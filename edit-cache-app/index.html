@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ai-i18n-tools — translation editor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>ai-i18n-tools</h1>
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="segments" class="active">Segments</button>
+        <button type="button" data-tab="ui">UI strings</button>
+        <button type="button" data-tab="glossary">Glossary</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="panel-segments" class="panel active">
+        <p class="hint">SQLite segment cache — filter and edit translations.</p>
+        <div class="row">
+          <input id="seg-locale" placeholder="locale" />
+          <input id="seg-file" placeholder="filename contains" />
+          <button type="button" id="seg-load">Load</button>
+        </div>
+        <div id="seg-status" class="status"></div>
+        <table class="grid">
+          <thead>
+            <tr>
+              <th>hash</th>
+              <th>locale</th>
+              <th>source</th>
+              <th>translated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="seg-body"></tbody>
+        </table>
+      </section>
+
+      <section id="panel-ui" class="panel">
+        <p class="hint" id="ui-meta"></p>
+        <div id="ui-status" class="status"></div>
+        <table class="grid">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>source</th>
+              <th id="ui-locale-head">translated</th>
+            </tr>
+          </thead>
+          <tbody id="ui-body"></tbody>
+        </table>
+      </section>
+
+      <section id="panel-glossary" class="panel">
+        <p class="hint" id="gl-meta"></p>
+        <div class="row">
+          <input id="gl-original" placeholder="Original language string" />
+          <input id="gl-locale" placeholder="locale or *" />
+          <input id="gl-translation" placeholder="Translation" />
+          <button type="button" id="gl-add">Add row</button>
+        </div>
+        <div id="gl-status" class="status"></div>
+        <table class="grid">
+          <thead>
+            <tr>
+              <th>Original</th>
+              <th>locale</th>
+              <th>Translation</th>
+            </tr>
+          </thead>
+          <tbody id="gl-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

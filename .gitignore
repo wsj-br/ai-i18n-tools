@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Cache
+.translation-cache/
+*.db
+*.db-wal
+*.db-shm
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Example apps — regenerable outputs (sources live in git under examples/)
+examples/**/.translation-cache/
+examples/**/translated-docs/
+
+# Documentation source (keep only compiled docs)
+docs-src/

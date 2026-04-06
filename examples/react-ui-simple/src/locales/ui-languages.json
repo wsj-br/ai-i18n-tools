@@ -1,0 +1,22 @@
+[
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)"
+  },
+  {
+    "code": "en-GB",
+    "label": "English (UK)",
+    "englishName": "English (United Kingdom)"
+  },
+  {
+    "code": "es",
+    "label": "Español",
+    "englishName": "Spanish"
+  },
+  {
+    "code": "fr",
+    "label": "Français",
+    "englishName": "French"
+  }
+]

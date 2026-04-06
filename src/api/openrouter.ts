@@ -1,0 +1,443 @@
+import fs from "fs";
+import type { I18nConfig } from "../core/types.js";
+import {
+  type BatchTranslationResult,
+  type ChatResponse,
+  type Segment,
+  type TranslationResult,
+  BatchTranslationError,
+} from "../core/types.js";
+import { resolveTranslationModels, normalizeLocale } from "../core/config.js";
+import {
+  buildDocumentBatchPrompt,
+  buildDocumentSinglePrompt,
+  buildUIPromptMessages,
+  parseBatchTranslationResponse,
+  parseUIJsonArrayResponse,
+  type DocumentPromptContentType,
+} from "../core/prompt-builder.js";
+import type { Logger } from "../utils/logger.js";
+
+/** OpenRouter: prefer throughput; allow backup providers. */
+const OPENROUTER_PROVIDER = {
+  sort: "throughput" as const,
+  allow_fallbacks: true,
+};
+
+interface OpenRouterContentBlock {
+  type: "text";
+  text: string;
+  cache_control?: { type: "ephemeral"; ttl?: string };
+}
+
+interface OpenRouterMessage {
+  role: "system" | "user" | "assistant";
+  content: string | OpenRouterContentBlock[];
+}
+
+interface OpenRouterResponse {
+  id: string;
+  choices: Array<{
+    message: { content: string };
+    finish_reason: string;
+  }>;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+    cost?: number;
+    cost_details?: { upstream_inference_cost?: number };
+  };
+}
+
+interface OpenRouterRequestPayload {
+  model: string;
+  max_tokens: number;
+  temperature: number;
+  messages: OpenRouterMessage[];
+  provider: typeof OPENROUTER_PROVIDER;
+}
+
+export interface OpenRouterClientOptions {
+  config: Pick<I18nConfig, "openrouter" | "sourceLocale" | "localeDisplayNames">;
+  apiKey?: string;
+  /** Append request/response JSON when set. */
+  debugTrafficFilePath?: string | null;
+  logger?: Logger;
+  httpReferer?: string;
+  xTitle?: string;
+}
+
+/**
+ * OpenRouter chat client with ordered `translationModels` fallback (Transrewrt-aligned).
+ */
+export class OpenRouterClient {
+  private readonly apiKey: string;
+  private readonly baseUrl: string;
+  private readonly modelsToTry: string[];
+  private readonly maxTokens: number;
+  private readonly temperature: number;
+  private readonly debugTrafficFilePath: string | null;
+  private readonly logger?: Logger;
+  private readonly localeDisplayNames: Record<string, string>;
+  private readonly sourceLanguageLabel: string;
+  private readonly httpReferer: string;
+  private readonly xTitle: string;
+
+  constructor(opts: OpenRouterClientOptions) {
+    this.apiKey = opts.apiKey ?? process.env.OPENROUTER_API_KEY ?? "";
+    if (!this.apiKey) {
+      throw new Error("OPENROUTER_API_KEY is required");
+    }
+    this.baseUrl = opts.config.openrouter.baseUrl.replace(/\/$/, "");
+    this.modelsToTry = resolveTranslationModels(opts.config.openrouter);
+    if (this.modelsToTry.length === 0) {
+      throw new Error("No OpenRouter models configured (translationModels or defaultModel)");
+    }
+    this.maxTokens = opts.config.openrouter.maxTokens;
+    this.temperature = opts.config.openrouter.temperature;
+    this.debugTrafficFilePath = opts.debugTrafficFilePath ?? null;
+    this.logger = opts.logger;
+    this.localeDisplayNames = {};
+    for (const [k, v] of Object.entries(opts.config.localeDisplayNames ?? {})) {
+      if (typeof v === "string") {
+        this.localeDisplayNames[k] = v;
+      }
+    }
+    const srcNorm = normalizeLocale(opts.config.sourceLocale);
+    this.sourceLanguageLabel = this.localeDisplayNames[srcNorm] ?? opts.config.sourceLocale;
+    this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
+    this.xTitle = opts.xTitle ?? "ai-i18n-tools";
+  }
+
+  getConfiguredModels(): readonly string[] {
+    return this.modelsToTry;
+  }
+
+  private targetLanguageLabel(localeCode: string): string {
+    const n = normalizeLocale(localeCode);
+    return this.localeDisplayNames[n] ?? localeCode;
+  }
+
+  private appendDebugLog(direction: "request" | "response", payload: unknown): void {
+    if (!this.debugTrafficFilePath) {
+      return;
+    }
+    const ts = new Date().toISOString();
+    const sep = `========== ${direction.toUpperCase()} ${ts} ==========`;
+    const body = typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
+    try {
+      fs.appendFileSync(this.debugTrafficFilePath, `${sep}\n${body}\n\n`, "utf8");
+    } catch (e) {
+      this.logger?.warn(`[debug-traffic] Failed to write: ${e}`);
+    }
+  }
+
+  private async handleRateLimit(response: Response): Promise<void> {
+    if (response.status === 429) {
+      const retryAfter = response.headers.get("retry-after");
+      const ms = retryAfter ? parseFloat(retryAfter) * 1000 : 2000;
+      await new Promise((r) => setTimeout(r, Number.isFinite(ms) ? ms : 2000));
+    }
+  }
+
+  private extractUsage(data: OpenRouterResponse): {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    cost?: number;
+  } {
+    const cost = data.usage.cost ?? (data as { cost?: number }).cost;
+    return {
+      inputTokens: data.usage.prompt_tokens,
+      outputTokens: data.usage.completion_tokens,
+      totalTokens: data.usage.total_tokens,
+      cost,
+    };
+  }
+
+  private toOpenRouterMessages(
+    messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
+  ): OpenRouterMessage[] {
+    return messages.map((m, i) => {
+      if (m.role === "system" && i === 0) {
+        return {
+          role: "system",
+          content: [
+            {
+              type: "text",
+              text: m.content,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
+  }
+
+  /** Single HTTP call for one model (with one 429 retry). */
+  private async fetchCompletion(
+    model: string,
+    openRouterMessages: OpenRouterMessage[]
+  ): Promise<ChatResponse> {
+    const requestPayload: OpenRouterRequestPayload = {
+      model,
+      max_tokens: this.maxTokens,
+      temperature: this.temperature,
+      messages: openRouterMessages,
+      provider: OPENROUTER_PROVIDER,
+    };
+
+    if (this.debugTrafficFilePath) {
+      this.appendDebugLog("request", requestPayload);
+    }
+
+    let response = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": this.httpReferer,
+        "X-Title": this.xTitle,
+      },
+      body: JSON.stringify(requestPayload),
+    });
+
+    if (response.status === 429) {
+      await this.handleRateLimit(response);
+      response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": this.httpReferer,
+          "X-Title": this.xTitle,
+        },
+        body: JSON.stringify(requestPayload),
+      });
+    }
+
+    const rawBody = await response.text();
+
+    if (this.debugTrafficFilePath) {
+      let parsedBody: unknown = rawBody;
+      try {
+        parsedBody = response.ok ? (JSON.parse(rawBody) as unknown) : rawBody;
+      } catch {
+        /* keep text */
+      }
+      this.appendDebugLog("response", {
+        status: response.status,
+        ok: response.ok,
+        body: parsedBody,
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error(`OpenRouter API error: ${response.status} - ${rawBody}`);
+    }
+
+    let data: OpenRouterResponse;
+    try {
+      data = JSON.parse(rawBody) as OpenRouterResponse;
+    } catch (e) {
+      throw e instanceof Error ? e : new Error(String(e));
+    }
+
+    const content = data.choices[0]?.message?.content;
+    if (content === undefined || content === null || String(content).trim() === "") {
+      throw new Error("Empty OpenRouter response content");
+    }
+
+    const usage = this.extractUsage(data);
+    return {
+      content: String(content),
+      model,
+      usage,
+      cost: usage.cost,
+    };
+  }
+
+  async chat(
+    messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    options?: { startModelIndex?: number }
+  ): Promise<ChatResponse> {
+    const openRouterMessages = this.toOpenRouterMessages(messages);
+    const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    let lastError: unknown;
+
+    for (let mi = start; mi < this.modelsToTry.length; mi++) {
+      const model = this.modelsToTry[mi]!;
+      try {
+        return await this.fetchCompletion(model, openRouterMessages);
+      } catch (e) {
+        lastError = e;
+        this.logger?.warn(`Model ${model} failed: ${e}`);
+      }
+    }
+
+    throw new Error(
+      `All translation models failed (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    );
+  }
+
+  stripTranslateTags(content: string): string {
+    return content
+      .replace(/^\s*<translate>\s*/i, "")
+      .replace(/\s*<\/translate>\s*$/i, "")
+      .trim();
+  }
+
+  async translateDocumentSegment(
+    content: string,
+    targetLocale: string,
+    glossaryHints: string[],
+    options?: { startModelIndex?: number; contentType?: DocumentPromptContentType }
+  ): Promise<TranslationResult> {
+    const contentType = options?.contentType ?? "markdown";
+    const { systemPrompt, userContent } = buildDocumentSinglePrompt(
+      content,
+      {
+        sourceLanguageLabel: this.sourceLanguageLabel,
+        targetLanguageLabel: this.targetLanguageLabel(targetLocale),
+        glossaryHints,
+      },
+      contentType
+    );
+
+    const res = await this.chat(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      { startModelIndex: options?.startModelIndex }
+    );
+
+    return {
+      content: this.stripTranslateTags(res.content),
+      model: res.model,
+      usage: res.usage,
+      cost: res.cost,
+    };
+  }
+
+  async translateDocumentBatch(
+    segments: Segment[],
+    locale: string,
+    glossaryHints: string[] = [],
+    options?: { startModelIndex?: number; contentType?: DocumentPromptContentType }
+  ): Promise<BatchTranslationResult> {
+    if (segments.length === 0) {
+      return {
+        translations: new Map(),
+        model: this.modelsToTry[0]!,
+        usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+      };
+    }
+
+    const contentType = options?.contentType ?? "markdown";
+    const { systemPrompt, userContent } = buildDocumentBatchPrompt(
+      segments,
+      {
+        sourceLanguageLabel: this.sourceLanguageLabel,
+        targetLanguageLabel: this.targetLanguageLabel(locale),
+        glossaryHints,
+      },
+      contentType
+    );
+
+    const openRouterMessages = this.toOpenRouterMessages([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userContent },
+    ]);
+
+    const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    let lastError: unknown;
+
+    for (let mi = start; mi < this.modelsToTry.length; mi++) {
+      const model = this.modelsToTry[mi]!;
+      try {
+        const result = await this.fetchCompletion(model, openRouterMessages);
+        const translations = parseBatchTranslationResponse(
+          result.content,
+          segments.length,
+          result.content
+        );
+        return {
+          translations,
+          model: result.model,
+          usage: result.usage,
+          cost: result.cost,
+        };
+      } catch (e) {
+        lastError = e;
+        if (e instanceof BatchTranslationError) {
+          this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
+        } else {
+          this.logger?.warn(`Batch request failed with ${model}: ${e}`);
+        }
+      }
+    }
+
+    throw new Error(
+      `All translation models failed for batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    );
+  }
+
+  /**
+   * UI strings: JSON array response (Transrewrt `generate-translations.js`), with model fallback chain.
+   */
+  async translateUIBatch(
+    texts: string[],
+    targetLocale: string,
+    options?: { startModelIndex?: number }
+  ): Promise<{
+    translations: string[];
+    model: string;
+    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    cost?: number;
+  }> {
+    if (texts.length === 0) {
+      return {
+        translations: [],
+        model: this.modelsToTry[0]!,
+        usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+      };
+    }
+
+    const { systemPrompt, userContent } = buildUIPromptMessages(texts, {
+      sourceLanguageLabel: this.sourceLanguageLabel,
+      targetLanguageLabel: this.targetLanguageLabel(targetLocale),
+    });
+
+    const openRouterMessages = this.toOpenRouterMessages([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userContent },
+    ]);
+
+    const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    let lastError: unknown;
+
+    for (let mi = start; mi < this.modelsToTry.length; mi++) {
+      const model = this.modelsToTry[mi]!;
+      try {
+        const result = await this.fetchCompletion(model, openRouterMessages);
+        const translations = parseUIJsonArrayResponse(result.content, texts.length);
+        return {
+          translations,
+          model: result.model,
+          usage: result.usage,
+          cost: result.cost,
+        };
+      } catch (e) {
+        lastError = e;
+        this.logger?.warn(`UI batch failed with ${model}: ${e}`);
+      }
+    }
+
+    throw new Error(
+      `All translation models failed for UI batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    );
+  }
+}
