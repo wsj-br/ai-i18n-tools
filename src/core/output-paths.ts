@@ -1,7 +1,7 @@
 import path from "path";
 import type { I18nConfig } from "./types.js";
 
-export type DocArtifactKind = "markdown" | "json" | "svg";
+export type DocArtifactKind = "markdown" | "json";
 
 const DOCUSAURUS_PLUGIN = "docusaurus-plugin-content-docs/current";
 
@@ -15,10 +15,7 @@ function templateForKind(config: I18nConfig, kind: DocArtifactKind): string | un
   if (kind === "markdown") {
     return mo.pathTemplate?.trim();
   }
-  if (kind === "json") {
-    return mo.jsonPathTemplate?.trim();
-  }
-  return mo.svgPathTemplate?.trim();
+  return mo.jsonPathTemplate?.trim();
 }
 
 export interface PathTemplateContext {
@@ -155,11 +152,11 @@ export function resolveDocumentationOutputPath(
   return abs;
 }
 
-/** Whether to run Transrewrt-style relative link rewriting for flat markdown outputs. */
+/** Whether to run relative link rewriting for flat markdown outputs. */
 export function shouldRewriteFlatMarkdownLinks(config: I18nConfig): boolean {
   const mo = config.documentation.markdownOutput;
-  if (mo.rewriteRelativeLinksForFlat !== undefined) {
-    return mo.rewriteRelativeLinksForFlat;
+  if (mo.rewriteRelativeLinks !== undefined) {
+    return mo.rewriteRelativeLinks;
   }
   if (mo.pathTemplate?.trim()) {
     return false;

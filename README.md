@@ -1,182 +1,147 @@
 # ai-i18n-tools
 
-> Unified internationalization toolkit for React apps and documentation sites. UI string extraction, markdown and JSON translation, SVG text handling, and SQLite-backed segment caching — one config-driven workflow.
+CLI and programmatic toolkit for internationalizing JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next - with a separate pipeline for markdown, Docusaurus JSON, and SVG document translation.
 
-[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+## Two core workflows
 
-## ✨ Features
+**Workflow 1 - UI Translation** (React, Next.js, Node.js, any i18next project)
 
-- **Multi-Content Support**: React UI strings, Markdown docs, JSON files, SVG assets
-- **Smart Caching**: SQLite-based segment-level cache with 70%+ hit rates
-- **Glossary Management**: CSV-based terminology enforcement
-- **Batch Processing**: Efficient API usage with **ordered `translationModels`** (try the next model on failure)
-- **Quality Validation**: Post-translation checks and placeholder protection
-- **Web Cache Editor**: Visual interface for manual corrections
-- **CLI Interface**: Easy-to-use commands for all operations
-- **Optional runtime helpers** (no React/i18next dependency): `getUILanguageLabel`, `getUILanguageLabelNative`, `interpolateTemplate` (`{{var}}`), `flipUiArrowsForRtl` — import from `ai-i18n-tools` for shared UI language labels and RTL arrow tweaks. See [Getting Started](./docs/GETTING_STARTED.md).
+Scans source files for `t("…")` calls, builds a master catalog (`strings.json`), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
-## 🚀 Quick Start
+**Workflow 2 - Document Translation** (Markdown, Docusaurus, SVG)
 
-```bash
-# Install
-npm install ai-i18n-tools
+Translates `.md`, `.mdx`, Docusaurus JSON label files, and `.svg` files. Supports Docusaurus's `i18n/<locale>/` layout and flat locale-suffixed layouts. SQLite cache ensures only new or changed segments are sent to the LLM.
 
-# Initialize configuration (default: ui-markdown; use -t ui-docusaurus for docs-site layout)
-npx ai-i18n-tools init
-
-# Extract translatable strings
-npx ai-i18n-tools extract
-
-# Translate to all locales
-npx ai-i18n-tools translate
-
-# Check translation status
-npx ai-i18n-tools status
-```
-
-## 📖 Documentation
-
-- **[Documentation home (`docs/README.md`)](./docs/README.md)** — full table of contents
-- **[Getting Started](./docs/GETTING_STARTED.md)** — install, env vars, config, first commands
-- **[Overview](./docs/OVERVIEW.md)** — goals, benefits, configuration examples
-- **[Canonical docs + rollout order](./docs/CANONICAL_DOCS.md)** — single source of truth; how to stage releases
-- **[Migration — Transrewrt-style apps](./docs/MIGRATION_GUIDE_TRANSREWRT.md)**
-- **[Migration — Docusaurus sites](./docs/MIGRATION_GUIDE_DUPLISTATUS.md)**
-- **[Comparison (legacy vs package)](./docs/COMPARISON.md)**
-- **[Implementation plan & roadmap](./docs/I18N_TOOLS_IMPLEMENTATION_PLAN.md)** — contributors; architecture and specs
-- **[Developing this repo](./docs/DEVELOPING.md)** — build, test, layout
-- **[Example: React + i18next + flat markdown](./examples/react-ui-simple/README.md)** — runnable sample (`npm run test:example-a` after clone; `npm install` inside the example for Vite)
-
-## 🎯 Use Cases
-
-### React Applications (UI extraction focus)
-
-```json
-{
-  "sourceLocale": "en",
-  "targetLocales": "src/locales/ui-languages.json",
-  "openrouter": {
-    "translationModels": [
-      "anthropic/claude-3.5-haiku",
-      "anthropic/claude-haiku-4.5"
-    ]
-  },
-  "features": {
-    "extractUIStrings": true,
-    "translateUIStrings": true
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "src/locales/strings.json",
-    "flatOutputDir": "src/locales/"
-  },
-  "documentation": {
-    "contentPaths": [],
-    "outputDir": "./i18n",
-    "cacheDir": ".translation-cache"
-  }
-}
-```
-
-Use a **string** path (not a JSON array) for the manifest. Adjust it for your repo (e.g. `src/renderer/locales/ui-languages.json`). Manifest shape: **`{ code, label, englishName }`** per row — see **[Getting Started](./docs/GETTING_STARTED.md)**.
-
-### Documentation Sites (markdown + Docusaurus JSON + SVG)
-
-`targetLocales` can be a **locale array** (as below) or a **string path** to `ui-languages.json` if you share a manifest with your UI/theme.
-
-```json
-{
-  "sourceLocale": "en",
-  "targetLocales": ["de", "fr", "es", "pt-BR"],
-  "openrouter": {
-    "translationModels": [
-      "anthropic/claude-3.5-haiku",
-      "anthropic/claude-haiku-4.5"
-    ]
-  },
-  "features": {
-    "translateMarkdown": true,
-    "translateJSON": true,
-    "translateSVG": true
-  },
-  "ui": {
-    "sourceRoots": [],
-    "stringsJson": "strings.json",
-    "flatOutputDir": "./locales"
-  },
-  "documentation": {
-    "contentPaths": ["docs/"],
-    "outputDir": "i18n/",
-    "cacheDir": ".translation-cache",
-    "jsonSource": "i18n/en",
-    "markdownOutput": { "style": "docusaurus", "docsRoot": "docs" }
-  },
-  "glossary": {
-    "uiGlossaryFromStringsJson": "path/to/strings.json",
-    "userGlossary": "glossary-user.csv"
-  }
-}
-```
-
-## 💡 Key Benefits
-
-- **Consolidated maintenance**: Replaces large duplicated per-repo translation stacks with **one npm package**; each product keeps a **small** integration surface (config + scripts)
-- **65% Cost Savings**: Smart caching reduces API calls
-- **Faster Translations**: 70%+ cache hit rate on subsequent runs
-- **Better Quality**: Glossary enforcement and validation
-- **Easy Maintenance**: Published package with community support
-
-## 🛠️ CLI Commands
-
-```bash
-ai-i18n-tools init                    # Create config (-t ui-markdown | ui-docusaurus)
-ai-i18n-tools extract                 # Extract UI strings → strings.json (i18next-scanner)
-ai-i18n-tools translate-ui [options]  # Translate strings.json + write per-locale JSON (OpenRouter, translationModels[])
-ai-i18n-tools translate [options]     # Docs: markdown / JSON / SVG (+ UI step if features.translateUIStrings)
-ai-i18n-tools sync [options]          # extract → translate-ui (if enabled) → translate docs
-ai-i18n-tools status                  # Markdown translation status vs cache
-ai-i18n-tools cleanup [options]       # Clean orphaned cache
-ai-i18n-tools edit                    # Web editor: doc cache + strings.json + glossary CSV
-ai-i18n-tools glossary-generate       # Stub glossary-user.csv with standard headers
-```
-
-Enable **`features.translateUIStrings`** to translate UI strings from `strings.json`; use **`translate --no-ui`** to run docs only.
-
-## 📦 Installation Requirements
-
-- Node.js >= 18.0.0
-- OpenRouter API key (`OPENROUTER_API_KEY` environment variable)
-- Optional: Inkscape (for SVG to PNG export)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md).
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Reference deployments
-
-Early production shape and requirements were validated against:
-
-- [Transrewrt](https://github.com/wsj-br/transrewrt) — React/Electron app i18n
-- [Duplistatus](https://github.com/wsj-br/duplistatus) — Docusaurus documentation workflow
-
-## 📞 Support
-
-- 📖 [Documentation](./docs/)
-- 🐛 [Issue Tracker](https://github.com/wsj-br/ai-i18n-tools/issues)
-- 💬 [Discord Community](https://discord.gg/your-server)
+Both workflows share a single config file and can be used independently or together.
 
 ---
 
-Made with ❤️ by the ai-i18n-tools contributors
+## Installation
+
+```bash
+npm install ai-i18n-tools
+# or
+pnpm add ai-i18n-tools
+```
+
+Set your OpenRouter API key:
+
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+```
+
+---
+
+## Quick start
+
+### Workflow 1 - UI strings
+
+```bash
+# 1. Create config
+npx ai-i18n-tools init
+
+# 2. Extract t("…") calls from source
+npx ai-i18n-tools extract
+
+# 3. Translate to all target locales
+npx ai-i18n-tools translate-ui
+```
+
+Wire i18next in your app using the helpers from `'ai-i18n-tools/runtime'`:
+
+```js
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import uiLanguages from './locales/ui-languages.json';
+import {
+  defaultI18nInitOptions,
+  wrapI18nWithKeyTrim,
+  makeLoadLocale,
+  applyDirection,
+} from 'ai-i18n-tools/runtime';
+
+// Must match sourceLocale in ai-i18n-tools.config.json
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
+wrapI18nWithKeyTrim(i18n);
+i18n.on('languageChanged', applyDirection);
+applyDirection(i18n.language);
+
+const localeLoaders = Object.fromEntries(
+  uiLanguages
+    .filter(({ code }) => code !== SOURCE_LOCALE)
+    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+);
+export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export default i18n;
+```
+
+### Workflow 2 - Documentation
+
+```bash
+# 1. Create config for Docusaurus
+npx ai-i18n-tools init -t ui-docusaurus
+
+# 2. Translate all docs
+npx ai-i18n-tools translate-docs
+
+# 3. Check status
+npx ai-i18n-tools status
+```
+
+### Both workflows
+
+```bash
+npx ai-i18n-tools sync   # extract UI strings, then translate UI strings and documents
+```
+
+---
+
+## Runtime helpers
+
+Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next import required:
+
+| Helper | Description |
+|---|---|
+| `defaultI18nInitOptions(sourceLocale)` | Standard i18next init options for key-as-default setups. |
+| `wrapI18nWithKeyTrim(i18n)` | Wrap `i18n.t` so keys are trimmed before lookup. |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory for async locale file loading. |
+| `getTextDirection(lng)` | Returns `'ltr'` or `'rtl'` for a BCP-47 code. |
+| `applyDirection(lng, element?)` | Sets `dir` attribute on `document.documentElement`. |
+| `getUILanguageLabel(lang, t)` | Display label for a language menu row (with i18n). |
+| `getUILanguageLabelNative(lang)` | Display label without calling `t()` (header-style). |
+| `interpolateTemplate(str, vars)` | Low-level `{{var}}` substitution on a plain string (used internally; app code should use `t()` instead). |
+| `flipUiArrowsForRtl(text, isRtl)` | Flip `→` to `←` for RTL layouts. |
+
+---
+
+## CLI commands
+
+```
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools extract                               Scan source for t("…") calls
+ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON, SVG); see docs for
+                                                    --force-update, --force, --no-cache, --stats, --clear-cache
+ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only
+ai-i18n-tools sync                                  Extract UI strings, then translate UI strings and documents
+ai-i18n-tools status                                Translation status per file × locale
+ai-i18n-tools editor                                Open cache/glossary web editor
+ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>] [-y]   Clean stale + orphaned cache rows; confirms first (see --help); backs up SQLite by default
+ai-i18n-tools glossary-generate                     Create empty glossary CSV template
+```
+
+All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), and optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory).
+
+---
+
+## Documentation
+
+- [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, all CLI flags, and config field reference.
+- [Package Overview](docs/PACKAGE_OVERVIEW.md) - architecture, internals, programmatic API, and extension points.
+
+---
+
+## License
+
+MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)

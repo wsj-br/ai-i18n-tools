@@ -5,11 +5,13 @@ export {
   type OpenRouterConfig,
   type FeaturesConfig,
   type GlossaryConfig,
+  type UIStringExtractorConfig,
   type ReactExtractorConfig,
   type SvgExtractorConfig,
   type UiConfig,
   type DocumentationConfig,
   type MarkdownOutputConfig,
+  type SvgAssetsConfig,
   type RawI18nConfigInput,
   type Segment,
   type SegmentType,
@@ -37,6 +39,14 @@ export {
 } from "./core/output-paths.js";
 
 export {
+  type SvgPathTemplateContext,
+  expandSvgPathTemplate,
+  resolveSvgAssetOutputPath,
+  svgAssetCacheFilepath,
+  relPathUnderSvgSource,
+} from "./core/svg-asset-paths.js";
+
+export {
   resolveTranslationModels,
   coerceTargetLocalesField,
   normalizeLocale,
@@ -47,6 +57,7 @@ export {
   loadI18nConfigFromFile,
   defaultI18nConfigPartial,
   validateI18nBusinessRules,
+  assertSvgCommandConfig,
   DEFAULT_CONFIG_FILENAME,
   initConfigTemplates,
   writeInitConfigFile,
@@ -70,6 +81,12 @@ export {
 export { computeSegmentHash } from "./utils/hash.js";
 
 export {
+  runMapWithConcurrency,
+  AsyncSemaphore,
+  AsyncMutex,
+} from "./utils/concurrency.js";
+
+export {
   Logger,
   type LogLevelName,
   type LoggerOptions,
@@ -84,7 +101,9 @@ export { classifySegmentType } from "./extractors/classify-segment.js";
 export { MarkdownExtractor } from "./extractors/markdown-extractor.js";
 export { JsonExtractor } from "./extractors/json-extractor.js";
 export { SvgExtractor, type SvgExtractorOptions } from "./extractors/svg-extractor.js";
-export { ReactExtractor } from "./extractors/react-extractor.js";
+export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
+/** @deprecated Use {@link UIStringExtractor} */
+export { UIStringExtractor as ReactExtractor } from "./extractors/ui-string-extractor.js";
 
 export { PlaceholderHandler } from "./processors/placeholder-handler.js";
 export { protectMarkdownUrls, restoreMarkdownUrls } from "./processors/url-placeholders.js";
@@ -111,6 +130,7 @@ export {
   expandDocumentationTargetLocalesInRawInput,
   getDocumentationTargetLocaleCodes,
   resolveLocalesForDocumentation,
+  resolveLocalesForSvg,
   resolveUiLanguagesAbsPath,
   loadUiLanguageEntries,
   mergeUiLanguageDisplayNames,
@@ -120,8 +140,11 @@ export {
 } from "./core/ui-languages.js";
 
 /**
- * Optional runtime helpers (no React / i18next dependency): language row labels, `{{var}}` interpolation,
- * RTL arrow flip — same ideas as Transrewrt `languageDisplay.js` / `formatUtils.js`.
+ * Runtime helpers (no React / i18next import required):
+ * - Language row display labels for UI menus
+ * - `{{var}}` interpolation for non-i18next contexts
+ * - RTL direction detection, DOM `dir` helper
+ * - i18next setup factories: init options, key-trim wrapper, locale loader
  */
 export {
   interpolateTemplate,
@@ -129,6 +152,14 @@ export {
   getUILanguageLabel,
   getUILanguageLabelNative,
   type TranslateFn,
+  RTL_LANGS,
+  getTextDirection,
+  applyDirection,
+  defaultI18nInitOptions,
+  wrapI18nWithKeyTrim,
+  makeLoadLocale,
+  type I18nLike,
+  type I18nWithResources,
 } from "./runtime/index.js";
 
 export { Glossary } from "./glossary/glossary.js";

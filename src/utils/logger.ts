@@ -26,7 +26,7 @@ function timestamp(): string {
 export interface LoggerOptions {
   /** Minimum level to emit (console and file). */
   level?: LogLevelName;
-  /** When set, append structured lines to this file (no rotation in Phase 1 — use logrotate externally). */
+  /** When set, append structured lines to this file (no rotation in Phase 1 - use logrotate externally). */
   filePath?: string;
   /** Label prefix for this logger instance. */
   context?: string;

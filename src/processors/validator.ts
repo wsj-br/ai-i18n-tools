@@ -16,7 +16,7 @@ export function segmentMarkdownUrlCountsMatch(
 }
 
 /**
- * Compare translated segments to source (Transrewrt-aligned checks).
+ * Compare translated segments to source: count, code-block integrity, URL counts, heading levels, length ratio.
  */
 export function validateTranslation(
   sourceSegments: Segment[],

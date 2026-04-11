@@ -1,0 +1,42 @@
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["es", "fr", "de", "pt-BR"],
+  "concurrency": 4,
+  "batchConcurrency": 4,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "openrouter": {
+    "baseUrl": "https://openrouter.ai/api/v1",
+    "translationModels": [
+      "qwen/qwen3-235b-a22b-2507",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku"
+    ],
+    "maxTokens": 8192,
+    "temperature": 0.2
+  },
+  "features": {
+    "extractUIStrings": true,
+    "translateUIStrings": true,
+    "translateMarkdown": true,
+    "translateJSON": false
+  },
+  "glossary": {
+    "uiGlossary": "locales/strings.json",
+    "userGlossary": "glossary-user.csv"
+  },
+  "ui": {
+    "sourceRoots": ["src/"],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "locales/"
+  },
+  "documentation": {
+    "contentPaths": ["README.md"],
+    "outputDir": "translated-docs",
+    "cacheDir": ".translation-cache",
+    "injectTranslationMetadata": true,
+    "markdownOutput": {
+      "style": "flat"
+    }
+  }
+}

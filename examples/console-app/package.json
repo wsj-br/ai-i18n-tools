@@ -1,0 +1,26 @@
+{
+  "name": "console-app-example",
+  "version": "1.0.0",
+  "description": "Example console application demonstrating ai-i18n-tools",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "start:es": "node src/main.js --locale es",
+    "start:fr": "node src/main.js --locale fr",
+    "start:de": "node src/main.js --locale de",
+    "start:pt-BR": "node src/main.js --locale pt-BR",
+    "i18n:extract": "ai-i18n-tools extract",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate",
+    "i18n:clean": "rm -rf .translation-cache"
+  },
+  "dependencies": {
+    "ai-i18n-tools": "workspace:^",
+    "i18next": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}

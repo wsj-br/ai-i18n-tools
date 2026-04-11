@@ -4,8 +4,10 @@ dist/
 build/
 
 # Cache
-.translation-cache/
+.translation-cache/*
+!.translation-cache/cache.db
 *.db
+!.translation-cache/cache.db
 *.db-wal
 *.db-shm
 
@@ -41,9 +43,9 @@ tmp/
 temp/
 *.tmp
 
-# Example apps — regenerable outputs (sources live in git under examples/)
-examples/**/.translation-cache/
-examples/**/translated-docs/
+# Example apps - track cache.db so clones reuse SQLite cache; ignore other cache dir files
+examples/**/.translation-cache/*
+!examples/**/.translation-cache/cache.db
 
 # Documentation source (keep only compiled docs)
 docs-src/

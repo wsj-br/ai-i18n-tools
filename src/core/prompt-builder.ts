@@ -21,7 +21,7 @@ export const MARKDOWN_PRESERVATION_RULES = `Markdown structure: Preserve heading
 export const JSON_SEGMENT_CONTEXT_ADDENDUM = `
 Context: Segments are end-user-visible strings from Docusaurus or app locale JSON (messages, labels, descriptions, sidebar titles).
 - Preserve interpolation and markup exactly: {name}, {{var}}, ICU/plural patterns, HTML inside strings, Markdown fragments if present, %s / %d style placeholders.
-- Do not add or remove braces, brackets, or escape sequences; output only the translated human text inside each <t id="N"> block — never a full JSON object.`;
+- Do not add or remove braces, brackets, or escape sequences; output only the translated human text inside each <t id="N"> block - never a full JSON object.`;
 
 /** Appended for SVG <text>/<tspan>/<title> extracted segments. */
 export const SVG_SEGMENT_CONTEXT_ADDENDUM = `
@@ -167,7 +167,7 @@ export function parseBatchTranslationResponse(
   return byIndex;
 }
 
-/** System prompt for UI batch translation — JSON array response only. */
+/** System prompt for UI batch translation - JSON array response only. */
 const UI_BATCH_SYSTEM_PROMPT = `You are a professional UI/UX translator specializing in software interfaces.
 
 RULES:
@@ -177,22 +177,38 @@ RULES:
 - Keep placeholders unchanged: {{variable}}, {0}, %s, %d, :value
 - Keep HTML tags unchanged: <strong>, <br/>, etc.
 - Use informal/familiar tone where natural for the target language
-- Short strings (1-3 words) must stay short — do not expand them
+- Short strings (1-3 words) must stay short - do not expand them
 - You MUST respond with ONLY a valid JSON array, nothing else
 - No markdown, no code fences, no explanation, no preamble, no postamble
 - First character of your response must be [ and last character must be ]`;
 
 export function buildUIPromptMessages(
   texts: string[],
-  opts: { sourceLanguageLabel: string; targetLanguageLabel: string }
+  opts: {
+    sourceLanguageLabel: string;
+    targetLanguageLabel: string;
+    /** Optional terminology lines (same shape as document `<glossary>` blocks). */
+    glossaryHints?: string[];
+  }
 ): { systemPrompt: string; userContent: string } {
+  const hints = opts.glossaryHints?.filter((h) => h.trim().length > 0) ?? [];
+  const glossaryBlock =
+    hints.length === 0
+      ? ""
+      : `
+
+Glossary - when a string matches or contains a term below, prefer the suggested target wording. Do not output glossary lines; respond with only the JSON array as required above.
+<glossary>
+${hints.join("\n")}
+</glossary>`;
+
   const userContent = `Translate these ${texts.length} UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel} and return a JSON array:
 
 ${JSON.stringify(texts, null, 2)}
 
 Respond with ONLY the JSON array. No other text.`;
 
-  return { systemPrompt: UI_BATCH_SYSTEM_PROMPT, userContent };
+  return { systemPrompt: UI_BATCH_SYSTEM_PROMPT + glossaryBlock, userContent };
 }
 
 export class UIJsonArrayParseError extends Error {

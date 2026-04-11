@@ -1,0 +1,4 @@
+packages:
+  - "."
+  - "examples/console-app"
+  - "examples/nextjs-app"

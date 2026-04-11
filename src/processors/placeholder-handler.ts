@@ -3,7 +3,7 @@ import { protectDocAnchors, restoreDocAnchors } from "./anchor-placeholders.js";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
- * Chains placeholder protection in the same order as Transrewrt doc translate:
+ * Chains placeholder protection for document translation:
  * admonitions → doc anchors → markdown URLs. Restore is the inverse order.
  */
 export class PlaceholderHandler {

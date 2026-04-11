@@ -1,0 +1,33 @@
+{
+  "name": "nextjs-app-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example Next.js application demonstrating ai-i18n-tools",
+  "scripts": {
+    "dev": "next dev -p 3030",
+    "build": "next build",
+    "start": "next start -p 3030",
+    "i18n:extract": "ai-i18n-tools extract",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate-svg && ai-i18n-tools translate-docs",
+    "i18n:cleanup": "ai-i18n-tools cleanup"
+  },
+  "dependencies": {
+    "ai-i18n-tools": "workspace:^",
+    "i18next": "^24.0.0",
+    "next": "^14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}

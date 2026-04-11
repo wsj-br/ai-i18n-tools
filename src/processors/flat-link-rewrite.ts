@@ -1,9 +1,9 @@
 import path from "path";
 
 /**
- * Transrewrt-style: adjust relative markdown links for locale-suffixed outputs in a flat folder.
- * @param i18nPrefix — POSIX relative path from `linkRewriteDocsRoot` to output dir (e.g. `translated-docs`)
- * @param depthPrefix — e.g. `../` when output lives one level below cwd-relative anchor
+ * Adjust relative markdown links for locale-suffixed outputs in a flat output folder.
+ * @param i18nPrefix - POSIX relative path from `linkRewriteDocsRoot` to output dir (e.g. `translated-docs`)
+ * @param depthPrefix - e.g. `../` when output lives one level below cwd-relative anchor
  */
 export function rewriteOneRelativePathForFlatOutput(
   pathOnly: string,
@@ -94,7 +94,7 @@ export function rewriteDocLinksForFlatOutput(
   return out;
 }
 
-/** Compute Transrewrt-style `i18nPrefix` (POSIX) and `depthPrefix` from cwd-relative roots. */
+/** Compute `i18nPrefix` (POSIX) and `depthPrefix` from cwd-relative roots. */
 export function computeFlatLinkRewritePrefixes(
   cwd: string,
   linkRewriteDocsRoot: string,

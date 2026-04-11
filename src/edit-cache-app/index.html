@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ai-i18n-tools - Translation Cache Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>ai-i18n-tools - Translation Cache Editor</h1>
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="segments" class="active">Documentation</button>
+        <button type="button" data-tab="ui">UI strings</button>
+        <button type="button" data-tab="glossary">Glossary</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="panel-segments" class="panel active">
+        <p class="hint">Documentation cache - filter, edit, delete, log file links to the server console.</p>
+        <div class="container-inner">
+          <section class="filters seg-filters">
+            <div class="filter-row filter-row-seg-primary">
+              <select id="seg-filter-filepath-select" title="Choose filepath from list (sets filename filter)">
+                <option value="">-- Select filepath --</option>
+              </select>
+              <select id="seg-filter-locale" title="Filter by locale">
+                <option value="">All locales</option>
+              </select>
+              <select id="seg-filter-model" title="Filter by model">
+                <option value="">All models</option>
+              </select>
+              <input type="text" id="seg-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
+              <div class="filter-row-seg-primary-actions">
+                <select id="seg-filter-last-hit" title="Filter by last cache hit (stale = never hit this run)">
+                  <option value="">All entries</option>
+                  <option value="stale">Stale</option>
+                  <option value="active">Active</option>
+                </select>
+                <button type="button" id="seg-btn-clear" class="seg-btn-clear">Clear</button>
+                <button type="button" id="seg-btn-apply">Apply</button>
+              </div>
+            </div>
+            <div class="filter-row filter-row-seg-secondary">
+              <input type="text" id="seg-filter-source-hash" placeholder="Source hash" title="Filter by source_hash" />
+              <input type="text" id="seg-filter-source-text" placeholder="Source text search" title="Filter by source_text" />
+              <input type="text" id="seg-filter-translated-text" placeholder="Translated text search" title="Filter by translated_text" />
+              <button type="button" id="seg-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
+            </div>
+          </section>
+
+          <section class="delete-by-filepath">
+            <label for="seg-select-filepath">Delete all translations for filepath:</label>
+            <select id="seg-select-filepath">
+              <option value="">-- Select filepath --</option>
+            </select>
+            <button type="button" id="seg-btn-delete-filepath" disabled>Delete all</button>
+          </section>
+
+          <section class="pagination-top">
+            <span id="seg-pagination-info"></span>
+            <div class="pagination-controls">
+              <button type="button" id="seg-btn-prev" disabled>Previous</button>
+              <span id="seg-page-indicator"></span>
+              <button type="button" id="seg-btn-next" disabled>Next</button>
+              <label>
+                Page size:
+                <select id="seg-page-size">
+                  <option value="25">25</option>
+                  <option value="50" selected>50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Filepath</th>
+                  <th>Line #</th>
+                  <th>Source hash</th>
+                  <th id="seg-th-source-text">Source text</th>
+                  <th>Locale</th>
+                  <th>Translated text</th>
+                  <th>Model</th>
+                  <th>Created</th>
+                  <th>Last hit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="seg-table-body"></tbody>
+            </table>
+          </section>
+
+          <section class="pagination-bottom">
+            <span id="seg-pagination-info-bottom"></span>
+            <div class="pagination-controls">
+              <button type="button" id="seg-btn-prev-bottom" disabled>Previous</button>
+              <span id="seg-page-indicator-bottom"></span>
+              <button type="button" id="seg-btn-next-bottom" disabled>Next</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="panel-ui" class="panel">
+        <p class="hint" id="ui-meta"></p>
+        <div id="ui-status" class="status"></div>
+        <div class="filters">
+          <div class="filter-row filter-row-ui-primary">
+            <input type="text" id="ui-filter-id" placeholder="Id / hash" />
+            <input type="text" id="ui-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
+            <select id="ui-filter-filepath-select" title="Choose filepath from list (filters by location file)">
+              <option value="">-- Select filepath --</option>
+            </select>
+            <input type="text" id="ui-filter-source" placeholder="Source contains" />
+            <input type="text" id="ui-filter-translated" placeholder="Translated contains" />
+            <select id="ui-edit-locale" title="Locale for translated column, filter, and edit"></select>
+            <button type="button" id="ui-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
+            <button type="button" id="ui-btn-clear" class="seg-btn-clear">Clear</button>
+            <button type="button" id="ui-btn-apply">Apply filters</button>
+          </div>
+        </div>
+        <section class="pagination-top hidden-ui" id="ui-pagination-wrap-top">
+          <span id="ui-pagination-info"></span>
+          <div class="pagination-controls">
+            <button type="button" id="ui-btn-prev" disabled>Previous</button>
+            <span id="ui-page-indicator"></span>
+            <button type="button" id="ui-btn-next" disabled>Next</button>
+          </div>
+        </section>
+        <section class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Locations</th>
+                <th id="ui-th-source">Source</th>
+                <th>Locale</th>
+                <th>Translated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ui-table-body"></tbody>
+          </table>
+        </section>
+        <section class="pagination-bottom hidden-ui" id="ui-pagination-wrap-bottom">
+          <span id="ui-pagination-info-bottom"></span>
+          <div class="pagination-controls">
+            <button type="button" id="ui-btn-prev-bottom" disabled>Previous</button>
+            <span id="ui-page-indicator-bottom"></span>
+            <button type="button" id="ui-btn-next-bottom" disabled>Next</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="panel-glossary" class="panel">
+        <div class="gl-meta-row">
+          <p class="hint" id="gl-meta"></p>
+          <div id="gl-status" class="status"></div>
+        </div>
+        <div class="row-add" id="gl-add-row">
+          <input type="text" id="gl-new-original" placeholder="Original language string" />
+          <select id="gl-new-locale"></select>
+          <input type="text" id="gl-new-translation" placeholder="Translation" />
+          <button type="button" id="gl-btn-add">Add row</button>
+        </div>
+        <div class="filters">
+          <div class="filter-row">
+            <input type="text" id="gl-filter-original" placeholder="Filter original" />
+            <select id="gl-filter-locale" title="Locale; * = all locales"></select>
+            <input type="text" id="gl-filter-translation" placeholder="Filter translation" />
+            <button type="button" id="gl-btn-clear" class="seg-btn-clear">Clear</button>
+            <button type="button" id="gl-btn-apply">Apply filters</button>
+          </div>
+        </div>
+        <section class="pagination-top hidden-ui" id="gl-pagination-wrap-top">
+          <span id="gl-pagination-info"></span>
+          <div class="pagination-controls">
+            <button type="button" id="gl-btn-prev" disabled>Previous</button>
+            <span id="gl-page-indicator"></span>
+            <button type="button" id="gl-btn-next" disabled>Next</button>
+          </div>
+        </section>
+        <section class="table-wrapper">
+          <table class="grid-inline">
+            <thead>
+              <tr>
+                <th id="gl-th-original">Original</th>
+                <th>Locale</th>
+                <th>Translation</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="gl-table-body"></tbody>
+          </table>
+        </section>
+        <section class="pagination-bottom hidden-ui" id="gl-pagination-wrap-bottom">
+          <span id="gl-pagination-info-bottom"></span>
+          <div class="pagination-controls">
+            <button type="button" id="gl-btn-prev-bottom" disabled>Previous</button>
+            <span id="gl-page-indicator-bottom"></span>
+            <button type="button" id="gl-btn-next-bottom" disabled>Next</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="seg-modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <h2>Edit translated text</h2>
+        <textarea id="seg-modal-textarea" rows="8"></textarea>
+        <div class="modal-actions">
+          <button type="button" id="seg-btn-modal-cancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="seg-btn-modal-save" class="btn-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ui-modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <h2>Edit UI translation</h2>
+        <textarea id="ui-modal-textarea" rows="8"></textarea>
+        <div class="modal-actions">
+          <button type="button" id="ui-btn-modal-cancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="ui-btn-modal-save" class="btn-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

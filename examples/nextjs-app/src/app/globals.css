@@ -1,0 +1,87 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f8f9fa;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #dee2e6;
+  margin: 1rem 0;
+}
+
+.locale-row {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.locale-row label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.locale-row select {
+  font-size: 0.875rem;
+  padding: 0.3rem 0.5rem;
+  min-width: 18rem;
+  max-width: calc(100vw - 2rem);
+}
+
+.lines p {
+  margin: 0.35rem 0;
+}
+
+.demo-svg {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.demo-svg-frame {
+  display: inline-block;
+  max-width: 100%;
+  text-align: left;
+  vertical-align: top;
+}
+
+.demo-svg-frame img {
+  display: block;
+  max-height: 400px;
+  max-width: 100%;
+}
+
+.demo-svg-caption {
+  margin: 0.35rem 0 0;
+}

@@ -44,6 +44,10 @@ function pickTranslation(row: Record<string, string>): string | undefined {
  */
 export class Glossary {
   private readonly terms = new Map<string, GlossaryTerm>();
+  /** Term count after loading UI strings / UI CSV (before user glossary merge). */
+  private readonly _uiStringsTermCount: number;
+  /** Terms whose key was first added when merging the user glossary CSV. */
+  private readonly _userGlossaryTermCount: number;
 
   constructor(
     glossaryUiPath: string | undefined,
@@ -60,9 +64,23 @@ export class Glossary {
       /* optional: missing file */
     }
 
+    this._uiStringsTermCount = this.terms.size;
+
+    const sizeBeforeUser = this.terms.size;
     if (glossaryUserPath && fs.existsSync(glossaryUserPath)) {
       this.loadUserCsv(glossaryUserPath, targetLocales);
     }
+    this._userGlossaryTermCount = this.terms.size - sizeBeforeUser;
+  }
+
+  /** Terms from `strings.json` / UI glossary file (before user CSV merge). */
+  get uiStringsTermCount(): number {
+    return this._uiStringsTermCount;
+  }
+
+  /** Terms first introduced by the user glossary CSV (new keys not present after UI load). */
+  get userGlossaryTermCount(): number {
+    return this._userGlossaryTermCount;
   }
 
   private loadFromStringsJson(filepath: string): void {
@@ -95,7 +113,7 @@ export class Glossary {
       });
       count++;
     }
-    void count;
+    console.log(`✓ Loaded ${count} glossary terms from strings.json (UI)`);
   }
 
   private loadUiCsv(filepath: string): void {
@@ -129,6 +147,7 @@ export class Glossary {
       }
       this.terms.set(english.toLowerCase(), term);
     }
+    console.log(`✓ Loaded ${this.terms.size} glossary terms from UI CSV`);
   }
 
   /**
@@ -160,6 +179,8 @@ export class Glossary {
       }
     }
 
+    let userOverrideRowCount = 0;
+
     for (const { english, translation } of starRows) {
       if (targetLocales.length === 0) {
         continue;
@@ -175,6 +196,7 @@ export class Glossary {
           term.translations[loc] = translation;
         }
       }
+      userOverrideRowCount++;
     }
 
     for (const { english, locale, translation } of exactRows) {
@@ -185,6 +207,11 @@ export class Glossary {
         this.terms.set(key, term);
       }
       term.translations[locale] = translation;
+      userOverrideRowCount++;
+    }
+
+    if (userOverrideRowCount > 0) {
+      console.log(`✓ Loaded ${userOverrideRowCount} user glossary overrides`);
     }
   }
 

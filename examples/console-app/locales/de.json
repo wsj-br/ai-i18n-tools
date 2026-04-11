@@ -1,0 +1,7 @@
+{
+  "ai-i18n-tools example console app": "ai-i18n-tools Beispiel-Konsolenanwendung",
+  "Hello World!!": "Hallo Welt!!",
+  "This line will be translated to multiple languages.": "Diese Zeile wird in mehrere Sprachen übersetzt.",
+  "This is line number {{number}}": "Dies ist die Zeilennummer {{number}}",
+  "Example console application demonstrating ai-i18n-tools": "Beispiel-Konsolenanwendung, die ai-i18n-tools demonstriert"
+}

@@ -11,7 +11,7 @@ const DEFAULT_BATCH: BatchConfig = {
 };
 
 /**
- * Group translatable segments into batches (Transrewrt-style): max count and max total chars.
+ * Group translatable segments into batches: bounded by max count and max total chars.
  */
 export function splitTranslatableIntoBatches(
   segments: Segment[],

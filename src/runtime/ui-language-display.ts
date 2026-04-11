@@ -4,9 +4,8 @@ import type { UiLanguageEntry } from "../core/ui-languages.js";
 export type TranslateFn = (key: string) => string;
 
 /**
- * Display label for a language row: English (or Latin) name, then `t(englishName)` when it differs.
- * Same behavior as Transrewrt `src/renderer/utils/misc/languageDisplay.js` → `getUILanguageLabel`.
- *
+ * Display label for a language row: `englishName`, or `englishName / t(englishName)` when
+ * the translated name differs from the English name.
  * Uses `" / "` between parts (avoids nested parentheses in long names).
  */
 export function getUILanguageLabel(lang: UiLanguageEntry, t: TranslateFn): string {
@@ -20,8 +19,8 @@ export function getUILanguageLabel(lang: UiLanguageEntry, t: TranslateFn): strin
 
 /**
  * Display label using manifest fields only (no `t()` on the row).
- * Same behavior as Transrewrt `getUILanguageLabelNative` — e.g. header language menu:
- * `englishName / label` when they differ, else a single string.
+ * Returns `englishName / label` when they differ (e.g. `German / Deutsch`),
+ * or a single string when they are the same. Suitable for header language menus.
  */
 export function getUILanguageLabelNative(lang: UiLanguageEntry): string {
   const { englishName, label } = lang;

@@ -13,6 +13,7 @@ import {
   looksLikeUiLanguagesFileRef,
   mergeUiLanguageDisplayNames,
   resolveLocalesForDocumentation,
+  resolveLocalesForSvg,
   resolveLocalesForUI,
   resolveUiTranslationTargetCodes,
 } from "../../src/core/ui-languages";
@@ -44,7 +45,6 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
         translateUIStrings: true,
         translateMarkdown: false,
         translateJSON: false,
-        translateSVG: false,
       },
       ...over,
     })
@@ -145,7 +145,7 @@ describe("ui-languages", () => {
     expect(() => loadUiLanguageEntries(p)).toThrow(/englishName/);
   });
 
-  it("loadUiLanguageEntries reads Transrewrt-style array", () => {
+  it("loadUiLanguageEntries reads ui-languages.json array", () => {
     const p = path.join(tmp, "ui-languages.json");
     fs.writeFileSync(
       p,
@@ -265,7 +265,6 @@ describe("ui-languages", () => {
           translateUIStrings: true,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
           extractUIStrings: false,
         },
       }),
@@ -309,7 +308,6 @@ describe("ui-languages", () => {
           translateUIStrings: true,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
           extractUIStrings: false,
         },
       }),
@@ -348,6 +346,32 @@ describe("ui-languages", () => {
     expect(getDocumentationTargetLocaleCodes(c)).toEqual(["de", "fr"]);
   });
 
+  it("resolveLocalesForSvg includes source locale then documentation targets", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en-GB",
+      targetLocales: ["de", "fr"],
+      documentation: {
+        contentPaths: ["docs/"],
+        outputDir: "./i18n",
+        cacheDir: ".translation-cache",
+      },
+    });
+    expect(resolveLocalesForSvg(c, tmp, null)).toEqual(["en-GB", "de", "fr"]);
+  });
+
+  it("resolveLocalesForSvg filters by --locale", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en-GB",
+      targetLocales: ["de", "fr"],
+      documentation: {
+        contentPaths: ["docs/"],
+        outputDir: "./i18n",
+        cacheDir: ".translation-cache",
+      },
+    });
+    expect(resolveLocalesForSvg(c, tmp, "de")).toEqual(["de"]);
+  });
+
   it("resolveLocalesForDocumentation intersects --locale with doc targets", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
@@ -362,7 +386,6 @@ describe("ui-languages", () => {
         translateUIStrings: false,
         translateMarkdown: true,
         translateJSON: false,
-        translateSVG: false,
         extractUIStrings: false,
       },
     });

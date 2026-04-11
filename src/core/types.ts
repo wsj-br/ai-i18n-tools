@@ -15,7 +15,7 @@ export type SegmentType =
 
 /** SVG reassembly metadata (regex-extracted elements). */
 export interface SvgSegmentMeta {
-  element: "text" | "title";
+  element: "text" | "title" | "desc";
   fullMatch: string;
   openingTag: string;
 }
@@ -138,13 +138,29 @@ const featuresSchema = z.object({
   translateUIStrings: z.boolean().default(false),
   translateMarkdown: z.boolean().default(false),
   translateJSON: z.boolean().default(false),
-  translateSVG: z.boolean().default(false),
 });
 
-const glossarySchema = z.object({
-  uiGlossaryFromStringsJson: z.string().optional(),
-  userGlossary: z.string().optional(),
-});
+const glossarySchema = z.preprocess(
+  (raw) => {
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      const o = { ...(raw as Record<string, unknown>) };
+      const legacy = o.uiGlossaryFromStringsJson;
+      if (typeof legacy === "string" && o.uiGlossary === undefined) {
+        o.uiGlossary = legacy;
+      }
+      delete o.uiGlossaryFromStringsJson;
+      return o;
+    }
+    return raw;
+  },
+  z
+    .object({
+      /** Path to `strings.json` - auto-builds glossary hints from existing UI translations. */
+      uiGlossary: z.string().optional(),
+      userGlossary: z.string().optional(),
+    })
+    .strict()
+);
 
 const reactExtractorSchema = z
   .object({
@@ -173,18 +189,18 @@ const markdownOutputSchema = z
     docsRoot: z.string().optional(),
     /** When set, overrides `style` for markdown output paths. */
     pathTemplate: z.string().optional(),
-    /** Optional overrides for JSON / SVG outputs (default: nested `outputDir/locale/relPath`). */
+    /** Optional overrides for JSON outputs (default: nested `outputDir/locale/relPath`). */
     jsonPathTemplate: z.string().optional(),
-    svgPathTemplate: z.string().optional(),
     /** For `flat` style: keep dirname segments so `docs/a.md` → `out/docs/a.de.md` instead of colliding with root `a.md`. */
     flatPreserveRelativeDir: z.boolean().default(false),
     /**
-     * Transrewrt-style link rewriting after translation. Default: true when `style === "flat"` and `pathTemplate` is unset;
-     * default false when `pathTemplate` is set (opt in explicitly).
+     * Rewrite relative links after translation for flat-style outputs. Default: true when
+     * `style === "flat"` and `pathTemplate` is unset; false when `pathTemplate` is set (opt in explicitly).
      */
-    rewriteRelativeLinksForFlat: z.boolean().optional(),
+    rewriteRelativeLinks: z.boolean().optional(),
     /**
-     * Repo root used with `documentation.outputDir` to compute `i18nPrefix` / `depthPrefix` for flat link rewriting (Transrewrt: `.`).
+     * Repo root used with `documentation.outputDir` to compute `i18nPrefix` / `depthPrefix`
+     * for flat link rewriting (typically `.`).
      */
     linkRewriteDocsRoot: z.string().optional(),
   })
@@ -202,15 +218,36 @@ const uiConfigSchema = z
   })
   .strict();
 
+const svgAssetsConfigSchema = z
+  .object({
+    /** One directory or several (relative to cwd); each is scanned recursively for `*.svg`. */
+    sourcePath: z.preprocess(
+      (v) => (typeof v === "string" ? [v] : v),
+      z.array(z.string().min(1)).min(1)
+    ),
+    /** Output root for translated SVGs (relative to cwd). */
+    outputDir: z.string().min(1),
+    /**
+     * When set, overrides `style` for output paths. Expand `{outputDir}` (absolute resolved `svg.outputDir`),
+     * `{locale}`, `{LOCALE}`, `{relPath}` (file relative to cwd), `{stem}`, `{basename}`, `{extension}`,
+     * `{relativeToSourceRoot}` (path under `sourcePath`).
+     */
+    pathTemplate: z.string().optional(),
+    /** `flat`: `{stem}.{locale}.svg`; `nested`: `{locale}/{relPathUnderSourceRoot}`. Ignored when `pathTemplate` is set. */
+    style: z.enum(["flat", "nested"]),
+    svgExtractor: svgExtractorSchema.optional(),
+  })
+  .strict();
+
 const documentationConfigSchema = z
   .object({
-    /** Markdown / MDX / SVG roots under cwd (files and directories). */
+    /** Markdown / MDX roots under cwd (files and directories). */
     contentPaths: z.array(z.string().min(1)).default([]),
-    /** Optional alias (e.g. Transrewrt `source-files`); merged into `contentPaths` at load. */
+    /** Optional alias for `contentPaths`; merged into `contentPaths` at load. */
     sourceFiles: z.array(z.string().min(1)).optional(),
     /**
-     * Locales for markdown / JSON / SVG translation only. When **omitted** or empty after load, root
-     * `targetLocales` is used (same set as UI). When set, docs translate to this list only — e.g. app in 10
+     * Locales for markdown / JSON translation only. When **omitted** or empty after load, root
+     * `targetLocales` is used (same set as UI). When set, docs translate to this list only - e.g. app in 10
      * languages, docs in 5. Same rules as root: array of codes, or a single path to `ui-languages.json`
      * (expanded at load; does not change `uiLanguagesPath`).
      */
@@ -222,16 +259,20 @@ const documentationConfigSchema = z
         return coerceTargetLocalesField(v);
       }, z.array(z.string().min(1)).optional())
       .optional(),
-    /** Base directory for translated docs (markdown / default JSON / SVG layout). */
+    /** Base directory for translated docs (markdown / default JSON layout). */
     outputDir: z.string().min(1).default("./i18n"),
     cacheDir: z.string().min(1).default(".translation-cache"),
     /** Docusaurus / JSON UI strings source dir (e.g. i18n/en/). */
     jsonSource: z.string().optional(),
-    svgExtractor: svgExtractorSchema.optional(),
     markdownOutput: markdownOutputSchema.default({
       style: "nested",
       flatPreserveRelativeDir: false,
     }),
+    /**
+     * When true (default), translated markdown files include YAML keys matching reference transrewrt:
+     * `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`.
+     */
+    injectTranslationMetadata: z.boolean().optional(),
   })
   .strict();
 
@@ -254,7 +295,6 @@ export const i18nConfigSchema = z
       translateUIStrings: false,
       translateMarkdown: false,
       translateJSON: false,
-      translateSVG: false,
     }),
     glossary: glossarySchema.default({}),
     ui: uiConfigSchema.default({
@@ -280,9 +320,17 @@ export const i18nConfigSchema = z
      * still want manifest-driven UI locale filtering / `localeDisplayNames` / intersection.
      */
     uiLanguagesPath: z.string().optional(),
+    /** Standalone SVG translation (`translate-svg`): sources + output layout. */
+    svg: svgAssetsConfigSchema.optional(),
     batchSize: z.number().int().positive().optional(),
     maxBatchChars: z.number().int().positive().optional(),
+    /**
+     * Max parallel **target locales** (`translate-ui`, `translate-docs`). Defaults: UI `4`, docs `3` when unset.
+     */
     concurrency: z.number().int().positive().optional(),
+    /**
+     * Max parallel OpenRouter **batch** requests per file (`translate-docs`, `translate-svg`). Default `4` when unset.
+     */
     batchConcurrency: z.number().int().positive().optional(),
   })
   .strict();
@@ -291,10 +339,13 @@ export type I18nConfig = z.infer<typeof i18nConfigSchema>;
 export type OpenRouterConfig = z.infer<typeof openRouterConfigSchema>;
 export type FeaturesConfig = z.infer<typeof featuresSchema>;
 export type GlossaryConfig = z.infer<typeof glossarySchema>;
-export type ReactExtractorConfig = z.infer<typeof reactExtractorSchema>;
+export type UIStringExtractorConfig = z.infer<typeof reactExtractorSchema>;
+/** @deprecated Use {@link UIStringExtractorConfig} */
+export type ReactExtractorConfig = UIStringExtractorConfig;
 export type SvgExtractorConfig = z.infer<typeof svgExtractorSchema>;
 export type MarkdownOutputConfig = z.infer<typeof markdownOutputSchema>;
 export type UiConfig = z.infer<typeof uiConfigSchema>;
 export type DocumentationConfig = z.infer<typeof documentationConfigSchema>;
+export type SvgAssetsConfig = z.infer<typeof svgAssetsConfigSchema>;
 
 export type RawI18nConfigInput = z.input<typeof i18nConfigSchema>;

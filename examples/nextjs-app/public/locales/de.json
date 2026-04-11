@@ -1,0 +1,9 @@
+{
+  "AI-i18n-tools: Next.js example app": "AI-i18n-tools: Next.js Beispielanwendung",
+  "Hello World!!": "Hallo Welt!!",
+  "This line will be translated to multiple languages.": "Diese Zeile wird in mehrere Sprachen übersetzt.",
+  "This is line number {{number}}": "Dies ist die Zeile Nummer {{number}}",
+  "Translation demo illustration": "Übersichtsdemo-Illustration",
+  "The texts inside this SVG ilustration are being translated by ai-i18n-tools.": "Die Texte in dieser SVG-Illustration werden von ai-i18n-tools übersetzt.",
+  "Example Next.js application demonstrating ai-i18n-tools": "Beispielanwendung für Next.js, die ai-i18n-tools demonstriert"
+}

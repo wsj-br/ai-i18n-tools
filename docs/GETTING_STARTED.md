@@ -1,6 +1,50 @@
-# Getting Started with ai-i18n-tools
+# ai-i18n-tools: Getting Started
 
-This guide will help you get started with the unified i18n tools package. **All docs:** [Documentation home](./README.md).
+`ai-i18n-tools` provides two independent, composable workflows:
+
+- **Workflow 1 - UI Translation**: extract `t("…")` calls from any JS/TS source, translate them via OpenRouter, and write flat per-locale JSON files ready for i18next.
+- **Workflow 2 - Document Translation**: translate markdown (MDX), Docusaurus JSON label files, and SVG files to any number of locales, with smart caching.
+
+Both workflows use OpenRouter (any compatible LLM) and share a single config file.
+
+---
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents** 
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Workflow 1 - UI Translation](#workflow-1---ui-translation)
+  - [Step 1: Initialize](#step-1-initialize)
+  - [Step 2: Extract strings](#step-2-extract-strings)
+  - [Step 3: Translate UI strings](#step-3-translate-ui-strings)
+  - [Step 4: Wire i18next at runtime](#step-4-wire-i18next-at-runtime)
+  - [Using `t()` in source code](#using-t-in-source-code)
+  - [Interpolation](#interpolation)
+  - [Language switcher UI](#language-switcher-ui)
+  - [RTL languages](#rtl-languages)
+- [Workflow 2 - Document Translation](#workflow-2---document-translation)
+  - [Step 1: Initialize](#step-1-initialize-1)
+  - [Step 2: Translate documents](#step-2-translate-documents)
+    - [Cache behavior and `translate-docs` flags](#cache-behavior-and-translate-docs-flags)
+  - [Output layouts](#output-layouts)
+- [Combined workflow (UI + Docs)](#combined-workflow-ui--docs)
+- [Configuration reference](#configuration-reference)
+  - [`sourceLocale`](#sourcelocale)
+  - [`targetLocales`](#targetlocales)
+  - [`concurrency` (optional)](#concurrency-optional)
+  - [`batchConcurrency` (optional)](#batchconcurrency-optional)
+  - [`batchSize` / `maxBatchChars` (optional)](#batchsize--maxbatchchars-optional)
+  - [`openrouter`](#openrouter)
+  - [`features`](#features)
+  - [`ui`](#ui)
+  - [`documentation`](#documentation)
+  - [`glossary`](#glossary)
+- [CLI reference](#cli-reference)
+- [Environment variables](#environment-variables)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Installation
 
@@ -12,289 +56,354 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-## Quick Start (5 minutes)
-
-### 1. Initialize Configuration
-
-```bash
-# Default: UI extraction/translation + markdown under app paths
-npx ai-i18n-tools init
-
-# Or: UI extraction + Docusaurus-style docs (markdown, JSON, SVG under i18n/)
-npx ai-i18n-tools init -t ui-docusaurus
-```
-
-This writes `ai-i18n-tools.config.json` (or the path you pass with `-o`). Templates:
-
-- **`ui-markdown`** (default) — UI strings + markdown in your app tree; `targetLocales` is typically a path to `ui-languages.json`.
-- **`ui-docusaurus`** — same engine with paths aimed at a Docusaurus-style layout; `targetLocales` may be that manifest path **or** a locale array — both are valid (see [README](../README.md) use cases).
-
-### 2. Set API Key
+Set your OpenRouter API key:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Or create a `.env` file:
+Or create a `.env` file in the project root:
+
 ```env
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-### 3. Extract Strings
+---
+
+## Quick Start
+
+The default `init` template (`ui-markdown`) enables **UI** extraction/translation only. The `ui-docusaurus` template enables **document** translation (`translate-docs`). Use `sync` when you want extract + UI + docs (and optional standalone SVG when `svg` is configured) in one invocation.
+
+```bash
+# Workflow 1 - UI strings (default template enables extract + translate-ui)
+npx ai-i18n-tools init
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+
+# Workflow 2 - docs (Docusaurus-oriented template)
+npx ai-i18n-tools init -t ui-docusaurus
+npx ai-i18n-tools translate-docs
+
+# Combined: extract UI strings, then translate UI + docs (per config features)
+npx ai-i18n-tools sync
+
+# Markdown translation status (per file × locale)
+npx ai-i18n-tools status
+```
+
+---
+
+## Workflow 1 - UI Translation
+
+Designed for any JS/TS project that uses i18next: React apps, Next.js (client and server components), Node.js services, CLI tools.
+
+### Step 1: Initialize
+
+```bash
+npx ai-i18n-tools init
+```
+
+This writes `ai-i18n-tools.config.json` with the `ui-markdown` template. Edit it to set:
+
+- `sourceLocale` - your source language BCP-47 code (e.g. `"en-GB"`). **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
+- `targetLocales` - path to your `ui-languages.json` manifest OR an array of BCP-47 codes.
+- `ui.sourceRoots` - directories to scan for `t("…")` calls (e.g. `["src/"]`).
+- `ui.stringsJson` - where to write the master catalog (e.g. `"src/locales/strings.json"`).
+- `ui.flatOutputDir` - where to write `de.json`, `pt-BR.json`, etc. (e.g. `"src/locales/"`).
+
+### Step 2: Extract strings
 
 ```bash
 npx ai-i18n-tools extract
 ```
 
-This scans your source files and extracts translatable strings.
+Scans all JS/TS files under `ui.sourceRoots` for `t("literal")` and `i18n.t("literal")` calls. Writes (or merges into) `ui.stringsJson`.
 
-### 4. Translate
+The scanner is configurable - you can add custom function names via `ui.reactExtractor.funcNames`.
 
-```bash
-npx ai-i18n-tools translate
-```
-
-This translates all extracted strings to your target locales.
-
-### 5. Check Status
+### Step 3: Translate UI strings
 
 ```bash
-npx ai-i18n-tools status
+npx ai-i18n-tools translate-ui
 ```
 
-See which files are translated, outdated, or missing.
+Reads `strings.json`, sends batches to OpenRouter for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`.
 
-## Configuration Examples
+### Step 4: Wire i18next at runtime
 
-The config file has a **shared root** (locales, OpenRouter, `features`, `glossary`) and two path namespaces:
+Create your i18n setup file using the helpers exported by `'ai-i18n-tools/runtime'`:
 
-- **`ui`** — where to scan for `t()` / `i18n.t()`, where **`strings.json`** lives, and where flat **`de.json`**, **`pt-BR.json`**, … are written.
-- **`documentation`** — markdown / MDX / SVG roots, translated output base, Docusaurus **`jsonSource`**, cache dir, and **`markdownOutput`** (layout style, optional path templates).
+```js
+// src/i18n.js  (or src/i18n.ts)
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import uiLanguages from './locales/ui-languages.json';
+import {
+  defaultI18nInitOptions,
+  wrapI18nWithKeyTrim,
+  makeLoadLocale,
+  applyDirection,
+} from 'ai-i18n-tools/runtime';
 
-### For React Apps
+// Must match sourceLocale in ai-i18n-tools.config.json
+export const SOURCE_LOCALE = 'en-GB';
 
-```json
-{
-  "sourceLocale": "en-GB",
-  "targetLocales": "src/locales/ui-languages.json",
-  "openrouter": {
-    "baseUrl": "https://openrouter.ai/api/v1",
-    "translationModels": [
-      "qwen/qwen3-235b-a22b-2507",
-      "stepfun/step-3.5-flash:free",
-      "anthropic/claude-3.5-haiku"
-    ],
-    "maxTokens": 8192,
-    "temperature": 0.2
-  },
-  "features": {
-    "extractUIStrings": true,
-    "translateUIStrings": true
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "src/locales/strings.json",
-    "flatOutputDir": "src/locales/"
-  },
-  "documentation": {
-    "contentPaths": [],
-    "outputDir": "./i18n",
-    "cacheDir": ".translation-cache"
-  }
+void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
+wrapI18nWithKeyTrim(i18n);
+i18n.on('languageChanged', applyDirection);
+applyDirection(i18n.language);
+
+const localeLoaders = Object.fromEntries(
+  uiLanguages
+    .filter(({ code }) => code !== SOURCE_LOCALE)
+    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+);
+
+export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export default i18n;
+```
+
+Import `i18n.js` before React renders (e.g. at the top of your entry point). When the user changes language, call `await loadLocale(code)` then `i18n.changeLanguage(code)`.
+
+`SOURCE_LOCALE` is exported so any other file that needs it (e.g. a language switcher) can import it directly from `'./i18n'`.
+
+`**defaultI18nInitOptions(sourceLocale)**` returns the standard options for key-as-default setups:
+
+- `parseMissingKeyHandler` returns the key itself, so untranslated strings display the source text.
+- `nsSeparator: false` allows keys that contain colons.
+- `interpolation.escapeValue: false` - safe to disable: React escapes values itself, and Node.js/CLI output has no HTML to escape.
+
+`**wrapI18nWithKeyTrim(i18n)**` wraps `i18n.t` so that: (1) keys are trimmed before lookup, matching how the extract script stores them; (2) <code>{"{{var}}"}</code> interpolation is applied when the source locale returns the raw key - so <code>{"t('Hello {{name}}', { name })"}</code> works correctly even for the source language.
+
+`**makeLoadLocale(i18n, loaders, sourceLocale)**` returns an async `loadLocale(lang)` function that dynamically imports the JSON bundle for a locale and registers it with i18next.
+
+### Using `t()` in source code
+
+Call `t()` with a **literal string** so the extract script can find it:
+
+```jsx
+import { useTranslation } from 'react-i18next';
+
+function MyComponent() {
+  const { t } = useTranslation();
+  return <button>{t('Save')}</button>;
 }
 ```
 
-For **React** apps, set **`targetLocales`** to a **string** path to **`ui-languages.json`** (same file your UI imports). On load it is expanded to locale codes; **`uiLanguagesPath`** is set automatically. If you also translate **markdown**, list those roots under **`documentation.contentPaths`**; targets still come from the same manifest when **`targetLocales`** is the file path.
+The same pattern works outside React (Node.js, server components, CLI):
 
-Set **`translateUIStrings`** to run **`translate-ui`** (or the UI step inside **`translate`** / **`sync`**) after **`extract`**.
-
-#### `targetLocales`: string path vs locale array
-
-- **String** — path to **`ui-languages.json`**. After normalization it is treated like a one-element list; if it **ends with `.json`** or **contains `/` or `\\`**, the file is loaded and **`targetLocales`** becomes the list of **`code`** values (excluding **`sourceLocale`**). A string such as **`"de"`** (no `.json`, no path separator) stays a single locale code.
-- **Array** — explicit locale codes, e.g. **`["de", "fr", "es"]`**, for docs-only setups or when you do not use a manifest. You can still use a **one-element array** with a manifest path (e.g. **`["src/locales/ui-languages.json"]`**) for the same behavior as the string form.
-
-#### `documentation.targetLocales` (optional, docs only)
-
-Root **`targetLocales`** drives **`translate-ui`** and the default set for markdown / JSON / SVG when you do **not** override docs.
-
-Set **`documentation.targetLocales`** when the **app** ships more languages than you want for **documentation** — e.g. UI in 10 locales, docs only in 5. Same formats as root: **locale array**, or a **single path** to a `ui-languages.json`-shaped manifest (expanded at load; does **not** change **`uiLanguagesPath`**).
-
-- **`translate`**, **`sync`** (doc steps), and **`status`** (markdown) use **`documentation.targetLocales`** when it is non-empty; otherwise they use root **`targetLocales`**.
-- **`--locale`** for those commands is intersected with that documentation list (not with the full UI list when a doc override exists).
-- **`translate-ui`** and the **`edit`** web UI still follow root **`targetLocales`** / manifest rules.
-
-If you enable doc translation with **no** root **`targetLocales`**, you must set non-empty **`documentation.targetLocales`** (docs-only projects).
-
-Manifest shape: JSON array of **`{ "code", "label", "englishName" }`** (all three required on each object):
-
-- **`code`**: BCP-47 locale id (e.g. `de`, `pt-BR`).
-- **`label`**: the language name **in that language** (what users see in the menu), e.g. `Deutsch`, `日本語` — not necessarily English.
-- **`englishName`**: a clear English (or Latin-script) name for LLM prompts, **`localeDisplayNames`**, and **`t(englishName)`** in dropdowns; must be a non-empty string. If it equals **`label`** (e.g. `English (UK)`), helpers show a single string.
-
-Example **`ui-languages.json`** (trim or extend for your app; **`code`** uses BCP-47, e.g. **`pt-BR`** not `pt_BR`):
-
-```json
-[
-  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)" },
-  { "code": "en-US", "label": "English (US)", "englishName": "English (US)" },
-  { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (BR)" },
-  { "code": "es", "label": "Español", "englishName": "Spanish" },
-  { "code": "fr", "label": "Français", "englishName": "French" },
-  { "code": "de", "label": "Deutsch", "englishName": "German" },
-  { "code": "zh-CN", "label": "简体中文", "englishName": "Chinese (CN)" },
-  { "code": "uk", "label": "Українська", "englishName": "Ukrainian" }
-]
+```js
+import i18n from './i18n.js';
+console.log(i18n.t('Processing complete'));
 ```
 
-Set **`sourceLocale`** in config to one of these codes (often **`en-GB`** or **`en-US`**); other entries are default translation targets for UI and (unless you set **`documentation.targetLocales`**) for docs.
+**Rules:**
 
-**Why a JSON array (not a map)?** For UI work you almost always want **one ordered list** you can import and map straight into a `<select>`, menu, or settings screen. Arrays preserve **display order** (e.g. English first, then alphabetical in English, or regional grouping). An object keyed by locale is fine for **lookup by code** only, but sort order is awkward unless you add a separate `order` field or maintain a parallel array anyway. That is why this package (and Transrewrt’s **`ui-languages.json`**) standardizes on an **array of entries**: same file for the **renderer** and for **`targetLocales`** / **`translate-ui`**, with no second source of truth.
+- Only these forms are extracted: `t("…")`, `t('…')`, `t(`…`)`, `i18n.t("…")`.
+- The key must be a **literal string** - no variables or expressions as the key.
+- Do not use template literals for the key: <code>{'t(`Hello ${name}`)'}</code> is not extractable.
 
-#### Using the list in the UI (dropdown / menu)
+### Interpolation
 
-Import the **same** JSON your config points at (e.g. `src/renderer/locales/ui-languages.json`). Enable JSON imports in TypeScript if needed (`resolveJsonModule` in `tsconfig.json`).
+Use i18next's native second-argument interpolation for <code>{"{{var}}"}</code> placeholders:
 
-**react-i18next + extract:** follow the same rules as Transrewrt’s **`dev/i18n.md`** (*Dropdowns and option lists*) and project guidance for option lists:
+```js
+// i18next handles substitution natively, even in key-as-default mode
+t('Hello {{name}}, you have {{count}} messages', { name, count })
+// → "Hello Alice, you have 3 messages"
+```
 
-- Build per-row display strings in **`useMemo`** when the factory calls **`t()`**, with **`[t]`** so rows refresh after **`changeLanguage`**.
-- Transrewrt does **not** pass the native **`label`** through **`t()`** (it is already the name in that language). For **settings / content-language** dropdowns it uses **`englishName`** with **`t(englishName)`** so the UI can show a translated language name when the interface locale is not English; see **`getUILanguageLabel`** below. For the **header globe** menu it uses **`getUILanguageLabelNative`**: **`englishName / label`** when they differ (e.g. `German / Deutsch`), with **no** **`t()`** on the row text.
+The extract script ignores the second argument - only the literal key string <code>{"\"Hello {{name}}, you have {{count}} messages\""}</code> is extracted and sent for translation. Translators are instructed to preserve <code>{"{{...}}"}</code> tokens.
 
-**Display helpers** — this package exports the same behavior as Transrewrt’s **`languageDisplay.js`**: **`getUILanguageLabel`**, **`getUILanguageLabelNative`** (import from **`ai-i18n-tools`**). They take a manifest row shaped like **`UiLanguageEntry`** (`code`, `label`, **`englishName`**).
+### Language switcher UI
 
-- **`getUILanguageLabel(lang, t)`** — **`t(englishName)`**; if the translation equals **`englishName`**, show that only; otherwise **`englishName / translated`** (e.g. `German / Deutsch` when `de` UI translates “German”).
-- **`getUILanguageLabelNative(lang)`** — **`englishName / label`** when different, else a single string (header-style, no i18n on the row).
-
-**Native `<select>` (React + i18next)** — **`value` / `onChange`** use **`code`**; option text uses **`getUILanguageLabel`** so both **English name** and **native `label`** appear in the familiar Transrewrt shape:
+Use the `ui-languages.json` manifest to build a language selector. `ai-i18n-tools` exports two display helpers:
 
 ```tsx
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   getUILanguageLabel,
   getUILanguageLabelNative,
   type UiLanguageEntry,
-} from "ai-i18n-tools";
-import uiLanguages from "../locales/ui-languages.json";
+} from 'ai-i18n-tools/runtime';
+import uiLanguages from './locales/ui-languages.json';
+import { loadLocale } from './i18n';
 
 function LanguageSelect({
   value,
   onChange,
 }: {
   value: string;
-  onChange: (localeCode: string) => void;
+  onChange: (code: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const options = useMemo(
     () =>
       (uiLanguages as UiLanguageEntry[]).map((lang) => ({
         code: lang.code,
-        displayText: getUILanguageLabel(lang, t),
+        // Settings/content dropdowns: shows translated name when available
+        label: getUILanguageLabel(lang, t),
+        // Header globe menu: shows "English / Deutsch"-style label, no t() call
+        nativeLabel: getUILanguageLabelNative(lang),
       })),
     [t]
   );
 
+  const handleChange = async (code: string) => {
+    await loadLocale(code);
+    i18n.changeLanguage(code);
+    onChange(code);
+  };
+
   return (
-    <label>
-      {t("Language")}
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={t("Language")}
-      >
-        {options.map((row) => (
-          <option key={row.code} value={row.code}>
-            {row.displayText}
-          </option>
-        ))}
-      </select>
-    </label>
+    <select value={value} onChange={(e) => handleChange(e.target.value)}>
+      {options.map((row) => (
+        <option key={row.code} value={row.code}>
+          {row.label}
+        </option>
+      ))}
+    </select>
   );
 }
 ```
 
-Use **`getUILanguageLabelNative`** instead of **`getUILanguageLabel`** when you want the row to show **`Portuguese (BR) / Português (BR)`**-style text without calling **`t()`** on each line (Transrewrt’s **header** language grid).
+`**getUILanguageLabel(lang, t)**` - shows `t(englishName)` when translated, or `englishName / t(englishName)` when both differ. Suitable for settings screens.
 
-If you add synthetic rows (e.g. “System default”), build them **inside** the same **`useMemo`** factory and extend the dependency array if needed.
+`**getUILanguageLabelNative(lang)**` - shows `englishName / label` (no `t()` call on each row). Suitable for header menus where you want the native name visible.
 
-**Menu / list UI (e.g. Fluent `MenuList`, MUI `MenuItem`)** — derive **`options`** in **`useMemo`** with **`[t]`** when using **`getUILanguageLabel`**; render **`row.displayText`** or call **`getUILanguageLabelNative(lang)`** for header-style menus; on activate, pass **`lang.code`** to **`onChange`**. Chrome strings such as **`t("Interface language")`** stay separate literals.
+The `ui-languages.json` manifest is a JSON array of <code>{"{ code, label, englishName }"}</code> entries. Example:
 
-**Interpolation (`{{…}}`)** — with **key-as-default** (or whenever **`t()`** does not interpolate), fill placeholders after translating:
-
-```ts
-import { interpolateTemplate } from "ai-i18n-tools";
-
-const line = interpolateTemplate(t("Hello {{name}}"), { name: userName });
+```json
+[
+  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)" },
+  { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (BR)" },
+  { "code": "de",    "label": "Deutsch",        "englishName": "German" },
+  { "code": "fr",    "label": "Français",       "englishName": "French" },
+  { "code": "ar",    "label": "العربية",         "englishName": "Arabic" }
+]
 ```
 
-Same idea as Transrewrt **`interpolateTemplate`** in **`dev/i18n.md`** / `formatUtils.js`. Placeholder keys must be ASCII word tokens (`\w+`), matching **`{{name}}`** style.
+Set `targetLocales` in config to the path of this file so the translate command uses the same list.
 
-**RTL arrows** — if a string may contain **→** (U+2192), you can normalize for RTL layouts with **`flipUiArrowsForRtl(text, isRtl)`** (also exported from **`ai-i18n-tools`**), same behavior as Transrewrt’s helper.
+### RTL languages
 
-**Numbers, dates, currency** — this package does **not** ship helpers like `formatInteger` / `formatDecimal`. Those are easy to get wrong across locales and tend to be **app-specific** (null handling, “free” vs `$0`, duration formats). Prefer the platform APIs:
+`ai-i18n-tools` exports `getTextDirection(lng)` and `applyDirection(lng)`:
 
-- Use **`Intl.NumberFormat`**, **`Intl.DateTimeFormat`**, **`Intl.RelativeTimeFormat`** (and friends) with a BCP-47 tag from your UI locale, e.g. **`i18n.language`** from react-i18next, or a small hook that returns **`i18n.language || "en-GB"`** (Transrewrt’s **`useFormatLocale`** pattern in **`dev/i18n.md`**).
-- See [MDN: Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) for options (fraction digits, currency, time zones).
+```js
+import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
 
-```ts
-import { useTranslation } from "react-i18next";
+getTextDirection('ar')    // 'rtl'
+getTextDirection('en-GB') // 'ltr'
 
-function Price({ n }: { n: number }) {
-  const { i18n } = useTranslation();
-  const locale = i18n.language || "en-GB";
-  return new Intl.NumberFormat(locale, { style: "currency", currency: "USD" }).format(n);
-}
+// Applied automatically via i18n.on('languageChanged', applyDirection) - see Step 4
 ```
 
-If you need the same “em dash for null” or custom duration strings as Transrewrt, keep those helpers **in your app** (or copy from Transrewrt **`formatUtils.js`**) — they are not required for **`ai-i18n-tools`** extract/translate workflows.
+`applyDirection` sets `document.documentElement.dir` (browser) or is a no-op (Node.js). Pass an optional `element` argument to target a specific element.
 
-**i18next** — after the user picks a code, switch the runtime locale (exact API depends on your setup):
+For strings that may contain `→` arrows, flip them for RTL layouts:
 
-```ts
-import i18n from "i18next";
-
-async function applyLocale(code: string) {
-  await i18n.changeLanguage(code);
-  // Persist if you store preference: localStorage, settings file, etc.
-}
+```js
+import { flipUiArrowsForRtl } from 'ai-i18n-tools/runtime';
+const { i18n } = useTranslation();
+const isRtl = getTextDirection(i18n.language) === 'rtl';
+const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 ```
 
-Wire `LanguageSelect` so `onChange` calls `applyLocale` (and updates any app state that tracks the current `code`).
+---
 
-With an explicit **array** in **`targetLocales`**, you can still set **`uiLanguagesPath`** to the same manifest to get intersection (subset of shipped languages) and display names — but a **string path** (or one-element array path) alone is enough for typical Transrewrt setups.
+## Workflow 2 - Document Translation
 
-### For Documentation Sites (and hybrid app + Docusaurus)
+Designed for markdown documentation, Docusaurus sites, JSON label files, and SVG diagrams.
 
-**Hybrid products** (app UI + Docusaurus docs) usually point root **`targetLocales`** at the same **`ui-languages.json`** as the UI so **`translate-ui`** matches the app. When docs should cover **fewer** languages, add **`documentation.targetLocales`** (subset array or a smaller manifest file). **Docs-only** repos may use only **`documentation.targetLocales`** with root **`targetLocales`** empty, or share one locale list at the root; both are valid.
+### Step 1: Initialize
 
-**Layouts:**
+```bash
+npx ai-i18n-tools init -t ui-docusaurus
+```
 
-- **Docusaurus** — `sourceLocale` source under **`docs/`**; translated files belong under  
-  **`i18n/<LOCALE>/docusaurus-plugin-content-docs/current/`** with the same relative paths as under **`docs/`**. Set **`documentation.markdownOutput.style`** to **`"docusaurus"`** and **`docsRoot`** to **`"docs"`** (or your site’s doc root). Relative links between doc pages usually need **no** extra rewriting.
-- **Flat repo-root docs** (e.g. **`README.md`**, **`USER-GUIDE.md`** written next to the English files with a locale suffix) — use **`markdownOutput.style`** **`"flat"`** and often enable **`rewriteRelativeLinksForFlat`** (defaults on for flat style when no custom **`pathTemplate`**). Combine with **`documentation.contentPaths`** listing both root files and any **`docs/`** tree; see **`markdownOutput`** for per-site overrides.
+Edit the generated `ai-i18n-tools.config.json`:
 
-Optional **`documentation.markdownOutput.pathTemplate`** overrides the built-in layout, e.g. `{outputDir}/custom/{locale}/{relPath}` or `{outputDir}/{stem}.{locale}{extension}`. Placeholders include **`{outputDir}`**, **`{locale}`**, **`{relPath}`**, **`{stem}`**, **`{extension}`**, **`{docsRoot}`**, **`{relativeToDocsRoot}`**.
+- `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
+- `targetLocales` - array of locale codes or path to a manifest.
+- `documentation.contentPaths` - markdown/SVG source directories/files.
+- `documentation.outputDir` - translated output root.
+- `documentation.markdownOutput.style` - `"docusaurus"` or `"flat"` (see [Output layouts](#output-layouts)).
+
+### Step 2: Translate documents
+
+```bash
+npx ai-i18n-tools translate-docs
+```
+
+This translates all files in `documentation.contentPaths` to all `targetLocales` (or `documentation.targetLocales` when set). Already-translated segments are served from the SQLite cache - only new or changed segments are sent to the LLM.
+
+To translate a single locale:
+
+```bash
+npx ai-i18n-tools translate-docs --locale de
+```
+
+To check what needs translating:
+
+```bash
+npx ai-i18n-tools status
+```
+
+#### Cache behavior and `translate-docs` flags
+
+The CLI keeps **file tracking** in SQLite (source hash per file × locale) and **segment** rows (hash × locale per translatable chunk). A normal run skips a file entirely when the tracked hash matches the current source **and** the output file already exists; otherwise it processes the file and uses the segment cache so unchanged text does not call the API.
+
+
+| Flag                     | Effect                                                                                                                                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| *(default)*              | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                             |
+| `--force-update`         | Re-process every matched file (extract, reassemble, write outputs) even when file tracking would skip. **Segment cache still applies** - unchanged segments are not sent to the LLM.                   |
+| `--force`                | Clears file tracking for each processed file and **does not read** the segment cache for API translation (full re-translation). New results are still **written** to the segment cache.                 |
+| `--stats`                | Print segment counts, tracked file counts, and per-locale segment totals, then exit.                                                                                                                   |
+| `--clear-cache [locale]` | Delete cached translations (and file tracking): all locales, or a single locale, then exit.                                                                                                            |
+
+
+You cannot combine `--force` with `--force-update` (they are mutually exclusive).
+
+### Output layouts
+
+`**"docusaurus"`** - places translated files at `i18n/<locale>/docusaurus-plugin-content-docs/current/<relPath>`, mirroring the standard Docusaurus i18n folder layout. Set `documentation.markdownOutput.docsRoot` to your docs source root (e.g. `"docs"`).
+
+```
+docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
+i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+```
+
+`**"flat"**` - places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically.
+
+```
+docs/guide.md → i18n/guide.de.md
+```
+
+You can override paths entirely with `documentation.markdownOutput.pathTemplate`. Placeholders: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>.
+
+---
+
+## Combined workflow (UI + Docs)
+
+Enable all features in a single config to run both workflows together:
 
 ```json
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["de", "fr", "es", "pt-BR"],
-  "openrouter": {
-    "baseUrl": "https://openrouter.ai/api/v1",
-    "translationModels": [
-      "anthropic/claude-3.5-haiku",
-      "anthropic/claude-haiku-4.5",
-      "stepfun/step-3.5-flash:free"
-    ],
-    "maxTokens": 8192,
-    "temperature": 0.3
-  },
+  "targetLocales": "src/locales/ui-languages.json",
   "features": {
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": true,
+    "translateJSON": false,
     "translateSVG": false
+  },
+  "glossary": {
+    "uiGlossary": "src/locales/strings.json",
+    "userGlossary": "glossary-user.csv"
   },
   "ui": {
     "sourceRoots": ["src/"],
@@ -305,209 +414,161 @@ Optional **`documentation.markdownOutput.pathTemplate`** overrides the built-in 
     "contentPaths": ["docs/"],
     "outputDir": "i18n/",
     "cacheDir": ".translation-cache",
-    "jsonSource": "i18n/en",
-    "markdownOutput": {
-      "style": "docusaurus",
-      "docsRoot": "docs"
-    }
-  },
-  "glossary": {
-    "uiGlossaryFromStringsJson": "path/to/strings.json",
-    "userGlossary": "glossary-user.csv"
+    "markdownOutput": { "style": "flat" }
   }
 }
 ```
 
-## Common Commands
+`glossary.uiGlossary` points document translation at the same `strings.json` catalog as the UI so terminology stays consistent; `glossary.userGlossary` adds CSV overrides for product terms.
 
-```bash
-# Extract translatable strings
-npx ai-i18n-tools extract
+Run `npx ai-i18n-tools sync` to run one pipeline: **extract** UI strings (if `features.extractUIStrings`), **translate UI** strings (if `features.translateUIStrings`), **translate standalone SVG assets** (if a `svg` block is present in config), then **translate documentation** (markdown/JSON under `documentation`). Skip parts with `--no-ui`, `--no-svg`, or `--no-docs`. The docs step accepts `--dry-run`, `-p` / `--path`, `--force`, and `--force-update` (the last two only apply when documentation translation runs; they are ignored if you pass `--no-docs`).
 
-# Translate UI strings (strings.json → de.json, fr.json, …)
-npx ai-i18n-tools translate-ui
+Use `documentation.targetLocales` to translate docs to a **smaller subset** than the UI:
 
-# Translate documentation (and UI too if translateUIStrings is true)
-npx ai-i18n-tools translate
-
-# Translate specific locale
-npx ai-i18n-tools translate --locale fr
-
-# Force re-translation (ignore cache)
-npx ai-i18n-tools translate --force
-
-# Dry run (no API calls, no writes)
-npx ai-i18n-tools translate --dry-run
-
-# Check translation status
-npx ai-i18n-tools status
-
-# Clean orphaned cache entries
-npx ai-i18n-tools cleanup
-
-# Launch web translation editor (document cache + UI strings + glossary)
-npx ai-i18n-tools edit
-
-# Show help
-npx ai-i18n-tools --help
-```
-
-### Web translation editor (`edit`)
-
-The local UI (default port from `--port`, often `8787`) exposes **three areas**, driven by your config paths:
-
-1. **Document segments** — SQLite cache rows (source/translated fragments); same role as today’s Duplistatus cache editor.
-2. **UI strings** — Edit `strings.json` entries (`source` + per-locale `translated`), when a path is configured.
-3. **User glossary** — Edit **`glossary-user.csv`** rows (`Original language string`, `locale`, `Translation`), when `glossary.userGlossary` is set.
-
-Tabs without a configured file stay hidden or read-only with an explanation. Full behavior and APIs: [I18N_TOOLS_IMPLEMENTATION_PLAN.md §4.7](./I18N_TOOLS_IMPLEMENTATION_PLAN.md#47-translation-editor-web-ui).
-
-The CLI also accepts **`edit-cache`** as an alias for **`edit`** (same as older docs and scripts).
-
-## Understanding the Workflow
-
-### 1. Extraction Phase
-
-The tool scans your source files for translatable content:
-
-- **React apps**: Finds `t("...")` calls using i18next-scanner
-- **Markdown**: Parses headings, paragraphs, frontmatter
-- **JSON**: Extracts message fields from Docusaurus JSON files
-- **SVG**: Identifies text elements in SVG files
-
-Output: `strings.json` or similar intermediate format
-
-### 2. Translation Phase
-
-For each target locale:
-1. Check cache for existing translations
-2. Batch remaining segments for API efficiency
-3. Call OpenRouter API with glossary hints
-4. Validate translations
-5. Write output files
-6. Update cache
-
-### 3. Caching
-
-Translations are cached in `.translation-cache/cache.db`:
-- **Segment-level**: Individual strings/paragraphs
-- **File-level**: Skip unchanged files entirely
-- **Automatic**: Happens transparently
-- **Persistent**: Survives between runs
-
-Result: 70%+ cache hit rate on subsequent runs!
-
-## Tips & Best Practices
-
-### Use Glossaries
-
-Create `glossary-user.csv` with columns **`Original language string`**, **`locale`**, **`Translation`**. Use **`*`** in `locale` for all target languages.
-
-```csv
-"Original language string","locale","Translation"
-"backup","*","backup"
-"backup","pt-BR","cópia de segurança"
-"API Key","de","API-Schlüssel"
-"API Key","fr","Clé API"
-```
-
-Details: [I18N_TOOLS_IMPLEMENTATION_PLAN.md §3.3](./I18N_TOOLS_IMPLEMENTATION_PLAN.md#33-glossary-system).
-
-### Organize Content
-
-**Good (i18next `t()`):**
-```tsx
-import { useTranslation } from "react-i18next";
-
-function SaveBar() {
-  const { t } = useTranslation("my-component");
-  return <Button>{t("saveButton")}</Button>;
-}
-
-function Toolbar() {
-  const { t } = useTranslation("common");
-  return <Button>{t("ui.cancel")}</Button>;
+```json
+{
+  "targetLocales": "src/locales/ui-languages.json",
+  "documentation": {
+    "targetLocales": ["de", "fr", "es"]
+  }
 }
 ```
 
-**Avoid:**
-```javascript
-// Don't use variables as keys
-t(dynamicString)  // ❌ Won't be extracted
+---
 
-// Do use literal strings
-t("Save Changes")  // ✅ Will be extracted
-```
+## Configuration reference
 
-### Test Incrementally
+### `sourceLocale`
+
+BCP-47 code for the source language (e.g. `"en-GB"`, `"en"`, `"pt-BR"`). No translation file is generated for this locale - the key string itself is the source text.
+
+**Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
+
+### `targetLocales`
+
+Which locales to translate to. Accepts:
+
+- **String path** to a `ui-languages.json` manifest (`"src/locales/ui-languages.json"`). The file is loaded and locale codes are extracted.
+- **Array of BCP-47 codes** (`["de", "fr", "es"]`).
+- **One-element array with a path** (`["src/locales/ui-languages.json"]`) - same behavior as the string form.
+
+### `concurrency` (optional)
+
+Maximum **target locales** translated at the same time (`translate-ui`, `translate-docs`, `translate-svg`, and the matching steps inside `sync`). If omitted, the CLI uses **4** for UI translation and **3** for documentation translation (built-in defaults). Override per run with `-j` / `--concurrency`.
+
+### `batchConcurrency` (optional)
+
+**translate-docs** and **translate-svg** (and the documentation step of `sync`): maximum parallel OpenRouter **batch** requests per file (each batch can contain many segments). Default **4** when omitted. Ignored by `translate-ui`. Override with `-b` / `--batch-concurrency`. On `sync`, `-b` applies to the documentation translation step only.
+
+### `batchSize` / `maxBatchChars` (optional)
+
+Segment batching for document translation: how many segments per API request, and a character ceiling. Defaults: **20** segments, **4096** characters (when omitted).
+
+### `openrouter`
+
+
+| Field               | Description                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| `baseUrl`           | OpenRouter API base URL. Default: `https://openrouter.ai/api/v1`.                        |
+| `translationModels` | Ordered list of model IDs. First is tried first; subsequent ones are fallbacks on error. |
+| `maxTokens`         | Max completion tokens per request. Default: `8192`.                                      |
+| `temperature`       | Sampling temperature. Default: `0.2`.                                                    |
+
+
+Set `OPENROUTER_API_KEY` in your environment or `.env` file.
+
+### `features`
+
+
+| Field                | Workflow | Description                                                       |
+| -------------------- | -------- | ----------------------------------------------------------------- |
+| `extractUIStrings`   | 1        | Scan source for `t("…")` and write/merge `strings.json`.          |
+| `translateUIStrings` | 1        | Translate `strings.json` entries and write per-locale JSON files. |
+| `translateMarkdown`  | 2        | Translate `.md` / `.mdx` files.                                   |
+| `translateJSON`      | 2        | Translate Docusaurus JSON label files.                            |
+| `translateSVG`       | 2        | Translate text content in `.svg` files.                           |
+
+
+### `ui`
+
+
+| Field                       | Description                                                             |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `sourceRoots`               | Directories (relative to cwd) scanned for `t("…")` calls.               |
+| `stringsJson`               | Path to the master catalog file. Updated by `extract`.                  |
+| `flatOutputDir`             | Directory where per-locale JSON files are written (`de.json`, etc.).    |
+| `reactExtractor.funcNames`  | Additional function names to scan (default: `["t", "i18n.t"]`).         |
+| `reactExtractor.extensions` | File extensions to include (default: `[".js", ".jsx", ".ts", ".tsx"]`). |
+
+
+### `documentation`
+
+
+| Field                                        | Description                                                                                                                                                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contentPaths`                               | Source files/directories to translate (markdown, JSON, SVG).                                                                                                                                                              |
+| `outputDir`                                  | Root directory for translated output.                                                                                                                                                                                     |
+| `cacheDir`                                   | SQLite cache directory. Reuse across runs for incremental translation.                                                                                                                                                    |
+| `targetLocales`                              | Optional subset of locales for docs only (overrides root `targetLocales`).                                                                                                                                                |
+| `jsonSource`                                 | Source directory for Docusaurus JSON label files (e.g. `"i18n/en"`).                                                                                                                                                      |
+| `markdownOutput.style`                       | `"docusaurus"` or `"flat"`.                                                                                                                                                                                               |
+| `markdownOutput.docsRoot`                    | Source docs root for Docusaurus layout (e.g. `"docs"`).                                                                                                                                                                   |
+| `markdownOutput.pathTemplate`                | Custom output path. Placeholders: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{extension}"}</code>.                                                                                                                        |
+| `markdownOutput.rewriteRelativeLinks` | Rewrite relative links after translation (auto-enabled for `flat` style).                                                                                                                                                 |
+| `injectTranslationMetadata`                  | When `true` (default when omitted), translated markdown files include YAML keys: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`. Set to `false` to skip. |
+
+
+### `glossary`
+
+
+| Field          | Description                                                                                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `uiGlossary`   | Path to `strings.json` - auto-builds a glossary from existing translations.                                                                                                                 |
+| `userGlossary` | Path to a CSV with columns `**Original language string`** (or `**en**`), `**locale**`, `**Translation**` - one row per source term and target locale (`locale` may be `*` for all targets). |
+
+
+The legacy key `uiGlossaryFromStringsJson` is still accepted and mapped to `uiGlossary` when loading config.
+
+Generate an empty glossary CSV:
 
 ```bash
-# Test with one file first
-npx ai-i18n-tools translate --path docs/intro.md --locale fr
-
-# Test with one locale
-npx ai-i18n-tools translate --locale de
-
-# Then do full translation
-npx ai-i18n-tools translate
+npx ai-i18n-tools glossary-generate
 ```
 
-### Monitor Costs
+---
 
-```bash
-# Dry run to see what would be translated
-npx ai-i18n-tools translate --dry-run
+## CLI reference
 
-# Check cache stats
-npx ai-i18n-tools status
 
-# Clear cache if needed
-npx ai-i18n-tools cleanup --clear-cache
-```
+| Command                                                                   | Description                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentation.injectTranslationMetadata`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                            |
+| `extract`                                                                 | Scan source for `t("…")` calls and update `strings.json`. Requires `features.extractUIStrings`.                                                                                                                                                                                                    |
+| `translate-docs …`                                                        | Translate documentation files under `documentation.contentPaths` (markdown, MDX, JSON label files, and any `.svg` included there). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. See [Cache behavior and `translate-docs` flags](#cache-behavior-and-translate-docs-flags) for `--force`, `--force-update`, `--stats`, `--clear-cache`. |
+| `translate-svg …`                                                         | Translate standalone SVG assets configured in `config.svg` (separate from docs). Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
+| `translate-ui [--locale <code>] [-j <n>]`                                 | Translate UI strings only. `-j`: max parallel locales. Requires `features.translateUIStrings`.                                                                                                                                                                                                     |
+| `sync …`                                                                  | Extract (if enabled), then UI translation, then `translate-svg` when `config.svg` exists, then documentation translation - unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run).                         |
+| `status`                                                                  | Show markdown translation status per file × locale (no `--locale` filter; locales come from config).                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>] [-y]`                  | Remove stale rows (null `last_hit_at` / empty filepath) and orphaned rows (missing files). Before modifying the DB, prompts (unless `--dry-run` or `--yes`): run `translate-docs --force-update` first so tracking and cache hits are current. Creates a timestamped SQLite backup under the cache dir unless `--no-backup`. Use `--yes` when stdin is not a TTY. |
+| `editor [-p <port>]`                                                      | Launch a local web editor for the cache, `strings.json`, and glossary CSV.                                                                                                                                                                                                                         |
+| `glossary-generate`                                                       | Write an empty `glossary-user.csv` template.                                                                                                                                                                                                                                                       |
 
-## Troubleshooting
 
-### "No strings extracted"
+All commands accept `-c <path>` to specify a non-default config file, `-v` for verbose output, and `-w` / `--write-logs [path]` to tee console output to a log file (default path: under `documentation.cacheDir`).
 
-- Check `documentation.contentPaths` (and `ui.sourceRoots` for extract) in config
-- Verify file extensions match extractor patterns
-- Ensure `t()` calls use literal strings
+---
 
-### "API key not set"
+## Environment variables
 
-```bash
-echo $OPENROUTER_API_KEY  # Should show your key
-export OPENROUTER_API_KEY=your-key  # Set it
-```
 
-### "Translation quality poor"
+| Variable               | Description                                                |
+| ---------------------- | ---------------------------------------------------------- |
+| `OPENROUTER_API_KEY`   | **Required.** Your OpenRouter API key.                     |
+| `OPENROUTER_BASE_URL`  | Override the API base URL.                                 |
+| `I18N_SOURCE_LOCALE`   | Override `sourceLocale` at runtime.                        |
+| `I18N_TARGET_LOCALES`  | Comma-separated locale codes to override `targetLocales`.  |
+| `I18N_LOG_LEVEL`       | Logger level (`debug`, `info`, `warn`, `error`, `silent`). |
+| `NO_COLOR`             | When `1`, disable ANSI colors in log output.               |
+| `I18N_LOG_SESSION_MAX` | Max lines kept per log session (default `5000`).           |
 
-- Add terms to glossary
-- Try different model: `--model anthropic/claude-3.5-sonnet`
-- Clear problematic cache entries via web editor
 
-### "Cache not working"
-
-```bash
-# Check cache exists
-ls -la .translation-cache/cache.db
-
-# Clear and rebuild
-npx ai-i18n-tools cleanup --clear-cache
-npx ai-i18n-tools translate --force
-```
-
-## Next Steps
-
-- 📖 Read [full documentation](./docs/)
-- 🔧 See [configuration reference](./docs/CONFIGURATION.md)
-- 🚀 Check [migration guides](./docs/) for your project type
-- 💬 Join our [Discord community](https://discord.gg/your-server)
-
-## Need Help?
-
-- 📚 [Documentation](./docs/)
-- 🐛 [GitHub Issues](https://github.com/wsj-br/ai-i18n-tools/issues)
-- 💬 [Discord](https://discord.gg/your-server)
-
-Happy translating! 🌍

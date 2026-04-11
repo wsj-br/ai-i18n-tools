@@ -19,7 +19,7 @@ describe("parseBatchTranslationResponse", () => {
   });
 });
 
-describe("buildDocumentBatchPrompt (Transrewrt-aligned)", () => {
+describe("buildDocumentBatchPrompt", () => {
   const baseOpts = {
     sourceLanguageLabel: "English",
     targetLanguageLabel: "German",
@@ -36,7 +36,7 @@ describe("buildDocumentBatchPrompt (Transrewrt-aligned)", () => {
     },
   ];
 
-  it("markdown type matches Transrewrt core rules (no JSON/SVG addendum)", () => {
+  it("markdown type includes core rules but no JSON/SVG addendum", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "markdown");
     expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
     expect(systemPrompt).toContain("Preserve GFM pipe tables");

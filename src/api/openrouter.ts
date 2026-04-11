@@ -1,4 +1,5 @@
 import fs from "fs";
+import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import {
   type BatchTranslationResult,
@@ -69,7 +70,7 @@ export interface OpenRouterClientOptions {
 }
 
 /**
- * OpenRouter chat client with ordered `translationModels` fallback (Transrewrt-aligned).
+ * OpenRouter chat client with ordered `translationModels` fallback chain.
  */
 export class OpenRouterClient {
   private readonly apiKey: string;
@@ -139,6 +140,23 @@ export class OpenRouterClient {
       const ms = retryAfter ? parseFloat(retryAfter) * 1000 : 2000;
       await new Promise((r) => setTimeout(r, Number.isFinite(ms) ? ms : 2000));
     }
+  }
+
+  /** Match doc-translate log lines: two-space indent, locale, filename. */
+  private warnModelSwitch(
+    localeCode: string,
+    relativePath: string | undefined,
+    failedModel: string,
+    nextModel: string,
+    error: unknown
+  ): void {
+    const loc = relativePath != null ? `${localeCode} ${relativePath}` : localeCode;
+    const detail = error instanceof Error ? error.message : String(error);
+    console.warn(
+      chalk.yellow(
+        `  ⚠️  ${loc}: ${failedModel} failed (${detail}). Trying ${nextModel}…`
+      )
+    );
   }
 
   private extractUsage(data: OpenRouterResponse): {
@@ -261,7 +279,10 @@ export class OpenRouterClient {
 
   async chat(
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-    options?: { startModelIndex?: number }
+    options?: {
+      startModelIndex?: number;
+      docLogContext?: { locale: string; relativePath: string };
+    }
   ): Promise<ChatResponse> {
     const openRouterMessages = this.toOpenRouterMessages(messages);
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
@@ -273,7 +294,18 @@ export class OpenRouterClient {
         return await this.fetchCompletion(model, openRouterMessages);
       } catch (e) {
         lastError = e;
-        this.logger?.warn(`Model ${model} failed: ${e}`);
+        const nextModel = this.modelsToTry[mi + 1];
+        if (nextModel && options?.docLogContext) {
+          this.warnModelSwitch(
+            options.docLogContext.locale,
+            options.docLogContext.relativePath,
+            model,
+            nextModel,
+            e
+          );
+        } else if (!options?.docLogContext) {
+          this.logger?.warn(`Model ${model} failed: ${e}`);
+        }
       }
     }
 
@@ -293,7 +325,11 @@ export class OpenRouterClient {
     content: string,
     targetLocale: string,
     glossaryHints: string[],
-    options?: { startModelIndex?: number; contentType?: DocumentPromptContentType }
+    options?: {
+      startModelIndex?: number;
+      contentType?: DocumentPromptContentType;
+      docLogContext?: { locale: string; relativePath: string };
+    }
   ): Promise<TranslationResult> {
     const contentType = options?.contentType ?? "markdown";
     const { systemPrompt, userContent } = buildDocumentSinglePrompt(
@@ -311,7 +347,10 @@ export class OpenRouterClient {
         { role: "system", content: systemPrompt },
         { role: "user", content: userContent },
       ],
-      { startModelIndex: options?.startModelIndex }
+      {
+        startModelIndex: options?.startModelIndex,
+        docLogContext: options?.docLogContext,
+      }
     );
 
     return {
@@ -326,7 +365,12 @@ export class OpenRouterClient {
     segments: Segment[],
     locale: string,
     glossaryHints: string[] = [],
-    options?: { startModelIndex?: number; contentType?: DocumentPromptContentType }
+    options?: {
+      startModelIndex?: number;
+      contentType?: DocumentPromptContentType;
+      /** When set, log model fallback warnings (translate-docs style). */
+      docLogContext?: { relativePath: string };
+    }
   ): Promise<BatchTranslationResult> {
     if (segments.length === 0) {
       return {
@@ -372,10 +416,21 @@ export class OpenRouterClient {
         };
       } catch (e) {
         lastError = e;
-        if (e instanceof BatchTranslationError) {
-          this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
-        } else {
-          this.logger?.warn(`Batch request failed with ${model}: ${e}`);
+        const nextModel = this.modelsToTry[mi + 1];
+        if (nextModel && options?.docLogContext) {
+          this.warnModelSwitch(
+            locale,
+            options.docLogContext.relativePath,
+            model,
+            nextModel,
+            e
+          );
+        } else if (!options?.docLogContext) {
+          if (e instanceof BatchTranslationError) {
+            this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
+          } else {
+            this.logger?.warn(`Batch request failed with ${model}: ${e}`);
+          }
         }
       }
     }
@@ -386,12 +441,12 @@ export class OpenRouterClient {
   }
 
   /**
-   * UI strings: JSON array response (Transrewrt `generate-translations.js`), with model fallback chain.
+   * UI strings: translate a batch of strings and return a JSON array response, with model fallback chain.
    */
   async translateUIBatch(
     texts: string[],
     targetLocale: string,
-    options?: { startModelIndex?: number }
+    options?: { startModelIndex?: number; glossaryHints?: string[] }
   ): Promise<{
     translations: string[];
     model: string;
@@ -409,6 +464,7 @@ export class OpenRouterClient {
     const { systemPrompt, userContent } = buildUIPromptMessages(texts, {
       sourceLanguageLabel: this.sourceLanguageLabel,
       targetLanguageLabel: this.targetLanguageLabel(targetLocale),
+      glossaryHints: options?.glossaryHints,
     });
 
     const openRouterMessages = this.toOpenRouterMessages([

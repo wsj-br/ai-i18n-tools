@@ -1,0 +1,510 @@
+:root {
+  --bg-page: #1a1a1a;
+  --bg-card: #161B22;
+  --bg-input: #2d2d2d;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border: #404040;
+  --accent: #4a9eff;
+  --accent-hover: #6bb3ff;
+  --danger: #e74c3c;
+  --danger-hover: #ec7063;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.top {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: #161b22;
+}
+.top h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.tabs button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  margin-right: 0.35rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tabs button.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+main {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+.panel {
+  display: none;
+}
+.panel.active {
+  display: block;
+}
+
+.hint {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+#panel-glossary .gl-meta-row {
+  margin-bottom: 1rem;
+}
+#panel-glossary .gl-meta-row .hint {
+  display: inline;
+  margin: 0;
+  vertical-align: baseline;
+}
+#panel-glossary .gl-meta-row .status {
+  display: inline-block;
+  margin: 0 0 0 0.5rem;
+  vertical-align: baseline;
+  text-align: left;
+}
+
+.container-inner {
+  max-width: 1600px;
+}
+
+.filters {
+  margin-bottom: 1rem;
+}
+.filters.seg-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.filter-row-seg-primary select#seg-filter-filepath-select {
+  flex: 0 1 420px;
+  min-width: 180px;
+  max-width: 420px;
+}
+.filter-row-ui-primary input[type="text"]#ui-filter-filename {
+  flex: 1 1 160px;
+  min-width: 140px;
+  max-width: none;
+  width: 0;
+}
+.filter-row-ui-primary input[type="text"]#ui-filter-id {
+  max-width: 100px;
+}
+.filter-row-ui-primary select#ui-filter-filepath-select {
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: 100%;
+}
+.filter-row-seg-primary select#seg-filter-locale {
+  flex: 0 1 auto;
+  min-width: 7.5rem;
+}
+.filter-row-seg-primary select#seg-filter-model {
+  flex: 0 1 280px;
+  min-width: 8rem;
+  max-width: min(420px, 45vw);
+}
+.filter-row-seg-primary input[type="text"]#seg-filter-filename {
+  flex: 1 1 160px;
+  min-width: 140px;
+  max-width: none;
+  width: 0;
+}
+.filter-row-seg-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+.filter-row-seg-primary-actions select#seg-filter-last-hit {
+  min-width: 9.5rem;
+}
+.filter-row-seg-secondary input[type="text"]#seg-filter-translated-text {
+  flex: 1 1 200px;
+  min-width: 160px;
+  max-width: 560px;
+}
+.filter-row-seg-secondary .seg-btn-delete-filtered {
+  margin-left: auto;
+}
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.filter-row input[type="text"] {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+.filter-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.filter-row select {
+  min-width: 100px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+.filter-row .filter-stale-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.filter-row button {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.filter-row button:hover {
+  background: var(--accent-hover);
+}
+.filter-row button.seg-btn-clear {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.filter-row button.seg-btn-clear:hover {
+  background: var(--border);
+}
+.filter-row button.seg-btn-delete-filtered {
+  background: var(--danger);
+}
+.filter-row button.seg-btn-delete-filtered:hover {
+  background: var(--danger-hover);
+}
+
+.delete-by-filepath {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.delete-by-filepath label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.delete-by-filepath select {
+  min-width: 240px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+.delete-by-filepath button {
+  padding: 0.5rem 1rem;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.delete-by-filepath button:hover:not(:disabled) {
+  background: var(--danger-hover);
+}
+.delete-by-filepath button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-top,
+.pagination-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.pagination-controls button {
+  padding: 0.4rem 0.8rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.pagination-controls button:hover:not(:disabled) {
+  background: var(--border);
+}
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pagination-controls select {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+#seg-pagination-info,
+#seg-pagination-info-bottom,
+#ui-pagination-info,
+#ui-pagination-info-bottom,
+#gl-pagination-info,
+#gl-pagination-info-bottom {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-card);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: var(--bg-input);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  vertical-align: top;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+td.source-text,
+td.translated-text {
+  max-width: 240px;
+  word-break: break-word;
+}
+td.actions {
+  white-space: nowrap;
+}
+td.last-hit-at {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+td.last-hit-at.stale {
+  color: var(--danger);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0 2px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.icon-btn:hover {
+  background: var(--border);
+  color: var(--accent);
+}
+.icon-btn.delete-btn:hover {
+  color: var(--danger);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.hidden {
+  display: none;
+}
+#ui-modal-overlay {
+  z-index: 1001;
+}
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 560px;
+  width: 90%;
+}
+.modal h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+.modal textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 8rem;
+}
+.modal textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.modal-actions .btn-cancel {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.modal-actions .btn-save {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+}
+
+.status {
+  min-height: 1.25rem;
+  color: #d29922;
+  font-size: 0.85rem;
+  margin: 0.25rem 0;
+}
+.status.ok {
+  color: #3fb950;
+}
+
+.row-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+#gl-add-row {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 0.5rem 0.75rem;
+}
+#gl-add-row select#gl-new-locale {
+  min-width: 11rem;
+}
+.row-add input,
+.row-add select {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+.row-add button {
+  padding: 0.4rem 0.75rem;
+  background: #238636;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.grid-inline input,
+.grid-inline select {
+  width: 100%;
+  min-width: 4rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+.grid-inline .btn-small {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--accent);
+}
+.grid-inline .btn-delete {
+  color: var(--danger);
+}
+
+.hidden-ui {
+  display: none !important;
+}

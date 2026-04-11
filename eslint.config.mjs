@@ -9,7 +9,7 @@ export default tseslint.config(
       "node_modules/**",
       "coverage/**",
       "**/*.cjs",
-      "edit-cache-app/**",
+      "src/edit-cache-app/**",
     ],
   },
   eslint.configs.recommended,

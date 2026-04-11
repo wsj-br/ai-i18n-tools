@@ -1,4 +1,4 @@
-import Database from "better-sqlite3";
+import { DatabaseSync, backup } from "node:sqlite";
 import fs from "fs";
 import path from "path";
 import { CacheError } from "./errors.js";
@@ -12,13 +12,13 @@ const SCHEMA_VERSION = 1;
  * (no JS-level pool); reuse one instance per process for best throughput.
  */
 export class TranslationCache {
-  private db: Database.Database;
+  private db: DatabaseSync;
   private readonly dbFilePath: string | null;
 
   constructor(cachePath: string) {
     if (cachePath === ":memory:") {
       this.dbFilePath = null;
-      this.db = new Database(":memory:");
+      this.db = new DatabaseSync(":memory:");
       this.applyMigrations();
       return;
     }
@@ -28,12 +28,13 @@ export class TranslationCache {
     }
 
     this.dbFilePath = path.join(cachePath, "cache.db");
-    this.db = new Database(this.dbFilePath);
+    this.db = new DatabaseSync(this.dbFilePath);
     this.applyMigrations();
   }
 
   private applyMigrations(): void {
-    const current = this.db.pragma("user_version", { simple: true }) as number;
+    const current = (this.db.prepare("PRAGMA user_version").get() as { user_version: number })
+      .user_version;
     if (current < 1) {
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS translations (
@@ -63,7 +64,7 @@ export class TranslationCache {
         CREATE INDEX IF NOT EXISTS idx_translations_filepath
           ON translations(filepath);
       `);
-      this.db.pragma(`user_version = ${SCHEMA_VERSION}`);
+      this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
     }
   }
 
@@ -159,6 +160,14 @@ export class TranslationCache {
     stmt.run(filepath, locale, sourceHash);
   }
 
+  /**
+   * Remove file-tracking for one path/locale so the next run does not skip the file.
+   * Segment rows stay keyed by `(source_hash, locale)`; `--force` bypasses segment cache reads so rows refresh on re-translate.
+   */
+  clearFile(filepath: string, locale: string): void {
+    this.db.prepare("DELETE FROM file_tracking WHERE filepath = ? AND locale = ?").run(filepath, locale);
+  }
+
   getStats(): { totalSegments: number; totalFiles: number; byLocale: Record<string, number> } {
     const segments = this.db.prepare("SELECT COUNT(*) as count FROM translations").get() as {
       count: number;
@@ -195,9 +204,28 @@ export class TranslationCache {
 
   /**
    * Set `last_hit_at = NULL` for markdown segments that were not hit this run.
-   * @param keysHit — entries as `sourceHash|locale` (same convention as Transrewrt).
+   * Scoped to markdown-like paths only so JSON (and other) rows are not cleared.
+   * @param keysHit - entries as `sourceHash|locale`.
    */
   resetLastHitAtForUnhitMarkdown(hitKeys: Set<string>): number {
+    return this.resetLastHitAtForUnhitScoped(
+      hitKeys,
+      `(filepath IS NULL OR LOWER(filepath) LIKE '%.md' OR LOWER(filepath) LIKE '%.mdx')`
+    );
+  }
+
+  /**
+   * Set `last_hit_at = NULL` for JSON UI/doc segments that were not hit this run.
+   * @param keysHit - entries as `sourceHash|locale`.
+   */
+  resetLastHitAtForUnhitJson(hitKeys: Set<string>): number {
+    return this.resetLastHitAtForUnhitScoped(
+      hitKeys,
+      `(filepath IS NOT NULL AND LOWER(filepath) LIKE '%.json')`
+    );
+  }
+
+  private resetLastHitAtForUnhitScoped(hitKeys: Set<string>, filepathPredicateSql: string): number {
     if (hitKeys.size === 0) {
       return 0;
     }
@@ -212,12 +240,12 @@ export class TranslationCache {
     const result = this.db
       .prepare(
         `UPDATE translations SET last_hit_at = NULL
-       WHERE (filepath IS NULL OR filepath NOT LIKE '%.svg')
+       WHERE ${filepathPredicateSql}
        AND (source_hash, locale) NOT IN (SELECT source_hash, locale FROM _hit_keys)`
       )
       .run();
     this.db.exec("DROP TABLE IF EXISTS _hit_keys");
-    return result.changes;
+    return Number(result.changes);
   }
 
   cleanupStaleTranslations(dryRun = false): {
@@ -251,6 +279,8 @@ export class TranslationCache {
     source_text?: string;
     translated_text?: string;
     last_hit_at_null?: boolean;
+    /** When true, only rows with a non-null `last_hit_at` (active). Mutually exclusive with `last_hit_at_null` in normal use. */
+    last_hit_at_not_null?: boolean;
     limit?: number;
     offset?: number;
   }): { rows: TranslationRow[]; total: number } {
@@ -286,6 +316,9 @@ export class TranslationCache {
     if (filters?.last_hit_at_null === true) {
       conditions.push("last_hit_at IS NULL");
     }
+    if (filters?.last_hit_at_not_null === true) {
+      conditions.push("last_hit_at IS NOT NULL");
+    }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
     const countStmt = this.db.prepare(`SELECT COUNT(*) as count FROM translations ${whereClause}`);
@@ -297,7 +330,7 @@ export class TranslationCache {
        ORDER BY filepath, locale, CASE WHEN start_line IS NULL THEN 1 ELSE 0 END, start_line, source_hash
        LIMIT ? OFFSET ?`
     );
-    const rows = selectStmt.all(...params, limit, offset) as TranslationRow[];
+    const rows = selectStmt.all(...params, limit, offset) as unknown as TranslationRow[];
 
     return { rows, total };
   }
@@ -325,6 +358,7 @@ export class TranslationCache {
     source_text?: string;
     translated_text?: string;
     last_hit_at_null?: boolean;
+    last_hit_at_not_null?: boolean;
   }): number {
     const conditions: string[] = [];
     const params: (string | number)[] = [];
@@ -356,6 +390,9 @@ export class TranslationCache {
     if (filters?.last_hit_at_null === true) {
       conditions.push("last_hit_at IS NULL");
     }
+    if (filters?.last_hit_at_not_null === true) {
+      conditions.push("last_hit_at IS NOT NULL");
+    }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -366,13 +403,13 @@ export class TranslationCache {
       .run(...params);
 
     const result = this.db.prepare(`DELETE FROM translations ${whereClause}`).run(...params);
-    return result.changes;
+    return Number(result.changes);
   }
 
   deleteByFilepath(filepath: string): number {
     const result = this.db.prepare("DELETE FROM translations WHERE filepath = ?").run(filepath);
     this.db.prepare("DELETE FROM file_tracking WHERE filepath = ?").run(filepath);
-    return result.changes;
+    return Number(result.changes);
   }
 
   getUniqueLocales(): string[] {
@@ -448,10 +485,16 @@ export class TranslationCache {
   }
 
   /**
-   * @param keys — `sourceHash|locale` strings for segments that were read from cache this run.
+   * @param markdownKeys - `sourceHash|locale` for markdown segments hit this run (may be empty).
+   * @param jsonKeys - `sourceHash|locale` for JSON segments hit this run (may be empty).
    */
-  async resetLastHitAtForUnhit(keys: string[]): Promise<void> {
-    this.resetLastHitAtForUnhitMarkdown(new Set(keys));
+  async resetLastHitAtForUnhit(markdownKeys: string[], jsonKeys: string[]): Promise<void> {
+    if (markdownKeys.length > 0) {
+      this.resetLastHitAtForUnhitMarkdown(new Set(markdownKeys));
+    }
+    if (jsonKeys.length > 0) {
+      this.resetLastHitAtForUnhitJson(new Set(jsonKeys));
+    }
     return Promise.resolve();
   }
 
@@ -463,13 +506,13 @@ export class TranslationCache {
     });
   }
 
-  /** Hot SQLite backup to another file (`better-sqlite3` backup API is async). */
+  /** Hot SQLite backup to another file. */
   async backupTo(destinationPath: string): Promise<void> {
     if (this.dbFilePath === null) {
       throw new CacheError("backup is not supported for :memory: databases");
     }
     fs.mkdirSync(path.dirname(path.resolve(destinationPath)), { recursive: true });
-    await this.db.backup(destinationPath);
+    await backup(this.db, destinationPath);
   }
 
   /** Replace the on-disk DB with a copied file; closes and reopens the connection. */
@@ -482,7 +525,7 @@ export class TranslationCache {
     }
     this.db.close();
     fs.copyFileSync(sourcePath, this.dbFilePath);
-    this.db = new Database(this.dbFilePath);
+    this.db = new DatabaseSync(this.dbFilePath);
     this.applyMigrations();
   }
 }

@@ -13,7 +13,7 @@ describe("interpolateTemplate", () => {
     expect(interpolateTemplate("x={{x}}", {})).toBe("x=");
   });
 
-  it("only matches word keys like Transrewrt", () => {
+  it("only matches ASCII word keys (\\w+)", () => {
     expect(interpolateTemplate("{{a}} {{b2}}", { a: "1", b2: "2" })).toBe("1 2");
   });
 });

@@ -1,0 +1,7 @@
+[
+  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)" },
+  { "code": "es", "label": "Español", "englishName": "Spanish" },
+  { "code": "fr", "label": "Français", "englishName": "French" },
+  { "code": "de", "label": "Deutsch", "englishName": "German" },
+  { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (Brazil)" }
+]

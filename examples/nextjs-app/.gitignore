@@ -1,0 +1,6 @@
+node_modules/
+.next/
+out/
+*.log
+.translation-cache/*
+!.translation-cache/cache.db

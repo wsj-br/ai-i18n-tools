@@ -10,13 +10,13 @@ import {
 import type { I18nConfig, RawI18nConfigInput } from "./types.js";
 
 /**
- * Transrewrt-style UI language manifest (`src/renderer/locales/ui-languages.json`).
+ * UI language manifest (`ui-languages.json`).
  * Drives language switcher labels and, when configured, which locales receive UI string translation.
  */
 export interface UiLanguageEntry {
   code: string;
   /**
-   * Language name **in that language** (endonym), for in-app menus and switchers — e.g. `Deutsch`, `日本語`.
+   * Language name **in that language** (endonym), for in-app menus and switchers - e.g. `Deutsch`, `日本語`.
    * Not necessarily English.
    */
   label: string;
@@ -40,8 +40,8 @@ export function looksLikeUiLanguagesFileRef(s: string): boolean {
 }
 
 /**
- * When `targetLocales` is a single string that looks like a manifest path, load it (Transrewrt
- * `ui-languages.json` shape), replace `targetLocales` with locale codes (excluding `sourceLocale`),
+ * When `targetLocales` is a single string that looks like a manifest path, load it
+ * (`ui-languages.json` shape), replace `targetLocales` with locale codes (excluding `sourceLocale`),
  * and set `uiLanguagesPath` to that path for prompts / `--locale` filtering.
  *
  * Call on merged config input **before** {@link parseI18nConfig} (e.g. from {@link loadI18nConfigFromFile}).
@@ -94,7 +94,7 @@ export function expandTargetLocalesFileReferenceInRawInput(
 
 /**
  * When `documentation.targetLocales` is a single manifest path (`ui-languages.json`), expand to locale codes
- * (excluding `sourceLocale`). Does not set `uiLanguagesPath` — UI resolution is unchanged.
+ * (excluding `sourceLocale`). Does not set `uiLanguagesPath` - UI resolution is unchanged.
  */
 export function expandDocumentationTargetLocalesInRawInput(
   raw: RawI18nConfigInput,
@@ -136,7 +136,7 @@ export function expandDocumentationTargetLocalesInRawInput(
 }
 
 /**
- * Locale codes used for **documentation** translation (markdown / JSON / SVG): `documentation.targetLocales`
+ * Locale codes used for **documentation** translation (markdown / JSON): `documentation.targetLocales`
  * when non-empty, otherwise root `targetLocales`. Excludes `sourceLocale`, deduped.
  */
 export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] {
@@ -175,6 +175,37 @@ export function resolveLocalesForDocumentation(
     if (list.length === 0 && requested.filter((c) => c !== src).length > 0) {
       throw new Error(
         `[translate] None of the requested --locale codes are documentation target locales. Allowed: ${[...allowed].join(", ") || "(none)"}`
+      );
+    }
+    return list;
+  }
+  return base;
+}
+
+/**
+ * Locales for `translate-svg`: always includes `sourceLocale` (copy-through output), plus documentation
+ * target locales (same as {@link getDocumentationTargetLocaleCodes}).
+ */
+export function resolveLocalesForSvg(
+  config: I18nConfig,
+  _cwd: string,
+  cliLocalesRaw?: string | null
+): string[] {
+  const docTargets = getDocumentationTargetLocaleCodes(config);
+  const src = normalizeLocale(config.sourceLocale);
+  const base: string[] = [src];
+  for (const l of docTargets) {
+    if (!base.includes(l)) {
+      base.push(l);
+    }
+  }
+  if (cliLocalesRaw?.trim()) {
+    const requested = parseLocaleList(cliLocalesRaw).map((c) => normalizeLocale(c));
+    const allowed = new Set(base);
+    const list = requested.filter((c) => allowed.has(c));
+    if (list.length === 0 && requested.length > 0) {
+      throw new Error(
+        `[translate-svg] None of the requested --locale codes are allowed. Allowed: ${[...allowed].join(", ")}`
       );
     }
     return list;

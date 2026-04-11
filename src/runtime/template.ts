@@ -1,11 +1,15 @@
 /**
- * Small string helpers aligned with Transrewrt `src/renderer/utils/misc/formatUtils.js`
- * (`interpolateTemplate`, `flipUiArrowsForRtl`). No i18n dependency — safe for browser or Node.
+ * Small string helpers for i18next key-as-default setups.
+ * No i18n dependency - safe for browser or Node.
  */
 
 /**
- * Replace `{{key}}` placeholders (ASCII word keys only, same regex as Transrewrt).
- * Use when `t()` returns a static string and i18next does not interpolate (e.g. key-as-default setups).
+ * Replace `{{key}}` placeholders (ASCII word keys only) in a pre-translated string.
+ * Use for non-i18next contexts: CLI output, Node.js scripts, or strings already
+ * returned by `t()` that need further substitution outside the React tree.
+ *
+ * In React/i18next components, prefer `t('key {{var}}', { var })` directly -
+ * i18next handles interpolation natively in key-as-default mode.
  *
  * @example interpolateTemplate(t("Hello {{name}}"), { name: userName })
  */

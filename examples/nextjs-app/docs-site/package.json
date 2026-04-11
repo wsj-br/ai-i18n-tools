@@ -1,0 +1,42 @@
+{
+  "name": "nextjs-app-docs-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start --port 3040",
+    "start:es": "docusaurus start --port 3040 --locale es",
+    "start:fr": "docusaurus start --port 3040 --locale fr",
+    "start:de": "docusaurus start --port 3040 --locale de",
+    "start:pt-BR": "docusaurus start --port 3040 --locale pt-BR",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve --port 3040",
+    "preview": "docusaurus build && docusaurus serve --port 3040",
+    "clear": "docusaurus clear",
+    "write-translations": "docusaurus write-translations",
+    "i18n:translate": "cd .. && ai-i18n-tools translate-docs",
+    "i18n:sync": "cd .. && ai-i18n-tools sync",
+    "i18n:cleanup": "cd .. && ai-i18n-tools cleanup",
+    "i18n:editor": "cd .. && ai-i18n-tools editor"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@mdx-js/react": "^3.1.0",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/types": "^3.6.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "webpack": "5.93.0"
+    }
+  }
+}

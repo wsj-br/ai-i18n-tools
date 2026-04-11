@@ -115,7 +115,6 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     translateUIStrings: false,
     translateMarkdown: false,
     translateJSON: false,
-    translateSVG: false,
   },
   glossary: {},
   ui: {
@@ -149,9 +148,7 @@ export function mergeWithDefaults(raw: unknown): RawI18nConfigInput {
 export function validateI18nBusinessRules(config: I18nConfig): void {
   const models = resolveTranslationModels(config.openrouter);
   const needsDocTranslation =
-    config.features.translateMarkdown ||
-    config.features.translateJSON ||
-    config.features.translateSVG;
+    config.features.translateMarkdown || config.features.translateJSON;
   const needsExtract = config.features.extractUIStrings;
   const needsUITranslation = config.features.translateUIStrings;
 
@@ -168,7 +165,7 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
 
   if (needsDocTranslation && getDocumentationTargetLocaleCodes(config).length === 0) {
     throw new ConfigValidationError(
-      "When translateMarkdown / translateJSON / translateSVG is enabled, set non-empty targetLocales " +
+      "When translateMarkdown / translateJSON is enabled, set non-empty targetLocales " +
         "and/or documentation.targetLocales (documentation-only locale list)."
     );
   }
@@ -188,8 +185,27 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
 
   if (needsDocTranslation && config.documentation.contentPaths.length === 0) {
     throw new ConfigValidationError(
-      "documentation.contentPaths must be non-empty when translateMarkdown / translateJSON / translateSVG is enabled"
+      "documentation.contentPaths must be non-empty when translateMarkdown / translateJSON is enabled"
     );
+  }
+}
+
+/** Validate config for the `translate-svg` command (call after normal load). */
+export function assertSvgCommandConfig(config: I18nConfig): void {
+  if (!config.svg) {
+    throw new ConfigValidationError(
+      "translate-svg requires an svg block in config: sourcePath, outputDir, style (flat | nested)"
+    );
+  }
+  const src = normalizeLocale(config.sourceLocale);
+  const needsApi = getDocumentationTargetLocaleCodes(config).some((l) => normalizeLocale(l) !== src);
+  if (needsApi) {
+    const models = resolveTranslationModels(config.openrouter);
+    if (models.length === 0) {
+      throw new ConfigValidationError(
+        "translate-svg requires openrouter.translationModels (or legacy defaultModel) when translating to non-source locales"
+      );
+    }
   }
 }
 
@@ -279,74 +295,112 @@ export function loadI18nConfigFromFile(configPath: string, cwd = process.cwd()):
 export const DEFAULT_CONFIG_FILENAME = "ai-i18n-tools.config.json";
 
 /**
- * Template objects for `init` — UI + app markdown vs UI + Docusaurus-style docs.
+ * Template objects for `init`.
+ *
+ * `ui-markdown` - Workflow 1 (UI string extraction/translation) for a React/Next.js app.
+ * `ui-docusaurus` - Workflow 2 (markdown/JSON document translation) for Docusaurus sites.
+ *
+ * Both templates include all top-level fields so the generated file is self-documenting.
+ * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
  */
 export const initConfigTemplates = {
   uiMarkdown: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
-    targetLocales: "src/renderer/locales/ui-languages.json",
+    // Must match sourceLocale - path to ui-languages.json OR an array of BCP-47 codes
+    targetLocales: "src/locales/ui-languages.json",
+    openrouter: {
+      baseUrl: "https://openrouter.ai/api/v1",
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      maxTokens: 8192,
+      temperature: 0.2,
+    },
     features: {
+      // Workflow 1: UI string extraction and translation
       extractUIStrings: true,
       translateUIStrings: true,
-      translateMarkdown: true,
+      // Workflow 2: document translation (enable when you have markdown to translate)
+      translateMarkdown: false,
       translateJSON: false,
-      translateSVG: false,
     },
     glossary: {
-      uiGlossaryFromStringsJson: "src/renderer/locales/strings.json",
+      uiGlossary: "src/locales/strings.json",
       userGlossary: "glossary-user.csv",
     },
     ui: {
-      sourceRoots: ["src/renderer/"],
-      stringsJson: "src/renderer/locales/strings.json",
-      flatOutputDir: "src/renderer/locales/",
+      sourceRoots: ["src/"],
+      stringsJson: "src/locales/strings.json",
+      flatOutputDir: "src/locales/",
     },
+    // Parallelism: translate-ui effective default 4; translate-docs effective default 3 when omitted.
+    concurrency: 4,
+    // translate-docs: max parallel OpenRouter batch requests per file.
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
     documentation: {
-      contentPaths: ["src/renderer/"],
-      outputDir: "src/renderer/locales/",
+      contentPaths: [],
+      outputDir: "./i18n",
       cacheDir: ".translation-cache",
       markdownOutput: {
-        style: "nested",
+        style: "flat",
       },
+      // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
+      injectTranslationMetadata: true,
     },
   }),
 
   uiDocusaurus: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
+    // Must match Docusaurus defaultLocale - path to ui-languages.json OR array of BCP-47 codes
     targetLocales: "i18n/ui-languages.json",
+    openrouter: {
+      baseUrl: "https://openrouter.ai/api/v1",
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      maxTokens: 8192,
+      temperature: 0.2,
+    },
     features: {
-      extractUIStrings: true,
+      // Workflow 1: enable if you also have a React UI with t() calls to extract
+      extractUIStrings: false,
       translateUIStrings: false,
+      // Workflow 2: Docusaurus document translation
       translateMarkdown: true,
       translateJSON: true,
-      translateSVG: true,
     },
     glossary: {
-      uiGlossaryFromStringsJson: "path/to/strings.json",
+      uiGlossary: "src/locales/strings.json",
       userGlossary: "glossary-user.csv",
     },
     ui: {
       sourceRoots: ["src/"],
-      stringsJson: "path/to/strings.json",
-      flatOutputDir: "path/to/locales/",
+      stringsJson: "src/locales/strings.json",
+      flatOutputDir: "src/locales/",
     },
+    // Docs-focused template: match translate-docs default (3) for parallel locales.
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
     documentation: {
       contentPaths: ["docs/"],
       outputDir: "i18n/",
       cacheDir: ".translation-cache",
       jsonSource: "i18n/en",
       markdownOutput: {
+        // 'docusaurus' places translated files under i18n/<locale>/docusaurus-plugin-content-docs/current/
         style: "docusaurus",
         docsRoot: "docs",
       },
+      injectTranslationMetadata: true,
     },
   }),
 } as const;
 
 /**
  * Write a starter config JSON for `ai-i18n-tools init`.
+ * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
  */
 export function writeInitConfigFile(
   outPath: string,

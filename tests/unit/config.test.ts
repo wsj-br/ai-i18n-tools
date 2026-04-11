@@ -67,7 +67,6 @@ describe("parseI18nConfig", () => {
           extractUIStrings: false,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
         },
       })
     );
@@ -126,7 +125,6 @@ describe("parseI18nConfig", () => {
           translateMarkdown: true,
           translateUIStrings: false,
           translateJSON: false,
-          translateSVG: false,
           extractUIStrings: false,
         },
       })
@@ -172,7 +170,6 @@ describe("parseI18nConfig", () => {
           translateUIStrings: true,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
           extractUIStrings: false,
         },
       })
@@ -212,7 +209,6 @@ describe("parseI18nConfig", () => {
           translateUIStrings: true,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
         },
       })
     );
@@ -297,7 +293,6 @@ describe("parseI18nConfig targetLocales string", () => {
           translateUIStrings: true,
           translateMarkdown: false,
           translateJSON: false,
-          translateSVG: false,
           extractUIStrings: false,
         },
       })

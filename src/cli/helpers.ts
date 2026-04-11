@@ -31,7 +31,7 @@ export function hashFileContent(content: string): string {
 
 /** `strings.json` path: explicit glossary path or `ui.stringsJson`. */
 export function resolveStringsJsonPath(config: I18nConfig, cwd: string): string {
-  const fromGlossary = config.glossary?.uiGlossaryFromStringsJson?.trim();
+  const fromGlossary = config.glossary?.uiGlossary?.trim();
   if (fromGlossary) {
     return path.isAbsolute(fromGlossary) ? fromGlossary : path.join(cwd, fromGlossary);
   }
