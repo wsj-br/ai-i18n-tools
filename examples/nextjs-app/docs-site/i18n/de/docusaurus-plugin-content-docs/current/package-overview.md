@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-04-11T01:50:10.397Z'
-source_file_mtime: '2026-04-11T01:49:54.976Z'
-source_file_hash: 2da126d2fe624a4d86e9a84e69d5128bea51a57be4b185213215d6b17c3fd83e
+translation_last_updated: '2026-04-11T03:31:28.714Z'
+source_file_mtime: '2026-04-11T03:30:13.297Z'
+source_file_hash: cc126df0f102c515c7e7b274fcf133efca9733834d7836fbb6433cb58703842f
 translation_language: de
 source_file_path: docs-site/docs/package-overview.md
 ---
@@ -22,23 +22,23 @@ Anweisungen zur praktischen Nutzung finden Sie unter [Erste Schritte](./getting-
 - [Workflow 1 - Interna der UI-Übersetzung](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [Flache Sprachdateien](#flat-locale-files)
+  - [Flache Lokalisierungsdateien](#flat-locale-files)
   - [UI-Übersetzungsanfragen](#ui-translation-prompts)
 - [Workflow 2 - Interna der Dokumentübersetzung](#workflow-2---document-translation-internals)
   - [Extractoren](#extractors)
   - [Platzhalter-Schutz](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
   - [Auflösung des Ausgabepfads](#output-path-resolution)
-  - [Umschreiben flacher Links](#flat-link-rewriting)
+  - [Umschreibung flacher Links](#flat-link-rewriting)
 - [Gemeinsame Infrastruktur](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Konfigurationsladen](#config-loading)
   - [Protokollierung (Logger)](#logger)
 - [Laufzeit-Hilfs-API](#runtime-helpers-api)
   - [RTL-Hilfsfunktionen](#rtl-helpers)
-  - [i18next-Setup-Fabriken](#i18next-setup-factories)
+  - [i18next-Setup-Factorys](#i18next-setup-factories)
   - [Anzeigehilfen](#display-helpers)
-  - [Zeichenkettenhilfen](#string-helpers)
+  - [String-Hilfsfunktionen](#string-helpers)
 - [Programmatische API](#programmatic-api)
 - [Erweiterungspunkte](#extension-points)
   - [Benutzerdefinierte Funktionsnamen (UI-Extraktion)](#custom-function-names-ui-extraction)
@@ -169,11 +169,11 @@ Der Hauptkatalog hat folgende Struktur:
 }
 ```
 
-`extract` fügt neue Schlüssel hinzu und erhält bestehende Übersetzungen. `translate-ui` füllt fehlende `translated`-Einträge aus und schreibt flache Sprachdateien.
+`extract` fügt neue Schlüssel hinzu und behält vorhandene Übersetzungen bei. `translate-ui` füllt fehlende `translated`-Einträge aus und schreibt flache Lokalisierungsdateien.
 
-### Flache Sprachdateien {#flat-locale-files}
+### Flache Lokalisierungsdateien {#flat-locale-files}
 
-Jede Zielsprache erhält eine flache JSON-Datei (`de.json`), die Quellzeichenkette → Übersetzung abbildet:
+Jede Zielsprache erhält eine flache JSON-Datei (`de.json`), die Quelltext → Übersetzung abbildet:
 
 ```json
 {
@@ -182,25 +182,25 @@ Jede Zielsprache erhält eine flache JSON-Datei (`de.json`), die Quellzeichenket
 }
 ```
 
-i18next lädt diese als Ressourcenbündel und sucht Übersetzungen anhand der Quellzeichenkette (Schlüssel-als-Standard-Modell).
+i18next lädt diese als Ressourcenbündel und sucht Übersetzungen über den Quelltext (Schlüssel-als-Standard-Modell).
 
 ### UI-Übersetzungsanfragen {#ui-translation-prompts}
 
 `buildUIPromptMessages` erstellt System- und Benutzernachrichten, die:
 - Die Ausgangs- und Zielsprache identifizieren (nach Anzeigenamen aus `localeDisplayNames` oder `ui-languages.json`).
-- Ein JSON-Array von Zeichenketten senden und ein JSON-Array von Übersetzungen als Antwort anfordern.
+- Ein JSON-Array mit Zeichenketten senden und ein JSON-Array mit Übersetzungen als Antwort anfordern.
 - Glossarhinweise einbeziehen, falls verfügbar.
 
-`OpenRouterClient.translateUIBatch` versucht nacheinander jedes Modell in `translationModels`, mit Fallback bei Analyse- oder Netzwerkfehlern.
+`OpenRouterClient.translateUIBatch` versucht nacheinander jedes Modell in `translationModels`, mit Fallback bei Parse- oder Netzwerkfehlern.
 
 ---
 
 ## Workflow 2 - Interna der Dokumentübersetzung {#workflow-2---document-translation-internals}
 
 ```
-markdown/MDX/JSON/SVG files
+markdown/MDX/JSON files (`translate-docs`)
       │
-      ▼  MarkdownExtractor / JsonExtractor / SvgExtractor
+      ▼  MarkdownExtractor / JsonExtractor
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
@@ -223,37 +223,38 @@ output file  ─────────────────── Docusauru
 
 Alle Extraktoren erweitern `BaseExtractor` und implementieren `extract(content, filepath): Segment[]`.
 
-- **`MarkdownExtractor`** - teilt Markdown in getypte Segmente auf: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Nicht übersetzbare Segmente (Codeblöcke, roher HTML-Code) werden wörtlich beibehalten.
-- **`JsonExtractor`** - extrahiert Zeichenfolgewerte aus Docusaurus-JSON-Labelfiles.
-- **`SvgExtractor`** - extrahiert den Inhalt von `<text>`- und `<title>`-Elementen aus SVG.
+- **`MarkdownExtractor`** – teilt Markdown in typisierte Segmente auf: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Nicht zu übersetzende Segmente (Codeblöcke, rohes HTML) werden wortwörtlich beibehalten.
+- **`JsonExtractor`** – extrahiert Zeichenkettenwerte aus Docusaurus JSON-Beschriftungsdateien.
+- **`SvgExtractor`** – extrahiert den Inhalt von `<text>`- und `<title>`-Elementen aus SVG (wird von `translate-svg` für Assets unter `config.svg` verwendet, nicht von `translate-docs`).
 
 ### Platzhalter-Schutz {#placeholder-protection}
 
-Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetzt, um eine Beschädigung durch LLM zu verhindern:
+Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetzt, um LLM-Beschädigungen zu verhindern:
 
-1. **Admonition-Marker** (`:::note`, `:::`) - mit dem genauen Originaltext wiederhergestellt.
-2. **Dokumentenverknüpfungen** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) - wörtlich beibehalten.
-3. **Markdown-URLs** (`](url)`, `src="…"`) - nach der Übersetzung aus einer Zuordnung wiederhergestellt.
+1. **Hinweis-Marker** (`:::note`, `:::`) – werden mit exakt dem ursprünglichen Text wiederhergestellt.
+2. **Dok-Anker** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) – werden wortwörtlich beibehalten.
+3. **Markdown-URLs** (`](url)`, `src="…"`) – werden nach der Übersetzung aus einer Zuordnung wiederhergestellt.
 
 ### Cache (`TranslationCache`) {#cache-translationcache}
 
-Eine SQLite-Datenbank (über `node:sqlite`) speichert `(source_hash, locale, translated_content, model, cost, last_hit_at)`. Der Hash ist die ersten 16 Hexadezimalzeichen des SHA-256-Hashwerts des normalisierten Inhalts (zusammengefasste Leerzeichen).
+SQLite-Datenbank (über `node:sqlite`) speichert Zeilen, die durch `(source_hash, locale)` gekennzeichnet sind, mit `translated_text`, `model`, `filepath`, `last_hit_at` und verwandten Feldern. Der Hash ist die ersten 16 Hex-Zeichen des SHA-256-Hashs des normalisierten Inhalts (Leerzeichen zusammengefasst).
 
-Bei jedem Lauf werden die Segmente nach Hash × Gebietsschema gesucht. Nur Cache-Misses gehen zum LLM. Nach der Übersetzung wird `last_hit_at` für Segmente, die nicht berührt wurden, zurückgesetzt - `cleanup` entfernt veraltete Zeilen (null `last_hit_at` / leerer Dateipfad) und verwaiste Zeilen, deren Quelldatei nicht mehr existiert; es sichert `cache.db` zuerst, es sei denn, `--no-backup` wird übergeben.
+Bei jedem Durchlauf werden Segmente anhand von Hash × locale abgerufen. Nur Cache-Misses werden an das LLM übermittelt. Nach der Übersetzung wird `last_hit_at` für Segmente zurückgesetzt, die nicht berührt wurden – `cleanup` entfernt veraltete Zeilen (null `last_hit_at` / leerer filepath) und verwaiste Zeilen, deren Quelldatei nicht mehr existiert; dabei wird zuerst `cache.db` gesichert, es sei denn, `--no-backup` wird angegeben.
 
-Der Befehl `translate-docs` verwendet auch **Datei-Tracking**, so dass unveränderte Quellen mit vorhandenen Ausgaben die Arbeit ganz überspringen können. `--force-update` führt die Dateiverabeitung erneut aus, verwendet aber weiterhin den Segmentcache; `--force` löscht das Datei-Tracking und umgeht das Lesen des Segmentcaches für die API-Übersetzung. Siehe [Erste Schritte](./getting-started.md#cache-behavior-and-translate-docs-flags) für die vollständige Flaggtabelle.
+Der Befehl `translate-docs` verwendet außerdem **Datei-Tracking**, sodass unveränderte Quellen mit vorhandenen Ausgaben vollständig übersprungen werden können. `--force-update` führt die Dateiverarbeitung erneut aus, nutzt aber weiterhin den Segment-Cache; `--force` löscht das Datei-Tracking und umgeht Lesevorgänge aus dem Segment-Cache für die API-Übersetzung. Siehe [Erste Schritte](./getting-started.md#cache-behaviour-and-translate-docs-flags) für die vollständige Flag-Tabelle.
 
 ### Auflösung des Ausgabepfads {#output-path-resolution}
 
-`resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` ordnet einen quelldateirelativem Pfad dem Ausgabepfad zu:
+`resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` ordnet einen quellbezogenen Pfad dem Ausgabepfad zu:
 
-- **`docusaurus`**-Stil: `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`.
+- **`nested`**-Stil (Standard): `{outputDir}/{locale}/{relPath}` für Markdown.
+- **`docusaurus`**-Stil: unter `docsRoot` verwenden die Ausgaben `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; Pfade außerhalb von `docsRoot` fallen auf das verschachtelte Layout zurück.
 - **`flat`**-Stil: `{outputDir}/{stem}.{locale}{extension}` (mit optionalem `flatPreserveRelativeDir`).
-- **Benutzerdefiniertes** `pathTemplate`: jedes Layout mit `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Benutzerdefinierte** `pathTemplate`: beliebiges Layout unter Verwendung von `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 
-### Flache Link-Umschreibung {#flat-link-rewriting}
+### Umwandlung flacher Links {#flat-link-rewriting}
 
-Wenn `markdownOutput.style === "flat"`, werden übersetzte Markdown-Dateien neben der Quelle mit Gebietsschema-Suffixen platziert. Relative Links zwischen Seiten werden so umgeschrieben, dass `[Anleitung](./guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Gesteuert durch `rewriteRelativeLinks` (für den flachen Stil ohne benutzerdefiniertes `pathTemplate` automatisch aktiviert).
+Wenn `markdownOutput.style === "flat"`, werden übersetzte Markdown-Dateien neben der Quelle mit Sprachsuffixen abgelegt. Relative Links zwischen Seiten werden umgeschrieben, sodass `[Guide](./guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Gesteuert durch `rewriteRelativeLinks` (automatisch aktiviert für flachen Stil ohne benutzerdefinierte `pathTemplate`).
 
 ---
 
@@ -261,34 +262,34 @@ Wenn `markdownOutput.style === "flat"`, werden übersetzte Markdown-Dateien nebe
 
 ### `OpenRouterClient` {#openrouterclient}
 
-Umhüllt die OpenRouter-Chat-Completions-API. Wichtige Verhaltensweisen:
+Umhüllt die OpenRouter Chat-Completions-API. Wichtige Verhaltensweisen:
 
-- **Modell-Fallback**: versucht jedes Modell in `translationModels` der Reihe nach; fällt bei HTTP-Fehlern oder Parsing-Fehlern zurück.
-- **Drosselung**: erkennt 429-Antworten, wartet `retry-after` (oder 2s), versucht es einmal erneut.
-- **Prompt-Caching**: Systemnachricht wird mit `cache_control: { type: "ephemeral" }` gesendet, um das Prompt-Caching auf unterstützten Modellen zu aktivieren.
-- **Debug-Verkehrsprotokoll**: wenn `debugTrafficFilePath` gesetzt ist, hängt JSON-Anfrage und -Antwort an eine Datei an.
+- **Modell-Fallback**: versucht nacheinander jedes Modell in `translationModels`; greift bei HTTP-Fehlern oder Parse-Fehlern zurück.
+- **Ratenbegrenzung**: erkennt 429-Antworten, wartet `retry-after` (oder 2 Sekunden), versucht es einmal erneut.
+- **Prompt-Caching**: Systemnachricht wird mit `cache_control: { type: "ephemeral" }` gesendet, um Prompt-Caching bei unterstützten Modellen zu aktivieren.
+- **Debug-Verkehrsprotokoll**: falls `debugTrafficFilePath` gesetzt ist, werden Anfrage- und Antwort-JSON an eine Datei angehängt.
 
-### Konfigurationsladung {#config-loading}
+### Laden der Konfiguration {#config-loading}
 
-`loadI18nConfigFromFile(configPath, cwd)`-Pipeline:
+`loadI18nConfigFromFile(configPath, cwd)` Pipeline:
 
-1. Lese und parse `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` – Tiefes Zusammenführen mit `defaultI18nConfigPartial`.
-3. `expandTargetLocalesFileReferenceInRawInput` – Wenn `targetLocales` ein Dateipfad ist, lade das Manifest und erweitere es zu Locale-Codes; setze `uiLanguagesPath`.
-4. `expandDocumentationTargetLocalesInRawInput` – dasselbe für `documentation.targetLocales`.
-5. `parseI18nConfig` – Zod-Validierung + `validateI18nBusinessRules`.
-6. `applyEnvOverrides` – Anwenden von `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` usw.
-7. `augmentConfigWithUiLanguagesFile` – Anhängen der Anzeigename aus dem Manifest.
+1. Lesen und Parsen von `ai-i18n-tools.config.json` (JSON).
+2. `mergeWithDefaults` - Tiefe Zusammenführung mit `defaultI18nConfigPartial`.
+3. `expandTargetLocalesFileReferenceInRawInput` - Wenn `targetLocales` ein Dateipfad ist, lade das Manifest und erweitere es auf Gebietsschemacode; setze `uiLanguagesPath`.
+4. `expandDocumentationTargetLocalesInRawInput` - Dasselbe für `documentation.targetLocales`.
+5. `parseI18nConfig` - Zod-Validierung + `validateI18nBusinessRules`.
+6. `applyEnvOverrides` - Anwenden von `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` usw.
+7. `augmentConfigWithUiLanguagesFile` - Anhängen von Anzeigenamen aus dem Manifest.
 
 ### Logger {#logger}
 
-`Logger` unterstützt die Ebenen `debug`, `info`, `warn`, `error` mit ANSI-Farbausgabe. Der ausführliche Modus (`-v`) aktiviert `debug`. Die Protokollierungsausgabe kann durch Übergabe von `logFilePath` in eine Datei dupliziert werden.
+`Logger` unterstützt die Ebenen `debug`, `info`, `warn`, `error` mit ANSI-Farbausgabe. Der Verbose-Modus (`-v`) aktiviert `debug`. Wenn `logFilePath` gesetzt ist, werden die Logzeilen auch in diese Datei geschrieben.
 
 ---
 
-## API für Laufzeit-Hilfsfunktionen {#runtime-helpers-api}
+## Runtime-Hilfsfunktionen-API {#runtime-helpers-api}
 
-Diese werden aus `'ai-i18n-tools/runtime'` exportiert und funktionieren in jeder JavaScript-Umgebung (Browser, Node.js, Deno, Edge). Sie importieren **nicht** aus `i18next` oder `react-i18next`.
+Diese werden aus `'ai-i18n-tools/runtime'` exportiert und funktionieren in jeder JavaScript-Umgebung (Browser, Node.js, Deno, Edge). Sie importieren **nicht** von `i18next` oder `react-i18next`.
 
 ### RTL-Hilfsfunktionen {#rtl-helpers}
 
@@ -298,7 +299,7 @@ getTextDirection(lng: string): 'ltr' | 'rtl'
 applyDirection(lng: string, element?: Element): void
 ```
 
-### i18next-Setup-Fabriken {#i18next-setup-factories}
+### i18next-Setup-Factories {#i18next-setup-factories}
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
@@ -310,14 +311,14 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-### Anzeige-Hilfsfunktionen {#display-helpers}
+### Anzeigehilfsfunktionen {#display-helpers}
 
 ```ts
 getUILanguageLabel(lang: UiLanguageEntry, t: TranslateFn): string
 getUILanguageLabelNative(lang: UiLanguageEntry): string
 ```
 
-### Zeichenketten-Hilfsfunktionen {#string-helpers}
+### Zeichenfolgehilfsfunktionen {#string-helpers}
 
 ```ts
 interpolateTemplate(str: string, vars: Record<string, string | number | boolean>): string
@@ -328,45 +329,44 @@ flipUiArrowsForRtl(text: string | null | undefined, isRtl: boolean): string | nu
 
 ## Programmatische API {#programmatic-api}
 
-Alle öffentlichen Typen und Klassen werden aus der Paketwurzel exportiert. Beispiel: Ausführen des Übersetzungsschritts für die Benutzeroberfläche aus Node.js heraus ohne die CLI:
+Alle öffentlichen Typen und Klassen werden aus dem Pakethauptverzeichnis exportiert. Beispiel: Ausführen des Übersetzungs-UI-Schritts von Node.js aus ohne die CLI:
 
 ```ts
-import {
-  loadI18nConfigFromFile,
-  runTranslateUI,
-  Logger,
-} from 'ai-i18n-tools';
+import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
 
+// Config must have features.translateUIStrings: true (and valid targetLocales, etc.).
 const config = loadI18nConfigFromFile('ai-i18n-tools.config.json');
-const logger = new Logger({ level: 'info' });
 
-const summary = await runTranslateUI({
-  config,
+const summary = await runTranslateUI(config, {
   cwd: process.cwd(),
-  logger,
-  apiKey: process.env.OPENROUTER_API_KEY,
+  locales: config.targetLocales,
+  force: false,
+  dryRun: false,
+  verbose: false,
 });
-console.log(`Translated ${summary.translated} strings across ${summary.locales} locales`);
+console.log(
+  `Updated ${summary.stringsUpdated} string(s); locales touched: ${summary.localesTouched.join(', ')}`
+);
 ```
 
 Wichtige Exporte:
 
 | Export | Beschreibung |
 |---|---|
-| `loadI18nConfigFromFile` | Lädt, fusioniert und validiert die Konfiguration aus einer JSON-Datei. |
-| `parseI18nConfig` | Validiert ein rohes Konfigurationsobjekt. |
-| `TranslationCache` | SQLite-Cache – Instanziierung mit einem `cacheDir`-Pfad. |
-| `UIStringExtractor` | Extrahiert `t("…")`-Zeichenketten aus JS/TS-Quellcode. |
-| `MarkdownExtractor` | Extrahiert übersetzbare Segmente aus Markdown. |
-| `JsonExtractor` | Extrahiert aus Docusaurus JSON-Beschriftungsdateien. |
-| `SvgExtractor` | Extrahiert aus SVG-Dateien. |
-| `OpenRouterClient` | Sendet Übersetzungsanfragen an OpenRouter. |
-| `PlaceholderHandler` | Schützt/stellt Markdown-Syntax um die Übersetzung herum wieder her. |
-| `splitTranslatableIntoBatches` | Gruppiert Segmente in LLM-gerechte Batches. |
+| `loadI18nConfigFromFile` | Laden, Zusammenführen, Validieren der Konfiguration aus einer JSON-Datei. |
+| `parseI18nConfig` | Validieren eines rohen Konfigurationsobjekts. |
+| `TranslationCache` | SQLite-Cache - Instanziieren mit einem `cacheDir`-Pfad. |
+| `UIStringExtractor` | Extrahieren von `t("…")`-Zeichenfolgen aus JS/TS-Quellcode. |
+| `MarkdownExtractor` | Extrahieren von übersetzbaren Segmenten aus Markdown. |
+| `JsonExtractor` | Extrahieren aus Docusaurus-JSON-Etikettendateien. |
+| `SvgExtractor` | Extrahieren aus SVG-Dateien. |
+| `OpenRouterClient` | Stellen von Übersetzungsanfragen an OpenRouter. |
+| `PlaceholderHandler` | Schützen/Wiederherstellen von Markdown-Syntax um Übersetzungen. |
+| `splitTranslatableIntoBatches` | Gruppieren von Segmenten in LLM-skalierte Batches. |
 | `validateTranslation` | Strukturelle Prüfungen nach der Übersetzung. |
-| `resolveDocumentationOutputPath` | Ermittelt den Ausgabedateipfad für ein übersetztes Dokument. |
-| `Glossary` / `GlossaryMatcher` | Lädt und wendet Übersetzungsglossare an. |
-| `runTranslateUI` | Programmatischer Einstiegspunkt für translate-UI. |
+| `resolveDocumentationOutputPath` | Auflösen des Ausgabedateipfads für ein übersetztes Dokument. |
+| `Glossary` / `GlossaryMatcher` | Laden und Anwenden von Übersetzungsglossaren. |
+| `runTranslateUI` | Programmatischer Einstiegspunkt für Übersetzungs-UI.
 
 ---
 
@@ -374,7 +374,7 @@ Wichtige Exporte:
 
 ### Benutzerdefinierte Funktionsnamen (UI-Extraktion) {#custom-function-names-ui-extraction}
 
-Fügen Sie nicht standardmäßige Übersetzungsfunktionsnamen über die Konfiguration hinzu:
+Fügen Sie nicht-standardmäßige Übersetzungsfunktionsnamen über die Konfiguration hinzu:
 
 ```json
 {
@@ -401,11 +401,11 @@ class MyExtractor extends BaseExtractor {
 }
 ```
 
-Übergeben Sie ihn an die doc-translate-Pipeline, indem Sie die Hilfsfunktionen aus `doc-translate.ts` programmatisch importieren.
+Übergeben Sie ihn an die Dokumentations-Übersetzungs-Pipeline, indem Sie die Hilfsfunktionen `doc-translate.ts` programmatisch importieren.
 
 ### Benutzerdefinierte Ausgabepfade {#custom-output-paths}
 
-Verwenden Sie `markdownOutput.pathTemplate` für jedes gewünschte Dateilayout:
+Verwenden Sie `markdownOutput.pathTemplate` für jede Dateianordnung:
 
 ```json
 {

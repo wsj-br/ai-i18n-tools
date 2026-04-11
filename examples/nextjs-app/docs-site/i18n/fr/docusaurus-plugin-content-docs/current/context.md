@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-04-11T01:50:04.935Z'
-source_file_mtime: '2026-04-11T01:49:54.980Z'
-source_file_hash: bbe062d908fc9ffb78ef01c82109ef171a341b28d31299b453571cb1324d5799
+translation_last_updated: '2026-04-11T03:31:23.218Z'
+source_file_mtime: '2026-04-11T03:30:13.297Z'
+source_file_hash: 5f9c6a0c2a3bfe9a86da9ff07c86e5c69480ada8a3908d87506d35d7fe8ae368
 translation_language: fr
 source_file_path: docs-site/docs/context.md
 ---
@@ -51,7 +51,12 @@ Fichier : `ai-i18n-tools.config.json` (emplacement par défaut - remplaçable av
   "targetLocales": "src/locales/ui-languages.json",
 
   "openrouter": {
-    "translationModels": ["google/gemini-2.5-flash", "openai/gpt-4o-mini"],
+    "translationModels": [
+      "qwen/qwen3-235b-a22b-2507",
+      "stepfun/step-3.5-flash",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku"
+    ],
     "maxTokens": 8192,
     "temperature": 0.2
   },

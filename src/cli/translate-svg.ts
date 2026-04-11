@@ -19,7 +19,7 @@ import {
   matchesPathFilter,
 } from "./doc-translate.js";
 import { runMapWithConcurrency, AsyncMutex } from "../utils/concurrency.js";
-import { formatElapsedMmSs } from "./format.js";
+import { formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
@@ -77,16 +77,12 @@ export async function runTranslateSvg(
   const displayModels = client?.getConfiguredModels() ?? models;
 
   console.log(
-    chalk.gray("\n\n___SVG Translation_____________________________________________________________________________\n\n") +
+    chalk.gray("\n\n___SVG Translation_______________________________________________________________________________________\n\n") +
     chalk.bold(
       `\n🌐 Translating ${totalFileCount} SVG file(s) to ${locales.length} locale(s)\n`
     )
   );
-  if (displayModels.length > 0) {
-    console.log(
-      chalk.cyan(`Models (try in order): `) + chalk.magenta(displayModels.join(", "))
-    );
-  }
+  printModelsTryInOrder(displayModels);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(`SVG output: `) +

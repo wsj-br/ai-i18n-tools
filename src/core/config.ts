@@ -20,11 +20,9 @@ export { coerceTargetLocalesField, normalizeLocale, parseLocaleList };
 
 const DEFAULT_OPENROUTER_MODELS: string[] = [
   "qwen/qwen3-235b-a22b-2507",
-  "stepfun/step-3.5-flash:free",
+  "stepfun/step-3.5-flash",
   "anthropic/claude-3-haiku",
-  "z-ai/glm-4.7-flash",
-  "minimax/minimax-m2.5",
-  "anthropic/claude-3.5-haiku",
+  "anthropic/claude-3.5-haiku"
 ];
 
 /**

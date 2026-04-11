@@ -5,13 +5,13 @@ import type { I18nConfig } from "../core/types.js";
 import { OpenRouterClient } from "../api/openrouter.js";
 import { normalizeLocale } from "../core/config.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
-import { timestamp, formatElapsedMmSs } from "./format.js";
+import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { Glossary } from "../glossary/glossary.js";
 
 const UI_CHUNK = 50;
 
-const RULE = "-".repeat(108);
+const RULE = "-".repeat(100);
 
 export interface TranslateUIOptions {
   cwd: string;
@@ -107,14 +107,10 @@ export async function runTranslateUI(
 
   // Header block
   console.log(
-    chalk.gray("\n\n___UI Translation______________________________________________________________________________\n\n") +
+    chalk.gray("\n\n___UI Translation________________________________________________________________________________________\n\n") +
     chalk.bold(`🌐 Translating UI strings to ${targets.length} locale(s)\n`)
   );
-  if (models.length > 0) {
-    console.log(
-      chalk.cyan(`Models (try in order): `) + chalk.magenta(models.join(", "))
-    );
-  }
+  printModelsTryInOrder(models);
   console.log(
     chalk.cyan(`Strings: `) + chalk.magenta(`${entries.length} total entries`)
   );

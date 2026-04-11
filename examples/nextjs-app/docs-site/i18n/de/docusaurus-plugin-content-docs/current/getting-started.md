@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-04-11T01:50:07.882Z'
-source_file_mtime: '2026-04-11T01:49:54.972Z'
-source_file_hash: 42cdce1d92b5dfdb22af93d450a8a9ca909c0ec4aa06ddfe5cf89bde8acd698b
+translation_last_updated: '2026-04-11T03:31:26.166Z'
+source_file_mtime: '2026-04-11T03:30:13.293Z'
+source_file_hash: d90b2b1044bb86a41adcd98b63e7d0fcccc9d3735de82bcee90754647f0d1b15
 translation_language: de
 source_file_path: docs-site/docs/getting-started.md
 ---
@@ -9,8 +9,8 @@ source_file_path: docs-site/docs/getting-started.md
 
 `ai-i18n-tools` bietet zwei unabhängige, kombinierbare Workflows:
 
-- **Workflow 1 – UI-Übersetzung**: Extrahieren von `t("…")`-Aufrufen aus beliebigen JS/TS-Quellen, Übersetzung über OpenRouter und Erstellen flacher JSON-Dateien pro Sprache, die für i18next bereitstehen.
-- **Workflow 2 – Dokumentenübersetzung**: Übersetzung von Markdown (MDX), Docusaurus-JSON-Beschriftungsdateien und SVG-Dateien in beliebig viele Sprachen mit intelligenter Zwischenspeicherung.
+- **Workflow 1 – UI-Übersetzung**: Extrahieren Sie `t("…")`-Aufrufe aus jeder JS/TS-Quelle, übersetzen Sie sie über OpenRouter und schreiben Sie flache JSON-Dateien pro Sprache, die für i18next bereitstehen.
+- **Workflow 2 – Dokumentenübersetzung**: Übersetzen Sie Markdown (MDX) und Docusaurus JSON-Beschriftungsdateien in beliebig viele Sprachen mit intelligenter Zwischenspeicherung. **SVG**-Ressourcen verwenden einen separaten Befehl (`translate-svg`) und eine optionale `svg`-Konfiguration (siehe [CLI-Referenz](#cli-reference)).
 
 Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine einzige Konfigurationsdatei.
 
@@ -30,11 +30,11 @@ Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine e
   - [Verwendung von `t()` im Quellcode](#using-t-in-source-code)
   - [Interpolation](#interpolation)
   - [Sprachumschalter-Benutzeroberfläche](#language-switcher-ui)
-  - [RTL-Sprachen](#rtl-languages)
+  - [Sprachen mit rechts-nach-links-Leserichtung (RTL)](#rtl-languages)
 - [Workflow 2 – Dokumentenübersetzung](#workflow-2---document-translation)
   - [Schritt 1: Initialisieren](#step-1-initialize-1)
   - [Schritt 2: Dokumente übersetzen](#step-2-translate-documents)
-    - [Cache-Verhalten und `translate-docs`-Flags](#cache-behavior-and-translate-docs-flags)
+    - [Cache-Verhalten und `translate-docs`-Flags](#cache-behaviour-and-translate-docs-flags)
   - [Ausgabe-Layouts](#output-layouts)
 - [Kombinierter Workflow (UI + Docs)](#combined-workflow-ui--docs)
 - [Konfigurationsreferenz](#configuration-reference)
@@ -126,7 +126,7 @@ npx ai-i18n-tools extract
 
 Durchsucht alle JS/TS-Dateien unter `ui.sourceRoots` nach `t("literal")`- und `i18n.t("literal")`-Aufrufen. Schreibt (oder führt zusammen in) `ui.stringsJson`.
 
-Der Scanner ist konfigurierbar – Sie können über `ui.reactExtractor.funcNames` benutzerdefinierte Funktionsnamen hinzufügen.
+Der Scanner ist konfigurierbar: Fügen Sie benutzerdefinierte Funktionsnamen über `ui.reactExtractor.funcNames` hinzu.
 
 ### Schritt 3: UI-Strings übersetzen {#step-3-translate-ui-strings}
 
@@ -174,15 +174,15 @@ Importieren Sie `i18n.js`, bevor React gerendert wird (z. B. am Anfang Ihrer E
 
 `SOURCE_LOCALE` wird exportiert, sodass jede andere Datei, die sie benötigt (z. B. ein Sprachumschalter), sie direkt aus `'./i18n'` importieren kann.
 
-`**defaultI18nInitOptions(sourceLocale)**` gibt die Standardoptionen für Setups mit Schlüssel als Standardtext zurück:
+**`defaultI18nInitOptions(sourceLocale)`** gibt die Standardoptionen für Key-as-Default-Setups zurück:
 
 - `parseMissingKeyHandler` gibt den Schlüssel selbst zurück, sodass nicht übersetzte Zeichenketten den Quelltext anzeigen.
 - `nsSeparator: false` erlaubt Schlüssel, die Doppelpunkte enthalten.
 - `interpolation.escapeValue: false` – die Deaktivierung ist sicher: React selbst entwertet Werte, und die Ausgabe von Node.js/CLI enthält kein HTML, das entwertet werden müsste.
 
-`**wrapI18nWithKeyTrim(i18n)**` umschließt `i18n.t` so, dass: (1) Schlüssel vor der Suche abgeschnitten werden, was der Art entspricht, wie das Extraktionsskript sie speichert; (2) <code>{"{{var}}"}</code>-Interpolation angewendet wird, wenn die Quellsprache den Rohschlüssel zurückgibt – sodass <code>{"t('Hello {{name}}', { name })"}</code> auch für die Quellsprache korrekt funktioniert.
+**`wrapI18nWithKeyTrim(i18n)`** umschließt `i18n.t`, sodass: (1) Schlüssel vor der Suche gekürzt werden, was der Art entspricht, wie das Extraktionsskript sie speichert; (2) <code>{"{{var}}"}</code>-Interpolation angewendet wird, wenn die Quelllokalisierung den rohen Schlüssel zurückgibt – sodass <code>{"t('Hello {{name}}', { name })"}</code> auch für die Ausgangssprache korrekt funktioniert.
 
-`**makeLoadLocale(i18n, loaders, sourceLocale)**` gibt eine asynchrone `loadLocale(lang)`-Funktion zurück, die das JSON-Bundle für ein Sprachgebiet dynamisch importiert und bei i18next registriert.
+**`makeLoadLocale(i18n, loaders, sourceLocale)`** gibt eine asynchrone `loadLocale(lang)`-Funktion zurück, die das JSON-Bundle für eine Lokalisierung dynamisch importiert und bei i18next registriert.
 
 ### Verwendung von `t()` im Quellcode {#using-t-in-source-code}
 
@@ -276,9 +276,9 @@ function LanguageSelect({
 }
 ```
 
-`**getUILanguageLabel(lang, t)**` – zeigt `t(englishName)`, wenn übersetzt, oder `englishName / t(englishName)`, wenn beide unterschiedlich sind. Geeignet für Einstellungsseiten.
+**`getUILanguageLabel(lang, t)`** – zeigt `t(englishName)` bei Übersetzung an, oder `englishName / t(englishName)`, wenn beide unterschiedlich sind. Geeignet für Einstellungsseiten.
 
-`**getUILanguageLabelNative(lang)**` – zeigt `englishName / label` (kein `t()`-Aufruf pro Zeile). Geeignet für Kopfzeilenmenüs, bei denen der native Name sichtbar sein soll.
+**`getUILanguageLabelNative(lang)`** – zeigt `englishName / label` an (kein `t()`-Aufruf pro Zeile). Geeignet für Kopfzeilenmenüs, bei denen der native Name sichtbar sein soll.
 
 Das Manifest `ui-languages.json` ist ein JSON-Array aus Einträgen <code>{"{ code, label, englishName }"}</code>. Beispiel:
 
@@ -322,7 +322,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## Workflow 2 – Dokumentenübersetzung {#workflow-2---document-translation}
 
-Entwickelt für Markdown-Dokumentation, Docusaurus-Seiten, JSON-Beschriftungsdateien und SVG-Diagramme.
+Entwickelt für Markdown-Dokumentation, Docusaurus-Seiten und JSON-Beschriftungsdateien. SVG-Diagramme werden über [`translate-svg`](#cli-reference) und `svg` in der Konfiguration übersetzt, nicht über `documentation.contentPaths`.
 
 ### Schritt 1: Initialisieren {#step-1-initialize-1}
 
@@ -333,10 +333,10 @@ npx ai-i18n-tools init -t ui-docusaurus
 Bearbeiten Sie die generierte Datei `ai-i18n-tools.config.json`:
 
 - `sourceLocale` – Ausgangssprache (muss mit `defaultLocale` in `docusaurus.config.js` übereinstimmen).
-- `targetLocales` – Array mit Sprachcodes oder Pfad zu einem Manifest.
-- `documentation.contentPaths` – Quellverzeichnisse/-dateien für Markdown/SVG.
-- `documentation.outputDir` – Stammverzeichnis für übersetzte Ausgabe.
-- `documentation.markdownOutput.style` – `"docusaurus"` oder `"flat"` (siehe [Ausgabe-Layouts](#output-layouts)).
+- `targetLocales` – Array mit Sprachcodes oder Pfad zu einer Manifestdatei.
+- `documentation.contentPaths` – Quellverzeichnisse oder -dateien im Markdown-/MDX-Format (siehe auch `documentation.jsonSource` für JSON-Beschriftungen).
+- `documentation.outputDir` – Stammverzeichnis für die übersetzten Ausgabedateien.
+- `documentation.markdownOutput.style` – `"nested"` (Standard), `"docusaurus"` oder `"flat"` (siehe [Ausgabe-Layouts](#output-layouts)).
 
 ### Schritt 2: Dokumente übersetzen {#step-2-translate-documents}
 
@@ -358,7 +358,7 @@ So prüfen Sie, was übersetzt werden muss:
 npx ai-i18n-tools status
 ```
 
-#### Cache-Verhalten und `translate-docs`-Flags {#cache-behavior-and-translate-docs-flags}
+#### Cache-Verhalten und `translate-docs`-Flags {#cache-behaviour-and-translate-docs-flags}
 
 Die CLI führt **Datei-Tracking** in SQLite (Quell-Hash pro Datei × Sprache) und **Segment**-Einträge (Hash × Sprache pro übersetzbarer Abschnitt). Ein normaler Durchlauf überspringt eine Datei vollständig, wenn der gespeicherte Hash mit der aktuellen Quelle übereinstimmt **und** die Ausgabedatei bereits existiert; andernfalls verarbeitet sie die Datei und nutzt den Segment-Cache, sodass unveränderte Texte die API nicht aufrufen.
 
@@ -374,14 +374,16 @@ Sie können `--force` nicht mit `--force-update` kombinieren (sie schließen sic
 
 ### Ausgabe-Layouts {#output-layouts}
 
-`**"docusaurus"`** – platziert übersetzte Dateien unter `i18n/<locale>/docusaurus-plugin-content-docs/current/<relPath>`, analog zur standardmäßigen Docusaurus-i18n-Ordnerstruktur. Legen Sie `documentation.markdownOutput.docsRoot` auf die Wurzel Ihres Dokumentationsquellordners fest (z. B. `"docs"`).
+`**"nested"`** (Standard, wenn nicht angegeben) – spiegelt die Quellstruktur unter `{outputDir}/{locale}/` wider (z. B. `docs/guide.md` → `i18n/de/docs/guide.md`).
+
+`**"docusaurus"`** – legt Dateien, die sich unter `docsRoot` befinden, in `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>` ab, entsprechend dem üblichen Docusaurus-i18n-Layout. Legen Sie `documentation.markdownOutput.docsRoot` auf Ihre Dokumentationsquellwurzel fest (z. B. `"docs"`).
 
 ```
 docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
 i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
 ```
 
-`**"flat"**` – platziert übersetzte Dateien neben der Quelldatei mit einem Ländersuffix oder in einem Unterordner. Relative Links zwischen Seiten werden automatisch umgeschrieben.
+**`"flat"`** – platziert übersetzte Dateien neben der Quelldatei mit einem Lokalisierungssuffix oder in einem Unterverzeichnis. Relative Links zwischen Seiten werden automatisch umgeschrieben.
 
 ```
 docs/guide.md → i18n/guide.de.md
@@ -403,8 +405,7 @@ Aktivieren Sie alle Funktionen in einer einzigen Konfiguration, um beide Workflo
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false,
-    "translateSVG": false
+    "translateJSON": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -453,9 +454,9 @@ BCP-47-Code für die Ausgangssprache (z. B. `"en-GB"`, `"en"`, `"pt-BR"`). Fü
 
 Welche Sprachen übersetzt werden sollen. Akzeptiert:
 
-- **Pfad als Zeichenkette** zu einem `ui-languages.json`-Manifest (`"src/locales/ui-languages.json"`). Die Datei wird geladen und die Sprachcodes werden extrahiert.
+- **Zeichenkettenpfad** zu einem `ui-languages.json`-Manifest (`"src/locales/ui-languages.json"`). Die Datei wird geladen und die Sprachcodes werden extrahiert.
 - **Array mit BCP-47-Codes** (`["de", "fr", "es"]`).
-- **Array mit einem Element, das ein Pfad ist** (`["src/locales/ui-languages.json"]`) – gleiche Funktionalität wie die String-Form.
+- **Array mit einem Element und Pfad** (`["src/locales/ui-languages.json"]`) – gleiche Funktionalität wie die Zeichenkettenform.
 
 ### `concurrency` (optional) {#concurrency-optional}
 
@@ -482,13 +483,14 @@ Legen Sie `OPENROUTER_API_KEY` in Ihrer Umgebung oder `.env`-Datei fest.
 
 ### `features` {#features}
 
-| Feld                   | Workflow | Beschreibung                                                       |
-| ---------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings`     | 1        | Durchsucht Quellcode nach `t("…")` und erstellt/aktualisiert `strings.json`.          |
-| `translateUIStrings`   | 1        | Übersetzt Einträge in `strings.json` und schreibt sprachspezifische JSON-Dateien. |
-| `translateMarkdown`    | 2        | Übersetzt `.md` / `.mdx`-Dateien.                                   |
-| `translateJSON`        | 2        | Übersetzt Docusaurus-JSON-Beschriftungsdateien.                            |
-| `translateSVG`         | 2        | Übersetzt Textinhalte in `.svg`-Dateien.                           |
+| Feld | Workflow | Beschreibung |
+| -------------------- | -------- | ----------------------------------------------------------------- |
+| `extractUIStrings` | 1 | Durchsucht die Quelle nach `t("…")` und schreibt/fügt `strings.json` zusammen. |
+| `translateUIStrings` | 1 | Übersetzt Einträge in `strings.json` und schreibt JSON-Dateien pro Sprache. |
+| `translateMarkdown` | 2 | Übersetzt `.md` / `.mdx`-Dateien. |
+| `translateJSON` | 2 | Übersetzt Docusaurus JSON-Beschriftungsdateien.
+
+Es gibt kein Flag `features.translateSVG`. Übersetzen Sie **standalone** SVG-Ressourcen mit `translate-svg` und einem `svg`-Block auf oberster Ebene in der Konfiguration. Der `sync`-Befehl führt diesen Schritt aus, wenn `svg` vorhanden ist (außer bei `--no-svg`).
 
 ### `ui` {#ui}
 
@@ -504,23 +506,23 @@ Legen Sie `OPENROUTER_API_KEY` in Ihrer Umgebung oder `.env`-Datei fest.
 
 | Feld                                        | Beschreibung                                                                                                                                                                                                               |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contentPaths`                               | Quelldateien/-verzeichnisse zum Übersetzen (Markdown, JSON, SVG).                                                                                                                                                              |
-| `outputDir`                                  | Stammverzeichnis für übersetzte Ausgabe.                                                                                                                                                                                     |
-| `cacheDir`                                   | SQLite-Cache-Verzeichnis. Wiederverwendung zwischen Läufen für inkrementelle Übersetzung.                                                                                                                                                    |
-| `targetLocales`                              | Optionaler Teilsatz von Sprachvarianten nur für Dokumentation (ersetzt die Stamm-`targetLocales`).                                                                                                                                                |
-| `jsonSource`                                 | Quellverzeichnis für Docusaurus JSON-Beschriftungsdateien (z. B. `"i18n/en"`).                                                                                                                                                      |
-| `markdownOutput.style`                       | `"docusaurus"` oder `"flat"`.                                                                                                                                                                                               |
+| `contentPaths`                               | Markdown/MDX-Quellen zum Übersetzen (`translate-docs` durchsucht diese nach `.md` / `.mdx`). JSON-Bezeichnungen stammen aus `jsonSource`.                                                                                                |
+| `outputDir`                                  | Stammverzeichnis für die übersetzte Ausgabe.                                                                                                                                                                                     |
+| `cacheDir`                                   | SQLite-Cache-Verzeichnis. Wiederverwendung zwischen Durchläufen für inkrementelle Übersetzung.                                                                                                                                                    |
+| `targetLocales`                              | Optionaler Teilsatz von Sprachversionen nur für Dokumente (überschreibt die globale `targetLocales`).                                                                                                                                                |
+| `jsonSource`                                 | Quellverzeichnis für Docusaurus JSON-Label-Dateien (z. B. `"i18n/en"`).                                                                                                                                                      |
+| `markdownOutput.style`                       | `"nested"` (Standard), `"docusaurus"` oder `"flat"`.                                                                                                                                                                        |
 | `markdownOutput.docsRoot`                    | Quell-Docs-Stammverzeichnis für Docusaurus-Layout (z. B. `"docs"`).                                                                                                                                                                   |
 | `markdownOutput.pathTemplate`                | Benutzerdefinierter Ausgabepfad. Platzhalter: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{extension}"}</code>.                                                                                                                        |
-| `markdownOutput.rewriteRelativeLinks` | Relative Links nach der Übersetzung neu schreiben (automatisch aktiviert für `flat`-Stil).                                                                                                                                                 |
-| `injectTranslationMetadata`                  | Wenn `true` (Standard, wenn weggelassen), enthalten übersetzte Markdown-Dateien YAML-Schlüssel: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`. Auf `false` setzen, um zu überspringen. |
+| `markdownOutput.rewriteRelativeLinks` | Relative Links nach der Übersetzung neu schreiben (automatisch aktiviert bei `flat`-Stil).                                                                                                                                                 |
+| `injectTranslationMetadata`                  | Wenn `true` (Standard, wenn nicht angegeben), enthalten übersetzte Markdown-Dateien YAML-Schlüssel: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`. Auf `false` setzen, um zu überspringen. |
 
 ### `glossary` {#glossary}
 
-| Feld | Beschreibung |
+| Feld           | Beschreibung                                                                                                                                                                                |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `uiGlossary` | Pfad zu `strings.json` – erstellt automatisch ein Glossar aus vorhandenen Übersetzungen. |
-| `userGlossary` | Pfad zu einer CSV-Datei mit den Spalten `**Originalsprach-String**` (oder `**en**`), `**locale**`, `**Übersetzung**` – eine Zeile pro Quellbegriff und Ziellocale (`locale` kann `*` für alle Ziele sein). |
+| `uiGlossary`   | Pfad zu `strings.json` – erstellt automatisch ein Glossar aus vorhandenen Übersetzungen.                                                                                                     |
+| `userGlossary` | Pfad zu einer CSV-Datei mit den Spalten **`Original language string`** (oder `**en**`), `**locale**`, `**Translation`** – eine Zeile pro Quellbegriff und Ziellokalisierung (`locale` kann `*` für alle Ziele sein). |
 
 Der veraltete Schlüssel `uiGlossaryFromStringsJson` wird weiterhin akzeptiert und beim Laden der Konfiguration `uiGlossary` zugeordnet.
 
@@ -536,14 +538,14 @@ npx ai-i18n-tools glossary-generate
 
 | Befehl                                                                   | Beschreibung                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docus游戏副本] [-o path] [--with-translate-ignore]` | Schreibt eine Beispielkonfigurationsdatei (enthält `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `documentation.injectTranslationMetadata`). Mit `--with-translate-ignore` wird eine Beispiel-`.translate-ignore`-Datei erstellt.                                                                            |
+| `init [-t ui-markdown|ui-docusauros] [-o pfad] [--with-translate-ignore]` | Schreibt eine Startkonfigurationsdatei (enthält `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `documentation.injectTranslationMetadata`). `--with-translate-ignore` erstellt eine Start-`.translate-ignore`-Datei.                                                                            |
 | `extract`                                                                 | Durchsucht die Quelle nach `t("…")`-Aufrufen und aktualisiert `strings.json`. Erfordert `features.extractUIStrings`.                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | Übersetzt Dokumentationsdateien unter `documentation.contentPaths` (Markdown, MDX, JSON-Label-Dateien und alle dort enthaltenen `.svg`-Dateien). `-j`: maximale parallele Sprachen; `-b`: maximale parallele Batch-API-Aufrufe pro Datei. Siehe [Cache-Verhalten und `translate-docs`-Flags](#cache-behavior-and-translate-docs-flags) für `--force`, `--force-update`, `--stats`, `--clear-cache`. |
-| `translate-svg …`                                                         | Übersetzt eigenständige SVG-Ressourcen, die in `config.svg` konfiguriert sind (getrennt von Dokumentation). Gleiche Cache-Logik wie bei Dokumenten; unterstützt `--no-cache`, um SQLite-Lese-/Schreibvorgänge für diesen Lauf zu überspringen. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
+| `translate-docs …`                                                        | Übersetzt Markdown/MDX unter `documentation.contentPaths` und JSON unter `documentation.jsonSource`, wenn aktiviert. `-j`: maximale parallele Sprachen; `-b`: maximale parallele Batch-API-Aufrufe pro Datei. Siehe [Cache-Verhalten und `translate-docs`-Flags](#cache-behaviour-and-translate-docs-flags) für `--force`, `--force-update`, `--stats`, `--clear-cache`. |
+| `translate-svg …`                                                         | Übersetzt eigenständige SVG-Assets, die in `config.svg` konfiguriert sind (getrennt von Dokumentation). Gleiche Cache-Konzepte wie bei Dokumenten; unterstützt `--no-cache`, um SQLite-Lese-/Schreibvorgänge für diesen Durchlauf zu überspringen. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
 | `translate-ui [--locale <code>] [-j <n>]`                                 | Übersetzt nur die UI-Texte. `-j`: maximale parallele Sprachen. Erfordert `features.translateUIStrings`.                                                                                                                                                                                                     |
-| `sync …`                                                                  | Extrahiert (falls aktiviert), dann UI-Übersetzung, dann `translate-svg`, wenn `config.svg` existiert, dann Dokumentationsübersetzung – es sei denn, dies wird mit `--no-ui`, `--no-svg` oder `--no-docs` übersprungen. Gemeinsame Flags: `-l`, `-p`, `--dry-run`, `-j`, `-b` (nur Dokumenten-Batch-Größe), `--force` / `--force-update` (nur Dokumente; sich gegenseitig ausschließend, wenn Dokumente verarbeitet werden).                         |
-| `status`                                                                  | Zeigt den Übersetzungsstatus von Markdown-Dateien pro Datei × Sprache an (kein `--locale`-Filter; Sprachen stammen aus der Konfiguration).                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>] [-y]`                  | Entfernt veraltete Einträge (null `last_hit_at` / leere Dateipfade) und verwaiste Einträge (fehlende Dateien). Vor der Änderung der Datenbank wird eine Bestätigung abgefragt (außer bei `--dry-run` oder `--yes`): Führen Sie zuerst `translate-docs --force-update` aus, damit Tracking und Cache-Hits aktuell sind. Erstellt ein zeitgestempeltes SQLite-Backup im Cache-Verzeichnis, es sei denn, `--no-backup` ist gesetzt. Verwenden Sie `--yes`, wenn stdin kein TTY ist. |
+| `sync …`                                                                  | Extrahiert (falls aktiviert), dann UI-Übersetzung, dann `translate-svg`, wenn `config.svg` existiert, dann Dokumentationsübersetzung – es sei denn, es wird mit `--no-ui`, `--no-svg` oder `--no-docs` übersprungen. Gemeinsame Flags: `-l`, `-p`, `--dry-run`, `-j`, `-b` (nur Dokumenten-Batch-Größe), `--force` / `--force-update` (nur Dokumente; sich gegenseitig ausschließend, wenn Dokumente verarbeitet werden).                         |
+| `status`                                                                  | Zeigt den Übersetzungsstatus von Markdown pro Datei × Sprache an (kein `--locale`-Filter; Sprachen stammen aus der Konfiguration).                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <pfad>] [-y]`                  | Entfernt veraltete Einträge (null `last_hit_at` / leerer Dateipfad) und verwaiste Einträge (fehlende Dateien). Vor der Änderung der Datenbank wird eine Bestätigung abgefragt (außer bei `--dry-run` oder `--yes`): Führen Sie zuerst `translate-docs --force-update` aus, damit die Tracking- und Cache-Treffer aktuell sind. Erstellt eine zeitgestempelte SQLite-Sicherung im Cache-Verzeichnis, es sei denn, `--no-backup` ist gesetzt. Verwenden Sie `--yes`, wenn stdin kein TTY ist. |
 | `editor [-p <port>]`                                                      | Startet einen lokalen Web-Editor für den Cache, `strings.json` und die Glossar-CSV.                                                                                                                                                                                                                         |
 | `glossary-generate`                                                       | Erstellt eine leere Vorlage `glossary-user.csv`.                                                                                                                                                                                                                                                       |
 
@@ -558,7 +560,7 @@ Alle Befehle akzeptieren `-c <Pfad>`, um eine abweichende Konfigurationsdatei an
 | `OPENROUTER_API_KEY`   | **Erforderlich.** Ihr OpenRouter-API-Schlüssel.                     |
 | `OPENROUTER_BASE_URL`  | Überschreibt die Basis-URL der API.                                 |
 | `I18N_SOURCE_LOCALE`   | Überschreibt `sourceLocale` zur Laufzeit.                        |
-| `I18N_TARGET_LOCALES`  | Durch Komma getrennte Locale-Codes zur Überschreibung von `targetLocales`.  |
+| `I18N_TARGET_LOCALES`  | Durch Komma getrennte Gebietsschemacodes zur Überschreibung von `targetLocales`.  |
 | `I18N_LOG_LEVEL`       | Protokollierungsstufe (`debug`, `info`, `warn`, `error`, `silent`). |
-| `NO_COLOR`             | Wenn `1`, werden ANSI-Farben in der Protokollaustgabe deaktiviert.               |
-| `I18N_LOG_SESSION_MAX` | Maximale Anzahl an Zeilen pro Protokollsitzung (Standard `5000`).           |
+| `NO_COLOR`             | Wenn `1`, werden ANSI-Farben in der Protokollierungsausgabe deaktiviert.            |
+| `I18N_LOG_SESSION_MAX` | Maximale Anzahl an Zeilen pro Protokollierungssitzung (Standard `5000`).           |

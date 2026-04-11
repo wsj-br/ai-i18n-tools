@@ -191,9 +191,9 @@ i18next loads these as resource bundles and looks up translations by the source 
 ## Workflow 2 - Document Translation internals
 
 ```
-markdown/MDX/JSON/SVG files
+markdown/MDX/JSON files (`translate-docs`)
       │
-      ▼  MarkdownExtractor / JsonExtractor / SvgExtractor
+      ▼  MarkdownExtractor / JsonExtractor
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
@@ -218,7 +218,7 @@ All extractors extend `BaseExtractor` and implement `extract(content, filepath):
 
 - **`MarkdownExtractor`** - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
 - **`JsonExtractor`** - extracts string values from Docusaurus JSON label files.
-- **`SvgExtractor`** - extracts `<text>` and `<title>` element content from SVG.
+- **`SvgExtractor`** - extracts `<text>` and `<title>` element content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
 
 ### Placeholder protection
 
@@ -230,17 +230,18 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 
 ### Cache (`TranslationCache`)
 
-SQLite database (via `node:sqlite`) stores `(source_hash, locale, translated_content, model, cost, last_hit_at)`. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
+SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
 
 On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segments that weren't touched - `cleanup` removes stale rows (null `last_hit_at` / empty filepath) and orphaned rows whose source file no longer exists; it backs up `cache.db` first unless `--no-backup` is passed.
 
-The `translate-docs` command also uses **file tracking** so unchanged sources with existing outputs can skip work entirely. `--force-update` re-runs file processing while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. See [Getting Started](./GETTING_STARTED.md#cache-behavior-and-translate-docs-flags) for the full flag table.
+The `translate-docs` command also uses **file tracking** so unchanged sources with existing outputs can skip work entirely. `--force-update` re-runs file processing while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. See [Getting Started](./GETTING_STARTED.md#cache-behaviour-and-translate-docs-flags) for the full flag table.
 
 ### Output path resolution
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` maps a source-relative path to the output path:
 
-- **`docusaurus`** style: `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`.
+- **`nested`** style (default): `{outputDir}/{locale}/{relPath}` for markdown.
+- **`docusaurus`** style: under `docsRoot`, outputs use `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; paths outside `docsRoot` fall back to the nested layout.
 - **`flat`** style: `{outputDir}/{stem}.{locale}{extension}` (with optional `flatPreserveRelativeDir`).
 - **Custom** `pathTemplate`: any layout using `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 
@@ -254,7 +255,7 @@ When `markdownOutput.style === "flat"`, translated markdown files are placed alo
 
 ### `OpenRouterClient`
 
-Wraps the OpenRouter chat completions API. Key behaviors:
+Wraps the OpenRouter chat completions API. Key behaviours:
 
 - **Model fallback**: tries each model in `translationModels` in order; falls back on HTTP errors or parse failures.
 - **Rate limiting**: detects 429 responses, waits `retry-after` (or 2s), retries once.
@@ -275,7 +276,7 @@ Wraps the OpenRouter chat completions API. Key behaviors:
 
 ### Logger
 
-`Logger` supports `debug`, `info`, `warn`, `error` levels with ANSI color output. Verbose mode (`-v`) enables `debug`. Log output can be tee'd to a file by passing `logFilePath`.
+`Logger` supports `debug`, `info`, `warn`, `error` levels with ANSI colour output. Verbose mode (`-v`) enables `debug`. When `logFilePath` is set, log lines are also written to that file.
 
 ---
 
@@ -324,22 +325,21 @@ flipUiArrowsForRtl(text: string | null | undefined, isRtl: boolean): string | nu
 All public types and classes are exported from the package root. Example: running the translate-UI step from Node.js without the CLI:
 
 ```ts
-import {
-  loadI18nConfigFromFile,
-  runTranslateUI,
-  Logger,
-} from 'ai-i18n-tools';
+import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
 
+// Config must have features.translateUIStrings: true (and valid targetLocales, etc.).
 const config = loadI18nConfigFromFile('ai-i18n-tools.config.json');
-const logger = new Logger({ level: 'info' });
 
-const summary = await runTranslateUI({
-  config,
+const summary = await runTranslateUI(config, {
   cwd: process.cwd(),
-  logger,
-  apiKey: process.env.OPENROUTER_API_KEY,
+  locales: config.targetLocales,
+  force: false,
+  dryRun: false,
+  verbose: false,
 });
-console.log(`Translated ${summary.translated} strings across ${summary.locales} locales`);
+console.log(
+  `Updated ${summary.stringsUpdated} string(s); locales touched: ${summary.localesTouched.join(', ')}`
+);
 ```
 
 Key exports:

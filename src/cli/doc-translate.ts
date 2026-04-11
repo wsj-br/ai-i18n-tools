@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import chalk from "chalk";
 import type { I18nConfig, Segment } from "../core/types.js";
 import { BatchTranslationError } from "../core/types.js";
-import { timestamp, formatElapsedMmSs } from "./format.js";
+import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
@@ -13,7 +13,7 @@ import { PlaceholderHandler } from "../processors/placeholder-handler.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { OpenRouterClient } from "../api/openrouter.js";
-import { validateTranslation } from "../processors/validator.js";
+import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
 import {
   computeFlatLinkRewritePrefixes,
   rewriteDocLinksForFlatOutput,
@@ -71,6 +71,26 @@ export interface TranslateTotals {
 }
 
 type ProtectState = ReturnType<PlaceholderHandler["protectForTranslation"]>;
+
+function segmentOriginalContent(s: Segment, originalContentByHash: Map<string, string>): Segment {
+  return { ...s, content: originalContentByHash.get(s.hash) ?? s.content };
+}
+
+/** Same style as {@link OpenRouterClient} model switch warnings; used when post-restore quality checks fail. */
+function warnDocQualityModelSwitch(
+  locale: string,
+  relativePath: string | undefined,
+  failedModel: string,
+  nextModel: string,
+  detail: string
+): void {
+  const loc = relativePath != null ? `${locale} ${relativePath}` : locale;
+  console.warn(
+    chalk.yellow(
+      `  ⚠️  ${loc}: ${failedModel} output failed quality check (${detail}). Trying ${nextModel}…`
+    )
+  );
+}
 
 /** Elapsed time as `M:SS` (minutes not zero-padded), matching reference translate-docs. */
 function formatElapsedFileTime(ms: number): string {
@@ -178,6 +198,8 @@ function segRangeLabel(indices0: number[], totalSegments: number): string {
 async function translateSegmentsBatched(
   batchable: Segment[],
   placeholderById: Map<string, ProtectState>,
+  /** Pre-placeholder markdown source per segment hash; empty for json/svg (original is on the segment). */
+  originalContentByHash: Map<string, string>,
   locale: string,
   glossary: Glossary,
   client: OpenRouterClient | null,
@@ -232,6 +254,7 @@ async function translateSegmentsBatched(
     const batch = batches[bi]!;
     const hintText = batch.map((s) => s.content).join("\n");
     const hints = glossary.findTermsInText(hintText, locale);
+    const markdownQuality = contentType === "markdown";
 
     if (dryRun || !client) {
       if (verbose) {
@@ -247,26 +270,7 @@ async function translateSegmentsBatched(
       return { partial, inTok: localIn, outTok: localOut, cost: localCost };
     }
 
-    try {
-      const res = await client.translateDocumentBatch(batch, locale, hints, {
-        contentType,
-        docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
-      });
-      localIn += res.usage.inputTokens;
-      localOut += res.usage.outputTokens;
-      localCost += res.cost ?? 0;
-      for (let i = 0; i < batch.length; i++) {
-        const s = batch[i]!;
-        const raw = res.translations.get(i);
-        if (raw === undefined) {
-          throw new Error(`Missing translation for batch index ${i}`);
-        }
-        const st = placeholderById.get(s.id);
-        const restored = st
-          ? new PlaceholderHandler().restoreAfterTranslation(raw, st)
-          : raw;
-        partial.set(s.hash, restored);
-      }
+    const logBatchSuccess = (res: { usage: { totalTokens: number } }) => {
       if (docLog && batchDocIndices[bi]) {
         const idxs = batchDocIndices[bi]!;
         const n = batch.length;
@@ -277,6 +281,118 @@ async function translateSegmentsBatched(
           )
         );
       }
+    };
+
+    if (!markdownQuality) {
+      try {
+        const res = await client.translateDocumentBatch(batch, locale, hints, {
+          contentType,
+          docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
+        });
+        localIn += res.usage.inputTokens;
+        localOut += res.usage.outputTokens;
+        localCost += res.cost ?? 0;
+        const ph = new PlaceholderHandler();
+        for (let i = 0; i < batch.length; i++) {
+          const s = batch[i]!;
+          const raw = res.translations.get(i);
+          if (raw === undefined) {
+            throw new Error(`Missing translation for batch index ${i}`);
+          }
+          const st = placeholderById.get(s.id);
+          const restored = st ? ph.restoreAfterTranslation(raw, st) : raw;
+          partial.set(s.hash, restored);
+        }
+        logBatchSuccess(res);
+      } catch (e) {
+        if (e instanceof BatchTranslationError && client) {
+          if (verbose) {
+            console.warn(
+              chalk.yellow(
+                `⚠️  ${locale} ${docLog?.relativePath ?? "?"}: batch failed (expected ${e.expected} <t> segments, got ${e.received}); falling back to single-segment API calls`
+              )
+            );
+          }
+          const ph = new PlaceholderHandler();
+          for (const s of batch) {
+            const st = placeholderById.get(s.id);
+            const single = await client.translateDocumentSegment(s.content, locale, hints, {
+              contentType,
+              docLogContext:
+                docLog && docLog.relativePath
+                  ? { locale, relativePath: docLog.relativePath }
+                  : undefined,
+            });
+            localIn += single.usage.inputTokens;
+            localOut += single.usage.outputTokens;
+            localCost += single.cost ?? 0;
+            const restored = st ? ph.restoreAfterTranslation(single.content, st) : single.content;
+            partial.set(s.hash, restored);
+          }
+        } else {
+          throw e;
+        }
+      }
+      return { partial, inTok: localIn, outTok: localOut, cost: localCost };
+    }
+
+    const ph = new PlaceholderHandler();
+    const models = client.getConfiguredModels();
+
+    try {
+      let startModelIndex = 0;
+      let finished = false;
+      while (!finished && startModelIndex < models.length) {
+        const res = await client.translateDocumentBatch(batch, locale, hints, {
+          contentType,
+          docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
+          startModelIndex,
+        });
+        localIn += res.usage.inputTokens;
+        localOut += res.usage.outputTokens;
+        localCost += res.cost ?? 0;
+
+        const qualityErrors: string[] = [];
+        const batchPartial = new Map<string, string>();
+        for (let i = 0; i < batch.length; i++) {
+          const s = batch[i]!;
+          const raw = res.translations.get(i);
+          if (raw === undefined) {
+            throw new Error(`Missing translation for batch index ${i}`);
+          }
+          const st = placeholderById.get(s.id);
+          const restored = st ? ph.restoreAfterTranslation(raw, st) : raw;
+          const origSeg = segmentOriginalContent(s, originalContentByHash);
+          const v = validateDocTranslatePair(origSeg, restored);
+          if (!v.ok) {
+            qualityErrors.push(...v.errors);
+          }
+          batchPartial.set(s.hash, restored);
+        }
+
+        if (qualityErrors.length === 0) {
+          for (const [h, t] of batchPartial) {
+            partial.set(h, t);
+          }
+          logBatchSuccess(res);
+          finished = true;
+        } else {
+          const nextStart = models.indexOf(res.model) + 1;
+          if (nextStart >= models.length) {
+            throw new Error(
+              `Doc translation quality failed (${docLog?.relativePath ?? "?"}): ${qualityErrors.join("; ")}`
+            );
+          }
+          warnDocQualityModelSwitch(
+            locale,
+            docLog?.relativePath,
+            res.model,
+            models[nextStart]!,
+            qualityErrors.join("; ")
+          );
+          startModelIndex = nextStart;
+        }
+      }
     } catch (e) {
       if (e instanceof BatchTranslationError && client) {
         if (verbose) {
@@ -286,21 +402,43 @@ async function translateSegmentsBatched(
             )
           );
         }
-        const handler = new PlaceholderHandler();
         for (const s of batch) {
           const st = placeholderById.get(s.id);
-          const single = await client.translateDocumentSegment(s.content, locale, hints, {
-            contentType,
-            docLogContext:
-              docLog && docLog.relativePath
-                ? { locale, relativePath: docLog.relativePath }
-                : undefined,
-          });
-          localIn += single.usage.inputTokens;
-          localOut += single.usage.outputTokens;
-          localCost += single.cost ?? 0;
-          const restored = st ? handler.restoreAfterTranslation(single.content, st) : single.content;
-          partial.set(s.hash, restored);
+          const origSeg = segmentOriginalContent(s, originalContentByHash);
+          let startIdx = 0;
+          while (startIdx < models.length) {
+            const single = await client.translateDocumentSegment(s.content, locale, hints, {
+              contentType,
+              startModelIndex: startIdx,
+              docLogContext:
+                docLog && docLog.relativePath
+                  ? { locale, relativePath: docLog.relativePath }
+                  : undefined,
+            });
+            localIn += single.usage.inputTokens;
+            localOut += single.usage.outputTokens;
+            localCost += single.cost ?? 0;
+            const restored = st ? ph.restoreAfterTranslation(single.content, st) : single.content;
+            const v = validateDocTranslatePair(origSeg, restored);
+            if (v.ok) {
+              partial.set(s.hash, restored);
+              break;
+            }
+            const nextIdx = models.indexOf(single.model) + 1;
+            if (nextIdx >= models.length) {
+              throw new Error(
+                `Doc translation quality failed (${docLog?.relativePath ?? "?"}): ${v.errors.join("; ")}`
+              );
+            }
+            warnDocQualityModelSwitch(
+              locale,
+              docLog?.relativePath,
+              single.model,
+              models[nextIdx]!,
+              v.errors.join("; ")
+            );
+            startIdx = nextIdx;
+          }
         }
       } else {
         throw e;
@@ -404,6 +542,7 @@ export async function translateMarkdownFile(
   );
   const translations = new Map<string, string>();
   const placeholderById = new Map<string, ProtectState>();
+  const originalContentByHash = new Map<string, string>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
 
@@ -426,6 +565,7 @@ export async function translateMarkdownFile(
         continue;
       }
     }
+    originalContentByHash.set(s.hash, s.content);
     const st = ph.protectForTranslation(s.content);
     placeholderById.set(s.id, st);
     toBatch.push({ ...s, content: st.text });
@@ -439,6 +579,7 @@ export async function translateMarkdownFile(
   const { map, inTok, outTok, cost } = await translateSegmentsBatched(
     toBatch,
     placeholderById,
+    originalContentByHash,
     locale,
     glossary,
     client,
@@ -646,6 +787,7 @@ export async function translateJsonFile(
   const { map, inTok, outTok, cost } = await translateSegmentsBatched(
     toBatch,
     emptyPh,
+    new Map(),
     locale,
     glossary,
     client,
@@ -842,6 +984,7 @@ export async function translateSvgAssetFile(
   const { map, inTok, outTok, cost } = await translateSegmentsBatched(
     toBatch,
     emptyPh,
+    new Map(),
     locale,
     glossary,
     client,
@@ -958,16 +1101,12 @@ export async function runTranslate(
 
   // Header block
   console.log(
-    chalk.gray("\n\n___DOCUMENTATION Translation_______________________________________________________________________\n\n") +
+    chalk.gray("\n\n___DOCUMENTATION Translation_____________________________________________________________________________\n\n") +
     chalk.bold(
       `\n🌐 Translating ${totalFileCount} file(s) to ${locales.length} locale(s)\n`
     )
   );
-  if (models.length > 0) {
-    console.log(
-      chalk.cyan(`Models (try in order): `) + chalk.magenta(models.join(", "))
-    );
-  }
+  printModelsTryInOrder(models);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(`Output: `) +

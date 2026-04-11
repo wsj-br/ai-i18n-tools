@@ -63,7 +63,7 @@ function unescapeXml(text: string): string {
 function documentCoreRulesBlock(opts: PromptBuilderOptions): string {
   return `Translate from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
 
-Rules: Keep headers (###), inline \`code\`, variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{URL_PLACEHOLDER_N}}, {{HTML_ANCHOR_N}}, {{DOC_HEADING_ID_N}}. Translate only title/description in front matter. Prefer glossary terms. Maintain coherence on the translated terminology.
+Rules: Keep headers (###), inline \`code\`, variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{URL_PLACEHOLDER_N}}, {{HTML_ANCHOR_N}}, {{DOC_HEADING_ID_N}}. Copy each placeholder character-for-character, including underscores in DOC_HEADING_ID (never replace them with hyphens). Translate only title/description in front matter. Prefer glossary terms. Maintain coherence on the translated terminology.
 
 ${MARKDOWN_PRESERVATION_RULES}`;
 }

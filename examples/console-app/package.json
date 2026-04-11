@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "ai-i18n-tools": "workspace:^",
-    "i18next": "^24.0.0"
+    "i18next": "^26.0.4"
   },
   "engines": {
     "node": ">=18.0.0"

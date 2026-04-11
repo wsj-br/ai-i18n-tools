@@ -1,6 +1,6 @@
 # ai-i18n-tools
 
-CLI and programmatic toolkit for internationalizing JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next - with a separate pipeline for markdown, Docusaurus JSON, and SVG document translation.
+CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and (via `translate-svg`) standalone SVG assets.
 
 ## Two core workflows
 
@@ -8,9 +8,9 @@ CLI and programmatic toolkit for internationalizing JavaScript/TypeScript applic
 
 Scans source files for `t("…")` calls, builds a master catalog (`strings.json`), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
-**Workflow 2 - Document Translation** (Markdown, Docusaurus, SVG)
+**Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
 
-Translates `.md`, `.mdx`, Docusaurus JSON label files, and `.svg` files. Supports Docusaurus's `i18n/<locale>/` layout and flat locale-suffixed layouts. SQLite cache ensures only new or changed segments are sent to the LLM.
+Translates `.md` and `.mdx` from `documentation.contentPaths` and JSON label files from `documentation.jsonSource` when enabled. Supports Docusaurus-style and flat locale-suffixed layouts (`documentation.markdownOutput`). SQLite cache ensures only new or changed segments are sent to the LLM. **SVG:** use `translate-svg` with a top-level `svg` block (also run from `sync` when `svg` is set).
 
 Both workflows share a single config file and can be used independently or together.
 
@@ -93,7 +93,7 @@ npx ai-i18n-tools status
 ### Both workflows
 
 ```bash
-npx ai-i18n-tools sync   # extract UI strings, then translate UI strings and documents
+npx ai-i18n-tools sync   # extract UI strings, then translate UI strings, optional standalone SVG, then docs
 ```
 
 ---
@@ -121,17 +121,18 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 ```
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
 ai-i18n-tools extract                               Scan source for t("…") calls
-ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON, SVG); see docs for
-                                                    --force-update, --force, --no-cache, --stats, --clear-cache
+ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
+                                                    --force-update, --force, --stats, --clear-cache
+ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (requires config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only
-ai-i18n-tools sync                                  Extract UI strings, then translate UI strings and documents
+ai-i18n-tools sync                                  Extract UI strings, then UI, optional SVG, then docs
 ai-i18n-tools status                                Translation status per file × locale
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>] [-y]   Clean stale + orphaned cache rows; confirms first (see --help); backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), and optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory).
+All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), and optional `-w` / `--write-logs [path]` to append console output to a log file (default: under the translation cache directory).
 
 ---
 

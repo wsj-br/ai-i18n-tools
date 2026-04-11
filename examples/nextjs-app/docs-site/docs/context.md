@@ -44,7 +44,12 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
   "targetLocales": "src/locales/ui-languages.json",
 
   "openrouter": {
-    "translationModels": ["google/gemini-2.5-flash", "openai/gpt-4o-mini"],
+    "translationModels": [
+      "qwen/qwen3-235b-a22b-2507",
+      "stepfun/step-3.5-flash",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku"
+    ],
     "maxTokens": 8192,
     "temperature": 0.2
   },

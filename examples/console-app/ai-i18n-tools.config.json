@@ -9,6 +9,7 @@
     "baseUrl": "https://openrouter.ai/api/v1",
     "translationModels": [
       "qwen/qwen3-235b-a22b-2507",
+      "stepfun/step-3.5-flash",
       "anthropic/claude-3-haiku",
       "anthropic/claude-3.5-haiku"
     ],

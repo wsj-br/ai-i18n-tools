@@ -1,4 +1,5 @@
 import type { Segment } from "../core/types.js";
+import { hasInternalPlaceholderLeak } from "./translation-placeholder-leaks.js";
 
 export interface ValidationResult {
   valid: boolean;
@@ -78,4 +79,55 @@ export function validateTranslation(
     warnings,
     errors,
   };
+}
+
+/**
+ * Strict checks for markdown doc translation after placeholder restore: same structural rules as
+ * {@link validateTranslation}, but URL count and length ratio are errors (not warnings), and any
+ * remaining internal `{{...}}` markers fail the segment.
+ */
+export function validateDocTranslatePair(source: Segment, translatedText: string): {
+  ok: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (source.type === "code" && source.content !== translatedText) {
+    errors.push(`Code block modified (hash ${source.hash})`);
+  }
+
+  const sourceUrls = source.content.match(/\]\(([^)]+)\)/g) || [];
+  const translatedUrls = translatedText.match(/\]\(([^)]+)\)/g) || [];
+  if (sourceUrls.length !== translatedUrls.length) {
+    errors.push(
+      `URL count mismatch: ${sourceUrls.length} vs ${translatedUrls.length} (hash ${source.hash})`
+    );
+  }
+
+  const sourceHeading = source.content.match(/^(#{1,6})\s/);
+  const translatedHeading = translatedText.match(/^(#{1,6})\s/);
+  if (sourceHeading && translatedHeading && sourceHeading[1] !== translatedHeading[1]) {
+    errors.push(`Heading level changed (hash ${source.hash})`);
+  }
+
+  if (source.translatable && translatedText.length > 0) {
+    const ratio = translatedText.length / Math.max(1, source.content.length);
+    if (ratio > 3 || ratio < 0.2) {
+      errors.push(`Unusual length ratio (${ratio.toFixed(2)}) (hash ${source.hash})`);
+    }
+  }
+
+  if (source.type === "frontmatter") {
+    const sourceFmKeys = source.content.match(/^[a-z_]+:/gm) || [];
+    const translatedFmKeys = translatedText.match(/^[a-z_]+:/gm) || [];
+    if (sourceFmKeys.length !== translatedFmKeys.length) {
+      errors.push(`Front matter structure changed (hash ${source.hash})`);
+    }
+  }
+
+  if (hasInternalPlaceholderLeak(translatedText)) {
+    errors.push(`Internal translation placeholder leaked in output (hash ${source.hash})`);
+  }
+
+  return { ok: errors.length === 0, errors };
 }

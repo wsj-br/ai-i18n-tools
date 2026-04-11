@@ -115,9 +115,12 @@ export { protectDocAnchors, restoreDocAnchors } from "./processors/anchor-placeh
 export { splitTranslatableIntoBatches, type BatchConfig } from "./processors/batch-processor.js";
 export {
   validateTranslation,
+  validateDocTranslatePair,
   segmentMarkdownUrlCountsMatch,
   type ValidationResult,
 } from "./processors/validator.js";
+
+export { hasInternalPlaceholderLeak } from "./processors/translation-placeholder-leaks.js";
 
 export { OpenRouterClient, type OpenRouterClientOptions } from "./api/openrouter.js";
 

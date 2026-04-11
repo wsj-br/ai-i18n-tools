@@ -31,7 +31,7 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg33" />
   <title id="title1">Illustration de démonstration de traduction</title>
-  <desc id="desc1">Une scène colorée avec un lever de soleil, une montgolfière et deux libellés en anglais prêts pour des démonstrations de traduction.</desc>
+  <desc id="desc1">Une scène colorée avec un lever de soleil, une montgolfière et deux étiquettes de texte en anglais prêtes pour des démonstrations de traduction.</desc>
   <defs
      id="defs1">
     <clipPath
@@ -396,7 +396,7 @@
      x="28.75"
      y="300.75"
      style="color:#ffffff;font-weight:400;font-size:12px;font-family:sans-serif;dominant-baseline:auto;text-anchor:start;opacity:1;fill:#9ba3bf;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
-     id="text31"><tspan>Un début de journée paisible</tspan></text>
+     id="text31"><tspan>Un début paisible de la journée</tspan></text>
   <!-- Top right: Hot air balloon -->
   <rect
      x="390.75"
@@ -422,5 +422,5 @@
      x="400.75"
      y="60.75"
      style="color:#ffffff;font-weight:400;font-size:12px;font-family:sans-serif;dominant-baseline:auto;text-anchor:start;opacity:1;fill:#9ba3bf;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
-     id="text33"><tspan>En vol au-dessus de la campagne</tspan></text>
+     id="text33"><tspan>Vol au-dessus de la campagne</tspan></text>
 </svg>

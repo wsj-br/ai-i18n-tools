@@ -26,7 +26,6 @@ import {
 } from "../core/ui-languages.js";
 import {
   loadConfigOrExit,
-  resolveConfigPath,
   resolveStringsJsonPath,
   hashFileContent,
   resolveTranslatedOutputPath,
@@ -46,6 +45,7 @@ import { runTranslateUI } from "./translate-ui-strings.js";
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { createTranslationEditorApp, resolveEditCacheStaticDir } from "../server/translation-editor.js";
+import type { I18nConfig } from "../core/types.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -116,10 +116,9 @@ async function confirmCleanupProceed(opts: { yes?: boolean; dryRun?: boolean }):
   }
 }
 
-function withConfig(cmd: Command): { config: string; cwd: string } {
+function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string } {
   const o = cmd.optsWithGlobals() as { config?: string };
-  const cwd = process.cwd();
-  return { config: resolveConfigPath(o.config, cwd), cwd };
+  return { configFlag: o.config, cwd: process.cwd() };
 }
 
 const program = new Command();
@@ -172,14 +171,14 @@ program
   .command("extract")
   .description("Extract UI strings (t(...) / i18next-scanner) to strings.json")
   .action(async (_opts, cmd) => {
-    const { config: cfgPath, cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(cfgPath, cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     if (!config.features.extractUIStrings) {
       console.error("[extract] Enable features.extractUIStrings in config.");
       process.exit(1);
     }
     try {
-      const s = runExtract(config, cwd);
+      const s = runExtract(config, projectRoot);
       console.log(
         chalk.green(
           `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
@@ -214,7 +213,8 @@ function activateWriteLogs(
 
 function buildTranslateOpts(
   cmd: Command,
-  cwd: string,
+  config: I18nConfig,
+  projectRoot: string,
   logPath?: string
 ): { locales: string[]; uiLocales: string[]; translateOpts: TranslateRunOptions } {
   const g = cmd.optsWithGlobals() as { verbose?: boolean; config?: string };
@@ -231,11 +231,10 @@ function buildTranslateOpts(
     concurrency?: string;
     batchConcurrency?: string;
   };
-  const config = loadConfigOrExit(resolveConfigPath(g.config, cwd), cwd);
-  const locales = resolveLocalesForDocumentation(config, cwd, o.locale ?? null);
-  const uiLocales = resolveLocalesForUI(config, cwd, o.locale ?? null);
+  const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
+  const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
   const translateOpts: TranslateRunOptions = {
-    cwd,
+    cwd: projectRoot,
     locales,
     dryRun: Boolean(o.dryRun),
     force: Boolean(o.force),
@@ -292,10 +291,10 @@ program
     "Max parallel batch API calls per file (default: config or 4)"
   )
   .action(async (_a, cmd) => {
-    const { cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(resolveConfigPath((cmd.optsWithGlobals() as { config?: string }).config, cwd), cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(cwd, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
     const raw = cmd.opts() as {
       force?: boolean;
       forceUpdate?: boolean;
@@ -349,7 +348,7 @@ program
       return;
     }
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-docs");
-    const { translateOpts } = buildTranslateOpts(cmd, cwd, logPath);
+    const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
 
     if (config.features.translateJSON && !config.documentation.jsonSource?.trim()) {
       console.warn(
@@ -362,12 +361,12 @@ program
     }
 
     const md = filterIgnored(
-      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], cwd),
-      cwd
+      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
+      projectRoot
     );
     const jsonRoot = config.documentation.jsonSource
-      ? path.resolve(cwd, config.documentation.jsonSource)
-      : path.resolve(cwd, ".");
+      ? path.resolve(projectRoot, config.documentation.jsonSource)
+      : path.resolve(projectRoot, ".");
     const jsonFiles =
       config.documentation.jsonSource && shouldRunJson(translateOpts, config)
         ? collectFilesRelativeToRoot(jsonRoot, [".json"])
@@ -423,13 +422,10 @@ program
     "Max parallel batch API calls per file (default: config or 4)"
   )
   .action(async (_a, cmd) => {
-    const { cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(
-      resolveConfigPath((cmd.optsWithGlobals() as { config?: string }).config, cwd),
-      cwd
-    );
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(cwd, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
     const raw = cmd.opts() as { force?: boolean; forceUpdate?: boolean };
     if (raw.force && raw.forceUpdate) {
       console.error(
@@ -443,9 +439,9 @@ program
       process.exit(1);
     }
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-svg");
-    const { translateOpts } = buildTranslateOpts(cmd, cwd, logPath);
+    const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
     const localeOpt = cmd.opts() as { locale?: string };
-    translateOpts.locales = resolveLocalesForSvg(config, cwd, localeOpt.locale ?? null);
+    translateOpts.locales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
     try {
       await runTranslateSvg(config, translateOpts);
     } catch (e) {
@@ -468,20 +464,20 @@ program
     "Max parallel target locales (default: config or 4)"
   )
   .action(async (_a, cmd) => {
-    const { cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(resolveConfigPath((cmd.optsWithGlobals() as { config?: string }).config, cwd), cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
     const o = cmd.opts() as { locale?: string; dryRun?: boolean; force?: boolean; concurrency?: string };
-    const locales = resolveLocalesForUI(config, cwd, o.locale ?? null);
+    const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
     if (!config.features.translateUIStrings) {
       console.error(chalk.red("❌ [translate-ui] Enable features.translateUIStrings in config."));
       process.exit(1);
     }
-    const cacheDir = path.join(cwd, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-ui");
     try {
       await runTranslateUI(config, {
-        cwd,
+        cwd: projectRoot,
         locales,
         force: Boolean(o.force),
         dryRun: Boolean(o.dryRun),
@@ -528,8 +524,8 @@ program
     "Max parallel batch API calls per file for docs (default: config)"
   )
   .action(async (_a, cmd) => {
-    const { cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(resolveConfigPath((cmd.optsWithGlobals() as { config?: string }).config, cwd), cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const syncOpts = cmd.opts() as {
       noUi?: boolean;
       noSvg?: boolean;
@@ -552,12 +548,12 @@ program
     const noUi = Boolean(syncOpts.noUi);
     const noSvg = Boolean(syncOpts.noSvg);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(cwd, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync");
-    const { uiLocales, translateOpts } = buildTranslateOpts(cmd, cwd, logPath);
+    const { uiLocales, translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
     if (config.features.extractUIStrings) {
       try {
-        const s = runExtract(config, cwd);
+        const s = runExtract(config, projectRoot);
         console.log(
           chalk.green(`✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`)
         );
@@ -569,7 +565,7 @@ program
     if (config.features.translateUIStrings && !noUi) {
       try {
         await runTranslateUI(config, {
-          cwd,
+          cwd: projectRoot,
           locales: uiLocales,
           force: translateOpts.force,
           dryRun: translateOpts.dryRun,
@@ -587,7 +583,7 @@ program
         const localeOpt = cmd.opts() as { locale?: string };
         const svgOpts: TranslateRunOptions = {
           ...translateOpts,
-          locales: resolveLocalesForSvg(config, cwd, localeOpt.locale ?? null),
+          locales: resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null),
         };
         await runTranslateSvg(config, svgOpts);
       } catch (e) {
@@ -597,12 +593,12 @@ program
     }
     if (!noDocs) {
       const md = filterIgnored(
-        collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], cwd),
-        cwd
+        collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
+        projectRoot
       );
       const jsonRoot = config.documentation.jsonSource
-        ? path.resolve(cwd, config.documentation.jsonSource)
-        : path.resolve(cwd, ".");
+        ? path.resolve(projectRoot, config.documentation.jsonSource)
+        : path.resolve(projectRoot, ".");
       const jsonFiles =
         config.documentation.jsonSource && shouldRunJson(translateOpts, config)
           ? collectFilesRelativeToRoot(jsonRoot, [".json"])
@@ -620,18 +616,18 @@ program
   .command("status")
   .description("Show markdown translation status vs cache / output files")
   .action((_a, cmd) => {
-    const { config: cfgPath, cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(cfgPath, cwd);
-    const cache = new TranslationCache(path.join(cwd, config.documentation.cacheDir));
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const cache = new TranslationCache(path.join(projectRoot, config.documentation.cacheDir));
     const md = filterIgnored(
-      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], cwd),
-      cwd
+      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
+      projectRoot
     );
     const locales = getDocumentationTargetLocaleCodes(config);
     const headers = ["File", ...locales];
     const rows: string[][] = [];
     for (const rel of md) {
-      const abs = path.join(cwd, rel);
+      const abs = path.join(projectRoot, rel);
       let srcHash = "";
       try {
         srcHash = hashFileContent(fs.readFileSync(abs, "utf8"));
@@ -640,7 +636,7 @@ program
         continue;
       }
       const cells = locales.map((loc) => {
-        const out = resolveTranslatedOutputPath(config, cwd, loc, rel, "markdown");
+        const out = resolveTranslatedOutputPath(config, projectRoot, loc, rel, "markdown");
         const tracked = cache.getFileHash(rel, loc);
         if (!fs.existsSync(out)) {
           return "-";
@@ -677,8 +673,8 @@ program
   )
   .option("-y, --yes", "Skip confirmation prompt (required when stdin is not a TTY)", false)
   .action(async (opts: { dryRun?: boolean; noBackup?: boolean; backup?: string; yes?: boolean }, cmd) => {
-    const { config: cfgPath, cwd } = withConfig(cmd);
-    const loaded = loadConfigOrExit(cfgPath, cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd);
 
     const confirm = await confirmCleanupProceed({ yes: opts.yes, dryRun: opts.dryRun });
     if (!confirm.ok) {
@@ -688,7 +684,7 @@ program
       process.exit(1);
     }
 
-    const cacheDir = path.join(cwd, loaded.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, loaded.documentation.cacheDir);
     const cache = new TranslationCache(cacheDir);
 
     const shouldBackup = !opts.dryRun && !opts.noBackup;
@@ -711,7 +707,7 @@ program
 
     let orphaned = 0;
     for (const fp of cache.getUniqueFilepaths()) {
-      const abs = path.join(cwd, fp);
+      const abs = path.join(projectRoot, fp);
       if (!fs.existsSync(abs)) {
         if (!opts.dryRun) {
           orphaned += cache.deleteByFilepath(fp);
@@ -731,20 +727,20 @@ program
   .option("-p, --port <n>", "Port", "8787")
   .option("--no-open", "Do not open the default browser")
   .action((_opts: { port?: string }, cmd) => {
-    const { config: cfgPath, cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(cfgPath, cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
     const port = parseInt(cmdOpts.port || "8787", 10);
-    const cache = new TranslationCache(path.join(cwd, config.documentation.cacheDir));
+    const cache = new TranslationCache(path.join(projectRoot, config.documentation.cacheDir));
     const stringsPath = config.glossary?.uiGlossary
-      ? path.join(cwd, config.glossary.uiGlossary)
-      : resolveStringsJsonPath(config, cwd);
+      ? path.join(projectRoot, config.glossary.uiGlossary)
+      : resolveStringsJsonPath(config, projectRoot);
     const glossaryPath = config.glossary?.userGlossary
-      ? path.join(cwd, config.glossary.userGlossary)
+      ? path.join(projectRoot, config.glossary.userGlossary)
       : null;
 
     const app = createTranslationEditorApp(cache, {
-      cwd,
+      cwd: projectRoot,
       stringsJsonPath: stringsPath,
       glossaryUserPath: glossaryPath,
       sourceLocale: config.sourceLocale,
@@ -778,11 +774,11 @@ program
   .description("Write an empty glossary-user.csv with standard headers")
   .option("-o, --output <path>", "Output path (default: config glossary.userGlossary or glossary-user.csv)")
   .action((opts: { output?: string }, cmd) => {
-    const { config: cfgPath, cwd } = withConfig(cmd);
-    const config = loadConfigOrExit(cfgPath, cwd);
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const out = opts.output
       ? path.resolve(cwd, opts.output)
-      : path.join(cwd, config.glossary?.userGlossary || "glossary-user.csv");
+      : path.join(projectRoot, config.glossary?.userGlossary || "glossary-user.csv");
     const header = `"Original language string","locale","Translation"\n`;
     if (fs.existsSync(out)) {
       console.error(`Refusing to overwrite existing file: ${out}`);

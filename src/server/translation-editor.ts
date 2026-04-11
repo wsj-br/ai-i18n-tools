@@ -185,7 +185,7 @@ export function createTranslationEditorApp(
       }
       const resolved = resolveSegmentLogFilepath(String(filepath), opts.jsonSource);
       const lineSuffix = start_line != null ? `:${start_line}` : ":1";
-      console.log(`[editor] link: ` + chalk.cyan(`${resolved}${lineSuffix} (${String(locale)})`));
+      console.log(`[editor] link: ` + chalk.cyan(`${resolved}${lineSuffix}`));
       res.json({ ok: true });
     } catch (err) {
       console.error(err);
@@ -200,12 +200,11 @@ export function createTranslationEditorApp(
         locale?: string;
       };
       const locs = body.locations ?? [];
-      const locale = body.locale ?? "";
       for (const loc of locs) {
         const filepath = loc.filepath ?? loc.file;
         if (!filepath) continue;
         const line = loc.line != null ? loc.line : 1;
-        console.log(`[editor] link:  ` + chalk.cyan(`${String(filepath)}:${line} (${locale})`));
+        console.log(`[editor] link:  ` + chalk.cyan(`${String(filepath)}:${line}`));
       }
       res.json({ ok: true });
     } catch (err) {

@@ -42,7 +42,10 @@ export function restoreDocAnchors(
   let restored = text;
 
   for (let i = 0; i < docusaurusHeadingIds.length; i++) {
-    const flexible = new RegExp(`\\{\\{\\s*DOC_HEADING_ID_${i}\\s*\\}\\}`, "g");
+    const flexible = new RegExp(
+      `\\{\\{\\s*DOC_HEADING[-_]ID_${i}\\s*\\}\\}`,
+      "g"
+    );
     restored = restored.replace(flexible, docusaurusHeadingIds[i]);
   }
 
