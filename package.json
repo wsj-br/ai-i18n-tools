@@ -40,7 +40,6 @@
     "i18n:sync": "ai-i18n-tools sync",
     "i18n:translate": "ai-i18n-tools translate-docs",
     "i18n:cleanup": "ai-i18n-tools cleanup",
-    "sync-docs": "node scripts/sync-docs-to-nextjs-example.mjs",
     "update-all": "pnpm build && ai-i18n-tools cleanup && cd examples/console-app && ai-i18n-tools cleanup && cd ../nextjs-app && ai-i18n-tools cleanup",
     "clean-temp": "find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -print && read -p 'Delete these files? (y/n) ' ans && [ \"$ans\" = \"y\" ] && find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -delete"
   },
