@@ -1,64 +1,45 @@
 ---
-description: Core project conventions and context for ai-i18n-tools
+description: Minimal context for new chats and CHANGELOG updates
 alwaysApply: true
 ---
 
-# ai-i18n-tools — Project Rule
+# Minimal Context and CHANGELOG
 
-## What this project is
+## Project baseline
 
-CLI + library that automates i18n for JS/TS projects. Two independent workflows:
-1. **UI Strings** — extract `t("…")` calls → master catalog (`strings.json`) → per-locale flat JSON via OpenRouter LLMs.
-2. **Document translation** — markdown/mdx/JSON → segment-level SQLite cache → translated output files.
-
-Config: `ai-i18n-tools.config.json`. Runtime helpers exported from `ai-i18n-tools/runtime`.
-
-## Tech stack
-
-- **Language:** TypeScript (strict), ESM-only (`"type": "module"`)
-- **Runtime:** Node.js ≥ 22.16
-- **Package manager:** pnpm ≥ 10.33
-- **Build:** `tsc` (target ES2020, module Node16)
-- **Test:** Vitest with `@vitest/coverage-v8`
-- **Lint / format:** ESLint + Prettier
-- **Key deps:** Commander (CLI), Zod (config validation), Express (local editor), i18next-scanner (extractor), mdast/micromark (markdown parsing)
+- **App and Project name**: `ai-i18n-tools`
+- **Stack**: TypeScript (strict), ESM-only, Node.js ≥ 22.16, pnpm ≥ 10.33. Build: `tsc` (ES2020, Node16). Test: Vitest + `@vitest/coverage-v8`. Lint/format: ESLint + Prettier.
+- **Key deps**: Commander (CLI), Zod (config validation), Express (local editor), i18next-scanner (extractor), mdast/micromark (markdown parsing).
+- **What it does**: CLI + library that automates i18n for JS/TS projects. Two independent workflows: **UI Strings** — extract `t("…")` calls → master catalog (`strings.json`) → per-locale flat JSON via OpenRouter LLMs. **Document translation** — markdown/mdx/JSON → segment-level SQLite cache → translated output files.
+- **Config**: `ai-i18n-tools.config.json`. Runtime helpers exported from `ai-i18n-tools/runtime`.
 
 ## Source layout
 
-```
-src/
-├── index.ts          Public API (all programmatic exports)
-├── cli/              CLI command implementations (Commander)
-├── core/             Config loading, Zod types, SQLite cache, prompt builder, output paths
-├── extractors/       Segment extractors: JS/TS, Markdown, JSON, SVG
-├── processors/       Placeholder protection, batch splitting, post-translation validation, link rewriting
-├── api/              OpenRouter HTTP client (model fallback, rate-limit handling)
-├── glossary/         Glossary loading (CSV + auto from strings.json) and term matching
-├── runtime/          i18next helpers, RTL helpers, display helpers (no i18next import)
-├── server/           Local Express web editor for cache/glossary
-└── utils/            Logger, SHA-256 hash, .translate-ignore parser
-```
+- All source in `src/`; public API re-exported from `src/index.ts`. Tests in `tests/` mirroring `src/` structure.
+- **Key dirs**: `cli/` (Commander commands), `core/` (config, Zod types, SQLite cache, prompt builder), `extractors/` (JS/TS, Markdown, JSON, SVG), `processors/` (placeholder protection, batch splitting, validation, link rewriting), `api/` (OpenRouter HTTP client), `glossary/` (CSV + auto glossary), `runtime/` (i18next/RTL/display helpers), `server/` (Express web editor), `utils/` (logger, SHA-256, .translate-ignore parser).
 
 ## Documentation
 
-- **Canonical locations:** `README.md` (project root) and `docs/` folder.
-- **Auto-generated — do NOT edit:** `examples/nextjs-app/docs-site/` or `translated-docs` folders, they  rebuilt by `pnpm sync-docs` or the `ai-i18n-tools translate-docs`. Never hand-edit files there; changes will be overwritten.
-- When updating docs, edit only the canonical sources and let the sync script propagate.
-- Read `docs/ai-i18n-tools-context.md` before making code or config changes — it is the concise agent context document.
+- **Canonical locations**: `README.md` (root) and `docs/` folder. Read `docs/ai-i18n-tools-context.md` before making code or config changes.
+- **Auto-generated — do NOT edit**: `examples/nextjs-app/docs-site/` or `translated-docs` folders; rebuilt by `pnpm sync-docs` or `ai-i18n-tools translate-docs`. Edit only canonical sources.
 
-## Changelog
+## Minimal context (each new chat)
 
-Maintain `docs/CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+- Prefer **searching the codebase** (e.g. SemanticSearch, Grep) over assuming structure or APIs.
+- Use **minimal necessary context**: only open or reference files relevant to the current task.
+- When unsure about stack or entrypoints, check **package.json** and key entry files (e.g. `src/main/main.js`, `src/server/index.js`) rather than guessing.
+- Keep replies **focused**: avoid repeating project overview unless the user asks.
 
-- Record every notable change under the `## Unreleased` section.
-- Use conventional types: **Added**, **Changed**, **Fixed**, **Deprecated**, **Removed**, **Security**.
-- When a version is released, move the unreleased items under a new `## [x.y.z] - YYYY-MM-DD` heading.
-- Keep descriptions short and user-facing (what changed, not implementation detail).
+## CHANGELOG
+
+- Maintain `dev/CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+- For **any notable change** (features, fixes, refactors, config, dependencies), **add an entry** under the **Unreleased** section of **dev/CHANGELOG.md**.
+- Don't keep changes to the documentation files.
+- Use **Keep a Changelog** types: Added, Changed, Deprecated, Removed, Fixed, Security.
+- One short line per change; no need to duplicate full commit messages.
 
 ## Coding conventions
 
-- All source is in `src/`; public API surface is re-exported from `src/index.ts`.
 - Prefer `async/await` over raw Promises; always handle errors (no empty catches).
 - Use Zod for any config or external-data validation.
-- Tests live in `tests/` mirroring the `src/` structure; use Vitest `describe`/`it`.
-- Run `pnpm test` to verify changes; run `pnpm lint` before committing.
+- Use Vitest `describe`/`it`. Run `pnpm test` to verify changes; run `pnpm lint` before committing.

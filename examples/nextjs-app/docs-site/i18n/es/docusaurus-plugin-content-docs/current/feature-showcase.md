@@ -4,7 +4,7 @@ title: Muestra de funciones de traducción
 description: >-
   Un documento de referencia que demuestra cada elemento Markdown que
   ai-i18n-tools sabe cómo traducir.
-translation_last_updated: '2026-04-13T17:23:05.972Z'
+translation_last_updated: '2026-04-13T19:05:55.723Z'
 source_file_mtime: '2026-04-13T12:49:18.347Z'
 source_file_hash: 60c92aa8b547462c58ec49a6b0d6830f7245d618f2052c5ab961e2a4e80a0234
 translation_language: es

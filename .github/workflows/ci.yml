@@ -1,10 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -38,3 +36,30 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

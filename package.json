@@ -23,6 +23,8 @@
   "files": [
     "dist/",
     "README.md",
+    "docs/",
+    "translated-docs/",
     "LICENSE"
   ],
   "scripts": {
@@ -41,7 +43,7 @@
     "i18n:translate": "ai-i18n-tools translate-docs",
     "i18n:cleanup": "ai-i18n-tools cleanup",
     "update-all": "pnpm build && ai-i18n-tools cleanup && cd examples/console-app && ai-i18n-tools cleanup && cd ../nextjs-app && ai-i18n-tools cleanup",
-    "clean-temp": "find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -print && read -p 'Delete these files? (y/n) ' ans && [ \"$ans\" = \"y\" ] && find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -delete"
+    "clean-temp": "find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -print && read -p '\nDelete these files? (y/n) ' ans && [ \"$ans\" = \"y\" ] && find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -delete"
   },
   "keywords": [
     "i18n",
