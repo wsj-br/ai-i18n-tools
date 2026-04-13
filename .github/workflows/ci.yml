@@ -85,13 +85,12 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      # Trusted publishing needs npm ≥ 11.5.1 (Node 22’s default npm is older).
-      - name: Upgrade npm for OIDC trusted publishing
-        run: npm install -g npm@^11.5.1
-
+      # Trusted publishing needs npm ≥ 11.5.1 (Node 22 ships npm 10.x). Do not `npm install -g npm@…` on
+      # hosted runners — it can corrupt the bundled CLI (`Cannot find module 'promise-retry'`). Run the
+      # published `npm` package via npx instead.
       # `--ignore-scripts`: skip `prepublishOnly` (clean/build/test); the matrix `build` job already did that.
       # `--provenance`: supply-chain attestation (public repos; npm also attests when using Trusted Publishing).
       - name: Publish to npm
-        run: npm publish --ignore-scripts --provenance --tag latest
+        run: npx --yes npm@^11.5.1 publish --ignore-scripts --provenance --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
