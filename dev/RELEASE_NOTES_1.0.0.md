@@ -110,4 +110,4 @@ pnpm add ai-i18n-tools
 
 ## License
 
-MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)
+MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br/ai-i18n-tools)
