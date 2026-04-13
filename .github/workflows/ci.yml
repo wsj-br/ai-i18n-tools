@@ -54,8 +54,11 @@ jobs:
     needs: build
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag_as_latest == 'true')
     runs-on: ubuntu-latest
-    # OIDC for npm trusted publishing (replaces long-lived NPM_TOKEN for the publish step).
-    # Requires npm CLI ≥ 11.5.1 and Node ≥ 22.14 — see https://docs.npmjs.com/trusted-publishers/
+    # Optional: Settings → Environments → `npm` — add protection rules, required reviewers, or wait timers before publish.
+    environment: npm
+    # Publishing: prefer npm Trusted Publishers (OIDC) — configure on npmjs with workflow file `ci.yml`
+    # (name must match exactly). If OIDC is not set up or the workflow name mismatches, set
+    # `NPM_TOKEN` (granular publish token) as a repo secret. See https://docs.npmjs.com/trusted-publishers/
     permissions:
       id-token: write
       contents: read
@@ -73,6 +76,8 @@ jobs:
           node-version: 22.x
           cache: pnpm
           registry-url: https://registry.npmjs.org
+          # Used when publishing with a classic token; also seeds .npmrc for the registry.
+          token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -80,9 +85,13 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      # Node’s bundled npm is often < 11.5.1; trusted publishing requires npm ≥ 11.5.1.
+      # Trusted publishing needs npm ≥ 11.5.1 (Node 22’s default npm is older).
       - name: Upgrade npm for OIDC trusted publishing
         run: npm install -g npm@^11.5.1
 
-      - name: Publish to npm (OIDC)
-        run: pnpm publish --no-git-checks --tag latest
+      # `--ignore-scripts`: skip `prepublishOnly` (clean/build/test); the matrix `build` job already did that.
+      # `--provenance`: supply-chain attestation (public repos; npm also attests when using Trusted Publishing).
+      - name: Publish to npm
+        run: npm publish --ignore-scripts --provenance --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -11,6 +11,7 @@ Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scop
 
 ## Unreleased
 
-- **Changed**: GitHub Actions - Switched the npm publish job to OpenID Connect trusted publishing: grant `id-token: write`, upgrade npm to ≥ 11.5.1 before publish, and stop using `secrets.NPM_TOKEN` for publishing (configure the trusted publisher on npmjs for workflow `ci.yml`).
+- **Fixed**: GitHub Actions - Restore npm publish auth by passing `secrets.NPM_TOKEN` into `actions/setup-node` and the publish step (`ENEEDAUTH` when OIDC is not configured or the Trusted Publisher workflow name on npm does not match `ci.yml` exactly).
+- **Changed**: GitHub Actions - Publish job targets environment `npm` (optional protection rules in repo Settings → Environments); `npm publish` uses `--ignore-scripts` (skip duplicate `prepublishOnly`), `--provenance`, and explicit `NODE_AUTH_TOKEN` on the publish step per GitHub’s npm publishing guide.
 
 
