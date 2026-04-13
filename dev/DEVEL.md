@@ -79,6 +79,17 @@ Publishing is automated via GitHub Actions. When you create a GitHub release,
 the CI workflow runs lint, format check, build, and tests across the Node.js
 matrix. If all checks pass, it publishes the package to npm automatically.
 
+You can also run the same workflow **manually** from the **Actions** tab
+(**Run workflow**). Choose the branch (usually `main`), then:
+
+- Leave **Tag this build as 'latest'** unchecked to run lint, format, build, and
+  tests only (no npm publish).
+- Turn it **on** to run the full pipeline and **publish** the current
+  `package.json` version to npm with the `latest` dist-tag — useful to retry or
+  fix a failed release after correcting the branch. Ensure the version in
+  `package.json` matches what you intend to ship; npm rejects duplicate
+  versions.
+
 ### One-time setup: `NPM_TOKEN` secret
 
 The GitHub Actions workflow authenticates with the npm registry using a secret

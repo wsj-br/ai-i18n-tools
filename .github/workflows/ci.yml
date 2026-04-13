@@ -3,6 +3,13 @@ name: CI
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag_as_latest:
+        description: "Publish to npm with the 'latest' dist-tag (manual runs only; use after fixing the branch)"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -39,6 +46,7 @@ jobs:
 
   publish:
     needs: build
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag_as_latest == 'true')
     runs-on: ubuntu-latest
 
     steps:
@@ -60,6 +68,6 @@ jobs:
         run: pnpm run build
 
       - name: Publish to npm
-        run: pnpm publish --no-git-checks
+        run: pnpm publish --no-git-checks --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
