@@ -1,5 +1,9 @@
 name: CI
 
+# Use Node 24 for JS-based actions (checkout, pnpm/setup) until they default to 24.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   release:
     types: [published]
@@ -22,6 +26,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -53,6 +59,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
