@@ -11,7 +11,6 @@ Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scop
 
 ## Unreleased
 
-
-
+- **Changed**: GitHub Actions - Switched the npm publish job to OpenID Connect trusted publishing: grant `id-token: write`, upgrade npm to ≥ 11.5.1 before publish, and stop using `secrets.NPM_TOKEN` for publishing (configure the trusted publisher on npmjs for workflow `ci.yml`).
 
 
