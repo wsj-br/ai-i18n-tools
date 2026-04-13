@@ -1,3 +1,6 @@
+import type { Heading, Root } from "mdast";
+import type { Node } from "unist";
+import { visit } from "unist-util-visit";
 import type { Segment } from "../core/types.js";
 import { hasInternalPlaceholderLeak } from "./translation-placeholder-leaks.js";
 
@@ -7,22 +10,148 @@ export interface ValidationResult {
   errors: string[];
 }
 
-export function segmentMarkdownUrlCountsMatch(
-  sourceContent: string,
-  translatedContent: string
-): boolean {
-  const sourceUrls = sourceContent.match(/\]\(([^)]+)\)/g) || [];
-  const translatedUrls = translatedContent.match(/\]\(([^)]+)\)/g) || [];
-  return sourceUrls.length === translatedUrls.length;
+/** Lazy ESM loads (mdast stack is ESM-only; dynamic import works in Vitest + Node). */
+type MarkdownParserModules = {
+  fromMarkdown: (value: string, options?: Record<string, unknown>) => Root;
+  gfm: (options?: unknown) => unknown;
+  gfmFromMarkdown: () => unknown[];
+};
+
+let parserPromise: Promise<MarkdownParserModules> | null = null;
+
+function loadMarkdownParser(): Promise<MarkdownParserModules> {
+  if (!parserPromise) {
+    parserPromise = Promise.all([
+      import("mdast-util-from-markdown"),
+      import("micromark-extension-gfm"),
+      import("mdast-util-gfm"),
+    ]).then(([fromMarkdownMod, gfmMod, gfmMdMod]) => ({
+      fromMarkdown: fromMarkdownMod.fromMarkdown as (value: string, options?: Record<string, unknown>) => Root,
+      gfm: gfmMod.gfm as (options?: unknown) => unknown,
+      gfmFromMarkdown: gfmMdMod.gfmFromMarkdown as () => unknown[],
+    }));
+  }
+  return parserPromise;
+}
+
+/** Structural counts derived from mdast (GFM). Used to compare source vs translated segment text. */
+interface MarkdownStructureStats {
+  link: number;
+  image: number;
+  code: number;
+  inlineCode: number;
+  strong: number;
+  emphasis: number;
+  list: number;
+  listItem: number;
+  table: number;
+  headingDepths: number[];
+}
+
+function emptyStats(): MarkdownStructureStats {
+  return {
+    link: 0,
+    image: 0,
+    code: 0,
+    inlineCode: 0,
+    strong: 0,
+    emphasis: 0,
+    list: 0,
+    listItem: 0,
+    table: 0,
+    headingDepths: [],
+  };
+}
+
+async function collectMarkdownStructure(md: string): Promise<MarkdownStructureStats> {
+  const { fromMarkdown, gfm, gfmFromMarkdown } = await loadMarkdownParser();
+  const tree = fromMarkdown(md, {
+    extensions: [gfm()],
+    mdastExtensions: gfmFromMarkdown(),
+  });
+  const stats = emptyStats();
+  visit(tree, (node: Node) => {
+    switch (node.type) {
+      case "link":
+        stats.link++;
+        break;
+      case "image":
+        stats.image++;
+        break;
+      case "code":
+        stats.code++;
+        break;
+      case "inlineCode":
+        stats.inlineCode++;
+        break;
+      case "strong":
+        stats.strong++;
+        break;
+      case "emphasis":
+        stats.emphasis++;
+        break;
+      case "list":
+        stats.list++;
+        break;
+      case "listItem":
+        stats.listItem++;
+        break;
+      case "table":
+        stats.table++;
+        break;
+      case "heading":
+        stats.headingDepths.push((node as Heading).depth);
+        break;
+      default:
+        break;
+    }
+  });
+  return stats;
+}
+
+const STRUCT_KEYS = [
+  "link",
+  "image",
+  "code",
+  "inlineCode",
+  "strong",
+  "emphasis",
+  "list",
+  "listItem",
+  "table",
+] as const;
+
+/**
+ * Compare mdast structure between two Markdown strings (GFM). Returns human-readable error messages.
+ */
+export async function compareMarkdownAST(sourceMd: string, translatedMd: string): Promise<string[]> {
+  const a = await collectMarkdownStructure(sourceMd);
+  const b = await collectMarkdownStructure(translatedMd);
+  const errors: string[] = [];
+  for (const k of STRUCT_KEYS) {
+    if (a[k] !== b[k]) {
+      errors.push(`AST mismatch: ${k} ${a[k]} → ${b[k]}`);
+    }
+  }
+  const aHead = a.headingDepths.join(",");
+  const bHead = b.headingDepths.join(",");
+  if (aHead !== bHead) {
+    errors.push(`Heading depth sequence changed: [${aHead}] → [${bHead}]`);
+  }
+  return errors;
+}
+
+function shouldCompareMarkdownStructure(source: Segment): boolean {
+  return source.type === "paragraph" || source.type === "heading" || source.type === "admonition";
 }
 
 /**
- * Compare translated segments to source: count, code-block integrity, URL counts, heading levels, length ratio.
+ * Compare translated segments to source: count, code-block integrity, mdast structure, length ratio.
  */
-export function validateTranslation(
+export async function validateTranslation(
   sourceSegments: Segment[],
   translatedSegments: Segment[]
-): ValidationResult {
+): Promise<ValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -42,18 +171,11 @@ export function validateTranslation(
       errors.push(`Code block modified at segment ${i} (hash ${source.hash})`);
     }
 
-    const sourceUrls = source.content.match(/\]\(([^)]+)\)/g) || [];
-    const translatedUrls = translated.content.match(/\]\(([^)]+)\)/g) || [];
-    if (sourceUrls.length !== translatedUrls.length) {
-      warnings.push(
-        `URL count mismatch at segment ${i}: ${sourceUrls.length} vs ${translatedUrls.length} (hash ${source.hash})`
-      );
-    }
-
-    const sourceHeading = source.content.match(/^(#{1,6})\s/);
-    const translatedHeading = translated.content.match(/^(#{1,6})\s/);
-    if (sourceHeading && translatedHeading && sourceHeading[1] !== translatedHeading[1]) {
-      errors.push(`Heading level changed at segment ${i} (hash ${source.hash})`);
+    if (shouldCompareMarkdownStructure(source)) {
+      const astErrors = await compareMarkdownAST(source.content, translated.content);
+      for (const msg of astErrors) {
+        warnings.push(`${msg} at segment ${i} (hash ${source.hash})`);
+      }
     }
 
     if (source.translatable && translated.content.length > 0) {
@@ -82,32 +204,25 @@ export function validateTranslation(
 }
 
 /**
- * Strict checks for markdown doc translation after placeholder restore: same structural rules as
- * {@link validateTranslation}, but URL count and length ratio are errors (not warnings), and any
- * remaining internal `{{...}}` markers fail the segment.
+ * Strict checks for markdown doc translation after placeholder restore: mdast structure matches source,
+ * length ratio, frontmatter keys, and no leaked internal `{{...}}` markers.
  */
-export function validateDocTranslatePair(source: Segment, translatedText: string): {
+export async function validateDocTranslatePair(
+  source: Segment,
+  translatedText: string
+): Promise<{
   ok: boolean;
   errors: string[];
-} {
+}> {
   const errors: string[] = [];
 
   if (source.type === "code" && source.content !== translatedText) {
     errors.push(`Code block modified (hash ${source.hash})`);
   }
 
-  const sourceUrls = source.content.match(/\]\(([^)]+)\)/g) || [];
-  const translatedUrls = translatedText.match(/\]\(([^)]+)\)/g) || [];
-  if (sourceUrls.length !== translatedUrls.length) {
-    errors.push(
-      `URL count mismatch: ${sourceUrls.length} vs ${translatedUrls.length} (hash ${source.hash})`
-    );
-  }
-
-  const sourceHeading = source.content.match(/^(#{1,6})\s/);
-  const translatedHeading = translatedText.match(/^(#{1,6})\s/);
-  if (sourceHeading && translatedHeading && sourceHeading[1] !== translatedHeading[1]) {
-    errors.push(`Heading level changed (hash ${source.hash})`);
+  if (shouldCompareMarkdownStructure(source)) {
+    const astErrors = await compareMarkdownAST(source.content, translatedText);
+    errors.push(...astErrors.map((e) => `${e} (hash ${source.hash})`));
   }
 
   if (source.translatable && translatedText.length > 0) {

@@ -70,7 +70,12 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   const outPath = resolveStringsJsonPath(config, cwd);
   let existing: Record<
     string,
-    { source?: string; translated?: Record<string, string>; locations?: Array<{ file: string; line: number }> }
+    {
+      source?: string;
+      translated?: Record<string, string>;
+      models?: Record<string, string>;
+      locations?: Array<{ file: string; line: number }>;
+    }
   > = {};
   if (fs.existsSync(outPath)) {
     try {
@@ -87,6 +92,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     {
       source: string;
       translated: Record<string, string>;
+      models?: Record<string, string>;
       locations?: Array<{ file: string; line: number }>;
     }
   > = {};
@@ -100,10 +106,13 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     }
     const mergedTranslated =
       prev && typeof prev.translated === "object" && prev.translated ? { ...prev.translated } : {};
+    const mergedModels =
+      prev && typeof prev.models === "object" && prev.models ? { ...prev.models } : {};
     const locs = locByHash.get(h);
     output[h] = {
       source: next.source,
       translated: mergedTranslated,
+      ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
       ...(locs && locs.length > 0 ? { locations: locs } : {}),
     };
   }

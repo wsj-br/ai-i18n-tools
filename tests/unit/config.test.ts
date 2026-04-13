@@ -1,17 +1,24 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import {
   applyEnvOverrides,
+  loadI18nConfigFromFile,
   mergeWithDefaults,
+  normalizeLocale,
   parseI18nConfig,
   parseLocaleList,
   resolveTranslationModels,
+  resolveUITranslationModels,
   validateI18nBusinessRules,
-} from "../../src/core/config";
-import { ConfigValidationError } from "../../src/core/errors";
+  writeInitConfigFile,
+} from "../../src/core/config.js";
+import { ConfigValidationError } from "../../src/core/errors.js";
+import type { I18nConfig } from "../../src/core/types.js";
 
-const docDefaults = {
+const docBlockDefaults = {
   contentPaths: ["docs/"] as string[],
   outputDir: "./out",
-  cacheDir: ".translation-cache",
 };
 
 const uiDefaults = {
@@ -57,12 +64,86 @@ describe("resolveTranslationModels", () => {
   });
 });
 
+describe("resolveUITranslationModels", () => {
+  function uiConfig(overrides: Record<string, unknown>): I18nConfig {
+    return parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["a", "b"],
+          maxTokens: 8192,
+          temperature: 0.2,
+        },
+        features: {
+          extractUIStrings: false,
+          translateUIStrings: true,
+          translateMarkdown: false,
+          translateJSON: false,
+        },
+        glossary: {},
+        ui: {
+          sourceRoots: ["src/"],
+          stringsJson: "strings.json",
+          flatOutputDir: "./locales",
+        },
+        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        ...overrides,
+      })
+    );
+  }
+
+  it("returns base order when preferredModel is unset", () => {
+    expect(resolveUITranslationModels(uiConfig({}))).toEqual(["a", "b"]);
+  });
+
+  it("prepends preferredModel and skips duplicate in the tail", () => {
+    expect(
+      resolveUITranslationModels(
+        uiConfig({
+          ui: {
+            sourceRoots: ["src/"],
+            stringsJson: "strings.json",
+            flatOutputDir: "./locales",
+            preferredModel: "b",
+          },
+        })
+      )
+    ).toEqual(["b", "a"]);
+  });
+
+  it("prepends preferredModel before legacy default/fallback models", () => {
+    expect(
+      resolveUITranslationModels(
+        uiConfig({
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: [],
+            defaultModel: "x",
+            fallbackModel: "y",
+            maxTokens: 8192,
+            temperature: 0.2,
+          },
+          ui: {
+            sourceRoots: ["src/"],
+            stringsJson: "strings.json",
+            flatOutputDir: "./locales",
+            preferredModel: "z",
+          },
+        })
+      )
+    ).toEqual(["z", "x", "y"]);
+  });
+});
+
 describe("parseI18nConfig", () => {
   it("accepts a minimal valid config with all features off", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
-        documentation: { ...docDefaults, contentPaths: [], outputDir: "./out" },
+        cacheDir: ".translation-cache",
+        documentations: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
         features: {
           extractUIStrings: false,
           translateMarkdown: false,
@@ -71,7 +152,116 @@ describe("parseI18nConfig", () => {
       })
     );
     expect(c.sourceLocale).toBe("en");
-    expect(c.documentation.outputDir).toBe("./out");
+    expect(c.documentations[0].outputDir).toBe("./out");
+  });
+
+  it("merges sourceFiles into contentPaths and dedupes", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            contentPaths: ["docs/"],
+            sourceFiles: ["docs/", "extra.md"],
+            outputDir: "./out",
+          },
+        ],
+        features: {
+          extractUIStrings: false,
+          translateMarkdown: false,
+          translateJSON: false,
+        },
+      })
+    );
+    expect(c.documentations[0].contentPaths).toEqual(["docs/", "extra.md"]);
+  });
+
+  it("uses sourceFiles when contentPaths is omitted", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            sourceFiles: ["only-from-source-files.md"],
+            outputDir: "./out",
+          },
+        ],
+        features: {
+          extractUIStrings: false,
+          translateMarkdown: false,
+          translateJSON: false,
+        },
+      })
+    );
+    expect(c.documentations[0].contentPaths).toEqual(["only-from-source-files.md"]);
+  });
+
+  it("accepts documentations[].markdownOutput.postProcessing", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            contentPaths: ["docs/"],
+            outputDir: "./out",
+            markdownOutput: {
+              style: "flat",
+              postProcessing: {
+                regexAdjustments: [
+                  {
+                    description: "screenshots",
+                    search: "x/",
+                    replace: "y/${translatedLocale}/",
+                  },
+                ],
+                languageListBlock: {
+                  start: "<s>",
+                  end: "</s>",
+                  separator: " ",
+                },
+              },
+            },
+          },
+        ],
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: { translateMarkdown: true, translateJSON: false, extractUIStrings: false, translateUIStrings: false },
+      })
+    );
+    const pp = c.documentations[0]!.markdownOutput.postProcessing;
+    expect(pp?.regexAdjustments).toHaveLength(1);
+    expect(pp?.languageListBlock?.start).toBe("<s>");
+  });
+
+  it("preserves optional documentations[].description", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            description: "Docusaurus docs tree",
+            ...docBlockDefaults,
+            contentPaths: [],
+            outputDir: "./out",
+          },
+        ],
+        features: {
+          extractUIStrings: false,
+          translateMarkdown: false,
+          translateJSON: false,
+        },
+      })
+    );
+    expect(c.documentations[0].description).toBe("Docusaurus docs tree");
   });
 
   it("rejects translate feature without models", () => {
@@ -79,7 +269,8 @@ describe("parseI18nConfig", () => {
       parseI18nConfig(
         mergeWithDefaults({
           sourceLocale: "en",
-          documentation: docDefaults,
+          cacheDir: ".translation-cache",
+          documentations: [docBlockDefaults],
           targetLocales: ["de"],
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
@@ -98,7 +289,8 @@ describe("parseI18nConfig", () => {
       parseI18nConfig(
         mergeWithDefaults({
           sourceLocale: "en",
-          documentation: docDefaults,
+          cacheDir: ".translation-cache",
+          documentations: [docBlockDefaults],
           targetLocales: [],
           features: { translateMarkdown: true },
         })
@@ -106,14 +298,17 @@ describe("parseI18nConfig", () => {
     ).toThrow(ConfigValidationError);
   });
 
-  it("allows translateMarkdown with empty root targetLocales when documentation.targetLocales is set", () => {
+  it("allows translateMarkdown with empty root targetLocales when documentations[].targetLocales is set", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
-        documentation: {
-          ...docDefaults,
-          targetLocales: ["de", "fr"],
-        },
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            ...docBlockDefaults,
+            targetLocales: ["de", "fr"],
+          },
+        ],
         targetLocales: [],
         openrouter: {
           baseUrl: "https://openrouter.ai/api/v1",
@@ -129,7 +324,7 @@ describe("parseI18nConfig", () => {
         },
       })
     );
-    expect(c.documentation.targetLocales).toEqual(["de", "fr"]);
+    expect(c.documentations[0].targetLocales).toEqual(["de", "fr"]);
   });
 
   it("rejects translateUIStrings with empty targetLocales when uiLanguagesPath is unset", () => {
@@ -137,7 +332,8 @@ describe("parseI18nConfig", () => {
       parseI18nConfig(
         mergeWithDefaults({
           sourceLocale: "en",
-          documentation: { contentPaths: [], outputDir: "./out", cacheDir: ".translation-cache" },
+          cacheDir: ".translation-cache",
+          documentations: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: [],
           openrouter: {
@@ -156,7 +352,8 @@ describe("parseI18nConfig", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en-GB",
-        documentation: { contentPaths: [], outputDir: "./out", cacheDir: ".translation-cache" },
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./out" }],
         ui: uiDefaults,
         targetLocales: [],
         uiLanguagesPath: "src/renderer/locales/ui-languages.json",
@@ -182,7 +379,8 @@ describe("parseI18nConfig", () => {
       parseI18nConfig(
         mergeWithDefaults({
           sourceLocale: "en",
-          documentation: { contentPaths: [], outputDir: "./out", cacheDir: ".translation-cache" },
+          cacheDir: ".translation-cache",
+          documentations: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: ["de"],
           openrouter: {
@@ -197,11 +395,12 @@ describe("parseI18nConfig", () => {
     ).toThrow(ConfigValidationError);
   });
 
-  it("allows translateUIStrings without documentation.contentPaths when doc translate is off", () => {
+  it("allows translateUIStrings without documentations[].contentPaths when doc translate is off", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
-        documentation: { contentPaths: [], outputDir: "./out", cacheDir: ".translation-cache" },
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./out" }],
         ui: uiDefaults,
         targetLocales: ["de"],
         features: {
@@ -220,7 +419,8 @@ describe("applyEnvOverrides", () => {
   const base = parseI18nConfig(
     mergeWithDefaults({
       sourceLocale: "en",
-      documentation: { ...docDefaults, contentPaths: ["src/"] },
+      cacheDir: ".translation-cache",
+      documentations: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
       ui: { ...uiDefaults, sourceRoots: ["src/"] },
       targetLocales: ["de"],
       features: { extractUIStrings: true },
@@ -241,6 +441,36 @@ describe("applyEnvOverrides", () => {
       }
     }
   });
+
+  it("overrides I18N_SOURCE_LOCALE", () => {
+    const prev = process.env.I18N_SOURCE_LOCALE;
+    process.env.I18N_SOURCE_LOCALE = "fr-CA";
+    try {
+      const next = applyEnvOverrides(base);
+      expect(next.sourceLocale).toBe("fr-CA");
+    } finally {
+      if (prev === undefined) {
+        delete process.env.I18N_SOURCE_LOCALE;
+      } else {
+        process.env.I18N_SOURCE_LOCALE = prev;
+      }
+    }
+  });
+
+  it("overrides I18N_TARGET_LOCALES", () => {
+    const prev = process.env.I18N_TARGET_LOCALES;
+    process.env.I18N_TARGET_LOCALES = "it  pt-BR";
+    try {
+      const next = applyEnvOverrides(base);
+      expect(next.targetLocales).toEqual(["it", "pt-BR"]);
+    } finally {
+      if (prev === undefined) {
+        delete process.env.I18N_TARGET_LOCALES;
+      } else {
+        process.env.I18N_TARGET_LOCALES = prev;
+      }
+    }
+  });
 });
 
 describe("validateI18nBusinessRules after env", () => {
@@ -248,7 +478,8 @@ describe("validateI18nBusinessRules after env", () => {
     const base = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
-        documentation: { ...docDefaults, contentPaths: ["src/"] },
+        cacheDir: ".translation-cache",
+        documentations: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
         ui: { ...uiDefaults, sourceRoots: ["src/"] },
         targetLocales: ["de"],
         features: { extractUIStrings: true, translateMarkdown: true },
@@ -275,12 +506,88 @@ describe("parseLocaleList", () => {
   });
 });
 
+describe("normalizeLocale", () => {
+  it("normalizes BCP-47 with region", () => {
+    expect(normalizeLocale("en-GB")).toBe("en-GB");
+    expect(normalizeLocale("  de-at  ")).toBe("de-AT");
+  });
+
+  it("lowercases simple language tags", () => {
+    expect(normalizeLocale(" FR ")).toBe("fr");
+  });
+});
+
+describe("loadI18nConfigFromFile", () => {
+  it("throws when file is missing", () => {
+    expect(() => loadI18nConfigFromFile("nonexistent-config.json", "/tmp")).toThrow(
+      ConfigValidationError
+    );
+    expect(() => loadI18nConfigFromFile("nonexistent-config.json", "/tmp")).toThrow(
+      /Config file not found/
+    );
+  });
+
+  it("throws on invalid JSON", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-json-"));
+    const p = path.join(dir, "bad.json");
+    fs.writeFileSync(p, "{ not json", "utf8");
+    try {
+      expect(() => loadI18nConfigFromFile("bad.json", dir)).toThrow(/Invalid JSON/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("writeInitConfigFile", () => {
+  it("writes parseable JSON for uiMarkdown template", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-"));
+    const out = path.join(dir, "out", "ai-i18n-tools.config.json");
+    try {
+      writeInitConfigFile(out, "uiMarkdown", dir);
+      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as { sourceLocale?: string };
+      expect(raw.sourceLocale).toBe("en-GB");
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("parseI18nConfig glossary legacy field", () => {
+  it("maps glossary.uiGlossaryFromStringsJson to uiGlossary when uiGlossary is unset", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./out" }],
+        ui: uiDefaults,
+        glossary: { uiGlossaryFromStringsJson: "strings.json" },
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: {
+          translateUIStrings: true,
+          translateMarkdown: false,
+          translateJSON: false,
+          extractUIStrings: false,
+        },
+      })
+    );
+    expect(c.glossary?.uiGlossary).toBe("strings.json");
+  });
+});
+
 describe("parseI18nConfig targetLocales string", () => {
   it("accepts targetLocales as a string path and coerces to array in output", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
-        documentation: { contentPaths: [], outputDir: "./out", cacheDir: ".translation-cache" },
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./out" }],
         ui: uiDefaults,
         targetLocales: "src/locales/ui-languages.json",
         openrouter: {

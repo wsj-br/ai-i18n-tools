@@ -1,10 +1,11 @@
 import { protectAdmonitionSyntax, restoreAdmonitionSyntax } from "./admonition-placeholders.js";
 import { protectDocAnchors, restoreDocAnchors } from "./anchor-placeholders.js";
+import { protectMarkdownEmphasis, restoreMarkdownEmphasis } from "./emphasis-placeholders.js";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
  * Chains placeholder protection for document translation:
- * admonitions → doc anchors → markdown URLs. Restore is the inverse order.
+ * admonitions → doc anchors → markdown URLs → markdown emphasis. Restore is the inverse order.
  */
 export class PlaceholderHandler {
   protectForTranslation(text: string): {
@@ -18,8 +19,9 @@ export class PlaceholderHandler {
     const ad = protectAdmonitionSyntax(text);
     const doc = protectDocAnchors(ad.protected);
     const urls = protectMarkdownUrls(doc.protected);
+    const emphasis = protectMarkdownEmphasis(urls.protected);
     return {
-      text: urls.protected,
+      text: emphasis.protected,
       openMap: ad.openMap,
       endMap: ad.endMap,
       htmlAnchors: doc.htmlAnchors,
@@ -38,7 +40,8 @@ export class PlaceholderHandler {
       urlMap: string[];
     }
   ): string {
-    let s = restoreMarkdownUrls(text, state.urlMap);
+    let s = restoreMarkdownEmphasis(text);
+    s = restoreMarkdownUrls(s, state.urlMap);
     s = restoreDocAnchors(s, state.htmlAnchors, state.docusaurusHeadingIds);
     s = restoreAdmonitionSyntax(s, state.openMap, state.endMap);
     return s;

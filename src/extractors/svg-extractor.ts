@@ -1,4 +1,4 @@
-import type { Segment } from "../core/types.js";
+import type { Segment, SegmentTranslationMapValue } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 
 const TEXT_TAG_RE = /<text([\s\S]*?)>([\s\S]*?)<\/text>/gi;
@@ -112,7 +112,7 @@ export class SvgExtractor extends BaseExtractor {
     return segments;
   }
 
-  reassemble(segments: Segment[], translations: Map<string, string>): string {
+  reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string {
     if (!this.lastSvg) {
       throw new Error("SvgExtractor.reassemble: call extract() first");
     }

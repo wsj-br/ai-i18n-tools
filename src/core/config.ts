@@ -1,7 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { ConfigValidationError } from "./errors.js";
-import { coerceTargetLocalesField, normalizeLocale, parseLocaleList } from "./locale-utils.js";
+import {
+  coerceTargetLocalesField,
+  englishLanguageNameForLocale,
+  normalizeLocale,
+  parseLocaleList,
+} from "./locale-utils.js";
 import {
   augmentConfigWithUiLanguagesFile,
   expandDocumentationTargetLocalesInRawInput,
@@ -10,19 +15,23 @@ import {
   resolveLocalesForUI,
 } from "./ui-languages.js";
 import {
+  type DocumentationBlock,
   type I18nConfig,
+  type I18nDocTranslateConfig,
   type OpenRouterConfig,
   type RawI18nConfigInput,
   i18nConfigSchema,
 } from "./types.js";
 
-export { coerceTargetLocalesField, normalizeLocale, parseLocaleList };
+export { coerceTargetLocalesField, englishLanguageNameForLocale, normalizeLocale, parseLocaleList };
 
 const DEFAULT_OPENROUTER_MODELS: string[] = [
-  "qwen/qwen3-235b-a22b-2507",
-  "stepfun/step-3.5-flash",
-  "anthropic/claude-3-haiku",
-  "anthropic/claude-3.5-haiku"
+  "openai/gpt-4o-mini",
+  "deepseek/deepseek-v3.2",
+  "google/gemini-3.1-flash-lite-preview",
+  "qwen/qwen3.6-plus",
+  "moonshotai/kimi-k2.5",
+  "anthropic/claude-sonnet-4.6"
 ];
 
 /**
@@ -44,6 +53,25 @@ export function resolveTranslationModels(o: OpenRouterConfig): string[] {
   const fb = o.fallbackModel?.trim();
   if (fb && fb !== out[0]) {
     out.push(fb);
+  }
+  return out;
+}
+
+/**
+ * Ordered OpenRouter models for UI translation: optional `ui.preferredModel` first, then
+ * {@link resolveTranslationModels} for `openrouter`, with the preferred id deduplicated from the tail.
+ */
+export function resolveUITranslationModels(config: I18nConfig): string[] {
+  const base = resolveTranslationModels(config.openrouter);
+  const pref = config.ui.preferredModel?.trim();
+  if (!pref) {
+    return base;
+  }
+  const out: string[] = [pref];
+  for (const m of base) {
+    if (m !== pref) {
+      out.push(m);
+    }
   }
   return out;
 }
@@ -79,24 +107,37 @@ function deepMergeDefaults<T extends Record<string, unknown>>(base: T, override:
   return next as T;
 }
 
-/** Merge `documentation.sourceFiles` into `documentation.contentPaths` (unique). */
+/** Merge each block's `sourceFiles` into `contentPaths` (unique). */
 function mergeDocumentationSourceFiles(raw: Record<string, unknown>): void {
-  const doc = raw.documentation;
-  if (!doc || typeof doc !== "object" || Array.isArray(doc)) {
+  const docs = raw.documentations;
+  if (!Array.isArray(docs)) {
     return;
   }
-  const d = doc as Record<string, unknown>;
-  const cp = d.contentPaths;
-  const sf = d.sourceFiles;
-  const list: string[] = Array.isArray(cp) ? [...(cp as string[])] : [];
-  if (Array.isArray(sf)) {
-    for (const p of sf as string[]) {
-      if (typeof p === "string" && p.trim() && !list.includes(p)) {
-        list.push(p);
+  for (const item of docs) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      continue;
+    }
+    const d = item as Record<string, unknown>;
+    const cp = d.contentPaths;
+    const sf = d.sourceFiles;
+    const list: string[] = Array.isArray(cp) ? [...(cp as string[])] : [];
+    if (Array.isArray(sf)) {
+      for (const p of sf as string[]) {
+        if (typeof p === "string" && p.trim() && !list.includes(p)) {
+          list.push(p);
+        }
       }
     }
+    d.contentPaths = list;
   }
-  d.contentPaths = list;
+}
+
+/**
+ * Single-documentation view for translate-docs: one block plus root `cacheDir` and shared settings.
+ */
+export function toDocTranslateConfig(root: I18nConfig, block: DocumentationBlock): I18nDocTranslateConfig {
+  const { documentations: _, ...rest } = root;
+  return { ...rest, documentation: block };
 }
 
 export const defaultI18nConfigPartial: RawI18nConfigInput = {
@@ -120,12 +161,14 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     stringsJson: "strings.json",
     flatOutputDir: "./locales",
   },
-  documentation: {
-    contentPaths: [],
-    outputDir: "./i18n",
-    cacheDir: ".translation-cache",
-    markdownOutput: {},
-  },
+  cacheDir: ".translation-cache",
+  documentations: [
+    {
+      contentPaths: [],
+      outputDir: "./i18n",
+      markdownOutput: {},
+    },
+  ],
 };
 
 /**
@@ -164,7 +207,7 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
   if (needsDocTranslation && getDocumentationTargetLocaleCodes(config).length === 0) {
     throw new ConfigValidationError(
       "When translateMarkdown / translateJSON is enabled, set non-empty targetLocales " +
-        "and/or documentation.targetLocales (documentation-only locale list)."
+        "and/or documentations[].targetLocales (documentation-only locale list)."
     );
   }
 
@@ -181,10 +224,13 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
     );
   }
 
-  if (needsDocTranslation && config.documentation.contentPaths.length === 0) {
-    throw new ConfigValidationError(
-      "documentation.contentPaths must be non-empty when translateMarkdown / translateJSON is enabled"
-    );
+  if (needsDocTranslation) {
+    const hasPaths = config.documentations.some((d) => d.contentPaths.length > 0);
+    if (!hasPaths) {
+      throw new ConfigValidationError(
+        "documentations[].contentPaths must be non-empty in at least one block when translateMarkdown / translateJSON is enabled"
+      );
+    }
   }
 }
 
@@ -336,16 +382,18 @@ export const initConfigTemplates = {
     batchConcurrency: 4,
     batchSize: 20,
     maxBatchChars: 4096,
-    documentation: {
-      contentPaths: [],
-      outputDir: "./i18n",
-      cacheDir: ".translation-cache",
-      markdownOutput: {
-        style: "flat",
+    cacheDir: ".translation-cache",
+    documentations: [
+      {
+        contentPaths: [],
+        outputDir: "./i18n",
+        markdownOutput: {
+          style: "flat",
+        },
+        // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
+        injectTranslationMetadata: true,
       },
-      // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
-      injectTranslationMetadata: true,
-    },
+    ],
   }),
 
   uiDocusaurus: (): RawI18nConfigInput => ({
@@ -381,18 +429,20 @@ export const initConfigTemplates = {
     batchConcurrency: 4,
     batchSize: 20,
     maxBatchChars: 4096,
-    documentation: {
-      contentPaths: ["docs/"],
-      outputDir: "i18n/",
-      cacheDir: ".translation-cache",
-      jsonSource: "i18n/en",
-      markdownOutput: {
-        // 'docusaurus' places translated files under i18n/<locale>/docusaurus-plugin-content-docs/current/
-        style: "docusaurus",
-        docsRoot: "docs",
+    cacheDir: ".translation-cache",
+    documentations: [
+      {
+        contentPaths: ["docs/"],
+        outputDir: "i18n/",
+        jsonSource: "i18n/en",
+        markdownOutput: {
+          // 'docusaurus' places translated files under i18n/<locale>/docusaurus-plugin-content-docs/current/
+          style: "docusaurus",
+          docsRoot: "docs",
+        },
+        injectTranslationMetadata: true,
       },
-      injectTranslationMetadata: true,
-    },
+    ],
   }),
 } as const;
 

@@ -1,7 +1,7 @@
 # Console App Example
 
-**Read in other languages:**
-[English](README.md) · [Español](translated-docs/README.es.md) · [Français](translated-docs/README.fr.md) · [Deutsch](translated-docs/README.de.md) · [Português (BR)](translated-docs/README.pt-BR.md)
+<small>**Read in other languages:** </small>
+<small id="lang-list">[en-GB](./README.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [pt-BR](./translated-docs/README.pt-BR.md)</small>
 
 This example demonstrates how to use `ai-i18n-tools` to internationalize a Node.js console application.
 

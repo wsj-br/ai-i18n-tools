@@ -1,4 +1,4 @@
-import type { Segment } from "../core/types.js";
+import type { Segment, SegmentTranslationMapValue } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 
 interface I18nEntry {
@@ -89,7 +89,7 @@ export class JsonExtractor extends BaseExtractor {
     return segments;
   }
 
-  reassemble(segments: Segment[], translations: Map<string, string>): string {
+  reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string {
     const originalContent = this.lastOriginalContent;
     if (!originalContent) {
       throw new Error("JsonExtractor.reassemble: call extract() first");

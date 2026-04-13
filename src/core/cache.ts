@@ -1,21 +1,38 @@
-import { DatabaseSync, backup } from "node:sqlite";
 import fs from "fs";
 import path from "path";
+import { createRequire } from "node:module";
+import type * as Sqlite from "node:sqlite";
 import { CacheError } from "./errors.js";
+import { USER_EDITED_MODEL } from "./user-edited-model.js";
 import type { CacheEntry, CleanupStats, FileTracking, TranslationRow } from "./types.js";
 import { computeSegmentHash } from "../utils/hash.js";
+import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
 
 const SCHEMA_VERSION = 1;
+const require = createRequire(import.meta.url);
+
+type SqliteModule = typeof Sqlite;
+
+let sqliteModule: SqliteModule | null = null;
+
+function loadSqlite(): SqliteModule {
+  // Delay node:sqlite evaluation until runtime so the CLI can install its
+  // warning filter before Node emits the module's ExperimentalWarning.
+  sqliteModule ??= require("node:sqlite") as SqliteModule;
+  return sqliteModule;
+}
 
 /**
  * SQLite translation cache. `better-sqlite3` uses a single native connection per instance
  * (no JS-level pool); reuse one instance per process for best throughput.
  */
 export class TranslationCache {
-  private db: DatabaseSync;
+  private db: Sqlite.DatabaseSync;
   private readonly dbFilePath: string | null;
 
   constructor(cachePath: string) {
+    const { DatabaseSync } = loadSqlite();
+
     if (cachePath === ":memory:") {
       this.dbFilePath = null;
       this.db = new DatabaseSync(":memory:");
@@ -192,6 +209,85 @@ export class TranslationCache {
     };
   }
 
+  /**
+   * Aggregate documentation-cache stats for dashboards (stale vs active, per locale/model).
+   */
+  getDetailedStats(): {
+    totalSegments: number;
+    totalFiles: number;
+    staleSegments: number;
+    activeSegments: number;
+    byLocale: { locale: string; total: number; stale: number; active: number }[];
+    byModel: { model: string; count: number }[];
+    byModelLocale: { model: string; locale: string; count: number }[];
+    uniqueFilepaths: number;
+  } {
+    const totalSegments = (
+      this.db.prepare("SELECT COUNT(*) as count FROM translations").get() as { count: number }
+    ).count;
+    const totalFiles = (
+      this.db.prepare("SELECT COUNT(*) as count FROM file_tracking").get() as { count: number }
+    ).count;
+    const staleSegments = (
+      this.db
+        .prepare("SELECT COUNT(*) as count FROM translations WHERE last_hit_at IS NULL")
+        .get() as { count: number }
+    ).count;
+    const activeSegments = (
+      this.db
+        .prepare("SELECT COUNT(*) as count FROM translations WHERE last_hit_at IS NOT NULL")
+        .get() as { count: number }
+    ).count;
+    const uniqueFilepaths = (
+      this.db
+        .prepare(
+          "SELECT COUNT(DISTINCT filepath) as count FROM translations WHERE filepath IS NOT NULL AND TRIM(filepath) != ''"
+        )
+        .get() as { count: number }
+    ).count;
+
+    const localeRows = this.db
+      .prepare(
+        `SELECT locale,
+          COUNT(*) as total,
+          SUM(CASE WHEN last_hit_at IS NULL THEN 1 ELSE 0 END) as stale,
+          SUM(CASE WHEN last_hit_at IS NOT NULL THEN 1 ELSE 0 END) as active
+        FROM translations
+        GROUP BY locale
+        ORDER BY locale`
+      )
+      .all() as { locale: string; total: number; stale: number; active: number }[];
+
+    const modelRows = this.db
+      .prepare(
+        `SELECT COALESCE(NULLIF(TRIM(model), ''), '(unknown)') as model, COUNT(*) as count
+        FROM translations
+        GROUP BY COALESCE(NULLIF(TRIM(model), ''), '(unknown)')
+        ORDER BY count DESC, model`
+      )
+      .all() as { model: string; count: number }[];
+
+    const modelLocaleRows = this.db
+      .prepare(
+        `SELECT COALESCE(NULLIF(TRIM(model), ''), '(unknown)') as model, locale, COUNT(*) as count
+        FROM translations
+        GROUP BY COALESCE(NULLIF(TRIM(model), ''), '(unknown)'), locale
+        ORDER BY model, locale`
+      )
+      .all() as { model: string; locale: string; count: number }[];
+
+    return {
+      totalSegments,
+      totalFiles,
+      staleSegments,
+      activeSegments,
+      byLocale: localeRows,
+      byModel: modelRows,
+      byModelLocale: modelLocaleRows,
+      uniqueFilepaths,
+    };
+  }
+
   clear(locale?: string): void {
     if (locale) {
       this.db.prepare("DELETE FROM translations WHERE locale = ?").run(locale);
@@ -245,6 +341,78 @@ export class TranslationCache {
       )
       .run();
     this.db.exec("DROP TABLE IF EXISTS _hit_keys");
+    return Number(result.changes);
+  }
+
+  /**
+   * Like {@link resetLastHitAtForUnhitMarkdown}, but only rows whose `filepath` is in `allowedRelPaths`
+   * (e.g. markdown files in scope for this translate run after path filters).
+   */
+  resetLastHitAtForUnhitMarkdownInScope(
+    hitKeys: Set<string>,
+    allowedRelPaths: readonly string[]
+  ): number {
+    if (hitKeys.size === 0 || allowedRelPaths.length === 0) {
+      return 0;
+    }
+    const normalized = allowedRelPaths.map((p) => p.split("\\").join("/"));
+    return this.resetLastHitAtForUnhitScopedWithScope(
+      hitKeys,
+      `(filepath IS NULL OR LOWER(filepath) LIKE '%.md' OR LOWER(filepath) LIKE '%.mdx')`,
+      normalized
+    );
+  }
+
+  /**
+   * Like {@link resetLastHitAtForUnhitJson}, but only rows whose `filepath` is in `allowedRelPaths`.
+   */
+  resetLastHitAtForUnhitJsonInScope(
+    hitKeys: Set<string>,
+    allowedRelPaths: readonly string[]
+  ): number {
+    if (hitKeys.size === 0 || allowedRelPaths.length === 0) {
+      return 0;
+    }
+    const normalized = allowedRelPaths.map((p) => p.split("\\").join("/"));
+    return this.resetLastHitAtForUnhitScopedWithScope(
+      hitKeys,
+      `(filepath IS NOT NULL AND LOWER(filepath) LIKE '%.json')`,
+      normalized
+    );
+  }
+
+  private resetLastHitAtForUnhitScopedWithScope(
+    hitKeys: Set<string>,
+    filepathPredicateSql: string,
+    allowedRelPaths: readonly string[]
+  ): number {
+    const keys = Array.from(hitKeys);
+    const flatParams = keys.flatMap((k) => {
+      const [h, l] = k.split("|");
+      return [h, l];
+    });
+    this.db.exec("DROP TABLE IF EXISTS _hit_keys");
+    this.db.exec("CREATE TEMP TABLE _hit_keys (source_hash TEXT, locale TEXT)");
+    const insertPlaceholders = keys.map(() => "(?, ?)").join(", ");
+    this.db.prepare(`INSERT INTO _hit_keys VALUES ${insertPlaceholders}`).run(...flatParams);
+
+    this.db.exec("DROP TABLE IF EXISTS _scope_paths");
+    this.db.exec("CREATE TEMP TABLE _scope_paths (filepath TEXT PRIMARY KEY)");
+    const scopePlaceholders = allowedRelPaths.map(() => "(?)").join(", ");
+    this.db
+      .prepare(`INSERT INTO _scope_paths VALUES ${scopePlaceholders}`)
+      .run(...allowedRelPaths);
+
+    const result = this.db
+      .prepare(
+        `UPDATE translations SET last_hit_at = NULL
+       WHERE ${filepathPredicateSql}
+       AND filepath IN (SELECT filepath FROM _scope_paths)
+       AND (source_hash, locale) NOT IN (SELECT source_hash, locale FROM _hit_keys)`
+      )
+      .run();
+    this.db.exec("DROP TABLE IF EXISTS _hit_keys");
+    this.db.exec("DROP TABLE IF EXISTS _scope_paths");
     return Number(result.changes);
   }
 
@@ -337,8 +505,10 @@ export class TranslationCache {
 
   updateTranslation(sourceHash: string, locale: string, translatedText: string): void {
     this.db
-      .prepare(`UPDATE translations SET translated_text = ? WHERE source_hash = ? AND locale = ?`)
-      .run(translatedText, sourceHash, locale);
+      .prepare(
+        `UPDATE translations SET translated_text = ?, model = ? WHERE source_hash = ? AND locale = ?`
+      )
+      .run(translatedText, USER_EDITED_MODEL, sourceHash, locale);
   }
 
   deleteTranslation(sourceHash: string, locale: string): void {
@@ -406,10 +576,52 @@ export class TranslationCache {
     return Number(result.changes);
   }
 
-  deleteByFilepath(filepath: string): number {
+  /** Deletes matching rows in `translations` only (see {@link deleteFileTrackingByPath} for tracking keys). */
+  deleteTranslationsByFilepath(filepath: string): number {
     const result = this.db.prepare("DELETE FROM translations WHERE filepath = ?").run(filepath);
-    this.db.prepare("DELETE FROM file_tracking WHERE filepath = ?").run(filepath);
     return Number(result.changes);
+  }
+
+  /** Deletes all `file_tracking` rows for this cache key (all locales). */
+  deleteFileTrackingByPath(filepath: string): number {
+    const result = this.db.prepare("DELETE FROM file_tracking WHERE filepath = ?").run(filepath);
+    return Number(result.changes);
+  }
+
+  /** Distinct `filepath` values in `file_tracking` (cache keys: `doc-block:…`, `svg-assets:…`, etc.). */
+  listFileTrackingPaths(): string[] {
+    const rows = this.db
+      .prepare(
+        `SELECT DISTINCT filepath FROM file_tracking WHERE filepath IS NOT NULL AND filepath != '' ORDER BY filepath`
+      )
+      .all() as { filepath: string }[];
+    return rows.map((r) => r.filepath);
+  }
+
+  /**
+   * Remove `file_tracking` rows whose resolved path does not exist on disk under `projectRoot`.
+   */
+  pruneOrphanedFileTrackingByDisk(projectRoot: string, dryRun: boolean): number {
+    let removed = 0;
+    for (const fp of this.listFileTrackingPaths()) {
+      const abs = resolveCacheTrackingKeyToAbs(projectRoot, fp);
+      if (!fs.existsSync(abs)) {
+        if (!dryRun) {
+          removed += this.deleteFileTrackingByPath(fp);
+        } else {
+          removed += 1;
+        }
+      }
+    }
+    return removed;
+  }
+
+  /**
+   * @deprecated Prefer {@link deleteTranslationsByFilepath} / {@link deleteFileTrackingByPath} explicitly.
+   * Deletes `translations` rows only (no longer deletes `file_tracking`).
+   */
+  deleteByFilepath(filepath: string): number {
+    return this.deleteTranslationsByFilepath(filepath);
   }
 
   getUniqueLocales(): string[] {
@@ -511,6 +723,7 @@ export class TranslationCache {
     if (this.dbFilePath === null) {
       throw new CacheError("backup is not supported for :memory: databases");
     }
+    const { backup } = loadSqlite();
     fs.mkdirSync(path.dirname(path.resolve(destinationPath)), { recursive: true });
     await backup(this.db, destinationPath);
   }
@@ -520,6 +733,7 @@ export class TranslationCache {
     if (this.dbFilePath === null) {
       throw new CacheError("restore is not supported for :memory: databases");
     }
+    const { DatabaseSync } = loadSqlite();
     if (!fs.existsSync(sourcePath)) {
       throw new CacheError(`Backup file not found: ${sourcePath}`);
     }

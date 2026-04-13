@@ -13,6 +13,31 @@ export function normalizeLocale(locale: string): string {
   return normalized.toLowerCase();
 }
 
+/**
+ * English language name for a BCP-47 tag (e.g. `ko` → `"Korean"`, `en-GB` → `"British English"`).
+ * Used for LLM prompts when `localeDisplayNames` is unset. Returns `undefined` if `Intl` cannot resolve a useful label.
+ */
+export function englishLanguageNameForLocale(localeCode: string): string | undefined {
+  const tag = normalizeLocale(localeCode);
+  if (!tag) {
+    return undefined;
+  }
+  try {
+    const dn = new Intl.DisplayNames(["en"], { type: "language" });
+    const name = dn.of(tag);
+    if (typeof name !== "string" || !name.trim()) {
+      return undefined;
+    }
+    const t = name.trim();
+    if (t.toLowerCase() === tag.toLowerCase()) {
+      return undefined;
+    }
+    return t;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Split CLI/config locale lists (commas and/or ASCII whitespace). Dedupes, preserves order. */
 export function parseLocaleList(raw: string): string[] {
   const seen = new Set<string>();

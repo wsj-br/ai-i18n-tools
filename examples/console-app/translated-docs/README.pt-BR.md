@@ -1,16 +1,17 @@
 ---
-translation_last_updated: '2026-04-11T01:51:18.631Z'
-source_file_mtime: '2026-04-11T01:00:55.851Z'
-source_file_hash: 885c19658d8dbf08c9bba9f382a23b61d462037268057df4d9c87aea4e5012fc
+translation_last_updated: '2026-04-13T00:28:28.947Z'
+source_file_mtime: '2026-04-12T15:37:53.621Z'
+source_file_hash: 49f79b71c1318dd97048d93d4c0d706db898b57db53ec2ab566d1cf0375dcb76
 translation_language: pt-BR
 source_file_path: README.md
 ---
 # Exemplo de Aplicativo de Console
 
-**Leia em outros idiomas:**
-[English](../README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português (BR)](README.pt-BR.md)
+<small>**Leia em outros idiomas:**</small>
 
-Este exemplo demonstra como usar o `ai-i18n-tools` para internacionalizar uma aplicação Node.js de console.
+<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+
+Este exemplo demonstra como usar `ai-i18n-tools` para internacionalizar um aplicativo de console Node.js.
 
 ## Requisitos
 
@@ -20,7 +21,7 @@ Este exemplo demonstra como usar o `ai-i18n-tools` para internacionalizar uma ap
 
 ## Instalação
 
-Execute `pnpm install` a partir da **raiz do repositório**. O arquivo `pnpm-workspace.yaml` na raiz declara tanto a biblioteca quanto este exemplo como pacotes do workspace, então o pnpm vincula o `ai-i18n-tools` diretamente ao seu checkout local por meio da entrada `"ai-i18n-tools": "workspace:^"` no `package.json`. Nenhuma etapa separada de build ou link é necessária - basta recompilar a biblioteca (`pnpm run build` na raiz do repositório) sempre que alterar os arquivos-fonte e o exemplo usará automaticamente o `dist/` atualizado.
+Execute `pnpm install` a partir da **raiz do repositório**. O arquivo `pnpm-workspace.yaml` na raiz declara tanto a biblioteca quanto este exemplo como pacotes do workspace, então o pnpm vincula `ai-i18n-tools` diretamente ao seu checkout local através da entrada `"ai-i18n-tools": "workspace:^"` no `package.json`. Nenhuma etapa de build ou link separada é necessária - basta reconstruir a biblioteca (`pnpm run build` na raiz do repositório) sempre que você alterar os arquivos de origem e o exemplo utilizará automaticamente o `dist/` atualizado.
 
 ```bash
 # From the repository root
@@ -30,7 +31,7 @@ pnpm run build
 
 ## Uso
 
-Execute a aplicação em inglês (padrão):
+Execute o aplicativo em inglês (padrão):
 
 ```bash
 pnpm start
@@ -53,19 +54,19 @@ node src/main.js --locale fr
 
 ## Idiomas Suportados
 
-| Código  | Idioma               |
-| ------- | -------------------- |
+| Código  | Idioma                |
+| ------- | --------------------- |
 | `en`    | Inglês (padrão)      |
-| `es`    | Espanhol             |
-| `fr`    | Francês              |
-| `de`    | Alemão               |
-| `pt-BR` | Português (Brasil)   |
+| `es`    | Espanhol              |
+| `fr`    | Francês               |
+| `de`    | Alemão                |
+| `pt-BR` | Português (Brasil)    |
 
 ## Fluxo de Trabalho
 
-### 1. Extrair strings da interface
+### 1. Extrair strings da UI
 
-Verifica os arquivos em `src/` por chamadas a `t()` e atualiza o `locales/strings.json`:
+Examina `src/` em busca de chamadas `t()` e atualiza `locales/strings.json`:
 
 ```bash
 pnpm run i18n:extract
@@ -80,7 +81,7 @@ export OPENROUTER_API_KEY=your_key_here
 pnpm run i18n:translate
 ```
 
-Você também pode executar `i18n:sync` para extrair e traduzir as strings da interface em um único passo:
+Você também pode executar `i18n:sync` para extrair e traduzir as strings da UI em uma única etapa:
 
 ```bash
 pnpm run i18n:sync
@@ -92,9 +93,9 @@ pnpm run i18n:sync
 pnpm run start:es
 ```
 
-### Limpar cache e traduzir novamente
+### Limpar cache e retraduzir
 
-`i18n:clean` exclui apenas o diretório `.translation-cache/` (ele **não** remove o conteúdo confirmado em `locales/` ou `translated-docs/`).
+`i18n:clean` exclui apenas `.translation-cache/` (ele **não** remove os diretórios `locales/` ou `translated-docs/` que estão no commit).
 
 ```bash
 pnpm run i18n:clean && pnpm run i18n:extract && pnpm run i18n:translate
@@ -117,4 +118,4 @@ console-app/
     └── pt-BR.json              # Portuguese (Brazil) flat strings (committed)
 ```
 
-O diretório `translated-docs/` é confirmado no git com os READMEs traduzidos para que você possa lê-los sem precisar executar a tradução; execute novamente `i18n:translate` após alterar a fonte em inglês.
+O diretório `translated-docs/` está no commit do git com os READMEs traduzidos, para que você possa lê-los sem executar a tradução; execute novamente `i18n:translate` após alterar a fonte em inglês.

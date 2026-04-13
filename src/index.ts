@@ -9,12 +9,20 @@ export {
   type ReactExtractorConfig,
   type SvgExtractorConfig,
   type UiConfig,
-  type DocumentationConfig,
+  type DocumentationBlock,
+  type I18nDocTranslateConfig,
   type MarkdownOutputConfig,
+  type MarkdownPostProcessingConfig,
+  type LanguageListBlockConfig,
+  type RegexAdjustmentConfig,
   type SvgAssetsConfig,
   type RawI18nConfigInput,
   type Segment,
   type SegmentType,
+  type DocSegmentTranslation,
+  type SegmentTranslationMapValue,
+  segmentTranslationText,
+  translationTextMap,
   type SvgSegmentMeta,
   type TranslationResult,
   type FileTracking,
@@ -43,12 +51,15 @@ export {
   expandSvgPathTemplate,
   resolveSvgAssetOutputPath,
   svgAssetCacheFilepath,
+  svgTranslationFilepathMetadata,
   relPathUnderSvgSource,
 } from "./core/svg-asset-paths.js";
 
 export {
   resolveTranslationModels,
+  resolveUITranslationModels,
   coerceTargetLocalesField,
+  englishLanguageNameForLocale,
   normalizeLocale,
   parseLocaleList,
   mergeWithDefaults,
@@ -61,9 +72,12 @@ export {
   DEFAULT_CONFIG_FILENAME,
   initConfigTemplates,
   writeInitConfigFile,
+  toDocTranslateConfig,
 } from "./core/config.js";
 
 export { TranslationCache } from "./core/cache.js";
+
+export { USER_EDITED_MODEL } from "./core/user-edited-model.js";
 
 export {
   buildDocumentBatchPrompt,
@@ -98,7 +112,7 @@ export { loadTranslateIgnore, isIgnored } from "./utils/ignore-parser.js";
 
 export { BaseExtractor } from "./extractors/base-extractor.js";
 export { classifySegmentType } from "./extractors/classify-segment.js";
-export { MarkdownExtractor } from "./extractors/markdown-extractor.js";
+export { MarkdownExtractor, type MarkdownExtractOptions } from "./extractors/markdown-extractor.js";
 export { JsonExtractor } from "./extractors/json-extractor.js";
 export { SvgExtractor, type SvgExtractorOptions } from "./extractors/svg-extractor.js";
 export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
@@ -116,7 +130,7 @@ export { splitTranslatableIntoBatches, type BatchConfig } from "./processors/bat
 export {
   validateTranslation,
   validateDocTranslatePair,
-  segmentMarkdownUrlCountsMatch,
+  compareMarkdownAST,
   type ValidationResult,
 } from "./processors/validator.js";
 

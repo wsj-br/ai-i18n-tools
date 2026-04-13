@@ -2,30 +2,42 @@
   "b4af1a76": {
     "source": "AI-i18n-tools: Next.js example app",
     "translated": {
-      "es": "AI-i18n-tools: Aplicación de ejemplo Next.js",
-      "fr": "AI-i18n-tools : exemple d'application Next.js",
-      "de": "AI-i18n-tools: Next.js Beispielanwendung",
-      "pt-BR": "AI-i18n-tools: Aplicativo de exemplo Next.js"
+      "es": "AI-i18n-tools: Ejemplo de aplicación Next.js",
+      "pt-BR": "AI-i18n-tools: Aplicativo de exemplo Next.js",
+      "de": "AI-i18n-tools: Next.js Beispiel-App",
+      "fr": "AI-i18n-tools : Exemple d'application Next.js"
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 31
+        "line": 34
       }
     ]
   },
   "cbf41347": {
     "source": "Hello World!!",
     "translated": {
-      "es": "¡Hola Mundo!",
-      "fr": "Bonjour tout le monde !!",
+      "es": "¡Hola Mundo!!",
+      "pt-BR": "Olá Mundo!!",
       "de": "Hallo Welt!!",
-      "pt-BR": "Olá Mundo!!"
+      "fr": "Bonjour le monde !!"
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 48
+        "line": 51
       }
     ]
   },
@@ -33,14 +45,20 @@
     "source": "This line will be translated to multiple languages.",
     "translated": {
       "es": "Esta línea se traducirá a varios idiomas.",
-      "fr": "Cette ligne sera traduite dans plusieurs langues.",
+      "pt-BR": "Esta linha será traduzida para vários idiomas.",
       "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
-      "pt-BR": "Esta linha será traduzida para vários idiomas."
+      "fr": "Cette ligne sera traduite en plusieurs langues."
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 49
+        "line": 52
       }
     ]
   },
@@ -48,39 +66,36 @@
     "source": "This is line number {{number}}",
     "translated": {
       "es": "Esta es la línea número {{number}}",
-      "fr": "Ceci est la ligne numéro {{number}}",
-      "de": "Dies ist die Zeile Nummer {{number}}",
-      "pt-BR": "Esta é a linha número {{number}}"
+      "pt-BR": "Esta é a linha número {{number}}",
+      "de": "Das ist Zeile Nummer {{number}}",
+      "fr": "Ceci est la ligne numéro {{number}}"
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 50
+        "line": 53
       }
     ]
   },
   "6d13d00f": {
     "source": "Translation demo illustration",
     "translated": {
-      "de": "Übersichtsdemo-Illustration",
+      "es": "Ilustración de demostración de traducción",
       "pt-BR": "Ilustração de demonstração de tradução",
-      "fr": "Illustration de démonstration de traduction",
-      "es": "Ilustración de demostración de traducción"
+      "de": "Übersetzungs-Demo-Illustration",
+      "fr": "Illustration de démonstration de traduction"
     },
-    "locations": [
-      {
-        "file": "src/app/page.tsx",
-        "line": 58
-      }
-    ]
-  },
-  "d8394469": {
-    "source": "The texts inside this SVG ilustration are being translated by ai-i18n-tools.",
-    "translated": {
-      "es": "Los textos dentro de esta ilustración SVG están siendo traducidos por ai-i18n-tools.",
-      "de": "Die Texte in dieser SVG-Illustration werden von ai-i18n-tools übersetzt.",
-      "pt-BR": "Os textos dentro desta ilustração SVG estão sendo traduzidos pelo ai-i18n-tools.",
-      "fr": "Les textes à l'intérieur de cette illustration SVG sont traduits par ai-i18n-tools."
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -89,13 +104,40 @@
       }
     ]
   },
+  "85e37a04": {
+    "source": "ai-i18n-tools is translating the texts contained within this SVG ilustration.",
+    "translated": {
+      "es": "ai-i18n-tools está traduciendo los textos contenidos en esta ilustración SVG.",
+      "pt-BR": "ai-i18n-tools está traduzindo os textos contidos nesta ilustração SVG.",
+      "de": "ai-i18n-tools übersetzt die Texte in dieser SVG-Illustration.",
+      "fr": "ai-i18n-tools traduit les textes contenus dans cette illustration SVG."
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
+    },
+    "locations": [
+      {
+        "file": "src/app/page.tsx",
+        "line": 64
+      }
+    ]
+  },
   "e75d0156": {
     "source": "Example Next.js application demonstrating ai-i18n-tools",
     "translated": {
-      "es": "Aplicación de ejemplo Next.js que demuestra ai-i18n-tools",
-      "fr": "Exemple d'application Next.js démontrant ai-i18n-tools",
-      "de": "Beispielanwendung für Next.js, die ai-i18n-tools demonstriert",
-      "pt-BR": "Aplicativo Next.js de exemplo demonstrando ai-i18n-tools"
+      "es": "Ejemplo de aplicación Next.js que demuestra ai-i18n-tools",
+      "pt-BR": "Aplicativo de exemplo Next.js demonstrando ai-i18n-tools",
+      "de": "Beispiel Next.js-Anwendung, die ai-i18n-tools demonstriert",
+      "fr": "Exemple d'application Next.js démontrant ai-i18n-tools"
+    },
+    "models": {
+      "es": "openai/gpt-4o-mini",
+      "pt-BR": "openai/gpt-4o-mini",
+      "de": "openai/gpt-4o-mini",
+      "fr": "openai/gpt-4o-mini"
     },
     "locations": [
       {

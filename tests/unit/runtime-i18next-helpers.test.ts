@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from "vitest";
 import {
   defaultI18nInitOptions,
   wrapI18nWithKeyTrim,
@@ -5,7 +6,7 @@ import {
   getTextDirection,
   applyDirection,
   type I18nWithResources,
-} from "../../src/runtime/i18next-helpers";
+} from "../../src/runtime/i18next-helpers.js";
 
 // ---------------------------------------------------------------------------
 // Minimal fake i18n instance used across tests
@@ -13,7 +14,7 @@ import {
 
 function makeFakeI18n(translations: Record<string, string> = {}) {
   return {
-    t(key: string, options?: unknown): string {
+    t(key: string, _options?: unknown): string {
       const found = translations[key];
       if (found !== undefined) return found;
       // Simulate parseMissingKeyHandler: (key) => key (key-as-default behaviour)
@@ -79,15 +80,13 @@ describe("wrapI18nWithKeyTrim – source-locale interpolation fallback", () => {
   it("does NOT interpolate when options is null", () => {
     const i18n = makeFakeI18n();
     wrapI18nWithKeyTrim(i18n);
-    // @ts-expect-error - null is not a valid option but tests runtime guard
-    expect(i18n.t("Just a key", null)).toBe("Just a key");
+    expect(i18n.t("Just a key", null as never)).toBe("Just a key");
   });
 
   it("does NOT interpolate when options is an array", () => {
     const i18n = makeFakeI18n();
     wrapI18nWithKeyTrim(i18n);
-    // @ts-expect-error - array is not a valid option but tests runtime guard
-    expect(i18n.t("Just a key", [])).toBe("Just a key");
+    expect(i18n.t("Just a key", [] as never)).toBe("Just a key");
   });
 
   it("trims key AND interpolates in the same call", () => {
@@ -149,15 +148,33 @@ describe("getTextDirection", () => {
 
 describe("applyDirection", () => {
   it("sets dir=rtl on the provided element for an RTL locale", () => {
-    const el = { setAttribute: jest.fn() };
+    const el = { setAttribute: vi.fn() };
     applyDirection("ar", el);
     expect(el.setAttribute).toHaveBeenCalledWith("dir", "rtl");
   });
 
   it("sets dir=ltr on the provided element for an LTR locale", () => {
-    const el = { setAttribute: jest.fn() };
+    const el = { setAttribute: vi.fn() };
     applyDirection("en", el);
     expect(el.setAttribute).toHaveBeenCalledWith("dir", "ltr");
+  });
+
+  it("sets dir on global document.documentElement when element is omitted", () => {
+    const setAttribute = vi.fn();
+    const prev = (globalThis as { document?: unknown }).document;
+    (globalThis as { document?: unknown }).document = {
+      documentElement: { setAttribute },
+    };
+    try {
+      applyDirection("ar");
+      expect(setAttribute).toHaveBeenCalledWith("dir", "rtl");
+    } finally {
+      if (prev === undefined) {
+        delete (globalThis as { document?: unknown }).document;
+      } else {
+        (globalThis as { document?: unknown }).document = prev;
+      }
+    }
   });
 });
 
@@ -183,7 +200,7 @@ describe("makeLoadLocale", () => {
 
   it("loads a locale and adds the resource bundle", async () => {
     const i18n = makeI18nWithResources();
-    const loader = jest.fn().mockResolvedValue({ Hello: "Hola" });
+    const loader = vi.fn().mockResolvedValue({ Hello: "Hola" });
     const loadLocale = makeLoadLocale(i18n, { es: loader }, "en");
     await loadLocale("es");
     expect(loader).toHaveBeenCalledTimes(1);
@@ -192,7 +209,7 @@ describe("makeLoadLocale", () => {
 
   it("skips the source locale without calling the loader", async () => {
     const i18n = makeI18nWithResources();
-    const loader = jest.fn();
+    const loader = vi.fn();
     const loadLocale = makeLoadLocale(i18n, { "en-GB": loader }, "en-GB");
     await loadLocale("en-GB");
     expect(loader).not.toHaveBeenCalled();
@@ -200,7 +217,7 @@ describe("makeLoadLocale", () => {
 
   it("warns and skips unsupported locales", async () => {
     const i18n = makeI18nWithResources();
-    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const loadLocale = makeLoadLocale(i18n, {}, "en");
     await loadLocale("ja");
     expect(warn).toHaveBeenCalledWith("[i18n] locale not supported:", "ja");
@@ -209,9 +226,23 @@ describe("makeLoadLocale", () => {
 
   it("handles ESM default-export shaped modules", async () => {
     const i18n = makeI18nWithResources();
-    const loader = jest.fn().mockResolvedValue({ default: { Hello: "Bonjour" } });
+    const loader = vi.fn().mockResolvedValue({ default: { Hello: "Bonjour" } });
     const loadLocale = makeLoadLocale(i18n, { fr: loader }, "en");
     await loadLocale("fr");
     expect((i18n as ReturnType<typeof makeI18nWithResources>).bundles["fr"]).toEqual({ Hello: "Bonjour" });
+  });
+
+  it("warns when dynamic import fails", async () => {
+    const i18n = makeI18nWithResources();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const loader = vi.fn().mockRejectedValue(new Error("network"));
+    const loadLocale = makeLoadLocale(i18n, { de: loader }, "en");
+    await loadLocale("de");
+    expect(warn).toHaveBeenCalledWith(
+      "[i18n] locale not found:",
+      "de",
+      "network"
+    );
+    warn.mockRestore();
   });
 });

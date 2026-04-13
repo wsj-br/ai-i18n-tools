@@ -8,13 +8,20 @@ import {
   type TranslationResult,
   BatchTranslationError,
 } from "../core/types.js";
-import { resolveTranslationModels, normalizeLocale } from "../core/config.js";
+import {
+  englishLanguageNameForLocale,
+  normalizeLocale,
+  resolveTranslationModels,
+} from "../core/config.js";
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
   buildUIPromptMessages,
+  parseBatchJsonArrayResponse,
+  parseBatchJsonObjectResponse,
   parseBatchTranslationResponse,
   parseUIJsonArrayResponse,
+  type DocumentBatchResponseFormat,
   type DocumentPromptContentType,
 } from "../core/prompt-builder.js";
 import type { Logger } from "../utils/logger.js";
@@ -59,9 +66,32 @@ interface OpenRouterRequestPayload {
   provider: typeof OPENROUTER_PROVIDER;
 }
 
+/** Thrown when every model in the chain fails for {@link OpenRouterClient.translateDocumentBatch}. */
+export class DocumentBatchAllModelsFailedError extends Error {
+  constructor(
+    message: string,
+    public readonly details: {
+      systemPrompt: string;
+      userContent: string;
+      lastModel: string;
+      lastError: unknown;
+      /** HTTP response body text when the model returned content but parsing failed. */
+      lastRawAssistantContent?: string;
+    }
+  ) {
+    super(message);
+    this.name = "DocumentBatchAllModelsFailedError";
+  }
+}
+
 export interface OpenRouterClientOptions {
   config: Pick<I18nConfig, "openrouter" | "sourceLocale" | "localeDisplayNames">;
   apiKey?: string;
+  /**
+   * When set and non-empty, use this ordered model list instead of resolving from `config.openrouter`
+   * (e.g. UI translation with `ui.preferredModel` prepended to the global list).
+   */
+  translationModels?: string[];
   /** Append request/response JSON when set. */
   debugTrafficFilePath?: string | null;
   logger?: Logger;
@@ -91,7 +121,17 @@ export class OpenRouterClient {
       throw new Error("OPENROUTER_API_KEY is required");
     }
     this.baseUrl = opts.config.openrouter.baseUrl.replace(/\/$/, "");
-    this.modelsToTry = resolveTranslationModels(opts.config.openrouter);
+    const override = opts.translationModels;
+    const fromOverride =
+      Array.isArray(override) && override.length > 0
+        ? override
+            .filter((m): m is string => typeof m === "string" && m.trim().length > 0)
+            .map((m) => m.trim())
+        : null;
+    this.modelsToTry =
+      fromOverride !== null && fromOverride.length > 0
+        ? fromOverride
+        : resolveTranslationModels(opts.config.openrouter);
     if (this.modelsToTry.length === 0) {
       throw new Error("No OpenRouter models configured (translationModels or defaultModel)");
     }
@@ -102,11 +142,10 @@ export class OpenRouterClient {
     this.localeDisplayNames = {};
     for (const [k, v] of Object.entries(opts.config.localeDisplayNames ?? {})) {
       if (typeof v === "string") {
-        this.localeDisplayNames[k] = v;
+        this.localeDisplayNames[normalizeLocale(k)] = v;
       }
     }
-    const srcNorm = normalizeLocale(opts.config.sourceLocale);
-    this.sourceLanguageLabel = this.localeDisplayNames[srcNorm] ?? opts.config.sourceLocale;
+    this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
   }
@@ -115,9 +154,23 @@ export class OpenRouterClient {
     return this.modelsToTry;
   }
 
-  private targetLanguageLabel(localeCode: string): string {
+  /**
+   * BCP-47 locale id plus English display name for LLM prompts (e.g. `pt-BR: Brazilian Portuguese`).
+   * Uses a colon so it reads as a clear key–value / label field (common in prompt instructions);
+   * it does not clash with hyphens inside tags (`zh-CN`, `pt-BR`) the way a bare `-` can.
+   * Order: `localeDisplayNames` from config, else `englishLanguageNameForLocale` (Intl), else raw code.
+   */
+  private languageLabelForPrompt(localeCode: string): string {
     const n = normalizeLocale(localeCode);
-    return this.localeDisplayNames[n] ?? localeCode;
+    const configured = this.localeDisplayNames[n];
+    const display =
+      configured && configured.trim().length > 0
+        ? configured.trim()
+        : englishLanguageNameForLocale(n);
+    if (display && display.length > 0) {
+      return `${n}: ${display}`;
+    }
+    return localeCode;
   }
 
   private appendDebugLog(direction: "request" | "response", payload: unknown): void {
@@ -336,7 +389,7 @@ export class OpenRouterClient {
       content,
       {
         sourceLanguageLabel: this.sourceLanguageLabel,
-        targetLanguageLabel: this.targetLanguageLabel(targetLocale),
+        targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
         glossaryHints,
       },
       contentType
@@ -358,6 +411,8 @@ export class OpenRouterClient {
       model: res.model,
       usage: res.usage,
       cost: res.cost,
+      debugPrompt: { systemPrompt, userContent },
+      rawAssistantContent: res.content,
     };
   }
 
@@ -368,6 +423,7 @@ export class OpenRouterClient {
     options?: {
       startModelIndex?: number;
       contentType?: DocumentPromptContentType;
+      responseFormat?: DocumentBatchResponseFormat;
       /** When set, log model fallback warnings (translate-docs style). */
       docLogContext?: { relativePath: string };
     }
@@ -381,14 +437,16 @@ export class OpenRouterClient {
     }
 
     const contentType = options?.contentType ?? "markdown";
+    const responseFormat = options?.responseFormat ?? "xml-tags";
     const { systemPrompt, userContent } = buildDocumentBatchPrompt(
       segments,
       {
         sourceLanguageLabel: this.sourceLanguageLabel,
-        targetLanguageLabel: this.targetLanguageLabel(locale),
+        targetLanguageLabel: this.languageLabelForPrompt(locale),
         glossaryHints,
       },
-      contentType
+      contentType,
+      responseFormat
     );
 
     const openRouterMessages = this.toOpenRouterMessages([
@@ -398,24 +456,30 @@ export class OpenRouterClient {
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    let lastFailureDetails:
+      | {
+          systemPrompt: string;
+          userContent: string;
+          lastModel: string;
+          lastError: unknown;
+          lastRawAssistantContent?: string;
+        }
+      | undefined;
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      let completion: ChatResponse;
       try {
-        const result = await this.fetchCompletion(model, openRouterMessages);
-        const translations = parseBatchTranslationResponse(
-          result.content,
-          segments.length,
-          result.content
-        );
-        return {
-          translations,
-          model: result.model,
-          usage: result.usage,
-          cost: result.cost,
-        };
+        completion = await this.fetchCompletion(model, openRouterMessages);
       } catch (e) {
         lastError = e;
+        lastFailureDetails = {
+          systemPrompt,
+          userContent,
+          lastModel: model,
+          lastError: e,
+          lastRawAssistantContent: undefined,
+        };
         const nextModel = this.modelsToTry[mi + 1];
         if (nextModel && options?.docLogContext) {
           this.warnModelSwitch(
@@ -432,12 +496,69 @@ export class OpenRouterClient {
             this.logger?.warn(`Batch request failed with ${model}: ${e}`);
           }
         }
+        continue;
+      }
+
+      try {
+        let translations: Map<number, string>;
+        if (responseFormat === "json-array") {
+          translations = parseBatchJsonArrayResponse(completion.content, segments.length);
+        } else if (responseFormat === "json-object") {
+          translations = parseBatchJsonObjectResponse(completion.content, segments.length);
+        } else {
+          translations = parseBatchTranslationResponse(
+            completion.content,
+            segments.length,
+            completion.content
+          );
+        }
+        return {
+          translations,
+          model: completion.model,
+          usage: completion.usage,
+          cost: completion.cost,
+          debugPrompt: { systemPrompt, userContent },
+          rawAssistantContent: completion.content,
+        };
+      } catch (e) {
+        lastError = e;
+        lastFailureDetails = {
+          systemPrompt,
+          userContent,
+          lastModel: model,
+          lastError: e,
+          lastRawAssistantContent: completion.content,
+        };
+        const nextModel = this.modelsToTry[mi + 1];
+        if (nextModel && options?.docLogContext) {
+          this.warnModelSwitch(
+            locale,
+            options.docLogContext.relativePath,
+            model,
+            nextModel,
+            e
+          );
+        } else if (!options?.docLogContext) {
+          if (e instanceof BatchTranslationError) {
+            this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
+          } else {
+            this.logger?.warn(`Batch parse failed with ${model}: ${e}`);
+          }
+        }
       }
     }
 
-    throw new Error(
-      `All translation models failed for batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
-    );
+    const msg = `All translation models failed for batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`;
+    const details =
+      lastFailureDetails ??
+      ({
+        systemPrompt,
+        userContent,
+        lastModel: this.modelsToTry[Math.max(0, this.modelsToTry.length - 1)]!,
+        lastError,
+        lastRawAssistantContent: undefined,
+      } as const);
+    throw new DocumentBatchAllModelsFailedError(msg, details);
   }
 
   /**
@@ -463,7 +584,7 @@ export class OpenRouterClient {
 
     const { systemPrompt, userContent } = buildUIPromptMessages(texts, {
       sourceLanguageLabel: this.sourceLanguageLabel,
-      targetLanguageLabel: this.targetLanguageLabel(targetLocale),
+      targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
       glossaryHints: options?.glossaryHints,
     });
 

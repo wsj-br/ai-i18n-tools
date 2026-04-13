@@ -1,7 +1,8 @@
 import {
   assignCoercedTargetLocales,
   coerceTargetLocalesField,
-} from "../../src/core/locale-utils";
+  englishLanguageNameForLocale,
+} from "../../src/core/locale-utils.js";
 
 describe("coerceTargetLocalesField", () => {
   it("wraps non-empty string as one-element array", () => {
@@ -24,6 +25,14 @@ describe("coerceTargetLocalesField", () => {
   it("returns [] for invalid input", () => {
     expect(coerceTargetLocalesField(null)).toEqual([]);
     expect(coerceTargetLocalesField(1)).toEqual([]);
+  });
+});
+
+describe("englishLanguageNameForLocale", () => {
+  it("returns English labels for common BCP-47 tags", () => {
+    expect(englishLanguageNameForLocale("ko")).toBe("Korean");
+    expect(englishLanguageNameForLocale("en-GB")).toBe("British English");
+    expect(englishLanguageNameForLocale("de")).toBe("German");
   });
 });
 

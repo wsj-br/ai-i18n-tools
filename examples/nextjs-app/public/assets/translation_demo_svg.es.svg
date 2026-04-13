@@ -31,7 +31,7 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg33" />
   <title id="title1">Ilustración de demostración de traducción</title>
-  <desc id="desc1">Una escena colorida con un amanecer, globo aerostático y dos etiquetas de texto en inglés listas para demostraciones de traducción.</desc>
+  <desc id="desc1">Una escena colorida con un amanecer, un globo aerostático y dos etiquetas de texto en inglés listas para demostraciones de traducción.</desc>
   <defs
      id="defs1">
     <clipPath
@@ -391,12 +391,12 @@
      x="46.75"
      y="281.75"
      style="color:#ffffff;font-weight:500;font-size:15px;font-family:sans-serif;dominant-baseline:auto;text-anchor:start;opacity:1;fill:#e8eaf4;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
-     id="text30"><tspan>Amanecer matutino</tspan></text>
+     id="text30"><tspan>Amanecer</tspan></text>
   <text
      x="28.75"
      y="300.75"
      style="color:#ffffff;font-weight:400;font-size:12px;font-family:sans-serif;dominant-baseline:auto;text-anchor:start;opacity:1;fill:#9ba3bf;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
-     id="text31"><tspan>Un comienzo tranquilo al día</tspan></text>
+     id="text31"><tspan>Un comienzo pacífico del día</tspan></text>
   <!-- Top right: Hot air balloon -->
   <rect
      x="390.75"

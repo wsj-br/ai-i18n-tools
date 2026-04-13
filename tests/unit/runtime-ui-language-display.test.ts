@@ -1,8 +1,8 @@
 import {
   getUILanguageLabel,
   getUILanguageLabelNative,
-} from "../../src/runtime/ui-language-display";
-import type { UiLanguageEntry } from "../../src/core/ui-languages";
+} from "../../src/runtime/ui-language-display.js";
+import type { UiLanguageEntry } from "../../src/core/ui-languages.js";
 
 describe("getUILanguageLabelNative", () => {
   it("returns single label when englishName matches label", () => {

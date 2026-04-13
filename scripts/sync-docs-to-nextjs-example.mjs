@@ -5,7 +5,7 @@
  * after translation (same IDs as English).
  *
  * This mirrors what `docusaurus write-heading-ids` does (classic `{#id}` syntax),
- * but runs without installing Docusaurus: repo-root `pnpm run sync-docs:nextjs-example`
+ * but runs without installing Docusaurus: repo-root `pnpm run sync-docs`
  * only needs Node + github-slugger. We also skip an explicit id on the "Table of
  * contents" heading to match the example site. If you prefer the official CLI,
  * copy/sync first, then from `examples/nextjs-app/docs-site/` run
@@ -13,7 +13,7 @@
  * (slug rules may differ slightly).
  *
  * Usage: node scripts/sync-docs-to-nextjs-example.mjs
- *    or: npm run sync-docs:nextjs-example
+ *    or: npm run sync-docs
  */
 import fs from "node:fs";
 import path from "node:path";

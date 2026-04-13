@@ -32,6 +32,33 @@ export interface Segment {
   svg?: SvgSegmentMeta;
 }
 
+/**
+ * Per-segment translation with optional model metadata. `modelUsed` is set when the text was produced by the API this run
+ * (the model that actually succeeded). Omitted for cache hits so callers do not overwrite a stored model.
+ * Plain `string` remains supported for tests and simple pipelines.
+ */
+export type DocSegmentTranslation = { text: string; modelUsed?: string };
+
+/** Values accepted by {@link ContentExtractor.reassemble}. */
+export type SegmentTranslationMapValue = string | DocSegmentTranslation;
+
+export function segmentTranslationText(v: SegmentTranslationMapValue | undefined): string | undefined {
+  if (v === undefined) {
+    return undefined;
+  }
+  return typeof v === "string" ? v : v.text;
+}
+
+/** Coerce a map to plain `Map<string, string>` (e.g. legacy callers or JSON serialization). */
+export function translationTextMap(m: Map<string, SegmentTranslationMapValue>): Map<string, string> {
+  return new Map(
+    [...m].map(([k, v]) => {
+      const t = segmentTranslationText(v);
+      return [k, t ?? ""] as const;
+    })
+  );
+}
+
 export interface TranslationResult {
   content: string;
   model: string;
@@ -41,6 +68,10 @@ export interface TranslationResult {
     totalTokens: number;
   };
   cost?: number;
+  /** When the API succeeded; used for translation failure debug logs. */
+  debugPrompt?: { systemPrompt: string; userContent: string };
+  /** Raw assistant text before `<translate>` stripping (single-segment). */
+  rawAssistantContent?: string;
 }
 
 /** Row shape for file_tracking and status queries. */
@@ -83,7 +114,7 @@ export interface ContentExtractor {
   readonly name: string;
   canHandle(filepath: string): boolean;
   extract(content: string, filepath: string): Segment[];
-  reassemble(segments: Segment[], translations: Map<string, string>): string;
+  reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string;
 }
 
 export interface GlossaryTerm {
@@ -98,6 +129,9 @@ export interface BatchTranslationResult {
   model: string;
   usage: { inputTokens: number; outputTokens: number; totalTokens: number };
   cost?: number;
+  /** When the API succeeded; used for translation failure debug logs. */
+  debugPrompt?: { systemPrompt: string; userContent: string };
+  rawAssistantContent?: string;
 }
 
 export class BatchTranslationError extends Error {
@@ -158,6 +192,7 @@ const glossarySchema = z.preprocess(
       /** Path to `strings.json` - auto-builds glossary hints from existing UI translations. */
       uiGlossary: z.string().optional(),
       userGlossary: z.string().optional(),
+      autoAddUserEditedToGlossary: z.boolean().default(true),
     })
     .strict()
 );
@@ -175,6 +210,37 @@ const svgExtractorSchema = z
   .object({
     /** When true, translated text is lowercased on SVG reassembly (optional layout tweak). */
     forceLowercase: z.boolean().default(false),
+  })
+  .strict();
+
+const languageListBlockSchema = z
+  .object({
+    /** Marker that identifies the language-list block start line in markdown body. */
+    start: z.string().min(1),
+    /** Marker that identifies the language-list block end line in markdown body. */
+    end: z.string().min(1),
+    /** Separator used between generated locale links. */
+    separator: z.string(),
+  })
+  .strict();
+
+const regexAdjustmentSchema = z
+  .object({
+    /** Optional rule note for maintainers (display-only). */
+    description: z.string().optional(),
+    /** Regex pattern (`pattern` or `/pattern/flags`) used for search. */
+    search: z.string().min(1),
+    /** Replacement template (supports `${translatedLocale}` and related vars). */
+    replace: z.string(),
+  })
+  .strict();
+
+const markdownPostProcessingSchema = z
+  .object({
+    /** Optional canonical language switcher replacement for translated markdown files. */
+    languageListBlock: languageListBlockSchema.optional(),
+    /** Ordered regex replacements applied to markdown body. */
+    regexAdjustments: z.array(regexAdjustmentSchema).default([]),
   })
   .strict();
 
@@ -199,10 +265,14 @@ const markdownOutputSchema = z
      */
     rewriteRelativeLinks: z.boolean().optional(),
     /**
-     * Repo root used with `documentation.outputDir` to compute `i18nPrefix` / `depthPrefix`
+     * Repo root used with the active documentation block's `outputDir` to compute `i18nPrefix` / `depthPrefix`
      * for flat link rewriting (typically `.`).
      */
     linkRewriteDocsRoot: z.string().optional(),
+    /**
+     * Optional post-processing run on translated markdown body after reassembly/link rewrite.
+     */
+    postProcessing: markdownPostProcessingSchema.optional(),
   })
   .strict();
 
@@ -214,6 +284,11 @@ const uiConfigSchema = z
     stringsJson: z.string().min(1).default("strings.json"),
     /** Directory for flat per-locale JSON (`de.json`, …). */
     flatOutputDir: z.string().min(1).default("./locales"),
+    /**
+     * When set, UI translation (`translate-ui`) tries this OpenRouter model first, then the rest of
+     * `openrouter.translationModels` (or legacy default/fallback) in order, skipping duplicates.
+     */
+    preferredModel: z.string().min(1).optional(),
     reactExtractor: reactExtractorSchema.optional(),
   })
   .strict();
@@ -239,8 +314,11 @@ const svgAssetsConfigSchema = z
   })
   .strict();
 
-const documentationConfigSchema = z
+/** One documentation pipeline (markdown/JSON layout under `outputDir`, optional Docusaurus `jsonSource`). */
+const documentationBlockSchema = z
   .object({
+    /** Optional human-readable note for this block (shown in CLI headers; not used for translation). */
+    description: z.string().optional(),
     /** Markdown / MDX roots under cwd (files and directories). */
     contentPaths: z.array(z.string().min(1)).default([]),
     /** Optional alias for `contentPaths`; merged into `contentPaths` at load. */
@@ -261,7 +339,6 @@ const documentationConfigSchema = z
       .optional(),
     /** Base directory for translated docs (markdown / default JSON layout). */
     outputDir: z.string().min(1).default("./i18n"),
-    cacheDir: z.string().min(1).default(".translation-cache"),
     /** Docusaurus / JSON UI strings source dir (e.g. i18n/en/). */
     jsonSource: z.string().optional(),
     markdownOutput: markdownOutputSchema.default({
@@ -276,10 +353,12 @@ const documentationConfigSchema = z
   })
   .strict();
 
-/** Unified package config: shared root + `ui` + `documentation` namespaces. */
+/** Unified package config: shared root + `ui` + `documentations` pipelines. */
 export const i18nConfigSchema = z
   .object({
     sourceLocale: z.string().min(1),
+    /** Shared SQLite cache directory for all documentation blocks (and CLI log defaults). */
+    cacheDir: z.string().min(1).default(".translation-cache"),
     /**
      * Target locale codes (BCP-47) as an array, **or** a single string path to `ui-languages.json`
      * (React / UI). On load, a path string is expanded to codes and `uiLanguagesPath` is set.
@@ -296,21 +375,24 @@ export const i18nConfigSchema = z
       translateMarkdown: false,
       translateJSON: false,
     }),
-    glossary: glossarySchema.default({}),
+    glossary: glossarySchema.default({ autoAddUserEditedToGlossary: true }),
     ui: uiConfigSchema.default({
       sourceRoots: [],
       stringsJson: "strings.json",
       flatOutputDir: "./locales",
     }),
-    documentation: documentationConfigSchema.default({
-      contentPaths: [],
-      outputDir: "./i18n",
-      cacheDir: ".translation-cache",
-      markdownOutput: {
-        style: "nested",
-        flatPreserveRelativeDir: false,
-      },
-    }),
+    documentations: z
+      .array(documentationBlockSchema)
+      .default([
+        {
+          contentPaths: [],
+          outputDir: "./i18n",
+          markdownOutput: {
+            style: "nested",
+            flatPreserveRelativeDir: false,
+          },
+        },
+      ]),
     /** BCP-47-ish codes that use RTL typography; layout `dir` stays the app’s i18next concern. */
     rtlLocales: z.array(z.string().min(1)).optional(),
     localeDisplayNames: z.record(z.string(), z.string()).optional(),
@@ -343,9 +425,20 @@ export type UIStringExtractorConfig = z.infer<typeof reactExtractorSchema>;
 /** @deprecated Use {@link UIStringExtractorConfig} */
 export type ReactExtractorConfig = UIStringExtractorConfig;
 export type SvgExtractorConfig = z.infer<typeof svgExtractorSchema>;
+export type LanguageListBlockConfig = z.infer<typeof languageListBlockSchema>;
+export type RegexAdjustmentConfig = z.infer<typeof regexAdjustmentSchema>;
+export type MarkdownPostProcessingConfig = z.infer<typeof markdownPostProcessingSchema>;
 export type MarkdownOutputConfig = z.infer<typeof markdownOutputSchema>;
 export type UiConfig = z.infer<typeof uiConfigSchema>;
-export type DocumentationConfig = z.infer<typeof documentationConfigSchema>;
+export type DocumentationBlock = z.infer<typeof documentationBlockSchema>;
 export type SvgAssetsConfig = z.infer<typeof svgAssetsConfigSchema>;
+
+/**
+ * View passed to translate-docs internals: one active `documentation` block plus root fields.
+ * Built from root config via {@link toDocTranslateConfig}.
+ */
+export type I18nDocTranslateConfig = Omit<I18nConfig, "documentations"> & {
+  documentation: DocumentationBlock;
+};
 
 export type RawI18nConfigInput = z.input<typeof i18nConfigSchema>;

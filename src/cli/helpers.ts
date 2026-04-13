@@ -5,7 +5,7 @@ import { loadI18nConfigFromFile, DEFAULT_CONFIG_FILENAME } from "../core/config.
 import { ConfigValidationError } from "../core/errors.js";
 import type { DocArtifactKind } from "../core/output-paths.js";
 import { resolveDocumentationOutputPath } from "../core/output-paths.js";
-import type { I18nConfig } from "../core/types.js";
+import type { I18nConfig, I18nDocTranslateConfig } from "../core/types.js";
 
 export interface GlobalCliOptions {
   config: string;
@@ -95,7 +95,7 @@ export function resolveStringsJsonPath(config: I18nConfig, cwd: string): string 
 
 /** Resolved translated artifact path (markdown / JSON / SVG). */
 export function resolveTranslatedOutputPath(
-  config: I18nConfig,
+  config: I18nDocTranslateConfig,
   cwd: string,
   locale: string,
   relPath: string,

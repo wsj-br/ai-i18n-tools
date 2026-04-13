@@ -1,11 +1,12 @@
 import path from "path";
-import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config";
+import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
 import {
   expandSvgPathTemplate,
   relPathUnderSvgSource,
   resolveSvgAssetOutputPath,
   svgAssetCacheFilepath,
-} from "../../src/core/svg-asset-paths";
+  svgTranslationFilepathMetadata,
+} from "../../src/core/svg-asset-paths.js";
 
 describe("svg-asset-paths", () => {
   const flatConfig = parseI18nConfig(
@@ -18,7 +19,8 @@ describe("svg-asset-paths", () => {
         maxTokens: 100,
         temperature: 0.1,
       },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".cache" },
+      cacheDir: ".cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -37,7 +39,8 @@ describe("svg-asset-paths", () => {
         maxTokens: 100,
         temperature: 0.1,
       },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".cache" },
+      cacheDir: ".cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -58,7 +61,8 @@ describe("svg-asset-paths", () => {
         maxTokens: 100,
         temperature: 0.1,
       },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".cache" },
+      cacheDir: ".cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -113,8 +117,13 @@ describe("svg-asset-paths", () => {
     expect(abs).toBe(path.join(cwd, "public/assets/pt-BR/icons/a.svg"));
   });
 
-  it("svgAssetCacheFilepath prefixes svg-assets/", () => {
-    expect(svgAssetCacheFilepath("images/x.svg")).toBe("svg-assets/images/x.svg");
+  it("svgAssetCacheFilepath prefixes svg-assets:", () => {
+    expect(svgAssetCacheFilepath("images/x.svg")).toBe("svg-assets:images/x.svg");
+  });
+
+  it("svgTranslationFilepathMetadata is cwd-relative posix without svg-assets prefix", () => {
+    expect(svgTranslationFilepathMetadata("images/x.svg")).toBe("images/x.svg");
+    expect(svgTranslationFilepathMetadata("a\\b.svg")).toBe("a/b.svg");
   });
 
   it("relPathUnderSvgSource picks longest matching root", () => {

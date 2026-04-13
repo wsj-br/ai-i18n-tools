@@ -1,13 +1,13 @@
 ---
-translation_last_updated: '2026-04-11T03:31:23.445Z'
-source_file_mtime: '2026-04-11T03:30:13.297Z'
-source_file_hash: 5f9c6a0c2a3bfe9a86da9ff07c86e5c69480ada8a3908d87506d35d7fe8ae368
+translation_last_updated: '2026-04-13T00:28:31.020Z'
+source_file_mtime: '2026-04-13T00:28:15.573Z'
+source_file_hash: d362c2411cab836c5035efd2135f097efeb4477a3f61cd225850c323e0cc7071
 translation_language: de
 source_file_path: docs-site/docs/context.md
 ---
-# ai-i18n-tools: AI-Agenten-Kontext
+# ai-i18n-tools: KI-Agent-Kontext
 
-Dieses Dokument vermittelt einem KI-Agenten das mentale Modell, die wichtigsten Entscheidungen und Muster, die erforderlich sind, um effektiv mit `ai-i18n-tools` zu arbeiten, ohne vorher jedes andere Dokument konsultieren zu müssen. Lesen Sie dies, bevor Sie Code- oder Konfigurationsänderungen vornehmen.
+Dieses Dokument gibt einem KI-Agenten das mentale Modell, die wichtigsten Entscheidungen und Muster, die benötigt werden, um effektiv mit `ai-i18n-tools` zu arbeiten, ohne vorher jedes andere Dokument zu konsultieren. Lesen Sie dies, bevor Sie Code- oder Konfigurationsänderungen vornehmen.
 
 <!-- DOCTOC SKIP -->
 
@@ -15,35 +15,35 @@ Dieses Dokument vermittelt einem KI-Agenten das mentale Modell, die wichtigsten 
 
 ## Was dieses Paket macht {#what-this-package-does}
 
-`ai-i18n-tools` ist eine CLI und Bibliothek, die die Internationalisierung für JavaScript/TypeScript-Projekte automatisiert. Es:
+`ai-i18n-tools` ist ein CLI + Bibliothek, die die Internationalisierung für JavaScript/TypeScript-Projekte automatisiert. Es:
 
-1. **Extrahiert** UI-Texte aus dem Quellcode (`t("…")`-Aufrufe) in einen Hauptkatalog.
+1. **Extrahiert** UI-Strings aus dem Quellcode (`t("…")`-Aufrufen) in ein Masterkatalog.
 2. **Übersetzt** diesen Katalog und Dokumentationsdateien über LLMs (über OpenRouter).
-3. **Erstellt** JSON-Dateien, die für i18next bereit für verschiedene Sprachen sind, sowie übersetzte Kopien von Markdown/SVG/JSON-Dokumenten.
-4. **Exportiert Laufzeit-Helfer**, um i18next, RTL-Unterstützung und Sprachauswahl in jeder JS-Umgebung einzubinden.
+3. **Schreibt** lokalefertige JSON-Dateien für i18next, plus übersetzte Markdown-, Docusaurus-JSON-Labels und eigenständige SVG-Assets.
+4. **Exportiert Laufzeithilfen** für die Verdrahtung von i18next, RTL-Unterstützung und Sprachenauswahl in jeder JS-Umgebung.
 
-Alles wird über eine einzige Konfigurationsdatei gesteuert: `ai-i18n-tools.config.json`.
+Alles wird von einer einzigen Konfigurationsdatei gesteuert: `ai-i18n-tools.config.json`.
 
 ---
 
 ## Zwei unabhängige Workflows {#two-independent-workflows}
 
-| | Workflow 1 - UI-Texte | Workflow 2 - Dokumente |
+| | Workflow 1 - UI-Strings | Workflow 2 - Dokumente |
 |---|---|---|
-| **Eingabe** | JS/TS-Quelldateien mit `t("…")`-Aufrufen | `.md`, `.mdx`, Docusaurus JSON-Beschriftungsdateien, `.svg` |
-| **Ausgabe** | `strings.json` (Katalog) + flache JSON-Dateien pro Sprache (`de.json` usw.) | Übersetzte Kopien dieser Dateien an den konfigurierten Ausgabepfaden |
-| **Cache** | `strings.json` selbst (bestehende Übersetzungen bleiben erhalten) | SQLite-Datenbank (`cacheDir`) – nur neue/geänderte Segmente werden an LLM gesendet |
-| **Wichtiger Befehl** | `translate-ui` | `translate-docs` |
+| **Eingabe** | JS/TS-Quell Dateien mit `t("…"`-Aufrufen | `.md`, `.mdx`, Docusaurus-JSON-Label-Dateien |
+| **Ausgabe** | `strings.json` (Katalog) + pro-Locale flache JSON-Dateien (`de.json`, usw.) | Übersetzte Kopien dieser Dateien an konfigurierten Ausgabepfaden |
+| **Cache** | `strings.json` selbst (bestehende Übersetzungen werden beibehalten) | SQLite-Datenbank (`cacheDir`) - nur neue/geänderte Segmente gehen zu LLM |
+| **Hauptbefehl** | `translate-ui` | `translate-docs` |
 | **Sync-Befehl** | `sync` | `sync` |
-| **Feature-Flags** | `extractUIStrings`, `translateUIStrings` | `translateMarkdown`, `translateJSON`, `translateSVG` |
+| **Feature-Flags** | `extractUIStrings`, `translateUIStrings` | `translateMarkdown`, `translateJSON` |
 
-Sie können unabhängig oder gemeinsam in derselben Konfiguration verwendet werden. **`sync`** führt nacheinander aus: `extract` (falls aktiviert), `translate-ui` (falls aktiviert, es sei denn `--no-ui`), `translate-svg`, wenn `config.svg` existiert (es sei denn `--no-svg`), dann `translate-docs` (es sei denn `--no-docs`). Siehe [CLI-Cheat-Sheet](#cli-commands-cheat-sheet) für Flags.
+Sie können unabhängig oder zusammen in derselben Konfiguration verwendet werden. `sync` wird in folgender Reihenfolge ausgeführt: `extract` (wenn aktiviert), `translate-ui` (wenn aktiviert, es sei denn, `--no-ui`), `translate-svg`, wenn `config.svg` existiert (es sei denn, `--no-svg`), dann `translate-docs` (es sei denn, `--no-docs`). Die eigenständige SVG-Übersetzung wird über den obersten `svg`-Block konfiguriert, nicht über ein Funktionsflag. Siehe das [CLI-Spickzettel](#cli-commands-cheat-sheet) für Flags.
 
 ---
 
 ## Schnellreferenz zur Konfigurationsdatei {#config-file-quick-reference}
 
-Datei: `ai-i18n-tools.config.json` (Standardpfad – kann mit `-c <Pfad>` überschrieben werden)
+Datei: `ai-i18n-tools.config.json` (Standardstandort - überschreiben mit `-c <path>`)
 
 ```json
 {
@@ -53,9 +53,14 @@ Datei: `ai-i18n-tools.config.json` (Standardpfad – kann mit `-c <Pfad>` übers
   "openrouter": {
     "translationModels": [
       "qwen/qwen3-235b-a22b-2507",
-      "stepfun/step-3.5-flash",
+      "openai/gpt-4o-mini",
+      "deepseek/deepseek-v3.2",
       "anthropic/claude-3-haiku",
-      "anthropic/claude-3.5-haiku"
+      "qwen/qwen3.6-plus",
+      "anthropic/claude-3.5-haiku",
+      "openai/gpt-5.3-codex",
+      "anthropic/claude-sonnet-4.6",
+      "google/gemini-3-flash-preview"
     ],
     "maxTokens": 8192,
     "temperature": 0.2
@@ -65,30 +70,38 @@ Datei: `ai-i18n-tools.config.json` (Standardpfad – kann mit `-c <Pfad>` übers
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false,
-    "translateSVG": false
+    "translateJSON": false
   },
 
   "ui": {
     "sourceRoots": ["src/"],
     "stringsJson": "src/locales/strings.json",
     "flatOutputDir": "src/locales/",
+    "preferredModel": "anthropic/claude-3.5-haiku",
     "reactExtractor": {
       "funcNames": ["t", "i18n.t"],
       "extensions": [".js", ".jsx", ".ts", ".tsx"]
     }
   },
 
-  "documentation": {
-    "contentPaths": ["docs/"],
-    "outputDir": "i18n/",
-    "cacheDir": ".translation-cache",
-    "targetLocales": ["de", "fr"],
-    "jsonSource": "i18n/en",
-    "markdownOutput": {
-      "style": "docusaurus",
-      "docsRoot": "docs"
+  "cacheDir": ".translation-cache",
+  "documentations": [
+    {
+      "contentPaths": ["docs/"],
+      "outputDir": "i18n/",
+      "targetLocales": ["de", "fr"],
+      "jsonSource": "i18n/en",
+      "markdownOutput": {
+        "style": "docusaurus",
+        "docsRoot": "docs"
+      }
     }
+  ],
+
+  "svg": {
+    "sourcePath": "images",
+    "outputDir": "public/assets",
+    "style": "flat"
   },
 
   "glossary": {
@@ -100,17 +113,20 @@ Datei: `ai-i18n-tools.config.json` (Standardpfad – kann mit `-c <Pfad>` übers
 
 ### Wichtige Einschränkungen {#key-constraints}
 
-- `sourceLocale` **muss exakt mit** der `SOURCE_LOCALE`-Konstante übereinstimmen, die aus der Laufzeit-i18n-Setup-Datei exportiert wird (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` kann ein Zeichenkettenpfad zu einem `ui-languages.json`-Manifest ODER ein Array von BCP-47-Codes sein.
-- `documentation.targetLocales` überschreibt `targetLocales` nur für Dokumente – nützlich, wenn Sie weniger Dokumentationssprachen als UI-Sprachen wünschen.
-- Alle Pfade sind relativ zum Arbeitsverzeichnis (cwd), von wo die CLI aufgerufen wird.
-- `OPENROUTER_API_KEY` muss in der Umgebung oder einer `.env`-Datei gesetzt sein.
+- `sourceLocale` **muss genau übereinstimmen** mit der `SOURCE_LOCALE`-Konstanten, die aus der Laufzeit-i18n-Setup-Datei (`src/i18n.ts` / `src/i18n.js`) exportiert wird.
+- `targetLocales` kann ein String-Pfad zu einem `ui-languages.json`-Manifest ODER ein Array von BCP-47-Codes sein.
+- `uiLanguagesPath` ist optional, aber nützlich, wenn `targetLocales` ein explizites Array ist und Sie dennoch manifestgesteuerte Labels und Locale-Filterung wünschen.
+- `documentations[].description` ist optionaler Text für die Wartenden (für was der Block gedacht ist); es beeinflusst nicht die Übersetzung. Wenn gesetzt, wird es in der Überschrift von `translate-docs` und in den `status`-Überschriften aufgenommen.
+- `documentations[].targetLocales` beschränkt diesen Block auf eine Teilmenge; effektive Dokumentationslokale sind die **Vereinigung** über die Blöcke (nützlich, wenn unterschiedliche Bäume unterschiedliche Locale-Sets benötigen).
+- `documentations[].markdownOutput.postProcessing` kann übersetztes Markdown nach der Wiederzusammenstellung anpassen, zum Beispiel durch das Umschreiben von Screenshot-Pfaden oder das Wiederaufbauen eines Sprachlistenblocks.
+- Alle Pfade sind relativ zum cwd (wo die CLI aufgerufen wird).
+- `OPENROUTER_API_KEY` muss in der Umgebung oder in einer `.env`-Datei gesetzt werden.
 
 ---
 
 ## Das `ui-languages.json`-Manifest {#the-ui-languagesjson-manifest}
 
-Wenn `targetLocales` ein Dateipfad ist, muss diese Datei ein JSON-Array mit folgender Struktur sein:
+Wenn `targetLocales` ein Dateipfad ist, muss diese Datei ein JSON-Array dieser Form haben:
 
 ```json
 [
@@ -120,15 +136,15 @@ Wenn `targetLocales` ein Dateipfad ist, muss diese Datei ein JSON-Array mit folg
 ]
 ```
 
-- `code` – BCP-47-Lokalisierungscode, der in Dateinamen und von i18next verwendet wird.
-- `label` – nativer Name, der in Sprachwählern angezeigt wird.
-- `englishName` – englischer Name, der für Anzeigehilfen und Übersetzungsanweisungen verwendet wird.
+- `code` - BCP-47-Lokalisierungscode, der in Dateinamen und von i18next verwendet wird.
+- `label` - der native Name, der in Sprachwählern angezeigt wird.
+- `englishName` - der englische Name, der für Anzeigehilfen und Übersetzungsaufforderungen verwendet wird.
 
-Diese Datei steuert sowohl die Übersetzungs-Pipeline als auch die Laufzeit-Benutzeroberfläche für die Sprachumschaltung. Halten Sie sie als einzige verbindliche Quelle für unterstützte Sprachen.
+Diese Datei steuert sowohl die Übersetzungs-Pipeline als auch die Laufzeit-Sprachumschalter-UI. Halten Sie sie als die einzige Quelle der Wahrheit für unterstützte Lokale.
 
 ---
 
-## CLI-Befehle – Schnellübersicht {#cli-commands-cheat-sheet}
+## CLI-Befehle Spickzettel {#cli-commands-cheat-sheet}
 
 ```
 npx ai-i18n-tools init [-t ui-markdown|ui-docusaurus]
@@ -139,14 +155,16 @@ npx ai-i18n-tools extract
     Scan source for t("…") calls, write/merge strings.json.
     Safe to re-run - preserves existing translations.
 
-npx ai-i18n-tools translate-ui [--locale <code>]
+npx ai-i18n-tools translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]
     Translate UI strings only. Reads strings.json, writes flatOutputDir/de.json etc.
+    --force: re-translate all entries per locale. --dry-run: no writes, no API calls. -j: max parallel locales.
 
 npx ai-i18n-tools translate-docs [--locale <code>] [--force | --force-update] …
-    Translate markdown/JSON/SVG under documentation paths. Default: skip unchanged files + use segment SQLite cache.
+    Translate markdown and JSON under documentation paths. Default: skip unchanged files + use segment SQLite cache.
     --force-update: re-run every file output; segment cache still used (no API for unchanged text).
     --force: clear file tracking and ignore segment cache reads (full re-translation); new results still write to cache.
     --stats: print cache stats and exit. --clear-cache [locale]: wipe cache (all or one locale) and exit.
+    --prompt-format xml|json-array|json-object: batch wire format to the model (default xml); does not change validation or cache.
     Do not combine --force with --force-update (when the docs step runs).
 
 npx ai-i18n-tools translate-svg [--locale <code>] [--force | --force-update] [--no-cache] …
@@ -156,26 +174,26 @@ npx ai-i18n-tools sync [--locale <code>] [--force | --force-update] [--no-ui] [-
     extract (if enabled), translate-ui (unless --no-ui), translate-svg when config.svg exists (unless --no-svg),
     translate-docs (unless --no-docs). --force / --force-update apply to the docs step only; if --no-docs, both can be passed without conflict.
 
-npx ai-i18n-tools status [--locale <code>]
-    Show translation coverage per file × locale.
+npx ai-i18n-tools status
+    Show markdown translation coverage per file × locale.
 
 npx ai-i18n-tools editor
     Launch a local web editor for the SQLite cache, strings.json, and glossary.
 
-npx ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>] [--yes]
-    Maintain the SQLite cache: removes stale rows and orphaned filepath rows.
-    Prompts before DB writes (unless --dry-run or --yes): run translate-docs --force-update first.
-    Backs up cache.db under the cache dir before modifications unless --no-backup. Use --yes in CI.
+npx ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
+    Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, svg-assets:, …);
+    orphaned translation rows whose filepath metadata points at a missing file.
+    Backs up cache.db under the cache dir before modifications unless --no-backup.
 
 npx ai-i18n-tools glossary-generate
     Write an empty glossary-user.csv template.
 ```
 
-Globale Flags: `-c <config>` (Konfigurationspfad), `-v` (ausführliche/Debug-Ausgabe).
+Globale Flags: `-c <config>` (Konfigurationspfad), `-v` (ausführliche/debug-Ausgabe), `-w` / `--write-logs [path]` (Konsolenausgabe in eine Protokolldatei umleiten; Standardpfad: unter `cacheDir`).
 
 ---
 
-## Workflow 1 - UI-Zeichenketten: wie Daten fließen {#workflow-1---ui-strings-how-data-flows}
+## Workflow 1 - UI-Strings: wie Daten fließen {#workflow-1---ui-strings-how-data-flows}
 
 ```
 source files (JS/TS)
@@ -185,10 +203,11 @@ strings.json  - master catalog
     {
       "<md5-8-hex>": {
         "source": "The English string",
-        "translated": { "de": "Der deutsche Text", "pt-BR": "O texto em português" }
+        "translated": { "de": "Der deutsche Text", "pt-BR": "O texto em português" },
+        "models": { "de": "…", "pt-BR": "…" }
       }
     }
-    │  translate-ui reads this, sends batches to OpenRouter, fills missing locales
+    │  translate-ui reads this, sends batches to OpenRouter, fills missing locales and records model ids per locale
     ▼
 src/locales/de.json    - flat map: source string → translation
     { "The English string": "Der deutsche Text", "Save": "Speichern" }
@@ -196,7 +215,7 @@ src/locales/pt-BR.json
     ...
 ```
 
-**Nur literale Zeichenketten sind extrahierbar.** Variablen, Ausdrücke oder Template-Literale als Schlüssel werden nicht gefunden:
+**Nur literale Strings sind extrahierbar.** Variablen, Ausdrücke oder Template-Literale als Schlüssel werden nicht gefunden:
 
 ```js
 t('Save')                   // ✓ extracted
@@ -205,14 +224,14 @@ t(labelVar)                 // ✗ not extracted - variable key
 t(`Hello ${name}`)          // ✗ not extracted - template literal
 ```
 
-i18next verwendet das Key-as-Default-Modell: Fehlende Übersetzungen greifen auf den Schlüssel selbst (die englische Quellzeichenkette) zurück. Der `parseMissingKeyHandler` in `defaultI18nInitOptions` behandelt dies.
+i18next verwendet das Schlüssel-als-Standard-Modell: Fehlende Übersetzungen fallen auf den Schlüssel selbst zurück (den englischen Quellstring). Der `parseMissingKeyHandler` in `defaultI18nInitOptions` kümmert sich darum.
 
 ---
 
-## Workflow 2 - Dokumentenübersetzung: wie Daten fließen {#workflow-2---document-translation-how-data-flows}
+## Workflow 2 - Dokumentübersetzung: wie Daten fließen {#workflow-2---document-translation-how-data-flows}
 
 ```
-source files (md/mdx/json/svg)
+source files (md/mdx/json)
     │  Extractor produces typed segments with SHA-256 hash
     ▼
 PlaceholderHandler  - replaces URLs, admonitions, anchors with opaque tokens
@@ -226,25 +245,28 @@ PlaceholderHandler.restore  - tokens replaced back with original syntax
 resolveDocumentationOutputPath  → write to output file
 ```
 
-**Cache-Schlüssel**: SHA-256, erste 16 Hex-Zeichen des whitespace-normalisierten Segmentinhalts × Gebietsschema. Der Cache befindet sich in `documentation.cacheDir` (eine `.db` SQLite-Datei).
+**Cache-Schlüssel**: SHA-256 erste 16 Hex-Zeichen des whitespace-normalisierten Segmentinhalts × Locale. Der Cache befindet sich im Stammverzeichnis `cacheDir` (eine `cache.db` SQLite-Datei), die von allen `documentations`-Blöcken gemeinsam genutzt wird. Jede Zeile speichert das `model`, das zuletzt das Segment übersetzt hat; das Speichern einer Bearbeitung im `editor` setzt `model` auf `user-edited` (dasselbe Sentinel wie UI `strings.json` `models`).
 
-**CLI**: `--force-update` umgeht nur die *dateiebene* Skip-Funktion (rebuildet Ausgaben), nutzt aber weiterhin den Segment-Cache. `--force` löscht die pro-Datei-Verfolgung und überspringt Lesevorgänge aus dem Segment-Cache für API-Aufrufe. Siehe den Einstiegsguide für die vollständige Flag-Tabelle.
+**CLI**: `--force-update` umgeht nur das *Datei-Level*-Überspringen (Rebuild-Ausgaben), während der Segment-Cache weiterhin verwendet wird. `--force` löscht die Verfolgung pro Datei und überspringt Segment-Cache-Lesungen für API-Aufrufe. Siehe die Anleitung zum Einstieg für die vollständige Flaggenübersicht.
+
+**Standalone SVGs**: werden von `translate-svg` mit dem obersten `svg`-Konfigurationsblock behandelt. Sie verwenden die gleichen OpenRouter/Cache-Ideen, jedoch nicht die `documentations`-Pipeline.
 
 **Ausgabestile** (`markdownOutput.style`):
 
-| Style | Beispiel |
+| Stil | Beispiel |
 |---|---|
+| `"nested"` (Standard) | `docs/guide.md` → `i18n/de/docs/guide.md` |
 | `"docusaurus"` | `docs/guide.md` → `i18n/de/docusaurus-plugin-content-docs/current/guide.md` |
 | `"flat"` | `docs/guide.md` → `i18n/guide.de.md` |
-| benutzerdefinierte `pathTemplate` | beliebiges Layout unter Verwendung von `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` |
+| benutzerdefiniertes `pathTemplate` | jedes Layout, das `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` verwendet |
 
-Die flache Ausgabeform schreibt relative Links zwischen Seiten automatisch um (z. B. `[Guide](./guide.md)` → `guide.de.md`).
+Die Flat-Style-Ausgabe schreibt relative Links zwischen Seiten automatisch um (z.B. `[Guide](./guide.md)` → `guide.de.md`).
 
 ---
 
-## Laufzeitintegration – Einbindung von i18next {#runtime-integration---wiring-i18next}
+## Laufzeitintegration - i18next verkabeln {#runtime-integration---wiring-i18next}
 
-Das Paket exportiert Hilfsfunktionen aus `'ai-i18n-tools/runtime'`, die Boilerplate-Code entfernen. Die minimale Einrichtung:
+Das Paket exportiert Helfer aus `'ai-i18n-tools/runtime'`, die Boilerplate entfernen. Die minimale Einrichtung:
 
 ```ts
 // src/i18n.ts  - import this at the top of your entry point
@@ -277,88 +299,86 @@ export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
-**Laden eines Gebietsschemas bei Bedarf** (z. B. wenn der Benutzer die Sprache wechselt):
+**Laden einer Locale auf Anfrage** (z.B. wenn der Benutzer die Sprache wechselt):
 
 ```ts
 await loadLocale(code);
 i18n.changeLanguage(code);
 ```
 
-`loadLocale` ist eine No-Op-Funktion für das Quellgebietsschema – sie lädt nur Nicht-Quellgebietsschemas.
+`loadLocale` ist ein No-Op für die Quell-Locale - es ruft nur Nicht-Quell-Lokalisierungen ab.
 
 ---
 
-## Referenz zu Laufzeithilfsfunktionen {#runtime-helpers-reference}
+## Laufzeit-Helferreferenz {#runtime-helpers-reference}
 
-Alle exportiert aus `'ai-i18n-tools/runtime'`. Funktionieren in jeder JS-Umgebung (Browser, Node.js, Edge, Deno). Keine i18next-Peer-Abhängigkeit erforderlich.
+Alle exportiert aus `'ai-i18n-tools/runtime'`. Funktioniert in jeder JS-Umgebung (Browser, Node.js, Edge, Deno). Keine i18next-Peer-Abhängigkeit erforderlich.
 
 | Export | Signatur | Zweck |
 |---|---|---|
-| `defaultI18nInitOptions` | `(sourceLocale?: string) => i18nextInitOptions` | Standard-i18next-Initialisierung für Key-as-Default-Setup |
-| `wrapI18nWithKeyTrim` | `(i18n: I18nLike) => void` | Kürzt Schlüssel vor der Suche und wendet `{{var}}`-Interpolation für das Quellgebietsschema an (wo `parseMissingKeyHandler` den rohen Schlüssel zurückgibt) |
-| `makeLoadLocale` | `(i18n, loaders, sourceLocale?) => (lang: string) => Promise<void>` | Factory für asynchrones Laden von Gebietsschemas |
-| `getTextDirection` | `(lng: string) => 'ltr' \| 'rtl'` | Erkennung von rechtsläufigen Sprachen anhand des BCP-47-Codes |
+| `defaultI18nInitOptions` | `(sourceLocale?: string) => i18nextInitOptions` | Standard-i18next-Initialisierung für Schlüssel-als-Standard-Setup |
+| `wrapI18nWithKeyTrim` | `(i18n: I18nLike) => void` | Schlüssel vor der Suche trimmen und `{{var}}`-Interpolation für die Quell-Locale anwenden (wo `parseMissingKeyHandler` den Rohschlüssel zurückgibt) |
+| `makeLoadLocale` | `(i18n, loaders, sourceLocale?) => (lang: string) => Promise<void>` | Fabrik für asynchrones Laden von Locales |
+| `getTextDirection` | `(lng: string) => 'ltr' \| 'rtl'` | RTL-Erkennung durch BCP-47-Code |
 | `applyDirection` | `(lng: string, element?: Element) => void` | Setzt `dir` auf `document.documentElement` (No-Op in Node.js) |
-| `getUILanguageLabel` | `(lang: UiLanguageEntry, t: TranslateFn) => string` | Übersetzte Bezeichnung für Dropdown-Menüs in Einstellungsseiten |
-| `getUILanguageLabelNative` | `(lang: UiLanguageEntry) => string` | Native Bezeichnung für Kopfzeilenmenüs (ohne `t()`-Aufruf) |
-| `interpolateTemplate` | `(str: string, vars: Record<string, string \| number \| boolean>) => string` | Niedrigstufige `{{var}}`-Ersetzung in einer einfachen Zeichenkette (wird intern von `wrapI18nWithKeyTrim` verwendet; selten im Anwendungscode erforderlich) |
-| `flipUiArrowsForRtl` | `(text, isRtl: boolean) => string` | Dreht `→` zu `←` für rechtsläufige Layouts |
-| `RTL_LANGS` | `ReadonlySet<string>` | Menge von BCP-47-Codes, die als rechtsläufig gelten |
+| `getUILanguageLabel` | `(lang: UiLanguageEntry, t: TranslateFn) => string` | Übersetztes Label für Dropdowns auf der Einstellungsseite |
+| `getUILanguageLabelNative` | `(lang: UiLanguageEntry) => string` | Native Bezeichnung für Header-Menüs (kein `t()`-Aufruf) |
+| `interpolateTemplate` | `(str: string, vars: Record<string, string \| number \| boolean>) => string` | Niedrigstufige `{{var}}`-Substitution auf einem einfachen String (intern verwendet von `wrapI18nWithKeyTrim`; selten im Anwendungs-Code benötigt) |
+| `flipUiArrowsForRtl` | `(text, isRtl: boolean) => string` | Dreht `→` zu `←` für RTL-Layouts |
+| `RTL_LANGS` | `ReadonlySet<string>` | Menge von BCP-47-Codes, die als RTL behandelt werden |
 
 ---
 
-## Programmatische API {#programmatic-api}
+## Programmatic API {#programmatic-api}
 
-Importieren Sie aus `'ai-i18n-tools'`. Nützlich, wenn Sie Übersetzungsschritte aus einem Build-Skript oder CI-Pipeline aufrufen müssen.
+Importieren von `'ai-i18n-tools'`. Nützlich, wenn Sie Übersetzungsschritte aus einem Build-Skript oder CI-Pipeline aufrufen müssen.
 
 ```ts
 import {
   loadI18nConfigFromFile,
   runTranslateUI,
-  Logger,
 } from 'ai-i18n-tools';
 
 const config = loadI18nConfigFromFile('ai-i18n-tools.config.json');
-const logger = new Logger({ level: 'info' });
-
-const summary = await runTranslateUI({
-  config,
+const summary = await runTranslateUI(config, {
   cwd: process.cwd(),
-  logger,
-  apiKey: process.env.OPENROUTER_API_KEY,
+  locales: config.targetLocales,
+  force: false,
+  dryRun: false,
+  verbose: false,
 });
-// summary.translated - number of newly translated strings
-// summary.locales   - number of locales processed
+// summary.stringsUpdated - number of newly translated strings
+// summary.localesTouched - locale codes processed
 ```
 
 Weitere nützliche Exporte für benutzerdefinierte Pipelines:
 
-| Export | Verwendung |
+| Export | Verwenden bei |
 |---|---|
-| `loadI18nConfigFromFile(path, cwd?)` | Lädt und validiert die Konfiguration |
-| `parseI18nConfig(rawObject)` | Validiert ein in Code erstelltes Konfigurationsobjekt |
-| `TranslationCache` | Direkter Zugriff auf SQLite-Cache |
-| `UIStringExtractor` | Extrahiert `t("…")`-Aufrufe aus JS/TS-Dateien |
-| `MarkdownExtractor` | Wandelt Markdown in übersetzbare Segmente um |
-| `JsonExtractor` | Parst Docusaurus JSON-Beschriftungsdateien |
-| `SvgExtractor` | Parst SVG-Textelemente |
-| `OpenRouterClient` | Direkte Übersetzungsanfragen |
-| `PlaceholderHandler` | Schützt/stellt Markdown-Syntax um Übersetzungen herum wieder her |
-| `splitTranslatableIntoBatches` | Gruppiert Segmente in LLM-gerechte Batches |
-| `validateTranslation` | Strukturelle Prüfungen nach einem Übersetzungsauftrag |
-| `resolveDocumentationOutputPath` | Berechnet den Ausgabedateipfad für ein übersetztes Dokument |
-| `Glossary` / `GlossaryMatcher` | Lädt und wendet ein Übersetzungsglossar an |
+| `loadI18nConfigFromFile(path, cwd?)` | Konfiguration laden und validieren |
+| `parseI18nConfig(rawObject)` | Ein in Code erstelltes Konfigurationsobjekt validieren |
+| `TranslationCache` | Direkter SQLite-Cache-Zugriff |
+| `UIStringExtractor` | `t("…")`-Aufrufe aus JS/TS-Dateien extrahieren |
+| `MarkdownExtractor` | Markdown in übersetzbare Segmente parsen |
+| `JsonExtractor` | Docusaurus JSON-Labeldateien parsen |
+| `SvgExtractor` | SVG-Text-Elemente parsen |
+| `OpenRouterClient` | Übersetzungsanfragen direkt stellen |
+| `PlaceholderHandler` | Markdown-Syntax um die Übersetzung schützen/wiederherstellen |
+| `splitTranslatableIntoBatches` | Segmente in LLM-große Batches gruppieren |
+| `validateTranslation` | Strukturelle Überprüfungen nach einem Übersetzungsaufruf |
+| `resolveDocumentationOutputPath` | Den Ausgabepfad für ein übersetztes Dokument berechnen |
+| `Glossary` / `GlossaryMatcher` | Ein Übersetzungs-Glossar laden und anwenden |
 
 ---
 
 ## Glossar {#glossary}
 
-Das Glossar stellt eine konsistente Terminologie über alle Übersetzungen hinweg sicher.
+Das Glossar sorgt für konsistente Terminologie über Übersetzungen hinweg.
 
-- **Automatisch erstelltes Glossar** (`glossary.uiGlossary`): liest `strings.json` und nutzt vorhandene Übersetzungen als Hinweisquelle. Keine CSV-Datei erforderlich.
-- **Benutzerglossar** (`glossary.userGlossary`): eine CSV-Datei mit den Spalten `term,translation,locale`. Generieren Sie eine leere Vorlage mit `npx ai-i18n-tools glossary-generate`.
+- **Automatisch erstelltes Glossar** (`glossary.uiGlossary`): liest `strings.json` und verwendet vorhandene Übersetzungen als Hinweisquelle. Keine CSV erforderlich.
+- **Benutzer-Glossar** (`glossary.userGlossary`): eine CSV-Datei mit den Spalten `Originalsprache`, `locale`, `Übersetzung` (oder `en`, `locale`, `Übersetzung`). Generieren Sie eine leere Vorlage mit `npx ai-i18n-tools glossary-generate`.
 
-Glossarhinweise werden in die Systemanweisung des LLM eingefügt – sie sind Vorschläge, keine festen Ersetzungen.
+Glossarhinweise werden in den LLM-Systemprompt eingefügt - sie sind Vorschläge, keine festen Ersetzungen.
 
 ---
 
@@ -387,63 +407,68 @@ class MyExtractor extends BaseExtractor {
 
 ```json
 {
-  "documentation": {
-    "markdownOutput": {
-      "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
+  "documentations": [
+    {
+      "markdownOutput": {
+        "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
+      }
     }
-  }
+  ]
 }
 ```
 
-Verfügbare Platzhalter: `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+Verfügbare Platzhalter: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 
 ---
 
-## Häufige Aufgaben und Vorgehensweisen {#common-tasks-and-what-to-do}
+## Häufige Aufgaben und was zu tun ist {#common-tasks-and-what-to-do}
 
-| Aufgabe | Was auszuführen/zu ändern ist |
+| Aufgabe | Was auszuführen / zu ändern |
 |---|---|
-| Neue Sprache hinzufügen | Zur `ui-languages.json` (oder `targetLocales`-Array) hinzufügen, dann `translate-docs` / `translate-ui` / `sync` ausführen |
-| Nur eine Sprache übersetzen | `npx ai-i18n-tools translate-docs --locale de` (oder `translate-ui`, `sync`) |
-| Neuen UI-Text hinzufügen | `t('Mein neuer Text')` im Quellcode schreiben, dann `extract` und anschließend `translate-ui` ausführen |
-| Übersetzung manuell aktualisieren | Direkt in `strings.json` bearbeiten (`translated`-Objekt), dann `translate-ui` ausführen (bestehende Einträge werden nicht überschrieben) |
-| Nur neue/aktualisierte Dokumente übersetzen | `translate-docs` ausführen – Datei- und Segment-Cache überspringen automatisch Unverändertes |
-| Dokumentausgaben neu erstellen, ohne API-Aufrufe für unveränderte Segmente | `npx ai-i18n-tools translate-docs --force-update` |
-| Vollständige Dokumentübersetzung (Segment-Cache ignorieren) | `npx ai-i18n-tools translate-docs --force` |
+| Eine neue Locale hinzufügen | Fügen Sie sie zu `ui-languages.json` (oder `targetLocales`-Array) hinzu, und führen Sie dann `translate-docs` / `translate-ui` / `sync` aus |
+| Nur eine Locale übersetzen | `npx ai-i18n-tools translate-docs --locale de` (oder `translate-ui`, `sync`) |
+| Einen neuen UI-String hinzufügen | Schreiben Sie `t('Mein neuer String')` in die Quelle, und führen Sie dann `extract` und dann `translate-ui` aus |
+| Eine Übersetzung manuell aktualisieren | Bearbeiten Sie `strings.json` direkt (`translated`), oder verwenden Sie `editor` (setzt `models[locale]` auf `user-edited`). `translate-ui` überspringt Locales, die bereits Text haben, es sei denn, Sie verwenden `--force` |
+| Nur neue/aktualisierte Dokumente übersetzen | Führen Sie `translate-docs` aus - Datei + Segment-Cache überspringt unveränderte Arbeiten automatisch |
+| Dokumentenausgaben neu erstellen, ohne die API für unveränderte Segmente erneut aufzurufen | `npx ai-i18n-tools sync --force-update` |
+| Vollständige Dokumentenübersetzung (Segment-Cache ignorieren) | `npx ai-i18n-tools translate-docs --force` |
 | Cache-Speicher freigeben | `npx ai-i18n-tools cleanup` oder `translate-docs --clear-cache` |
-| Unübersetzte Inhalte prüfen | `npx ai-i18n-tools status` |
-| Übersetzungsmodell wechseln | `openrouter.translationModels` in der Konfiguration bearbeiten (erstes Modell ist primär, restliche sind Fallbacks) |
-| i18next in ein neues Projekt einbinden | Siehe [Runtime-Integration](#runtime-integration---wiring-i18next) oben |
-| Dokumente in weniger Sprachen übersetzen als die UI | `documentation.targetLocales` auf ein kleineres Array setzen |
-| Extrahieren + UI + SVG + Dokumente in einem Befehl ausführen | `npx ai-i18n-tools sync` – verwenden Sie `--no-ui`, `--no-svg` oder `--no-docs`, um eine Stufe zu überspringen (z. B. nur UI + SVG: `--no-docs`) |
+| Überprüfen, was nicht übersetzt ist | `npx ai-i18n-tools status` |
+| Das Übersetzungsmodell ändern | Bearbeiten Sie `openrouter.translationModels` (das erste ist primär, die restlichen sind Fallbacks). Für **UI nur** wird optional `ui.preferredModel` vor dieser Liste ausprobiert. |
+| i18next in einem neuen Projekt einbinden | Siehe [Runtime-Integration](#runtime-integration---wiring-i18next) oben |
+| Dokumente in weniger Locales als UI übersetzen | Setzen Sie `documentations[].targetLocales` auf den relevanten Block(en) oder verwenden Sie eine kleinere Vereinigung |
+| Extract + UI + SVG + Dokumente in einem Befehl ausführen | `npx ai-i18n-tools sync` - verwenden Sie `--no-ui`, `--no-svg` oder `--no-docs`, um eine Phase zu überspringen (z. B. nur UI + SVG: `--no-docs`) |
 
 ---
 
 ## Umgebungsvariablen {#environment-variables}
 
-| Variable | Wirkung |
+| Variable | Effekt |
 |---|---|
-| `OPENROUTER_API_KEY` | **Erforderlich.** Ihr OpenRouter-API-Schlüssel. |
-| `OPENROUTER_BASE_URL` | Überschreibt die API-Basis-URL. |
-| `I18N_SOURCE_LOCALE` | Überschreibt `sourceLocale` zur Laufzeit. |
-| `I18N_TARGET_LOCALES` | Durch Komma getrennte Sprachcodes, um `targetLocales` zu überschreiben. |
+| `OPENROUTER_API_KEY` | **Erforderlich.** Ihr OpenRouter API-Schlüssel. |
+| `OPENROUTER_BASE_URL` | Überschreiben Sie die API-Basis-URL. |
+| `I18N_SOURCE_LOCALE` | Überschreiben Sie `sourceLocale` zur Laufzeit. |
+| `I18N_TARGET_LOCALES` | Komma-getrennte Gebietsschema-Codes zum Überschreiben von `targetLocales`. |
+| `I18N_LOG_LEVEL` | Logger-Stufe (`debug`, `info`, `warn`, `error`, `silent`). |
+| `NO_COLOR` | Wenn `1`, deaktivieren Sie ANSI-Farben in der Protokollausgabe. |
+| `I18N_LOG_SESSION_MAX` | Maximalzeilen pro Protokollsitzung (Standard `5000`). |
 
 ---
 
-## Vom Tool generierte oder verwaltete Dateien {#files-generated--maintained-by-the-tool}
+## Von dem Tool generierte / verwaltete Dateien {#files-generated--maintained-by-the-tool}
 
 | Datei | Eigentümer | Hinweise |
 |---|---|---|
-| `ai-i18n-tools.config.json` | Sie | Hauptkonfiguration. Manuelles Bearbeiten erforderlich. |
-| `ui-languages.json` (an der konfigurierten Stelle) | Sie | Lokalisierungs-Manifest. Manuelles Bearbeiten, um Sprachen hinzuzufügen/zu entfernen. |
-| `strings.json` (an der konfigurierten Stelle) | Tool (`extract`) | Master-Katalog für die Benutzeroberfläche. Es ist sicher, die Werte in `translated` zu bearbeiten. Schlüssel nicht umbenennen. |
-| `{flatOutputDir}/de.json`, usw. | Tool (`translate-ui`) | Flache Zuordnungen pro Sprache. Nicht bearbeiten – wird bei jedem Aufruf von `translate-ui` neu generiert. |
-| `{cacheDir}/*.db` | Tool | SQLite-Übersetzungscache. Nicht direkt bearbeiten; verwenden Sie den Befehl `editor` oder `cleanup`. |
-| `glossary-user.csv` | Sie | Begriffsüberschreibungen. Vorlage mit `glossary-generate` generieren. |
+| `ai-i18n-tools.config.json` | Sie | Hauptkonfiguration. Manuell bearbeiten. |
+| `ui-languages.json` (wo immer konfiguriert) | Sie | Locale-Manifest. Manuell bearbeiten, um Locales hinzuzufügen/zu entfernen. |
+| `strings.json` (wo immer konfiguriert) | Tool (`extract` / `translate-ui` / `editor`) | Master-UI-Katalog: `source`, `translated`, optional `models` (pro Locale: OpenRouter-Modell-ID oder `user-edited`), optional `locations`. Sicher zu bearbeiten `translated`; Schlüssel nicht umbenennen. |
+| `{flatOutputDir}/de.json`, usw. | Tool (`translate-ui`) | Flache Karten pro Locale (Quelle → nur Übersetzung, keine `models`). Nicht bearbeiten — bei jedem `translate-ui` neu generiert. |
+| `{cacheDir}/*.db` | Tool | SQLite-Übersetzungscache (pro Segment `model`-Metadaten; `user-edited` nach manuellen Speichern im `editor`). Nicht direkt bearbeiten; verwenden Sie `editor` oder `cleanup`. |
+| `glossary-user.csv` | Sie | Begriff-Overrides. Vorlage mit `glossary-generate` generieren. |
 
 ---
 
-## Übersicht zur Quellstruktur {#source-layout-summary}
+## Zusammenfassung des Quelllayouts {#source-layout-summary}
 
 ```
 src/

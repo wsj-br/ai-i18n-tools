@@ -1,4 +1,4 @@
-import { flipUiArrowsForRtl, interpolateTemplate } from "../../src/runtime/template";
+import { flipUiArrowsForRtl, interpolateTemplate } from "../../src/runtime/template.js";
 
 describe("interpolateTemplate", () => {
   it("replaces {{key}} with string values", () => {

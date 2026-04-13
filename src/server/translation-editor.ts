@@ -1,9 +1,11 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { parse } from "csv-parse/sync";
 import { TranslationCache } from "../core/cache.js";
+import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 
 function csvEscapeCell(s: string): string {
@@ -141,7 +143,7 @@ export function createTranslationEditorApp(
         res.status(400).json({ error: "Missing filepath query parameter" });
         return;
       }
-      const deleted = cache.deleteByFilepath(filepath);
+      const deleted = cache.deleteTranslationsByFilepath(filepath);
       res.json({ ok: true, deleted });
     } catch (err) {
       console.error(err);
@@ -240,6 +242,7 @@ export function createTranslationEditorApp(
         {
           source?: string;
           translated?: Record<string, string>;
+          models?: Record<string, string>;
           locations?: Array<{ file: string; line: number }>;
         }
       >;
@@ -247,6 +250,7 @@ export function createTranslationEditorApp(
         id,
         source: v.source ?? "",
         translated: v.translated ?? {},
+        models: v.models ?? {},
         locations: v.locations ?? [],
       }));
       res.json({ entries });
@@ -269,6 +273,7 @@ export function createTranslationEditorApp(
         {
           source: string;
           translated: Record<string, string>;
+          models?: Record<string, string>;
           locations?: Array<{ file: string; line: number }>;
         }
       >;
@@ -277,13 +282,22 @@ export function createTranslationEditorApp(
         res.status(404).json({ error: "Unknown id" });
         return;
       }
+      const nextTranslated =
+        body.translated !== undefined
+          ? { ...prev.translated, ...body.translated }
+          : prev.translated;
+      const nextModels: Record<string, string> =
+        prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+      if (body.translated !== undefined) {
+        for (const loc of Object.keys(body.translated)) {
+          nextModels[loc] = USER_EDITED_MODEL;
+        }
+      }
       doc[id] = {
         source: body.source !== undefined ? body.source : prev.source,
-        translated:
-          body.translated !== undefined
-            ? { ...prev.translated, ...body.translated }
-            : prev.translated,
+        translated: nextTranslated,
         ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
+        ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
       };
       writeAtomicUtf8(stringsPath, `${JSON.stringify(doc, null, 2)}\n`);
       res.json({ ok: true });
@@ -311,6 +325,7 @@ export function createTranslationEditorApp(
         {
           source: string;
           translated: Record<string, string>;
+          models?: Record<string, string>;
           locations?: Array<{ file: string; line: number }>;
         }
       >;
@@ -326,10 +341,14 @@ export function createTranslationEditorApp(
       }
       const nextTr = { ...tr };
       delete nextTr[locale];
+      const nextModels: Record<string, string> =
+        prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+      delete nextModels[locale];
       doc[id] = {
-        ...prev,
+        source: prev.source,
         translated: nextTr,
         ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
+        ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
       };
       writeAtomicUtf8(stringsPath, `${JSON.stringify(doc, null, 2)}\n`);
       res.json({ ok: true });
@@ -356,6 +375,7 @@ export function createTranslationEditorApp(
         {
           source: string;
           translated: Record<string, string>;
+          models?: Record<string, string>;
           locations?: Array<{ file: string; line: number }>;
         }
       >;
@@ -373,10 +393,14 @@ export function createTranslationEditorApp(
         if (!prev || !Object.prototype.hasOwnProperty.call(tr, loc)) continue;
         const nextTr = { ...tr };
         delete nextTr[loc];
+        const nextModels: Record<string, string> =
+          prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+        delete nextModels[loc];
         doc[rowId] = {
-          ...prev,
+          source: prev.source,
           translated: nextTr,
           ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
+          ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
         };
         deleted++;
       }
@@ -539,6 +563,85 @@ export function createTranslationEditorApp(
     }
   });
 
+  app.get("/api/stats", (_req, res) => {
+    try {
+      const cacheStats = cache.getDetailedStats();
+
+      let uiStrings: {
+        available: boolean;
+        totalEntries: number;
+        byLocale: { locale: string; translated: number; missing: number }[];
+        byModel: { model: string; count: number }[];
+        byModelLocale: { model: string; locale: string; count: number }[];
+      };
+      if (stringsPath && fs.existsSync(stringsPath)) {
+        const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
+          string,
+          { translated?: Record<string, string>; models?: Record<string, string> }
+        >;
+        const totalEntries = Object.keys(doc).length;
+        const byLocale = opts.targetLocales.map((locale) => {
+          let translated = 0;
+          for (const v of Object.values(doc)) {
+            const tr = v.translated?.[locale];
+            if (tr != null && String(tr).trim() !== "") translated++;
+          }
+          return { locale, translated, missing: totalEntries - translated };
+        });
+        
+        const modelCounts = new Map<string, number>();
+        const modelLocaleCounts = new Map<string, number>();
+        for (const v of Object.values(doc)) {
+          if (v.models) {
+            for (const [locale, model] of Object.entries(v.models)) {
+              const m = model?.trim() ? model.trim() : "(unknown)";
+              modelCounts.set(m, (modelCounts.get(m) ?? 0) + 1);
+              const mlKey = `${m}\0${locale}`;
+              modelLocaleCounts.set(mlKey, (modelLocaleCounts.get(mlKey) ?? 0) + 1);
+            }
+          }
+        }
+        const byModel = [...modelCounts.entries()]
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .map(([model, count]) => ({ model, count }));
+
+        const byModelLocale = [...modelLocaleCounts.entries()].map(([key, count]) => {
+          const [model, locale] = key.split("\0");
+          return { model, locale, count };
+        });
+
+        uiStrings = { available: true, totalEntries, byLocale, byModel, byModelLocale };
+      } else {
+        uiStrings = { available: false, totalEntries: 0, byLocale: [], byModel: [], byModelLocale: [] };
+      }
+
+      let glossary: {
+        available: boolean;
+        totalTerms: number;
+        byLocale: { locale: string; count: number }[];
+      };
+      if (glossaryPath && fs.existsSync(glossaryPath)) {
+        const rows = readGlossaryRows();
+        const byLoc = new Map<string, number>();
+        for (const row of rows) {
+          const loc = row[1]?.trim() ? row[1].trim() : "(unknown)";
+          byLoc.set(loc, (byLoc.get(loc) ?? 0) + 1);
+        }
+        const byLocale = [...byLoc.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([locale, count]) => ({ locale, count }));
+        glossary = { available: true, totalTerms: rows.length, byLocale };
+      } else {
+        glossary = { available: false, totalTerms: 0, byLocale: [] };
+      }
+
+      res.json({ cache: cacheStats, uiStrings, glossary });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true });
   });
@@ -547,5 +650,5 @@ export function createTranslationEditorApp(
 }
 
 export function resolveEditCacheStaticDir(): string {
-  return path.join(__dirname, "..", "edit-cache-app");
+  return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "edit-cache-app");
 }

@@ -1,5 +1,5 @@
 import path from "path";
-import type { I18nConfig } from "./types.js";
+import type { I18nDocTranslateConfig } from "./types.js";
 
 export type DocArtifactKind = "markdown" | "json";
 
@@ -10,7 +10,7 @@ export function toPosix(p: string): string {
   return p.split(path.sep).join("/");
 }
 
-function templateForKind(config: I18nConfig, kind: DocArtifactKind): string | undefined {
+function templateForKind(config: I18nDocTranslateConfig, kind: DocArtifactKind): string | undefined {
   const mo = config.documentation.markdownOutput;
   if (kind === "markdown") {
     return mo.pathTemplate?.trim();
@@ -64,12 +64,12 @@ function assertOutputWithinRoot(absFile: string, rootDir: string): void {
   const root = path.resolve(rootDir);
   const rel = path.relative(root, abs);
   if (rel.startsWith("..") || path.isAbsolute(rel)) {
-    throw new Error(`Resolved output path escapes documentation.outputDir: ${absFile} (root: ${root})`);
+    throw new Error(`Resolved output path escapes the documentation block outputDir: ${absFile} (root: ${root})`);
   }
 }
 
 function resolveByStyle(
-  config: I18nConfig,
+  config: I18nDocTranslateConfig,
   cwd: string,
   locale: string,
   relPath: string,
@@ -122,7 +122,7 @@ function resolveByStyle(
  * Resolve absolute output path for a translated documentation artifact.
  */
 export function resolveDocumentationOutputPath(
-  config: I18nConfig,
+  config: I18nDocTranslateConfig,
   cwd: string,
   locale: string,
   relPath: string,
@@ -153,7 +153,7 @@ export function resolveDocumentationOutputPath(
 }
 
 /** Whether to run relative link rewriting for flat markdown outputs. */
-export function shouldRewriteFlatMarkdownLinks(config: I18nConfig): boolean {
+export function shouldRewriteFlatMarkdownLinks(config: I18nDocTranslateConfig): boolean {
   const mo = config.documentation.markdownOutput;
   if (mo.rewriteRelativeLinks !== undefined) {
     return mo.rewriteRelativeLinks;

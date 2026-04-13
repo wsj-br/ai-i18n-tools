@@ -1,7 +1,7 @@
 {
-  "ai-i18n-tools example console app": "aplicativo de console de exemplo de ferramentas de i18n de ia",
+  "ai-i18n-tools example console app": "ai-i18n-tools exemplo de app de console",
   "Hello World!!": "Olá Mundo!!",
   "This line will be translated to multiple languages.": "Esta linha será traduzida para vários idiomas.",
-  "This is line number {{number}}": "Este é o número da linha {{number}}",
-  "Example console application demonstrating ai-i18n-tools": "Aplicativo de console de exemplo demonstrando ferramentas de i18n de ia"
+  "This is line number {{number}}": "Esta é a linha número {{number}}",
+  "Example console application demonstrating ai-i18n-tools": "Aplicativo de console de exemplo demonstrando o ai-i18n-tools"
 }

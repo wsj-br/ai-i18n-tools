@@ -9,8 +9,11 @@ type UiLang = { code: string; label: string; englishName: string };
 
 const locales = uiLanguages as UiLang[];
 
-function optionLabel({ code, englishName, label }: UiLang): string {
-  return `${code} / ${englishName} / ${label}`;
+function optionLabel({ englishName, label }: UiLang): string {
+  if (englishName !== label)
+    return `${label} / ${englishName}`
+  else
+    return `${englishName}`;  
 }
 
 export default function HomePage() {
@@ -58,7 +61,7 @@ export default function HomePage() {
             alt={t("Translation demo illustration")}
           />
           <p className="demo-svg-caption">
-            {t("The texts inside this SVG ilustration are being translated by ai-i18n-tools.")}
+            {t("ai-i18n-tools is translating the texts contained within this SVG ilustration.")}
           </p>
         </div>
       </div>

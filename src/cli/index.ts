@@ -13,11 +13,17 @@ process.on("warning", (w) => {
 import express from "express";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "node:url";
 import http from "http";
 import { exec, execFile } from "node:child_process";
-import readline from "node:readline/promises";
 import chalk from "chalk";
-import { DEFAULT_CONFIG_FILENAME, writeInitConfigFile } from "../core/config.js";
+import {
+  DEFAULT_CONFIG_FILENAME,
+  writeInitConfigFile,
+  toDocTranslateConfig,
+} from "../core/config.js";
+import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
+import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
   getDocumentationTargetLocaleCodes,
   resolveLocalesForDocumentation,
@@ -44,6 +50,7 @@ import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
+import { stripAnsi } from "../utils/logger.js";
 import { createTranslationEditorApp, resolveEditCacheStaticDir } from "../server/translation-editor.js";
 import type { I18nConfig } from "../core/types.js";
 
@@ -65,7 +72,7 @@ function openBrowser(url: string): void {
   }
 }
 
-const pkgPath = path.join(__dirname, "..", "..", "package.json");
+const pkgPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json");
 let version = "0.0.0";
 try {
   const raw = fs.readFileSync(pkgPath, "utf8");
@@ -80,40 +87,6 @@ try {
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
   return files.filter((f) => !isIgnored(ig, path.join(cwd, f), cwd));
-}
-
-type CleanupConfirmResult = { ok: true } | { ok: false; reason: "declined" | "not-tty" };
-
-/** Interactive confirmation before destructive cleanup; `--dry-run` skips (no DB writes). */
-async function confirmCleanupProceed(opts: { yes?: boolean; dryRun?: boolean }): Promise<CleanupConfirmResult> {
-  if (opts.dryRun || opts.yes) {
-    return { ok: true };
-  }
-  if (!process.stdin.isTTY) {
-    console.error(
-      chalk.red(
-        "cleanup: stdin is not a TTY; pass --yes to confirm, or run `translate-docs --force-update` first.\n" +
-          "That step refreshes file tracking and segment hits so valid cache rows are not removed."
-      )
-    );
-    return { ok: false, reason: "not-tty" };
-  }
-  console.log(
-    chalk.yellow(
-      "Run `translate-docs --force-update` before cleanup so file tracking and cache hits are current.\n" +
-        "Otherwise valid cache entries may be removed.\n"
-    )
-  );
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  try {
-    const answer = await rl.question("Continue with cleanup? [y/N] ");
-    if (/^y(es)?$/i.test(answer.trim())) {
-      return { ok: true };
-    }
-    return { ok: false, reason: "declined" };
-  } finally {
-    rl.close();
-  }
 }
 
 function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string } {
@@ -230,6 +203,7 @@ function buildTranslateOpts(
     noJson?: boolean;
     concurrency?: string;
     batchConcurrency?: string;
+    promptFormat?: string;
   };
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
   const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
@@ -254,8 +228,136 @@ function buildTranslateOpts(
       o.batchConcurrency !== undefined
         ? parsePositiveInt("Batch concurrency (-b)", o.batchConcurrency)
         : undefined,
+    promptFormat: parseTranslatePromptFormat(o.promptFormat),
   };
   return { locales, uiLocales, translateOpts };
+}
+
+function parseTranslatePromptFormat(
+  raw: string | undefined
+): TranslateRunOptions["promptFormat"] {
+  if (raw === undefined || raw === "") {
+    return "xml";
+  }
+  if (raw === "xml" || raw === "json-array" || raw === "json-object") {
+    return raw;
+  }
+  throw new InvalidArgumentError(
+    `Invalid --prompt-format: ${raw} (expected xml, json-array, or json-object)`
+  );
+}
+
+/** Same as `sync --force-update` (extract + UI + SVG + docs with force-update semantics). */
+function buildCleanupSyncTranslateOpts(
+  config: I18nConfig,
+  projectRoot: string,
+  logPath: string | undefined,
+  g: { verbose?: boolean },
+  dryRun: boolean
+): { uiLocales: string[]; translateOpts: TranslateRunOptions } {
+  const locales = resolveLocalesForDocumentation(config, projectRoot, null);
+  const uiLocales = resolveLocalesForUI(config, projectRoot, null);
+  const translateOpts: TranslateRunOptions = {
+    cwd: projectRoot,
+    locales,
+    dryRun,
+    force: false,
+    forceUpdate: true,
+    noCache: false,
+    verbose: Boolean(g.verbose),
+    pathFilter: undefined,
+    typeFilter: undefined,
+    jsonOnly: false,
+    noJson: false,
+    logPath,
+    concurrency: undefined,
+    batchConcurrency: undefined,
+    promptFormat: "xml",
+  };
+  return { uiLocales, translateOpts };
+}
+
+async function runSyncPipeline(args: {
+  config: I18nConfig;
+  projectRoot: string;
+  uiLocales: string[];
+  svgLocales: string[];
+  translateOpts: TranslateRunOptions;
+  noUi: boolean;
+  noSvg: boolean;
+  noDocs: boolean;
+}): Promise<void> {
+  const { config, projectRoot, uiLocales, svgLocales, translateOpts, noUi, noSvg, noDocs } = args;
+  if (config.features.extractUIStrings) {
+    try {
+      const s = runExtract(config, projectRoot);
+      console.log(
+        chalk.green(`✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`)
+      );
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`));
+      throw e;
+    }
+  }
+  if (config.features.translateUIStrings && !noUi) {
+    try {
+      await runTranslateUI(config, {
+        cwd: projectRoot,
+        locales: uiLocales,
+        force: translateOpts.force,
+        dryRun: translateOpts.dryRun,
+        verbose: translateOpts.verbose,
+        logPath: translateOpts.logPath,
+        concurrency: translateOpts.concurrency,
+      });
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync][ui] ${e instanceof Error ? e.message : String(e)}`));
+      throw e;
+    }
+  }
+  if (config.svg && !noSvg) {
+    try {
+      const svgOpts: TranslateRunOptions = {
+        ...translateOpts,
+        locales: svgLocales,
+      };
+      await runTranslateSvg(config, svgOpts);
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync][svg] ${e instanceof Error ? e.message : String(e)}`));
+      throw e;
+    }
+  }
+  if (!noDocs) {
+    try {
+      for (let bi = 0; bi < config.documentations.length; bi++) {
+        const block = config.documentations[bi]!;
+        const view = toDocTranslateConfig(config, block);
+        const md = filterIgnored(
+          collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+          projectRoot
+        );
+        const jsonRoot = block.jsonSource
+          ? path.resolve(projectRoot, block.jsonSource)
+          : path.resolve(projectRoot, ".");
+        const jsonFiles =
+          block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
+            ? collectFilesRelativeToRoot(jsonRoot, [".json"])
+            : [];
+        if (md.length === 0 && jsonFiles.length === 0) {
+          continue;
+        }
+        await runTranslate(
+          view,
+          { ...translateOpts, documentationBlockIndex: bi },
+          { markdown: md, json: jsonFiles },
+          jsonRoot
+        );
+      }
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync][translate] ${e instanceof Error ? e.message : String(e)}`));
+      throw e;
+    }
+  }
 }
 
 program
@@ -290,11 +392,16 @@ program
     "-b, --batch-concurrency <n>",
     "Max parallel batch API calls per file (default: config or 4)"
   )
+  .option(
+    "--prompt-format <mode>",
+    "Batch segment prompt/response: xml (<seg>/<t>), json-array, or json-object",
+    "xml"
+  )
   .action(async (_a, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.cacheDir);
     const raw = cmd.opts() as {
       force?: boolean;
       forceUpdate?: boolean;
@@ -350,33 +457,60 @@ program
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-docs");
     const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
 
-    if (config.features.translateJSON && !config.documentation.jsonSource?.trim()) {
+    if (
+      config.features.translateJSON &&
+      !config.documentations.some((b) => b.jsonSource?.trim())
+    ) {
       console.warn(
         chalk.yellow(
-          "\n⚠️  translateJSON is enabled but documentation.jsonSource is not set. " +
+          "\n⚠️  translateJSON is enabled but no documentations[].jsonSource is set. " +
             "JSON translation (e.g. Docusaurus UI strings from write-translations) is skipped. " +
-            'Set documentation.jsonSource to your default-locale catalog (e.g. "docs-site/i18n/en").\n'
+            'Set jsonSource on at least one block to your default-locale catalog (e.g. "docs-site/i18n/en").\n'
         )
       );
     }
 
-    const md = filterIgnored(
-      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
-      projectRoot
-    );
-    const jsonRoot = config.documentation.jsonSource
-      ? path.resolve(projectRoot, config.documentation.jsonSource)
-      : path.resolve(projectRoot, ".");
-    const jsonFiles =
-      config.documentation.jsonSource && shouldRunJson(translateOpts, config)
-        ? collectFilesRelativeToRoot(jsonRoot, [".json"])
-        : [];
-
+    let totalSkipped = 0;
+    let totalWritten = 0;
     try {
-      const sum = await runTranslate(config, translateOpts, { markdown: md, json: jsonFiles }, jsonRoot);
+      for (let bi = 0; bi < config.documentations.length; bi++) {
+        const block = config.documentations[bi]!;
+        const view = toDocTranslateConfig(config, block);
+        const md = filterIgnored(
+          collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+          projectRoot
+        );
+        const jsonRoot = block.jsonSource
+          ? path.resolve(projectRoot, block.jsonSource)
+          : path.resolve(projectRoot, ".");
+        const jsonFiles =
+          block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
+            ? collectFilesRelativeToRoot(jsonRoot, [".json"])
+            : [];
+        if (md.length === 0 && jsonFiles.length === 0) {
+          continue;
+        }
+        const desc =
+          typeof block.description === "string" && block.description.trim()
+            ? ` — ${block.description.trim()}`
+            : "";
+        console.log(
+          chalk.gray(
+            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${md.length} md, ${jsonFiles.length} json) ---\n`
+          )
+        );
+        const sum = await runTranslate(
+          view,
+          { ...translateOpts, documentationBlockIndex: bi },
+          { markdown: md, json: jsonFiles },
+          jsonRoot
+        );
+        totalSkipped += sum.filesSkipped;
+        totalWritten += sum.filesWritten;
+      }
       if (
-        sum.filesSkipped > 0 &&
-        sum.filesWritten === 0 &&
+        totalSkipped > 0 &&
+        totalWritten === 0 &&
         !translateOpts.dryRun &&
         !translateOpts.force &&
         !translateOpts.forceUpdate
@@ -425,7 +559,7 @@ program
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.cacheDir);
     const raw = cmd.opts() as { force?: boolean; forceUpdate?: boolean };
     if (raw.force && raw.forceUpdate) {
       console.error(
@@ -473,7 +607,7 @@ program
       console.error(chalk.red("❌ [translate-ui] Enable features.translateUIStrings in config."));
       process.exit(1);
     }
-    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-ui");
     try {
       await runTranslateUI(config, {
@@ -548,67 +682,24 @@ program
     const noUi = Boolean(syncOpts.noUi);
     const noSvg = Boolean(syncOpts.noSvg);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
-    const cacheDir = path.join(projectRoot, config.documentation.cacheDir);
+    const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync");
     const { uiLocales, translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
-    if (config.features.extractUIStrings) {
-      try {
-        const s = runExtract(config, projectRoot);
-        console.log(
-          chalk.green(`✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`)
-        );
-      } catch (e) {
-        console.error(chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`));
-        process.exit(1);
-      }
-    }
-    if (config.features.translateUIStrings && !noUi) {
-      try {
-        await runTranslateUI(config, {
-          cwd: projectRoot,
-          locales: uiLocales,
-          force: translateOpts.force,
-          dryRun: translateOpts.dryRun,
-          verbose: translateOpts.verbose,
-          logPath,
-          concurrency: translateOpts.concurrency,
-        });
-      } catch (e) {
-        console.error(chalk.red(`❌ [sync][ui] ${e instanceof Error ? e.message : String(e)}`));
-        process.exit(1);
-      }
-    }
-    if (config.svg && !noSvg) {
-      try {
-        const localeOpt = cmd.opts() as { locale?: string };
-        const svgOpts: TranslateRunOptions = {
-          ...translateOpts,
-          locales: resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null),
-        };
-        await runTranslateSvg(config, svgOpts);
-      } catch (e) {
-        console.error(chalk.red(`❌ [sync][svg] ${e instanceof Error ? e.message : String(e)}`));
-        process.exit(1);
-      }
-    }
-    if (!noDocs) {
-      const md = filterIgnored(
-        collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
-        projectRoot
-      );
-      const jsonRoot = config.documentation.jsonSource
-        ? path.resolve(projectRoot, config.documentation.jsonSource)
-        : path.resolve(projectRoot, ".");
-      const jsonFiles =
-        config.documentation.jsonSource && shouldRunJson(translateOpts, config)
-          ? collectFilesRelativeToRoot(jsonRoot, [".json"])
-          : [];
-      try {
-        await runTranslate(config, translateOpts, { markdown: md, json: jsonFiles }, jsonRoot);
-      } catch (e) {
-        console.error(chalk.red(`❌ [sync][translate] ${e instanceof Error ? e.message : String(e)}`));
-        process.exit(1);
-      }
+    const localeOpt = cmd.opts() as { locale?: string };
+    const svgLocales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
+    try {
+      await runSyncPipeline({
+        config,
+        projectRoot,
+        uiLocales,
+        svgLocales,
+        translateOpts,
+        noUi,
+        noSvg,
+        noDocs,
+      });
+    } catch {
+      process.exit(1);
     }
   });
 
@@ -618,52 +709,104 @@ program
   .action((_a, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
-    const cache = new TranslationCache(path.join(projectRoot, config.documentation.cacheDir));
-    const md = filterIgnored(
-      collectFilesByExtension(config.documentation.contentPaths, [".md", ".mdx"], projectRoot),
-      projectRoot
-    );
+    const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
     const locales = getDocumentationTargetLocaleCodes(config);
     const headers = ["File", ...locales];
-    const rows: string[][] = [];
-    for (const rel of md) {
-      const abs = path.join(projectRoot, rel);
-      let srcHash = "";
-      try {
-        srcHash = hashFileContent(fs.readFileSync(abs, "utf8"));
-      } catch {
-        rows.push([rel, ...locales.map(() => "?")]);
+
+    const padVis = (s: string, width: number): string => {
+      const visLen = stripAnsi(s).length;
+      return s + " ".repeat(Math.max(0, width - visLen));
+    };
+
+    const printTable = (rows: string[][]) => {
+      const colW = Math.max(12, ...rows.map((r) => stripAnsi(r[0]!).length), 8);
+      const localeColW = Math.max(
+        4,
+        ...locales.map((l) => l.length),
+        ...rows.flatMap((r) => r.slice(1).map((c) => stripAnsi(String(c)).length)),
+      );
+      const sep = (cols: string[]) => cols.join(" | ");
+      console.log(
+        sep(
+          headers.map((h, i) =>
+            i === 0 ? padVis(chalk.bold(h), colW) : padVis(chalk.bold(h), localeColW),
+          ),
+        ),
+      );
+      console.log(sep(headers.map((_, i) => (i === 0 ? "-".repeat(colW) : "-".repeat(localeColW)))));
+      for (const r of rows) {
+        console.log(sep(r.map((c, i) => (i === 0 ? padVis(String(c), colW) : padVis(String(c), localeColW)))));
+      }
+    };
+
+    console.log(chalk.bold.cyan("📊 Translation status (markdown)"));
+    console.log(
+      chalk.gray("Legend: ") +
+        chalk.green("✓") +
+        chalk.gray(" up to date  ") +
+        chalk.yellow("●") +
+        chalk.gray(" stale or missing  ") +
+        chalk.gray("-") +
+        chalk.gray(" not generated  ") +
+        chalk.red("?") +
+        chalk.gray(" source read error"),
+    );
+    for (let bi = 0; bi < config.documentations.length; bi++) {
+      const block = config.documentations[bi]!;
+      const view = toDocTranslateConfig(config, block);
+      const md = filterIgnored(
+        collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+        projectRoot
+      );
+      if (md.length === 0) {
         continue;
       }
-      const cells = locales.map((loc) => {
-        const out = resolveTranslatedOutputPath(config, projectRoot, loc, rel, "markdown");
-        const tracked = cache.getFileHash(rel, loc);
-        if (!fs.existsSync(out)) {
-          return "-";
+      const desc =
+        typeof block.description === "string" && block.description.trim()
+          ? ` — ${block.description.trim()}`
+          : "";
+      if (config.documentations.length > 1 || desc) {
+        console.log(
+          "\n" +
+            chalk.bold(`documentations[${bi}]`) +
+            chalk.gray(`${desc} `) +
+            chalk.cyan(`(${block.outputDir})`) +
+            "\n",
+        );
+      }
+      const rows: string[][] = [];
+      for (const rel of md) {
+        const abs = path.join(projectRoot, rel);
+        const trackKey = documentationFileTrackingKey(bi, rel);
+        let srcHash = "";
+        try {
+          srcHash = hashFileContent(fs.readFileSync(abs, "utf8"));
+        } catch {
+          rows.push([rel, ...locales.map(() => chalk.red("?"))]);
+          continue;
         }
-        if (tracked === srcHash) {
-          return "✓";
-        }
-        return "●";
-      });
-      rows.push([rel, ...cells]);
+        const cells = locales.map((loc) => {
+          const out = resolveTranslatedOutputPath(view, projectRoot, loc, rel, "markdown");
+          const tracked = cache.getFileHash(trackKey, loc);
+          if (!fs.existsSync(out)) {
+            return chalk.gray("-");
+          }
+          if (tracked === srcHash) {
+            return chalk.green("✓");
+          }
+          return chalk.yellow("●");
+        });
+        rows.push([rel, ...cells]);
+      }
+      printTable(rows);
     }
     cache.close();
-
-    const colW = Math.max(12, ...rows.map((r) => r[0].length), 8);
-    const sep = (cols: string[]) => cols.join(" | ");
-    console.log("Translation status (markdown):");
-    console.log(sep(headers.map((h, i) => (i === 0 ? h.padEnd(colW) : h.padEnd(4)))));
-    console.log(sep(headers.map((_, i) => (i === 0 ? "-".repeat(colW) : "----"))));
-    for (const r of rows) {
-      console.log(sep(r.map((c, i) => (i === 0 ? c.padEnd(colW) : String(c).padEnd(4)))));
-    }
   });
 
 program
   .command("cleanup")
   .description(
-    "Clean stale rows (null last_hit_at / empty filepath) and orphaned rows (filepath missing on disk) from the document translation cache (SQLite)"
+    "Run sync --force-update (extract, UI, SVG, docs), then clean stale segment rows (null last_hit_at / empty filepath); remove orphaned file_tracking keys and translation rows when resolved paths are missing on disk (SQLite)"
   )
   .option("--dry-run", "Show only", false)
   .option("--no-backup", "Skip SQLite backup before modifications", false)
@@ -671,20 +814,38 @@ program
     "--backup <path>",
     "SQLite backup path (default: timestamped file under documentation cacheDir)"
   )
-  .option("-y, --yes", "Skip confirmation prompt (required when stdin is not a TTY)", false)
-  .action(async (opts: { dryRun?: boolean; noBackup?: boolean; backup?: string; yes?: boolean }, cmd) => {
+  .action(async (opts: { dryRun?: boolean; noBackup?: boolean; backup?: string }, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd);
 
-    const confirm = await confirmCleanupProceed({ yes: opts.yes, dryRun: opts.dryRun });
-    if (!confirm.ok) {
-      if (confirm.reason === "declined") {
-        console.log(chalk.dim("Aborted."));
-      }
+    const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
+    const cacheDir = path.join(projectRoot, loaded.cacheDir);
+    const logPath = activateWriteLogs(g.writeLogs, cacheDir, "cleanup");
+    const { uiLocales, translateOpts } = buildCleanupSyncTranslateOpts(
+      loaded,
+      projectRoot,
+      logPath,
+      g,
+      Boolean(opts.dryRun)
+    );
+    const svgLocales = resolveLocalesForSvg(loaded, projectRoot, null);
+
+    console.log(chalk.cyan("[cleanup] Running sync --force-update first…"));
+    try {
+      await runSyncPipeline({
+        config: loaded,
+        projectRoot,
+        uiLocales,
+        svgLocales,
+        translateOpts,
+        noUi: false,
+        noSvg: false,
+        noDocs: false,
+      });
+    } catch {
       process.exit(1);
     }
 
-    const cacheDir = path.join(projectRoot, loaded.documentation.cacheDir);
     const cache = new TranslationCache(cacheDir);
 
     const shouldBackup = !opts.dryRun && !opts.noBackup;
@@ -705,18 +866,25 @@ program
       console.log(deletedRows.slice(0, 20).map((r) => `  ${r.source_hash} ${r.locale}`).join("\n"));
     }
 
-    let orphaned = 0;
+    const prunedTracking = cache.pruneOrphanedFileTrackingByDisk(projectRoot, Boolean(opts.dryRun));
+    console.log(
+      `[cleanup] orphaned file_tracking (missing on disk): ${prunedTracking}${opts.dryRun ? " (dry-run)" : ""}`
+    );
+
+    let orphanTranslations = 0;
     for (const fp of cache.getUniqueFilepaths()) {
-      const abs = path.join(projectRoot, fp);
+      const abs = resolveCacheTrackingKeyToAbs(projectRoot, fp);
       if (!fs.existsSync(abs)) {
         if (!opts.dryRun) {
-          orphaned += cache.deleteByFilepath(fp);
+          orphanTranslations += cache.deleteTranslationsByFilepath(fp);
         } else {
-          orphaned += 1;
+          orphanTranslations += 1;
         }
       }
     }
-    console.log(`[cleanup] orphaned filepath rows: ${orphaned}${opts.dryRun ? " (dry-run)" : ""}`);
+    console.log(
+      `[cleanup] orphaned translations (missing on disk): ${orphanTranslations}${opts.dryRun ? " (dry-run)" : ""}`
+    );
 
     cache.close();
   });
@@ -731,13 +899,14 @@ program
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
     const port = parseInt(cmdOpts.port || "8787", 10);
-    const cache = new TranslationCache(path.join(projectRoot, config.documentation.cacheDir));
+    const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
     const stringsPath = config.glossary?.uiGlossary
       ? path.join(projectRoot, config.glossary.uiGlossary)
       : resolveStringsJsonPath(config, projectRoot);
     const glossaryPath = config.glossary?.userGlossary
       ? path.join(projectRoot, config.glossary.userGlossary)
       : null;
+    const jsonSourceBlock = config.documentations.find((b) => b.jsonSource?.trim());
 
     const app = createTranslationEditorApp(cache, {
       cwd: projectRoot,
@@ -745,7 +914,7 @@ program
       glossaryUserPath: glossaryPath,
       sourceLocale: config.sourceLocale,
       targetLocales: config.targetLocales,
-      jsonSource: config.documentation.jsonSource?.trim() || null,
+      jsonSource: jsonSourceBlock?.jsonSource?.trim() || null,
     });
 
     const staticDir = resolveEditCacheStaticDir();

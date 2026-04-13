@@ -1,6 +1,12 @@
-import matter from "gray-matter";
-import type { Segment } from "../core/types.js";
+import { matter, stringify as matterStringify } from "gray-matter-es";
+import type { LanguageListBlockConfig, Segment, SegmentTranslationMapValue } from "../core/types.js";
+import { extractLanguageListBlock } from "../processors/doc-postprocess.js";
 import { BaseExtractor } from "./base-extractor.js";
+
+/** Optional extraction behavior for markdown docs (e.g. skip language-list blocks from translation). */
+export type MarkdownExtractOptions = {
+  languageListBlock?: LanguageListBlockConfig;
+};
 
 /** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
 const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
@@ -12,7 +18,7 @@ export class MarkdownExtractor extends BaseExtractor {
     return /\.mdx?$/i.test(filepath);
   }
 
-  extract(content: string, filepath: string): Segment[] {
+  extract(content: string, filepath: string, options?: MarkdownExtractOptions): Segment[] {
     void filepath;
     const segments: Segment[] = [];
     let segmentIndex = 0;
@@ -20,7 +26,7 @@ export class MarkdownExtractor extends BaseExtractor {
     const { data: frontMatter, content: body } = matter(content);
 
     if (Object.keys(frontMatter).length > 0) {
-      const frontMatterStr = matter.stringify("", frontMatter).trim();
+      const frontMatterStr = matterStringify("", frontMatter).trim();
       segments.push({
         id: `seg-${segmentIndex++}`,
         type: "frontmatter",
@@ -34,7 +40,7 @@ export class MarkdownExtractor extends BaseExtractor {
     const bodyStartLine =
       1 + (content.substring(0, content.indexOf(body)).match(/\n/g) || []).length;
 
-    const bodySegments = this.splitBody(body, bodyStartLine);
+    const bodySegments = this.splitBody(body, bodyStartLine, options?.languageListBlock);
     for (const seg of bodySegments) {
       segments.push({
         id: `seg-${segmentIndex++}`,
@@ -46,7 +52,7 @@ export class MarkdownExtractor extends BaseExtractor {
     return segments;
   }
 
-  reassemble(segments: Segment[], translations: Map<string, string>): string {
+  reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string {
     const merged = this.mergeTranslations(segments, translations);
     const parts: string[] = [];
 
@@ -66,9 +72,19 @@ export class MarkdownExtractor extends BaseExtractor {
     return parts.join("\n\n").trim() + "\n";
   }
 
-  private splitBody(body: string, bodyStartLine: number): Omit<Segment, "id" | "hash">[] {
+  private splitBody(
+    body: string,
+    bodyStartLine: number,
+    languageListBlock?: LanguageListBlockConfig
+  ): Omit<Segment, "id" | "hash">[] {
     const segments: Omit<Segment, "id" | "hash">[] = [];
     const lines = body.split("\n");
+    const langListExt =
+      languageListBlock !== undefined
+        ? extractLanguageListBlock(body, languageListBlock)
+        : null;
+    const langListStart = langListExt?.startLine ?? -1;
+    const langListEnd = langListExt?.endLine ?? -1;
     let currentSegment: string[] = [];
     let currentSegmentStartLine = 0;
     let inCodeBlock = false;
@@ -112,6 +128,23 @@ export class MarkdownExtractor extends BaseExtractor {
 
       if (inCodeBlock) {
         codeBlockContent.push(line);
+        continue;
+      }
+
+      if (
+        langListStart !== -1 &&
+        lineIndex === langListStart &&
+        !inAdmonition
+      ) {
+        flushCurrentSegment();
+        const blockLines = lines.slice(langListStart, langListEnd + 1);
+        segments.push({
+          type: "other",
+          content: blockLines.join("\n"),
+          translatable: false,
+          startLine: bodyStartLine + langListStart,
+        });
+        lineIndex = langListEnd;
         continue;
       }
 

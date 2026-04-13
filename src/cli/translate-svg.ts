@@ -54,7 +54,7 @@ export async function runTranslateSvg(
 
   const cache: TranslationCache | null = opts.noCache
     ? null
-    : new TranslationCache(path.join(opts.cwd, config.documentation.cacheDir));
+    : new TranslationCache(path.join(opts.cwd, config.cacheDir));
 
   const locales = opts.locales.map((l) => normalizeLocale(l));
   const hasNonSourceTarget = locales.some(

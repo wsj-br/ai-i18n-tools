@@ -95,9 +95,17 @@ export function resolveSvgAssetOutputPath(
   return abs;
 }
 
-/** Stable cache filepath key for standalone SVG assets (avoids collisions with doc paths). */
+/**
+ * Namespaced key for `file_tracking` (and file-level cache skip) for standalone SVG assets.
+ * Do not use for `translations.filepath` — use {@link svgTranslationFilepathMetadata} instead.
+ */
 export function svgAssetCacheFilepath(relPathFromCwdPosix: string): string {
-  return `svg-assets/${toPosix(relPathFromCwdPosix)}`;
+  return `svg-assets:${toPosix(relPathFromCwdPosix)}`;
+}
+
+/** Cwd-relative posix path for `translations.filepath` metadata (no `svg-assets:` prefix). */
+export function svgTranslationFilepathMetadata(relPathFromCwd: string): string {
+  return toPosix(relPathFromCwd.replace(/\\/g, "/"));
 }
 
 /**

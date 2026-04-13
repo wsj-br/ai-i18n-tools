@@ -502,6 +502,18 @@
     return Array.from(set).sort();
   }
 
+  /** Unique non-empty model ids from `strings.json` entries (per-locale). */
+  function uiCollectModels(entries) {
+    const set = new Set();
+    for (const e of entries) {
+      const m = e.models || {};
+      for (const v of Object.values(m)) {
+        if (v != null && String(v).trim() !== "") set.add(String(v).trim());
+      }
+    }
+    return Array.from(set).sort();
+  }
+
   function uiFillFilepathSelect() {
     const sel = document.getElementById("ui-filter-filepath-select");
     const preserved = sel.value;
@@ -511,6 +523,22 @@
       const opt = document.createElement("option");
       opt.value = fp;
       opt.textContent = fp;
+      sel.appendChild(opt);
+    }
+    if (preserved && Array.from(sel.options).some((o) => o.value === preserved)) {
+      sel.value = preserved;
+    }
+  }
+
+  function uiFillModelSelect() {
+    const sel = document.getElementById("ui-filter-model");
+    const preserved = sel.value;
+    const models = uiCollectModels(uiState.allEntries);
+    sel.innerHTML = '<option value="">All models</option>';
+    for (const model of models) {
+      const opt = document.createElement("option");
+      opt.value = model;
+      opt.textContent = model;
       sel.appendChild(opt);
     }
     if (preserved && Array.from(sel.options).some((o) => o.value === preserved)) {
@@ -536,6 +564,7 @@
     const filepathSel = document.getElementById("ui-filter-filepath-select").value;
     const srcQ = document.getElementById("ui-filter-source").value.trim().toLowerCase();
     const trQ = document.getElementById("ui-filter-translated").value.trim().toLowerCase();
+    const modelQ = document.getElementById("ui-filter-model").value.trim();
     const rows = [];
     for (const e of uiState.allEntries) {
       if (idQ && !String(e.id).toLowerCase().includes(idQ)) continue;
@@ -551,6 +580,11 @@
       for (const locale of uiLocalesForTableRows(e)) {
         const t = ((e.translated || {})[locale] != null ? String((e.translated || {})[locale]) : "").toLowerCase();
         if (trQ && !t.includes(trQ)) continue;
+        if (modelQ) {
+          const rowModel = (e.models || {})[locale];
+          const rowModelStr = rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
+          if (rowModelStr !== modelQ) continue;
+        }
         rows.push({ entry: e, locale });
       }
     }
@@ -593,12 +627,17 @@
     for (const { entry: e, locale: rowLocale } of slice) {
       const tr = document.createElement("tr");
       const t = (e.translated || {})[rowLocale] != null ? String((e.translated || {})[rowLocale]) : "";
+      const modelLabel =
+        (e.models || {})[rowLocale] != null && String((e.models || {})[rowLocale]).trim() !== ""
+          ? String((e.models || {})[rowLocale])
+          : "\u2014";
       tr.innerHTML = `
         <td><code>${escapeHtml(e.id)}</code></td>
         <td title="${escapeHtml(uiFormatLocations(e.locations))}">${escapeHtml(truncate(uiFormatLocations(e.locations), 80))}</td>
         <td class="source-text">${escapeHtml(truncate(e.source, 200))}</td>
         <td>${escapeHtml(rowLocale)}</td>
         <td>${escapeHtml(truncate(t, 120))}</td>
+        <td title="${escapeHtml(modelLabel)}">${escapeHtml(truncate(modelLabel, 48))}</td>
         <td class="actions"></td>
       `;
       const editBtn = document.createElement("button");
@@ -757,6 +796,9 @@
         const fpSel = document.getElementById("ui-filter-filepath-select");
         fpSel.innerHTML = '<option value="">-- Select filepath --</option>';
         fpSel.value = "";
+        const modelSel = document.getElementById("ui-filter-model");
+        modelSel.innerHTML = '<option value="">All models</option>';
+        modelSel.value = "";
         return;
       }
       const data = await fetch("/api/ui-strings").then((r) => r.json());
@@ -765,9 +807,11 @@
         id: e.id,
         source: e.source,
         translated: e.translated || {},
+        models: e.models || {},
         locations: e.locations || [],
       }));
       uiFillFilepathSelect();
+      uiFillModelSelect();
       uiApplyFiltersToList();
       uiRenderTable();
       setStatus(
@@ -786,7 +830,18 @@
     document.getElementById("ui-filter-filepath-select").value = "";
     document.getElementById("ui-filter-source").value = "";
     document.getElementById("ui-filter-translated").value = "";
+    document.getElementById("ui-filter-model").value = "";
     document.getElementById("ui-edit-locale").value = "";
+    uiApplyFiltersToList();
+    uiRenderTable();
+    setStatus(
+      document.getElementById("ui-status"),
+      `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
+      true
+    );
+  }
+
+  function uiApplyAndRender() {
     uiApplyFiltersToList();
     uiRenderTable();
     setStatus(
@@ -799,45 +854,22 @@
   function uiInitListeners() {
     document.getElementById("ui-btn-delete-filtered").addEventListener("click", uiDeleteFiltered);
     document.getElementById("ui-btn-clear").addEventListener("click", uiClearFilters);
-    document.getElementById("ui-btn-apply").addEventListener("click", () => {
-      uiApplyFiltersToList();
-      uiRenderTable();
-      setStatus(
-        document.getElementById("ui-status"),
-        `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
-        true
-      );
-    });
-    document.getElementById("ui-filter-filename").addEventListener("keydown", (e) => {
+    document.getElementById("ui-btn-apply").addEventListener("click", uiApplyAndRender);
+    function uiApplyFiltersOnEnter(e) {
       if (e.key === "Enter") {
-        uiApplyFiltersToList();
-        uiRenderTable();
-        setStatus(
-          document.getElementById("ui-status"),
-          `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
-          true
-        );
+        uiApplyAndRender();
       }
-    });
-    document.getElementById("ui-edit-locale").addEventListener("change", () => {
-      uiApplyFiltersToList();
-      uiRenderTable();
-      setStatus(
-        document.getElementById("ui-status"),
-        `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
-        true
-      );
-    });
+    }
+    document.getElementById("ui-filter-id").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document.getElementById("ui-filter-filename").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document.getElementById("ui-filter-source").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document.getElementById("ui-filter-translated").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document.getElementById("ui-edit-locale").addEventListener("change", uiApplyAndRender);
     document.getElementById("ui-filter-filepath-select").addEventListener("change", (e) => {
       document.getElementById("ui-filter-filename").value = e.target.value;
-      uiApplyFiltersToList();
-      uiRenderTable();
-      setStatus(
-        document.getElementById("ui-status"),
-        `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
-        true
-      );
+      uiApplyAndRender();
     });
+    document.getElementById("ui-filter-model").addEventListener("change", uiApplyAndRender);
     function uiPrev() {
       if (uiState.page > 1) {
         uiState.page--;
@@ -1119,6 +1151,147 @@
     document.getElementById("gl-btn-next-bottom").addEventListener("click", glNext);
   }
 
+  function loadStats() {
+    const statusEl = document.getElementById("stats-status");
+    const contentEl = document.getElementById("stats-content");
+    setStatus(statusEl, "Loading statistics...", false);
+    contentEl.innerHTML = "";
+
+    function pct(translated, total) {
+      if (total === 0) return "100.0";
+      return ((100 * translated) / total).toFixed(1);
+    }
+
+    function pctPart(count, total) {
+      if (total === 0) return "—";
+      return ((100 * count) / total).toFixed(1);
+    }
+
+    function renderModelLocaleMatrix(byModel, byLocale, byModelLocale, isUi) {
+      if (!byModel || byModel.length === 0 || !byLocale || byLocale.length === 0 || !byModelLocale) return "";
+      const locales = byLocale.map((r) => r.locale);
+      let mHtml = '<h4 class="stats-subtitle">By model and locale</h4>';
+      mHtml += '<div style="overflow-x:auto; padding-bottom: 0.5rem;"><table class="stats-table" style="max-width:none;"><thead><tr><th>Model</th>';
+      for (const loc of locales) {
+        mHtml += `<th>${escapeHtml(loc)}</th>`;
+      }
+      mHtml += '</tr></thead><tbody>';
+
+      const map = {};
+      for (const r of byModelLocale) {
+        map[`${r.model}\0${r.locale}`] = r.count;
+      }
+
+      const locTotals = {};
+      for (const r of byLocale) {
+        locTotals[r.locale] = isUi ? r.translated : r.total;
+      }
+
+      for (const mRow of byModel) {
+        mHtml += `<tr><td>${escapeHtml(mRow.model)}</td>`;
+        for (const loc of locales) {
+          const count = map[`${mRow.model}\0${loc}`] || 0;
+          const totalForLoc = locTotals[loc] || 0;
+          if (count === 0) {
+            mHtml += '<td style="color: var(--text-secondary); text-align: center;">&mdash;</td>';
+          } else {
+            const pct = pctPart(count, totalForLoc);
+            mHtml += `<td>${count} <span style="color: var(--text-secondary); font-size: 0.85em;">(${pct}%)</span></td>`;
+          }
+        }
+        mHtml += '</tr>';
+      }
+      mHtml += '</tbody></table></div>';
+      return mHtml;
+    }
+
+    fetch("/api/stats")
+      .then((r) => {
+        if (!r.ok) return r.text().then((t) => Promise.reject(new Error(t || r.statusText)));
+        return r.json();
+      })
+      .then((data) => {
+        setStatus(statusEl, "Statistics loaded.", true);
+        const c = data.cache;
+        const ui = data.uiStrings;
+        const gl = data.glossary;
+
+        let html = "";
+        html += '<div class="stats-grid"><div class="stats-column">';
+        
+        html += '<div class="stats-section"><h3 class="stats-section-title">Documentation cache</h3>';
+        html += '<div class="stats-cards">';
+        html += `<div class="stats-card"><span class="stats-card-value">${c.totalSegments}</span><span class="stats-card-label">Total segments</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.staleSegments}</span><span class="stats-card-label">Stale</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.activeSegments}</span><span class="stats-card-label">Active</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.totalFiles}</span><span class="stats-card-label">Tracked files</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.uniqueFilepaths}</span><span class="stats-card-label">Unique filepaths</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.byModel.length}</span><span class="stats-card-label">Models used</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${gl.available ? gl.totalTerms : 0}</span><span class="stats-card-label">Glossary entries</span></div>`;
+        html += "</div>";
+
+        html +=
+          '<table class="stats-table"><thead><tr><th>Locale</th><th>Segments</th><th>Stale</th><th>Active</th></tr></thead><tbody>';
+        for (const row of c.byLocale) {
+          html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.total}</td><td>${row.stale}</td><td>${row.active}</td></tr>`;
+        }
+        html += "</tbody></table>";
+
+        html +=
+          '<h4 class="stats-subtitle">By model</h4><table class="stats-table"><thead><tr><th>Model</th><th>Segments</th><th>% of total</th></tr></thead><tbody>';
+        for (const row of c.byModel) {
+          const p = pctPart(row.count, c.totalSegments);
+          html += `<tr><td>${escapeHtml(row.model)}</td><td>${row.count}</td><td>${p === "—" ? p : `${p}%`}</td></tr>`;
+        }
+        html += "</tbody>";
+        html += `<tfoot><tr class="stats-table-total"><th scope="row">Total</th><td>${c.totalSegments}</td><td>${
+          c.totalSegments === 0 ? "—" : "100.0%"
+        }</td></tr></tfoot></table>`;
+        
+        html += renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, false);
+        
+        html += '</div>';
+
+        html += '</div><div class="stats-column">';
+
+        html += '<div class="stats-section"><h3 class="stats-section-title">UI strings (strings.json)</h3>';
+        if (!ui.available) {
+          html += '<p class="hint stats-unavailable">strings.json not configured or missing.</p>';
+        } else {
+          html += `<p class="hint">${ui.totalEntries} entries</p>`;
+          html +=
+            '<table class="stats-table"><thead><tr><th>Locale</th><th>Translated</th><th>Missing</th><th>Coverage</th></tr></thead><tbody>';
+          for (const row of ui.byLocale) {
+            const cov = pct(row.translated, ui.totalEntries);
+            html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.translated}</td><td>${row.missing}</td><td>${cov}%</td></tr>`;
+          }
+          html += "</tbody></table>";
+
+          const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
+          html +=
+            '<h4 class="stats-subtitle">By model</h4><table class="stats-table"><thead><tr><th>Model</th><th>Entries</th><th>% of total</th></tr></thead><tbody>';
+          for (const row of ui.byModel) {
+            const p = pctPart(row.count, totalUiModelUsage);
+            html += `<tr><td>${escapeHtml(row.model)}</td><td>${row.count}</td><td>${p === "—" ? p : `${p}%`}</td></tr>`;
+          }
+          html += "</tbody>";
+          html += `<tfoot><tr class="stats-table-total"><th scope="row">Total</th><td>${totalUiModelUsage}</td><td>${
+            totalUiModelUsage === 0 ? "—" : "100.0%"
+          }</td></tr></tfoot></table>`;
+          
+          html += renderModelLocaleMatrix(ui.byModel, ui.byLocale, ui.byModelLocale, true);
+        }
+        html += "</div>";
+
+        html += "</div></div>";
+
+        contentEl.innerHTML = html;
+      })
+      .catch((err) => {
+        setStatus(statusEl, String(err.message || err), false);
+      });
+  }
+
   // ---------- Tabs ----------
   document.querySelectorAll(".tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1129,6 +1302,7 @@
       document.getElementById(`panel-${tab}`).classList.add("active");
       if (tab === "ui") loadUiStrings();
       if (tab === "glossary") loadGlossary();
+      if (tab === "stats") loadStats();
     });
   });
 

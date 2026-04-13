@@ -1,5 +1,5 @@
-import { computeSegmentHash } from "../../src/utils/hash";
-import { TranslationCache } from "../../src/core/cache";
+import { computeSegmentHash } from "../../src/utils/hash.js";
+import { TranslationCache } from "../../src/core/cache.js";
 
 describe("computeSegmentHash", () => {
   it("matches TranslationCache.computeHash", () => {

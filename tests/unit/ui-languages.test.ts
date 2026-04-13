@@ -1,9 +1,9 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { loadI18nConfigFromFile, mergeWithDefaults, parseI18nConfig } from "../../src/core/config";
-import type { I18nConfig } from "../../src/core/types";
-import { ConfigValidationError } from "../../src/core/errors";
+import { loadI18nConfigFromFile, mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
+import type { I18nConfig } from "../../src/core/types.js";
+import { ConfigValidationError } from "../../src/core/errors.js";
 import {
   augmentConfigWithUiLanguagesFile,
   expandDocumentationTargetLocalesInRawInput,
@@ -16,7 +16,9 @@ import {
   resolveLocalesForSvg,
   resolveLocalesForUI,
   resolveUiTranslationTargetCodes,
-} from "../../src/core/ui-languages";
+} from "../../src/core/ui-languages.js";
+
+const defaultMarkdownOutput = { style: "nested" as const, flatPreserveRelativeDir: false };
 
 function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
   return parseI18nConfig(
@@ -29,11 +31,8 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
         stringsJson: "strings.json",
         flatOutputDir: "./locales",
       },
-      documentation: {
-        contentPaths: [],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-      },
+      cacheDir: ".translation-cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       openrouter: {
         baseUrl: "https://openrouter.ai/api/v1",
         translationModels: ["m"],
@@ -66,6 +65,8 @@ describe("ui-languages", () => {
     expect(looksLikeUiLanguagesFileRef("de")).toBe(false);
     expect(looksLikeUiLanguagesFileRef("pt-BR")).toBe(false);
     expect(looksLikeUiLanguagesFileRef("en-GB")).toBe(false);
+    expect(looksLikeUiLanguagesFileRef("")).toBe(false);
+    expect(looksLikeUiLanguagesFileRef("   ")).toBe(false);
   });
 
   it("expandTargetLocalesFileReferenceInRawInput accepts targetLocales as a string path", () => {
@@ -82,7 +83,8 @@ describe("ui-languages", () => {
     const raw = mergeWithDefaults({
       sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".translation-cache" },
+      cacheDir: ".translation-cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       targetLocales: "locales/ui-languages.json",
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
@@ -106,7 +108,8 @@ describe("ui-languages", () => {
     const raw = mergeWithDefaults({
       sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".translation-cache" },
+      cacheDir: ".translation-cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       targetLocales: ["locales/ui-languages.json"],
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
@@ -114,6 +117,19 @@ describe("ui-languages", () => {
     expandTargetLocalesFileReferenceInRawInput(raw, tmp);
     expect(raw.targetLocales).toEqual(["de"]);
     expect(raw.uiLanguagesPath).toBe("locales/ui-languages.json");
+  });
+
+  it("expandTargetLocalesFileReferenceInRawInput throws when manifest file is missing", () => {
+    const raw = mergeWithDefaults({
+      sourceLocale: "en",
+      targetLocales: ["missing-ui-languages.json"],
+      ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
+      cacheDir: ".translation-cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      openrouter: { translationModels: ["m"] },
+      features: { translateUIStrings: true },
+    });
+    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(/not found/);
   });
 
   it("expandTargetLocalesFileReferenceInRawInput rejects conflicting uiLanguagesPath", () => {
@@ -126,7 +142,8 @@ describe("ui-languages", () => {
     const raw = mergeWithDefaults({
       sourceLocale: "en",
       ui: { flatOutputDir: "o", sourceRoots: [], stringsJson: "strings.json" },
-      documentation: { contentPaths: [], outputDir: "./i18n", cacheDir: ".translation-cache" },
+      cacheDir: ".translation-cache",
+      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
       targetLocales: ["a.json"],
       uiLanguagesPath: "other.json",
       openrouter: { translationModels: ["m"] },
@@ -218,6 +235,24 @@ describe("ui-languages", () => {
     expect(resolveLocalesForUI(c, tmp, "de, fr")).toEqual(["de"]);
   });
 
+  it("resolveLocalesForUI throws when --locale codes are not in manifest", () => {
+    const p = path.join(tmp, "ui-languages.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify([{ code: "de", label: "DE", englishName: "German" }]),
+      "utf8"
+    );
+    const c = baseUiConfig({ uiLanguagesPath: p });
+    expect(() => resolveLocalesForUI(c, tmp, "fr")).toThrow(/None of the requested locales/);
+  });
+
+  it("augmentConfigWithUiLanguagesFile wraps invalid JSON errors", () => {
+    const p = path.join(tmp, "bad-ui.json");
+    fs.writeFileSync(p, "{ not json", "utf8");
+    const c = baseUiConfig({ uiLanguagesPath: p });
+    expect(() => augmentConfigWithUiLanguagesFile(c, tmp)).toThrow(/Invalid ui-languages file/);
+  });
+
   it("augmentConfigWithUiLanguagesFile merges display names", () => {
     const p = path.join(tmp, "ui-languages.json");
     fs.writeFileSync(
@@ -253,11 +288,8 @@ describe("ui-languages", () => {
           stringsJson: "strings.json",
           flatOutputDir: "locales",
         },
-        documentation: {
-          contentPaths: [],
-          outputDir: "./i18n",
-          cacheDir: ".translation-cache",
-        },
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
         openrouter: {
           translationModels: ["m"],
         },
@@ -296,11 +328,8 @@ describe("ui-languages", () => {
           stringsJson: "strings.json",
           flatOutputDir: "locales",
         },
-        documentation: {
-          contentPaths: [],
-          outputDir: "./i18n",
-          cacheDir: ".translation-cache",
-        },
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
         openrouter: {
           translationModels: ["m"],
         },
@@ -319,16 +348,19 @@ describe("ui-languages", () => {
     expect(loaded.localeDisplayNames?.de).toBe("German");
   });
 
-  it("getDocumentationTargetLocaleCodes prefers documentation.targetLocales", () => {
+  it("getDocumentationTargetLocaleCodes prefers documentations[].targetLocales", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es", "pt-BR"],
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-        targetLocales: ["de", "fr"],
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["de", "fr"],
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
     });
     expect(getDocumentationTargetLocaleCodes(c)).toEqual(["de", "fr"]);
   });
@@ -337,11 +369,14 @@ describe("ui-languages", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
       targetLocales: ["de", "fr"],
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
     });
     expect(getDocumentationTargetLocaleCodes(c)).toEqual(["de", "fr"]);
   });
@@ -350,11 +385,14 @@ describe("ui-languages", () => {
     const c = baseUiConfig({
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
     });
     expect(resolveLocalesForSvg(c, tmp, null)).toEqual(["en-GB", "de", "fr"]);
   });
@@ -363,25 +401,54 @@ describe("ui-languages", () => {
     const c = baseUiConfig({
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
     });
     expect(resolveLocalesForSvg(c, tmp, "de")).toEqual(["de"]);
+  });
+
+  it("resolveLocalesForDocumentation throws when requested locales are not doc targets", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr", "es"],
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["de"],
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
+      features: {
+        translateUIStrings: false,
+        translateMarkdown: true,
+        translateJSON: false,
+        extractUIStrings: false,
+      },
+    });
+    expect(() => resolveLocalesForDocumentation(c, tmp, "es")).toThrow(/None of the requested/);
   });
 
   it("resolveLocalesForDocumentation intersects --locale with doc targets", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es"],
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-        targetLocales: ["de", "fr"],
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["de", "fr"],
+          markdownOutput: defaultMarkdownOutput,
+        },
+      ],
       features: {
         translateUIStrings: false,
         translateMarkdown: true,
@@ -407,17 +474,21 @@ describe("ui-languages", () => {
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es", "it"],
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
-      documentation: {
-        contentPaths: ["docs/"],
-        outputDir: "./i18n",
-        cacheDir: ".translation-cache",
-        targetLocales: ["doc-locales.json"],
-      },
+      cacheDir: ".translation-cache",
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["doc-locales.json"],
+        },
+      ],
       openrouter: { translationModels: ["m"] },
       features: { translateMarkdown: true },
     });
     expandDocumentationTargetLocalesInRawInput(raw, tmp);
-    expect((raw.documentation as { targetLocales: string[] }).targetLocales.sort()).toEqual(["de", "fr"]);
+    expect(
+      (raw.documentations as { targetLocales: string[] }[])[0].targetLocales.sort()
+    ).toEqual(["de", "fr"]);
     expect(raw.uiLanguagesPath).toBeUndefined();
   });
 });

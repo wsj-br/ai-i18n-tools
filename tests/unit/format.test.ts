@@ -3,15 +3,17 @@ import {
   MODELS_TRY_ORDER_LOG_PREFIX,
   MODELS_TRY_ORDER_LOG_WIDTH,
   wrapCommaSeparatedListForWidth,
-} from "../../src/cli/format";
+} from "../../src/cli/format.js";
 
 describe("wrapCommaSeparatedListForWidth", () => {
   it("wraps at comma boundaries within width budgets", () => {
     const models = [
-      "qwen/qwen3-235b-a22b-2507",
-      "stepfun/step-3.5-flash",
-      "anthropic/claude-3-haiku",
-      "anthropic/claude-3.5-haiku"
+      "openai/gpt-4o-mini",
+      "deepseek/deepseek-v3.2",
+      "google/gemini-3.1-flash-lite-preview",
+      "qwen/qwen3.6-plus",
+      "moonshotai/kimi-k2.5",
+      "anthropic/claude-sonnet-4.6"
     ];
     const joined = models.join(", ");
     const parts = wrapCommaSeparatedListForWidth(

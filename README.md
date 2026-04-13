@@ -2,21 +2,27 @@
 
 CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and (via `translate-svg`) standalone SVG assets.
 
+
+<small>**Read in other languages:** </small>
+<small id="lang-list">[en-GB](./README.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [hi](./translated-docs/README.hi.md) · [ja](./translated-docs/README.ja.md) · [ko](./translated-docs/README.ko.md) · [pt-BR](./translated-docs/README.pt-BR.md) · [zh-CN](./translated-docs/README.zh-CN.md) · [zh-TW](./translated-docs/README.zh-TW.md)</small>
+
 ## Two core workflows
 
 **Workflow 1 - UI Translation** (React, Next.js, Node.js, any i18next project)
 
-Scans source files for `t("…")` calls, builds a master catalog (`strings.json`), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
+Scans source files for `t("…")` calls, builds a master catalog (`strings.json` with optional per-locale **`models`** metadata), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
 **Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
 
-Translates `.md` and `.mdx` from `documentation.contentPaths` and JSON label files from `documentation.jsonSource` when enabled. Supports Docusaurus-style and flat locale-suffixed layouts (`documentation.markdownOutput`). SQLite cache ensures only new or changed segments are sent to the LLM. **SVG:** use `translate-svg` with a top-level `svg` block (also run from `sync` when `svg` is set).
+Translates `.md` and `.mdx` from each `documentations` block’s `contentPaths` and JSON label files from that block’s `jsonSource` when enabled. Supports Docusaurus-style and flat locale-suffixed layouts per block (`documentations[].markdownOutput`). Shared root `cacheDir` holds the SQLite cache so only new or changed segments are sent to the LLM. **SVG:** use `translate-svg` with a top-level `svg` block (also run from `sync` when `svg` is set).
 
-Both workflows share a single config file and can be used independently or together.
+Both workflows share a single `ai-i18n-tools.config.json` file and can be used independently or together. Standalone SVG translation is configured via the top-level `svg` block and runs through `translate-svg` (or the SVG stage inside `sync`).
 
 ---
 
 ## Installation
+
+The published package is **ESM-only** (`"type": "module"`). Use `import` from Node.js, bundlers, or `import()` — **`require('ai-i18n-tools')` is not supported.**
 
 ```bash
 npm install ai-i18n-tools
@@ -122,13 +128,14 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
 ai-i18n-tools extract                               Scan source for t("…") calls
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
-                                                    --force-update, --force, --stats, --clear-cache
+                                                    --force-update, --force, --stats, --clear-cache,
+                                                    --prompt-format (xml | json-array | json-object)
 ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (requires config.svg); see --no-cache
-ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only
+ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools sync                                  Extract UI strings, then UI, optional SVG, then docs
 ai-i18n-tools status                                Translation status per file × locale
 ai-i18n-tools editor                                Open cache/glossary web editor
-ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>] [-y]   Clean stale + orphaned cache rows; confirms first (see --help); backs up SQLite by default
+ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
@@ -140,6 +147,7 @@ All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (
 
 - [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, all CLI flags, and config field reference.
 - [Package Overview](docs/PACKAGE_OVERVIEW.md) - architecture, internals, programmatic API, and extension points.
+- [AI Agent Context](docs/ai-i18n-tools-context.md) - concise project context for agents and maintainers making code or config changes.
 
 ---
 

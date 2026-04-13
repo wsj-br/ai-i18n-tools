@@ -3,11 +3,13 @@ import path from "path";
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import { OpenRouterClient } from "../api/openrouter.js";
-import { normalizeLocale } from "../core/config.js";
+import { normalizeLocale, resolveUITranslationModels } from "../core/config.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { Glossary } from "../glossary/glossary.js";
+import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { parse as parseCsv } from "csv-parse/sync";
 
 const UI_CHUNK = 50;
 
@@ -35,7 +37,10 @@ export interface TranslateUISummary {
   costUsd: number;
 }
 
-type StringsFile = Record<string, { source?: string; translated?: Record<string, string> }>;
+type StringsFile = Record<
+  string,
+  { source?: string; translated?: Record<string, string>; models?: Record<string, string> }
+>;
 
 function localeEnglishLabel(config: I18nConfig, locale: string): string {
   const n = normalizeLocale(locale);
@@ -79,18 +84,72 @@ export async function runTranslateUI(
     throw new Error("No target locales after excluding sourceLocale");
   }
 
-  const glossaryUi = config.glossary?.uiGlossary
-    ? path.join(opts.cwd, config.glossary.uiGlossary)
-    : undefined;
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(opts.cwd, config.glossary.userGlossary)
     : undefined;
-  const glossary = new Glossary(glossaryUi, glossaryUser, targets);
+
+  if (config.glossary?.autoAddUserEditedToGlossary !== false && glossaryUser && !opts.dryRun) {
+    const headers = ["Original language string", "locale", "Translation"];
+    let csvRows: string[][] = [];
+
+    if (fs.existsSync(glossaryUser)) {
+      const raw = fs.readFileSync(glossaryUser, "utf8");
+      const records = parseCsv(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<string, string>[];
+      csvRows = records.map((r) => [
+        r["Original language string"] ?? r["en"] ?? "",
+        r["locale"] ?? "",
+        r["Translation"] ?? r["translation"] ?? "",
+      ]);
+    }
+
+    const existingPairs = new Set(csvRows.map((r) => `${r[0]}\0${r[1]}`));
+    let addedToGlossary = 0;
+
+    for (const [, entry] of entries) {
+      if (!entry.source || !entry.models || !entry.translated) continue;
+      for (const target of targets) {
+        if (entry.models[target] === USER_EDITED_MODEL) {
+          const translation = entry.translated[target];
+          if (translation && typeof translation === "string" && translation.trim() !== "") {
+            const pairKey = `${entry.source}\0${target}`;
+            const starKey = `${entry.source}\0*`;
+            if (!existingPairs.has(pairKey) && !existingPairs.has(starKey)) {
+              csvRows.push([entry.source, target, translation]);
+              existingPairs.add(pairKey);
+              addedToGlossary++;
+            }
+          }
+        }
+      }
+    }
+
+    if (addedToGlossary > 0) {
+      const csvEscapeCell = (s: string): string => {
+        if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+        return s;
+      };
+      const lines = [
+        headers.map(csvEscapeCell).join(","),
+        ...csvRows.map((r) => r.map(csvEscapeCell).join(",")),
+      ];
+      writeAtomicUtf8(glossaryUser, `${lines.join("\n")}\n`);
+      console.log(
+        chalk.green(
+          `[user-glossary] Added ${addedToGlossary} user-edited entr${addedToGlossary === 1 ? "y" : "ies"} to ${config.glossary.userGlossary}`
+        )
+      );
+    }
+  }
+
+  const glossary = new Glossary(undefined, glossaryUser, targets);
 
   let client: OpenRouterClient | null = null;
   if (!opts.dryRun) {
     try {
-      client = new OpenRouterClient({ config });
+      client = new OpenRouterClient({
+        config,
+        translationModels: resolveUITranslationModels(config),
+      });
     } catch (e) {
       throw new Error(
         `OPENROUTER_API_KEY required for UI translation: ${e instanceof Error ? e.message : String(e)}`
@@ -199,6 +258,10 @@ export async function runTranslateUI(
               strings[h].translated = {};
             }
             strings[h].translated![locale] = tr;
+            if (!strings[h].models) {
+              strings[h].models = {};
+            }
+            strings[h].models![locale] = uiBatch.model;
             stringsUpdated++;
           }
         });
@@ -299,6 +362,10 @@ export async function runTranslateUI(
               strings[h].translated = {};
             }
             strings[h].translated![locale] = tr;
+            if (!strings[h].models) {
+              strings[h].models = {};
+            }
+            strings[h].models![locale] = uiBatch.model;
             stringsUpdated++;
           }
         });

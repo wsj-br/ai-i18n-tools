@@ -1,16 +1,17 @@
 ---
-translation_last_updated: '2026-04-11T01:51:19.454Z'
-source_file_mtime: '2026-04-11T01:00:55.851Z'
-source_file_hash: 885c19658d8dbf08c9bba9f382a23b61d462037268057df4d9c87aea4e5012fc
+translation_last_updated: '2026-04-13T00:28:28.942Z'
+source_file_mtime: '2026-04-12T15:37:53.621Z'
+source_file_hash: 49f79b71c1318dd97048d93d4c0d706db898b57db53ec2ab566d1cf0375dcb76
 translation_language: de
 source_file_path: README.md
 ---
-# Beispiel für eine Konsolenanwendung
+# Konsolen-App-Beispiel
 
-**In anderen Sprachen lesen:**
-[Englisch](../README.md) · [Spanisch](README.es.md) · [Französisch](README.fr.md) · [Deutsch](README.de.md) · [Portugiesisch (BR)](README.pt-BR.md)
+<small>**In anderen Sprachen lesen:** </small>
 
-Dieses Beispiel zeigt, wie `ai-i18n-tools` verwendet wird, um eine Node.js-Konsolenanwendung zu internationalisieren.
+<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+
+Dieses Beispiel zeigt, wie `ai-i18n-tools` zur Internationalisierung einer Node.js-Konsolenanwendung verwendet wird.
 
 ## Voraussetzungen
 
@@ -20,7 +21,7 @@ Dieses Beispiel zeigt, wie `ai-i18n-tools` verwendet wird, um eine Node.js-Konso
 
 ## Installation
 
-Führen Sie `pnpm install` aus dem **Repository-Stammverzeichnis** aus. Die `pnpm-workspace.yaml` im Stammverzeichnis deklariert sowohl die Bibliothek als auch dieses Beispiel als Workspace-Pakete, sodass pnpm `ai-i18n-tools` direkt über den Eintrag `"ai-i18n-tools": "workspace:^"` in der `package.json` mit Ihrer lokalen Kopie verknüpft. Es ist kein separater Build- oder Verknüpfungsschritt erforderlich – bauen Sie die Bibliothek einfach neu (`pnpm run build` im Repository-Stamm), sobald Sie Quelldateien ändern, und das Beispiel übernimmt automatisch das aktualisierte `dist/`-Verzeichnis.
+Führe `pnpm install` aus dem **Repository-Stammverzeichnis** aus. Die `pnpm-workspace.yaml` im Stammverzeichnis deklariert sowohl die Bibliothek als auch dieses Beispiel als Workspace-Pakete, daher verlinkt pnpm `ai-i18n-tools` direkt mit deinem lokalen Checkout über den Eintrag `"ai-i18n-tools": "workspace:^"` in `package.json`. Kein separater Build- oder Link-Schritt ist erforderlich – baue die Bibliothek einfach neu (`pnpm run build` im Repository-Stammverzeichnis), wann immer du Quelldateien änderst, und das Beispiel übernimmt automatisch das aktualisierte `dist/`.
 
 ```bash
 # From the repository root
@@ -30,13 +31,13 @@ pnpm run build
 
 ## Verwendung
 
-Führen Sie die Anwendung auf Englisch aus (Standard):
+Führe die Anwendung auf Englisch aus (Standard):
 
 ```bash
 pnpm start
 ```
 
-Verwenden Sie die Option `--locale`, um die Ausgabe in einer anderen Sprache anzuzeigen:
+Verwende die Option `--locale`, um die Ausgabe in einer anderen Sprache anzuzeigen:
 
 ```bash
 pnpm run start:es    # Spanish
@@ -45,7 +46,7 @@ pnpm run start:de    # German
 pnpm run start:pt-BR # Portuguese (Brazil)
 ```
 
-Oder übergeben Sie das Flag direkt:
+Oder übergib das Flag direkt:
 
 ```bash
 node src/main.js --locale fr
@@ -53,17 +54,17 @@ node src/main.js --locale fr
 
 ## Unterstützte Sprachen
 
-| Code    | Sprache             |
-| ------- | ------------------- |
-| `en`    | Englisch (Standard) |
-| `es`    | Spanisch            |
-| `fr`    | Französisch         |
-| `de`    | Deutsch             |
+| Code    | Sprache               |
+| ------- | --------------------- |
+| `en`    | Englisch (Standard)   |
+| `es`    | Spanisch              |
+| `fr`    | Französisch           |
+| `de`    | Deutsch               |
 | `pt-BR` | Portugiesisch (Brasilien) |
 
-## Ablauf
+## Arbeitsablauf
 
-### 1. Benutzeroberflächen-Texte extrahieren
+### 1. UI-Strings extrahieren
 
 Durchsucht `src/` nach `t()`-Aufrufen und aktualisiert `locales/strings.json`:
 
@@ -73,28 +74,28 @@ pnpm run i18n:extract
 
 ### 2. Übersetzen
 
-Erstellt JSON-Dateien pro Sprache in `locales/` und übersetzte Markdown-Dokumente in `translated-docs/`:
+Erzeugt Locale-JSON-Dateien in `locales/` und übersetzte Markdown-Dokumente in `translated-docs/`:
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
 pnpm run i18n:translate
 ```
 
-Sie können auch `i18n:sync` ausführen, um die Benutzeroberflächen-Texte in einem Schritt zu extrahieren und zu übersetzen:
+Du kannst auch `i18n:sync` ausführen, um die UI-Strings in einem Schritt zu extrahieren und zu übersetzen:
 
 ```bash
 pnpm run i18n:sync
 ```
 
-### 3. Anwendung ausführen
+### 3. App ausführen
 
 ```bash
 pnpm run start:es
 ```
 
-### Cache leeren und neu übersetzen
+### Cache löschen und neu übersetzen
 
-`i18n:clean` löscht nur `.translation-cache/` (es entfernt **nicht** committete `locales/` oder `translated-docs/`).
+`i18n:clean` löscht nur `.translation-cache/` (es entfernt **nicht** die committeten `locales/` oder `translated-docs/`).
 
 ```bash
 pnpm run i18n:clean && pnpm run i18n:extract && pnpm run i18n:translate
@@ -117,4 +118,4 @@ console-app/
     └── pt-BR.json              # Portuguese (Brazil) flat strings (committed)
 ```
 
-Das Verzeichnis `translated-docs/` wird in Git mit übersetzten READMEs committet, sodass Sie diese lesen können, ohne die Übersetzung auszuführen; führen Sie `i18n:translate` erneut aus, nachdem Sie die englische Quelle geändert haben.
+Das `translated-docs/`-Verzeichnis wird mit übersetzten READMEs in git committet, damit du sie lesen kannst, ohne die Übersetzung auszuführen; führe `i18n:translate` erneut aus, nachdem du die englische Quelle geändert hast.

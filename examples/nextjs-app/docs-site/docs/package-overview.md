@@ -4,6 +4,9 @@ This document describes the internal architecture of `ai-i18n-tools`, how each c
 
 For practical usage instructions, see [Getting Started](./getting-started.md).
 
+<small>**Read in other languages:** </small>
+<small id="lang-list">[en-GB](./PACKAGE_OVERVIEW.md) · [de](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [es](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [fr](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [hi](../translated-docs/docs/PACKAGE_OVERVIEW.hi.md) · [ja](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [ko](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [pt-BR](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](../translated-docs/docs/PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](../translated-docs/docs/PACKAGE_OVERVIEW.zh-TW.md)</small>
+
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -134,17 +137,17 @@ source files (JS/TS)
       │
       ▼  UIStringExtractor (i18next-scanner Parser)
 strings.json  ─────────────────── master catalog
-      │             { hash: { source, translated: { de: "…" } } }
+      │             { hash: { source, translated, models?, locations? } }
       ▼
 OpenRouterClient.translateUIBatch()
-      │  sends JSON array of source strings, receives JSON array of translations
+      │  sends JSON array of source strings, receives JSON array of translations (+ model id per batch)
       ▼
-de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation
+de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
 ```
 
 ### `UIStringExtractor` {#uistringextractor}
 
-Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Configurable function names and file extensions. Segment hashes are **MD5 first 8 hex chars** of the trimmed source string - these become the keys in `strings.json`.
+Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable, and extraction can also include the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled. Segment hashes are **MD5 first 8 hex chars** of the trimmed source string - these become the keys in `strings.json`.
 
 ### `strings.json` {#stringsjson}
 
@@ -157,16 +160,23 @@ The master catalog has the shape:
     "translated": {
       "de": "Der deutsche Text",
       "pt-BR": "O texto em português"
-    }
+    },
+    "models": {
+      "de": "anthropic/claude-3.5-haiku",
+      "pt-BR": "openai/gpt-4o"
+    },
+    "locations": [{ "file": "src/app/page.tsx", "line": 51 }]
   }
 }
 ```
 
-`extract` adds new keys and preserves existing translations. `translate-ui` fills missing `translated` entries and writes flat locale files.
+`models` (optional) — per locale, which model produced that translation after the last successful `translate-ui` run for that locale (or `user-edited` if the text was saved from the `editor` web UI). `locations` (optional) — where `extract` found the string.
+
+`extract` adds new keys and preserves existing `translated` / `models` data for keys still present in the scan. `translate-ui` fills missing `translated` entries, updates `models` for locales it translates, and writes flat locale files.
 
 ### Flat locale files {#flat-locale-files}
 
-Each target locale gets a flat JSON file (`de.json`) mapping source string → translation:
+Each target locale gets a flat JSON file (`de.json`) mapping source string → translation (no `models` field):
 
 ```json
 {
@@ -184,7 +194,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
 
-`OpenRouterClient.translateUIBatch` tries each model in `translationModels` in order, falling back on parse or network errors.
+`OpenRouterClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list from `openrouter.translationModels` (or legacy default/fallback); for `translate-ui`, optional `ui.preferredModel` is prepended when set (deduplicated against the rest).
 
 ---
 
@@ -216,9 +226,9 @@ output file  ─────────────────── Docusauru
 
 All extractors extend `BaseExtractor` and implement `extract(content, filepath): Segment[]`.
 
-- **`MarkdownExtractor`** - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
-- **`JsonExtractor`** - extracts string values from Docusaurus JSON label files.
-- **`SvgExtractor`** - extracts `<text>` and `<title>` element content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
+- `MarkdownExtractor` - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
+- `JsonExtractor` - extracts string values from Docusaurus JSON label files.
+- `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
 
 ### Placeholder protection {#placeholder-protection}
 
@@ -232,18 +242,22 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 
 SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
 
-On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segments that weren't touched - `cleanup` removes stale rows (null `last_hit_at` / empty filepath) and orphaned rows whose source file no longer exists; it backs up `cache.db` first unless `--no-backup` is passed.
+On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `svg-assets:…`, etc.), and removes translation rows whose metadata filepath points at a missing file; it backs up `cache.db` first unless `--no-backup` is passed.
 
 The `translate-docs` command also uses **file tracking** so unchanged sources with existing outputs can skip work entirely. `--force-update` re-runs file processing while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. See [Getting Started](./getting-started.md#cache-behaviour-and-translate-docs-flags) for the full flag table.
+
+**Batch prompt format:** `translate-docs --prompt-format` selects XML (`<seg>` / `<t>`) or JSON array/object shapes for `OpenRouterClient.translateDocumentBatch` only; extraction, placeholders, and validation are unchanged. See [Batch prompt format](./getting-started.md#batch-prompt-format).
 
 ### Output path resolution {#output-path-resolution}
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` maps a source-relative path to the output path:
 
-- **`nested`** style (default): `{outputDir}/{locale}/{relPath}` for markdown.
-- **`docusaurus`** style: under `docsRoot`, outputs use `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; paths outside `docsRoot` fall back to the nested layout.
-- **`flat`** style: `{outputDir}/{stem}.{locale}{extension}` (with optional `flatPreserveRelativeDir`).
-- **Custom** `pathTemplate`: any layout using `{outputDir}`, `{locale}`, `{relPath}`, `{stem}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- `nested` style (default): `{outputDir}/{locale}/{relPath}` for markdown.
+- `docusaurus` style: under `docsRoot`, outputs use `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; paths outside `docsRoot` fall back to the nested layout.
+- `flat` style: `{outputDir}/{stem}.{locale}{extension}`. When `flatPreserveRelativeDir` is `true`, source subdirectories are kept under `outputDir`.
+- **Custom** `pathTemplate`: any markdown layout using `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Custom** `jsonPathTemplate`: separate custom layout for JSON label files, using the same placeholders.
+- `linkRewriteDocsRoot` helps the flat-link rewriter compute correct prefixes when translated output is rooted somewhere other than the default project root.
 
 ### Flat link rewriting {#flat-link-rewriting}
 
@@ -257,7 +271,7 @@ When `markdownOutput.style === "flat"`, translated markdown files are placed alo
 
 Wraps the OpenRouter chat completions API. Key behaviours:
 
-- **Model fallback**: tries each model in `translationModels` in order; falls back on HTTP errors or parse failures.
+- **Model fallback**: tries each model in the resolved list in order; falls back on HTTP errors or parse failures. UI translation resolves `ui.preferredModel` first when present, then `openrouter` models.
 - **Rate limiting**: detects 429 responses, waits `retry-after` (or 2s), retries once.
 - **Prompt caching**: system message is sent with `cache_control: { type: "ephemeral" }` to enable prompt caching on supported models.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.
@@ -267,9 +281,9 @@ Wraps the OpenRouter chat completions API. Key behaviours:
 `loadI18nConfigFromFile(configPath, cwd)` pipeline:
 
 1. Read and parse `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` - deep-merge with `defaultI18nConfigPartial`.
+2. `mergeWithDefaults` - deep-merge with `defaultI18nConfigPartial`, and merge any `documentations[].sourceFiles` entries into `contentPaths`.
 3. `expandTargetLocalesFileReferenceInRawInput` - if `targetLocales` is a file path, load the manifest and expand to locale codes; set `uiLanguagesPath`.
-4. `expandDocumentationTargetLocalesInRawInput` - same for `documentation.targetLocales`.
+4. `expandDocumentationTargetLocalesInRawInput` - same for each `documentations[].targetLocales` entry.
 5. `parseI18nConfig` - Zod validation + `validateI18nBusinessRules`.
 6. `applyEnvOverrides` - apply `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` - attach manifest display names.
@@ -402,10 +416,12 @@ Use `markdownOutput.pathTemplate` for any file layout:
 
 ```json
 {
-  "documentation": {
-    "markdownOutput": {
-      "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
+  "documentations": [
+    {
+      "markdownOutput": {
+        "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
+      }
     }
-  }
+  ]
 }
 ```

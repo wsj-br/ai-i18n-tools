@@ -2,10 +2,10 @@
   "de00bc67": {
     "source": "ai-i18n-tools example console app",
     "translated": {
-      "es": "aplicación de consola de ejemplo de herramientas ai-i18n",
-      "fr": "application console exemple ai-i18n-tools",
-      "de": "ai-i18n-tools Beispiel-Konsolenanwendung",
-      "pt-BR": "aplicativo de console de exemplo de ferramentas de i18n de ia"
+      "es": "ai-i18n-tools aplicación de consola de ejemplo",
+      "fr": "ai-i18n-tools exemple d'application console",
+      "de": "ai-i18n-tools Beispiel-Konsolen-App",
+      "pt-BR": "ai-i18n-tools exemplo de app de console"
     },
     "locations": [
       {
@@ -17,8 +17,8 @@
   "cbf41347": {
     "source": "Hello World!!",
     "translated": {
-      "es": "¡Hola Mundo!",
-      "fr": "Bonjour tout le monde !!",
+      "es": "¡Hola Mundo!!",
+      "fr": "Bonjour le monde !!",
       "de": "Hallo Welt!!",
       "pt-BR": "Olá Mundo!!"
     },
@@ -32,7 +32,7 @@
   "da0d36f0": {
     "source": "This line will be translated to multiple languages.",
     "translated": {
-      "es": "Esta línea será traducida a varios idiomas.",
+      "es": "Esta línea se traducirá a varios idiomas.",
       "fr": "Cette ligne sera traduite dans plusieurs langues.",
       "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
       "pt-BR": "Esta linha será traduzida para vários idiomas."
@@ -49,8 +49,8 @@
     "translated": {
       "es": "Esta es la línea número {{number}}",
       "fr": "Ceci est la ligne numéro {{number}}",
-      "de": "Dies ist die Zeilennummer {{number}}",
-      "pt-BR": "Este é o número da linha {{number}}"
+      "de": "Dies ist Zeile Nummer {{number}}",
+      "pt-BR": "Esta é a linha número {{number}}"
     },
     "locations": [
       {
@@ -62,10 +62,10 @@
   "30eadb0c": {
     "source": "Example console application demonstrating ai-i18n-tools",
     "translated": {
-      "es": "Aplicación de consola de ejemplo que demuestra las herramientas ai-i18n",
-      "fr": "Exemple d'application console illustrant ai-i18n-tools",
-      "de": "Beispiel-Konsolenanwendung, die ai-i18n-tools demonstriert",
-      "pt-BR": "Aplicativo de console de exemplo demonstrando ferramentas de i18n de ia"
+      "es": "Aplicación de consola de ejemplo que demuestra ai-i18n-tools",
+      "fr": "Exemple d'application console démontrant ai-i18n-tools",
+      "de": "Beispiel-Konsolenanwendung zur Demonstration von ai-i18n-tools",
+      "pt-BR": "Aplicativo de console de exemplo demonstrando o ai-i18n-tools"
     },
     "locations": [
       {

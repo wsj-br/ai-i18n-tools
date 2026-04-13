@@ -2,8 +2,8 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { Parser } from "i18next-scanner";
-import type { Segment } from "../core/types.js";
-import type { UIStringExtractorConfig } from "../core/types.js";
+import type { Segment, SegmentTranslationMapValue, UIStringExtractorConfig } from "../core/types.js";
+import { segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 
 const DEFAULT_EXT = [".js", ".jsx", ".ts", ".tsx"];
@@ -129,10 +129,13 @@ export class UIStringExtractor extends BaseExtractor {
    */
   buildStringsJson(
     segments: Segment[],
-    translationsByLocale: Record<string, Map<string, string>>,
+    translationsByLocale: Record<string, Map<string, SegmentTranslationMapValue>>,
     existingPath?: string
   ): string {
-    let existing: Record<string, { source?: string; translated?: Record<string, string> }> = {};
+    let existing: Record<
+      string,
+      { source?: string; translated?: Record<string, string>; models?: Record<string, string> }
+    > = {};
     if (existingPath && fs.existsSync(existingPath)) {
       try {
         existing = JSON.parse(fs.readFileSync(existingPath, "utf8")) as typeof existing;
@@ -141,7 +144,10 @@ export class UIStringExtractor extends BaseExtractor {
       }
     }
 
-    const output: Record<string, { source: string; translated: Record<string, string> }> = {};
+    const output: Record<
+      string,
+      { source: string; translated: Record<string, string>; models?: Record<string, string> }
+    > = {};
 
     for (const [h, str] of segments.map((s) => [s.hash, s.content] as const)) {
       const prev = existing[h];
@@ -150,15 +156,22 @@ export class UIStringExtractor extends BaseExtractor {
           ? { ...prev.translated }
           : {};
       for (const [locale, map] of Object.entries(translationsByLocale)) {
-        const t = map.get(h);
+        const raw = map.get(h);
+        const t = segmentTranslationText(raw);
         if (t !== undefined && t !== "") {
           translated[locale] = t;
         }
       }
-      output[h] =
+      const preservedModels =
+        prev && typeof prev.models === "object" && prev.models ? { ...prev.models } : undefined;
+      const base =
         prev && typeof prev === "object" && typeof prev.source === "string"
           ? { source: str, translated: { ...(prev.translated ?? {}), ...translated } }
           : { source: str, translated };
+      output[h] =
+        preservedModels && Object.keys(preservedModels).length > 0
+          ? { ...base, models: preservedModels }
+          : base;
     }
 
     return `${JSON.stringify(output, null, 2)}\n`;
@@ -167,7 +180,7 @@ export class UIStringExtractor extends BaseExtractor {
   /**
    * `ContentExtractor` reassemble: emit `strings.json` snapshot with one locale (`defaultReassembleLocale`).
    */
-  reassemble(segments: Segment[], translations: Map<string, string>): string {
+  reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string {
     return this.buildStringsJson(segments, { [this.defaultReassembleLocale]: translations });
   }
 }

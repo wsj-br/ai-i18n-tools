@@ -93,66 +93,73 @@ export function expandTargetLocalesFileReferenceInRawInput(
 }
 
 /**
- * When `documentation.targetLocales` is a single manifest path (`ui-languages.json`), expand to locale codes
+ * When a block's `targetLocales` is a single manifest path (`ui-languages.json`), expand to locale codes
  * (excluding `sourceLocale`). Does not set `uiLanguagesPath` - UI resolution is unchanged.
  */
 export function expandDocumentationTargetLocalesInRawInput(
   raw: RawI18nConfigInput,
   cwd: string
 ): void {
-  const doc = raw.documentation;
-  if (!doc || typeof doc !== "object" || Array.isArray(doc)) {
+  const docs = raw.documentations;
+  if (!Array.isArray(docs)) {
     return;
   }
-  const d = doc as Record<string, unknown>;
-  const tl = d.targetLocales;
-  if (tl === undefined || tl === null) {
-    return;
+  for (const item of docs) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      continue;
+    }
+    const d = item as Record<string, unknown>;
+    const tl = d.targetLocales;
+    if (tl === undefined || tl === null) {
+      continue;
+    }
+    const arr = coerceTargetLocalesField(tl);
+    d.targetLocales = arr;
+    if (!Array.isArray(arr) || arr.length !== 1) {
+      continue;
+    }
+    const only = String(arr[0]).trim();
+    if (!looksLikeUiLanguagesFileRef(only)) {
+      continue;
+    }
+    const abs = path.isAbsolute(only) ? only : path.join(cwd, only);
+    if (!fs.existsSync(abs)) {
+      throw new ConfigValidationError(`documentations[].targetLocales: languages file not found: ${abs}`);
+    }
+    let entries: UiLanguageEntry[];
+    try {
+      entries = loadUiLanguageEntries(abs);
+    } catch (e) {
+      throw new ConfigValidationError(
+        `documentations[].targetLocales: invalid languages file "${only}": ${e instanceof Error ? e.message : String(e)}`
+      );
+    }
+    const src = normalizeLocale(raw.sourceLocale ?? "en");
+    const codes = entries.map((e) => normalizeLocale(e.code)).filter((c) => c !== src);
+    d.targetLocales = codes;
   }
-  const arr = coerceTargetLocalesField(tl);
-  d.targetLocales = arr;
-  if (!Array.isArray(arr) || arr.length !== 1) {
-    return;
-  }
-  const only = String(arr[0]).trim();
-  if (!looksLikeUiLanguagesFileRef(only)) {
-    return;
-  }
-  const abs = path.isAbsolute(only) ? only : path.join(cwd, only);
-  if (!fs.existsSync(abs)) {
-    throw new ConfigValidationError(`documentation.targetLocales: languages file not found: ${abs}`);
-  }
-  let entries: UiLanguageEntry[];
-  try {
-    entries = loadUiLanguageEntries(abs);
-  } catch (e) {
-    throw new ConfigValidationError(
-      `documentation.targetLocales: invalid languages file "${only}": ${e instanceof Error ? e.message : String(e)}`
-    );
-  }
-  const src = normalizeLocale(raw.sourceLocale ?? "en");
-  const codes = entries.map((e) => normalizeLocale(e.code)).filter((c) => c !== src);
-  d.targetLocales = codes;
 }
 
 /**
- * Locale codes used for **documentation** translation (markdown / JSON): `documentation.targetLocales`
- * when non-empty, otherwise root `targetLocales`. Excludes `sourceLocale`, deduped.
+ * Locale codes used for **documentation** translation (markdown / JSON): union of each block's
+ * `targetLocales` when non-empty, otherwise root `targetLocales`, per block. Excludes `sourceLocale`, deduped.
  */
 export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] {
   const src = normalizeLocale(config.sourceLocale);
-  const doc = config.documentation.targetLocales;
-  const useDoc = Array.isArray(doc) && doc.length > 0;
-  const list = useDoc ? doc : config.targetLocales;
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const l of list) {
-    const c = normalizeLocale(l);
-    if (c === src || seen.has(c)) {
-      continue;
+  for (const block of config.documentations) {
+    const doc = block.targetLocales;
+    const useDoc = Array.isArray(doc) && doc.length > 0;
+    const list = useDoc ? doc! : config.targetLocales;
+    for (const l of list) {
+      const c = normalizeLocale(l);
+      if (c === src || seen.has(c)) {
+        continue;
+      }
+      seen.add(c);
+      out.push(c);
     }
-    seen.add(c);
-    out.push(c);
   }
   return out;
 }

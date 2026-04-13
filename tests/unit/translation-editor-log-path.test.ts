@@ -26,4 +26,12 @@ describe("resolveSegmentLogFilepath", () => {
   it("no-ops when jsonSource is unset", () => {
     expect(resolveSegmentLogFilepath("code.json", null)).toBe("code.json");
   });
+
+  it("returns empty string when filepath is empty", () => {
+    expect(resolveSegmentLogFilepath("", js)).toBe("");
+  });
+
+  it("does not prepend jsonSource when jsonSource is only whitespace", () => {
+    expect(resolveSegmentLogFilepath("bare.json", "   ")).toBe("bare.json");
+  });
 });

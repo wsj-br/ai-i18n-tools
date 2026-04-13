@@ -5,6 +5,11 @@ import {
 } from "../../src/utils/concurrency.js";
 
 describe("runMapWithConcurrency", () => {
+  it("returns empty array for empty items", async () => {
+    const out = await runMapWithConcurrency([], 4, async () => 1);
+    expect(out).toEqual([]);
+  });
+
   it("returns results in input order", async () => {
     const items = [1, 2, 3, 4, 5];
     const out = await runMapWithConcurrency(items, 2, async (n, i) => {
@@ -30,6 +35,11 @@ describe("runMapWithConcurrency", () => {
 });
 
 describe("AsyncSemaphore", () => {
+  it("throws when max is not a positive finite number", () => {
+    expect(() => new AsyncSemaphore(0)).toThrow(/max must be a finite number/);
+    expect(() => new AsyncSemaphore(Number.NaN)).toThrow(/max must be a finite number/);
+  });
+
   it("limits parallel use()", async () => {
     const sem = new AsyncSemaphore(2);
     let active = 0;

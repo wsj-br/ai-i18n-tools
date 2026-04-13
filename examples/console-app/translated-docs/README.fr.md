@@ -1,14 +1,15 @@
 ---
-translation_last_updated: '2026-04-11T01:51:18.750Z'
-source_file_mtime: '2026-04-11T01:00:55.851Z'
-source_file_hash: 885c19658d8dbf08c9bba9f382a23b61d462037268057df4d9c87aea4e5012fc
+translation_last_updated: '2026-04-13T00:28:28.937Z'
+source_file_mtime: '2026-04-12T15:37:53.621Z'
+source_file_hash: 49f79b71c1318dd97048d93d4c0d706db898b57db53ec2ab566d1cf0375dcb76
 translation_language: fr
 source_file_path: README.md
 ---
-# Exemple d'application console
+# Exemple d'Application Console
 
-**Lire dans d'autres langues :**
-[English](../README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português (BR)](README.pt-BR.md)
+<small>**Lire dans d'autres langues :** </small>
+
+<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
 
 Cet exemple montre comment utiliser `ai-i18n-tools` pour internationaliser une application console Node.js.
 
@@ -20,7 +21,7 @@ Cet exemple montre comment utiliser `ai-i18n-tools` pour internationaliser une a
 
 ## Installation
 
-Exécutez `pnpm install` depuis la **racine du dépôt**. Le fichier `pnpm-workspace.yaml` situé à la racine déclare à la fois la bibliothèque et cet exemple comme des packages de l'espace de travail, donc pnpm lie directement `ai-i18n-tools` à votre version locale via l'entrée `"ai-i18n-tools": "workspace:^"` dans `package.json`. Aucune étape de construction ou de liaison séparée n'est nécessaire - il suffit de reconstruire la bibliothèque (`pnpm run build` à la racine du dépôt) chaque fois que vous modifiez des fichiers sources, et l'exemple récupérera automatiquement le dossier `dist/` mis à jour.
+Exécutez `pnpm install` depuis la **racine du dépôt**. Le fichier `pnpm-workspace.yaml` à la racine déclare à la fois la bibliothèque et cet exemple comme des packages de l'espace de travail, donc pnpm lie `ai-i18n-tools` directement à votre copie locale via l'entrée `"ai-i18n-tools": "workspace:^"` dans `package.json`. Aucune étape de construction ou de liaison séparée n'est nécessaire - il suffit de reconstruire la bibliothèque (`pnpm run build` à la racine du dépôt) chaque fois que vous modifiez les fichiers sources et l'exemple récupérera automatiquement le `dist/` mis à jour.
 
 ```bash
 # From the repository root
@@ -36,7 +37,7 @@ Exécutez l'application en anglais (par défaut) :
 pnpm start
 ```
 
-Utilisez l'option `--locale` pour afficher la sortie dans une langue différente :
+Utilisez l'option `--locale` pour afficher la sortie dans une autre langue :
 
 ```bash
 pnpm run start:es    # Spanish
@@ -45,7 +46,7 @@ pnpm run start:de    # German
 pnpm run start:pt-BR # Portuguese (Brazil)
 ```
 
-Ou passez l'indicateur directement :
+Ou passez le drapeau directement :
 
 ```bash
 node src/main.js --locale fr
@@ -53,19 +54,19 @@ node src/main.js --locale fr
 
 ## Langues prises en charge
 
-| Code    | Langue              |
+| Code    | Langue               |
 | ------- | ------------------- |
-| `en`    | Anglais (par défaut)|
-| `es`    | Espagnol            |
-| `fr`    | Français            |
-| `de`    | Allemand            |
-| `pt-BR` | Portugais (Brésil)  |
+| `en`    | Anglais (par défaut) |
+| `es`    | Espagnol             |
+| `fr`    | Français             |
+| `de`    | Allemand             |
+| `pt-BR` | Portugais (Brésil)   |
 
 ## Flux de travail
 
-### 1. Extraire les chaînes d'interface utilisateur
+### 1. Extraire les chaînes de l'interface utilisateur
 
-Analyse `src/` à la recherche des appels à `t()` et met à jour `locales/strings.json` :
+Analyse `src/` pour les appels `t()` et met à jour `locales/strings.json` :
 
 ```bash
 pnpm run i18n:extract
@@ -73,14 +74,14 @@ pnpm run i18n:extract
 
 ### 2. Traduire
 
-Génère les fichiers JSON de langue dans `locales/` et les documents markdown traduits dans `translated-docs/` :
+Génère les fichiers JSON de locale dans `locales/` et les documents markdown traduits dans `translated-docs/` :
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
 pnpm run i18n:translate
 ```
 
-Vous pouvez également exécuter `i18n:sync` pour extraire et traduire les chaînes d'interface utilisateur en une seule étape :
+Vous pouvez également exécuter `i18n:sync` pour extraire et traduire les chaînes de l'interface utilisateur en une seule étape :
 
 ```bash
 pnpm run i18n:sync
@@ -92,9 +93,9 @@ pnpm run i18n:sync
 pnpm run start:es
 ```
 
-### Effacer le cache et retraduire
+### Vider le cache et retraduire
 
-`i18n:clean` supprime uniquement le répertoire `.translation-cache/` (il ne supprime **pas** les dossiers `locales/` ou `translated-docs/` validés).
+`i18n:clean` supprime uniquement `.translation-cache/` (il ne supprime **pas** les fichiers `locales/` ou `translated-docs/` validés).
 
 ```bash
 pnpm run i18n:clean && pnpm run i18n:extract && pnpm run i18n:translate
@@ -117,4 +118,4 @@ console-app/
     └── pt-BR.json              # Portuguese (Brazil) flat strings (committed)
 ```
 
-Le répertoire `translated-docs/` est validé dans git avec les fichiers README traduits afin que vous puissiez les lire sans avoir à exécuter la traduction ; relancez `i18n:translate` après avoir modifié la source en anglais.
+Le répertoire `translated-docs/` est validé dans Git avec les README traduits afin que vous puissiez les lire sans exécuter la traduction ; relancez `i18n:translate` après avoir modifié la source en anglais.

@@ -1,4 +1,4 @@
-import { hasInternalPlaceholderLeak } from "../../src/processors/translation-placeholder-leaks";
+import { hasInternalPlaceholderLeak } from "../../src/processors/translation-placeholder-leaks.js";
 
 describe("hasInternalPlaceholderLeak", () => {
   it("detects leaked DOC_HEADING tokens", () => {
@@ -12,5 +12,10 @@ describe("hasInternalPlaceholderLeak", () => {
     expect(hasInternalPlaceholderLeak("x {{URL_PLACEHOLDER_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_OPEN_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_END_0}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{IT}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{IU}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{SE}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{SU}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{ST}}")).toBe(true);
   });
 });
