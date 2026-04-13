@@ -39,10 +39,7 @@ export async function runTranslateSvg(
   assertSvgCommandConfig(config);
   const svg = config.svg!;
   const roots = svg.sourcePath;
-  const files = filterIgnored(
-    collectFilesByExtension(roots, [".svg"], opts.cwd),
-    opts.cwd
-  );
+  const files = filterIgnored(collectFilesByExtension(roots, [".svg"], opts.cwd), opts.cwd);
 
   const sum: TranslateTotals = {
     filesWritten: 0,
@@ -80,16 +77,15 @@ export async function runTranslateSvg(
   const displayModels = client?.getConfiguredModels() ?? models;
 
   console.log(
-    chalk.gray("\n\n___SVG Translation_______________________________________________________________________________________\n\n") +
-    chalk.bold(
-      `\n🌐 Translating ${totalFileCount} SVG file(s) to ${locales.length} locale(s)\n`
-    )
+    chalk.gray(
+      "\n\n___SVG Translation_______________________________________________________________________________________\n\n"
+    ) +
+      chalk.bold(`\n🌐 Translating ${totalFileCount} SVG file(s) to ${locales.length} locale(s)\n`)
   );
   printModelsTryInOrder(displayModels);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
-    chalk.cyan(`SVG output: `) +
-      chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
+    chalk.cyan(`SVG output: `) + chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
   );
   if (opts.logPath) {
     console.log(chalk.cyan(`Output log: `) + chalk.magenta(opts.logPath));
@@ -99,21 +95,15 @@ export async function runTranslateSvg(
   }
   console.log("");
 
-  const localeConcurrency = Math.max(
-    1,
-    Math.floor(opts.concurrency ?? config.concurrency ?? 3)
-  );
+  const localeConcurrency = Math.max(1, Math.floor(opts.concurrency ?? config.concurrency ?? 3));
   const batchConcurrencyEffective = Math.max(
     1,
     Math.floor(opts.batchConcurrency ?? config.batchConcurrency ?? 4)
   );
 
+  console.log(chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`));
   console.log(
-    chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`)
-  );
-  console.log(
-    chalk.cyan(`Parallel API calls per file: `) +
-      chalk.magenta(`${batchConcurrencyEffective}`)
+    chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
   );
   console.log("");
 
@@ -170,7 +160,8 @@ export async function runTranslateSvg(
         partial.outputTokens += totals.outputTokens;
         partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
         partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-        partial.segmentsTranslated = (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+        partial.segmentsTranslated =
+          (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
       }
     }
 
@@ -182,10 +173,8 @@ export async function runTranslateSvg(
     return { locale, partial, localeElapsed };
   };
 
-  const localeResults = await runMapWithConcurrency(
-    locales,
-    localeConcurrency,
-    async (locale) => processLocale(locale)
+  const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
+    processLocale(locale)
   );
 
   for (const r of localeResults) {
@@ -210,9 +199,7 @@ export async function runTranslateSvg(
   console.log(`   Total files skipped:   ${sum.filesSkipped}`);
   console.log(`   Segments from cache:   ${sum.segmentsCached ?? 0}`);
   console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
-  console.log(
-    `   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`
-  );
+  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
   } else if ((sum.filesWritten ?? 0) > 0) {

@@ -1,9 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import {
-  resolveConfigFileLocation,
-} from "../../src/cli/helpers.js";
+import { resolveConfigFileLocation } from "../../src/cli/helpers.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 
 describe("resolveConfigFileLocation", () => {

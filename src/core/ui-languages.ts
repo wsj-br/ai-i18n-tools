@@ -124,7 +124,9 @@ export function expandDocumentationTargetLocalesInRawInput(
     }
     const abs = path.isAbsolute(only) ? only : path.join(cwd, only);
     if (!fs.existsSync(abs)) {
-      throw new ConfigValidationError(`documentations[].targetLocales: languages file not found: ${abs}`);
+      throw new ConfigValidationError(
+        `documentations[].targetLocales: languages file not found: ${abs}`
+      );
     }
     let entries: UiLanguageEntry[];
     try {
@@ -284,9 +286,7 @@ export function resolveUiTranslationTargetCodes(
   entries: UiLanguageEntry[]
 ): string[] {
   const src = normalizeLocale(config.sourceLocale);
-  const fromFile = entries
-    .map((e) => normalizeLocale(e.code))
-    .filter((c) => c !== src);
+  const fromFile = entries.map((e) => normalizeLocale(e.code)).filter((c) => c !== src);
 
   const configured = config.targetLocales.map((l) => normalizeLocale(l));
   if (configured.length === 0) {
@@ -310,10 +310,7 @@ export function resolveLocalesForUI(
   cliLocalesRaw?: string | null
 ): string[] {
   const abs = resolveUiLanguagesAbsPath(config, cwd);
-  const entries =
-    abs && fs.existsSync(abs)
-      ? loadUiLanguageEntries(abs)
-      : null;
+  const entries = abs && fs.existsSync(abs) ? loadUiLanguageEntries(abs) : null;
 
   const allowedCodes = entries ? new Set(entries.map((e) => normalizeLocale(e.code))) : null;
   const src = normalizeLocale(config.sourceLocale);

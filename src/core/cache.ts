@@ -195,7 +195,9 @@ export class TranslationCache {
    * Segment rows stay keyed by `(source_hash, locale)`; `--force` bypasses segment cache reads so rows refresh on re-translate.
    */
   clearFile(filepath: string, locale: string): void {
-    this.db.prepare("DELETE FROM file_tracking WHERE filepath = ? AND locale = ?").run(filepath, locale);
+    this.db
+      .prepare("DELETE FROM file_tracking WHERE filepath = ? AND locale = ?")
+      .run(filepath, locale);
   }
 
   getStats(): { totalSegments: number; totalFiles: number; byLocale: Record<string, number> } {
@@ -412,9 +414,7 @@ export class TranslationCache {
     this.db.exec("DROP TABLE IF EXISTS _scope_paths");
     this.db.exec("CREATE TEMP TABLE _scope_paths (filepath TEXT PRIMARY KEY)");
     const scopePlaceholders = allowedRelPaths.map(() => "(?)").join(", ");
-    this.db
-      .prepare(`INSERT INTO _scope_paths VALUES ${scopePlaceholders}`)
-      .run(...allowedRelPaths);
+    this.db.prepare(`INSERT INTO _scope_paths VALUES ${scopePlaceholders}`).run(...allowedRelPaths);
 
     const result = this.db
       .prepare(

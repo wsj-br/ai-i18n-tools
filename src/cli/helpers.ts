@@ -73,7 +73,9 @@ export function loadConfigOrExit(
     const config = loadI18nConfigFromFile(resolvedAbs, projectRoot);
     return { config, projectRoot };
   } catch (e) {
-    console.error(`[ai-i18n-tools] Failed to load config: ${e instanceof Error ? e.message : String(e)}`);
+    console.error(
+      `[ai-i18n-tools] Failed to load config: ${e instanceof Error ? e.message : String(e)}`
+    );
     process.exit(1);
   }
 }

@@ -2,7 +2,11 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { Parser } from "i18next-scanner";
-import type { Segment, SegmentTranslationMapValue, UIStringExtractorConfig } from "../core/types.js";
+import type {
+  Segment,
+  SegmentTranslationMapValue,
+  UIStringExtractorConfig,
+} from "../core/types.js";
 import { segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 

@@ -6,7 +6,11 @@ import type { UiLanguageEntry } from "../../src/core/ui-languages.js";
 
 describe("getUILanguageLabelNative", () => {
   it("returns single label when englishName matches label", () => {
-    const lang: UiLanguageEntry = { code: "en-GB", label: "English (UK)", englishName: "English (UK)" };
+    const lang: UiLanguageEntry = {
+      code: "en-GB",
+      label: "English (UK)",
+      englishName: "English (UK)",
+    };
     expect(getUILanguageLabelNative(lang)).toBe("English (UK)");
   });
 

@@ -34,7 +34,10 @@ export function parseAdjustmentSearchToRegExp(search: string): RegExp {
   return new RegExp(trimmed, "g");
 }
 
-export function interpolateAdjustmentTemplate(template: string, vars: Record<string, string>): string {
+export function interpolateAdjustmentTemplate(
+  template: string,
+  vars: Record<string, string>
+): string {
   return template.replace(ADJUSTMENT_PLACEHOLDER_RE, (full, key: string) => {
     if (Object.prototype.hasOwnProperty.call(vars, key)) return vars[key]!;
     return full;

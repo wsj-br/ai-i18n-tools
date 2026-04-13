@@ -23,7 +23,9 @@ describe("parseBatchTranslationResponse", () => {
   });
 
   it("throws on mismatch", () => {
-    expect(() => parseBatchTranslationResponse(`<t id="0">A</t>`, 2, "")).toThrow(BatchTranslationError);
+    expect(() => parseBatchTranslationResponse(`<t id="0">A</t>`, 2, "")).toThrow(
+      BatchTranslationError
+    );
   });
 });
 
@@ -78,7 +80,7 @@ describe("buildDocumentBatchPrompt", () => {
     );
     expect(systemPrompt).toContain("valid JSON array");
     expect(userContent).toContain("[");
-    expect(userContent).toContain("\"Hello\"");
+    expect(userContent).toContain('"Hello"');
     expect(userContent).not.toContain("<seg id=");
   });
 
@@ -90,7 +92,7 @@ describe("buildDocumentBatchPrompt", () => {
       "json-object"
     );
     expect(systemPrompt).toContain("valid JSON object");
-    expect(userContent).toContain("\"0\": \"Hello\"");
+    expect(userContent).toContain('"0": "Hello"');
     expect(userContent).not.toContain("<seg id=");
   });
 });
@@ -101,7 +103,7 @@ describe("parseUIJsonArrayResponse", () => {
   });
 
   it("strips fences", () => {
-    expect(parseUIJsonArrayResponse("```json\n[\"x\"]\n```", 1)).toEqual(["x"]);
+    expect(parseUIJsonArrayResponse('```json\n["x"]\n```', 1)).toEqual(["x"]);
   });
 
   it("throws on wrong length", () => {
@@ -164,7 +166,11 @@ describe("buildDocumentSinglePrompt", () => {
   };
 
   it("markdown includes example and translate footer", () => {
-    const { systemPrompt, userContent } = buildDocumentSinglePrompt("Hello world", baseOpts, "markdown");
+    const { systemPrompt, userContent } = buildDocumentSinglePrompt(
+      "Hello world",
+      baseOpts,
+      "markdown"
+    );
     expect(systemPrompt).toContain("Example (same structure in French)");
     expect(systemPrompt).toContain(PROMPTS.document.translateFooter);
     expect(userContent).toContain("<translate>");

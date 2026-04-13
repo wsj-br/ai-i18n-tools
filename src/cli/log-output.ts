@@ -24,8 +24,7 @@ export function setupLogOutput(options?: {
       fs.mkdirSync(dir, { recursive: true });
     }
   } else {
-    const cacheDir =
-      options?.cacheDir ?? path.join(process.cwd(), ".translation-cache");
+    const cacheDir = options?.cacheDir ?? path.join(process.cwd(), ".translation-cache");
     const prefix = options?.prefix ?? "translate";
     const dir = path.resolve(cacheDir);
     if (!fs.existsSync(dir)) {
@@ -49,34 +48,24 @@ export function setupLogOutput(options?: {
     encodingOrCallback?: BufferEncoding | ((err?: Error) => void),
     callback?: (err?: Error) => void
   ): boolean {
-    const enc =
-      typeof encodingOrCallback === "string" ? encodingOrCallback : undefined;
-    const cb =
-      typeof encodingOrCallback === "function" ? encodingOrCallback : callback;
+    const enc = typeof encodingOrCallback === "string" ? encodingOrCallback : undefined;
+    const cb = typeof encodingOrCallback === "function" ? encodingOrCallback : callback;
     try {
       if (!isProgressLine(chunk)) {
-        const s =
-          typeof chunk === "string"
-            ? chunk
-            : (chunk as Buffer).toString(enc ?? "utf8");
+        const s = typeof chunk === "string" ? chunk : (chunk as Buffer).toString(enc ?? "utf8");
         fs.appendFileSync(logPath, s, "utf8");
       }
     } catch {
       // ignore log write errors
     }
     if (cb) {
-      return (
-        original as (
-          c: unknown,
-          e?: BufferEncoding,
-          cb?: (err?: Error) => void
-        ) => boolean
-      )(chunk, enc, cb);
+      return (original as (c: unknown, e?: BufferEncoding, cb?: (err?: Error) => void) => boolean)(
+        chunk,
+        enc,
+        cb
+      );
     }
-    return (original as (c: unknown, e?: BufferEncoding) => boolean)(
-      chunk,
-      enc
-    );
+    return (original as (c: unknown, e?: BufferEncoding) => boolean)(chunk, enc);
   }
 
   process.stdout.write = function (

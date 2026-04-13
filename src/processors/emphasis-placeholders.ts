@@ -176,10 +176,7 @@ function nextUseLength(openRun: DelimiterRun, closeRun: DelimiterRun): number {
   return openAvail >= 2 && closeAvail >= 2 ? 2 : 1;
 }
 
-function placeholderFor(
-  marker: "*" | "_" | "~",
-  markerRunLength: number
-): string {
+function placeholderFor(marker: "*" | "_" | "~", markerRunLength: number): string {
   if (marker === "~" && markerRunLength === 2) {
     return STRIKETHROUGH_PLACEHOLDER;
   }

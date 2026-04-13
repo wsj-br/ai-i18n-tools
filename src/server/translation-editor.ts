@@ -9,7 +9,12 @@ import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 
 /** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
-const GLOSSARY_USER_HEADERS = ["Original language string", "locale", "Translation", "Force"] as const;
+const GLOSSARY_USER_HEADERS = [
+  "Original language string",
+  "locale",
+  "Translation",
+  "Force",
+] as const;
 
 function csvEscapeCell(s: string): string {
   if (/[",\n\r]/.test(s)) {
@@ -539,7 +544,7 @@ export function createTranslationEditorApp(
         String(original).trim(),
         String(locale).trim(),
         String(translation),
-        force !== undefined ? String(force).trim() : prev[3] ?? "",
+        force !== undefined ? String(force).trim() : (prev[3] ?? ""),
       ];
       writeAtomicUtf8(glossaryPath, serializeGlossaryCsv(headers, rows));
       res.json({ ok: true });
@@ -600,7 +605,7 @@ export function createTranslationEditorApp(
           }
           return { locale, translated, missing: totalEntries - translated };
         });
-        
+
         const modelCounts = new Map<string, number>();
         const modelLocaleCounts = new Map<string, number>();
         for (const v of Object.values(doc)) {
@@ -624,7 +629,13 @@ export function createTranslationEditorApp(
 
         uiStrings = { available: true, totalEntries, byLocale, byModel, byModelLocale };
       } else {
-        uiStrings = { available: false, totalEntries: 0, byLocale: [], byModel: [], byModelLocale: [] };
+        uiStrings = {
+          available: false,
+          totalEntries: 0,
+          byLocale: [],
+          byModel: [],
+          byModelLocale: [],
+        };
       }
 
       let glossary: {

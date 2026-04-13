@@ -99,11 +99,7 @@ export {
 
 export { computeSegmentHash } from "./utils/hash.js";
 
-export {
-  runMapWithConcurrency,
-  AsyncSemaphore,
-  AsyncMutex,
-} from "./utils/concurrency.js";
+export { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "./utils/concurrency.js";
 
 export {
   Logger,
@@ -129,7 +125,10 @@ export {
   protectBoldWrappedInlineCode,
   restoreBoldWrappedInlineCode,
 } from "./processors/bold-code-placeholders.js";
-export { protectInlineCodeSpans, restoreInlineCodeSpans } from "./processors/inline-code-placeholders.js";
+export {
+  protectInlineCodeSpans,
+  restoreInlineCodeSpans,
+} from "./processors/inline-code-placeholders.js";
 export { protectMarkdownUrls, restoreMarkdownUrls } from "./processors/url-placeholders.js";
 export {
   protectAdmonitionSyntax,
@@ -153,7 +152,11 @@ export {
 
 export { OpenRouterClient, type OpenRouterClientOptions } from "./api/openrouter.js";
 
-export { runTranslateUI, type TranslateUIOptions, type TranslateUISummary } from "./cli/translate-ui-strings.js";
+export {
+  runTranslateUI,
+  type TranslateUIOptions,
+  type TranslateUISummary,
+} from "./cli/translate-ui-strings.js";
 
 export {
   type UiLanguageEntry,

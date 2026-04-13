@@ -22,10 +22,7 @@ describe("src/runtime/index.ts", () => {
   it("exports template and i18next helpers", () => {
     expect(runtime.interpolateTemplate("a {{k}}", { k: "b" })).toBe("a b");
     expect(
-      runtime.getUILanguageLabel(
-        { code: "de", englishName: "German", label: "Deutsch" },
-        (s) => s
-      )
+      runtime.getUILanguageLabel({ code: "de", englishName: "German", label: "Deutsch" }, (s) => s)
     ).toBe("German");
     expect(runtime.defaultI18nInitOptions("en").lng).toBe("en");
   });

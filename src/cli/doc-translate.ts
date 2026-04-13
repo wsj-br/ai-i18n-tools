@@ -2,7 +2,12 @@ import fs from "fs";
 import path from "path";
 import { matter, stringify as matterStringify } from "gray-matter-es";
 import chalk from "chalk";
-import type { DocSegmentTranslation, I18nConfig, I18nDocTranslateConfig, Segment } from "../core/types.js";
+import type {
+  DocSegmentTranslation,
+  I18nConfig,
+  I18nDocTranslateConfig,
+  Segment,
+} from "../core/types.js";
 import { segmentTranslationText } from "../core/types.js";
 
 export type { DocSegmentTranslation };
@@ -27,9 +32,7 @@ import {
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
-import {
-  shouldRewriteFlatMarkdownLinks,
-} from "../core/output-paths.js";
+import { shouldRewriteFlatMarkdownLinks } from "../core/output-paths.js";
 import {
   applyMarkdownLanguageListPostProcessing,
   applyMarkdownPostProcessing,
@@ -39,7 +42,12 @@ import {
   svgAssetCacheFilepath,
   svgTranslationFilepathMetadata,
 } from "../core/svg-asset-paths.js";
-import { ensureDirForFile, hashFileContent, resolveTranslatedOutputPath, writeAtomicUtf8 } from "./helpers.js";
+import {
+  ensureDirForFile,
+  hashFileContent,
+  resolveTranslatedOutputPath,
+  writeAtomicUtf8,
+} from "./helpers.js";
 import { normalizeLocale } from "../core/config.js";
 import type {
   DocumentBatchResponseFormat,
@@ -291,7 +299,10 @@ function logTranslateFileComplete(
   );
 }
 
-export function shouldRunMarkdown(opts: TranslateRunOptions, config: I18nDocTranslateConfig): boolean {
+export function shouldRunMarkdown(
+  opts: TranslateRunOptions,
+  config: I18nDocTranslateConfig
+): boolean {
   if (!config.features.translateMarkdown) {
     return false;
   }
@@ -415,7 +426,12 @@ async function translateSegmentsBatched(
   },
   /** Absolute `cacheDir` path; writes `*-FAILED-TRANSLATION-*.log` on markdown quality failures. */
   failureLogDirAbs?: string | null
-): Promise<{ map: Map<string, DocSegmentTranslation>; inTok: number; outTok: number; cost: number }> {
+): Promise<{
+  map: Map<string, DocSegmentTranslation>;
+  inTok: number;
+  outTok: number;
+  cost: number;
+}> {
   const out = new Map<string, DocSegmentTranslation>();
   let inTok = 0;
   let outTok = 0;
@@ -648,9 +664,7 @@ async function translateSegmentsBatched(
           const origSeg = segmentOriginalContent(s, originalContentByHash);
           const docIdx0 = batchDocIndices[bi]?.[si];
           const segLabelSingle =
-            docLog && docIdx0 !== undefined
-              ? segRangeLabel([docIdx0], docLog.totalSegments)
-              : "";
+            docLog && docIdx0 !== undefined ? segRangeLabel([docIdx0], docLog.totalSegments) : "";
           let startIdx = 0;
           while (startIdx < models.length) {
             const single = await client.translateDocumentSegment(s.content, locale, hints, {
@@ -724,9 +738,7 @@ async function translateSegmentsBatched(
   };
 
   if (sem) {
-    const results = await Promise.all(
-      batches.map((_, bi) => sem.use(() => processBatch(bi)))
-    );
+    const results = await Promise.all(batches.map((_, bi) => sem.use(() => processBatch(bi))));
     for (const r of results) {
       inTok += r.inTok;
       outTok += r.outTok;
@@ -802,9 +814,7 @@ export async function translateMarkdownFile(
     fs.existsSync(outPath)
   ) {
     if (opts.verbose) {
-      console.log(
-        chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPath} (unchanged)`)
-      );
+      console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPath} (unchanged)`));
     }
     totals.filesSkipped = 1;
     totals.filesProcessed = 0;
@@ -938,26 +948,17 @@ export async function translateMarkdownFile(
       config.documentation.outputDir
     );
     const parsed = matter(output);
-    const newBody = rewriteDocLinksForFlatOutput(
-      parsed.content,
-      locale,
-      i18nPrefix,
-      depthPrefix,
-      {
-        cwd: opts.cwd,
-        config,
-        currentSourceRelPath: normalizeMarkdownRelPath(relPath),
-        translatedMarkdownRelPaths,
-      }
-    );
+    const newBody = rewriteDocLinksForFlatOutput(parsed.content, locale, i18nPrefix, depthPrefix, {
+      cwd: opts.cwd,
+      config,
+      currentSourceRelPath: normalizeMarkdownRelPath(relPath),
+      translatedMarkdownRelPaths,
+    });
     output = matterStringify(newBody, parsed.data);
   }
 
   const moPost = config.documentation.markdownOutput.postProcessing;
-  if (
-    moPost &&
-    (moPost.languageListBlock || (moPost.regexAdjustments?.length ?? 0) > 0)
-  ) {
+  if (moPost && (moPost.languageListBlock || (moPost.regexAdjustments?.length ?? 0) > 0)) {
     const absSource = path.join(opts.cwd, relPath);
     const docStem = path.parse(relPath).name;
     output = applyMarkdownPostProcessing(output, {
@@ -1081,9 +1082,7 @@ export async function translateJsonFile(
     fs.existsSync(outPath)
   ) {
     if (opts.verbose) {
-      console.log(
-        chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPath} (json, unchanged)`)
-      );
+      console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPath} (json, unchanged)`));
     }
     totals.filesSkipped = 1;
     totals.filesProcessed = 0;
@@ -1185,7 +1184,15 @@ export async function translateJsonFile(
           if (entry === undefined || entry.modelUsed === undefined) {
             continue;
           }
-          cache.setSegment(s.hash, locale, s.content, entry.text, entry.modelUsed, relPathFromCwd, null);
+          cache.setSegment(
+            s.hash,
+            locale,
+            s.content,
+            entry.text,
+            entry.modelUsed,
+            relPathFromCwd,
+            null
+          );
         }
       });
     }
@@ -1265,9 +1272,7 @@ export async function translateSvgAssetFile(
     fs.existsSync(outPath)
   ) {
     if (opts.verbose) {
-      console.log(
-        chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPathFromCwd} (svg, unchanged)`)
-      );
+      console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPathFromCwd} (svg, unchanged)`));
     }
     totals.filesSkipped = 1;
     totals.filesProcessed = 0;
@@ -1390,7 +1395,15 @@ export async function translateSvgAssetFile(
           if (entry === undefined || entry.modelUsed === undefined) {
             continue;
           }
-          cache.setSegment(s.hash, locale, s.content, entry.text, entry.modelUsed, translationSvgFilepathMeta, null);
+          cache.setSegment(
+            s.hash,
+            locale,
+            s.content,
+            entry.text,
+            entry.modelUsed,
+            translationSvgFilepathMeta,
+            null
+          );
         }
       });
     }
@@ -1480,8 +1493,7 @@ export async function runTranslate(
     : new TranslationCache(path.join(opts.cwd, config.cacheDir));
 
   const needsApi =
-    !opts.dryRun &&
-    (config.features.translateMarkdown || config.features.translateJSON);
+    !opts.dryRun && (config.features.translateMarkdown || config.features.translateJSON);
   const client = needsApi ? new OpenRouterClient({ config }) : null;
 
   const glossaryUi = config.glossary?.uiGlossary
@@ -1509,8 +1521,9 @@ export async function runTranslate(
 
   // Header block
   console.log(
-    chalk.gray("\n\n___DOCUMENTATION Translation_____________________________________________________________________________\n\n") +
-      chalk.bold(`\n${translatingHeadline}`)
+    chalk.gray(
+      "\n\n___DOCUMENTATION Translation_____________________________________________________________________________\n\n"
+    ) + chalk.bold(`\n${translatingHeadline}`)
   );
   printModelsTryInOrder(models);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
@@ -1526,26 +1539,17 @@ export async function runTranslate(
   }
   console.log("");
 
-  const localeConcurrency = Math.max(
-    1,
-    Math.floor(opts.concurrency ?? config.concurrency ?? 3)
-  );
+  const localeConcurrency = Math.max(1, Math.floor(opts.concurrency ?? config.concurrency ?? 3));
   const batchConcurrencyEffective = Math.max(
     1,
     Math.floor(opts.batchConcurrency ?? config.batchConcurrency ?? 4)
   );
 
+  console.log(chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`));
   console.log(
-    chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`)
+    chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
   );
-  console.log(
-    chalk.cyan(`Parallel API calls per file: `) +
-      chalk.magenta(`${batchConcurrencyEffective}`)
-  );
-  console.log(
-    chalk.cyan(`Batch prompt format: `) +
-      chalk.magenta(`${opts.promptFormat ?? "xml"}`)
-  );
+  console.log(chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "xml"}`));
   console.log("");
 
   const wallStart = Date.now();
@@ -1600,7 +1604,8 @@ export async function runTranslate(
           partial.outputTokens += totals.outputTokens;
           partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
           partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-          partial.segmentsTranslated = (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+          partial.segmentsTranslated =
+            (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
         }
       }
     }
@@ -1632,7 +1637,8 @@ export async function runTranslate(
           partial.outputTokens += totals.outputTokens;
           partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
           partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-          partial.segmentsTranslated = (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+          partial.segmentsTranslated =
+            (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
         }
       }
     }
@@ -1645,10 +1651,8 @@ export async function runTranslate(
     return { locale, partial, markdownHitKeysLocal, localeElapsed };
   };
 
-  const localeResults = await runMapWithConcurrency(
-    locales,
-    localeConcurrency,
-    async (locale) => processLocale(locale)
+  const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
+    processLocale(locale)
   );
 
   for (const r of localeResults) {
@@ -1676,9 +1680,7 @@ export async function runTranslate(
     const jsonScopeRel = shouldRunJson(opts, config)
       ? files.json
           .filter((r) => matchesPathFilter(r, opts.pathFilter))
-          .map((r) =>
-            path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/")
-          )
+          .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
       : null;
     if (markdownScopeRel && markdownScopeRel.length > 0 && markdownHitKeys.size > 0) {
       cache.resetLastHitAtForUnhitMarkdownInScope(markdownHitKeys, markdownScopeRel);
@@ -1702,9 +1704,7 @@ export async function runTranslate(
   console.log(`   Total files skipped:   ${sum.filesSkipped}`);
   console.log(`   Segments from cache:   ${sum.segmentsCached ?? 0}`);
   console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
-  console.log(
-    `   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`
-  );
+  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
   } else if ((sum.filesWritten ?? 0) > 0) {

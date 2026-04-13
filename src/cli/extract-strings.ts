@@ -31,7 +31,10 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   const rx = new UIStringExtractor(config.ui.reactExtractor, { cwd });
   const list = config.ui.reactExtractor?.extensions ?? [".js", ".jsx", ".ts", ".tsx"];
   const files = collectFilesByExtension(config.ui.sourceRoots, list, cwd);
-  const packageJsonPath = path.resolve(cwd, config.ui.reactExtractor?.packageJsonPath ?? "package.json");
+  const packageJsonPath = path.resolve(
+    cwd,
+    config.ui.reactExtractor?.packageJsonPath ?? "package.json"
+  );
   const funcNames = defaultFuncNamesFromConfig(config.ui.reactExtractor);
 
   const locByHash = aggregateUiStringLocations(

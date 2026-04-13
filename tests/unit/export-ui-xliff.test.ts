@@ -50,7 +50,7 @@ describe("buildUiXliffString", () => {
       minimalConfig,
       {
         x1: {
-          source: 'a & b < c',
+          source: "a & b < c",
           translated: { de: 'd "e"' },
         },
       },

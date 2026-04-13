@@ -68,9 +68,7 @@ Paragraph after.`;
         separator: " | ",
       },
     });
-    const langSeg = segs.find(
-      (s) => s.type === "other" && s.content.includes("**LANGS_START**")
-    );
+    const langSeg = segs.find((s) => s.type === "other" && s.content.includes("**LANGS_START**"));
     expect(langSeg).toBeDefined();
     expect(langSeg!.translatable).toBe(false);
     const para = segs.find((s) => s.type === "paragraph" && s.content.includes("Paragraph after"));

@@ -1,8 +1,4 @@
-import type {
-  ContentExtractor,
-  Segment,
-  SegmentTranslationMapValue,
-} from "../core/types.js";
+import type { ContentExtractor, Segment, SegmentTranslationMapValue } from "../core/types.js";
 import { segmentTranslationText } from "../core/types.js";
 import { computeSegmentHash } from "../utils/hash.js";
 
@@ -13,7 +9,10 @@ export abstract class BaseExtractor implements ContentExtractor {
   abstract readonly name: string;
   abstract canHandle(filepath: string): boolean;
   abstract extract(content: string, filepath: string): Segment[];
-  abstract reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string;
+  abstract reassemble(
+    segments: Segment[],
+    translations: Map<string, SegmentTranslationMapValue>
+  ): string;
 
   protected computeHash(content: string): string {
     return computeSegmentHash(content);

@@ -97,7 +97,11 @@ export function buildDocumentBatchPrompt(
   const addendum = contentTypeAddendum(contentType);
 
   if (responseFormat === "json-array") {
-    const userContent = JSON.stringify(segments.map((s) => s.content), null, 2);
+    const userContent = JSON.stringify(
+      segments.map((s) => s.content),
+      null,
+      2
+    );
     const systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
 
 ${PROMPTS.document.batchJsonArrayInstruction}${glossary}`;
@@ -176,10 +180,7 @@ export function buildUIPromptMessages(
   }
 ): { systemPrompt: string; userContent: string } {
   const systemBase = PROMPTS.ui.systemPrompt.join("\n");
-  const glossaryBlock = buildGlossaryBlock(
-    opts.glossaryHints ?? [],
-    PROMPTS.ui.glossaryPreamble
-  );
+  const glossaryBlock = buildGlossaryBlock(opts.glossaryHints ?? [], PROMPTS.ui.glossaryPreamble);
 
   const userContent = `Translate these ${texts.length} UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel} and return a JSON array:
 

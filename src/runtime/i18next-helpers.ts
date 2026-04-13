@@ -42,12 +42,21 @@ import { interpolateTemplate } from "./template.js";
  * Thaana (dv), Adlam (ff), N'Ko (nqo), Hanifi Rohingya (rhg).
  */
 export const RTL_LANGS: ReadonlySet<string> = new Set([
-  "ar", "he", "fa", "ur", "yi",
-  "ps", "sd", "ug",
+  "ar",
+  "he",
+  "fa",
+  "ur",
+  "yi",
+  "ps",
+  "sd",
+  "ug",
   "dv",
   "ff",
-  "syr", "aii", "cld",
-  "rhg", "nqo",
+  "syr",
+  "aii",
+  "cld",
+  "rhg",
+  "nqo",
 ]);
 
 /**

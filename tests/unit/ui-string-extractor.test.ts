@@ -35,7 +35,10 @@ describe("UIStringExtractor", () => {
     const map = new Map<string, string>();
     map.set(segs[0]!.hash, "B");
     const out = ex.reassemble(segs, map);
-    const parsed = JSON.parse(out) as Record<string, { source: string; translated: { en: string } }>;
+    const parsed = JSON.parse(out) as Record<
+      string,
+      { source: string; translated: { en: string } }
+    >;
     const key = Object.keys(parsed)[0]!;
     expect(parsed[key]!.source).toBe("A");
     expect(parsed[key]!.translated.en).toBe("B");
@@ -64,7 +67,10 @@ describe("UIStringExtractor", () => {
         },
       ];
       const out = ex.buildStringsJson(segs, { en: new Map([[h, "enval"]]) }, existing);
-      const parsed = JSON.parse(out) as Record<string, { source: string; translated: Record<string, string> }>;
+      const parsed = JSON.parse(out) as Record<
+        string,
+        { source: string; translated: Record<string, string> }
+      >;
       expect(parsed[h]!.translated.fr).toBe("vieux");
       expect(parsed[h]!.translated.en).toBe("enval");
     } finally {
@@ -114,11 +120,7 @@ describe("UIStringExtractor", () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ui-pkg-"));
     try {
       const pkgPath = path.join(tmpDir, "package.json");
-      fs.writeFileSync(
-        pkgPath,
-        JSON.stringify({ name: "x", description: "  My app  " }),
-        "utf8"
-      );
+      fs.writeFileSync(pkgPath, JSON.stringify({ name: "x", description: "  My app  " }), "utf8");
       const ex = new UIStringExtractor(
         { packageJsonPath: "package.json", includePackageDescription: true },
         { cwd: tmpDir }

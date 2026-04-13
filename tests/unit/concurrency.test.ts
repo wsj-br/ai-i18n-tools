@@ -1,8 +1,4 @@
-import {
-  runMapWithConcurrency,
-  AsyncSemaphore,
-  AsyncMutex,
-} from "../../src/utils/concurrency.js";
+import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../../src/utils/concurrency.js";
 
 describe("runMapWithConcurrency", () => {
   it("returns empty array for empty items", async () => {

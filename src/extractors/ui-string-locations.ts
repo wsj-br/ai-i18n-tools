@@ -49,8 +49,9 @@ export function collectUiStringLocationsFromSource(
     nsSeparator: false,
     keySeparator: false,
   });
-  const fixKeys = (parser as unknown as { fixStringAfterRegExpAsArray: (s: string) => string[] })
-    .fixStringAfterRegExpAsArray.bind(parser);
+  const fixKeys = (
+    parser as unknown as { fixStringAfterRegExpAsArray: (s: string) => string[] }
+  ).fixStringAfterRegExpAsArray.bind(parser);
 
   const re = buildParseFuncRegExp(funcNames);
   const relNorm = relPath.replace(/\\/g, "/");
@@ -100,7 +101,10 @@ function mergeLocationMaps(
 }
 
 /** Line of `"description"` in package.json, or 1. */
-export function packageJsonDescriptionLocation(packageJsonPath: string, cwd: string): UiStringLocation {
+export function packageJsonDescriptionLocation(
+  packageJsonPath: string,
+  cwd: string
+): UiStringLocation {
   const rel = path.relative(cwd, packageJsonPath) || "package.json";
   const relNorm = rel.replace(/\\/g, "/");
   let line = 1;

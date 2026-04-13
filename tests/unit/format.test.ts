@@ -13,7 +13,7 @@ describe("wrapCommaSeparatedListForWidth", () => {
       "google/gemini-3.1-flash-lite-preview",
       "qwen/qwen3.6-plus",
       "moonshotai/kimi-k2.5",
-      "anthropic/claude-sonnet-4.6"
+      "anthropic/claude-sonnet-4.6",
     ];
     const joined = models.join(", ");
     const parts = wrapCommaSeparatedListForWidth(

@@ -1,5 +1,9 @@
 import { matter, stringify as matterStringify } from "gray-matter-es";
-import type { LanguageListBlockConfig, Segment, SegmentTranslationMapValue } from "../core/types.js";
+import type {
+  LanguageListBlockConfig,
+  Segment,
+  SegmentTranslationMapValue,
+} from "../core/types.js";
 import { extractLanguageListBlock } from "../processors/doc-postprocess.js";
 import { BaseExtractor } from "./base-extractor.js";
 
@@ -80,9 +84,7 @@ export class MarkdownExtractor extends BaseExtractor {
     const segments: Omit<Segment, "id" | "hash">[] = [];
     const lines = body.split("\n");
     const langListExt =
-      languageListBlock !== undefined
-        ? extractLanguageListBlock(body, languageListBlock)
-        : null;
+      languageListBlock !== undefined ? extractLanguageListBlock(body, languageListBlock) : null;
     const langListStart = langListExt?.startLine ?? -1;
     const langListEnd = langListExt?.endLine ?? -1;
     let currentSegment: string[] = [];
@@ -131,11 +133,7 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
 
-      if (
-        langListStart !== -1 &&
-        lineIndex === langListStart &&
-        !inAdmonition
-      ) {
+      if (langListStart !== -1 && lineIndex === langListStart && !inAdmonition) {
         flushCurrentSegment();
         const blockLines = lines.slice(langListStart, langListEnd + 1);
         segments.push({

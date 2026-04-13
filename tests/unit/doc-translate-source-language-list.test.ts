@@ -66,9 +66,9 @@ describe("rewriteSourceMarkdownLanguageListBlocks", () => {
       expect(rewritten).toBe(1);
 
       const output = fs.readFileSync(readmePath, "utf8");
-      expect(output).toContain('[en-GB](./README.md)');
-      expect(output).toContain('[de](./translated-docs/README.de.md)');
-      expect(output).toContain('[fr](./translated-docs/README.fr.md)');
+      expect(output).toContain("[en-GB](./README.md)");
+      expect(output).toContain("[de](./translated-docs/README.de.md)");
+      expect(output).toContain("[fr](./translated-docs/README.fr.md)");
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

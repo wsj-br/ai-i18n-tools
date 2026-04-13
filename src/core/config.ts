@@ -31,7 +31,7 @@ const DEFAULT_OPENROUTER_MODELS: string[] = [
   "google/gemini-3.1-flash-lite-preview",
   "qwen/qwen3.6-plus",
   "moonshotai/kimi-k2.5",
-  "anthropic/claude-sonnet-4.6"
+  "anthropic/claude-sonnet-4.6",
 ];
 
 /**
@@ -135,7 +135,10 @@ function mergeDocumentationSourceFiles(raw: Record<string, unknown>): void {
 /**
  * Single-documentation view for translate-docs: one block plus root `cacheDir` and shared settings.
  */
-export function toDocTranslateConfig(root: I18nConfig, block: DocumentationBlock): I18nDocTranslateConfig {
+export function toDocTranslateConfig(
+  root: I18nConfig,
+  block: DocumentationBlock
+): I18nDocTranslateConfig {
   const { documentations: _, ...rest } = root;
   return { ...rest, documentation: block };
 }
@@ -189,8 +192,7 @@ export function mergeWithDefaults(raw: unknown): RawI18nConfigInput {
 
 export function validateI18nBusinessRules(config: I18nConfig): void {
   const models = resolveTranslationModels(config.openrouter);
-  const needsDocTranslation =
-    config.features.translateMarkdown || config.features.translateJSON;
+  const needsDocTranslation = config.features.translateMarkdown || config.features.translateJSON;
   const needsExtract = config.features.extractUIStrings;
   const needsUITranslation = config.features.translateUIStrings;
   const src = normalizeLocale(config.sourceLocale);
@@ -212,9 +214,7 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
   }
 
   const uiTargetsFromFileOnly =
-    needsUITranslation &&
-    !needsDocTranslation &&
-    Boolean(config.uiLanguagesPath?.trim());
+    needsUITranslation && !needsDocTranslation && Boolean(config.uiLanguagesPath?.trim());
 
   if (needsDocTranslation && getDocumentationTargetLocaleCodes(config).length === 0) {
     throw new ConfigValidationError(
@@ -226,7 +226,7 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
   if (needsUITranslation && config.targetLocales.length === 0 && !uiTargetsFromFileOnly) {
     throw new ConfigValidationError(
       "targetLocales must be non-empty when translateUIStrings is enabled (unless only UI translation is on and uiLanguagesPath points at your ui-languages.json), " +
-        "or use a single manifest path in targetLocales (e.g. [\"src/renderer/locales/ui-languages.json\"])"
+        'or use a single manifest path in targetLocales (e.g. ["src/renderer/locales/ui-languages.json"])'
     );
   }
 
@@ -254,7 +254,9 @@ export function assertSvgCommandConfig(config: I18nConfig): void {
     );
   }
   const src = normalizeLocale(config.sourceLocale);
-  const needsApi = getDocumentationTargetLocaleCodes(config).some((l) => normalizeLocale(l) !== src);
+  const needsApi = getDocumentationTargetLocaleCodes(config).some(
+    (l) => normalizeLocale(l) !== src
+  );
   if (needsApi) {
     const models = resolveTranslationModels(config.openrouter);
     if (models.length === 0) {
@@ -335,10 +337,7 @@ export function loadI18nConfigFromFile(configPath: string, cwd = process.cwd()):
   const withEnv = applyEnvOverrides(parsed);
   validateI18nBusinessRules(withEnv);
   const augmented = augmentConfigWithUiLanguagesFile(withEnv, cwd);
-  if (
-    augmented.features.translateUIStrings &&
-    resolveLocalesForUI(augmented, cwd).length === 0
-  ) {
+  if (augmented.features.translateUIStrings && resolveLocalesForUI(augmented, cwd).length === 0) {
     throw new ConfigValidationError(
       "translateUIStrings is enabled but no UI target locales resolved: set targetLocales to a locale array, " +
         "a string path to ui-languages.json, and/or uiLanguagesPath (see docs/GETTING_STARTED.md)"

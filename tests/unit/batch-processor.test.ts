@@ -32,9 +32,9 @@ describe("splitTranslatableIntoBatches", () => {
   });
 
   it("returns empty when no translatable segments", () => {
-    expect(splitTranslatableIntoBatches([seg("a", false)], { batchSize: 2, maxBatchChars: 100 })).toEqual(
-      []
-    );
+    expect(
+      splitTranslatableIntoBatches([seg("a", false)], { batchSize: 2, maxBatchChars: 100 })
+    ).toEqual([]);
   });
 
   it("uses default batch config when omitted", () => {

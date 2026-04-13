@@ -30,11 +30,7 @@ describe("ui-string-locations", () => {
   it("aggregateUiStringLocations merges scanned files and package.json description", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ui-loc-agg-"));
     const pj = path.join(dir, "package.json");
-    fs.writeFileSync(
-      pj,
-      JSON.stringify({ name: "n", description: "Package tagline" }),
-      "utf8"
-    );
+    fs.writeFileSync(pj, JSON.stringify({ name: "n", description: "Package tagline" }), "utf8");
     try {
       const merged = aggregateUiStringLocations(
         ["src/App.tsx", "src/B.tsx"],
@@ -59,12 +55,11 @@ describe("ui-string-locations", () => {
     const pj = path.join(dir, "package.json");
     fs.writeFileSync(pj, JSON.stringify({ description: "OnlyPkg" }), "utf8");
     try {
-      const merged = aggregateUiStringLocations(
-        ["x.ts"],
-        () => `t("code");\n`,
-        ["t"],
-        { packageJsonPath: pj, cwd: dir, includePackageDescription: false }
-      );
+      const merged = aggregateUiStringLocations(["x.ts"], () => `t("code");\n`, ["t"], {
+        packageJsonPath: pj,
+        cwd: dir,
+        includePackageDescription: false,
+      });
       expect(merged.get(uiStringHash("OnlyPkg"))).toBeUndefined();
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });

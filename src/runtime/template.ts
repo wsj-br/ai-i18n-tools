@@ -13,7 +13,10 @@
  *
  * @example interpolateTemplate(t("Hello {{name}}"), { name: userName })
  */
-export function interpolateTemplate(str: string, vars: Record<string, string | number | boolean>): string {
+export function interpolateTemplate(
+  str: string,
+  vars: Record<string, string | number | boolean>
+): string {
   return str.replace(/\{\{(\w+)\}\}/g, (_, key: string) => String(vars[key] ?? ""));
 }
 

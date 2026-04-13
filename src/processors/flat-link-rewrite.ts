@@ -71,13 +71,7 @@ export function rewriteOneRelativePathForFlatOutput(
       normalizedCurrent,
       "markdown"
     );
-    const toAbs = resolveDocumentationOutputPath(
-      ctx.config,
-      ctx.cwd,
-      locale,
-      resolved,
-      "markdown"
-    );
+    const toAbs = resolveDocumentationOutputPath(ctx.config, ctx.cwd, locale, resolved, "markdown");
     const rel = toPosix(path.relative(path.dirname(fromAbs), toAbs));
     return `${rel}${query}${fragment}`;
   }

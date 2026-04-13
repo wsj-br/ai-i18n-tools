@@ -112,10 +112,7 @@ export function svgTranslationFilepathMetadata(relPathFromCwd: string): string {
  * Path under a configured `svg.sourcePath` root (posix), for nested output layout.
  * Returns `null` if `fileRelCwd` is not under any root.
  */
-export function relPathUnderSvgSource(
-  fileRelCwd: string,
-  sourceRoots: string[]
-): string | null {
+export function relPathUnderSvgSource(fileRelCwd: string, sourceRoots: string[]): string | null {
   const posix = toPosix(fileRelCwd.replace(/\\/g, "/"));
   const sorted = [...sourceRoots].sort((a, b) => b.length - a.length);
   for (const root of sorted) {

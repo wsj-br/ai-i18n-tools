@@ -41,18 +41,17 @@ import { normalizeLocale } from "../core/config.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { runExtract } from "./extract-strings.js";
-import {
-  runTranslate,
-  shouldRunJson,
-  type TranslateRunOptions,
-} from "./doc-translate.js";
+import { runTranslate, shouldRunJson, type TranslateRunOptions } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
-import { createTranslationEditorApp, resolveEditCacheStaticDir } from "../server/translation-editor.js";
+import {
+  createTranslationEditorApp,
+  resolveEditCacheStaticDir,
+} from "../server/translation-editor.js";
 import type { I18nConfig } from "../core/types.js";
 
 function openBrowser(url: string): void {
@@ -99,7 +98,9 @@ const program = new Command();
 
 program
   .name("ai-i18n-tools")
-  .description(`Unified i18n toolkit for Node.js apps and documentation with AI translation (v${version})`)
+  .description(
+    `Unified i18n toolkit for Node.js apps and documentation with AI translation (v${version})`
+  )
   .version(version)
   .option("-c, --config <path>", "Config file path", DEFAULT_CONFIG_FILENAME)
   .option("-v, --verbose", "Verbose logging", false)
@@ -167,9 +168,7 @@ program
 function parsePositiveInt(optionLabel: string, value: string): number {
   const n = Number.parseInt(value, 10);
   if (!Number.isFinite(n) || n < 1) {
-    throw new InvalidArgumentError(
-      `${optionLabel} must be a positive integer (got "${value}")`
-    );
+    throw new InvalidArgumentError(`${optionLabel} must be a positive integer (got "${value}")`);
   }
   return n;
 }
@@ -222,9 +221,7 @@ function buildTranslateOpts(
     noJson: Boolean(o.noJson),
     logPath,
     concurrency:
-      o.concurrency !== undefined
-        ? parsePositiveInt("Concurrency (-j)", o.concurrency)
-        : undefined,
+      o.concurrency !== undefined ? parsePositiveInt("Concurrency (-j)", o.concurrency) : undefined,
     batchConcurrency:
       o.batchConcurrency !== undefined
         ? parsePositiveInt("Batch concurrency (-b)", o.batchConcurrency)
@@ -234,9 +231,7 @@ function buildTranslateOpts(
   return { locales, uiLocales, translateOpts };
 }
 
-function parseTranslatePromptFormat(
-  raw: string | undefined
-): TranslateRunOptions["promptFormat"] {
+function parseTranslatePromptFormat(raw: string | undefined): TranslateRunOptions["promptFormat"] {
   if (raw === undefined || raw === "") {
     return "xml";
   }
@@ -293,7 +288,9 @@ async function runSyncPipeline(args: {
     try {
       const s = runExtract(config, projectRoot);
       console.log(
-        chalk.green(`✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`)
+        chalk.green(
+          `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+        )
       );
     } catch (e) {
       console.error(chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`));
@@ -355,7 +352,9 @@ async function runSyncPipeline(args: {
         );
       }
     } catch (e) {
-      console.error(chalk.red(`❌ [sync][translate] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(`❌ [sync][translate] ${e instanceof Error ? e.message : String(e)}`)
+      );
       throw e;
     }
   }
@@ -385,10 +384,7 @@ program
   .option("--type <kind>", "markdown | json")
   .option("--json-only", "JSON only", false)
   .option("--no-json", "Skip JSON", false)
-  .option(
-    "-j, --concurrency <n>",
-    "Max parallel target locales (default: config or 3)"
-  )
+  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 3)")
   .option(
     "-b, --batch-concurrency <n>",
     "Max parallel batch API calls per file (default: config or 4)"
@@ -438,7 +434,9 @@ program
       let locale: string | undefined;
       if (typeof raw.clearCache === "string" && raw.clearCache.trim() !== "") {
         locale = normalizeLocale(raw.clearCache);
-        const allowed = new Set(getDocumentationTargetLocaleCodes(config).map((c) => normalizeLocale(c)));
+        const allowed = new Set(
+          getDocumentationTargetLocaleCodes(config).map((c) => normalizeLocale(c))
+        );
         if (allowed.size > 0 && !allowed.has(locale)) {
           console.error(
             chalk.red(
@@ -458,10 +456,7 @@ program
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-docs");
     const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
 
-    if (
-      config.features.translateJSON &&
-      !config.documentations.some((b) => b.jsonSource?.trim())
-    ) {
+    if (config.features.translateJSON && !config.documentations.some((b) => b.jsonSource?.trim())) {
       console.warn(
         chalk.yellow(
           "\n⚠️  translateJSON is enabled but no documentations[].jsonSource is set. " +
@@ -548,10 +543,7 @@ program
     false
   )
   .option("--no-cache", "Bypass SQLite cache", false)
-  .option(
-    "-j, --concurrency <n>",
-    "Max parallel target locales (default: config or 3)"
-  )
+  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 3)")
   .option(
     "-b, --batch-concurrency <n>",
     "Max parallel batch API calls per file (default: config or 4)"
@@ -598,15 +590,17 @@ program
   )
   .option("--dry-run", "No writes, no API calls", false)
   .option("--force", "Re-translate all entries per locale", false)
-  .option(
-    "-j, --concurrency <n>",
-    "Max parallel target locales (default: config or 4)"
-  )
+  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 4)")
   .action(async (_a, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
-    const o = cmd.opts() as { locale?: string; dryRun?: boolean; force?: boolean; concurrency?: string };
+    const o = cmd.opts() as {
+      locale?: string;
+      dryRun?: boolean;
+      force?: boolean;
+      concurrency?: string;
+    };
     const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
     if (!config.features.translateUIStrings) {
       console.error(chalk.red("❌ [translate-ui] Enable features.translateUIStrings in config."));
@@ -635,7 +629,9 @@ program
 
 program
   .command("export-ui-xliff")
-  .description("Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)")
+  .description(
+    "Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)"
+  )
   .option(
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
@@ -668,7 +664,9 @@ program
         dryRun: Boolean(o.dryRun),
       });
     } catch (e) {
-      console.error(chalk.red(`❌ [export-ui-xliff] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(`❌ [export-ui-xliff] ${e instanceof Error ? e.message : String(e)}`)
+      );
       process.exit(1);
     }
   });
@@ -772,19 +770,27 @@ program
       const localeColW = Math.max(
         4,
         ...locales.map((l) => l.length),
-        ...rows.flatMap((r) => r.slice(1).map((c) => stripAnsi(String(c)).length)),
+        ...rows.flatMap((r) => r.slice(1).map((c) => stripAnsi(String(c)).length))
       );
       const sep = (cols: string[]) => cols.join(" | ");
       console.log(
         sep(
           headers.map((h, i) =>
-            i === 0 ? padVis(chalk.bold(h), colW) : padVis(chalk.bold(h), localeColW),
-          ),
-        ),
+            i === 0 ? padVis(chalk.bold(h), colW) : padVis(chalk.bold(h), localeColW)
+          )
+        )
       );
-      console.log(sep(headers.map((_, i) => (i === 0 ? chalk.bold("-".repeat(colW)) : chalk.bold("-".repeat(localeColW))))));
+      console.log(
+        sep(
+          headers.map((_, i) =>
+            i === 0 ? chalk.bold("-".repeat(colW)) : chalk.bold("-".repeat(localeColW))
+          )
+        )
+      );
       for (const r of rows) {
-        console.log(sep(r.map((c, i) => (i === 0 ? padVis(String(c), colW) : padVis(String(c), localeColW)))));
+        console.log(
+          sep(r.map((c, i) => (i === 0 ? padVis(String(c), colW) : padVis(String(c), localeColW))))
+        );
       }
       console.log();
     };
@@ -812,12 +818,12 @@ program
         const totalRow: string[] = [chalk.bold("Total")];
 
         for (const loc of uiLocales) {
-          const translated = keys.filter(
-            (k) => stringsData[k]?.translated?.[loc]?.trim()
-          ).length;
+          const translated = keys.filter((k) => stringsData[k]?.translated?.[loc]?.trim()).length;
           const missing = total - translated;
 
-          translatedRow.push(chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`));
+          translatedRow.push(
+            chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`)
+          );
           missingRow.push(
             missing > 0
               ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
@@ -832,7 +838,7 @@ program
         const uiLocColW = Math.max(
           4,
           ...uiLocales.map((l) => l.length),
-          ...uiRows.flatMap((r) => r.slice(1).map((c) => stripAnsi(c).length)),
+          ...uiRows.flatMap((r) => r.slice(1).map((c) => stripAnsi(c).length))
         );
         const uiSep = (cols: string[]) => cols.join(" | ");
 
@@ -841,11 +847,13 @@ program
         console.log(
           uiSep(
             uiHeaders.map((h, i) =>
-              i === 0 ? padVis(chalk.bold(h), labelW) : padVis(chalk.bold(h), uiLocColW),
-            ),
-          ),
+              i === 0 ? padVis(chalk.bold(h), labelW) : padVis(chalk.bold(h), uiLocColW)
+            )
+          )
         );
-        console.log(uiSep(uiHeaders.map((_, i) => (i === 0 ? "-".repeat(labelW) : "-".repeat(uiLocColW)))));
+        console.log(
+          uiSep(uiHeaders.map((_, i) => (i === 0 ? "-".repeat(labelW) : "-".repeat(uiLocColW))))
+        );
         for (const r of uiRows) {
           console.log(uiSep(r.map((c, i) => (i === 0 ? padVis(c, labelW) : padVis(c, uiLocColW)))));
         }
@@ -863,7 +871,7 @@ program
         chalk.gray("-") +
         chalk.gray(" not generated  ") +
         chalk.red("?") +
-        chalk.gray(" source read error"),
+        chalk.gray(" source read error")
     );
     for (let bi = 0; bi < config.documentations.length; bi++) {
       const block = config.documentations[bi]!;
@@ -885,7 +893,7 @@ program
             chalk.bold(`documentations[${bi}]`) +
             chalk.cyan(`${desc} `) +
             chalk.magenta(`(${block.outputDir})`) +
-            "\n",
+            "\n"
         );
       }
       const rows: string[][] = [];
@@ -978,7 +986,12 @@ program
     const { count, deletedRows } = cache.cleanupStaleTranslations(Boolean(opts.dryRun));
     console.log(`[cleanup] stale: ${count} row(s)${opts.dryRun ? " (dry-run)" : ""}`);
     if (opts.dryRun && deletedRows.length) {
-      console.log(deletedRows.slice(0, 20).map((r) => `  ${r.source_hash} ${r.locale}`).join("\n"));
+      console.log(
+        deletedRows
+          .slice(0, 20)
+          .map((r) => `  ${r.source_hash} ${r.locale}`)
+          .join("\n")
+      );
     }
 
     const prunedTracking = cache.pruneOrphanedFileTrackingByDisk(projectRoot, Boolean(opts.dryRun));
@@ -1056,7 +1069,10 @@ program
 program
   .command("glossary-generate")
   .description("Write an empty glossary-user.csv with standard headers")
-  .option("-o, --output <path>", "Output path (default: config glossary.userGlossary or glossary-user.csv)")
+  .option(
+    "-o, --output <path>",
+    "Output path (default: config glossary.userGlossary or glossary-user.csv)"
+  )
   .action((opts: { output?: string }, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);

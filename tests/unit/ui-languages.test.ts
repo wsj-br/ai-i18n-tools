@@ -1,7 +1,11 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { loadI18nConfigFromFile, mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
+import {
+  loadI18nConfigFromFile,
+  mergeWithDefaults,
+  parseI18nConfig,
+} from "../../src/core/config.js";
 import type { I18nConfig } from "../../src/core/types.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 import {
@@ -149,16 +153,14 @@ describe("ui-languages", () => {
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
     });
-    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(ConfigValidationError);
+    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(
+      ConfigValidationError
+    );
   });
 
   it("loadUiLanguageEntries rejects entries without englishName", () => {
     const p = path.join(tmp, "bad.json");
-    fs.writeFileSync(
-      p,
-      JSON.stringify([{ code: "de", label: "Deutsch" }]),
-      "utf8"
-    );
+    fs.writeFileSync(p, JSON.stringify([{ code: "de", label: "Deutsch" }]), "utf8");
     expect(() => loadUiLanguageEntries(p)).toThrow(/englishName/);
   });
 
@@ -486,9 +488,10 @@ describe("ui-languages", () => {
       features: { translateMarkdown: true },
     });
     expandDocumentationTargetLocalesInRawInput(raw, tmp);
-    expect(
-      (raw.documentations as { targetLocales: string[] }[])[0].targetLocales.sort()
-    ).toEqual(["de", "fr"]);
+    expect((raw.documentations as { targetLocales: string[] }[])[0].targetLocales.sort()).toEqual([
+      "de",
+      "fr",
+    ]);
     expect(raw.uiLanguagesPath).toBeUndefined();
   });
 });

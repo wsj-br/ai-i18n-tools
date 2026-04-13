@@ -45,58 +45,34 @@ describe("normalizeMarkdownRelPath", () => {
 describe("rewriteOneRelativePathForFlatOutput", () => {
   it("returns original when path empty after trim", () => {
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "",
-        "",
-        "",
-        "es",
-        "i18n",
-        "../",
-        {
-          cwd,
-          config: cfg(),
-          currentSourceRelPath: "foo.md",
-          translatedMarkdownRelPaths: new Set(),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("", "", "", "es", "i18n", "../", {
+        cwd,
+        config: cfg(),
+        currentSourceRelPath: "foo.md",
+        translatedMarkdownRelPaths: new Set(),
+      })
     ).toBe("");
   });
 
   it("strips i18n prefix when present", () => {
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "i18n/out/foo.md",
-        "",
-        "",
-        "es",
-        "i18n/out",
-        "../",
-        {
-          cwd,
-          config: cfg(),
-          currentSourceRelPath: "foo.md",
-          translatedMarkdownRelPaths: new Set(),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("i18n/out/foo.md", "", "", "es", "i18n/out", "../", {
+        cwd,
+        config: cfg(),
+        currentSourceRelPath: "foo.md",
+        translatedMarkdownRelPaths: new Set(),
+      })
     ).toBe("foo.md");
   });
 
   it("depth prefix for self link (resolved target equals current source)", () => {
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "foo.md",
-        "",
-        "",
-        "es",
-        "",
-        "../",
-        {
-          cwd,
-          config: cfg(),
-          currentSourceRelPath: "foo.md",
-          translatedMarkdownRelPaths: new Set(["foo.md"]),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("foo.md", "", "", "es", "", "../", {
+        cwd,
+        config: cfg(),
+        currentSourceRelPath: "foo.md",
+        translatedMarkdownRelPaths: new Set(["foo.md"]),
+      })
     ).toBe("../foo.md");
   });
 
@@ -111,20 +87,12 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
       ],
     });
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "b.md",
-        "",
-        "",
-        "es",
-        "",
-        "../",
-        {
-          cwd,
-          config: c,
-          currentSourceRelPath: "a.md",
-          translatedMarkdownRelPaths: new Set(["a.md", "b.md"]),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("b.md", "", "", "es", "", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "a.md",
+        translatedMarkdownRelPaths: new Set(["a.md", "b.md"]),
+      })
     ).toBe("b.es.md");
   });
 
@@ -166,58 +134,38 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
         {
           contentPaths: ["docs/a.md", "other/a.md", "docs/x.md", "other/x.md"],
           outputDir: "out",
-          markdownOutput: { style: "flat", flatPreserveRelativeDir: true, linkRewriteDocsRoot: "." },
+          markdownOutput: {
+            style: "flat",
+            flatPreserveRelativeDir: true,
+            linkRewriteDocsRoot: ".",
+          },
         },
       ],
     });
     const set = new Set(["docs/a.md", "other/a.md", "docs/x.md", "other/x.md"]);
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "./a.md",
-        "",
-        "",
-        "de",
-        "",
-        "../",
-        {
-          cwd,
-          config: c,
-          currentSourceRelPath: "docs/x.md",
-          translatedMarkdownRelPaths: set,
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("./a.md", "", "", "de", "", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "docs/x.md",
+        translatedMarkdownRelPaths: set,
+      })
     ).toBe("a.de.md");
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "./a.md",
-        "",
-        "",
-        "de",
-        "",
-        "../",
-        {
-          cwd,
-          config: c,
-          currentSourceRelPath: "other/x.md",
-          translatedMarkdownRelPaths: set,
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("./a.md", "", "", "de", "", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "other/x.md",
+        translatedMarkdownRelPaths: set,
+      })
     ).toBe("a.de.md");
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "../other/a.md",
-        "",
-        "",
-        "de",
-        "",
-        "../",
-        {
-          cwd,
-          config: c,
-          currentSourceRelPath: "docs/x.md",
-          translatedMarkdownRelPaths: set,
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("../other/a.md", "", "", "de", "", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "docs/x.md",
+        translatedMarkdownRelPaths: set,
+      })
     ).toBe("../other/a.de.md");
   });
 
@@ -236,39 +184,23 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
       ],
     });
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "../README.md",
-        "",
-        "",
-        "es",
-        "translated-docs",
-        "../",
-        {
-          cwd,
-          config: c,
-          currentSourceRelPath: "docs/page.md",
-          translatedMarkdownRelPaths: new Set(["README.md", "docs/page.md"]),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("../README.md", "", "", "es", "translated-docs", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "docs/page.md",
+        translatedMarkdownRelPaths: new Set(["README.md", "docs/page.md"]),
+      })
     ).toBe("../README.es.md");
   });
 
   it("default depth prefix for paths not in translated set", () => {
     expect(
-      rewriteOneRelativePathForFlatOutput(
-        "sub/page.md",
-        "?q=1",
-        "#h",
-        "es",
-        "",
-        "../",
-        {
-          cwd,
-          config: cfg(),
-          currentSourceRelPath: "foo.md",
-          translatedMarkdownRelPaths: new Set(["foo.md"]),
-        }
-      )
+      rewriteOneRelativePathForFlatOutput("sub/page.md", "?q=1", "#h", "es", "", "../", {
+        cwd,
+        config: cfg(),
+        currentSourceRelPath: "foo.md",
+        translatedMarkdownRelPaths: new Set(["foo.md"]),
+      })
     ).toBe("../sub/page.md?q=1#h");
   });
 });
@@ -310,7 +242,7 @@ describe("rewriteDocLinksForFlatOutput", () => {
     expect(out).toContain("(D:/foo)");
   });
 
-  it("rewrites src=\"...\" attributes", () => {
+  it('rewrites src="..." attributes', () => {
     const body = `<img src="b.md" />`;
     const out = rewriteDocLinksForFlatOutput(body, locale, i18nPrefix, depthPrefix, ctx);
     expect(out).toContain('src="b.es.md"');
@@ -329,11 +261,7 @@ describe("computeFlatLinkRewritePrefixes", () => {
   });
 
   it("empty i18nPrefix yields depth 0", () => {
-    const { i18nPrefix, depthPrefix } = computeFlatLinkRewritePrefixes(
-      "/proj",
-      "docs",
-      "docs"
-    );
+    const { i18nPrefix, depthPrefix } = computeFlatLinkRewritePrefixes("/proj", "docs", "docs");
     expect(i18nPrefix).toBe("");
     expect(depthPrefix).toBe("");
   });

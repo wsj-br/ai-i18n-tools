@@ -59,7 +59,7 @@ describe("doc-postprocess", () => {
 
   it("extractLanguageListBlock finds line-bounded block", () => {
     const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
-    const body = "Intro\n<small id=\"lang-list\">old</small>\nRest";
+    const body = 'Intro\n<small id="lang-list">old</small>\nRest';
     const ext = extractLanguageListBlock(body, cfg);
     expect(ext).not.toBeNull();
     expect(ext!.block).toContain("lang-list");
@@ -87,7 +87,7 @@ describe("doc-postprocess", () => {
 
   it("replaceLanguageListBlockInBody replaces block", () => {
     const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
-    const body = "X\n<small id=\"lang-list\">old</small>\nY";
+    const body = 'X\n<small id="lang-list">old</small>\nY';
     const { body: next, replaced } = replaceLanguageListBlockInBody(
       body,
       cfg,
@@ -133,7 +133,12 @@ describe("doc-postprocess", () => {
           maxTokens: 100,
           temperature: 0.1,
         },
-        features: { translateMarkdown: true, translateJSON: false, extractUIStrings: false, translateUIStrings: false },
+        features: {
+          translateMarkdown: true,
+          translateJSON: false,
+          extractUIStrings: false,
+          translateUIStrings: false,
+        },
       })
     );
     const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
@@ -316,7 +321,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
 
   it("extractLanguageListBlock same-line start and end", () => {
     const cfg = { start: "<s>", end: "</s>", separator: "" };
-    const ext = extractLanguageListBlock('pre\n<s>one line</s>\npost', cfg);
+    const ext = extractLanguageListBlock("pre\n<s>one line</s>\npost", cfg);
     expect(ext).not.toBeNull();
     expect(ext!.startLine).toBe(ext!.endLine);
   });

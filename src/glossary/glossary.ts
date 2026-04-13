@@ -169,8 +169,12 @@ export class Glossary {
     }) as Record<string, string>[];
 
     const starRows: Array<{ english: string; translation: string; force: boolean }> = [];
-    const exactRows: Array<{ english: string; locale: string; translation: string; force: boolean }> =
-      [];
+    const exactRows: Array<{
+      english: string;
+      locale: string;
+      translation: string;
+      force: boolean;
+    }> = [];
 
     for (const row of rows) {
       const english = pickEnglish(row);

@@ -12,8 +12,14 @@ export function isDirectory(p: string): boolean {
 /**
  * Collect files under `roots` (files or directories) matching `extensions` (e.g. ['.md', '.mdx']).
  */
-export function collectFilesByExtension(roots: string[], extensions: string[], cwd: string): string[] {
-  const extSet = new Set(extensions.map((e) => (e.startsWith(".") ? e.toLowerCase() : `.${e.toLowerCase()}`)));
+export function collectFilesByExtension(
+  roots: string[],
+  extensions: string[],
+  cwd: string
+): string[] {
+  const extSet = new Set(
+    extensions.map((e) => (e.startsWith(".") ? e.toLowerCase() : `.${e.toLowerCase()}`))
+  );
   const out: string[] = [];
 
   const walk = (abs: string) => {
@@ -51,7 +57,9 @@ export function collectFilesByExtension(roots: string[], extensions: string[], c
  * Paths relative to `root` (posix slashes), for JSON/SVG roots that are not cwd.
  */
 export function collectFilesRelativeToRoot(root: string, extensions: string[]): string[] {
-  const extSet = new Set(extensions.map((e) => (e.startsWith(".") ? e.toLowerCase() : `.${e.toLowerCase()}`)));
+  const extSet = new Set(
+    extensions.map((e) => (e.startsWith(".") ? e.toLowerCase() : `.${e.toLowerCase()}`))
+  );
   const absRoot = path.resolve(root);
   const out: string[] = [];
 

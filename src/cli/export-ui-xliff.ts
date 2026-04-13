@@ -56,7 +56,9 @@ function buildNotesBlock(entry: StringsJsonEntry): string {
     const file = typeof loc.file === "string" ? loc.file : "";
     const line = typeof loc.line === "number" ? loc.line : undefined;
     const text =
-      line !== undefined && file ? `${file}:${line}` : file || (line !== undefined ? String(line) : "");
+      line !== undefined && file
+        ? `${file}:${line}`
+        : file || (line !== undefined ? String(line) : "");
     if (text) {
       lines.push(`        <note category="location">${escapeXml(text)}</note>`);
     }
@@ -82,9 +84,7 @@ function buildUnitXml(
   const notes = buildNotesBlock(entry);
   const state = hasTranslation ? "translated" : "initial";
   const sourceLine = `        <source>${escapeXml(source)}</source>`;
-  const targetLine = hasTranslation
-    ? `\n        <target>${escapeXml(tr!)}</target>`
-    : "";
+  const targetLine = hasTranslation ? `\n        <target>${escapeXml(tr!)}</target>` : "";
 
   return `    <unit id="${escapeXml(id)}">
 ${notes}      <segment state="${state}">
@@ -129,7 +129,10 @@ ${body}
 /**
  * Read `strings.json` and write one XLIFF 2.0 file per target locale.
  */
-export function runExportUIXliff(config: I18nConfig, opts: ExportUIXliffOptions): ExportUIXliffSummary {
+export function runExportUIXliff(
+  config: I18nConfig,
+  opts: ExportUIXliffOptions
+): ExportUIXliffSummary {
   const stringsPath = resolveStringsJsonPath(config, opts.cwd);
   if (!fs.existsSync(stringsPath)) {
     throw new Error(`[export-ui-xliff] strings.json not found: ${stringsPath}`);

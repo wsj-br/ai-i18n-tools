@@ -80,12 +80,7 @@ export function protectBoldWrappedInlineCode(text: string): ProtectedBoldCodeRes
       continue;
     }
 
-    if (
-      text[i] === "*" &&
-      text[i + 1] === "*" &&
-      i + 2 < text.length &&
-      text[i + 2] === "`"
-    ) {
+    if (text[i] === "*" && text[i + 1] === "*" && i + 2 < text.length && text[i + 2] === "`") {
       const tickStart = i + 2;
       const tickCount = readRun(text, tickStart, "`");
       const codeEnd = findCodeSpanEnd(text, tickStart, tickCount);
@@ -118,8 +113,6 @@ export function protectBoldWrappedInlineCode(text: string): ProtectedBoldCodeRes
  * directly to the preceding token, so `**`code`**이` won't parse as bold.
  * We insert a regular space when the next character is a Unicode letter.
  */
-const UNICODE_LETTER_AFTER = /\p{L}/u;
-
 function escapeForRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

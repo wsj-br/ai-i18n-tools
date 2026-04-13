@@ -66,9 +66,7 @@ describe("wrapI18nWithKeyTrim – source-locale interpolation fallback", () => {
     wrapI18nWithKeyTrim(i18n);
     // The fake doesn't do interpolation itself - real i18next would. We just assert
     // that wrapI18nWithKeyTrim does NOT double-interpolate when a translation exists.
-    expect(i18n.t("Hello {{name}}", { name: "Ada" })).toBe(
-      "Hola {{name}} (translated)"
-    );
+    expect(i18n.t("Hello {{name}}", { name: "Ada" })).toBe("Hola {{name}} (translated)");
   });
 
   it("does NOT interpolate when options is a string (count/context shorthand)", () => {
@@ -187,11 +185,7 @@ describe("makeLoadLocale", () => {
     const bundles: Record<string, Record<string, string>> = {};
     return {
       t: (key: string) => key,
-      addResourceBundle(
-        lng: string,
-        _ns: string,
-        resources: Record<string, string>
-      ) {
+      addResourceBundle(lng: string, _ns: string, resources: Record<string, string>) {
         bundles[lng] = resources;
       },
       bundles,
@@ -204,7 +198,9 @@ describe("makeLoadLocale", () => {
     const loadLocale = makeLoadLocale(i18n, { es: loader }, "en");
     await loadLocale("es");
     expect(loader).toHaveBeenCalledTimes(1);
-    expect((i18n as ReturnType<typeof makeI18nWithResources>).bundles["es"]).toEqual({ Hello: "Hola" });
+    expect((i18n as ReturnType<typeof makeI18nWithResources>).bundles["es"]).toEqual({
+      Hello: "Hola",
+    });
   });
 
   it("skips the source locale without calling the loader", async () => {
@@ -229,7 +225,9 @@ describe("makeLoadLocale", () => {
     const loader = vi.fn().mockResolvedValue({ default: { Hello: "Bonjour" } });
     const loadLocale = makeLoadLocale(i18n, { fr: loader }, "en");
     await loadLocale("fr");
-    expect((i18n as ReturnType<typeof makeI18nWithResources>).bundles["fr"]).toEqual({ Hello: "Bonjour" });
+    expect((i18n as ReturnType<typeof makeI18nWithResources>).bundles["fr"]).toEqual({
+      Hello: "Bonjour",
+    });
   });
 
   it("warns when dynamic import fails", async () => {
@@ -238,11 +236,7 @@ describe("makeLoadLocale", () => {
     const loader = vi.fn().mockRejectedValue(new Error("network"));
     const loadLocale = makeLoadLocale(i18n, { de: loader }, "en");
     await loadLocale("de");
-    expect(warn).toHaveBeenCalledWith(
-      "[i18n] locale not found:",
-      "de",
-      "network"
-    );
+    expect(warn).toHaveBeenCalledWith("[i18n] locale not found:", "de", "network");
     warn.mockRestore();
   });
 });

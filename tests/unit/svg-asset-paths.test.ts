@@ -90,9 +90,7 @@ describe("svg-asset-paths", () => {
       "images/translation_demo_svg.svg",
       "translation_demo_svg.svg"
     );
-    expect(abs).toBe(
-      path.join(cwd, "public/assets/illustrations/translation_demo_svg__de.svg")
-    );
+    expect(abs).toBe(path.join(cwd, "public/assets/illustrations/translation_demo_svg__de.svg"));
   });
 
   it("resolveSvgAssetOutputPath flat uses stem.locale.svg", () => {

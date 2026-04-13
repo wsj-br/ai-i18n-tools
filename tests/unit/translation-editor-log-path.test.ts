@@ -20,7 +20,9 @@ describe("resolveSegmentLogFilepath", () => {
   });
 
   it("does not change markdown paths", () => {
-    expect(resolveSegmentLogFilepath("docs-site/docs/guide.md", js)).toBe("docs-site/docs/guide.md");
+    expect(resolveSegmentLogFilepath("docs-site/docs/guide.md", js)).toBe(
+      "docs-site/docs/guide.md"
+    );
   });
 
   it("no-ops when jsonSource is unset", () => {

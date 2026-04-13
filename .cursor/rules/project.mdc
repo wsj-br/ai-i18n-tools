@@ -35,8 +35,17 @@ alwaysApply: true
 - Maintain `dev/CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - For **any notable change** (features, fixes, refactors, config, dependencies), **add an entry** under the **Unreleased** section of **dev/CHANGELOG.md**.
 - Don't keep changes to the documentation files.
-- Use **Keep a Changelog** types: Added, Changed, Deprecated, Removed, Fixed, Security.
-- One short line per change; no need to duplicate full commit messages.
+- **Entry format** (each bullet is one change):
+
+  `- **{Type}**: {scope} - {description}`
+
+  - **{Type}**: one of Added, Changed, Deprecated, Removed, Fixed, Security (same as Keep a Changelog).
+  - **{scope}**: short area or surface (e.g. `Windows NSIS`, `translate-ui-strings`, `Settings → Models`) so readers can scan by subsystem.
+  - **{description}**: full sentence(s); chain related clauses with semicolons if needed. Use backticks for identifiers, paths, flags, errors, and code snippets; use **bold** for UI labels or emphasis where it helps. No need to mirror the full commit message—summarize the user-visible or maintainer-relevant outcome.
+
+- Place bullets under **`## Unreleased`**. If the file uses **`### Added` / `### Fixed`** groupings, put each bullet in the matching subsection but **keep the same** `- **{Type}**: {scope} - …` line shape so the type stays visible when reading. If the file uses a **flat** list under Unreleased (no `###`), the type is only in each bullet—both are fine.
+
+- Prefer **one bullet per logical change** (one PR can add several bullets if it touched unrelated areas).
 
 ## Coding conventions
 

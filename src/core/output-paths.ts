@@ -10,7 +10,10 @@ export function toPosix(p: string): string {
   return p.split(path.sep).join("/");
 }
 
-function templateForKind(config: I18nDocTranslateConfig, kind: DocArtifactKind): string | undefined {
+function templateForKind(
+  config: I18nDocTranslateConfig,
+  kind: DocArtifactKind
+): string | undefined {
   const mo = config.documentation.markdownOutput;
   if (kind === "markdown") {
     return mo.pathTemplate?.trim();
@@ -64,7 +67,9 @@ function assertOutputWithinRoot(absFile: string, rootDir: string): void {
   const root = path.resolve(rootDir);
   const rel = path.relative(root, abs);
   if (rel.startsWith("..") || path.isAbsolute(rel)) {
-    throw new Error(`Resolved output path escapes the documentation block outputDir: ${absFile} (root: ${root})`);
+    throw new Error(
+      `Resolved output path escapes the documentation block outputDir: ${absFile} (root: ${root})`
+    );
   }
 }
 
@@ -97,8 +102,7 @@ function resolveByStyle(
       if (!under) {
         return path.join(outBase, locale, relPath);
       }
-      const rest =
-        posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
+      const rest = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
       return path.join(outBase, locale, DOCUSAURUS_PLUGIN, rest);
     }
     case "flat": {

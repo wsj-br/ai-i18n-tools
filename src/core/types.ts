@@ -42,7 +42,9 @@ export type DocSegmentTranslation = { text: string; modelUsed?: string };
 /** Values accepted by {@link ContentExtractor.reassemble}. */
 export type SegmentTranslationMapValue = string | DocSegmentTranslation;
 
-export function segmentTranslationText(v: SegmentTranslationMapValue | undefined): string | undefined {
+export function segmentTranslationText(
+  v: SegmentTranslationMapValue | undefined
+): string | undefined {
   if (v === undefined) {
     return undefined;
   }
@@ -50,7 +52,9 @@ export function segmentTranslationText(v: SegmentTranslationMapValue | undefined
 }
 
 /** Coerce a map to plain `Map<string, string>` (e.g. legacy callers or JSON serialization). */
-export function translationTextMap(m: Map<string, SegmentTranslationMapValue>): Map<string, string> {
+export function translationTextMap(
+  m: Map<string, SegmentTranslationMapValue>
+): Map<string, string> {
   return new Map(
     [...m].map(([k, v]) => {
       const t = segmentTranslationText(v);
@@ -334,12 +338,15 @@ const documentationBlockSchema = z
      * (expanded at load; does not change `uiLanguagesPath`).
      */
     targetLocales: z
-      .preprocess((v) => {
-        if (v === undefined || v === null) {
-          return undefined;
-        }
-        return coerceTargetLocalesField(v);
-      }, z.array(z.string().min(1)).optional())
+      .preprocess(
+        (v) => {
+          if (v === undefined || v === null) {
+            return undefined;
+          }
+          return coerceTargetLocalesField(v);
+        },
+        z.array(z.string().min(1)).optional()
+      )
       .optional(),
     /** Base directory for translated docs (markdown / default JSON layout). */
     outputDir: z.string().min(1).default("./i18n"),
@@ -387,18 +394,16 @@ export const i18nConfigSchema = z
       stringsJson: "strings.json",
       flatOutputDir: "./locales",
     }),
-    documentations: z
-      .array(documentationBlockSchema)
-      .default([
-        {
-          contentPaths: [],
-          outputDir: "./i18n",
-          markdownOutput: {
-            style: "nested",
-            flatPreserveRelativeDir: false,
-          },
+    documentations: z.array(documentationBlockSchema).default([
+      {
+        contentPaths: [],
+        outputDir: "./i18n",
+        markdownOutput: {
+          style: "nested",
+          flatPreserveRelativeDir: false,
         },
-      ]),
+      },
+    ]),
     /** BCP-47-ish codes that use RTL typography; layout `dir` stays the app’s i18next concern. */
     rtlLocales: z.array(z.string().min(1)).optional(),
     localeDisplayNames: z.record(z.string(), z.string()).optional(),

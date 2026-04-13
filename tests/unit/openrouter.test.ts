@@ -144,7 +144,10 @@ describe("OpenRouterClient", () => {
   });
 
   it("translateDocumentSegment strips tags from response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockJsonResponse(completionBody("<translate>DE</translate>"))));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(mockJsonResponse(completionBody("<translate>DE</translate>")))
+    );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     const r = await c.translateDocumentSegment("src", "de", []);
     expect(r.content).toBe("DE");
@@ -160,11 +163,9 @@ describe("OpenRouterClient", () => {
   it("translateDocumentBatch parses batch XML response", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        mockJsonResponse(
-          completionBody(`<t id="0">A</t>\n<t id="1">B</t>`)
-        )
-      )
+      vi
+        .fn()
+        .mockResolvedValue(mockJsonResponse(completionBody(`<t id="0">A</t>\n<t id="1">B</t>`)))
     );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     const segs = [
@@ -177,7 +178,10 @@ describe("OpenRouterClient", () => {
   });
 
   it("translateDocumentBatch parses json-array response format", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["A","B"]'))));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["A","B"]')))
+    );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     const segs = [
       { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
@@ -189,7 +193,10 @@ describe("OpenRouterClient", () => {
   });
 
   it("translateDocumentBatch parses json-object response format", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockJsonResponse(completionBody('{"0":"A","1":"B"}'))));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(mockJsonResponse(completionBody('{"0":"A","1":"B"}')))
+    );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     const segs = [
       { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
@@ -253,7 +260,9 @@ describe("OpenRouterClient", () => {
     });
     await c.translateUIBatch(["a"], "de");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
-    const payload = JSON.parse(init.body ?? "{}") as { messages: Array<{ role: string; content: string }> };
+    const payload = JSON.parse(init.body ?? "{}") as {
+      messages: Array<{ role: string; content: string }>;
+    };
     const user = payload.messages.find((m) => m.role === "user");
     expect(user?.content).toContain("en: English");
     expect(user?.content).toContain("de: German");
@@ -271,7 +280,9 @@ describe("OpenRouterClient", () => {
     });
     await c.translateUIBatch(["a"], "de");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
-    const payload = JSON.parse(init.body ?? "{}") as { messages: Array<{ role: string; content: string }> };
+    const payload = JSON.parse(init.body ?? "{}") as {
+      messages: Array<{ role: string; content: string }>;
+    };
     const user = payload.messages.find((m) => m.role === "user");
     expect(user?.content).toContain("en: English");
     expect(user?.content).toContain("de: German");
@@ -347,7 +358,9 @@ describe("OpenRouterClient", () => {
       { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
     ];
     await c.translateDocumentBatch(segs, "de");
-    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch parse failed"))).toBe(true);
+    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch parse failed"))).toBe(
+      true
+    );
   });
 
   it("translateDocumentBatch warns Batch request failed without docLogContext", async () => {
@@ -372,18 +385,16 @@ describe("OpenRouterClient", () => {
       { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
     ];
     await c.translateDocumentBatch(segs, "de");
-    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch request failed"))).toBe(true);
+    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch request failed"))).toBe(
+      true
+    );
   });
 
   it("translateDocumentBatch falls back when first model returns batch parse error", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        mockJsonResponse(completionBody(`<t id="0">only-one</t>`))
-      )
-      .mockResolvedValueOnce(
-        mockJsonResponse(completionBody(`<t id="0">A</t><t id="1">B</t>`))
-      );
+      .mockResolvedValueOnce(mockJsonResponse(completionBody(`<t id="0">only-one</t>`)))
+      .mockResolvedValueOnce(mockJsonResponse(completionBody(`<t id="0">A</t><t id="1">B</t>`)));
     vi.stubGlobal("fetch", fetchMock);
     const c = new OpenRouterClient({ config: openRouterConfig(["bad", "good"]), apiKey: "k" });
     const segs = [
@@ -408,7 +419,9 @@ describe("OpenRouterClient", () => {
       })
     );
     const c = new OpenRouterClient({ config: openRouterConfig(["a", "b"]), apiKey: "k" });
-    await expect(c.translateUIBatch(["x"], "de")).rejects.toThrow(/All translation models failed for UI batch/);
+    await expect(c.translateUIBatch(["x"], "de")).rejects.toThrow(
+      /All translation models failed for UI batch/
+    );
   });
 
   it("fetchCompletion throws on empty message content", async () => {
@@ -439,7 +452,10 @@ describe("OpenRouterClient", () => {
       apiKey: "k",
       debugTrafficFilePath: tmp,
     });
-    await c.chat([{ role: "system", content: "s" }, { role: "user", content: "u" }]);
+    await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
     const log = fs.readFileSync(tmp, "utf8");
     expect(log).toContain("REQUEST");
     expect(log).toContain("RESPONSE");

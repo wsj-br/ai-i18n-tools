@@ -206,9 +206,7 @@ export class OpenRouterClient {
     const loc = relativePath != null ? `${localeCode} ${relativePath}` : localeCode;
     const detail = error instanceof Error ? error.message : String(error);
     console.warn(
-      chalk.yellow(
-        `  ⚠️  ${loc}: ${failedModel} failed (${detail}). Trying ${nextModel}…`
-      )
+      chalk.yellow(`  ⚠️  ${loc}: ${failedModel} failed (${detail}). Trying ${nextModel}…`)
     );
   }
 
@@ -482,13 +480,7 @@ export class OpenRouterClient {
         };
         const nextModel = this.modelsToTry[mi + 1];
         if (nextModel && options?.docLogContext) {
-          this.warnModelSwitch(
-            locale,
-            options.docLogContext.relativePath,
-            model,
-            nextModel,
-            e
-          );
+          this.warnModelSwitch(locale, options.docLogContext.relativePath, model, nextModel, e);
         } else if (!options?.docLogContext) {
           if (e instanceof BatchTranslationError) {
             this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
@@ -531,13 +523,7 @@ export class OpenRouterClient {
         };
         const nextModel = this.modelsToTry[mi + 1];
         if (nextModel && options?.docLogContext) {
-          this.warnModelSwitch(
-            locale,
-            options.docLogContext.relativePath,
-            model,
-            nextModel,
-            e
-          );
+          this.warnModelSwitch(locale, options.docLogContext.relativePath, model, nextModel, e);
         } else if (!options?.docLogContext) {
           if (e instanceof BatchTranslationError) {
             this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);

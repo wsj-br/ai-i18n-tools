@@ -89,17 +89,16 @@ describe("runTranslateUI", () => {
     );
     fs.writeFileSync(
       path.join(tmp, "glossary-user.csv"),
-      [
-        "Original language string,locale,Translation",
-        "Save,de,Speichern",
-      ].join("\n"),
+      ["Original language string,locale,Translation", "Save,de,Speichern"].join("\n"),
       "utf8"
     );
 
     const fetchMock = vi.fn().mockResolvedValue(
       mockJsonResponse({
         id: "r1",
-        choices: [{ message: { content: '["Speichern","Konto schliessen"]' }, finish_reason: "stop" }],
+        choices: [
+          { message: { content: '["Speichern","Konto schliessen"]' }, finish_reason: "stop" },
+        ],
         usage: {
           prompt_tokens: 1,
           completion_tokens: 2,

@@ -80,9 +80,7 @@ export async function runTranslateUI(
   fs.mkdirSync(outDir, { recursive: true });
 
   const srcNorm = normalizeLocale(config.sourceLocale);
-  const targets = opts.locales
-    .map((l) => normalizeLocale(l))
-    .filter((l) => l !== srcNorm);
+  const targets = opts.locales.map((l) => normalizeLocale(l)).filter((l) => l !== srcNorm);
 
   if (targets.length === 0) {
     throw new Error("No target locales after excluding sourceLocale");
@@ -98,7 +96,11 @@ export async function runTranslateUI(
 
     if (fs.existsSync(glossaryUser)) {
       const raw = fs.readFileSync(glossaryUser, "utf8");
-      const records = parseCsv(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<string, string>[];
+      const records = parseCsv(raw, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true,
+      }) as Record<string, string>[];
       csvRows = records.map((r) => [
         r["Original language string"] ?? r["en"] ?? "",
         r["locale"] ?? "",
@@ -164,20 +166,16 @@ export async function runTranslateUI(
 
   const models = client?.getConfiguredModels() ?? [];
 
-  const parallelLimit = Math.max(
-    1,
-    Math.floor(opts.concurrency ?? config.concurrency ?? 4)
-  );
+  const parallelLimit = Math.max(1, Math.floor(opts.concurrency ?? config.concurrency ?? 4));
 
   // Header block
   console.log(
-    chalk.gray("\n\n___UI Translation________________________________________________________________________________________\n\n") +
-    chalk.bold(`🌐 Translating UI strings to ${targets.length} locale(s)\n`)
+    chalk.gray(
+      "\n\n___UI Translation________________________________________________________________________________________\n\n"
+    ) + chalk.bold(`🌐 Translating UI strings to ${targets.length} locale(s)\n`)
   );
   printModelsTryInOrder(models);
-  console.log(
-    chalk.cyan(`Strings: `) + chalk.magenta(`${entries.length} total entries`)
-  );
+  console.log(chalk.cyan(`Strings: `) + chalk.magenta(`${entries.length} total entries`));
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(chalk.cyan(`Output dir: `) + chalk.magenta(outDir));
   if (opts.logPath) {
@@ -185,7 +183,8 @@ export async function runTranslateUI(
   }
   if (targets.length > 1) {
     console.log(
-      chalk.cyan(`Parallel translations: `) + chalk.magenta(`up to ${Math.min(parallelLimit, targets.length)}`) 
+      chalk.cyan(`Parallel translations: `) +
+        chalk.magenta(`up to ${Math.min(parallelLimit, targets.length)}`)
     );
   }
   if (opts.dryRun) {
@@ -220,9 +219,7 @@ export async function runTranslateUI(
       console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}: up to date`));
     } else {
       console.log(
-        chalk.yellow(
-          `🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`
-        )
+        chalk.yellow(`🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
       );
 
       for (let i = 0; i < missing.length; i += UI_CHUNK) {
@@ -302,18 +299,14 @@ export async function runTranslateUI(
       writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
       if (opts.verbose) {
         console.log(
-          chalk.gray(
-            `   ${timestamp()} - wrote ${Object.keys(flat).length} keys → ${localePath}`
-          )
+          chalk.gray(`   ${timestamp()} - wrote ${Object.keys(flat).length} keys → ${localePath}`)
         );
       }
     }
 
     const localeElapsed = Date.now() - localeStart;
     if (localeElapsed > 0) {
-      console.log(
-        chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`)
-      );
+      console.log(chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`));
     }
     langProgress.completed += 1;
   };
@@ -336,9 +329,7 @@ export async function runTranslateUI(
       console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}: up to date`));
     } else {
       console.log(
-        chalk.yellow(
-          `🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`
-        )
+        chalk.yellow(`🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
       );
 
       for (let i = 0; i < missing.length; i += UI_CHUNK) {
@@ -414,18 +405,14 @@ export async function runTranslateUI(
       writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
       if (opts.verbose) {
         console.log(
-          chalk.gray(
-            `   ${timestamp()} - wrote ${Object.keys(flat).length} keys → ${localePath}`
-          )
+          chalk.gray(`   ${timestamp()} - wrote ${Object.keys(flat).length} keys → ${localePath}`)
         );
       }
     }
 
     const localeElapsed = Date.now() - localeStart;
     if (localeElapsed > 0) {
-      console.log(
-        chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`)
-      );
+      console.log(chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`));
     }
     langProgress.completed += 1;
   };

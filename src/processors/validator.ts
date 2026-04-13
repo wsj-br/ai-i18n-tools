@@ -26,7 +26,10 @@ function loadMarkdownParser(): Promise<MarkdownParserModules> {
       import("micromark-extension-gfm"),
       import("mdast-util-gfm"),
     ]).then(([fromMarkdownMod, gfmMod, gfmMdMod]) => ({
-      fromMarkdown: fromMarkdownMod.fromMarkdown as (value: string, options?: Record<string, unknown>) => Root,
+      fromMarkdown: fromMarkdownMod.fromMarkdown as (
+        value: string,
+        options?: Record<string, unknown>
+      ) => Root,
       gfm: gfmMod.gfm as (options?: unknown) => unknown,
       gfmFromMarkdown: gfmMdMod.gfmFromMarkdown as () => unknown[],
     }));
@@ -124,7 +127,10 @@ const STRUCT_KEYS = [
 /**
  * Compare mdast structure between two Markdown strings (GFM). Returns human-readable error messages.
  */
-export async function compareMarkdownAST(sourceMd: string, translatedMd: string): Promise<string[]> {
+export async function compareMarkdownAST(
+  sourceMd: string,
+  translatedMd: string
+): Promise<string[]> {
   const a = await collectMarkdownStructure(sourceMd);
   const b = await collectMarkdownStructure(translatedMd);
   const errors: string[] = [];

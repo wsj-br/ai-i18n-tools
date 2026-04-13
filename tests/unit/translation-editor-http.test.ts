@@ -96,12 +96,18 @@ describe("createTranslationEditorApp", () => {
             byModel: Array<{ model: string; count: number }>;
             byModelLocale: Array<{ model: string; locale: string; count: number }>;
           };
-          glossary: { available: boolean; totalTerms: number; byLocale: Array<{ locale: string; count: number }> };
+          glossary: {
+            available: boolean;
+            totalTerms: number;
+            byLocale: Array<{ locale: string; count: number }>;
+          };
         };
         expect(data.cache.totalSegments).toBe(1);
         expect(data.cache.byLocale.some((r) => r.locale === "de")).toBe(true);
         expect(data.cache.byModel.some((r) => r.model === "m1")).toBe(true);
-        expect(data.cache.byModelLocale.some((r) => r.model === "m1" && r.locale === "de")).toBe(true);
+        expect(data.cache.byModelLocale.some((r) => r.model === "m1" && r.locale === "de")).toBe(
+          true
+        );
         expect(data.uiStrings.available).toBe(true);
         expect(data.uiStrings.totalEntries).toBe(2);
         const deUi = data.uiStrings.byLocale.find((x) => x.locale === "de");
@@ -110,7 +116,9 @@ describe("createTranslationEditorApp", () => {
           { model: "(unknown)", count: 1 },
           { model: "model-a", count: 1 },
         ]);
-        const mLocArr = [...data.uiStrings.byModelLocale].sort((a, b) => a.model.localeCompare(b.model));
+        const mLocArr = [...data.uiStrings.byModelLocale].sort((a, b) =>
+          a.model.localeCompare(b.model)
+        );
         expect(mLocArr).toEqual([
           { model: "(unknown)", locale: "fr", count: 1 },
           { model: "model-a", locale: "de", count: 1 },
