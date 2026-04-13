@@ -2,16 +2,18 @@
   "b4af1a76": {
     "source": "AI-i18n-tools: Next.js example app",
     "translated": {
-      "es": "AI-i18n-tools: Ejemplo de aplicación Next.js",
-      "pt-BR": "AI-i18n-tools: Aplicativo de exemplo Next.js",
-      "de": "AI-i18n-tools: Next.js Beispiel-App",
-      "fr": "AI-i18n-tools : Exemple d'application Next.js"
+      "pt-BR": "ai-i18n-tools: Aplicativo de exemplo Next.js",
+      "fr": "ai-i18n-tools : Application exemple Next.js",
+      "de": "ai-i18n-tools: Next.js-Beispielanwendung",
+      "es": "ai-i18n-tools: Aplicación de ejemplo Next.js",
+      "ar": "ai-i18n-tools: تطبيق Next.js نموذجي"
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -23,16 +25,18 @@
   "cbf41347": {
     "source": "Hello World!!",
     "translated": {
-      "es": "¡Hola Mundo!!",
       "pt-BR": "Olá Mundo!!",
+      "fr": "Bonjour le monde !!",
       "de": "Hallo Welt!!",
-      "fr": "Bonjour le monde !!"
+      "es": "¡Hola mundo!",
+      "ar": "مرحباً بالعالم!!"
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -44,16 +48,18 @@
   "da0d36f0": {
     "source": "This line will be translated to multiple languages.",
     "translated": {
-      "es": "Esta línea se traducirá a varios idiomas.",
       "pt-BR": "Esta linha será traduzida para vários idiomas.",
+      "fr": "Cette ligne sera traduite dans plusieurs langues.",
       "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
-      "fr": "Cette ligne sera traduite en plusieurs langues."
+      "es": "Esta línea se traducirá a varios idiomas.",
+      "ar": "سيتم ترجمة هذا السطر إلى لغات متعددة."
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -65,16 +71,18 @@
   "5a8f8558": {
     "source": "This is line number {{number}}",
     "translated": {
+      "pt-BR": "Este é o número da linha {{number}}",
+      "fr": "Ceci est la ligne numéro {{number}}",
+      "de": "Dies ist die Zeilennummer {{number}}",
       "es": "Esta es la línea número {{number}}",
-      "pt-BR": "Esta é a linha número {{number}}",
-      "de": "Das ist Zeile Nummer {{number}}",
-      "fr": "Ceci est la ligne numéro {{number}}"
+      "ar": "هذا هو السطر رقم {{number}}"
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -86,16 +94,18 @@
   "6d13d00f": {
     "source": "Translation demo illustration",
     "translated": {
-      "es": "Ilustración de demostración de traducción",
       "pt-BR": "Ilustração de demonstração de tradução",
-      "de": "Übersetzungs-Demo-Illustration",
-      "fr": "Illustration de démonstration de traduction"
+      "fr": "Illustration de démonstration de traduction",
+      "de": "Übersichtsdemo zur Übersetzung",
+      "es": "Ilustración de demostración de traducción",
+      "ar": "رسم توضيحي لعرض الترجمة"
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -107,16 +117,18 @@
   "85e37a04": {
     "source": "ai-i18n-tools is translating the texts contained within this SVG ilustration.",
     "translated": {
-      "es": "ai-i18n-tools está traduciendo los textos contenidos en esta ilustración SVG.",
       "pt-BR": "ai-i18n-tools está traduzindo os textos contidos nesta ilustração SVG.",
-      "de": "ai-i18n-tools übersetzt die Texte in dieser SVG-Illustration.",
-      "fr": "ai-i18n-tools traduit les textes contenus dans cette illustration SVG."
+      "fr": "ai-i18n-tools traduit les textes contenus dans cette illustration SVG.",
+      "de": "ai-i18n-tools übersetzt die in dieser SVG-Illustration enthaltenen Texte.",
+      "es": "ai-i18n-tools está traduciendo los textos contenidos en esta ilustración SVG.",
+      "ar": "يقوم ai-i18n-tools بترجمة النصوص الموجودة داخل هذا الرسم التوضيحي SVG."
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
@@ -128,16 +140,18 @@
   "e75d0156": {
     "source": "Example Next.js application demonstrating ai-i18n-tools",
     "translated": {
-      "es": "Ejemplo de aplicación Next.js que demuestra ai-i18n-tools",
-      "pt-BR": "Aplicativo de exemplo Next.js demonstrando ai-i18n-tools",
-      "de": "Beispiel Next.js-Anwendung, die ai-i18n-tools demonstriert",
-      "fr": "Exemple d'application Next.js démontrant ai-i18n-tools"
+      "pt-BR": "Aplicativo exemplo Next.js demonstrando ai-i18n-tools",
+      "fr": "Exemple d'application Next.js illustrant ai-i18n-tools",
+      "de": "Beispielanwendung mit Next.js, die ai-i18n-tools demonstriert",
+      "es": "Aplicación de ejemplo de Next.js que demuestra ai-i18n-tools",
+      "ar": "تطبيق Next.js نموذجي يوضح ai-i18n-tools"
     },
     "models": {
-      "es": "openai/gpt-4o-mini",
-      "pt-BR": "openai/gpt-4o-mini",
-      "de": "openai/gpt-4o-mini",
-      "fr": "openai/gpt-4o-mini"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {

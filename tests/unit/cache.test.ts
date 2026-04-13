@@ -18,6 +18,9 @@ describe("TranslationCache", () => {
     });
     const t = await cache.getSegmentAsync(h, "de");
     expect(t).toBe("hallo welt");
+    const det = cache.getSegmentDetails(h, "de");
+    expect(det?.text).toBe("hallo welt");
+    expect(det?.model).toBe("test/model");
     cache.close();
   });
 

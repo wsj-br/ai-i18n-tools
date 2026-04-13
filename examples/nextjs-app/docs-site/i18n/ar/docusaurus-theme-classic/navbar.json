@@ -1,0 +1,10 @@
+{
+  "title": {
+    "message": "ai-i18n-tools",
+    "description": "The title in the navbar"
+  },
+  "item.label.Documentation": {
+    "message": "التوثيق",
+    "description": "Navbar item with label Documentation"
+  }
+}

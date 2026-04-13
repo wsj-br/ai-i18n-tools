@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:16.782Z'
-source_file_mtime: '2026-04-13T00:12:20.078Z'
-source_file_hash: e18e8298ff645bc6b54dc44e33f5afcd538eef92699118fc92ccc8746d207cc3
-translation_language: hi
-source_file_path: README.md
----
 # ai-i18n-tools
 
 CLI और प्रोग्रामेटिक टूलकिट जो JavaScript/TypeScript अनुप्रयोगों और दस्तावेज़ साइटों का अंतर्राष्ट्रीयकरण करता है। UI स्ट्रिंग्स को निकालता है, उन्हें OpenRouter के माध्यम से LLMs के साथ अनुवाद करता है, और i18next के लिए स्थानीयकृत JSON फ़ाइलें उत्पन्न करता है, साथ ही मार्कडाउन, Docusaurus JSON, और ( `translate-svg` के माध्यम से) स्वतंत्र SVG संपत्तियों के लिए पाइपलाइनों को भी बनाता है।
@@ -152,8 +145,8 @@ ai-i18n-tools glossary-generate                     Create empty glossary CSV te
 
 ## दस्तावेज़ीकरण
 
-- [शुरुआत करना](GETTING_STARTED.hi.md) - दोनों कार्यप्रवाहों के लिए पूर्ण सेटअप गाइड, सभी CLI फ्लैग, और कॉन्फ़िग फ़ील्ड संदर्भ।
-- [पैकेज अवलोकन](PACKAGE_OVERVIEW.hi.md) - आर्किटेक्चर, आंतरिक, प्रोग्रामेटिक API, और एक्सटेंशन पॉइंट्स।
+- [शुरुआत करना](docs/GETTING_STARTED.hi.md) - दोनों कार्यप्रवाहों के लिए पूर्ण सेटअप गाइड, सभी CLI फ्लैग, और कॉन्फ़िग फ़ील्ड संदर्भ।
+- [पैकेज अवलोकन](docs/PACKAGE_OVERVIEW.hi.md) - आर्किटेक्चर, आंतरिक, प्रोग्रामेटिक API, और एक्सटेंशन पॉइंट्स।
 - [AI एजेंट संदर्भ](../docs/ai-i18n-tools-context.md) - एजेंटों और रखरखाव करने वालों के लिए संक्षिप्त परियोजना संदर्भ जो कोड या कॉन्फ़िग परिवर्तन कर रहे हैं।
 
 ---

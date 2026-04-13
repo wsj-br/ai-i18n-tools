@@ -85,11 +85,16 @@ export {
   buildUIPromptMessages,
   parseBatchTranslationResponse,
   parseUIJsonArrayResponse,
+  PromptParseError,
   UIJsonArrayParseError,
+  PROMPTS,
   MARKDOWN_PRESERVATION_RULES,
   JSON_SEGMENT_CONTEXT_ADDENDUM,
   SVG_SEGMENT_CONTEXT_ADDENDUM,
   type DocumentPromptContentType,
+  type PromptStrings,
+  type DocumentPromptStrings,
+  type UIPromptStrings,
 } from "./core/prompt-builder.js";
 
 export { computeSegmentHash } from "./utils/hash.js";
@@ -135,6 +140,11 @@ export {
 } from "./processors/validator.js";
 
 export { hasInternalPlaceholderLeak } from "./processors/translation-placeholder-leaks.js";
+export {
+  protectGlossaryForcedTerms,
+  restoreGlossaryForcedTerms,
+  glossaryForcePlaceholderToken,
+} from "./processors/glossary-force-placeholders.js";
 
 export { OpenRouterClient, type OpenRouterClientOptions } from "./api/openrouter.js";
 

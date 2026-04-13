@@ -1,9 +1,40 @@
 import path from "path";
+import type { I18nDocTranslateConfig } from "../core/types.js";
+import { resolveDocumentationOutputPath, toPosix } from "../core/output-paths.js";
 
 /**
- * Adjust relative markdown links for locale-suffixed outputs in a flat output folder.
- * @param i18nPrefix - POSIX relative path from `linkRewriteDocsRoot` to output dir (e.g. `translated-docs`)
- * @param depthPrefix - e.g. `../` when output lives one level below cwd-relative anchor
+ * Normalized posix cwd-relative path for markdown source files (for set membership and comparisons).
+ * Treats backslashes as separators so Windows-style paths match on any OS.
+ */
+export function normalizeMarkdownRelPath(relPath: string): string {
+  const withSlash = toPosix(relPath).replace(/\\/g, "/");
+  return path.posix.normalize(withSlash);
+}
+
+/**
+ * Context for rewriting relative links in flat markdown outputs using resolved source paths
+ * and {@link resolveDocumentationOutputPath} as the layout source of truth.
+ */
+export interface FlatLinkRewriteContext {
+  cwd: string;
+  config: I18nDocTranslateConfig;
+  /** Normalized posix cwd-relative path of the file being translated */
+  currentSourceRelPath: string;
+  /** Normalized posix paths of all markdown sources in this documentation batch */
+  translatedMarkdownRelPaths: ReadonlySet<string>;
+}
+
+function resolveRelativeMarkdownTarget(
+  normalizedCurrentSourceRelPath: string,
+  pathTrim: string
+): string {
+  return path.posix.normalize(
+    path.posix.join(path.posix.dirname(normalizedCurrentSourceRelPath), pathTrim)
+  );
+}
+
+/**
+ * Rewrite one relative URL for flat markdown output (used by tests and {@link rewriteDocLinksForFlatOutput}).
  */
 export function rewriteOneRelativePathForFlatOutput(
   pathOnly: string,
@@ -12,8 +43,7 @@ export function rewriteOneRelativePathForFlatOutput(
   locale: string,
   i18nPrefix: string,
   depthPrefix: string,
-  sourceFileBasenames: string[],
-  currentSourceBasename: string
+  ctx: FlatLinkRewriteContext
 ): string {
   const pathTrim = pathOnly.replace(/^\.\//u, "").trim();
   if (!pathTrim) return `${pathOnly}${query}${fragment}`;
@@ -25,14 +55,31 @@ export function rewriteOneRelativePathForFlatOutput(
     return `${rest}${query}${fragment}`;
   }
 
-  const base = path.posix.basename(rest);
-  if (base === currentSourceBasename) {
+  const normalizedCurrent = normalizeMarkdownRelPath(ctx.currentSourceRelPath);
+  const resolved = resolveRelativeMarkdownTarget(normalizedCurrent, rest);
+
+  if (resolved === normalizedCurrent) {
+    const base = path.posix.basename(rest);
     return `${depthPrefix}${base}${query}${fragment}`;
   }
-  if (sourceFileBasenames.includes(base) && base !== currentSourceBasename) {
-    const ext = path.extname(base);
-    const stem = ext ? path.basename(base, ext) : base;
-    return `${stem}.${locale}${ext}${query}${fragment}`;
+
+  if (ctx.translatedMarkdownRelPaths.has(resolved)) {
+    const fromAbs = resolveDocumentationOutputPath(
+      ctx.config,
+      ctx.cwd,
+      locale,
+      normalizedCurrent,
+      "markdown"
+    );
+    const toAbs = resolveDocumentationOutputPath(
+      ctx.config,
+      ctx.cwd,
+      locale,
+      resolved,
+      "markdown"
+    );
+    const rel = toPosix(path.relative(path.dirname(fromAbs), toAbs));
+    return `${rel}${query}${fragment}`;
   }
 
   return `${depthPrefix}${rest}${query}${fragment}`;
@@ -46,8 +93,7 @@ export function rewriteDocLinksForFlatOutput(
   locale: string,
   i18nPrefix: string,
   depthPrefix: string,
-  sourceFileBasenames: string[],
-  currentSourceBasename: string
+  ctx: FlatLinkRewriteContext
 ): string {
   const rewriteUrl = (trimmed: string): string => {
     if (!trimmed) return trimmed;
@@ -73,8 +119,7 @@ export function rewriteDocLinksForFlatOutput(
       locale,
       i18nPrefix,
       depthPrefix,
-      sourceFileBasenames,
-      currentSourceBasename
+      ctx
     );
     return newPath;
   };

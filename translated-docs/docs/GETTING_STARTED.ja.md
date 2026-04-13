@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:24.850Z'
-source_file_mtime: '2026-04-13T00:09:06.223Z'
-source_file_hash: 0d67865859266b61296bab41fec3c62bd682a4d4808658743d84ee4af5ff9865
-translation_language: ja
-source_file_path: docs/GETTING_STARTED.md
----
 # ai-i18n-tools: 始めに
 
 `ai-i18n-tools` は、2つの独立した、合成可能なワークフローを提供します：
@@ -346,14 +339,14 @@ npx ai-i18n-tools init -t ui-docusaurus
 
 生成された`ai-i18n-tools.config.json`を編集します:
 
-- `sourceLocale` - ソース言語（`docusaurus.config.js`の`defaultLocale`と一致する必要があります）。  
-- `targetLocales` - ロケールコードの配列またはマニフェストへのパス。  
-- `cacheDir` - すべてのドキュメントパイプライン用の共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。  
-- `documentations` - ドキュメントブロックの配列。各ブロックにはオプションの`description`、`contentPaths`、`outputDir`、オプションの`jsonSource`、`markdownOutput`、`targetLocales`、`injectTranslationMetadata`などがあります。  
-- `documentations[].description` - メンテナ用のオプションの短いノート（このブロックがカバーする内容）。設定されると、`translate-docs`の見出し（`🌐 …: translating …`）と`status`セクションのヘッダーに表示されます。  
-- `documentations[].contentPaths` - Markdown/MDXソースディレクトリまたはファイル（JSONラベル用の`documentations[].jsonSource`も参照）。  
-- `documentations[].outputDir` - そのブロックの翻訳された出力ルート。  
-- `documentations[].markdownOutput.style` - `"nested"`（デフォルト）、`"docusaurus"`、または`"flat"`（[出力レイアウト](#output-layouts)を参照）。
+- `sourceLocale` - ソース言語（`docusaurus.config.js` 内の `defaultLocale` と一致している必要があります）。
+- `targetLocales` - ロケールコードの配列、またはマニフェストへのパス。
+- `cacheDir` - すべてのドキュメントパイプラインで共有されるSQLiteキャッシュディレクトリ（および `--write-logs` のデフォルトログディレクトリ）。
+- `documentations` - ドキュメントブロックの配列。各ブロックには、オプションの `description`、`contentPaths`、`outputDir`、オプションの `jsonSource`、`markdownOutput`、`targetLocales`、`addFrontmatter` などがあります。
+- `documentations[].description` - メンテナー向けのオプションの簡単なメモ（このブロックが何をカバーしているか）。設定されている場合、`translate-docs` の見出し（`🌐 …: translating …`）および `status` セクションのヘッダーに表示されます。
+- `documentations[].contentPaths` - Markdown/MDX ソースディレクトリまたはファイル（JSONラベルについては `documentations[].jsonSource` も参照）。
+- `documentations[].outputDir` - そのブロックの翻訳出力ルート。
+- `documentations[].markdownOutput.style` - `"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`（[出力レイアウト](#output-layouts) を参照）。
 
 ### ステップ 2: ドキュメントを翻訳する
 
@@ -572,25 +565,25 @@ docs/guide.md → i18n/guide.de.md
 
 ドキュメントパイプラインブロックの配列。`translate-docs` と `sync` プロセスのドキュメントフェーズは、**各**ブロックを順番に処理します。
 
-| フィールド                                   | 説明                                                                                                                                                                                                                     |
+| フィールド | 説明 |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `description`                                | このブロックのためのオプションの人間可読なノート（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐` ヘッドラインにプレフィックスされ、`status` セクションのヘッダーにも表示されます。                                                      |
-| `contentPaths`                               | 翻訳するためのMarkdown/MDXソース（`translate-docs`はこれらを`.md` / `.mdx`のためにスキャンします）。JSONラベルは同じブロックの`jsonSource`から来ます。                                                                                  |
-| `outputDir`                                  | このブロックの翻訳された出力のルートディレクトリ。                                                                                                                                                                      |
-| `sourceFiles`                                | ロード時に`contentPaths`にマージされるオプションのエイリアス。                                                                                                                                                          |
-| `targetLocales`                              | このブロックのためのローカルのオプションのサブセット（そうでなければルートの`targetLocales`）。有効なドキュメントロケールはブロック間の和集合です。                                                                                     |
-| `jsonSource`                                 | このブロックのためのDocusaurus JSONラベルファイルのソースディレクトリ（例：`"i18n/en"`）。                                                                                                                                       |
-| `markdownOutput.style`                       | `"nested"`（デフォルト）、`"docusaurus"`、または`"flat"`。                                                                                                                                                                        |
-| `markdownOutput.docsRoot`                    | Docusaurusレイアウトのためのソースドキュメントルート（例：`"docs"`）。                                                                                                                                                                   |
-| `markdownOutput.pathTemplate`                | カスタムMarkdown出力パス。プレースホルダー：<code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>. |
-| `markdownOutput.jsonPathTemplate`            | ラベルファイルのためのカスタムJSON出力パス。`pathTemplate`と同じプレースホルダーをサポートします。                                                                                                                                |
-| `markdownOutput.flatPreserveRelativeDir`     | `flat`スタイルの場合、ソースのサブディレクトリを保持し、同じベース名のファイルが衝突しないようにします。                                                                                                                              |
-| `markdownOutput.rewriteRelativeLinks` | 翻訳後に相対リンクを書き換えます（`flat`スタイルでは自動的に有効）。                                                                                                                                                 |
-| `markdownOutput.linkRewriteDocsRoot` | フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。通常は`"."`のままにしておきますが、翻訳されたドキュメントが異なるプロジェクトルートの下にある場合は変更します。 |
-| `markdownOutput.postProcessing` | 翻訳されたMarkdown **本文**に対するオプションの変換（YAMLフロントマターは保持されます）。セグメントの再構成とフラットリンクの書き換えの後、`injectTranslationMetadata`の前に実行されます。 |
-| `markdownOutput.postProcessing.regexAdjustments` | `{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターン（プレーン文字列はフラグ`g`を使用、または`/pattern/flags`）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポートします（参照`additional-adjustments`と同様のアイデア）。 |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 翻訳者は`start`を含む最初の行と一致する`end`行を見つけ、そのスライスを標準的な言語スイッチャーに置き換えます。リンクは翻訳されたファイルに対して相対的なパスで構築され、ラベルは設定されている場合は`uiLanguagesPath` / `ui-languages.json`から、そうでない場合は`localeDisplayNames`とロケールコードから取得されます。 |
-| `injectTranslationMetadata`                  | `true`の場合（省略時のデフォルト）、翻訳されたMarkdownファイルにはYAMLキーが含まれます：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`。スキップするには`false`に設定します。 |
+| `description` | このブロックの任意の人間が読めるメモ（翻訳には使用されません）。設定されている場合、`translate-docs` の `🌐` ヘッドラインの先頭に追加され、`status` セクションのヘッダーにも表示されます。 |
+| `contentPaths` | 翻訳対象のMarkdown/MDXソース（`translate-docs` は `.md` / `.mdx` をスキャンします）。JSONラベルは、同じブロックの `jsonSource` から取得されます。 |
+| `outputDir` | このブロックの翻訳出力のルートディレクトリ。 |
+| `sourceFiles` | 読み込み時に `contentPaths` にマージされる任意のエイリアス。 |
+| `targetLocales` | このブロックにのみ適用される任意のロケールのサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合です。 |
+| `jsonSource` | このブロック用のDocusaurus JSONラベルファイルのソースディレクトリ（例: `"i18n/en"`）。 |
+| `markdownOutput.style` | `"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`。 |
+| `markdownOutput.docsRoot` | Docusaurusレイアウト用のソースドキュメントルート（例: `"docs"`）。 |
+| `markdownOutput.pathTemplate` | カスタムマークダウン出力パス。プレースホルダー: <code>{"{outputDir}"}</code>、<code>{"{locale}"}</code>、<code>{"{LOCALE}"}</code>、<code>{"{relPath}"}</code>、<code>{"{stem}"}</code>、<code>{"{basename}"}</code>、<code>{"{extension}"}</code>、<code>{"{docsRoot}"}</code>、<code>{"{relativeToDocsRoot}"}</code>。 |
+| `markdownOutput.jsonPathTemplate` | ラベルファイルのカスタムJSON出力パス。`pathTemplate` と同じプレースホルダーをサポートします。 |
+| `markdownOutput.flatPreserveRelativeDir` | `flat` スタイルの場合、同じベース名のファイルが衝突しないようにソースのサブディレクトリを保持します。 |
+| `markdownOutput.rewriteRelativeLinks` | 翻訳後に相対リンクを書き換える（`flat` スタイルでは自動的に有効）。 |
+| `markdownOutput.linkRewriteDocsRoot` | フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。通常は `"."` のままにします。翻訳されたドキュメントが別のプロジェクトルート下にある場合を除き。 |
+| `markdownOutput.postProcessing` | 翻訳されたマークダウンの**本文**に適用する任意の変換（YAMLフロントマターは保持されます）。セグメントの再結合およびフラットリンクの書き換えの後、`addFrontmatter` の前に実行されます。 |
+| `markdownOutput.postProcessing.regexAdjustments` | `{ "description"?, "search", "replace" }` の順序付きリスト。`search` は正規表現パターン（単純な文字列はフラグ `g` を使用、または `/pattern/flags`）。`replace` は `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}` などのプレースホルダーをサポート（リファレンスの `additional-adjustments` と同じ考え方）。 |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 翻訳者は `start` を含む最初の行と一致する `end` 行を見つけ、その範囲を標準の言語スイッチャーに置き換えます。リンクは翻訳されたファイルからの相対パスで構築されます。ラベルは、設定されている場合は `uiLanguagesPath` / `ui-languages.json` から、それ以外は `localeDisplayNames` とロケールコードから取得されます。 |
+| `addFrontmatter` | `true` の場合（省略時はデフォルト）翻訳されたマークダウンファイルにYAMLキーが含まれます：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`、および少なくとも1つのセグメントにモデルメタデータがある場合、`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）。スキップする場合は `false` に設定します。 |
 
 例（フラット README パイプライン — スクリーンショットパス + オプションの言語リストラッパー）:
 
@@ -645,18 +638,18 @@ npx ai-i18n-tools glossary-generate
 
 ## CLI リファレンス
 
-| コマンド | 説明 |
-| --- | --- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き出します（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および `documentations[].injectTranslationMetadata` を含む）。`--with-translate-ignore` を指定すると、スターターの `.translate-ignore` ファイルも作成されます。 |
-| `extract` | ソース内の `t("…")` 呼び出しをスキャンし、`strings.json` を更新します。`features.extractUIStrings` が必要です。 |
-| `translate-docs …` | 各 `documentations` ブロック（`contentPaths`、オプションの `jsonSource`）に対して、Markdown/MDX および JSON を翻訳します。`-j`：並列処理するロケールの最大数。`-b`：ファイルごとの並列バッチ API 呼び出しの最大数。`--prompt-format`：バッチ送信フォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags) および [バッチプロンプトフォーマット](#batch-prompt-format) を参照してください。 |
-| `translate-svg …` | `config.svg` で設定されたスタンドアロンの SVG アセットを翻訳します（ドキュメントとは別）。ドキュメントと同様のキャッシュ方式を採用。`--no-cache` を使用して、その実行時の SQLite の読み書きをスキップ可能。`-j`、`-b`，`--force`，`--force-update`，`-p` / `--path`，`--dry-run` をサポート。 |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | UI 文字列のみを翻訳します。`--force`：既存の翻訳を無視して、すべてのエントリを再翻訳。`--dry-run`：書き込みも API 呼び出しも行いません。`-j`：並列処理するロケールの最大数。`features.translateUIStrings` が必要です。 |
-| `sync …` | 抽出（有効の場合）、次に UI 翻訳、次に `config.svg` が存在する場合は `translate-svg`、その後ドキュメントの翻訳を実行します。ただし、`--no-ui`、`--no-svg`、`--no-docs` でスキップ可能。共通フラグ：`-l`、`-p`、`--dry-run`、`-j`、`-b`（ドキュメントのバッチ処理のみ）、`--force` / `--force-update`（ドキュメントのみ、両者は排他的）。 |
-| `status` | ファイル × ロケールごとの Markdown 翻訳状況を表示します（`--locale` フィルター不可。ロケールは設定から取得）。 |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | 最初に `sync --force-update` を実行（抽出、UI、SVG、ドキュメント）、その後、古くなったセグメント行（`last_hit_at` が null またはファイルパスが空）を削除。`file_tracking` 行のうち、解決されたソースパスがディスク上に存在しないものを削除。`filepath` メタデータが存在しないファイルを指している翻訳行も削除。3つのカウント（古くなったもの、孤立した `file_tracking`、孤立した翻訳）をログ出力。`--no-backup` を指定しない限り、キャッシュディレクトリ内にタイムスタンプ付きの SQLite バックアップを作成します。 |
-| `editor [-p <port>] [--no-open]` | キャッシュ、`strings.json`、および用語集 CSV 用のローカル Web エディターを起動します。`--no-open`：デフォルトのブラウザを自動で開かない。<br><br>**注：** キャッシュエディターでエントリを編集した場合、更新されたキャッシュエントリを出力ファイルに書き戻すために `sync --force-update` を実行する必要があります。また、後でソーステキストが変更されると、新しいキャッシュキーが生成されるため、手動での編集は失われます。 |
-| `glossary-generate [-o <path>]` | 空の `glossary-user.csv` テンプレートを出力します。`-o`：出力パスを上書き（デフォルト：設定の `glossary.userGlossary`、または `glossary-user.csv`）。 |
+| コマンド                                                                   | 説明                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および `documentations[].addFrontmatter` を含みます）。`--with-translate-ignore` はスターターの `.translate-ignore` を作成します。                                                                            |
+| `extract`                                                                 | ソースをスキャンして `t("…")` コールを見つけ、`strings.json` を更新します。`features.extractUIStrings` が必要です。                                                                                                                                                                                                    |
+| `translate-docs …`                                                        | 各 `documentations` ブロック（`contentPaths`、オプションの `jsonSource`）のために markdown/MDX と JSON を翻訳します。`-j`: 最大並列ロケール; `-b`: ファイルごとの最大並列バッチ API コール。`--prompt-format`: バッチワイヤフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags) および [バッチプロンプトフォーマット](#batch-prompt-format) を参照してください。 |
+| `translate-svg …`                                                         | `config.svg` で設定されたスタンドアロンの SVG アセットを翻訳します（ドキュメントとは別）。ドキュメントと同様のキャッシュのアイデア; 実行中に SQLite の読み書きをスキップするための `--no-cache` をサポートします。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | UI 文字列のみを翻訳します。`--force`: ロケールごとにすべてのエントリを再翻訳します（既存の翻訳を無視します）。`--dry-run`: 書き込みなし、API コールなし。`-j`: 最大並列ロケール。`features.translateUIStrings` が必要です。                                                                                 |
+| `sync …`                                                                  | （有効な場合）抽出し、次に UI 翻訳を行い、`config.svg` が存在する場合は `translate-svg` を実行し、次にドキュメント翻訳を行います - `--no-ui`、`--no-svg`、または `--no-docs` でスキップしない限り。共有フラグ: `-l`、`-p`、`--dry-run`、`-j`、`-b`（ドキュメントバッチのみ）、`--force` / `--force-update`（ドキュメントのみ; ドキュメント実行時に相互排他的）。                         |
+| `status`                                                                  | ファイル × ロケールごとの markdown 翻訳ステータスを表示します（`--locale` フィルタなし; ロケールは設定から取得されます）。                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 最初に `sync --force-update` を実行します（抽出、UI、SVG、ドキュメント）、次に古いセグメント行を削除します（null `last_hit_at` / 空のファイルパス）；ディスク上に解決されたソースパスが欠けている `file_tracking` 行を削除します；欠けているファイルを指す `filepath` メタデータを持つ翻訳行を削除します。3つのカウント（古い、孤立した `file_tracking`、孤立した翻訳）をログに記録します。`--no-backup` が指定されていない限り、キャッシュディレクトリの下にタイムスタンプ付きの SQLite バックアップを作成します。 |
+| `editor [-p <port>] [--no-open]`                                          | キャッシュ、`strings.json`、および用語集 CSV のためのローカルウェブエディタを起動します。`--no-open`: デフォルトのブラウザを自動的に開かない。<br><br>**注意:** キャッシュエディタでエントリを編集した場合、更新されたキャッシュエントリで出力ファイルを書き換えるために `sync --force-update` を実行する必要があります。また、後でソーステキストが変更された場合、手動での編集は失われます。新しいキャッシュキーが生成されるためです。 |
+| `glossary-generate [-o <path>]`                                           | 空の `glossary-user.csv` テンプレートを書き込みます。`-o`: 出力パスを上書きします（デフォルト: 設定からの `glossary.userGlossary`、または `glossary-user.csv`）。                                                                                                                                                |
 
 すべてのコマンドは、非デフォルトの設定ファイルを指定するために `-c <path>` を受け入れ、詳細な出力のために `-v` を使用し、コンソール出力をログファイルに記録するために `-w` / `--write-logs [path]` を使用します（デフォルトパス：ルート `cacheDir` の下）。
 

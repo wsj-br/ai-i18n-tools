@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:21.345Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: de
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools: Paketübersicht
 
 Dieses Dokument beschreibt die interne Architektur von `ai-i18n-tools`, wie jede Komponente zusammenpasst und wie die beiden Kernarbeitsabläufe implementiert sind.

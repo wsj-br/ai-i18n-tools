@@ -13,6 +13,8 @@ Use conventional types (Added, Changed, Fixed, etc.) and short descriptions.
 
 ### Changed
 
+- Renamed documentation block config field `injectTranslationMetadata` to `addFrontmatter`.
+
 - `cleanup` now runs `sync --force-update` before pruning the SQLite cache (no interactive confirmation).
 
 ### Added

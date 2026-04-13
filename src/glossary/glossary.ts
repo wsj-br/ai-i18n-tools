@@ -39,6 +39,12 @@ function pickTranslation(row: Record<string, string>): string | undefined {
   return n["translation"]?.trim();
 }
 
+function pickForce(row: Record<string, string>): boolean {
+  const n = normalizeRow(row);
+  const v = n["force"]?.trim().toLowerCase();
+  return v === "true" || v === "yes" || v === "1";
+}
+
 /**
  * Terminology for doc translation: `strings.json` and/or CSV, with user overrides.
  */
@@ -162,8 +168,9 @@ export class Glossary {
       trim: true,
     }) as Record<string, string>[];
 
-    const starRows: Array<{ english: string; translation: string }> = [];
-    const exactRows: Array<{ english: string; locale: string; translation: string }> = [];
+    const starRows: Array<{ english: string; translation: string; force: boolean }> = [];
+    const exactRows: Array<{ english: string; locale: string; translation: string; force: boolean }> =
+      [];
 
     for (const row of rows) {
       const english = pickEnglish(row);
@@ -172,16 +179,24 @@ export class Glossary {
       if (!english || !locale || !translation) {
         continue;
       }
+      const force = pickForce(row);
       if (locale === "*") {
-        starRows.push({ english, translation });
+        starRows.push({ english, translation, force });
       } else {
-        exactRows.push({ english, locale, translation });
+        exactRows.push({ english, locale, translation, force });
       }
     }
 
     let userOverrideRowCount = 0;
 
-    for (const { english, translation } of starRows) {
+    const ensureForced = (term: GlossaryTerm): Record<string, boolean> => {
+      if (!term.forcedByLocale) {
+        term.forcedByLocale = {};
+      }
+      return term.forcedByLocale;
+    };
+
+    for (const { english, translation, force } of starRows) {
       if (targetLocales.length === 0) {
         continue;
       }
@@ -191,15 +206,17 @@ export class Glossary {
         term = { english, translations: {}, partOfSpeech: "unknown" };
         this.terms.set(key, term);
       }
+      const fm = ensureForced(term);
       for (const loc of targetLocales) {
         if (!term.translations[loc]) {
           term.translations[loc] = translation;
+          fm[loc] = force;
         }
       }
       userOverrideRowCount++;
     }
 
-    for (const { english, locale, translation } of exactRows) {
+    for (const { english, locale, translation, force } of exactRows) {
       const key = english.toLowerCase();
       let term = this.terms.get(key);
       if (!term) {
@@ -207,6 +224,7 @@ export class Glossary {
         this.terms.set(key, term);
       }
       term.translations[locale] = translation;
+      ensureForced(term)[locale] = force;
       userOverrideRowCount++;
     }
 
@@ -258,6 +276,29 @@ export class Glossary {
 
   getTranslation(englishTerm: string, locale: string): string | undefined {
     return this.terms.get(englishTerm.toLowerCase())?.translations[locale];
+  }
+
+  /**
+   * User-glossary `force` rows for this locale, longest match first (for placeholder protection).
+   */
+  getForcedTermEntriesForLocale(locale: string): Array<{
+    english: string;
+    termLower: string;
+    replacement: string;
+  }> {
+    const out: Array<{ english: string; termLower: string; replacement: string }> = [];
+    for (const [termLower, term] of this.terms.entries()) {
+      if (!term.forcedByLocale?.[locale]) {
+        continue;
+      }
+      const replacement = term.translations[locale]?.trim();
+      if (!replacement) {
+        continue;
+      }
+      out.push({ english: term.english, termLower, replacement });
+    }
+    out.sort((a, b) => b.termLower.length - a.termLower.length);
+    return out;
   }
 
   get size(): number {

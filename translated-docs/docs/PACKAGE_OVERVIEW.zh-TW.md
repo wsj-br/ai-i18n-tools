@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:27.772Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: zh-TW
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools：套件概述
 
 本文件描述了 `ai-i18n-tools` 的內部架構，各組件如何協同運作，以及兩個核心工作流程的實現方式。

@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:21.357Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: fr
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools : Vue d'ensemble du package
 
 Ce document décrit l'architecture interne de `ai-i18n-tools`, comment chaque composant s'assemble et comment les deux flux de travail principaux sont implémentés.

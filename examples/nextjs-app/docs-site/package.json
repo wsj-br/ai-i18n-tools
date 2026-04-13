@@ -9,6 +9,7 @@
     "start:fr": "docusaurus start --port 3040 --locale fr",
     "start:de": "docusaurus start --port 3040 --locale de",
     "start:pt-BR": "docusaurus start --port 3040 --locale pt-BR",
+    "start:ar": "docusaurus start --port 3040 --locale ar",
     "build": "docusaurus build",
     "serve": "docusaurus serve --port 3040",
     "preview": "docusaurus build && docusaurus serve --port 3040",

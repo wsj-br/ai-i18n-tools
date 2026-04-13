@@ -5,7 +5,7 @@ This example shows how to use `ai-i18n-tools` with a **TypeScript** [Next.js](ht
 Nested under this folder is a small **[Docusaurus](https://docusaurus.io/)** site ([`docs-site/`](./docs-site/)) with copies of the main project docs for local browsing.
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[en-GB](./README.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [pt-BR](./translated-docs/README.pt-BR.md)</small>
+<small id="lang-list">[en-GB](./README.md) · [ar](./translated-docs/README.ar.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [pt-BR](./translated-docs/README.pt-BR.md)</small>
 
 
 ## Screenshot
@@ -57,7 +57,7 @@ pnpm install
 pnpm start
 ```
 
-Open [http://localhost:3040](http://localhost:3040) (English). In **development**, Docusaurus serves **one locale at a time**: paths such as `/es/getting-started` **404** unless you run `pnpm run start:es` (or `start:fr`, `start:de`, `start:pt-BR`). After `pnpm build && pnpm serve`, all locales are available. See [`docs-site/README.md`](./docs-site/README.md).
+Open [http://localhost:3040](http://localhost:3040) (English). In **development**, Docusaurus serves **one locale at a time**: paths such as `/es/getting-started` **404** unless you run `pnpm run start:es` (or `start:fr`, `start:de`, `start:pt-BR`, `start:ar`). After `pnpm build && pnpm serve`, all locales are available. See [`docs-site/README.md`](./docs-site/README.md).
 
 ## Supported Languages
 
@@ -68,6 +68,7 @@ Open [http://localhost:3040](http://localhost:3040) (English). In **development*
 | `fr`     | French               |
 | `de`     | German               |
 | `pt-BR`  | Portuguese (Brazil)  |
+| `ar`     | Arabic               |
 
 ## Workflow
 
@@ -176,7 +177,8 @@ nextjs-app/
 │   ├── es.json
 │   ├── fr.json
 │   ├── de.json
-│   └── pt-BR.json
+│   ├── pt-BR.json
+│   └── ar.json
 ├── public/assets/            # Per-locale SVGs (translate-svg; page uses translation_demo_svg.<locale>.svg)
 │   └── translation_demo_svg.*.svg
 └── docs-site/                # Docusaurus docs (port 3040)

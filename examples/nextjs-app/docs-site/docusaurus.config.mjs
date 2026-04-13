@@ -12,7 +12,7 @@ const config = {
   trailingSlash: false,
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "es", "fr", "de", "pt-BR"],
+    locales: ["ar", "en", "es", "fr", "de", "pt-BR"],
     localeConfigs: {
       en: {
         label: "English",
@@ -48,6 +48,13 @@ const config = {
         label: "Português (Brasil)",
         direction: "ltr",
         htmlLang: "pt-BR",
+        calendar: "gregory",
+      },
+      ar: {
+        label: "العربية",
+        direction: "rtl",
+        htmlLang: "ar",
+        path: "ar",
         calendar: "gregory",
       },
     },

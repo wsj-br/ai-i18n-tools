@@ -37,7 +37,7 @@
         "docs/PACKAGE_OVERVIEW.md"
       ],
       "outputDir": "translated-docs",
-      "injectTranslationMetadata": true,
+      "addFrontmatter": false,
       "markdownOutput": {
         "style": "flat",
         "flatPreserveRelativeDir": true,

@@ -391,7 +391,7 @@ export const initConfigTemplates = {
           style: "flat",
         },
         // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
-        injectTranslationMetadata: true,
+        addFrontmatter: true,
       },
     ],
   }),
@@ -440,7 +440,7 @@ export const initConfigTemplates = {
           style: "docusaurus",
           docsRoot: "docs",
         },
-        injectTranslationMetadata: true,
+        addFrontmatter: true,
       },
     ],
   }),

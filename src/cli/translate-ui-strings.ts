@@ -8,6 +8,10 @@ import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { Glossary } from "../glossary/glossary.js";
+import {
+  protectGlossaryForcedTerms,
+  restoreGlossaryForcedTerms,
+} from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { parse as parseCsv } from "csv-parse/sync";
 
@@ -89,7 +93,7 @@ export async function runTranslateUI(
     : undefined;
 
   if (config.glossary?.autoAddUserEditedToGlossary !== false && glossaryUser && !opts.dryRun) {
-    const headers = ["Original language string", "locale", "Translation"];
+    const headers = ["Original language string", "locale", "Translation", "Force"];
     let csvRows: string[][] = [];
 
     if (fs.existsSync(glossaryUser)) {
@@ -99,6 +103,7 @@ export async function runTranslateUI(
         r["Original language string"] ?? r["en"] ?? "",
         r["locale"] ?? "",
         r["Translation"] ?? r["translation"] ?? "",
+        r["Force"] ?? r["force"] ?? "",
       ]);
     }
 
@@ -114,7 +119,7 @@ export async function runTranslateUI(
             const pairKey = `${entry.source}\0${target}`;
             const starKey = `${entry.source}\0*`;
             if (!existingPairs.has(pairKey) && !existingPairs.has(starKey)) {
-              csvRows.push([entry.source, target, translation]);
+              csvRows.push([entry.source, target, translation, ""]);
               existingPairs.add(pairKey);
               addedToGlossary++;
             }
@@ -245,14 +250,26 @@ export async function runTranslateUI(
           );
         }
 
-        const hints = glossary.findTermsInText(sources.join("\n"), locale);
-        const uiBatch = await client.translateUIBatch(sources, locale, { glossaryHints: hints });
+        const protectedSources: string[] = [];
+        const glossaryReplacementsPerString: string[][] = [];
+        for (const src of sources) {
+          const g = protectGlossaryForcedTerms(src, glossary, locale);
+          protectedSources.push(g.text);
+          glossaryReplacementsPerString.push(g.replacements);
+        }
+        const hints = glossary.findTermsInText(protectedSources.join("\n"), locale);
+        const uiBatch = await client.translateUIBatch(protectedSources, locale, {
+          glossaryHints: hints,
+        });
         inputTokens += uiBatch.usage.inputTokens;
         outputTokens += uiBatch.usage.outputTokens;
         costUsd += uiBatch.cost ?? 0;
 
         chunk.forEach(([h], idx) => {
-          const tr = uiBatch.translations[idx];
+          let tr = uiBatch.translations[idx];
+          if (tr !== undefined) {
+            tr = restoreGlossaryForcedTerms(tr, glossaryReplacementsPerString[idx] ?? []);
+          }
           if (tr !== undefined && strings[h]) {
             if (!strings[h].translated) {
               strings[h].translated = {};
@@ -349,14 +366,26 @@ export async function runTranslateUI(
           );
         }
 
-        const hints = glossary.findTermsInText(sources.join("\n"), locale);
-        const uiBatch = await client.translateUIBatch(sources, locale, { glossaryHints: hints });
+        const protectedSources: string[] = [];
+        const glossaryReplacementsPerString: string[][] = [];
+        for (const src of sources) {
+          const g = protectGlossaryForcedTerms(src, glossary, locale);
+          protectedSources.push(g.text);
+          glossaryReplacementsPerString.push(g.replacements);
+        }
+        const hints = glossary.findTermsInText(protectedSources.join("\n"), locale);
+        const uiBatch = await client.translateUIBatch(protectedSources, locale, {
+          glossaryHints: hints,
+        });
         inputTokens += uiBatch.usage.inputTokens;
         outputTokens += uiBatch.usage.outputTokens;
         costUsd += uiBatch.cost ?? 0;
 
         chunk.forEach(([h], idx) => {
-          const tr = uiBatch.translations[idx];
+          let tr = uiBatch.translations[idx];
+          if (tr !== undefined) {
+            tr = restoreGlossaryForcedTerms(tr, glossaryReplacementsPerString[idx] ?? []);
+          }
           if (tr !== undefined && strings[h]) {
             if (!strings[h].translated) {
               strings[h].translated = {};

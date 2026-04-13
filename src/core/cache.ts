@@ -90,42 +90,55 @@ export class TranslationCache {
     return computeSegmentHash(content);
   }
 
+  /**
+   * Cached segment text and model id (as stored on last successful translation).
+   * Updates `last_hit_at` / optional filepath tracking like {@link getSegment}.
+   */
+  getSegmentDetails(
+    sourceHash: string,
+    locale: string,
+    filepath?: string,
+    startLine?: number
+  ): { text: string; model: string | null } | null {
+    const selectStmt = this.db.prepare(`
+      SELECT translated_text, model FROM translations
+      WHERE source_hash = ? AND locale = ?
+    `);
+    const row = selectStmt.get(sourceHash, locale) as
+      | { translated_text: string; model: string | null }
+      | undefined;
+    if (!row) {
+      return null;
+    }
+    const updates: string[] = ["last_hit_at = datetime('now')"];
+    const params: (string | number)[] = [];
+
+    if (filepath) {
+      updates.push(
+        "filepath = CASE WHEN (filepath IS NULL OR filepath = '') THEN ? ELSE filepath END"
+      );
+      params.push(filepath);
+    }
+    if (startLine !== undefined && startLine !== null) {
+      updates.push("start_line = CASE WHEN start_line IS NULL THEN ? ELSE start_line END");
+      params.push(startLine);
+    }
+
+    params.push(sourceHash, locale);
+    this.db
+      .prepare(`UPDATE translations SET ${updates.join(", ")} WHERE source_hash = ? AND locale = ?`)
+      .run(...params);
+
+    return { text: row.translated_text, model: row.model };
+  }
+
   getSegment(
     sourceHash: string,
     locale: string,
     filepath?: string,
     startLine?: number
   ): string | null {
-    const selectStmt = this.db.prepare(`
-      SELECT translated_text FROM translations
-      WHERE source_hash = ? AND locale = ?
-    `);
-    const row = selectStmt.get(sourceHash, locale) as { translated_text: string } | undefined;
-    if (row) {
-      const updates: string[] = ["last_hit_at = datetime('now')"];
-      const params: (string | number)[] = [];
-
-      if (filepath) {
-        updates.push(
-          "filepath = CASE WHEN (filepath IS NULL OR filepath = '') THEN ? ELSE filepath END"
-        );
-        params.push(filepath);
-      }
-      if (startLine !== undefined && startLine !== null) {
-        updates.push("start_line = CASE WHEN start_line IS NULL THEN ? ELSE start_line END");
-        params.push(startLine);
-      }
-
-      params.push(sourceHash, locale);
-      this.db
-        .prepare(
-          `UPDATE translations SET ${updates.join(", ")} WHERE source_hash = ? AND locale = ?`
-        )
-        .run(...params);
-
-      return row.translated_text;
-    }
-    return null;
+    return this.getSegmentDetails(sourceHash, locale, filepath, startLine)?.text ?? null;
   }
 
   setSegment(

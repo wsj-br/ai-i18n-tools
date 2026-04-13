@@ -965,6 +965,8 @@
       const orig = r["Original language string"] ?? "";
       const loc = r.locale ?? "";
       const trn = r.Translation ?? "";
+      const forceRaw = (r.force ?? "").trim().toLowerCase();
+      const forced = forceRaw === "true" || forceRaw === "1" || forceRaw === "yes";
       const idx = r.rowIndex;
 
       const tdO = document.createElement("td");
@@ -994,6 +996,13 @@
       inpT.value = trn;
       tdT.appendChild(inpT);
 
+      const tdF = document.createElement("td");
+      const inpF = document.createElement("input");
+      inpF.type = "checkbox";
+      inpF.dataset.field = "force";
+      inpF.checked = forced;
+      tdF.appendChild(inpF);
+
       const tdA = document.createElement("td");
       const saveBtn = document.createElement("button");
       saveBtn.type = "button";
@@ -1007,7 +1016,7 @@
       delBtn.addEventListener("click", () => glDeleteRow(idx));
       tdA.append(saveBtn, delBtn);
 
-      tr.append(tdO, tdL, tdT, tdA);
+      tr.append(tdO, tdL, tdT, tdF, tdA);
       tbody.appendChild(tr);
     }
   }
@@ -1020,11 +1029,13 @@
     const orig = tr.querySelector('[data-field="orig"]').value;
     const locale = tr.querySelector('[data-field="locale"]').value;
     const translation = tr.querySelector('[data-field="tr"]').value;
+    const forceEl = tr.querySelector('[data-field="force"]');
+    const force = forceEl && forceEl.checked ? "true" : "";
     try {
       const res = await fetch(`/api/glossary-user/${rowIndex}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ original: orig, locale, translation }),
+        body: JSON.stringify({ original: orig, locale, translation, force }),
       });
       const pj = await res.json();
       if (!res.ok) throw new Error(pj.error || res.statusText);
@@ -1083,6 +1094,7 @@
       const original = document.getElementById("gl-new-original").value.trim();
       const locale = document.getElementById("gl-new-locale").value;
       const translation = document.getElementById("gl-new-translation").value;
+      const force = document.getElementById("gl-new-force").checked ? "true" : "";
       if (!original || locale === "") {
         setStatus(document.getElementById("gl-status"), "Original and locale required", false);
         return;
@@ -1090,13 +1102,14 @@
       const pr = await fetch("/api/glossary-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ original, locale, translation }),
+        body: JSON.stringify({ original, locale, translation, force }),
       });
       const pj = await pr.json();
       setStatus(document.getElementById("gl-status"), pr.ok ? "Added." : pj.error, pr.ok);
       if (pr.ok) {
         document.getElementById("gl-new-original").value = "";
         document.getElementById("gl-new-translation").value = "";
+        document.getElementById("gl-new-force").checked = false;
         await loadGlossary();
       }
     });

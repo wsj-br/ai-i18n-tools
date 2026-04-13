@@ -132,4 +132,28 @@ describe("Glossary", () => {
     expect(g.getTranslation("term", "de")).toBe("EXACT");
     expect(g.getTranslation("term", "fr")).toBe("STAR");
   });
+
+  it("user CSV force merges per locale (exact overrides star)", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-force-"));
+    const ui = path.join(dir, "ui.json");
+    fs.writeFileSync(ui, "{}", "utf8");
+    const user = path.join(dir, "user.csv");
+    fs.writeFileSync(
+      user,
+      `"Original language string","locale","Translation","Force"
+"t","*","S","true"
+"t","de","E","false"
+`,
+      "utf8"
+    );
+    try {
+      const g = new Glossary(ui, user, ["de", "fr"]);
+      expect(g.getForcedTermEntriesForLocale("de")).toEqual([]);
+      const frForced = g.getForcedTermEntriesForLocale("fr");
+      expect(frForced.length).toBe(1);
+      expect(frForced[0]!.replacement).toBe("S");
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });

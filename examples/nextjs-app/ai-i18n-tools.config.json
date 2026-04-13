@@ -1,6 +1,6 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["es", "fr", "de", "pt-BR"],
+  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -44,17 +44,26 @@
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
-      "injectTranslationMetadata": true,
+      "addFrontmatter": true,
       "markdownOutput": {
         "style": "docusaurus",
-        "docsRoot": "docs-site/docs"
+        "docsRoot": "docs-site/docs",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders in docs-site static assets",
+              "search": "screenshots/en-GB/",
+              "replace": "screenshots/${translatedLocale}/"
+            }
+          ]
+        }
       }
     },
     {
       "description": "Root README only (flat markdown output)",
       "contentPaths": ["README.md"],
       "outputDir": "translated-docs",
-      "injectTranslationMetadata": false,
+      "addFrontmatter": false,
       "markdownOutput": {
         "style": "flat",
         "postProcessing": {

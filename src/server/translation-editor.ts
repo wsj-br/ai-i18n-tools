@@ -8,6 +8,9 @@ import { TranslationCache } from "../core/cache.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 
+/** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
+const GLOSSARY_USER_HEADERS = ["Original language string", "locale", "Translation", "Force"] as const;
+
 function csvEscapeCell(s: string): string {
   if (/[",\n\r]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`;
@@ -422,7 +425,7 @@ export function createTranslationEditorApp(
   app.get("/api/glossary-user/meta", (_req, res) => {
     res.json({
       path: glossaryPath,
-      headers: ["Original language string", "locale", "Translation"],
+      headers: [...GLOSSARY_USER_HEADERS],
       available: Boolean(glossaryPath),
       targetLocales: opts.targetLocales,
       sourceLocale: opts.sourceLocale,
@@ -432,7 +435,7 @@ export function createTranslationEditorApp(
   app.get("/api/glossary-user", (_req, res) => {
     try {
       if (!glossaryPath || !fs.existsSync(glossaryPath)) {
-        res.json({ headers: ["Original language string", "locale", "Translation"], rows: [] });
+        res.json({ headers: [...GLOSSARY_USER_HEADERS], rows: [] });
         return;
       }
       const raw = fs.readFileSync(glossaryPath, "utf8");
@@ -445,9 +448,10 @@ export function createTranslationEditorApp(
         "Original language string": r["Original language string"] ?? r["en"] ?? "",
         locale: r["locale"] ?? "",
         Translation: r["Translation"] ?? r["translation"] ?? "",
+        force: r["Force"] ?? r["force"] ?? "",
       }));
       res.json({
-        headers: ["Original language string", "locale", "Translation"],
+        headers: [...GLOSSARY_USER_HEADERS],
         rows,
       });
     } catch (err) {
@@ -462,12 +466,12 @@ export function createTranslationEditorApp(
         res.status(400).json({ error: "glossary user path not configured" });
         return;
       }
-      const { original, locale, translation } = req.body as Record<string, string>;
+      const { original, locale, translation, force } = req.body as Record<string, string>;
       if (!original?.trim() || !locale?.trim() || translation === undefined) {
         res.status(400).json({ error: "Missing original, locale, or translation" });
         return;
       }
-      const headers = ["Original language string", "locale", "Translation"];
+      const headers = [...GLOSSARY_USER_HEADERS];
       let rows: string[][] = [];
       if (fs.existsSync(glossaryPath)) {
         const raw = fs.readFileSync(glossaryPath, "utf8");
@@ -479,9 +483,10 @@ export function createTranslationEditorApp(
           r["Original language string"] ?? r["en"] ?? "",
           r["locale"] ?? "",
           r["Translation"] ?? r["translation"] ?? "",
+          r["Force"] ?? r["force"] ?? "",
         ]);
       }
-      rows.push([original.trim(), locale.trim(), String(translation)]);
+      rows.push([original.trim(), locale.trim(), String(translation), force?.trim() ?? ""]);
       writeAtomicUtf8(glossaryPath, serializeGlossaryCsv(headers, rows));
       res.json({ ok: true });
     } catch (err) {
@@ -503,6 +508,7 @@ export function createTranslationEditorApp(
       r["Original language string"] ?? r["en"] ?? "",
       r["locale"] ?? "",
       r["Translation"] ?? r["translation"] ?? "",
+      r["Force"] ?? r["force"] ?? "",
     ]);
   }
 
@@ -517,18 +523,24 @@ export function createTranslationEditorApp(
         res.status(400).json({ error: "Invalid row index" });
         return;
       }
-      const { original, locale, translation } = req.body as Record<string, string>;
+      const { original, locale, translation, force } = req.body as Record<string, string>;
       if (original === undefined || locale === undefined || translation === undefined) {
         res.status(400).json({ error: "Missing original, locale, or translation" });
         return;
       }
-      const headers = ["Original language string", "locale", "Translation"];
+      const headers = [...GLOSSARY_USER_HEADERS];
       const rows = readGlossaryRows();
       if (index >= rows.length) {
         res.status(404).json({ error: "Row index out of range" });
         return;
       }
-      rows[index] = [String(original).trim(), String(locale).trim(), String(translation)];
+      const prev = rows[index]!;
+      rows[index] = [
+        String(original).trim(),
+        String(locale).trim(),
+        String(translation),
+        force !== undefined ? String(force).trim() : prev[3] ?? "",
+      ];
       writeAtomicUtf8(glossaryPath, serializeGlossaryCsv(headers, rows));
       res.json({ ok: true });
     } catch (err) {
@@ -548,7 +560,7 @@ export function createTranslationEditorApp(
         res.status(400).json({ error: "Invalid row index" });
         return;
       }
-      const headers = ["Original language string", "locale", "Translation"];
+      const headers = [...GLOSSARY_USER_HEADERS];
       const rows = readGlossaryRows();
       if (index >= rows.length) {
         res.status(404).json({ error: "Row index out of range" });

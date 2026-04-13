@@ -1,12 +1,12 @@
 # Ejemplo de aplicación Next.js
 
-Este ejemplo muestra cómo usar `ai-i18n-tools` con una aplicación **TypeScript** [Next.js](https://nextjs.org/) y **pnpm**. La interfaz de usuario coincide con el [ejemplo de aplicación de consola](../../console-app/), utilizando las mismas claves de cadena y un selector de configuración regional impulsado por `locales/ui-languages.json` (la configuración regional de origen `en-GB` primero, seguida de los idiomas de destino de traducción).
+Este ejemplo muestra cómo usar `ai-i18n-tools` con una aplicación **TypeScript** [Next.js](https://nextjs.org/) y **pnpm**. La interfaz coincide con el [ejemplo de aplicación de consola](../../console-app/), utilizando las mismas claves de cadena y un selector de configuración regional controlado por `locales/ui-languages.json` (la configuración regional de origen `en-GB` primero, seguida de los objetivos de traducción).
 
 Anidado bajo esta carpeta hay un pequeño sitio **[Docusaurus](https://docusaurus.io/)** ([`docs-site/`](../docs-site/)) con copias de la documentación principal del proyecto para navegación local.
 
 <small>**Leer en otros idiomas:** </small>
 
-<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+<small id="lang-list">[en-GB](../README.md) · [ar](./README.ar.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
 
 ## Captura de pantalla
 
@@ -20,13 +20,13 @@ Anidado bajo esta carpeta hay un pequeño sitio **[Docusaurus](https://docusauru
 
 ## Instalación
 
-Desde la **raíz del repositorio**, ejecuta:
+Desde la **raíz del repositorio**, ejecute:
 
 ```bash
 pnpm install
 ```
 
-El archivo `pnpm-workspace.yaml` raíz incluye la biblioteca y este ejemplo, por lo que pnpm enlaza `ai-i18n-tools` mediante `"ai-i18n-tools": "workspace:^"` en `package.json`. No se necesita ningún paso de compilación o enlace por separado: después de cambiar las fuentes de la biblioteca, ejecuta `pnpm run build` en la raíz del repositorio y el ejemplo tomará automáticamente el `dist/` actualizado.
+El archivo raíz `pnpm-workspace.yaml` incluye la biblioteca y este ejemplo, por lo que pnpm enlaza `ai-i18n-tools` mediante `"ai-i18n-tools": "workspace:^"` en `package.json`. No se necesita un paso separado de compilación o enlace: después de cambiar las fuentes de la biblioteca, ejecute `pnpm run build` en la raíz del repositorio y el ejemplo recogerá automáticamente la carpeta `dist/` actualizada.
 
 ## Uso
 
@@ -38,16 +38,16 @@ Servidor de desarrollo:
 pnpm dev
 ```
 
-Compilación de producción e inicio:
+Compilación para producción e inicio:
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-Abre [http://localhost:3030](http://localhost:3030). Usa el menú desplegable **Configuración regional** para cambiar el idioma (ID de configuración regional / nombre en inglés / etiqueta nativa).
+Abra [http://localhost:3030](http://localhost:3030). Use el menú desplegable **Locale** para cambiar de idioma (ID de configuración regional / nombre en inglés / etiqueta nativa).
 
-La página de inicio también muestra un **SVG de demostración** en la parte inferior. La URL de la imagen sigue `public/assets/translation_demo_svg.<locale>.svg` (diseño plano del bloque `svg` en `ai-i18n-tools.config.json`). Después de ejecutar `translate-svg`, cada archivo de configuración regional contiene el contenido traducido `<text>`, `<title>` y `<desc>`; hasta entonces, las copias confirmadas pueden parecer idénticas en todas las configuraciones regionales.
+La página de inicio también muestra un **demo SVG** en la parte inferior. La URL de la imagen sigue el patrón `public/assets/translation_demo_svg.<locale>.svg` (estructura plana desde el bloque `svg` en `ai-i18n-tools.config.json`). Después de ejecutar `translate-svg`, cada archivo de configuración regional contiene contenido traducido en las etiquetas `<text>`, `<title>` y `<desc>`; hasta entonces, las copias confirmadas pueden parecer idénticas entre configuraciones regionales.
 
 ### Sitio de documentación (puerto 3040)
 
@@ -57,23 +57,24 @@ pnpm install
 pnpm start
 ```
 
-Abre [http://localhost:3040](http://localhost:3040) (inglés). En **desarrollo**, Docusaurus sirve **una configuración regional a la vez**: rutas como `/es/getting-started` devuelven **404** a menos que ejecutes `pnpm run start:es` (o `start:fr`, `start:de`, `start:pt-BR`). Después de `pnpm build && pnpm serve`, todas las configuraciones regionales están disponibles. Consulta [`docs-site/README.md`](../README.md).
+Abra [http://localhost:3040](http://localhost:3040) (inglés). En **desarrollo**, Docusaurus sirve **una configuración regional a la vez**: rutas como `/es/getting-started` dan error **404** a menos que ejecute `pnpm run start:es` (o `start:fr`, `start:de`, `start:pt-BR`, `start:ar`). Después de `pnpm build && pnpm serve`, todas las configuraciones regionales están disponibles. Consulte [`docs-site/README.md`](../docs-site/README.md).
 
-## Idiomas admitidos
+## Idiomas soportados
 
-| Código   | Idioma                |
-| -------- | --------------------- |
-| `en-GB`  | Inglés (RU) predeterminado |
-| `es`     | Español               |
+| Código     | Idioma             |
+| -------- | -------------------- |
+| `en-GB`  | Inglés (Reino Unido) por defecto |
+| `es`     | Español              |
 | `fr`     | Francés               |
-| `de`     | Alemán                |
-| `pt-BR`  | Portugués (Brasil)    |
+| `de`     | Alemán               |
+| `pt-BR`  | Portugués (Brasil)  |
+| `ar`     | Árabe               |
 
 ## Flujo de trabajo
 
-### 1. Extraer cadenas de UI
+### 1. Extraer cadenas de la interfaz de usuario
 
-Escanea `src/` en busca de llamadas a `t()` y actualiza `locales/strings.json`:
+Analiza `src/` en busca de llamadas a `t()` y actualiza `locales/strings.json`:
 
 ```bash
 pnpm run i18n:extract
@@ -81,7 +82,7 @@ pnpm run i18n:extract
 
 ### 2. Traducir
 
-Establece `OPENROUTER_API_KEY`, luego ejecuta los scripts de traducción:
+Establece `OPENROUTER_API_KEY` y luego ejecuta los scripts de traducción:
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
@@ -106,40 +107,40 @@ ai-i18n-tools sync
 
 Los pasos se ejecutan en orden:
 
-1. **`ai-i18n-tools extract`** — extrae cadenas de UI y actualiza `locales/strings.json`.
-2. **`ai-i18n-tools translate-ui`** — escribe JSON de locales planos bajo `public/locales/` desde `locales/strings.json`.
-3. **`ai-i18n-tools translate-svg`** — traduce activos SVG de `images/` a `public/assets/` según el bloque `svg` en `ai-i18n-tools.config.json` (este ejemplo utiliza nombres planos: `translation_demo_svg.<locale>.svg`).
-4. **`ai-i18n-tools translate-docs`** — traduce markdown de Docusaurus bajo `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (ver **Flujo de trabajo 2** en `docs/GETTING_STARTED.md` en la raíz del repositorio).
+1. **`ai-i18n-tools extract`** — extrae las cadenas de la interfaz de usuario y actualiza `locales/strings.json`.
+2. **`ai-i18n-tools translate-ui`** — genera archivos JSON planos por idioma en `public/locales/` a partir de `locales/strings.json`.
+3. **`ai-i18n-tools translate-svg`** — traduce los recursos SVG desde `images/` a `public/assets/` según el bloque `svg` en `ai-i18n-tools.config.json` (este ejemplo usa nombres planos: `translation_demo_svg.<locale>.svg`).
+4. **`ai-i18n-tools translate-docs`** — traduce el contenido markdown de Docusaurus en `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (véase **Flujo de trabajo 2** en `docs/GETTING_STARTED.md` en la raíz del repositorio).
 
-Puedes ejecutar cualquier paso individualmente (por ejemplo, `ai-i18n-tools translate-svg`) cuando solo han cambiado las fuentes para ese flujo de trabajo.
+Puedes ejecutar cualquier paso individualmente (por ejemplo, `ai-i18n-tools translate-svg`) cuando solo hayan cambiado las fuentes correspondientes a ese flujo de trabajo.
 
-Si los registros muestran muchos saltos y pocas escrituras, la herramienta está reutilizando **salidas existentes** y la **caché de SQLite** en `.translation-cache/`. Para forzar la retraducción, pasa `--force` o `--force-update` en el comando relevante donde sea compatible, o ejecuta `pnpm run i18n:clean` y traduce de nuevo.
+Si los registros muestran muchos saltos y pocas escrituras, la herramienta está reutilizando **salidas existentes** y la **caché SQLite** en `.translation-cache/`. Para forzar la traducción nuevamente, pasa `--force` o `--force-update` al comando correspondiente cuando sea compatible, o ejecuta `pnpm run i18n:clean` y traduce de nuevo.
 
-Este ejemplo de configuración incluye `svg`, por lo que **`i18n:sync` ejecuta el mismo paso SVG que `translate-svg`**. Aún puedes llamar a `ai-i18n-tools translate-svg` solo para ese paso, o usar `pnpm run i18n:translate` para el orden fijo UI → SVG → docs **sin** ejecutar **extract**.
+Esta configuración de ejemplo incluye `svg`, por lo que **`i18n:sync` ejecuta el mismo paso de SVG que `translate-svg`**. Aún puedes llamar a `ai-i18n-tools translate-svg` por separado para ese paso, o usar `pnpm run i18n:translate` para el orden fijo UI → SVG → documentos **sin** ejecutar **extract**.
 
-### 3. Limpiar caché y retraducir
+### 3. Limpiar la caché y volver a traducir
 
-Después de cambios en la UI o documentación, algunas entradas de caché pueden estar obsoletas u huérfanas (por ejemplo, si se eliminó o renombró un documento). `i18n:cleanup` ejecuta `sync --force-update` primero, luego elimina entradas obsoletas:
+Después de cambios en la interfaz de usuario o en la documentación, algunas entradas de la caché pueden estar obsoletas o huérfanas (por ejemplo, si un documento fue eliminado o renombrado). `i18n:cleanup` ejecuta primero `sync --force-update`, y luego elimina las entradas obsoletas:
 
 ```bash
 pnpm run i18n:cleanup
 ```
 
-Para forzar la retraducción de la UI, documentos o SVGs, usa `--force`. Esto ignora la caché y retraduce utilizando modelos de IA.
+Para forzar la traducción nuevamente de la interfaz de usuario, documentos o SVGs, utiliza `--force`. Esto ignora la caché y vuelve a traducir usando modelos de IA.
 
-Para retraducir todo el proyecto (UI, documentos, SVGs):
+Para volver a traducir todo el proyecto (UI, documentos, SVGs):
 
 ```bash
 pnpm run i18n:sync --force
 ```
 
-Para retraducir un solo locale:
+Para volver a traducir un solo idioma:
 
 ```bash
 pnpm run i18n:sync --force --locale pt-BR
 ```
 
-Para retraducir solo las cadenas de UI para un locale específico:
+Para volver a traducir solo las cadenas de interfaz de usuario de un idioma específico:
 
 ```bash
 ai-i18n-tools translate-ui --force --locale pt-BR
@@ -147,15 +148,15 @@ ai-i18n-tools translate-ui --force --locale pt-BR
 
 ### 4. Ediciones manuales (Editor de caché)
 
-Puedes lanzar una interfaz web local para revisar y editar manualmente las traducciones en la caché, cadenas de la interfaz de usuario y glosario:
+Puede iniciar una interfaz de usuario web local para revisar y editar manualmente las traducciones en la caché, las cadenas de la interfaz de usuario y el glosario:
 
 ```bash
 pnpm run i18n:editor
 ```
 
-> **Importante:** Si editas manualmente una entrada en el editor de caché, necesitas ejecutar un `sync --force-update` (por ejemplo, `pnpm run i18n:sync --force-update`) para reescribir los archivos planos generados o archivos markdown con la traducción actualizada. También ten en cuenta que si el texto fuente original cambia en el futuro, tu edición manual se perderá ya que la herramienta genera un nuevo hash para el nuevo texto fuente.
+> **Importante:** Si edita manualmente una entrada en el editor de caché, debe ejecutar un `sync --force-update` (por ejemplo, `pnpm run i18n:sync --force-update`) para reescribir los archivos planos generados o los archivos markdown con la traducción actualizada. Tenga en cuenta también que si el texto fuente original cambia en el futuro, su edición manual se perderá, ya que la herramienta genera un nuevo hash para el nuevo texto fuente.
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
 nextjs-app/
@@ -176,7 +177,8 @@ nextjs-app/
 │   ├── es.json
 │   ├── fr.json
 │   ├── de.json
-│   └── pt-BR.json
+│   ├── pt-BR.json
+│   └── ar.json
 ├── public/assets/            # Per-locale SVGs (translate-svg; page uses translation_demo_svg.<locale>.svg)
 │   └── translation_demo_svg.*.svg
 └── docs-site/                # Docusaurus docs (port 3040)
@@ -184,6 +186,6 @@ nextjs-app/
     └── i18n/                 # Translated docs (Docusaurus layout; committed in git)
 ```
 
-Las fuentes de documentos en inglés bajo `docs-site/docs/` pueden ser sincronizadas desde la raíz del repositorio con `pnpm run sync-docs`, lo que añade anclas de encabezado `{#slug}` y refleja `docusaurus write-heading-ids`; consulta el encabezado del script en `scripts/sync-docs-to-nextjs-example.mjs`.
+Las fuentes en inglés bajo `docs-site/docs/` pueden sincronizarse desde la raíz del repositorio con `pnpm run sync-docs`, lo cual añade anclajes de encabezado `{#slug}` y replica el comportamiento de `docusaurus write-heading-ids`; consulte el encabezado del script en `scripts/sync-docs-to-nextjs-example.mjs`.
 
-Las cadenas de interfaz de usuario traducidas, SVGs de demostración y páginas de Docusaurus ya están comprometidas bajo `public/locales/`, `public/assets/`, `locales/strings.json`, y `docs-site/i18n/`. Después de cambiar las fuentes y ejecutar `i18n:translate`, reinicia los servidores de desarrollo de Next.js y Docusaurus según sea necesario; los locales de Docusaurus están listados en `docs-site/docusaurus.config.js`.
+Las cadenas de interfaz de usuario traducidas, los SVG de demostración y las páginas de Docusaurus ya están confirmadas en `public/locales/`, `public/assets/`, `locales/strings.json` y `docs-site/i18n/`. Después de modificar las fuentes y ejecutar `i18n:translate`, reinicie los servidores de desarrollo de Next.js y Docusaurus según sea necesario; los idiomas de Docusaurus se enumeran en `docs-site/docusaurus.config.js`.

@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:26.400Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: ja
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools: パッケージ概要
 
 このドキュメントでは、`ai-i18n-tools` の内部アーキテクチャ、各コンポーネントの連携方法、および2つのコアワークフローの実装について説明します。

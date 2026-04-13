@@ -1,4 +1,5 @@
 import {
+  applyDirection,
   defaultI18nInitOptions,
   makeLoadLocale,
   wrapI18nWithKeyTrim,
@@ -13,6 +14,16 @@ const i18nForHelpers = i18n as unknown as I18nWithResources;
 
 void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
 wrapI18nWithKeyTrim(i18nForHelpers);
+
+function applyDocumentLocale(lng: string) {
+  applyDirection(lng);
+  if (typeof document !== "undefined" && document.documentElement) {
+    document.documentElement.setAttribute("lang", lng);
+  }
+}
+
+i18n.on("languageChanged", applyDocumentLocale);
+applyDocumentLocale(i18n.language);
 
 function makeFetchLoader(localeCode: string) {
   return async () => {
@@ -29,6 +40,7 @@ const localeLoaders = {
   fr: makeFetchLoader("fr"),
   de: makeFetchLoader("de"),
   "pt-BR": makeFetchLoader("pt-BR"),
+  ar: makeFetchLoader("ar"),
 };
 
 export const loadLocale = makeLoadLocale(

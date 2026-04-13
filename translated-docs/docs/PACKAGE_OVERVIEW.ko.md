@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:26.406Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: ko
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools: 패키지 개요
 
 이 문서는 `ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 상호 연결 방식 및 두 가지 핵심 워크플로우의 구현 방법을 설명합니다.

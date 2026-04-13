@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:22.023Z'
-source_file_mtime: '2026-04-13T00:12:20.078Z'
-source_file_hash: e18e8298ff645bc6b54dc44e33f5afcd538eef92699118fc92ccc8746d207cc3
-translation_language: zh-CN
-source_file_path: README.md
----
 # ai-i18n-tools
 
 用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 及编程工具包。提取 UI 字符串，通过 OpenRouter 使用 LLM 进行翻译，并为 i18next 生成支持多语言的 JSON 文件，同时提供针对 Markdown、Docusaurus JSON 以及（通过 `translate-svg`）独立 SVG 资源的处理流程。
@@ -152,8 +145,8 @@ ai-i18n-tools glossary-generate                     Create empty glossary CSV te
 
 ## 文档
 
-- [入门指南](GETTING_STARTED.zh-CN.md) - 包含两种工作流程的完整设置指南、所有 CLI 标志和配置字段参考。
-- [包概述](PACKAGE_OVERVIEW.zh-CN.md) - 架构、内部结构、编程 API 和扩展点。
+- [入门指南](docs/GETTING_STARTED.zh-CN.md) - 包含两种工作流程的完整设置指南、所有 CLI 标志和配置字段参考。
+- [包概述](docs/PACKAGE_OVERVIEW.zh-CN.md) - 架构、内部结构、编程 API 和扩展点。
 - [AI 代理上下文](../docs/ai-i18n-tools-context.md) - 为进行代码或配置更改的代理和维护者提供简明的项目上下文。
 
 ---

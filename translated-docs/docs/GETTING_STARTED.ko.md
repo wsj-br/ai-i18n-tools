@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:24.858Z'
-source_file_mtime: '2026-04-13T00:09:06.223Z'
-source_file_hash: 0d67865859266b61296bab41fec3c62bd682a4d4808658743d84ee4af5ff9865
-translation_language: ko
-source_file_path: docs/GETTING_STARTED.md
----
 # ai-i18n-tools: 시작하기
 
 `ai-i18n-tools`는 두 가지 독립적이면서도 조합 가능한 워크플로우를 제공합니다:
@@ -346,14 +339,14 @@ npx ai-i18n-tools init -t ui-docusaurus
 
 생성된 `ai-i18n-tools.config.json`을 편집합니다:
 
-- `sourceLocale` - 소스 언어 (필수로 `docusaurus.config.js`의 `defaultLocale`과 일치해야 함).
+- `sourceLocale` - 원본 언어 ( `docusaurus.config.js` 의 `defaultLocale` 과 일치해야 함).
 - `targetLocales` - 로케일 코드 배열 또는 매니페스트 경로.
-- `cacheDir` - 모든 문서 파이프라인에서 공유하는 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리).
-- `documentations` - 문서 블록들의 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, `targetLocales`, `injectTranslationMetadata` 등을 가집니다.
-- `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모(이 블록의 범위). 설정 시 `translate-docs` 헤드라인(`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됩니다.
-- `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일(`documentations[].jsonSource`는 JSON 레이블 참조).
+- `cacheDir` - 모든 문서 파이프라인에 공유되는 SQLite 캐시 디렉터리 (`--write-logs` 의 기본 로그 디렉터리).
+- `documentations` - 문서 블록들의 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, `targetLocales`, `addFrontmatter` 등이 포함될 수 있음.
+- `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모 (해당 블록의 범위). 설정된 경우 `translate-docs` 헤드라인(`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됨.
+- `documentations[].contentPaths` - 마크다운/MDX 원본 디렉터리 또는 파일 (JSON 레이블의 경우 `documentations[].jsonSource` 참조).
 - `documentations[].outputDir` - 해당 블록의 번역된 출력 루트.
-- `documentations[].markdownOutput.style` - `"nested"` (기본값), `"docusaurus"`, 또는 `"flat"` ([출력 레이아웃](#output-layouts) 참조).
+- `documentations[].markdownOutput.style` - `"nested"` (기본값), `"docusaurus"`, 또는 `"flat"` ( [출력 레이아웃](#output-layouts) 참조).
 
 ### 2단계: 문서 번역
 
@@ -574,23 +567,23 @@ docs/guide.md → i18n/guide.de.md
 
 | 필드 | 설명 |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `description` | 이 블록에 대한 선택적 인간이 읽을 수 있는 메모(번역에는 사용되지 않음). 설정된 경우 `translate-docs`의 `🌐` 헤드라인 앞에 접두사로 표시되며, `status` 섹션 헤더에도 표시됨. |
-| `contentPaths` | 번역할 마크다운/MDX 소스(`translate-docs`가 `.md` / `.mdx` 파일을 스캔함). JSON 레이블은 동일한 블록의 `jsonSource`에서 가져옴. |
+| `description` | 이 블록에 대한 선택적 인간이 읽을 수 있는 메모(번역에는 사용되지 않음). 설정된 경우 `translate-docs`의 `🌐` 헤드라인 앞에 표시되며, `status` 섹션 헤더에도 표시됨. |
+| `contentPaths` | 번역할 Markdown/MDX 소스(`translate-docs`가 `.md` / `.mdx` 파일을 스캔함). JSON 레이블은 동일한 블록의 `jsonSource`에서 가져옴. |
 | `outputDir` | 이 블록에 대한 번역 출력의 루트 디렉터리. |
 | `sourceFiles` | 로드 시 `contentPaths`에 병합되는 선택적 별칭. |
 | `targetLocales` | 이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록의 합집합임. |
 | `jsonSource` | 이 블록에 대한 Docusaurus JSON 레이블 파일의 소스 디렉터리(예: `"i18n/en"`). |
 | `markdownOutput.style` | `"nested"`(기본값), `"docusaurus"`, 또는 `"flat"`. |
-| `markdownOutput.docsRoot` | Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`). |
+| `markdownOutput.docsRoot` | Docusaurus 레이아웃을 위한 소스 docs 루트(예: `"docs"`). |
 | `markdownOutput.pathTemplate` | 사용자 정의 마크다운 출력 경로. 자리표시자: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>. |
-| `markdownOutput.jsonPathTemplate` | 레이블 파일에 대한 사용자 정의 JSON 출력 경로. `pathTemplate`과 동일한 자리표시자를 지원함. |
+| `markdownOutput.jsonPathTemplate` | 레이블 파일의 사용자 정의 JSON 출력 경로. `pathTemplate`과 동일한 자리표시자를 지원함. |
 | `markdownOutput.flatPreserveRelativeDir` | `flat` 스타일의 경우, 동일한 basename을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지함. |
 | `markdownOutput.rewriteRelativeLinks` | 번역 후 상대 링크를 다시 작성함(`flat` 스타일에서는 자동으로 활성화됨). |
-| `markdownOutput.linkRewriteDocsRoot` | 평면 링크 재작성 접두어를 계산할 때 사용되는 리포지터리 루트. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 둠. |
-| `markdownOutput.postProcessing` | 번역된 마크다운 **본문**에 대한 선택적 변환(YAML 프론트 매터는 보존됨). 세그먼트 재조합 및 평면 링크 재작성 후, `injectTranslationMetadata` 전에 실행됨. |
-| `markdownOutput.postProcessing.regexAdjustments` | `{ "description"?, "search", "replace" }`의 순서가 지정된 목록. `search`는 정규식 패턴임(일반 문자열은 플래그 `g` 사용, 또는 `/pattern/flags`). `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`(참조 문서의 `additional-adjustments`와 동일한 개념) 등의 자리표시자를 지원함. |
+| `markdownOutput.linkRewriteDocsRoot` | 평면 링크 재작성 접두사를 계산할 때 사용되는 리포지터리 루트. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 둠. |
+| `markdownOutput.postProcessing` | 번역된 마크다운 **본문**에 대한 선택적 변환(YAML front matter는 유지됨). 세그먼트 재조합 및 평면 링크 재작성 후, `addFrontmatter` 이전에 실행됨. |
+| `markdownOutput.postProcessing.regexAdjustments` | `{ "description"?, "search", "replace" }`의 순서 있는 목록. `search`는 정규식 패턴임(일반 문자열은 플래그 `g` 사용, 또는 `/pattern/flags`). `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`(참조 문서 `additional-adjustments`와 동일한 개념) 등의 자리표시자를 지원함. |
 | `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 번역기는 `start`를 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾은 후, 해당 범위를 표준 언어 전환기로 대체함. 링크는 번역된 파일을 기준으로 상대 경로로 생성됨; 레이블은 구성된 경우 `uiLanguagesPath` / `ui-languages.json`에서 가져오고, 그렇지 않으면 `localeDisplayNames` 및 로케일 코드에서 가져옴. |
-| `injectTranslationMetadata` | `true`일 경우(생략 시 기본값), 번역된 마크다운 파일에 YAML 키를 포함함: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`. 생략하려면 `false`로 설정함. |
+| `addFrontmatter` | `true`인 경우(생략 시 기본값), 번역된 마크다운 파일에는 YAML 키가 포함됨: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, 그리고 세그먼트 중 하나 이상에 모델 메타데이터가 있는 경우 `translation_models`(사용된 OpenRouter 모델 ID의 정렬된 목록). 생략하려면 `false`로 설정. |
 
 예시 (단순한 README 파이프라인 — 스크린샷 경로 + 선택적 언어 목록 래퍼):
 
@@ -645,18 +638,18 @@ npx ai-i18n-tools glossary-generate
 
 ## CLI 참조
 
-| 명령어                                                                   | 설명                                                                                                                                                                                                                                                                                        |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 시작 구성 파일을 작성합니다(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].injectTranslationMetadata` 포함). `--with-translate-ignore`는 시작용 `.translate-ignore` 파일을 생성합니다.                                                                            |
-| `extract`                                                                 | 소스에서 `t("…")` 호출을 스캔하고 `strings.json`을 업데이트합니다. `features.extractUIStrings`가 필요합니다.                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | 각 `documentations` 블록에 대해 마크다운/MDX 및 JSON을 번역합니다(`contentPaths`, 선택적으로 `jsonSource` 포함). `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식 (`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format) 참조. |
-| `translate-svg …`                                                         | `config.svg`에 구성된 독립형 SVG 자산을 번역합니다(문서와 별도). 문서와 동일한 캐시 개념을 사용하며, 해당 실행 시 SQLite 읽기/쓰기를 건너뛰기 위한 `--no-cache`를 지원합니다. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | UI 문자열만 번역합니다. `--force`: 기존 번역을 무시하고 로케일별로 모든 항목을 다시 번역합니다. `--dry-run`: 쓰기 작업 없음, API 호출 없음. `-j`: 최대 병렬 로케일 수. `features.translateUIStrings` 필요.                                                                                 |
-| `sync …`                                                                  | 활성화된 경우 추출(extract)을 수행한 후 UI 번역, `config.svg`가 존재하면 `translate-svg`, 그 후 문서 번역을 수행합니다. `--no-ui`, `--no-svg`, `--no-docs`로 건너뛸 수 있습니다. 공유 플래그: `-l`, `-p`, `--dry-run`, `-j`, `-b`(문서 배치 전용), `--force` / `--force-update`(문서 전용; 문서 실행 시 상호 배타적).                         |
-| `status`                                                                  | 파일 × 로케일별 마크다운 번역 상태를 표시합니다(`--locale` 필터 없음; 로케일은 구성에서 가져옴).                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 먼저 `sync --force-update`를 실행합니다(추출, UI, SVG, 문서), 그 후 오래된 세그먼트 행(null `last_hit_at` 또는 빈 filepath)을 제거하고, 디스크상에 존재하지 않는 해결된 소스 경로를 가진 `file_tracking` 행을 삭제하며, `filepath` 메타데이터가 존재하지 않는 파일을 가리키는 번역 행을 제거합니다. 세 가지 개수(오래된, 고아 `file_tracking`, 고아 번역)를 기록합니다. `--no-backup`이 없으면 캐시 디렉터리 아래에 타임스탬프가 붙은 SQLite 백업을 생성합니다. |
-| `editor [-p <port>] [--no-open]`                                          | 캐시, `strings.json`, 용어집 CSV를 위한 로컬 웹 에디터를 실행합니다. `--no-open`: 기본 브라우저를 자동으로 열지 않습니다.<br><br>**참고:** 캐시 에디터에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 작성하려면 `sync --force-update`를 실행해야 합니다. 또한 소스 텍스트가 나중에 변경되면 새로운 캐시 키가 생성되므로 수동 편집은 사라집니다. |
-| `glossary-generate [-o <path>]`                                           | 빈 `glossary-user.csv` 템플릿을 작성합니다. `-o`: 출력 경로를 재정의합니다(기본값: 구성의 `glossary.userGlossary`, 또는 `glossary-user.csv`).                                                                                                                                                |
+| 명령 | 설명 |
+| --- | --- |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 시작 구성 파일을 작성합니다(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`는 시작용 `.translate-ignore` 파일을 생성합니다. |
+| `extract` | 소스에서 `t("…")` 호출을 스캔하고 `strings.json`을 업데이트합니다. `features.extractUIStrings`가 필요합니다. |
+| `translate-docs …` | 각 `documentations` 블록에 대해 마크다운/MDX 및 JSON을 번역합니다(`contentPaths`, 선택적으로 `jsonSource` 포함). `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식 (`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format) 참조. |
+| `translate-svg …` | `config.svg`에 구성된 독립형 SVG 자산을 번역합니다(문서와 별도). 문서와 동일한 캐시 개념을 사용하며, 해당 실행 시 SQLite 읽기/쓰기를 건너뛰기 위해 `--no-cache`를 지원합니다. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`. |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | UI 문자열만 번역합니다. `--force`: 기존 번역을 무시하고 로케일별로 모든 항목을 다시 번역합니다. `--dry-run`: 쓰기 작업이나 API 호출을 수행하지 않습니다. `-j`: 최대 병렬 로케일 수. `features.translateUIStrings`가 필요합니다. |
+| `sync …` | 활성화된 경우 추출(extract)을 수행한 후 UI 번역, `config.svg`가 존재하면 `translate-svg`, 그 후 문서 번역을 수행합니다. 단, `--no-ui`, `--no-svg`, `--no-docs`로 건너뛸 수 있습니다. 공유 플래그: `-l`, `-p`, `--dry-run`, `-j`, `-b`(문서 배치에만 해당), `--force` / `--force-update`(문서에만 해당; 문서 실행 시 서로 배타적). |
+| `status` | 파일 × 로케일별 마크다운 번역 상태를 표시합니다(`--locale` 필터 없음; 로케일은 구성에서 가져옴). |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | 먼저 `sync --force-update`를 실행하고(추출, UI, SVG, 문서), 이후 오래된 세그먼트 행(null `last_hit_at` 또는 비어 있는 파일 경로)을 제거합니다. 디스크에 존재하지 않는 해결된 소스 경로를 가진 `file_tracking` 행을 삭제하고, `filepath` 메타데이터가 존재하지 않는 파일을 가리키는 번역 행을 제거합니다. 세 가지 카운트(오래된, 고아 `file_tracking`, 고아 번역)를 기록합니다. `--no-backup`이 없으면 캐시 디렉터리 아래에 타임스탬프가 포함된 SQLite 백업을 생성합니다. |
+| `editor [-p <port>] [--no-open]` | 캐시, `strings.json`, 용어집 CSV를 위한 로컬 웹 편집기를 실행합니다. `--no-open`: 기본 브라우저를 자동으로 열지 않습니다.<br><br>**참고:** 캐시 편집기에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 작성하려면 `sync --force-update`를 실행해야 합니다. 또한 나중에 소스 텍스트가 변경되면 새로운 캐시 키가 생성되므로 수동 편집 내용은 사라집니다. |
+| `glossary-generate [-o <path>]` | 빈 `glossary-user.csv` 템플릿을 작성합니다. `-o`: 출력 경로를 재정의합니다(기본값: 구성의 `glossary.userGlossary` 또는 `glossary-user.csv`). |
 
 모든 명령어는 비기본 설정 파일을 지정하기 위한 `-c <경로>`, 자세한 출력을 위한 `-v`, 그리고 콘솔 출력을 로그 파일로 복제하기 위한 `-w` / `--write-logs [경로]`를 지원합니다(기본 경로: 루트 `cacheDir` 아래).
 

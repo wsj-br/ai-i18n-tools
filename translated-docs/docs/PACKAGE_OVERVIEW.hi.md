@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:21.363Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: hi
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools: पैकेज अवलोकन
 
 यह दस्तावेज़ `ai-i18n-tools` की आंतरिक वास्तुकला का वर्णन करता है, कि प्रत्येक घटक कैसे एक साथ फिट होता है, और कैसे दो मुख्य कार्यप्रवाह लागू किए जाते हैं।

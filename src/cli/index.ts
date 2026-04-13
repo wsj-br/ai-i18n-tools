@@ -733,13 +733,78 @@ program
           ),
         ),
       );
-      console.log(sep(headers.map((_, i) => (i === 0 ? "-".repeat(colW) : "-".repeat(localeColW)))));
+      console.log(sep(headers.map((_, i) => (i === 0 ? chalk.bold("-".repeat(colW)) : chalk.bold("-".repeat(localeColW))))));
       for (const r of rows) {
         console.log(sep(r.map((c, i) => (i === 0 ? padVis(String(c), colW) : padVis(String(c), localeColW)))));
       }
+      console.log();
     };
 
-    console.log(chalk.bold.cyan("📊 Translation status (markdown)"));
+    if (config.features.translateUIStrings) {
+      const stringsPath = resolveStringsJsonPath(config, projectRoot);
+      let stringsData: Record<string, { translated?: Record<string, string> }> = {};
+      try {
+        stringsData = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as typeof stringsData;
+      } catch {
+        console.log(chalk.red("\n⚠ Could not read strings.json: " + stringsPath));
+      }
+
+      const keys = Object.keys(stringsData);
+      const total = keys.length;
+
+      if (total > 0) {
+        const uiLocales = resolveLocalesForUI(config, projectRoot);
+        const uiHeaders = ["", ...uiLocales];
+
+        const pct = (n: number) => Math.round((n / total) * 100);
+
+        const translatedRow: string[] = [chalk.bold("Translated")];
+        const missingRow: string[] = [chalk.bold("Missing")];
+        const totalRow: string[] = [chalk.bold("Total")];
+
+        for (const loc of uiLocales) {
+          const translated = keys.filter(
+            (k) => stringsData[k]?.translated?.[loc]?.trim()
+          ).length;
+          const missing = total - translated;
+
+          translatedRow.push(chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`));
+          missingRow.push(
+            missing > 0
+              ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
+              : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
+          );
+          totalRow.push(String(total));
+        }
+
+        const uiRows = [translatedRow, missingRow, totalRow];
+
+        const labelW = Math.max(12, ...uiRows.map((r) => stripAnsi(r[0]!).length));
+        const uiLocColW = Math.max(
+          4,
+          ...uiLocales.map((l) => l.length),
+          ...uiRows.flatMap((r) => r.slice(1).map((c) => stripAnsi(c).length)),
+        );
+        const uiSep = (cols: string[]) => cols.join(" | ");
+
+        console.log(chalk.bold.cyan("\n📊 UI strings status"));
+        console.log(chalk.gray(`(${stringsPath})\n`));
+        console.log(
+          uiSep(
+            uiHeaders.map((h, i) =>
+              i === 0 ? padVis(chalk.bold(h), labelW) : padVis(chalk.bold(h), uiLocColW),
+            ),
+          ),
+        );
+        console.log(uiSep(uiHeaders.map((_, i) => (i === 0 ? "-".repeat(labelW) : "-".repeat(uiLocColW)))));
+        for (const r of uiRows) {
+          console.log(uiSep(r.map((c, i) => (i === 0 ? padVis(c, labelW) : padVis(c, uiLocColW)))));
+        }
+        console.log();
+      }
+    }
+
+    console.log(chalk.bold.cyan("\n📊 Translation status (markdown)"));
     console.log(
       chalk.gray("Legend: ") +
         chalk.green("✓") +
@@ -769,8 +834,8 @@ program
         console.log(
           "\n" +
             chalk.bold(`documentations[${bi}]`) +
-            chalk.gray(`${desc} `) +
-            chalk.cyan(`(${block.outputDir})`) +
+            chalk.cyan(`${desc} `) +
+            chalk.magenta(`(${block.outputDir})`) +
             "\n",
         );
       }
@@ -800,6 +865,7 @@ program
       }
       printTable(rows);
     }
+
     cache.close();
   });
 
@@ -948,7 +1014,7 @@ program
     const out = opts.output
       ? path.resolve(cwd, opts.output)
       : path.join(projectRoot, config.glossary?.userGlossary || "glossary-user.csv");
-    const header = `"Original language string","locale","Translation"\n`;
+    const header = `"Original language string","locale","Translation","Force"\n`;
     if (fs.existsSync(out)) {
       console.error(`Refusing to overwrite existing file: ${out}`);
       process.exit(1);

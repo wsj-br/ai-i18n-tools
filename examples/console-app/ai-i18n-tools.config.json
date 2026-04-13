@@ -43,7 +43,7 @@
       "description": "Project README translated to locale-suffixed files",
       "contentPaths": ["README.md"],
       "outputDir": "translated-docs",
-      "injectTranslationMetadata": true,
+      "addFrontmatter": true,
       "markdownOutput": {
         "style": "flat",
         "postProcessing": {

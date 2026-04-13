@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:22.010Z'
-source_file_mtime: '2026-04-13T00:12:20.078Z'
-source_file_hash: e18e8298ff645bc6b54dc44e33f5afcd538eef92699118fc92ccc8746d207cc3
-translation_language: ko
-source_file_path: README.md
----
 # ai-i18n-tools
 
 JavaScript/TypeScript 애플리케이션과 문서 사이트를 국제화하기 위한 CLI 및 프로그래밍 방식 툴킷입니다. UI 문자열을 추출하고, OpenRouter를 통해 LLM으로 번역하며, i18next용 로케일 준비 JSON 파일을 생성합니다. 또한 마크다운, Docusaurus JSON 및 (`translate-svg`를 통한) 독립형 SVG 자산을 위한 파이프라인을 제공합니다.
@@ -152,8 +145,8 @@ ai-i18n-tools glossary-generate                     Create empty glossary CSV te
 
 ## 문서
 
-- [시작하기](GETTING_STARTED.ko.md) - 두 워크플로우에 대한 전체 설정 가이드, 모든 CLI 플래그 및 구성 필드 참조.
-- [패키지 개요](PACKAGE_OVERVIEW.ko.md) - 아키텍처, 내부 구조, 프로그래밍 API 및 확장 지점.
+- [시작하기](docs/GETTING_STARTED.ko.md) - 두 워크플로우에 대한 전체 설정 가이드, 모든 CLI 플래그 및 구성 필드 참조.
+- [패키지 개요](docs/PACKAGE_OVERVIEW.ko.md) - 아키텍처, 내부 구조, 프로그래밍 API 및 확장 지점.
 - [AI 에이전트 컨텍스트](../docs/ai-i18n-tools-context.md) - 코드 또는 구성 변경을 하는 에이전트 및 유지 관리자를 위한 간결한 프로젝트 컨텍스트.
 
 ---

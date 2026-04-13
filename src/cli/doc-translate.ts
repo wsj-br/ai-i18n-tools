@@ -14,12 +14,17 @@ import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
 import { SvgExtractor } from "../extractors/svg-extractor.js";
 import { PlaceholderHandler } from "../processors/placeholder-handler.js";
+import {
+  protectGlossaryForcedTerms,
+  restoreGlossaryForcedTerms,
+} from "../processors/glossary-force-placeholders.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { OpenRouterClient } from "../api/openrouter.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
 import {
   computeFlatLinkRewritePrefixes,
+  normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
 import {
@@ -107,7 +112,69 @@ export interface TranslateTotals {
   segmentsTranslated?: number;
 }
 
-type ProtectState = ReturnType<PlaceholderHandler["protectForTranslation"]>;
+type ProtectState = ReturnType<PlaceholderHandler["protectForTranslation"]> & {
+  glossaryForceReplacements?: string[];
+};
+
+function emptyMarkdownProtectShell(): Omit<
+  ReturnType<PlaceholderHandler["protectForTranslation"]>,
+  "text"
+> {
+  return {
+    openMap: [],
+    endMap: [],
+    htmlAnchors: [],
+    docusaurusHeadingIds: [],
+    urlMap: [],
+  };
+}
+
+/** Glossary forced tokens first, then markdown URL/admonition/emphasis protection when `useMarkdownPlaceholders`. */
+export function protectSegmentForTranslation(
+  raw: string,
+  glossary: Glossary,
+  locale: string,
+  useMarkdownPlaceholders: boolean
+): { text: string; state: ProtectState } {
+  const g = protectGlossaryForcedTerms(raw, glossary, locale);
+  const glossaryForceReplacements = g.replacements;
+
+  if (useMarkdownPlaceholders) {
+    const ph = new PlaceholderHandler();
+    const st = ph.protectForTranslation(g.text);
+    return {
+      text: st.text,
+      state: {
+        ...st,
+        glossaryForceReplacements:
+          glossaryForceReplacements.length > 0 ? glossaryForceReplacements : undefined,
+      },
+    };
+  }
+
+  return {
+    text: g.text,
+    state: {
+      text: g.text,
+      ...emptyMarkdownProtectShell(),
+      glossaryForceReplacements:
+        glossaryForceReplacements.length > 0 ? glossaryForceReplacements : undefined,
+    },
+  };
+}
+
+function restoreSegmentTranslation(
+  ph: PlaceholderHandler,
+  raw: string,
+  st: ProtectState | undefined
+): string {
+  if (!st) {
+    return raw;
+  }
+  let out = ph.restoreAfterTranslation(raw, st);
+  out = restoreGlossaryForcedTerms(out, st.glossaryForceReplacements ?? []);
+  return out;
+}
 
 function segmentOriginalContent(s: Segment, originalContentByHash: Map<string, string>): Segment {
   return { ...s, content: originalContentByHash.get(s.hash) ?? s.content };
@@ -270,7 +337,8 @@ function addTranslationMetadata(
   sourceFileMtime: string,
   sourceFileHash: string,
   locale: string,
-  relativePath: string
+  relativePath: string,
+  translationModels: string[]
 ): string {
   const { data: frontMatter, content: body } = matter(content);
   const base =
@@ -283,7 +351,28 @@ function addTranslationMetadata(
   fm.source_file_hash = sourceFileHash;
   fm.translation_language = locale;
   fm.source_file_path = relativePath;
+  if (translationModels.length > 0) {
+    fm.translation_models = translationModels;
+  }
   return matterStringify(body, fm);
+}
+
+/** Unique non-empty model ids from segment translations, sorted for stable front matter. */
+function collectTranslationModelsFromSegments(
+  segments: Segment[],
+  translations: Map<string, DocSegmentTranslation>
+): string[] {
+  const set = new Set<string>();
+  for (const s of segments) {
+    if (!s.translatable) {
+      continue;
+    }
+    const m = translations.get(s.hash)?.modelUsed?.trim();
+    if (m) {
+      set.add(m);
+    }
+  }
+  return [...set].sort((a, b) => a.localeCompare(b));
 }
 
 /** 1-based segment range label for translate-docs logs (indices are 0-based in the full segment list). */
@@ -410,7 +499,7 @@ async function translateSegmentsBatched(
             throw new Error(`Missing translation for batch index ${i}`);
           }
           const st = placeholderById.get(s.id);
-          const restored = st ? ph.restoreAfterTranslation(raw, st) : raw;
+          const restored = restoreSegmentTranslation(ph, raw, st);
           partial.set(s.hash, { text: restored, modelUsed: res.model });
         }
         logBatchSuccess(res);
@@ -436,7 +525,7 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            const restored = st ? ph.restoreAfterTranslation(single.content, st) : single.content;
+            const restored = restoreSegmentTranslation(ph, single.content, st);
             partial.set(s.hash, { text: restored, modelUsed: single.model });
           }
         } else {
@@ -473,7 +562,7 @@ async function translateSegmentsBatched(
             throw new Error(`Missing translation for batch index ${i}`);
           }
           const st = placeholderById.get(s.id);
-          const restored = st ? ph.restoreAfterTranslation(raw, st) : raw;
+          const restored = restoreSegmentTranslation(ph, raw, st);
           const origSeg = segmentOriginalContent(s, originalContentByHash);
           const v = await validateDocTranslatePair(origSeg, restored);
           if (!v.ok) {
@@ -573,7 +662,7 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            const restored = st ? ph.restoreAfterTranslation(single.content, st) : single.content;
+            const restored = restoreSegmentTranslation(ph, single.content, st);
             const v = await validateDocTranslatePair(origSeg, restored);
             if (v.ok) {
               partial.set(s.hash, { text: restored, modelUsed: single.model });
@@ -669,7 +758,7 @@ export async function translateMarkdownFile(
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>,
-  markdownBasenames: string[]
+  translatedMarkdownRelPaths: ReadonlySet<string>
 ): Promise<{ skipped: boolean; totals: TranslateTotals }> {
   const totals: TranslateTotals = {
     filesWritten: 0,
@@ -740,7 +829,6 @@ export async function translateMarkdownFile(
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
 
-  const ph = new PlaceholderHandler();
   let segmentsCached = 0;
 
   for (let docIdx = 0; docIdx < segments.length; docIdx++) {
@@ -750,12 +838,16 @@ export async function translateMarkdownFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, translationFilepathMeta, s.startLine)
+        cache.getSegmentDetails(s.hash, locale, translationFilepathMeta, s.startLine)
       );
       if (hit) {
-        const quality = await validateDocTranslatePair(s, hit);
+        const quality = await validateDocTranslatePair(s, hit.text);
         if (quality.ok) {
-          translations.set(s.hash, { text: hit });
+          const modelUsed = hit.model?.trim();
+          translations.set(s.hash, {
+            text: hit.text,
+            ...(modelUsed ? { modelUsed } : {}),
+          });
           hitKeys.add(`${s.hash}|${locale}`);
           segmentsCached++;
           continue;
@@ -770,9 +862,14 @@ export async function translateMarkdownFile(
       }
     }
     originalContentByHash.set(s.hash, s.content);
-    const st = ph.protectForTranslation(s.content);
+    const { text: protectedText, state: st } = protectSegmentForTranslation(
+      s.content,
+      glossary,
+      locale,
+      true
+    );
     placeholderById.set(s.id, st);
-    toBatch.push({ ...s, content: st.text });
+    toBatch.push({ ...s, content: protectedText });
     segmentIndicesInDoc.push(docIdx);
   }
 
@@ -838,15 +935,18 @@ export async function translateMarkdownFile(
       docsRoot,
       config.documentation.outputDir
     );
-    const currentBasename = path.basename(relPath);
     const parsed = matter(output);
     const newBody = rewriteDocLinksForFlatOutput(
       parsed.content,
       locale,
       i18nPrefix,
       depthPrefix,
-      markdownBasenames,
-      currentBasename
+      {
+        cwd: opts.cwd,
+        config,
+        currentSourceRelPath: normalizeMarkdownRelPath(relPath),
+        translatedMarkdownRelPaths,
+      }
     );
     output = matterStringify(newBody, parsed.data);
   }
@@ -870,9 +970,16 @@ export async function translateMarkdownFile(
     });
   }
 
-  const injectMeta = config.documentation.injectTranslationMetadata !== false;
-  if (injectMeta && !opts.dryRun) {
-    output = addTranslationMetadata(output, sourceFileMtime, fileHash, locale, relPath);
+  if (config.documentation.addFrontmatter !== false && !opts.dryRun) {
+    const translationModels = collectTranslationModelsFromSegments(segments, translations);
+    output = addTranslationMetadata(
+      output,
+      sourceFileMtime,
+      fileHash,
+      locale,
+      relPath,
+      translationModels
+    );
   }
 
   if (!opts.dryRun) {
@@ -991,6 +1098,7 @@ export async function translateJsonFile(
     )
   );
   const translations = new Map<string, DocSegmentTranslation>();
+  const placeholderByIdJson = new Map<string, ProtectState>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
   let segmentsCached = 0;
@@ -1011,18 +1119,24 @@ export async function translateJsonFile(
         continue;
       }
     }
-    toBatch.push({ ...s });
+    const { text: protectedText, state: st } = protectSegmentForTranslation(
+      s.content,
+      glossary,
+      locale,
+      false
+    );
+    placeholderByIdJson.set(s.id, st);
+    toBatch.push({ ...s, content: protectedText });
     segmentIndicesInDoc.push(docIdx);
   }
 
-  const emptyPh = new Map<string, ProtectState>();
   const batchSize = config.batchSize ?? 20;
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrencyJson = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
   const { map, inTok, outTok, cost } = await translateSegmentsBatched(
     toBatch,
-    emptyPh,
+    placeholderByIdJson,
     new Map(),
     locale,
     glossary,
@@ -1185,6 +1299,7 @@ export async function translateSvgAssetFile(
     )
   );
   const translations = new Map<string, DocSegmentTranslation>();
+  const placeholderByIdSvg = new Map<string, ProtectState>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
   let segmentsCached = 0;
@@ -1209,18 +1324,24 @@ export async function translateSvgAssetFile(
         continue;
       }
     }
-    toBatch.push({ ...s });
+    const { text: protectedText, state: st } = protectSegmentForTranslation(
+      s.content,
+      glossary,
+      locale,
+      false
+    );
+    placeholderByIdSvg.set(s.id, st);
+    toBatch.push({ ...s, content: protectedText });
     segmentIndicesInDoc.push(docIdx);
   }
 
-  const emptyPh = new Map<string, ProtectState>();
   const batchSize = config.batchSize ?? 20;
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrencySvg = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
   const { map, inTok, outTok, cost } = await translateSegmentsBatched(
     toBatch,
-    emptyPh,
+    placeholderByIdSvg,
     new Map(),
     locale,
     glossary,
@@ -1369,7 +1490,9 @@ export async function runTranslate(
     : undefined;
   const hitKeys = new Set<string>();
   const markdownHitKeys = new Set<string>();
-  const markdownBasenames = files.markdown.map((r) => path.basename(r));
+  const translatedMarkdownRelPaths = new Set(
+    files.markdown.map((r) => normalizeMarkdownRelPath(r))
+  );
 
   const locales = opts.locales.map((l) => normalizeLocale(l));
   const glossary = new Glossary(glossaryUi, glossaryUser, locales);
@@ -1463,7 +1586,7 @@ export async function runTranslate(
           glossary,
           runOpts,
           markdownHitKeysLocal,
-          markdownBasenames
+          translatedMarkdownRelPaths
         );
         if (skipped) {
           partial.filesSkipped += totals.filesSkipped;

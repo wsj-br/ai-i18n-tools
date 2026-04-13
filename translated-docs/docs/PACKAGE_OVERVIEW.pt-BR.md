@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:26.412Z'
-source_file_mtime: '2026-04-13T00:12:20.082Z'
-source_file_hash: 492dc2b02831a77d02ebea5776448ae47f7ef6b42d4c5badaa92fd48201586c2
-translation_language: pt-BR
-source_file_path: docs/PACKAGE_OVERVIEW.md
----
 # ai-i18n-tools: Visão Geral do Pacote
 
 Este documento descreve a arquitetura interna do `ai-i18n-tools`, como cada componente se encaixa e como os dois fluxos de trabalho principais são implementados.

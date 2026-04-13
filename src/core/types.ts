@@ -121,6 +121,8 @@ export interface GlossaryTerm {
   english: string;
   translations: Record<string, string>;
   partOfSpeech: string;
+  /** From user glossary CSV `force` column (per locale after * / exact merge). */
+  forcedByLocale?: Record<string, boolean>;
 }
 
 /** Result from batch translation (index → translated text). */
@@ -347,9 +349,10 @@ const documentationBlockSchema = z
     }),
     /**
      * When true (default), translated markdown files include YAML keys matching reference transrewrt:
-     * `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`.
+     * `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`,
+     * `source_file_path`, and when known, `translation_models` (sorted unique OpenRouter model ids used for segments).
      */
-    injectTranslationMetadata: z.boolean().optional(),
+    addFrontmatter: z.boolean().optional(),
   })
   .strict();
 

@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:22.002Z'
-source_file_mtime: '2026-04-13T00:12:20.078Z'
-source_file_hash: e18e8298ff645bc6b54dc44e33f5afcd538eef92699118fc92ccc8746d207cc3
-translation_language: ja
-source_file_path: README.md
----
 # ai-i18n-tools
 
 JavaScript/TypeScript アプリケーションおよびドキュメントサイトの国際化のための CLI およびプログラムツールキット。UI 文字列を抽出し、OpenRouter を介して LLM で翻訳し、i18next 用のロケール対応 JSON ファイルを生成します。さらに、Markdown、Docusaurus JSON、および（`translate-svg` を介して）スタンドアロン SVG アセットのためのパイプラインを提供します。
@@ -152,8 +145,8 @@ ai-i18n-tools glossary-generate                     Create empty glossary CSV te
 
 ## ドキュメント
 
-- [はじめに](GETTING_STARTED.ja.md) - 両方のワークフローの完全なセットアップガイド、すべてのCLIフラグ、および設定フィールドのリファレンス。
-- [パッケージ概要](PACKAGE_OVERVIEW.ja.md) - アーキテクチャ、内部構造、プログラムAPI、および拡張ポイント。
+- [はじめに](docs/GETTING_STARTED.ja.md) - 両方のワークフローの完全なセットアップガイド、すべてのCLIフラグ、および設定フィールドのリファレンス。
+- [パッケージ概要](docs/PACKAGE_OVERVIEW.ja.md) - アーキテクチャ、内部構造、プログラムAPI、および拡張ポイント。
 - [AIエージェントコンテキスト](../docs/ai-i18n-tools-context.md) - コードや設定変更を行うエージェントやメンテナのための簡潔なプロジェクトコンテキスト。
 
 ---

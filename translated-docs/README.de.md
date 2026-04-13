@@ -1,10 +1,3 @@
----
-translation_last_updated: '2026-04-13T00:28:16.763Z'
-source_file_mtime: '2026-04-13T00:12:20.078Z'
-source_file_hash: e18e8298ff645bc6b54dc44e33f5afcd538eef92699118fc92ccc8746d207cc3
-translation_language: de
-source_file_path: README.md
----
 # ai-i18n-tools
 
 CLI- und programmatische Werkzeuge zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Strings, übersetzt sie mit LLMs über OpenRouter und generiert lokaleready JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus JSON und (über `translate-svg`) eigenständige SVG-Assets.
@@ -152,8 +145,8 @@ Alle Befehle akzeptieren `-c <config>` (Standard: `ai-i18n-tools.config.json`), 
 
 ## Dokumentation
 
-- [Erste Schritte](GETTING_STARTED.de.md) - vollständige Einrichtungsanleitung für beide Workflows, alle CLI-Flags und Referenz der Konfigurationsfelder.
-- [Paketübersicht](PACKAGE_OVERVIEW.de.md) - Architektur, interne Abläufe, programmgesteuerte API und Erweiterungspunkte.
+- [Erste Schritte](docs/GETTING_STARTED.de.md) - vollständige Einrichtungsanleitung für beide Workflows, alle CLI-Flags und Referenz der Konfigurationsfelder.
+- [Paketübersicht](docs/PACKAGE_OVERVIEW.de.md) - Architektur, interne Abläufe, programmgesteuerte API und Erweiterungspunkte.
 - [AI-Agent-Kontext](../docs/ai-i18n-tools-context.md) - prägnanter Projektkontext für Agenten und Wartende, die Code- oder Konfigurationsänderungen vornehmen.
 
 ---
