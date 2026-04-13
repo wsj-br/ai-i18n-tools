@@ -3,7 +3,7 @@ import { protectMarkdownUrls, restoreMarkdownUrls } from "../../src/processors/u
 describe("url-placeholders", () => {
   it("protectMarkdownUrls replaces link targets with placeholders", () => {
     const { protected: p, urlMap } = protectMarkdownUrls("[a](https://x.com/y)");
-    expect(p).toContain("{{URL_PLACEHOLDER_0}}");
+    expect(p).toContain("{{URL_0}}");
     expect(urlMap).toEqual(["https://x.com/y"]);
   });
 

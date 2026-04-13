@@ -48,6 +48,7 @@ import {
 } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
+import { runExportUIXliff } from "./export-ui-xliff.js";
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
@@ -315,7 +316,7 @@ async function runSyncPipeline(args: {
       throw e;
     }
   }
-  if (config.svg && !noSvg) {
+  if (config.features.translateSVG && config.svg && !noSvg) {
     try {
       const svgOpts: TranslateRunOptions = {
         ...translateOpts,
@@ -529,7 +530,7 @@ program
 
 program
   .command("translate-svg")
-  .description("Translate standalone SVG assets per config.svg (sourcePath, outputDir, style)")
+  .description("Translate standalone SVG assets per config.svg (requires features.translateSVG)")
   .option(
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: documentation.targetLocales if set, else targetLocales"
@@ -576,6 +577,10 @@ program
     const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
     const localeOpt = cmd.opts() as { locale?: string };
     translateOpts.locales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
+    if (!config.features.translateSVG) {
+      console.error(chalk.red("❌ [translate-svg] Enable features.translateSVG in config."));
+      process.exit(1);
+    }
     try {
       await runTranslateSvg(config, translateOpts);
     } catch (e) {
@@ -629,9 +634,49 @@ program
   });
 
 program
+  .command("export-ui-xliff")
+  .description("Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)")
+  .option(
+    "-l, --locale <codes>",
+    "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
+  )
+  .option(
+    "-o, --output-dir <path>",
+    "Output directory for .xliff files (default: same directory as strings.json)"
+  )
+  .option(
+    "--untranslated-only",
+    "Include only units that have no translation for the target locale",
+    false
+  )
+  .option("--dry-run", "Print paths that would be written without writing files", false)
+  .action((_a, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const o = cmd.opts() as {
+      locale?: string;
+      outputDir?: string;
+      untranslatedOnly?: boolean;
+      dryRun?: boolean;
+    };
+    try {
+      runExportUIXliff(config, {
+        cwd: projectRoot,
+        locales: o.locale ?? null,
+        outputDir: o.outputDir,
+        untranslatedOnly: Boolean(o.untranslatedOnly),
+        dryRun: Boolean(o.dryRun),
+      });
+    } catch (e) {
+      console.error(chalk.red(`❌ [export-ui-xliff] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+  });
+
+program
   .command("sync")
   .description(
-    "Extract UI strings (if enabled), then translate UI / SVG / docs unless skipped with --no-*"
+    "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*"
   )
   .option("-l, --locale <codes>", "Target locales for translate step")
   .option("-p, --path <path>", "Limit translate to path prefix")
@@ -647,7 +692,11 @@ program
     false
   )
   .option("--no-ui", "Skip UI strings translation", false)
-  .option("--no-svg", "Skip standalone SVG translation (config.svg)", false)
+  .option(
+    "--no-svg",
+    "Skip standalone SVG translation (when features.translateSVG and config.svg)",
+    false
+  )
   .option("--no-docs", "Skip markdown/JSON documentation translation", false)
   .option(
     "-j, --concurrency <n>",

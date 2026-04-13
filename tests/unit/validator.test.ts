@@ -99,7 +99,7 @@ describe("validateDocTranslatePair", () => {
 
   it("fails on leaked internal placeholders", async () => {
     const src = S({ type: "paragraph", content: "Hi", hash: "h" });
-    const r = await validateDocTranslatePair(src, "Hola {{DOC_HEADING_ID_0}}");
+    const r = await validateDocTranslatePair(src, "Hola {{HDG_0}}");
     expect(r.ok).toBe(false);
     expect(r.errors.some((e) => e.includes("placeholder leaked"))).toBe(true);
   });

@@ -2,8 +2,8 @@
 
 `ai-i18n-tools` fornece dois fluxos de trabalho independentes e compostáveis:
 
-- **Fluxo de Trabalho 1 - Tradução de UI**: extrai chamadas `t("…")` de qualquer fonte JS/TS, traduzindo-as via OpenRouter, e escreve arquivos JSON planos por localidade prontos para i18next.
-- **Fluxo de Trabalho 2 - Tradução de Documentos**: traduz arquivos markdown (MDX) e arquivos de rótulo JSON do Docusaurus para qualquer número de localidades, com cache inteligente. **Ativos** SVG usam um comando separado (`translate-svg`) e configuração `svg` opcional (veja [referência CLI](#cli-reference)).
+- **Workflow 1 - UI Translation**: extrai chamadas `t("…")` de qualquer fonte JS/TS, traduz por meio do OpenRouter e gera arquivos JSON planos por localidade, prontos para uso com i18next.
+- **Workflow 2 - Document Translation**: traduz arquivos markdown (MDX) e arquivos JSON de rótulos do Docusaurus para qualquer número de localidades, com cache inteligente. Ativos **SVG** usam `features.translateSVG`, o bloco `svg` de nível superior e `translate-svg` (veja [referência da CLI](#cli-reference)).
 
 Ambos os fluxos de trabalho usam OpenRouter (qualquer LLM compatível) e compartilham um único arquivo de configuração.
 
@@ -18,22 +18,23 @@ Ambos os fluxos de trabalho usam OpenRouter (qualquer LLM compatível) e compart
 **Tabela de Conteúdos**
 
 - [Instalação](#installation)
-- [Início Rápido](#quick-start)
-- [Fluxo de Trabalho 1 - Tradução de UI](#workflow-1---ui-translation)
-  - [Passo 1: Inicializar](#step-1-initialise)
-  - [Passo 2: Extrair strings](#step-2-extract-strings)
-  - [Passo 3: Traduzir strings de UI](#step-3-translate-ui-strings)
-  - [Passo 4: Conectar i18next em tempo de execução](#step-4-wire-i18next-at-runtime)
-  - [Usando `t()` no código fonte](#using-t-in-source-code)
+- [Primeiros Passos](#quick-start)
+- [Fluxo de trabalho 1 - Tradução de interface](#workflow-1---ui-translation)
+  - [Etapa 1: Inicializar](#step-1-initialise)
+  - [Etapa 2: Extrair strings](#step-2-extract-strings)
+  - [Etapa 3: Traduzir strings da interface](#step-3-translate-ui-strings)
+  - [Exportar para XLIFF 2.0 (opcional)](#exporting-to-xliff-20-optional)
+  - [Etapa 4: Conectar o i18next em tempo de execução](#step-4-wire-i18next-at-runtime)
+  - [Usando `t()` no código-fonte](#using-t-in-source-code)
   - [Interpolação](#interpolation)
-  - [UI do seletor de idioma](#language-switcher-ui)
+  - [Interface de troca de idioma](#language-switcher-ui)
   - [Idiomas RTL](#rtl-languages)
-- [Fluxo de Trabalho 2 - Tradução de Documentos](#workflow-2---document-translation)
-  - [Passo 1: Inicializar](#step-1-initialise-1)
-  - [Passo 2: Traduzir documentos](#step-2-translate-documents)
+- [Fluxo de trabalho 2 - Tradução de documentos](#workflow-2---document-translation)
+  - [Etapa 1: Inicializar](#step-1-initialise-1)
+  - [Etapa 2: Traduzir documentos](#step-2-translate-documents)
     - [Comportamento de cache e flags `translate-docs`](#cache-behaviour-and-translate-docs-flags)
   - [Layouts de saída](#output-layouts)
-- [Fluxo de trabalho combinado (UI + Documentos)](#combined-workflow-ui--docs)
+- [Fluxo de trabalho combinado (UI + Docs)](#combined-workflow-ui--docs)
 - [Referência de configuração](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -48,7 +49,7 @@ Ambos os fluxos de trabalho usam OpenRouter (qualquer LLM compatível) e compart
   - [`documentations`](#documentations)
   - [`svg` (opcional)](#svg-optional)
   - [`glossary`](#glossary)
-- [Referência CLI](#cli-reference)
+- [Referência da CLI](#cli-reference)
 - [Variáveis de ambiente](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ Lê `strings.json`, envia lotes para o OpenRouter para cada localidade alvo, esc
 Para cada entrada, `translate-ui` armazena o id do modelo **OpenRouter** que traduziu com sucesso cada localidade em um objeto opcional `models` (com as mesmas chaves de localidade que `translated`). Strings editadas no comando local `editor` são marcadas com o valor sentinela `user-edited` em `models` para aquela localidade. Os arquivos planos por localidade em `ui.flatOutputDir` permanecem apenas com **string de origem → tradução**; eles não incluem `models` (assim os pacotes de tempo de execução permanecem inalterados).
 
 > **Nota sobre o uso do Editor de Cache:** Se você editar uma entrada no editor de cache, precisará executar um `sync --force-update` (ou o comando `translate` equivalente com `--force-update`) para reescrever os arquivos de saída com a entrada de cache atualizada. Além disso, tenha em mente que se o texto de origem mudar posteriormente, sua edição manual será perdida porque uma nova chave de cache (hash) será gerada para a nova string de origem.
+
+### Exportar para XLIFF 2.0 (opcional)
+
+Para entregar strings da interface a um fornecedor de tradução, TMS ou ferramenta CAT, exporte o catálogo como **XLIFF 2.0** (um arquivo por localidade de destino). Este comando é **somente leitura**: ele não modifica `strings.json` nem chama nenhuma API.
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+Por padrão, os arquivos são gravados ao lado de `ui.stringsJson`, com nomes como `strings.de.xliff`, `strings.pt-BR.xliff` (nome base do seu catálogo + localidade + `.xliff`). Use `-o` / `--output-dir` para gravar em outro local. As traduções existentes de `strings.json` aparecem em `<target>`; localidades ausentes usam `state="initial"` sem `<target>`, para que as ferramentas possam preenchê-las. Use `--untranslated-only` para exportar apenas unidades que ainda precisam de tradução para cada localidade (útil para lotes enviados a fornecedores). `--dry-run` exibe os caminhos sem gravar os arquivos.
 
 ### Etapa 4: Conectar i18next em tempo de execução
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## Fluxo de trabalho 2 - Tradução de Documentos
 
-Projetado para documentação em markdown, sites Docusaurus e arquivos de rótulo JSON. Diagramas SVG são traduzidos via [`translate-svg`](#cli-reference) e `svg` na configuração, não via `documentations[].contentPaths`.
+Projetado para documentação em markdown, sites Docusaurus e arquivos JSON de rótulos. Ativos SVG autônomos são traduzidos por meio de [`translate-svg`](#cli-reference) quando `features.translateSVG` está habilitado e o bloco `svg` de nível superior está configurado — e não por meio de `documentations[].contentPaths`.
 
 ### Passo 1: Inicializar
 
@@ -435,7 +446,8 @@ Ative todos os recursos em uma única configuração para executar ambos os flux
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ Ative todos os recursos em uma única configuração para executar ambos os flux
 
 `glossary.uiGlossary` aponta a tradução de documentos para o mesmo catálogo `strings.json` que a UI, assim a terminologia permanece consistente; `glossary.userGlossary` adiciona substituições CSV para termos de produto.
 
-Execute `npx ai-i18n-tools sync` para rodar um pipeline: **extrair** strings da UI (se `features.extractUIStrings`), **traduzir strings da UI** (se `features.translateUIStrings`), **traduzir ativos SVG independentes** (se um bloco `svg` estiver presente na configuração), então **traduzir documentação** (cada bloco `documentations`: markdown/JSON conforme configurado). Pule partes com `--no-ui`, `--no-svg`, ou `--no-docs`. A etapa de docs aceita `--dry-run`, `-p` / `--path`, `--force`, e `--force-update` (os dois últimos se aplicam apenas quando a tradução de documentação é executada; eles são ignorados se você passar `--no-docs`).
+Execute `npx ai-i18n-tools sync` para rodar um pipeline: **extrair** strings de interface (se `features.extractUIStrings`), **traduzir** strings de interface (se `features.translateUIStrings`), **traduzir ativos SVG autônomos** (se `features.translateSVG` e um bloco `svg` estiverem configurados) e, em seguida, **traduzir documentação** (cada bloco `documentations`: markdown/JSON conforme configurado). Pule etapas com `--no-ui`, `--no-svg` ou `--no-docs`. A etapa de documentação aceita `--dry-run`, `-p` / `--path`, `--force` e `--force-update` (os dois últimos só se aplicam quando a tradução da documentação é executada; são ignorados se você usar `--no-docs`).
 
 Use `documentations[].targetLocales` em um bloco para traduzir os arquivos desse bloco para um **subconjunto menor** do que a UI (localidades de documentação efetivas são a **união** entre blocos):
 
@@ -533,14 +545,15 @@ Defina `OPENROUTER_API_KEY` em seu ambiente ou arquivo `.env`.
 
 ### `features`
 
-| Campo                | Fluxo de Trabalho | Descrição                                                       |
+| Campo                | Fluxo de trabalho | Descrição                                                       |
 | -------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings`   | 1        | Escanear a fonte para `t("…")` e escrever/mesclar `strings.json`.          |
-| `translateUIStrings` | 1        | Traduzir entradas de `strings.json` e escrever arquivos JSON por localidade. |
-| `translateMarkdown`  | 2        | Traduzir arquivos `.md` / `.mdx`.                                   |
-| `translateJSON`      | 2        | Traduzir arquivos de rótulo JSON do Docusaurus.                            |
+| `extractUIStrings`   | 1        | Analisa o código-fonte em busca de `t("…")` e escreve/merge `strings.json`.          |
+| `translateUIStrings` | 1        | Traduz as entradas de `strings.json` e gera arquivos JSON por localidade. |
+| `translateMarkdown`  | 2        | Traduz arquivos `.md` / `.mdx`.                                   |
+| `translateJSON`      | 2        | Traduz arquivos JSON de rótulos do Docusaurus.                            |
+| `translateSVG`       | 2        | Traduz ativos `.svg` autônomos (requer o bloco `svg` de nível superior). |
 
-Não há a flag `features.translateSVG`. Traduza ativos SVG **independentes** com `translate-svg` e um bloco `svg` de nível superior na configuração. O comando `sync` executa essa etapa quando `svg` está presente (a menos que `--no-svg`).
+Traduza ativos SVG **autônomos** com `translate-svg` quando `features.translateSVG` for verdadeiro e um bloco `svg` de nível superior estiver configurado. O comando `sync` executa essa etapa quando ambos estiverem definidos (a menos que `--no-svg`).
 
 ### `ui`
 
@@ -609,7 +622,7 @@ Exemplo (pipeline README plano — caminhos de captura de tela + wrapper opciona
 
 ### `svg` (opcional)
 
-Configuração de nível superior para ativos SVG autônomos traduzidos por `translate-svg` e a etapa SVG de `sync`.
+Caminhos e layout de nível superior para ativos SVG autônomos. A tradução é executada apenas quando **`features.translateSVG`** for verdadeiro (por meio de `translate-svg` ou da etapa SVG de `sync`).
 
 | Campo                       | Descrição |
 | --------------------------- | ----------- |
@@ -640,16 +653,17 @@ npx ai-i18n-tools glossary-generate
 
 | Comando                                                                   | Descrição                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | Grava um arquivo de configuração inicial (inclui `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` e `documentations[].addFrontmatter`). `--with-translate-ignore` cria um arquivo `.translate-ignore` inicial.                                                                            |
-| `extract`                                                                 | Analisa o código-fonte em busca de chamadas `t("…")` e atualiza o `strings.json`. Requer `features.extractUIStrings`.                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | Traduz arquivos markdown/MDX e JSON para cada bloco `documentations` (`contentPaths`, opcional `jsonSource`). `-j`: número máximo de localidades em paralelo; `-b`: número máximo de chamadas paralelas à API por lote por arquivo. `--prompt-format`: formato do lote (`xml` \| `json-array` \| `json-object`). Veja [Comportamento do cache e flags do `translate-docs`](#cache-behaviour-and-translate-docs-flags) e [Formato do prompt em lote](#batch-prompt-format). |
-| `translate-svg …`                                                         | Traduz ativos SVG autônomos configurados em `config.svg` (separado da documentação). Mesmas ideias de cache da documentação; suporta `--no-cache` para pular leituras/escritas no SQLite nesta execução. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | Escreve um arquivo de configuração inicial (inclui `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` e `documentations[].addFrontmatter`). `--with-translate-ignore` cria um `.translate-ignore` inicial.                                                                            |
+| `extract`                                                                 | Analisa a fonte em busca de chamadas `t("…")` e atualiza `strings.json`. Requer `features.extractUIStrings`.                                                                                                                                                                                                    |
+| `translate-docs …`                                                        | Traduz markdown/MDX e JSON para cada bloco `documentations` (`contentPaths`, opcional `jsonSource`). `-j`: número máximo de localidades em paralelo; `-b`: número máximo de chamadas à API em lote por arquivo. `--prompt-format`: formato do lote (`xml` \| `json-array` \| `json-object`). Veja [Comportamento do cache e flags `translate-docs`](#cache-behaviour-and-translate-docs-flags) e [Formato do prompt em lote](#batch-prompt-format). |
+| `translate-svg …`                                                         | Traduz ativos SVG autônomos configurados em `config.svg` (separado da documentação). Requer `features.translateSVG`. Mesmas ideias de cache da documentação; suporta `--no-cache` para pular leituras/escritas no SQLite nesta execução. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
 | `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | Traduz apenas as strings da interface. `--force`: traduz novamente todas as entradas por localidade (ignora traduções existentes). `--dry-run`: sem gravações, sem chamadas à API. `-j`: número máximo de localidades em paralelo. Requer `features.translateUIStrings`.                                                                                 |
-| `sync …`                                                                  | Extrai (se habilitado), depois tradução da interface, depois `translate-svg` quando `config.svg` existe, depois tradução da documentação - a menos que pulado com `--no-ui`, `--no-svg` ou `--no-docs`. Flags compartilhadas: `-l`, `-p`, `--dry-run`, `-j`, `-b` (apenas agrupamento de documentos), `--force` / `--force-update` (apenas documentos; mutuamente exclusivos quando documentos são executados).                         |
-| `status`                                                                  | Mostra o status de tradução do markdown por arquivo × localidade (sem filtro `--locale`; as localidades vêm da configuração).                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | Executa primeiro `sync --force-update` (extrai, interface, SVG, documentos), depois remove linhas de segmentos obsoletos (com `last_hit_at` nulo / caminho de arquivo vazio); remove linhas de `file_tracking` cujo caminho de origem resolvido está ausente no disco; remove linhas de tradução cujos metadados de `filepath` apontam para um arquivo ausente. Registra três contagens (obsoletos, `file_tracking` órfãos, traduções órfãs). Cria um backup do SQLite com carimbo de data na pasta de cache, a menos que `--no-backup`. |
-| `editor [-p <port>] [--no-open]`                                          | Inicia um editor web local para o cache, `strings.json` e glossário CSV. `--no-open`: não abre automaticamente o navegador padrão.<br><br>**Observação:** Se você editar uma entrada no editor de cache, deve executar um `sync --force-update` para reescrever os arquivos de saída com a entrada de cache atualizada. Além disso, se o texto de origem mudar posteriormente, a edição manual será perdida, pois uma nova chave de cache será gerada. |
-| `glossary-generate [-o <path>]`                                           | Grava um modelo vazio de `glossary-user.csv`. `-o`: substitui o caminho de saída (padrão: `glossary.userGlossary` da configuração, ou `glossary-user.csv`).                                                                                                                                                |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | Exporta `strings.json` para XLIFF 2.0 (um `.xliff` por localidade de destino). `-o` / `--output-dir`: diretório de saída (padrão: mesma pasta do catálogo). `--untranslated-only`: apenas unidades sem tradução para essa localidade. Somente leitura; sem API.                                                        |
+| `sync …`                                                                  | Extrai (se habilitado), depois tradução da interface, depois `translate-svg` quando `features.translateSVG` e `config.svg` estão definidos, depois tradução da documentação — a menos que pulada com `--no-ui`, `--no-svg` ou `--no-docs`. Flags compartilhadas: `-l`, `-p`, `--dry-run`, `-j`, `-b` (apenas agrupamento de documentação), `--force` / `--force-update` (apenas documentação; mutuamente exclusivas quando a documentação é executada).                         |
+| `status`                                                                  | Mostra o status da tradução em markdown por arquivo × localidade (sem filtro `--locale`; as localidades vêm da configuração).                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | Executa `sync --force-update` primeiro (extração, interface, SVG, documentação), depois remove linhas de segmentos obsoletas (`last_hit_at` nulo / caminho do arquivo vazio); descarta linhas `file_tracking` cujo caminho de origem resolvido está ausente no disco; remove linhas de tradução cujos metadados `filepath` apontam para um arquivo ausente. Registra três contagens (obsoletas, `file_tracking` órfãs, traduções órfãs). Cria um backup do SQLite com carimbo de data/hora no diretório de cache, a menos que `--no-backup`. |
+| `editor [-p <port>] [--no-open]`                                          | Inicia um editor web local para o cache, `strings.json` e CSV do glossário. `--no-open`: não abre o navegador padrão automaticamente.<br><br>**Observação:** Se você editar uma entrada no editor de cache, deve executar um `sync --force-update` para reescrever os arquivos de saída com a entrada de cache atualizada. Além disso, se o texto de origem mudar posteriormente, a edição manual será perdida, pois uma nova chave de cache será gerada. |
+| `glossary-generate [-o <path>]`                                           | Escreve um modelo `glossary-user.csv` vazio. `-o`: sobrescreve o caminho de saída (padrão: `glossary.userGlossary` da configuração, ou `glossary-user.csv`).                                                                                                                                                |
 
 Todos os comandos aceitam `-c <path>` para especificar um arquivo de configuração não padrão, `-v` para saída detalhada, e `-w` / `--write-logs [path]` para redirecionar a saída do console para um arquivo de log (caminho padrão: sob o diretório raiz `cacheDir`).
 

@@ -33,6 +33,9 @@ export async function runTranslateSvg(
   config: I18nConfig,
   opts: TranslateRunOptions
 ): Promise<TranslateTotals> {
+  if (!config.features.translateSVG) {
+    throw new Error("Enable features.translateSVG in config");
+  }
   assertSvgCommandConfig(config);
   const svg = config.svg!;
   const roots = svg.sourcePath;

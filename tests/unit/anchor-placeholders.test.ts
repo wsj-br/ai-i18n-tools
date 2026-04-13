@@ -5,7 +5,7 @@ describe("anchor-placeholders", () => {
     const src = `<a id="x"></a>\n<p>Hi</p>`;
     const p = protectDocAnchors(src);
     expect(p.htmlAnchors.length).toBe(1);
-    expect(p.protected).toContain("HTML_ANCHOR");
+    expect(p.protected).toContain("ANC_");
     expect(restoreDocAnchors(p.protected, p.htmlAnchors, [])).toContain('<a id="x">');
   });
 
@@ -16,8 +16,8 @@ describe("anchor-placeholders", () => {
     expect(restoreDocAnchors(p.protected, [], p.docusaurusHeadingIds)).toContain("{#my-id}");
   });
 
-  it("restoreDocAnchors accepts hyphenated DOC_HEADING-ID placeholder form", () => {
-    const corrupted = "x {{DOC_HEADING-ID_0}} y";
+  it("restoreDocAnchors accepts hyphenated HDG placeholder form", () => {
+    const corrupted = "x {{HDG-0}} y";
     expect(restoreDocAnchors(corrupted, [], ["{#z}"])).toContain("{#z}");
   });
 });

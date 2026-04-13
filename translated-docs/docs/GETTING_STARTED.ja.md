@@ -2,8 +2,8 @@
 
 `ai-i18n-tools` は、2つの独立した、合成可能なワークフローを提供します：
 
-- **ワークフロー 1 - UI 翻訳**: 任意の JS/TS ソースから `t("…")` コールを抽出し、OpenRouter を介して翻訳し、i18next 用にロケールごとのフラットな JSON ファイルを書き出します。
-- **ワークフロー 2 - ドキュメント翻訳**: マークダウン (MDX) と Docusaurus JSON ラベルファイルを任意の数のロケールに翻訳し、スマートキャッシングを行います。**SVG** アセットは別のコマンド (`translate-svg`) とオプションの `svg` 設定を使用します（[CLI リファレンス](#cli-reference)を参照）。
+- **Workflow 1 - UI Translation**: 任意のJS/TSソースから `t("…")` 呼び出しを抽出し、OpenRouterを介して翻訳し、i18next向けにフラットなロケール別JSONファイルを出力します。
+- **Workflow 2 - Document Translation**: markdown（MDX）およびDocusaurusのJSONラベルファイルを任意の数のロケールに翻訳。スマートキャッシュ付き。**SVG**アセットは、`features.translateSVG` が有効で、トップレベルの `svg` ブロックが設定され、`translate-svg` が使用されている場合に翻訳されます（[CLIリファレンス](#cli-reference)を参照）。
 
 両方のワークフローは OpenRouter（互換性のある LLM）を使用し、単一の設定ファイルを共有します。
 
@@ -21,8 +21,9 @@
 - [クイックスタート](#quick-start)
 - [ワークフロー 1 - UI 翻訳](#workflow-1---ui-translation)
   - [ステップ 1: 初期化](#step-1-initialise)
-  - [ステップ 2: 文字列を抽出](#step-2-extract-strings)
-  - [ステップ 3: UI 文字列を翻訳](#step-3-translate-ui-strings)
+  - [ステップ 2: 文字列の抽出](#step-2-extract-strings)
+  - [ステップ 3: UI 文字列の翻訳](#step-3-translate-ui-strings)
+  - [XLIFF 2.0 へのエクスポート (オプション)](#exporting-to-xliff-20-optional)
   - [ステップ 4: 実行時に i18next を接続](#step-4-wire-i18next-at-runtime)
   - [ソースコード内での `t()` の使用](#using-t-in-source-code)
   - [補間](#interpolation)
@@ -30,7 +31,7 @@
   - [RTL 言語](#rtl-languages)
 - [ワークフロー 2 - ドキュメント翻訳](#workflow-2---document-translation)
   - [ステップ 1: 初期化](#step-1-initialise-1)
-  - [ステップ 2: ドキュメントを翻訳](#step-2-translate-documents)
+  - [ステップ 2: ドキュメントの翻訳](#step-2-translate-documents)
     - [キャッシュ動作と `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags)
   - [出力レイアウト](#output-layouts)
 - [統合ワークフロー (UI + ドキュメント)](#combined-workflow-ui--docs)
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ npx ai-i18n-tools translate-ui
 各エントリごとに、`translate-ui` は各ロケールを正常に翻訳した **OpenRouter モデル ID** を、オプションの `models` オブジェクト（`translated` と同じロケールキー）に保存します。ローカルの `editor` コマンドで編集された文字列は、そのロケールの `models` 内でセントネル値 `user-edited` としてマークされます。`ui.flatOutputDir` 配下のロケール別フラットファイルは引き続き **source string → translation** のみであり、`models` は含みません（そのため実行時バンドルは変更されません）。
 
 > **キャッシュエディタ使用時の注意:** キャッシュエディタでエントリを編集した場合、更新されたキャッシュエントリで出力ファイルを書き換えるために `sync --force-update`（または同等の `--force-update` オプション付き `translate` コマンド）を実行する必要があります。また、後でソーステキストが変更された場合、新しいソース文字列に対して新しいキャッシュキー（ハッシュ）が生成されるため、手動編集は失われる点に注意してください。
+
+### XLIFF 2.0 へのエクスポート (オプション)
+
+UI 文字列を翻訳ベンダー、TMS、または CAT ツールに渡すために、カタログを **XLIFF 2.0** としてエクスポートします (ターゲットロケールごとに 1 つのファイル)。このコマンドは **読み取り専用** です: `strings.json` を変更したり、API を呼び出したりしません。
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+デフォルトでは、ファイルは `ui.stringsJson` の隣に書き込まれ、`strings.de.xliff`、`strings.pt-BR.xliff` のように名前が付けられます (カタログのベース名 + ロケール + `.xliff`)。他の場所に書き込むには `-o` / `--output-dir` を使用します。`strings.json` からの既存の翻訳は `<target>` に表示され、欠落しているロケールは `state="initial"` を使用し、`<target>` がないためツールがそれらを埋めることができます。`--untranslated-only` を使用して、各ロケールに対してまだ翻訳が必要なユニットのみをエクスポートします (ベンダーバッチに便利です)。`--dry-run` はファイルを書き込まずにパスを印刷します。
 
 ### ステップ 4: ランタイムでの i18next の接続
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## ワークフロー 2 - ドキュメント翻訳
 
-Markdownドキュメント、Docusaurusサイト、JSONラベルファイル用に設計されています。SVG図は[`translate-svg`](#cli-reference)を介して翻訳され、`svg`は構成で使用され、`documentations[].contentPaths`を介しては翻訳されません。
+マークダウン形式のドキュメント、Docusaurusサイト、およびJSONラベルファイル向けに設計されています。スタンドアロンのSVGアセットは、`features.translateSVG` が有効で、トップレベルの `svg` ブロックが設定されている場合に [`translate-svg`](#cli-reference) を使って翻訳されます。`documentations[].contentPaths` 経由ではありません。
 
 ### ステップ 1: 初期化
 
@@ -435,7 +446,8 @@ docs/guide.md → i18n/guide.de.md
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ docs/guide.md → i18n/guide.de.md
 
 `glossary.uiGlossary`はドキュメント翻訳をUIと同じ`strings.json`カタログに向けるため、用語が一貫性を保ちます; `glossary.userGlossary`は製品用語のCSV上書きを追加します。
 
-`npx ai-i18n-tools sync`を実行して1つのパイプラインを実行します: **抽出** UI文字列（`features.extractUIStrings`の場合）、**翻訳** UI文字列（`features.translateUIStrings`の場合）、**スタンドアロンSVGアセットを翻訳**（設定に`svg`ブロックが存在する場合）、次に**ドキュメントを翻訳**（各`documentations`ブロック: 設定されたmarkdown/JSON）。`--no-ui`、`--no-svg`、または`--no-docs`で部分をスキップします。ドキュメントステップは`--dry-run`、`-p` / `--path`、`--force`、および`--force-update`を受け入れます（最後の2つはドキュメント翻訳が実行されるときのみ適用され、`--no-docs`を渡すと無視されます）。
+`npx ai-i18n-tools sync` を実行すると、1つのパイプラインが実行されます。`features.extractUIStrings` が設定されている場合は**UI文字列の抽出**、`features.translateUIStrings` が設定されている場合は**UI文字列の翻訳**、`features.translateSVG` とトップレベルの `svg` ブロックが設定されている場合は**スタンドアロンSVGアセットの翻訳**、その後**ドキュメントの翻訳**（各 `documentations` ブロックで設定された通りに、markdown/JSONを処理）を行います。`--no-ui`、`--no-svg`、`--no-docs` を使用して、特定の処理をスキップできます。ドキュメント翻訳ステップでは `--dry-run`、`-p` / `--path`、`--force`、および `--force-update` を受け付けます（最後の2つはドキュメント翻訳が実行される場合にのみ有効。`--no-docs` を指定すると無視されます）。
 
 ブロックのファイルをUIよりも**小さなサブセット**に翻訳するには、ブロックに`documentations[].targetLocales`を使用します（有効なドキュメントロケールはブロック間の**和集合**です）:
 
@@ -533,14 +545,15 @@ docs/guide.md → i18n/guide.de.md
 
 ### `features`
 
-| フィールド                | ワークフロー | 説明                                                       |
-| -------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings`   | 1        | ソースコードをスキャンして `t("…")` を検出し、`strings.json` を書き出し/マージします。          |
-| `translateUIStrings` | 1        | `strings.json` のエントリを翻訳し、ロケールごとの JSON ファイルを書き出します。 |
-| `translateMarkdown`  | 2        | `.md` / `.mdx` ファイルを翻訳します。                                   |
-| `translateJSON`      | 2        | Docusaurus の JSON ラベルファイルを翻訳します。                            |
+| フィールド               | ワークフロー | 説明                                                            |
+| ------------------------ | ---------- | -------------------------------------------------------------- |
+| `extractUIStrings`       | 1          | ソースをスキャンして `t("…")` を検出し、`strings.json` を作成またはマージ。         |
+| `translateUIStrings`     | 1          | `strings.json` のエントリを翻訳し、ロケールごとのJSONファイルを出力。 |
+| `translateMarkdown`      | 2          | `.md` / `.mdx` ファイルを翻訳。                                  |
+| `translateJSON`          | 2          | DocusaurusのJSONラベルファイルを翻訳。                           |
+| `translateSVG`           | 2          | スタンドアロンの `.svg` アセットを翻訳（トップレベルの `svg` ブロックが必要）。 |
 
-`features.translateSVG` フラグはありません。**スタンドアロン**の SVG アセットは、`translate-svg` と設定ファイルのトップレベルにある `svg` ブロックを使用して翻訳します。`sync` コマンドは、`svg` が存在する場合（`--no-svg` が指定されていない限り）そのステップを実行します。
+`features.translateSVG` が true で、トップレベルの `svg` ブロックが設定されている場合、`translate-svg` を使って**スタンドアロン**のSVGアセットを翻訳します。`sync` コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg` を指定しない限り）。
 
 ### `ui`
 
@@ -609,7 +622,7 @@ docs/guide.md → i18n/guide.de.md
 
 ### `svg`（オプション）
 
-`translate-svg` と `sync` の SVG ステージによって翻訳されたスタンドアロン SVG アセットのトップレベル設定。
+スタンドアロンSVGアセットのトップレベルのパスおよびレイアウト。翻訳は、**`features.translateSVG`** が true の場合にのみ実行されます（`translate-svg` または `sync` のSVGステージ経由）。
 
 | フィールド                     | 説明                                                                                     |
 | --------------------------- | ---------------------------------------------------------------------------------------- |
@@ -638,18 +651,19 @@ npx ai-i18n-tools glossary-generate
 
 ## CLI リファレンス
 
-| コマンド                                                                   | 説明                                                                                                                                                                                                                                                                                        |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および `documentations[].addFrontmatter` を含みます）。`--with-translate-ignore` はスターターの `.translate-ignore` を作成します。                                                                            |
-| `extract`                                                                 | ソースをスキャンして `t("…")` コールを見つけ、`strings.json` を更新します。`features.extractUIStrings` が必要です。                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | 各 `documentations` ブロック（`contentPaths`、オプションの `jsonSource`）のために markdown/MDX と JSON を翻訳します。`-j`: 最大並列ロケール; `-b`: ファイルごとの最大並列バッチ API コール。`--prompt-format`: バッチワイヤフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags) および [バッチプロンプトフォーマット](#batch-prompt-format) を参照してください。 |
-| `translate-svg …`                                                         | `config.svg` で設定されたスタンドアロンの SVG アセットを翻訳します（ドキュメントとは別）。ドキュメントと同様のキャッシュのアイデア; 実行中に SQLite の読み書きをスキップするための `--no-cache` をサポートします。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | UI 文字列のみを翻訳します。`--force`: ロケールごとにすべてのエントリを再翻訳します（既存の翻訳を無視します）。`--dry-run`: 書き込みなし、API コールなし。`-j`: 最大並列ロケール。`features.translateUIStrings` が必要です。                                                                                 |
-| `sync …`                                                                  | （有効な場合）抽出し、次に UI 翻訳を行い、`config.svg` が存在する場合は `translate-svg` を実行し、次にドキュメント翻訳を行います - `--no-ui`、`--no-svg`、または `--no-docs` でスキップしない限り。共有フラグ: `-l`、`-p`、`--dry-run`、`-j`、`-b`（ドキュメントバッチのみ）、`--force` / `--force-update`（ドキュメントのみ; ドキュメント実行時に相互排他的）。                         |
-| `status`                                                                  | ファイル × ロケールごとの markdown 翻訳ステータスを表示します（`--locale` フィルタなし; ロケールは設定から取得されます）。                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 最初に `sync --force-update` を実行します（抽出、UI、SVG、ドキュメント）、次に古いセグメント行を削除します（null `last_hit_at` / 空のファイルパス）；ディスク上に解決されたソースパスが欠けている `file_tracking` 行を削除します；欠けているファイルを指す `filepath` メタデータを持つ翻訳行を削除します。3つのカウント（古い、孤立した `file_tracking`、孤立した翻訳）をログに記録します。`--no-backup` が指定されていない限り、キャッシュディレクトリの下にタイムスタンプ付きの SQLite バックアップを作成します。 |
-| `editor [-p <port>] [--no-open]`                                          | キャッシュ、`strings.json`、および用語集 CSV のためのローカルウェブエディタを起動します。`--no-open`: デフォルトのブラウザを自動的に開かない。<br><br>**注意:** キャッシュエディタでエントリを編集した場合、更新されたキャッシュエントリで出力ファイルを書き換えるために `sync --force-update` を実行する必要があります。また、後でソーステキストが変更された場合、手動での編集は失われます。新しいキャッシュキーが生成されるためです。 |
-| `glossary-generate [-o <path>]`                                           | 空の `glossary-user.csv` テンプレートを書き込みます。`-o`: 出力パスを上書きします（デフォルト: 設定からの `glossary.userGlossary`、または `glossary-user.csv`）。                                                                                                                                                |
+| コマンド | 説明 |
+| --- | --- |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`documentations[].addFrontmatter` を含みます）。`--with-translate-ignore` はスターター `.translate-ignore` を作成します。 |
+| `extract` | ソース内の `t("…")` 呼び出しをスキャンし、`strings.json` を更新します。`features.extractUIStrings` が必要です。 |
+| `translate-docs …` | 各 `documentations` ブロック（`contentPaths`、オプションの `jsonSource`）に対して、Markdown/MDX および JSON を翻訳します。`-j`：並列処理するロケールの最大数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチのワイヤーフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照してください。 |
+| `translate-svg …` | `config.svg` で設定されたスタンドアロンのSVGアセットを翻訳します（ドキュメントとは別）。`features.translateSVG` が必要です。ドキュメントと同じキャッシュの考え方を採用。その実行時のSQLiteの読み書きをスキップするための `--no-cache` をサポート。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。 |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | UI文字列のみを翻訳します。`--force`：すべてのエントリをロケールごとに再翻訳（既存の翻訳を無視）。`--dry-run`：書き込みなし、API呼び出しもなし。`-j`：並列処理するロケールの最大数。`features.translateUIStrings` が必要です。 |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | `strings.json` をXLIFF 2.0形式でエクスポートします（対象ロケールごとに1つの`.xliff`）。`-o` / `--output-dir`：出力ディレクトリ（デフォルト：カタログと同じフォルダ）。`--untranslated-only`：そのロケールで翻訳が欠落しているユニットのみ。読み取り専用。API呼び出しはしません。 |
+| `sync …` | 抽出（有効の場合）→ UI翻訳 → `features.translateSVG` と `config.svg` が設定されている場合は `translate-svg` → ドキュメント翻訳（ただし、`--no-ui`、`--no-svg`、`--no-docs` でスキップされる場合を除く）。共通フラグ：`-l`、`-p`、`--dry-run`、`-j`、`-b`（ドキュメントのバッチ処理のみ）、`--force` / `--force-update`（ドキュメントのみ、ドキュメント実行時は相互に排他的）。 |
+| `status` | ファイル × ロケールごとのMarkdown翻訳の状態を表示します（`--locale` フィルターなし。ロケールは設定から取得）。 |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | 最初に `sync --force-update` を実行（抽出、UI、SVG、ドキュメント）し、その後、古くなったセグメント行（null `last_hit_at` / 空のファイルパス）を削除。ディスク上に解決されたソースパスが存在しない `file_tracking` 行を削除。`filepath` メタデータが存在しないファイルを指している翻訳行を削除。3つのカウント（古くなったもの、孤立した`file_tracking`、孤立した翻訳）をログ出力。`--no-backup` を指定しない限り、キャッシュディレクトリ内にタイムスタンプ付きのSQLiteバックアップを作成。 |
+| `editor [-p <port>] [--no-open]` | キャッシュ、`strings.json`、および用語集CSV用のローカルWebエディタを起動します。`--no-open`：デフォルトブラウザを自動的に開かない。<br><br>**注：** キャッシュエディタでエントリを編集した場合、更新されたキャッシュエントリを出力ファイルに再書き込みするために `sync --force-update` を実行する必要があります。また、後でソーステキストが変更された場合、新しいキャッシュキーが生成されるため、手動での編集は失われます。 |
+| `glossary-generate [-o <path>]` | 空の `glossary-user.csv` テンプレートを書き込みます。`-o`：出力パスを上書き（デフォルト：設定の `glossary.userGlossary`、または `glossary-user.csv`）。 |
 
 すべてのコマンドは、非デフォルトの設定ファイルを指定するために `-c <path>` を受け入れ、詳細な出力のために `-v` を使用し、コンソール出力をログファイルに記録するために `-w` / `--write-logs [path]` を使用します（デフォルトパス：ルート `cacheDir` の下）。
 

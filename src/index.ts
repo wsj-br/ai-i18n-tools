@@ -125,6 +125,11 @@ export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
 export { UIStringExtractor as ReactExtractor } from "./extractors/ui-string-extractor.js";
 
 export { PlaceholderHandler } from "./processors/placeholder-handler.js";
+export {
+  protectBoldWrappedInlineCode,
+  restoreBoldWrappedInlineCode,
+} from "./processors/bold-code-placeholders.js";
+export { protectInlineCodeSpans, restoreInlineCodeSpans } from "./processors/inline-code-placeholders.js";
 export { protectMarkdownUrls, restoreMarkdownUrls } from "./processors/url-placeholders.js";
 export {
   protectAdmonitionSyntax,

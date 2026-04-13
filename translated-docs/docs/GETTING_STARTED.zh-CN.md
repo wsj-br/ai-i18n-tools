@@ -2,8 +2,8 @@
 
 `ai-i18n-tools` 提供两个独立的、可组合的工作流程：
 
-- **工作流程 1 - UI 翻译**：从任何 JS/TS 源中提取 `t("…")` 调用，通过 OpenRouter 翻译它们，并写入每个区域的平面 JSON 文件，准备好用于 i18next。
-- **工作流程 2 - 文档翻译**：将 markdown (MDX) 和 Docusaurus JSON 标签文件翻译成任意数量的区域，具有智能缓存。**SVG** 资产使用单独的命令 (`translate-svg`) 和可选的 `svg` 配置（请参见 [CLI 参考](#cli-reference)）。
+- **工作流程 1 - UI 翻译**：从任意 JS/TS 源码中提取 `t("…")` 调用，通过 OpenRouter 进行翻译，并生成适用于 i18next 的扁平化按语言环境划分的 JSON 文件。
+- **工作流程 2 - 文档翻译**：将 Markdown（MDX）和 Docusaurus JSON 标签文件翻译为任意数量的语言环境，并支持智能缓存。**SVG** 资源使用 `features.translateSVG`、顶层 `svg` 块以及 `translate-svg` 命令（参见 [CLI 参考](#cli-reference)）。
 
 两个工作流程都使用 OpenRouter（任何兼容的 LLM）并共享一个配置文件。
 
@@ -19,34 +19,35 @@
 
 - [安装](#installation)
 - [快速开始](#quick-start)
-- [工作流程 1 - UI 翻译](#workflow-1---ui-translation)
+- [工作流 1 - UI 翻译](#workflow-1---ui-translation)
   - [步骤 1：初始化](#step-1-initialise)
   - [步骤 2：提取字符串](#step-2-extract-strings)
   - [步骤 3：翻译 UI 字符串](#step-3-translate-ui-strings)
-  - [步骤 4：在运行时连接 i18next](#step-4-wire-i18next-at-runtime)
+  - [导出为 XLIFF 2.0（可选）](#exporting-to-xliff-20-optional)
+  - [步骤 4：在运行时接入 i18next](#step-4-wire-i18next-at-runtime)
   - [在源代码中使用 `t()`](#using-t-in-source-code)
   - [插值](#interpolation)
   - [语言切换器 UI](#language-switcher-ui)
   - [RTL 语言](#rtl-languages)
-- [工作流程 2 - 文档翻译](#workflow-2---document-translation)
+- [工作流 2 - 文档翻译](#workflow-2---document-translation)
   - [步骤 1：初始化](#step-1-initialise-1)
   - [步骤 2：翻译文档](#step-2-translate-documents)
     - [缓存行为和 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags)
   - [输出布局](#output-layouts)
-- [组合工作流程 (UI + 文档)](#combined-workflow-ui--docs)
+- [组合工作流（UI + 文档）](#combined-workflow-ui--docs)
 - [配置参考](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
-  - [`uiLanguagesPath` (可选)](#uilanguagespath-optional)
-  - [`concurrency` (可选)](#concurrency-optional)
-  - [`batchConcurrency` (可选)](#batchconcurrency-optional)
-  - [`batchSize` / `maxBatchChars` (可选)](#batchsize--maxbatchchars-optional)
+  - [`uiLanguagesPath`（可选）](#uilanguagespath-optional)
+  - [`concurrency`（可选）](#concurrency-optional)
+  - [`batchConcurrency`（可选）](#batchconcurrency-optional)
+  - [`batchSize` / `maxBatchChars`（可选）](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
   - [`documentations`](#documentations)
-  - [`svg` (可选)](#svg-optional)
+  - [`svg`（可选）](#svg-optional)
   - [`glossary`](#glossary)
 - [CLI 参考](#cli-reference)
 - [环境变量](#environment-variables)
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ npx ai-i18n-tools translate-ui
 对于每个条目，`translate-ui` 在可选的 `models` 对象中存储成功翻译每种语言的 **OpenRouter 模型 ID**（与 `translated` 相同的语言键）。在本地 `editor` 命令中编辑的字符串在该语言的 `models` 中标记为哨兵值 `user-edited`。位于 `ui.flatOutputDir` 下的每种语言的平面文件仅保留 **源字符串 → 翻译**；它们不包括 `models`（因此运行时包保持不变）。
 
 > **关于使用缓存编辑器的注意事项：** 如果你在缓存编辑器中编辑了一个条目，需要运行 `sync --force-update`（或等效的 `translate` 命令并加上 `--force-update`）来用更新后的缓存条目重写输出文件。另外，请注意，如果稍后源文本发生变化，你的手动编辑将会丢失，因为会为新的源字符串生成一个新的缓存键（哈希值）。
+
+### 导出为 XLIFF 2.0（可选）
+
+要将 UI 字符串交付给翻译供应商、TMS 或 CAT 工具，请将目录导出为 **XLIFF 2.0** 格式（每个目标语言区域一个文件）。此命令为 **只读**：不会修改 `strings.json` 或调用任何 API。
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+默认情况下，文件会写入 `ui.stringsJson` 旁边，命名为 `strings.de.xliff`、`strings.pt-BR.xliff`（目录的基本名称 + 语言区域 + `.xliff`）。使用 `-o` / `--output-dir` 可将文件写入其他位置。来自 `strings.json` 的现有翻译会出现在 `<target>` 中；缺失的语言区域会使用 `state="initial"` 且无 `<target>`，以便工具填充。使用 `--untranslated-only` 仅导出每个语言区域仍需翻译的单元（适用于供应商批量处理）。`--dry-run` 会打印路径但不写入文件。
 
 ### 步骤 4：在运行时连接 i18next
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## 工作流 2 - 文档翻译
 
-为 markdown 文档、Docusaurus 网站和 JSON 标签文件设计。SVG 图表通过 [`translate-svg`](#cli-reference) 和配置中的 `svg` 翻译，而不是通过 `documentations[].contentPaths`。
+专为 Markdown 文档、Docusaurus 站点和 JSON 标签文件设计。当启用 `features.translateSVG` 并设置了顶层 `svg` 块时，独立的 SVG 资源将通过 [`translate-svg`](#cli-reference) 进行翻译——而不是通过 `documentations[].contentPaths`。
 
 ### 步骤 1：初始化
 
@@ -435,7 +446,8 @@ docs/guide.md → i18n/guide.de.md
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ docs/guide.md → i18n/guide.de.md
 
 `glossary.uiGlossary` 将文档翻译指向与 UI 相同的 `strings.json` 目录，以保持术语一致；`glossary.userGlossary` 为产品术语添加 CSV 覆盖。
 
-运行 `npx ai-i18n-tools sync` 来运行一个管道：**提取** UI 字符串（如果 `features.extractUIStrings`），**翻译 UI** 字符串（如果 `features.translateUIStrings`），**翻译独立的 SVG 资产**（如果配置中存在 `svg` 块），然后 **翻译文档**（每个 `documentations` 块：按配置的 markdown/JSON）。使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳过部分步骤。文档步骤接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（最后两个仅在文档翻译运行时适用；如果您传递 `--no-docs`，则会被忽略）。
+运行 `npx ai-i18n-tools sync` 可执行完整流水线：**提取** UI 字符串（如果启用了 `features.extractUIStrings`），**翻译 UI** 字符串（如果启用了 `features.translateUIStrings`），**翻译独立 SVG 资源**（如果设置了 `features.translateSVG` 和顶层 `svg` 块），然后 **翻译文档**（每个 `documentations` 块中配置的 Markdown/JSON 文件）。可通过 `--no-ui`、`--no-svg` 或 `--no-docs` 跳过相应步骤。文档步骤支持 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update` 参数（后两个参数仅在执行文档翻译时生效；若指定 `--no-docs` 则会被忽略）。
 
 在块上使用 `documentations[].targetLocales` 将该块的文件翻译为比 UI 更**小的子集**（有效的文档语言是跨块的**并集**）：
 
@@ -533,14 +545,15 @@ docs/guide.md → i18n/guide.de.md
 
 ### `features`
 
-| 字段 | 工作流 | 描述 |
-| -------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings` | 1 | 扫描源代码中的 `t("…")` 并写入/合并 `strings.json`。 |
-| `translateUIStrings` | 1 | 翻译 `strings.json` 条目并写入每个语言环境的 JSON 文件。 |
-| `translateMarkdown` | 2 | 翻译 `.md` / `.mdx` 文件。 |
-| `translateJSON` | 2 | 翻译 Docusaurus JSON 标签文件。 |
+| 字段                 | 工作流程 | 说明                                                                 |
+| -------------------- | -------- | -------------------------------------------------------------------- |
+| `extractUIStrings`   | 1        | 扫描源码中的 `t("…")` 调用，并写入或合并 `strings.json` 文件。     |
+| `translateUIStrings` | 1        | 翻译 `strings.json` 中的条目，并生成按语言环境划分的 JSON 文件。         |
+| `translateMarkdown`  | 2        | 翻译 `.md` / `.mdx` 文件。                                           |
+| `translateJSON`      | 2        | 翻译 Docusaurus JSON 标签文件。                                      |
+| `translateSVG`       | 2        | 翻译独立的 `.svg` 资源（需要配置顶层 `svg` 块）。                        |
 
-没有 `features.translateSVG` 标志。使用 `translate-svg` 和配置中的顶层 `svg` 块来翻译**独立**的 SVG 资源。当存在 `svg` 块时，`sync` 命令会运行该步骤（除非使用 `--no-svg`）。
+当 `features.translateSVG` 为 true 且配置了顶层 `svg` 块时，使用 `translate-svg` 翻译 **独立的** SVG 资源。`sync` 命令在两个条件均满足时执行该步骤（除非指定 `--no-svg`）。
 
 ### `ui`
 
@@ -609,7 +622,7 @@ docs/guide.md → i18n/guide.de.md
 
 ### `svg`（可选）
 
-由 `translate-svg` 和 `sync` 的 SVG 阶段翻译的独立 SVG 资产的顶级配置。
+用于独立 SVG 资源的顶层路径和布局。仅当 **`features.translateSVG`** 为 true 时才会执行翻译（通过 `translate-svg` 或 `sync` 的 SVG 阶段）。
 
 | 字段                       | 描述 |
 | --------------------------- | ----------- |
@@ -640,16 +653,17 @@ npx ai-i18n-tools glossary-generate
 
 | 命令                                                                   | 说明                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 生成一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 会创建一个初始的 `.translate-ignore` 文件。                                                                            |
-| `extract`                                                                 | 扫描源码中的 `t("…")` 调用并更新 `strings.json`。需要启用 `features.extractUIStrings`。                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | 为每个 `documentations` 配置块（`contentPaths`，可选 `jsonSource`）翻译 Markdown/MDX 和 JSON 文件。`-j`：最大并行翻译的语言数量；`-b`：每个文件最大并行的批处理 API 调用数。`--prompt-format`：批处理请求格式（`xml` \| `json-array` \| `json-object`）。参见 [缓存行为和 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags) 和 [批处理提示格式](#batch-prompt-format)。 |
-| `translate-svg …`                                                         | 翻译在 `config.svg` 中配置的独立 SVG 资源（与文档分离）。缓存机制与文档类似；支持 `--no-cache` 以跳过本次运行的 SQLite 读写操作。支持 `-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | 仅翻译 UI 字符串。`--force`：为每种语言重新翻译所有条目（忽略现有翻译）。`--dry-run`：不进行写入，也不发起 API 调用。`-j`：最大并行语言数量。需要启用 `features.translateUIStrings`。                                                                                 |
-| `sync …`                                                                  | 提取（如果启用），然后进行 UI 翻译，接着当 `config.svg` 存在时执行 `translate-svg`，最后进行文档翻译——除非使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳过。共享标志：`-l`、`-p`、`--dry-run`、`-j`、`-b`（仅用于文档批处理）、`--force` / `--force-update`（仅用于文档；当文档运行时互斥）。                         |
-| `status`                                                                  | 显示每个文件 × 语言的 Markdown 翻译状态（无 `--locale` 过滤；语言来自配置）。                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 首先运行 `sync --force-update`（提取、UI、SVG、文档），然后移除陈旧的段落行（`last_hit_at` 为 null 或文件路径为空）；删除 `file_tracking` 中源路径在磁盘上不存在的记录；移除 `filepath` 元数据指向已删除文件的翻译行。输出三个计数（陈旧条目、孤立的 `file_tracking`、孤立的翻译）。除非指定 `--no-backup`，否则会在缓存目录下创建带时间戳的 SQLite 备份。 |
-| `editor [-p <port>] [--no-open]`                                          | 启动一个本地 Web 编辑器，用于编辑缓存、`strings.json` 和术语表 CSV。`--no-open`：不自动打开默认浏览器。<br><br>**注意：** 如果在缓存编辑器中修改了条目，必须运行 `sync --force-update` 才能将更新后的缓存条目写入输出文件。此外，如果源文本之后发生变化，手动修改的内容将丢失，因为会生成新的缓存键。 |
-| `glossary-generate [-o <path>]`                                           | 生成空的 `glossary-user.csv` 模板。`-o`：覆盖输出路径（默认：来自配置的 `glossary.userGlossary`，或 `glossary-user.csv`）。                                                                                                                                                |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 生成一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 会创建一个初始的 `.translate-ignore`。                                                                            |
+| `extract`                                                                 | 扫描源码中的 `t("…")` 调用并更新 `strings.json`。需要 `features.extractUIStrings`。                                                                                                                                                                                                    |
+| `translate-docs …`                                                        | 为每个 `documentations` 块（`contentPaths`，可选 `jsonSource`）翻译 Markdown/MDX 和 JSON。`-j`：最大并行语言区域数；`-b`：每个文件最大并行批处理 API 调用数。`--prompt-format`：批处理传输格式（`xml` \| `json-array` \| `json-object`）。参见 [缓存行为和 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags) 和 [批处理提示格式](#batch-prompt-format)。 |
+| `translate-svg …`                                                         | 翻译在 `config.svg` 中配置的独立 SVG 资源（与文档分离）。需要 `features.translateSVG`。与文档共享相同的缓存机制；支持 `--no-cache` 以跳过本次运行的 SQLite 读写操作。支持 `-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | 仅翻译 UI 字符串。`--force`：重新翻译每个语言区域的所有条目（忽略现有翻译）。`--dry-run`：不写入文件，不调用 API。`-j`：最大并行语言区域数。需要 `features.translateUIStrings`。                                                                                 |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | 将 `strings.json` 导出为 XLIFF 2.0 格式（每个目标语言区域一个 `.xliff`）。`-o` / `--output-dir`：输出目录（默认：与目录文件同目录）。`--untranslated-only`：仅导出缺少该语言区域翻译的单元。只读操作；不调用 API。                                                        |
+| `sync …`                                                                  | 启用时先提取，然后进行 UI 翻译，接着当 `features.translateSVG` 和 `config.svg` 设置后执行 `translate-svg`，最后进行文档翻译——除非通过 `--no-ui`、`--no-svg` 或 `--no-docs` 跳过。共享标志：`-l`、`-p`、`--dry-run`、`-j`、`-b`（仅限文档批处理）、`--force` / `--force-update`（仅限文档；文档运行时互斥）。                         |
+| `status`                                                                  | 显示每个文件 × 语言区域的 Markdown 翻译状态（无 `--locale` 过滤；语言区域来自配置）。                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 首先运行 `sync --force-update`（提取、UI、SVG、文档），然后移除陈旧的段落行（null `last_hit_at` / 空文件路径）；删除其解析后源路径在磁盘上不存在的 `file_tracking` 行；移除其 `filepath` 元数据指向缺失文件的翻译行。记录三个计数（陈旧、孤立的 `file_tracking`、孤立的翻译）。除非使用 `--no-backup`，否则在缓存目录下创建带时间戳的 SQLite 备份。 |
+| `editor [-p <port>] [--no-open]`                                          | 启动本地 Web 编辑器以编辑缓存、`strings.json` 和术语表 CSV。`--no-open`：不自动打开默认浏览器。<br><br>**注意：** 如果在缓存编辑器中编辑了条目，必须运行 `sync --force-update` 才能将更新后的缓存条目重写到输出文件中。此外，如果源文本之后发生变化，手动编辑的内容将会丢失，因为会生成新的缓存密钥。 |
+| `glossary-generate [-o <path>]`                                           | 生成一个空的 `glossary-user.csv` 模板。`-o`：覆盖输出路径（默认：来自配置的 `glossary.userGlossary`，或 `glossary-user.csv`）。                                                                                                                                                |
 
 所有命令都接受 `-c <path>` 来指定非默认配置文件，`-v` 用于详细输出，以及 `-w` / `--write-logs [path]` 将控制台输出记录到日志文件（默认路径：在根 `cacheDir` 下）。
 

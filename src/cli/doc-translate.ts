@@ -126,6 +126,8 @@ function emptyMarkdownProtectShell(): Omit<
     htmlAnchors: [],
     docusaurusHeadingIds: [],
     urlMap: [],
+    boldCodeMap: [],
+    ilcMap: [],
   };
 }
 

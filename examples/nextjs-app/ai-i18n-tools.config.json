@@ -25,7 +25,8 @@
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": true
+    "translateJSON": true,
+    "translateSVG": true
   },
   "glossary": {
     "uiGlossary": "locales/strings.json",

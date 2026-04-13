@@ -4,7 +4,7 @@ title: Exemplo de Recursos de Tradução
 description: >-
   Um documento de referência que demonstra todos os elementos Markdown que o
   ai-i18n-tools sabe como traduzir.
-translation_last_updated: '2026-04-13T15:45:41.088Z'
+translation_last_updated: '2026-04-13T17:23:09.498Z'
 source_file_mtime: '2026-04-13T12:49:18.347Z'
 source_file_hash: 60c92aa8b547462c58ec49a6b0d6830f7245d618f2052c5ab961e2a4e80a0234
 translation_language: pt-BR

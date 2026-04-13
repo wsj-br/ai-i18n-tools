@@ -2,7 +2,7 @@
  * Protect markdown link destinations from translation (`](url)` → placeholder).
  */
 
-const PLACEHOLDER_PREFIX = "{{URL_PLACEHOLDER_";
+const PLACEHOLDER_PREFIX = "{{URL_";
 const PLACEHOLDER_SUFFIX = "}}";
 
 const MARKDOWN_URL_REGEX = /\]\(([^)]*)\)/g;

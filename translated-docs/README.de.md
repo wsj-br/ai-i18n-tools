@@ -1,6 +1,6 @@
 # ai-i18n-tools
 
-CLI- und programmatische Werkzeuge zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Strings, übersetzt sie mit LLMs über OpenRouter und generiert lokaleready JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus JSON und (über `translate-svg`) eigenständige SVG-Assets.
+CLI- und programmatisches Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Texte, übersetzt sie mithilfe von LLMs über OpenRouter und generiert sprachenspezifische JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus-JSON und (über `features.translateSVG`, `translate-svg` und den `svg`-Block) eigenständige SVG-Ressourcen.
 
 <small>**In anderen Sprachen lesen:** </small>
 
@@ -14,9 +14,9 @@ Durchsucht Quell-Dateien nach `t("…")`-Aufrufen, erstellt einen Master-Katalog
 
 **Arbeitsablauf 2 - Dokumentenübersetzung** (Markdown, Docusaurus JSON)
 
-Übersetzt `.md` und `.mdx` aus den `contentPaths` jedes `documentations`-Blocks und JSON-Label-Dateien aus der `jsonSource` dieses Blocks, wenn aktiviert. Unterstützt Docusaurus-Stil und flache, lokal-suffixierte Layouts pro Block (`documentations[].markdownOutput`). Das gemeinsame Wurzelverzeichnis `cacheDir` enthält den SQLite-Cache, sodass nur neue oder geänderte Segmente an das LLM gesendet werden. **SVG:** Verwende `translate-svg` mit einem obersten `svg`-Block (auch aus `sync` ausgeführt, wenn `svg` gesetzt ist).
+Übersetzt `.md`- und `.mdx`-Dateien aus den `contentPaths` jedes `documentations`-Blocks sowie JSON-Beschriftungsdateien aus dem `jsonSource` dieses Blocks, wenn aktiviert. Unterstützt Docusaurus-artige und flache, sprachcodesuffixierte Layouts pro Block (`documentations[].markdownOutput`). Ein gemeinsames Stammverzeichnis `cacheDir` enthält den SQLite-Cache, sodass nur neue oder geänderte Segmente an das LLM gesendet werden. **SVG:** Aktivieren Sie `features.translateSVG`, fügen Sie den `svg`-Block auf oberster Ebene hinzu und verwenden Sie anschließend `translate-svg` (wird auch über `sync` ausgeführt, wenn beide aktiviert sind).
 
-Beide Arbeitsabläufe teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und können unabhängig oder zusammen verwendet werden. Die eigenständige SVG-Übersetzung wird über den obersten `svg`-Block konfiguriert und läuft über `translate-svg` (oder die SVG-Phase innerhalb von `sync`).
+Beide Workflows teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und können unabhängig oder zusammen verwendet werden. Die eigenständige SVG-Übersetzung nutzt `features.translateSVG` zusammen mit dem `svg`-Block auf oberster Ebene und wird über `translate-svg` ausgeführt (oder über die SVG-Phase innerhalb von `sync`).
 
 ---
 
@@ -99,7 +99,7 @@ npx ai-i18n-tools status
 ### Beide Arbeitsabläufe
 
 ```bash
-npx ai-i18n-tools sync   # extract UI strings, then translate UI strings, optional standalone SVG, then docs
+npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, and docs
 ```
 
 ---
@@ -130,9 +130,10 @@ ai-i18n-tools extract                               Scan source for t("…") cal
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
-ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (requires config.svg); see --no-cache
+ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
-ai-i18n-tools sync                                  Extract UI strings, then UI, optional SVG, then docs
+ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
+ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
 ai-i18n-tools status                                Translation status per file × locale
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default

@@ -109,14 +109,14 @@ Steps run in order:
 
 1. **`ai-i18n-tools extract`** — extracts UI strings and updates `locales/strings.json`.
 2. **`ai-i18n-tools translate-ui`** — writes flat locale JSON under `public/locales/` from `locales/strings.json`.
-3. **`ai-i18n-tools translate-svg`** — translates SVG assets from `images/` to `public/assets/` per the `svg` block in `ai-i18n-tools.config.json` (this example uses flat names: `translation_demo_svg.<locale>.svg`).
+3. **`ai-i18n-tools translate-svg`** — translates SVG assets from `images/` to `public/assets/` when `features.translateSVG` is true and the `svg` block is set in `ai-i18n-tools.config.json` (this example uses flat names: `translation_demo_svg.<locale>.svg`).
 4. **`ai-i18n-tools translate-docs`** — translates Docusaurus markdown under `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (see **Workflow 2** in `docs/GETTING_STARTED.md` at the repository root).
 
 You can run any step individually (e.g. `ai-i18n-tools translate-svg`) when only the sources for that workflow have changed.
 
 If logs show many skips and few writes, the tool is reusing **existing outputs** and the **SQLite cache** in `.translation-cache/`. To force re-translation, pass `--force` or `--force-update` on the relevant command where supported, or run `pnpm run i18n:clean` and translate again.
 
-This example config includes `svg`, so **`i18n:sync` runs the same SVG step as `translate-svg`**. You can still call `ai-i18n-tools translate-svg` alone for that step, or use `pnpm run i18n:translate` for the fixed UI → SVG → docs order **without** running **extract**.
+This example has `features.translateSVG` and an `svg` block, so **`i18n:sync` runs the same SVG step as `translate-svg`**. You can still call `ai-i18n-tools translate-svg` alone for that step, or use `pnpm run i18n:translate` for the fixed UI → SVG → docs order **without** running **extract**.
 
 ### 3. Clean up cache and re-translate
 

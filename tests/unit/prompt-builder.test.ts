@@ -47,6 +47,8 @@ describe("buildDocumentBatchPrompt", () => {
   it("markdown type includes core rules but no JSON/SVG addendum", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "markdown");
     expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
+    expect(systemPrompt).toContain("{{BLD_N}}");
+    expect(systemPrompt).toContain("{{ILC_N}}");
     expect(systemPrompt).toContain("{{IT}}");
     expect(systemPrompt).toContain("{{IU}}");
     expect(systemPrompt).toContain("{{SE}}");

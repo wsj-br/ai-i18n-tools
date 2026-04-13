@@ -6,7 +6,7 @@ describe("PlaceholderHandler", () => {
     const h = new PlaceholderHandler();
     const src = `:::note\nSee [link](https://x.com) and **bold** + *italic* + ~~strike~~\n:::`;
     const st = h.protectForTranslation(src);
-    expect(st.text).toContain("URL_PLACEHOLDER");
+    expect(st.text).toContain("{{URL_");
     expect(st.text).toContain("ADM_OPEN");
     expect(st.text).toContain("{{SE}}");
     expect(st.text).toContain("{{IT}}");
@@ -39,7 +39,7 @@ describe("PlaceholderHandler", () => {
     const line = "### Step {#my-id}";
     const p = protectDocAnchors(line);
     expect(p.docusaurusHeadingIds).toEqual(["{#my-id}"]);
-    const corrupted = p.protected.replace("DOC_HEADING_ID_0", "DOC_HEADING-ID_0");
+    const corrupted = p.protected.replace("HDG_0", "HDG-0");
     const out = restoreDocAnchors(corrupted, [], p.docusaurusHeadingIds);
     expect(out).toBe(line);
   });

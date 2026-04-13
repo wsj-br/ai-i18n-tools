@@ -154,6 +154,7 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     translateUIStrings: false,
     translateMarkdown: false,
     translateJSON: false,
+    translateSVG: false,
   },
   glossary: {},
   ui: {
@@ -192,10 +193,21 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
     config.features.translateMarkdown || config.features.translateJSON;
   const needsExtract = config.features.extractUIStrings;
   const needsUITranslation = config.features.translateUIStrings;
+  const src = normalizeLocale(config.sourceLocale);
+  const needsSvgTranslation = config.features.translateSVG && Boolean(config.svg);
+  const needsSvgApi =
+    needsSvgTranslation &&
+    getDocumentationTargetLocaleCodes(config).some((l) => normalizeLocale(l) !== src);
 
-  if ((needsDocTranslation || needsUITranslation) && models.length === 0) {
+  if (config.features.translateSVG && !config.svg) {
     throw new ConfigValidationError(
-      "openrouter.translationModels (non-empty array), or legacy defaultModel, is required when translateUIStrings or doc translate features are enabled"
+      "translateSVG is enabled but no svg block is configured (sourcePath, outputDir, style)"
+    );
+  }
+
+  if ((needsDocTranslation || needsUITranslation || needsSvgApi) && models.length === 0) {
+    throw new ConfigValidationError(
+      "openrouter.translationModels (non-empty array), or legacy defaultModel, is required when translateUIStrings, translateSVG (with non-source locales), or doc translate features are enabled"
     );
   }
 
@@ -366,6 +378,7 @@ export const initConfigTemplates = {
       // Workflow 2: document translation (enable when you have markdown to translate)
       translateMarkdown: false,
       translateJSON: false,
+      translateSVG: false,
     },
     glossary: {
       uiGlossary: "src/locales/strings.json",
@@ -414,6 +427,7 @@ export const initConfigTemplates = {
       // Workflow 2: Docusaurus document translation
       translateMarkdown: true,
       translateJSON: true,
+      translateSVG: false,
     },
     glossary: {
       uiGlossary: "src/locales/strings.json",

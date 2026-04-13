@@ -107,16 +107,16 @@ ai-i18n-tools sync
 
 تُنفَّذ الخطوات بالترتيب:
 
-1. **`ai-i18n-tools extract`** — يستخرج سلاسل واجهة المستخدم ويُحدّث `locales/strings.json`.
-2. **`ai-i18n-tools translate-ui`** — يكتب ملفات JSON مسطحة للغات تحت `public/locales/` من `locales/strings.json`.
-3. **`ai-i18n-tools translate-svg`** — يترجم أصول SVG من `images/` إلى `public/assets/` وفقًا للكتلة `svg` في ملف `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
-4. **`ai-i18n-tools translate-docs`** — يترجم ملفات Docusaurus markdown الموجودة ضمن `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (انظر **Workflow 2** في `docs/GETTING_STARTED.md` في جذر المستودع).
+1. **`ai-i18n-tools extract`** — يستخرج سلاسل واجهة المستخدم وحدّث `locales/strings.json`.  
+2. **`ai-i18n-tools translate-ui`** — يكتب ملف JSON للموضع بلغة مسطحة ضمن `public/locales/` من `locales/strings.json`.  
+3. **`ai-i18n-tools translate-svg`** — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون قيمة `features.translateSVG` صحيحة ويكون كتلة `svg` مضبوطة في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).  
+4. **`ai-i18n-tools translate-docs`** — يترجم ملفات Docusaurus بصيغة markdown الموجودة ضمن `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (انظر **Workflow 2** في `docs/GETTING_STARTED.md` في جذر المستودع).
 
 يمكنك تشغيل أي خطوة على حدة (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بسير العمل ذاك.
 
 إذا أظهرت السجلات تخطيًا عديدًا وكتابات قليلة، فإن الأداة تعيد استخدام **المخرجات الحالية** و**ذاكرة التخزين المؤقت SQLite** في `.translation-cache/`. لإجبار إعادة الترجمة، استخدم الخيار `--force` أو `--force-update` مع الأمر المعني عند دعمه، أو شغّل `pnpm run i18n:clean` ثم قم بالترجمة مرة أخرى.
 
-يتضمن تكوين هذا المثال `svg`، وبالتالي **`i18n:sync` يقوم بنفس خطوة SVG التي يقوم بها `translate-svg`**. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للحصول على الترتيب الثابت واجهة المستخدم → SVG → المستندات **دون** تشغيل **extract**.
+يحتوي هذا المثال على `features.translateSVG` وكتلة `svg`، وبالتالي **`i18n:sync` يقوم بتشغيل خطوة SVG نفسها كما في `translate-svg`**. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للحصول على الترتيب الثابت واجهة المستخدم → SVG → المستندات **بدون** تشغيل **extract**.
 
 ### 3. تنظيف الذاكرة المؤقتة وإعادة الترجمة
 

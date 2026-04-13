@@ -1,6 +1,6 @@
 import type { Glossary } from "../glossary/glossary.js";
 
-const PLACEHOLDER_PREFIX = "{{GLOSSARY_FORCE_";
+const PLACEHOLDER_PREFIX = "{{GLS_";
 const PLACEHOLDER_SUFFIX = "}}";
 
 export function glossaryForcePlaceholderToken(index: number): string {

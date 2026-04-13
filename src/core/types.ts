@@ -174,6 +174,8 @@ const featuresSchema = z.object({
   translateUIStrings: z.boolean().default(false),
   translateMarkdown: z.boolean().default(false),
   translateJSON: z.boolean().default(false),
+  /** Standalone SVG assets via `translate-svg` / `sync` when `svg` is configured. */
+  translateSVG: z.boolean().default(false),
 });
 
 const glossarySchema = z.preprocess(
@@ -377,6 +379,7 @@ export const i18nConfigSchema = z
       translateUIStrings: false,
       translateMarkdown: false,
       translateJSON: false,
+      translateSVG: false,
     }),
     glossary: glossarySchema.default({ autoAddUserEditedToGlossary: true }),
     ui: uiConfigSchema.default({

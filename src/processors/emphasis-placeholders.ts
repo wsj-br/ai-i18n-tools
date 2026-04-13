@@ -283,6 +283,18 @@ const RESTORE_RULES: PlaceholderRestoreRule[] = [
   { placeholder: STRIKETHROUGH_PLACEHOLDER, marker: "~~" },
 ];
 
+/**
+ * CommonMark right-flanking fix: when a restored emphasis delimiter is likely
+ * a closer (preceded by a letter, digit, or `}` from another placeholder) and
+ * the next character is a Unicode letter (CJK particle, etc.), insert a space
+ * so the delimiter satisfies the right-flanking rule.
+ *
+ * Openers are preceded by whitespace, start-of-string, or punctuation like
+ * `;` `(` `>` — those are left untouched so they remain left-flanking.
+ */
+const UNICODE_LETTER = /\p{L}/u;
+const LIKELY_CLOSER_PREV = /[\p{L}\p{N}}]/u;
+
 export function restoreMarkdownEmphasis(text: string): string {
   const out: string[] = [];
   let i = 0;
@@ -291,7 +303,15 @@ export function restoreMarkdownEmphasis(text: string): string {
     let matched = false;
     for (const rule of RESTORE_RULES) {
       if (text.startsWith(rule.placeholder, i)) {
+        const prevChar = out.length > 0 ? out[out.length - 1]! : "";
+        const nextChar = text[i + rule.placeholder.length] ?? "";
+        const likelyCloser = LIKELY_CLOSER_PREV.test(prevChar);
+
         out.push(rule.marker);
+        if (likelyCloser && UNICODE_LETTER.test(nextChar)) {
+          out.push(" ");
+        }
+
         i += rule.placeholder.length;
         matched = true;
         break;

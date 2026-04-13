@@ -25,7 +25,8 @@
     "extractUIStrings": false,
     "translateUIStrings": false,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "cacheDir": ".translation-cache",
   "documentations": [

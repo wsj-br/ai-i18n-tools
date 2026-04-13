@@ -2,8 +2,8 @@
 
 `ai-i18n-tools` दो स्वतंत्र, संयोज्य कार्यप्रवाह प्रदान करता है:
 
-- **कार्यप्रवाह 1 - UI अनुवाद**: किसी भी JS/TS स्रोत से `t("…")` कॉल निकालें, उन्हें OpenRouter के माध्यम से अनुवादित करें, और i18next के लिए तैयार फ्लैट प्रति-स्थानीय JSON फ़ाइलें लिखें।
-- **कार्यप्रवाह 2 - दस्तावेज़ अनुवाद**: स्मार्ट कैशिंग के साथ किसी भी संख्या में स्थानीय भाषाओं में मार्कडाउन (MDX) और Docusaurus JSON लेबल फ़ाइलों का अनुवाद करें। **SVG** संपत्तियों के लिए एक अलग कमांड (`translate-svg`) और वैकल्पिक `svg` कॉन्फ़िगरेशन का उपयोग किया जाता है (देखें [CLI संदर्भ](#cli-reference)).
+- **वर्कफ़्लो 1 - UI अनुवाद**: किसी भी JS/TS स्रोत से `t("…")` कॉल निकालें, उन्हें OpenRouter के माध्यम से अनुवादित करें, और i18next के लिए तैयार प्रति-स्थानांतरण JSON फ़ाइलें लिखें।
+- **वर्कफ़्लो 2 - दस्तावेज़ अनुवाद**: किसी भी संख्या में स्थानांतरणों के लिए मार्कडाउन (MDX) और डॉक्यूसॉरस JSON लेबल फ़ाइलों का अनुवाद करें, स्मार्ट कैशिंग के साथ। **SVG** संपत्तियों के लिए `features.translateSVG`, शीर्ष-स्तरीय `svg` ब्लॉक और `translate-svg` का उपयोग करें (देखें [CLI संदर्भ](#cli-reference))।
 
 दोनों कार्यप्रवाह OpenRouter (किसी भी संगत LLM) का उपयोग करते हैं और एक ही कॉन्फ़िग फ़ाइल साझा करते हैं।
 
@@ -19,21 +19,22 @@
 
 - [स्थापना](#installation)
 - [त्वरित प्रारंभ](#quick-start)
-- [कार्यप्रवाह 1 - UI अनुवाद](#workflow-1---ui-translation)
-  - [चरण 1: प्रारंभ करें](#step-1-initialise)
-  - [चरण 2: स्ट्रिंग निकालें](#step-2-extract-strings)
-  - [चरण 3: UI स्ट्रिंग का अनुवाद करें](#step-3-translate-ui-strings)
-  - [चरण 4: रनटाइम पर i18next को कनेक्ट करें](#step-4-wire-i18next-at-runtime)
-  - [स्रोत कोड में `t()` का उपयोग करना](#using-t-in-source-code)
+- [कार्यप्रवाह 1 - यूआई अनुवाद](#workflow-1---ui-translation)
+  - [चरण 1: आरंभ करें](#step-1-initialise)
+  - [चरण 2: स्ट्रिंग्स निकालें](#step-2-extract-strings)
+  - [चरण 3: यूआई स्ट्रिंग्स का अनुवाद करें](#step-3-translate-ui-strings)
+  - [XLIFF 2.0 में निर्यात करना (वैकल्पिक)](#exporting-to-xliff-20-optional)
+  - [चरण 4: रनटाइम पर i18next को जोड़ें](#step-4-wire-i18next-at-runtime)
+  - [स्रोत कोड में `t()` का उपयोग](#using-t-in-source-code)
   - [इंटरपोलेशन](#interpolation)
-  - [भाषा स्विचर UI](#language-switcher-ui)
-  - [RTL भाषाएँ](#rtl-languages)
+  - [भाषा स्विचर यूआई](#language-switcher-ui)
+  - [दाएं से बाएं भाषाएं](#rtl-languages)
 - [कार्यप्रवाह 2 - दस्तावेज़ अनुवाद](#workflow-2---document-translation)
-  - [चरण 1: प्रारंभ करें](#step-1-initialise-1)
+  - [चरण 1: आरंभ करें](#step-1-initialise-1)
   - [चरण 2: दस्तावेज़ों का अनुवाद करें](#step-2-translate-documents)
-    - [कैश व्यवहार और `translate-docs` ध्वज](#cache-behaviour-and-translate-docs-flags)
+    - [कैश व्यवहार और `translate-docs` झंडे](#cache-behaviour-and-translate-docs-flags)
   - [आउटपुट लेआउट](#output-layouts)
-- [संयुक्त कार्यप्रवाह (UI + दस्तावेज़)](#combined-workflow-ui--docs)
+- [संयुक्त कार्यप्रवाह (यूआई + दस्तावेज़)](#combined-workflow-ui--docs)
 - [कॉन्फ़िगरेशन संदर्भ](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ npx ai-i18n-tools translate-ui
 प्रत्येक प्रविष्टि के लिए, `translate-ui` प्रत्येक स्थानीयकरण को सफलतापूर्वक अनुवादित करने वाले **OpenRouter मॉडल आईडी** को एक वैकल्पिक `models` ऑब्जेक्ट में संग्रहीत करता है (जिसकी स्थानीयकरण कुंजियाँ `translated` के समान होती हैं)। स्थानीय `editor` कमांड में संपादित किए गए स्ट्रिंग्स को `models` में उस स्थानीयकरण के लिए सेंटिनल मान `user-edited` से चिह्नित किया जाता है। `ui.flatOutputDir` के तहत प्रति-स्थानीयकरण फ्लैट फ़ाइल्स केवल **स्रोत स्ट्रिंग → अनुवाद** रहती हैं; उनमें `models` शामिल नहीं होता है (ताकि रनटाइम बंडल अपरिवर्तित रहें)।
 
 > **कैश संपादक का उपयोग करने पर नोट:** यदि आप कैश संपादक में एक प्रविष्टि संपादित करते हैं, तो आपको अपडेट की गई कैश प्रविष्टि के साथ आउटपुट फ़ाइलों को फिर से लिखने के लिए `sync --force-update` (या समकक्ष `translate` आदेश के साथ `--force-update`) चलाना होगा। इसके अलावा, ध्यान रखें कि यदि स्रोत पाठ बाद में बदलता है, तो आपका मैनुअल संपादन खो जाएगा क्योंकि नए स्रोत स्ट्रिंग के लिए एक नया कैश कुंजी (हैश) उत्पन्न किया जाएगा।
+
+### XLIFF 2.0 में निर्यात करना (वैकल्पिक)
+
+यूआई स्ट्रिंग्स को एक अनुवाद विक्रेता, TMS या CAT उपकरण को सौंपने के लिए, कैटलॉग को **XLIFF 2.0** के रूप में निर्यात करें (प्रत्येक लक्ष्य स्थान के लिए एक फ़ाइल)। यह कमांड **केवल पढ़ने के लिए** है: यह `strings.json` में संशोधन नहीं करता है या कोई API नहीं कॉल करता है।
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+डिफ़ॉल्ट रूप से, फ़ाइलें `ui.stringsJson` के बगल में लिखी जाती हैं, जैसे `strings.de.xliff`, `strings.pt-BR.xliff` (आपके कैटलॉग का बेसनेम + स्थान + `.xliff`)। कहीं और लिखने के लिए `-o` / `--output-dir` का उपयोग करें। `strings.json` से मौजूदा अनुवाद `<target>` में दिखाई देते हैं; लापता स्थानों के लिए `state="initial"` का उपयोग किया जाता है और कोई `<target>` नहीं होता ताकि उपकरण उन्हें भर सकें। प्रत्येक स्थान के लिए अभी भी अनुवाद की आवश्यकता वाली केवल इकाइयों को निर्यात करने के लिए `--untranslated-only` का उपयोग करें (विक्रेता बैच के लिए उपयोगी)। `--dry-run` फ़ाइलें लिखे बिना पथ प्रिंट करता है।
 
 ### चरण 4: रनटाइम पर i18next को वायर करें
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## कार्यप्रवाह 2 - दस्तावेज़ अनुवाद
 
-मार्कडाउन दस्तावेज़, Docusaurus साइटों, और JSON लेबल फ़ाइलों के लिए डिज़ाइन किया गया। SVG आरेख [`translate-svg`](#cli-reference) और कॉन्फ़िग में `svg` के माध्यम से अनुवादित होते हैं, `documentations[].contentPaths` के माध्यम से नहीं।
+मार्कडाउन प्रलेखन, डॉक्यूसॉरस साइटों और JSON लेबल फ़ाइलों के लिए डिज़ाइन किया गया। स्वतंत्र SVG संपत्तियों का अनुवाद [`translate-svg`](#cli-reference) के माध्यम से किया जाता है जब `features.translateSVG` सक्षम होता है और शीर्ष-स्तरीय `svg` ब्लॉक सेट होता है — `documentations[].contentPaths` के माध्यम से नहीं।
 
 ### चरण 1: प्रारंभ करें
 
@@ -435,7 +446,8 @@ docs/guide.md → i18n/guide.de.md
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ docs/guide.md → i18n/guide.de.md
 
 `glossary.uiGlossary` दस्तावेज़ अनुवाद को UI के समान `strings.json` कैटलॉग पर इंगित करता है ताकि शब्दावली सुसंगत बनी रहे; `glossary.userGlossary` उत्पाद शर्तों के लिए CSV ओवरराइड जोड़ता है।
 
-एक पाइपलाइन चलाने के लिए `npx ai-i18n-tools sync` चलाएँ: **निकालें** UI स्ट्रिंग्स (यदि `features.extractUIStrings`), **अनुवाद करें UI** स्ट्रिंग्स (यदि `features.translateUIStrings`), **स्वतंत्र SVG संपत्तियों का अनुवाद करें** (यदि कॉन्फ़िगरेशन में एक `svg` ब्लॉक मौजूद है), फिर **दस्तावेज़ का अनुवाद करें** (प्रत्येक `documentations` ब्लॉक: कॉन्फ़िगर किए गए अनुसार markdown/JSON)। `--no-ui`, `--no-svg`, या `--no-docs` के साथ भागों को छोड़ें। दस्तावेज़ चरण `--dry-run`, `-p` / `--path`, `--force`, और `--force-update` को स्वीकार करता है (अंतिम दो केवल तब लागू होते हैं जब दस्तावेज़ अनुवाद चलता है; यदि आप `--no-docs` पास करते हैं तो उन्हें अनदेखा किया जाता है)।
+`npx ai-i18n-tools sync` चलाएँ एक पाइपलाइन चलाने के लिए: **UI स्ट्रिंग्स निकालें** (यदि `features.extractUIStrings`), **UI स्ट्रिंग्स का अनुवाद करें** (यदि `features.translateUIStrings`), **स्वतंत्र SVG संपत्तियों का अनुवाद करें** (यदि `features.translateSVG` और `svg` ब्लॉक सेट है), फिर **प्रलेखन का अनुवाद करें** (प्रत्येक `documentations` ब्लॉक: मार्कडाउन/JSON के रूप में कॉन्फ़िगर किया गया)। `--no-ui`, `--no-svg`, या `--no-docs` के साथ भागों को छोड़ें। दस्तावेज़ीकरण चरण `--dry-run`, `-p` / `--path`, `--force`, और `--force-update` को स्वीकार करता है (अंतिम दो केवल तभी लागू होते हैं जब प्रलेखन अनुवाद चलता है; यदि आप `--no-docs` पास करते हैं तो उन्हें अनदेखा कर दिया जाता है)।
 
 एक ब्लॉक पर `documentations[].targetLocales` का उपयोग करें ताकि उस ब्लॉक की फ़ाइलों का अनुवाद UI की तुलना में **छोटे उपसमुच्चय** में किया जा सके (प्रभावी दस्तावेज़ स्थानीयताएँ ब्लॉकों के बीच **संघ** हैं):
 
@@ -533,14 +545,15 @@ docs/guide.md → i18n/guide.de.md
 
 ### `features`
 
-| फ़ील्ड                | कार्यप्रवाह | विवरण                                                       |
+| फ़ील्ड                | वर्कफ़्लो | विवरण                                                       |
 | -------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings`   | 1        | स्रोत को `t("…")` के लिए स्कैन करें और `strings.json` लिखें/मर्ज करें।          |
-| `translateUIStrings` | 1        | `strings.json` प्रविष्टियों का अनुवाद करें और प्रति-स्थानीय JSON फ़ाइलें लिखें। |
+| `extractUIStrings`   | 1        | `t("…")` के लिए स्रोत को स्कैन करें और `strings.json` लिखें/मर्ज करें।          |
+| `translateUIStrings` | 1        | `strings.json` प्रविष्टियों का अनुवाद करें और प्रति-स्थानांतरण JSON फ़ाइलें लिखें। |
 | `translateMarkdown`  | 2        | `.md` / `.mdx` फ़ाइलों का अनुवाद करें।                                   |
-| `translateJSON`      | 2        | Docusaurus JSON लेबल फ़ाइलों का अनुवाद करें।                            |
+| `translateJSON`      | 2        | डॉक्यूसॉरस JSON लेबल फ़ाइलों का अनुवाद करें।                            |
+| `translateSVG`       | 2        | स्वतंत्र `.svg` संपत्तियों का अनुवाद करें (शीर्ष-स्तरीय `svg` ब्लॉक की आवश्यकता होती है)।
 
-कोई `features.translateSVG` ध्वज नहीं है। **स्वतंत्र** SVG संपत्तियों का अनुवाद `translate-svg` और कॉन्फ़िग में एक शीर्ष स्तर `svg` ब्लॉक के साथ करें। `sync` कमांड उस चरण को चलाता है जब `svg` मौजूद होता है (जब तक `--no-svg` न हो)।
+`translate-svg` के साथ **स्वतंत्र** SVG संपत्तियों का अनुवाद करें जब `features.translateSVG` सत्य हो और एक शीर्ष-स्तरीय `svg` ब्लॉक कॉन्फ़िगर किया गया हो। `sync` कमांड उस चरण को चलाता है जब दोनों सेट हों (जब तक `--no-svg` न हो)।
 
 ### `ui`
 
@@ -609,7 +622,7 @@ docs/guide.md → i18n/guide.de.md
 
 ### `svg` (वैकल्पिक)
 
-`translate-svg` द्वारा अनुवादित और `sync` के SVG चरण के लिए स्वतंत्र SVG संपत्तियों के लिए शीर्ष-स्तरीय कॉन्फ़िगरेशन।
+स्वतंत्र SVG संपत्तियों के लिए शीर्ष-स्तरीय पथ और लेआउट। अनुवाद केवल तभी चलता है जब **`features.translateSVG`** सत्य हो (या तो `translate-svg` या `sync` के SVG चरण के माध्यम से)।
 
 | फ़ील्ड                       | विवरण |
 | --------------------------- | ----------- |
@@ -640,16 +653,17 @@ npx ai-i18n-tools glossary-generate
 
 | कमांड | विवरण |
 | --- | --- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (इसमें `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `documentations[].addFrontmatter` शामिल हैं)। `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है। |
-| `extract` | स्रोत में `t("…")` कॉल की स्कैन करें और `strings.json` को अपडेट करें। `features.extractUIStrings` की आवश्यकता होती है। |
-| `translate-docs …` | प्रत्येक `documentations` ब्लॉक के लिए मार्कडाउन/MDX और JSON का अनुवाद करें (`contentPaths`, वैकल्पिक `jsonSource`)। `-j`: अधिकतम समानांतर स्थानीयकरण; `-b`: प्रति फ़ाइल अधिकतम समानांतर बैच API कॉल। `--prompt-format`: बैच वायर फ़ॉर्मेट (`xml` \| `json-array` \| `json-object`)। [कैश व्यवहार और `translate-docs` फ़्लैग](#cache-behaviour-and-translate-docs-flags) और [बैच प्रॉम्प्ट फ़ॉर्मेट](#batch-prompt-format) देखें। |
-| `translate-svg …` | `config.svg` में कॉन्फ़िगर किए गए स्वतंत्र SVG एसेट का अनुवाद करें (दस्तावेज़ों से अलग)। दस्तावेज़ों के समान कैश विचार; `--no-cache` का समर्थन करता है जो उस रन के लिए SQLite पढ़ने/लिखने को छोड़ देता है। `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`। |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | केवल UI स्ट्रिंग्स का अनुवाद करें। `--force`: प्रत्येक स्थानीयकरण के लिए सभी प्रविष्टियों को पुनः अनुवादित करें (मौजूदा अनुवादों को अनदेखा करें)। `--dry-run`: कोई लेखन नहीं, कोई API कॉल नहीं। `-j`: अधिकतम समानांतर स्थानीयकरण। `features.translateUIStrings` की आवश्यकता होती है। |
-| `sync …` | निकालें (यदि सक्षम है), फिर UI अनुवाद, फिर `config.svg` मौजूद होने पर `translate-svg`, फिर दस्तावेज़ीकरण अनुवाद - जब तक `--no-ui`, `--no-svg`, या `--no-docs` के साथ छोड़ा न जाए। साझा फ्लैग: `-l`, `-p`, `--dry-run`, `-j`, `-b` (केवल दस्तावेज़ बैचिंग), `--force` / `--force-update` (केवल दस्तावेज़; परस्पर अनन्य जब दस्तावेज़ चलते हैं)। |
-| `status` | प्रत्येक फ़ाइल × स्थानीयकरण के लिए मार्कडाउन अनुवाद स्थिति दिखाएँ (कोई `--locale` फ़िल्टर नहीं; स्थानीयकरण कॉन्फ़िग से आते हैं)। |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | पहले `sync --force-update` चलाता है (निकालें, UI, SVG, दस्तावेज़), फिर बेकार सेगमेंट पंक्तियाँ हटाता है (null `last_hit_at` / खाली फ़ाइलपाथ); `file_tracking` पंक्तियाँ छोड़ता है जिनका संकल्पित स्रोत पथ डिस्क पर अनुपलब्ध है; उन अनुवाद पंक्तियों को हटाता है जिनका `filepath` मेटाडेटा एक अनुपलब्ध फ़ाइल की ओर इशारा करता है। तीन गिनती लॉग करता है (बेकार, अनाथ `file_tracking`, अनाथ अनुवाद)। कैश डिरेक्टरी के अंतर्गत एक समयस्टैम्प वाला SQLite बैकअप बनाता है जब तक कि `--no-backup` न हो। |
-| `editor [-p <port>] [--no-open]` | कैश, `strings.json`, और शब्दावली CSV के लिए एक स्थानीय वेब संपादक लॉन्च करें। `--no-open`: डिफ़ॉल्ट ब्राउज़र को स्वचालित रूप से न खोलें।<br><br>**नोट:** यदि आप कैश संपादक में एक प्रविष्टि संपादित करते हैं, तो आपको अपडेट किए गए कैश प्रविष्टि के साथ आउटपुट फ़ाइलों को पुनः लिखने के लिए `sync --force-update` चलाना होगा। इसके अलावा, यदि बाद में स्रोत पाठ बदल जाता है, तो मैन्युअल संपादन खो जाएगा क्योंकि एक नया कैश कुंजी उत्पन्न होती है। |
-| `glossary-generate [-o <path>]` | एक खाली `glossary-user.csv` टेम्पलेट लिखें। `-o`: आउटपुट पथ को ओवरराइड करें (डिफ़ॉल्ट: कॉन्फ़िग से `glossary.userGlossary`, या `glossary-user.csv`)। |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `documentations[].addFrontmatter` शामिल हैं)। `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है। |
+| `extract` | स्रोत में `t("…")` कॉल के लिए स्कैन करें और `strings.json` को अपडेट करें। `features.extractUIStrings` की आवश्यकता होती है। |
+| `translate-docs …` | प्रत्येक `documentations` ब्लॉक (`contentPaths`, वैकल्पिक `jsonSource`) के लिए मार्कडाउन/MDX और JSON का अनुवाद करें। `-j`: अधिकतम समानांतर स्थानिकताएँ; `-b`: प्रति फ़ाइल अधिकतम समानांतर बैच API कॉल। `--prompt-format`: बैच वायर फॉर्मेट (`xml` \| `json-array` \| `json-object`)। [कैश व्यवहार और `translate-docs` फ्लैग्स](#cache-behaviour-and-translate-docs-flags) और [बैच प्रॉम्प्ट प्रारूप](#batch-prompt-format) देखें। |
+| `translate-svg …` | `config.svg` में कॉन्फ़िगर किए गए स्वतंत्र SVG एसेट्स का अनुवाद करें (दस्तावेज़ों से अलग)। `features.translateSVG` की आवश्यकता होती है। दस्तावेज़ों के समान कैश विचार; उस रन के लिए SQLite पढ़ने/लिखने को छोड़ने के लिए `--no-cache` का समर्थन करता है। `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`। |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | केवल UI स्ट्रिंग्स का अनुवाद करें। `--force`: प्रत्येक स्थानिकता के लिए सभी प्रविष्टियों का पुनः अनुवाद करें (मौजूदा अनुवादों को अनदेखा करें)। `--dry-run`: कोई लेखन नहीं, कोई API कॉल नहीं। `-j`: अधिकतम समानांतर स्थानिकताएँ। `features.translateUIStrings` की आवश्यकता होती है। |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | `strings.json` को XLIFF 2.0 में निर्यात करें (प्रत्येक लक्ष्य स्थानिकता के लिए एक `.xliff`)। `-o` / `--output-dir`: आउटपुट निर्देशिका (डिफ़ॉल्ट: कैटलॉग के समान फ़ोल्डर)। `--untranslated-only`: केवल उन इकाइयों को जिनके लिए उस स्थानिकता के लिए अनुवाद लापता है। केवल पढ़ने के लिए; कोई API नहीं। |
+| `sync …` | निर्यात (यदि सक्षम है), फिर UI अनुवाद, फिर `translate-svg` जब `features.translateSVG` और `config.svg` सेट हों, फिर दस्तावेज़ीकरण अनुवाद - जब तक `--no-ui`, `--no-svg`, या `--no-docs` के साथ छोड़ा न जाए। साझा फ्लैग: `-l`, `-p`, `--dry-run`, `-j`, `-b` (केवल दस्तावेज़ बैचिंग), `--force` / `--force-update` (केवल दस्तावेज़; जब दस्तावेज़ चलते हैं तो परस्पर अनन्य)। |
+| `status` | प्रत्येक फ़ाइल × स्थानिकता के लिए मार्कडाउन अनुवाद स्थिति दिखाएँ (कोई `--locale` फ़िल्टर नहीं; स्थानिकताएँ कॉन्फ़िग से आती हैं)। |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | पहले `sync --force-update` चलाता है (निष्कर्षण, UI, SVG, दस्तावेज़), फिर बेकार सेगमेंट पंक्तियाँ हटाता है (null `last_hit_at` / खाली फ़ाइलपाथ); उन `file_tracking` पंक्तियों को छोड़ता है जिनका हल किया गया स्रोत पथ डिस्क पर लापता है; उन अनुवाद पंक्तियों को हटाता है जिनका `filepath` मेटाडेटा लापता फ़ाइल की ओर इशारा करता है। तीन गिनतियाँ लॉग करता है (बेकार, अनाथ `file_tracking`, अनाथ अनुवाद)। कैश निर्देशिका के तहत `--no-backup` के बिना एक समयसील SQLite बैकअप बनाता है। |
+| `editor [-p <port>] [--no-open]` | कैश, `strings.json`, और शब्दावली CSV के लिए एक स्थानीय वेब संपादक लॉन्च करें। `--no-open`: डिफ़ॉल्ट ब्राउज़र को स्वचालित रूप से न खोलें।<br><br>**नोट:** यदि आप कैश संपादक में किसी प्रविष्टि को संपादित करते हैं, तो आपको अपडेटेड कैश प्रविष्टि के साथ आउटपुट फ़ाइलों को पुनः लिखने के लिए एक `sync --force-update` चलाना होगा। इसके अलावा, यदि बाद में स्रोत पाठ बदल जाता है, तो मैन्युअल संपादन खो जाएगा क्योंकि एक नया कैश कुंजी उत्पन्न की जाती है। |
+| `glossary-generate [-o <path>]` | एक खाली `glossary-user.csv` टेम्पलेट लिखें। `-o`: आउटपुट पथ को ओवरराइड करें (डिफ़ॉल्ट: कॉन्फ़िग से `glossary.userGlossary`, या `glossary-user.csv`)।
 
 सभी कमांड `-c <path>` को एक गैर-डिफ़ॉल्ट कॉन्फ़िग फ़ाइल निर्दिष्ट करने के लिए, `-v` विस्तृत आउटपुट के लिए, और `-w` / `--write-logs [path]` को लॉग फ़ाइल में कंसोल आउटपुट को टी करने के लिए स्वीकार करते हैं (डिफ़ॉल्ट पथ: रूट `cacheDir` के तहत)।
 

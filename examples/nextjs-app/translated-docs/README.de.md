@@ -107,16 +107,16 @@ ai-i18n-tools sync
 
 Die Schritte werden in folgender Reihenfolge ausgeführt:
 
-1. **`ai-i18n-tools extract`** — extrahiert UI-Texte und aktualisiert `locales/strings.json`.
-2. **`ai-i18n-tools translate-ui`** — schreibt flache Locale-JSON-Dateien unter `public/locales/` basierend auf `locales/strings.json`.
-3. **`ai-i18n-tools translate-svg`** — übersetzt SVG-Ressourcen aus `images/` nach `public/assets/` gemäß dem `svg`-Block in `ai-i18n-tools.config.json` (dieses Beispiel verwendet flache Namen: `translation_demo_svg.<locale>.svg`).
-4. **`ai-i18n-tools translate-docs`** — übersetzt Docusaurus-Markdown unter `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (siehe **Workflow 2** in `docs/GETTING_STARTED.md` im Repository-Stammverzeichnis).
+1. **`ai-i18n-tools extract`** – extrahiert UI-Zeichenketten und aktualisiert `locales/strings.json`.
+2. **`ai-i18n-tools translate-ui`** – schreibt flaches Locale-JSON unter `public/locales/` aus `locales/strings.json`.
+3. **`ai-i18n-tools translate-svg`** – übersetzt SVG-Ressourcen von `images/` nach `public/assets/`, wenn `features.translateSVG` true ist und der `svg`-Block in `ai-i18n-tools.config.json` gesetzt ist (dieses Beispiel verwendet flache Namen: `translation_demo_svg.<locale>.svg`).
+4. **`ai-i18n-tools translate-docs`** – übersetzt Docusaurus-Markdown unter `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (siehe **Workflow 2** in `docs/GETTING_STARTED.md` im Stammverzeichnis des Repositorys).
 
 Sie können jeden Schritt einzeln ausführen (z. B. `ai-i18n-tools translate-svg`), wenn sich nur die Quellen für diesen Workflow geändert haben.
 
 Wenn die Protokolle viele Überspringungen und nur wenige Schreibvorgänge anzeigen, wiederverwendet das Tool **bestehende Ausgaben** und den **SQLite-Cache** in `.translation-cache/`. Um eine erneute Übersetzung zu erzwingen, übergeben Sie `--force` oder `--force-update` an den entsprechenden Befehl (sofern unterstützt), oder führen Sie `pnpm run i18n:clean` aus und übersetzen Sie erneut.
 
-Diese Beispielkonfiguration enthält `svg`, daher führt **`i18n:sync` denselben SVG-Schritt wie `translate-svg` aus**. Sie können dennoch `ai-i18n-tools translate-svg` allein für diesen Schritt aufrufen oder `pnpm run i18n:translate` verwenden, um die feste Reihenfolge UI → SVG → Dokumente durchzuführen, **ohne** **extract** auszuführen.
+Dieses Beispiel enthält `features.translateSVG` und einen `svg`-Block, daher **`i18n:sync` führt denselben SVG-Schritt wie `translate-svg`** aus. Sie können dennoch `ai-i18n-tools translate-svg` allein für diesen Schritt aufrufen oder `pnpm run i18n:translate` verwenden, um die feste Reihenfolge UI → SVG → Dokumentation durchzuführen, **ohne** **extract** auszuführen.
 
 ### 3. Cache bereinigen und erneut übersetzen
 

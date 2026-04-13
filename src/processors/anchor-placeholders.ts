@@ -1,5 +1,5 @@
-const HTML_ANCHOR_PREFIX = "{{HTML_ANCHOR_";
-const HEADING_ID_PREFIX = "{{DOC_HEADING_ID_";
+const HTML_ANCHOR_PREFIX = "{{ANC_";
+const HEADING_ID_PREFIX = "{{HDG_";
 const PLACEHOLDER_SUFFIX = "}}";
 
 const HTML_ID_ANCHOR_RE = /<a\s+id\s*=\s*(["'])([^"']*)\1[^>]*>\s*<\/a>/gi;
@@ -42,15 +42,12 @@ export function restoreDocAnchors(
   let restored = text;
 
   for (let i = 0; i < docusaurusHeadingIds.length; i++) {
-    const flexible = new RegExp(
-      `\\{\\{\\s*DOC_HEADING[-_]ID_${i}\\s*\\}\\}`,
-      "g"
-    );
+    const flexible = new RegExp(`\\{\\{\\s*HDG[-_]${i}\\s*\\}\\}`, "g");
     restored = restored.replace(flexible, docusaurusHeadingIds[i]);
   }
 
   for (let i = 0; i < htmlAnchors.length; i++) {
-    const flexible = new RegExp(`\\{\\{\\s*HTML_ANCHOR_${i}\\s*\\}\\}`, "g");
+    const flexible = new RegExp(`\\{\\{\\s*ANC[-_]${i}\\s*\\}\\}`, "g");
     restored = restored.replace(flexible, htmlAnchors[i]);
   }
 

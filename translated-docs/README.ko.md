@@ -1,6 +1,6 @@
 # ai-i18n-tools
 
-JavaScript/TypeScript 애플리케이션과 문서 사이트를 국제화하기 위한 CLI 및 프로그래밍 방식 툴킷입니다. UI 문자열을 추출하고, OpenRouter를 통해 LLM으로 번역하며, i18next용 로케일 준비 JSON 파일을 생성합니다. 또한 마크다운, Docusaurus JSON 및 (`translate-svg`를 통한) 독립형 SVG 자산을 위한 파이프라인을 제공합니다.
+JavaScript/TypeScript 애플리케이션 및 문서 사이트의 국제화를 위한 CLI 및 프로그래밍 도구모음입니다. UI 문자열을 추출하고 OpenRouter를 통해 LLM을 사용하여 번역한 후 i18next용 로케일 대응 JSON 파일을 생성하며, 마크다운, Docusaurus JSON, 그리고 (`features.translateSVG`, `translate-svg` 및 `svg` 블록을 통해) 독립형 SVG 자산에 대한 파이프라인도 제공합니다.
 
 <small>**다른 언어로 읽기:** </small>
 
@@ -14,9 +14,9 @@ JavaScript/TypeScript 애플리케이션과 문서 사이트를 국제화하기 
 
 **워크플로우 2 - 문서 번역** (마크다운, Docusaurus JSON)
 
-각 `documentations` 블록의 `contentPaths`에서 `.md` 및 `.mdx` 파일을 번역하고, 해당 블록의 `jsonSource`가 활성화된 경우 JSON 레이블 파일을 번역합니다. 블록별로 Docusaurus 스타일 및 평면 로케일 접미사 레이아웃(`documentations[].markdownOutput`)을 지원합니다. 공유 루트 `cacheDir`은 SQLite 캐시를 보유하여 새롭거나 변경된 세그먼트만 LLM으로 전송됩니다. **SVG:** 최상위 `svg` 블록과 함께 `translate-svg`를 사용하세요 (`svg`가 설정된 경우 `sync` 내에서도 실행됨).
+`documentations` 블록의 `contentPaths`에서 `.md` 및 `.mdx` 파일을, 해당 블록의 `jsonSource`에서 JSON 레이블 파일을 활성화 시 번역합니다. 블록별로 Docusaurus 스타일 또는 단순 로케일 접미사 형식 레이아웃을 지원합니다(`documentations[].markdownOutput`). 공유 루트 `cacheDir`에 SQLite 캐시를 저장하여 새로운 또는 변경된 세그먼트만 LLM으로 전송합니다. **SVG:** `features.translateSVG`를 활성화하고 최상위 `svg` 블록을 추가한 후 `translate-svg`를 사용하세요(둘 다 설정된 경우 `sync`에서도 실행됨).
 
-두 워크플로우는 단일 `ai-i18n-tools.config.json` 파일을 공유하며 독립적으로 또는 함께 사용할 수 있습니다. 독립형 SVG 번역은 최상위 `svg` 블록을 통해 구성되며 `translate-svg`(또는 `sync` 내부의 SVG 단계)를 통해 실행됩니다.
+두 워크플로우는 동일한 `ai-i18n-tools.config.json` 파일을 공유하며 독립적으로 또는 함께 사용할 수 있습니다. 독립형 SVG 번역은 `features.translateSVG`와 최상위 `svg` 블록을 사용하며 `translate-svg`(또는 `sync` 내의 SVG 단계)를 통해 실행됩니다.
 
 ---
 
@@ -99,7 +99,7 @@ npx ai-i18n-tools status
 ### 두 워크플로우 모두
 
 ```bash
-npx ai-i18n-tools sync   # extract UI strings, then translate UI strings, optional standalone SVG, then docs
+npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, and docs
 ```
 
 ---
@@ -130,9 +130,10 @@ ai-i18n-tools extract                               Scan source for t("…") cal
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
-ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (requires config.svg); see --no-cache
+ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
-ai-i18n-tools sync                                  Extract UI strings, then UI, optional SVG, then docs
+ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
+ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
 ai-i18n-tools status                                Translation status per file × locale
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default

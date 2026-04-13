@@ -25,7 +25,7 @@ describe("glossary-force-placeholders", () => {
         g,
         "de"
       );
-      expect(text).toContain("{{GLOSSARY_FORCE_");
+      expect(text).toContain("{{GLS_");
       expect(replacements).toEqual(["Brand", "Brand"]);
       const back = restoreGlossaryForcedTerms(text, replacements);
       expect(back).toBe("Use Brand today in Brand.");

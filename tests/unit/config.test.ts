@@ -233,7 +233,13 @@ describe("parseI18nConfig", () => {
           maxTokens: 100,
           temperature: 0.1,
         },
-        features: { translateMarkdown: true, translateJSON: false, extractUIStrings: false, translateUIStrings: false },
+        features: {
+          translateMarkdown: true,
+          translateJSON: false,
+          extractUIStrings: false,
+          translateUIStrings: false,
+          translateSVG: false,
+        },
       })
     );
     const pp = c.documentations[0]!.markdownOutput.postProcessing;
@@ -412,6 +418,32 @@ describe("parseI18nConfig", () => {
       })
     );
     expect(c.features.translateUIStrings).toBe(true);
+  });
+
+  it("rejects translateSVG when no svg block is configured", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          targetLocales: ["de"],
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: ["m"],
+            maxTokens: 100,
+            temperature: 0.1,
+          },
+          features: {
+            extractUIStrings: false,
+            translateUIStrings: false,
+            translateMarkdown: false,
+            translateJSON: false,
+            translateSVG: true,
+          },
+        })
+      )
+    ).toThrow(/translateSVG is enabled but no svg block/);
   });
 });
 

@@ -2,8 +2,8 @@
 
 `ai-i18n-tools` 提供兩個獨立的可組合工作流程：
 
-- **工作流程 1 - UI 翻譯**：從任何 JS/TS 源碼中提取 `t("…")` 調用，通過 OpenRouter 進行翻譯，並寫入每個地區的平面 JSON 文件，準備好用於 i18next。
-- **工作流程 2 - 文檔翻譯**：將 markdown (MDX) 和 Docusaurus JSON 標籤文件翻譯成任意數量的地區，並具有智能緩存。**SVG** 資產使用單獨的命令 (`translate-svg`) 和可選的 `svg` 配置（請參見 [CLI 參考](#cli-reference)）。
+- **Workflow 1 - UI 翻譯**：從任何 JS/TS 原始碼中提取 `t("…")` 呼叫，透過 OpenRouter 進行翻譯，並寫入扁平的每種語言 JSON 檔案，以供 i18next 使用。
+- **Workflow 2 - 文件翻譯**：將 markdown（MDX）和 Docusaurus JSON 標籤檔案翻譯成任意數量的語系，並具備智慧快取功能。**SVG** 資產使用 `features.translateSVG`、頂層的 `svg` 區塊，以及 `translate-svg`（參見 [CLI 參考](#cli-reference))。
 
 這兩個工作流程都使用 OpenRouter（任何兼容的 LLM）並共享一個配置文件。
 
@@ -21,20 +21,21 @@
 - [快速開始](#quick-start)
 - [工作流程 1 - UI 翻譯](#workflow-1---ui-translation)
   - [步驟 1：初始化](#step-1-initialise)
-  - [步驟 2：提取字符串](#step-2-extract-strings)
-  - [步驟 3：翻譯 UI 字符串](#step-3-translate-ui-strings)
-  - [步驟 4：在運行時連接 i18next](#step-4-wire-i18next-at-runtime)
-  - [在源代碼中使用 `t()`](#using-t-in-source-code)
+  - [步驟 2：提取字串](#step-2-extract-strings)
+  - [步驟 3：翻譯 UI 字串](#step-3-translate-ui-strings)
+  - [匯出為 XLIFF 2.0（可選）](#exporting-to-xliff-20-optional)
+  - [步驟 4：在執行階段連結 i18next](#step-4-wire-i18next-at-runtime)
+  - [在原始碼中使用 `t()`](#using-t-in-source-code)
   - [插值](#interpolation)
-  - [語言切換器 UI](#language-switcher-ui)
+  - [語言切換 UI](#language-switcher-ui)
   - [RTL 語言](#rtl-languages)
-- [工作流程 2 - 文檔翻譯](#workflow-2---document-translation)
+- [工作流程 2 - 文件翻譯](#workflow-2---document-translation)
   - [步驟 1：初始化](#step-1-initialise-1)
-  - [步驟 2：翻譯文檔](#step-2-translate-documents)
-    - [緩存行為和 `translate-docs` 標誌](#cache-behaviour-and-translate-docs-flags)
+  - [步驟 2：翻譯文件](#step-2-translate-documents)
+    - [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags)
   - [輸出佈局](#output-layouts)
-- [結合工作流程（UI + 文檔）](#combined-workflow-ui--docs)
-- [配置參考](#configuration-reference)
+- [合併工作流程（UI + 文件）](#combined-workflow-ui--docs)
+- [設定參考](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
   - [`uiLanguagesPath`（可選）](#uilanguagespath-optional)
@@ -49,7 +50,7 @@
   - [`svg`（可選）](#svg-optional)
   - [`glossary`](#glossary)
 - [CLI 參考](#cli-reference)
-- [環境變量](#environment-variables)
+- [環境變數](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ npx ai-i18n-tools translate-ui
 對於每個條目，`translate-ui` 在可選的 `models` 對象中存儲成功翻譯每個語言的 **OpenRouter 模型 ID**（與 `translated` 相同的語言鍵）。在本地 `editor` 命令中編輯的字符串在該語言的 `models` 中標記為哨兵值 `user-edited`。位於 `ui.flatOutputDir` 下的每個語言的平面文件僅保留 **源字符串 → 翻譯**；它們不包括 `models`（因此運行時包保持不變）。
 
 > **使用快取編輯器的注意事項：** 若在快取編輯器中編輯項目，您必須執行 `sync --force-update`（或等效的 `translate` 指令加上 `--force-update`），才能以更新後的快取項目覆寫輸出檔案。此外請注意，若日後來源文字發生變更，您的手動編輯將會遺失，因為系統會為新的來源字串產生新的快取金鑰（雜湊值）。
+
+### 匯出為 XLIFF 2.0（可選）
+
+若要將 UI 字串交給翻譯供應商、TMS 或 CAT 工具，可將目錄匯出為 **XLIFF 2.0** 格式（每個目標語系一個檔案）。此指令為 **唯讀**：不會修改 `strings.json` 或呼叫任何 API。
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+預設情況下，檔案會寫入 `ui.stringsJson` 旁邊，命名方式如 `strings.de.xliff`、`strings.pt-BR.xliff`（您的目錄檔名 + 語系 + `.xliff`）。使用 `-o` / `--output-dir` 可指定其他輸出位置。來自 `strings.json` 的現有翻譯會出現在 `<target>` 中；缺少的語系則使用 `state="initial"` 且不含 `<target>`，以便工具填入內容。使用 `--untranslated-only` 可僅匯出每個語系尚待翻譯的項目（適用於供應商批次作業）。`--dry-run` 則僅列印路徑而不寫入檔案。
 
 ### 步驟 4：在執行階段串接 i18next
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## 工作流程 2 - 文檔翻譯
 
-設計用於 markdown 文檔、Docusaurus 網站和 JSON 標籤文件。SVG 圖表通過 [`translate-svg`](#cli-reference) 和配置中的 `svg` 進行翻譯，而不是通過 `documentations[].contentPaths`。
+專為 markdown 文件、Docusaurus 網站和 JSON 標籤檔案設計。當啟用 `features.translateSVG` 且設定頂層 `svg` 區塊時，獨立的 SVG 資產會透過 [`translate-svg`](#cli-reference) 進行翻譯——而不是透過 `documentations[].contentPaths`。
 
 ### 步驟 1：初始化
 
@@ -435,7 +446,8 @@ docs/guide.md → i18n/guide.de.md
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ docs/guide.md → i18n/guide.de.md
 
 `glossary.uiGlossary` 將文檔翻譯指向與 UI 相同的 `strings.json` 目錄，以保持術語的一致性；`glossary.userGlossary` 為產品術語添加 CSV 覆蓋。
 
-運行 `npx ai-i18n-tools sync` 以運行一個管道：**提取** UI 字符串（如果 `features.extractUIStrings`），**翻譯 UI** 字符串（如果 `features.translateUIStrings`），**翻譯獨立的 SVG 資產**（如果配置中存在 `svg` 區塊），然後 **翻譯文檔**（每個 `documentations` 區塊：按配置的 markdown/JSON）。跳過部分使用 `--no-ui`，`--no-svg`，或 `--no-docs`。文檔步驟接受 `--dry-run`，`-p` / `--path`，`--force`，和 `--force-update`（最後兩個僅在文檔翻譯運行時適用；如果您傳遞 `--no-docs`，則會被忽略）。
+執行 `npx ai-i18n-tools sync` 來運行一個管線：**提取** UI 字串（若設定 `features.extractUIStrings`），**翻譯 UI** 字串（若設定 `features.translateUIStrings`），**翻譯獨立 SVG 資產**（若設定 `features.translateSVG` 且有 `svg` 區塊），然後 **翻譯文件**（每個 `documentations` 區塊：依設定處理 markdown/JSON）。可使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過部分步驟。文件步驟接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（後兩個僅在執行文件翻譯時有效；若傳入 `--no-docs` 則會被忽略）。
 
 在區塊上使用 `documentations[].targetLocales` 將該區塊的文件翻譯為比 UI 更**小的子集**（有效的文檔地區是區塊之間的**聯集**）：
 
@@ -533,14 +545,15 @@ docs/guide.md → i18n/guide.de.md
 
 ### `features`
 
-| 欄位                | 工作流程 | 描述                                                       |
+| 欄位                 | 工作流程 | 說明                                                              |
 | -------------------- | -------- | ----------------------------------------------------------------- |
 | `extractUIStrings`   | 1        | 掃描原始碼中的 `t("…")` 並寫入/合併 `strings.json`。          |
-| `translateUIStrings` | 1        | 翻譯 `strings.json` 條目並寫入每個語系的 JSON 檔案。 |
+| `translateUIStrings` | 1        | 翻譯 `strings.json` 條目並寫入每種語言的 JSON 檔案。 |
 | `translateMarkdown`  | 2        | 翻譯 `.md` / `.mdx` 檔案。                                   |
 | `translateJSON`      | 2        | 翻譯 Docusaurus JSON 標籤檔案。                            |
+| `translateSVG`       | 2        | 翻譯獨立的 `.svg` 資產（需要頂層 `svg` 區塊）。 |
 
-沒有 `features.translateSVG` 旗標。使用 `translate-svg` 和設定檔頂層的 `svg` 區塊來翻譯**獨立**的 SVG 資源。當設定檔中存在 `svg` 時，`sync` 指令會執行該步驟（除非使用 `--no-svg`）。
+當 `features.translateSVG` 為 true 且已設定頂層 `svg` 區塊時，使用 `translate-svg` 來翻譯 **獨立** 的 SVG 資產。`sync` 命令會在兩者皆設定時執行該步驟（除非使用 `--no-svg`）。
 
 ### `ui`
 
@@ -609,7 +622,7 @@ docs/guide.md → i18n/guide.de.md
 
 ### `svg`（可選）
 
-獨立 SVG 資產的頂層配置，由 `translate-svg` 和 `sync` 的 SVG 階段翻譯。
+獨立 SVG 資產的頂層路徑與佈局。僅當 **`features.translateSVG`** 為 true 時才會執行翻譯（透過 `translate-svg` 或 `sync` 的 SVG 階段）。
 
 | 欄位                       | 描述 |
 | --------------------------- | ----------- |
@@ -640,16 +653,17 @@ npx ai-i18n-tools glossary-generate
 
 | 命令                                                                   | 說明                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 寫入一個起始設定檔（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 會建立一個起始的 `.translate-ignore` 檔案。                                                                            |
-| `extract`                                                                 | 掃描原始碼中的 `t("…")` 呼叫並更新 `strings.json`。需要啟用 `features.extractUIStrings`。                                                                                                                                                                                                    |
-| `translate-docs …`                                                        | 為每個 `documentations` 區塊（`contentPaths`，可選的 `jsonSource`）翻譯 Markdown/MDX 和 JSON 檔案。`-j`：最多並行的語系數量；`-b`：每份檔案最多並行的批次 API 呼叫數。`--prompt-format`：批次傳輸格式（`xml` \| `json-array` \| `json-object`）。請參閱 [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags) 和 [批次提示格式](#batch-prompt-format)。 |
-| `translate-svg …`                                                         | 翻譯設定在 `config.svg` 中的獨立 SVG 資產（與文件分開）。與文件具有相同的快取機制；支援 `--no-cache` 以在此次執行中跳過 SQLite 的讀取/寫入。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | 僅翻譯 UI 字串。`--force`：針對每個語系重新翻譯所有項目（忽略現有的翻譯）。`--dry-run`：不進行寫入，也不發出 API 呼叫。`-j`：最多並行的語系數量。需要啟用 `features.translateUIStrings`。                                                                                 |
-| `sync …`                                                                  | 提取（若已啟用），然後進行 UI 翻譯，接著當 `config.svg` 存在時執行 `translate-svg`，最後進行文件翻譯——除非使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過。共用標記：`-l`、`-p`、`--dry-run`、`-j`、`-b`（僅限文件批次處理）、`--force` / `--force-update`（僅限文件；當執行文件時互斥）。                         |
-| `status`                                                                  | 顯示每份檔案 × 語系的 Markdown 翻譯狀態（無 `--locale` 過濾；語系來自設定）。                                                                                                                                                                                               |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 首先執行 `sync --force-update`（提取、UI、SVG、文件），然後移除過時的片段資料列（`last_hit_at` 為 null 或 filepath 為空）；刪除其解析後的原始路徑在磁碟上不存在的 `file_tracking` 資料列；移除其 `filepath` 元資料指向不存在檔案的翻譯資料列。會記錄三項計數（過時、孤立的 `file_tracking`、孤立的翻譯）。除非指定 `--no-backup`，否則會在快取目錄下建立一個帶時間戳記的 SQLite 備份。 |
-| `editor [-p <port>] [--no-open]`                                          | 啟動一個本地網頁編輯器，用於編輯快取、`strings.json` 和詞彙表 CSV。`--no-open`：不要自動開啟預設瀏覽器。<br><br>**注意：** 如果您在快取編輯器中編輯某個項目，您必須執行 `sync --force-update` 才能將更新後的快取項目寫回輸出檔案。此外，如果原始文字日後變更，手動編輯將會遺失，因為會產生新的快取金鑰。 |
-| `glossary-generate [-o <path>]`                                           | 寫入一個空白的 `glossary-user.csv` 範本。`-o`：覆寫輸出路徑（預設：來自設定的 `glossary.userGlossary`，或 `glossary-user.csv`）。                                                                                                                                                |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 寫入一個起始設定檔（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 會建立一個起始的 `.translate-ignore`。                                                                            |
+| `extract`                                                                 | 掃描原始碼中的 `t("…")` 呼叫並更新 `strings.json`。需要 `features.extractUIStrings`。                                                                                                                                                                                                    |
+| `translate-docs …`                                                        | 為每個 `documentations` 區塊（`contentPaths`，可選的 `jsonSource`）翻譯 Markdown/MDX 和 JSON。`-j`：最大並行語系數量；`-b`：每檔案最大並行批次 API 呼叫數。`--prompt-format`：批次傳輸格式（`xml` \| `json-array` \| `json-object`）。請參閱 [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags) 和 [批次提示格式](#batch-prompt-format)。 |
+| `translate-svg …`                                                         | 翻譯在 `config.svg` 中設定的獨立 SVG 資產（與文件分開）。需要 `features.translateSVG`。與文件共享相同的快取機制；支援 `--no-cache` 以跳過該次執行的 SQLite 讀寫操作。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                    |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | 僅翻譯 UI 字串。`--force`：重新翻譯每個語系的所有項目（忽略現有翻譯）。`--dry-run`：不寫入、不呼叫 API。`-j`：最大並行語系數量。需要 `features.translateUIStrings`。                                                                                 |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | 將 `strings.json` 匯出為 XLIFF 2.0 格式（每個目標語系產生一個 `.xliff`）。`-o` / `--output-dir`：輸出目錄（預設：與目錄檔相同資料夾）。`--untranslated-only`：僅包含該語系中缺少翻譯的單元。唯讀模式；不呼叫 API。                                                        |
+| `sync …`                                                                  | 啟用時先進行提取，接著進行 UI 翻譯，然後在設定 `features.translateSVG` 和 `config.svg` 時執行 `translate-svg`，最後進行文件翻譯——除非使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過。共用旗標：`-l`、`-p`、`--dry-run`、`-j`、`-b`（僅限文件批次處理）、`--force` / `--force-update`（僅限文件；文件執行時互斥）。                         |
+| `status`                                                                  | 顯示每檔案 × 語系的 Markdown 翻譯狀態（無 `--locale` 過濾；語系來自設定）。                                                                                                                                                                                               |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | 首先執行 `sync --force-update`（提取、UI、SVG、文件），然後移除過時的片段資料列（null `last_hit_at` / 空檔案路徑）；刪除其解析後來源路徑在磁碟上不存在的 `file_tracking` 資料列；移除其 `filepath` 中中繼資料指向遺失檔案的翻譯資料列。記錄三項計數（過時、孤立的 `file_tracking`、孤立的翻譯）。除非指定 `--no-backup`，否則會在快取目錄下建立帶有時間戳記的 SQLite 備份。 |
+| `editor [-p <port>] [--no-open]`                                          | 啟動本地網頁編輯器以編輯快取、`strings.json` 和詞彙表 CSV。`--no-open`：不要自動開啟預設瀏覽器。<br><br>**注意：** 如果您在快取編輯器中編輯了某個項目，您必須執行 `sync --force-update` 才能將更新後的快取項目寫回輸出檔案。此外，如果稍後原始文字變更，手動編輯將會遺失，因為會產生新的快取金鑰。 |
+| `glossary-generate [-o <path>]`                                           | 寫入一個空的 `glossary-user.csv` 範本。`-o`：覆寫輸出路徑（預設：來自設定的 `glossary.userGlossary`，或 `glossary-user.csv`）。                                                                                                                                                |
 
 所有命令都接受 `-c <path>` 來指定非預設的配置文件，`-v` 用於詳細輸出，以及 `-w` / `--write-logs [path]` 將控制台輸出記錄到日誌文件（預設路徑：在根目錄 `cacheDir` 下）。
 

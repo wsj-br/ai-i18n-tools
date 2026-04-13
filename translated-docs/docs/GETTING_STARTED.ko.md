@@ -2,8 +2,8 @@
 
 `ai-i18n-tools`는 두 가지 독립적이면서도 조합 가능한 워크플로우를 제공합니다:
 
-- **워크플로우 1 - UI 번역**: JS/TS 소스에서 `t("…")` 호출을 추출하고 OpenRouter를 통해 번역한 후 i18next에서 바로 사용할 수 있는 평면화된 로케일별 JSON 파일을 생성합니다.
-- **워크플로우 2 - 문서 번역**: 마크다운(MDX) 및 Docusaurus JSON 레이블 파일을 여러 로케일로 번역하며, 스마트 캐싱을 지원합니다. **SVG** 자산은 별도의 명령어(`translate-svg`)와 선택적 `svg` 설정을 사용합니다(자세한 내용은 [CLI 참조](#cli-reference) 참조).
+- **Workflow 1 - UI Translation**: JS/TS 소스에서 `t("…")` 호출을 추출하고 OpenRouter를 통해 번역한 후, i18next에서 바로 사용할 수 있는 평면화된 지역별 JSON 파일을 작성합니다.  
+- **Workflow 2 - Document Translation**: 마크다운(MDX) 및 Docusaurus JSON 레이블 파일을 여러 지역화 언어로 번역하며, 스마트 캐싱을 지원합니다. **SVG** 자산은 `features.translateSVG`, 최상위 `svg` 블록 및 `translate-svg`을 사용합니다(자세한 내용은 [CLI 참조](#cli-reference) 참조).
 
 두 워크플로우 모두 OpenRouter(호환되는 모든 LLM)를 사용하며 단일 설정 파일을 공유합니다.
 
@@ -23,18 +23,19 @@
   - [1단계: 초기화](#step-1-initialise)
   - [2단계: 문자열 추출](#step-2-extract-strings)
   - [3단계: UI 문자열 번역](#step-3-translate-ui-strings)
-  - [4단계: 런타임에서 i18next 연결](#step-4-wire-i18next-at-runtime)
+  - [XLIFF 2.0으로 내보내기 (선택 사항)](#exporting-to-xliff-20-optional)
+  - [4단계: 런타임에 i18next 연결](#step-4-wire-i18next-at-runtime)
   - [소스 코드에서 `t()` 사용하기](#using-t-in-source-code)
   - [보간](#interpolation)
-  - [언어 전환 UI](#language-switcher-ui)
+  - [언어 전환기 UI](#language-switcher-ui)
   - [RTL 언어](#rtl-languages)
 - [워크플로우 2 - 문서 번역](#workflow-2---document-translation)
   - [1단계: 초기화](#step-1-initialise-1)
   - [2단계: 문서 번역](#step-2-translate-documents)
     - [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags)
   - [출력 레이아웃](#output-layouts)
-- [통합 워크플로우(UI + 문서)](#combined-workflow-ui--docs)
-- [설정 참조](#configuration-reference)
+- [통합 워크플로우 (UI + 문서)](#combined-workflow-ui--docs)
+- [구성 참조](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
   - [`uiLanguagesPath` (선택 사항)](#uilanguagespath-optional)
@@ -93,7 +94,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + docs (per config features)
+# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
 # Markdown translation status (per file × locale)
@@ -142,6 +143,16 @@ npx ai-i18n-tools translate-ui
 각 항목에 대해 `translate-ui`는 각 로케일을 성공적으로 번역한 **OpenRouter 모델 ID**를 선택적 `models` 객체에 저장합니다 (`translated`와 동일한 로케일 키 사용). 로컬 `editor` 명령어로 편집된 문자열은 해당 로케일의 `models`에 `user-edited`라는 시그널 값으로 표시됩니다. `ui.flatOutputDir` 아래의 로케일별 평면 파일은 **원본 문자열 → 번역문**만 포함되며, `models`는 포함되지 않습니다 (따라서 런타임 번들은 변경되지 않습니다).
 
 > **캐시 에디터 사용 시 참고사항:** 캐시 에디터에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 작성하기 위해 `sync --force-update` (또는 `--force-update` 옵션을 사용한 동등한 `translate` 명령어)를 실행해야 합니다. 또한, 이후 원본 텍스트가 변경되면 새로운 캐시 키(해시)가 생성되므로 수동 편집 내용이 사라진다는 점에 유의하세요.
+
+### XLIFF 2.0으로 내보내기 (선택 사항)
+
+UI 문자열을 번역 업체, TMS 또는 CAT 도구에 전달하려면 카탈로그를 **XLIFF 2.0** 형식으로 내보내세요(대상 로케일당 하나의 파일). 이 명령은 **읽기 전용** 입니다. `strings.json`을 수정하거나 API를 호출하지 않습니다.
+
+```bash
+npx ai-i18n-tools export-ui-xliff
+```
+
+기본적으로 파일은 `ui.stringsJson` 옆에 `strings.de.xliff`, `strings.pt-BR.xliff` 형식(카탈로그의 기본 이름 + 로케일 + `.xliff`)으로 작성됩니다. 다른 위치에 쓰려면 `-o` / `--output-dir`를 사용하세요. `strings.json`의 기존 번역은 `<target>`에 나타납니다. 누락된 로케일은 `state="initial"`으로 표시되며 `<target>`는 없으므로 도구에서 이를 채울 수 있습니다. `--untranslated-only`을 사용하면 각 로케일에 대해 아직 번역이 필요한 항목만 내보낼 수 있습니다(업체 배치에 유용함). `--dry-run`은 파일을 쓰지 않고 경로만 출력합니다.
 
 ### 4단계: 런타임에서 i18next 연결
 
@@ -329,7 +340,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 ## 워크플로 2 - 문서 번역
 
-마크다운 문서, Docusaurus 사이트 및 JSON 레이블 파일을 위한 것입니다. SVG 다이어그램은 [`translate-svg`](#cli-reference) 및 구성의 `svg`를 통해 번역되며, `documentations[].contentPaths`를 통해 번역되지 않습니다.
+마크다운 문서, Docusaurus 사이트 및 JSON 레이블 파일을 위한 설계입니다. 독립형 SVG 자산은 `features.translateSVG`이 활성화되고 최상위 `svg` 블록이 설정된 경우 [`translate-svg`](#cli-reference)을 통해 번역되며, `documentations[].contentPaths`을 통해 번역되지 않습니다.
 
 ### 1단계: 초기화
 
@@ -435,7 +446,8 @@ docs/guide.md → i18n/guide.de.md
     "extractUIStrings": true,
     "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": false
+    "translateJSON": false,
+    "translateSVG": false
   },
   "glossary": {
     "uiGlossary": "src/locales/strings.json",
@@ -459,7 +471,7 @@ docs/guide.md → i18n/guide.de.md
 
 `glossary.uiGlossary`는 UI와 동일한 `strings.json` 카탈로그를 문서 번역에 사용하여 용어 일관성을 유지합니다. `glossary.userGlossary`는 제품 용어에 대한 CSV 재정의를 추가합니다.
 
-`npx ai-i18n-tools sync`를 실행하여 하나의 파이프라인을 실행합니다: **추출** UI 문자열(`features.extractUIStrings`인 경우), **번역 UI** 문자열(`features.translateUIStrings`인 경우), **독립형 SVG 자산 번역**(설정에 `svg` 블록이 있는 경우), 그 후 **문서 번역**(각 `documentations` 블록: 설정된 대로 마크다운/JSON). `--no-ui`, `--no-svg`, 또는 `--no-docs`로 일부 단계를 건너뛸 수 있습니다. 문서 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update`를 지원합니다(마지막 두 옵션은 문서 번역이 실행될 때만 적용되며, `--no-docs`를 전달하면 무시됩니다).
+`npx ai-i18n-tools sync`을 실행하여 하나의 파이프라인을 수행합니다: **추출** UI 문자열(`features.extractUIStrings`인 경우), **번역 UI** 문자열(`features.translateUIStrings`인 경우), **독립형 SVG 자산 번역**(`features.translateSVG` 및 `svg` 블록이 설정된 경우), 그 후 **문서 번역**(각 `documentations` 블록: 구성된 대로 마크다운/JSON). `--no-ui`, `--no-svg` 또는 `--no-docs`을 사용하여 일부 단계를 건너뛸 수 있습니다. 문서 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update`을 허용합니다(마지막 두 옵션은 문서 번역이 실행될 때만 적용되며, `--no-docs`를 전달하면 무시됩니다).
 
 `documentations[].targetLocales`를 블록에 사용하여 해당 블록 파일을 UI보다 **더 작은 하위 집합**으로 번역합니다(효과적인 문서 로케일은 블록 간의 **합집합**입니다):
 
@@ -533,14 +545,15 @@ docs/guide.md → i18n/guide.de.md
 
 ### `features`
 
-| 필드                | 워크플로우 | 설명                                                       |
+| 필드                 | 워크플로 | 설명                                                              |
 | -------------------- | -------- | ----------------------------------------------------------------- |
-| `extractUIStrings`   | 1        | 소스에서 `t("…")`를 스캔하고 `strings.json`을 작성/병합합니다.          |
+| `extractUIStrings`   | 1        | 소스를 검사하여 `t("…")`을 찾고 `strings.json`을 작성/병합합니다.          |
 | `translateUIStrings` | 1        | `strings.json` 항목을 번역하고 지역별 JSON 파일을 작성합니다. |
 | `translateMarkdown`  | 2        | `.md` / `.mdx` 파일을 번역합니다.                                   |
 | `translateJSON`      | 2        | Docusaurus JSON 레이블 파일을 번역합니다.                            |
+| `translateSVG`       | 2        | 독립형 `.svg` 자산을 번역합니다(최상위 `svg` 블록 필요).
 
-`features.translateSVG` 플래그는 없습니다. **독립형** SVG 자산은 `translate-svg` 및 구성의 최상위 `svg` 블록으로 번역하세요. `sync` 명령은 `svg`가 존재할 때 해당 단계를 실행합니다 (단, `--no-svg` 제외).
+`features.translateSVG`이 true이고 최상위 `svg` 블록이 구성된 경우, `translate-svg`을 사용하여 **독립형** SVG 자산을 번역합니다. `sync` 명령은 두 조건이 모두 설정된 경우 해당 단계를 실행합니다(`--no-svg`인 경우 제외).
 
 ### `ui`
 
@@ -609,7 +622,7 @@ docs/guide.md → i18n/guide.de.md
 
 ### `svg` (선택 사항)
 
-`translate-svg` 및 `sync`의 SVG 단계에서 번역되는 독립형 SVG 자산을 위한 최상위 설정입니다.
+독립형 SVG 자산을 위한 최상위 경로 및 레이아웃. 번역은 **`features.translateSVG`** 이 true일 때만 실행됩니다(`translate-svg` 또는 `sync`의 SVG 단계를 통해).
 
 | 필드                       | 설명 |
 | --------------------------- | ----------- |
@@ -640,15 +653,16 @@ npx ai-i18n-tools glossary-generate
 
 | 명령 | 설명 |
 | --- | --- |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 시작 구성 파일을 작성합니다(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`는 시작용 `.translate-ignore` 파일을 생성합니다. |
-| `extract` | 소스에서 `t("…")` 호출을 스캔하고 `strings.json`을 업데이트합니다. `features.extractUIStrings`가 필요합니다. |
-| `translate-docs …` | 각 `documentations` 블록에 대해 마크다운/MDX 및 JSON을 번역합니다(`contentPaths`, 선택적으로 `jsonSource` 포함). `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식 (`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format) 참조. |
-| `translate-svg …` | `config.svg`에 구성된 독립형 SVG 자산을 번역합니다(문서와 별도). 문서와 동일한 캐시 개념을 사용하며, 해당 실행 시 SQLite 읽기/쓰기를 건너뛰기 위해 `--no-cache`를 지원합니다. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`. |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | UI 문자열만 번역합니다. `--force`: 기존 번역을 무시하고 로케일별로 모든 항목을 다시 번역합니다. `--dry-run`: 쓰기 작업이나 API 호출을 수행하지 않습니다. `-j`: 최대 병렬 로케일 수. `features.translateUIStrings`가 필요합니다. |
-| `sync …` | 활성화된 경우 추출(extract)을 수행한 후 UI 번역, `config.svg`가 존재하면 `translate-svg`, 그 후 문서 번역을 수행합니다. 단, `--no-ui`, `--no-svg`, `--no-docs`로 건너뛸 수 있습니다. 공유 플래그: `-l`, `-p`, `--dry-run`, `-j`, `-b`(문서 배치에만 해당), `--force` / `--force-update`(문서에만 해당; 문서 실행 시 서로 배타적). |
+| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | 시작 구성 파일을 작성합니다 (`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`는 시작용 `.translate-ignore`을 생성합니다. |
+| `extract` | 소스에서 `t("…")` 호출을 스캔하고 `strings.json`을 업데이트합니다. `features.extractUIStrings`이 필요합니다. |
+| `translate-docs …` | 각 `documentations` 블록(필수 `contentPaths`, 선택적 `jsonSource`)의 마크다운/MDX 및 JSON을 번역합니다. `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식 (`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format) 참조. |
+| `translate-svg …` | `config.svg`에서 구성된 독립형 SVG 자산을 번역합니다(문서와 별도). `features.translateSVG`가 필요합니다. 문서와 동일한 캐시 개념을 사용하며, 해당 실행에서 SQLite 읽기/쓰기를 건너뛰기 위해 `--no-cache`를 지원합니다. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`. |
+| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]` | UI 문자열만 번역합니다. `--force`: 기존 번역을 무시하고 로케일별로 모든 항목을 다시 번역합니다. `--dry-run`: 쓰기 없음, API 호출 없음. `-j`: 최대 병렬 로케일 수. `features.translateUIStrings`이 필요합니다. |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | `strings.json`을 XLIFF 2.0 형식으로 내보냅니다(대상 로케일당 하나의 `.xliff`). `-o` / `--output-dir`: 출력 디렉터리(기본값: 카탈로그와 동일한 폴더). `--untranslated-only`: 해당 로케일에서 번역이 누락된 항목만 포함합니다. 읽기 전용; API 없음. |
+| `sync …` | 활성화된 경우 추출 후 UI 번역, `features.translateSVG` 및 `config.svg`이 설정된 경우 `translate-svg`, 그 후 문서 번역을 수행합니다. 단, `--no-ui`, `--no-svg`, 또는 `--no-docs`로 건너뛸 수 있습니다. 공유 플래그: `-l`, `-p`, `--dry-run`, `-j`, `-b` (문서 배치 전용), `--force` / `--force-update` (문서 전용; 문서 실행 시 상호 배타적). |
 | `status` | 파일 × 로케일별 마크다운 번역 상태를 표시합니다(`--locale` 필터 없음; 로케일은 구성에서 가져옴). |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | 먼저 `sync --force-update`를 실행하고(추출, UI, SVG, 문서), 이후 오래된 세그먼트 행(null `last_hit_at` 또는 비어 있는 파일 경로)을 제거합니다. 디스크에 존재하지 않는 해결된 소스 경로를 가진 `file_tracking` 행을 삭제하고, `filepath` 메타데이터가 존재하지 않는 파일을 가리키는 번역 행을 제거합니다. 세 가지 카운트(오래된, 고아 `file_tracking`, 고아 번역)를 기록합니다. `--no-backup`이 없으면 캐시 디렉터리 아래에 타임스탬프가 포함된 SQLite 백업을 생성합니다. |
-| `editor [-p <port>] [--no-open]` | 캐시, `strings.json`, 용어집 CSV를 위한 로컬 웹 편집기를 실행합니다. `--no-open`: 기본 브라우저를 자동으로 열지 않습니다.<br><br>**참고:** 캐시 편집기에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 작성하려면 `sync --force-update`를 실행해야 합니다. 또한 나중에 소스 텍스트가 변경되면 새로운 캐시 키가 생성되므로 수동 편집 내용은 사라집니다. |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]` | 먼저 `sync --force-update`를 실행한 후(추출, UI, SVG, 문서), 고장난 세그먼트 행(null `last_hit_at` / 비어 있는 파일 경로)을 제거하고, 디스크상에서 해결된 소스 경로가 없는 `file_tracking` 행을 삭제하며, 존재하지 않는 파일을 가리키는 `filepath` 메타데이터가 있는 번역 행을 제거합니다. 세 가지 카운트(고장난, 고아된 `file_tracking`, 고아된 번역)를 기록합니다. `--no-backup`이 설정되지 않은 경우 캐시 디렉터리 아래에 타임스탬프가 붙은 SQLite 백업을 생성합니다. |
+| `editor [-p <port>] [--no-open]` | 캐시, `strings.json`, 용어집 CSV를 위한 로컬 웹 편집기를 실행합니다. `--no-open`: 기본 브라우저를 자동으로 열지 않습니다.<br><br>**참고:** 캐시 편집기에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 작성하기 위해 `sync --force-update`을 실행해야 합니다. 또한 나중에 소스 텍스트가 변경되면 새로운 캐시 키가 생성되기 때문에 수동 편집 내용은 사라집니다. |
 | `glossary-generate [-o <path>]` | 빈 `glossary-user.csv` 템플릿을 작성합니다. `-o`: 출력 경로를 재정의합니다(기본값: 구성의 `glossary.userGlossary` 또는 `glossary-user.csv`). |
 
 모든 명령어는 비기본 설정 파일을 지정하기 위한 `-c <경로>`, 자세한 출력을 위한 `-v`, 그리고 콘솔 출력을 로그 파일로 복제하기 위한 `-w` / `--write-logs [경로]`를 지원합니다(기본 경로: 루트 `cacheDir` 아래).
