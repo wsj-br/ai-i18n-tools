@@ -332,8 +332,8 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
     fs.writeFileSync(
       ui,
       JSON.stringify([
-        { code: "en", label: "English", englishName: "English" },
-        { code: "de", label: "Deutsch", englishName: "German" },
+        { code: "en", label: "English", englishName: "English", direction: "ltr" },
+        { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
       ]),
       "utf8"
     );

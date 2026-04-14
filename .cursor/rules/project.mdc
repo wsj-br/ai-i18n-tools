@@ -20,7 +20,9 @@ alwaysApply: true
 
 ## Documentation
 
-- **Canonical locations**: `README.md` (root) and `docs/` folder. Read `docs/ai-i18n-tools-context.md` before making code or config changes.
+- **Canonical locations**: `README.md` (root) and `docs/` folder.
+- **Working on this repository:** read `dev/package-context.md` first (maintainer / package internals). It is not published on npm.
+- **Downstream / consumer angle:** `docs/ai-i18n-tools-context.md` (also shipped on npm) targets apps **using** the package in their own repos.
 - **Auto-generated — do NOT edit**: `examples/nextjs-app/docs-site/` or `translated-docs` folders; rebuilt by `pnpm sync-docs` or `ai-i18n-tools translate-docs`. Edit only canonical sources.
 
 ## Minimal context (each new chat)

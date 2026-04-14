@@ -45,6 +45,11 @@ import { runTranslate, shouldRunJson, type TranslateRunOptions } from "./doc-tra
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
+import {
+  logGenerateUiLanguagesWarnings,
+  resolveDefaultUiLanguagesMasterPath,
+  runGenerateUiLanguages,
+} from "./generate-ui-languages.js";
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
@@ -144,7 +149,9 @@ program
 
 program
   .command("extract")
-  .description("Extract UI strings (t(...) / i18next-scanner) to strings.json")
+  .description(
+    "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
+  )
   .action(async (_opts, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
@@ -1064,6 +1071,40 @@ program
       }
       console.log("\n");
     });
+  });
+
+program
+  .command("generate-ui-languages")
+  .description("Write ui-languages.json from sourceLocale, targetLocales, and the master catalog")
+  .option("--master <path>", "Path to ui-languages-complete.json (default: bundled data file)")
+  .option("--dry-run", "Print JSON to stdout only; do not write the output file", false)
+  .action((opts: { master?: string; dryRun?: boolean }, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const masterPath = opts.master
+      ? path.resolve(cwd, opts.master)
+      : resolveDefaultUiLanguagesMasterPath();
+    if (!fs.existsSync(masterPath)) {
+      console.error(chalk.red(`Master file not found: ${masterPath}`));
+      process.exit(1);
+    }
+    try {
+      const result = runGenerateUiLanguages(config, projectRoot, {
+        masterPath,
+        dryRun: Boolean(opts.dryRun),
+      });
+      logGenerateUiLanguagesWarnings(result.warnings);
+      if (opts.dryRun) {
+        console.log(JSON.stringify(result.rows, null, 2));
+      } else {
+        console.log(
+          chalk.green(`✅ Wrote ${result.outPath} (${result.rows.length} row${result.rows.length === 1 ? "" : "s"})`)
+        );
+      }
+    } catch (e) {
+      console.error(chalk.red(`❌ [generate-ui-languages] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
   });
 
 program

@@ -1,4 +1,5 @@
 import { interpolateTemplate } from "./template.js";
+import { getTextDirectionFromBundledCatalog } from "./ui-languages-master-direction.js";
 
 /**
  * Framework-agnostic i18next setup helpers for key-as-default projects.
@@ -17,6 +18,7 @@ import { interpolateTemplate } from "./template.js";
  *   defaultI18nInitOptions, wrapI18nWithKeyTrim,
  *   makeLoadLocale, applyDirection,
  * } from 'ai-i18n-tools/runtime';
+ * // Direction comes from bundled data/ui-languages-complete.json — not from project ui-languages.json.
  *
  * // Must match sourceLocale in ai-i18n-tools.config.json
  * export const SOURCE_LOCALE = 'en-GB';
@@ -60,14 +62,19 @@ export const RTL_LANGS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Detect text direction from a BCP-47 locale code.
- * Strips region/script subtags and checks the base language against {@link RTL_LANGS}.
+ * Detect text direction from a locale code.
+ * Uses the bundled `data/ui-languages-complete.json` catalog (same source as the extract-generated manifest),
+ * then falls back to {@link RTL_LANGS} for codes missing from the catalog.
  *
  * @example getTextDirection('ar')      // 'rtl'
  * @example getTextDirection('fa-IR')   // 'rtl'
  * @example getTextDirection('en-GB')   // 'ltr'
  */
 export function getTextDirection(lng: string): "ltr" | "rtl" {
+  const fromCatalog = getTextDirectionFromBundledCatalog(lng);
+  if (fromCatalog !== undefined) {
+    return fromCatalog;
+  }
   const base = (lng && lng.split(/[-_]/)[0]) || "";
   return RTL_LANGS.has(base) ? "rtl" : "ltr";
 }

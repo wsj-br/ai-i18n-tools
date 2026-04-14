@@ -14,6 +14,14 @@ export function normalizeLocale(locale: string): string {
 }
 
 /**
+ * Canonical key for matching `ui-languages.json` / master catalog `code` values
+ * whether they use glibc underscores (`ar_SA`, `be_BY@latin`) or BCP-47 hyphens (`ar-SA`).
+ */
+export function normalizeManifestLocaleKey(locale: string): string {
+  return locale.trim().replace(/-/g, "_").toLowerCase();
+}
+
+/**
  * English language name for a BCP-47 tag (e.g. `ko` → `"Korean"`, `en-GB` → `"British English"`).
  * Used for LLM prompts when `localeDisplayNames` is unset. Returns `undefined` if `Intl` cannot resolve a useful label.
  */

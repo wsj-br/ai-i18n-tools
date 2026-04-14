@@ -138,6 +138,15 @@ describe("getTextDirection", () => {
   it("returns ltr for empty string", () => {
     expect(getTextDirection("")).toBe("ltr");
   });
+
+  it("uses bundled catalog direction when the locale is in data/ui-languages-complete.json", () => {
+    expect(getTextDirection("ar")).toBe("rtl");
+    expect(getTextDirection("ar-SA")).toBe("rtl");
+  });
+
+  it("falls through to RTL_LANGS when a code is missing from the bundled catalog", () => {
+    expect(getTextDirection("xx-YY")).toBe("ltr");
+  });
 });
 
 // ---------------------------------------------------------------------------

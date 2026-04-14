@@ -65,6 +65,8 @@ export {
   mergeWithDefaults,
   parseI18nConfig,
   applyEnvOverrides,
+  augmentConfigWithUiLanguagesMaster,
+  applyDefaultUiLanguagesPathToRawInput,
   loadI18nConfigFromFile,
   defaultI18nConfigPartial,
   validateI18nBusinessRules,
@@ -160,6 +162,7 @@ export {
 
 export {
   type UiLanguageEntry,
+  assertTargetLocalesAreLocaleCodes,
   looksLikeUiLanguagesFileRef,
   expandTargetLocalesFileReferenceInRawInput,
   expandDocumentationTargetLocalesInRawInput,
@@ -171,8 +174,15 @@ export {
   mergeUiLanguageDisplayNames,
   resolveUiTranslationTargetCodes,
   resolveLocalesForUI,
-  augmentConfigWithUiLanguagesFile,
 } from "./core/ui-languages.js";
+
+export {
+  buildUiLanguageRowsFromMaster,
+  effectiveUiLanguagesCodes,
+  loadUiLanguagesMaster,
+  resolveBundledUiLanguagesCompletePath,
+  type UiLanguageRow,
+} from "./core/ui-languages-catalog.js";
 
 /**
  * Runtime helpers (no React / i18next import required):

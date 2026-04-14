@@ -1,21 +1,26 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
+import { buildUiLanguageRowsFromMaster, loadUiLanguagesMaster } from "../core/ui-languages-catalog.js";
 import type { I18nConfig } from "../core/types.js";
 import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
   aggregateUiStringLocations,
   defaultFuncNamesFromConfig,
+  uiStringHash,
 } from "../extractors/ui-string-locations.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
+import { logGenerateUiLanguagesWarnings, resolveDefaultUiLanguagesMasterPath, runGenerateUiLanguages } from "./generate-ui-languages.js";
 
 export interface ExtractSummary {
   found: number;
   added: number;
   updated: number;
   outPath: string;
+  /** Set when `ui-languages.json` was written alongside extract. */
+  uiLanguagesOutPath?: string;
 }
 
 /**
@@ -67,6 +72,39 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     if (!byHash.has(s.hash)) {
       byHash.set(s.hash, { source: s.content, translated: {} });
       found++;
+    }
+  }
+
+  if (config.ui.reactExtractor?.includeUiLanguageEnglishNames) {
+    const masterPath = resolveDefaultUiLanguagesMasterPath();
+    if (!fs.existsSync(masterPath)) {
+      console.warn(
+        chalk.yellow(
+          `⚠️  ${timestamp()} - includeUiLanguageEnglishNames is enabled but bundled ui-languages master was not found; skipping englishName merge.`
+        )
+      );
+    } else {
+      try {
+        const master = loadUiLanguagesMaster(masterPath);
+        const { rows } = buildUiLanguageRowsFromMaster(config, master);
+        for (const row of rows) {
+          const text = row.englishName.trim();
+          if (!text) {
+            continue;
+          }
+          const h = uiStringHash(text);
+          if (!byHash.has(h)) {
+            byHash.set(h, { source: text, translated: {} });
+            found++;
+          }
+        }
+      } catch (err) {
+        console.warn(
+          chalk.yellow(
+            `⚠️  ${timestamp()} - Could not merge englishName hints from master catalog: ${err instanceof Error ? err.message : String(err)}`
+          )
+        );
+      }
     }
   }
 
@@ -122,5 +160,27 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
 
   writeAtomicUtf8(outPath, `${JSON.stringify(output, null, 2)}\n`);
 
-  return { found, added, updated, outPath };
+  let uiLanguagesOutPath: string | undefined;
+  const masterPath = resolveDefaultUiLanguagesMasterPath();
+  if (fs.existsSync(masterPath)) {
+    try {
+      const gen = runGenerateUiLanguages(config, cwd, { masterPath, dryRun: false });
+      logGenerateUiLanguagesWarnings(gen.warnings);
+      uiLanguagesOutPath = gen.outPath;
+    } catch (e) {
+      console.warn(
+        chalk.yellow(
+          `⚠️  ${timestamp()} - Could not write ui-languages.json: ${e instanceof Error ? e.message : String(e)}`
+        )
+      );
+    }
+  } else {
+    console.warn(
+      chalk.yellow(
+        `⚠️  ${timestamp()} - Bundled ui-languages master not found at ${masterPath}; skipping ui-languages.json generation.`
+      )
+    );
+  }
+
+  return { found, added, updated, outPath, uiLanguagesOutPath };
 }

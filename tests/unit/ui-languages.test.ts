@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import {
+  augmentConfigWithUiLanguagesMaster,
   loadI18nConfigFromFile,
   mergeWithDefaults,
   parseI18nConfig,
@@ -9,7 +10,6 @@ import {
 import type { I18nConfig } from "../../src/core/types.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 import {
-  augmentConfigWithUiLanguagesFile,
   expandDocumentationTargetLocalesInRawInput,
   expandTargetLocalesFileReferenceInRawInput,
   getDocumentationTargetLocaleCodes,
@@ -28,7 +28,7 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
   return parseI18nConfig(
     mergeWithDefaults({
       sourceLocale: "en-GB",
-      targetLocales: [],
+      targetLocales: ["de", "fr"],
       uiLanguagesPath: "ui-languages.json",
       ui: {
         sourceRoots: [],
@@ -73,42 +73,7 @@ describe("ui-languages", () => {
     expect(looksLikeUiLanguagesFileRef("   ")).toBe(false);
   });
 
-  it("expandTargetLocalesFileReferenceInRawInput accepts targetLocales as a string path", () => {
-    const uiPath = path.join(tmp, "locales", "ui-languages.json");
-    fs.mkdirSync(path.dirname(uiPath), { recursive: true });
-    fs.writeFileSync(
-      uiPath,
-      JSON.stringify([
-        { code: "en-GB", label: "English", englishName: "English (UK)" },
-        { code: "de", label: "Deutsch", englishName: "German" },
-      ]),
-      "utf8"
-    );
-    const raw = mergeWithDefaults({
-      sourceLocale: "en-GB",
-      ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
-      cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
-      targetLocales: "locales/ui-languages.json",
-      openrouter: { translationModels: ["m"] },
-      features: { translateUIStrings: true },
-    });
-    expandTargetLocalesFileReferenceInRawInput(raw, tmp);
-    expect(raw.targetLocales).toEqual(["de"]);
-    expect(raw.uiLanguagesPath).toBe("locales/ui-languages.json");
-  });
-
-  it("expandTargetLocalesFileReferenceInRawInput replaces targetLocales and sets uiLanguagesPath", () => {
-    const uiPath = path.join(tmp, "locales", "ui-languages.json");
-    fs.mkdirSync(path.dirname(uiPath), { recursive: true });
-    fs.writeFileSync(
-      uiPath,
-      JSON.stringify([
-        { code: "en-GB", label: "English", englishName: "English (UK)" },
-        { code: "de", label: "Deutsch", englishName: "German" },
-      ]),
-      "utf8"
-    );
+  it("expandTargetLocalesFileReferenceInRawInput rejects a path-like targetLocales entry", () => {
     const raw = mergeWithDefaults({
       sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
@@ -118,44 +83,21 @@ describe("ui-languages", () => {
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
     });
-    expandTargetLocalesFileReferenceInRawInput(raw, tmp);
-    expect(raw.targetLocales).toEqual(["de"]);
-    expect(raw.uiLanguagesPath).toBe("locales/ui-languages.json");
+    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(ConfigValidationError);
   });
 
-  it("expandTargetLocalesFileReferenceInRawInput throws when manifest file is missing", () => {
+  it("expandTargetLocalesFileReferenceInRawInput accepts locale codes", () => {
     const raw = mergeWithDefaults({
-      sourceLocale: "en",
-      targetLocales: ["missing-ui-languages.json"],
+      sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
       cacheDir: ".translation-cache",
       documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      targetLocales: ["de", "fr"],
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
     });
-    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(/not found/);
-  });
-
-  it("expandTargetLocalesFileReferenceInRawInput rejects conflicting uiLanguagesPath", () => {
-    const uiPath = path.join(tmp, "a.json");
-    fs.writeFileSync(
-      uiPath,
-      JSON.stringify([{ code: "de", label: "D", englishName: "German" }]),
-      "utf8"
-    );
-    const raw = mergeWithDefaults({
-      sourceLocale: "en",
-      ui: { flatOutputDir: "o", sourceRoots: [], stringsJson: "strings.json" },
-      cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
-      targetLocales: ["a.json"],
-      uiLanguagesPath: "other.json",
-      openrouter: { translationModels: ["m"] },
-      features: { translateUIStrings: true },
-    });
-    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(
-      ConfigValidationError
-    );
+    expandTargetLocalesFileReferenceInRawInput(raw, tmp);
+    expect(raw.targetLocales).toEqual(["de", "fr"]);
   });
 
   it("loadUiLanguageEntries rejects entries without englishName", () => {
@@ -164,13 +106,23 @@ describe("ui-languages", () => {
     expect(() => loadUiLanguageEntries(p)).toThrow(/englishName/);
   });
 
+  it("loadUiLanguageEntries rejects entries without direction", () => {
+    const p = path.join(tmp, "bad-dir.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify([{ code: "de", label: "Deutsch", englishName: "German" }]),
+      "utf8"
+    );
+    expect(() => loadUiLanguageEntries(p)).toThrow(/direction/);
+  });
+
   it("loadUiLanguageEntries reads ui-languages.json array", () => {
     const p = path.join(tmp, "ui-languages.json");
     fs.writeFileSync(
       p,
       JSON.stringify([
-        { code: "en-GB", label: "English", englishName: "English (UK)" },
-        { code: "de", label: "Deutsch", englishName: "German" },
+        { code: "en-GB", label: "English", englishName: "English (UK)", direction: "ltr" },
+        { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
       ]),
       "utf8"
     );
@@ -182,8 +134,8 @@ describe("ui-languages", () => {
   it("mergeUiLanguageDisplayNames fills missing localeDisplayNames", () => {
     const c = baseUiConfig({ localeDisplayNames: { de: "Custom DE" } });
     const next = mergeUiLanguageDisplayNames(c, [
-      { code: "de", label: "Deutsch", englishName: "German" },
-      { code: "fr", label: "Français", englishName: "French" },
+      { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
+      { code: "fr", label: "Français", englishName: "French", direction: "ltr" },
     ]);
     expect(next.localeDisplayNames?.de).toBe("Custom DE");
     expect(next.localeDisplayNames?.fr).toBe("French");
@@ -192,99 +144,59 @@ describe("ui-languages", () => {
   it("resolveUiTranslationTargetCodes drops source and intersects targetLocales", () => {
     const c = baseUiConfig({ sourceLocale: "en-GB", targetLocales: ["de", "xx"] });
     const codes = resolveUiTranslationTargetCodes(c, [
-      { code: "en-GB", label: "EN", englishName: "English (UK)" },
-      { code: "de", label: "DE", englishName: "German" },
-      { code: "fr", label: "FR", englishName: "French" },
+      { code: "en-GB", label: "EN", englishName: "English (UK)", direction: "ltr" },
+      { code: "de", label: "DE", englishName: "German", direction: "ltr" },
+      { code: "fr", label: "FR", englishName: "French", direction: "ltr" },
     ]);
     expect(codes).toEqual(["de"]);
   });
 
   it("resolveUiTranslationTargetCodes uses file only when targetLocales empty", () => {
-    const c = baseUiConfig({ sourceLocale: "en-GB", targetLocales: [] });
+    const c = baseUiConfig({
+      sourceLocale: "en-GB",
+      targetLocales: [],
+      features: {
+        extractUIStrings: false,
+        translateUIStrings: false,
+        translateMarkdown: false,
+        translateJSON: false,
+      },
+    });
     const codes = resolveUiTranslationTargetCodes(c, [
-      { code: "en-GB", label: "EN", englishName: "English (UK)" },
-      { code: "de", label: "DE", englishName: "German" },
+      { code: "en-GB", label: "EN", englishName: "English (UK)", direction: "ltr" },
+      { code: "de", label: "DE", englishName: "German", direction: "ltr" },
     ]);
     expect(codes).toEqual(["de"]);
   });
 
-  it("resolveLocalesForUI uses file when present", () => {
-    const p = path.join(tmp, "ui-languages.json");
-    fs.writeFileSync(
-      p,
-      JSON.stringify([
-        { code: "en-GB", label: "EN", englishName: "English (UK)" },
-        { code: "de", label: "DE", englishName: "German" },
-        { code: "fr", label: "FR", englishName: "French" },
-      ]),
-      "utf8"
-    );
-    const c = baseUiConfig({ uiLanguagesPath: p });
-    expect(resolveLocalesForUI(c, tmp)).toEqual(["de", "fr"]);
+  it("resolveLocalesForUI uses targetLocales", () => {
+    const c = baseUiConfig({ targetLocales: ["de", "fr", "es"] });
+    expect(resolveLocalesForUI(c, tmp)).toEqual(["de", "fr", "es"]);
   });
 
-  it("resolveLocalesForUI filters --locale against file", () => {
-    const p = path.join(tmp, "ui-languages.json");
-    fs.writeFileSync(
-      p,
-      JSON.stringify([
-        { code: "en-GB", label: "EN", englishName: "English (UK)" },
-        { code: "de", label: "DE", englishName: "German" },
-      ]),
-      "utf8"
-    );
-    const c = baseUiConfig({ uiLanguagesPath: p });
+  it("resolveLocalesForUI filters --locale against targetLocales", () => {
+    const c = baseUiConfig({ targetLocales: ["de"] });
     expect(resolveLocalesForUI(c, tmp, "de, fr")).toEqual(["de"]);
   });
 
-  it("resolveLocalesForUI throws when --locale codes are not in manifest", () => {
-    const p = path.join(tmp, "ui-languages.json");
-    fs.writeFileSync(
-      p,
-      JSON.stringify([{ code: "de", label: "DE", englishName: "German" }]),
-      "utf8"
-    );
-    const c = baseUiConfig({ uiLanguagesPath: p });
+  it("resolveLocalesForUI throws when --locale codes are not in targetLocales", () => {
+    const c = baseUiConfig({ targetLocales: ["de"] });
     expect(() => resolveLocalesForUI(c, tmp, "fr")).toThrow(/None of the requested locales/);
   });
 
-  it("augmentConfigWithUiLanguagesFile wraps invalid JSON errors", () => {
-    const p = path.join(tmp, "bad-ui.json");
-    fs.writeFileSync(p, "{ not json", "utf8");
-    const c = baseUiConfig({ uiLanguagesPath: p });
-    expect(() => augmentConfigWithUiLanguagesFile(c, tmp)).toThrow(/Invalid ui-languages file/);
+  it("augmentConfigWithUiLanguagesMaster merges display names from bundled master", () => {
+    const c = baseUiConfig({ localeDisplayNames: undefined, targetLocales: ["de"] });
+    const next = augmentConfigWithUiLanguagesMaster(c);
+    expect(next.localeDisplayNames?.de).toBeDefined();
   });
 
-  it("augmentConfigWithUiLanguagesFile merges display names", () => {
-    const p = path.join(tmp, "ui-languages.json");
-    fs.writeFileSync(
-      p,
-      JSON.stringify([{ code: "de", label: "Deutsch", englishName: "German" }]),
-      "utf8"
-    );
-    const c = baseUiConfig({ uiLanguagesPath: p });
-    const next = augmentConfigWithUiLanguagesFile(c, tmp);
-    expect(next.localeDisplayNames?.de).toBe("German");
-  });
-
-  it("loadI18nConfigFromFile applies ui file and passes when UI targets resolve", () => {
-    const uiPath = path.join(tmp, "locales", "ui-languages.json");
-    fs.mkdirSync(path.dirname(uiPath), { recursive: true });
-    fs.writeFileSync(
-      uiPath,
-      JSON.stringify([
-        { code: "en-GB", label: "EN", englishName: "English (UK)" },
-        { code: "de", label: "DE", englishName: "German" },
-      ]),
-      "utf8"
-    );
+  it("loadI18nConfigFromFile merges display names from bundled master", () => {
     const cfgPath = path.join(tmp, "ai-i18n-tools.config.json");
     fs.writeFileSync(
       cfgPath,
       JSON.stringify({
         sourceLocale: "en-GB",
-        targetLocales: [],
-        uiLanguagesPath: "locales/ui-languages.json",
+        targetLocales: ["de"],
         ui: {
           sourceRoots: [],
           stringsJson: "strings.json",
@@ -305,20 +217,10 @@ describe("ui-languages", () => {
       "utf8"
     );
     const loaded = loadI18nConfigFromFile(cfgPath, tmp);
-    expect(loaded.localeDisplayNames?.de).toBe("German");
+    expect(loaded.localeDisplayNames?.de).toBeDefined();
   });
 
-  it("loadI18nConfigFromFile expands targetLocales when it is a single manifest path", () => {
-    const uiPath = path.join(tmp, "locales", "ui-languages.json");
-    fs.mkdirSync(path.dirname(uiPath), { recursive: true });
-    fs.writeFileSync(
-      uiPath,
-      JSON.stringify([
-        { code: "en-GB", label: "EN", englishName: "English (UK)" },
-        { code: "de", label: "DE", englishName: "German" },
-      ]),
-      "utf8"
-    );
+  it("loadI18nConfigFromFile rejects targetLocales that look like a manifest path", () => {
     const cfgPath = path.join(tmp, "ai-i18n-tools.config.json");
     fs.writeFileSync(
       cfgPath,
@@ -344,10 +246,7 @@ describe("ui-languages", () => {
       }),
       "utf8"
     );
-    const loaded = loadI18nConfigFromFile(cfgPath, tmp);
-    expect(loaded.targetLocales.map((l) => l.toLowerCase())).toContain("de");
-    expect(loaded.uiLanguagesPath).toBe("locales/ui-languages.json");
-    expect(loaded.localeDisplayNames?.de).toBe("German");
+    expect(() => loadI18nConfigFromFile(cfgPath, tmp)).toThrow(ConfigValidationError);
   });
 
   it("getDocumentationTargetLocaleCodes prefers documentations[].targetLocales", () => {
@@ -461,17 +360,7 @@ describe("ui-languages", () => {
     expect(resolveLocalesForDocumentation(c, tmp, "de, es")).toEqual(["de"]);
   });
 
-  it("expandDocumentationTargetLocalesInRawInput expands manifest without setting uiLanguagesPath", () => {
-    const docManifest = path.join(tmp, "doc-locales.json");
-    fs.writeFileSync(
-      docManifest,
-      JSON.stringify([
-        { code: "en", label: "English", englishName: "English" },
-        { code: "de", label: "Deutsch", englishName: "German" },
-        { code: "fr", label: "Français", englishName: "French" },
-      ]),
-      "utf8"
-    );
+  it("expandDocumentationTargetLocalesInRawInput rejects a path-like doc targetLocales entry", () => {
     const raw = mergeWithDefaults({
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es", "it"],
@@ -487,11 +376,6 @@ describe("ui-languages", () => {
       openrouter: { translationModels: ["m"] },
       features: { translateMarkdown: true },
     });
-    expandDocumentationTargetLocalesInRawInput(raw, tmp);
-    expect((raw.documentations as { targetLocales: string[] }[])[0].targetLocales.sort()).toEqual([
-      "de",
-      "fr",
-    ]);
-    expect(raw.uiLanguagesPath).toBeUndefined();
+    expect(() => expandDocumentationTargetLocalesInRawInput(raw, tmp)).toThrow(ConfigValidationError);
   });
 });

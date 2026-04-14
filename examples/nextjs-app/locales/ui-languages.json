@@ -1,8 +1,8 @@
 [
-  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)" },
-  { "code": "es", "label": "Español", "englishName": "Spanish" },
-  { "code": "fr", "label": "Français", "englishName": "French" },
-  { "code": "de", "label": "Deutsch", "englishName": "German" },
-  { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (Brazil)" },
-  { "code": "ar", "label": "العربية", "englishName": "Arabic" }
+  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)", "direction": "ltr" },
+  { "code": "es", "label": "Español", "englishName": "Spanish", "direction": "ltr" },
+  { "code": "fr", "label": "Français", "englishName": "French", "direction": "ltr" },
+  { "code": "de", "label": "Deutsch", "englishName": "German", "direction": "ltr" },
+  { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (BR)", "direction": "ltr" },
+  { "code": "ar", "label": "العربية", "englishName": "Arabic", "direction": "rtl" }
 ]

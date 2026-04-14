@@ -147,7 +147,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable, and extraction can also include the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled. Segment hashes are **MD5 first 8 hex chars** of the trimmed source string - these become the keys in `strings.json`.
+Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable. **`extract` also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled (default), and each **`englishName`** from `ui-languages.json` when `reactExtractor.includeUiLanguageEnglishNames` is `true` and `uiLanguagesPath` is set (strings already found in source keep precedence). Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
 
 ### `strings.json`
 
@@ -170,9 +170,11 @@ The master catalog has the shape:
 }
 ```
 
-`models` (optional) — per locale, which model produced that translation after the last successful `translate-ui` run for that locale (or `user-edited` if the text was saved from the `editor` web UI). `locations` (optional) — where `extract` found the string.
+`models` (optional) — per locale, which model produced that translation after the last successful `translate-ui` run for that locale (or `user-edited` if the text was saved from the `editor` web UI). `locations` (optional) — where `extract` found the string (scanner + package description line; manifest-only `englishName` strings may omit `locations`).
 
-`extract` adds new keys and preserves existing `translated` / `models` data for keys still present in the scan. `translate-ui` fills missing `translated` entries, updates `models` for locales it translates, and writes flat locale files.
+`extract` adds new keys and preserves existing `translated` / `models` data for keys still present in the scan (scanner literals, optional description, optional manifest `englishName`). `translate-ui` fills missing `translated` entries, updates `models` for locales it translates, and writes flat locale files.
+
+**`ui-languages.json` manifest** — JSON array of `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` or `"rtl"`). Use `generate-ui-languages` to build a project file from `sourceLocale` + `targetLocales` and the bundled master `data/ui-languages-complete.json`.
 
 ### Flat locale files
 

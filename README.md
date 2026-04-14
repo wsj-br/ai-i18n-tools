@@ -10,7 +10,7 @@ CLI and programmatic toolkit for internationalising JavaScript/TypeScript applic
 
 **Workflow 1 - UI Translation** (React, Next.js, Node.js, any i18next project)
 
-Scans source files for `t("…")` calls, builds a master catalog (`strings.json` with optional per-locale **`models`** metadata), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
+Builds a master catalog (`strings.json` with optional per-locale **`models`** metadata) from **`t("…")` / `i18n.t("…")` literals**, optionally **`package.json` `description`**, and optionally each **`englishName`** from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
 **Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
 
@@ -46,7 +46,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # 1. Create config
 npx ai-i18n-tools init
 
-# 2. Extract t("…") calls from source
+# 2. Extract UI strings to strings.json (t(…) literals + optional package.json / manifest strings)
 npx ai-i18n-tools extract
 
 # 3. Translate to all target locales
@@ -126,7 +126,8 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 
 ```
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
-ai-i18n-tools extract                               Scan source for t("…") calls
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
+ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
@@ -148,7 +149,8 @@ All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (
 
 - [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, all CLI flags, and config field reference.
 - [Package Overview](docs/PACKAGE_OVERVIEW.md) - architecture, internals, programmatic API, and extension points.
-- [AI Agent Context](docs/ai-i18n-tools-context.md) - concise project context for agents and maintainers making code or config changes.
+- [AI Agent Context](docs/ai-i18n-tools-context.md) - **for apps using the package:** integration prompts for downstream projects (copy into your repo’s agent rules).
+- Maintainer internals for **this** repository: `dev/package-context.md` (clone-only; not on npm).
 
 ---
 

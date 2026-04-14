@@ -354,30 +354,31 @@ describe("parseI18nConfig", () => {
     ).toThrow(ConfigValidationError);
   });
 
-  it("allows translateUIStrings with empty targetLocales when uiLanguagesPath is set (doc translate off)", () => {
-    const c = parseI18nConfig(
-      mergeWithDefaults({
-        sourceLocale: "en-GB",
-        cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./out" }],
-        ui: uiDefaults,
-        targetLocales: [],
-        uiLanguagesPath: "src/renderer/locales/ui-languages.json",
-        openrouter: {
-          baseUrl: "https://openrouter.ai/api/v1",
-          translationModels: ["m"],
-          maxTokens: 100,
-          temperature: 0.1,
-        },
-        features: {
-          translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: false,
-        },
-      })
-    );
-    expect(c.uiLanguagesPath).toContain("ui-languages");
+  it("rejects translateUIStrings with empty targetLocales", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en-GB",
+          cacheDir: ".translation-cache",
+          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          ui: uiDefaults,
+          targetLocales: [],
+          uiLanguagesPath: "src/renderer/locales/ui-languages.json",
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: ["m"],
+            maxTokens: 100,
+            temperature: 0.1,
+          },
+          features: {
+            translateUIStrings: true,
+            translateMarkdown: false,
+            translateJSON: false,
+            extractUIStrings: false,
+          },
+        })
+      )
+    ).toThrow(ConfigValidationError);
   });
 
   it("rejects translateUIStrings without models", () => {
@@ -613,29 +614,30 @@ describe("parseI18nConfig glossary legacy field", () => {
   });
 });
 
-describe("parseI18nConfig targetLocales string", () => {
-  it("accepts targetLocales as a string path and coerces to array in output", () => {
-    const c = parseI18nConfig(
-      mergeWithDefaults({
-        sourceLocale: "en",
-        cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./out" }],
-        ui: uiDefaults,
-        targetLocales: "src/locales/ui-languages.json",
-        openrouter: {
-          baseUrl: "https://openrouter.ai/api/v1",
-          translationModels: ["m"],
-          maxTokens: 100,
-          temperature: 0.1,
-        },
-        features: {
-          translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: false,
-        },
-      })
-    );
-    expect(c.targetLocales).toEqual(["src/locales/ui-languages.json"]);
+describe("parseI18nConfig targetLocales", () => {
+  it("rejects targetLocales that look like a ui-languages.json path", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          ui: uiDefaults,
+          targetLocales: "src/locales/ui-languages.json",
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: ["m"],
+            maxTokens: 100,
+            temperature: 0.1,
+          },
+          features: {
+            translateUIStrings: true,
+            translateMarkdown: false,
+            translateJSON: false,
+            extractUIStrings: false,
+          },
+        })
+      )
+    ).toThrow(ConfigValidationError);
   });
 });
