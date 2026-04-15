@@ -6,7 +6,7 @@
 
 <small>**以其他语言阅读：**</small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。函数名称和文件扩展名是可配置的，当启用 `reactExtractor.includePackageDescription` 时，提取还可以包含项目 `package.json` 的 `description`。段哈希是**修剪后源字符串的 MD5 前 8 个十六进制字符**——这些将成为 `strings.json` 中的键。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任意 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。函数名称和文件扩展名可配置。**`extract` 还会将非扫描器输入合并到同一目录中：** 当启用 `reactExtractor.includePackageDescription` 时（默认），包含项目 `package.json` `description`，以及当 `reactExtractor.includeUiLanguageEnglishNames` 为 `true` 且设置了 `uiLanguagesPath` 时，来自 `ui-languages.json` 的每个 **`englishName`**（源代码中已找到的字符串优先）。片段哈希是修剪后源字符串的 **MD5 前 8 位十六进制字符** —— 这些将成为 `strings.json` 中的键。
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models`（可选）—— 按区域设置，表示在该区域设置上一次成功的 `translate-ui` 运行后，是由哪个模型生成了该翻译（如果文本是从 `editor` 网页界面保存的，则为 `user-edited`）。`locations`（可选）—— `extract` 发现该字符串的位置。
+`models`（可选）— 每个区域设置，在上一次针对该区域设置成功运行 `translate-ui` 后，是哪个模型生成了该翻译（如果文本是从 `editor` 网页界面保存的，则为 `user-edited`）。`locations`（可选）— `extract` 发现字符串的位置（扫描器 + 包描述行；仅清单的 `englishName` 字符串可省略 `locations`）。
 
-`extract` 会添加新键，并保留仍存在于扫描中的键的现有 `translated` / `models` 数据。`translate-ui` 填充缺失的 `translated` 条目，更新其所翻译区域设置的 `models`，并写入扁平化的区域设置文件。
+`extract` 添加新键，并为扫描中仍存在的键保留现有的 `translated` / `models` 数据（扫描器字面量、可选描述、可选清单 `englishName`）。`translate-ui` 填充缺失的 `translated` 条目，更新其翻译的区域设置的 `models`，并写入扁平化的区域设置文件。
+
+**`ui-languages.json` 清单** — `{ code, label, englishName, direction }` 的 JSON 数组（BCP-47 `code`、UI `label`、参考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 从 `sourceLocale` + `targetLocales` 和捆绑的主 `data/ui-languages-complete.json` 构建项目文件。
 
 ### 扁平化区域设置文件
 

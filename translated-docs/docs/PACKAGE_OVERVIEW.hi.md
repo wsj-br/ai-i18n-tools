@@ -6,7 +6,7 @@
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-`i18next-scanner` के `Parser.parseFuncFromString` का उपयोग `t("literal")` और `i18n.t("literal")` कॉल को किसी भी JS/TS फ़ाइल में खोजने के लिए किया जाता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन कॉन्फ़िगर करने योग्य हैं, और निकासी में प्रोजेक्ट `package.json` `description` को भी शामिल किया जा सकता है जब `reactExtractor.includePackageDescription` सक्षम हो। खंड हैश **MD5 पहले 8 हेक्स वर्ण** होते हैं ट्रिम किए गए स्रोत स्ट्रिंग के - ये `strings.json` में कुंजी बन जाते हैं।
+किसी भी JS/TS फ़ाइल में `t("literal")` और `i18n.t("literal")` कॉल खोजने के लिए `i18next-scanner` के `Parser.parseFuncFromString` का उपयोग करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन कॉन्फ़िगर करने योग्य हैं। **`extract` गैर-स्कैनर इनपुट को एक ही कैटलॉग में भी मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `reactExtractor.includePackageDescription` सक्षम है (डिफ़ॉल्ट), और `ui-languages.json` से प्रत्येक **`englishName`** जब `reactExtractor.includeUiLanguageEnglishNames` `true` है और `uiLanguagesPath` सेट है (स्रोत में पहले से मौजूद स्ट्रिंग्स को प्राथमिकता रहती है)। सेगमेंट हैश ट्रिम की गई स्रोत स्ट्रिंग के **MD5 के पहले 8 हेक्स अक्षर** होते हैं — ये `strings.json` में कुंजियाँ बन जाते हैं।
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models` (वैकल्पिक) — प्रति स्थान, जिस मॉडल ने उस स्थान के लिए अंतिम सफल `translate-ui` चलने के बाद उस अनुवाद का उत्पादन किया (या `user-edited` यदि पाठ `editor` वेब यूआई से सहेजा गया था)। `locations` (वैकल्पिक) — जहां `extract` ने स्ट्रिंग पाई।
+`models` (वैकल्पिक) — प्रति स्थानीयकरण, उस स्थानीयकरण के लिए अंतिम सफल `translate-ui` रन के बाद कौन सा मॉडल अनुवाद उत्पन्न करता है (या यदि पाठ `editor` वेब UI से सहेजा गया था तो `user-edited`)। `locations` (वैकल्पिक) — जहाँ `extract` ने स्ट्रिंग पाई (स्कैनर + पैकेज विवरण पंक्ति; मैनिफेस्ट-केवल `englishName` स्ट्रिंग्स `locations` छोड़ सकते हैं)।
 
-`extract` नए कुंजियाँ जोड़ता है और स्कैन में अभी भी मौजूद कुंजियों के लिए मौजूदा `translated` / `models` डेटा को बरकरार रखता है। `translate-ui` लुप्त `translated` प्रविष्टियों को भरता है, उन स्थानों के लिए `models` को अपडेट करता है जिनका अनुवाद करता है, और सपाट स्थान फ़ाइलें लिखता है।
+`extract` नए कुंजी जोड़ता है और स्कैन में अभी भी मौजूद कुंजियों के लिए मौजूदा `translated` / `models` डेटा को बरकरार रखता है (स्कैनर लिटरल्स, वैकल्पिक विवरण, वैकल्पिक मैनिफेस्ट `englishName`)। `translate-ui` लुप्त `translated` प्रविष्टियों को भरता है, उन स्थानीयकरणों के लिए `models` को अपडेट करता है जिनका यह अनुवाद करता है, और सपाट स्थानीयकरण फ़ाइलें लिखता है।
+
+**`ui-languages.json` मैनिफेस्ट** — `{ code, label, englishName, direction }` की JSON सरणी (BCP-47 `code`, UI `label`, संदर्भ `englishName`, `"ltr"` या `"rtl"`)। `sourceLocale` + `targetLocales` और बंडल किए गए मास्टर `data/ui-languages-complete.json` से प्रोजेक्ट फ़ाइल बनाने के लिए `generate-ui-languages` का उपयोग करें।
 
 ### फ्लैट स्थानीय फ़ाइलें
 

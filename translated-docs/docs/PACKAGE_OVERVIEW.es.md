@@ -6,7 +6,7 @@ Para instrucciones de uso práctico, consulte [GETTING_STARTED.md](GETTING_START
 
 <small>**Leer en otros idiomas:** </small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Utiliza `i18next-scanner`'s `Parser.parseFuncFromString` para encontrar llamadas a `t("literal")` e `i18n.t("literal")` en cualquier archivo JS/TS. Los nombres de funciones y las extensiones de archivo son configurables, y la extracción también puede incluir la `description` del proyecto `package.json` cuando `reactExtractor.includePackageDescription` está habilitado. Los hashes de segmento son **los primeros 8 caracteres hexadecimales MD5** de la cadena de origen recortada; estos se convierten en las claves en `strings.json`.
+Utiliza `i18next-scanner` de `Parser.parseFuncFromString` para encontrar llamadas a `t("literal")` y `i18n.t("literal")` en cualquier archivo JS/TS. Los nombres de funciones y las extensiones de archivo son configurables. **`extract` también combina entradas no escaneadas en el mismo catálogo:** el `package.json` `description` del proyecto cuando `reactExtractor.includePackageDescription` está habilitado (predeterminado), y cada **`englishName`** de `ui-languages.json` cuando `reactExtractor.includeUiLanguageEnglishNames` es `true` y `uiLanguagesPath` está configurado (las cadenas ya encontradas en el código fuente tienen prioridad). Los hashes de segmento son los **primeros 8 caracteres hexadecimales del MD5** de la cadena fuente recortada — estos se convierten en las claves en `strings.json`.
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ El catálogo maestro tiene la forma:
 }
 ```
 
-`models` (opcional): por configuración regional, qué modelo produjo esa traducción después de la última ejecución exitosa de `translate-ui` para esa configuración regional (o `user-edited` si el texto se guardó desde la interfaz web `editor`). `locations` (opcional): dónde encontró `extract` la cadena.
+`models` (opcional) — por configuración regional, qué modelo produjo esa traducción tras la última ejecución exitosa de `translate-ui` para esa configuración regional (o `user-edited` si el texto se guardó desde la interfaz web `editor`). `locations` (opcional) — dónde encontró `extract` la cadena (escáner + línea de descripción del paquete; las cadenas solo del manifiesto `englishName` pueden omitir `locations`).
 
-`extract` añade nuevas claves y conserva los datos existentes de `translated` / `models` para las claves que aún están presentes en el análisis. `translate-ui` rellena las entradas `translated` que faltan, actualiza `models` para las configuraciones regionales que traduce, y escribe archivos planos por configuración regional.
+`extract` añade nuevas claves y conserva los datos existentes de `translated` / `models` para las claves que aún están presentes en el escaneo (literales del escáner, descripción opcional, manifiesto opcional `englishName`). `translate-ui` rellena las entradas `translated` faltantes, actualiza `models` para los idiomas que traduce, y escribe archivos planos por configuración regional.
+
+**manifiesto `ui-languages.json`** — array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interfaz de usuario `label`, referencia `englishName`, `"ltr"` o `"rtl"`). Usa `generate-ui-languages` para crear un archivo de proyecto a partir de `sourceLocale` + `targetLocales` y el `data/ui-languages-complete.json` maestro incluido.
 
 ### Archivos de localización plana
 

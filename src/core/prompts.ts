@@ -13,7 +13,8 @@ export interface DocumentPromptStrings {
   jsonSegmentAddendum: string;
   svgSegmentAddendum: string;
   markdownExample: string;
-  translateFooter: string;
+  /** Shown after the example / addendum for {@link buildDocumentSinglePrompt} (single-segment API). User message is raw segment text — no `<translate>` wrapper. */
+  singleSegmentOutputInstruction: string;
   batchXmlInstruction: string;
   batchJsonArrayInstruction: string;
   batchJsonObjectInstruction: string;
@@ -34,7 +35,7 @@ export interface PromptStrings {
 export const PROMPTS: PromptStrings = {
   document: {
     coreRules:
-      "Rules: Keep headers (###), variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{URL_N}}, {{BLD_N}}, {{ILC_N}}, {{ANC_N}}, {{HDG_N}}, {{GLS_N}}, {{IT}}, {{IU}}, {{SE}}, {{SU}}, {{ST}} (for GLS and similar tokens, N is any non-negative integer; copy the full token character-for-character). Copy each placeholder character-for-character; do not change underscores, hyphens, or digits inside {{...}} tokens. Translate only title/description in front matter. If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). Maintain coherence for all other phrasing.",
+      "Rules: Keep headers (###), variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{URL_N}}, {{BLD_N}}, {{ILC_N}}, {{HTM_N}}, {{ANC_N}}, {{HDG_N}}, {{GLS_N}}, {{IT}}, {{IU}}, {{SE}}, {{SU}}, {{ST}} (for GLS and similar tokens, N is any non-negative integer; copy the full token character-for-character). Copy each placeholder character-for-character; do not change underscores, hyphens, or digits inside {{...}} tokens. Translate only title/description in front matter. If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). Maintain coherence for all other phrasing.",
 
     markdownPreservation:
       "Markdown structure: Preserve heading levels (#\u2013######), list markers and indentation, blockquotes (>), horizontal rules, and meaningful line breaks. Inline `` `code` `` is sent as {{ILC_N}}; bold+code **`code`** as {{BLD_N}} \u2014 copy those tokens exactly. Keep **bold** and *italic* intact with balanced delimiters. Every **bold** span in the source must have a corresponding **bold** span in the translation \u2014 even when the bolded word translates to a short conjunction, particle, suffix, or single word in the target language; never remove bold to simplify the sentence. In [visible text](url), ![alt](path), and HTML like <img \u2026> / <a \u2026>, translate only the visible link text or alt; keep URLs, paths, angle-bracket links, and attribute names unchanged. Preserve GFM pipe tables (| cells |).",
@@ -59,8 +60,8 @@ Output:
 ### [Translated section title]
 [Translated body line with \`CODE\` and {{PLACEHOLDER}}.]`,
 
-    translateFooter:
-      "Translate the content inside the <translate> tags below. Output ONLY the translated text - do NOT include <translate> or </translate> tags in your response. No explanations or extra markup.",
+    singleSegmentOutputInstruction:
+      "The next user message is one source segment only (markdown or text as provided). Respond with ONLY the translated segment — no explanations, preamble, code fences, or extra markup beyond what the segment requires.",
 
     batchXmlInstruction:
       'Each <seg id="N"> element contains one source segment. Reply with ONLY <t id="N">translation</t> blocks, one per segment, preserving the same N id. No other text.',

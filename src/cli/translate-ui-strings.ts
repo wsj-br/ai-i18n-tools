@@ -219,7 +219,7 @@ export async function runTranslateUI(
       console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}: up to date`));
     } else {
       console.log(
-        chalk.yellow(`🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
+        chalk.yellow(`📄 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
       );
 
       for (let i = 0; i < missing.length; i += UI_CHUNK) {
@@ -329,7 +329,7 @@ export async function runTranslateUI(
       console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}: up to date`));
     } else {
       console.log(
-        chalk.yellow(`🔃 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
+        chalk.yellow(`📄 ${timestamp()} - ${locale}: ${missing.length} string(s) to translate`)
       );
 
       for (let i = 0; i < missing.length; i += UI_CHUNK) {

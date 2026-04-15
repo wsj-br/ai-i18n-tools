@@ -6,7 +6,7 @@
 
 <small>**다른 언어로 읽기:** </small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-`i18next-scanner`의 `Parser.parseFuncFromString`을 사용하여 JS/TS 파일 내 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. 함수 이름과 파일 확장자는 구성 가능하며, `reactExtractor.includePackageDescription`가 활성화된 경우 프로젝트의 `package.json` `description`도 추출에 포함될 수 있습니다. 세그먼트 해시는 **MD5의 앞 8자리 16진수**이며, 이는 소스 문자열을 잘라낸 후 생성되며 `strings.json`의 키가 됩니다.
+모든 JS/TS 파일에서 `i18next-scanner`의 `Parser.parseFuncFromString`을 사용하여 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. 함수 이름과 파일 확장자는 구성 가능합니다. **`extract`는 비-스캐너 입력을 동일한 카탈로그에 병합합니다:** `reactExtractor.includePackageDescription`이 활성화된 경우(기본값) 프로젝트 `package.json` `description`, 그리고 `reactExtractor.includeUiLanguageEnglishNames`가 `true`이고 `uiLanguagesPath`이 설정된 경우 `ui-languages.json`의 각 **`englishName`** (소스에서 이미 발견된 문자열이 우선 적용됨). 세그먼트 해시는 잘린 소스 문자열의 **MD5 첫 8자리 16진수 문자**이며, 이는 `strings.json`의 키가 됩니다.
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models` (선택 사항) — 각 로케일별로, 해당 로케일에 대해 마지막으로 성공한 `translate-ui` 실행 후 어떤 모델이 번역을 생성했는지를 나타냅니다 (또는 `editor` 웹 UI에서 텍스트가 저장된 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 찾은 위치입니다.
+`models` (선택 사항) — 로캘별로, 해당 로캘에 대해 마지막으로 성공한 `translate-ui` 실행 이후 어떤 모델이 번역을 생성했는지를 나타냅니다 (또는 `editor` 웹 UI에서 텍스트를 저장한 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 찾은 위치 (스캐너 + 패키지 설명 라인; 매니페스트 전용 `englishName` 문자열은 `locations`을 생략할 수 있음).
 
-`extract`는 새로운 키를 추가하고, 스캔 결과에 여전히 존재하는 키에 대해 기존의 `translated` / `models` 데이터를 보존합니다. `translate-ui`는 누락된 `translated` 항목을 채우고, 번역한 로케일에 대해 `models`를 업데이트하며, 평면화된 로케일 파일을 작성합니다.
+`extract`은 새 키를 추가하고 스캔에 여전히 존재하는 키에 대해 기존 `translated` / `models` 데이터를 보존합니다 (스캐너 리터럴, 선택적 설명, 선택적 매니페스트 `englishName`). `translate-ui`는 누락된 `translated` 항목을 채우고, 번역하는 로캘에 대해 `models`을 업데이트하며, 단순한 로캘 파일을 작성합니다.
+
+**`ui-languages.json` 매니페스트** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, 참조 `englishName`, `"ltr"` 또는 `"rtl"`)의 JSON 배열입니다. `sourceLocale` + `targetLocales` 및 번들된 마스터 `data/ui-languages-complete.json`에서 프로젝트 파일을 생성하려면 `generate-ui-languages`을 사용하세요.
 
 ### 평면화된 로케일 파일
 

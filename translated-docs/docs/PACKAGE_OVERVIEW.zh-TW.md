@@ -6,7 +6,7 @@
 
 <small>**以其他語言閱讀：**</small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 來查找任何 JS/TS 文件中的 `t("literal")` 和 `i18n.t("literal")` 調用。函數名稱和文件擴展名是可配置的，當啟用 `reactExtractor.includePackageDescription` 時，提取還可以包括項目的 `package.json` `description`。段哈希是修剪後源字符串的 **MD5 前 8 個十六進制字符** - 這些成為 `strings.json` 中的鍵。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 檔案中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。函數名稱和檔案副檔名可設定。**`extract` 也會將非掃描器輸入合併到同一個目錄中：** 當啟用 `reactExtractor.includePackageDescription` 時（預設），合併專案 `package.json` `description`，以及當 `reactExtractor.includeUiLanguageEnglishNames` 為 `true` 且已設定 `uiLanguagesPath` 時，合併來自 `ui-languages.json` 的每個 **`englishName`**（原始碼中已找到的字串具有優先權）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵。
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models`（選用）— 每個語系，標示該語系在上一次成功的 `translate-ui` 執行後，是由哪個模型產生的翻譯（若文字是從 `editor` 網頁 UI 儲存的，則為 `user-edited`）。`locations`（選用）— `extract` 發現字串的位置。
+`models`（選填）— 每個語系，該語系上次成功執行 `translate-ui` 後是由哪個模型產生的翻譯（若文字是從 `editor` 網頁 UI 儲存的，則為 `user-edited`）。`locations`（選填）— `extract` 發現字串的位置（掃描器 + 套件描述行；僅限 manifest 的 `englishName` 字串可省略 `locations`）。
 
-`extract` 會新增鍵值，並保留仍存在於掃描中的鍵之現有 `translated` / `models` 資料。`translate-ui` 會填入遺漏的 `translated` 條目，更新其所翻譯語系的 `models`，並寫入扁平化的語系檔案。
+`extract` 新增新的鍵，並保留掃描中仍存在的鍵之現有 `translated` / `models` 資料（掃描器字面值、選填描述、選填 manifest `englishName`）。`translate-ui` 填補遺漏的 `translated` 項目，更新其翻譯語系的 `models`，並寫入扁平化的語系檔案。
+
+**`ui-languages.json` manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和內建的主 `data/ui-languages-complete.json` 建立專案檔案。
 
 ### 平面區域文件
 

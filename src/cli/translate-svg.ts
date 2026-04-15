@@ -19,7 +19,7 @@ import {
   matchesPathFilter,
 } from "./doc-translate.js";
 import { runMapWithConcurrency, AsyncMutex } from "../utils/concurrency.js";
-import { formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import { formatElapsedMmSs, formatSegmentCacheHitSuffix, printModelsTryInOrder } from "./format.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
@@ -50,6 +50,8 @@ export async function runTranslateSvg(
     costUsd: 0,
     segmentsCached: 0,
     segmentsTranslated: 0,
+    segmentValidationFailures: 0,
+    individualSegmentTranslations: 0,
   };
 
   const cache: TranslationCache | null = opts.noCache
@@ -125,6 +127,8 @@ export async function runTranslateSvg(
       costUsd: 0,
       segmentsCached: 0,
       segmentsTranslated: 0,
+      segmentValidationFailures: 0,
+      individualSegmentTranslations: 0,
     };
     const localeStart = Date.now();
 
@@ -162,6 +166,11 @@ export async function runTranslateSvg(
         partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
         partial.segmentsTranslated =
           (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+        partial.segmentValidationFailures =
+          (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+        partial.individualSegmentTranslations =
+          (partial.individualSegmentTranslations ?? 0) +
+          (totals.individualSegmentTranslations ?? 0);
       }
     }
 
@@ -186,6 +195,10 @@ export async function runTranslateSvg(
     sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
     sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
     sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
+    sum.segmentValidationFailures =
+      (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
+    sum.individualSegmentTranslations =
+      (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
   }
 
   cache?.close();
@@ -197,8 +210,15 @@ export async function runTranslateSvg(
   console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsed)}`);
   console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
   console.log(`   Total files skipped:   ${sum.filesSkipped}`);
-  console.log(`   Segments from cache:   ${sum.segmentsCached ?? 0}`);
+  console.log(
+    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
+      sum.segmentsCached,
+      sum.segmentsTranslated
+    )}`
+  );
   console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
+  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
+  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);

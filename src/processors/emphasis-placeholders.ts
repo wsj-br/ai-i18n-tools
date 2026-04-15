@@ -167,6 +167,85 @@ function collectDelimiterRuns(text: string): DelimiterRun[] {
   return runs;
 }
 
+/** For post-translation spacing: underscore closers before CJK are often not `canClose` in strict CommonMark. */
+const UNICODE_LETTER_FOR_SCAN = /\p{L}/u;
+
+function scanDelimitersForSpacing(
+  text: string,
+  start: number,
+  marker: "*" | "_" | "~"
+): Pick<DelimiterRun, "count" | "canOpen" | "canClose"> {
+  const base = scanDelimiters(text, start, marker);
+  if (marker !== "_") {
+    return base;
+  }
+  const count = readRun(text, start, marker);
+  const prevChar = start > 0 ? text[start - 1]! : "\n";
+  const nextIndex = start + count;
+  const nextChar = nextIndex < text.length ? text[nextIndex]! : "\n";
+  const prevWhite = isWhiteSpace(prevChar);
+  const nextWhite = isWhiteSpace(nextChar);
+  const prevPunct = isPunctuation(prevChar);
+  const nextPunct = isPunctuation(nextChar);
+  const leftFlanking = !nextWhite && (!nextPunct || prevWhite || prevPunct);
+  const rightFlanking = !prevWhite && (!prevPunct || nextWhite || nextPunct);
+  return {
+    count,
+    canOpen: leftFlanking && (!rightFlanking || prevPunct),
+    canClose:
+      base.canClose ||
+      (rightFlanking && leftFlanking && UNICODE_LETTER_FOR_SCAN.test(nextChar)),
+  };
+}
+
+function collectDelimiterRunsForSpacing(text: string): DelimiterRun[] {
+  const runs: DelimiterRun[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+
+    if (ch === "{" && text[i + 1] === "{") {
+      const end = findPlaceholderEnd(text, i);
+      if (end !== -1) {
+        i = end;
+        continue;
+      }
+    }
+
+    if (ch === "`") {
+      const tickCount = readRun(text, i, "`");
+      const end = findCodeSpanEnd(text, i, tickCount);
+      if (end !== -1) {
+        i = end;
+      } else {
+        i += tickCount;
+      }
+      continue;
+    }
+
+    if ((ch === "*" || ch === "_" || ch === "~") && !isEscaped(text, i)) {
+      const marker = ch as "*" | "_" | "~";
+      const scan = scanDelimitersForSpacing(text, i, marker);
+      if (scan.count > 0 && (scan.canOpen || scan.canClose)) {
+        runs.push({
+          marker,
+          start: i,
+          count: scan.count,
+          canOpen: scan.canOpen,
+          canClose: scan.canClose,
+          openerUsed: 0,
+          closerUsed: 0,
+        });
+      }
+      i += scan.count || 1;
+      continue;
+    }
+
+    i++;
+  }
+  return runs;
+}
+
 function nextUseLength(openRun: DelimiterRun, closeRun: DelimiterRun): number {
   if (openRun.marker === "~" || closeRun.marker === "~") {
     return 2;
@@ -211,9 +290,19 @@ function buildProtectedText(source: string, replacements: Replacement[]): string
   return out.join("");
 }
 
-export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
+/**
+ * Same opener/closer pairing as {@link protectMarkdownEmphasis}, returning replacement spans
+ * plus each **closing** delimiter span in source order (for post-translation spacing fixes).
+ */
+function pairEmphasisDelimitersFromRuns(
+  text: string,
+  runs: DelimiterRun[]
+): {
+  replacements: Replacement[];
+  closerSpans: Array<{ start: number; end: number }>;
+} {
   const replacements: Replacement[] = [];
-  const runs = collectDelimiterRuns(text);
+  const closerSpans: Array<{ start: number; end: number }> = [];
 
   for (let closerIndex = 0; closerIndex < runs.length; closerIndex++) {
     const closer = runs[closerIndex]!;
@@ -228,8 +317,8 @@ export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
       }
 
       while (true) {
-        const openerAvail = opener.count - opener.openerUsed;
-        const closerAvail = closer.count - closer.closerUsed;
+        const openerAvail = opener.count - opener.openerUsed - opener.closerUsed;
+        const closerAvail = closer.count - closer.closerUsed - closer.openerUsed;
         if (openerAvail <= 0 || closerAvail <= 0) {
           break;
         }
@@ -251,6 +340,7 @@ export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
           end: closerStart + useLen,
           placeholder: placeholderFor(closer.marker, useLen),
         });
+        closerSpans.push({ start: closerStart, end: closerStart + useLen });
 
         opener.openerUsed += useLen;
         closer.closerUsed += useLen;
@@ -262,6 +352,18 @@ export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
     }
   }
 
+  return { replacements, closerSpans };
+}
+
+function pairEmphasisDelimiters(text: string): {
+  replacements: Replacement[];
+  closerSpans: Array<{ start: number; end: number }>;
+} {
+  return pairEmphasisDelimitersFromRuns(text, collectDelimiterRuns(text));
+}
+
+export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
+  const { replacements } = pairEmphasisDelimiters(text);
   return {
     protected: buildProtectedText(text, replacements),
   };
@@ -280,33 +382,169 @@ const RESTORE_RULES: PlaceholderRestoreRule[] = [
   { placeholder: STRIKETHROUGH_PLACEHOLDER, marker: "~~" },
 ];
 
-/**
- * CommonMark right-flanking fix: when a restored emphasis delimiter is likely
- * a closer (preceded by a letter, digit, or `}` from another placeholder) and
- * the next character is a Unicode letter (CJK particle, etc.), insert a space
- * so the delimiter satisfies the right-flanking rule.
- *
- * Openers are preceded by whitespace, start-of-string, or punctuation like
- * `;` `(` `>` — those are left untouched so they remain left-flanking.
- */
 const UNICODE_LETTER = /\p{L}/u;
-const LIKELY_CLOSER_PREV = /[\p{L}\p{N}}]/u;
 
+/**
+ * Returns true if a **closing** emphasis delimiter needs a trailing space injected before the
+ * next character to remain a valid CommonMark closer.
+ *
+ * The rules differ by marker type:
+ *
+ * **Asterisk (`*` / `**`)** — closing rule: must be _right-flanking_.
+ *   `letter**letter` is right-flanking (preceded by non-punct) → already valid, no space needed.
+ *   `)**letter` is NOT right-flanking (preceded by `)` punctuation + followed by letter) →
+ *   the parser treats it as a new opener instead of a closer → space required.
+ *   Same for `]**letter` and `}**letter` (from placeholders like `{{ILC_0}}`).
+ *
+ * **Underscore (`_` / `__`)** — stricter closing rule: must be right-flanking AND NOT left-flanking
+ *   (or left-flanking but preceded by punctuation).
+ *   `letter__letter` is BOTH right-flanking AND left-flanking → cannot close → needs space.
+ *   So a space is always needed when nextChar is a Unicode letter, regardless of prevChar.
+ *
+ * **Tilde (`~~`)** — GFM strikethrough closes correctly even before a Unicode letter → no space.
+ *
+ * **RTL scripts:** Markdown is stored in logical (code-unit) order; the space is inserted
+ * immediately after the closing delimiter. BiDi rendering positions the gap correctly for RTL.
+ *
+ * This function is only called for CLOSERS. Callers use parity tracking (even encounter index
+ * = opener, odd = closer) to avoid modifying openers.
+ */
+function closerNeedsTrailingSpace(marker: string, prevChar: string, nextChar: string): boolean {
+  if (!UNICODE_LETTER.test(nextChar)) {
+    return false;
+  }
+  if (marker === "_" || marker === "__") {
+    // Underscore closing rule: must be right-flanking AND not left-flanking.
+    // letter__letter is both → cannot close → always needs space before a Unicode letter.
+    return true;
+  }
+  if (marker === "*" || marker === "**") {
+    // Asterisk closing rule: just right-flanking.
+    // letter**letter is right-flanking → closes fine, no space needed.
+    // )/**letter or ]/**letter or }/**letter: NOT right-flanking → needs space.
+    return /[})\]]/u.test(prevChar);
+  }
+  // ~~ (GFM strikethrough): closes fine before Unicode letters.
+  return false;
+}
+
+/**
+ * When emphasis was not replaced by placeholders (non-`--emphasis-placeholders` path), scan the
+ * translated text for closing emphasis delimiters that would fail to close before a Unicode letter
+ * and insert a space so the CommonMark parser can recognize them as closers.
+ *
+ * Uses {@link closerNeedsTrailingSpace} for marker-aware logic:
+ *  - `__bold__이` / `_italic_を` → closing `_`/`__` needs space (strict underscore closing rule).
+ *  - `**[link](url)**を` → closing `)**` needs space (not right-flanking); handled by the
+ *    separate {@link insertSpacesAfterClosingConstructDelimiters} scan.
+ *  - `**bold**이` → no space needed (asterisk closer is right-flanking before letters).
+ *
+ * `collectDelimiterRunsForSpacing` relaxes the `_` `canClose` check so that `d__이` is
+ * included in `closerSpans` even though strict CommonMark marks it `canClose=false`.
+ */
+export function applyEmphasisCloserSpacing(text: string): string {
+  const { closerSpans } = pairEmphasisDelimitersFromRuns(text, collectDelimiterRunsForSpacing(text));
+  const sorted = [...closerSpans].sort((a, b) => b.end - a.end);
+  let out = text;
+  for (const { start, end } of sorted) {
+    // Determine the marker character from the original text (positions stay valid in reverse order).
+    const markerChar = text[start]!;
+    const delimLen = end - start;
+    const marker = delimLen >= 2 ? markerChar + markerChar : markerChar;
+    const prevChar = start > 0 ? out[start - 1]! : "";
+    const nextChar = end < out.length ? out[end]! : "";
+    if (closerNeedsTrailingSpace(marker, prevChar, nextChar)) {
+      out = out.slice(0, end) + " " + out.slice(end);
+    }
+  }
+  out = insertSpacesAfterClosingConstructDelimiters(out);
+  return out;
+}
+
+/**
+ * Linear scan that inserts a space between a closing-construct character (`)` or `]`) and a
+ * following emphasis delimiter (`*`, `**`, `_`, `__`, `~~`) when the character after the
+ * delimiter is a Unicode letter.
+ *
+ * This covers the case `)**letter` / `]**letter` which {@link pairEmphasisDelimiters} marks
+ * `canClose=false` (the delimiter is left-flanking there, not right-flanking) and therefore
+ * never appears in `closerSpans`. We cannot use `pairEmphasisDelimiters` output for these
+ * positions, but the pattern is unambiguous from local context alone: `)` or `]` is always
+ * a span-closing character, not content, so the immediately following delimiter must be a
+ * closer regardless of what the pairing algorithm says about flanking.
+ *
+ * At this call-site, inline-code spans are still encoded as `{{ILC_N}}` placeholders, so
+ * there are no raw backtick spans in the string that could produce false matches.
+ */
+function insertSpacesAfterClosingConstructDelimiters(text: string): string {
+  const buf: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i]!;
+    if (ch !== ")" && ch !== "]") {
+      buf.push(ch);
+      i++;
+      continue;
+    }
+    // Peek ahead: is there a delimiter run (* / ** / _ / __ / ~~) followed by a Unicode letter?
+    let j = i + 1;
+    const delim = text[j];
+    if (delim === "*" || delim === "_" || delim === "~") {
+      const delimChar = delim;
+      const maxRun = delimChar === "~" ? 2 : delimChar === "_" ? 2 : 2; // ~~, __, **
+      let runLen = 0;
+      while (j + runLen < text.length && text[j + runLen] === delimChar && runLen < maxRun) {
+        runLen++;
+      }
+      if (runLen > 0 && runLen <= maxRun) {
+        const afterDelim = text[j + runLen] ?? "";
+        if (UNICODE_LETTER.test(afterDelim)) {
+          // Emit: closing-construct char + delimiter run + injected space
+          buf.push(ch, text.slice(j, j + runLen), " ");
+          i = j + runLen;
+          continue;
+        }
+      }
+    }
+    buf.push(ch);
+    i++;
+  }
+  return buf.join("");
+}
+
+/**
+ * Restore `{{SE}}`, `{{SU}}`, `{{IT}}`, `{{IU}}`, `{{ST}}` placeholders back to their
+ * original delimiter markers (`**`, `__`, `*`, `_`, `~~`).
+ *
+ * Uses **parity tracking** to distinguish openers from closers: the first encounter of each
+ * placeholder type is an opener, the second a closer, the third an opener again, etc.
+ * (This matches the left-to-right pairing produced by `protectMarkdownEmphasis`.)
+ *
+ * Openers are never modified. For closers, {@link closerNeedsTrailingSpace} decides whether
+ * to inject a space before the next character to keep the delimiter right-flanking.
+ */
 export function restoreMarkdownEmphasis(text: string): string {
   const out: string[] = [];
+  // Count how many times each placeholder has been seen; even count → opener, odd → closer.
+  const seen = new Map<string, number>();
   let i = 0;
 
   while (i < text.length) {
     let matched = false;
     for (const rule of RESTORE_RULES) {
       if (text.startsWith(rule.placeholder, i)) {
-        const prevChar = out.length > 0 ? out[out.length - 1]! : "";
-        const nextChar = text[i + rule.placeholder.length] ?? "";
-        const likelyCloser = LIKELY_CLOSER_PREV.test(prevChar);
+        const count = seen.get(rule.placeholder) ?? 0;
+        seen.set(rule.placeholder, count + 1);
+        const isOpener = count % 2 === 0;
 
         out.push(rule.marker);
-        if (likelyCloser && UNICODE_LETTER.test(nextChar)) {
-          out.push(" ");
+
+        if (!isOpener) {
+          const prevChar = out.length > 1 ? out[out.length - 2]! : "";
+          const nextChar = text[i + rule.placeholder.length] ?? "";
+          if (closerNeedsTrailingSpace(rule.marker, prevChar, nextChar)) {
+            out.push(" ");
+          }
         }
 
         i += rule.placeholder.length;
@@ -315,12 +553,10 @@ export function restoreMarkdownEmphasis(text: string): string {
       }
     }
 
-    if (matched) {
-      continue;
+    if (!matched) {
+      out.push(text[i]!);
+      i++;
     }
-
-    out.push(text[i]!);
-    i++;
   }
 
   return out.join("");

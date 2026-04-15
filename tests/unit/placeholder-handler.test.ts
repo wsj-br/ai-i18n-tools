@@ -2,10 +2,21 @@ import { PlaceholderHandler } from "../../src/processors/placeholder-handler.js"
 import { protectDocAnchors, restoreDocAnchors } from "../../src/processors/anchor-placeholders.js";
 
 describe("PlaceholderHandler", () => {
+  it("skips emphasis masking when emphasis is false", () => {
+    const h = new PlaceholderHandler();
+    const src = `**bold** and *italic*`;
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.emphasisProtected).toBe(false);
+    expect(st.text).not.toContain("{{SE}}");
+    expect(st.text).not.toContain("{{IT}}");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
   it("round-trips URL and admonition placeholders", () => {
     const h = new PlaceholderHandler();
-    const src = `:::note\nSee [link](https://x.com) and **bold** + *italic* + ~~strike~~\n:::`;
+    const src = `:::note\n<!-- toc -->\nSee [link](https://x.com) and <small id="x">**bold** + *italic* + ~~strike~~</small>\n:::`;
     const st = h.protectForTranslation(src);
+    expect(st.text).toContain("{{HTM_");
     expect(st.text).toContain("{{URL_");
     expect(st.text).toContain("ADM_OPEN");
     expect(st.text).toContain("{{SE}}");
@@ -14,7 +25,10 @@ describe("PlaceholderHandler", () => {
     const back = h.restoreAfterTranslation(st.text, st);
     expect(back).toContain("https://x.com");
     expect(back).toContain(":::note");
-    expect(back).toContain("**bold**");
+    expect(back).toContain("<!-- toc -->");
+    expect(back).toContain('<small id="x">');
+    expect(back).toContain("**");
+    expect(back).toContain("bold");
     expect(back).toContain("*italic*");
     expect(back).toContain("~~strike~~");
   });

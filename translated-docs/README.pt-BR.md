@@ -4,13 +4,13 @@ Kit de ferramentas CLI e programático para internacionalização de aplicaçõe
 
 <small>**Leia em outros idiomas:** </small>
 
-<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [hi](./README.hi.md) · [ja](./README.ja.md) · [ko](./README.ko.md) · [pt-BR](./README.pt-BR.md) · [zh-CN](./README.zh-CN.md) · [zh-TW](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 ## Dois fluxos de trabalho principais
 
 **Fluxo de Trabalho 1 - Tradução de UI** (React, Next.js, Node.js, qualquer projeto i18next)
 
-Escaneia arquivos fonte em busca de chamadas `t("…")`, constrói um catálogo mestre (`strings.json` com metadados **`models`** opcionais por localidade), traduz entradas ausentes por localidade via OpenRouter e escreve arquivos JSON planos (`de.json`, `pt-BR.json`, …) prontos para i18next.
+Cria um catálogo mestre (`strings.json` com metadados opcionais por localidade **`models`**) a partir de literais **`t("…")` / `i18n.t("…")`**, opcionalmente **`package.json` `description`**, e opcionalmente cada **`englishName`** de `ui-languages.json` quando habilitado na configuração. Traduz entradas ausentes por localidade via OpenRouter e gera arquivos JSON planos (`de.json`, `pt-BR.json`, …) prontos para uso com i18next.
 
 **Fluxo de Trabalho 2 - Tradução de Documentos** (Markdown, JSON do Docusaurus)
 
@@ -46,7 +46,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # 1. Create config
 npx ai-i18n-tools init
 
-# 2. Extract t("…") calls from source
+# 2. Extract UI strings to strings.json (t(…) literals + optional package.json / manifest strings)
 npx ai-i18n-tools extract
 
 # 3. Translate to all target locales
@@ -125,8 +125,11 @@ Exportado de `'ai-i18n-tools/runtime'` - funciona em qualquer ambiente JS, sem n
 ## Comandos CLI
 
 ```
+ai-i18n-tools version                               Print version and build timestamp
+ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
-ai-i18n-tools extract                               Scan source for t("…") calls
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
+ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
@@ -134,21 +137,22 @@ ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (featu
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
 ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
-ai-i18n-tools status                                Translation status per file × locale
+ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-Todos os comandos aceitam `-c <config>` (padrão: `ai-i18n-tools.config.json`), `-v` (verbose) e opcionalmente `-w` / `--write-logs [caminho]` para adicionar a saída do console a um arquivo de log (padrão: sob o diretório de cache de tradução).
+Opções globais para todos os comandos: `-c <config>` (padrão: `ai-i18n-tools.config.json`), `-v` (verboso), opcional `-w` / `--write-logs [path]` para redirecionar a saída do console para um arquivo de log (padrão: dentro do diretório de cache de traduções), `-V` / `--version` e `-h` / `--help`. Veja [Introdução](docs/GETTING_STARTED.pt-BR.md#cli-reference) para as opções específicas de cada comando.
 
 ---
 
 ## Documentação
 
-- [Introdução](docs/GETTING_STARTED.pt-BR.md) - guia completo de configuração para ambos os fluxos de trabalho, todas as flags da CLI e referência de campos de configuração.  
-- [Visão Geral do Pacote](docs/PACKAGE_OVERVIEW.pt-BR.md) - arquitetura, internos, API programática e pontos de extensão.  
-- [Contexto do Agente de IA](../docs/ai-i18n-tools-context.md) - contexto conciso do projeto para agentes e mantenedores que fazem alterações de código ou configuração.
+- [Introdução](docs/GETTING_STARTED.pt-BR.md) - guia completo de configuração para ambos os fluxos de trabalho, referência da CLI e referência dos campos de configuração.
+- [Visão Geral do Pacote](docs/PACKAGE_OVERVIEW.pt-BR.md) - arquitetura, componentes internos, API programática e pontos de extensão.
+- [Contexto do Agente de IA](../docs/ai-i18n-tools-context.md) - **para aplicativos que usam o pacote:** prompts de integração para projetos downstream (copie para as regras do agente no seu repositório).
+- Internals do mantenedor para **este** repositório: `dev/package-context.md` (apenas clone; não está no npm).
 
 ---
 

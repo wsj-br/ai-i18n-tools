@@ -5,17 +5,27 @@ import {
   restoreBoldWrappedInlineCode,
 } from "./bold-code-placeholders.js";
 import { protectInlineCodeSpans, restoreInlineCodeSpans } from "./inline-code-placeholders.js";
-import { protectMarkdownEmphasis, restoreMarkdownEmphasis } from "./emphasis-placeholders.js";
+import {
+  applyEmphasisCloserSpacing,
+  protectMarkdownEmphasis,
+  restoreMarkdownEmphasis,
+} from "./emphasis-placeholders.js";
+import { protectHtmlTags, restoreHtmlTags } from "./html-tag-placeholders.js";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
  * Chains placeholder protection for document translation:
- * admonitions → doc anchors → markdown URLs → **`inline`** (whole span) → remaining `` `code` `` → emphasis.
+ * html tags/comments → admonitions → doc anchors → markdown URLs → **`inline`** (whole span)
+ * → remaining `` `code` `` → emphasis (optional).
  * Restore is the inverse order.
  */
 export class PlaceholderHandler {
-  protectForTranslation(text: string): {
+  protectForTranslation(
+    text: string,
+    options?: { emphasis?: boolean }
+  ): {
     text: string;
+    htmlTagMap: string[];
     openMap: string[];
     endMap: string[];
     htmlAnchors: string[];
@@ -23,15 +33,19 @@ export class PlaceholderHandler {
     urlMap: string[];
     boldCodeMap: string[];
     ilcMap: string[];
+    emphasisProtected: boolean;
   } {
-    const ad = protectAdmonitionSyntax(text);
+    const emphasisOn = options?.emphasis !== false;
+    const htmlTags = protectHtmlTags(text);
+    const ad = protectAdmonitionSyntax(htmlTags.protected);
     const doc = protectDocAnchors(ad.protected);
     const urls = protectMarkdownUrls(doc.protected);
     const boldCode = protectBoldWrappedInlineCode(urls.protected);
     const ilc = protectInlineCodeSpans(boldCode.protected);
-    const emphasis = protectMarkdownEmphasis(ilc.protected);
+    const body = emphasisOn ? protectMarkdownEmphasis(ilc.protected).protected : ilc.protected;
     return {
-      text: emphasis.protected,
+      text: body,
+      htmlTagMap: htmlTags.htmlTagMap,
       openMap: ad.openMap,
       endMap: ad.endMap,
       htmlAnchors: doc.htmlAnchors,
@@ -39,12 +53,14 @@ export class PlaceholderHandler {
       urlMap: urls.urlMap,
       boldCodeMap: boldCode.boldCodeMap,
       ilcMap: ilc.ilcMap,
+      emphasisProtected: emphasisOn,
     };
   }
 
   restoreAfterTranslation(
     text: string,
     state: {
+      htmlTagMap: string[];
       openMap: string[];
       endMap: string[];
       htmlAnchors: string[];
@@ -52,14 +68,20 @@ export class PlaceholderHandler {
       urlMap: string[];
       boldCodeMap: string[];
       ilcMap: string[];
+      /** When false or omitted, `restoreMarkdownEmphasis` is skipped (must match {@link protectForTranslation}). */
+      emphasisProtected?: boolean;
     }
   ): string {
-    let s = restoreMarkdownEmphasis(text);
+    let s =
+      state.emphasisProtected === false
+        ? applyEmphasisCloserSpacing(text)
+        : restoreMarkdownEmphasis(text);
     s = restoreInlineCodeSpans(s, state.ilcMap);
     s = restoreBoldWrappedInlineCode(s, state.boldCodeMap);
     s = restoreMarkdownUrls(s, state.urlMap);
     s = restoreDocAnchors(s, state.htmlAnchors, state.docusaurusHeadingIds);
     s = restoreAdmonitionSyntax(s, state.openMap, state.endMap);
+    s = restoreHtmlTags(s, state.htmlTagMap);
     return s;
   }
 

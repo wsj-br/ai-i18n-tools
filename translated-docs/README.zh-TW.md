@@ -4,13 +4,13 @@
 
 <small>**以其他語言閱讀：**</small>
 
-<small id="lang-list">[en-GB](../README.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [hi](./README.hi.md) · [ja](./README.ja.md) · [ko](./README.ko.md) · [pt-BR](./README.pt-BR.md) · [zh-CN](./README.zh-CN.md) · [zh-TW](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 ## 兩大核心工作流程
 
 **工作流程 1 - UI 翻譯** (React、Next.js、Node.js，任何 i18next 專案)
 
-掃描原始碼檔案中的 `t("…")` 呼叫，建立主目錄（`strings.json`，可選包含每個區域設定的 **`models`** 元資料），透過 OpenRouter 為每個區域設定翻譯缺失的條目，並寫入可供 i18next 直接使用的扁平 JSON 檔案（`de.json`、`pt-BR.json`，…）。
+從 **`t("…")` / `i18n.t("…")` 字面值** 建立主目錄（`strings.json`，並可選擇包含每個語系的 **`models`** 元資料），可選擇性地包含 **`package.json` `description`**，並在設定中啟用時，從 `ui-languages.json` 取得每個 **`englishName`**。透過 OpenRouter 翻譯各語系中缺失的條目，並輸出扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
 
 **工作流程 2 - 文件翻譯** (Markdown、Docusaurus JSON)
 
@@ -46,7 +46,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # 1. Create config
 npx ai-i18n-tools init
 
-# 2. Extract t("…") calls from source
+# 2. Extract UI strings to strings.json (t(…) literals + optional package.json / manifest strings)
 npx ai-i18n-tools extract
 
 # 3. Translate to all target locales
@@ -125,8 +125,11 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ## CLI 指令
 
 ```
+ai-i18n-tools version                               Print version and build timestamp
+ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
-ai-i18n-tools extract                               Scan source for t("…") calls
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
+ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
@@ -134,21 +137,22 @@ ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (featu
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
 ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
-ai-i18n-tools status                                Translation status per file × locale
+ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-所有命令都接受 `-c <config>`（默認值：`ai-i18n-tools.config.json`）、`-v`（詳細模式），以及可選的 `-w` / `--write-logs [path]` 來將控制台輸出附加到日誌文件（默認值：在翻譯緩存目錄下）。
+每個指令的全域選項：`-c <config>`（預設值：`ai-i18n-tools.config.json`）、`-v`（詳細輸出）、可選的 `-w` / `--write-logs [path]` 用於將主控台輸出同時寫入日誌檔（預設值：放在翻譯快取目錄下）、`-V` / `--version`，以及 `-h` / `--help`。各指令專用旗標請見 [快速入門](docs/GETTING_STARTED.zh-TW.md#cli-reference)。
 
 ---
 
 ## 文檔
 
-- [開始使用](docs/GETTING_STARTED.zh-TW.md) - 針對兩種工作流程的完整設置指南、所有 CLI 標誌和配置字段參考。
-- [包概述](docs/PACKAGE_OVERVIEW.zh-TW.md) - 架構、內部原理、程序化 API 和擴展點。
-- [AI 代理上下文](../docs/ai-i18n-tools-context.md) - 為進行代碼或配置更改的代理和維護者提供簡明的項目上下文。
+- [快速入門](docs/GETTING_STARTED.zh-TW.md) - 兩種工作流程的完整設定指南、CLI 參考與設定欄位說明。
+- [套件概覽](docs/PACKAGE_OVERVIEW.zh-TW.md) - 架構、內部機制、程式化 API 與擴充點。
+- [AI Agent 情境](../docs/ai-i18n-tools-context.md) - **針對使用此套件的應用程式**：提供下游專案整合時使用的提示（可複製到您專案庫的 agent 規則中）。
+- **本** 倉儲的維護者內部資料：`dev/package-context.md`（僅限克隆；未發布至 npm）。
 
 ---
 

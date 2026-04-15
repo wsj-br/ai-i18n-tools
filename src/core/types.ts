@@ -74,7 +74,7 @@ export interface TranslationResult {
   cost?: number;
   /** When the API succeeded; used for translation failure debug logs. */
   debugPrompt?: { systemPrompt: string; userContent: string };
-  /** Raw assistant text before `<translate>` stripping (single-segment). */
+  /** Raw assistant text before optional tag stripping (single-segment; see {@link OpenRouterClient.stripTranslateTags}). */
   rawAssistantContent?: string;
 }
 

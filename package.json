@@ -30,7 +30,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && node scripts/copy-edit-cache-app.mjs",
+    "build": "node scripts/write-build-info.mjs && tsc && node scripts/copy-edit-cache-app.mjs",
     "build:ui-languages-master": "node scripts/build-ui-languages-complete.mjs",
     "dev": "node scripts/copy-edit-cache-app.mjs && tsc --watch",
     "test": "vitest run --coverage",

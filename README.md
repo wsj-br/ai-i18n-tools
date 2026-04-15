@@ -4,7 +4,7 @@ CLI and programmatic toolkit for internationalising JavaScript/TypeScript applic
 
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[en-GB](./README.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [hi](./translated-docs/README.hi.md) · [ja](./translated-docs/README.ja.md) · [ko](./translated-docs/README.ko.md) · [pt-BR](./translated-docs/README.pt-BR.md) · [zh-CN](./translated-docs/README.zh-CN.md) · [zh-TW](./translated-docs/README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](./README.md) · [German](./translated-docs/README.de.md) · [Spanish](./translated-docs/README.es.md) · [French](./translated-docs/README.fr.md) · [Hindi](./translated-docs/README.hi.md) · [Japanese](./translated-docs/README.ja.md) · [Korean](./translated-docs/README.ko.md) · [Portuguese (BR)](./translated-docs/README.pt-BR.md) · [Chinese (CN)](./translated-docs/README.zh-CN.md) · [Chinese (TW)](./translated-docs/README.zh-TW.md)</small>
 
 ## Two core workflows
 
@@ -125,6 +125,8 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 ## CLI commands
 
 ```
+ai-i18n-tools version                               Print version and build timestamp
+ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
@@ -135,19 +137,19 @@ ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (featu
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
 ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
-ai-i18n-tools status                                Translation status per file × locale
+ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-All commands accept `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), and optional `-w` / `--write-logs [path]` to append console output to a log file (default: under the translation cache directory).
+Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory), `-V` / `--version`, and `-h` / `--help`. See [Getting Started](docs/GETTING_STARTED.md#cli-reference) for per-command flags.
 
 ---
 
 ## Documentation
 
-- [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, all CLI flags, and config field reference.
+- [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, CLI reference, and config field reference.
 - [Package Overview](docs/PACKAGE_OVERVIEW.md) - architecture, internals, programmatic API, and extension points.
 - [AI Agent Context](docs/ai-i18n-tools-context.md) - **for apps using the package:** integration prompts for downstream projects (copy into your repo’s agent rules).
 - Maintainer internals for **this** repository: `dev/package-context.md` (clone-only; not on npm).

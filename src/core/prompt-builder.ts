@@ -11,8 +11,8 @@ import {
  * Document translation prompts follow common OpenRouter-style doc-translation patterns
  * (`buildBatchPrompt`, `buildPrompt`, `MARKDOWN_PRESERVATION_RULES`). Adjust here when prompt strategy changes.
  *
- * For **JSON** (Docusaurus locale files) and **SVG** text segments, we append context addenda so the same
- * `<t id="N">` / `<translate>` response shape stays robust outside pure markdown.
+ * For **JSON** (Docusaurus locale files) and **SVG** text segments, we append context addenda so batch
+ * `<t id="N">` responses stay robust outside pure markdown. Single-segment calls use plain segment text in the user message (see {@link buildDocumentSinglePrompt}).
  *
  * Prompt **content** lives in `prompts.ts`; this module handles assembly and parsing only.
  */
@@ -140,7 +140,7 @@ export function buildDocumentSinglePrompt(
 ): { systemPrompt: string; userContent: string } {
   const glossary = buildGlossaryBlock(opts.glossaryHints);
   const addendum = contentTypeAddendum(contentType);
-  const footer = PROMPTS.document.translateFooter;
+  const outputHint = PROMPTS.document.singleSegmentOutputInstruction;
 
   let systemPrompt: string;
 
@@ -154,17 +154,15 @@ export function buildDocumentSinglePrompt(
 ${example}
 
 ---
-${footer}${glossary}`;
+${outputHint}${glossary}`;
   } else {
     systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
 
 ---
-${footer}${glossary}`;
+${outputHint}${glossary}`;
   }
 
-  const userContent = `<translate>
-${content}
-</translate>`;
+  const userContent = content;
 
   return { systemPrompt, userContent };
 }

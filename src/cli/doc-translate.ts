@@ -13,7 +13,12 @@ import { segmentTranslationText } from "../core/types.js";
 export type { DocSegmentTranslation };
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { BatchTranslationError } from "../core/types.js";
-import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import {
+  timestamp,
+  formatElapsedMmSs,
+  formatSegmentCacheHitSuffix,
+  printModelsTryInOrder,
+} from "./format.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
@@ -67,7 +72,10 @@ export function translatePromptFormatToResponseFormat(
   if (fmt === "json-object") {
     return "json-object";
   }
-  return "xml-tags";
+  if (fmt === "xml") {
+    return "xml-tags";
+  }
+  return "json-array";
 }
 
 export interface TranslateRunOptions {
@@ -101,9 +109,19 @@ export interface TranslateRunOptions {
   documentationBlockIndex?: number;
   /**
    * Batch segment prompt/response shape (`translate-docs --prompt-format`).
-   * Default `xml`: &lt;seg&gt;/&lt;t&gt;; `json-array` / `json-object` match {@link buildDocumentBatchPrompt} JSON modes.
+   * Default `json-array`; `xml` uses &lt;seg&gt;/&lt;t&gt;; `json-object` matches {@link buildDocumentBatchPrompt} JSON object mode.
    */
   promptFormat?: TranslatePromptFormat;
+  /**
+   * When true, markdown runs emphasis placeholder protection (`emphasis-placeholders.ts`) inside `PlaceholderHandler`
+   * (`translate-docs` / `sync --emphasis-placeholders`). Default: off — omit the flag to leave emphasis delimiters unmasked for the model.
+   */
+  emphasisPlaceholders?: boolean;
+  /**
+   * When true, write per-failure debug logs (`*-FAILED-TRANSLATION_*.log`) under cacheDir.
+   * Default: off.
+   */
+  debugFailed?: boolean;
 }
 
 export interface TranslateTotals {
@@ -118,6 +136,10 @@ export interface TranslateTotals {
   segmentsCached?: number;
   /** Translatable segments translated via API (or dry-run) this run. */
   segmentsTranslated?: number;
+  /** Segment translations that failed quality validation at least once before success (markdown batch + per-segment retries). */
+  segmentValidationFailures?: number;
+  /** Count of single-segment API calls (`translateDocumentSegment`), including batch fallbacks and markdown quality retries. */
+  individualSegmentTranslations?: number;
 }
 
 type ProtectState = ReturnType<PlaceholderHandler["protectForTranslation"]> & {
@@ -129,6 +151,7 @@ function emptyMarkdownProtectShell(): Omit<
   "text"
 > {
   return {
+    htmlTagMap: [],
     openMap: [],
     endMap: [],
     htmlAnchors: [],
@@ -136,22 +159,24 @@ function emptyMarkdownProtectShell(): Omit<
     urlMap: [],
     boldCodeMap: [],
     ilcMap: [],
+    emphasisProtected: false,
   };
 }
 
-/** Glossary forced tokens first, then markdown URL/admonition/emphasis protection when `useMarkdownPlaceholders`. */
+/** Glossary forced tokens first, then markdown URL/admonition/(optional) emphasis protection when `useMarkdownPlaceholders`. */
 export function protectSegmentForTranslation(
   raw: string,
   glossary: Glossary,
   locale: string,
-  useMarkdownPlaceholders: boolean
+  useMarkdownPlaceholders: boolean,
+  emphasisPlaceholders = false
 ): { text: string; state: ProtectState } {
   const g = protectGlossaryForcedTerms(raw, glossary, locale);
   const glossaryForceReplacements = g.replacements;
 
   if (useMarkdownPlaceholders) {
     const ph = new PlaceholderHandler();
-    const st = ph.protectForTranslation(g.text);
+    const st = ph.protectForTranslation(g.text, { emphasis: emphasisPlaceholders });
     return {
       text: st.text,
       state: {
@@ -198,13 +223,19 @@ function warnDocQualityModelSwitch(
   nextModel: string,
   detail: string,
   /** Same shape as successful batch lines, e.g. `segments 28–52/155`. */
-  segmentsLabel?: string
+  segmentsLabel?: string,
+  /** 1-based index of `nextModel` in the configured model list, and list length. */
+  nextModelOrdinal?: { index1Based: number; total: number }
 ): void {
   const loc = relativePath != null ? `${locale} ${relativePath}` : locale;
   const seg = segmentsLabel ? `: ${segmentsLabel}` : "";
+  const ordinal =
+    nextModelOrdinal != null
+      ? ` (${nextModelOrdinal.index1Based}/${nextModelOrdinal.total})`
+      : "";
   console.warn(
     chalk.yellow(
-      `  ⚠️  ${loc}${seg}: ${failedModel} output failed quality check (${detail}). Trying ${nextModel}…`
+      `  ⚠️  ${loc}${seg}: ${failedModel} output failed quality check (${detail}). Trying ${nextModel}${ordinal}…`
     )
   );
 }
@@ -218,29 +249,39 @@ function safeDocNameForLogFilename(relativePath: string): string {
  * Filename: `{iso}-FAILED-TRANSLATION_{document}_{ms}.log` under `cacheDirAbs`.
  * Returns absolute path; callers print `📝 Failure log: …` after warnings (retry) or before throw (fatal).
  */
-function writeDocTranslationFailureLog(opts: {
-  cacheDirAbs: string;
-  relativePath: string;
-  locale: string;
-  segmentsLabel: string;
-  outcome: "retrying_next_model" | "fatal";
-  failedModel: string;
-  nextModel?: string;
-  qualityErrors: string[];
-  perSegmentLines: string[];
-  systemPrompt: string;
-  userContent: string;
-  rawAssistantContent: string;
-}): string | undefined {
+type DocTranslationLogOutcome = "retrying_next_model" | "fatal" | "individual_success";
+
+function writeDocTranslationDetailLog(
+  opts: {
+    cacheDirAbs: string;
+    relativePath: string;
+    locale: string;
+    segmentsLabel: string;
+    outcome: DocTranslationLogOutcome;
+    failedModel: string;
+    nextModel?: string;
+    qualityErrors: string[];
+    perSegmentLines: string[];
+    systemPrompt: string;
+    userContent: string;
+    rawAssistantContent: string;
+  },
+  mode: "failed" | "debug"
+): string | undefined {
+  const fileLabel = mode === "failed" ? "FAILED-TRANSLATION" : "DEBUG-TRANSLATION";
+  const headerTitle =
+    mode === "failed"
+      ? "=== ai-i18n-tools doc translation failure ==="
+      : "=== ai-i18n-tools doc translation debug ===";
   const tsIso = new Date().toISOString().replace(/:/g, "-");
   const ms = Date.now();
   const doc = safeDocNameForLogFilename(opts.relativePath);
-  const fileName = `${tsIso}-FAILED-TRANSLATION_${doc}_${ms}.log`;
+  const fileName = `${tsIso}-${fileLabel}_${doc}_${ms}.log`;
   const abs = path.join(opts.cacheDirAbs, fileName);
   try {
     ensureDirForFile(abs);
     const lines = [
-      "=== ai-i18n-tools doc translation failure ===",
+      headerTitle,
       `logFilePath: ${abs}`,
       `isoTime: ${new Date().toISOString()}`,
       `locale: ${opts.locale}`,
@@ -251,7 +292,9 @@ function writeDocTranslationFailureLog(opts: {
       opts.nextModel ? `nextModel: ${opts.nextModel}` : "",
       "",
       "--- quality / validation errors ---",
-      ...opts.qualityErrors.map((e) => `  ${e}`),
+      ...(opts.qualityErrors.length > 0
+        ? opts.qualityErrors.map((e) => `  ${e}`)
+        : ["  (none)"]),
       "",
       "--- per-segment validation ---",
       ...opts.perSegmentLines.map((e) => `  ${e}`),
@@ -269,9 +312,43 @@ function writeDocTranslationFailureLog(opts: {
     fs.writeFileSync(abs, lines.join("\n"), "utf8");
     return abs;
   } catch (e) {
-    console.warn(chalk.yellow(`  ⚠️  Could not write translation failure log: ${e}`));
+    console.warn(chalk.yellow(`  ⚠️  Could not write translation ${mode} log: ${e}`));
     return undefined;
   }
+}
+
+function writeDocTranslationFailureLog(opts: {
+  cacheDirAbs: string;
+  relativePath: string;
+  locale: string;
+  segmentsLabel: string;
+  outcome: "retrying_next_model" | "fatal";
+  failedModel: string;
+  nextModel?: string;
+  qualityErrors: string[];
+  perSegmentLines: string[];
+  systemPrompt: string;
+  userContent: string;
+  rawAssistantContent: string;
+}): string | undefined {
+  return writeDocTranslationDetailLog(opts, "failed");
+}
+
+function writeDocTranslationDebugLog(opts: {
+  cacheDirAbs: string;
+  relativePath: string;
+  locale: string;
+  segmentsLabel: string;
+  outcome: DocTranslationLogOutcome;
+  failedModel: string;
+  nextModel?: string;
+  qualityErrors: string[];
+  perSegmentLines: string[];
+  systemPrompt: string;
+  userContent: string;
+  rawAssistantContent: string;
+}): string | undefined {
+  return writeDocTranslationDetailLog(opts, "debug");
 }
 
 /** Elapsed time as `M:SS` (minutes not zero-padded), matching reference translate-docs. */
@@ -335,6 +412,52 @@ export function matchesPathFilter(relPath: string, filter: string | undefined): 
   const f = filter.replace(/\\/g, "/");
   const r = relPath.replace(/\\/g, "/");
   return r === f || r.startsWith(f.endsWith("/") ? f : `${f}/`);
+}
+
+/**
+ * Posix path of a JSON catalog file relative to the project root (`opts.cwd`).
+ * JSON file lists use paths relative to `jsonSource`, so this is used with `--path` / `--file`.
+ */
+export function jsonFileProjectRelativePath(
+  projectRoot: string,
+  jsonAbsRoot: string,
+  jsonRel: string
+): string {
+  return path
+    .relative(projectRoot, path.join(jsonAbsRoot, jsonRel))
+    .split(path.sep)
+    .join("/");
+}
+
+/**
+ * Normalize CLI `--path` / `--file` to a project-root-relative posix path for {@link matchesPathFilter}.
+ * Empty input or a path equal to the project root means no filter (translate everything).
+ */
+export function normalizePathFilterForProjectRoot(
+  projectRoot: string,
+  raw: string | undefined
+): string | undefined {
+  if (raw === undefined) {
+    return undefined;
+  }
+  const trimmed = String(raw).trim();
+  if (trimmed === "") {
+    return undefined;
+  }
+  const resolved = path.isAbsolute(trimmed)
+    ? path.normalize(trimmed)
+    : path.resolve(projectRoot, trimmed);
+  const rel = path.relative(projectRoot, resolved);
+  if (rel === "" || rel === ".") {
+    return undefined;
+  }
+  const norm = rel.split(path.sep).join("/");
+  if (norm.startsWith("../") || norm === "..") {
+    throw new Error(
+      `Path filter must be inside the project root (${projectRoot}). Got: ${raw}`
+    );
+  }
+  return norm;
 }
 
 async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Promise<T> {
@@ -431,15 +554,26 @@ async function translateSegmentsBatched(
   inTok: number;
   outTok: number;
   cost: number;
+  segmentValidationFailures: number;
+  individualSegmentTranslations: number;
 }> {
   const out = new Map<string, DocSegmentTranslation>();
   let inTok = 0;
   let outTok = 0;
   let cost = 0;
+  let segmentValidationFailures = 0;
+  let individualSegmentTranslations = 0;
 
   const batches = splitTranslatableIntoBatches(batchable, { batchSize, maxBatchChars });
   if (batches.length === 0) {
-    return { map: out, inTok, outTok, cost };
+    return {
+      map: out,
+      inTok,
+      outTok,
+      cost,
+      segmentValidationFailures: 0,
+      individualSegmentTranslations: 0,
+    };
   }
 
   const batchDocIndices: number[][] = [];
@@ -460,6 +594,8 @@ async function translateSegmentsBatched(
     inTok: number;
     outTok: number;
     cost: number;
+    segmentValidationFailures: number;
+    individualSegmentTranslations: number;
   };
 
   const processBatch = async (bi: number): Promise<BatchProcessResult> => {
@@ -467,6 +603,8 @@ async function translateSegmentsBatched(
     let localIn = 0;
     let localOut = 0;
     let localCost = 0;
+    let localSegmentValidationFailures = 0;
+    let localIndividualSegmentTranslations = 0;
     const batch = batches[bi]!;
     const hintText = batch.map((s) => s.content).join("\n");
     const hints = glossary.findTermsInText(hintText, locale);
@@ -483,7 +621,14 @@ async function translateSegmentsBatched(
       for (const s of batch) {
         partial.set(s.hash, { text: s.content });
       }
-      return { partial, inTok: localIn, outTok: localOut, cost: localCost };
+      return {
+        partial,
+        inTok: localIn,
+        outTok: localOut,
+        cost: localCost,
+        segmentValidationFailures: localSegmentValidationFailures,
+        individualSegmentTranslations: localIndividualSegmentTranslations,
+      };
     }
 
     const logBatchSuccess = (res: { usage: { totalTokens: number } }) => {
@@ -533,6 +678,7 @@ async function translateSegmentsBatched(
           const ph = new PlaceholderHandler();
           for (const s of batch) {
             const st = placeholderById.get(s.id);
+            localIndividualSegmentTranslations++;
             const single = await client.translateDocumentSegment(s.content, locale, hints, {
               contentType,
               docLogContext:
@@ -550,124 +696,147 @@ async function translateSegmentsBatched(
           throw e;
         }
       }
-      return { partial, inTok: localIn, outTok: localOut, cost: localCost };
+      return {
+        partial,
+        inTok: localIn,
+        outTok: localOut,
+        cost: localCost,
+        segmentValidationFailures: localSegmentValidationFailures,
+        individualSegmentTranslations: localIndividualSegmentTranslations,
+      };
     }
 
     const ph = new PlaceholderHandler();
     const models = client.getConfiguredModels();
 
     try {
-      let startModelIndex = 0;
-      let finished = false;
-      while (!finished && startModelIndex < models.length) {
-        const res = await client.translateDocumentBatch(batch, locale, hints, {
-          contentType,
-          responseFormat: batchResponseFormat,
-          docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
-          startModelIndex,
-        });
-        localIn += res.usage.inputTokens;
-        localOut += res.usage.outputTokens;
-        localCost += res.cost ?? 0;
+      const res = await client.translateDocumentBatch(batch, locale, hints, {
+        contentType,
+        responseFormat: batchResponseFormat,
+        docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
+      });
+      localIn += res.usage.inputTokens;
+      localOut += res.usage.outputTokens;
+      localCost += res.cost ?? 0;
 
-        const qualityErrors: string[] = [];
-        const batchPartial = new Map<string, string>();
-        const perSegmentLines: string[] = [];
-        for (let i = 0; i < batch.length; i++) {
-          const s = batch[i]!;
-          const raw = res.translations.get(i);
-          if (raw === undefined) {
-            throw new Error(`Missing translation for batch index ${i}`);
-          }
-          const st = placeholderById.get(s.id);
-          const restored = restoreSegmentTranslation(ph, raw, st);
-          const origSeg = segmentOriginalContent(s, originalContentByHash);
-          const v = await validateDocTranslatePair(origSeg, restored);
-          if (!v.ok) {
-            qualityErrors.push(...v.errors);
-          }
-          const docIdx0 = batchDocIndices[bi]?.[i];
-          const label =
-            docLog && docIdx0 !== undefined
-              ? `doc #${docIdx0 + 1}/${docLog.totalSegments} (hash ${s.hash})`
-              : `batch index ${i} (hash ${s.hash})`;
-          perSegmentLines.push(`${label}: ${v.ok ? "OK" : v.errors.join("; ")}`);
-          batchPartial.set(s.hash, restored);
+      const qualityErrors: string[] = [];
+      const perSegmentLines: string[] = [];
+      const failedSegments: Array<{
+        index: number;
+        segment: Segment;
+        state: ProtectState | undefined;
+        original: Segment;
+        errors: string[];
+        docIdx0: number | undefined;
+      }> = [];
+      for (let i = 0; i < batch.length; i++) {
+        const s = batch[i]!;
+        const raw = res.translations.get(i);
+        if (raw === undefined) {
+          throw new Error(`Missing translation for batch index ${i}`);
+        }
+        const st = placeholderById.get(s.id);
+        const restored = restoreSegmentTranslation(ph, raw, st);
+        const origSeg = segmentOriginalContent(s, originalContentByHash);
+        const v = await validateDocTranslatePair(origSeg, restored);
+        const docIdx0 = batchDocIndices[bi]?.[i];
+        const label =
+          docLog && docIdx0 !== undefined
+            ? `doc #${docIdx0 + 1}/${docLog.totalSegments} seg id=${i} (hash ${s.hash})`
+            : `batch seg id=${i} (hash ${s.hash})`;
+        perSegmentLines.push(`${label}: ${v.ok ? "OK" : v.errors.join("; ")}`);
+        if (v.ok) {
+          partial.set(s.hash, { text: restored, modelUsed: res.model });
+        } else {
+          localSegmentValidationFailures++;
+          qualityErrors.push(...v.errors);
+          failedSegments.push({
+            index: i,
+            segment: s,
+            state: st,
+            original: origSeg,
+            errors: v.errors,
+            docIdx0,
+          });
+        }
+      }
+
+      if (failedSegments.length === 0) {
+        logBatchSuccess(res);
+      } else {
+        const nextStart = models.indexOf(res.model) + 1;
+        const segLabel =
+          docLog && batchDocIndices[bi] && batchDocIndices[bi]!.length > 0
+            ? segRangeLabel(batchDocIndices[bi]!, docLog.totalSegments)
+            : "";
+
+        let failureLogPath: string | undefined;
+        if (failureLogDirAbs && docLog) {
+          failureLogPath = writeDocTranslationFailureLog({
+            cacheDirAbs: failureLogDirAbs,
+            relativePath: docLog.relativePath,
+            locale,
+            segmentsLabel: segLabel || "(segment range unknown)",
+            outcome: nextStart >= models.length ? "fatal" : "retrying_next_model",
+            failedModel: res.model,
+            nextModel: nextStart < models.length ? models[nextStart]! : undefined,
+            qualityErrors,
+            perSegmentLines,
+            systemPrompt: res.debugPrompt?.systemPrompt ?? "",
+            userContent: res.debugPrompt?.userContent ?? "",
+            rawAssistantContent:
+              res.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
+          });
         }
 
-        if (qualityErrors.length === 0) {
-          for (const [h, t] of batchPartial) {
-            partial.set(h, { text: t, modelUsed: res.model });
-          }
-          logBatchSuccess(res);
-          finished = true;
-        } else {
-          const nextStart = models.indexOf(res.model) + 1;
-          const segLabel =
-            docLog && batchDocIndices[bi] && batchDocIndices[bi]!.length > 0
-              ? segRangeLabel(batchDocIndices[bi]!, docLog.totalSegments)
-              : "";
-
-          let failureLogPath: string | undefined;
-          if (failureLogDirAbs && docLog) {
-            failureLogPath = writeDocTranslationFailureLog({
-              cacheDirAbs: failureLogDirAbs,
-              relativePath: docLog.relativePath,
-              locale,
-              segmentsLabel: segLabel || "(segment range unknown)",
-              outcome: nextStart >= models.length ? "fatal" : "retrying_next_model",
-              failedModel: res.model,
-              nextModel: nextStart < models.length ? models[nextStart]! : undefined,
-              qualityErrors,
-              perSegmentLines,
-              systemPrompt: res.debugPrompt?.systemPrompt ?? "",
-              userContent: res.debugPrompt?.userContent ?? "",
-              rawAssistantContent:
-                res.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
-            });
-          }
-
-          if (nextStart >= models.length) {
-            if (failureLogPath) {
-              console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
-            }
-            throw new Error(
-              `Doc translation quality failed (${docLog?.relativePath ?? "?"}): ${segLabel ? `${segLabel}: ` : ""}${qualityErrors.join("; ")}`
-            );
-          }
-          warnDocQualityModelSwitch(
-            locale,
-            docLog?.relativePath,
-            res.model,
-            models[nextStart]!,
-            qualityErrors.join("; "),
-            segLabel || undefined
-          );
+        if (nextStart >= models.length) {
           if (failureLogPath) {
             console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
           }
-          startModelIndex = nextStart;
-        }
-      }
-    } catch (e) {
-      if (e instanceof BatchTranslationError && client) {
-        if (verbose) {
-          console.warn(
-            chalk.yellow(
-              `⚠️  ${locale} ${docLog?.relativePath ?? "?"}: batch failed (expected ${e.expected} translated segments, got ${e.received}); falling back to single-segment API calls`
-            )
+          throw new Error(
+            `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabel ? `${segLabel}: ` : ""}${qualityErrors.join("; ")}`
           );
         }
-        for (let si = 0; si < batch.length; si++) {
-          const s = batch[si]!;
-          const st = placeholderById.get(s.id);
-          const origSeg = segmentOriginalContent(s, originalContentByHash);
-          const docIdx0 = batchDocIndices[bi]?.[si];
+
+        warnDocQualityModelSwitch(
+          locale,
+          docLog?.relativePath,
+          res.model,
+          models[nextStart]!,
+          qualityErrors.join("; "),
+          segLabel || undefined,
+          { index1Based: nextStart + 1, total: models.length }
+        );
+        if (failureLogPath) {
+          console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
+        }
+
+        const initialModelIndex = models.indexOf(res.model);
+        const okCount = batch.length - failedSegments.length;
+        const failedCount = failedSegments.length;
+        const baseLoc = docLog?.relativePath ? `${locale} ${docLog.relativePath}` : locale;
+        console.warn(
+          chalk.yellow(
+            `  ⚠️  ${baseLoc}: batch validation complete — ${okCount}/${batch.length} segment(s) OK, ${failedCount} failed.`
+          )
+        );
+        const initialTryOrdinal =
+          initialModelIndex >= 0 ? ` (${initialModelIndex + 1}/${models.length})` : "";
+        console.warn(
+          chalk.magenta(
+            `  🔄 ${baseLoc}: retrying ${failedCount} failed segment(s) individually. Trying ${res.model}${initialTryOrdinal}…`
+          )
+        );
+        for (const failed of failedSegments) {
           const segLabelSingle =
-            docLog && docIdx0 !== undefined ? segRangeLabel([docIdx0], docLog.totalSegments) : "";
-          let startIdx = 0;
+            docLog && failed.docIdx0 !== undefined
+              ? segRangeLabel([failed.docIdx0], docLog.totalSegments)
+              : "";
+          let startIdx = initialModelIndex >= 0 ? initialModelIndex : 0;
+          let remainingErrors = failed.errors;
           while (startIdx < models.length) {
-            const single = await client.translateDocumentSegment(s.content, locale, hints, {
+            localIndividualSegmentTranslations++;
+            const single = await client.translateDocumentSegment(failed.segment.content, locale, hints, {
               contentType,
               startModelIndex: startIdx,
               docLogContext:
@@ -678,17 +847,42 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            const restored = restoreSegmentTranslation(ph, single.content, st);
-            const v = await validateDocTranslatePair(origSeg, restored);
+            const restored = restoreSegmentTranslation(ph, single.content, failed.state);
+            const v = await validateDocTranslatePair(failed.original, restored);
+            const nextIdx = models.indexOf(single.model) + 1;
+            const perSegLine =
+              docLog && failed.docIdx0 !== undefined
+                ? `doc #${failed.docIdx0 + 1}/${docLog.totalSegments} seg id=${failed.index} (hash ${failed.segment.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`
+                : `batch seg id=${failed.index} (hash ${failed.segment.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`;
+            if (failureLogDirAbs && docLog) {
+              const debugLogPathSingle = writeDocTranslationDebugLog({
+                cacheDirAbs: failureLogDirAbs,
+                relativePath: docLog.relativePath,
+                locale,
+                segmentsLabel: segLabelSingle || "(segment range unknown)",
+                outcome: v.ok ? "individual_success" : nextIdx >= models.length ? "fatal" : "retrying_next_model",
+                failedModel: single.model,
+                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
+                qualityErrors: v.errors,
+                perSegmentLines: [perSegLine],
+                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
+                userContent: single.debugPrompt?.userContent ?? "",
+                rawAssistantContent:
+                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
+              });
+              if (debugLogPathSingle) {
+                console.warn(chalk.gray(`  🧪 Debug log: ${debugLogPathSingle}`));
+              }
+            }
             if (v.ok) {
-              partial.set(s.hash, { text: restored, modelUsed: single.model });
+              partial.set(failed.segment.hash, { text: restored, modelUsed: single.model });
               break;
             }
-            const nextIdx = models.indexOf(single.model) + 1;
+
+            localSegmentValidationFailures++;
+            remainingErrors = v.errors;
             const perSegDetail = [
-              docLog && docIdx0 !== undefined
-                ? `doc #${docIdx0 + 1}/${docLog.totalSegments} (hash ${s.hash}): ${v.errors.join("; ")}`
-                : `batch index ${si} (hash ${s.hash}): ${v.errors.join("; ")}`,
+              perSegLine,
             ];
             let failureLogPathSingle: string | undefined;
             if (failureLogDirAbs && docLog) {
@@ -713,7 +907,7 @@ async function translateSegmentsBatched(
                 console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
               }
               throw new Error(
-                `Doc translation quality failed (${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${v.errors.join("; ")}`
+                `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${v.errors.join("; ")}`
               );
             }
             warnDocQualityModelSwitch(
@@ -722,7 +916,120 @@ async function translateSegmentsBatched(
               single.model,
               models[nextIdx]!,
               v.errors.join("; "),
-              segLabelSingle || undefined
+              segLabelSingle || undefined,
+              { index1Based: nextIdx + 1, total: models.length }
+            );
+            if (failureLogPathSingle) {
+              console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
+            }
+            startIdx = nextIdx;
+          }
+          if (!partial.has(failed.segment.hash)) {
+            throw new Error(
+              `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${remainingErrors.join("; ")}`
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (e instanceof BatchTranslationError && client) {
+        if (verbose) {
+          console.warn(
+            chalk.yellow(
+              `⚠️  ${locale} ${docLog?.relativePath ?? "?"}: batch failed (expected ${e.expected} translated segments, got ${e.received}); falling back to single-segment API calls`
+            )
+          );
+        }
+        for (let si = 0; si < batch.length; si++) {
+          const s = batch[si]!;
+          const st = placeholderById.get(s.id);
+          const origSeg = segmentOriginalContent(s, originalContentByHash);
+          const docIdx0 = batchDocIndices[bi]?.[si];
+          const segLabelSingle =
+            docLog && docIdx0 !== undefined ? segRangeLabel([docIdx0], docLog.totalSegments) : "";
+          let startIdx = 0;
+          while (startIdx < models.length) {
+            localIndividualSegmentTranslations++;
+            const single = await client.translateDocumentSegment(s.content, locale, hints, {
+              contentType,
+              startModelIndex: startIdx,
+              docLogContext:
+                docLog && docLog.relativePath
+                  ? { locale, relativePath: docLog.relativePath }
+                  : undefined,
+            });
+            localIn += single.usage.inputTokens;
+            localOut += single.usage.outputTokens;
+            localCost += single.cost ?? 0;
+            const restored = restoreSegmentTranslation(ph, single.content, st);
+            const v = await validateDocTranslatePair(origSeg, restored);
+            const nextIdx = models.indexOf(single.model) + 1;
+            const perSegLine =
+              docLog && docIdx0 !== undefined
+                ? `doc #${docIdx0 + 1}/${docLog.totalSegments} seg id=${si} (hash ${s.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`
+                : `batch seg id=${si} (hash ${s.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`;
+            if (failureLogDirAbs && docLog) {
+              const debugLogPathSingle = writeDocTranslationDebugLog({
+                cacheDirAbs: failureLogDirAbs,
+                relativePath: docLog.relativePath,
+                locale,
+                segmentsLabel: segLabelSingle || "(segment range unknown)",
+                outcome: v.ok ? "individual_success" : nextIdx >= models.length ? "fatal" : "retrying_next_model",
+                failedModel: single.model,
+                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
+                qualityErrors: v.errors,
+                perSegmentLines: [perSegLine],
+                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
+                userContent: single.debugPrompt?.userContent ?? "",
+                rawAssistantContent:
+                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
+              });
+              if (debugLogPathSingle) {
+                console.warn(chalk.gray(`  🧪 Debug log: ${debugLogPathSingle}`));
+              }
+            }
+            if (v.ok) {
+              partial.set(s.hash, { text: restored, modelUsed: single.model });
+              break;
+            }
+            localSegmentValidationFailures++;
+            const perSegDetail = [
+              perSegLine,
+            ];
+            let failureLogPathSingle: string | undefined;
+            if (failureLogDirAbs && docLog) {
+              failureLogPathSingle = writeDocTranslationFailureLog({
+                cacheDirAbs: failureLogDirAbs,
+                relativePath: docLog.relativePath,
+                locale,
+                segmentsLabel: segLabelSingle || "(segment range unknown)",
+                outcome: nextIdx >= models.length ? "fatal" : "retrying_next_model",
+                failedModel: single.model,
+                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
+                qualityErrors: v.errors,
+                perSegmentLines: perSegDetail,
+                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
+                userContent: single.debugPrompt?.userContent ?? "",
+                rawAssistantContent:
+                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
+              });
+            }
+            if (nextIdx >= models.length) {
+              if (failureLogPathSingle) {
+                console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
+              }
+              throw new Error(
+                `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${v.errors.join("; ")}`
+              );
+            }
+            warnDocQualityModelSwitch(
+              locale,
+              docLog?.relativePath,
+              single.model,
+              models[nextIdx]!,
+              v.errors.join("; "),
+              segLabelSingle || undefined,
+              { index1Based: nextIdx + 1, total: models.length }
             );
             if (failureLogPathSingle) {
               console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
@@ -734,7 +1041,14 @@ async function translateSegmentsBatched(
         throw e;
       }
     }
-    return { partial, inTok: localIn, outTok: localOut, cost: localCost };
+    return {
+      partial,
+      inTok: localIn,
+      outTok: localOut,
+      cost: localCost,
+      segmentValidationFailures: localSegmentValidationFailures,
+      individualSegmentTranslations: localIndividualSegmentTranslations,
+    };
   };
 
   if (sem) {
@@ -743,6 +1057,8 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
+      segmentValidationFailures += r.segmentValidationFailures;
+      individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
         out.set(h, t);
       }
@@ -753,13 +1069,22 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
+      segmentValidationFailures += r.segmentValidationFailures;
+      individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
         out.set(h, t);
       }
     }
   }
 
-  return { map: out, inTok, outTok, cost };
+  return {
+    map: out,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures,
+    individualSegmentTranslations,
+  };
 }
 
 export async function translateMarkdownFile(
@@ -832,7 +1157,7 @@ export async function translateMarkdownFile(
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
-      `🔃 ${locale} ${relPath}: ${segments.length} segment(s) (${translatableCount} translatable)`
+      `📄 ${locale} ${relPath}: ${segments.length} segment(s) (${translatableCount} translatable)`
     )
   );
   const translations = new Map<string, DocSegmentTranslation>();
@@ -878,7 +1203,8 @@ export async function translateMarkdownFile(
       s.content,
       glossary,
       locale,
-      true
+      true,
+      Boolean(opts.emphasisPlaceholders)
     );
     placeholderById.set(s.id, st);
     toBatch.push({ ...s, content: protectedText });
@@ -889,7 +1215,14 @@ export async function translateMarkdownFile(
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
-  const { map, inTok, outTok, cost } = await translateSegmentsBatched(
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures: segValFail,
+    individualSegmentTranslations: indivSeg,
+  } = await translateSegmentsBatched(
     toBatch,
     placeholderById,
     originalContentByHash,
@@ -908,7 +1241,7 @@ export async function translateMarkdownFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    path.join(opts.cwd, config.cacheDir)
+    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null
   );
 
   for (const [h, t] of map) {
@@ -917,6 +1250,10 @@ export async function translateMarkdownFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures =
+    (totals.segmentValidationFailures ?? 0) + segValFail;
+  totals.individualSegmentTranslations =
+    (totals.individualSegmentTranslations ?? 0) + indivSeg;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1095,7 +1432,7 @@ export async function translateJsonFile(
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
-      `🔃 ${locale} ${relPath} (json): ${segments.length} segment(s) (${translatableCount} translatable)`
+      `📄 ${locale} ${relPath} (json): ${segments.length} segment(s) (${translatableCount} translatable)`
     )
   );
   const translations = new Map<string, DocSegmentTranslation>();
@@ -1135,7 +1472,14 @@ export async function translateJsonFile(
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrencyJson = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
-  const { map, inTok, outTok, cost } = await translateSegmentsBatched(
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures: segValFailJson,
+    individualSegmentTranslations: indivSegJson,
+  } = await translateSegmentsBatched(
     toBatch,
     placeholderByIdJson,
     new Map(),
@@ -1162,6 +1506,10 @@ export async function translateJsonFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures =
+    (totals.segmentValidationFailures ?? 0) + segValFailJson;
+  totals.individualSegmentTranslations =
+    (totals.individualSegmentTranslations ?? 0) + indivSegJson;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1302,7 +1650,7 @@ export async function translateSvgAssetFile(
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
-      `🔃 ${locale} ${relPathFromCwd} (svg): ${segments.length} segment(s) (${translatableCount} translatable)`
+      `📄 ${locale} ${relPathFromCwd} (svg): ${segments.length} segment(s) (${translatableCount} translatable)`
     )
   );
   const translations = new Map<string, DocSegmentTranslation>();
@@ -1346,7 +1694,14 @@ export async function translateSvgAssetFile(
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrencySvg = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
-  const { map, inTok, outTok, cost } = await translateSegmentsBatched(
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures: segValFailSvg,
+    individualSegmentTranslations: indivSegSvg,
+  } = await translateSegmentsBatched(
     toBatch,
     placeholderByIdSvg,
     new Map(),
@@ -1373,6 +1728,10 @@ export async function translateSvgAssetFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures =
+    (totals.segmentValidationFailures ?? 0) + segValFailSvg;
+  totals.individualSegmentTranslations =
+    (totals.individualSegmentTranslations ?? 0) + indivSegSvg;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1486,6 +1845,8 @@ export async function runTranslate(
     costUsd: 0,
     segmentsCached: 0,
     segmentsTranslated: 0,
+    segmentValidationFailures: 0,
+    individualSegmentTranslations: 0,
   };
 
   const cache: TranslationCache | null = opts.noCache
@@ -1549,7 +1910,11 @@ export async function runTranslate(
   console.log(
     chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
   );
-  console.log(chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "xml"}`));
+  console.log(chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`));
+  console.log(
+    chalk.cyan(`Markdown emphasis placeholders: `) +
+      chalk.magenta(opts.emphasisPlaceholders ? "on" : "off")
+  );
   console.log("");
 
   const wallStart = Date.now();
@@ -1573,6 +1938,8 @@ export async function runTranslate(
       costUsd: 0,
       segmentsCached: 0,
       segmentsTranslated: 0,
+      segmentValidationFailures: 0,
+      individualSegmentTranslations: 0,
     };
     const localeStart = Date.now();
 
@@ -1606,13 +1973,23 @@ export async function runTranslate(
           partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
           partial.segmentsTranslated =
             (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+          partial.segmentValidationFailures =
+            (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+          partial.individualSegmentTranslations =
+            (partial.individualSegmentTranslations ?? 0) +
+            (totals.individualSegmentTranslations ?? 0);
         }
       }
     }
 
     if (shouldRunJson(opts, config)) {
       for (const rel of files.json) {
-        if (!matchesPathFilter(rel, opts.pathFilter)) {
+        const jsonRelFromProjectRoot = jsonFileProjectRelativePath(
+          opts.cwd,
+          jsonAbsRoot,
+          rel
+        );
+        if (!matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter)) {
           continue;
         }
         const abs = path.join(jsonAbsRoot, rel);
@@ -1639,6 +2016,11 @@ export async function runTranslate(
           partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
           partial.segmentsTranslated =
             (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+          partial.segmentValidationFailures =
+            (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+          partial.individualSegmentTranslations =
+            (partial.individualSegmentTranslations ?? 0) +
+            (totals.individualSegmentTranslations ?? 0);
         }
       }
     }
@@ -1664,6 +2046,10 @@ export async function runTranslate(
     sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
     sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
     sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
+    sum.segmentValidationFailures =
+      (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
+    sum.individualSegmentTranslations =
+      (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
     localeTimes.push({
       locale: r.locale,
       elapsedMs: r.localeElapsed,
@@ -1679,7 +2065,9 @@ export async function runTranslate(
       : null;
     const jsonScopeRel = shouldRunJson(opts, config)
       ? files.json
-          .filter((r) => matchesPathFilter(r, opts.pathFilter))
+          .filter((r) =>
+            matchesPathFilter(jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, r), opts.pathFilter)
+          )
           .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
       : null;
     if (markdownScopeRel && markdownScopeRel.length > 0 && markdownHitKeys.size > 0) {
@@ -1702,8 +2090,15 @@ export async function runTranslate(
   console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsed)}`);
   console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
   console.log(`   Total files skipped:   ${sum.filesSkipped}`);
-  console.log(`   Segments from cache:   ${sum.segmentsCached ?? 0}`);
+  console.log(
+    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
+      sum.segmentsCached,
+      sum.segmentsTranslated
+    )}`
+  );
   console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
+  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
+  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);

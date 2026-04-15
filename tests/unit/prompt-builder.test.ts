@@ -141,7 +141,7 @@ describe("PROMPTS config shape", () => {
     expect(typeof doc.jsonSegmentAddendum).toBe("string");
     expect(typeof doc.svgSegmentAddendum).toBe("string");
     expect(typeof doc.markdownExample).toBe("string");
-    expect(typeof doc.translateFooter).toBe("string");
+    expect(typeof doc.singleSegmentOutputInstruction).toBe("string");
     expect(typeof doc.batchXmlInstruction).toBe("string");
     expect(typeof doc.batchJsonArrayInstruction).toBe("string");
     expect(typeof doc.batchJsonObjectInstruction).toBe("string");
@@ -165,16 +165,15 @@ describe("buildDocumentSinglePrompt", () => {
     glossaryHints: [] as string[],
   };
 
-  it("markdown includes example and translate footer", () => {
+  it("markdown includes example and single-segment output instruction", () => {
     const { systemPrompt, userContent } = buildDocumentSinglePrompt(
       "Hello world",
       baseOpts,
       "markdown"
     );
     expect(systemPrompt).toContain("Example (same structure in French)");
-    expect(systemPrompt).toContain(PROMPTS.document.translateFooter);
-    expect(userContent).toContain("<translate>");
-    expect(userContent).toContain("Hello world");
+    expect(systemPrompt).toContain(PROMPTS.document.singleSegmentOutputInstruction);
+    expect(userContent).toBe("Hello world");
   });
 
   it("json type includes addendum but no markdown example", () => {

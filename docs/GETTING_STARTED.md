@@ -9,7 +9,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[en-GB](./GETTING_STARTED.md) · [de](../translated-docs/docs/GETTING_STARTED.de.md) · [es](../translated-docs/docs/GETTING_STARTED.es.md) · [fr](../translated-docs/docs/GETTING_STARTED.fr.md) · [hi](../translated-docs/docs/GETTING_STARTED.hi.md) · [ja](../translated-docs/docs/GETTING_STARTED.ja.md) · [ko](../translated-docs/docs/GETTING_STARTED.ko.md) · [pt-BR](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [zh-CN](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [zh-TW](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](./GETTING_STARTED.md) · [German](../translated-docs/docs/GETTING_STARTED.de.md) · [Spanish](../translated-docs/docs/GETTING_STARTED.es.md) · [French](../translated-docs/docs/GETTING_STARTED.fr.md) · [Hindi](../translated-docs/docs/GETTING_STARTED.hi.md) · [Japanese](../translated-docs/docs/GETTING_STARTED.ja.md) · [Korean](../translated-docs/docs/GETTING_STARTED.ko.md) · [Portuguese (BR)](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [Chinese (CN)](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [Chinese (TW)](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -99,8 +99,9 @@ npx ai-i18n-tools translate-docs
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
 npx ai-i18n-tools sync
 
-# Markdown translation status (per file × locale)
+# Translation status (UI strings per locale; markdown per file × locale in chunked tables)
 npx ai-i18n-tools status
+# npx ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
 ### Recommended `package.json` scripts
@@ -409,11 +410,20 @@ The CLI keeps **file tracking** in SQLite (source hash per file × locale) and *
 | Flag                     | Effect                                                                                                                                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | *(default)*              | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                             |
+| `-l, --locale <codes>`   | Comma-separated target locales (defaults follow `documentation.targetLocales` / `targetLocales` when omitted).                                                                                           |
+| `-p, --path` / `-f, --file` | Only translate markdown/JSON under this path (project-relative or absolute); `--file` is an alias for `--path`.                                                                                     |
+| `--dry-run`              | No file writes and no API calls.                                                                                                                                                                       |
+| `--type <kind>`          | Restrict to `markdown` or `json` (otherwise both when enabled in config).                                                                                                                              |
+| `--json-only` / `--no-json` | Translate only JSON label files, or skip JSON and translate markdown only.                                                                                                                         |
+| `-j, --concurrency <n>`  | Max parallel target locales (default from config or CLI built-in default).                                                                                                                             |
+| `-b, --batch-concurrency <n>` | Max parallel batch API calls per file (docs; default from config or CLI).                                                                                                                          |
+| `--emphasis-placeholders` | Mask markdown emphasis markers as placeholders before translation (optional; default off).                                                                                                         |
+| `--debug-failed`         | Write detailed `FAILED-TRANSLATION` logs under `cacheDir` when validation fails.                                                                                                                       |
 | `--force-update`         | Re-process every matched file (extract, reassemble, write outputs) even when file tracking would skip. **Segment cache still applies** - unchanged segments are not sent to the LLM.                   |
 | `--force`                | Clears file tracking for each processed file and **does not read** the segment cache for API translation (full re-translation). New results are still **written** to the segment cache.                 |
 | `--stats`                | Print segment counts, tracked file counts, and per-locale segment totals, then exit.                                                                                                                   |
 | `--clear-cache [locale]` | Delete cached translations (and file tracking): all locales, or a single locale, then exit.                                                                                                            |
-| `--prompt-format <mode>` | How each **batch** of segments is sent to the model and parsed (`xml`, `json-array`, or `json-object`). Default **`xml`**. Does not change extraction, placeholders, validation, cache, or fallback behaviour — see [Batch prompt format](#batch-prompt-format). |
+| `--prompt-format <mode>` | How each **batch** of segments is sent to the model and parsed (`xml`, `json-array`, or `json-object`). Default **`json-array`**. Does not change extraction, placeholders, validation, cache, or fallback behaviour — see [Batch prompt format](#batch-prompt-format). |
 
 
 You cannot combine `--force` with `--force-update` (they are mutually exclusive).
@@ -424,11 +434,11 @@ You cannot combine `--force` with `--force-update` (they are mutually exclusive)
 
 | Mode | User message | Model reply |
 | ---- | ------------ | ----------- |
-| **`xml`** (default) | Pseudo-XML: one `<seg id="N">…</seg>` per segment (with XML escaping). | Only `<t id="N">…</t>` blocks, one per segment index. |
-| **`json-array`** | A JSON array of strings, one entry per segment in order. | A JSON array of the **same length** (same order). |
+| **`xml`** | Pseudo-XML: one `<seg id="N">…</seg>` per segment (with XML escaping). | Only `<t id="N">…</t>` blocks, one per segment index. |
+| **`json-array`** (default) | A JSON array of strings, one entry per segment in order. | A JSON array of the **same length** (same order). |
 | **`json-object`** | A JSON object `{"0":"…","1":"…",…}` keyed by segment index. | A JSON object with the **same keys** and translated values. |
 
-The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and standalone SVG batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to **`xml`**).
+The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and standalone SVG batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to **`json-array`**).
 
 **Segment dedupe and paths in SQLite**
 
@@ -562,6 +572,27 @@ Segment batching for document translation: how many segments per API request, an
 | `maxTokens`         | Max completion tokens per request. Default: `8192`.                                      |
 | `temperature`       | Sampling temperature. Default: `0.2`.                                                    |
 
+**Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure **`openrouter.translationModels` as an ordered fallback chain** (rather than a single model) so the CLI can attempt the next model if a request fails. 
+
+Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those OpenRouter IDs as further alternatives. 
+
+This list was **tested for broad locale coverage** (for example, on the Transrewrt project translating **36** target locales) in **April 2026**; it serves as a practical default, but is not guaranteed to perform well for every locale.
+
+Example `translationModels` (same as `npx ai-i18n-tools init` and the package examples):
+
+```json
+"translationModels": [
+  "qwen/qwen3-235b-a22b-2507",
+  "openai/gpt-4o-mini",
+  "deepseek/deepseek-v3.2",
+  "anthropic/claude-3-haiku",
+  "qwen/qwen3.6-plus",
+  "anthropic/claude-3.5-haiku",
+  "openai/gpt-5.3-codex",
+  "anthropic/claude-sonnet-4.6",
+  "google/gemini-3-flash-preview"
+]
+```
 
 Set `OPENROUTER_API_KEY` in your environment or `.env` file.
 
@@ -682,6 +713,7 @@ npx ai-i18n-tools glossary-generate
 
 | Command                                                                   | Description                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`                                                                 | Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).                                                                                                                                                                                                  |
 | `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                            |
 | `extract`                                                                 | Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional manifest `englishName` entries (see `ui.reactExtractor`). Requires `features.extractUIStrings`.                                                                                                                                                                                                    |
 | `generate-ui-languages [--master <path>] [--dry-run]`                     | Write `ui-languages.json` to `ui.flatOutputDir` (or `uiLanguagesPath` when set) using `sourceLocale` + `targetLocales` and the bundled `data/ui-languages-complete.json` (or `--master`). Warns and emits `TODO` placeholders for locales missing from the master file. If you have an existing manifest with customised `label` or `englishName` values, they will be replaced by master catalog defaults — review and adjust the generated file afterward. |
@@ -689,14 +721,14 @@ npx ai-i18n-tools glossary-generate
 | `translate-svg …`                                                         | Translate standalone SVG assets configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
 | `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | Translate UI strings only. `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j`: max parallel locales. Requires `features.translateUIStrings`.                                                                                 |
 | `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | Export `strings.json` to XLIFF 2.0 (one `.xliff` per target locale). `-o` / `--output-dir`: output directory (default: same folder as the catalog). `--untranslated-only`: only units missing a translation for that locale. Read-only; no API.                                                        |
-| `sync …`                                                                  | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation - unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run).                         |
-| `status`                                                                  | Show markdown translation status per file × locale (no `--locale` filter; locales come from config).                                                                                                                                                                                               |
+| `sync …`                                                                  | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation - unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; the docs step uses the built-in default (`json-array`).                         |
+| `status [--max-columns <n>]`                                   | When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.                                                                                                                                                                                               |
 | `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | Runs `sync --force-update` first (extract, UI, SVG, docs), then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file. Logs three counts (stale, orphaned `file_tracking`, orphaned translations). Creates a timestamped SQLite backup under the cache dir unless `--no-backup`. |
 | `editor [-p <port>] [--no-open]`                                          | Launch a local web editor for the cache, `strings.json`, and glossary CSV. `--no-open`: do not open the default browser automatically.<br><br>**Note:** If you edit an entry in the cache editor, you must run a `sync --force-update` to rewrite the output files with the updated cache entry. Also, if the source text changes later, the manual edit will be lost since a new cache key is generated. |
 | `glossary-generate [-o <path>]`                                           | Write an empty `glossary-user.csv` template. `-o`: override the output path (default: `glossary.userGlossary` from config, or `glossary-user.csv`).                                                                                                                                                |
 
 
-All commands accept `-c <path>` to specify a non-default config file, `-v` for verbose output, and `-w` / `--write-logs [path]` to tee console output to a log file (default path: under root `cacheDir`).
+All commands accept `-c <path>` to specify a non-default config file, `-v` for verbose output, and `-w` / `--write-logs [path]` to tee console output to a log file (default path: under root `cacheDir`). The root program also supports `-V` / `--version` and `-h` / `--help`; `ai-i18n-tools help [command]` shows the same per-command usage as `ai-i18n-tools <command> --help`.
 
 ---
 

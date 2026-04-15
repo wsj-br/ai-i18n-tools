@@ -6,7 +6,7 @@
 
 **他の言語で読む:**
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-`i18next-scanner` の `Parser.parseFuncFromString` を使用して、JS/TSファイル内の `t("literal")` および `i18n.t("literal")` 呼び出しを検出します。関数名とファイル拡張子は設定可能で、`reactExtractor.includePackageDescription` が有効な場合、プロジェクトの `package.json` の `description` も抽出に含めることができます。セグメントハッシュは、トリミングされたソース文字列の **MD5最初の8文字（16進数）** であり、これが `strings.json` 内のキーになります。
+任意の JS/TS ファイル内で `t("literal")` と `i18n.t("literal")` の呼び出しを見つけるために、`i18next-scanner` の `Parser.parseFuncFromString` を使用します。関数名とファイル拡張子は設定可能です。**`extract` は、スキャナー以外の入力も同じカタログにマージします:** `reactExtractor.includePackageDescription` が有効（デフォルト）な場合はプロジェクトの `package.json` `description` を、`reactExtractor.includeUiLanguageEnglishNames` が `true` で `uiLanguagesPath` が設定されている場合は `ui-languages.json` から各 **`englishName`** を取り込みます（ソース内ですでに見つかっている文字列が優先されます）。セグメントハッシュは、トリムしたソース文字列の **MD5 の先頭8桁の16進文字** です — これらは `strings.json` のキーになります。
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models`（オプション） — ロケールごとに、最後の成功した `translate-ui` 実行後にその翻訳を生成したモデル（または `editor` ウェブ UI から保存された場合は `user-edited`）。`locations`（オプション） — `extract` が文字列を見つけた場所。
+`models`（オプション）— ロケールごとに、そのロケールで最後に正常に実行された`translate-ui`の後にどのモデルが翻訳を生成したか（または`editor`のWeb UIからテキストが保存された場合は`user-edited`）。`locations`（オプション）— `extract`が文字列をどこで見つけたか（スキャナー＋パッケージ記述行。マニフェストのみの`englishName`文字列は`locations`を省略する場合あり）。
 
-`extract` は新しいキーを追加し、スキャンにまだ存在するキーの既存の `translated` / `models` データを保持します。`translate-ui` は欠落している `translated` エントリを埋め、翻訳するロケールの `models` を更新し、フラットなロケールファイルを書き込みます。
+`extract`は新しいキーを追加し、スキャンで引き続き存在するキーについては既存の`translated` / `models`データを保持します（スキャナーのリテラル、オプションの説明、オプションのマニフェスト`englishName`）。`translate-ui`は欠落している`translated`エントリを補完し、翻訳対象のロケールの`models`を更新し、フラットなロケールファイルを書き出します。
+
+**`ui-languages.json`マニフェスト** — `{ code, label, englishName, direction }`（BCP-47 `code`、UI `label`、リファレンス `englishName`、`"ltr"`または`"rtl"`）のJSON配列。`generate-ui-languages`を使用して、`sourceLocale`＋`targetLocales`およびバンドルされたマスター`data/ui-languages-complete.json`からプロジェクトファイルを構築します。
 
 ### フラットロケールファイル
 

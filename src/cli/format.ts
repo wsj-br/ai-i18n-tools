@@ -81,6 +81,25 @@ export function formatElapsedMmSs(ms: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
+/**
+ * Suffix for summary lines: cache hit rate as a percentage of
+ * (segments from cache + segments newly translated).
+ * Returns empty string when there are no segments.
+ */
+export function formatSegmentCacheHitSuffix(
+  segmentsCached: number | undefined,
+  segmentsTranslated: number | undefined
+): string {
+  const cached = segmentsCached ?? 0;
+  const translated = segmentsTranslated ?? 0;
+  const total = cached + translated;
+  if (total === 0) {
+    return "";
+  }
+  const pct = (cached / total) * 100;
+  return ` (${pct.toFixed(1)}% cache hit)`;
+}
+
 /** Format elapsed milliseconds as HH:MM:SS. */
 export function formatElapsedHhMmSs(ms: number): string {
   const safe = Math.max(0, Math.floor(ms));

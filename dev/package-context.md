@@ -171,7 +171,7 @@ npx ai-i18n-tools translate-docs [--locale <code>] [--force | --force-update] â€
     --force-update: re-run every file output; segment cache still used (no API for unchanged text).
     --force: clear file tracking and ignore segment cache reads (full re-translation); new results still write to cache.
     --stats: print cache stats and exit. --clear-cache [locale]: wipe cache (all or one locale) and exit.
-    --prompt-format xml|json-array|json-object: batch wire format to the model (default xml); does not change validation or cache.
+    --prompt-format xml|json-array|json-object: batch wire format to the model (default json-array); does not change validation or cache.
     Do not combine --force with --force-update (when the docs step runs).
 
 npx ai-i18n-tools translate-svg [--locale <code>] [--force | --force-update] [--no-cache] â€¦

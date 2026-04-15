@@ -12,6 +12,7 @@ describe("hasInternalPlaceholderLeak", () => {
     expect(hasInternalPlaceholderLeak("x {{URL_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{BLD_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ILC_0}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{HTM_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{GLS_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_OPEN_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_END_0}}")).toBe(true);

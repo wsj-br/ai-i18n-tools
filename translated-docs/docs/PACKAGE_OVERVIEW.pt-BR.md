@@ -6,7 +6,7 @@ Para instruções de uso prático, consulte [GETTING_STARTED.md](GETTING_STARTED
 
 <small>**Leia em outros idiomas:** </small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Usa `Parser.parseFuncFromString` do `i18next-scanner` para encontrar chamadas `t("literal")` e `i18n.t("literal")` em qualquer arquivo JS/TS. Nomes de funções e extensões de arquivo são configuráveis, e a extração também pode incluir a `description` do `package.json` do projeto quando `reactExtractor.includePackageDescription` está habilitado. Hashes de segmento são **os primeiros 8 caracteres hexadecimais MD5** da string de origem aparada - esses se tornam as chaves em `strings.json`.
+Utiliza o `i18next-scanner` do `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em qualquer arquivo JS/TS. Os nomes das funções e as extensões dos arquivos são configuráveis. **`extract` também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` `description` do projeto quando `reactExtractor.includePackageDescription` está habilitado (padrão), e cada **`englishName`** do `ui-languages.json` quando `reactExtractor.includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (as strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string-fonte recortada — esses se tornam as chaves no `strings.json`.
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ O catálogo mestre tem a seguinte estrutura:
 }
 ```
 
-`models` (opcional) — por localidade, qual modelo produziu aquela tradução após a última execução bem-sucedida do `translate-ui` para aquela localidade (ou `user-edited` se o texto foi salvo a partir da interface web `editor`). `locations` (opcional) — onde o `extract` encontrou a string.
+`models` (opcional) — por localidade, qual modelo produziu essa tradução após a última execução bem-sucedida do `translate-ui` para essa localidade (ou `user-edited` se o texto foi salvo a partir da interface web `editor`). `locations` (opcional) — onde `extract` encontrou a string (scanner + linha de descrição do pacote; strings apenas de manifesto `englishName` podem omitir `locations`).
 
-O `extract` adiciona novas chaves e preserva os dados existentes de `translated` / `models` para chaves ainda presentes na varredura. O `translate-ui` preenche entradas `translated` ausentes, atualiza `models` para as localidades que traduz e gera arquivos de localidade planos.
+`extract` adiciona novas chaves e preserva os dados existentes de `translated` / `models` para chaves ainda presentes na varredura (literais do scanner, descrição opcional, `englishName` opcional do manifesto). `translate-ui` preenche entradas `translated` ausentes, atualiza `models` para as localidades que traduz e gera arquivos de localidade planos.
+
+**manifesto `ui-languages.json`** — array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interface do usuário `label`, referência `englishName`, `"ltr"` ou `"rtl"`). Use `generate-ui-languages` para criar um arquivo de projeto a partir do `sourceLocale` + `targetLocales` e do `data/ui-languages-complete.json` mestre incluído.
 
 ### Arquivos de localidade plana
 

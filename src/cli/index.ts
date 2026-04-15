@@ -41,7 +41,14 @@ import { normalizeLocale } from "../core/config.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { runExtract } from "./extract-strings.js";
-import { runTranslate, shouldRunJson, type TranslateRunOptions } from "./doc-translate.js";
+import {
+  runTranslate,
+  shouldRunJson,
+  type TranslateRunOptions,
+  matchesPathFilter,
+  normalizePathFilterForProjectRoot,
+  jsonFileProjectRelativePath,
+} from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
@@ -58,6 +65,7 @@ import {
   resolveEditCacheStaticDir,
 } from "../server/translation-editor.js";
 import type { I18nConfig } from "../core/types.js";
+import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -89,9 +97,49 @@ try {
   /* keep default */
 }
 
+function formatVersionOutput(): string {
+  const build =
+    BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
+  return `ai-i18n-tools ${version}\nBuild: ${build}`;
+}
+
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
   return files.filter((f) => !isIgnored(ig, path.join(cwd, f), cwd));
+}
+
+/** When set, keep only markdown/JSON files that fall under the project-root-relative path filter. */
+function filterDocumentationFilesByPathFilter(
+  projectRoot: string,
+  jsonAbsRoot: string,
+  md: string[],
+  jsonFiles: string[],
+  pathFilter: string | undefined
+): { markdown: string[]; json: string[] } {
+  if (!pathFilter?.trim()) {
+    return { markdown: md, json: jsonFiles };
+  }
+  return {
+    markdown: md.filter((r) => matchesPathFilter(r, pathFilter)),
+    json: jsonFiles.filter((r) =>
+      matchesPathFilter(jsonFileProjectRelativePath(projectRoot, jsonAbsRoot, r), pathFilter)
+    ),
+  };
+}
+
+function resolveCliPathOrFile(opts: { path?: string; file?: string }): string | undefined {
+  const hasP = opts.path !== undefined && String(opts.path).trim() !== "";
+  const hasF = opts.file !== undefined && String(opts.file).trim() !== "";
+  if (hasP && hasF) {
+    throw new Error("Use either --path or --file, not both");
+  }
+  if (hasP) {
+    return String(opts.path).trim();
+  }
+  if (hasF) {
+    return String(opts.file).trim();
+  }
+  return undefined;
 }
 
 function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string } {
@@ -106,13 +154,20 @@ program
   .description(
     `Unified i18n toolkit for Node.js apps and documentation with AI translation (v${version})`
   )
-  .version(version)
+  .version(formatVersionOutput())
   .option("-c, --config <path>", "Config file path", DEFAULT_CONFIG_FILENAME)
   .option("-v, --verbose", "Verbose logging", false)
   .option(
     "-w, --write-logs [path]",
     "Tee console output to a .log file (default path: under cacheDir)"
   );
+
+program
+  .command("version")
+  .description("Show version and build time")
+  .action(() => {
+    console.log(formatVersionOutput());
+  });
 
 program
   .command("init")
@@ -201,6 +256,7 @@ function buildTranslateOpts(
   const o = cmd.opts() as {
     locale?: string;
     path?: string;
+    file?: string;
     dryRun?: boolean;
     force?: boolean;
     forceUpdate?: boolean;
@@ -211,9 +267,12 @@ function buildTranslateOpts(
     concurrency?: string;
     batchConcurrency?: string;
     promptFormat?: string;
+    emphasisPlaceholders?: boolean;
+    debugFailed?: boolean;
   };
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
   const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
+  const pathFilterRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
   const translateOpts: TranslateRunOptions = {
     cwd: projectRoot,
     locales,
@@ -222,7 +281,7 @@ function buildTranslateOpts(
     forceUpdate: Boolean(o.forceUpdate),
     noCache: Boolean(o.noCache),
     verbose: Boolean(g.verbose),
-    pathFilter: o.path,
+    pathFilter: normalizePathFilterForProjectRoot(projectRoot, pathFilterRaw),
     typeFilter: o.type as TranslateRunOptions["typeFilter"],
     jsonOnly: Boolean(o.jsonOnly),
     noJson: Boolean(o.noJson),
@@ -234,13 +293,15 @@ function buildTranslateOpts(
         ? parsePositiveInt("Batch concurrency (-b)", o.batchConcurrency)
         : undefined,
     promptFormat: parseTranslatePromptFormat(o.promptFormat),
+    emphasisPlaceholders: Boolean(o.emphasisPlaceholders),
+    debugFailed: Boolean(o.debugFailed),
   };
   return { locales, uiLocales, translateOpts };
 }
 
 function parseTranslatePromptFormat(raw: string | undefined): TranslateRunOptions["promptFormat"] {
   if (raw === undefined || raw === "") {
-    return "xml";
+    return "json-array";
   }
   if (raw === "xml" || raw === "json-array" || raw === "json-object") {
     return raw;
@@ -275,7 +336,8 @@ function buildCleanupSyncTranslateOpts(
     logPath,
     concurrency: undefined,
     batchConcurrency: undefined,
-    promptFormat: "xml",
+    promptFormat: "json-array",
+    emphasisPlaceholders: false,
   };
   return { uiLocales, translateOpts };
 }
@@ -348,19 +410,26 @@ async function runSyncPipeline(args: {
           block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
-        if (md.length === 0 && jsonFiles.length === 0) {
+        const { markdown: mdScoped, json: jsonScoped } = filterDocumentationFilesByPathFilter(
+          projectRoot,
+          jsonRoot,
+          md,
+          jsonFiles,
+          translateOpts.pathFilter
+        );
+        if (mdScoped.length === 0 && jsonScoped.length === 0) {
           continue;
         }
         await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: md, json: jsonFiles },
+          { markdown: mdScoped, json: jsonScoped },
           jsonRoot
         );
       }
     } catch (e) {
       console.error(
-        chalk.red(`❌ [sync][translate] ${e instanceof Error ? e.message : String(e)}`)
+        chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`)
       );
       throw e;
     }
@@ -374,7 +443,11 @@ program
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: documentation.targetLocales if set, else targetLocales"
   )
-  .option("-p, --path <path>", "Limit to file or directory prefix")
+  .option(
+    "-p, --path <path>",
+    "Only translate files under this path (file or directory); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
   .option("--dry-run", "No writes, no API calls", false)
   .option(
     "--force",
@@ -399,7 +472,17 @@ program
   .option(
     "--prompt-format <mode>",
     "Batch segment prompt/response: xml (<seg>/<t>), json-array, or json-object",
-    "xml"
+    "json-array"
+  )
+  .option(
+    "--emphasis-placeholders",
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation",
+    false
+  )
+  .option(
+    "--debug-failed",
+    "Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures",
+    false
   )
   .action(async (_a, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
@@ -461,7 +544,13 @@ program
       return;
     }
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-docs");
-    const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
+    let translateOpts: TranslateRunOptions;
+    try {
+      ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
 
     if (config.features.translateJSON && !config.documentations.some((b) => b.jsonSource?.trim())) {
       console.warn(
@@ -490,7 +579,14 @@ program
           block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
-        if (md.length === 0 && jsonFiles.length === 0) {
+        const { markdown: mdScoped, json: jsonScoped } = filterDocumentationFilesByPathFilter(
+          projectRoot,
+          jsonRoot,
+          md,
+          jsonFiles,
+          translateOpts.pathFilter
+        );
+        if (mdScoped.length === 0 && jsonScoped.length === 0) {
           continue;
         }
         const desc =
@@ -499,13 +595,13 @@ program
             : "";
         console.log(
           chalk.gray(
-            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${md.length} md, ${jsonFiles.length} json) ---\n`
+            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${jsonScoped.length} json) ---\n`
           )
         );
         const sum = await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: md, json: jsonFiles },
+          { markdown: mdScoped, json: jsonScoped },
           jsonRoot
         );
         totalSkipped += sum.filesSkipped;
@@ -537,7 +633,11 @@ program
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: documentation.targetLocales if set, else targetLocales"
   )
-  .option("-p, --path <path>", "Limit to file or directory prefix")
+  .option(
+    "-p, --path <path>",
+    "Only translate files under this path (file or directory); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
   .option("--dry-run", "No writes, no API calls", false)
   .option(
     "--force",
@@ -573,7 +673,13 @@ program
       process.exit(1);
     }
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-svg");
-    const { translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
+    let translateOpts: TranslateRunOptions;
+    try {
+      ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
     const localeOpt = cmd.opts() as { locale?: string };
     translateOpts.locales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
     if (!config.features.translateSVG) {
@@ -684,7 +790,11 @@ program
     "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*"
   )
   .option("-l, --locale <codes>", "Target locales for translate step")
-  .option("-p, --path <path>", "Limit translate to path prefix")
+  .option(
+    "-p, --path <path>",
+    "Only translate files under this path (docs/SVG); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
   .option("--dry-run", "No writes / no API", false)
   .option(
     "--force",
@@ -710,6 +820,16 @@ program
   .option(
     "-b, --batch-concurrency <n>",
     "Max parallel batch API calls per file for docs (default: config)"
+  )
+  .option(
+    "--emphasis-placeholders",
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation",
+    false
+  )
+  .option(
+    "--debug-failed",
+    "Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures",
+    false
   )
   .action(async (_a, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
@@ -738,7 +858,14 @@ program
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync");
-    const { uiLocales, translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath);
+    let uiLocales: string[];
+    let translateOpts: TranslateRunOptions;
+    try {
+      ({ uiLocales, translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
     const localeOpt = cmd.opts() as { locale?: string };
     const svgLocales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
     try {
@@ -757,26 +884,41 @@ program
     }
   });
 
+const DEFAULT_STATUS_MAX_COLUMNS = 9;
+
 program
   .command("status")
-  .description("Show markdown translation status vs cache / output files")
-  .action((_a, cmd) => {
+  .description("Show UI string coverage and markdown translation status vs cache / output files")
+  .option(
+    "--max-columns <n>",
+    "Max locale columns per markdown status table",
+    (v: string) => {
+      const n = parseInt(String(v), 10);
+      if (!Number.isFinite(n) || n < 1) {
+        throw new InvalidArgumentError("Must be a positive integer.");
+      }
+      return n;
+    },
+    DEFAULT_STATUS_MAX_COLUMNS
+  )
+  .action((opts: { maxColumns: number }, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
     const locales = getDocumentationTargetLocaleCodes(config);
-    const headers = ["File", ...locales];
+    const maxColumns = opts.maxColumns;
 
     const padVis = (s: string, width: number): string => {
       const visLen = stripAnsi(s).length;
       return s + " ".repeat(Math.max(0, width - visLen));
     };
 
-    const printTable = (rows: string[][]) => {
+    const printMarkdownTableChunk = (chunkLocales: string[], rows: string[][]) => {
+      const headers = ["File", ...chunkLocales];
       const colW = Math.max(12, ...rows.map((r) => stripAnsi(r[0]!).length), 8);
       const localeColW = Math.max(
         4,
-        ...locales.map((l) => l.length),
+        ...chunkLocales.map((l) => l.length),
         ...rows.flatMap((r) => r.slice(1).map((c) => stripAnsi(String(c)).length))
       );
       const sep = (cols: string[]) => cols.join(" | ");
@@ -802,6 +944,26 @@ program
       console.log();
     };
 
+    const printMarkdownTablesChunked = (rows: string[][]) => {
+      const nLocales = locales.length;
+      const chunkSize = maxColumns;
+      if (nLocales === 0) {
+        printMarkdownTableChunk([], rows.map((r) => [r[0]!]));
+        return;
+      }
+      const numChunks = Math.ceil(nLocales / chunkSize);
+      const showChunkLabels = numChunks > 1;
+      for (let start = 0; start < nLocales; start += chunkSize) {
+        const end = Math.min(start + chunkSize, nLocales);
+        const chunkLocales = locales.slice(start, end);
+        const slicedRows = rows.map((r) => [r[0]!, ...r.slice(1 + start, 1 + end)]);
+        if (showChunkLabels) {
+          console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+        }
+        printMarkdownTableChunk(chunkLocales, slicedRows);
+      }
+    };
+
     if (config.features.translateUIStrings) {
       const stringsPath = resolveStringsJsonPath(config, projectRoot);
       let stringsData: Record<string, { translated?: Record<string, string> }> = {};
@@ -816,53 +978,74 @@ program
 
       if (total > 0) {
         const uiLocales = resolveLocalesForUI(config, projectRoot);
-        const uiHeaders = ["", ...uiLocales];
 
         const pct = (n: number) => Math.round((n / total) * 100);
 
-        const translatedRow: string[] = [chalk.bold("Translated")];
-        const missingRow: string[] = [chalk.bold("Missing")];
-        const totalRow: string[] = [chalk.bold("Total")];
-
+        const uiHeaders = [
+          chalk.bold("Locale"),
+          chalk.bold("Translated"),
+          chalk.bold("Missing"),
+          chalk.bold("Total"),
+        ];
+        const uiRows: string[][] = [];
         for (const loc of uiLocales) {
           const translated = keys.filter((k) => stringsData[k]?.translated?.[loc]?.trim()).length;
           const missing = total - translated;
-
-          translatedRow.push(
-            chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`)
-          );
-          missingRow.push(
+          const translatedCell =
+            chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`);
+          const missingCell =
             missing > 0
               ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
-              : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
-          );
-          totalRow.push(String(total));
+              : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`);
+          uiRows.push([loc, translatedCell, missingCell, String(total)]);
         }
 
-        const uiRows = [translatedRow, missingRow, totalRow];
-
-        const labelW = Math.max(12, ...uiRows.map((r) => stripAnsi(r[0]!).length));
-        const uiLocColW = Math.max(
-          4,
-          ...uiLocales.map((l) => l.length),
-          ...uiRows.flatMap((r) => r.slice(1).map((c) => stripAnsi(c).length))
+        const localeColW = Math.max(
+          6,
+          stripAnsi(uiHeaders[0]!).length,
+          ...uiLocales.map((l) => l.length)
+        );
+        const wTranslated = Math.max(
+          stripAnsi(uiHeaders[1]!).length,
+          ...uiRows.map((r) => stripAnsi(r[1]!).length)
+        );
+        const wMissing = Math.max(
+          stripAnsi(uiHeaders[2]!).length,
+          ...uiRows.map((r) => stripAnsi(r[2]!).length)
+        );
+        const wTotal = Math.max(
+          stripAnsi(uiHeaders[3]!).length,
+          ...uiRows.map((r) => stripAnsi(r[3]!).length)
         );
         const uiSep = (cols: string[]) => cols.join(" | ");
 
         console.log(chalk.bold.cyan("\n📊 UI strings status"));
         console.log(chalk.gray(`(${stringsPath})\n`));
         console.log(
-          uiSep(
-            uiHeaders.map((h, i) =>
-              i === 0 ? padVis(chalk.bold(h), labelW) : padVis(chalk.bold(h), uiLocColW)
-            )
-          )
+          uiSep([
+            padVis(uiHeaders[0]!, localeColW),
+            padVis(uiHeaders[1]!, wTranslated),
+            padVis(uiHeaders[2]!, wMissing),
+            padVis(uiHeaders[3]!, wTotal),
+          ])
         );
         console.log(
-          uiSep(uiHeaders.map((_, i) => (i === 0 ? "-".repeat(labelW) : "-".repeat(uiLocColW))))
+          uiSep([
+            chalk.bold("-".repeat(localeColW)),
+            chalk.bold("-".repeat(wTranslated)),
+            chalk.bold("-".repeat(wMissing)),
+            chalk.bold("-".repeat(wTotal)),
+          ])
         );
         for (const r of uiRows) {
-          console.log(uiSep(r.map((c, i) => (i === 0 ? padVis(c, labelW) : padVis(c, uiLocColW)))));
+          console.log(
+            uiSep([
+              padVis(r[0]!, localeColW),
+              padVis(r[1]!, wTranslated),
+              padVis(r[2]!, wMissing),
+              padVis(r[3]!, wTotal),
+            ])
+          );
         }
         console.log();
       }
@@ -927,7 +1110,7 @@ program
         });
         rows.push([rel, ...cells]);
       }
-      printTable(rows);
+      printMarkdownTablesChunked(rows);
     }
 
     cache.close();

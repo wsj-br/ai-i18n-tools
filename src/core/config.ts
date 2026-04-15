@@ -33,12 +33,15 @@ import {
 export { coerceTargetLocalesField, englishLanguageNameForLocale, normalizeLocale, parseLocaleList };
 
 const DEFAULT_OPENROUTER_MODELS: string[] = [
+  "qwen/qwen3-235b-a22b-2507",
   "openai/gpt-4o-mini",
   "deepseek/deepseek-v3.2",
-  "google/gemini-3.1-flash-lite-preview",
+  "anthropic/claude-3-haiku",
   "qwen/qwen3.6-plus",
-  "moonshotai/kimi-k2.5",
+  "anthropic/claude-3.5-haiku",
+  "openai/gpt-5.3-codex",
   "anthropic/claude-sonnet-4.6",
+  "google/gemini-3-flash-preview",
 ];
 
 /**

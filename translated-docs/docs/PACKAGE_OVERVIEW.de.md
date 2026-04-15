@@ -6,7 +6,7 @@ Für praktische Nutzungshinweise siehe [GETTING_STARTED.md](GETTING_STARTED.de.m
 
 <small>**In anderen Sprachen lesen:** </small>
 
-<small id="lang-list">[en-GB](../../docs/PACKAGE_OVERVIEW.md) · [de](./PACKAGE_OVERVIEW.de.md) · [es](./PACKAGE_OVERVIEW.es.md) · [fr](./PACKAGE_OVERVIEW.fr.md) · [hi](./PACKAGE_OVERVIEW.hi.md) · [ja](./PACKAGE_OVERVIEW.ja.md) · [ko](./PACKAGE_OVERVIEW.ko.md) · [pt-BR](./PACKAGE_OVERVIEW.pt-BR.md) · [zh-CN](./PACKAGE_OVERVIEW.zh-CN.md) · [zh-TW](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Verwendet `i18next-scanner`'s `Parser.parseFuncFromString`, um `t("literal")` und `i18n.t("literal")` Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateiendungen sind konfigurierbar, und die Extraktion kann auch die `description` des Projekt-`package.json` einbeziehen, wenn `reactExtractor.includePackageDescription` aktiviert ist. Segment-Hashes sind **MD5 erste 8 hex Zeichen** des getrimmten Quellstrings - diese werden zu den Schlüsseln in `strings.json`.
+Verwendet `i18next-scanner` von `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateierweiterungen sind konfigurierbar. **`extract` fügt außerdem Nicht-Scanner-Eingaben in denselben Katalog ein:** die Projekt-`package.json`-`description`, wenn `reactExtractor.includePackageDescription` aktiviert ist (Standard), und jedes **`englishName`** aus `ui-languages.json`, wenn `reactExtractor.includeUiLanguageEnglishNames` `true` ist und `uiLanguagesPath` festgelegt ist (Zeichenketten, die bereits im Quellcode gefunden wurden, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der bereinigten Quellzeichenkette – diese werden zu den Schlüsseln in `strings.json`.
 
 ### `strings.json`
 
@@ -171,9 +171,11 @@ Der Master-Katalog hat die Form:
 }
 ```
 
-`models` (optional) – je Sprachvariante, welches Modell die Übersetzung nach dem letzten erfolgreichen `translate-ui`-Lauf für diese Sprachvariante erstellt hat (oder `user-edited`, wenn der Text über die `editor`-Webbenutzeroberfläche gespeichert wurde). `locations` (optional) – wo `extract` die Zeichenkette gefunden hat.
+`models` (optional) – je Sprachvariante, welches Modell die Übersetzung nach dem letzten erfolgreichen `translate-ui`-Lauf für diese Sprachvariante erstellt hat (oder `user-edited`, wenn der Text über die `editor`-Web-Oberfläche gespeichert wurde). `locations` (optional) – wo `extract` die Zeichenkette gefunden hat (Scanner + Paketbeschreibungszeile; für nur im Manifest enthaltene `englishName`-Zeichenketten kann `locations` weggelassen werden).
 
-`extract` fügt neue Schlüssel hinzu und behält vorhandene `translated`-/`models`-Daten für Schlüssel bei, die weiterhin im Scan vorhanden sind. `translate-ui` füllt fehlende `translated`-Einträge aus, aktualisiert `models` für die Sprachvarianten, die es übersetzt, und schreibt flache Sprachdateien.
+`extract` fügt neue Schlüssel hinzu und behält vorhandene `translated`-/`models`-Daten für Schlüssel bei, die weiterhin im Scan vorhanden sind (Scanner-Literale, optionale Beschreibung, optionales Manifest-`englishName`). `translate-ui` füllt fehlende `translated`-Einträge auf, aktualisiert `models` für die Sprachvarianten, die es übersetzt, und schreibt flache Sprachdateien.
+
+**`ui-languages.json`-Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
 
 ### Flache Lokalisierungsdateien
 
