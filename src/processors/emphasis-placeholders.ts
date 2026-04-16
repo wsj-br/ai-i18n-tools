@@ -487,7 +487,7 @@ function insertSpacesAfterClosingConstructDelimiters(text: string): string {
       continue;
     }
     // Peek ahead: is there a delimiter run (* / ** / _ / __ / ~~) followed by a Unicode letter?
-    let j = i + 1;
+    const j = i + 1;
     const delim = text[j];
     if (delim === "*" || delim === "_" || delim === "~") {
       const delimChar = delim;
