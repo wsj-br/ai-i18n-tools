@@ -230,9 +230,7 @@ function warnDocQualityModelSwitch(
   const loc = relativePath != null ? `${locale} ${relativePath}` : locale;
   const seg = segmentsLabel ? `: ${segmentsLabel}` : "";
   const ordinal =
-    nextModelOrdinal != null
-      ? ` (${nextModelOrdinal.index1Based}/${nextModelOrdinal.total})`
-      : "";
+    nextModelOrdinal != null ? ` (${nextModelOrdinal.index1Based}/${nextModelOrdinal.total})` : "";
   console.warn(
     chalk.yellow(
       `  ⚠️  ${loc}${seg}: ${failedModel} output failed quality check (${detail}). Trying ${nextModel}${ordinal}…`
@@ -292,9 +290,7 @@ function writeDocTranslationDetailLog(
       opts.nextModel ? `nextModel: ${opts.nextModel}` : "",
       "",
       "--- quality / validation errors ---",
-      ...(opts.qualityErrors.length > 0
-        ? opts.qualityErrors.map((e) => `  ${e}`)
-        : ["  (none)"]),
+      ...(opts.qualityErrors.length > 0 ? opts.qualityErrors.map((e) => `  ${e}`) : ["  (none)"]),
       "",
       "--- per-segment validation ---",
       ...opts.perSegmentLines.map((e) => `  ${e}`),
@@ -423,10 +419,7 @@ export function jsonFileProjectRelativePath(
   jsonAbsRoot: string,
   jsonRel: string
 ): string {
-  return path
-    .relative(projectRoot, path.join(jsonAbsRoot, jsonRel))
-    .split(path.sep)
-    .join("/");
+  return path.relative(projectRoot, path.join(jsonAbsRoot, jsonRel)).split(path.sep).join("/");
 }
 
 /**
@@ -453,9 +446,7 @@ export function normalizePathFilterForProjectRoot(
   }
   const norm = rel.split(path.sep).join("/");
   if (norm.startsWith("../") || norm === "..") {
-    throw new Error(
-      `Path filter must be inside the project root (${projectRoot}). Got: ${raw}`
-    );
+    throw new Error(`Path filter must be inside the project root (${projectRoot}). Got: ${raw}`);
   }
   return norm;
 }
@@ -836,14 +827,19 @@ async function translateSegmentsBatched(
           let remainingErrors = failed.errors;
           while (startIdx < models.length) {
             localIndividualSegmentTranslations++;
-            const single = await client.translateDocumentSegment(failed.segment.content, locale, hints, {
-              contentType,
-              startModelIndex: startIdx,
-              docLogContext:
-                docLog && docLog.relativePath
-                  ? { locale, relativePath: docLog.relativePath }
-                  : undefined,
-            });
+            const single = await client.translateDocumentSegment(
+              failed.segment.content,
+              locale,
+              hints,
+              {
+                contentType,
+                startModelIndex: startIdx,
+                docLogContext:
+                  docLog && docLog.relativePath
+                    ? { locale, relativePath: docLog.relativePath }
+                    : undefined,
+              }
+            );
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
@@ -860,7 +856,11 @@ async function translateSegmentsBatched(
                 relativePath: docLog.relativePath,
                 locale,
                 segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: v.ok ? "individual_success" : nextIdx >= models.length ? "fatal" : "retrying_next_model",
+                outcome: v.ok
+                  ? "individual_success"
+                  : nextIdx >= models.length
+                    ? "fatal"
+                    : "retrying_next_model",
                 failedModel: single.model,
                 nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
                 qualityErrors: v.errors,
@@ -881,9 +881,7 @@ async function translateSegmentsBatched(
 
             localSegmentValidationFailures++;
             remainingErrors = v.errors;
-            const perSegDetail = [
-              perSegLine,
-            ];
+            const perSegDetail = [perSegLine];
             let failureLogPathSingle: string | undefined;
             if (failureLogDirAbs && docLog) {
               failureLogPathSingle = writeDocTranslationFailureLog({
@@ -974,7 +972,11 @@ async function translateSegmentsBatched(
                 relativePath: docLog.relativePath,
                 locale,
                 segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: v.ok ? "individual_success" : nextIdx >= models.length ? "fatal" : "retrying_next_model",
+                outcome: v.ok
+                  ? "individual_success"
+                  : nextIdx >= models.length
+                    ? "fatal"
+                    : "retrying_next_model",
                 failedModel: single.model,
                 nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
                 qualityErrors: v.errors,
@@ -993,9 +995,7 @@ async function translateSegmentsBatched(
               break;
             }
             localSegmentValidationFailures++;
-            const perSegDetail = [
-              perSegLine,
-            ];
+            const perSegDetail = [perSegLine];
             let failureLogPathSingle: string | undefined;
             if (failureLogDirAbs && docLog) {
               failureLogPathSingle = writeDocTranslationFailureLog({
@@ -1250,10 +1250,8 @@ export async function translateMarkdownFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.segmentValidationFailures =
-    (totals.segmentValidationFailures ?? 0) + segValFail;
-  totals.individualSegmentTranslations =
-    (totals.individualSegmentTranslations ?? 0) + indivSeg;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
+  totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1506,10 +1504,8 @@ export async function translateJsonFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.segmentValidationFailures =
-    (totals.segmentValidationFailures ?? 0) + segValFailJson;
-  totals.individualSegmentTranslations =
-    (totals.individualSegmentTranslations ?? 0) + indivSegJson;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailJson;
+  totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegJson;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1728,10 +1724,8 @@ export async function translateSvgAssetFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.segmentValidationFailures =
-    (totals.segmentValidationFailures ?? 0) + segValFailSvg;
-  totals.individualSegmentTranslations =
-    (totals.individualSegmentTranslations ?? 0) + indivSegSvg;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailSvg;
+  totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegSvg;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1910,7 +1904,9 @@ export async function runTranslate(
   console.log(
     chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
   );
-  console.log(chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`));
+  console.log(
+    chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`)
+  );
   console.log(
     chalk.cyan(`Markdown emphasis placeholders: `) +
       chalk.magenta(opts.emphasisPlaceholders ? "on" : "off")
@@ -1984,11 +1980,7 @@ export async function runTranslate(
 
     if (shouldRunJson(opts, config)) {
       for (const rel of files.json) {
-        const jsonRelFromProjectRoot = jsonFileProjectRelativePath(
-          opts.cwd,
-          jsonAbsRoot,
-          rel
-        );
+        const jsonRelFromProjectRoot = jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, rel);
         if (!matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter)) {
           continue;
         }
@@ -2066,7 +2058,10 @@ export async function runTranslate(
     const jsonScopeRel = shouldRunJson(opts, config)
       ? files.json
           .filter((r) =>
-            matchesPathFilter(jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, r), opts.pathFilter)
+            matchesPathFilter(
+              jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, r),
+              opts.pathFilter
+            )
           )
           .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
       : null;

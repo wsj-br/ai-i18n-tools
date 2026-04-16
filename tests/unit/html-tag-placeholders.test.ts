@@ -1,7 +1,4 @@
-import {
-  protectHtmlTags,
-  restoreHtmlTags,
-} from "../../src/processors/html-tag-placeholders.js";
+import { protectHtmlTags, restoreHtmlTags } from "../../src/processors/html-tag-placeholders.js";
 
 describe("html-tag-placeholders", () => {
   it("protects and restores HTML comments and tags", () => {

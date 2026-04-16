@@ -13,7 +13,13 @@ import { timestamp } from "./format.js";
 
 /** Default bundled master file (next to `dist/` when running compiled CLI). */
 export function resolveDefaultUiLanguagesMasterPath(): string {
-  return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "ui-languages-complete.json");
+  return path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "..",
+    "data",
+    "ui-languages-complete.json"
+  );
 }
 
 export type { UiLanguageRow } from "../core/ui-languages-catalog.js";

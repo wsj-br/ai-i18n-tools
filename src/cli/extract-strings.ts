@@ -1,7 +1,10 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import { buildUiLanguageRowsFromMaster, loadUiLanguagesMaster } from "../core/ui-languages-catalog.js";
+import {
+  buildUiLanguageRowsFromMaster,
+  loadUiLanguagesMaster,
+} from "../core/ui-languages-catalog.js";
 import type { I18nConfig } from "../core/types.js";
 import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
@@ -12,7 +15,11 @@ import {
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
-import { logGenerateUiLanguagesWarnings, resolveDefaultUiLanguagesMasterPath, runGenerateUiLanguages } from "./generate-ui-languages.js";
+import {
+  logGenerateUiLanguagesWarnings,
+  resolveDefaultUiLanguagesMasterPath,
+  runGenerateUiLanguages,
+} from "./generate-ui-languages.js";
 
 export interface ExtractSummary {
   found: number;

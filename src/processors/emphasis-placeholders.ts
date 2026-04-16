@@ -193,8 +193,7 @@ function scanDelimitersForSpacing(
     count,
     canOpen: leftFlanking && (!rightFlanking || prevPunct),
     canClose:
-      base.canClose ||
-      (rightFlanking && leftFlanking && UNICODE_LETTER_FOR_SCAN.test(nextChar)),
+      base.canClose || (rightFlanking && leftFlanking && UNICODE_LETTER_FOR_SCAN.test(nextChar)),
   };
 }
 
@@ -443,7 +442,10 @@ function closerNeedsTrailingSpace(marker: string, prevChar: string, nextChar: st
  * included in `closerSpans` even though strict CommonMark marks it `canClose=false`.
  */
 export function applyEmphasisCloserSpacing(text: string): string {
-  const { closerSpans } = pairEmphasisDelimitersFromRuns(text, collectDelimiterRunsForSpacing(text));
+  const { closerSpans } = pairEmphasisDelimitersFromRuns(
+    text,
+    collectDelimiterRunsForSpacing(text)
+  );
   const sorted = [...closerSpans].sort((a, b) => b.end - a.end);
   let out = text;
   for (const { start, end } of sorted) {

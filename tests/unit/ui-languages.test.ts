@@ -83,7 +83,9 @@ describe("ui-languages", () => {
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
     });
-    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(ConfigValidationError);
+    expect(() => expandTargetLocalesFileReferenceInRawInput(raw, tmp)).toThrow(
+      ConfigValidationError
+    );
   });
 
   it("expandTargetLocalesFileReferenceInRawInput accepts locale codes", () => {
@@ -376,6 +378,8 @@ describe("ui-languages", () => {
       openrouter: { translationModels: ["m"] },
       features: { translateMarkdown: true },
     });
-    expect(() => expandDocumentationTargetLocalesInRawInput(raw, tmp)).toThrow(ConfigValidationError);
+    expect(() => expandDocumentationTargetLocalesInRawInput(raw, tmp)).toThrow(
+      ConfigValidationError
+    );
   });
 });

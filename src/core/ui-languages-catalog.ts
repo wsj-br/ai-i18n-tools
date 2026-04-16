@@ -6,7 +6,13 @@ import type { I18nConfig } from "./types.js";
 
 /** Bundled IANA-derived master (`data/ui-languages-complete.json`). */
 export function resolveBundledUiLanguagesCompletePath(): string {
-  return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "ui-languages-complete.json");
+  return path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "..",
+    "data",
+    "ui-languages-complete.json"
+  );
 }
 
 export type UiLanguageRow = {
@@ -50,9 +56,7 @@ export function loadUiLanguagesMaster(absPath: string): Map<string, UiLanguageRo
     if (!code) continue;
     const label = typeof o.label === "string" && o.label.trim() ? o.label.trim() : code;
     const englishName =
-      typeof o.englishName === "string" && o.englishName.trim()
-        ? o.englishName.trim()
-        : label;
+      typeof o.englishName === "string" && o.englishName.trim() ? o.englishName.trim() : label;
     const dir = o.direction;
     const direction: "ltr" | "rtl" = dir === "ltr" || dir === "rtl" ? dir : "ltr";
     const row: UiLanguageRow = { code, label, englishName, direction };

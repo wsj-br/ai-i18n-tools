@@ -31,7 +31,9 @@ describe("normalizePathFilterForProjectRoot", () => {
   });
 
   it("throws when path escapes project root", () => {
-    expect(() => normalizePathFilterForProjectRoot(root, "/other/x")).toThrow(/inside the project root/);
+    expect(() => normalizePathFilterForProjectRoot(root, "/other/x")).toThrow(
+      /inside the project root/
+    );
   });
 });
 

@@ -98,8 +98,7 @@ try {
 }
 
 function formatVersionOutput(): string {
-  const build =
-    BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
+  const build = BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
   return `ai-i18n-tools ${version}\nBuild: ${build}`;
 }
 
@@ -428,9 +427,7 @@ async function runSyncPipeline(args: {
         );
       }
     } catch (e) {
-      console.error(
-        chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`)
-      );
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
       throw e;
     }
   }
@@ -948,7 +945,10 @@ program
       const nLocales = locales.length;
       const chunkSize = maxColumns;
       if (nLocales === 0) {
-        printMarkdownTableChunk([], rows.map((r) => [r[0]!]));
+        printMarkdownTableChunk(
+          [],
+          rows.map((r) => [r[0]!])
+        );
         return;
       }
       const numChunks = Math.ceil(nLocales / chunkSize);
@@ -1281,11 +1281,15 @@ program
         console.log(JSON.stringify(result.rows, null, 2));
       } else {
         console.log(
-          chalk.green(`✅ Wrote ${result.outPath} (${result.rows.length} row${result.rows.length === 1 ? "" : "s"})`)
+          chalk.green(
+            `✅ Wrote ${result.outPath} (${result.rows.length} row${result.rows.length === 1 ? "" : "s"})`
+          )
         );
       }
     } catch (e) {
-      console.error(chalk.red(`❌ [generate-ui-languages] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(`❌ [generate-ui-languages] ${e instanceof Error ? e.message : String(e)}`)
+      );
       process.exit(1);
     }
   });

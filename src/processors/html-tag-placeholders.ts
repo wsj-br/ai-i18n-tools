@@ -112,10 +112,7 @@ const KNOWN_HTML_TAGS = [
 const TAG_NAMES = KNOWN_HTML_TAGS.join("|");
 const COMMENT_RE = /<!--[\s\S]*?-->/g;
 const CLOSE_TAG_RE = new RegExp(`<\\/(?:${TAG_NAMES})\\s*>`, "gi");
-const OPEN_OR_SELF_CLOSING_TAG_RE = new RegExp(
-  `<(?:${TAG_NAMES})(?:\\s[^>]*)?\\s*\\/?>`,
-  "gi"
-);
+const OPEN_OR_SELF_CLOSING_TAG_RE = new RegExp(`<(?:${TAG_NAMES})(?:\\s[^>]*)?\\s*\\/?>`, "gi");
 const HTML_TAG_OR_COMMENT_RE = new RegExp(
   `${COMMENT_RE.source}|${CLOSE_TAG_RE.source}|${OPEN_OR_SELF_CLOSING_TAG_RE.source}`,
   "gi"

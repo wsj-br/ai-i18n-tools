@@ -51,7 +51,7 @@ describe("emphasis placeholders", () => {
     it("** opener preceded by Korean particle is NOT treated as closer (parity tracking)", () => {
       // から{{SE}} is opener #1, not a closer — must not receive a trailing space.
       expect(restoreMarkdownEmphasis("から{{SE}}インターフェース言語{{SE}}を")).toBe(
-        "から**インターフェース言語**を",
+        "から**インターフェース言語**を"
       );
     });
 
@@ -82,12 +82,14 @@ describe("emphasis placeholders", () => {
     it("inserts space when closing ** is preceded by ) from a link and followed by CJK", () => {
       // )**を: `)` is punctuation + `を` is letter → left-flanking, not right-flanking → needs space.
       const translated = "参照：{{SE}}[ユーザーガイド]({{URL_0}}){{SE}}を確認";
-      expect(restoreMarkdownEmphasis(translated)).toBe("参照：**[ユーザーガイド]({{URL_0}})** を確認");
+      expect(restoreMarkdownEmphasis(translated)).toBe(
+        "参照：**[ユーザーガイド]({{URL_0}})** を確認"
+      );
     });
 
     it("inserts space when closing ** is preceded by ) and followed by Arabic letter", () => {
       expect(restoreMarkdownEmphasis("{{SE}}[رابط]({{URL_0}}){{SE}}يرجى")).toBe(
-        "**[رابط]({{URL_0}})** يرجى",
+        "**[رابط]({{URL_0}})** يرجى"
       );
     });
 
@@ -99,20 +101,20 @@ describe("emphasis placeholders", () => {
     it("handles closing ** after {{ILC_0}} placeholder followed by CJK (} prevChar = closer)", () => {
       // The {{SE}} count is 1 (closer) here → } prevChar triggers space.
       expect(restoreMarkdownEmphasis("{{SE}}text {{ILC_0}}{{SE}}이 끝")).toBe(
-        "**text {{ILC_0}}** 이 끝",
+        "**text {{ILC_0}}** 이 끝"
       );
     });
 
     it("opener {{SE}} immediately after {{HTM_N}} is NOT modified (parity: count=0 = opener)", () => {
       expect(restoreMarkdownEmphasis("{{HTM_0}}{{SE}}他の言語で読む:{{SE}} {{HTM_1}}")).toBe(
-        "{{HTM_0}}**他の言語で読む:** {{HTM_1}}",
+        "{{HTM_0}}**他の言語で読む:** {{HTM_1}}"
       );
     });
 
     // ── Misc edge cases ───────────────────────────────────────────────────────────────────────
     it("does not insert space for opener preceded by HTML entity semicolon", () => {
       expect(restoreMarkdownEmphasis("&lt;br&gt;&lt;br&gt;{{SE}}Nota:{{SE}} Si editas")).toBe(
-        "&lt;br&gt;&lt;br&gt;**Nota:** Si editas",
+        "&lt;br&gt;&lt;br&gt;**Nota:** Si editas"
       );
     });
 
@@ -170,7 +172,7 @@ describe("emphasis placeholders", () => {
 
     it("inserts space when closing ** is preceded by ) and followed by CJK", () => {
       expect(applyEmphasisCloserSpacing("**[ユーザーガイド](USER-GUIDE.md)**を参照")).toBe(
-        "**[ユーザーガイド](USER-GUIDE.md)** を参照",
+        "**[ユーザーガイド](USER-GUIDE.md)** を参照"
       );
     });
 

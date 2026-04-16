@@ -77,7 +77,12 @@ describe("generate-ui-languages", () => {
       fs.writeFileSync(
         p,
         JSON.stringify([
-          { code: "pt-BR", label: "Português", englishName: "Portuguese (Brazil)", direction: "ltr" },
+          {
+            code: "pt-BR",
+            label: "Português",
+            englishName: "Portuguese (Brazil)",
+            direction: "ltr",
+          },
         ]),
         "utf8"
       );

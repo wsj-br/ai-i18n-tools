@@ -51,9 +51,10 @@ describe("runExtract includeUiLanguageEnglishNames", () => {
       });
 
       runExtract(config, tmp);
-      const out = JSON.parse(
-        fs.readFileSync(path.join(tmp, "strings.json"), "utf8")
-      ) as Record<string, { source: string }>;
+      const out = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as Record<
+        string,
+        { source: string }
+      >;
 
       const germanHash = uiStringHash("German");
       expect(out[germanHash]?.source).toBe("German");
@@ -68,11 +69,7 @@ describe("runExtract includeUiLanguageEnglishNames", () => {
     try {
       fs.mkdirSync(path.join(tmp, "src"), { recursive: true });
       fs.mkdirSync(path.join(tmp, "locales"), { recursive: true });
-      fs.writeFileSync(
-        path.join(tmp, "src", "app.tsx"),
-        `t("French");\n`,
-        "utf8"
-      );
+      fs.writeFileSync(path.join(tmp, "src", "app.tsx"), `t("French");\n`, "utf8");
 
       const config = minimalExtractConfig({
         targetLocales: ["fr"],
@@ -84,9 +81,10 @@ describe("runExtract includeUiLanguageEnglishNames", () => {
       });
 
       runExtract(config, tmp);
-      const out = JSON.parse(
-        fs.readFileSync(path.join(tmp, "strings.json"), "utf8")
-      ) as Record<string, { source: string }>;
+      const out = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as Record<
+        string,
+        { source: string }
+      >;
       const h = uiStringHash("French");
       expect(Object.keys(out).filter((k) => out[k]?.source === "French")).toHaveLength(1);
       expect(out[h]?.source).toBe("French");
