@@ -1,7 +1,10 @@
 #!/bin/bash
 # upgrade-dependencies.sh
 #
-# This script upgrades the dependencies in the project to the latest versions.
+# Upgrades dependencies and runs pnpm audit for:
+#   - Repository root (ai-i18n-tools package + pnpm workspace lockfile)
+#   - examples/console-app and examples/nextjs-app (workspace members; share root lockfile)
+#   - examples/nextjs-app/docs-site (standalone lockfile; Docusaurus — use --ignore-workspace)
 #
 # Shells cannot export environment changes to a parent process; nvm must run in your
 # interactive shell (see https://github.com/nvm-sh/nvm/issues/2124). Run:
@@ -22,6 +25,9 @@ fi
 
 _transrewrt_upgrade_dependencies() {
   set -e
+
+  REPO_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
+  cd "$REPO_ROOT"
 
   # Color codes
   BLUE='\033[0;34m'
@@ -52,17 +58,19 @@ _transrewrt_upgrade_dependencies() {
   fi
   unset _transrewrt_suppress_done_prev _transrewrt_suppress_done_was_set
 
+  cd "$REPO_ROOT"
+
   # npm-check-updates: optionally pin eslint, @eslint/js, eslint-plugin-react, eslint-plugin-react-hooks
   # until the latest published plugins declare peerDependencies.eslint that allows ESLint 10
   # (see scripts/eslint-react-peers-allow-eslint10.js).
   _eslint_ncu_reject='eslint,@eslint/js,eslint-plugin-react,eslint-plugin-react-hooks'
-  echo -e "${BLUE}📦  Checking registry: do latest react ESLint plugins allow ESLint 10?${RESET}"
+  echo -e "${BLUE}📦  [repo root] Checking registry: do latest react ESLint plugins allow ESLint 10?${RESET}"
   set +e
   _eslint10_peer_out=$(node "${SCRIPT_DIR}/eslint-react-peers-allow-eslint10.js" 2>&1)
   _eslint10_peer_ok=$?
   set -e
   printf '%s\n' "$_eslint10_peer_out" | pr -o 4 -T
-  echo -e "${BLUE}📦  Running npm-check-updates...${RESET}"
+  echo -e "${BLUE}📦  [repo root] Running npm-check-updates...${RESET}"
   if [ "$_eslint10_peer_ok" -eq 0 ]; then
     echo -e "${GREEN}Peer ranges include ESLint 10; upgrading the ESLint stack with everything else.${RESET}"
     ncu --upgrade 2>&1 | pr -o 4 -T
@@ -74,21 +82,57 @@ _transrewrt_upgrade_dependencies() {
     ncu --upgrade -x "$_eslint_ncu_reject" 2>&1 | pr -o 4 -T
   fi
 
-  # Update pnpm lockfile and install updated dependencies
-  echo -e "${BLUE}⬆️  Running pnpm install...${RESET}"
+  # Workspace examples: bump direct deps but keep the local workspace link to ai-i18n-tools
+  echo -e "${BLUE}📦  [examples] npm-check-updates (console-app, nextjs-app)...${RESET}"
+  for _ex in "examples/console-app" "examples/nextjs-app"; do
+    if [ -f "${REPO_ROOT}/${_ex}/package.json" ]; then
+      echo -e "${BLUE}   → ${_ex}${RESET}"
+      (cd "${REPO_ROOT}/${_ex}" && ncu --upgrade -x ai-i18n-tools) 2>&1 | pr -o 4 -T
+    fi
+  done
+
+  # Update pnpm lockfile and install updated dependencies (root + workspace packages)
+  echo -e "${BLUE}⬆️  [repo root] Running pnpm install...${RESET}"
   pnpm install 2>&1 | pr -o 4 -T
 
   # check for vulnerabilities
-  echo -e "${BLUE}🔍  Checking for vulnerabilities...${RESET}"
+  echo -e "${BLUE}🔍  [repo root] Checking for vulnerabilities...${RESET}"
   pnpm audit 2>&1 | pr -o 4 -T
 
   # fix vulnerabilities
-  echo -e "${BLUE}🔧  Fixing vulnerabilities...${RESET}"
+  echo -e "${BLUE}🔧  [repo root] Fixing vulnerabilities...${RESET}"
   pnpm audit fix 2>&1 | pr -o 4 -T
 
   # check for vulnerabilities again
-  echo -e "${BLUE}🔍  Checking for vulnerabilities again...${RESET}"
+  echo -e "${BLUE}🔍  [repo root] Checking for vulnerabilities again...${RESET}"
   pnpm audit 2>&1 | pr -o 4 -T
+
+  # Nested Docusaurus app: its own lockfile; not a workspace package — do not hoist to monorepo root.
+  # pnpm 10 blocks dependency install scripts unless allowlisted (see docs-site package.json
+  # `pnpm.onlyBuiltDependencies`). If install prints "Ignored build scripts: …", that list is for *this*
+  # project only. `pnpm approve-builds` run from this directory still attaches to the parent
+  # monorepo workspace (empty approval queue), so "nothing to approve" is expected — use
+  # onlyBuiltDependencies / overrides in docs-site rather than approve-builds here.
+  _docs_site="${REPO_ROOT}/examples/nextjs-app/docs-site"
+  if [ -f "${_docs_site}/package.json" ]; then
+    echo ""
+    echo -e "${BLUE}📦  [docs-site] npm-check-updates (examples/nextjs-app/docs-site)...${RESET}"
+    (cd "${_docs_site}" && ncu --upgrade) 2>&1 | pr -o 4 -T
+
+    echo -e "${BLUE}⬆️  [docs-site] pnpm install --ignore-workspace...${RESET}"
+    (cd "${_docs_site}" && pnpm install --ignore-workspace) 2>&1 | pr -o 4 -T
+
+    echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities...${RESET}"
+    (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T
+
+    echo -e "${BLUE}🔧  [docs-site] Fixing vulnerabilities (audit --fix)...${RESET}"
+    (cd "${_docs_site}" && pnpm audit --ignore-workspace --fix) 2>&1 | pr -o 4 -T
+
+    echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities again...${RESET}"
+    (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T
+  else
+    echo -e "${YELLOW}Skipping docs-site: ${_docs_site}/package.json not found.${RESET}"
+  fi
 }
 
 # When sourced from bash, run in the caller's shell so nvm PATH changes persist.

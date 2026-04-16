@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "packageManager": "pnpm@10.33.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
@@ -58,7 +58,9 @@
     "localization",
     "multilingual",
     "cache",
-    "cli"
+    "cli",
+    "ai",
+    "ai-agent"
   ],
   "author": "Waldemar Scudeller Jr.",
   "license": "MIT",

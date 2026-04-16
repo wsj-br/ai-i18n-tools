@@ -36,8 +36,11 @@
     "node": ">=22.16.0"
   },
   "pnpm": {
+    "onlyBuiltDependencies": ["core-js"],
     "overrides": {
-      "webpack": "5.93.0"
+      "webpack": "5.105.0",
+      "serialize-javascript": "7.0.5",
+      "follow-redirects": "1.16.0"
     }
   }
 }
