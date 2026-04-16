@@ -1,9 +1,5 @@
 name: CI
 
-# Use Node 24 for JS-based actions (checkout, pnpm/setup) until they default to 24.
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 on:
   release:
     types: [published]
@@ -23,14 +19,14 @@ jobs:
         node-version: [22.x, 24.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.33.0
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
@@ -64,20 +60,19 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.33.0
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22.x
           cache: pnpm
+          # Seeds project `.npmrc` for `registry.npmjs.org`; auth for `npm publish` comes from `NODE_AUTH_TOKEN` on the publish step.
           registry-url: https://registry.npmjs.org
-          # Used when publishing with a classic token; also seeds .npmrc for the registry.
-          token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
