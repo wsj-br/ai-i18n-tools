@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 檔案中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。函數名稱和檔案副檔名可設定。**`extract` 也會將非掃描器輸入合併到同一個目錄中：** 當啟用 `reactExtractor.includePackageDescription` 時（預設），合併專案 `package.json` `description`，以及當 `reactExtractor.includeUiLanguageEnglishNames` 為 `true` 且已設定 `uiLanguagesPath` 時，合併來自 `ui-languages.json` 的每個 **`englishName`**（原始碼中已找到的字串具有優先權）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 檔案中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。函數名稱和檔案副檔名可設定。`extract` **也會將非掃描器輸入合併到同一個目錄中：** 當啟用 `reactExtractor.includePackageDescription` 時（預設），合併專案 `package.json` `description`，以及當 `reactExtractor.includeUiLanguageEnglishNames` 為 `true` 且已設定 `uiLanguagesPath` 時，合併來自 `ui-languages.json` 的每個 **`englishName`**（原始碼中已找到的字串具有優先權）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵。
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 `extract` 新增新的鍵，並保留掃描中仍存在的鍵之現有 `translated` / `models` 資料（掃描器字面值、選填描述、選填 manifest `englishName`）。`translate-ui` 填補遺漏的 `translated` 項目，更新其翻譯語系的 `models`，並寫入扁平化的語系檔案。
 
-**`ui-languages.json` manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和內建的主 `data/ui-languages-complete.json` 建立專案檔案。
+`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和內建的主 `data/ui-languages-complete.json` 建立專案檔案。
 
 ### 平面區域文件
 
@@ -313,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+使用 **`setupKeyAsDefaultT`** 作為通常的應用程式進入點（鍵裁剪 + 複數 **`wrapT`** + 可選的 **`translate-ui`** `{sourceLocale}.json`）。單獨呼叫 **`wrapI18nWithKeyTrim`** 用於應用程式接線已**棄用**。
+
+使用 **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** 建立 **`localeLoaders`**，以便在 **`generate-ui-languages`** 之後鍵仍與 **`targetLocales`** 對齊。請參閱 **`docs/GETTING_STARTED.md`**（執行時接線）以及 **`examples/nextjs-app/`** / **`examples/console-app/`**。
 
 ### 顯示輔助工具
 

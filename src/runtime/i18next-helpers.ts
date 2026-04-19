@@ -1,3 +1,4 @@
+import { normalizeLocale } from "../core/locale-utils.js";
 import { interpolateTemplate } from "./template.js";
 import { getTextDirectionFromBundledCatalog } from "./ui-languages-master-direction.js";
 
@@ -14,26 +15,29 @@ import { getTextDirectionFromBundledCatalog } from "./ui-languages-master-direct
  * import i18n from 'i18next';
  * import { initReactI18next } from 'react-i18next';
  * import uiLanguages from './locales/ui-languages.json';
- * import {
- *   defaultI18nInitOptions, wrapI18nWithKeyTrim,
- *   makeLoadLocale, applyDirection,
- * } from 'ai-i18n-tools/runtime';
+ * import stringsJson from './locales/strings.json';
+ * // Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+ * import sourcePluralFlat from './public/locales/en-GB.json';
+ * import aiI18n from 'ai-i18n-tools/runtime';
  * // Direction comes from bundled data/ui-languages-complete.json — not from project ui-languages.json.
  *
  * // Must match sourceLocale in ai-i18n-tools.config.json
  * export const SOURCE_LOCALE = 'en-GB';
  *
- * void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
- * wrapI18nWithKeyTrim(i18n);
- * i18n.on('languageChanged', applyDirection);
- * applyDirection(i18n.language);
+ * void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+ * aiI18n.setupKeyAsDefaultT(i18n, {
+ *   stringsJson,
+ *   sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+ * });
+ * i18n.on('languageChanged', aiI18n.applyDirection);
+ * aiI18n.applyDirection(i18n.language);
  *
- * const localeLoaders = Object.fromEntries(
- *   uiLanguages
- *     .filter(({ code }) => code !== SOURCE_LOCALE)
- *     .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+ * const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+ *   uiLanguages,
+ *   SOURCE_LOCALE,
+ *   (code) => () => import(`./locales/${code}.json`)
  * );
- * export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+ * export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
  * export default i18n;
  * ```
  */
@@ -145,9 +149,12 @@ export function defaultI18nInitOptions(sourceLocale = "en"): {
 /**
  * Minimal interface for an i18next instance (or any compatible translate object).
  * Accepts the full i18next instance without requiring an import of `i18next` itself.
+ *
+ * `t` is typed loosely so real **`i18next`** **`TFunction`** overloads assign without casts.
  */
 export interface I18nLike {
-  t: (key: string, ...rest: unknown[]) => string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- i18next `TFunction` overloads are not assignable to a single narrow signature
+  t: any;
 }
 
 /**
@@ -161,6 +168,8 @@ export interface I18nLike {
  *    (result === trimmed key) and applies `interpolateTemplate` automatically.
  *
  * Mutates the `t` property on the passed instance in-place.
+ *
+ * @deprecated For application wiring use {@link setupKeyAsDefaultT} with your extracted **`strings.json`** — it installs this wrapper together with plural-aware {@link wrapT}. Low-level use remains valid for tests or custom stacks.
  *
  * @example wrapI18nWithKeyTrim(i18n);
  */
@@ -182,6 +191,136 @@ export function wrapI18nWithKeyTrim(i18n: I18nLike): void {
   };
 }
 
+/** Placeholder names inside `{{ ... }}` (used by {@link wrapT} for optional `count` injection). */
+export function extractInterpolationNamesForWrap(message: string): string[] {
+  const re = /\{\{\s*([^}]+?)\s*\}\}/g;
+  const names: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(message)) !== null) {
+    const inner = m[1]?.trim() ?? "";
+    if (inner) {
+      names.push(inner);
+    }
+  }
+  return names;
+}
+
+/**
+ * Build `literal → groupId` map from `strings.json` for use with {@link wrapT}.
+ * Only rows with `"plural": true` participate.
+ */
+export function buildPluralIndexFromStringsJson(
+  entries: Record<string, { plural?: boolean; source?: string }>
+): Record<string, string> {
+  const idx: Record<string, string> = {};
+  for (const [id, row] of Object.entries(entries)) {
+    if (row.plural === true && typeof row.source === "string" && row.source.trim() !== "") {
+      idx[row.source.trim()] = id;
+    }
+  }
+  return idx;
+}
+
+export interface WrapTOptions {
+  pluralIndex: Record<string, string>;
+}
+
+/** Options for {@link setupKeyAsDefaultT}. */
+export interface SetupKeyAsDefaultTOptions {
+  /** Parsed **`strings.json`** from extract (same shape as the glossary catalog). */
+  stringsJson: Record<string, { plural?: boolean; source?: string }>;
+  /**
+   * Optional: merge **`translate-ui`** output **`{sourceLocale}.json`** (plural suffixed keys only)
+   * into i18next so the source locale resolves `_one` / `_other` / … Requires **`addResourceBundle`** on **`i18n`**.
+   */
+  sourcePluralFlatBundle?: {
+    lng: string;
+    bundle: Record<string, string>;
+  };
+}
+
+/**
+ * Standard ai-i18n-tools wiring for key-as-default **`t()`**: applies {@link wrapI18nWithKeyTrim}, optionally
+ * registers the source-locale plural flat bundle, then applies {@link wrapT} using {@link buildPluralIndexFromStringsJson}.
+ *
+ * Call after **`i18n.init(defaultI18nInitOptions(…))`** (and after **`use(initReactI18next)`** when using React).
+ */
+export function setupKeyAsDefaultT(
+  i18n: I18nLike & Partial<Pick<I18nWithResources, "addResourceBundle">>,
+  options: SetupKeyAsDefaultTOptions
+): void {
+  const { stringsJson, sourcePluralFlatBundle } = options;
+
+  wrapI18nWithKeyTrim(i18n);
+
+  if (sourcePluralFlatBundle) {
+    const withBundle = i18n as I18nWithResources;
+    if (typeof withBundle.addResourceBundle !== "function") {
+      throw new Error(
+        "setupKeyAsDefaultT: sourcePluralFlatBundle requires an i18next instance with addResourceBundle()"
+      );
+    }
+    withBundle.addResourceBundle(
+      sourcePluralFlatBundle.lng,
+      "translation",
+      sourcePluralFlatBundle.bundle,
+      true,
+      true
+    );
+  }
+
+  wrapT(i18n, {
+    pluralIndex: buildPluralIndexFromStringsJson(stringsJson),
+  });
+}
+
+/**
+ * Wrap `i18n.t` for cardinal plural groups emitted by `translate-ui`:
+ * strips tooling-only `plurals` / `zeroDigit`, maps the original literal key to the group id when present in `pluralIndex`,
+ * and forwards `count` (with optional injection from a single non-`{{count}}` placeholder).
+ * Pair with suffixed keys in locale JSON (`&lt;id&gt;_one`, …). Apply after {@link wrapI18nWithKeyTrim} if both are used.
+ */
+export function wrapT(i18n: I18nLike, options: WrapTOptions): void {
+  const originalT = i18n.t.bind(i18n) as (...args: unknown[]) => string;
+  i18n.t = function (key: string, ...rest: unknown[]): string {
+    const literal = typeof key === "string" ? key.trim() : String(key);
+    const opt0 = rest[0];
+
+    if (
+      opt0 !== null &&
+      typeof opt0 === "object" &&
+      !Array.isArray(opt0) &&
+      (opt0 as Record<string, unknown>).plurals === true
+    ) {
+      const raw = opt0 as Record<string, unknown>;
+      const nextOpts: Record<string, unknown> = { ...raw };
+      delete nextOpts.plurals;
+      delete nextOpts.zeroDigit;
+
+      let lookupKey = literal;
+      const gid = options.pluralIndex[literal];
+      if (gid) {
+        lookupKey = gid;
+      }
+
+      if (nextOpts.count === undefined) {
+        const placeholders = extractInterpolationNamesForWrap(literal);
+        if (placeholders.length === 1 && placeholders[0] !== "count") {
+          const name = placeholders[0]!;
+          const v = nextOpts[name];
+          if (typeof v === "number") {
+            nextOpts.count = v;
+          }
+        }
+      }
+
+      return originalT(lookupKey, nextOpts, ...rest.slice(1));
+    }
+
+    return originalT(key, ...rest);
+  };
+}
+
 /**
  * Extended i18next interface that includes the resource bundle API needed by `makeLoadLocale`.
  */
@@ -193,6 +332,31 @@ export interface I18nWithResources extends I18nLike {
     deep?: boolean,
     overwrite?: boolean
   ): void;
+}
+
+/** Manifest row: at least **`code`** (matches entries in **`ui-languages.json`**). */
+export type UiLanguageManifestRow = { readonly code: string };
+
+/**
+ * Build the locale → async loader map expected by {@link makeLoadLocale} from **`ui-languages.json`**
+ * (or any **`{ code }[]`**): one loader per **`code`** except **`sourceLocale`** (normalized comparison).
+ *
+ * Provide **`makeLoaderForLocale`** for your environment (**`fetch`**, dynamic **`import()`**, **`readFileSync`** wrapper, …).
+ */
+export function makeLocaleLoadersFromManifest(
+  manifest: readonly UiLanguageManifestRow[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<{ default?: unknown } | unknown>
+): Record<string, () => Promise<{ default?: unknown } | unknown>> {
+  const srcNorm = normalizeLocale(sourceLocale);
+  return Object.fromEntries(
+    manifest
+      .filter(({ code }) => normalizeLocale(code) !== srcNorm)
+      .map(({ code }) => {
+        const c = code.trim();
+        return [c, makeLoaderForLocale(c)];
+      })
+  );
 }
 
 /**
@@ -207,10 +371,10 @@ export interface I18nWithResources extends I18nLike {
  *
  * @example
  * ```js
- * const localeLoaders = Object.fromEntries(
- *   uiLanguages
- *     .filter(({ code }) => code !== SOURCE_LOCALE)
- *     .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+ * const localeLoaders = makeLocaleLoadersFromManifest(
+ *   uiLanguages,
+ *   SOURCE_LOCALE,
+ *   (code) => () => import(`./locales/${code}.json`)
  * );
  * export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
  *
@@ -220,12 +384,12 @@ export interface I18nWithResources extends I18nLike {
  * ```
  */
 export function makeLoadLocale(
-  i18n: I18nWithResources,
+  i18n: I18nLike & Pick<I18nWithResources, "addResourceBundle">,
   localeLoaders: Record<string, () => Promise<{ default?: unknown } | unknown>>,
   sourceLocale = "en"
 ): (lang: string) => Promise<void> {
   return async function loadLocale(lang: string): Promise<void> {
-    if (lang === sourceLocale || lang === "en") return;
+    if (normalizeLocale(lang) === normalizeLocale(sourceLocale)) return;
     const loader = localeLoaders[lang];
     if (!loader) {
       console.warn("[i18n] locale not supported:", lang);

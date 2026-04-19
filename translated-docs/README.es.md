@@ -22,7 +22,7 @@ Ambos flujos de trabajo comparten un único archivo `ai-i18n-tools.config.json` 
 
 ## Instalación
 
-El paquete publicado es **solo ESM** (`"type": "module"`). Usa `import` desde Node.js, empaquetadores o `import()` — **`require('ai-i18n-tools')` no es compatible.**
+El paquete publicado es **solo ESM** (`"type": "module"`). Usa `import` desde Node.js, empaquetadores o `import()` — `require('ai-i18n-tools')` **no es compatible.**
 
 ```bash
 npm install ai-i18n-tools
@@ -59,27 +59,28 @@ Conecta i18next en tu aplicación utilizando los ayudantes de `'ai-i18n-tools/ru
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -108,16 +109,18 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 Exportados de `'ai-i18n-tools/runtime'` - funcionan en cualquier entorno JS, no se requiere importación de i18next:
 
-| Ayudante | Descripción |
+| Helper | Descripción |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Opciones de inicialización estándar de i18next para configuraciones de clave como predeterminadas. |
-| `wrapI18nWithKeyTrim(i18n)` | Envuelve `i18n.t` para que las claves se recorten antes de la búsqueda. |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para la carga asíncrona de archivos de localidad. |
+| `defaultI18nInitOptions(sourceLocale)` | Opciones estándar de inicialización de i18next para configuraciones con clave como valor por defecto. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Configuración recomendada: key-trim + plural **`wrapT`** de **`strings.json`**, opcionalmente combina claves plurales **`translate-ui`** `{sourceLocale}.json`. |
+| `wrapI18nWithKeyTrim(i18n)` | Solo un contenedor de nivel inferior para key-trim (obsoleto para configuración de aplicaciones; se prefiere **`setupKeyAsDefaultT`**). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Crea el mapa **`localeLoaders`** para **`makeLoadLocale`** a partir de **`ui-languages.json`** (todos los **`code`** excepto **`sourceLocale`**). |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para carga asíncrona de archivos de localización. |
 | `getTextDirection(lng)` | Devuelve `'ltr'` o `'rtl'` para un código BCP-47. |
 | `applyDirection(lng, element?)` | Establece el atributo `dir` en `document.documentElement`. |
-| `getUILanguageLabel(lang, t)` | Etiqueta de visualización para una fila de menú de idioma (con i18n). |
-| `getUILanguageLabelNative(lang)` | Etiqueta de visualización sin llamar a `t()` (estilo encabezado). |
-| `interpolateTemplate(str, vars)` | Sustitución de bajo nivel `{{var}}` en una cadena simple (usado internamente; el código de la aplicación debe usar `t()` en su lugar). |
+| `getUILanguageLabel(lang, t)` | Etiqueta mostrada para una fila del menú de idiomas (con i18n). |
+| `getUILanguageLabelNative(lang)` | Etiqueta mostrada sin llamar a `t()` (estilo encabezado). |
+| `interpolateTemplate(str, vars)` | Sustitución de bajo nivel `{{var}}` en una cadena simple (usado internamente; el código de la aplicación debería usar `t()` en su lugar). |
 | `flipUiArrowsForRtl(text, isRtl)` | Invierte `→` a `←` para diseños RTL. |
 
 ---

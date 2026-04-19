@@ -4,9 +4,9 @@ title: Démarrage rapide
 description: >-
   Obtenez votre premier document traduit en moins de cinq minutes à l’aide de
   ai-i18n-tools avec ce projet exemple Next.js.
-translation_last_updated: '2026-04-13T19:05:57.195Z'
-source_file_mtime: '2026-04-13T12:37:25.386Z'
-source_file_hash: f28037e8c747358d722aeab10f171799df8f1dc59513a8295af098c8c30f9fa5
+translation_last_updated: '2026-04-18T22:42:43.735Z'
+source_file_mtime: '2026-04-18T18:55:03.274Z'
+source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
 translation_language: fr
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -136,9 +136,27 @@ Cela démarre le serveur de développement Docusaurus en allemand. Ouvrez [http:
 
 ---
 
+## Étape 7 — Explorer la démo Next.js (locale + pluriels cardinaux)
+
+La traduction de la documentation dans ce tutoriel utilise uniquement du **Markdown**. Le même dépôt exemple inclut également une interface **Next.js** sur le port **3030**, où vous pouvez voir les appels **`t()`**, les URLs **`?locale=`** et une démonstration des **pluriels cardinaux**.
+
+Depuis `examples/nextjs-app/` :
+
+```bash
+npm run dev
+```
+
+Ensuite, ouvrez [http://localhost:3030](http://localhost:3030).
+
+- Changez de langue avec le menu déroulant **Locale**, ou ajoutez **`?locale=<code>`** (par exemple `http://localhost:3030/?locale=ar`). L'interface garde la chaîne de requête et le menu déroulant synchronisés.
+- Faites défiler jusqu'à **Plurals: automatic generation usage example**. La page répète « This page has … sections » pour des nombres d'exemples prédéfinis (**1**, **2**, **5**, **50**) afin que vous puissiez comparer les règles de pluriel entre les locales (y compris les langues ayant plusieurs formes de pluriel).
+- Les appels utilisent **`t("…", { plurals: true, count })`**. Avec **`extract`** / **`translate-ui`**, cette clé devient un groupe de pluriels dans `locales/strings.json` ; les fichiers plats **`public/locales/*.json`** contiennent les formes suffixées. La configuration à l'exécution se trouve dans **`src/lib/i18n.ts`** — consultez la section **Cardinal plurals example** dans le [README de l'exemple](../../README.md) pour une présentation concise.
+
+---
+
 ## Que faire ensuite
 
-- Lisez le [Translation Feature Showcase](./feature-showcase) pour découvrir chaque élément Markdown que `ai-i18n-tools` peut gérer.
-- Modifiez une phrase dans `docs-site/docs/feature-showcase.md` puis relancez `sync` — seul ce segment sera envoyé au LLM ; les autres seront servis depuis le cache.
-- Ajoutez un terme à `glossary-user.csv` pour imposer une terminologie cohérente dans toutes les langues.
+- Consultez le [Translation Feature Showcase](./feature-showcase) pour voir chaque élément Markdown que `ai-i18n-tools` peut gérer — notamment la relation entre les **chaînes d'interface de pluriel cardinal** et ce pipeline de documentation.
+- Modifiez une phrase dans `docs-site/docs/feature-showcase.md` et relancez `sync` — seul ce segment sera envoyé au LLM ; les autres seront servis depuis le cache.
+- Ajoutez un terme à `glossary-user.csv` pour garantir une terminologie cohérente dans toutes les locales.
 - Activez le pipeline des chaînes d'interface en définissant `"translateUIStrings": true` et en exécutant `sync` sans l'indicateur `--no-ui`.

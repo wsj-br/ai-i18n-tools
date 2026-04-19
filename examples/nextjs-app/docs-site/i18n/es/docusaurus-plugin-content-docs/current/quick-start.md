@@ -4,9 +4,9 @@ title: Introducción rápida
 description: >-
   Obtén tu primer documento traducido en menos de cinco minutos usando
   ai-i18n-tools con este proyecto de ejemplo de Next.js.
-translation_last_updated: '2026-04-13T19:05:57.085Z'
-source_file_mtime: '2026-04-13T12:37:25.386Z'
-source_file_hash: f28037e8c747358d722aeab10f171799df8f1dc59513a8295af098c8c30f9fa5
+translation_last_updated: '2026-04-18T22:42:43.625Z'
+source_file_mtime: '2026-04-18T18:55:03.274Z'
+source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
 translation_language: es
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -136,9 +136,27 @@ Esto inicia el servidor de desarrollo de Docusaurus en alemán. Abre [http://loc
 
 ---
 
+## Paso 7 — Explorar la demo de Next.js (plural local + cardinal)
+
+La traducción de documentación en este tutorial utiliza **solo Markdown**. El mismo repositorio de ejemplo también incluye una interfaz de usuario de **Next.js** en el puerto **3030**, donde puedes ver llamadas **`t()`**, URLs **`?locale=`** y una demostración de **plural cardinal**.
+
+Desde `examples/nextjs-app/`:
+
+```bash
+npm run dev
+```
+
+Luego abre [http://localhost:3030](http://localhost:3030).
+
+- Cambia los idiomas con el menú desplegable de **Locale**, o añade **`?locale=<code>`** (por ejemplo `http://localhost:3030/?locale=ar`). La interfaz mantiene sincronizados la cadena de consulta y el menú desplegable.
+- Desplázate hasta **Plurales: ejemplo de uso de generación automática**. La página repite “This page has … sections” para cantidades fijas de ejemplo (**1**, **2**, **5**, **50**) para que puedas comparar reglas plurales entre distintos idiomas (incluyendo aquellos con múltiples formas plurales).
+- Las llamadas usan **`t("…", { plurals: true, count })`**. Con **`extract`** / **`translate-ui`**, esa clave se convierte en un grupo plural en `locales/strings.json`; los archivos planos **`public/locales/*.json`** contienen las formas con sufijos. La conexión en tiempo de ejecución está en **`src/lib/i18n.ts`** — consulta la sección **Cardinal plurals example** en el [README del ejemplo](../../README.md) para una explicación concisa.
+
+---
+
 ## Qué explorar a continuación
 
-- Lee la [Muestra de Funcionalidades de Traducción](./feature-showcase) para ver cada elemento Markdown que `ai-i18n-tools` puede manejar.
-- Edita una oración en `docs-site/docs/feature-showcase.md` y vuelve a ejecutar `sync`; solo ese segmento se enviará al LLM; el resto se servirá desde la caché.
-- Añade un término a `glossary-user.csv` para garantizar una terminología consistente en todos los idiomas.
-- Activa la canalización de cadenas de interfaz de usuario configurando `"translateUIStrings": true` y ejecutando `sync` sin la bandera `--no-ui`.
+- Lee el [Translation Feature Showcase](./feature-showcase) para ver cada elemento de Markdown que `ai-i18n-tools` puede manejar — incluyendo cómo las **cadenas de interfaz de plural cardinal** se relacionan con esta canalización de documentación.
+- Edita una oración en `docs-site/docs/feature-showcase.md` y vuelve a ejecutar `sync` — solo ese segmento será enviado al LLM; el resto se sirven desde la caché.
+- Añade un término a `glossary-user.csv` para garantizar una terminología coherente en todos los idiomas.
+- Activa la canalización de cadenas de interfaz estableciendo `"translateUIStrings": true` y ejecutando `sync` sin la bandera `--no-ui`.

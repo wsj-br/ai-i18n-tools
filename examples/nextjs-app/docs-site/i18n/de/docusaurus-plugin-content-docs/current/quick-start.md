@@ -4,9 +4,9 @@ title: Schnellstart
 description: >-
   Erhalten Sie Ihr erstes übersetztes Dokument in unter fünf Minuten mithilfe
   von ai-i18n-tools mit diesem Next.js-Beispielprojekt.
-translation_last_updated: '2026-04-13T19:05:57.197Z'
-source_file_mtime: '2026-04-13T12:37:25.386Z'
-source_file_hash: f28037e8c747358d722aeab10f171799df8f1dc59513a8295af098c8c30f9fa5
+translation_last_updated: '2026-04-18T22:42:43.736Z'
+source_file_mtime: '2026-04-18T18:55:03.274Z'
+source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
 translation_language: de
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -136,9 +136,27 @@ Dies startet den Docusaurus-Entwicklungsserver auf Deutsch. Öffnen Sie [http://
 
 ---
 
+## Schritt 7 — Entdecken Sie das Next.js-Demo (Sprachumgebung + kardinaler Plural)
+
+Die Übersetzung der Dokumentation in diesem Tutorial verwendet ausschließlich **Markdown**. Das gleiche Beispiel-Repository enthält außerdem eine **Next.js**-Benutzeroberfläche auf Port **3030**, in der Sie **`t()`**-Aufrufe, **`?locale=`**-URLs und eine Demo zum **kardinalen Plural** sehen können.
+
+Aus `examples/nextjs-app/`:
+
+```bash
+npm run dev
+```
+
+Öffnen Sie anschließend [http://localhost:3030](http://localhost:3030).
+
+- Wechseln Sie die Sprache über das Dropdown-Menü **Locale** oder fügen Sie **`?locale=<code>`** an (z. B. `http://localhost:3030/?locale=ar`). Die Benutzeroberfläche hält die Abfragezeichenfolge und das Dropdown synchron.
+- Scrollen Sie zu **Pluralformen: Beispiel für die Verwendung der automatischen Generierung**. Die Seite wiederholt „This page has … sections“ für feste Beispielanzahlen (**1**, **2**, **5**, **50**), sodass Sie die Pluralregeln zwischen verschiedenen Sprachumgebungen vergleichen können (auch bei Sprachen mit mehreren Pluralformen).
+- Die Aufrufe verwenden **`t("…", { plurals: true, count })`**. Mit **`extract`** / **`translate-ui`** wird dieser Schlüssel zu einer Pluralgruppe in `locales/strings.json`; flache **`public/locales/*.json`**-Dateien enthalten die suffigierten Formen. Die Laufzeitverknüpfung befindet sich in **`src/lib/i18n.ts`** — im Abschnitt **Cardinal plurals example** der [Beispiel-README](../../README.md) finden Sie eine kurze Anleitung.
+
+---
+
 ## Was Sie als Nächstes erkunden können
 
-- Lesen Sie das [Beispiel zur Übersetzungsfunktion](./feature-showcase), um alle Markdown-Elemente zu sehen, die `ai-i18n-tools` verarbeiten kann.
-- Bearbeiten Sie einen Satz in `docs-site/docs/feature-showcase.md` und führen Sie erneut `sync` aus — nur dieses Segment wird an das LLM gesendet; der Rest wird aus dem Cache bereitgestellt.
-- Fügen Sie einen Begriff zu `glossary-user.csv` hinzu, um eine einheitliche Terminologie über alle Sprachen hinweg sicherzustellen.
-- Aktivieren Sie die UI-String-Pipeline, indem Sie `"translateUIStrings": true` setzen und `sync` ohne das Flag `--no-ui` ausführen.
+- Lesen Sie das [Translation Feature Showcase](./feature-showcase), um alle Markdown-Elemente zu sehen, die `ai-i18n-tools` verarbeiten kann — einschließlich der Beziehung zwischen **kardinalen Plural-UI-Zeichenketten** und dieser Dokumentations-Pipeline.
+- Bearbeiten Sie einen Satz in `docs-site/docs/feature-showcase.md` und führen Sie `sync` erneut aus — nur dieses Segment wird an das LLM gesendet; der Rest wird aus dem Cache bereitgestellt.
+- Fügen Sie einen Begriff zu `glossary-user.csv` hinzu, um eine einheitliche Terminologie in allen Sprachumgebungen sicherzustellen.
+- Aktivieren Sie die UI-Zeichenketten-Pipeline, indem Sie `"translateUIStrings": true` setzen und `sync` ohne das `--no-ui`-Flag ausführen.

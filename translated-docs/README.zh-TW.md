@@ -10,7 +10,7 @@
 
 **工作流程 1 - UI 翻譯** (React、Next.js、Node.js，任何 i18next 專案)
 
-從 **`t("…")` / `i18n.t("…")` 字面值** 建立主目錄（`strings.json`，並可選擇包含每個語系的 **`models`** 元資料），可選擇性地包含 **`package.json` `description`**，並在設定中啟用時，從 `ui-languages.json` 取得每個 **`englishName`**。透過 OpenRouter 翻譯各語系中缺失的條目，並輸出扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
+從 `t("…")` / `i18n.t("…")` **字面值** 建立主目錄（`strings.json`，並可選擇包含每個語系的 **`models`** 元資料），可選擇性地包含 **`package.json` `description`**，並在設定中啟用時，從 `ui-languages.json` 取得每個 **`englishName`**。透過 OpenRouter 翻譯各語系中缺失的條目，並輸出扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
 
 **工作流程 2 - 文件翻譯** (Markdown、Docusaurus JSON)
 
@@ -22,7 +22,7 @@
 
 ## 安裝
 
-已發佈的套件為 **僅限 ESM**（`"type": "module"`）。請在 Node.js、打包工具或 `import()` 中使用 `import` — **不支援 `require('ai-i18n-tools')`。**
+已發佈的套件為 **僅限 ESM**（`"type": "module"`）。請在 Node.js、打包工具或 `import()` 中使用 `import` — 不支援 `require('ai-i18n-tools')` **。**
 
 ```bash
 npm install ai-i18n-tools
@@ -59,27 +59,28 @@ npx ai-i18n-tools translate-ui
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -108,17 +109,19 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 從 `'ai-i18n-tools/runtime'` 匯出 - 適用於任何 JS 環境，無需引入 i18next：
 
-| 輔助工具 | 描述 |
+| 幫助者 | 描述 |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | 適用於以鍵值作為預設值設定的標準 i18next 初始化選項。 |
-| `wrapI18nWithKeyTrim(i18n)` | 包裝 `i18n.t`，使其在查詢前先修剪鍵值。 |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用於非同步載入區域設定檔案的工廠函式。 |
-| `getTextDirection(lng)` | 針對 BCP-47 代碼返回 `'ltr'` 或 `'rtl'`。 |
-| `applyDirection(lng, element?)` | 在 `document.documentElement` 上設定 `dir` 屬性。 |
-| `getUILanguageLabel(lang, t)` | 語言選單列的顯示標籤（搭配 i18n）。 |
-| `getUILanguageLabelNative(lang)` | 不呼叫 `t()` 的顯示標籤（標題風格）。 |
-| `interpolateTemplate(str, vars)` | 對純字串進行 `{{var}}` 替換的低階函式（內部使用；應用程式碼應改用 `t()`）。 |
-| `flipUiArrowsForRtl(text, isRtl)` | 針對 RTL 佈局將 `→` 翻轉為 `←`。 |
+| `defaultI18nInitOptions(sourceLocale)` | 用於鍵作為默認設置的標準 i18next 初始化選項。 |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 建議的連接：鍵修剪 + 從 **`strings.json`** 的複數 **`wrapT`**，可選地合併 **`translate-ui`** `{sourceLocale}.json` 複數鍵。 |
+| `wrapI18nWithKeyTrim(i18n)` | 僅限於較低級別的鍵修剪包裝器（不建議用於應用連接；建議使用 **`setupKeyAsDefaultT`**）。 |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 從 **`ui-languages.json`** 為 **`makeLoadLocale`** 構建 **`localeLoaders`** 映射（每個 **`code`** 除了 **`sourceLocale`**）。 |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用於異步區域文件加載的工廠。 |
+| `getTextDirection(lng)` | 返回 `'ltr'` 或 `'rtl'` 以獲取 BCP-47 代碼。 |
+| `applyDirection(lng, element?)` | 在 `document.documentElement` 上設置 `dir` 屬性。 |
+| `getUILanguageLabel(lang, t)` | 語言菜單行的顯示標籤（帶有 i18n）。 |
+| `getUILanguageLabelNative(lang)` | 無需調用 `t()` 的顯示標籤（標題樣式）。 |
+| `interpolateTemplate(str, vars)` | 在普通字符串上進行低級別的 `{{var}}` 替換（內部使用；應用代碼應使用 `t()`）。 |
+| `flipUiArrowsForRtl(text, isRtl)` | 將 `→` 翻轉為 `←` 以適應 RTL 佈局。 |
 
 ---
 

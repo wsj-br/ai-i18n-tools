@@ -1,157 +1,226 @@
 {
-  "b4af1a76": {
-    "source": "AI-i18n-tools: Next.js example app",
+  "ef6ced16": {
+    "source": "ai-i18n-tools: Next.js example app",
     "translated": {
-      "pt-BR": "ai-i18n-tools: Aplicativo de exemplo Next.js",
       "fr": "ai-i18n-tools : Application exemple Next.js",
-      "de": "ai-i18n-tools: Next.js-Beispielanwendung",
-      "es": "ai-i18n-tools: Aplicación de ejemplo Next.js",
-      "ar": "ai-i18n-tools: تطبيق Next.js نموذجي"
+      "de": "ai-i18n-tools: Next.js Beispiel-App",
+      "ar": "ai-i18n-tools: تطبيق Next.js مثال",
+      "es": "ai-i18n-tools: aplicación de ejemplo Next.js",
+      "pt-BR": "ai-i18n-tools: aplicativo de exemplo Next.js"
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 34
+        "line": 62
       }
     ]
   },
-  "cbf41347": {
-    "source": "Hello World!!",
+  "ed076287": {
+    "source": "Hello World!",
     "translated": {
-      "pt-BR": "Olá Mundo!!",
-      "fr": "Bonjour le monde !!",
-      "de": "Hallo Welt!!",
+      "fr": "Bonjour le monde !",
+      "de": "Hallo Welt!",
+      "ar": "مرحباً بالعالم!",
       "es": "¡Hola mundo!",
-      "ar": "مرحباً بالعالم!!"
+      "pt-BR": "Olá Mundo!"
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 51
+        "line": 79
       }
     ]
   },
   "da0d36f0": {
     "source": "This line will be translated to multiple languages.",
     "translated": {
-      "pt-BR": "Esta linha será traduzida para vários idiomas.",
       "fr": "Cette ligne sera traduite dans plusieurs langues.",
       "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
+      "ar": "سيتم ترجمة هذا السطر إلى لغات متعددة.",
       "es": "Esta línea se traducirá a varios idiomas.",
-      "ar": "سيتم ترجمة هذا السطر إلى لغات متعددة."
+      "pt-BR": "Esta linha será traduzida para vários idiomas."
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 52
+        "line": 80
       }
     ]
   },
   "5a8f8558": {
     "source": "This is line number {{number}}",
     "translated": {
-      "pt-BR": "Este é o número da linha {{number}}",
       "fr": "Ceci est la ligne numéro {{number}}",
-      "de": "Dies ist die Zeilennummer {{number}}",
+      "de": "Dies ist die Zeile Nummer {{number}}",
+      "ar": "هذا هو السطر رقم {{number}}",
       "es": "Esta es la línea número {{number}}",
-      "ar": "هذا هو السطر رقم {{number}}"
+      "pt-BR": "Esta é a linha número {{number}}"
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 53
+        "line": 81
+      }
+    ]
+  },
+  "2bad7cac": {
+    "source": "Plurals: automatic generation usage example",
+    "translated": {
+      "es": "Plurales: ejemplo de uso de generación automática",
+      "ar": "الجمع: مثال على استخدام التوليد التلقائي",
+      "fr": "Pluriels : exemple d'utilisation de la génération automatique",
+      "de": "Pluralformen: Beispiel für die Verwendung der automatischen Generierung",
+      "pt-BR": "Plurais: exemplo de uso da geração automática"
+    },
+    "models": {
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
+    },
+    "locations": [
+      {
+        "file": "src/app/page.tsx",
+        "line": 84
+      }
+    ]
+  },
+  "f9ba51ab": {
+    "plural": true,
+    "source": "This page has {{count}} sections",
+    "translated": {
+      "en-GB": {
+        "one": "This page has {{count}} section",
+        "other": "This page has {{count}} sections"
+      },
+      "de": {
+        "one": "Diese Seite hat {{count}} Abschnitt",
+        "other": "Diese Seite hat {{count}} Abschnitte"
+      },
+      "fr": {
+        "one": "Cette page a {{count}} section",
+        "other": "Cette page a {{count}} sections"
+      },
+      "es": {
+        "one": "Esta página tiene {{count}} sección",
+        "other": "Esta página tiene {{count}} secciones"
+      },
+      "ar": {
+        "one": "تحتوي هذه الصفحة على {{count}} قسم",
+        "two": "تحتوي هذه الصفحة على {{count}} قسمين",
+        "many": "تحتوي هذه الصفحة على {{count}} قسماً",
+        "other": "تحتوي هذه الصفحة على {{count}} أقسام"
+      },
+      "pt-BR": {
+        "one": "Esta página tem {{count}} seção",
+        "other": "Esta página tem {{count}} seções"
+      }
+    },
+    "models": {
+      "en-GB": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
+      "fr": "qwen/qwen3-235b-a22b-2507",
+      "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
+    },
+    "locations": [
+      {
+        "file": "src/app/page.tsx",
+        "line": 98
       }
     ]
   },
   "6d13d00f": {
     "source": "Translation demo illustration",
     "translated": {
-      "pt-BR": "Ilustração de demonstração de tradução",
       "fr": "Illustration de démonstration de traduction",
-      "de": "Übersichtsdemo zur Übersetzung",
+      "de": "Übersetzungs-Demo-Illustration",
+      "ar": "رسم توضيحي لعرض الترجمة",
       "es": "Ilustración de demostración de traducción",
-      "ar": "رسم توضيحي لعرض الترجمة"
+      "pt-BR": "Ilustração de demonstração de tradução"
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 61
+        "line": 111
       }
     ]
   },
-  "85e37a04": {
-    "source": "ai-i18n-tools is translating the texts contained within this SVG ilustration.",
+  "fe6ac1c5": {
+    "source": "ai-i18n-tools translated the texts contained within this SVG illustration.",
     "translated": {
-      "pt-BR": "ai-i18n-tools está traduzindo os textos contidos nesta ilustração SVG.",
-      "fr": "ai-i18n-tools traduit les textes contenus dans cette illustration SVG.",
-      "de": "ai-i18n-tools übersetzt die in dieser SVG-Illustration enthaltenen Texte.",
-      "es": "ai-i18n-tools está traduciendo los textos contenidos en esta ilustración SVG.",
-      "ar": "يقوم ai-i18n-tools بترجمة النصوص الموجودة داخل هذا الرسم التوضيحي SVG."
+      "fr": "ai-i18n-tools a traduit les textes contenus dans cette illustration SVG.",
+      "de": "ai-i18n-tools hat die in dieser SVG-Illustration enthaltenen Texte übersetzt.",
+      "ar": "قام ai-i18n-tools بترجمة النصوص الموجودة ضمن هذه الصورة التوضيحية SVG.",
+      "es": "ai-i18n-tools tradujo los textos contenidos en esta ilustración SVG.",
+      "pt-BR": "ai-i18n-tools traduziu os textos contidos nesta ilustração SVG."
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {
         "file": "src/app/page.tsx",
-        "line": 64
+        "line": 114
       }
     ]
   },
   "e75d0156": {
     "source": "Example Next.js application demonstrating ai-i18n-tools",
     "translated": {
-      "pt-BR": "Aplicativo exemplo Next.js demonstrando ai-i18n-tools",
       "fr": "Exemple d'application Next.js illustrant ai-i18n-tools",
-      "de": "Beispielanwendung mit Next.js, die ai-i18n-tools demonstriert",
+      "de": "Beispiel-Next.js-Anwendung, die ai-i18n-tools demonstriert",
+      "ar": "تطبيق Next.js توضيحي يعرض ai-i18n-tools",
       "es": "Aplicación de ejemplo de Next.js que demuestra ai-i18n-tools",
-      "ar": "تطبيق Next.js نموذجي يوضح ai-i18n-tools"
+      "pt-BR": "Aplicativo exemplo Next.js demonstrando ai-i18n-tools"
     },
     "models": {
-      "pt-BR": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507"
+      "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
       {

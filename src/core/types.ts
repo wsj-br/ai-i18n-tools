@@ -26,10 +26,53 @@ export interface Segment {
   content: string;
   hash: string;
   translatable: boolean;
+  /** When true, this segment reassembles with a single `\n` after the previous segment (no blank line). */
+  tightJoinPrevious?: boolean;
   startLine?: number;
   jsonKey?: string;
   jsonDescription?: string;
   svg?: SvgSegmentMeta;
+  /** When true, `content` is the original `t()` literal; plural rows live under `strings.json` single-entry shape. */
+  plurals?: boolean;
+  /** Tooling-only; stripped before `i18next.t`. Phrasing hint for `_zero` in Step 0 / Pass B. */
+  zeroDigit?: boolean;
+}
+
+/** CLDR cardinal plural categories used by i18next JSON v4 suffixes (`_zero` … `_other`). */
+export type CldrPluralForm = "zero" | "one" | "two" | "few" | "many" | "other";
+
+/** Non-plural row in `strings.json` (`translated[locale]` is a string). */
+export interface StringsJsonPlainEntry {
+  plural?: false;
+  source: string;
+  translated: Record<string, string>;
+  models?: Record<string, string>;
+  locations?: Array<{ file: string; line: number }>;
+}
+
+/** Plural group row: one top-level hash per `t(..., { plurals: true })` literal; `translated[locale]` maps forms → text. */
+export interface StringsJsonPluralEntry {
+  plural: true;
+  source: string;
+  /** When true, `_zero` source uses literal Arabic `0`; when false, natural phrasing in that language. */
+  zeroDigit?: boolean;
+  translated: Record<string, Partial<Record<CldrPluralForm, string>>>;
+  models?: Record<string, string>;
+  locations?: Array<{ file: string; line: number }>;
+}
+
+export type StringsJsonEntry = StringsJsonPlainEntry | StringsJsonPluralEntry;
+
+export function isPluralStringsEntry(
+  e: StringsJsonEntry | Record<string, unknown>
+): e is StringsJsonPluralEntry {
+  return (e as StringsJsonPluralEntry).plural === true;
+}
+
+export function isPlainStringsEntry(
+  e: StringsJsonEntry | Record<string, unknown>
+): e is StringsJsonPlainEntry {
+  return !isPluralStringsEntry(e);
 }
 
 /**
@@ -257,6 +300,28 @@ const markdownPostProcessingSchema = z
   })
   .strict();
 
+/** Optional finer-grained markdown segments (pipe tables, long lists, dense paragraphs). Default **enabled** when the documentation block omits **`segmentSplitting`** (translate-docs merges via {@link mergeSegmentSplittingOpts}). */
+export const segmentSplittingSchema = z
+  .object({
+    enabled: z.boolean().default(true),
+    /** Soft cap for paragraph chunk size when splitting dense blocks (characters). */
+    maxCharsPerSegment: z.number().int().positive().max(100_000).optional(),
+    splitPipeTables: z.boolean().default(true),
+    splitDenseParagraphs: z.boolean().default(true),
+    maxLinesPerParagraphChunk: z.number().int().positive().optional(),
+    splitLongLists: z.boolean().default(true),
+    maxListItemsPerChunk: z.number().int().positive().default(12),
+  })
+  .strict();
+
+export type SegmentSplittingConfig = z.infer<typeof segmentSplittingSchema>;
+
+export function mergeSegmentSplittingOpts(
+  partial: z.input<typeof segmentSplittingSchema> | undefined
+): SegmentSplittingConfig {
+  return segmentSplittingSchema.parse(partial ?? {});
+}
+
 const markdownOutputSchema = z
   .object({
     /** Built-in layout when `pathTemplate` is unset. */
@@ -361,11 +426,22 @@ const documentationBlockSchema = z
       flatPreserveRelativeDir: false,
     }),
     /**
+     * Optional finer-grained markdown segments for **translate-docs** (pipe tables, dense paragraphs, long lists).
+     * Sibling of **`markdownOutput`** — applies to the whole documentation pipeline for this block, not layout/post-processing only.
+     */
+    segmentSplitting: segmentSplittingSchema.optional(),
+    /**
      * When true (default), translated markdown files include YAML keys matching reference transrewrt:
      * `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`,
      * `source_file_path`, and when known, `translation_models` (sorted unique OpenRouter model ids used for segments).
      */
     addFrontmatter: z.boolean().optional(),
+    /**
+     * Overrides default markdown emphasis placeholder masking for this docs block.
+     * When omitted: CJK (`zh`, `ja`, `ko`) and RTL locales mask emphasis by default; others do not.
+     * Root `rtlLocales` extends RTL detection alongside built-in RTL language codes.
+     */
+    emphasisPlaceholders: z.boolean().optional(),
   })
   .strict();
 

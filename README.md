@@ -10,7 +10,7 @@ CLI and programmatic toolkit for internationalising JavaScript/TypeScript applic
 
 **Workflow 1 - UI Translation** (React, Next.js, Node.js, any i18next project)
 
-Builds a master catalog (`strings.json` with optional per-locale **`models`** metadata) from **`t("…")` / `i18n.t("…")` literals**, optionally **`package.json` `description`**, and optionally each **`englishName`** from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
+Builds a master catalog (`strings.json` with optional per-locale **`models`** metadata) from `t("…")` / `i18n.t("…")` **literals**, optionally **`package.json` `description`**, and optionally each **`englishName`** from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
 **Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
 
@@ -22,7 +22,7 @@ Both workflows share a single `ai-i18n-tools.config.json` file and can be used i
 
 ## Installation
 
-The published package is **ESM-only** (`"type": "module"`). Use `import` from Node.js, bundlers, or `import()` — **`require('ai-i18n-tools')` is not supported.**
+The published package is **ESM-only** (`"type": "module"`). Use `import` from Node.js, bundlers, or `import()` — `require('ai-i18n-tools')` **is not supported.**
 
 ```bash
 npm install ai-i18n-tools
@@ -59,27 +59,28 @@ Wire i18next in your app using the helpers from `'ai-i18n-tools/runtime'`:
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -111,7 +112,9 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 | Helper | Description |
 |---|---|
 | `defaultI18nInitOptions(sourceLocale)` | Standard i18next init options for key-as-default setups. |
-| `wrapI18nWithKeyTrim(i18n)` | Wrap `i18n.t` so keys are trimmed before lookup. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Recommended wiring: key-trim + plural **`wrapT`** from **`strings.json`**, optionally merges **`translate-ui`** `{sourceLocale}.json` plural keys. |
+| `wrapI18nWithKeyTrim(i18n)` | Lower-level key-trim wrapper only (deprecated for app wiring; prefer **`setupKeyAsDefaultT`**). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the **`localeLoaders`** map for **`makeLoadLocale`** from **`ui-languages.json`** (every **`code`** except **`sourceLocale`**). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory for async locale file loading. |
 | `getTextDirection(lng)` | Returns `'ltr'` or `'rtl'` for a BCP-47 code. |
 | `applyDirection(lng, element?)` | Sets `dir` attribute on `document.documentElement`. |
@@ -124,7 +127,7 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 
 ## CLI commands
 
-```
+```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file

@@ -11,7 +11,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents** 
+## Table of Contents
 
 - [Architecture overview](#architecture-overview)
 - [Source tree](#source-tree)
@@ -47,7 +47,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 ## Architecture overview
 
-```
+```text
 ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
@@ -66,7 +66,7 @@ Everything that consumers may need programmatically is re-exported from `src/ind
 
 ## Source tree
 
-```
+```text
 src/
 ├── index.ts                        Public API re-exports
 │
@@ -132,7 +132,7 @@ src/
 
 ## Workflow 1 - UI Translation internals
 
-```
+```text
 source files (JS/TS)
       │
       ▼  UIStringExtractor (i18next-scanner Parser)
@@ -147,7 +147,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable. **`extract` also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled (default), and each **`englishName`** from `ui-languages.json` when `reactExtractor.includeUiLanguageEnglishNames` is `true` and `uiLanguagesPath` is set (strings already found in source keep precedence). Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
+Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable. `extract` **also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled (default), and each **`englishName`** from `ui-languages.json` when `reactExtractor.includeUiLanguageEnglishNames` is `true` and `uiLanguagesPath` is set (strings already found in source keep precedence). Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
 
 ### `strings.json`
 
@@ -174,7 +174,7 @@ The master catalog has the shape:
 
 `extract` adds new keys and preserves existing `translated` / `models` data for keys still present in the scan (scanner literals, optional description, optional manifest `englishName`). `translate-ui` fills missing `translated` entries, updates `models` for locales it translates, and writes flat locale files.
 
-**`ui-languages.json` manifest** — JSON array of `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` or `"rtl"`). Use `generate-ui-languages` to build a project file from `sourceLocale` + `targetLocales` and the bundled master `data/ui-languages-complete.json`.
+`ui-languages.json` **manifest** — JSON array of `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` or `"rtl"`). Use `generate-ui-languages` to build a project file from `sourceLocale` + `targetLocales` and the bundled master `data/ui-languages-complete.json`.
 
 ### Flat locale files
 
@@ -192,6 +192,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 ### UI Translation prompts
 
 `buildUIPromptMessages` constructs system + user messages that:
+
 - Identify the source and target languages (by display name from `localeDisplayNames` or `ui-languages.json`).
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
@@ -202,7 +203,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 
 ## Workflow 2 - Document Translation internals
 
-```
+```text
 markdown/MDX/JSON files (`translate-docs`)
       │
       ▼  MarkdownExtractor / JsonExtractor
@@ -312,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+Use **`setupKeyAsDefaultT`** as the usual app entry point (key-trim + plural **`wrapT`** + optional **`translate-ui`** `{sourceLocale}.json`). Calling **`wrapI18nWithKeyTrim`** alone is **deprecated** for application wiring.
+
+Build **`localeLoaders`** with **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** so keys stay aligned with **`targetLocales`** after **`generate-ui-languages`**. See **`docs/GETTING_STARTED.md`** (runtime wiring) and **`examples/nextjs-app/`** / **`examples/console-app/`**.
 
 ### Display helpers
 

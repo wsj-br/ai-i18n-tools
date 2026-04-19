@@ -92,7 +92,10 @@ describe("createTranslationEditorApp", () => {
           uiStrings: {
             available: boolean;
             totalEntries: number;
-            byLocale: Array<{ locale: string; translated: number; missing: number }>;
+            plainTotal: number;
+            pluralTotal: number;
+            plainByLocale: Array<{ locale: string; translated: number; missing: number }>;
+            pluralByLocale: Array<{ locale: string; complete: number; incomplete: number }>;
             byModel: Array<{ model: string; count: number }>;
             byModelLocale: Array<{ model: string; locale: string; count: number }>;
           };
@@ -110,8 +113,14 @@ describe("createTranslationEditorApp", () => {
         );
         expect(data.uiStrings.available).toBe(true);
         expect(data.uiStrings.totalEntries).toBe(2);
-        const deUi = data.uiStrings.byLocale.find((x) => x.locale === "de");
-        expect(deUi?.missing).toBe(1);
+        expect(data.uiStrings.plainTotal).toBe(2);
+        expect(data.uiStrings.pluralTotal).toBe(0);
+        const dePlain = data.uiStrings.plainByLocale.find((x) => x.locale === "de");
+        expect(dePlain?.translated).toBe(1);
+        expect(dePlain?.missing).toBe(1);
+        const dePlural = data.uiStrings.pluralByLocale.find((x) => x.locale === "de");
+        expect(dePlural?.complete).toBe(0);
+        expect(dePlural?.incomplete).toBe(0);
         expect(data.uiStrings.byModel).toEqual([
           { model: "(unknown)", count: 1 },
           { model: "model-a", count: 1 },
@@ -235,6 +244,459 @@ describe("createTranslationEditorApp", () => {
         const row = data.entries.find((e) => e.id === "h1");
         expect(row?.source).toBe("Hello");
         expect(row?.models?.de).toBe("model-a");
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("GET /api/ui-strings exposes plural rows with completenessByLocale", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-get-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          zeroDigit: false,
+          source: "{{count}} items",
+          translated: {
+            en: { one: "{{count}} item", other: "{{count}} items" },
+            de: { one: "eins" },
+          },
+          locations: [{ file: "p.tsx", line: 10 }],
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/ui-strings`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as {
+          entries: Array<{
+            id: string;
+            plural?: boolean;
+            completenessByLocale?: Record<string, boolean>;
+            requiredFormsByLocale?: Record<string, string[]>;
+          }>;
+        };
+        const row = data.entries.find((e) => e.id === "pg");
+        expect(row?.plural).toBe(true);
+        expect(row?.completenessByLocale?.en).toBe(true);
+        expect(row?.completenessByLocale?.de).toBe(false);
+        expect(row?.requiredFormsByLocale?.en?.length).toBeGreaterThan(0);
+        expect(row?.requiredFormsByLocale?.de?.length).toBeGreaterThan(0);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("GET /api/ui-strings omits empty plural form strings; completeness matches translate-ui", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-sanitize-get-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          source: "{{count}} x",
+          translated: {
+            es: {
+              one: "ún",
+              many: "",
+              other: "otr",
+            },
+            ar: {
+              zero: "",
+              one: "ق1",
+              two: "ق2",
+              few: "قف",
+              many: "",
+              other: "قو",
+            },
+          },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["es", "ar"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/ui-strings`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as {
+          entries: Array<{
+            id: string;
+            translated?: Record<string, Record<string, string>>;
+            completenessByLocale?: Record<string, boolean>;
+          }>;
+        };
+        const row = data.entries.find((e) => e.id === "pg");
+        expect(row?.translated?.es).not.toHaveProperty("many");
+        expect(row?.translated?.es).toEqual({ one: "ún", other: "otr" });
+        expect(row?.translated?.ar?.zero).toBe(undefined);
+        expect(row?.translated?.ar?.many).toBe(undefined);
+        expect(row?.translated?.ar?.one).toBe("ق1");
+        expect(row?.completenessByLocale?.es).toBe(true);
+        expect(row?.completenessByLocale?.ar).toBe(true);
+
+        const disk = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+          pg: { translated: Record<string, Record<string, string>> };
+        };
+        expect(disk.pg.translated.es.many).toBe("");
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings deep-merges plural forms and preserves plural and zeroDigit", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-patch-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          zeroDigit: false,
+          source: "{{count}} items",
+          translated: {
+            de: { one: "{{count}} thing", other: "{{count}} things" },
+          },
+          models: { de: "model-x" },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { de: { other: "ANDERE" } } }),
+        });
+        expect(patch.ok).toBe(true);
+        const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+          pg: {
+            plural: boolean;
+            zeroDigit: boolean;
+            translated: { de: { one: string; other: string } };
+            models?: Record<string, string>;
+          };
+        };
+        expect(doc.pg.plural).toBe(true);
+        expect(doc.pg.zeroDigit).toBe(false);
+        expect(doc.pg.translated.de.one).toBe("{{count}} thing");
+        expect(doc.pg.translated.de.other).toBe("ANDERE");
+        expect(doc.pg.models?.de).toBe(USER_EDITED_MODEL);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings returns 400 when plural row receives string locale value", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-bad-patch-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          source: "x",
+          translated: { de: { one: "a", other: "b" } },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { de: "nope" } }),
+        });
+        expect(patch.status).toBe(400);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings returns 400 when plain row receives object locale value", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plain-obj-patch-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        plain: { source: "x", translated: { de: "y" } },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/ui-strings/plain`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { de: { one: "not allowed" } } }),
+        });
+        expect(patch.status).toBe(400);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings returns 400 when plural patch includes unknown CLDR key", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-unknown-key-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          source: "{{count}} x",
+          translated: { de: { one: "eins", other: "mehr" } },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { de: { nonsenseKey: "x" } } }),
+        });
+        expect(patch.status).toBe(400);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings returns 400 when body includes zeroDigit", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-zerodigit-patch-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          zeroDigit: true,
+          source: "{{count}} x",
+          translated: { de: { one: "eins", other: "mehr" } },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ zeroDigit: false, translated: { de: { other: "z" } } }),
+        });
+        expect(patch.status).toBe(400);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("PATCH /api/ui-strings removes plural form keys with empty string and updates completeness", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-empty-form-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          source: "{{count}} x",
+          translated: { de: { one: "eins", other: "mehr" } },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const before = await fetch(`${base}/api/ui-strings`);
+        const beforeJson = (await before.json()) as {
+          entries: Array<{ id: string; completenessByLocale?: Record<string, boolean> }>;
+        };
+        const row0 = beforeJson.entries.find((e) => e.id === "pg");
+        expect(row0?.completenessByLocale?.de).toBe(true);
+
+        const patch = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { de: { one: "" } } }),
+        });
+        expect(patch.ok).toBe(true);
+
+        const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+          pg: { translated: { de: Record<string, string> } };
+        };
+        expect(doc.pg.translated.de.one).toBe(undefined);
+        expect(doc.pg.translated.de.other).toBe("mehr");
+
+        const after = await fetch(`${base}/api/ui-strings`);
+        const afterJson = (await after.json()) as {
+          entries: Array<{ id: string; completenessByLocale?: Record<string, boolean> }>;
+        };
+        const row1 = afterJson.entries.find((e) => e.id === "pg");
+        expect(row1?.completenessByLocale?.de).toBe(false);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("DELETE /api/ui-strings removes one locale on a plural row and preserves others", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-plural-delete-locale-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        pg: {
+          plural: true,
+          source: "{{count}} x",
+          translated: {
+            en: { one: "one", other: "others" },
+            de: { one: "eins", other: "mehr" },
+            fr: { one: "un", other: "plusieurs" },
+          },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de", "fr"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const del = await fetch(`${base}/api/ui-strings/pg`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locale: "fr" }),
+        });
+        expect(del.ok).toBe(true);
+        const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+          pg: { translated: Record<string, Record<string, string>> };
+        };
+        expect(doc.pg.translated.fr).toBe(undefined);
+        expect(doc.pg.translated.de?.other).toBe("mehr");
+        expect(doc.pg.translated.en?.one).toBe("one");
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("GET /api/stats counts plural completeness separately from plain strings", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-stats-split-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        plain: { source: "a", translated: { de: "b" } },
+        pl: {
+          plural: true,
+          source: "{{count}} x",
+          translated: {
+            de: { one: "eins", other: "mehr" },
+          },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/stats`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as {
+          uiStrings: {
+            plainTotal: number;
+            pluralTotal: number;
+            plainByLocale: Array<{ locale: string; translated: number }>;
+            pluralByLocale: Array<{ locale: string; complete: number; incomplete: number }>;
+          };
+        };
+        expect(data.uiStrings.plainTotal).toBe(1);
+        expect(data.uiStrings.pluralTotal).toBe(1);
+        const deP = data.uiStrings.plainByLocale.find((x) => x.locale === "de");
+        expect(deP?.translated).toBe(1);
+        const dePl = data.uiStrings.pluralByLocale.find((x) => x.locale === "de");
+        expect(dePl?.complete).toBe(1);
+        expect(dePl?.incomplete).toBe(0);
       });
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
@@ -469,9 +931,17 @@ describe("createTranslationEditorApp", () => {
       });
       await withHttpServer(app, async (base) => {
         const res = await fetch(`${base}/api/ui-strings/meta`);
-        const data = (await res.json()) as { available: boolean; path: string | null };
+        const data = (await res.json()) as {
+          available: boolean;
+          path: string | null;
+          pluralLocales?: string[];
+          requiredPluralFormsByLocale?: Record<string, string[]>;
+        };
         expect(data.available).toBe(true);
         expect(data.path).toBe(sj);
+        expect(data.pluralLocales).toEqual(["en", "de"]);
+        expect(data.requiredPluralFormsByLocale?.en?.length).toBeGreaterThan(0);
+        expect(data.requiredPluralFormsByLocale?.de?.length).toBeGreaterThan(0);
       });
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });

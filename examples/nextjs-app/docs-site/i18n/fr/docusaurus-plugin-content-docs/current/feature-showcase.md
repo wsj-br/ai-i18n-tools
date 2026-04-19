@@ -4,9 +4,9 @@ title: Exemple de fonctionnalités de traduction
 description: >-
   Un document de référence démontrant chaque élément Markdown que ai-i18n-tools
   sait traduire.
-translation_last_updated: '2026-04-13T19:05:55.926Z'
-source_file_mtime: '2026-04-13T12:49:18.347Z'
-source_file_hash: 60c92aa8b547462c58ec49a6b0d6830f7245d618f2052c5ab961e2a4e80a0234
+translation_last_updated: '2026-04-18T22:42:42.298Z'
+source_file_mtime: '2026-04-18T18:55:00.042Z'
+source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
 translation_language: fr
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -63,10 +63,11 @@ Les tableaux sont une source fréquente d'erreurs de traduction. Chaque cellule 
 |---|---|---|
 | Traduction Markdown | ✅ Stable | Segments mis en cache dans SQLite |
 | Extraction des chaînes d'interface | ✅ Stable | Lit les appels `t("…")` |
-| Traduction des libellés JSON | ✅ Stable | JSON de la barre latérale/navbar Docusaurus |
+| Chaînes d'interface pluriels cardinaux | ✅ Stable | `t("…", { plurals: true, count })` ; catalogue + suffixes JSON plats |
+| Traduction des libellés JSON | ✅ Stable | JSON de barre latérale/navbar Docusaurus |
 | Traduction du texte SVG | ✅ Stable | Préserve la structure SVG |
 | Application du glossaire | ✅ Stable | Glossaire CSV par projet |
-| Concurrency par lot | ✅ Configurable | Clé `batchConcurrency` |
+| Concurrency par lots | ✅ Configurable | clé `batchConcurrency` |
 
 ### Variantes d'alignement
 
@@ -96,14 +97,30 @@ Les tableaux sont une source fréquente d'erreurs de traduction. Chaque cellule 
 
 ### Imbriquées
 
-- **Pipeline Documents**
+- **Pipeline des documents**
   - Source : tout fichier `.md` ou `.mdx`
-  - Sortie : arborescence `i18n/` de Docusaurus ou copies traduites plates
-  - Cache : SQLite, indexé par chemin de fichier + hachage du segment
-- **Pipeline chaînes d'interface**
-  - Source : fichiers JS/TS avec appels `t("…")`
-  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …)
+  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites plates
+  - Cache : SQLite, indexé par chemin de fichier + hachage de segment
+- **Pipeline des chaînes d'interface**
+  - Source : fichiers JS/TS avec appels `t("…")` (y compris pluriels cardinaux via `{ plurals: true, count }`)
+  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …) avec clés suffixées pour les catégories plurielles le cas échéant
   - Cache : le catalogue maître `strings.json` lui-même
+
+---
+
+## Chaînes d'interface pluriels cardinaux (application compagnon Next.js)
+
+Les documents Markdown sur ce site montrent la traduction de **document**. Le comportement **pluriel cardinal** pour le texte d'interface est le plus facile à observer dans l'**exemple Next.js intégré** situé à côté de `docs-site/` dans `examples/nextjs-app/`.
+
+La page d'accueil de cette application (`src/app/page.tsx`) inclut une section **exemple de pluriels** et répète un message à plusieurs nombres d'exemple afin que vous puissiez comparer la grammaire entre les langues (par exemple arabe vs anglais). Chaque ligne appelle :
+
+```typescript
+t("This page has {{count}} sections", { plurals: true, count })
+```
+
+Utilisez **`plurals: true`** afin que **`extract`** enregistre un groupe pluriel dans `locales/strings.json` et que **`translate-ui`** remplisse les fichiers plats par langue situés dans `public/locales/`. Au moment de l'exécution, i18next résout la bonne clé suffixée pour le **`count`** actif ; l'exemple Next.js intègre des utilitaires dans **`src/lib/i18n.ts`**.
+
+Pour les captures d'écran, les URL des langues et la structure des fichiers, consultez l'**exemple de pluriels cardinaux** dans le [README de l'exemple Next.js](../../README.md).
 
 ---
 

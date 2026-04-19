@@ -2,14 +2,17 @@ import { matter, stringify as matterStringify } from "gray-matter-es";
 import type {
   LanguageListBlockConfig,
   Segment,
+  SegmentSplittingConfig,
   SegmentTranslationMapValue,
 } from "../core/types.js";
 import { extractLanguageListBlock } from "../processors/doc-postprocess.js";
 import { BaseExtractor } from "./base-extractor.js";
+import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 
 /** Optional extraction behavior for markdown docs (e.g. skip language-list blocks from translation). */
 export type MarkdownExtractOptions = {
   languageListBlock?: LanguageListBlockConfig;
+  segmentSplitting?: SegmentSplittingConfig;
 };
 
 /** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
@@ -44,7 +47,11 @@ export class MarkdownExtractor extends BaseExtractor {
     const bodyStartLine =
       1 + (content.substring(0, content.indexOf(body)).match(/\n/g) || []).length;
 
-    const bodySegments = this.splitBody(body, bodyStartLine, options?.languageListBlock);
+    let bodySegments = this.splitBody(body, bodyStartLine, options?.languageListBlock);
+    const splitOpts = options?.segmentSplitting;
+    if (splitOpts?.enabled) {
+      bodySegments = expandSegmentsWithSplitting(bodySegments, splitOpts);
+    }
     for (const seg of bodySegments) {
       segments.push({
         id: `seg-${segmentIndex++}`,
@@ -65,12 +72,21 @@ export class MarkdownExtractor extends BaseExtractor {
       if (!segment) {
         continue;
       }
+      if (segment.tightJoinPrevious) {
+        continue;
+      }
       if (segment.type === "frontmatter") {
         parts.push(segment.content);
         parts.push("");
-      } else {
-        parts.push(segment.content);
+        continue;
       }
+      let chunk = segment.content;
+      let j = i + 1;
+      while (j < merged.length && merged[j]?.tightJoinPrevious) {
+        chunk += "\n" + merged[j]!.content;
+        j++;
+      }
+      parts.push(chunk);
     }
 
     return parts.join("\n\n").trim() + "\n";

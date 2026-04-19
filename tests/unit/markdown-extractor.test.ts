@@ -1,4 +1,5 @@
 import type { DocSegmentTranslation } from "../../src/core/types.js";
+import { segmentSplittingSchema } from "../../src/core/types.js";
 import { MarkdownExtractor } from "../../src/extractors/markdown-extractor.js";
 
 describe("MarkdownExtractor", () => {
@@ -53,6 +54,24 @@ Paragraph one.
     expect(out).toContain("Title!");
     expect(out).toContain("Body.!");
     expect(out).not.toContain("test/model");
+  });
+
+  it("optionally splits pipe tables and reassembles with tight newlines", () => {
+    const md = "| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |";
+    const segs = ex.extract(md, "t.md", {
+      segmentSplitting: segmentSplittingSchema.parse({ enabled: true }),
+    });
+    expect(segs.length).toBe(2);
+    const map = new Map<string, string>();
+    for (const s of segs) {
+      if (s.translatable) {
+        map.set(s.hash, s.content);
+      }
+    }
+    const out = ex.reassemble(segs, map);
+    expect(out).toContain("| 1 | 2 |");
+    expect(out).toContain("| 3 | 4 |");
+    expect(out.split("\n").filter((l) => l.includes("| 3 | 4 |"))).toHaveLength(1);
   });
 
   it("skips configured language-list block like a code fence (not translated)", () => {

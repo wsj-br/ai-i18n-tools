@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "packageManager": "pnpm@10.33.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
@@ -37,6 +37,8 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:md": "markdownlint \"*.md\" \"dev/*.md\" \"docs/*.md\" \"examples/console-app/*.md\" \"examples/nextjs-app/*.md\" \"examples/nextjs-app/docs-site/docs/*.md\"",
+    "lint:md:fix": "markdownlint \"*.md\" \"dev/*.md\" \"docs/*.md\" \"examples/console-app/*.md\" \"examples/nextjs-app/*.md\" \"examples/nextjs-app/docs-site/docs/*.md\" -f",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "clean": "rm -rf dist/",
@@ -52,15 +54,15 @@
     "i18n",
     "internationalization",
     "translation",
+    "ai",
+    "auto-translation",
     "react",
     "docusaurus",
     "openrouter",
     "localization",
     "multilingual",
-    "cache",
     "cli",
-    "ai",
-    "ai-agent"
+    "markdown"
   ],
   "author": "Waldemar Scudeller Jr.",
   "license": "MIT",
@@ -73,6 +75,8 @@
   },
   "homepage": "https://github.com/wsj-br/ai-i18n-tools#readme",
   "dependencies": {
+    "@babel/parser": "^7.29.2",
+    "@babel/types": "^7.29.0",
     "chalk": "^5.6.2",
     "commander": "^14.0.3",
     "csv-parse": "^6.2.1",
@@ -96,6 +100,7 @@
     "eslint": "^10.2.0",
     "github-slugger": "^2.0.0",
     "globals": "^17.5.0",
+    "markdownlint-cli": "^0.48.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.2",
@@ -121,6 +126,8 @@
     "test-exclude": "^8.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["sharp"]
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   }
 }

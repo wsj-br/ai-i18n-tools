@@ -10,6 +10,18 @@
 
 > **Tip:** [Corepack](https://nodejs.org/api/corepack.html) ships with Node.js and is the recommended way to manage pnpm.
 
+### Optional: locale screenshots (`examples/nextjs-app`)
+
+[`examples/nextjs-app/scripts/screenshot-locales.sh`](../examples/nextjs-app/scripts/screenshot-locales.sh) captures headless PNGs (`images/screenshots/<locale>/screenshot.png`) for **`sourceLocale`** plus each **`targetLocales`** entry in `examples/nextjs-app/ai-i18n-tools.config.json` (source first; skips any target that duplicates the source). Extra prerequisites:
+
+| Dependency | Role |
+|------------|------|
+| **`jq`** | Builds the locale list from the JSON config (`sourceLocale`, then **`targetLocales`** minus duplicates). |
+| **`chromium-headless-shell`** | Runs **`--screenshot`** (1300×900); set **`CHROME_BIN`** if your binary lives elsewhere. |
+| **Next.js dev server** | Must be reachable while the script runs — from **`examples/nextjs-app`**, run **`pnpm dev`** (default **<http://localhost:3030>**). Override with **`BASE_URL`** if the app listens elsewhere. |
+
+Optional tuning: **`VIRTUAL_TIME_MS`** (default **8000**) delays capture so locale JSON and fonts can load before the screenshot.
+
 ## Setting Up the Workspace
 
 ```bash
@@ -39,7 +51,7 @@ After building, the CLI is available locally via `pnpm exec ai-i18n-tools` or th
 
 ## Project Structure
 
-```
+```text
 src/            TypeScript source (compiles to dist/)
 tests/          Vitest test files
 docs/           English documentation (published to npm)
@@ -149,6 +161,7 @@ Verify that the output includes `dist/`, `docs/`, `translated-docs/`, `README.md
 5. Click **Publish release**.
 
 This triggers the CI workflow which:
+
 1. Runs lint, format check, build, and tests on Node.js 22.x and 24.x.
 2. If all checks pass, publishes the package to npm.
 

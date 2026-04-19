@@ -8,6 +8,7 @@ import type {
   I18nDocTranslateConfig,
   Segment,
 } from "../core/types.js";
+import { segmentSplittingSchema } from "../core/types.js";
 import { segmentTranslationText } from "../core/types.js";
 
 export type { DocSegmentTranslation };
@@ -59,6 +60,11 @@ import type {
   DocumentPromptContentType,
 } from "../core/prompt-builder.js";
 import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../utils/concurrency.js";
+import {
+  describeEmphasisPlaceholdersPolicy,
+  resolveMarkdownEmphasisPlaceholders,
+  usesAutomaticEmphasisPlaceholdersForLocale,
+} from "../core/markdown-emphasis-defaults.js";
 
 /** Batch segment prompt/response shape for `translate-docs --prompt-format`. */
 export type TranslatePromptFormat = "xml" | "json-array" | "json-object";
@@ -113,10 +119,14 @@ export interface TranslateRunOptions {
    */
   promptFormat?: TranslatePromptFormat;
   /**
-   * When true, markdown runs emphasis placeholder protection (`emphasis-placeholders.ts`) inside `PlaceholderHandler`
-   * (`translate-docs` / `sync --emphasis-placeholders`). Default: off — omit the flag to leave emphasis delimiters unmasked for the model.
+   * Set when `translate-docs` / `sync` passes `--emphasis-placeholders` (mask emphasis for all locales unless
+   * `documentations[].emphasisPlaceholders` overrides).
    */
-  emphasisPlaceholders?: boolean;
+  emphasisPlaceholdersCli?: boolean;
+  /**
+   * Set when `translate-docs` / `sync` passes `--no-emphasis-placeholders`.
+   */
+  noEmphasisPlaceholdersCli?: boolean;
   /**
    * When true, write per-failure debug logs (`*-FAILED-TRANSLATION_*.log`) under cacheDir.
    * Default: off.
@@ -813,9 +823,16 @@ async function translateSegmentsBatched(
         );
         const initialTryOrdinal =
           initialModelIndex >= 0 ? ` (${initialModelIndex + 1}/${models.length})` : "";
+        const failedSegDetail = failedSegments
+          .map((f) =>
+            docLog && f.docIdx0 !== undefined
+              ? `doc #${f.docIdx0 + 1}/${docLog.totalSegments} seg id=${f.index} (hash ${f.segment.hash})`
+              : `batch seg id=${f.index} (hash ${f.segment.hash})`
+          )
+          .join("; ");
         console.warn(
           chalk.magenta(
-            `  🔄 ${baseLoc}: retrying ${failedCount} failed segment(s) individually. Trying ${res.model}${initialTryOrdinal}…`
+            `  🔄 ${baseLoc}: retrying ${failedCount} failed segment(s) individually — ${failedSegDetail}. Trying ${res.model}${initialTryOrdinal}…`
           )
         );
         for (const failed of failedSegments) {
@@ -1149,11 +1166,15 @@ export async function translateMarkdownFile(
   const fileStartTime = Date.now();
   const md = new MarkdownExtractor();
   const langListCfg = config.documentation.markdownOutput.postProcessing?.languageListBlock;
-  const segments = md.extract(
-    content,
-    relPath,
-    langListCfg ? { languageListBlock: langListCfg } : undefined
-  );
+  const splitCfg = segmentSplittingSchema.parse(config.documentation.segmentSplitting ?? {});
+  const mdExtractOpts =
+    langListCfg || splitCfg.enabled
+      ? {
+          ...(langListCfg ? { languageListBlock: langListCfg } : {}),
+          ...(splitCfg.enabled ? { segmentSplitting: splitCfg } : {}),
+        }
+      : undefined;
+  const segments = md.extract(content, relPath, mdExtractOpts);
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
@@ -1165,6 +1186,12 @@ export async function translateMarkdownFile(
   const originalContentByHash = new Map<string, string>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
+  const emphasisOn = resolveMarkdownEmphasisPlaceholders(
+    locale,
+    config.documentation,
+    config,
+    opts
+  );
 
   let segmentsCached = 0;
 
@@ -1204,7 +1231,7 @@ export async function translateMarkdownFile(
       glossary,
       locale,
       true,
-      Boolean(opts.emphasisPlaceholders)
+      emphasisOn
     );
     placeholderById.set(s.id, st);
     toBatch.push({ ...s, content: protectedText });
@@ -1820,6 +1847,61 @@ export function rewriteSourceMarkdownLanguageListBlocks(
   return rewritten;
 }
 
+function printTranslateDocsRunSummary(
+  opts: TranslateRunOptions,
+  sum: TranslateTotals,
+  wallElapsedMs: number,
+  models: readonly string[],
+  outcome: "success" | "failure"
+): void {
+  if (outcome === "success") {
+    console.log(chalk.bold.green("\n✅ Translation complete!\n"));
+  } else {
+    console.log(
+      chalk.bold.yellow(
+        "\n⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error).\n"
+      )
+    );
+    printModelsTryInOrder(models);
+    console.log(
+      chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`)
+    );
+    console.log("");
+  }
+
+  console.log(chalk.bold("📊 Summary:"));
+  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
+  console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
+  console.log(`   Total files skipped:   ${sum.filesSkipped}`);
+  console.log(
+    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
+      sum.segmentsCached,
+      sum.segmentsTranslated
+    )}`
+  );
+  console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
+  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
+  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
+  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
+  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
+    console.log(`   Files written:         0 (dry-run)`);
+  } else if ((sum.filesWritten ?? 0) > 0) {
+    console.log(`   Files written:         ${sum.filesWritten}`);
+  }
+  const cost = sum.costUsd ?? 0;
+  const segNew = sum.segmentsTranslated ?? 0;
+  if (segNew > 0) {
+    if (cost > 0) {
+      console.log(`   Total cost:            $${cost.toFixed(6)}`);
+    } else {
+      console.log(`   Total cost:            $0.0000 (cost data not available from API)`);
+    }
+  } else {
+    console.log(`   Total cost:            $0.0000 (all segments from cache)`);
+  }
+  console.log("");
+}
+
 /** Run translate for all enabled kinds and locales. */
 export async function runTranslate(
   config: I18nDocTranslateConfig,
@@ -1909,7 +1991,7 @@ export async function runTranslate(
   );
   console.log(
     chalk.cyan(`Markdown emphasis placeholders: `) +
-      chalk.magenta(opts.emphasisPlaceholders ? "on" : "off")
+      chalk.magenta(describeEmphasisPlaceholdersPolicy(config.documentation, opts))
   );
   console.log("");
 
@@ -1938,83 +2020,95 @@ export async function runTranslate(
       individualSegmentTranslations: 0,
     };
     const localeStart = Date.now();
+    let error: unknown;
 
-    if (shouldRunMarkdown(opts, config)) {
-      for (const rel of files.markdown) {
-        if (!matchesPathFilter(rel, opts.pathFilter)) {
-          continue;
+    try {
+      if (shouldRunMarkdown(opts, config)) {
+        if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.documentation, config, runOpts)) {
+          console.log(
+            chalk.gray(
+              `   ${locale}: Markdown emphasis placeholders is "on". Override with documentations[].emphasisPlaceholders or CLI flags)`
+            )
+          );
         }
-        const abs = path.join(opts.cwd, rel);
-        const { skipped, totals } = await translateMarkdownFile(
-          abs,
-          rel,
-          locale,
-          config,
-          cache,
-          client,
-          glossary,
-          runOpts,
-          markdownHitKeysLocal,
-          translatedMarkdownRelPaths
-        );
-        if (skipped) {
-          partial.filesSkipped += totals.filesSkipped;
-          partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-        } else {
-          partial.filesWritten += totals.filesWritten;
-          partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-          partial.inputTokens += totals.inputTokens;
-          partial.outputTokens += totals.outputTokens;
-          partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-          partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-          partial.segmentsTranslated =
-            (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-          partial.segmentValidationFailures =
-            (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-          partial.individualSegmentTranslations =
-            (partial.individualSegmentTranslations ?? 0) +
-            (totals.individualSegmentTranslations ?? 0);
+        for (const rel of files.markdown) {
+          if (!matchesPathFilter(rel, opts.pathFilter)) {
+            continue;
+          }
+          const abs = path.join(opts.cwd, rel);
+          const { skipped, totals } = await translateMarkdownFile(
+            abs,
+            rel,
+            locale,
+            config,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            markdownHitKeysLocal,
+            translatedMarkdownRelPaths
+          );
+          if (skipped) {
+            partial.filesSkipped += totals.filesSkipped;
+            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+          } else {
+            partial.filesWritten += totals.filesWritten;
+            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            partial.inputTokens += totals.inputTokens;
+            partial.outputTokens += totals.outputTokens;
+            partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+            partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+            partial.segmentsTranslated =
+              (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+            partial.segmentValidationFailures =
+              (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+            partial.individualSegmentTranslations =
+              (partial.individualSegmentTranslations ?? 0) +
+              (totals.individualSegmentTranslations ?? 0);
+          }
         }
       }
-    }
 
-    if (shouldRunJson(opts, config)) {
-      for (const rel of files.json) {
-        const jsonRelFromProjectRoot = jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, rel);
-        if (!matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter)) {
-          continue;
-        }
-        const abs = path.join(jsonAbsRoot, rel);
-        const { skipped, totals } = await translateJsonFile(
-          abs,
-          rel,
-          locale,
-          config,
-          cache,
-          client,
-          glossary,
-          runOpts,
-          hitKeys
-        );
-        if (skipped) {
-          partial.filesSkipped += totals.filesSkipped;
-          partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-        } else {
-          partial.filesWritten += totals.filesWritten;
-          partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-          partial.inputTokens += totals.inputTokens;
-          partial.outputTokens += totals.outputTokens;
-          partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-          partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-          partial.segmentsTranslated =
-            (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-          partial.segmentValidationFailures =
-            (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-          partial.individualSegmentTranslations =
-            (partial.individualSegmentTranslations ?? 0) +
-            (totals.individualSegmentTranslations ?? 0);
+      if (shouldRunJson(opts, config)) {
+        for (const rel of files.json) {
+          const jsonRelFromProjectRoot = jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, rel);
+          if (!matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter)) {
+            continue;
+          }
+          const abs = path.join(jsonAbsRoot, rel);
+          const { skipped, totals } = await translateJsonFile(
+            abs,
+            rel,
+            locale,
+            config,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys
+          );
+          if (skipped) {
+            partial.filesSkipped += totals.filesSkipped;
+            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+          } else {
+            partial.filesWritten += totals.filesWritten;
+            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            partial.inputTokens += totals.inputTokens;
+            partial.outputTokens += totals.outputTokens;
+            partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+            partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+            partial.segmentsTranslated =
+              (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+            partial.segmentValidationFailures =
+              (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+            partial.individualSegmentTranslations =
+              (partial.individualSegmentTranslations ?? 0) +
+              (totals.individualSegmentTranslations ?? 0);
+          }
         }
       }
+    } catch (e) {
+      error = e;
     }
 
     const localeElapsed = Date.now() - localeStart;
@@ -2022,96 +2116,81 @@ export async function runTranslate(
       console.log(chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`));
     }
 
-    return { locale, partial, markdownHitKeysLocal, localeElapsed };
+    return { locale, partial, markdownHitKeysLocal, localeElapsed, error };
   };
 
-  const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
-    processLocale(locale)
-  );
+  try {
+    const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
+      processLocale(locale)
+    );
 
-  for (const r of localeResults) {
-    sum.filesWritten += r.partial.filesWritten;
-    sum.filesSkipped += r.partial.filesSkipped;
-    sum.filesProcessed = (sum.filesProcessed ?? 0) + (r.partial.filesProcessed ?? 0);
-    sum.inputTokens += r.partial.inputTokens;
-    sum.outputTokens += r.partial.outputTokens;
-    sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
-    sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
-    sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
-    sum.segmentValidationFailures =
-      (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
-    sum.individualSegmentTranslations =
-      (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
-    localeTimes.push({
-      locale: r.locale,
-      elapsedMs: r.localeElapsed,
-    });
-    for (const k of r.markdownHitKeysLocal) {
-      markdownHitKeys.add(k);
+    const localeFailures = localeResults.filter((r) => r.error !== undefined);
+
+    for (const r of localeResults) {
+      sum.filesWritten += r.partial.filesWritten;
+      sum.filesSkipped += r.partial.filesSkipped;
+      sum.filesProcessed = (sum.filesProcessed ?? 0) + (r.partial.filesProcessed ?? 0);
+      sum.inputTokens += r.partial.inputTokens;
+      sum.outputTokens += r.partial.outputTokens;
+      sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
+      sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
+      sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
+      sum.segmentValidationFailures =
+        (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
+      sum.individualSegmentTranslations =
+        (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
+      localeTimes.push({
+        locale: r.locale,
+        elapsedMs: r.localeElapsed,
+      });
+      for (const k of r.markdownHitKeysLocal) {
+        markdownHitKeys.add(k);
+      }
     }
-  }
 
-  if (cache) {
-    const markdownScopeRel = shouldRunMarkdown(opts, config)
-      ? files.markdown.filter((r) => matchesPathFilter(r, opts.pathFilter))
-      : null;
-    const jsonScopeRel = shouldRunJson(opts, config)
-      ? files.json
-          .filter((r) =>
-            matchesPathFilter(
-              jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, r),
-              opts.pathFilter
-            )
+    const wallElapsedFailure = Date.now() - wallStart;
+    if (localeFailures.length > 0) {
+      if (localeFailures.length > 1) {
+        console.log(
+          chalk.yellow(
+            `\nLocales that failed before completion: ${localeFailures.map((f) => f.locale).join(", ")}\n`
           )
-          .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
-      : null;
-    if (markdownScopeRel && markdownScopeRel.length > 0 && markdownHitKeys.size > 0) {
-      cache.resetLastHitAtForUnhitMarkdownInScope(markdownHitKeys, markdownScopeRel);
+        );
+      }
+      printTranslateDocsRunSummary(opts, sum, wallElapsedFailure, models, "failure");
+      throw localeFailures[0]!.error;
     }
-    if (jsonScopeRel && jsonScopeRel.length > 0 && hitKeys.size > 0) {
-      cache.resetLastHitAtForUnhitJsonInScope(hitKeys, jsonScopeRel);
+
+    if (cache) {
+      const markdownScopeRel = shouldRunMarkdown(opts, config)
+        ? files.markdown.filter((r) => matchesPathFilter(r, opts.pathFilter))
+        : null;
+      const jsonScopeRel = shouldRunJson(opts, config)
+        ? files.json
+            .filter((r) =>
+              matchesPathFilter(
+                jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, r),
+                opts.pathFilter
+              )
+            )
+            .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
+        : null;
+      if (markdownScopeRel && markdownScopeRel.length > 0 && markdownHitKeys.size > 0) {
+        cache.resetLastHitAtForUnhitMarkdownInScope(markdownHitKeys, markdownScopeRel);
+      }
+      if (jsonScopeRel && jsonScopeRel.length > 0 && hitKeys.size > 0) {
+        cache.resetLastHitAtForUnhitJsonInScope(hitKeys, jsonScopeRel);
+      }
     }
+
+    rewriteSourceMarkdownLanguageListBlocks(config, runOpts, files.markdown);
+
+    const wallElapsed = Date.now() - wallStart;
+
+    printTranslateDocsRunSummary(opts, sum, wallElapsed, models, "success");
+
+    return sum;
+  } finally {
+    cache?.close();
   }
-
-  cache?.close();
-
-  rewriteSourceMarkdownLanguageListBlocks(config, runOpts, files.markdown);
-
-  const wallElapsed = Date.now() - wallStart;
-
-  // Summary block (aligned with reference translate-docs)
-  console.log(chalk.bold.green("\n✅ Translation complete!\n"));
-  console.log(chalk.bold("📊 Summary:"));
-  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsed)}`);
-  console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
-  console.log(`   Total files skipped:   ${sum.filesSkipped}`);
-  console.log(
-    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
-      sum.segmentsCached,
-      sum.segmentsTranslated
-    )}`
-  );
-  console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
-  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
-  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
-  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
-  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
-    console.log(`   Files written:         0 (dry-run)`);
-  } else if ((sum.filesWritten ?? 0) > 0) {
-    console.log(`   Files written:         ${sum.filesWritten}`);
-  }
-  const cost = sum.costUsd ?? 0;
-  const segNew = sum.segmentsTranslated ?? 0;
-  if (segNew > 0) {
-    if (cost > 0) {
-      console.log(`   Total cost:            $${cost.toFixed(6)}`);
-    } else {
-      console.log(`   Total cost:            $0.0000 (cost data not available from API)`);
-    }
-  } else {
-    console.log(`   Total cost:            $0.0000 (all segments from cache)`);
-  }
-  console.log("");
-
-  return sum;
 }

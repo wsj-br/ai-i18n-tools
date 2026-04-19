@@ -23,11 +23,24 @@ export interface DocumentPromptStrings {
 export interface UIPromptStrings {
   systemPrompt: string[];
   glossaryPreamble: string;
+  /** Cardinal plural groups: JSON object response (`one`, `other`, …). */
+  pluralFormsSystemPrompt: string[];
+  glossaryPreamblePlural: string;
+}
+
+/** LLM `lint-source`: review source-locale UI copy (spelling, grammar, terminology). */
+export interface LintSourcePromptStrings {
+  systemPrompt: string[];
+  /** Shown with &lt;glossary&gt; for preferred terminology in the locale under review. */
+  glossaryPreamble: string;
+  userMessagePreamble: string;
+  outputContract: string;
 }
 
 export interface PromptStrings {
   document: DocumentPromptStrings;
   ui: UIPromptStrings;
+  lintSource: LintSourcePromptStrings;
 }
 
 // ── Prompt content ────────────────────────────────────────────────────────
@@ -94,5 +107,56 @@ Do not change keys, add keys, remove keys, or return XML tags/markdown/code fenc
 
     glossaryPreamble:
       "Glossary - when a string matches or contains a term below, you must use the suggested target wording exactly (preserve brand names and terminology; do not paraphrase, translate around, or substitute synonyms). Do not output glossary lines; respond with only the JSON array as required above.",
+
+    glossaryPreamblePlural:
+      "Glossary - when a string matches or contains a term below, you must use the suggested target wording exactly (preserve brand names and terminology). Do not output glossary lines; respond with only the JSON object as required above.",
+
+    pluralFormsSystemPrompt: [
+      "You are a professional UI/UX linguist writing cardinal plural variants for software interfaces.",
+      "",
+      "RULES:",
+      "- Output ONLY a single JSON object (not an array). First non-whitespace character must be { and the object must end with }.",
+      "- Keys must be exactly the cardinal plural category names requested (CLDR / Intl.PluralRules: zero, one, two, few, many, other). Include only the keys you are asked for.",
+      "- Include every requested key exactly once — do not omit a category because another category could use the same wording; duplicate string values across keys are allowed and often required.",
+      "- Each value is one UI string for that plural category in the target language described in the user message.",
+      "- Preserve placeholders exactly: {{variable}}, {{count}}, {0}, %s, %d — copy character-for-character.",
+      "- For messages that include a numeric quantity, use {{count}} where a number must appear unless the category is zero and instructions say to use the literal digit 0.",
+      "- No markdown, no code fences, no commentary outside the JSON object.",
+    ],
+  },
+
+  lintSource: {
+    systemPrompt: [
+      "You are a professional copy editor reviewing end-user-visible UI strings for software.",
+      "",
+      "TASK:",
+      "- Review each string for spelling, grammar, punctuation, and clarity.",
+      "- When a <glossary> block is present: flag terminology **only** if the string uses a **wrong or inconsistent variant** of a term (wrong synonym, misspelling, or forbidden alternate branding). **Never** emit a warning whose sole purpose is “consistency” or “preferred spelling” when the string **already** uses the correct product name, package name, or glossary wording as intended — including proper repetition of that name in a sentence.",
+      "- Do not invent terminology problems for project names, npm-style package ids, or hyphenated product names when they already match the glossary or are clearly intentional.",
+      "- Do NOT nitpick stylistic alternatives when both are correct — only genuine errors or important clarity fixes.",
+      "",
+      "PLACEHOLDERS (must stay byte-for-byte identical in suggestedText when you propose a fix):",
+      "- {{variable}}, {{count}}, {{GLS_N}} (N is any non-negative integer)",
+      "- {0}, %s, %d, :value-style tokens when present",
+      "- Leading and trailing whitespace must match the original unless fixing an obvious stray space typo.",
+      "",
+      "OUTPUT:",
+      "- Respond with ONLY a JSON array — first non-whitespace character [, last ].",
+      "- Length must equal the number of input strings N. Index i corresponds to input string i (0 .. N-1).",
+      '- Each array element MUST be one JSON object with keys: "issues" only (no "index" key needed).',
+      '- Each "issues" value is an array of objects with keys: "severity" ("error" | "warning"), "message" (string), optional "suggestedText" (full corrected string — omit when you cannot propose a concrete fix).',
+      '- Empty "issues": [] means the string is acceptable.',
+      "- No markdown fences, no commentary outside the JSON array.",
+    ],
+
+    glossaryPreamble:
+      'Glossary — each line shows acceptable source wording → preferred target wording for this locale. Use it **only** to find **violations** (wrong variant, not the preferred form). If the string already conforms, **issues must be empty** for that reason. Do not output glossary lines verbatim in "message".',
+
+    userMessagePreamble:
+      "Review the following UI strings written for end users. Language / locale label:",
+
+    outputContract: `
+Input format: JSON array of strings (same length and order as you must return).
+`,
   },
 };

@@ -5,7 +5,15 @@ import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { parse } from "csv-parse/sync";
 import { TranslationCache } from "../core/cache.js";
+import type { CldrPluralForm } from "../core/types.js";
+import { isPluralStringsEntry } from "../core/types.js";
+import {
+  isKnownCldrPluralFormKey,
+  pluralFormsRequiredForTranslateUi,
+  pluralTranslatedLocaleHasContent,
+} from "../core/plural-forms.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { computeProjectStats } from "../core/project-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 
 /** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
@@ -29,6 +37,130 @@ function serializeGlossaryCsv(headers: string[], rows: string[][]): string {
     ...rows.map((r) => r.map(csvEscapeCell).join(",")),
   ];
   return `${lines.join("\n")}\n`;
+}
+
+/** Strip empty plural form strings per locale from GET payloads (disk file unchanged). */
+function omitEmptyPluralFormStrings(translated: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [loc, val] of Object.entries(translated)) {
+    if (val !== null && typeof val === "object" && !Array.isArray(val)) {
+      const bucket: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+        if (typeof v === "string" && v.trim() !== "") {
+          bucket[k] = v;
+        }
+      }
+      out[loc] = bucket;
+    } else {
+      out[loc] = val;
+    }
+  }
+  return out;
+}
+
+/** Locales to surface for a plural row: source + targets + any locale key already in `translated`. */
+function pluralLocaleUnion(
+  translated: Record<string, unknown>,
+  sourceLocale: string,
+  targetLocales: string[]
+): string[] {
+  const s = new Set<string>();
+  s.add(sourceLocale);
+  for (const t of targetLocales) {
+    s.add(t);
+  }
+  for (const k of Object.keys(translated)) {
+    s.add(k);
+  }
+  return [...s].sort((a, b) => a.localeCompare(b));
+}
+
+/** Merge PATCH `translated` for plain (string per locale) vs plural (nested forms per locale). */
+function mergeUiStringsTranslated(
+  prevEntry: Record<string, unknown>,
+  prevTranslated: Record<string, unknown>,
+  patch: Record<string, unknown> | undefined
+): Record<string, unknown> {
+  if (patch === undefined) {
+    return prevTranslated;
+  }
+  if (isPluralStringsEntry(prevEntry)) {
+    const next: Record<string, unknown> = { ...prevTranslated };
+    for (const [loc, val] of Object.entries(patch)) {
+      if (typeof val === "string") {
+        throw new Error(
+          `Locale "${loc}": plural entries require an object of CLDR forms (one, other, …), not a plain string.`
+        );
+      }
+      if (val !== null && typeof val === "object" && !Array.isArray(val)) {
+        const prevLocRaw = next[loc];
+        const prevLoc =
+          prevLocRaw !== undefined &&
+          typeof prevLocRaw === "object" &&
+          prevLocRaw !== null &&
+          !Array.isArray(prevLocRaw)
+            ? (prevLocRaw as Record<string, unknown>)
+            : {};
+        const merged: Record<string, string> = {};
+        for (const [k, v] of Object.entries(prevLoc)) {
+          if (typeof v === "string") {
+            merged[k] = v;
+          }
+        }
+        for (const [formKey, formVal] of Object.entries(val as Record<string, unknown>)) {
+          if (!isKnownCldrPluralFormKey(formKey)) {
+            throw new Error(
+              `Unknown plural form key "${formKey}" (expected a CLDR cardinal category).`
+            );
+          }
+          if (typeof formVal !== "string") {
+            throw new Error(`Locale "${loc}" form "${formKey}" must be a string.`);
+          }
+          if (formVal === "") {
+            delete merged[formKey];
+          } else {
+            merged[formKey] = formVal;
+          }
+        }
+        next[loc] = merged;
+      }
+    }
+    return next;
+  }
+  const next: Record<string, unknown> = { ...prevTranslated };
+  for (const [loc, val] of Object.entries(patch)) {
+    if (typeof val !== "string") {
+      throw new Error(`Locale "${loc}": plain entries require a string translation.`);
+    }
+    next[loc] = val;
+  }
+  return next;
+}
+
+/** Persist `strings.json` row preserving `plural` / `zeroDigit` / `locations`. */
+function serializeStringsJsonRow(
+  prev: Record<string, unknown>,
+  next: {
+    source: string;
+    translated: Record<string, unknown>;
+    models: Record<string, string>;
+  }
+): Record<string, unknown> {
+  const row: Record<string, unknown> = {
+    source: next.source,
+    translated: next.translated,
+    ...(Array.isArray(prev.locations) && prev.locations.length > 0
+      ? { locations: prev.locations }
+      : {}),
+    ...(Object.keys(next.models).length > 0 ? { models: next.models } : {}),
+  };
+  if (isPluralStringsEntry(prev)) {
+    row.plural = true;
+    if (typeof prev.zeroDigit === "boolean") {
+      row.zeroDigit = prev.zeroDigit;
+    }
+  }
+  return row;
 }
 
 export interface TranslationEditorOptions {
@@ -230,12 +362,19 @@ export function createTranslationEditorApp(
       : path.join(opts.cwd, opts.stringsJsonPath)
     : null;
 
+  const uiPluralLocaleList = [...new Set([opts.sourceLocale, ...opts.targetLocales])];
+  const requiredPluralFormsByLocale = Object.fromEntries(
+    uiPluralLocaleList.map((loc) => [loc, pluralFormsRequiredForTranslateUi(loc)])
+  );
+
   app.get("/api/ui-strings/meta", (_req, res) => {
     res.json({
       path: stringsPath,
       targetLocales: opts.targetLocales,
       available: Boolean(stringsPath && fs.existsSync(stringsPath)),
       sourceLocale: opts.sourceLocale,
+      pluralLocales: uiPluralLocaleList,
+      requiredPluralFormsByLocale,
     });
   });
 
@@ -247,20 +386,39 @@ export function createTranslationEditorApp(
       }
       const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
         string,
-        {
-          source?: string;
-          translated?: Record<string, string>;
-          models?: Record<string, string>;
-          locations?: Array<{ file: string; line: number }>;
-        }
+        Record<string, unknown>
       >;
-      const entries = Object.entries(doc).map(([id, v]) => ({
-        id,
-        source: v.source ?? "",
-        translated: v.translated ?? {},
-        models: v.models ?? {},
-        locations: v.locations ?? [],
-      }));
+      const entries = Object.entries(doc).map(([id, row]) => {
+        const translatedRaw = (row.translated as Record<string, unknown> | undefined) ?? {};
+        const base = {
+          id,
+          source: String(row.source ?? ""),
+          translated: translatedRaw,
+          models: (row.models as Record<string, string> | undefined) ?? {},
+          locations: (row.locations as Array<{ file: string; line: number }> | undefined) ?? [],
+        };
+        if (isPluralStringsEntry(row)) {
+          const locKeys = pluralLocaleUnion(translatedRaw, opts.sourceLocale, opts.targetLocales);
+          const completenessByLocale: Record<string, boolean> = {};
+          const requiredFormsByLocale: Record<string, CldrPluralForm[]> = {};
+          for (const loc of locKeys) {
+            completenessByLocale[loc] = pluralTranslatedLocaleHasContent(
+              translatedRaw[loc] as Record<string, unknown> | undefined,
+              loc
+            );
+            requiredFormsByLocale[loc] = pluralFormsRequiredForTranslateUi(loc);
+          }
+          return {
+            ...base,
+            translated: omitEmptyPluralFormStrings(translatedRaw),
+            plural: true,
+            ...(typeof row.zeroDigit === "boolean" ? { zeroDigit: row.zeroDigit } : {}),
+            completenessByLocale,
+            requiredFormsByLocale,
+          };
+        }
+        return base;
+      });
       res.json({ entries });
     } catch (err) {
       console.error(err);
@@ -275,38 +433,46 @@ export function createTranslationEditorApp(
         return;
       }
       const id = decodeURIComponent(req.params.id);
-      const body = req.body as { source?: string; translated?: Record<string, string> };
+      const bodyRaw = req.body as Record<string, unknown>;
+      if (Object.prototype.hasOwnProperty.call(bodyRaw, "zeroDigit")) {
+        res.status(400).json({ error: "zeroDigit is read-only" });
+        return;
+      }
+      const body = bodyRaw as { source?: string; translated?: Record<string, unknown> };
       const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
         string,
-        {
-          source: string;
-          translated: Record<string, string>;
-          models?: Record<string, string>;
-          locations?: Array<{ file: string; line: number }>;
-        }
+        Record<string, unknown>
       >;
       const prev = doc[id];
       if (!prev) {
         res.status(404).json({ error: "Unknown id" });
         return;
       }
-      const nextTranslated =
-        body.translated !== undefined
-          ? { ...prev.translated, ...body.translated }
-          : prev.translated;
+      let nextTranslated: Record<string, unknown>;
+      try {
+        nextTranslated = mergeUiStringsTranslated(
+          prev,
+          (prev.translated as Record<string, unknown> | undefined) ?? {},
+          body.translated
+        );
+      } catch (e) {
+        res.status(400).json({ error: String(e) });
+        return;
+      }
       const nextModels: Record<string, string> =
-        prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+        prev.models && typeof prev.models === "object"
+          ? { ...(prev.models as Record<string, string>) }
+          : {};
       if (body.translated !== undefined) {
         for (const loc of Object.keys(body.translated)) {
           nextModels[loc] = USER_EDITED_MODEL;
         }
       }
-      doc[id] = {
-        source: body.source !== undefined ? body.source : prev.source,
+      doc[id] = serializeStringsJsonRow(prev, {
+        source: body.source !== undefined ? String(body.source) : String(prev.source ?? ""),
         translated: nextTranslated,
-        ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
-        ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
-      };
+        models: nextModels,
+      });
       writeAtomicUtf8(stringsPath, `${JSON.stringify(doc, null, 2)}\n`);
       res.json({ ok: true });
     } catch (err) {
@@ -330,19 +496,14 @@ export function createTranslationEditorApp(
       }
       const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
         string,
-        {
-          source: string;
-          translated: Record<string, string>;
-          models?: Record<string, string>;
-          locations?: Array<{ file: string; line: number }>;
-        }
+        Record<string, unknown>
       >;
       const prev = doc[id];
       if (!prev) {
         res.status(404).json({ error: "Unknown id" });
         return;
       }
-      const tr = prev.translated || {};
+      const tr = (prev.translated as Record<string, unknown> | undefined) ?? {};
       if (!Object.prototype.hasOwnProperty.call(tr, locale)) {
         res.status(404).json({ error: "No translation for this locale" });
         return;
@@ -350,14 +511,15 @@ export function createTranslationEditorApp(
       const nextTr = { ...tr };
       delete nextTr[locale];
       const nextModels: Record<string, string> =
-        prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+        prev.models && typeof prev.models === "object"
+          ? { ...(prev.models as Record<string, string>) }
+          : {};
       delete nextModels[locale];
-      doc[id] = {
-        source: prev.source,
+      doc[id] = serializeStringsJsonRow(prev, {
+        source: String(prev.source ?? ""),
         translated: nextTr,
-        ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
-        ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
-      };
+        models: nextModels,
+      });
       writeAtomicUtf8(stringsPath, `${JSON.stringify(doc, null, 2)}\n`);
       res.json({ ok: true });
     } catch (err) {
@@ -380,12 +542,7 @@ export function createTranslationEditorApp(
       }
       const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
         string,
-        {
-          source: string;
-          translated: Record<string, string>;
-          models?: Record<string, string>;
-          locations?: Array<{ file: string; line: number }>;
-        }
+        Record<string, unknown>
       >;
       let deleted = 0;
       const seen = new Set<string>();
@@ -397,19 +554,20 @@ export function createTranslationEditorApp(
         if (seen.has(key)) continue;
         seen.add(key);
         const prev = doc[rowId];
-        const tr = prev?.translated || {};
+        const tr = (prev?.translated as Record<string, unknown> | undefined) ?? {};
         if (!prev || !Object.prototype.hasOwnProperty.call(tr, loc)) continue;
         const nextTr = { ...tr };
         delete nextTr[loc];
         const nextModels: Record<string, string> =
-          prev.models && typeof prev.models === "object" ? { ...prev.models } : {};
+          prev.models && typeof prev.models === "object"
+            ? { ...(prev.models as Record<string, string>) }
+            : {};
         delete nextModels[loc];
-        doc[rowId] = {
-          source: prev.source,
+        doc[rowId] = serializeStringsJsonRow(prev, {
+          source: String(prev.source ?? ""),
           translated: nextTr,
-          ...(prev.locations && prev.locations.length > 0 ? { locations: prev.locations } : {}),
-          ...(Object.keys(nextModels).length > 0 ? { models: nextModels } : {}),
-        };
+          models: nextModels,
+        });
         deleted++;
       }
       writeAtomicUtf8(stringsPath, `${JSON.stringify(doc, null, 2)}\n`);
@@ -582,82 +740,17 @@ export function createTranslationEditorApp(
 
   app.get("/api/stats", (_req, res) => {
     try {
-      const cacheStats = cache.getDetailedStats();
-
-      let uiStrings: {
-        available: boolean;
-        totalEntries: number;
-        byLocale: { locale: string; translated: number; missing: number }[];
-        byModel: { model: string; count: number }[];
-        byModelLocale: { model: string; locale: string; count: number }[];
-      };
-      if (stringsPath && fs.existsSync(stringsPath)) {
-        const doc = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<
-          string,
-          { translated?: Record<string, string>; models?: Record<string, string> }
-        >;
-        const totalEntries = Object.keys(doc).length;
-        const byLocale = opts.targetLocales.map((locale) => {
-          let translated = 0;
-          for (const v of Object.values(doc)) {
-            const tr = v.translated?.[locale];
-            if (tr != null && String(tr).trim() !== "") translated++;
-          }
-          return { locale, translated, missing: totalEntries - translated };
-        });
-
-        const modelCounts = new Map<string, number>();
-        const modelLocaleCounts = new Map<string, number>();
-        for (const v of Object.values(doc)) {
-          if (v.models) {
-            for (const [locale, model] of Object.entries(v.models)) {
-              const m = model?.trim() ? model.trim() : "(unknown)";
-              modelCounts.set(m, (modelCounts.get(m) ?? 0) + 1);
-              const mlKey = `${m}\0${locale}`;
-              modelLocaleCounts.set(mlKey, (modelLocaleCounts.get(mlKey) ?? 0) + 1);
-            }
-          }
-        }
-        const byModel = [...modelCounts.entries()]
-          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-          .map(([model, count]) => ({ model, count }));
-
-        const byModelLocale = [...modelLocaleCounts.entries()].map(([key, count]) => {
-          const [model, locale] = key.split("\0");
-          return { model, locale, count };
-        });
-
-        uiStrings = { available: true, totalEntries, byLocale, byModel, byModelLocale };
-      } else {
-        uiStrings = {
-          available: false,
-          totalEntries: 0,
-          byLocale: [],
-          byModel: [],
-          byModelLocale: [],
-        };
-      }
-
-      let glossary: {
-        available: boolean;
-        totalTerms: number;
-        byLocale: { locale: string; count: number }[];
-      };
-      if (glossaryPath && fs.existsSync(glossaryPath)) {
-        const rows = readGlossaryRows();
-        const byLoc = new Map<string, number>();
-        for (const row of rows) {
-          const loc = row[1]?.trim() ? row[1].trim() : "(unknown)";
-          byLoc.set(loc, (byLoc.get(loc) ?? 0) + 1);
-        }
-        const byLocale = [...byLoc.entries()]
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([locale, count]) => ({ locale, count }));
-        glossary = { available: true, totalTerms: rows.length, byLocale };
-      } else {
-        glossary = { available: false, totalTerms: 0, byLocale: [] };
-      }
-
+      const {
+        cache: cacheStats,
+        uiStrings,
+        glossary,
+      } = computeProjectStats({
+        cache,
+        stringsPath,
+        glossaryPath,
+        sourceLocale: opts.sourceLocale,
+        targetLocales: opts.targetLocales,
+      });
       res.json({ cache: cacheStats, uiStrings, glossary });
     } catch (err) {
       console.error(err);

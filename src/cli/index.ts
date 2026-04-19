@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Command, InvalidArgumentError } from "commander";
+import { Command, InvalidArgumentError, type Help } from "commander";
 
 // node:sqlite emits an ExperimentalWarning on every startup even on Node 24+.
 // The module is unflagged but not yet formally stable (nodejs/node#57445).
@@ -51,6 +51,7 @@ import {
 } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
+import { runLintSource } from "./lint-source.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
 import {
   logGenerateUiLanguagesWarnings,
@@ -64,8 +65,10 @@ import {
   createTranslationEditorApp,
   resolveEditCacheStaticDir,
 } from "../server/translation-editor.js";
-import type { I18nConfig } from "../core/types.js";
+import { pluralTranslatedLocaleHasContent } from "../core/plural-forms.js";
+import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
 import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
+import { computeProjectStats } from "../core/project-stats.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -100,6 +103,25 @@ try {
 function formatVersionOutput(): string {
   const build = BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
   return `ai-i18n-tools ${version}\nBuild: ${build}`;
+}
+
+/** Plain entries store `translated[locale]` as a string; plural entries store per-CLDR-form maps. */
+function uiStringsEntryTranslatedForLocale(entry: unknown, locale: string): boolean {
+  if (entry === null || typeof entry !== "object") {
+    return false;
+  }
+  const translated = (entry as { translated?: Record<string, unknown> }).translated;
+  const value = translated?.[locale];
+  if (value === undefined) {
+    return false;
+  }
+  if (isPluralStringsEntry(entry as never)) {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return false;
+    }
+    return pluralTranslatedLocaleHasContent(value as Record<string, unknown>, locale);
+  }
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function filterIgnored(files: string[], cwd: string): string[] {
@@ -146,6 +168,82 @@ function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string
   return { configFlag: o.config, cwd: process.cwd() };
 }
 
+/** Commander default order puts global options after command options; list globals first. */
+function formatCliHelp(cmd: Command, helper: Help): string {
+  const termWidth = helper.padWidth(cmd, helper);
+  const helpWidth = helper.helpWidth ?? 80;
+
+  const formatLine = (term: string, description: string): string =>
+    helper.formatItem(term, termWidth, description, helper);
+
+  let output: string[] = [
+    `${helper.styleTitle("Usage:")} ${helper.styleUsage(helper.commandUsage(cmd))}`,
+    "",
+  ];
+
+  const commandDescription = helper.commandDescription(cmd);
+  if (commandDescription.length > 0) {
+    output = output.concat([
+      helper.boxWrap(helper.styleCommandDescription(commandDescription), helpWidth),
+      "",
+    ]);
+  }
+
+  const argumentList = helper
+    .visibleArguments(cmd)
+    .map((argument) =>
+      formatLine(
+        helper.styleArgumentTerm(helper.argumentTerm(argument)),
+        helper.styleArgumentDescription(helper.argumentDescription(argument))
+      )
+    );
+  output = output.concat(helper.formatItemList("Arguments:", argumentList, helper));
+
+  if (helper.showGlobalOptions) {
+    const globalOptionList = helper
+      .visibleGlobalOptions(cmd)
+      .map((option) =>
+        formatLine(
+          helper.styleOptionTerm(helper.optionTerm(option)),
+          helper.styleOptionDescription(helper.optionDescription(option))
+        )
+      );
+    output = output.concat(helper.formatItemList("Global Options:", globalOptionList, helper));
+  }
+
+  const optionGroups = helper.groupItems(
+    [...cmd.options],
+    helper.visibleOptions(cmd),
+    (option) => option.helpGroupHeading ?? "Options:"
+  );
+  optionGroups.forEach((options, group) => {
+    const optionList = options.map((option) =>
+      formatLine(
+        helper.styleOptionTerm(helper.optionTerm(option)),
+        helper.styleOptionDescription(helper.optionDescription(option))
+      )
+    );
+    output = output.concat(helper.formatItemList(group, optionList, helper));
+  });
+
+  const commandGroups = helper.groupItems(
+    [...cmd.commands],
+    helper.visibleCommands(cmd),
+    (sub) => sub.helpGroup() || "Commands:"
+  );
+  commandGroups.forEach((commands, group) => {
+    const commandList = commands.map((sub) =>
+      formatLine(
+        helper.styleSubcommandTerm(helper.subcommandTerm(sub)),
+        helper.styleSubcommandDescription(helper.subcommandDescription(sub))
+      )
+    );
+    output = output.concat(helper.formatItemList(group, commandList, helper));
+  });
+
+  return output.join("\n");
+}
+
 const program = new Command();
 
 program
@@ -160,6 +258,11 @@ program
     "-w, --write-logs [path]",
     "Tee console output to a .log file (default path: under cacheDir)"
   );
+
+program.configureHelp({
+  showGlobalOptions: true,
+  formatHelp: formatCliHelp,
+});
 
 program
   .command("version")
@@ -267,6 +370,7 @@ function buildTranslateOpts(
     batchConcurrency?: string;
     promptFormat?: string;
     emphasisPlaceholders?: boolean;
+    noEmphasisPlaceholders?: boolean;
     debugFailed?: boolean;
   };
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
@@ -292,7 +396,8 @@ function buildTranslateOpts(
         ? parsePositiveInt("Batch concurrency (-b)", o.batchConcurrency)
         : undefined,
     promptFormat: parseTranslatePromptFormat(o.promptFormat),
-    emphasisPlaceholders: Boolean(o.emphasisPlaceholders),
+    emphasisPlaceholdersCli: Boolean(o.emphasisPlaceholders),
+    noEmphasisPlaceholdersCli: Boolean(o.noEmphasisPlaceholders),
     debugFailed: Boolean(o.debugFailed),
   };
   return { locales, uiLocales, translateOpts };
@@ -336,7 +441,6 @@ function buildCleanupSyncTranslateOpts(
     concurrency: undefined,
     batchConcurrency: undefined,
     promptFormat: "json-array",
-    emphasisPlaceholders: false,
   };
   return { uiLocales, translateOpts };
 }
@@ -473,7 +577,12 @@ program
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation",
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (configuration has precedence over CLI flags)",	
+    false
+  )
+  .option(
+    "--no-emphasis-placeholders",
+    "Do not mask markdown emphasis (overrides CJK/RTL default, configuration has precedence over CLI flags)",
     false
   )
   .option(
@@ -738,6 +847,50 @@ program
   });
 
 program
+  .command("lint-source")
+  .description(
+    "Run extract (refresh strings.json), then lint source-locale UI strings via OpenRouter; writes results log under cacheDir"
+  )
+  .option("-l, --locale <code>", "BCP-47 locale to lint (default: config sourceLocale)")
+  .option("--chunk <n>", "Strings per API batch (default: 50)", "50")
+  .option("-j, --concurrency <n>", "Max parallel batches (default: config.concurrency)")
+  .option("--dry-run", "Print batch plan only; no API calls", false)
+  .option("--json", "Write full JSON report to stdout (human output uses stderr)", false)
+  .action(async (_a, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean };
+    const o = cmd.opts() as {
+      locale?: string;
+      chunk?: string;
+      concurrency?: string;
+      dryRun?: boolean;
+      json?: boolean;
+    };
+    try {
+      const result = await runLintSource(config, {
+        cwd: projectRoot,
+        locale: o.locale,
+        chunkSize: parsePositiveInt("Chunk (--chunk)", o.chunk ?? "50"),
+        concurrency:
+          o.concurrency !== undefined
+            ? parsePositiveInt("Concurrency (-j)", o.concurrency)
+            : undefined,
+        dryRun: Boolean(o.dryRun),
+        verbose: Boolean(g.verbose),
+        json: Boolean(o.json),
+      });
+      if (result.exitWithError) {
+        console.error(chalk.red(`❌ [lint-source] ${result.exitWithError}`));
+        process.exit(1);
+      }
+    } catch (e) {
+      console.error(chalk.red(`❌ [lint-source] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+  });
+
+program
   .command("export-ui-xliff")
   .description(
     "Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)"
@@ -820,7 +973,12 @@ program
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation",
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (unless documentations[].emphasisPlaceholders overrides); CJK/RTL use this by default when flag is omitted",
+    false
+  )
+  .option(
+    "--no-emphasis-placeholders",
+    "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by documentations[].emphasisPlaceholders)",
     false
   )
   .option(
@@ -882,6 +1040,8 @@ program
   });
 
 const DEFAULT_STATUS_MAX_COLUMNS = 9;
+/** Default `--max-columns` for `statistics` only (narrower matrices than `status` markdown tables). */
+const DEFAULT_STATISTICS_MAX_COLUMNS = 6;
 
 program
   .command("status")
@@ -966,9 +1126,9 @@ program
 
     if (config.features.translateUIStrings) {
       const stringsPath = resolveStringsJsonPath(config, projectRoot);
-      let stringsData: Record<string, { translated?: Record<string, string> }> = {};
+      let stringsData: Record<string, unknown> = {};
       try {
-        stringsData = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as typeof stringsData;
+        stringsData = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<string, unknown>;
       } catch {
         console.log(chalk.red("\n⚠ Could not read strings.json: " + stringsPath));
       }
@@ -979,7 +1139,8 @@ program
       if (total > 0) {
         const uiLocales = resolveLocalesForUI(config, projectRoot);
 
-        const pct = (n: number) => Math.round((n / total) * 100);
+        const plainKeys = keys.filter((k) => !isPluralStringsEntry(stringsData[k] as never));
+        const pluralKeys = keys.filter((k) => isPluralStringsEntry(stringsData[k] as never));
 
         const uiHeaders = [
           chalk.bold("Locale"),
@@ -987,67 +1148,82 @@ program
           chalk.bold("Missing"),
           chalk.bold("Total"),
         ];
-        const uiRows: string[][] = [];
-        for (const loc of uiLocales) {
-          const translated = keys.filter((k) => stringsData[k]?.translated?.[loc]?.trim()).length;
-          const missing = total - translated;
-          const translatedCell =
-            chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`);
-          const missingCell =
-            missing > 0
-              ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
-              : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`);
-          uiRows.push([loc, translatedCell, missingCell, String(total)]);
-        }
 
-        const localeColW = Math.max(
-          6,
-          stripAnsi(uiHeaders[0]!).length,
-          ...uiLocales.map((l) => l.length)
-        );
-        const wTranslated = Math.max(
-          stripAnsi(uiHeaders[1]!).length,
-          ...uiRows.map((r) => stripAnsi(r[1]!).length)
-        );
-        const wMissing = Math.max(
-          stripAnsi(uiHeaders[2]!).length,
-          ...uiRows.map((r) => stripAnsi(r[2]!).length)
-        );
-        const wTotal = Math.max(
-          stripAnsi(uiHeaders[3]!).length,
-          ...uiRows.map((r) => stripAnsi(r[3]!).length)
-        );
-        const uiSep = (cols: string[]) => cols.join(" | ");
+        const printUiSubset = (sectionTitle: string, subsetKeys: string[]) => {
+          console.log(chalk.bold(sectionTitle));
+          const n = subsetKeys.length;
+          if (n === 0) {
+            console.log(chalk.gray("  (none)\n"));
+            return;
+          }
+          const pct = (num: number) => Math.round((num / n) * 100);
+          const uiRows: string[][] = [];
+          for (const loc of uiLocales) {
+            const translated = subsetKeys.filter((k) =>
+              uiStringsEntryTranslatedForLocale(stringsData[k], loc)
+            ).length;
+            const missing = n - translated;
+            const translatedCell =
+              chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`);
+            const missingCell =
+              missing > 0
+                ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
+                : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`);
+            uiRows.push([loc, translatedCell, missingCell, String(n)]);
+          }
+
+          const localeColW = Math.max(
+            6,
+            stripAnsi(uiHeaders[0]!).length,
+            ...uiLocales.map((l) => l.length)
+          );
+          const wTranslated = Math.max(
+            stripAnsi(uiHeaders[1]!).length,
+            ...uiRows.map((r) => stripAnsi(r[1]!).length)
+          );
+          const wMissing = Math.max(
+            stripAnsi(uiHeaders[2]!).length,
+            ...uiRows.map((r) => stripAnsi(r[2]!).length)
+          );
+          const wTotal = Math.max(
+            stripAnsi(uiHeaders[3]!).length,
+            ...uiRows.map((r) => stripAnsi(r[3]!).length)
+          );
+          const uiSep = (cols: string[]) => cols.join(" | ");
+
+          console.log(
+            uiSep([
+              padVis(uiHeaders[0]!, localeColW),
+              padVis(uiHeaders[1]!, wTranslated),
+              padVis(uiHeaders[2]!, wMissing),
+              padVis(uiHeaders[3]!, wTotal),
+            ])
+          );
+          console.log(
+            uiSep([
+              chalk.bold("-".repeat(localeColW)),
+              chalk.bold("-".repeat(wTranslated)),
+              chalk.bold("-".repeat(wMissing)),
+              chalk.bold("-".repeat(wTotal)),
+            ])
+          );
+          for (const r of uiRows) {
+            console.log(
+              uiSep([
+                padVis(r[0]!, localeColW),
+                padVis(r[1]!, wTranslated),
+                padVis(r[2]!, wMissing),
+                padVis(r[3]!, wTotal),
+              ])
+            );
+          }
+          console.log();
+        };
 
         console.log(chalk.bold.cyan("\n📊 UI strings status"));
         console.log(chalk.gray(`(${stringsPath})\n`));
-        console.log(
-          uiSep([
-            padVis(uiHeaders[0]!, localeColW),
-            padVis(uiHeaders[1]!, wTranslated),
-            padVis(uiHeaders[2]!, wMissing),
-            padVis(uiHeaders[3]!, wTotal),
-          ])
-        );
-        console.log(
-          uiSep([
-            chalk.bold("-".repeat(localeColW)),
-            chalk.bold("-".repeat(wTranslated)),
-            chalk.bold("-".repeat(wMissing)),
-            chalk.bold("-".repeat(wTotal)),
-          ])
-        );
-        for (const r of uiRows) {
-          console.log(
-            uiSep([
-              padVis(r[0]!, localeColW),
-              padVis(r[1]!, wTranslated),
-              padVis(r[2]!, wMissing),
-              padVis(r[3]!, wTotal),
-            ])
-          );
-        }
-        console.log();
+        printUiSubset("Plain UI strings", plainKeys);
+        printUiSubset("Plural UI string groups", pluralKeys);
       }
     }
 
@@ -1111,6 +1287,321 @@ program
         rows.push([rel, ...cells]);
       }
       printMarkdownTablesChunked(rows);
+    }
+
+    cache.close();
+  });
+
+program
+  .command("statistics")
+  .description(
+    "Show documentation cache and strings.json statistics (same aggregates as Translation Cache Editor → Statistics)"
+  )
+  .option(
+    "--max-columns <n>",
+    "Max locale columns per model × locale table",
+    (v: string) => {
+      const n = parseInt(String(v), 10);
+      if (!Number.isFinite(n) || n < 1) {
+        throw new InvalidArgumentError("Must be a positive integer.");
+      }
+      return n;
+    },
+    DEFAULT_STATISTICS_MAX_COLUMNS
+  )
+  .action((opts: { maxColumns: number }, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const chunkSize = opts.maxColumns;
+
+    const cacheDir = path.join(projectRoot, config.cacheDir);
+    const cache = new TranslationCache(cacheDir);
+
+    const stringsPath = config.glossary?.uiGlossary
+      ? path.join(projectRoot, config.glossary.uiGlossary)
+      : resolveStringsJsonPath(config, projectRoot);
+    const glossaryPath = config.glossary?.userGlossary
+      ? path.join(projectRoot, config.glossary.userGlossary)
+      : null;
+
+    const padVis = (s: string, width: number): string => {
+      const visLen = stripAnsi(s).length;
+      return s + " ".repeat(Math.max(0, width - visLen));
+    };
+
+    const pctPart = (count: number, total: number): string => {
+      if (total === 0) return "—";
+      return `${((100 * count) / total).toFixed(1)}%`;
+    };
+
+    /** Same slicing pattern as `status` `printMarkdownTablesChunked`: multiple tables when locales exceed chunk size. */
+    function runChunkedLocaleTables(
+      locales: string[],
+      printChunk: (chunkLocales: string[]) => void
+    ): void {
+      const nLocales = locales.length;
+      if (nLocales === 0) {
+        return;
+      }
+      const numChunks = Math.ceil(nLocales / chunkSize);
+      const showChunkLabels = numChunks > 1;
+      for (let start = 0; start < nLocales; start += chunkSize) {
+        const end = Math.min(start + chunkSize, nLocales);
+        const chunkLocales = locales.slice(start, end);
+        if (showChunkLabels) {
+          console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+        }
+        printChunk(chunkLocales);
+      }
+    }
+
+    const {
+      cache: c,
+      uiStrings: ui,
+      glossary: gl,
+    } = computeProjectStats({
+      cache,
+      stringsPath,
+      glossaryPath,
+      sourceLocale: config.sourceLocale,
+      targetLocales: config.targetLocales,
+    });
+
+    console.log(chalk.bold.cyan("\n📊 UI strings (strings.json)"));
+    console.log(chalk.gray(`(${stringsPath})\n`));
+
+    if (!ui.available) {
+      console.log(chalk.gray("strings.json not configured or missing.\n"));
+    } else {
+      console.log(
+        chalk.gray(
+          `${ui.totalEntries} entries (${ui.plainTotal} plain, ${ui.pluralTotal} plural)\n`
+        )
+      );
+      const uiCardLabelW = 22;
+      const uiCardLines: [string, string][] = [
+        ["Plain entries", String(ui.plainTotal)],
+        ["Plural groups", String(ui.pluralTotal)],
+      ];
+      for (const [label, val] of uiCardLines) {
+        console.log(`${padVis(chalk.magenta(label + ":"), uiCardLabelW)} ${val}`);
+      }
+      console.log();
+
+      const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
+      const uiModelHeaders = [chalk.bold("Model"), chalk.bold("Entries"), chalk.bold("% of total")];
+      const uiModelRows: string[][] = ui.byModel.map((row) => [
+        row.model,
+        String(row.count),
+        totalUiModelUsage === 0 ? "—" : `${pctPart(row.count, totalUiModelUsage)}`,
+      ]);
+      const wUiModel = Math.max(
+        stripAnsi(uiModelHeaders[0]!).length,
+        ...uiModelRows.map((r) => stripAnsi(r[0]!).length),
+        5
+      );
+      const wUiEnt = Math.max(
+        stripAnsi(uiModelHeaders[1]!).length,
+        ...uiModelRows.map((r) => stripAnsi(r[1]!).length),
+        8
+      );
+      const wUiPct = Math.max(
+        stripAnsi(uiModelHeaders[2]!).length,
+        ...uiModelRows.map((r) => stripAnsi(r[2]!).length),
+        10
+      );
+      const uiSep = (cols: string[]) => cols.join(" | ");
+      console.log(chalk.magenta.bold("By model"));
+      console.log(
+        uiSep([
+          padVis(uiModelHeaders[0]!, wUiModel),
+          padVis(uiModelHeaders[1]!, wUiEnt),
+          padVis(uiModelHeaders[2]!, wUiPct),
+        ])
+      );
+      console.log(
+        uiSep([
+          chalk.bold("-".repeat(wUiModel)),
+          chalk.bold("-".repeat(wUiEnt)),
+          chalk.bold("-".repeat(wUiPct)),
+        ])
+      );
+      for (const r of uiModelRows) {
+        console.log(uiSep([padVis(r[0]!, wUiModel), padVis(r[1]!, wUiEnt), padVis(r[2]!, wUiPct)]));
+      }
+      console.log(
+        uiSep([
+          padVis(chalk.bold("Total"), wUiModel),
+          padVis(String(totalUiModelUsage), wUiEnt),
+          padVis(totalUiModelUsage === 0 ? "—" : "100.0%", wUiPct),
+        ])
+      );
+      console.log();
+
+      const uiMlMap = new Map<string, number>();
+      for (const r of ui.byModelLocale) {
+        uiMlMap.set(`${r.model}\0${r.locale}`, r.count);
+      }
+      const uiLocTotals = new Map(
+        ui.plainByLocale.map((row) => [row.locale, row.translated + row.missing] as const)
+      );
+
+      const printUiMatrixChunk = (chunkLocales: string[]) => {
+        const headers = [chalk.bold("Model"), ...chunkLocales.map((loc) => chalk.bold(loc))];
+        const colWidths = headers.map((h, i) =>
+          Math.max(
+            stripAnsi(h).length,
+            ...ui.byModel.map((mRow) => {
+              if (i === 0) return stripAnsi(mRow.model).length;
+              const cnt = uiMlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
+              const tot = uiLocTotals.get(chunkLocales[i - 1]!) ?? 0;
+              const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
+              return stripAnsi(cell).length;
+            })
+          )
+        );
+        const sep = (cols: string[]) =>
+          cols.map((cell, i) => padVis(cell, colWidths[i]!)).join(" | ");
+        console.log(sep(headers.map((h) => String(h))));
+        console.log(sep(headers.map((_, i) => chalk.bold("-".repeat(colWidths[i]!)))));
+        for (const mRow of ui.byModel) {
+          const cells = [mRow.model];
+          for (const loc of chunkLocales) {
+            const cnt = uiMlMap.get(`${mRow.model}\0${loc}`) ?? 0;
+            const tot = uiLocTotals.get(loc) ?? 0;
+            cells.push(
+              cnt === 0 ? chalk.gray("—") : `${cnt} ${chalk.gray(`(${pctPart(cnt, tot)})`)}`
+            );
+          }
+          console.log(sep(cells));
+        }
+        console.log();
+      };
+
+      const uiLocalesList = ui.plainByLocale.map((r) => r.locale);
+      if (uiLocalesList.length === 0) {
+        console.log(chalk.magenta.bold("By model and locale"));
+        console.log(chalk.gray("  (no locale rows)\n"));
+      } else {
+        console.log(chalk.magenta.bold("By model and locale"));
+        runChunkedLocaleTables(uiLocalesList, printUiMatrixChunk);
+      }
+    }
+
+    console.log(chalk.bold.cyan("\n📊 Documentation cache"));
+    console.log(chalk.gray(`(${cacheDir})\n`));
+
+    const docCardLabelW = 22;
+    const docLines: [string, string][] = [
+      ["Total segments", String(c.totalSegments)],
+      ["Stale", String(c.staleSegments)],
+      ["Active", String(c.activeSegments)],
+      ["Tracked files", String(c.totalFiles)],
+      ["Unique filepaths", String(c.uniqueFilepaths)],
+      ["Models used", String(c.byModel.length)],
+      ["Glossary entries", gl.available ? String(gl.totalTerms) : "0"],
+    ];
+    for (const [label, val] of docLines) {
+      console.log(`${padVis(chalk.magenta(label + ":"), docCardLabelW)} ${val}`);
+    }
+    console.log();
+
+    const docModelHeaders = [chalk.bold("Model"), chalk.bold("Segments"), chalk.bold("% of total")];
+    const docModelRows: string[][] = c.byModel.map((row) => [
+      row.model,
+      String(row.count),
+      c.totalSegments === 0 ? "—" : `${pctPart(row.count, c.totalSegments)}`,
+    ]);
+    const wDocModel = Math.max(
+      stripAnsi(docModelHeaders[0]!).length,
+      ...docModelRows.map((r) => stripAnsi(r[0]!).length),
+      5
+    );
+    const wDocSeg = Math.max(
+      stripAnsi(docModelHeaders[1]!).length,
+      ...docModelRows.map((r) => stripAnsi(r[1]!).length),
+      9
+    );
+    const wDocPct = Math.max(
+      stripAnsi(docModelHeaders[2]!).length,
+      ...docModelRows.map((r) => stripAnsi(r[2]!).length),
+      10
+    );
+    const docSep = (cols: string[]) => cols.join(" | ");
+    console.log(chalk.magenta.bold("By model"));
+    console.log(
+      docSep([
+        padVis(docModelHeaders[0]!, wDocModel),
+        padVis(docModelHeaders[1]!, wDocSeg),
+        padVis(docModelHeaders[2]!, wDocPct),
+      ])
+    );
+    console.log(
+      docSep([
+        chalk.bold("-".repeat(wDocModel)),
+        chalk.bold("-".repeat(wDocSeg)),
+        chalk.bold("-".repeat(wDocPct)),
+      ])
+    );
+    for (const r of docModelRows) {
+      console.log(
+        docSep([padVis(r[0]!, wDocModel), padVis(r[1]!, wDocSeg), padVis(r[2]!, wDocPct)])
+      );
+    }
+    console.log(
+      docSep([
+        padVis(chalk.bold("Total"), wDocModel),
+        padVis(String(c.totalSegments), wDocSeg),
+        padVis(c.totalSegments === 0 ? "—" : "100.0%", wDocPct),
+      ])
+    );
+    console.log();
+
+    const mlMap = new Map<string, number>();
+    for (const r of c.byModelLocale) {
+      mlMap.set(`${r.model}\0${r.locale}`, r.count);
+    }
+    const cacheLocTotals = new Map(c.byLocale.map((row) => [row.locale, row.total] as const));
+
+    const printDocMatrixChunk = (chunkLocales: string[]) => {
+      const headers = [chalk.bold("Model"), ...chunkLocales.map((loc) => chalk.bold(loc))];
+      const colWidths = headers.map((h, i) =>
+        Math.max(
+          stripAnsi(h).length,
+          ...c.byModel.map((mRow) => {
+            if (i === 0) return stripAnsi(mRow.model).length;
+            const cnt = mlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
+            const tot = cacheLocTotals.get(chunkLocales[i - 1]!) ?? 0;
+            const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
+            return stripAnsi(cell).length;
+          })
+        )
+      );
+      const sep = (cols: string[]) =>
+        cols.map((cell, i) => padVis(cell, colWidths[i]!)).join(" | ");
+      console.log(sep(headers.map((h) => String(h))));
+      console.log(sep(headers.map((_, i) => chalk.bold("-".repeat(colWidths[i]!)))));
+      for (const mRow of c.byModel) {
+        const cells = [mRow.model];
+        for (const loc of chunkLocales) {
+          const cnt = mlMap.get(`${mRow.model}\0${loc}`) ?? 0;
+          const tot = cacheLocTotals.get(loc) ?? 0;
+          cells.push(
+            cnt === 0 ? chalk.gray("—") : `${cnt} ${chalk.gray(`(${pctPart(cnt, tot)})`)}`
+          );
+        }
+        console.log(sep(cells));
+      }
+      console.log();
+    };
+
+    const cacheLocales = c.byLocale.map((r) => r.locale);
+    if (cacheLocales.length === 0) {
+      console.log(chalk.magenta.bold("By model and locale"));
+      console.log(chalk.gray("  (no locale rows)\n"));
+    } else {
+      console.log(chalk.magenta.bold("By model and locale"));
+      runChunkedLocaleTables(cacheLocales, printDocMatrixChunk);
     }
 
     cache.close();

@@ -1,11 +1,11 @@
 # Next.js App Example
 
-This example shows how to use `ai-i18n-tools` with a **TypeScript** [Next.js](https://nextjs.org/) app and **pnpm**. The UI matches the [console app example](../console-app/), using the same string keys and a locale selector driven by `locales/ui-languages.json` (source locale `en-GB` first, followed by the translation targets).
+This example shows how to use `ai-i18n-tools` with a **TypeScript** [Next.js](https://nextjs.org/) app and **pnpm**. The UI matches the [console app example](../console-app/), using the same string keys and a locale selector driven by `locales/ui-languages.json` (source locale `en-GB` first, followed by the translation targets). [`src/lib/i18n.ts`](./src/lib/i18n.ts) builds **`localeLoaders`** from that manifest (every `code` except `SOURCE_LOCALE`), like the console app; bundles load with **`fetch`** to **`public/locales/<locale>.json`**.
 
 Nested under this folder is a small **[Docusaurus](https://docusaurus.io/)** site ([`docs-site/`](./docs-site/)) with copies of the main project docs for local browsing.
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[en-GB](./README.md) · [ar](./translated-docs/README.ar.md) · [de](./translated-docs/README.de.md) · [es](./translated-docs/README.es.md) · [fr](./translated-docs/README.fr.md) · [pt-BR](./translated-docs/README.pt-BR.md)</small>
+<small id="lang-list">[English](./README.md) · [العربية](./translated-docs/README.ar.md) · [Español](./translated-docs/README.es.md) · [Français](./translated-docs/README.fr.md) · [Deutsch](./translated-docs/README.de.md) · [Português (BR)](./translated-docs/README.pt-BR.md)</small>
 
 
 ## Screenshot
@@ -45,7 +45,18 @@ pnpm build
 pnpm start
 ```
 
-Open [http://localhost:3030](http://localhost:3030). Use the **Locale** dropdown to switch language (locale ID / English name / native label).
+Open [http://localhost:3030](http://localhost:3030). Use the **Locale** dropdown to switch language (locale ID / English name / native label). You can also deep-link a locale with the query string **`?locale=<code>`** (for example [`?locale=ar`](http://localhost:3030/?locale=ar)); the page keeps the dropdown and URL in sync.
+
+### Cardinal plurals example
+
+The home page includes a **plurals demo** (“Plurals: automatic generation usage example”) that shows how **cardinal plural** UI strings are wired end-to-end:
+
+- **Rendering:** The same message is repeated for several sample counts defined in **`PLURAL_DEMO_COUNTS`** in [`src/app/page.tsx`](./src/app/page.tsx) (by default **1**, **2**, **5**, and **50**) so you can compare plural behaviour across locales (including languages with several plural forms, such as Arabic).
+- **API:** Each line uses `t("This page has {{count}} sections", { plurals: true, count })`. Pass **`plurals: true`** so extraction and translation treat the key as a plural group; **`count`** selects the active plural form at runtime.
+- **Runtime:** “Plural forms are resolved at runtime using the helpers wired up in [src/lib/i18n.ts](src/lib/i18n.ts) (see the package’s runtime docs for the full picture).
+- **Outputs:** Target locales use suffixed entries in `public/locales/<locale>.json`; the source locale keeps plural bundles in **`public/locales/en-GB.json`** alongside the usual flat entries.
+
+The demo also shows a small **gray code block** with the JSX snippet above the live examples for quick reference.
 
 The home page also shows a **demo SVG** at the bottom. The image URL follows `public/assets/translation_demo_svg.<locale>.svg` (flat layout from the `svg` block in `ai-i18n-tools.config.json`). After running `translate-svg`, each locale file contains translated `<text>`, `<title>`, and `<desc>` content; until then, committed copies may look identical across locales.
 
@@ -158,7 +169,7 @@ pnpm run i18n:editor
 
 ## Project Structure
 
-```
+```text
 nextjs-app/
 ├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
 ├── src/

@@ -3,5 +3,10 @@
   "Hello World!!": "Bonjour le monde !!",
   "This line will be translated to multiple languages.": "Cette ligne sera traduite dans plusieurs langues.",
   "This is line number {{number}}": "Ceci est la ligne numéro {{number}}",
+  "Plurals: automatic generation usage example": "Pluriels : exemple d’utilisation de la génération automatique",
+  "f9ba51ab_original": "This page has {{count}} sections",
+  "f9ba51ab_one": "Cette page comporte {{count}} sections",
+  "f9ba51ab_many": "Cette page comporte {{count}} section",
+  "f9ba51ab_other": "Cette page comporte {{count}} sections",
   "Example console application demonstrating ai-i18n-tools": "Exemple d'application console démontrant ai-i18n-tools"
 }

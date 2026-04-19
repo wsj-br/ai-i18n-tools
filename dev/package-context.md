@@ -1,6 +1,6 @@
 # ai-i18n-tools: maintainer / package context
 
-**Audience:** Contributors and AI agents working **inside the `ai-i18n-tools` repository**. This file lives in `dev/` and is **not** the primary integration guide for downstream apps.
+**Audience:** Contributors and AI agents working inside the `ai-i18n-tools` **repository**. This file lives in `dev/` and is **not** the primary integration guide for downstream apps.
 
 **Consumers:** If you are adding the **published npm package** to another project, use [`docs/ai-i18n-tools-context.md`](../docs/ai-i18n-tools-context.md) (shipped on npm under `docs/`) and [`docs/GETTING_STARTED.md`](../docs/GETTING_STARTED.md).
 
@@ -141,7 +141,7 @@ When `targetLocales` is a file path, that file must be a JSON array of this shap
 - `englishName` — English (or reference) name for prompts, `t(englishName)` in language menus, and pairing with `label`.
 - `direction` — `"ltr"` or `"rtl"` (layout / `dir` for that row).
 
-This file drives translation targets, prompts, and the runtime language-switcher. **`extract` does not add `englishName` strings to `strings.json` unless** `ui.reactExtractor.includeUiLanguageEnglishNames` is `true` (then each non-duplicate `englishName` is merged with the same MD5-8 hash scheme as scanned literals). Regenerate or hand-edit the manifest with `generate-ui-languages` (see cheat sheet).
+This file drives translation targets, prompts, and the runtime language-switcher. `extract` does not add `englishName` strings to `strings.json` **unless** `ui.reactExtractor.includeUiLanguageEnglishNames` is `true` (then each non-duplicate `englishName` is merged with the same MD5-8 hash scheme as scanned literals). Regenerate or hand-edit the manifest with `generate-ui-languages` (see cheat sheet).
 
 **Bundled master list:** `data/ui-languages-complete.json` (IANA-derived; rebuild with `pnpm run build:ui-languages-master`).
 
@@ -149,7 +149,7 @@ This file drives translation targets, prompts, and the runtime language-switcher
 
 ## CLI commands cheat sheet
 
-```
+```text
 npx ai-i18n-tools init [-t ui-markdown|ui-docusaurus]
     Write a starter config file. ui-markdown = React/UI-only template.
     ui-docusaurus = combined UI + docs template.
@@ -202,7 +202,7 @@ Global flags: `-c <config>` (config path), `-v` (verbose/debug output), `-w` / `
 
 ## Workflow 1 - UI strings: how data flows
 
-```
+```text
 source files (JS/TS) ──► i18next-scanner: t("literal"), i18n.t("literal")
 optional package.json "description" (includePackageDescription)
 optional ui-languages.json englishName per row (includeUiLanguageEnglishNames + uiLanguagesPath)
@@ -238,7 +238,7 @@ i18next uses the key-as-default model: missing translations fall back to the key
 
 ## Workflow 2 - Document translation: how data flows
 
-```
+```text
 source files (md/mdx/json)
     │  Extractor produces typed segments with SHA-256 hash
     ▼
@@ -281,29 +281,30 @@ The package exports helpers from `'ai-i18n-tools/runtime'` that remove boilerpla
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json exactly
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
 // Dynamic imports for non-source locales
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
 
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -325,7 +326,9 @@ All exported from `'ai-i18n-tools/runtime'`. Work in any JS environment (browser
 | Export | Signature | Purpose |
 |---|---|---|
 | `defaultI18nInitOptions` | `(sourceLocale?: string) => i18nextInitOptions` | Standard i18next init for key-as-default setup |
-| `wrapI18nWithKeyTrim` | `(i18n: I18nLike) => void` | Trim keys before lookup and apply `{{var}}` interpolation for the source locale (where `parseMissingKeyHandler` returns the raw key) |
+| `setupKeyAsDefaultT` | `(i18n, options: SetupKeyAsDefaultTOptions) => void` | Recommended: key-trim + optional `{sourceLocale}.json` plural bundle + plural **`wrapT`** from **`strings.json`** |
+| `wrapI18nWithKeyTrim` | `(i18n: I18nLike) => void` | Lower-level key-trim only (deprecated for app wiring; prefer **`setupKeyAsDefaultT`**) |
+| `makeLocaleLoadersFromManifest` | `(manifest, sourceLocale, makeLoaderForLocale) => loaders` | Build **`makeLoadLocale`** loader map from **`ui-languages.json`** (omit **`sourceLocale`**) |
 | `makeLoadLocale` | `(i18n, loaders, sourceLocale?) => (lang: string) => Promise<void>` | Factory for async locale loading |
 | `getTextDirection` | `(lng: string) => 'ltr' \| 'rtl'` | RTL detection by BCP-47 code |
 | `applyDirection` | `(lng: string, element?: Element) => void` | Set `dir` on `document.documentElement` (no-op in Node.js) |
@@ -478,7 +481,7 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 
 ## Source layout summary
 
-```
+```text
 src/
 ├── index.ts               Public API (all programmatic exports)
 ├── cli/                   CLI command implementations

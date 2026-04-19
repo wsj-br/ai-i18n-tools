@@ -7,15 +7,11 @@
 
 Both workflows use OpenRouter (any compatible LLM) and share a single config file.
 
-
-<small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./GETTING_STARTED.md) · [German](../translated-docs/docs/GETTING_STARTED.de.md) · [Spanish](../translated-docs/docs/GETTING_STARTED.es.md) · [French](../translated-docs/docs/GETTING_STARTED.fr.md) · [Hindi](../translated-docs/docs/GETTING_STARTED.hi.md) · [Japanese](../translated-docs/docs/GETTING_STARTED.ja.md) · [Korean](../translated-docs/docs/GETTING_STARTED.ko.md) · [Portuguese (BR)](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [Chinese (CN)](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [Chinese (TW)](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
-
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents** 
+## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -30,7 +26,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
   - [Language switcher UI](#language-switcher-ui)
   - [RTL languages](#rtl-languages)
 - [Workflow 2 - Document Translation](#workflow-2---document-translation)
-  - [Step 1: Initialise](#step-1-initialise-1)
+  - [Step 1: Initialise for documentation](#step-1-initialise-for-documentation)
   - [Step 2: Translate documents](#step-2-translate-documents)
     - [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags)
   - [Output layouts](#output-layouts)
@@ -56,7 +52,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 
 ## Installation
 
-The published package is **ESM-only**. Use `import`/`import()` in Node.js or your bundler; **do not use `require('ai-i18n-tools')`.**
+The published package is **ESM-only**. Use `import`/`import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')` **.**
 
 ```bash
 npm install ai-i18n-tools
@@ -180,46 +176,65 @@ By default, files are written next to `ui.stringsJson`, named like `strings.de.x
 Create your i18n setup file using the helpers exported by `'ai-i18n-tools/runtime'`:
 
 ```js
-// src/i18n.js  (or src/i18n.ts)
+// src/i18n.js or src/i18n.ts — use ../locales and ../public/locales instead of ./ when this file is under src/
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import aiI18n from 'ai-i18n-tools/runtime';
 
-// Must match sourceLocale in ai-i18n-tools.config.json
+// Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
+import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import stringsJson from './locales/strings.json'; // `ui.stringsJson`
+import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
+
+// Must match `sourceLocale` in ai-i18n-tools.config.json (same string as in the import path above)
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+// initialize i18n with the default options
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+// setup the key-as-default translation
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+
+// apply the direction to the i18n instance
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
+
+// create the locale loaders
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
 
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+// create the loadLocale function
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+
+// export the i18n instance
 export default i18n;
 ```
 
+**Keep three values aligned:** `sourceLocale` in **`ai-i18n-tools.config.json`**, **`SOURCE_LOCALE`** in this file, and the plural flat JSON **`translate-ui`** writes as **`{sourceLocale}.json`** under your flat output dir (often `public/locales/`). Use that same basename in the static **`import`** (example above: `en-GB` → `en-GB.json`). The **`lng`** field in **`sourcePluralFlatBundle`** must equal **`SOURCE_LOCALE`**. Static ES **`import`** paths cannot use variables; if you change the source locale, update **`SOURCE_LOCALE`** and the import path together. Alternatively, load that file with a dynamic **`import(\`./public/locales/${SOURCE_LOCALE}.json\`)`**, **`fetch`**, or **`readFileSync`** so the path is built from **`SOURCE_LOCALE`**.
+
+The snippet uses **`./locales/…`** and **`./public/locales/…`** as if **`i18n`** sits beside those folders. If your file is under **`src/`** (typical), use **`../locales/…`** and **`../public/locales/…`** so imports resolve to the same paths as **`ui.stringsJson`**, **`uiLanguagesPath`**, and **`ui.flatOutputDir`**.
+
 Import `i18n.js` before React renders (e.g. at the top of your entry point). When the user changes language, call `await loadLocale(code)` then `i18n.changeLanguage(code)`.
+
+Keep `localeLoaders` **aligned with config** by deriving them from **`ui-languages.json`** with **`makeLocaleLoadersFromManifest`** (filters out **`SOURCE_LOCALE`** using the same normalization as **`makeLoadLocale`**). After you add a locale to **`targetLocales`** and run **`generate-ui-languages`**, the manifest updates and your loaders track it without maintaining a separate hardcoded map. If JSON bundles live under **`public/`** (typical Next.js), implement each loader with **`fetch(\`/locales/${code}.json\`)`** instead of **`import()`** so the browser loads static JSON from your public URL path. For Node CLIs without a bundler, load locale files with **`readFileSync`** inside a small **`makeFileLoader`** helper that returns the parsed JSON for each code.
 
 `SOURCE_LOCALE` is exported so any other file that needs it (e.g. a language switcher) can import it directly from `'./i18n'`. If you are migrating an existing i18next setup, replace any hardcoded source locale strings (e.g. `'en-GB'` checks scattered across components) with imports of `SOURCE_LOCALE` from your i18n bootstrap file.
 
-`defaultI18nInitOptions(sourceLocale)` returns the standard options for key-as-default setups:
+Named imports (`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runtime'`) work the same if you prefer not to use the default export.
+
+`aiI18n.defaultI18nInitOptions(sourceLocale)` (or `defaultI18nInitOptions(sourceLocale)` when imported by name) returns the standard options for key-as-default setups:
 
 - `parseMissingKeyHandler` returns the key itself, so untranslated strings display the source text.
 - `nsSeparator: false` allows keys that contain colons.
 - `interpolation.escapeValue: false` - safe to disable: React escapes values itself, and Node.js/CLI output has no HTML to escape.
 
-`wrapI18nWithKeyTrim(i18n)` wraps `i18n.t` so that: (1) keys are trimmed before lookup, matching how the extract script stores them; (2) <code>{"{{var}}"}</code> interpolation is applied when the source locale returns the raw key - so <code>{"t('Hello {{name}}', { name })"}</code> works correctly even for the source language.
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` is the **recommended** wiring for ai-i18n-tools projects: it applies key-trim + source-locale <code>{"{{var}}"}</code> interpolation fallback (same behaviour as the lower-level **`wrapI18nWithKeyTrim`**), optionally merges **`translate-ui`** **`{sourceLocale}.json`** plural suffixed keys via **`addResourceBundle`**, then installs plural-aware **`wrapT`** from your **`strings.json`**. That bundled file must be the plural flat for your **configured** source locale — the same **`sourceLocale`** as in **`ai-i18n-tools.config.json`** and **`SOURCE_LOCALE`** in your i18n bootstrap (see Step 4 above). Omit **`sourcePluralFlatBundle`** only while bootstrapping (merge it once **`translate-ui`** has emitted **`{sourceLocale}.json`**). **`wrapI18nWithKeyTrim`** alone is **deprecated** for application code — use **`setupKeyAsDefaultT`** instead.
 
 `makeLoadLocale(i18n, loaders, sourceLocale)` returns an async `loadLocale(lang)` function that dynamically imports the JSON bundle for a locale and registers it with i18next.
 
@@ -259,9 +274,33 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 // → "Hello Alice, you have 3 messages"
 ```
 
-The extract script ignores the second argument - only the literal key string <code>{"\"Hello {{name}}, you have {{count}} messages\""}</code> is extracted and sent for translation. Translators are instructed to preserve <code>{"{{...}}"}</code> tokens.
+The extract command parses the **second argument** when it is a plain object literal and reads tooling-only flags such as **`plurals: true`** and **`zeroDigit`** (see **Cardinal plurals** below). For ordinary strings, only the literal key is used for hashing; interpolation options are still passed through to i18next at runtime.
 
-If your project uses a custom interpolation utility (e.g. calling `t('key')` then piping the result through a template function like `interpolateTemplate(t('Hello {{name}}'), { name })`), `wrapI18nWithKeyTrim` makes that unnecessary — it applies <code>{"{{var}}"}</code> interpolation even when the source locale returns the raw key. Migrate call sites to `t('Hello {{name}}', { name })` and remove the custom utility.
+If your project uses a custom interpolation utility (e.g. calling `t('key')` then piping the result through a template function like `interpolateTemplate(t('Hello {{name}}'), { name })`), **`setupKeyAsDefaultT`** (via **`wrapI18nWithKeyTrim`**) makes that unnecessary — it applies <code>{"{{var}}"}</code> interpolation even when the source locale returns the raw key. Migrate call sites to `t('Hello {{name}}', { name })` and remove the custom utility.
+
+### Cardinal plurals (`plurals: true`)
+
+Use the **same literal** you want as the developer-default copy, and pass **`plurals: true`** so extract + `translate-ui` treat the call as one **cardinal plural group** (i18next JSON v4-style `_zero` … `_other` forms).
+
+```tsx
+{t('{{count}} items in your cart', { plurals: true, count: n })}
+```
+
+- **`zeroDigit`** (optional) — tooling-only; **not** read by i18next. When `true`, prompts prefer a literal Arabic **`0`** in the `_zero` string for each locale where that form exists; when `false` or omitted, natural zero phrasing is used. Strip these keys before calling `i18next.t` (see `wrapT` below).
+
+**Validation:** If the message contains **two or more** distinct `{{…}}` placeholders, **one of them must be `{{count}}`** (the plural axis). Otherwise `extract` **fails** with a clear file/line message.
+
+**Two independent counts** (e.g. sections and pages) cannot share one plural message — use **two** `t()` calls (each with `plurals: true` and its own `count`) and concatenate in the UI.
+
+`strings.json` **:** Plural groups use **one row per hash** with `"plural": true`, the original literal in **`source`**, and **`translated[locale]`** as an object mapping cardinal categories (`zero`, `one`, `two`, `few`, `many`, `other`) to strings for that locale.
+
+**Flat locale JSON:** Non-plural rows stay **source sentence → translation**. Plural rows are emitted as **`<groupId>_original`** (equals `source`, for reference) and **`<groupId>_<form>`** for each suffix so i18next resolves plurals natively. **`translate-ui`** also writes **`{sourceLocale}.json`** containing **only** plural flat keys (load this bundle for the source language so suffixed keys resolve; plain strings still use key-as-default). For each target locale, emitted suffix keys match **`Intl.PluralRules`** for that locale (`requiredCldrPluralForms`): if `strings.json` omitted a category because it matched another after compaction (e.g. Arabic **`many`** same as **`other`**), **`translate-ui`** still writes every required suffix into the flat file by copying from a fallback sibling string so runtime lookup never misses a key.
+
+Runtime (`ai-i18n-tools/runtime` **):** Call **`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle })`** — it runs **`wrapI18nWithKeyTrim`**, registers the optional **`translate-ui`** `{sourceLocale}.json` plural bundle, then **`wrapT`** using **`buildPluralIndexFromStringsJson(stringsJson)`**. `wrapT` strips `plurals` / `zeroDigit`, rewrites the key to the group id when needed, and forwards **`count`** (optional: if there is a single non-`{{count}}` placeholder, `count` is copied from that numeric option).
+
+**Older environments:** `Intl.PluralRules` is required for tooling and for consistent behaviour; polyfill if you target very old browsers.
+
+**Not in v1:** ordinal plurals (`_ordinal_*`, `ordinal: true`), interval plurals, ICU-only pipelines.
 
 ### Language switcher UI
 
@@ -333,7 +372,7 @@ The `ui-languages.json` manifest is a JSON array of <code>{"{ code, label, engli
 ]
 ```
 
-The manifest is generated by `generate-ui-languages` from `sourceLocale` + `targetLocales` and the bundled master catalog. It is written to `ui.flatOutputDir`.
+The manifest is generated by `generate-ui-languages` from `sourceLocale` + `targetLocales` and the bundled master catalog. It is written to `ui.flatOutputDir`. If you change the any of the locales in the configuration, run `generate-ui-languages` to update the `ui-languages.json` file.
 
 ### RTL languages
 
@@ -365,7 +404,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 
 Designed for markdown documentation, Docusaurus sites, and JSON label files. Standalone SVG assets are translated via [`translate-svg`](#cli-reference) when `features.translateSVG` is enabled and the top-level `svg` block is set — not via `documentations[].contentPaths`.
 
-### Step 1: Initialise
+### Step 1: Initialise for documentation
 
 ```bash
 npx ai-i18n-tools init -t ui-docusaurus
@@ -376,7 +415,7 @@ Edit the generated `ai-i18n-tools.config.json`:
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all documentation pipelines (and default log directory for `--write-logs`).
-- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, optional `segmentSplitting`, `targetLocales`, `addFrontmatter`, etc.
 - `documentations[].description` - optional short note for maintainers (what this block covers). When set, it appears in the `translate-docs` headline (`🌐 …: translating …`) and in `status` section headers.
 - `documentations[].contentPaths` - markdown/MDX source directories or files (see also `documentations[].jsonSource` for JSON labels).
 - `documentations[].outputDir` - translated output root for that block.
@@ -430,7 +469,7 @@ You cannot combine `--force` with `--force-update` (they are mutually exclusive)
 
 #### Batch prompt format
 
-`translate-docs` sends translatable segments to OpenRouter in **batches** (grouped by `batchSize` / `maxBatchChars`). The **`--prompt-format`** flag only changes that batch’s **wire format**; segment splitting, `PlaceholderHandler` tokens, markdown AST checks, SQLite cache keys, and per-segment fallback when batch parsing fails are unchanged.
+`translate-docs` sends translatable segments to OpenRouter in **batches** (grouped by `batchSize` / `maxBatchChars`). The **`--prompt-format`** flag only changes that batch’s **wire format**; `PlaceholderHandler` tokens, markdown AST checks, SQLite cache keys, and per-segment fallback when batch parsing fails are unchanged.
 
 | Mode | User message | Model reply |
 | ---- | ------------ | ----------- |
@@ -440,7 +479,7 @@ You cannot combine `--force` with `--force-update` (they are mutually exclusive)
 
 The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and standalone SVG batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to **`json-array`**).
 
-**Segment dedupe and paths in SQLite**
+#### Segment dedupe and paths in SQLite
 
 - Segment rows are keyed globally by `(source_hash, locale)` (hash = normalized content). Identical text in two files shares one row; `translations.filepath` is metadata (last writer), not a second cache entry per file.
 - `file_tracking.filepath` uses namespaced keys: `doc-block:{index}:{relPath}` per `documentations` block (`relPath` is project-root-relative posix: markdown paths as collected; **JSON label files use the cwd-relative path to the source file**, e.g. `docs-site/i18n/en/code.json`, so cleanup can resolve the real file), and `svg-assets:{relPath}` for standalone SVG assets under `translate-svg`.
@@ -453,14 +492,14 @@ The run header also prints `Batch prompt format: …` so you can confirm the act
 
 `"docusaurus"` — places files that lie under `docsRoot` at `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`, matching the usual Docusaurus i18n layout. Set `documentations[].markdownOutput.docsRoot` to your docs source root (e.g. `"docs"`).
 
-```
+```text
 docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
 i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
 ```
 
 `"flat"` - places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically.
 
-```
+```text
 docs/guide.md → i18n/guide.de.md
 ```
 
@@ -522,6 +561,66 @@ Use `documentations[].targetLocales` on a block to translate that block’s file
 }
 ```
 
+### Mixed documentation workflow (Docusaurus + flat)
+
+You can combine multiple documentation pipelines in the same config by adding more than one entry in `documentations`. This is a common setup when a project has a Docusaurus site plus root-level markdown files (for example, a repository readme) that should be translated with flat output.
+
+```json
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
+  "features": {
+    "extractUIStrings": true,
+    "translateUIStrings": true,
+    "translateMarkdown": true,
+    "translateJSON": true
+  },
+  "ui": {
+    "sourceRoots": ["src/"],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "public/locales/"
+  },
+  "cacheDir": ".translation-cache",
+  "documentations": [
+    {
+      "description": "Docusaurus docs and JSON labels",
+      "contentPaths": ["docs-site/docs/"],
+      "outputDir": "docs-site/i18n",
+      "jsonSource": "docs-site/i18n/en",
+      "addFrontmatter": true,
+      "markdownOutput": {
+        "style": "docusaurus",
+        "docsRoot": "docs-site/docs"
+      }
+    },
+    {
+      "description": "Root README in flat output",
+      "contentPaths": ["README.md"],
+      "outputDir": "translated-docs",
+      "addFrontmatter": false,
+      "markdownOutput": {
+        "style": "flat",
+        "postProcessing": {
+          "languageListBlock": {
+            "start": "<small id=\"lang-list\">",
+            "end": "</small>",
+            "separator": " · "
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+How this runs with `npx ai-i18n-tools sync`:
+
+- UI strings are extracted/translated from `src/` into `public/locales/`.
+- The first docs block translates markdown and JSON labels into Docusaurus `i18n/<locale>/...` layout.
+- The second docs block translates `README.md` into flat locale-suffixed files under `translated-docs/`.
+- All docs blocks share `cacheDir`, so unchanged segments are reused across runs to reduce API calls and cost.
+
+
 ---
 
 ## Configuration reference
@@ -566,19 +665,17 @@ Segment batching for document translation: how many segments per API request, an
 | Field               | Description                                                                              |
 | ------------------- | ---------------------------------------------------------------------------------------- |
 | `baseUrl`           | OpenRouter API base URL. Default: `https://openrouter.ai/api/v1`.                        |
-| `translationModels` | Preferred ordered list of model IDs. The first is tried first; later entries are fallbacks on error. For `translate-ui` only**, you can also set `ui.preferredModel` to try one model before this list (see `ui`). |
+| `translationModels` | Preferred ordered list of model IDs. The first is tried first; later entries are fallbacks on error. For `translate-ui` only, you can also set `ui.preferredModel` to try one model before this list (see `ui`). |
 | `defaultModel`      | Legacy single primary model. Used only when `translationModels` is unset or empty.       |
 | `fallbackModel`     | Legacy single fallback model. Used after `defaultModel` when `translationModels` is unset or empty. |
 | `maxTokens`         | Max completion tokens per request. Default: `8192`.                                      |
-| `temperature`       | Sampling temperature. Default: `0.2`.                                                    |
+| `temperature`       | Sampling temperature. Default: `0.2` **.                                                    |**Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure **`openrouter.translationModels` as an ordered fallback chain** (rather than a single model) so the CLI can attempt the next model if a request fails.
 
-**Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure **`openrouter.translationModels` as an ordered fallback chain** (rather than a single model) so the CLI can attempt the next model if a request fails. 
+Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those OpenRouter IDs as further alternatives.
 
-Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those OpenRouter IDs as further alternatives. 
+This list was **tested for broad locale coverage** (for example, on the Transrewrt project translating **36** target localesin **April 2026**); it serves as a practical default, but is not guaranteed to perform well for every locale.
 
-This list was **tested for broad locale coverage** (for example, on the Transrewrt project translating **36** target locales) in **April 2026**; it serves as a practical default, but is not guaranteed to perform well for every locale.
-
-Example `translationModels` (same as `npx ai-i18n-tools init` and the package examples):
+Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
 
 ```json
 "translationModels": [
@@ -605,9 +702,9 @@ Set `OPENROUTER_API_KEY` in your environment or `.env` file.
 | `translateUIStrings` | 1        | Translate `strings.json` entries and write per-locale JSON files. |
 | `translateMarkdown`  | 2        | Translate `.md` / `.mdx` files.                                   |
 | `translateJSON`      | 2        | Translate Docusaurus JSON label files.                            |
-| `translateSVG`       | 2        | Translate standalone `.svg` assets (requires the top-level `svg` block). |
+| `translateSVG`       | 2        | Translate standalone `.svg` assets (requires the top-level `svg` **block). |
 
-Translate **standalone** SVG assets with `translate-svg` when `features.translateSVG` is true and a top-level `svg` block is configured. The `sync` command runs that step when both are set (unless `--no-svg`).
+Translate**standalone SVG assets with `translate-svg` when `features.translateSVG` is true and a top-level `svg` block is configured. The `sync` command runs that step when both are set (unless `--no-svg`).
 
 ### `ui`
 
@@ -630,9 +727,24 @@ Translate **standalone** SVG assets with `translate-svg` when `features.translat
 | ---------- | ----------------------------------------------------------------------------- |
 | `cacheDir` | SQLite cache directory (shared by all `documentations` blocks). Reuse across runs. If you are migrating from a custom doc translation cache, archive or delete it — `cacheDir` creates its own SQLite database and is not compatible with other schemas. |
 
+Best practice for VCS exclusions:
+
+- Exclude the translation cache folder contents (for example via `.gitignore` or `.git/info/exclude`) to avoid committing transient cache artifacts.
+- Keep `cache.db` available (do not routinely delete it), because preserving the SQLite cache avoids re-translating unchanged segments, which saves both runtime and API cost when changing or upgrading software that uses `ai-i18n-tools`.
+
+Example:
+
+```gitignore
+# Translation cache directory
+.translation-cache/*
+
+# Keep SQLite cache for reuse
+!.translation-cache/cache.db
+```
+
 ### `documentations`
 
-Array of documentation pipeline blocks. `translate-docs` and the docs phase of `sync` process **each** block in order.
+Array of documentation pipeline blocks. `translate-docs` and the docs phase of `sync` **process**each block in order.
 
 | Field                                        | Description                                                                                                                                                                                                               |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -649,8 +761,9 @@ Array of documentation pipeline blocks. `translate-docs` and the docs phase of `
 | `markdownOutput.flatPreserveRelativeDir`     | For `flat` style, keep source subdirectories so files with the same basename do not collide.                                                                                                                              |
 | `markdownOutput.rewriteRelativeLinks` | Rewrite relative links after translation (auto-enabled for `flat` style).                                                                                                                                                 |
 | `markdownOutput.linkRewriteDocsRoot` | Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root. |
-| `markdownOutput.postProcessing` | Optional transforms on the translated markdown **body** (YAML front matter is preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`. |
-| `markdownOutput.postProcessing.regexAdjustments` | Ordered list of `{ "description"?, "search", "replace" }`. `search` is a regex pattern (plain string uses flag `g`, or `/pattern/flags`). `replace` supports placeholders such as `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` (same idea as the reference `additional-adjustments`). |
+| `markdownOutput.postProcessing` **| Optional transforms on the translated markdown**body (YAML front matter is preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`. |
+| `segmentSplitting` **| Same level as**`markdownOutput` (per `documentations[]` **block). Optional finer-grained segments for**translate-docs extraction: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }` **. When**`enabled`** is **`true`** (default when **`segmentSplitting`** is omitted), dense paragraphs, GFM pipe tables (first chunk includes header, separator, and first data row), and long lists are split; sub-parts rejoin with single newlines (**`tightJoinPrevious`**). Set **`"enabled": false` to use one segment per blank-line-delimited body block only. |
+| `markdownOutput.postProcessing.regexAdjustments` | Ordered list of `{ "description"?, "search", "replace" }`. `search` is a regex pattern (plain string uses flag `g`, or `/pattern/flags`). `replace` supports placeholders such as `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`. |
 | `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — the translator finds the first line containing `start` and the matching `end` line, then replaces that slice with a canonical language switcher. Links are built with paths relative to the translated file; labels come from `uiLanguagesPath` / `ui-languages.json` when configured, otherwise from `localeDisplayNames` and locale codes. |
 | `addFrontmatter`                  | When `true` (default when omitted), translated markdown files include YAML keys: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, and when at least one segment has model metadata, `translation_models` (sorted list of OpenRouter model ids used). Set to `false` to skip. |
 
@@ -677,9 +790,9 @@ Example (flat README pipeline — screenshot paths + optional language list wrap
 }
 ```
 
-### `svg` (optional)
+### `svg` **(optional)
 
-Top-level paths and layout for standalone SVG assets. Translation runs only when **`features.translateSVG`** is true (via `translate-svg` or the SVG stage of `sync`).
+Top-level paths and layout for standalone SVG assets. Translation runs only when**`features.translateSVG` is true (via `translate-svg` or the SVG stage of `sync`).
 
 | Field                       | Description |
 | --------------------------- | ----------- |
@@ -714,17 +827,18 @@ npx ai-i18n-tools glossary-generate
 | Command                                                                   | Description                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `version`                                                                 | Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).                                                                                                                                                                                                  |
-| `init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                            |
+| `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                            |
 | `extract`                                                                 | Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional manifest `englishName` entries (see `ui.reactExtractor`). Requires `features.extractUIStrings`.                                                                                                                                                                                                    |
 | `generate-ui-languages [--master <path>] [--dry-run]`                     | Write `ui-languages.json` to `ui.flatOutputDir` (or `uiLanguagesPath` when set) using `sourceLocale` + `targetLocales` and the bundled `data/ui-languages-complete.json` (or `--master`). Warns and emits `TODO` placeholders for locales missing from the master file. If you have an existing manifest with customised `label` or `englishName` values, they will be replaced by master catalog defaults — review and adjust the generated file afterward. |
 | `translate-docs …`                                                        | Translate markdown/MDX and JSON for each `documentations` block (`contentPaths`, optional `jsonSource`). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). See [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) and [Batch prompt format](#batch-prompt-format). |
 | `translate-svg …`                                                         | Translate standalone SVG assets configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                    |
 | `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`           | Translate UI strings only. `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j`: max parallel locales. Requires `features.translateUIStrings`.                                                                                 |
+| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]` **| Runs**`extract`** first (requires **`features.extractUIStrings`**) so **`strings.json`** matches source, then LLM review of **source-locale** UI strings (spelling, grammar). **Terminology hints** come from **`glossary.userGlossary`** CSV only (same scope as **`translate-ui` — not `strings.json` / `uiGlossary`, so bad copy is not reinforced as glossary). Uses OpenRouter (`OPENROUTER_API_KEY` **). Advisory only (exit**0** when the run completes). Writes **`lint-source-results_<timestamp>.log`** under **`cacheDir`** as a **human-readable** report (summary, issues, and per-string **OK** rows); the terminal prints summary counts and issues only (no **`[ok]`** lines per string). Prints the log filename on the last line. **`--json`**: full machine-readable JSON report on stdout only (log file stays human-readable). **`--dry-run`**: still runs **`extract`**, then prints batch plan only (no API calls). **`--chunk`**: strings per API batch (default **50). `-j` **: max parallel batches (default**`concurrency`**). With **`--json`**, human-style output goes to stderr. Links use **`path:line`** like the **`editor` UI strings “link” button. |
 | `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | Export `strings.json` to XLIFF 2.0 (one `.xliff` per target locale). `-o` / `--output-dir`: output directory (default: same folder as the catalog). `--untranslated-only`: only units missing a translation for that locale. Read-only; no API.                                                        |
 | `sync …`                                                                  | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation - unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; the docs step uses the built-in default (`json-array`).                         |
-| `status [--max-columns <n>]`                                   | When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.                                                                                                                                                                                               |
+| `status [--max-columns <n>]`                                   | When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` **locale columns (default**9) so lines stay narrow in the terminal.                                                                                                                                                                                               |
 | `cleanup [--dry-run] [--no-backup] [--backup <path>]`                  | Runs `sync --force-update` first (extract, UI, SVG, docs), then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file. Logs three counts (stale, orphaned `file_tracking`, orphaned translations). Creates a timestamped SQLite backup under the cache dir unless `--no-backup`. |
-| `editor [-p <port>] [--no-open]`                                          | Launch a local web editor for the cache, `strings.json`, and glossary CSV. `--no-open`: do not open the default browser automatically.<br><br>**Note:** If you edit an entry in the cache editor, you must run a `sync --force-update` to rewrite the output files with the updated cache entry. Also, if the source text changes later, the manual edit will be lost since a new cache key is generated. |
+| `editor [-p <port>] [--no-open]`                                          | Launch a local web editor for the cache, `strings.json`, and glossary CSV. `--no-open` **: do not open the default browser automatically.<br><br>**Note: If you edit an entry in the cache editor, you must run a `sync --force-update` to rewrite the output files with the updated cache entry. Also, if the source text changes later, the manual edit will be lost since a new cache key is generated. |
 | `glossary-generate [-o <path>]`                                           | Write an empty `glossary-user.csv` template. `-o`: override the output path (default: `glossary.userGlossary` from config, or `glossary-user.csv`).                                                                                                                                                |
 
 
@@ -737,7 +851,7 @@ All commands accept `-c <path>` to specify a non-default config file, `-v` for v
 
 | Variable               | Description                                                |
 | ---------------------- | ---------------------------------------------------------- |
-| `OPENROUTER_API_KEY`   | **Required.** Your OpenRouter API key.                     |
+| `OPENROUTER_API_KEY` **|**Required.** Your OpenRouter API key.                     |
 | `OPENROUTER_BASE_URL`  | Override the API base URL.                                 |
 | `I18N_SOURCE_LOCALE`   | Override `sourceLocale` at runtime.                        |
 | `I18N_TARGET_LOCALES`  | Comma-separated locale codes to override `targetLocales`.  |

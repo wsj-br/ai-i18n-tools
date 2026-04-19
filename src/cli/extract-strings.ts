@@ -5,13 +5,18 @@ import {
   buildUiLanguageRowsFromMaster,
   loadUiLanguagesMaster,
 } from "../core/ui-languages-catalog.js";
-import type { I18nConfig } from "../core/types.js";
+import type { I18nConfig, StringsJsonPluralEntry } from "../core/types.js";
+import { isPluralStringsEntry } from "../core/types.js";
 import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
   aggregateUiStringLocations,
   defaultFuncNamesFromConfig,
   uiStringHash,
 } from "../extractors/ui-string-locations.js";
+import {
+  extractUiCallsFromSource,
+  pluralMultiPlaceholderMissingCount,
+} from "../extractors/ui-string-babel.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
@@ -29,6 +34,12 @@ export interface ExtractSummary {
   /** Set when `ui-languages.json` was written alongside extract. */
   uiLanguagesOutPath?: string;
 }
+
+type ScannedRow = {
+  source: string;
+  plurals?: boolean;
+  zeroDigit?: boolean;
+};
 
 /**
  * Scan `ui.sourceRoots` for UI strings and write merged `strings.json`.
@@ -49,6 +60,26 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   );
   const funcNames = defaultFuncNamesFromConfig(config.ui.reactExtractor);
 
+  const validationErrors: string[] = [];
+  for (const rel of files) {
+    const abs = path.join(cwd, rel);
+    const content = fs.readFileSync(abs, "utf8");
+    const calls = extractUiCallsFromSource(content, rel, funcNames);
+    for (const call of calls) {
+      if (call.plurals && pluralMultiPlaceholderMissingCount(call.literal)) {
+        validationErrors.push(
+          `[extract] plurals: string with multiple interpolations must include {{count}} for the plural axis.\n` +
+            `  String: ${JSON.stringify(call.literal)}\n` +
+            `  File: ${rel}\n` +
+            `  Line: ${call.line}`
+        );
+      }
+    }
+  }
+  if (validationErrors.length > 0) {
+    throw new Error(validationErrors.join("\n\n"));
+  }
+
   const locByHash = aggregateUiStringLocations(
     files,
     (rel) => fs.readFileSync(path.join(cwd, rel), "utf8"),
@@ -60,7 +91,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     }
   );
 
-  const byHash = new Map<string, { source: string; translated: Record<string, string> }>();
+  const byHash = new Map<string, ScannedRow>();
   let found = 0;
 
   for (const rel of files) {
@@ -69,7 +100,11 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     const segs = rx.extract(content, rel);
     for (const s of segs) {
       if (!byHash.has(s.hash)) {
-        byHash.set(s.hash, { source: s.content, translated: {} });
+        byHash.set(s.hash, {
+          source: s.content,
+          ...(s.plurals === true ? { plurals: true } : {}),
+          ...(s.zeroDigit === true ? { zeroDigit: true } : {}),
+        });
         found++;
       }
     }
@@ -77,7 +112,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
 
   for (const s of rx.packageDescriptionSegments()) {
     if (!byHash.has(s.hash)) {
-      byHash.set(s.hash, { source: s.content, translated: {} });
+      byHash.set(s.hash, { source: s.content });
       found++;
     }
   }
@@ -101,7 +136,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
           }
           const h = uiStringHash(text);
           if (!byHash.has(h)) {
-            byHash.set(h, { source: text, translated: {} });
+            byHash.set(h, { source: text });
             found++;
           }
         }
@@ -116,18 +151,10 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   }
 
   const outPath = resolveStringsJsonPath(config, cwd);
-  let existing: Record<
-    string,
-    {
-      source?: string;
-      translated?: Record<string, string>;
-      models?: Record<string, string>;
-      locations?: Array<{ file: string; line: number }>;
-    }
-  > = {};
+  let existing: Record<string, unknown> = {};
   if (fs.existsSync(outPath)) {
     try {
-      existing = JSON.parse(fs.readFileSync(outPath, "utf8")) as typeof existing;
+      existing = JSON.parse(fs.readFileSync(outPath, "utf8")) as Record<string, unknown>;
     } catch {
       /* ignore */
     }
@@ -135,34 +162,61 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
 
   let added = 0;
   let updated = 0;
-  const output: Record<
-    string,
-    {
-      source: string;
-      translated: Record<string, string>;
-      models?: Record<string, string>;
-      locations?: Array<{ file: string; line: number }>;
-    }
-  > = {};
+  const output: Record<string, unknown> = {};
 
   for (const [h, next] of byHash) {
-    const prev = existing[h];
+    const prev = existing[h] as Record<string, unknown> | undefined;
     if (!prev) {
       added++;
-    } else if (prev.source !== next.source) {
+    } else if ((prev.source as string | undefined) !== next.source) {
       updated++;
     }
-    const mergedTranslated =
-      prev && typeof prev.translated === "object" && prev.translated ? { ...prev.translated } : {};
+
+    const prevWasPlural = prev ? isPluralStringsEntry(prev as never) : false;
+    const nextIsPlural = next.plurals === true;
+    const shapeChange = !!prev && prevWasPlural !== nextIsPlural;
+
+    if (shapeChange) {
+      console.warn(
+        chalk.yellow(
+          `⚠️  ${timestamp()} - Entry ${h}: plain/plural shape changed; clearing stored translations for this key.`
+        )
+      );
+    }
+
     const mergedModels =
-      prev && typeof prev.models === "object" && prev.models ? { ...prev.models } : {};
+      prev && typeof prev.models === "object" && prev.models
+        ? { ...(prev.models as Record<string, string>) }
+        : {};
     const locs = locByHash.get(h);
-    output[h] = {
-      source: next.source,
-      translated: mergedTranslated,
-      ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
-      ...(locs && locs.length > 0 ? { locations: locs } : {}),
-    };
+
+    if (nextIsPlural) {
+      const mergedTranslated: StringsJsonPluralEntry["translated"] =
+        !shapeChange && prevWasPlural && prev && isPluralStringsEntry(prev as never)
+          ? {
+              ...((prev as unknown as StringsJsonPluralEntry).translated ?? {}),
+            }
+          : {};
+      output[h] = {
+        plural: true,
+        source: next.source,
+        ...(next.zeroDigit ? { zeroDigit: true } : {}),
+        translated: mergedTranslated,
+        ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
+        ...(locs && locs.length > 0 ? { locations: locs } : {}),
+      };
+    } else {
+      const mergedTranslated: Record<string, string> =
+        !shapeChange && prev && !isPluralStringsEntry(prev as never) && prev.translated
+          ? { ...(prev.translated as Record<string, string>) }
+          : {};
+      output[h] = {
+        source: next.source,
+        translated: mergedTranslated,
+        ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
+        ...(locs && locs.length > 0 ? { locations: locs } : {}),
+      };
+    }
   }
 
   writeAtomicUtf8(outPath, `${JSON.stringify(output, null, 2)}\n`);

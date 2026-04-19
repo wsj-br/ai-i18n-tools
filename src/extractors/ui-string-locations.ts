@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { Parser } from "i18next-scanner";
 import type { UIStringExtractorConfig } from "../core/types.js";
+import { extractUiCallsFromSource } from "./ui-string-babel.js";
 
 export type UiStringLocation = { file: string; line: number };
 
@@ -11,73 +11,33 @@ export function uiStringHash(content: string): string {
   return crypto.createHash("md5").update(content).digest("hex").slice(0, 8);
 }
 
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 /**
- * Same core pattern as i18next-scanner `parseFuncFromString` (lib/parser.js) so
- * location hashes align with extracted strings.
- */
-function buildParseFuncRegExp(funcNames: string[]): RegExp {
-  const matchFuncs = funcNames.map((func) => `(?:${escapeRegExp(func)})`).join("|");
-  const matchSpecialCharacters = "[\\r\\n\\s]*";
-  const stringPart =
-    "`(?:[^`\\\\]|\\\\(?:.|$))*`" +
-    "|" +
-    '"(?:[^"\\\\]|\\\\(?:.|$))*"' +
-    "|" +
-    "'(?:[^'\\\\]|\\\\(?:.|$))*'";
-  const stringGroup = `${matchSpecialCharacters}(${stringPart})${matchSpecialCharacters}`;
-  const stringNoGroup = `${matchSpecialCharacters}(?:${stringPart})${matchSpecialCharacters}`;
-  const keys = `(${stringNoGroup}|\\[${stringNoGroup}(?:[,]${stringNoGroup})?\\])`;
-  const pattern = `(?:(?:^\\s*)|[^a-zA-Z0-9_])(?:${matchFuncs})\\(${keys}(?:[,]${stringGroup})?[,\\)]`;
-  return new RegExp(pattern, "gim");
-}
-
-/**
- * Collect per-hash source locations from one file's content (JS/TS).
+ * Collect per-hash source locations from one file's content (JS/TS) via Babel AST.
  */
 export function collectUiStringLocationsFromSource(
   content: string,
   relPath: string,
   funcNames: string[]
 ): Map<string, UiStringLocation[]> {
+  const calls = extractUiCallsFromSource(content, relPath, funcNames);
   const out = new Map<string, UiStringLocation[]>();
-  const parser = new Parser({
-    func: { list: funcNames, extensions: [".ts"] },
-    nsSeparator: false,
-    keySeparator: false,
-  });
-  const fixKeys = (
-    parser as unknown as { fixStringAfterRegExpAsArray: (s: string) => string[] }
-  ).fixStringAfterRegExpAsArray.bind(parser);
-
-  const re = buildParseFuncRegExp(funcNames);
-  const relNorm = relPath.replace(/\\/g, "/");
-  let m: RegExpExecArray | null;
   const seen = new Set<string>();
-  while ((m = re.exec(content)) !== null) {
-    const idx = m.index;
-    const line = 1 + (content.slice(0, idx).match(/\n/g) ?? []).length;
-    let keyParts: string[];
-    try {
-      keyParts = fixKeys(m[1] ?? "");
-    } catch {
+  const relNorm = relPath.replace(/\\/g, "/");
+  for (const call of calls) {
+    const str = call.literal.trim();
+    if (!str) {
       continue;
     }
-    for (const raw of keyParts) {
-      const str = String(raw).trim();
-      if (!str) continue;
-      const h = uiStringHash(str);
-      const loc: UiStringLocation = { file: relNorm, line };
-      const dedupeKey = `${h}:${relNorm}:${line}`;
-      if (seen.has(dedupeKey)) continue;
-      seen.add(dedupeKey);
-      const list = out.get(h) ?? [];
-      list.push(loc);
-      out.set(h, list);
+    const h = uiStringHash(str);
+    const dedupeKey = `${h}:${relNorm}:${call.line}`;
+    if (seen.has(dedupeKey)) {
+      continue;
     }
+    seen.add(dedupeKey);
+    const loc: UiStringLocation = { file: relNorm, line: call.line };
+    const list = out.get(h) ?? [];
+    list.push(loc);
+    out.set(h, list);
   }
   return out;
 }
@@ -112,7 +72,7 @@ export function packageJsonDescriptionLocation(
     const text = fs.readFileSync(packageJsonPath, "utf8");
     const lines = text.split(/\r?\n/);
     for (let i = 0; i < lines.length; i++) {
-      if (/^\s*"description"\s*:/.test(lines[i])) {
+      if (/^\s*"description"\s*:/.test(lines[i]!)) {
         line = i + 1;
         break;
       }

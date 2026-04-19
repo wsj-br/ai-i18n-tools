@@ -49,7 +49,7 @@ For the authoritative per-change list, see [`dev/CHANGELOG.md`](https://github.c
 
 - **Single-segment document prompts** — user message is **raw segment text** (no `<translate>` wrapper); system prompt uses `singleSegmentOutputInstruction` instead of `translateFooter`.
 - **`status`** — UI string coverage is **per-locale**; markdown file × locale tables are **chunked** with **`--max-columns <n>`** (default 9).
-- **`translate-svg` / shared doc totals** — summary includes **segment cache hit rate**; reports `segmentValidationFailures` and `individualSegmentTranslations`; quality-retry warnings show fallback position `(k/n)` in the model list.
+- `translate-svg` **/ shared doc totals** — summary includes **segment cache hit rate**; reports `segmentValidationFailures` and `individualSegmentTranslations`; quality-retry warnings show fallback position `(k/n)` in the model list.
 - **Default OpenRouter models** — `DEFAULT_OPENROUTER_MODELS` updated (reordered; adds newer/alternate models such as Qwen 3 235B, Anthropic Haiku variants, GPT-5.3 Codex, Gemini 3 Flash preview).
 - **`translate-ui-strings`** — pending-work log line uses 📄 instead of 🔃.
 - **`scripts/fill-ui-language-labels.mjs`** — uppercases the first character of model-returned native labels when it is a Unicode letter (`\p{L}`), via `toLocaleUpperCase("und")`.

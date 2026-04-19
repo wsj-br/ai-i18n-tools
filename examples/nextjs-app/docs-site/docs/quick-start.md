@@ -4,8 +4,6 @@ title: Quick Start
 description: Get your first translated document in under five minutes using ai-i18n-tools with this Next.js example project.
 ---
 
-# Quick Start
-
 Follow the steps below to run your first translation with `ai-i18n-tools`. This guide uses the example Next.js project you are already reading — every command should be run from the `examples/nextjs-app/` directory.
 
 ---
@@ -83,7 +81,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 
 You will see output similar to:
 
-```
+```text
 [docs] Scanning docs-site/docs/ — 2 files found
 [docs] Translating to: es, fr, de, pt-BR
 [docs] feature-showcase.md — 14 segments translated (4 locales)
@@ -125,9 +123,27 @@ This starts the Docusaurus dev server in German. Open [http://localhost:3000/de/
 
 ---
 
+## Step 7 — Explore the Next.js demo (locale + cardinal plurals)
+
+Documentation translation in this tutorial uses **Markdown only**. The same example repo also ships a **Next.js** UI on port **3030** where you can see **`t()`** calls, **`?locale=`** URLs, and a **cardinal plural** demo.
+
+From `examples/nextjs-app/`:
+
+```bash
+npm run dev
+```
+
+Then open [http://localhost:3030](http://localhost:3030).
+
+- Switch languages with the **Locale** dropdown, or append **`?locale=<code>`** (for example `http://localhost:3030/?locale=ar`). The UI keeps the query string and dropdown in sync.
+- Scroll to **Plurals: automatic generation usage example**. The page repeats “This page has … sections” for fixed sample counts (**1**, **2**, **5**, **50**) so you can compare plural rules across locales (including languages with multiple plural forms).
+- Calls use **`t("…", { plurals: true, count })`**. With **`extract`** / **`translate-ui`**, that key becomes a plural group in `locales/strings.json`; flat **`public/locales/*.json`** files carry the suffixed forms. Runtime wiring lives in **`src/lib/i18n.ts`** — see the **Cardinal plurals example** section in the [example README](../../README.md) for a concise walk-through.
+
+---
+
 ## What to explore next
 
-- Read the [Translation Feature Showcase](./feature-showcase) to see every Markdown element that `ai-i18n-tools` can handle.
+- Read the [Translation Feature Showcase](./feature-showcase) to see every Markdown element that `ai-i18n-tools` can handle — including how **cardinal plural UI strings** relate to this docs pipeline.
 - Edit a sentence in `docs-site/docs/feature-showcase.md` and re-run `sync` — only that segment will be sent to the LLM; the rest are served from cache.
 - Add a term to `glossary-user.csv` to enforce consistent terminology across all locales.
 - Enable the UI strings pipeline by setting `"translateUIStrings": true` and running `sync` without the `--no-ui` flag.

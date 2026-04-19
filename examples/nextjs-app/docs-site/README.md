@@ -30,7 +30,7 @@ The dev server listens on [http://localhost:3040](http://localhost:3040).
 
 ### i18n and `pnpm start` (important)
 
-Docusaurus **only loads one locale in development** at a time. `pnpm start` runs the **default** locale (`en`), so URLs under **`/es/`, `/fr/`, `/de/`, `/pt-BR/` return 404** until you start the dev server for that locale (same behavior as [duplistatus](https://github.com/wsj-br/duplistatus)’s `start:es`, etc.).
+Docusaurus **only loads one locale in development** at a time. `pnpm start` runs the **default** locale (`en`), so URLs under `/es/`, `/fr/`, `/de/`, `/pt-BR/` **return 404** until you start the dev server for that locale (same behavior as [duplistatus](https://github.com/wsj-br/duplistatus)’s `start:es`, etc.).
 
 | Goal | Command |
 |------|---------|

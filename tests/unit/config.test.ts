@@ -247,6 +247,39 @@ describe("parseI18nConfig", () => {
     expect(pp?.languageListBlock?.start).toBe("<s>");
   });
 
+  it("accepts documentations[].segmentSplitting alongside markdownOutput", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            contentPaths: ["docs/"],
+            outputDir: "./out",
+            markdownOutput: { style: "nested" },
+            segmentSplitting: { enabled: true, maxCharsPerSegment: 3000 },
+          },
+        ],
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: {
+          translateMarkdown: true,
+          translateJSON: false,
+          extractUIStrings: false,
+          translateUIStrings: false,
+          translateSVG: false,
+        },
+      })
+    );
+    expect(c.documentations[0]!.segmentSplitting?.enabled).toBe(true);
+    expect(c.documentations[0]!.segmentSplitting?.maxCharsPerSegment).toBe(3000);
+  });
+
   it("preserves optional documentations[].description", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({

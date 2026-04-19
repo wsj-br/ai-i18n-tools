@@ -119,6 +119,25 @@ describe("runExtract includeUiLanguageEnglishNames", () => {
     }
   });
 
+  it("throws when plurals:true has multiple placeholders without {{count}}", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "extract-plural-err-"));
+    try {
+      fs.mkdirSync(path.join(tmp, "src"), { recursive: true });
+      fs.writeFileSync(
+        path.join(tmp, "src", "bad.tsx"),
+        `t("Hello {{name}}, you have {{msgs}} messages", { plurals: true });\n`,
+        "utf8"
+      );
+
+      const config = minimalExtractConfig();
+
+      expect(() => runExtract(config, tmp)).toThrow(/must include \{\{count\}\}/);
+      expect(fs.existsSync(path.join(tmp, "strings.json"))).toBe(false);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
   it("writes ui-languages.json on extract", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "extract-ui-json-"));
     try {

@@ -1,23 +1,21 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { Parser } from "i18next-scanner";
 import type {
   Segment,
   SegmentTranslationMapValue,
   UIStringExtractorConfig,
 } from "../core/types.js";
-import { segmentTranslationText } from "../core/types.js";
+import { isPluralStringsEntry, segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
+import { extractUiCallsFromSource } from "./ui-string-babel.js";
 
 const DEFAULT_EXT = [".js", ".jsx", ".ts", ".tsx"];
 const DEFAULT_FUNCS = ["t", "i18n.t"];
 
 /**
- * UI string extraction via `i18next-scanner`. Scans any JS/TS source files for
- * `t("literal")` / `i18n.t("literal")` calls (configurable via `funcNames`).
- * Works in React, Next.js, Node.js, and any other JS/TS codebase using i18next.
- * Segment hashes are MD5 first 8 hex (keys in `strings.json`).
+ * UI string extraction via Babel AST. Scans JS/TS for `t("literal")` / `i18n.t("literal")` with optional
+ * `{ plurals: true, zeroDigit?: boolean }`. Segment hashes are MD5 first 8 hex (keys in `strings.json`).
  */
 export class UIStringExtractor extends BaseExtractor {
   readonly name = "ui-string";
@@ -55,33 +53,29 @@ export class UIStringExtractor extends BaseExtractor {
   }
 
   extract(content: string, filepath: string): Segment[] {
-    void filepath;
-    const found = new Map<string, string>();
-    const parser = new Parser({
-      func: { list: this.funcNames, extensions: Array.from(this.extensions) },
-      nsSeparator: false,
-      keySeparator: false,
-    });
-
-    parser.parseFuncFromString(content, (key: string) => {
-      const str = key.trim();
-      if (str) {
-        found.set(this.computeHash(str), str);
-      }
-    });
-
-    const segments: Segment[] = [];
+    const calls = extractUiCallsFromSource(content, filepath, this.funcNames);
+    const found = new Map<string, Segment>();
     let i = 0;
-    for (const [hash, text] of found) {
-      segments.push({
-        id: `ui-${i++}`,
-        type: "ui-string",
-        content: text,
-        hash,
-        translatable: true,
-      });
+    for (const call of calls) {
+      const str = call.literal.trim();
+      if (!str) {
+        continue;
+      }
+      const hash = this.computeHash(str);
+      if (!found.has(hash)) {
+        found.set(hash, {
+          id: `ui-${i++}`,
+          type: "ui-string",
+          content: str,
+          hash,
+          translatable: true,
+          startLine: call.line,
+          ...(call.plurals === true ? { plurals: true } : {}),
+          ...(call.zeroDigit === true ? { zeroDigit: true } : {}),
+        });
+      }
     }
-    return segments;
+    return Array.from(found.values());
   }
 
   /** Optional `package.json` description as a UI string (About tab pattern). */
@@ -128,8 +122,9 @@ export class UIStringExtractor extends BaseExtractor {
   }
 
   /**
-   * Build `strings.json` body: `{ [hash]: { source, translated: { [locale]: text } } }`.
+   * Build `strings.json` body: `{ [hash]: { source, translated } }`.
    * Existing file is merged when `existingPath` exists.
+   * Plural segments ignore per-locale string maps here (use `translate-ui`); reassemble keeps `translated` empty for plural rows.
    */
   buildStringsJson(
     segments: Segment[],
@@ -138,7 +133,13 @@ export class UIStringExtractor extends BaseExtractor {
   ): string {
     let existing: Record<
       string,
-      { source?: string; translated?: Record<string, string>; models?: Record<string, string> }
+      {
+        source?: string;
+        translated?: Record<string, string | Record<string, string>>;
+        models?: Record<string, string>;
+        plural?: boolean;
+        zeroDigit?: boolean;
+      }
     > = {};
     if (existingPath && fs.existsSync(existingPath)) {
       try {
@@ -150,14 +151,51 @@ export class UIStringExtractor extends BaseExtractor {
 
     const output: Record<
       string,
-      { source: string; translated: Record<string, string>; models?: Record<string, string> }
+      | {
+          source: string;
+          translated: Record<string, string>;
+          models?: Record<string, string>;
+        }
+      | {
+          plural: true;
+          source: string;
+          zeroDigit?: boolean;
+          translated: Record<string, Record<string, string>>;
+          models?: Record<string, string>;
+        }
     > = {};
 
-    for (const [h, str] of segments.map((s) => [s.hash, s.content] as const)) {
+    for (const s of segments) {
+      const h = s.hash;
+      const str = s.content;
       const prev = existing[h];
+      const preservedModels =
+        prev && typeof prev.models === "object" && prev.models ? { ...prev.models } : undefined;
+
+      if (s.plurals) {
+        const prevTr: Record<string, Record<string, string>> = prev &&
+        isPluralStringsEntry(prev as never) &&
+        prev.translated
+          ? { ...(prev.translated as Record<string, Record<string, string>>) }
+          : {};
+        output[h] = {
+          plural: true,
+          source: str,
+          ...(s.zeroDigit ? { zeroDigit: true } : {}),
+          translated: prevTr,
+          ...(preservedModels && Object.keys(preservedModels).length > 0
+            ? { models: preservedModels }
+            : {}),
+        };
+        continue;
+      }
+
       const translated: Record<string, string> =
-        prev && typeof prev.translated === "object" && prev.translated
-          ? { ...prev.translated }
+        prev &&
+        typeof prev.translated === "object" &&
+        prev.translated &&
+        !isPluralStringsEntry(prev as never)
+          ? { ...(prev.translated as Record<string, string>) }
           : {};
       for (const [locale, map] of Object.entries(translationsByLocale)) {
         const raw = map.get(h);
@@ -166,12 +204,17 @@ export class UIStringExtractor extends BaseExtractor {
           translated[locale] = t;
         }
       }
-      const preservedModels =
-        prev && typeof prev.models === "object" && prev.models ? { ...prev.models } : undefined;
-      const base =
+      const mergedFlat: Record<string, string> =
+        prev &&
+        typeof prev.translated === "object" &&
+        prev.translated &&
+        !isPluralStringsEntry(prev as never)
+          ? { ...(prev.translated as Record<string, string>), ...translated }
+          : translated;
+      const base: { source: string; translated: Record<string, string> } =
         prev && typeof prev === "object" && typeof prev.source === "string"
-          ? { source: str, translated: { ...(prev.translated ?? {}), ...translated } }
-          : { source: str, translated };
+          ? { source: str, translated: mergedFlat }
+          : { source: str, translated: mergedFlat };
       output[h] =
         preservedModels && Object.keys(preservedModels).length > 0
           ? { ...base, models: preservedModels }

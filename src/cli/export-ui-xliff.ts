@@ -1,18 +1,17 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import type { I18nConfig } from "../core/types.js";
+import type {
+  CldrPluralForm,
+  I18nConfig,
+  StringsJsonEntry,
+  StringsJsonPlainEntry,
+} from "../core/types.js";
+import { isPluralStringsEntry } from "../core/types.js";
 import { normalizeLocale } from "../core/config.js";
 import { resolveLocalesForUI } from "../core/ui-languages.js";
+import { requiredCldrPluralForms } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
-
-/** Matches `strings.json` entry shape used by extract / translate-ui. */
-export interface StringsJsonEntry {
-  source?: string;
-  translated?: Record<string, string>;
-  models?: Record<string, string>;
-  locations?: Array<{ file?: string; line?: number }>;
-}
 
 export type StringsJsonFile = Record<string, StringsJsonEntry>;
 
@@ -67,9 +66,25 @@ function buildNotesBlock(entry: StringsJsonEntry): string {
   return lines.length > 2 ? `${lines.join("\n")}\n` : "";
 }
 
-function buildUnitXml(
+function pluralFullyTranslated(entry: StringsJsonPluralLike, locale: string): boolean {
+  const forms = entry.translated?.[normalizeLocale(locale)];
+  if (!forms || typeof forms !== "object") {
+    return false;
+  }
+  const req = requiredCldrPluralForms(locale);
+  return req.every((f) => typeof forms[f] === "string" && String(forms[f]).trim().length > 0);
+}
+
+type StringsJsonPluralLike = {
+  plural: true;
+  source?: string;
+  translated?: Record<string, Partial<Record<CldrPluralForm, string>>>;
+  locations?: Array<{ file?: string; line?: number }>;
+};
+
+function buildPlainUnitXml(
   id: string,
-  entry: StringsJsonEntry,
+  entry: StringsJsonPlainEntry,
   targetLocale: string,
   untranslatedOnly: boolean
 ): string | null {
@@ -93,6 +108,81 @@ ${sourceLine}${targetLine}
     </unit>`;
 }
 
+function buildPluralUnitXml(
+  config: I18nConfig,
+  id: string,
+  entry: StringsJsonPluralLike,
+  targetLocale: string,
+  untranslatedOnly: boolean
+): string | null {
+  const srcNorm = normalizeLocale(config.sourceLocale);
+  const tgtNorm = normalizeLocale(targetLocale);
+
+  const fullyTranslated = pluralFullyTranslated(entry, targetLocale);
+  if (untranslatedOnly && fullyTranslated) {
+    return null;
+  }
+
+  const notes = buildPluralNotes(entry);
+
+  const reqTarget = requiredCldrPluralForms(targetLocale);
+  const segments: string[] = [];
+  for (const form of reqTarget) {
+    const srcText = String(
+      (entry.translated?.[srcNorm] as Partial<Record<CldrPluralForm, string>>)?.[form] ?? ""
+    );
+    const trRaw = (entry.translated?.[tgtNorm] as Partial<Record<CldrPluralForm, string>>)?.[form];
+    const hasTr = typeof trRaw === "string" && trRaw.trim().length > 0;
+    const state = hasTr ? "translated" : "initial";
+    const targetLine = hasTr ? `\n        <target>${escapeXml(trRaw!)}</target>` : "";
+    segments.push(`      <segment id="${escapeXml(`${id}_${form}`)}" state="${state}">
+        <source>${escapeXml(srcText)}</source>${targetLine}
+      </segment>`);
+  }
+
+  return `    <unit id="${escapeXml(id)}">
+${notes}${segments.join("\n")}
+    </unit>`;
+}
+
+function buildPluralNotes(entry: StringsJsonPluralLike): string {
+  const lines: string[] = [];
+  if (entry.source?.trim()) {
+    lines.push(`        <note category="original">${escapeXml(entry.source.trim())}</note>`);
+  }
+  for (const loc of entry.locations ?? []) {
+    const file = typeof loc.file === "string" ? loc.file : "";
+    const line = typeof loc.line === "number" ? loc.line : undefined;
+    const text =
+      line !== undefined && file
+        ? `${file}:${line}`
+        : file || (line !== undefined ? String(line) : "");
+    if (text) {
+      lines.push(`        <note category="location">${escapeXml(text)}</note>`);
+    }
+  }
+  if (lines.length === 0) {
+    return "";
+  }
+  return `      <notes>
+${lines.join("\n")}
+      </notes>
+`;
+}
+
+function buildUnitXml(
+  config: I18nConfig,
+  id: string,
+  entry: StringsJsonEntry,
+  targetLocale: string,
+  untranslatedOnly: boolean
+): string | null {
+  if (isPluralStringsEntry(entry)) {
+    return buildPluralUnitXml(config, id, entry, targetLocale, untranslatedOnly);
+  }
+  return buildPlainUnitXml(id, entry as StringsJsonPlainEntry, targetLocale, untranslatedOnly);
+}
+
 export function buildUiXliffString(
   config: I18nConfig,
   data: StringsJsonFile,
@@ -109,7 +199,7 @@ export function buildUiXliffString(
     if (!entry) {
       continue;
     }
-    const unitXml = buildUnitXml(id, entry, targetLocale, untranslatedOnly);
+    const unitXml = buildUnitXml(config, id, entry, targetLocale, untranslatedOnly);
     if (unitXml) {
       unitLines.push(unitXml);
     }
@@ -124,6 +214,30 @@ ${body}
   </file>
 </xliff>
 `;
+}
+
+function shouldCountUnit(
+  config: I18nConfig,
+  entry: StringsJsonEntry | undefined,
+  normalized: string,
+  untranslatedOnly: boolean
+): boolean {
+  if (!entry) {
+    return false;
+  }
+  if (isPluralStringsEntry(entry)) {
+    const fullyTranslated = pluralFullyTranslated(entry, normalized);
+    if (untranslatedOnly && fullyTranslated) {
+      return false;
+    }
+    return true;
+  }
+  const tr = entry.translated?.[normalized];
+  const hasTranslation = typeof tr === "string" && tr.trim().length > 0;
+  if (untranslatedOnly && hasTranslation) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -186,16 +300,9 @@ export function runExportUIXliff(
 
     let count = 0;
     for (const id of Object.keys(data)) {
-      const entry = data[id];
-      if (!entry) {
-        continue;
+      if (shouldCountUnit(config, data[id], normalized, opts.untranslatedOnly)) {
+        count += 1;
       }
-      const tr = entry.translated?.[normalized];
-      const hasTranslation = typeof tr === "string" && tr.trim().length > 0;
-      if (opts.untranslatedOnly && hasTranslation) {
-        continue;
-      }
-      count += 1;
     }
     unitsPerLocale[normalized] = count;
 

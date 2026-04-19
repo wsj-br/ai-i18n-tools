@@ -64,6 +64,29 @@ hr {
   margin: 0.35rem 0;
 }
 
+.code-block {
+  margin: 0.5rem 0 0;
+  padding: 0.75rem 1rem;
+  background: #e9ecef;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.code-block code {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+}
+
 .demo-svg {
   text-align: center;
   margin-top: 1rem;

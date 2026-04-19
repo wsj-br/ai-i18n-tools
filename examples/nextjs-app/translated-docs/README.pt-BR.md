@@ -1,12 +1,12 @@
 # Exemplo de Aplicativo Next.js
 
-Este exemplo mostra como usar o `ai-i18n-tools` com um aplicativo **TypeScript** [Next.js](https://nextjs.org/) e **pnpm**. A interface corresponde ao [exemplo de aplicativo de console](../../console-app/), utilizando as mesmas chaves de texto e um seletor de localidade controlado por `locales/ui-languages.json` (localidade de origem `en-GB` primeiro, seguida pelos alvos de tradução).
+Este exemplo mostra como usar `ai-i18n-tools` com um aplicativo **TypeScript** [Next.js](https://nextjs.org/) e **pnpm**. A interface do usuário corresponde ao [exemplo do aplicativo de console](../../console-app/), usando as mesmas chaves de string e um seletor de localidade controlado por `locales/ui-languages.json` (localidade de origem `en-GB` primeiro, seguido pelos alvos de tradução). [`src/lib/i18n.ts`](../src/lib/i18n.ts) constrói **`localeLoaders`** a partir desse manifesto (cada `code` exceto `SOURCE_LOCALE`), como o aplicativo de console; os pacotes são carregados com **`fetch`** para **`public/locales/<locale>.json`**.
 
 Aninhado nesta pasta há um pequeno site **[Docusaurus](https://docusaurus.io/)** ([`docs-site/`](../docs-site/)) com cópias da documentação principal do projeto para navegação local.
 
 <small>**Leia em outros idiomas:** </small>
 
-<small id="lang-list">[en-GB](../README.md) · [ar](./README.ar.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+<small id="lang-list">[English](../README.md) · [العربية](./README.ar.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (BR)](./README.pt-BR.md)</small>
 
 ## Captura de tela
 
@@ -45,7 +45,18 @@ pnpm build
 pnpm start
 ```
 
-Abra [http://localhost:3030](http://localhost:3030). Use o menu suspenso **Localidade** para alternar o idioma (ID da localidade / nome em inglês / rótulo nativo).
+Abra [http://localhost:3030](http://localhost:3030). Use o menu suspenso **Locale** para alternar o idioma (ID de localidade / nome em inglês / rótulo nativo). Você também pode usar um link direto para uma localidade com a string de consulta **`?locale=<code>`** (por exemplo, [`?locale=ar`](http://localhost:3030/?locale=ar)); a página mantém o menu suspenso e a URL sincronizados.
+
+### Exemplo de plurais cardinais
+
+A página inicial inclui uma **demonstração de plurais** (“Plurais: exemplo de uso da geração automática”) que mostra como as strings de interface de usuário de **plural cardinal** são conectadas de ponta a ponta:
+
+- **Renderização:** A mesma mensagem é repetida para várias contagens de exemplo definidas em **`PLURAL_DEMO_COUNTS`** em [`src/app/page.tsx`](../src/app/page.tsx) (por padrão **1**, **2**, **5** e **50**) para que você possa comparar o comportamento plural entre localidades (incluindo idiomas com várias formas plurais, como o árabe).
+- **API:** Cada linha usa `t("This page has {{count}} sections", { plurals: true, count })`. Passe **`plurals: true`** para que a extração e a tradução tratem a chave como um grupo plural; **`count`** seleciona a forma plural ativa em tempo de execução.
+- **Tempo de execução:** “As formas plurais são resolvidas em tempo de execução usando os auxiliares configurados em [src/lib/i18n.ts](../src/lib/i18n.ts) (consulte a documentação de tempo de execução do pacote para obter o panorama completo).
+- **Saídas:** As localidades de destino usam entradas com sufixo em `public/locales/<locale>.json`; a localidade de origem mantém os pacotes plurais em **`public/locales/en-GB.json`** ao lado das entradas planas usuais.
+
+O exemplo também mostra um pequeno **bloco de código cinza** com o trecho JSX acima dos exemplos em tempo real para referência rápida.
 
 A página inicial também exibe um **SVG de demonstração** na parte inferior. A URL da imagem segue o padrão `public/assets/translation_demo_svg.<locale>.svg` (estrutura plana do bloco `svg` em `ai-i18n-tools.config.json`). Após executar `translate-svg`, cada arquivo de localidade contém conteúdo traduzido em `<text>`, `<title>` e `<desc>`; até então, as cópias comitadas podem parecer idênticas entre as localidades.
 

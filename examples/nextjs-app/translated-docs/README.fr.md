@@ -1,12 +1,12 @@
 # Exemple d'application Next.js
 
-Cet exemple montre comment utiliser `ai-i18n-tools` avec une application **TypeScript** [Next.js](https://nextjs.org/) et **pnpm**. L'interface utilisateur correspond à celle de l'[exemple d'application console](../../console-app/), en utilisant les mêmes clés de chaînes et un sélecteur de langue piloté par `locales/ui-languages.json` (la langue source `en-GB` en premier, suivie des langues cibles de traduction).
+Cet exemple montre comment utiliser `ai-i18n-tools` avec une application **TypeScript** [Next.js](https://nextjs.org/) et **pnpm**. L'interface correspond à celle de l'exemple d'application console [console app example](../../console-app/), en utilisant les mêmes clés de chaîne et un sélecteur de langue piloté par `locales/ui-languages.json` (la langue source `en-GB` en premier, suivie des langues cibles). [`src/lib/i18n.ts`](../src/lib/i18n.ts) génère **`localeLoaders`** à partir de ce manifeste (chaque `code` sauf `SOURCE_LOCALE`), comme l'application console ; les paquets sont chargés avec **`fetch`** vers **`public/locales/<locale>.json`**.
 
 Imbriqué dans ce dossier se trouve un petit site **[Docusaurus](https://docusaurus.io/)** ([`docs-site/`](../docs-site/)) contenant des copies de la documentation principale du projet, accessibles en local.
 
 <small>**Lire dans d'autres langues :** </small>
 
-<small id="lang-list">[en-GB](../README.md) · [ar](./README.ar.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+<small id="lang-list">[English](../README.md) · [العربية](./README.ar.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (BR)](./README.pt-BR.md)</small>
 
 ## Capture d'écran
 
@@ -45,7 +45,18 @@ pnpm build
 pnpm start
 ```
 
-Ouvrez [http://localhost:3030](http://localhost:3030). Utilisez le menu déroulant **Locale** pour changer de langue (identifiant de langue / nom en anglais / libellé natif).
+Ouvrez [http://localhost:3030](http://localhost:3030). Utilisez le menu déroulant **Locale** pour changer de langue (ID de langue / nom anglais / libellé natif). Vous pouvez également créer un lien profond vers une langue à l’aide de la chaîne de requête **`?locale=<code>`** (par exemple [`?locale=ar`](http://localhost:3030/?locale=ar)) ; la page maintient le menu déroulant et l’URL synchronisés.
+
+### Exemple de pluriels cardinaux
+
+La page d'accueil inclut une **démonstration des pluriels** (« Pluriels : exemple d'utilisation de la génération automatique ») qui montre comment les chaînes d'interface utilisateur de type **pluriel cardinal** sont intégrées de bout en bout :
+
+- **Affichage :** Le même message est répété pour plusieurs valeurs d'exemple définies dans **`PLURAL_DEMO_COUNTS`** dans [`src/app/page.tsx`](../src/app/page.tsx) (par défaut **1**, **2**, **5** et **50**) afin que vous puissiez comparer le comportement du pluriel entre différentes langues (y compris celles ayant plusieurs formes de pluriel, comme l'arabe).
+- **API :** Chaque ligne utilise `t("This page has {{count}} sections", { plurals: true, count })`. Passez **`plurals: true`** pour que l'extraction et la traduction traitent la clé comme un groupe de pluriels ; **`count`** sélectionne la forme de pluriel active au moment de l'exécution.
+- **Exécution :** « Les formes de pluriel sont résolues au moment de l'exécution à l’aide des utilitaires configurés dans [src/lib/i18n.ts](../src/lib/i18n.ts) » (consultez la documentation d’exécution du package pour une vue complète).
+- **Sorties :** Les langues cibles utilisent des entrées suffixées dans `public/locales/<locale>.json` ; la langue source conserve les groupes de pluriels dans **`public/locales/en-GB.json`** aux côtés des entrées plates habituelles.
+
+La démonstration affiche également un petit **bloc de code gris** contenant l'extrait JSX au-dessus des exemples en direct, pour une référence rapide.
 
 La page d'accueil affiche également une **démonstration SVG** en bas. L'URL de l'image suit le modèle `public/assets/translation_demo_svg.<locale>.svg` (organisation plate issue du bloc `svg` dans `ai-i18n-tools.config.json`). Après avoir exécuté `translate-svg`, chaque fichier de langue contient du contenu traduit dans les balises `<text>`, `<title>` et `<desc>` ; avant cela, les copies validées peuvent sembler identiques entre les langues.
 

@@ -10,7 +10,7 @@
     "locations": [
       {
         "file": "src/main.js",
-        "line": 18
+        "line": 21
       }
     ]
   },
@@ -25,7 +25,7 @@
     "locations": [
       {
         "file": "src/main.js",
-        "line": 20
+        "line": 23
       }
     ]
   },
@@ -40,7 +40,7 @@
     "locations": [
       {
         "file": "src/main.js",
-        "line": 21
+        "line": 24
       }
     ]
   },
@@ -55,9 +55,69 @@
     "locations": [
       {
         "file": "src/main.js",
-        "line": 22
+        "line": 25
       }
     ]
+  },
+  "2bad7cac": {
+    "source": "Plurals: automatic generation usage example",
+    "translated": {
+      "es": "Plurals: ejemplo de uso de generación automática",
+      "fr": "Pluriels : exemple d’utilisation de la génération automatique",
+      "pt-BR": "Plurais: exemplo de uso da geração automática",
+      "de": "Plural: Beispiel für die automatische Generierung"
+    },
+    "locations": [
+      {
+        "file": "src/main.js",
+        "line": 27
+      }
+    ],
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini"
+    }
+  },
+  "f9ba51ab": {
+    "plural": true,
+    "source": "This page has {{count}} sections",
+    "translated": {
+      "en-GB": {
+        "one": "This page has {{count}} section",
+        "other": "This page has {{count}} sections"
+      },
+      "es": {
+        "one": "Esta página tiene {{count}} sección",
+        "other": "Esta página tiene {{count}} secciones"
+      },
+      "pt-BR": {
+        "one": "Esta página tem {{count}} seção",
+        "other": "Esta página tem {{count}} seções"
+      },
+      "fr": {
+        "many": "Cette page comporte {{count}} section",
+        "other": "Cette page comporte {{count}} sections"
+      },
+      "de": {
+        "one": "Diese Seite hat {{count}} Abschnitt",
+        "other": "Diese Seite hat {{count}} Abschnitte"
+      }
+    },
+    "locations": [
+      {
+        "file": "src/main.js",
+        "line": 30
+      }
+    ],
+    "models": {
+      "en-GB": "openai/gpt-5.4-mini",
+      "es": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini"
+    }
   },
   "30eadb0c": {
     "source": "Example console application demonstrating ai-i18n-tools",

@@ -37,6 +37,7 @@
         <nav class="tabs" id="tabs">
           <button type="button" data-tab="segments" class="active">Documentation</button>
           <button type="button" data-tab="ui">UI strings</button>
+          <button type="button" data-tab="ui-plurals">UI plurals</button>
           <button type="button" data-tab="glossary">Glossary</button>
           <button type="button" data-tab="stats">Statistics</button>
         </nav>
@@ -187,6 +188,66 @@
         </section>
       </section>
 
+      <section id="panel-ui-plurals" class="panel">
+        <p class="hint" id="up-meta"></p>
+        <div id="up-status" class="status"></div>
+        <div class="filters">
+          <div class="filter-row filter-row-ui-primary">
+            <input type="text" id="up-filter-id" placeholder="Id / hash" />
+            <input type="text" id="up-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
+            <select id="up-filter-filepath-select" title="Choose filepath from list (filters by location file)">
+              <option value="">-- Select filepath --</option>
+            </select>
+            <input type="text" id="up-filter-source" placeholder="Source contains" />
+            <input type="text" id="up-filter-translated" placeholder="Form text contains" />
+            <select id="up-filter-status" title="Plural completeness">
+              <option value="">All status</option>
+              <option value="complete">Complete</option>
+              <option value="incomplete">Incomplete</option>
+            </select>
+            <select id="up-edit-locale" title="Locale for forms column, filter, and edit"></select>
+            <select id="up-filter-model" title="Filter by model">
+              <option value="">All models</option>
+            </select>
+            <button type="button" id="up-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
+            <button type="button" id="up-btn-clear" class="seg-btn-clear">Clear</button>
+            <button type="button" id="up-btn-apply">Apply filters</button>
+          </div>
+        </div>
+        <section class="pagination-top hidden-ui" id="up-pagination-wrap-top">
+          <span id="up-pagination-info"></span>
+          <div class="pagination-controls">
+            <button type="button" id="up-btn-prev" disabled>Previous</button>
+            <span id="up-page-indicator"></span>
+            <button type="button" id="up-btn-next" disabled>Next</button>
+          </div>
+        </section>
+        <section class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Locations</th>
+                <th id="up-th-source">Source</th>
+                <th>Locale</th>
+                <th>Forms</th>
+                <th>Model</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="up-table-body"></tbody>
+          </table>
+        </section>
+        <section class="pagination-bottom hidden-ui" id="up-pagination-wrap-bottom">
+          <span id="up-pagination-info-bottom"></span>
+          <div class="pagination-controls">
+            <button type="button" id="up-btn-prev-bottom" disabled>Previous</button>
+            <span id="up-page-indicator-bottom"></span>
+            <button type="button" id="up-btn-next-bottom" disabled>Next</button>
+          </div>
+        </section>
+      </section>
+
       <section id="panel-glossary" class="panel">
         <div class="gl-meta-row">
           <p class="hint" id="gl-meta"></p>
@@ -278,6 +339,17 @@
         <div class="modal-actions">
           <button type="button" id="ui-btn-modal-cancel" class="btn-cancel">Cancel</button>
           <button type="button" id="ui-btn-modal-save" class="btn-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="uip-modal-overlay" class="modal-overlay hidden">
+      <div class="modal modal-wide">
+        <h2 id="uip-modal-title">Edit plural forms</h2>
+        <div id="uip-modal-fields" class="uip-modal-fields"></div>
+        <div class="modal-actions">
+          <button type="button" id="uip-btn-modal-cancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="uip-btn-modal-save" class="btn-save">Save</button>
         </div>
       </div>
     </div>

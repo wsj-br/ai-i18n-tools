@@ -4,9 +4,9 @@ title: Primeiros Passos
 description: >-
   Obtenha seu primeiro documento traduzido em menos de cinco minutos usando o
   ai-i18n-tools com este projeto de exemplo Next.js.
-translation_last_updated: '2026-04-13T19:05:59.655Z'
-source_file_mtime: '2026-04-13T12:37:25.386Z'
-source_file_hash: f28037e8c747358d722aeab10f171799df8f1dc59513a8295af098c8c30f9fa5
+translation_last_updated: '2026-04-18T22:42:46.122Z'
+source_file_mtime: '2026-04-18T18:55:03.274Z'
+source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
 translation_language: pt-BR
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -136,9 +136,27 @@ Isso inicia o servidor de desenvolvimento do Docusaurus em alemão. Abra [http:/
 
 ---
 
+## Etapa 7 — Explore o demo do Next.js (localidade + plurais cardinais)
+
+A tradução da documentação neste tutorial usa apenas **Markdown**. O mesmo repositório de exemplo também inclui uma interface **Next.js** na porta **3030**, onde você pode ver chamadas **`t()`**, URLs **`?locale=`** e um demo de **plurais cardinais**.
+
+A partir de `examples/nextjs-app/`:
+
+```bash
+npm run dev
+```
+
+Em seguida, abra [http://localhost:3030](http://localhost:3030).
+
+- Alterne os idiomas com o menu suspenso **Locale**, ou acrescente **`?locale=<code>`** (por exemplo `http://localhost:3030/?locale=ar`). A interface mantém a cadeia de consulta e o menu suspenso sincronizados.
+- Role até **Plurais: exemplo de uso da geração automática**. A página repete “Esta página tem … seções” para contagens fixas de exemplo (**1**, **2**, **5**, **50**) para que você possa comparar as regras plurais entre localidades (incluindo idiomas com múltiplas formas plurais).
+- As chamadas usam **`t("…", { plurals: true, count })`**. Com **`extract`** / **`translate-ui`**, essa chave se torna um grupo plural em `locales/strings.json`; arquivos planos **`public/locales/*.json`** contêm as formas com sufixos. A configuração em tempo de execução está em **`src/lib/i18n.ts`** — veja a seção **Cardinal plurals example** no [exemplo README](../../README.md) para um guia resumido.
+
+---
+
 ## O que explorar a seguir
 
-- Leia o [Exemplo de Recursos de Tradução](./feature-showcase) para ver todos os elementos Markdown que o `ai-i18n-tools` pode processar.
-- Edite uma frase em `docs-site/docs/feature-showcase.md` e execute novamente o comando `sync` — apenas esse segmento será enviado ao LLM; o restante será fornecido a partir do cache.
-- Adicione um termo ao arquivo `glossary-user.csv` para garantir a consistência terminológica em todos os idiomas.
-- Habilite o pipeline de strings da interface definindo `"translateUIStrings": true` e execute o `sync` sem a flag `--no-ui`.
+- Leia o [Translation Feature Showcase](./feature-showcase) para ver todos os elementos Markdown que `ai-i18n-tools` pode lidar — incluindo como **cadeias de UI plurais cardinais** se relacionam com este pipeline de documentação.
+- Edite uma frase em `docs-site/docs/feature-showcase.md` e execute novamente `sync` — apenas esse segmento será enviado ao LLM; o restante será servido do cache.
+- Adicione um termo a `glossary-user.csv` para impor terminologia consistente em todos os idiomas.
+- Habilite o pipeline de cadeias de interface definindo `"translateUIStrings": true` e executando `sync` sem a flag `--no-ui`.

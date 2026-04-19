@@ -2,6 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import {
   defaultI18nInitOptions,
   wrapI18nWithKeyTrim,
+  wrapT,
+  setupKeyAsDefaultT,
+  buildPluralIndexFromStringsJson,
+  makeLocaleLoadersFromManifest,
   makeLoadLocale,
   getTextDirection,
   applyDirection,
@@ -186,6 +190,34 @@ describe("applyDirection", () => {
 });
 
 // ---------------------------------------------------------------------------
+// makeLocaleLoadersFromManifest
+// ---------------------------------------------------------------------------
+
+describe("makeLocaleLoadersFromManifest", () => {
+  it("maps every manifest code except sourceLocale to makeLoaderForLocale factories", () => {
+    const manifest = [{ code: "en-GB" }, { code: "fr" }, { code: "de" }];
+    const factories = makeLocaleLoadersFromManifest(manifest, "en-GB", (code) =>
+      vi.fn(() => Promise.resolve(code))
+    );
+    expect(Object.keys(factories).sort()).toEqual(["de", "fr"]);
+    expect(typeof factories["fr"]).toBe("function");
+    expect(typeof factories["de"]).toBe("function");
+  });
+
+  it("filters out manifest row when normalizeLocale(code) equals normalizeLocale(sourceLocale)", () => {
+    const spy = vi.fn(() => () => Promise.resolve({}));
+    makeLocaleLoadersFromManifest([{ code: "pt-BR" }, { code: "fr" }], "pt-br", spy);
+    expect(spy.mock.calls.map((c) => c[0])).toEqual(["fr"]);
+  });
+
+  it("passes trimmed codes to makeLoaderForLocale", () => {
+    const spy = vi.fn((_code: string) => () => Promise.resolve({}));
+    makeLocaleLoadersFromManifest([{ code: "  fr  " }], "en", spy);
+    expect(spy).toHaveBeenCalledWith("fr");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // makeLoadLocale
 // ---------------------------------------------------------------------------
 
@@ -247,5 +279,118 @@ describe("makeLoadLocale", () => {
     await loadLocale("de");
     expect(warn).toHaveBeenCalledWith("[i18n] locale not found:", "de", "network");
     warn.mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// wrapT + buildPluralIndexFromStringsJson
+// ---------------------------------------------------------------------------
+
+describe("buildPluralIndexFromStringsJson", () => {
+  it("maps source literal to group id for plural rows", () => {
+    const idx = buildPluralIndexFromStringsJson({
+      abcdef01: { plural: true, source: "Hi {{count}}" },
+      z: { source: "Plain" },
+    });
+    expect(idx["Hi {{count}}"]).toBe("abcdef01");
+  });
+});
+
+describe("wrapT", () => {
+  it("rewrites key to group id and strips plurals flags", () => {
+    const seen: unknown[] = [];
+    const i18n = {
+      t(key: string, opts?: unknown): string {
+        seen.push(key, opts);
+        return String(key);
+      },
+    };
+    wrapT(i18n, { pluralIndex: { "Hi {{count}}": "abcdef01" } });
+    i18n.t("Hi {{count}}", { plurals: true, count: 3 });
+    expect(seen[0]).toBe("abcdef01");
+    expect(seen[1]).toEqual({ count: 3 });
+  });
+
+  it("injects count from single custom placeholder", () => {
+    const seen: unknown[] = [];
+    const i18n = {
+      t(key: string, opts?: unknown): string {
+        seen.push(key, opts);
+        return String(key);
+      },
+    };
+    wrapT(i18n, { pluralIndex: { "{{pages}} pages": "ab12cd34" } });
+    i18n.t("{{pages}} pages", { plurals: true, pages: 5 });
+    expect(seen[0]).toBe("ab12cd34");
+    expect(seen[1]).toEqual({ pages: 5, count: 5 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// setupKeyAsDefaultT
+// ---------------------------------------------------------------------------
+
+describe("setupKeyAsDefaultT", () => {
+  it("installs trim + plural wrap from strings.json", () => {
+    const seen: unknown[] = [];
+    const i18n = {
+      t(key: string, opts?: unknown): string {
+        seen.push(key, opts);
+        return String(key);
+      },
+      addResourceBundle(): void {},
+    };
+    setupKeyAsDefaultT(i18n, {
+      stringsJson: {
+        z9: { plural: true, source: "Hi {{count}}" },
+      },
+    });
+    i18n.t("Hi {{count}}", { plurals: true, count: 2 });
+    expect(seen[0]).toBe("z9");
+    expect(seen[1]).toEqual({ count: 2 });
+  });
+
+  it("registers source plural flat bundle when provided", () => {
+    const added: unknown[] = [];
+    const i18n = {
+      t(key: string): string {
+        return String(key);
+      },
+      addResourceBundle(
+        lng: string,
+        ns: string,
+        data: Record<string, string>,
+        deep?: boolean,
+        overwrite?: boolean
+      ): void {
+        added.push(lng, ns, data, deep, overwrite);
+      },
+    };
+    setupKeyAsDefaultT(i18n, {
+      stringsJson: {},
+      sourcePluralFlatBundle: {
+        lng: "en-GB",
+        bundle: { k_one: "one" },
+      },
+    });
+    expect(added[0]).toBe("en-GB");
+    expect(added[1]).toBe("translation");
+    expect(added[2]).toEqual({ k_one: "one" });
+    expect(added[3]).toBe(true);
+    expect(added[4]).toBe(true);
+  });
+
+  it("throws if sourcePluralFlatBundle is set but addResourceBundle is missing", () => {
+    const i18n = {
+      t(key: string): string {
+        return String(key);
+      },
+    };
+    expect(() =>
+      setupKeyAsDefaultT(i18n, {
+        stringsJson: {},
+        sourcePluralFlatBundle: { lng: "en-GB", bundle: {} },
+      })
+    ).toThrow(/addResourceBundle/);
   });
 });

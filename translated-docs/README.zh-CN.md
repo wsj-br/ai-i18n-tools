@@ -1,28 +1,28 @@
 # ai-i18n-tools
 
-用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 和编程工具包。通过 OpenRouter 使用 LLM 提取 UI 字符串并进行翻译，并为 i18next 生成适用于各个语言环境的 JSON 文件，同时提供用于 markdown、Docusaurus JSON 的管道，以及（通过 `features.translateSVG`、`translate-svg` 和 `svg` 块）独立 SVG 资源的处理功能。
+用于国际化 JavaScript/TypeScript 应用和文档站点的命令行工具及程序化工具包。通过 OpenRouter 使用大语言模型（LLM）提取 UI 字符串并进行翻译，并为 i18next 生成适用于各语言环境的 JSON 文件，同时支持 Markdown、Docusaurus JSON 的流水线，以及（通过 `features.translateSVG`、`translate-svg` 和 `svg` 块）独立 SVG 资源。
 
-<small>**以其他语言阅读：**</small>
+<small>**阅读其他语言版本：** </small>
 
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
-## 两种核心工作流
+## 两个核心工作流
 
-**工作流 1 - UI 翻译** (React, Next.js, Node.js, 任何 i18next 项目)
+**工作流 1 - UI 翻译**（适用于 React、Next.js、Node.js 或任何 i18next 项目）
 
-从 **`t("…")` / `i18n.t("…")` 字面量** 构建主目录（`strings.json`，可选的按区域设置的 **`models`** 元数据），可选择性地包含 **`package.json` `description`**，并在配置中启用时，从 `ui-languages.json` 为每个 **`englishName`** 生成。通过 OpenRouter 翻译各区域设置中缺失的条目，并生成可用于 i18next 的扁平 JSON 文件（`de.json`、`pt-BR.json` 等）。
+从 `t("…")` / `i18n.t("…")` **字面量** 构建主目录（`strings.json`，可选每个区域设置的 **`models`** 元数据），可选择性包含 **`package.json` `description`**，并在配置启用时可选择性提取来自 `ui-languages.json` 的每个 **`englishName`**。通过 OpenRouter 按区域设置翻译缺失条目，并生成可用于 i18next 的扁平 JSON 文件（`de.json`、`pt-BR.json` 等）。
 
-**工作流 2 - 文档翻译** (Markdown, Docusaurus JSON)
+**工作流 2 - 文档翻译**（适用于 Markdown、Docusaurus JSON）
 
-启用后，会翻译每个 `documentations` 块中 `contentPaths` 下的 `.md` 和 `.mdx` 文件，以及该块 `jsonSource` 中的 JSON 标签文件。每个块支持 Docusaurus 风格和扁平化带区域设置后缀的布局（`documentations[].markdownOutput`）。共享的根目录 `cacheDir` 用于存放 SQLite 缓存，因此只有新增或更改过的片段才会被发送到 LLM。**SVG：** 启用 `features.translateSVG`，添加顶层 `svg` 块，然后使用 `translate-svg`（当两者都设置时，也会在 `sync` 中运行）。
+翻译 `.md` 和 `.mdx` 从每个 `documentations` 块的 `contentPaths` 和 JSON 标签文件，从该块的 `jsonSource` 启用时。支持 Docusaurus 风格和每个块的扁平区域后缀布局 (`documentations[].markdownOutput`)。共享根 `cacheDir` 保存 SQLite 缓存，因此仅将新或更改的段发送到 LLM。 **SVG:** 启用 `features.translateSVG`，添加顶级 `svg` 块，然后使用 `translate-svg`（当两者都设置时，也从 `sync` 运行）。
 
-两种工作流共享同一个 `ai-i18n-tools.config.json` 文件，可以独立使用或结合使用。独立的 SVG 翻译使用 `features.translateSVG` 加上顶层 `svg` 块，并通过 `translate-svg`（或 `sync` 中的 SVG 阶段）运行。
+两个工作流共享单个 `ai-i18n-tools.config.json` 文件，可独立或联合使用。独立 SVG 翻译使用 `features.translateSVG` 加上顶层 `svg` 块，并通过 `translate-svg`（或 `sync` 内部的 SVG 阶段）运行。
 
 ---
 
 ## 安装
 
-发布的包是 **仅支持 ESM** 的（`"type": "module"`）。在 Node.js、打包工具或 `import()` 中使用 `import` — **不支持 `require('ai-i18n-tools')`。**
+发布的包仅支持 **ESM**（`"type": "module"`）。可在 Node.js、打包工具或 `import()` 中使用 `import` —— `require('ai-i18n-tools')` **不受支持。**
 
 ```bash
 npm install ai-i18n-tools
@@ -30,7 +30,7 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
-设置您的 OpenRouter API 密钥：
+设置你的 OpenRouter API 密钥：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -53,33 +53,34 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-使用 `'ai-i18n-tools/runtime'` 中的辅助函数在您的应用中配置 i18next：
+在你的应用中使用来自 `'ai-i18n-tools/runtime'` 的辅助函数来接入 i18next：
 
 ```js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -96,7 +97,7 @@ npx ai-i18n-tools translate-docs
 npx ai-i18n-tools status
 ```
 
-### 两种工作流
+### 两个工作流
 
 ```bash
 npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, and docs
@@ -106,25 +107,27 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 ## 运行时辅助函数
 
-从 `'ai-i18n-tools/runtime'` 导出 - 适用于任何 JavaScript 环境，无需导入 i18next：
+从 `'ai-i18n-tools/runtime'` 导出 —— 可在任何 JS 环境中使用，无需导入 i18next：
 
-| 辅助函数 | 描述 |
+| 辅助函数 | 说明 |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | 适用于以键作为默认值的标准 i18next 初始化选项。 |
-| `wrapI18nWithKeyTrim(i18n)` | 包装 `i18n.t`，使其在查找前对键进行修剪。 |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用于异步加载语言区域文件的工厂函数。 |
-| `getTextDirection(lng)` | 根据 BCP-47 代码返回 `'ltr'` 或 `'rtl'`。 |
+| `defaultI18nInitOptions(sourceLocale)` | 适用于“键即默认值”设置的标准 i18next 初始化选项。|
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推荐的布线方式：来自 **`strings.json`** 的 key-trim + 复数 **`wrapT`**，可选择性合并 **`translate-ui`** `{sourceLocale}.json` 复数键。 |
+| `wrapI18nWithKeyTrim(i18n)` | 仅低层级的 key-trim 包装器（不推荐用于应用布线；优先使用 **`setupKeyAsDefaultT`**）。 |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 从 **`ui-languages.json`**（除 **`sourceLocale`** 外的每个 **`code`**）为 **`makeLoadLocale`** 构建 **`localeLoaders`** 映射。 |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用于异步加载本地化文件的工厂。 |
+| `getTextDirection(lng)` | 为 BCP-47 代码返回 `'ltr'` 或 `'rtl'`。 |
 | `applyDirection(lng, element?)` | 在 `document.documentElement` 上设置 `dir` 属性。 |
-| `getUILanguageLabel(lang, t)` | 用于语言菜单行的显示标签（使用 i18n）。 |
+| `getUILanguageLabel(lang, t)` | 语言菜单行的显示标签（带 i18n）。 |
 | `getUILanguageLabelNative(lang)` | 不调用 `t()` 的显示标签（标题样式）。 |
-| `interpolateTemplate(str, vars)` | 对纯字符串进行 `{{var}}` 替换的低级函数（内部使用；应用代码应使用 `t()`）。 |
-| `flipUiArrowsForRtl(text, isRtl)` | 为 RTL 布局翻转 `→` 为 `←`。 |
+| `interpolateTemplate(str, vars)` | 在普通字符串上进行低层级的 `{{var}}` 替换（内部使用；应用代码应改用 `t()`）。 |
+| `flipUiArrowsForRtl(text, isRtl)` | 为 RTL 布局将 `→` 翻转为 `←`。 |
 
 ---
 
 ## CLI 命令
 
-```
+```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
@@ -143,7 +146,7 @@ ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-每个命令的全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细模式）、可选的 `-w` / `--write-logs [path]` 用于将控制台输出复制到日志文件（默认值：位于翻译缓存目录下）、`-V` / `--version`，以及 `-h` / `--help`。有关各命令的标志，请参见 [入门指南](docs/GETTING_STARTED.zh-CN.md#cli-reference)。
+每个命令的全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细模式）、可选的 `-w` / `--write-logs [path]` 用于将控制台输出同时输出到日志文件（默认值：位于翻译缓存目录下）、`-V` / `--version`，以及 `-h` / `--help`。有关每个命令的标志，请参阅 [入门指南](docs/GETTING_STARTED.zh-CN.md#cli-reference)。
 
 ---
 
@@ -151,8 +154,8 @@ ai-i18n-tools glossary-generate                     Create empty glossary CSV te
 
 - [入门指南](docs/GETTING_STARTED.zh-CN.md) - 两种工作流的完整设置指南、CLI 参考和配置字段参考。
 - [包概述](docs/PACKAGE_OVERVIEW.zh-CN.md) - 架构、内部机制、编程 API 和扩展点。
-- [AI Agent 上下文](../docs/ai-i18n-tools-context.md) - **适用于使用该包的应用程序**：下游项目的集成提示（复制到您仓库的 agent 规则中）。
-- **本** 仓库的维护者内部信息：`dev/package-context.md`（仅限克隆；不在 npm 上发布）。
+- [AI 代理上下文](../docs/ai-i18n-tools-context.md) - **对于使用该包的应用：** 下游项目的集成提示（复制到您的代码仓库的代理规则中）。
+- 仓库 **本身** 的维护者内部信息：`dev/package-context.md` （仅克隆；不在 npm 上）。
 
 ---
 

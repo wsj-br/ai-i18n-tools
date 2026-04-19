@@ -1,12 +1,12 @@
 # Next.js-App-Beispiel
 
-Dieses Beispiel zeigt, wie `ai-i18n-tools` mit einer **TypeScript**-[Next.js](https://nextjs.org/)-App und **pnpm** verwendet wird. Die Benutzeroberfläche entspricht dem [Konsole-App-Beispiel](../../console-app/) und verwendet dieselben Zeichenfolgenschlüssel sowie einen Sprachauswahl-Handler, der von `locales/ui-languages.json` gesteuert wird (Quelllokalisierung `en-GB` zuerst, gefolgt von den Zielsprachen).
+Dieses Beispiel zeigt, wie `ai-i18n-tools` mit einer **TypeScript**-[Next.js](https://nextjs.org/)-App und **pnpm** verwendet wird. Die Benutzeroberfläche entspricht dem [Beispiel der Konsolenanwendung](../../console-app/) und verwendet dieselben Zeichenfolgenschlüssel sowie einen Sprachauswahl-Handler, der auf `locales/ui-languages.json` basiert (Quellsprache `en-GB` zuerst, gefolgt von den Zielsprachen). [`src/lib/i18n.ts`](../src/lib/i18n.ts) erstellt **`localeLoaders`** aus diesem Manifest (jedes `code` außer `SOURCE_LOCALE`), genau wie die Konsolenanwendung; die Bundles werden mit **`fetch`** nach **`public/locales/<locale>.json`** geladen.
 
 Unterhalb dieses Ordners befindet sich eine kleine **[Docusaurus](https://docusaurus.io/)**-Website ([`docs-site/`](../docs-site/)) mit Kopien der wichtigsten Projekt-Dokumentationen zum lokalen Durchsuchen.
 
 <small>**In anderen Sprachen lesen:** </small>
 
-<small id="lang-list">[en-GB](../README.md) · [ar](./README.ar.md) · [de](./README.de.md) · [es](./README.es.md) · [fr](./README.fr.md) · [pt-BR](./README.pt-BR.md)</small>
+<small id="lang-list">[English](../README.md) · [العربية](./README.ar.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (BR)](./README.pt-BR.md)</small>
 
 ## Screenshot
 
@@ -45,7 +45,18 @@ pnpm build
 pnpm start
 ```
 
-Öffnen Sie [http://localhost:3030](http://localhost:3030). Verwenden Sie den **Locale**-Dropdown, um die Sprache zu wechseln (Lokalisierungs-ID / englischer Name / native Bezeichnung).
+Öffnen Sie [http://localhost:3030](http://localhost:3030). Verwenden Sie den Dropdown-Button **Locale**, um die Sprache zu wechseln (Lokalisierungs-ID / englischer Name / native Bezeichnung). Sie können auch direkt eine Lokalisierung über die Abfragezeichenfolge **`?locale=<code>`** verknüpfen (zum Beispiel [`?locale=ar`](http://localhost:3030/?locale=ar)); die Seite hält den Dropdown-Button und die URL synchron.
+
+### Beispiel für kardinalen Plural
+
+Auf der Startseite befindet sich eine **Plural-Demo** („Pluralformen: Beispiel für die Verwendung der automatischen Generierung“), die zeigt, wie **kardinale Pluralformen** von Benutzeroberflächen-Texten vollständig verarbeitet werden:
+
+- **Anzeige:** Derselbe Text wird für mehrere Beispielanzahlen wiederholt, die in **`PLURAL_DEMO_COUNTS`** in [`src/app/page.tsx`](../src/app/page.tsx) definiert sind (standardmäßig **1**, **2**, **5** und **50**), sodass Sie das Pluralverhalten in verschiedenen Lokalisierungen vergleichen können (einschließlich Sprachen mit mehreren Pluralformen wie Arabisch).
+- **API:** Jede Zeile verwendet `t("This page has {{count}} sections", { plurals: true, count })`. Übergeben Sie **`plurals: true`**, damit Extraktion und Übersetzung den Schlüssel als Pluralgruppe behandeln; **`count`** wählt zur Laufzeit die aktive Pluralform aus.
+- **Laufzeit:** „Pluralformen werden zur Laufzeit mithilfe der Hilfsfunktionen aufgelöst, die in [src/lib/i18n.ts](../src/lib/i18n.ts) eingebunden sind (siehe die Laufzeitdokumentation des Pakets für eine vollständige Übersicht).
+- **Ausgaben:** Ziel-Lokalisierungen verwenden suffigierte Einträge in `public/locales/<locale>.json`; die Quell-Lokalisierung behält Pluralbündel in **`public/locales/en-GB.json`** neben den üblichen flachen Einträgen.
+
+Die Demo zeigt außerdem einen kleinen **grauen Codeblock** mit dem JSX-Ausschnitt oberhalb der Live-Beispiele als schnelle Referenz.
 
 Auf der Startseite wird unten außerdem ein **Demo-SVG** angezeigt. Die Bild-URL folgt dem Muster `public/assets/translation_demo_svg.<locale>.svg` (flache Struktur aus dem `svg`-Block in `ai-i18n-tools.config.json`). Nachdem `translate-svg` ausgeführt wurde, enthält jede Lokalisierungsdatei übersetzte Inhalte für `<text>`, `<title>` und `<desc>`; bis dahin können die committeten Kopien in allen Lokalisierungen identisch aussehen.
 

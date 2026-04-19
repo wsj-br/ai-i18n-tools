@@ -4,9 +4,9 @@ title: Exemplo de Recursos de Tradução
 description: >-
   Um documento de referência que demonstra todos os elementos Markdown que o
   ai-i18n-tools sabe como traduzir.
-translation_last_updated: '2026-04-13T19:05:59.291Z'
-source_file_mtime: '2026-04-13T12:49:18.347Z'
-source_file_hash: 60c92aa8b547462c58ec49a6b0d6830f7245d618f2052c5ab961e2a4e80a0234
+translation_last_updated: '2026-04-18T22:42:45.762Z'
+source_file_mtime: '2026-04-18T18:55:00.042Z'
+source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
 translation_language: pt-BR
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -59,14 +59,15 @@ Todos os níveis de cabeçalho traduzem o texto, mas mantêm os IDs de âncora i
 
 Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida individualmente; os separadores de coluna e a sintaxe de alinhamento são preservados.
 
-| Recurso | Status | Observações |
+| Recurso | Status | Notas |
 |---|---|---|
-| Tradução Markdown | ✅ Estável | Segmentos armazenados em cache no SQLite |
+| Tradução de Markdown | ✅ Estável | Segmentos armazenados em cache no SQLite |
 | Extração de strings da interface | ✅ Estável | Lê chamadas `t("…")` |
-| Tradução de rótulos JSON | ✅ Estável | JSON da barra lateral/navbar do Docusaurus |
+| Strings de interface com plurais cardinais | ✅ Estável | `t("…", { plurals: true, count })`; catálogo + sufixos JSON planos |
+| Tradução de rótulos JSON | ✅ Estável | JSON de barra lateral/barra de navegação do Docusaurus |
 | Tradução de texto SVG | ✅ Estável | Preserva a estrutura SVG |
 | Aplicação de glossário | ✅ Estável | Glossário CSV por projeto |
-| Concorrência em lote | ✅ Configurável | Chave `batchConcurrency` |
+| Concorrência em lote | ✅ Configurável | chave `batchConcurrency`
 
 ### Variantes de alinhamento
 
@@ -98,12 +99,28 @@ Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida i
 
 - **Pipeline de documentos**
   - Origem: qualquer arquivo `.md` ou `.mdx`
-  - Saída: árvore `i18n/` do Docusaurus ou cópias traduzidas planas
+  - Saída: árvore Docusaurus `i18n/` ou cópias traduzidas planas
   - Cache: SQLite, indexado por caminho do arquivo + hash do segmento
 - **Pipeline de strings de interface**
-  - Origem: arquivos JS/TS com chamadas `t("…")`
-  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …)
+  - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais cardinais via `{ plurals: true, count }`)
+  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias plurais quando aplicável
   - Cache: o próprio catálogo mestre `strings.json`
+
+---
+
+## Strings de interface com plurais cardinais (aplicativo complementar Next.js)
+
+Os documentos Markdown neste site mostram a tradução de **documento**. O comportamento de **plurais cardinais** para textos de interface é mais fácil de observar no **exemplo Next.js agrupado**, localizado ao lado de `docs-site/` em `examples/nextjs-app/`.
+
+A página inicial desse aplicativo (`src/app/page.tsx`) inclui uma seção de **demonstração de plurais** e repete uma mensagem em várias contagens de exemplo para que você possa comparar a gramática entre localidades (por exemplo, árabe versus inglês). Cada linha chama:
+
+```typescript
+t("This page has {{count}} sections", { plurals: true, count })
+```
+
+Use **`plurals: true`** para que **`extract`** registre um grupo plural em `locales/strings.json` e **`translate-ui`** preencha os arquivos planos por localidade em `public/locales/`. Em tempo de execução, o i18next resolve a chave sufixada correta para o **`count`** ativo; o exemplo Next.js integra helpers em **`src/lib/i18n.ts`**.
+
+Para capturas de tela, URLs de localidade e estrutura de arquivos, consulte o **exemplo de plurais cardinais** no [README do exemplo Next.js](../../README.md).
 
 ---
 

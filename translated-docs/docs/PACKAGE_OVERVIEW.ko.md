@@ -1,8 +1,8 @@
 # ai-i18n-tools: 패키지 개요
 
-이 문서는 `ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 상호 연결 방식 및 두 가지 핵심 워크플로우의 구현 방법을 설명합니다.
+`ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 상호 연결 방식 및 두 가지 핵심 워크플로우가 구현되는 방식에 대해 설명합니다.
 
-실제 사용법은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)을 참조하세요.
+실제 사용 지침은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)을 참조하세요.
 
 <small>**다른 언어로 읽기:** </small>
 
@@ -16,25 +16,25 @@
 
 - [아키텍처 개요](#architecture-overview)
 - [소스 트리](#source-tree)
-- [워크플로우 1 - UI 번역 내부 구조](#workflow-1---ui-translation-internals)
+- [워크플로 1 - UI 번역 내부 구조](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
   - [평면화된 로케일 파일](#flat-locale-files)
   - [UI 번역 프롬프트](#ui-translation-prompts)
-- [워크플로우 2 - 문서 번역 내부 구조](#workflow-2---document-translation-internals)
+- [워크플로 2 - 문서 번역 내부 구조](#workflow-2---document-translation-internals)
   - [추출기](#extractors)
   - [플레이스홀더 보호](#placeholder-protection)
   - [캐시 (`TranslationCache`)](#cache-translationcache)
-  - [출력 경로 결정](#output-path-resolution)
+  - [출력 경로 해석](#output-path-resolution)
   - [평면화된 링크 재작성](#flat-link-rewriting)
 - [공유 인프라](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [설정 로드](#config-loading)
+  - [설정 로딩](#config-loading)
   - [로거](#logger)
 - [런타임 헬퍼 API](#runtime-helpers-api)
   - [RTL 헬퍼](#rtl-helpers)
   - [i18next 설정 팩토리](#i18next-setup-factories)
-  - [표시 헬퍼](#display-helpers)
+  - [디스플레이 헬퍼](#display-helpers)
   - [문자열 헬퍼](#string-helpers)
 - [프로그래밍 방식 API](#programmatic-api)
 - [확장 포인트](#extension-points)
@@ -61,7 +61,7 @@ ai-i18n-tools
 └── Utils (src/utils/)         - logger, hash, ignore parser
 ```
 
-소비자가 프로그래밍 방식으로 필요로 할 수 있는 모든 항목은 `src/index.ts`에서 다시 내보냅니다.
+소비자가 프로그래밍 방식으로 필요로 할 수 있는 모든 것은 `src/index.ts`에서 다시 내보내집니다.
 
 ---
 
@@ -131,7 +131,7 @@ src/
 
 ---
 
-## 워크플로우 1 - UI 번역 내부 구조
+## 워크플로 1 - UI 번역 내부 구조
 
 ```
 source files (JS/TS)
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-모든 JS/TS 파일에서 `i18next-scanner`의 `Parser.parseFuncFromString`을 사용하여 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. 함수 이름과 파일 확장자는 구성 가능합니다. **`extract`는 비-스캐너 입력을 동일한 카탈로그에 병합합니다:** `reactExtractor.includePackageDescription`이 활성화된 경우(기본값) 프로젝트 `package.json` `description`, 그리고 `reactExtractor.includeUiLanguageEnglishNames`가 `true`이고 `uiLanguagesPath`이 설정된 경우 `ui-languages.json`의 각 **`englishName`** (소스에서 이미 발견된 문자열이 우선 적용됨). 세그먼트 해시는 잘린 소스 문자열의 **MD5 첫 8자리 16진수 문자**이며, 이는 `strings.json`의 키가 됩니다.
+`i18next-scanner`의 `Parser.parseFuncFromString`을 사용하여 JS/TS 파일 내의 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. 함수 이름과 파일 확장자는 구성 가능합니다. `extract` **는 또한 비스캐너 입력을 동일한 카탈로그에 병합합니다.** `reactExtractor.includePackageDescription`이 활성화된 경우(기본값) 프로젝트의 `package.json` `description`와, `reactExtractor.includeUiLanguageEnglishNames`가 `true`이고 `uiLanguagesPath`이 설정된 경우 `ui-languages.json`의 각 **`englishName`** 를 병합합니다(소스에서 이미 발견된 문자열이 우선 적용됨). 세그먼트 해시는 잘린 소스 문자열의 **MD5 첫 8자리 16진수**이며, 이는 `strings.json`의 키로 사용됩니다.
 
 ### `strings.json`
 
@@ -171,15 +171,15 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-`models` (선택 사항) — 로캘별로, 해당 로캘에 대해 마지막으로 성공한 `translate-ui` 실행 이후 어떤 모델이 번역을 생성했는지를 나타냅니다 (또는 `editor` 웹 UI에서 텍스트를 저장한 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 찾은 위치 (스캐너 + 패키지 설명 라인; 매니페스트 전용 `englishName` 문자열은 `locations`을 생략할 수 있음).
+`models` (선택 사항) — 로케일별로, 해당 로케일에 대해 마지막으로 성공한 `translate-ui` 실행 후 어떤 모델이 번역을 생성했는지 (또는 `editor` 웹 UI에서 텍스트가 저장된 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 어디에서 찾았는지 (스캐너 + 패키지 설명 라인; 매니페스트 전용 `englishName` 문자열은 `locations`을 생략할 수 있음).
 
-`extract`은 새 키를 추가하고 스캔에 여전히 존재하는 키에 대해 기존 `translated` / `models` 데이터를 보존합니다 (스캐너 리터럴, 선택적 설명, 선택적 매니페스트 `englishName`). `translate-ui`는 누락된 `translated` 항목을 채우고, 번역하는 로캘에 대해 `models`을 업데이트하며, 단순한 로캘 파일을 작성합니다.
+`extract`는 새 키를 추가하고 스캔에 여전히 존재하는 키에 대해 기존 `translated` / `models` 데이터를 보존합니다 (스캐너 리터럴, 선택 설명, 선택 매니페스트 `englishName`). `translate-ui`는 누락된 `translated` 항목을 채우고, 번역하는 로케일에 대해 `models`을 업데이트하며, 평면화된 로케일 파일을 작성합니다.
 
-**`ui-languages.json` 매니페스트** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, 참조 `englishName`, `"ltr"` 또는 `"rtl"`)의 JSON 배열입니다. `sourceLocale` + `targetLocales` 및 번들된 마스터 `data/ui-languages-complete.json`에서 프로젝트 파일을 생성하려면 `generate-ui-languages`을 사용하세요.
+`ui-languages.json` **매니페스트** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, 참조 `englishName`, `"ltr"` 또는 `"rtl"`)의 JSON 배열. `generate-ui-languages`을 사용하여 `sourceLocale` + `targetLocales` 및 번들된 마스터 `data/ui-languages-complete.json`에서 프로젝트 파일을 생성합니다.
 
 ### 평면화된 로케일 파일
 
-각 대상 로케일은 소스 문자열 → 번역을 매핑하는 평면화된 JSON 파일(`de.json`)을 가지며, `models` 필드는 포함하지 않습니다:
+각 대상 로케일은 원본 문자열 → 번역을 매핑하는 평면화된 JSON 파일(`de.json`)을 가지며 (`models` 필드 없음):
 
 ```json
 {
@@ -188,20 +188,20 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 }
 ```
 
-i18next는 이를 리소스 번들로 로드하고 소스 문자열을 키로 하여 번역을 조회합니다 (기본값으로 키를 사용하는 모델).
+i18next는 이러한 리소스 번들을 로드하고 소스 문자열(키-기본 모델)을 통해 번역을 조회합니다.
 
 ### UI 번역 프롬프트
 
-`buildUIPromptMessages`는 다음을 수행하는 시스템 및 사용자 메시지를 구성합니다:
-- 소스 및 대상 언어를 표시 이름(`localeDisplayNames` 또는 `ui-languages.json`에서)으로 식별합니다.
-- 문자열의 JSON 배열을 전송하고 번역된 결과의 JSON 배열을 반환하도록 요청합니다.
-- 가능할 경우 용어집 힌트를 포함합니다.
+`buildUIPromptMessages`는 다음과 같은 시스템 + 사용자 메시지를 구성합니다:
+- 소스 및 대상 언어를 식별합니다 (`localeDisplayNames` 또는 `ui-languages.json`의 표시 이름으로).
+- 문자열의 JSON 배열을 전송하고 번역의 JSON 배열을 요청합니다.
+- 사용 가능한 경우 용어집 힌트를 포함합니다.
 
-`OpenRouterClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 파싱 또는 네트워크 오류 시 다음 모델로 폴백합니다. CLI는 `openrouter.translationModels`(또는 레거시 기본값/폴백)에서 해당 목록을 생성하며, `translate-ui`의 경우 선택적 `ui.preferredModel`이 설정되어 있으면 앞에 추가됩니다(나머지 목록과 중복 제거됨).
+`OpenRouterClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 파싱 또는 네트워크 오류가 발생할 경우 백업합니다. CLI는 `openrouter.translationModels`(또는 레거시 기본/백업)에서 해당 목록을 작성합니다; `translate-ui`의 경우, 선택적 `ui.preferredModel`가 설정되면 앞에 추가됩니다(나머지와 중복 제거됨).
 
 ---
 
-## 워크플로우 2 - 문서 번역 내부 구조
+## 워크플로 2 - 문서 번역 내부
 
 ```
 markdown/MDX/JSON files (`translate-docs`)
@@ -227,44 +227,44 @@ output file  ─────────────────── Docusauru
 
 ### 추출기
 
-모든 추출기는 `BaseExtractor`를 확장하며 `extract(content, filepath): Segment[]`를 구현합니다.
+모든 추출기는 `BaseExtractor`를 확장하고 `extract(content, filepath): Segment[]`를 구현합니다.
 
-- `MarkdownExtractor` - 마크다운을 `frontmatter`, `heading`, `paragraph`, `code`, `admonition`과 같은 타입의 세그먼트로 분할합니다. 번역이 불가능한 세그먼트(코드 블록, 원시 HTML)는 원문 그대로 보존됩니다.
-- `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다.
-- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`translate-svg`가 `config.svg` 아래의 자산에 대해 사용하며, `translate-docs`에서는 사용하지 않음).
+- `MarkdownExtractor` - 마크다운을 유형별 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. 번역 불가능한 세그먼트(코드 블록, 원본 HTML)는 문자 그대로 유지됩니다.
+- `JsonExtractor` - Docusaurus JSON 라벨 파일에서 문자열 값을 추출합니다.
+- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 내용을 추출합니다(`translate-svg`가 `config.svg` 아래의 자산에 사용하며, `translate-docs`는 사용하지 않습니다).
 
-### 자리 표시자 보호
+### 플레이스홀더 보호
 
-번역 전에 민감한 구문은 LLM에 의한 손상을 방지하기 위해 불투명한 토큰으로 대체됩니다.
+번역 전에 민감한 구문은 LLM 손상을 방지하기 위해 불투명한 토큰으로 대체됩니다:
 
-1. **주석 표시자** (`:::note`, `:::`) - 정확한 원본 텍스트로 복원됩니다.
+1. **주의 마커** (`:::note`, `:::`) - 원본 텍스트로 복원됩니다.
 2. **문서 앵커** (HTML `<a id="…">`, Docusaurus 제목 `{#…}`) - 원문 그대로 보존됩니다.
 3. **마크다운 URL** (`](url)`, `src="../…"`) - 번역 후 맵에서 복원됩니다.
 
-### 캐시(`TranslationCache`)
+### 캐시 (`TranslationCache`)
 
-SQLite 데이터베이스(`node:sqlite`를 통해)는 `(source_hash, locale)`을 키로 하여 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드와 함께 행을 저장합니다. 해시는 정규화된 콘텐츠(공백이 축소됨)의 SHA-256 해시값의 처음 16자리 16진수 문자입니다.
+SQLite 데이터베이스 (`node:sqlite`를 통해)는 `(source_hash, locale)`로 키가 지정된 행을 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드와 함께 저장합니다. 해시는 정규화된 콘텐츠의 SHA-256 첫 16 헥스 문자(공백 축소)입니다.
 
-각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 전송됩니다. 번역 후 현재 번역 범위 내에서 적중되지 않은 세그먼트 행의 `last_hit_at`이 재설정됩니다. `cleanup`은 먼저 `sync --force-update`를 실행한 후, 오래된 세그먼트 행(null `last_hit_at` 또는 빈 filepath)을 제거하고, 디스크상에 해결된 소스 경로가 없는 경우 `file_tracking` 키를 정리하며(`doc-block:…`, `svg-assets:…` 등), 메타데이터 filepath가 누락된 파일을 가리키는 번역 행을 제거합니다. 단, `--no-backup`이 지정되지 않은 경우 `cache.db`를 먼저 백업합니다.
+각 실행 시, 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 전송됩니다. 번역 후, `last_hit_at`는 현재 번역 범위에서 히트되지 않은 세그먼트 행에 대해 재설정됩니다. `cleanup`은 `sync --force-update`를 먼저 실행한 후, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 디스크에서 해결된 소스 경로가 누락된 경우 `file_tracking` 키를 정리하며 (`doc-block:…`, `svg-assets:…` 등), 메타데이터 파일 경로가 누락된 파일을 가리키는 번역 행을 제거합니다; `--no-backup`가 전달되지 않는 한 `cache.db`를 먼저 백업합니다.
 
-`translate-docs` 명령어는 또한 **파일 추적**을 사용하여 기존 출력이 있는 변경되지 않은 소스가 작업을 완전히 건너뛸 수 있도록 합니다. `--force-update`는 세그먼트 캐시를 계속 사용하면서도 파일 처리를 다시 실행하며, `--force`는 파일 추적을 지우고 API 번역을 위해 세그먼트 캐시 읽기를 우회합니다. 전체 플래그 표는 [시작하기](GETTING_STARTED.ko.md#cache-behaviour-and-translate-docs-flags)를 참조하세요.
+`translate-docs` 명령은 또한 **파일 추적**를 사용하여 변경되지 않은 소스와 기존 출력이 있는 경우 작업을 완전히 건너뛸 수 있습니다. `--force-update`은 여전히 세그먼트 캐시를 사용하면서 파일 처리를 다시 실행합니다; `--force`는 파일 추적을 지우고 API 번역을 위해 세그먼트 캐시 읽기를 우회합니다. 전체 플래그 테이블은 [시작하기](GETTING_STARTED.ko.md#cache-behaviour-and-translate-docs-flags)를 참조하세요.
 
-**배치 프롬프트 형식:** `translate-docs --prompt-format`은 `OpenRouterClient.translateDocumentBatch`에만 적용되는 XML(`<seg>` / `<t>`) 또는 JSON 배열/객체 형식을 선택합니다. 추출, 자리 표시자, 검증은 변경되지 않습니다. [배치 프롬프트 형식](GETTING_STARTED.ko.md#batch-prompt-format)을 참조하세요.
+**배치 프롬프트 형식:** `translate-docs --prompt-format`는 `OpenRouterClient.translateDocumentBatch`에 대해서만 XML (`<seg>` / `<t>`) 또는 JSON 배열/객체 형식을 선택합니다; 추출, 플레이스홀더 및 검증은 변경되지 않습니다. [배치 프롬프트 형식](GETTING_STARTED.ko.md#batch-prompt-format)을 참조하세요.
 
-### 출력 경로 결정
+### 출력 경로 해상도
 
-`resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`은 소스 기준 경로를 출력 경로에 매핑합니다.
+`resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`는 소스 상대 경로를 출력 경로에 매핑합니다:
 
-- `nested` 스타일(기본값): 마크다운의 경우 `{outputDir}/{locale}/{relPath}`.
-- `docusaurus` 스타일: `docsRoot` 아래에서 출력은 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`를 사용합니다. `docsRoot` 외부의 경로는 nested 레이아웃으로 대체됩니다.
-- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`이 `true`인 경우 소스 하위 디렉터리가 `outputDir` 아래에 유지됩니다.
-- **사용자 정의** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`를 사용하는 임의의 마크다운 레이아웃.
-- **사용자 정의** `jsonPathTemplate`: JSON 레이블 파일을 위한 별도의 사용자 정의 레이아웃으로, 동일한 자리 표시자를 사용합니다.
-- `linkRewriteDocsRoot`는 번역된 출력이 기본 프로젝트 루트 외부에 위치할 때 평면 링크 재작성기가 올바른 접두사를 계산할 수 있도록 도와줍니다.
+- `nested` 스타일 (기본): 마크다운에 대해 `{outputDir}/{locale}/{relPath}`.
+- `docusaurus` 스타일: `docsRoot` 아래에서, 출력은 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`를 사용합니다; `docsRoot` 외부의 경로는 중첩 레이아웃으로 돌아갑니다.
+- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`가 `true`일 때, 소스 하위 디렉터리는 `outputDir` 아래에 유지됩니다.
+- **사용자 정의** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`를 사용하는 모든 마크다운 레이아웃.
+- **사용자 정의** `jsonPathTemplate`: JSON 레이블 파일을 위한 별도의 사용자 정의 레이아웃, 동일한 플레이스홀더를 사용합니다.
+- `linkRewriteDocsRoot`는 번역된 출력이 기본 프로젝트 루트가 아닌 다른 곳에 뿌리를 두고 있을 때 올바른 접두사를 계산하는 데 도움이 됩니다.
 
 ### 평면 링크 재작성
 
-`markdownOutput.style === "flat"`일 때 번역된 마크다운 파일은 로케일 접미사와 함께 소스와 동일한 위치에 배치됩니다. 페이지 간의 상대 링크는 `readme.de.md`의 `[Guide](../guide.md)`가 `guide.de.md`를 가리키도록 재작성됩니다. `rewriteRelativeLinks`에 의해 제어되며(사용자 정의 `pathTemplate` 없이 flat 스타일에서는 자동 활성화됨).
+`markdownOutput.style === "flat"`일 때, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간의 상대 링크는 `[Guide](../guide.md)`의 `readme.de.md`가 `guide.de.md`를 가리키도록 다시 작성됩니다. `rewriteRelativeLinks`에 의해 제어되며, 사용자 정의 `pathTemplate` 없이 평면 스타일일 경우 자동으로 활성화됩니다.
 
 ---
 
@@ -274,8 +274,8 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 `(source_hash, locale)`을
 
 OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 
-- **모델 폴백**: 해결된 목록의 각 모델을 순서대로 시도하며, HTTP 오류 또는 파싱 실패 시 폴백합니다. UI 번역은 존재할 경우 먼저 `ui.preferredModel`을 확인하고, 그 다음 `openrouter` 모델을 사용합니다.
-- **속도 제한**: 429 응답을 감지하면 `retry-after`(또는 2초) 동안 대기한 후 한 번 재시도합니다.
+- **모델 폴백**: 확인된 목록에 있는 각 모델을 순서대로 시도합니다. HTTP 오류 또는 파싱 실패 시 폴백합니다. UI 번역은 존재할 경우 먼저 `ui.preferredModel`를 확인하고, 그 다음 `openrouter` 모델을 확인합니다.
+- **속도 제한**: 429 응답을 감지하면 `retry-after`(또는 2초) 동안 대기하고 한 번 재시도합니다.
 - **프롬프트 캐싱**: 지원되는 모델에서 프롬프트 캐싱을 활성화하기 위해 시스템 메시지를 `cache_control: { type: "ephemeral" }`와 함께 전송합니다.
 - **디버그 트래픽 로그**: `debugTrafficFilePath`가 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다.
 
@@ -283,23 +283,23 @@ OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 
 `loadI18nConfigFromFile(configPath, cwd)` 파이프라인:
 
-1. `ai-i18n-tools.config.json` 파일을 읽고 파싱합니다(JSON).
-2. `mergeWithDefaults` - `defaultI18nConfigPartial`과 깊은 병합을 수행하고, `documentations[].sourceFiles` 항목들을 `contentPaths`에 병합합니다.
-3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`가 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장하며, `uiLanguagesPath`를 설정합니다.
+1. `ai-i18n-tools.config.json`(JSON)을 읽고 파싱합니다.
+2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합을 수행하고, `documentations[].sourceFiles` 항목을 `contentPaths`에 병합합니다.
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`이 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장하며, `uiLanguagesPath`을 설정합니다.
 4. `expandDocumentationTargetLocalesInRawInput` - 각 `documentations[].targetLocales` 항목에 대해 동일하게 수행합니다.
-5. `parseI18nConfig` - Zod 유효성 검사 및 `validateI18nBusinessRules` 실행.
-6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등의 환경 변수를 적용합니다.
-7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름을 첨부합니다.
+5. `parseI18nConfig` - Zod 유효성 검사 + `validateI18nBusinessRules`.
+6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등을 적용합니다.
+7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름을 연결합니다.
 
 ### 로거
 
-`Logger`는 ANSI 색상 출력을 지원하는 `debug`, `info`, `warn`, `error` 레벨을 제공합니다. 상세 모드(`-v`)는 `debug` 레벨을 활성화합니다. `logFilePath`가 설정된 경우 로그 라인은 해당 파일에도 기록됩니다.
+`Logger`는 ANSI 색상 출력과 함께 `debug`, `info`, `warn`, `error` 수준을 지원합니다. 상세 모드(`-v`)는 `debug`을 활성화합니다. `logFilePath`이 설정된 경우 로그 라인은 해당 파일에도 기록됩니다.
 
 ---
 
 ## 런타임 헬퍼 API
 
-이 API는 `'ai-i18n-tools/runtime'`에서 내보내며, 모든 JavaScript 환경(브라우저, Node.js, Deno, Edge)에서 작동합니다. `i18next` 또는 `react-i18next`를 **임포트하지 않습니다**.
+이 기능들은 `'ai-i18n-tools/runtime'`에서 내보내지며 모든 JavaScript 환경(브라우저, Node.js, Deno, Edge)에서 작동합니다. `i18next` 또는 `react-i18next`에서 **가져오지 않습니다**.
 
 ### RTL 헬퍼
 
@@ -313,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+일반적인 앱 진입점으로 **`setupKeyAsDefaultT`** 을 사용하세요(키 트림 + 복수 **`wrapT`** + 선택적 **`translate-ui`** `{sourceLocale}.json`). 애플리케이션 연결을 위해 **`wrapI18nWithKeyTrim`** 만 호출하는 것은 **사용 중단됨**입니다.
+
+**`generate-ui-languages`** 후에도 **`targetLocales`** 와 키가 일치하도록 유지되도록 **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** 로 **`localeLoaders`** 을 빌드하세요. **`docs/GETTING_STARTED.md`**(런타임 연결) 및 **`examples/nextjs-app/`** / **`examples/console-app/`** 를 참조하세요.
 
 ### 표시 헬퍼
 
@@ -339,7 +351,7 @@ flipUiArrowsForRtl(text: string | null | undefined, isRtl: boolean): string | nu
 
 ## 프로그래밍 방식 API
 
-모든 공개 타입과 클래스는 패키지 루트에서 내보내집니다. 예: CLI 없이 Node.js에서 UI 번역 단계를 실행하는 경우:
+모든 공개 유형과 클래스는 패키지 루트에서 내보내집니다. 예: CLI 없이 Node.js에서 UI 번역 단계를 실행하는 경우:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -359,32 +371,32 @@ console.log(
 );
 ```
 
-주요 내보내기 항목:
+주요 내보내기:
 
 | 내보내기 | 설명 |
 |---|---|
-| `loadI18nConfigFromFile` | JSON 파일에서 설정을 로드하고 병합 및 검증합니다. |
-| `parseI18nConfig` | 원시 설정 객체를 검증합니다. |
+| `loadI18nConfigFromFile` | JSON 파일에서 설정을 로드하고 병합한 후 유효성을 검사합니다. |
+| `parseI18nConfig` | 원시 설정 객체의 유효성을 검사합니다. |
 | `TranslationCache` | SQLite 캐시 - `cacheDir` 경로로 인스턴스를 생성합니다. |
-| `UIStringExtractor` | JS/TS 소스 코드에서 `t("…")` 문자열을 추출합니다. |
+| `UIStringExtractor` | JS/TS 소스에서 `t("…")` 문자열을 추출합니다. |
 | `MarkdownExtractor` | 마크다운에서 번역 가능한 세그먼트를 추출합니다. |
 | `JsonExtractor` | Docusaurus JSON 레이블 파일에서 추출합니다. |
 | `SvgExtractor` | SVG 파일에서 추출합니다. |
 | `OpenRouterClient` | OpenRouter로 번역 요청을 보냅니다. |
-| `PlaceholderHandler` | 번역 주변의 마크다운 구문을 보호하고 복원합니다. |
+| `PlaceholderHandler` | 번역 중 마크다운 구문을 보호하고 복원합니다. |
 | `splitTranslatableIntoBatches` | 세그먼트를 LLM 크기의 배치로 그룹화합니다. |
 | `validateTranslation` | 번역 후 구조적 검사를 수행합니다. |
 | `resolveDocumentationOutputPath` | 번역된 문서의 출력 파일 경로를 결정합니다. |
 | `Glossary` / `GlossaryMatcher` | 번역 용어집을 로드하고 적용합니다. |
-| `runTranslateUI` | 프로그래밍 방식의 UI 번역 진입점입니다. |
+| `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점입니다. |
 
 ---
 
 ## 확장 포인트
 
-### 사용자 정의 함수 이름(UI 추출)
+### 사용자 정의 함수 이름 (UI 추출)
 
-설정을 통해 비표준 번역 함수 이름을 추가할 수 있습니다:
+설정을 통해 비표준 번역 함수 이름을 추가합니다:
 
 ```json
 {
@@ -411,11 +423,11 @@ class MyExtractor extends BaseExtractor {
 }
 ```
 
-`doc-translate.ts` 유틸리티를 프로그래밍 방식으로 가져와 doc-translate 파이프라인에 전달합니다.
+프로그래밍 방식으로 `doc-translate.ts` 유틸리티를 가져와 doc-translate 파이프라인에 전달합니다.
 
 ### 사용자 정의 출력 경로
 
-모든 파일 레이아웃에 대해 `markdownOutput.pathTemplate`을 사용합니다:
+`markdownOutput.pathTemplate`을(를) 사용하여 임의의 파일 레이아웃 지정:
 
 ```json
 {

@@ -1,10 +1,12 @@
-import type { Segment } from "./types.js";
+import type { CldrPluralForm, Segment } from "./types.js";
 import { BatchTranslationError } from "./types.js";
+import { pluralCategoryExamplesHint } from "./plural-forms.js";
 import {
   PROMPTS,
   type PromptStrings,
   type DocumentPromptStrings,
   type UIPromptStrings,
+  type LintSourcePromptStrings,
 } from "./prompts.js";
 
 /**
@@ -19,7 +21,7 @@ import {
 export type DocumentPromptContentType = "markdown" | "json" | "svg";
 export type DocumentBatchResponseFormat = "xml-tags" | "json-array" | "json-object";
 
-export type { PromptStrings, DocumentPromptStrings, UIPromptStrings };
+export type { PromptStrings, DocumentPromptStrings, UIPromptStrings, LintSourcePromptStrings };
 export { PROMPTS };
 
 // ── Backward-compatible exported constants (derived from JSON) ────────────
@@ -189,6 +191,107 @@ Respond with ONLY the JSON array. No other text.`;
   return { systemPrompt: systemBase + glossaryBlock, userContent };
 }
 
+/** Step 0: fill `translated[sourceLocale]` cardinal forms from the original literal. */
+export function buildPluralStep0Prompt(opts: {
+  sourceLanguageLabel: string;
+  originalLiteral: string;
+  requiredForms: CldrPluralForm[];
+  zeroDigit: boolean;
+  glossaryHints?: string[];
+  /** When set, appends an `Intl.PluralRules` sample-count line for this BCP-47 tag. */
+  intlPluralLocaleTag?: string;
+}): { systemPrompt: string; userContent: string } {
+  const glossaryBlock = buildGlossaryBlock(
+    opts.glossaryHints ?? [],
+    PROMPTS.ui.glossaryPreamblePlural
+  );
+  const formsList = opts.requiredForms.join(", ");
+  const zeroNote = opts.zeroDigit
+    ? 'For the "zero" category, prefer the literal digit 0 where the quantity appears when that matches the language; still keep other placeholders exactly.'
+    : 'For the "zero" category, use natural zero-quantity phrasing for this language; preserve {{count}} where needed.';
+  const intlHint =
+    opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
+      ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
+      : "";
+
+  const userContent = `Language — write every output string in this language: ${opts.sourceLanguageLabel}
+
+Original UI string from source code (context):
+${JSON.stringify(opts.originalLiteral)}
+
+Generate cardinal plural variants for exactly these categories: ${formsList}.
+${zeroNote}
+${intlHint}
+Reply with ONLY one JSON object whose keys are exactly those category names (strings: zero, one, two, few, many, other as applicable) and whose values are the UI text for ${opts.sourceLanguageLabel}.`;
+
+  return {
+    systemPrompt: PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+    userContent,
+  };
+}
+
+/** Pass B: translate source-locale plural object into target locale forms. */
+export function buildPluralPassBPrompt(opts: {
+  sourceLanguageLabel: string;
+  targetLanguageLabel: string;
+  sourceForms: Partial<Record<CldrPluralForm, string>>;
+  requiredTargetForms: CldrPluralForm[];
+  originalLiteral: string;
+  glossaryHints?: string[];
+  /** When set, appends an `Intl.PluralRules` sample-count line for the target BCP-47 tag. */
+  intlPluralLocaleTag?: string;
+}): { systemPrompt: string; userContent: string } {
+  const glossaryBlock = buildGlossaryBlock(
+    opts.glossaryHints ?? [],
+    PROMPTS.ui.glossaryPreamblePlural
+  );
+  const intlHint =
+    opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
+      ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
+      : "";
+
+  const userContent = `Translate cardinal plural UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
+
+Original developer string (context):
+${JSON.stringify(opts.originalLiteral)}
+
+Source-language plural strings (JSON object):
+${JSON.stringify(opts.sourceForms, null, 2)}
+
+Produce translations for exactly these target categories: ${opts.requiredTargetForms.join(", ")}.
+${intlHint}
+Reply with ONLY one JSON object whose keys are exactly those category names and whose values are the translated UI strings in ${opts.targetLanguageLabel}.`;
+
+  return {
+    systemPrompt: PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+    userContent,
+  };
+}
+
+// ── Lint-source prompt ────────────────────────────────────────────────────
+
+export function buildLintSourcePromptMessages(
+  texts: string[],
+  opts: {
+    languageLabel: string;
+    glossaryHints?: string[];
+  }
+): { systemPrompt: string; userContent: string } {
+  const glossaryBlock = buildGlossaryBlock(
+    opts.glossaryHints ?? [],
+    PROMPTS.lintSource.glossaryPreamble
+  );
+  const systemPrompt = PROMPTS.lintSource.systemPrompt.join("\n") + glossaryBlock;
+  const userContent = `${PROMPTS.lintSource.userMessagePreamble} ${opts.languageLabel}
+
+${JSON.stringify(texts, null, 2)}
+
+${PROMPTS.lintSource.outputContract.trim()}
+Respond with ONLY the JSON array of length ${texts.length}.`;
+
+  return { systemPrompt, userContent };
+}
+
 // ── Response parsing: shared helpers ──────────────────────────────────────
 
 /** Base class for prompt/response parse errors that carry the raw model output. */
@@ -214,6 +317,105 @@ export class UIJsonArrayParseError extends PromptParseError {
     super(message, rawResponse);
     this.name = "UIJsonArrayParseError";
   }
+}
+
+export class PluralFormsParseError extends PromptParseError {
+  constructor(message: string, rawResponse: string) {
+    super(message, rawResponse);
+    this.name = "PluralFormsParseError";
+  }
+}
+
+export class LintSourceJsonParseError extends PromptParseError {
+  constructor(message: string, rawResponse: string) {
+    super(message, rawResponse);
+    this.name = "LintSourceJsonParseError";
+  }
+}
+
+/** One slot in a lint-source batch response (aligned with input string index). */
+export interface LintSourceSlotResult {
+  issues: LintSourceIssue[];
+}
+
+export interface LintSourceIssue {
+  severity: "error" | "warning";
+  message: string;
+  suggestedText?: string;
+  /** Set when a model suggestion was dropped because it broke placeholders. */
+  suggestionDroppedPlaceholderMismatch?: boolean;
+}
+
+/**
+ * Parse JSON array from model: `[ { "issues": [...] }, ... ]` with length `expectedLength`.
+ * If the model returns fewer or more slots than `expectedLength`, pads with empty issues or truncates (best-effort) and sets `lengthWarning`.
+ */
+export function parseLintSourceBatchResponse(
+  content: string,
+  expectedLength: number
+): { slots: LintSourceSlotResult[]; lengthWarning: string | null } {
+  const cleaned = cleanJsonResponse(content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    throw new LintSourceJsonParseError(
+      `lint-source batch: invalid JSON (${e instanceof Error ? e.message : String(e)})`,
+      content
+    );
+  }
+  if (!Array.isArray(parsed)) {
+    throw new LintSourceJsonParseError("lint-source batch: response is not a JSON array", content);
+  }
+
+  let lengthWarning: string | null = null;
+  if (parsed.length !== expectedLength) {
+    lengthWarning = `lint-source batch: expected ${expectedLength} slot objects, got ${parsed.length} (using best-effort padding/truncation)`;
+  }
+
+  const out: LintSourceSlotResult[] = [];
+  for (let i = 0; i < expectedLength; i++) {
+    const row = i < parsed.length ? parsed[i] : undefined;
+    if (row === null || row === undefined || typeof row !== "object" || Array.isArray(row)) {
+      if (row !== undefined) {
+        lengthWarning =
+          lengthWarning ??
+          `lint-source batch: slot ${i} is not a JSON object (treated as no issues)`;
+      }
+      out.push({ issues: [] });
+      continue;
+    }
+    const rec = row as Record<string, unknown>;
+    const rawIssues = rec["issues"];
+    const issues: LintSourceIssue[] = [];
+    if (Array.isArray(rawIssues)) {
+      for (const item of rawIssues) {
+        if (item === null || typeof item !== "object" || Array.isArray(item)) {
+          continue;
+        }
+        const o = item as Record<string, unknown>;
+        const sevRaw = o["severity"];
+        const msgRaw = o["message"];
+        const sugRaw = o["suggestedText"];
+        const severity =
+          sevRaw === "warning" || sevRaw === "error"
+            ? sevRaw
+            : sevRaw === "warn"
+              ? "warning"
+              : "warning";
+        const message = typeof msgRaw === "string" ? msgRaw.trim() : "";
+        if (!message) {
+          continue;
+        }
+        const suggestedText =
+          typeof sugRaw === "string" && sugRaw.trim().length > 0 ? sugRaw : undefined;
+        issues.push({ severity, message, suggestedText });
+      }
+    }
+    out.push({ issues });
+  }
+
+  return { slots: out, lengthWarning };
 }
 
 function cleanJsonResponse(content: string): string {
@@ -341,4 +543,34 @@ export function parseUIJsonArrayResponse(content: string, expectedLength: number
     );
   }
   return parsed.map((x) => String(x));
+}
+
+/** Parse JSON object `{ one: "…", other: "…" }` for cardinal plural batches. */
+export function parsePluralFormsJsonResponse(
+  content: string,
+  requiredForms: CldrPluralForm[]
+): Record<CldrPluralForm, string> {
+  const cleaned = cleanJsonResponse(content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    throw new PluralFormsParseError(
+      `Plural forms: invalid JSON (${e instanceof Error ? e.message : String(e)})`,
+      content
+    );
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new PluralFormsParseError("Plural forms: response is not a JSON object", content);
+  }
+  const record = parsed as Record<string, unknown>;
+  const out = {} as Record<CldrPluralForm, string>;
+  for (const f of requiredForms) {
+    const v = record[f];
+    if (v === undefined || typeof v !== "string") {
+      throw new PluralFormsParseError(`Plural forms: missing or invalid key "${f}"`, content);
+    }
+    out[f] = v;
+  }
+  return out;
 }

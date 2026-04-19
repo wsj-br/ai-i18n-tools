@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Verwendet `i18next-scanner` von `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateierweiterungen sind konfigurierbar. **`extract` fügt außerdem Nicht-Scanner-Eingaben in denselben Katalog ein:** die Projekt-`package.json`-`description`, wenn `reactExtractor.includePackageDescription` aktiviert ist (Standard), und jedes **`englishName`** aus `ui-languages.json`, wenn `reactExtractor.includeUiLanguageEnglishNames` `true` ist und `uiLanguagesPath` festgelegt ist (Zeichenketten, die bereits im Quellcode gefunden wurden, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der bereinigten Quellzeichenkette – diese werden zu den Schlüsseln in `strings.json`.
+Verwendet `i18next-scanner` von `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateierweiterungen sind konfigurierbar. `extract` **fügt außerdem Nicht-Scanner-Eingaben in denselben Katalog ein:** die Projekt-`package.json`-`description`, wenn `reactExtractor.includePackageDescription` aktiviert ist (Standard), und jedes **`englishName`** aus `ui-languages.json`, wenn `reactExtractor.includeUiLanguageEnglishNames` `true` ist und `uiLanguagesPath` festgelegt ist (Zeichenketten, die bereits im Quellcode gefunden wurden, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der bereinigten Quellzeichenkette – diese werden zu den Schlüsseln in `strings.json`.
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ Der Master-Katalog hat die Form:
 
 `extract` fügt neue Schlüssel hinzu und behält vorhandene `translated`-/`models`-Daten für Schlüssel bei, die weiterhin im Scan vorhanden sind (Scanner-Literale, optionale Beschreibung, optionales Manifest-`englishName`). `translate-ui` füllt fehlende `translated`-Einträge auf, aktualisiert `models` für die Sprachvarianten, die es übersetzt, und schreibt flache Sprachdateien.
 
-**`ui-languages.json`-Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
+`ui-languages.json` **-Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
 
 ### Flache Lokalisierungsdateien
 
@@ -313,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+**`setupKeyAsDefaultT`** als üblichen App-Einstiegspunkt verwenden (Schlüsselkürzung + Plural **`wrapT`** + optional **`translate-ui`** `{sourceLocale}.json`). Das alleinige Aufrufen von **`wrapI18nWithKeyTrim`** ist für die Anwendungsverdrahtung **veraltet**.
+
+**`localeLoaders`** mit **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** erstellen, damit die Schlüssel nach **`generate-ui-languages`** mit **`targetLocales`** synchron bleiben. Siehe **`docs/GETTING_STARTED.md`** (Laufzeitverdrahtung) und **`examples/nextjs-app/`** / **`examples/console-app/`**.
 
 ### Anzeigehilfen
 

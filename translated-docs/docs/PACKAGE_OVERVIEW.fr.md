@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Utilise `i18next-scanner` de `Parser.parseFuncFromString` pour rechercher les appels `t("literal")` et `i18n.t("literal")` dans n'importe quel fichier JS/TS. Les noms de fonctions et les extensions de fichiers sont configurables. **`extract` fusionne également les entrées non issues du scanneur dans le même catalogue :** le `package.json` `description` du projet lorsque `reactExtractor.includePackageDescription` est activé (par défaut), et chaque **`englishName`** de `ui-languages.json` lorsque `reactExtractor.includeUiLanguageEnglishNames` est `true` et que `uiLanguagesPath` est défini (les chaînes déjà présentes dans le code source conservent la priorité). Les hachages des segments sont les **8 premiers caractères hexadécimaux du hachage MD5** de la chaîne source après suppression des espaces — ceux-ci deviennent les clés dans `strings.json`.
+Utilise `i18next-scanner` de `Parser.parseFuncFromString` pour rechercher les appels `t("literal")` et `i18n.t("literal")` dans n'importe quel fichier JS/TS. Les noms de fonctions et les extensions de fichiers sont configurables. `extract` **fusionne également les entrées non issues du scanneur dans le même catalogue :** le `package.json` `description` du projet lorsque `reactExtractor.includePackageDescription` est activé (par défaut), et chaque **`englishName`** de `ui-languages.json` lorsque `reactExtractor.includeUiLanguageEnglishNames` est `true` et que `uiLanguagesPath` est défini (les chaînes déjà présentes dans le code source conservent la priorité). Les hachages des segments sont les **8 premiers caractères hexadécimaux du hachage MD5** de la chaîne source après suppression des espaces — ceux-ci deviennent les clés dans `strings.json`.
 
 ### `strings.json`
 
@@ -313,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+Utilisez **`setupKeyAsDefaultT`** comme point d'entrée habituel de l'application (clé raccourcie + pluriel **`wrapT`** + `{sourceLocale}.json` **`translate-ui`** facultatif). Appeler **`wrapI18nWithKeyTrim`** seul est **déconseillé** pour le câblage de l'application.
+
+Construisez **`localeLoaders`** avec **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** afin que les clés restent alignées avec **`targetLocales`** après **`generate-ui-languages`**. Consultez **`docs/GETTING_STARTED.md`** (câblage au moment de l'exécution) et **`examples/nextjs-app/`** / **`examples/console-app/`**.
 
 ### Helpers d'affichage
 

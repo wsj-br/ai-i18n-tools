@@ -13,6 +13,16 @@ export function normalizeLocale(locale: string): string {
   return normalized.toLowerCase();
 }
 
+/** ISO 639-1 (or extlang) primary subtag, lowercased — e.g. `zh-CN` → `zh`, `en-GB` → `en`. */
+export function primaryLanguageSubtag(locale: string): string {
+  const t = locale.trim();
+  if (!t) {
+    return "";
+  }
+  const first = t.split(/[-_]/)[0];
+  return first ? first.toLowerCase() : "";
+}
+
 /**
  * Canonical key for matching `ui-languages.json` / master catalog `code` values
  * whether they use glibc underscores (`ar_SA`, `be_BY@latin`) or BCP-47 hyphens (`ar-SA`).

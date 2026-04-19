@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-किसी भी JS/TS फ़ाइल में `t("literal")` और `i18n.t("literal")` कॉल खोजने के लिए `i18next-scanner` के `Parser.parseFuncFromString` का उपयोग करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन कॉन्फ़िगर करने योग्य हैं। **`extract` गैर-स्कैनर इनपुट को एक ही कैटलॉग में भी मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `reactExtractor.includePackageDescription` सक्षम है (डिफ़ॉल्ट), और `ui-languages.json` से प्रत्येक **`englishName`** जब `reactExtractor.includeUiLanguageEnglishNames` `true` है और `uiLanguagesPath` सेट है (स्रोत में पहले से मौजूद स्ट्रिंग्स को प्राथमिकता रहती है)। सेगमेंट हैश ट्रिम की गई स्रोत स्ट्रिंग के **MD5 के पहले 8 हेक्स अक्षर** होते हैं — ये `strings.json` में कुंजियाँ बन जाते हैं।
+किसी भी JS/TS फ़ाइल में `t("literal")` और `i18n.t("literal")` कॉल खोजने के लिए `i18next-scanner` के `Parser.parseFuncFromString` का उपयोग करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन कॉन्फ़िगर करने योग्य हैं। `extract` **गैर-स्कैनर इनपुट को एक ही कैटलॉग में भी मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `reactExtractor.includePackageDescription` सक्षम है (डिफ़ॉल्ट), और `ui-languages.json` से प्रत्येक **`englishName`** जब `reactExtractor.includeUiLanguageEnglishNames` `true` है और `uiLanguagesPath` सेट है (स्रोत में पहले से मौजूद स्ट्रिंग्स को प्राथमिकता रहती है)। सेगमेंट हैश ट्रिम की गई स्रोत स्ट्रिंग के **MD5 के पहले 8 हेक्स अक्षर** होते हैं — ये `strings.json` में कुंजियाँ बन जाते हैं।
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 `extract` नए कुंजी जोड़ता है और स्कैन में अभी भी मौजूद कुंजियों के लिए मौजूदा `translated` / `models` डेटा को बरकरार रखता है (स्कैनर लिटरल्स, वैकल्पिक विवरण, वैकल्पिक मैनिफेस्ट `englishName`)। `translate-ui` लुप्त `translated` प्रविष्टियों को भरता है, उन स्थानीयकरणों के लिए `models` को अपडेट करता है जिनका यह अनुवाद करता है, और सपाट स्थानीयकरण फ़ाइलें लिखता है।
 
-**`ui-languages.json` मैनिफेस्ट** — `{ code, label, englishName, direction }` की JSON सरणी (BCP-47 `code`, UI `label`, संदर्भ `englishName`, `"ltr"` या `"rtl"`)। `sourceLocale` + `targetLocales` और बंडल किए गए मास्टर `data/ui-languages-complete.json` से प्रोजेक्ट फ़ाइल बनाने के लिए `generate-ui-languages` का उपयोग करें।
+`ui-languages.json` **मैनिफेस्ट** — `{ code, label, englishName, direction }` की JSON सरणी (BCP-47 `code`, UI `label`, संदर्भ `englishName`, `"ltr"` या `"rtl"`)। `sourceLocale` + `targetLocales` और बंडल किए गए मास्टर `data/ui-languages-complete.json` से प्रोजेक्ट फ़ाइल बनाने के लिए `generate-ui-languages` का उपयोग करें।
 
 ### फ्लैट स्थानीय फ़ाइलें
 
@@ -313,13 +313,25 @@ applyDirection(lng: string, element?: Element): void
 
 ```ts
 defaultI18nInitOptions(sourceLocale?: string): i18nextInitOptions
+setupKeyAsDefaultT(i18n: I18nLike & Partial<I18nWithResources>, options: SetupKeyAsDefaultTOptions): void
 wrapI18nWithKeyTrim(i18n: I18nLike): void
+wrapT(i18n: I18nLike, options: WrapTOptions): void
+buildPluralIndexFromStringsJson(entries: Record<string, { plural?: boolean; source?: string }>): Record<string, string>
+makeLocaleLoadersFromManifest(
+  manifest: readonly { code: string }[],
+  sourceLocale: string,
+  makeLoaderForLocale: (localeCode: string) => () => Promise<unknown>
+): Record<string, () => Promise<unknown>>
 makeLoadLocale(
   i18n: I18nWithResources,
   localeLoaders: Record<string, () => Promise<unknown>>,
   sourceLocale?: string
 ): (lang: string) => Promise<void>
 ```
+
+**`setupKeyAsDefaultT`** को सामान्य ऐप प्रवेश बिंदु के रूप में उपयोग करें (key-trim + बहुवचन **`wrapT`** + वैकल्पिक **`translate-ui`** `{sourceLocale}.json`)। एप्लिकेशन वायरिंग के लिए अकेले **`wrapI18nWithKeyTrim`** को कॉल करना **अप्रचलित** है।
+
+**`generate-ui-languages`** के बाद **`localeLoaders`** को **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** के साथ बनाएँ ताकि कुंजियाँ **`targetLocales`** के साथ संरेखित रहें। **`docs/GETTING_STARTED.md`** (रनटाइम वायरिंग) और **`examples/nextjs-app/`** / **`examples/console-app/`** देखें।
 
 ### डिस्प्ले हेल्पर्स
 

@@ -10,7 +10,7 @@ CLI- und programmatisches Toolkit zur Internationalisierung von JavaScript/TypeS
 
 **Arbeitsablauf 1 - UI-Übersetzung** (React, Next.js, Node.js, jedes i18next-Projekt)
 
-Erstellt einen Masterkatalog (`strings.json` mit optionalen, sprachabhängigen **`models`**-Metadaten) aus **`t("…")` / `i18n.t("…")`-Literalen**, optional **`package.json` `description`** und optional jeweils **`englishName`** aus `ui-languages.json`, wenn dies in der Konfiguration aktiviert ist. Übersetzt fehlende Einträge pro Sprache über OpenRouter und schreibt flache JSON-Dateien (`de.json`, `pt-BR.json`, …), die für i18next bereitstehen.
+Erstellt einen Masterkatalog (`strings.json` mit optionalen, sprachabhängigen **`models`**-Metadaten) aus `t("…")` / `i18n.t("…")` **-Literalen**, optional **`package.json` `description`** und optional jeweils **`englishName`** aus `ui-languages.json`, wenn dies in der Konfiguration aktiviert ist. Übersetzt fehlende Einträge pro Sprache über OpenRouter und schreibt flache JSON-Dateien (`de.json`, `pt-BR.json`, …), die für i18next bereitstehen.
 
 **Arbeitsablauf 2 - Dokumentenübersetzung** (Markdown, Docusaurus JSON)
 
@@ -22,7 +22,7 @@ Beide Workflows teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und k
 
 ## Installation
 
-Das veröffentlichte Paket ist **ESM-only** (`"type": "module"`). Verwende `import` aus Node.js, Bundlern oder `import()` — **`require('ai-i18n-tools')` wird nicht unterstützt.**
+Das veröffentlichte Paket ist **ESM-only** (`"type": "module"`). Verwende `import` aus Node.js, Bundlern oder `import()` — `require('ai-i18n-tools')` **wird nicht unterstützt.**
 
 ```bash
 npm install ai-i18n-tools
@@ -59,27 +59,28 @@ Integriere i18next in deiner App mithilfe der Helfer aus `'ai-i18n-tools/runtime
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import uiLanguages from './locales/ui-languages.json';
-import {
-  defaultI18nInitOptions,
-  wrapI18nWithKeyTrim,
-  makeLoadLocale,
-  applyDirection,
-} from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
+import sourcePluralFlat from './public/locales/en-GB.json';
+import aiI18n from 'ai-i18n-tools/runtime';
 
 // Must match sourceLocale in ai-i18n-tools.config.json
 export const SOURCE_LOCALE = 'en-GB';
 
-void i18n.use(initReactI18next).init(defaultI18nInitOptions(SOURCE_LOCALE));
-wrapI18nWithKeyTrim(i18n);
-i18n.on('languageChanged', applyDirection);
-applyDirection(i18n.language);
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
+});
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
 
-const localeLoaders = Object.fromEntries(
-  uiLanguages
-    .filter(({ code }) => code !== SOURCE_LOCALE)
-    .map(({ code }) => [code, () => import(`./locales/${code}.json`)])
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
 );
-export const loadLocale = makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
 export default i18n;
 ```
 
@@ -108,16 +109,18 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 Exportiert aus `'ai-i18n-tools/runtime'` - funktioniert in jeder JS-Umgebung, kein i18next-Import erforderlich:
 
-| Helfer | Beschreibung |
+| Helper | Beschreibung |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Standard-i18next-Init-Optionen für Key-as-Default-Setups. |
-| `wrapI18nWithKeyTrim(i18n)` | Wickelt `i18n.t` so, dass Schlüssel vor der Suche getrimmt werden. |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fabrik für das asynchrone Laden von Locale-Dateien. |
+| `defaultI18nInitOptions(sourceLocale)` | Standard i18next-Init-Optionen für Key-as-Default-Setups. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Empfohlene Verkabelung: key-trim + plural **`wrapT`** von **`strings.json`**, optional zusammengeführt mit **`translate-ui`** `{sourceLocale}.json` Plural-Schlüsseln. |
+| `wrapI18nWithKeyTrim(i18n)` | Nur Low-Level-Key-trim-Wrapper (veraltet für App-Verkabelung; bevorzugen Sie **`setupKeyAsDefaultT`**). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Erstellt die **`localeLoaders`**-Map für **`makeLoadLocale`** aus **`ui-languages.json`** (jedes **`code`** außer **`sourceLocale`**). |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory für asynchrones Laden von Lokalisierungsdateien. |
 | `getTextDirection(lng)` | Gibt `'ltr'` oder `'rtl'` für einen BCP-47-Code zurück. |
 | `applyDirection(lng, element?)` | Setzt das `dir`-Attribut auf `document.documentElement`. |
-| `getUILanguageLabel(lang, t)` | Anzeige-Label für eine Sprachmenüzeile (mit i18n). |
-| `getUILanguageLabelNative(lang)` | Anzeige-Label ohne Aufruf von `t()` (Header-Stil). |
-| `interpolateTemplate(str, vars)` | Niedrigstufige `{{var}}`-Substitution auf einem einfachen String (intern verwendet; Anwendungs-Code sollte stattdessen `t()` verwenden). |
+| `getUILanguageLabel(lang, t)` | Anzeigebezeichnung für eine Sprachmenüzeile (mit i18n). |
+| `getUILanguageLabelNative(lang)` | Anzeigebezeichnung ohne Aufruf von `t()` (Kopfzeilen-Stil). |
+| `interpolateTemplate(str, vars)` | Low-Level `{{var}}`-Substitution an einem einfachen String (intern verwendet; Anwendungscode sollte stattdessen `t()` verwenden). |
 | `flipUiArrowsForRtl(text, isRtl)` | Dreht `→` zu `←` für RTL-Layouts. |
 
 ---

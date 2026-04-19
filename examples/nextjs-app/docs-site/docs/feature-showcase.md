@@ -4,8 +4,6 @@ title: Translation Feature Showcase
 description: A reference document demonstrating every Markdown element that ai-i18n-tools knows how to translate.
 ---
 
-# Translation Feature Showcase
-
 This page exists to demonstrate how `ai-i18n-tools` handles every common Markdown construct. Run `sync` against it and compare the output in each locale folder to see exactly what gets translated and what stays untouched.
 
 ---
@@ -52,6 +50,7 @@ Tables are a common source of translation errors. Each cell is translated indivi
 |---|---|---|
 | Markdown translation | ✅ Stable | Segments cached in SQLite |
 | UI string extraction | ✅ Stable | Reads `t("…")` calls |
+| Cardinal plural UI strings | ✅ Stable | `t("…", { plurals: true, count })`; catalog + flat JSON suffixes |
 | JSON label translation | ✅ Stable | Docusaurus sidebar/navbar JSON |
 | SVG text translation | ✅ Stable | Preserves SVG structure |
 | Glossary enforcement | ✅ Stable | Per-project CSV glossary |
@@ -90,9 +89,25 @@ Tables are a common source of translation errors. Each cell is translated indivi
   - Output: Docusaurus `i18n/` tree or flat translated copies
   - Cache: SQLite, keyed by file path + segment hash
 - **UI strings pipeline**
-  - Source: JS/TS files with `t("…")` calls
-  - Output: per-locale flat JSON (`de.json`, `fr.json`, …)
+  - Source: JS/TS files with `t("…")` calls (including cardinal plurals via `{ plurals: true, count }`)
+  - Output: per-locale flat JSON (`de.json`, `fr.json`, …) with suffixed keys for plural categories when applicable
   - Cache: the master `strings.json` catalog itself
+
+---
+
+## Cardinal plural UI strings (Next.js companion app)
+
+Markdown documents on this site show **document** translation. **Cardinal plural** behaviour for UI copy is easiest to see in the **bundled Next.js example** that lives beside `docs-site/` under `examples/nextjs-app/`.
+
+That app’s home page (`src/app/page.tsx`) includes a **plurals demo** section and repeats one message at several sample counts so you can compare grammar across locales (for example Arabic vs English). Each line calls:
+
+```typescript
+t("This page has {{count}} sections", { plurals: true, count })
+```
+
+Use **`plurals: true`** so **`extract`** records a plural group in `locales/strings.json` and **`translate-ui`** fills the per-locale flat files under `public/locales/`. At runtime, i18next resolves the right suffixed key for the active **`count`**; the Next example wires helpers in **`src/lib/i18n.ts`**.
+
+For screenshots, locale URLs, and file layout, see **Cardinal plurals example** in the [Next.js example README](../../README.md).
 
 ---
 

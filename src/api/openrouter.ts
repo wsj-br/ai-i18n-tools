@@ -1,6 +1,6 @@
 import fs from "fs";
 import chalk from "chalk";
-import type { I18nConfig } from "../core/types.js";
+import type { CldrPluralForm, I18nConfig } from "../core/types.js";
 import {
   type BatchTranslationResult,
   type ChatResponse,
@@ -16,13 +16,17 @@ import {
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
+  buildLintSourcePromptMessages,
   buildUIPromptMessages,
   parseBatchJsonArrayResponse,
   parseBatchJsonObjectResponse,
   parseBatchTranslationResponse,
+  parseLintSourceBatchResponse,
+  parsePluralFormsJsonResponse,
   parseUIJsonArrayResponse,
   type DocumentBatchResponseFormat,
   type DocumentPromptContentType,
+  type LintSourceSlotResult,
 } from "../core/prompt-builder.js";
 import type { Logger } from "../utils/logger.js";
 
@@ -601,6 +605,116 @@ export class OpenRouterClient {
 
     throw new Error(
       `All translation models failed for UI batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    );
+  }
+
+  /**
+   * `lint-source`: review a batch of source-locale UI strings; model returns JSON array of `{ issues: [...] }`.
+   */
+  async lintUISourceBatch(
+    texts: string[],
+    languageLabel: string,
+    options?: { startModelIndex?: number; glossaryHints?: string[] }
+  ): Promise<{
+    slots: LintSourceSlotResult[];
+    model: string;
+    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    cost?: number;
+    lengthWarning: string | null;
+  }> {
+    if (texts.length === 0) {
+      return {
+        slots: [],
+        model: this.modelsToTry[0]!,
+        usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+        lengthWarning: null,
+      };
+    }
+
+    const { systemPrompt, userContent } = buildLintSourcePromptMessages(texts, {
+      languageLabel,
+      glossaryHints: options?.glossaryHints,
+    });
+
+    const openRouterMessages = this.toOpenRouterMessages([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userContent },
+    ]);
+
+    const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    let lastError: unknown;
+
+    for (let mi = start; mi < this.modelsToTry.length; mi++) {
+      const model = this.modelsToTry[mi]!;
+      try {
+        const result = await this.fetchCompletion(model, openRouterMessages);
+        const { slots, lengthWarning } = parseLintSourceBatchResponse(result.content, texts.length);
+        return {
+          slots,
+          model: result.model,
+          usage: result.usage,
+          cost: result.cost,
+          lengthWarning,
+        };
+      } catch (e) {
+        lastError = e;
+        this.logger?.warn(`lint-source batch failed with ${model}: ${e}`);
+      }
+    }
+
+    throw new Error(
+      `All translation models failed for lint-source batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    );
+  }
+
+  /**
+   * Cardinal plural groups: model returns one JSON object (`one`, `other`, …) per locale batch.
+   */
+  async translatePluralCardinalBatch(
+    expectedForms: CldrPluralForm[],
+    messages: { systemPrompt: string; userContent: string },
+    options?: { startModelIndex?: number }
+  ): Promise<{
+    forms: Record<CldrPluralForm, string>;
+    model: string;
+    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    cost?: number;
+  }> {
+    if (expectedForms.length === 0) {
+      return {
+        forms: {} as Record<CldrPluralForm, string>,
+        model: this.modelsToTry[0]!,
+        usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+      };
+    }
+
+    const openRouterMessages = this.toOpenRouterMessages([
+      { role: "system", content: messages.systemPrompt },
+      { role: "user", content: messages.userContent },
+    ]);
+
+    const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    let lastError: unknown;
+
+    for (let mi = start; mi < this.modelsToTry.length; mi++) {
+      const model = this.modelsToTry[mi]!;
+      try {
+        const result = await this.fetchCompletion(model, openRouterMessages);
+        const forms = parsePluralFormsJsonResponse(result.content, expectedForms);
+        return {
+          forms,
+          model: result.model,
+          usage: result.usage,
+          cost: result.cost,
+        };
+      } catch (e) {
+        lastError = e;
+        this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
+      }
+    }
+
+    throw new Error(
+      `All translation models failed for plural cardinal batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
     );
   }
 }

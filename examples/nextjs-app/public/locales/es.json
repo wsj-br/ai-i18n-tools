@@ -1,9 +1,14 @@
 {
-  "AI-i18n-tools: Next.js example app": "ai-i18n-tools: Aplicación de ejemplo Next.js",
-  "Hello World!!": "¡Hola mundo!",
+  "ai-i18n-tools: Next.js example app": "ai-i18n-tools: aplicación de ejemplo Next.js",
+  "Hello World!": "¡Hola mundo!",
   "This line will be translated to multiple languages.": "Esta línea se traducirá a varios idiomas.",
   "This is line number {{number}}": "Esta es la línea número {{number}}",
+  "Plurals: automatic generation usage example": "Plurales: ejemplo de uso de generación automática",
+  "f9ba51ab_original": "This page has {{count}} sections",
+  "f9ba51ab_one": "Esta página tiene {{count}} sección",
+  "f9ba51ab_many": "Esta página tiene {{count}} secciones",
+  "f9ba51ab_other": "Esta página tiene {{count}} secciones",
   "Translation demo illustration": "Ilustración de demostración de traducción",
-  "ai-i18n-tools is translating the texts contained within this SVG ilustration.": "ai-i18n-tools está traduciendo los textos contenidos en esta ilustración SVG.",
+  "ai-i18n-tools translated the texts contained within this SVG illustration.": "ai-i18n-tools tradujo los textos contenidos en esta ilustración SVG.",
   "Example Next.js application demonstrating ai-i18n-tools": "Aplicación de ejemplo de Next.js que demuestra ai-i18n-tools"
 }

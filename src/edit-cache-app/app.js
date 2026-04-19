@@ -3,6 +3,7 @@
   "use strict";
 
   const UI_PAGE_SIZE = 25;
+  const UP_PAGE_SIZE = 25;
   const GL_PAGE_SIZE = 25;
 
   function escapeHtml(str) {
@@ -803,20 +804,22 @@
       }
       const data = await fetch("/api/ui-strings").then((r) => r.json());
       if (!data.entries) throw new Error(data.error || "Bad response");
-      uiState.allEntries = data.entries.map((e) => ({
-        id: e.id,
-        source: e.source,
-        translated: e.translated || {},
-        models: e.models || {},
-        locations: e.locations || [],
-      }));
+      uiState.allEntries = data.entries
+        .filter((e) => !e.plural)
+        .map((e) => ({
+          id: e.id,
+          source: e.source,
+          translated: e.translated || {},
+          models: e.models || {},
+          locations: e.locations || [],
+        }));
       uiFillFilepathSelect();
       uiFillModelSelect();
       uiApplyFiltersToList();
       uiRenderTable();
       setStatus(
         document.getElementById("ui-status"),
-        `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
+        `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
         true
       );
     } catch (e) {
@@ -836,7 +839,7 @@
     uiRenderTable();
     setStatus(
       document.getElementById("ui-status"),
-      `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
+      `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
       true
     );
   }
@@ -846,7 +849,7 @@
     uiRenderTable();
     setStatus(
       document.getElementById("ui-status"),
-      `${uiState.allEntries.length} entries (${uiState.filteredRows.length} row(s) after filter)`,
+      `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
       true
     );
   }
@@ -891,6 +894,518 @@
     document.getElementById("ui-btn-modal-save").addEventListener("click", uiSaveModal);
     document.getElementById("ui-modal-overlay").addEventListener("click", (e) => {
       if (e.target === e.currentTarget) uiCloseModal();
+    });
+  }
+
+  // ---------- UI plurals ----------
+  const upState = {
+    meta: null,
+    allEntries: [],
+    filteredRows: [],
+    page: 1,
+    editingEntry: null,
+    editingLocale: null,
+  };
+
+  function upGetLocale() {
+    return document.getElementById("up-edit-locale").value;
+  }
+
+  function upLocalesForTableRows(entry) {
+    const locFilter = upGetLocale();
+    const list = (upState.meta && upState.meta.pluralLocales) || [];
+    if (locFilter) {
+      return list.includes(locFilter) ? [locFilter] : [];
+    }
+    return list;
+  }
+
+  function upPluralBucketText(entry, locale) {
+    const bucket = entry.translated && entry.translated[locale];
+    if (!bucket || typeof bucket !== "object") return "";
+    return Object.values(bucket)
+      .filter((v) => typeof v === "string")
+      .join(" ")
+      .toLowerCase();
+  }
+
+  const UP_PLURAL_FORM_ORDER = ["zero", "one", "two", "few", "many", "other"];
+
+  /** Keys to show for a locale row: required forms first, then any extra keys present in `translated`. */
+  function upFormsCellOrderedKeys(entry, locale) {
+    const bucket = (entry.translated && entry.translated[locale]) || {};
+    const req = (entry.requiredFormsByLocale && entry.requiredFormsByLocale[locale]) || [];
+    const seen = new Set();
+    const keys = [];
+    for (const k of req) {
+      if (!seen.has(k)) {
+        seen.add(k);
+        keys.push(k);
+      }
+    }
+    for (const k of Object.keys(bucket)) {
+      if (typeof bucket[k] === "string" && !seen.has(k)) {
+        seen.add(k);
+        keys.push(k);
+      }
+    }
+    keys.sort((a, b) => {
+      const ia = UP_PLURAL_FORM_ORDER.indexOf(a);
+      const ib = UP_PLURAL_FORM_ORDER.indexOf(b);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return keys;
+  }
+
+  /** One line per form: `one: "…"` / `other: "…"` (Unicode curly quotes). */
+  function upFormsCellHtml(entry, locale) {
+    const bucket = (entry.translated && entry.translated[locale]) || {};
+    const keys = upFormsCellOrderedKeys(entry, locale);
+    if (keys.length === 0) return "\u2014";
+    return keys
+      .map((k) => {
+        const v = typeof bucket[k] === "string" ? bucket[k] : "";
+        const esc = escapeHtml(truncate(v, 400));
+        return `<span class="up-form-key">${escapeHtml(k)}:</span> <span class="up-form-val">\u201C${esc}\u201D</span>`;
+      })
+      .join("<br>");
+  }
+
+  function upFormsCellTitlePlain(entry, locale) {
+    const bucket = (entry.translated && entry.translated[locale]) || {};
+    const keys = upFormsCellOrderedKeys(entry, locale);
+    return keys
+      .map((k) => {
+        const v = typeof bucket[k] === "string" ? bucket[k] : "";
+        return `${k}: \u201C${v}\u201D`;
+      })
+      .join("\n");
+  }
+
+  function upSourceCellHtml(entry) {
+    const line = escapeHtml(truncate(entry.source, 200));
+    return `<div>${line}</div>`;
+  }
+
+  function upCollectFilepaths(entries) {
+    const set = new Set();
+    for (const e of entries) {
+      for (const loc of e.locations || []) {
+        if (loc.file) set.add(loc.file);
+      }
+    }
+    return Array.from(set).sort();
+  }
+
+  function upCollectModels(entries) {
+    const set = new Set();
+    for (const e of entries) {
+      const m = e.models || {};
+      for (const v of Object.values(m)) {
+        if (v != null && String(v).trim() !== "") set.add(String(v).trim());
+      }
+    }
+    return Array.from(set).sort();
+  }
+
+  function upFillFilepathSelect() {
+    const sel = document.getElementById("up-filter-filepath-select");
+    const preserved = sel.value;
+    const paths = upCollectFilepaths(upState.allEntries);
+    sel.innerHTML = '<option value="">-- Select filepath --</option>';
+    for (const fp of paths) {
+      const opt = document.createElement("option");
+      opt.value = fp;
+      opt.textContent = fp;
+      sel.appendChild(opt);
+    }
+    if (preserved && Array.from(sel.options).some((o) => o.value === preserved)) {
+      sel.value = preserved;
+    }
+  }
+
+  function upFillModelSelect() {
+    const sel = document.getElementById("up-filter-model");
+    const preserved = sel.value;
+    const models = upCollectModels(upState.allEntries);
+    sel.innerHTML = '<option value="">All models</option>';
+    for (const model of models) {
+      const opt = document.createElement("option");
+      opt.value = model;
+      opt.textContent = model;
+      sel.appendChild(opt);
+    }
+    if (preserved && Array.from(sel.options).some((o) => o.value === preserved)) {
+      sel.value = preserved;
+    }
+  }
+
+  function upSyncFilterFilepathSelect() {
+    const fn = document.getElementById("up-filter-filename").value.trim();
+    const sel = document.getElementById("up-filter-filepath-select");
+    if (!fn || !Array.from(sel.options).some((o) => o.value === fn)) {
+      sel.value = "";
+    } else {
+      sel.value = fn;
+    }
+  }
+
+  function upApplyFiltersToList() {
+    upSyncFilterFilepathSelect();
+    const idQ = document.getElementById("up-filter-id").value.trim().toLowerCase();
+    const filenamePartial = document.getElementById("up-filter-filename").value.trim().toLowerCase();
+    const filepathSel = document.getElementById("up-filter-filepath-select").value;
+    const srcQ = document.getElementById("up-filter-source").value.trim().toLowerCase();
+    const trQ = document.getElementById("up-filter-translated").value.trim().toLowerCase();
+    const modelQ = document.getElementById("up-filter-model").value.trim();
+    const statusF = document.getElementById("up-filter-status").value;
+    const rows = [];
+    for (const e of upState.allEntries) {
+      if (idQ && !String(e.id).toLowerCase().includes(idQ)) continue;
+      if (filepathSel) {
+        const files = (e.locations || []).map((l) => l.file).filter(Boolean);
+        if (!files.some((f) => f === filepathSel)) continue;
+      }
+      if (filenamePartial) {
+        const files = (e.locations || []).map((l) => l.file).filter(Boolean);
+        if (!files.some((f) => f.toLowerCase().includes(filenamePartial))) continue;
+      }
+      if (srcQ && !(e.source || "").toLowerCase().includes(srcQ)) continue;
+      for (const locale of upLocalesForTableRows(e)) {
+        const complete = e.completenessByLocale && e.completenessByLocale[locale];
+        if (statusF === "complete" && complete !== true) continue;
+        if (statusF === "incomplete" && complete !== false) continue;
+        const flat = upPluralBucketText(e, locale);
+        if (trQ && !flat.includes(trQ)) continue;
+        if (modelQ) {
+          const rowModel = (e.models || {})[locale];
+          const rowModelStr = rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
+          if (rowModelStr !== modelQ) continue;
+        }
+        rows.push({ entry: e, locale });
+      }
+    }
+    upState.filteredRows = rows;
+    upState.page = 1;
+  }
+
+  async function loadUiPlurals() {
+    setStatus(document.getElementById("up-status"), "Loading\u2026", false);
+    try {
+      const meta = await fetch("/api/ui-strings/meta").then((r) => r.json());
+      upState.meta = meta;
+      document.getElementById("up-meta").textContent = meta.available
+        ? `File: ${meta.path || "(unknown)"} \u2014 plural locales: ${(meta.pluralLocales || []).join(", ")}`
+        : "UI strings path not configured or file missing.";
+      document.getElementById("up-th-source").textContent = formatWithSourceLocale("Source", meta.sourceLocale);
+      const localeSel = document.getElementById("up-edit-locale");
+      const prevLocale = localeSel.value;
+      localeSel.innerHTML = "";
+      const allOpt = document.createElement("option");
+      allOpt.value = "";
+      allOpt.textContent = "All locales";
+      localeSel.appendChild(allOpt);
+      for (const loc of meta.pluralLocales || []) {
+        const opt = document.createElement("option");
+        opt.value = loc;
+        opt.textContent = loc;
+        localeSel.appendChild(opt);
+      }
+      const hasPrev = prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
+      localeSel.value = hasPrev ? prevLocale : "";
+      if (!meta.available) {
+        setStatus(document.getElementById("up-status"), "Unavailable", false);
+        document.getElementById("up-table-body").innerHTML = "";
+        document.getElementById("up-filter-filename").value = "";
+        document.getElementById("up-filter-filepath-select").innerHTML =
+          '<option value="">-- Select filepath --</option>';
+        document.getElementById("up-filter-model").innerHTML = '<option value="">All models</option>';
+        return;
+      }
+      const data = await fetch("/api/ui-strings").then((r) => r.json());
+      if (!data.entries) throw new Error(data.error || "Bad response");
+      upState.allEntries = data.entries
+        .filter((e) => e.plural === true)
+        .map((e) => ({
+          id: e.id,
+          source: e.source,
+          translated: e.translated || {},
+          models: e.models || {},
+          locations: e.locations || [],
+          plural: true,
+          completenessByLocale: e.completenessByLocale || {},
+          requiredFormsByLocale: e.requiredFormsByLocale || {},
+          zeroDigit: e.zeroDigit,
+        }));
+      upFillFilepathSelect();
+      upFillModelSelect();
+      upApplyFiltersToList();
+      upRenderTable();
+      setStatus(
+        document.getElementById("up-status"),
+        `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+        true
+      );
+    } catch (e) {
+      setStatus(document.getElementById("up-status"), String(e.message || e), false);
+    }
+  }
+
+  function upClearFilters() {
+    document.getElementById("up-filter-id").value = "";
+    document.getElementById("up-filter-filename").value = "";
+    document.getElementById("up-filter-filepath-select").value = "";
+    document.getElementById("up-filter-source").value = "";
+    document.getElementById("up-filter-translated").value = "";
+    document.getElementById("up-filter-status").value = "";
+    document.getElementById("up-filter-model").value = "";
+    document.getElementById("up-edit-locale").value = "";
+    upApplyFiltersToList();
+    upRenderTable();
+    setStatus(
+      document.getElementById("up-status"),
+      `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+      true
+    );
+  }
+
+  function upApplyAndRender() {
+    upApplyFiltersToList();
+    upRenderTable();
+    setStatus(
+      document.getElementById("up-status"),
+      `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+      true
+    );
+  }
+
+  function upRenderTable() {
+    const tbody = document.getElementById("up-table-body");
+    tbody.innerHTML = "";
+    const total = upState.filteredRows.length;
+    const showPag = total > UP_PAGE_SIZE;
+    document.getElementById("up-pagination-wrap-top").classList.toggle("hidden-ui", !showPag);
+    document.getElementById("up-pagination-wrap-bottom").classList.toggle("hidden-ui", !showPag);
+
+    const totalPages = Math.max(1, Math.ceil(total / UP_PAGE_SIZE) || 1);
+    const page = Math.min(upState.page, totalPages);
+    upState.page = page;
+    const start = (page - 1) * UP_PAGE_SIZE;
+    const slice = showPag ? upState.filteredRows.slice(start, start + UP_PAGE_SIZE) : upState.filteredRows;
+
+    if (showPag) {
+      const info = `Showing ${total ? start + 1 : 0}\u2013${Math.min(start + UP_PAGE_SIZE, total)} of ${total}`;
+      document.getElementById("up-pagination-info").textContent = info;
+      document.getElementById("up-pagination-info-bottom").textContent = info;
+      const pi = `Page ${page} of ${totalPages}`;
+      document.getElementById("up-page-indicator").textContent = pi;
+      document.getElementById("up-page-indicator-bottom").textContent = pi;
+      document.getElementById("up-btn-prev").disabled = page <= 1;
+      document.getElementById("up-btn-next").disabled = page >= totalPages;
+      document.getElementById("up-btn-prev-bottom").disabled = page <= 1;
+      document.getElementById("up-btn-next-bottom").disabled = page >= totalPages;
+    }
+
+    for (const { entry: e, locale: rowLocale } of slice) {
+      const tr = document.createElement("tr");
+      const modelLabel =
+        (e.models || {})[rowLocale] != null && String((e.models || {})[rowLocale]).trim() !== ""
+          ? String((e.models || {})[rowLocale])
+          : "\u2014";
+      const zdBadge =
+        e.zeroDigit === true
+          ? ' <span class="up-zerodigit-badge" title="zeroDigit hint for source forms">zeroDigit</span>'
+          : "";
+      tr.innerHTML = `
+        <td><code>${escapeHtml(e.id)}</code>${zdBadge}</td>
+        <td title="${escapeHtml(uiFormatLocations(e.locations))}">${escapeHtml(truncate(uiFormatLocations(e.locations), 80))}</td>
+        <td class="source-text">${upSourceCellHtml(e)}</td>
+        <td>${escapeHtml(rowLocale)}</td>
+        <td class="up-forms-col" title="${escapeHtml(upFormsCellTitlePlain(e, rowLocale))}">${upFormsCellHtml(e, rowLocale)}</td>
+        <td title="${escapeHtml(modelLabel)}">${escapeHtml(truncate(modelLabel, 48))}</td>
+        <td class="actions"></td>
+      `;
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "icon-btn";
+      editBtn.title = "Edit forms";
+      editBtn.textContent = "\u270F\uFE0F";
+      editBtn.addEventListener("click", () => upOpenModal(e, rowLocale));
+      const logBtn = document.createElement("button");
+      logBtn.type = "button";
+      logBtn.className = "icon-btn log-links-btn";
+      logBtn.title = "Log file links to server console";
+      logBtn.textContent = "\uD83D\uDD17";
+      logBtn.addEventListener("click", (ev) => uiLogLinks(e, rowLocale, ev));
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "icon-btn delete-btn";
+      deleteBtn.title = "Delete locale bucket";
+      deleteBtn.textContent = "\u274C";
+      deleteBtn.addEventListener("click", () => upDeleteRow(e, rowLocale));
+      tr.querySelector(".actions").append(editBtn, logBtn, deleteBtn);
+      tbody.appendChild(tr);
+    }
+  }
+
+  function upOpenModal(entry, locale) {
+    upState.editingEntry = entry;
+    upState.editingLocale = locale;
+    const reqForms =
+      (entry.requiredFormsByLocale && entry.requiredFormsByLocale[locale]) ||
+      (upState.meta &&
+        upState.meta.requiredPluralFormsByLocale &&
+        upState.meta.requiredPluralFormsByLocale[locale]) ||
+      [];
+    const bucket = (entry.translated && entry.translated[locale]) || {};
+    const formList =
+      reqForms.length > 0 ? reqForms : Object.keys(bucket).filter((k) => typeof bucket[k] === "string");
+    const container = document.getElementById("uip-modal-fields");
+    container.innerHTML = "";
+    const titleEl = document.getElementById("uip-modal-title");
+    titleEl.textContent = "";
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = `Plural forms (${locale})`;
+    titleEl.appendChild(titleSpan);
+    if (entry.zeroDigit === true) {
+      const badge = document.createElement("span");
+      badge.className = "up-zerodigit-badge";
+      badge.title = "zeroDigit (read-only)";
+      badge.textContent = "zeroDigit";
+      badge.style.marginLeft = "0.5rem";
+      titleEl.appendChild(badge);
+    }
+    for (const form of formList) {
+      const lab = document.createElement("label");
+      lab.textContent = form;
+      const ta = document.createElement("textarea");
+      ta.id = `uip-field-${form}`;
+      ta.rows = 3;
+      ta.value = typeof bucket[form] === "string" ? bucket[form] : "";
+      lab.appendChild(ta);
+      container.appendChild(lab);
+    }
+    document.getElementById("uip-modal-overlay").classList.remove("hidden");
+  }
+
+  function upCloseModal() {
+    upState.editingEntry = null;
+    upState.editingLocale = null;
+    document.getElementById("uip-modal-overlay").classList.add("hidden");
+    document.getElementById("uip-modal-fields").innerHTML = "";
+    const t = document.getElementById("uip-modal-title");
+    t.textContent = "Edit plural forms";
+  }
+
+  async function upSaveModal() {
+    if (!upState.editingEntry || upState.editingLocale == null) return;
+    const locale = upState.editingLocale;
+    const container = document.getElementById("uip-modal-fields");
+    const textareas = container.querySelectorAll("textarea");
+    const payload = {};
+    for (const ta of textareas) {
+      const id = ta.id.replace(/^uip-field-/, "");
+      if (id) payload[id] = ta.value;
+    }
+    try {
+      const res = await fetch(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ translated: { [locale]: payload } }),
+      });
+      const pj = await res.json();
+      if (!res.ok) throw new Error(pj.error || res.statusText);
+      upCloseModal();
+      await loadUiPlurals();
+    } catch (err) {
+      alert("Error saving: " + err.message);
+    }
+  }
+
+  async function upDeleteRow(entry, locale) {
+    if (!confirm("Delete all plural forms for this locale?")) return;
+    try {
+      const res = await fetch(`/api/ui-strings/${encodeURIComponent(entry.id)}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+      const pj = await res.json();
+      if (!res.ok) throw new Error(pj.error || res.statusText);
+      await loadUiPlurals();
+    } catch (err) {
+      alert("Error deleting: " + err.message);
+    }
+  }
+
+  async function upDeleteFiltered() {
+    const count = upState.filteredRows.length;
+    if (count === 0) {
+      alert("No rows to delete.");
+      return;
+    }
+    if (!confirm(`Delete all ${count} filtered locale bucket(s)?`)) return;
+    try {
+      const res = await fetch("/api/ui-strings/delete-rows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rows: upState.filteredRows.map((r) => ({ id: r.entry.id, locale: r.locale })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      alert(`Deleted ${data.deleted} locale bucket(s).`);
+      await loadUiPlurals();
+    } catch (err) {
+      alert("Error deleting: " + err.message);
+    }
+  }
+
+  function upInitListeners() {
+    document.getElementById("up-btn-delete-filtered").addEventListener("click", upDeleteFiltered);
+    document.getElementById("up-btn-clear").addEventListener("click", upClearFilters);
+    document.getElementById("up-btn-apply").addEventListener("click", upApplyAndRender);
+    function upApplyFiltersOnEnter(e) {
+      if (e.key === "Enter") {
+        upApplyAndRender();
+      }
+    }
+    document.getElementById("up-filter-id").addEventListener("keydown", upApplyFiltersOnEnter);
+    document.getElementById("up-filter-filename").addEventListener("keydown", upApplyFiltersOnEnter);
+    document.getElementById("up-filter-source").addEventListener("keydown", upApplyFiltersOnEnter);
+    document.getElementById("up-filter-translated").addEventListener("keydown", upApplyFiltersOnEnter);
+    document.getElementById("up-edit-locale").addEventListener("change", upApplyAndRender);
+    document.getElementById("up-filter-filepath-select").addEventListener("change", (e) => {
+      document.getElementById("up-filter-filename").value = e.target.value;
+      upApplyAndRender();
+    });
+    document.getElementById("up-filter-model").addEventListener("change", upApplyAndRender);
+    function upPrev() {
+      if (upState.page > 1) {
+        upState.page--;
+        upRenderTable();
+      }
+    }
+    function upNext() {
+      const totalPages = Math.max(1, Math.ceil(upState.filteredRows.length / UP_PAGE_SIZE));
+      if (upState.page < totalPages) {
+        upState.page++;
+        upRenderTable();
+      }
+    }
+    document.getElementById("up-btn-prev").addEventListener("click", upPrev);
+    document.getElementById("up-btn-next").addEventListener("click", upNext);
+    document.getElementById("up-btn-prev-bottom").addEventListener("click", upPrev);
+    document.getElementById("up-btn-next-bottom").addEventListener("click", upNext);
+    document.getElementById("up-filter-status").addEventListener("change", upApplyAndRender);
+    document.getElementById("uip-btn-modal-cancel").addEventListener("click", upCloseModal);
+    document.getElementById("uip-btn-modal-save").addEventListener("click", upSaveModal);
+    document.getElementById("uip-modal-overlay").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) upCloseModal();
     });
   }
 
@@ -1180,9 +1695,11 @@
       return ((100 * count) / total).toFixed(1);
     }
 
-    function renderModelLocaleMatrix(byModel, byLocale, byModelLocale, isUi) {
-      if (!byModel || byModel.length === 0 || !byLocale || byLocale.length === 0 || !byModelLocale) return "";
-      const locales = byLocale.map((r) => r.locale);
+    /** @param mode {"cache"|"ui"} — UI uses plain row counts per locale (same denominator as plain coverage). */
+    function renderModelLocaleMatrix(byModel, localeRows, byModelLocale, mode) {
+      if (!byModel || byModel.length === 0 || !localeRows || localeRows.length === 0 || !byModelLocale)
+        return "";
+      const locales = localeRows.map((r) => r.locale);
       let mHtml = '<h4 class="stats-subtitle">By model and locale</h4>';
       mHtml += '<div style="overflow-x:auto; padding-bottom: 0.5rem;"><table class="stats-table" style="max-width:none;"><thead><tr><th>Model</th>';
       for (const loc of locales) {
@@ -1196,8 +1713,12 @@
       }
 
       const locTotals = {};
-      for (const r of byLocale) {
-        locTotals[r.locale] = isUi ? r.translated : r.total;
+      for (const r of localeRows) {
+        if (mode === "cache") {
+          locTotals[r.locale] = r.total;
+        } else {
+          locTotals[r.locale] = r.translated + r.missing;
+        }
       }
 
       for (const mRow of byModel) {
@@ -1261,7 +1782,7 @@
           c.totalSegments === 0 ? "—" : "100.0%"
         }</td></tr></tfoot></table>`;
         
-        html += renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, false);
+        html += renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, "cache");
         
         html += '</div>';
 
@@ -1271,12 +1792,25 @@
         if (!ui.available) {
           html += '<p class="hint stats-unavailable">strings.json not configured or missing.</p>';
         } else {
-          html += `<p class="hint">${ui.totalEntries} entries</p>`;
+          html += `<p class="hint">${ui.totalEntries} entries (${ui.plainTotal} plain, ${ui.pluralTotal} plural)</p>`;
+          html += '<div class="stats-cards">';
+          html += `<div class="stats-card"><span class="stats-card-value">${ui.plainTotal}</span><span class="stats-card-label">Plain entries</span></div>`;
+          html += `<div class="stats-card"><span class="stats-card-value">${ui.pluralTotal}</span><span class="stats-card-label">Plural groups</span></div>`;
+          html += "</div>";
+          html += '<h4 class="stats-subtitle">Plain coverage per locale</h4>';
           html +=
             '<table class="stats-table"><thead><tr><th>Locale</th><th>Translated</th><th>Missing</th><th>Coverage</th></tr></thead><tbody>';
-          for (const row of ui.byLocale) {
-            const cov = pct(row.translated, ui.totalEntries);
+          for (const row of ui.plainByLocale) {
+            const cov = pct(row.translated, ui.plainTotal);
             html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.translated}</td><td>${row.missing}</td><td>${cov}%</td></tr>`;
+          }
+          html += "</tbody></table>";
+          html += '<h4 class="stats-subtitle">Plural completeness per locale</h4>';
+          html +=
+            '<table class="stats-table"><thead><tr><th>Locale</th><th>Complete</th><th>Incomplete</th><th>Coverage</th></tr></thead><tbody>';
+          for (const row of ui.pluralByLocale) {
+            const cov = pct(row.complete, ui.pluralTotal);
+            html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.complete}</td><td>${row.incomplete}</td><td>${cov}%</td></tr>`;
           }
           html += "</tbody></table>";
 
@@ -1292,7 +1826,7 @@
             totalUiModelUsage === 0 ? "—" : "100.0%"
           }</td></tr></tfoot></table>`;
           
-          html += renderModelLocaleMatrix(ui.byModel, ui.byLocale, ui.byModelLocale, true);
+          html += renderModelLocaleMatrix(ui.byModel, ui.plainByLocale, ui.byModelLocale, "ui");
         }
         html += "</div>";
 
@@ -1314,6 +1848,7 @@
       btn.classList.add("active");
       document.getElementById(`panel-${tab}`).classList.add("active");
       if (tab === "ui") loadUiStrings();
+      if (tab === "ui-plurals") loadUiPlurals();
       if (tab === "glossary") loadGlossary();
       if (tab === "stats") loadStats();
     });
@@ -1321,6 +1856,7 @@
 
   segInit();
   uiInitListeners();
+  upInitListeners();
   glInitListeners();
 
 })();

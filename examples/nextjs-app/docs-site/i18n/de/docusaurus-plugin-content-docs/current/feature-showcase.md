@@ -4,9 +4,9 @@ title: Vorführung der Übersetzungsfunktionen
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
   übersetzen kann.
-translation_last_updated: '2026-04-13T19:05:56.131Z'
-source_file_mtime: '2026-04-13T12:49:18.347Z'
-source_file_hash: 60c92aa8b547462c58ec49a6b0d6830f7245d618f2052c5ab961e2a4e80a0234
+translation_last_updated: '2026-04-18T22:42:42.524Z'
+source_file_mtime: '2026-04-18T18:55:00.042Z'
+source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
 translation_language: de
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -61,12 +61,13 @@ Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird ein
 
 | Funktion | Status | Hinweise |
 |---|---|---|
-| Markdown-Übersetzung | ✅ Stabil | Segmente im SQLite-Zwischenspeicher |
+| Markdown-Übersetzung | ✅ Stabil | Segmente im SQLite-Cache |
 | UI-String-Extraktion | ✅ Stabil | Liest `t("…")`-Aufrufe |
+| Kardinal-Plural UI-Strings | ✅ Stabil | `t("…", { plurals: true, count })`; Katalog + flache JSON-Endungen |
 | JSON-Label-Übersetzung | ✅ Stabil | Docusaurus Sidebar/Navbar JSON |
 | SVG-Text-Übersetzung | ✅ Stabil | Behält SVG-Struktur bei |
-| Glossar-Einhaltung | ✅ Stabil | Projektbezogenes CSV-Glossar |
-| Stapelverarbeitung Parallelität | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
+| Glossar-Einhaltung | ✅ Stabil | Pro Projekt CSV-Glossar |
+| Stapelweise Parallelität | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
 
 ### Ausrichtungsvarianten
 
@@ -96,14 +97,30 @@ Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird ein
 
 ### Geschachtelt
 
-- **Dokumenten-Pipeline**
-  - Quelle: beliebige `.md`- oder `.mdx`-Dateien
-  - Ausgabe: Docusaurus-`i18n/`-Verzeichnisbaum oder flache übersetzte Kopien
+- **Dokumente-Pipeline**
+  - Quelle: beliebige `.md`- oder `.mdx`-Datei
+  - Ausgabe: Docusaurus `i18n/`-Baum oder flache übersetzte Kopien
   - Cache: SQLite, indiziert nach Dateipfad + Segment-Hash
 - **UI-Strings-Pipeline**
-  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen
-  - Ausgabe: pro Sprache flache JSON-Dateien (`de.json`, `fr.json`, …)
-  - Cache: der Master-Katalog `strings.json` selbst
+  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich kardinaler Plurale über `{ plurals: true, count }`)
+  - Ausgabe: pro Sprache flache JSON-Dateien (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
+  - Cache: der Master-`strings.json`-Katalog selbst
+
+---
+
+## Kardinale Plural-UI-Strings (Next.js-Begleit-App)
+
+Markdown-Dokumente auf dieser Seite zeigen die **Dokument**-Übersetzung. Das Verhalten von **kardinalen Pluralen** für UI-Texte lässt sich am besten im **gebündelten Next.js-Beispiel** beobachten, das neben `docs-site/` unter `examples/nextjs-app/` liegt.
+
+Die Startseite dieser App (`src/app/page.tsx`) enthält einen Abschnitt **Plural-Demo** und wiederholt eine Nachricht bei mehreren Beispielanzahlen, sodass Sie die Grammatik zwischen Sprachen vergleichen können (z. B. Arabisch vs. Englisch). Jede Zeile ruft auf:
+
+```typescript
+t("This page has {{count}} sections", { plurals: true, count })
+```
+
+Verwenden Sie **`plurals: true`**, damit **`extract`** eine Pluralgruppe in `locales/strings.json` aufzeichnet und **`translate-ui`** die flachen Dateien pro Sprache unter `public/locales/` füllt. Zur Laufzeit löst i18next den richtigen suffigierten Schlüssel für das aktive **`count`** auf; das Next.js-Beispiel bindet Hilfsfunktionen in **`src/lib/i18n.ts`** ein.
+
+Für Screenshots, Sprach-URLs und die Dateistruktur siehe **Beispiel für kardinale Plurale** im [Next.js-Beispiel-README](../../README.md).
 
 ---
 

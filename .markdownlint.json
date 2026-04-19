@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json",
+  "default": true,
+  "MD012": {
+    "maximum": 4
+  },
+  "MD013": false,
+  "MD033": {
+    "allowed_elements": ["small", "br", "code"]
+  },
+  "MD060": false
+}
