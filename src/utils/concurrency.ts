@@ -1,5 +1,5 @@
 /**
- * Limited parallelism helpers (aligned with reference-transrewrt/scripts/translate/concurrency.ts).
+ * Bounded concurrency helpers for translation and batch workloads.
  */
 
 /**

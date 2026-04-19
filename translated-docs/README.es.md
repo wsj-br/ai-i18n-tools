@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Tabla de Contenidos**  *generado con [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ai-i18n-tools](#ai-i18n-tools)
+  - [Dos flujos principales](#two-core-workflows)
+  - [Instalación](#installation)
+  - [Inicio rápido](#quick-start)
+    - [Flujo 1 - Cadenas de interfaz](#workflow-1---ui-strings)
+    - [Flujo 2 - Documentación](#workflow-2---documentation)
+    - [Ambos flujos](#both-workflows)
+  - [Ayudantes en tiempo de ejecución](#runtime-helpers)
+  - [Comandos CLI](#cli-commands)
+  - [Documentación](#documentation)
+  - [Licencia](#license)
+
+<!-- FIN doctoc generado TOC por favor mantenga el comentario aquí para permitir la actualización automática -->
+
 # herramientas-ai-i18n
 
 Kit de herramientas CLI y programático para internacionalizar aplicaciones y sitios de documentación en JavaScript/TypeScript. Extrae cadenas de interfaz de usuario, las traduce con modelos de lenguaje grande (LLM) a través de OpenRouter y genera archivos JSON listos para cada idioma para i18next, además de pipelines para markdown, JSON de Docusaurus y (mediante `features.translateSVG`, `translate-svg` y el bloque `svg`) activos SVG independientes.
@@ -10,7 +28,7 @@ Kit de herramientas CLI y programático para internacionalizar aplicaciones y si
 
 **Flujo de trabajo 1 - Traducción de UI** (React, Next.js, Node.js, cualquier proyecto i18next)
 
-Crea un catálogo maestro (`strings.json` con metadatos opcionales por configuración regional **`models`**) a partir de literales **`t("…")` / `i18n.t("…")`**, opcionalmente **`package.json` `description`**, y opcionalmente cada **`englishName`** desde `ui-languages.json` cuando esté habilitado en la configuración. Traduce las entradas faltantes por configuración regional mediante OpenRouter y genera archivos JSON planos (`de.json`, `pt-BR.json`, …) listos para i18next.
+Crea un catálogo maestro (`strings.json` con metadatos opcionales por configuración regional **`models`**) a partir de **literales** `t("…")` / `i18n.t("…")`, opcionalmente **`package.json` `description`**, y opcionalmente cada **`englishName`** de `ui-languages.json` cuando está habilitado en la configuración. Traduce las entradas que faltan por configuración regional mediante OpenRouter y escribe archivos JSON planos (`de.json`, `pt-BR.json`, …) listos para i18next.
 
 **Flujo de trabajo 2 - Traducción de documentos** (Markdown, JSON de Docusaurus)
 
@@ -22,7 +40,7 @@ Ambos flujos de trabajo comparten un único archivo `ai-i18n-tools.config.json` 
 
 ## Instalación
 
-El paquete publicado es **solo ESM** (`"type": "module"`). Usa `import` desde Node.js, empaquetadores o `import()` — `require('ai-i18n-tools')` **no es compatible.**
+El paquete publicado es solo **ESM** (`"type": "module"`). Usa `import` desde Node.js, empaquetadores o `import()` — `require('ai-i18n-tools')` **no es compatible.**
 
 ```bash
 npm install ai-i18n-tools
@@ -109,25 +127,25 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 Exportados de `'ai-i18n-tools/runtime'` - funcionan en cualquier entorno JS, no se requiere importación de i18next:
 
-| Helper | Descripción |
+| Ayudante | Descripción |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Opciones estándar de inicialización de i18next para configuraciones con clave como valor por defecto. |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Configuración recomendada: key-trim + plural **`wrapT`** de **`strings.json`**, opcionalmente combina claves plurales **`translate-ui`** `{sourceLocale}.json`. |
-| `wrapI18nWithKeyTrim(i18n)` | Solo un contenedor de nivel inferior para key-trim (obsoleto para configuración de aplicaciones; se prefiere **`setupKeyAsDefaultT`**). |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Crea el mapa **`localeLoaders`** para **`makeLoadLocale`** a partir de **`ui-languages.json`** (todos los **`code`** excepto **`sourceLocale`**). |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para carga asíncrona de archivos de localización. |
+| `defaultI18nInitOptions(sourceLocale)` | Opciones estándar de inicialización de i18next para configuraciones donde la clave actúa como valor por defecto. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Configuración recomendada: eliminación de claves + plurales **`wrapT`** desde **`strings.json`**, opcionalmente combina claves plurales de **`translate-ui`** `{sourceLocale}.json`. |
+| `wrapI18nWithKeyTrim(i18n)` | Contenedor de bajo nivel solo para eliminación de claves (obsoleto para aplicaciones; se recomienda usar **`setupKeyAsDefaultT`**). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Crea el mapa **`localeLoaders`** para **`makeLoadLocale`** desde **`ui-languages.json`** (cada **`code`** excepto **`sourceLocale`**). |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para carga asíncrona de archivos por configuración regional. |
 | `getTextDirection(lng)` | Devuelve `'ltr'` o `'rtl'` para un código BCP-47. |
 | `applyDirection(lng, element?)` | Establece el atributo `dir` en `document.documentElement`. |
 | `getUILanguageLabel(lang, t)` | Etiqueta mostrada para una fila del menú de idiomas (con i18n). |
 | `getUILanguageLabelNative(lang)` | Etiqueta mostrada sin llamar a `t()` (estilo encabezado). |
-| `interpolateTemplate(str, vars)` | Sustitución de bajo nivel `{{var}}` en una cadena simple (usado internamente; el código de la aplicación debería usar `t()` en su lugar). |
-| `flipUiArrowsForRtl(text, isRtl)` | Invierte `→` a `←` para diseños RTL. |
+| `interpolateTemplate(str, vars)` | Sustitución de bajo nivel `{{var}}` en una cadena simple (usado internamente; el código de la aplicación debería usar `t()`). |
+| `flipUiArrowsForRtl(text, isRtl)` | Invierte `→` a `←` para diseños de texto de derecha a izquierda (RTL). |
 
 ---
 
 ## Comandos de CLI
 
-```
+```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file

@@ -44,7 +44,7 @@ export function interpolateAdjustmentTemplate(
   });
 }
 
-/** Variables for `regexAdjustments[].replace` templates (reference transrewrt parity). */
+/** Variables for `regexAdjustments[].replace` templates. */
 export function buildMarkdownAdjustmentVars(
   sourceAbs: string,
   translatedAbs: string,

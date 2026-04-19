@@ -141,6 +141,10 @@ export interface TranslateTotals {
   filesProcessed?: number;
   inputTokens: number;
   outputTokens: number;
+  /** Sum of OpenRouter `prompt_tokens_details.cached_tokens` when reported. */
+  cachedPromptTokens?: number;
+  /** Sum of OpenRouter `prompt_tokens_details.cache_write_tokens` when reported. */
+  cacheWritePromptTokens?: number;
   costUsd?: number;
   /** Translatable segments resolved from SQLite cache (per file or summed in `runTranslate`). */
   segmentsCached?: number;
@@ -468,7 +472,7 @@ async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Pr
   return mutex.runExclusive(async () => fn());
 }
 
-/** Match reference transrewrt `addTranslationMetadata` for translated markdown outputs. */
+/** Add YAML front matter fields to translated markdown (timestamp, source path, locale, models used). */
 function addTranslationMetadata(
   content: string,
   sourceFileMtime: string,
@@ -555,6 +559,8 @@ async function translateSegmentsBatched(
   inTok: number;
   outTok: number;
   cost: number;
+  cachedPromptTokens: number;
+  cacheWritePromptTokens: number;
   segmentValidationFailures: number;
   individualSegmentTranslations: number;
 }> {
@@ -562,6 +568,8 @@ async function translateSegmentsBatched(
   let inTok = 0;
   let outTok = 0;
   let cost = 0;
+  let cachedPromptTok = 0;
+  let cacheWriteTok = 0;
   let segmentValidationFailures = 0;
   let individualSegmentTranslations = 0;
 
@@ -572,6 +580,8 @@ async function translateSegmentsBatched(
       inTok,
       outTok,
       cost,
+      cachedPromptTokens: 0,
+      cacheWritePromptTokens: 0,
       segmentValidationFailures: 0,
       individualSegmentTranslations: 0,
     };
@@ -595,6 +605,8 @@ async function translateSegmentsBatched(
     inTok: number;
     outTok: number;
     cost: number;
+    cachedPromptTokens: number;
+    cacheWritePromptTokens: number;
     segmentValidationFailures: number;
     individualSegmentTranslations: number;
   };
@@ -604,6 +616,8 @@ async function translateSegmentsBatched(
     let localIn = 0;
     let localOut = 0;
     let localCost = 0;
+    let localCachedPrompt = 0;
+    let localCacheWrite = 0;
     let localSegmentValidationFailures = 0;
     let localIndividualSegmentTranslations = 0;
     const batch = batches[bi]!;
@@ -627,6 +641,8 @@ async function translateSegmentsBatched(
         inTok: localIn,
         outTok: localOut,
         cost: localCost,
+        cachedPromptTokens: localCachedPrompt,
+        cacheWritePromptTokens: localCacheWrite,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
       };
@@ -655,6 +671,8 @@ async function translateSegmentsBatched(
         localIn += res.usage.inputTokens;
         localOut += res.usage.outputTokens;
         localCost += res.cost ?? 0;
+        localCachedPrompt += res.usage.cachedPromptTokens ?? 0;
+        localCacheWrite += res.usage.cacheWritePromptTokens ?? 0;
         const ph = new PlaceholderHandler();
         for (let i = 0; i < batch.length; i++) {
           const s = batch[i]!;
@@ -690,6 +708,8 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
+            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
+            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, st);
             partial.set(s.hash, { text: restored, modelUsed: single.model });
           }
@@ -702,6 +722,8 @@ async function translateSegmentsBatched(
         inTok: localIn,
         outTok: localOut,
         cost: localCost,
+        cachedPromptTokens: localCachedPrompt,
+        cacheWritePromptTokens: localCacheWrite,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
       };
@@ -719,6 +741,8 @@ async function translateSegmentsBatched(
       localIn += res.usage.inputTokens;
       localOut += res.usage.outputTokens;
       localCost += res.cost ?? 0;
+      localCachedPrompt += res.usage.cachedPromptTokens ?? 0;
+      localCacheWrite += res.usage.cacheWritePromptTokens ?? 0;
 
       const qualityErrors: string[] = [];
       const perSegmentLines: string[] = [];
@@ -860,6 +884,8 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
+            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
+            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, failed.state);
             const v = await validateDocTranslatePair(failed.original, restored);
             const nextIdx = models.indexOf(single.model) + 1;
@@ -976,6 +1002,8 @@ async function translateSegmentsBatched(
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
+            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
+            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, st);
             const v = await validateDocTranslatePair(origSeg, restored);
             const nextIdx = models.indexOf(single.model) + 1;
@@ -1063,6 +1091,8 @@ async function translateSegmentsBatched(
       inTok: localIn,
       outTok: localOut,
       cost: localCost,
+      cachedPromptTokens: localCachedPrompt,
+      cacheWritePromptTokens: localCacheWrite,
       segmentValidationFailures: localSegmentValidationFailures,
       individualSegmentTranslations: localIndividualSegmentTranslations,
     };
@@ -1074,6 +1104,8 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
+      cachedPromptTok += r.cachedPromptTokens;
+      cacheWriteTok += r.cacheWritePromptTokens;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
@@ -1086,6 +1118,8 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
+      cachedPromptTok += r.cachedPromptTokens;
+      cacheWriteTok += r.cacheWritePromptTokens;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
@@ -1099,6 +1133,8 @@ async function translateSegmentsBatched(
     inTok,
     outTok,
     cost,
+    cachedPromptTokens: cachedPromptTok,
+    cacheWritePromptTokens: cacheWriteTok,
     segmentValidationFailures,
     individualSegmentTranslations,
   };
@@ -1247,6 +1283,8 @@ export async function translateMarkdownFile(
     inTok,
     outTok,
     cost,
+    cachedPromptTokens: batchCachedPrompt,
+    cacheWritePromptTokens: batchCacheWrite,
     segmentValidationFailures: segValFail,
     individualSegmentTranslations: indivSeg,
   } = await translateSegmentsBatched(
@@ -1277,6 +1315,8 @@ export async function translateMarkdownFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPrompt;
+  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWrite;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
 
@@ -1502,6 +1542,8 @@ export async function translateJsonFile(
     inTok,
     outTok,
     cost,
+    cachedPromptTokens: batchCachedPromptJson,
+    cacheWritePromptTokens: batchCacheWriteJson,
     segmentValidationFailures: segValFailJson,
     individualSegmentTranslations: indivSegJson,
   } = await translateSegmentsBatched(
@@ -1531,6 +1573,8 @@ export async function translateJsonFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPromptJson;
+  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWriteJson;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailJson;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegJson;
 
@@ -1722,6 +1766,8 @@ export async function translateSvgAssetFile(
     inTok,
     outTok,
     cost,
+    cachedPromptTokens: batchCachedPromptSvg,
+    cacheWritePromptTokens: batchCacheWriteSvg,
     segmentValidationFailures: segValFailSvg,
     individualSegmentTranslations: indivSegSvg,
   } = await translateSegmentsBatched(
@@ -1751,6 +1797,8 @@ export async function translateSvgAssetFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPromptSvg;
+  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWriteSvg;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailSvg;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegSvg;
 
@@ -1883,6 +1931,11 @@ function printTranslateDocsRunSummary(
   console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
   console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
+  if ((sum.inputTokens + sum.outputTokens) > 0) {
+    console.log(
+      `   Prompt cache (read / write): ${(sum.cachedPromptTokens ?? 0).toLocaleString()} / ${(sum.cacheWritePromptTokens ?? 0).toLocaleString()} (OpenRouter usage; 0 if not reported)`
+    );
+  }
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
   } else if ((sum.filesWritten ?? 0) > 0) {
@@ -1918,6 +1971,8 @@ export async function runTranslate(
     filesProcessed: 0,
     inputTokens: 0,
     outputTokens: 0,
+    cachedPromptTokens: 0,
+    cacheWritePromptTokens: 0,
     costUsd: 0,
     segmentsCached: 0,
     segmentsTranslated: 0,
@@ -2013,6 +2068,8 @@ export async function runTranslate(
       filesProcessed: 0,
       inputTokens: 0,
       outputTokens: 0,
+      cachedPromptTokens: 0,
+      cacheWritePromptTokens: 0,
       costUsd: 0,
       segmentsCached: 0,
       segmentsTranslated: 0,
@@ -2057,6 +2114,10 @@ export async function runTranslate(
             partial.inputTokens += totals.inputTokens;
             partial.outputTokens += totals.outputTokens;
             partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+            partial.cachedPromptTokens =
+              (partial.cachedPromptTokens ?? 0) + (totals.cachedPromptTokens ?? 0);
+            partial.cacheWritePromptTokens =
+              (partial.cacheWritePromptTokens ?? 0) + (totals.cacheWritePromptTokens ?? 0);
             partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
             partial.segmentsTranslated =
               (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
@@ -2096,6 +2157,10 @@ export async function runTranslate(
             partial.inputTokens += totals.inputTokens;
             partial.outputTokens += totals.outputTokens;
             partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+            partial.cachedPromptTokens =
+              (partial.cachedPromptTokens ?? 0) + (totals.cachedPromptTokens ?? 0);
+            partial.cacheWritePromptTokens =
+              (partial.cacheWritePromptTokens ?? 0) + (totals.cacheWritePromptTokens ?? 0);
             partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
             partial.segmentsTranslated =
               (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
@@ -2133,6 +2198,9 @@ export async function runTranslate(
       sum.inputTokens += r.partial.inputTokens;
       sum.outputTokens += r.partial.outputTokens;
       sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
+      sum.cachedPromptTokens = (sum.cachedPromptTokens ?? 0) + (r.partial.cachedPromptTokens ?? 0);
+      sum.cacheWritePromptTokens =
+        (sum.cacheWritePromptTokens ?? 0) + (r.partial.cacheWritePromptTokens ?? 0);
       sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
       sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
       sum.segmentValidationFailures =

@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Utiliza o `i18next-scanner` do `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em qualquer arquivo JS/TS. Os nomes das funções e extensões de arquivo são configuráveis. `extract` **também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` do projeto `description` quando `reactExtractor.includePackageDescription` está habilitado (padrão), e cada **`englishName`** de `ui-languages.json` quando `reactExtractor.includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (as strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string de origem recortada — esses tornam-se as chaves em `strings.json`.
+Utiliza o `i18next-scanner` `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em qualquer arquivo JS/TS. Os nomes das funções e as extensões dos arquivos são configuráveis. `extract` **também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` do projeto `description` quando `reactExtractor.includePackageDescription` está habilitado (padrão), e cada **`englishName`** de `ui-languages.json` quando `reactExtractor.includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (as strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string-fonte recortada — esses tornam-se as chaves em `strings.json`.
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ O catálogo principal tem a seguinte estrutura:
 
 `extract` adiciona novas chaves e preserva os dados existentes de `translated` / `models` para chaves ainda presentes na varredura (literais do scanner, descrição opcional, `englishName` opcional do manifesto). `translate-ui` preenche entradas `translated` ausentes, atualiza `models` para localidades que traduz e escreve arquivos de localidade planos.
 
-**Manifesto `ui-languages.json`** — Array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interface `label`, referência `englishName`, `"ltr"` ou `"rtl"`). Use `generate-ui-languages` para construir um arquivo de projeto a partir de `sourceLocale` + `targetLocales` e o `data/ui-languages-complete.json` mestre embutido.
+`ui-languages.json` **manifesto** — Array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interface do usuário `label`, referência `englishName`, `"ltr"` ou `"rtl"`). Use `generate-ui-languages` para gerar um arquivo de projeto a partir de `sourceLocale` + `targetLocales` e o `data/ui-languages-complete.json` mestre incluído.
 
 ### Arquivos de localidade planos
 

@@ -12,35 +12,35 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**目錄**
+## 目錄
 
-- [架構概述](#architecture-overview)
-- [源碼樹](#source-tree)
-- [工作流程 1 - UI 翻譯內部](#workflow-1---ui-translation-internals)
+- [架構概觀](#architecture-overview)
+- [原始碼樹狀結構](#source-tree)
+- [工作流程 1 - UI 翻譯內部機制](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [平面區域文件](#flat-locale-files)
+  - [平面化語系檔案](#flat-locale-files)
   - [UI 翻譯提示](#ui-translation-prompts)
-- [工作流程 2 - 文檔翻譯內部](#workflow-2---document-translation-internals)
+- [工作流程 2 - 文件翻譯內部機制](#workflow-2---document-translation-internals)
   - [提取器](#extractors)
   - [佔位符保護](#placeholder-protection)
-  - [緩存 (`TranslationCache`)](#cache-translationcache)
+  - [快取 (`TranslationCache`)](#cache-translationcache)
   - [輸出路徑解析](#output-path-resolution)
-  - [平面鏈接重寫](#flat-link-rewriting)
-- [共享基礎設施](#shared-infrastructure)
+  - [平面化連結重寫](#flat-link-rewriting)
+- [共用基礎設施](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [配置加載](#config-loading)
-  - [日誌記錄器](#logger)
-- [運行時幫助 API](#runtime-helpers-api)
-  - [RTL 幫助器](#rtl-helpers)
-  - [i18next 設置工廠](#i18next-setup-factories)
-  - [顯示幫助器](#display-helpers)
-  - [字符串幫助器](#string-helpers)
-- [程序化 API](#programmatic-api)
-- [擴展點](#extension-points)
-  - [自定義函數名稱 (UI 提取)](#custom-function-names-ui-extraction)
-  - [自定義提取器](#custom-extractors)
-  - [自定義輸出路徑](#custom-output-paths)
+  - [設定載入](#config-loading)
+  - [記錄器](#logger)
+- [執行階段輔助 API](#runtime-helpers-api)
+  - [RTL 輔助函式](#rtl-helpers)
+  - [i18next 設定工廠](#i18next-setup-factories)
+  - [顯示輔助函式](#display-helpers)
+  - [字串輔助函式](#string-helpers)
+- [程式化 API](#programmatic-api)
+- [擴充點](#extension-points)
+  - [自訂函式名稱 (UI 提取)](#custom-function-names-ui-extraction)
+  - [自訂提取器](#custom-extractors)
+  - [自訂輸出路徑](#custom-output-paths)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -48,7 +48,7 @@
 
 ## 架構概述
 
-```
+```text
 ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
@@ -67,7 +67,7 @@ ai-i18n-tools
 
 ## 源碼樹
 
-```
+```text
 src/
 ├── index.ts                        Public API re-exports
 │
@@ -133,7 +133,7 @@ src/
 
 ## 工作流程 1 - UI 翻譯內部
 
-```
+```text
 source files (JS/TS)
       │
       ▼  UIStringExtractor (i18next-scanner Parser)
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 檔案中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。函數名稱和檔案副檔名可設定。`extract` **也會將非掃描器輸入合併到同一個目錄中：** 當啟用 `reactExtractor.includePackageDescription` 時（預設），合併專案 `package.json` `description`，以及當 `reactExtractor.includeUiLanguageEnglishNames` 為 `true` 且已設定 `uiLanguagesPath` 時，合併來自 `ui-languages.json` 的每個 **`englishName`**（原始碼中已找到的字串具有優先權）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在任何 JS/TS 檔案中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。函式名稱與檔案副檔名可設定。`extract` **也會將非掃描器的輸入合併至同一個目錄：** 當啟用 `reactExtractor.includePackageDescription` 時（預設）的專案 `package.json` `description`，以及當 `reactExtractor.includeUiLanguageEnglishNames` 為 `true` 且設定 `uiLanguagesPath` 時來自 `ui-languages.json` 的每個 **`englishName`**（原始碼中已找到的字串具有較高優先權）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵值。
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 `extract` 新增新的鍵，並保留掃描中仍存在的鍵之現有 `translated` / `models` 資料（掃描器字面值、選填描述、選填 manifest `englishName`）。`translate-ui` 填補遺漏的 `translated` 項目，更新其翻譯語系的 `models`，並寫入扁平化的語系檔案。
 
-`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和內建的主 `data/ui-languages-complete.json` 建立專案檔案。
+`ui-languages.json` **manifest** — 包含 `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 與捆綁的主 `data/ui-languages-complete.json` 建立專案檔案。
 
 ### 平面區域文件
 
@@ -192,10 +192,11 @@ i18next 將這些作為資源包加載，並通過源字符串查找翻譯（鍵
 
 ### UI 翻譯提示
 
-`buildUIPromptMessages` 構建系統 + 用戶消息，該消息：
-- 確定源語言和目標語言（通過 `localeDisplayNames` 或 `ui-languages.json` 中的顯示名稱）。
-- 發送 JSON 字符串數組並請求返回 JSON 翻譯數組。
-- 在可用時包括詞彙提示。
+`buildUIPromptMessages` 建構系統與使用者訊息，其功能為：
+
+- 辨識來源與目標語言（根據 `localeDisplayNames` 或 `ui-languages.json` 中的顯示名稱）。
+- 傳送字串的 JSON 陣列，並請求回傳翻譯後的 JSON 陣列。
+- 在可用時包含詞彙表提示。
 
 `OpenRouterClient.translateUIBatch` 會依序嘗試每個模型，並在解析或網路錯誤時進行備援。CLI 會根據 `openrouter.translationModels`（或舊版的預設/備援）建立此清單；對於 `translate-ui`，若設定 `ui.preferredModel`，則會將其前置（與其餘清單去重複）。
 
@@ -203,7 +204,7 @@ i18next 將這些作為資源包加載，並通過源字符串查找翻譯（鍵
 
 ## 工作流程 2 - 文檔翻譯內部
 
-```
+```text
 markdown/MDX/JSON files (`translate-docs`)
       │
       ▼  MarkdownExtractor / JsonExtractor
@@ -373,22 +374,22 @@ console.log(
 
 關鍵導出：
 
-| 導出 | 描述 |
+| 匯出 | 說明 |
 |---|---|
-| `loadI18nConfigFromFile` | 從 JSON 文件加載、合併、驗證配置。 |
-| `parseI18nConfig` | 驗證原始配置對象。 |
-| `TranslationCache` | SQLite 緩存 - 使用 `cacheDir` 路徑實例化。 |
-| `UIStringExtractor` | 從 JS/TS 源中提取 `t("…")` 字串。 |
-| `MarkdownExtractor` | 從 markdown 中提取可翻譯的片段。 |
-| `JsonExtractor` | 從 Docusaurus JSON 標籤文件中提取。 |
-| `SvgExtractor` | 從 SVG 文件中提取。 |
+| `loadI18nConfigFromFile` | 從 JSON 檔案載入、合併並驗證設定。 |
+| `parseI18nConfig` | 驗證原始設定物件。 |
+| `TranslationCache` | SQLite 快取 — 使用 `cacheDir` 路徑進行實例化。 |
+| `UIStringExtractor` | 從 JS/TS 原始碼提取 `t("…")` 字串。 |
+| `MarkdownExtractor` | 從 Markdown 提取可翻譯的區段。 |
+| `JsonExtractor` | 從 Docusaurus JSON 標籤檔案提取。 |
+| `SvgExtractor` | 從 SVG 檔案提取。 |
 | `OpenRouterClient` | 向 OpenRouter 發送翻譯請求。 |
-| `PlaceholderHandler` | 保護/恢復翻譯周圍的 markdown 語法。 |
-| `splitTranslatableIntoBatches` | 將片段分組為 LLM 大小的批次。 |
+| `PlaceholderHandler` | 保護／還原翻譯周圍的 Markdown 語法。 |
+| `splitTranslatableIntoBatches` | 將區段分組為符合 LLM 大小的批次。 |
 | `validateTranslation` | 翻譯後的結構檢查。 |
-| `resolveDocumentationOutputPath` | 解決翻譯文檔的輸出文件路徑。 |
-| `Glossary` / `GlossaryMatcher` | 加載和應用翻譯詞彙表。 |
-| `runTranslateUI` | 程式化 translate-UI 入口點。 |
+| `resolveDocumentationOutputPath` | 解析已翻譯文件的輸出檔案路徑。 |
+| `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表。 |
+| `runTranslateUI` | 以程式設計方式翻譯 UI 的進入點。 |
 
 ---
 

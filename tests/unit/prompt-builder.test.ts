@@ -48,6 +48,7 @@ describe("buildDocumentBatchPrompt", () => {
 
   it("markdown type includes core rules but no JSON/SVG addendum", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "markdown");
+    expect(systemPrompt).toContain("TERMINOLOGY (technical documentation)");
     expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
     expect(systemPrompt).toContain("{{BLD_N}}");
     expect(systemPrompt).toContain("{{ILC_N}}");
@@ -57,13 +58,13 @@ describe("buildDocumentBatchPrompt", () => {
     expect(systemPrompt).toContain("{{SU}}");
     expect(systemPrompt).toContain("{{ST}}");
     expect(systemPrompt).toContain("Preserve GFM pipe tables");
-    expect(systemPrompt).not.toContain("Docusaurus or app locale JSON");
+    expect(systemPrompt).not.toContain("software localization JSON file");
   });
 
   it("json type appends locale-string context", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "json");
     expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
-    expect(systemPrompt).toContain("Docusaurus or app locale JSON");
+    expect(systemPrompt).toContain("software localization JSON file");
   });
 
   it("svg type appends SVG text context", () => {
@@ -136,6 +137,7 @@ describe("document JSON batch parsers", () => {
 describe("PROMPTS config shape", () => {
   it("has all required document prompt keys", () => {
     const doc = PROMPTS.document;
+    expect(typeof doc.terminology).toBe("string");
     expect(typeof doc.coreRules).toBe("string");
     expect(typeof doc.markdownPreservation).toBe("string");
     expect(typeof doc.jsonSegmentAddendum).toBe("string");
@@ -150,6 +152,8 @@ describe("PROMPTS config shape", () => {
   it("has all required UI prompt keys", () => {
     expect(Array.isArray(PROMPTS.ui.systemPrompt)).toBe(true);
     expect(PROMPTS.ui.systemPrompt.length).toBeGreaterThan(0);
+    expect(Array.isArray(PROMPTS.ui.translationJobLines)).toBe(true);
+    expect(PROMPTS.ui.translationJobLines.join("\n")).toContain("{{SOURCE_LANG}}");
     expect(typeof PROMPTS.ui.glossaryPreamble).toBe("string");
   });
 
@@ -178,7 +182,7 @@ describe("buildDocumentSinglePrompt", () => {
 
   it("json type includes addendum but no markdown example", () => {
     const { systemPrompt } = buildDocumentSinglePrompt("Hello", baseOpts, "json");
-    expect(systemPrompt).toContain("Docusaurus or app locale JSON");
+    expect(systemPrompt).toContain("software localization JSON file");
     expect(systemPrompt).not.toContain("Example (same structure in");
   });
 
@@ -191,24 +195,31 @@ describe("buildDocumentSinglePrompt", () => {
 });
 
 describe("buildUIPromptMessages", () => {
-  it("produces system and user prompts", () => {
+  it("puts locale routing in system and JSON-only payload in user (prompt cache prefix)", () => {
     const { systemPrompt, userContent } = buildUIPromptMessages(["Save", "Cancel"], {
       sourceLanguageLabel: "English",
       targetLanguageLabel: "German",
     });
     expect(systemPrompt).toContain("professional UI/UX translator");
-    expect(userContent).toContain("2 UI strings");
-    expect(userContent).toContain('"Save"');
+    expect(systemPrompt).toContain("conventional software");
+    expect(systemPrompt).toContain("mainstream software terminology");
+    expect(systemPrompt).toContain("TRANSLATION JOB:");
+    expect(systemPrompt).toContain("Source language: English");
+    expect(systemPrompt).toContain("Target language: German");
+    expect(userContent).toBe(JSON.stringify(["Save", "Cancel"], null, 2));
+    expect(userContent).not.toContain("TRANSLATION JOB:");
+    expect(userContent).not.toContain("Translate these");
   });
 
   it("includes glossary block when hints provided", () => {
     const { systemPrompt } = buildUIPromptMessages(["OK"], {
       sourceLanguageLabel: "English",
       targetLanguageLabel: "German",
-      glossaryHints: ['- "OK" → "OK"'],
+      glossaryHints: ['- "z" → "z"', '- "a" → "a"'],
     });
     expect(systemPrompt).toContain("<glossary>");
     expect(systemPrompt).toContain(PROMPTS.ui.glossaryPreamble);
+    expect(systemPrompt.indexOf('- "a"')).toBeLessThan(systemPrompt.indexOf('- "z"'));
   });
 });
 

@@ -106,14 +106,21 @@ export function translationTextMap(
   );
 }
 
+/** Token counts returned by OpenRouter (`usage`); optional fields mirror `prompt_tokens_details`. */
+export interface OpenRouterUsageStats {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  /** Provider prompt cache reads (discount input). */
+  cachedPromptTokens?: number;
+  /** Tokens written to prompt cache when applicable (e.g. Anthropic explicit cache). */
+  cacheWritePromptTokens?: number;
+}
+
 export interface TranslationResult {
   content: string;
   model: string;
-  usage: {
-    inputTokens: number;
-    outputTokens: number;
-    totalTokens: number;
-  };
+  usage: OpenRouterUsageStats;
   cost?: number;
   /** When the API succeeded; used for translation failure debug logs. */
   debugPrompt?: { systemPrompt: string; userContent: string };
@@ -176,7 +183,7 @@ export interface GlossaryTerm {
 export interface BatchTranslationResult {
   translations: Map<number, string>;
   model: string;
-  usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+  usage: OpenRouterUsageStats;
   cost?: number;
   /** When the API succeeded; used for translation failure debug logs. */
   debugPrompt?: { systemPrompt: string; userContent: string };
@@ -202,7 +209,7 @@ export interface ChatMessage {
 export interface ChatResponse {
   content: string;
   model: string;
-  usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+  usage: OpenRouterUsageStats;
   cost?: number;
 }
 
@@ -213,6 +220,11 @@ const openRouterConfigSchema = z.object({
   fallbackModel: z.string().optional(),
   maxTokens: z.number().int().positive().default(8192),
   temperature: z.number().min(0).max(2).default(0.2),
+  /**
+   * Anthropic-style prompt cache TTL on the first system block (`cache_control`).
+   * Omit or `5m`: default 5-minute cache. `1h`: longer-lived cache (higher cache-write price; see OpenRouter docs).
+   */
+  promptCacheTtl: z.enum(["5m", "1h"]).optional(),
 });
 
 const featuresSchema = z.object({
@@ -431,7 +443,7 @@ const documentationBlockSchema = z
      */
     segmentSplitting: segmentSplittingSchema.optional(),
     /**
-     * When true (default), translated markdown files include YAML keys matching reference transrewrt:
+     * When true (default), translated markdown files include YAML keys for traceability:
      * `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`,
      * `source_file_path`, and when known, `translation_models` (sorted unique OpenRouter model ids used for segments).
      */

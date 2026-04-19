@@ -42,6 +42,7 @@ export {
   type BatchTranslationResult,
   type ChatMessage,
   type ChatResponse,
+  type OpenRouterUsageStats,
   BatchTranslationError,
   i18nConfigSchema,
 } from "./core/types.js";

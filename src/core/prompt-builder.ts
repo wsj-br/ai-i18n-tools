@@ -10,11 +10,12 @@ import {
 } from "./prompts.js";
 
 /**
- * Document translation prompts follow common OpenRouter-style doc-translation patterns
- * (`buildBatchPrompt`, `buildPrompt`, `MARKDOWN_PRESERVATION_RULES`). Adjust here when prompt strategy changes.
+ * Document translation prompts follow common batch / single-segment patterns for markdown, JSON message
+ * bundles, and SVG text. Adjust here when prompt strategy changes.
  *
- * For **JSON** (Docusaurus locale files) and **SVG** text segments, we append context addenda so batch
- * `<t id="N">` responses stay robust outside pure markdown. Single-segment calls use plain segment text in the user message (see {@link buildDocumentSinglePrompt}).
+ * For **JSON** (locale bundle string segments from `.json` sources) and **SVG** text segments, context addenda are
+ * appended so batch `<t id="N">` (and JSON batch) responses stay robust outside pure markdown.
+ * Single-segment calls use plain segment text in the user message (see {@link buildDocumentSinglePrompt}).
  *
  * Prompt **content** lives in `prompts.ts`; this module handles assembly and parsing only.
  */
@@ -33,7 +34,7 @@ export { PROMPTS };
  */
 export const MARKDOWN_PRESERVATION_RULES: string = PROMPTS.document.markdownPreservation;
 
-/** Appended for locale JSON message segments (batch `<t id="N">` response format). */
+/** Appended for JSON locale-bundle segments (batch `<t id="N">` response format). */
 export const JSON_SEGMENT_CONTEXT_ADDENDUM: string = PROMPTS.document.jsonSegmentAddendum;
 
 /** Appended for SVG <text>/<tspan>/<title> extracted segments. */
@@ -50,7 +51,7 @@ export interface PromptBuilderOptions {
 // ── Shared helpers ────────────────────────────────────────────────────────
 
 function buildGlossaryBlock(hints: string[], preamble?: string): string {
-  const filtered = hints.filter((h) => h.trim().length > 0);
+  const filtered = hints.filter((h) => h.trim().length > 0).sort((a, b) => a.localeCompare(b));
   if (filtered.length === 0) return "";
   const prefix = preamble ? `\n\n${preamble}` : "";
   return `${prefix}\n<glossary>\n${filtered.join("\n")}\n</glossary>\n`;
@@ -75,6 +76,8 @@ function unescapeXml(text: string): string {
 /** Shared rules block for document batch/single prompts (all document types). */
 function documentCoreRulesBlock(opts: PromptBuilderOptions): string {
   return `Translate from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
+
+${PROMPTS.document.terminology}
 
 ${PROMPTS.document.coreRules}
 
@@ -180,15 +183,16 @@ export function buildUIPromptMessages(
   }
 ): { systemPrompt: string; userContent: string } {
   const systemBase = PROMPTS.ui.systemPrompt.join("\n");
+  const jobBlock = PROMPTS.ui.translationJobLines
+    .join("\n")
+    .replace(/\{\{SOURCE_LANG\}\}/g, opts.sourceLanguageLabel)
+    .replace(/\{\{TARGET_LANG\}\}/g, opts.targetLanguageLabel);
   const glossaryBlock = buildGlossaryBlock(opts.glossaryHints ?? [], PROMPTS.ui.glossaryPreamble);
 
-  const userContent = `Translate these ${texts.length} UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel} and return a JSON array:
+  const systemPrompt = `${systemBase}${jobBlock}${glossaryBlock}`;
+  const userContent = JSON.stringify(texts, null, 2);
 
-${JSON.stringify(texts, null, 2)}
-
-Respond with ONLY the JSON array. No other text.`;
-
-  return { systemPrompt: systemBase + glossaryBlock, userContent };
+  return { systemPrompt, userContent };
 }
 
 /** Step 0: fill `translated[sourceLocale]` cardinal forms from the original literal. */
@@ -281,13 +285,15 @@ export function buildLintSourcePromptMessages(
     opts.glossaryHints ?? [],
     PROMPTS.lintSource.glossaryPreamble
   );
-  const systemPrompt = PROMPTS.lintSource.systemPrompt.join("\n") + glossaryBlock;
-  const userContent = `${PROMPTS.lintSource.userMessagePreamble} ${opts.languageLabel}
+  const localeLine = `\n\nLocale / language of the strings under review: ${opts.languageLabel}`;
+  const systemPrompt =
+    PROMPTS.lintSource.systemPrompt.join("\n") +
+    localeLine +
+    glossaryBlock +
+    "\n\n" +
+    PROMPTS.lintSource.outputContract.trim();
 
-${JSON.stringify(texts, null, 2)}
-
-${PROMPTS.lintSource.outputContract.trim()}
-Respond with ONLY the JSON array of length ${texts.length}.`;
+  const userContent = JSON.stringify(texts, null, 2);
 
   return { systemPrompt, userContent };
 }

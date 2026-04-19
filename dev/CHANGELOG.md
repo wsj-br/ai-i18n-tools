@@ -11,6 +11,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Added**: Config — optional **`openrouter.promptCacheTtl`** (`5m` | `1h`) maps to Anthropic-style **`cache_control`** on the first system message (`1h` adds **`ttl: "1h"`**; omit or **`5m`** keeps default 5-minute ephemeral behavior).
+- **Changed**: Prompts — **`translate-ui`** and **`lint-source`** use a stable system prefix (locale routing + contracts) and a JSON-only user payload; glossary hint lines in **`buildGlossaryBlock`** are sorted for deterministic prefixes (better OpenRouter prompt-cache alignment).
+- **Added**: OpenRouter client — parses **`usage.prompt_tokens_details.cached_tokens`** and **`cache_write_tokens`** into **`OpenRouterUsageStats`**; **`translate-ui`**, **`translate-docs`** / **`sync`** (docs step), and **`translate-svg`** summaries print **Prompt cache (read / write)** when API usage is non-zero.
 - **Added**: Dev tooling — **`markdownlint-cli`** with **`pnpm run lint:md`** / **`pnpm run lint:md:fix`**; lints **only non-recursive** **`*.md`** in **`dev/`**, **`docs/`**, the repo root, **`examples/console-app/`**, **`examples/nextjs-app/`**, and **`examples/nextjs-app/docs-site/docs/`** (no markdown in subfolders of those paths); root **`.markdownlint.json`** disables **`MD013`** (line length) for changelog-style prose.
 - **Changed**: Dev tooling — **`.markdownlint.json`** allows inline HTML **`<small>`** via **`MD033`** **`allowed_elements`**.
 - **Added**: Config — each **`documentations`** block supports optional **`emphasisPlaceholders`** (`true` / `false`) to force markdown emphasis masking on or off for that pipeline; when omitted, **CJK** (`zh`, `ja`, `ko`) and **RTL** locales (built-in RTL primaries plus root **`rtlLocales`**) mask emphasis by default; other locales default off.

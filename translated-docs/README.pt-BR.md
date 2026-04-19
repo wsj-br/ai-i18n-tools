@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Sumário**  *gerado com [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ai-i18n-tools](#ai-i18n-tools)
+  - [Dois fluxos principais](#two-core-workflows)
+  - [Instalação](#installation)
+  - [Primeiros passos](#quick-start)
+    - [Fluxo 1 - Strings da interface](#workflow-1---ui-strings)
+    - [Fluxo 2 - Documentação](#workflow-2---documentation)
+    - [Ambos os fluxos](#both-workflows)
+  - [Auxiliares de tempo de execução](#runtime-helpers)
+  - [Comandos da CLI](#cli-commands)
+  - [Documentação](#documentation)
+  - [Licença](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ai-i18n-tools
 
 Kit de ferramentas CLI e programático para internacionalização de aplicações JavaScript/TypeScript e sites de documentação. Extrai strings de interface, traduz com LLMs via OpenRouter e gera arquivos JSON prontos para uso com i18next, além de pipelines para markdown, JSON do Docusaurus e (por meio dos blocos `features.translateSVG`, `translate-svg` e `svg`) ativos SVG autônomos.
@@ -10,7 +28,7 @@ Kit de ferramentas CLI e programático para internacionalização de aplicaçõe
 
 **Fluxo de trabalho 1 - Tradução de interface** (React, Next.js, Node.js, qualquer projeto com i18next)
 
-Constrói um catálogo mestre (`strings.json` com metadados opcionais por localidade **`models`**) a partir de literais **`t("…")` / `i18n.t("…")`**, opcionalmente **`package.json` `description`**, e opcionalmente cada **`englishName`** de `ui-languages.json` quando habilitado na configuração. Traduz entradas ausentes por localidade via OpenRouter e gera arquivos JSON planos (`de.json`, `pt-BR.json`, …) prontos para i18next.
+Gera um catálogo mestre (`strings.json` com metadados opcionais por localidade **`models`**) a partir de literais `t("…")` / `i18n.t("…")` **literais**, opcionalmente **`package.json` `description`**, e opcionalmente cada **`englishName`** de `ui-languages.json` quando habilitado na configuração. Traduz entradas ausentes por localidade por meio do OpenRouter e gera arquivos JSON planos (`de.json`, `pt-BR.json`, …) prontos para uso com i18next.
 
 **Fluxo de trabalho 2 - Tradução de documentos** (Markdown, JSON do Docusaurus)
 
@@ -22,7 +40,7 @@ Ambos os fluxos de trabalho compartilham um único arquivo `ai-i18n-tools.config
 
 ## Instalação
 
-O pacote publicado é apenas **ESM** (`"type": "module"`). Use `import` no Node.js, bundlers ou `import()` — `require('ai-i18n-tools')` **não é suportado.**
+O pacote publicado é apenas **ESM** (`"type": "module"`). Use `import` no Node.js, em empacotadores ou em `import()` — `require('ai-i18n-tools')` **não é suportado.**
 
 ```bash
 npm install ai-i18n-tools

@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**目錄**  *由 [DocToc](https://github.com/thlorenz/doctoc) 生成*
+
+- [ai-i18n-tools](#ai-i18n-tools)
+  - [兩個核心工作流程](#two-core-workflows)
+  - [安裝](#installation)
+  - [快速開始](#quick-start)
+    - [工作流程 1 - UI 字串](#workflow-1---ui-strings)
+    - [工作流程 2 - 文件](#workflow-2---documentation)
+    - [兩個工作流程](#both-workflows)
+  - [執行階段輔助工具](#runtime-helpers)
+  - [CLI 指令](#cli-commands)
+  - [文件](#documentation)
+  - [授權條款](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ai-i18n-tools
 
 用於國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 與程式化工具包。可提取 UI 字串，透過 OpenRouter 使用 LLM 進行翻譯，並為 i18next 生成符合語系的 JSON 檔案，同時提供 markdown、Docusaurus JSON 的處理流程，以及（透過 `features.translateSVG`、`translate-svg` 與 `svg` 區塊）獨立 SVG 資源的支援。
@@ -10,7 +28,7 @@
 
 **工作流程 1 - UI 翻譯** (React、Next.js、Node.js，任何 i18next 專案)
 
-從 `t("…")` / `i18n.t("…")` **字面值** 建立主目錄（`strings.json`，並可選擇包含每個語系的 **`models`** 元資料），可選擇性地包含 **`package.json` `description`**，並在設定中啟用時，從 `ui-languages.json` 取得每個 **`englishName`**。透過 OpenRouter 翻譯各語系中缺失的條目，並輸出扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
+從 `t("…")` / `i18n.t("…")` **字面值** 建立主目錄（`strings.json`，可選擇每種語系的 **`models`** 元資料），可選擇性包含 **`package.json` `description`**，並在設定中啟用時，從 `ui-languages.json` 匯入每個 **`englishName`**。透過 OpenRouter 翻譯各語系中缺失的條目，並輸出扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
 
 **工作流程 2 - 文件翻譯** (Markdown、Docusaurus JSON)
 
@@ -22,7 +40,7 @@
 
 ## 安裝
 
-已發佈的套件為 **僅限 ESM**（`"type": "module"`）。請在 Node.js、打包工具或 `import()` 中使用 `import` — 不支援 `require('ai-i18n-tools')` **。**
+發布的套件僅支援 **ESM**（`"type": "module"`）。請從 Node.js、打包工具或 `import()` 使用 `import` — `require('ai-i18n-tools')` **不支援。**
 
 ```bash
 npm install ai-i18n-tools
@@ -109,25 +127,25 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 從 `'ai-i18n-tools/runtime'` 匯出 - 適用於任何 JS 環境，無需引入 i18next：
 
-| 幫助者 | 描述 |
+| 輔助工具 | 說明 |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | 用於鍵作為默認設置的標準 i18next 初始化選項。 |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 建議的連接：鍵修剪 + 從 **`strings.json`** 的複數 **`wrapT`**，可選地合併 **`translate-ui`** `{sourceLocale}.json` 複數鍵。 |
-| `wrapI18nWithKeyTrim(i18n)` | 僅限於較低級別的鍵修剪包裝器（不建議用於應用連接；建議使用 **`setupKeyAsDefaultT`**）。 |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 從 **`ui-languages.json`** 為 **`makeLoadLocale`** 構建 **`localeLoaders`** 映射（每個 **`code`** 除了 **`sourceLocale`**）。 |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用於異步區域文件加載的工廠。 |
-| `getTextDirection(lng)` | 返回 `'ltr'` 或 `'rtl'` 以獲取 BCP-47 代碼。 |
-| `applyDirection(lng, element?)` | 在 `document.documentElement` 上設置 `dir` 屬性。 |
-| `getUILanguageLabel(lang, t)` | 語言菜單行的顯示標籤（帶有 i18n）。 |
-| `getUILanguageLabelNative(lang)` | 無需調用 `t()` 的顯示標籤（標題樣式）。 |
-| `interpolateTemplate(str, vars)` | 在普通字符串上進行低級別的 `{{var}}` 替換（內部使用；應用代碼應使用 `t()`）。 |
-| `flipUiArrowsForRtl(text, isRtl)` | 將 `→` 翻轉為 `←` 以適應 RTL 佈局。 |
+| `defaultI18nInitOptions(sourceLocale)` | 用於「鍵值即預設值」設定的標準 i18next 初始化選項。 |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 建議的整合方式：鍵值修剪 + 從 **`strings.json`** 取得複數 **`wrapT`**，可選擇性合併 **`translate-ui`** `{sourceLocale}.json` 的複數鍵。 |
+| `wrapI18nWithKeyTrim(i18n)` | 僅提供低階鍵值修剪封裝（應用程式整合已棄用；建議使用 **`setupKeyAsDefaultT`**）。 |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 從 **`ui-languages.json`** 建立 **`makeLoadLocale`** 的 **`localeLoaders`** 地圖（包含除 **`sourceLocale`** 以外的所有 **`code`**）。 |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | 用於非同步載入語系檔案的工廠函數。 |
+| `getTextDirection(lng)` | 根據 BCP-47 編碼回傳 `'ltr'` 或 `'rtl'`。 |
+| `applyDirection(lng, element?)` | 在 `document.documentElement` 上設定 `dir` 屬性。 |
+| `getUILanguageLabel(lang, t)` | 語言選單列的顯示標籤（含 i18n）。 |
+| `getUILanguageLabelNative(lang)` | 不呼叫 `t()` 的顯示標籤（標頭樣式）。 |
+| `interpolateTemplate(str, vars)` | 在純文字上進行低階 `{{var}}` 替換（內部使用；應用程式碼應改用 `t()`）。 |
+| `flipUiArrowsForRtl(text, isRtl)` | 將 `→` 翻轉為 `←` 以支援由右至左的版面配置。 |
 
 ---
 
 ## CLI 指令
 
-```
+```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file

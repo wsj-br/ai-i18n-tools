@@ -4,6 +4,7 @@ import type { CldrPluralForm, I18nConfig } from "../core/types.js";
 import {
   type BatchTranslationResult,
   type ChatResponse,
+  type OpenRouterUsageStats,
   type Segment,
   type TranslationResult,
   BatchTranslationError,
@@ -59,6 +60,10 @@ interface OpenRouterResponse {
     total_tokens: number;
     cost?: number;
     cost_details?: { upstream_inference_cost?: number };
+    prompt_tokens_details?: {
+      cached_tokens?: number;
+      cache_write_tokens?: number;
+    };
   };
 }
 
@@ -118,6 +123,8 @@ export class OpenRouterClient {
   private readonly sourceLanguageLabel: string;
   private readonly httpReferer: string;
   private readonly xTitle: string;
+  /** Mirrors `openrouter.promptCacheTtl`; only `"1h"` adds `ttl` on the cached system block. */
+  private readonly promptCacheTtl?: "5m" | "1h";
 
   constructor(opts: OpenRouterClientOptions) {
     this.apiKey = opts.apiKey ?? process.env.OPENROUTER_API_KEY ?? "";
@@ -152,6 +159,7 @@ export class OpenRouterClient {
     this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
+    this.promptCacheTtl = opts.config.openrouter.promptCacheTtl;
   }
 
   getConfiguredModels(): readonly string[] {
@@ -214,24 +222,38 @@ export class OpenRouterClient {
     );
   }
 
-  private extractUsage(data: OpenRouterResponse): {
-    inputTokens: number;
-    outputTokens: number;
-    totalTokens: number;
-    cost?: number;
-  } {
-    const cost = data.usage.cost ?? (data as { cost?: number }).cost;
-    return {
+  private extractUsage(data: OpenRouterResponse): OpenRouterUsageStats {
+    const details = data.usage.prompt_tokens_details;
+    const cached =
+      typeof details?.cached_tokens === "number" && Number.isFinite(details.cached_tokens)
+        ? details.cached_tokens
+        : undefined;
+    const cacheWrite =
+      typeof details?.cache_write_tokens === "number" &&
+      Number.isFinite(details.cache_write_tokens)
+        ? details.cache_write_tokens
+        : undefined;
+    const usage: OpenRouterUsageStats = {
       inputTokens: data.usage.prompt_tokens,
       outputTokens: data.usage.completion_tokens,
       totalTokens: data.usage.total_tokens,
-      cost,
     };
+    if (cached !== undefined) {
+      usage.cachedPromptTokens = cached;
+    }
+    if (cacheWrite !== undefined) {
+      usage.cacheWritePromptTokens = cacheWrite;
+    }
+    return usage;
   }
 
   private toOpenRouterMessages(
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
   ): OpenRouterMessage[] {
+    const cacheCtl: OpenRouterContentBlock["cache_control"] =
+      this.promptCacheTtl === "1h"
+        ? { type: "ephemeral", ttl: "1h" }
+        : { type: "ephemeral" };
     return messages.map((m, i) => {
       if (m.role === "system" && i === 0) {
         return {
@@ -240,7 +262,7 @@ export class OpenRouterClient {
             {
               type: "text",
               text: m.content,
-              cache_control: { type: "ephemeral" },
+              cache_control: cacheCtl,
             },
           ],
         };
@@ -324,11 +346,12 @@ export class OpenRouterClient {
     }
 
     const usage = this.extractUsage(data);
+    const cost = data.usage.cost ?? (data as { cost?: number }).cost;
     return {
       content: String(content),
       model,
       usage,
-      cost: usage.cost,
+      cost,
     };
   }
 
@@ -561,7 +584,7 @@ export class OpenRouterClient {
   ): Promise<{
     translations: string[];
     model: string;
-    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    usage: OpenRouterUsageStats;
     cost?: number;
   }> {
     if (texts.length === 0) {
@@ -618,7 +641,7 @@ export class OpenRouterClient {
   ): Promise<{
     slots: LintSourceSlotResult[];
     model: string;
-    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    usage: OpenRouterUsageStats;
     cost?: number;
     lengthWarning: string | null;
   }> {
@@ -677,7 +700,7 @@ export class OpenRouterClient {
   ): Promise<{
     forms: Record<CldrPluralForm, string>;
     model: string;
-    usage: { inputTokens: number; outputTokens: number; totalTokens: number };
+    usage: OpenRouterUsageStats;
     cost?: number;
   }> {
     if (expectedForms.length === 0) {

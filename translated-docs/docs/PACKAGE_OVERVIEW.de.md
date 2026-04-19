@@ -12,31 +12,31 @@ Für praktische Nutzungshinweise siehe [GETTING_STARTED.md](GETTING_STARTED.de.m
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Inhaltsverzeichnis**
+## Inhaltsverzeichnis
 
 - [Architekturübersicht](#architecture-overview)
 - [Quellbaum](#source-tree)
-- [Workflow 1 - UI-Übersetzungsinternas](#workflow-1---ui-translation-internals)
+- [Workflow 1 – Interna der UI-Übersetzung](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [Flache Lokalisierungsdateien](#flat-locale-files)
-  - [UI-Übersetzungsaufforderungen](#ui-translation-prompts)
-- [Workflow 2 - Dokumentenübersetzungsinternas](#workflow-2---document-translation-internals)
+  - [Flache Sprachdateien](#flat-locale-files)
+  - [Eingabeaufforderungen für UI-Übersetzung](#ui-translation-prompts)
+- [Workflow 2 – Interna der Dokumentübersetzung](#workflow-2---document-translation-internals)
   - [Extraktoren](#extractors)
-  - [Platzhalter-Schutz](#placeholder-protection)
+  - [Schutz von Platzhaltern](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
-  - [Ausgabepfadauflösung](#output-path-resolution)
-  - [Flaches Link-Rewriting](#flat-link-rewriting)
+  - [Auflösung des Ausgabepfads](#output-path-resolution)
+  - [Umschreibung flacher Links](#flat-link-rewriting)
 - [Gemeinsame Infrastruktur](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Konfigurationsladen](#config-loading)
-  - [Logger](#logger)
+  - [Protokollierungstool](#logger)
 - [Laufzeit-Hilfs-API](#runtime-helpers-api)
-  - [RTL-Hilfen](#rtl-helpers)
-  - [i18next-Setup-Fabriken](#i18next-setup-factories)
+  - [RTL-Hilfsfunktionen](#rtl-helpers)
+  - [i18next-Setup-Factorys](#i18next-setup-factories)
   - [Anzeigehilfen](#display-helpers)
-  - [String-Hilfen](#string-helpers)
-- [Programmierbare API](#programmatic-api)
+  - [Zeichenkettenhilfsfunktionen](#string-helpers)
+- [Programmatische API](#programmatic-api)
 - [Erweiterungspunkte](#extension-points)
   - [Benutzerdefinierte Funktionsnamen (UI-Extraktion)](#custom-function-names-ui-extraction)
   - [Benutzerdefinierte Extraktoren](#custom-extractors)
@@ -48,7 +48,7 @@ Für praktische Nutzungshinweise siehe [GETTING_STARTED.md](GETTING_STARTED.de.m
 
 ## Architekturübersicht
 
-```
+```text
 ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
@@ -67,7 +67,7 @@ Alles, was Verbraucher programmgesteuert benötigen könnten, wird von `src/inde
 
 ## Quellbaum
 
-```
+```text
 src/
 ├── index.ts                        Public API re-exports
 │
@@ -133,7 +133,7 @@ src/
 
 ## Workflow 1 - UI-Übersetzungsinternas
 
-```
+```text
 source files (JS/TS)
       │
       ▼  UIStringExtractor (i18next-scanner Parser)
@@ -148,7 +148,7 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 ### `UIStringExtractor`
 
-Verwendet `i18next-scanner` von `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateierweiterungen sind konfigurierbar. `extract` **fügt außerdem Nicht-Scanner-Eingaben in denselben Katalog ein:** die Projekt-`package.json`-`description`, wenn `reactExtractor.includePackageDescription` aktiviert ist (Standard), und jedes **`englishName`** aus `ui-languages.json`, wenn `reactExtractor.includeUiLanguageEnglishNames` `true` ist und `uiLanguagesPath` festgelegt ist (Zeichenketten, die bereits im Quellcode gefunden wurden, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der bereinigten Quellzeichenkette – diese werden zu den Schlüsseln in `strings.json`.
+Verwendet `i18next-scanner`s `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in jeder JS/TS-Datei zu finden. Funktionsnamen und Dateierweiterungen sind konfigurierbar. `extract` **führt auch Nicht-Scanner-Eingaben in denselben Katalog zusammen:** die Projekt-`package.json` `description`, wenn `reactExtractor.includePackageDescription` aktiviert ist (Standard), und jedes **`englishName`** aus `ui-languages.json`, wenn `reactExtractor.includeUiLanguageEnglishNames` auf `true` steht und `uiLanguagesPath` gesetzt ist (Zeichenketten, die bereits im Quelltext gefunden wurden, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5-Hashs** der bereinigten Quellzeichenkette – diese werden die Schlüssel in `strings.json`.
 
 ### `strings.json`
 
@@ -175,7 +175,7 @@ Der Master-Katalog hat die Form:
 
 `extract` fügt neue Schlüssel hinzu und behält vorhandene `translated`-/`models`-Daten für Schlüssel bei, die weiterhin im Scan vorhanden sind (Scanner-Literale, optionale Beschreibung, optionales Manifest-`englishName`). `translate-ui` füllt fehlende `translated`-Einträge auf, aktualisiert `models` für die Sprachvarianten, die es übersetzt, und schreibt flache Sprachdateien.
 
-`ui-languages.json` **-Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
+`ui-languages.json`-**Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
 
 ### Flache Lokalisierungsdateien
 
@@ -192,10 +192,11 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen anhand des Qu
 
 ### UI-Übersetzungsaufforderungen
 
-`buildUIPromptMessages` erstellt System- + Benutzermeldungen, die:
-- Die Quell- und Zielsprache identifizieren (nach Anzeigename aus `localeDisplayNames` oder `ui-languages.json`).
-- Ein JSON-Array von Strings senden und ein JSON-Array von Übersetzungen anfordern.
-- Glossarhinweise enthalten, wenn verfügbar.
+`buildUIPromptMessages` erstellt System- und Benutzernachrichten, die:
+
+- Die Ausgangs- und Zielsprache identifizieren (nach Anzeigename aus `localeDisplayNames` oder `ui-languages.json`).
+- Ein JSON-Array mit Zeichenketten sendet und ein JSON-Array mit Übersetzungen als Antwort anfordert.
+- Glossarhinweise einbeziehen, falls verfügbar.
 
 `OpenRouterClient.translateUIBatch` versucht nacheinander jedes Modell, mit Fallback bei Parse- oder Netzwerkfehlern. Die CLI erstellt diese Liste aus `openrouter.translationModels` (oder veraltetem Standard-/Fallback); für `translate-ui` wird das optionale `ui.preferredModel` vorangestellt, falls gesetzt (Duplikate gegenüber dem Rest werden entfernt).
 
@@ -203,7 +204,7 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen anhand des Qu
 
 ## Workflow 2 - Dokumentenübersetzungsinternas
 
-```
+```text
 markdown/MDX/JSON files (`translate-docs`)
       │
       ▼  MarkdownExtractor / JsonExtractor
@@ -375,20 +376,20 @@ Wichtige Exporte:
 
 | Export | Beschreibung |
 |---|---|
-| `loadI18nConfigFromFile` | Laden, Mergen, Validieren der Konfiguration aus einer JSON-Datei. |
-| `parseI18nConfig` | Validieren eines rohen Konfigurationsobjekts. |
-| `TranslationCache` | SQLite-Cache - mit einem `cacheDir`-Pfad instanziieren. |
-| `UIStringExtractor` | Extrahieren von `t("…")`-Strings aus JS/TS-Quellcode. |
-| `MarkdownExtractor` | Extrahieren von übersetzbaren Segmenten aus Markdown. |
-| `JsonExtractor` | Extrahieren aus Docusaurus JSON-Label-Dateien. |
-| `SvgExtractor` | Extrahieren aus SVG-Dateien. |
-| `OpenRouterClient` | Übersetzungsanfragen an OpenRouter stellen. |
+| `loadI18nConfigFromFile` | Konfiguration aus einer JSON-Datei laden, zusammenführen und validieren. |
+| `parseI18nConfig` | Ein rohes Konfigurationsobjekt validieren. |
+| `TranslationCache` | SQLite-Cache – Instanziierung mit einem `cacheDir`-Pfad. |
+| `UIStringExtractor` | `t("…")`-Zeichenketten aus JS/TS-Quellcode extrahieren. |
+| `MarkdownExtractor` | Übersetzbare Segmente aus Markdown extrahieren. |
+| `JsonExtractor` | Aus Docusaurus-JSON-Beschriftungsdateien extrahieren. |
+| `SvgExtractor` | Aus SVG-Dateien extrahieren. |
+| `OpenRouterClient` | Übersetzungsanfragen an OpenRouter senden. |
 | `PlaceholderHandler` | Markdown-Syntax um die Übersetzung schützen/wiederherstellen. |
-| `splitTranslatableIntoBatches` | Segmente in LLM-große Batches gruppieren. |
-| `validateTranslation` | Strukturelle Überprüfungen nach der Übersetzung. |
-| `resolveDocumentationOutputPath` | Ausgabedateipfad für ein übersetztes Dokument auflösen. |
-| `Glossar` / `GlossarMatcher` | Übersetzungs-Glossare laden und anwenden. |
-| `runTranslateUI` | Programmgesteuerter Einstiegspunkt für die Übersetzung der UI. |
+| `splitTranslatableIntoBatches` | Segmente in LLM-gerechte Batchgrößen einteilen. |
+| `validateTranslation` | Strukturelle Prüfungen nach der Übersetzung. |
+| `resolveDocumentationOutputPath` | Ausgabedateipfad für ein übersetztes Dokument ermitteln. |
+| `Glossary` / `GlossaryMatcher` | Übersetzungsglossare laden und anwenden. |
+| `runTranslateUI` | Programmatischer Einstiegspunkt für die Übersetzungs-Benutzeroberfläche. |
 
 ---
 

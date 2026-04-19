@@ -312,6 +312,8 @@ export async function runTranslateUI(
   let stringsUpdated = 0;
   let inputTokens = 0;
   let outputTokens = 0;
+  let cachedPromptTokens = 0;
+  let cacheWritePromptTokens = 0;
   let costUsd = 0;
 
   const wallStart = Date.now();
@@ -365,6 +367,8 @@ export async function runTranslateUI(
       ent.models[srcNorm] = batch.model;
       inputTokens += batch.usage.inputTokens;
       outputTokens += batch.usage.outputTokens;
+      cachedPromptTokens += batch.usage.cachedPromptTokens ?? 0;
+      cacheWritePromptTokens += batch.usage.cacheWritePromptTokens ?? 0;
       costUsd += batch.cost ?? 0;
       stringsUpdated++;
       step0Count++;
@@ -432,6 +436,8 @@ export async function runTranslateUI(
         });
         inputTokens += uiBatch.usage.inputTokens;
         outputTokens += uiBatch.usage.outputTokens;
+        cachedPromptTokens += uiBatch.usage.cachedPromptTokens ?? 0;
+        cacheWritePromptTokens += uiBatch.usage.cacheWritePromptTokens ?? 0;
         costUsd += uiBatch.cost ?? 0;
 
         const rangeLabel = plainMissingBatchRangeLabel(i, chunk.length, missingPlain.length);
@@ -551,6 +557,8 @@ export async function runTranslateUI(
         ent.models[locale] = batch.model;
         inputTokens += batch.usage.inputTokens;
         outputTokens += batch.usage.outputTokens;
+        cachedPromptTokens += batch.usage.cachedPromptTokens ?? 0;
+        cacheWritePromptTokens += batch.usage.cacheWritePromptTokens ?? 0;
         costUsd += batch.cost ?? 0;
         stringsUpdated++;
       }
@@ -628,6 +636,11 @@ export async function runTranslateUI(
   console.log(
     `   Tokens used:           ${(inputTokens + outputTokens).toLocaleString()} (in: ${inputTokens.toLocaleString()} / out: ${outputTokens.toLocaleString()})`
   );
+  if (inputTokens + outputTokens > 0) {
+    console.log(
+      `   Prompt cache (read / write): ${cachedPromptTokens.toLocaleString()} / ${cacheWritePromptTokens.toLocaleString()} (OpenRouter usage; 0 if not reported)`
+    );
+  }
   if (costUsd > 0) {
     console.log(chalk.green(`   💵 Total cost:          $${costUsd.toFixed(6)}`));
   } else {

@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table des matières**  *générée avec [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ai-i18n-tools](#ai-i18n-tools)
+  - [Deux flux de travail principaux](#two-core-workflows)
+  - [Installation](#installation)
+  - [Démarrage rapide](#quick-start)
+    - [Flux de travail 1 - Chaînes d'interface](#workflow-1---ui-strings)
+    - [Flux de travail 2 - Documentation](#workflow-2---documentation)
+    - [Les deux flux de travail](#both-workflows)
+  - [Assistants d'exécution](#runtime-helpers)
+  - [Commandes CLI](#cli-commands)
+  - [Documentation](#documentation)
+  - [Licence](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ai-i18n-tools
 
 Outil en ligne de commande et programme pour l'internationalisation d'applications JavaScript/TypeScript et de sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de modèles linguistiques (LLM) via OpenRouter, puis génère des fichiers JSON prêts pour les paramètres régionaux destinés à i18next, ainsi que des pipelines pour le markdown, le JSON Docusaurus et (via `features.translateSVG`, `translate-svg` et le bloc `svg`) des ressources SVG autonomes.
@@ -10,7 +28,7 @@ Outil en ligne de commande et programme pour l'internationalisation d'applicatio
 
 **Flux de travail 1 - Traduction de l'UI** (React, Next.js, Node.js, tout projet i18next)
 
-Construit un catalogue maître (`strings.json` avec des métadonnées **`models`** par langue facultatives) à partir de littéraux **`t("…")` / `i18n.t("…")`**, éventuellement **`package.json` `description`**, et éventuellement chaque **`englishName`** provenant de `ui-languages.json` lorsque cela est activé dans la configuration. Traduit les entrées manquantes par langue via OpenRouter et génère des fichiers JSON plats (`de.json`, `pt-BR.json`, …) prêts à être utilisés avec i18next.
+Crée un catalogue principal (`strings.json` avec des métadonnées par langue facultatives **`models`**) à partir de **littéraux** `t("…")` / `i18n.t("…")`, éventuellement **`package.json` `description`**, et éventuellement chaque **`englishName`** provenant de `ui-languages.json` lorsque cette option est activée dans la configuration. Traduit les entrées manquantes par langue via OpenRouter et génère des fichiers JSON plats (`de.json`, `pt-BR.json`, …) prêts à être utilisés avec i18next.
 
 **Flux de travail 2 - Traduction de documents** (Markdown, Docusaurus JSON)
 
@@ -22,7 +40,7 @@ Les deux flux de travail partagent un seul fichier `ai-i18n-tools.config.json` e
 
 ## Installation
 
-Le package publié est **uniquement ESM** (`"type": "module"`). Utilisez `import` depuis Node.js, des bundlers, ou `import()` — `require('ai-i18n-tools')` **n'est pas pris en charge.**
+Le package publié est uniquement en format **ESM** (`"type": "module"`). Utilisez `import` depuis Node.js, des outils de regroupement ou `import()` — `require('ai-i18n-tools')` **n'est pas pris en charge.**
 
 ```bash
 npm install ai-i18n-tools
@@ -109,25 +127,25 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 Exportés de `'ai-i18n-tools/runtime'` - fonctionnent dans n'importe quel environnement JS, aucune importation i18next requise :
 
-| Helper | Description |
+| Assistant | Description |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Options d'initialisation i18next standard pour les configurations clé-par-défaut. |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Configuration recommandée : key-trim + pluriel **`wrapT`** depuis **`strings.json`**, fusionne éventuellement les clés plurielles **`translate-ui`** `{sourceLocale}.json`. |
-| `wrapI18nWithKeyTrim(i18n)` | Enveloppe key-trim de bas niveau uniquement (obsolète pour le câblage applicatif ; préférez **`setupKeyAsDefaultT`**). |
+| `defaultI18nInitOptions(sourceLocale)` | Options d'initialisation standard i18next pour les configurations où la clé sert de valeur par défaut. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Configuration recommandée : suppression du préfixe de clé + pluriel **`wrapT`** depuis **`strings.json`**, fusionne éventuellement les clés plurielles **`translate-ui`** `{sourceLocale}.json`. |
+| `wrapI18nWithKeyTrim(i18n)` | Enveloppe bas niveau pour la suppression du préfixe de clé uniquement (obsolète pour le câblage applicatif ; privilégiez **`setupKeyAsDefaultT`**). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Construit la carte **`localeLoaders`** pour **`makeLoadLocale`** à partir de **`ui-languages.json`** (chaque **`code`** sauf **`sourceLocale`**). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Fabrique pour le chargement asynchrone des fichiers de langue. |
 | `getTextDirection(lng)` | Renvoie `'ltr'` ou `'rtl'` pour un code BCP-47. |
 | `applyDirection(lng, element?)` | Définit l'attribut `dir` sur `document.documentElement`. |
 | `getUILanguageLabel(lang, t)` | Libellé d'affichage pour une ligne de menu de langue (avec i18n). |
-| `getUILanguageLabelNative(lang)` | Libellé d'affichage sans appeler `t()` (style en-tête). |
-| `interpolateTemplate(str, vars)` | Substitution `{{var}}` de bas niveau sur une chaîne simple (utilisé en interne ; le code applicatif doit utiliser `t()` à la place). |
+| `getUILanguageLabelNative(lang)` | Libellé d'affichage sans appel à `t()` (style en-tête). |
+| `interpolateTemplate(str, vars)` | Substitution bas niveau `{{var}}` sur une chaîne simple (utilisée en interne ; le code applicatif devrait utiliser `t()` à la place). |
 | `flipUiArrowsForRtl(text, isRtl)` | Inverse `→` en `←` pour les mises en page RTL. |
 
 ---
 
 ## Commandes CLI
 
-```
+```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file

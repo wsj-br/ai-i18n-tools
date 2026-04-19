@@ -248,7 +248,7 @@ describe("OpenRouterClient", () => {
     expect(r.translations).toEqual(["eins", "zwei"]);
   });
 
-  it("translateUIBatch includes BCP-47 id and English display name in the user prompt", async () => {
+  it("translateUIBatch includes BCP-47 id and English display name in the system prompt", async () => {
     const fetchMock = vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["x"]')));
     vi.stubGlobal("fetch", fetchMock);
     const c = new OpenRouterClient({
@@ -261,11 +261,21 @@ describe("OpenRouterClient", () => {
     await c.translateUIBatch(["a"], "de");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
     const payload = JSON.parse(init.body ?? "{}") as {
-      messages: Array<{ role: string; content: string }>;
+      messages: Array<{ role: string; content: unknown }>;
     };
+    const systemText = (() => {
+      const sys = payload.messages.find((m) => m.role === "system");
+      const c0 = sys?.content;
+      if (typeof c0 === "string") return c0;
+      if (Array.isArray(c0)) {
+        return (c0 as Array<{ text?: string }>).map((b) => b.text ?? "").join("");
+      }
+      return "";
+    })();
+    expect(systemText).toContain("en: English");
+    expect(systemText).toContain("de: German");
     const user = payload.messages.find((m) => m.role === "user");
-    expect(user?.content).toContain("en: English");
-    expect(user?.content).toContain("de: German");
+    expect(user?.content).toBe(JSON.stringify(["a"], null, 2));
   });
 
   it("translateUIBatch uses Intl English names when localeDisplayNames has no entry", async () => {
@@ -281,11 +291,63 @@ describe("OpenRouterClient", () => {
     await c.translateUIBatch(["a"], "de");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
     const payload = JSON.parse(init.body ?? "{}") as {
-      messages: Array<{ role: string; content: string }>;
+      messages: Array<{ role: string; content: unknown }>;
     };
+    const systemText = (() => {
+      const sys = payload.messages.find((m) => m.role === "system");
+      const c0 = sys?.content;
+      if (typeof c0 === "string") return c0;
+      if (Array.isArray(c0)) {
+        return (c0 as Array<{ text?: string }>).map((b) => b.text ?? "").join("");
+      }
+      return "";
+    })();
+    expect(systemText).toContain("en: English");
+    expect(systemText).toContain("de: German");
     const user = payload.messages.find((m) => m.role === "user");
-    expect(user?.content).toContain("en: English");
-    expect(user?.content).toContain("de: German");
+    expect(user?.content).toBe(JSON.stringify(["a"], null, 2));
+  });
+
+  it("translateUIBatch sets cache_control ttl when openrouter.promptCacheTtl is 1h", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["x"]')));
+    vi.stubGlobal("fetch", fetchMock);
+    const base = openRouterConfig(["m"]);
+    const c = new OpenRouterClient({
+      config: {
+        ...base,
+        openrouter: { ...base.openrouter, promptCacheTtl: "1h" },
+      },
+      apiKey: "k",
+    });
+    await c.translateUIBatch(["a"], "de");
+    const init = fetchMock.mock.calls[0]![1] as { body?: string };
+    const payload = JSON.parse(init.body ?? "{}") as {
+      messages: Array<{ role: string; content: unknown }>;
+    };
+    const sys = payload.messages.find((m) => m.role === "system");
+    const block = Array.isArray(sys?.content) ? (sys!.content as Array<{ cache_control?: unknown }>)[0] : null;
+    expect(block?.cache_control).toEqual({ type: "ephemeral", ttl: "1h" });
+  });
+
+  it("chat maps prompt_tokens_details to usage optional fields", async () => {
+    const body = {
+      id: "r1",
+      choices: [{ message: { content: "ok" }, finish_reason: "stop" }],
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 2,
+        total_tokens: 102,
+        prompt_tokens_details: { cached_tokens: 80, cache_write_tokens: 10 },
+      },
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockJsonResponse(body)));
+    const c = new OpenRouterClient({ config: openRouterConfig(["m1"]), apiKey: "k" });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    expect(res.usage.cachedPromptTokens).toBe(80);
+    expect(res.usage.cacheWritePromptTokens).toBe(10);
   });
 
   it("fetchCompletion retries once on HTTP 429 then succeeds", async () => {

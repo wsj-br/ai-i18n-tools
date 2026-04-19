@@ -47,6 +47,8 @@ export async function runTranslateSvg(
     filesProcessed: 0,
     inputTokens: 0,
     outputTokens: 0,
+    cachedPromptTokens: 0,
+    cacheWritePromptTokens: 0,
     costUsd: 0,
     segmentsCached: 0,
     segmentsTranslated: 0,
@@ -124,6 +126,8 @@ export async function runTranslateSvg(
       filesProcessed: 0,
       inputTokens: 0,
       outputTokens: 0,
+      cachedPromptTokens: 0,
+      cacheWritePromptTokens: 0,
       costUsd: 0,
       segmentsCached: 0,
       segmentsTranslated: 0,
@@ -163,6 +167,10 @@ export async function runTranslateSvg(
         partial.inputTokens += totals.inputTokens;
         partial.outputTokens += totals.outputTokens;
         partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+        partial.cachedPromptTokens =
+          (partial.cachedPromptTokens ?? 0) + (totals.cachedPromptTokens ?? 0);
+        partial.cacheWritePromptTokens =
+          (partial.cacheWritePromptTokens ?? 0) + (totals.cacheWritePromptTokens ?? 0);
         partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
         partial.segmentsTranslated =
           (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
@@ -193,6 +201,9 @@ export async function runTranslateSvg(
     sum.inputTokens += r.partial.inputTokens;
     sum.outputTokens += r.partial.outputTokens;
     sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
+    sum.cachedPromptTokens = (sum.cachedPromptTokens ?? 0) + (r.partial.cachedPromptTokens ?? 0);
+    sum.cacheWritePromptTokens =
+      (sum.cacheWritePromptTokens ?? 0) + (r.partial.cacheWritePromptTokens ?? 0);
     sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
     sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
     sum.segmentValidationFailures =
@@ -220,6 +231,11 @@ export async function runTranslateSvg(
   console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
   console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
+  if ((sum.inputTokens + sum.outputTokens) > 0) {
+    console.log(
+      `   Prompt cache (read / write): ${(sum.cachedPromptTokens ?? 0).toLocaleString()} / ${(sum.cacheWritePromptTokens ?? 0).toLocaleString()} (OpenRouter usage; 0 if not reported)`
+    );
+  }
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
   } else if ((sum.filesWritten ?? 0) > 0) {
