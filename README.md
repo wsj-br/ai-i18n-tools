@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ai-i18n-tools](#ai-i18n-tools)
+  - [Two core workflows](#two-core-workflows)
+  - [Installation](#installation)
+  - [Quick start](#quick-start)
+    - [Workflow 1 - UI strings](#workflow-1---ui-strings)
+    - [Workflow 2 - Documentation](#workflow-2---documentation)
+    - [Both workflows](#both-workflows)
+  - [Runtime helpers](#runtime-helpers)
+  - [CLI commands](#cli-commands)
+  - [Documentation](#documentation)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ai-i18n-tools
 
 CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and (via `features.translateSVG`, `translate-svg`, and the `svg` block) standalone SVG assets.

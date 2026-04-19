@@ -542,7 +542,7 @@ program
   .description("Translate documentation files (markdown, JSON) per config features")
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: documentation.targetLocales if set, else targetLocales"
+    "Target locales (comma-separated); default: documentation targets from config (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
   )
   .option(
     "-p, --path <path>",
@@ -737,7 +737,7 @@ program
   .description("Translate standalone SVG assets per config.svg (requires features.translateSVG)")
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: documentation.targetLocales if set, else targetLocales"
+    "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales)"
   )
   .option(
     "-p, --path <path>",
