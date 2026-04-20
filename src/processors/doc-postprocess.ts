@@ -75,29 +75,50 @@ function splitBodyLines(body: string): string[] {
   return body.split(/\r?\n/);
 }
 
+/** Match {@link MarkdownExtractor}: CommonMark fenced code opener/closer line. */
+const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
+
 function joinBodyLines(lines: string[]): string {
   return lines.join("\n");
 }
 
 /**
  * Find the language-list block by scanning lines for `cfg.start` then `cfg.end` (no regex across lines).
+ * Markers inside CommonMark fenced code blocks (```` ``` ```` / `~~~`) are ignored so config examples in
+ * docs do not steal the match from the real HTML block.
  */
 export function extractLanguageListBlock(
   body: string,
   cfg: LanguageListBlockConfig
 ): { block: string; startLine: number; endLine: number } | null {
   const lines = splitBodyLines(body);
-  const startLine = lines.findIndex((line) => line.includes(cfg.start));
-  if (startLine === -1) return null;
+  let inFence = false;
+  let startLine = -1;
+  let endLine = -1;
 
-  let endLine: number;
-  if (lines[startLine]!.includes(cfg.end)) {
-    endLine = startLine;
-  } else {
-    const found = lines.findIndex((line, idx) => idx > startLine && line.includes(cfg.end));
-    if (found === -1) return null;
-    endLine = found;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
+    if (MD_CODE_FENCE_LINE_RE.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (startLine === -1) {
+      if (!inFence && line.includes(cfg.start)) {
+        startLine = i;
+        if (line.includes(cfg.end)) {
+          endLine = i;
+          break;
+        }
+      }
+      continue;
+    }
+    if (!inFence && line.includes(cfg.end)) {
+      endLine = i;
+      break;
+    }
   }
+
+  if (startLine === -1 || endLine === -1) return null;
 
   const block = lines.slice(startLine, endLine + 1).join("\n");
   return { block, startLine, endLine };

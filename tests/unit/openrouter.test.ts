@@ -308,28 +308,22 @@ describe("OpenRouterClient", () => {
     expect(user?.content).toBe(JSON.stringify(["a"], null, 2));
   });
 
-  it("translateUIBatch sets cache_control ttl when openrouter.promptCacheTtl is 1h", async () => {
+  it("translateUIBatch sends plain string system content (no prompt cache metadata)", async () => {
     const fetchMock = vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["x"]')));
     vi.stubGlobal("fetch", fetchMock);
-    const base = openRouterConfig(["m"]);
-    const c = new OpenRouterClient({
-      config: {
-        ...base,
-        openrouter: { ...base.openrouter, promptCacheTtl: "1h" },
-      },
-      apiKey: "k",
-    });
+    const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     await c.translateUIBatch(["a"], "de");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
+    expect(init.body).not.toContain("cache_control");
     const payload = JSON.parse(init.body ?? "{}") as {
       messages: Array<{ role: string; content: unknown }>;
     };
     const sys = payload.messages.find((m) => m.role === "system");
-    const block = Array.isArray(sys?.content) ? (sys!.content as Array<{ cache_control?: unknown }>)[0] : null;
-    expect(block?.cache_control).toEqual({ type: "ephemeral", ttl: "1h" });
+    expect(typeof sys?.content).toBe("string");
+    expect((sys?.content as string).length).toBeGreaterThan(0);
   });
 
-  it("chat maps prompt_tokens_details to usage optional fields", async () => {
+  it("chat maps usage to input/output/total tokens only", async () => {
     const body = {
       id: "r1",
       choices: [{ message: { content: "ok" }, finish_reason: "stop" }],
@@ -346,8 +340,7 @@ describe("OpenRouterClient", () => {
       { role: "system", content: "sys" },
       { role: "user", content: "usr" },
     ]);
-    expect(res.usage.cachedPromptTokens).toBe(80);
-    expect(res.usage.cacheWritePromptTokens).toBe(10);
+    expect(res.usage).toEqual({ inputTokens: 100, outputTokens: 2, totalTokens: 102 });
   });
 
   it("fetchCompletion retries once on HTTP 429 then succeeds", async () => {
@@ -377,6 +370,60 @@ describe("OpenRouterClient", () => {
     expect(res.content).toBe("after-429");
     expect(fetchMock).toHaveBeenCalledTimes(2);
     vi.useRealTimers();
+  });
+
+  it("chat tries next model when first returns HTTP 400", async () => {
+    const nested400 = JSON.stringify({
+      error: { message: "x", metadata: { raw: "did not allow prompt caching" } },
+    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        headers: { get: () => null },
+        text: async () => nested400,
+      })
+      .mockResolvedValueOnce(mockJsonResponse(completionBody("second-model")));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const c = new OpenRouterClient({ config: openRouterConfig(["bad", "good"]), apiKey: "k" });
+    const res = await c.chat(
+      [
+        { role: "system", content: "s" },
+        { role: "user", content: "u" },
+      ],
+      { docLogContext: { locale: "ja", relativePath: "doc.md" } }
+    );
+    expect(res.content).toBe("second-model");
+    expect(res.model).toBe("good");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("chat tries next model when HTTP 400 body is unrelated to routing", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        headers: { get: () => null },
+        text: async () =>
+          JSON.stringify({
+            error: { message: "unsupported model", code: 400 },
+          }),
+      })
+      .mockResolvedValueOnce(mockJsonResponse(completionBody("fallback-model")));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const c = new OpenRouterClient({ config: openRouterConfig(["bad", "good"]), apiKey: "k" });
+    const res = await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
+    expect(res.content).toBe("fallback-model");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect((fetchMock.mock.calls[0]![1] as { body: string }).body).not.toContain("cache_control");
+    expect((fetchMock.mock.calls[1]![1] as { body: string }).body).not.toContain("cache_control");
   });
 
   it("chat logs via logger when model fails without docLogContext", async () => {

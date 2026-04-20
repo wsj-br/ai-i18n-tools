@@ -69,6 +69,12 @@ import { pluralTranslatedLocaleHasContent } from "../core/plural-forms.js";
 import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
 import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
+import {
+  parseSlugStyle,
+  resolvePymdownOptions,
+  runWriteHeadingIds,
+} from "./write-heading-ids.js";
+import { runStripMdBoldInline } from "./strip-md-bold-inline.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -301,6 +307,169 @@ program
         );
         console.log("Wrote .translate-ignore");
       }
+    }
+  });
+
+program
+  .command("write-heading-ids")
+  .description(
+    'Insert `<a id="slug"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)'
+  )
+  .option(
+    "-p, --path <path>",
+    "Only process files under this path (file or directory); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
+  .option(
+    "--slug-style <mode>",
+    "github | bitbucket | gitlab | pymdown | azure-devops",
+    "github"
+  )
+  .option("--pymdown-case <mode>", "With pymdown: lower | title | none (default: lower)")
+  .option("--pymdown-normalize <mode>", "With pymdown: nfc | nfd | none (default: nfc)")
+  .option("--pymdown-percent-encode", "With pymdown: percent-encode slug (default on)", false)
+  .option("--no-pymdown-percent-encode", "With pymdown: disable percent-encoding", false)
+  .option("--dry-run", "Print files that would change; do not write", false)
+  .action((opts, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean };
+    const o = opts as {
+      path?: string;
+      file?: string;
+      slugStyle?: string;
+      pymdownCase?: string;
+      pymdownNormalize?: string;
+      pymdownPercentEncode?: boolean;
+      noPymdownPercentEncode?: boolean;
+      dryRun?: boolean;
+    };
+    const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
+    let slugStyle;
+    try {
+      slugStyle = parseSlugStyle(o.slugStyle);
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+
+    const pymdownFlagsUsed =
+      o.pymdownCase !== undefined ||
+      o.pymdownNormalize !== undefined ||
+      o.pymdownPercentEncode ||
+      o.noPymdownPercentEncode;
+
+    if (pymdownFlagsUsed && slugStyle !== "pymdown") {
+      console.error(
+        chalk.red(
+          "❌ --pymdown-* options are only valid with --slug-style pymdown."
+        )
+      );
+      process.exit(1);
+    }
+
+    if (o.pymdownPercentEncode && o.noPymdownPercentEncode) {
+      console.error(chalk.red("❌ Use either --pymdown-percent-encode or --no-pymdown-percent-encode, not both."));
+      process.exit(1);
+    }
+
+    let pymdownOpts;
+    try {
+      pymdownOpts =
+        slugStyle === "pymdown"
+          ? resolvePymdownOptions({
+              pymdownCase: o.pymdownCase,
+              pymdownNormalize: o.pymdownNormalize,
+              pymdownPercentEncode: o.pymdownPercentEncode,
+              noPymdownPercentEncode: o.noPymdownPercentEncode,
+            })
+          : undefined;
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+
+    if (!config.documentations?.length) {
+      console.error(chalk.red("❌ [write-heading-ids] config has no documentations[] blocks."));
+      process.exit(1);
+    }
+
+    try {
+      const sum = runWriteHeadingIds({
+        cwd: projectRoot,
+        config,
+        pathRaw,
+        slugStyle,
+        dryRun: Boolean(o.dryRun),
+        verbose: Boolean(g.verbose),
+        pymdown: pymdownOpts,
+      });
+      console.log(
+        chalk.green(
+          `\n✅ write-heading-ids: ${sum.filesWritten} file(s) updated, ${sum.filesUnchanged} unchanged`
+        )
+      );
+    } catch (e) {
+      console.error(
+        chalk.red(`❌ [write-heading-ids] ${e instanceof Error ? e.message : String(e)}`)
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("strip-md-bold-inline")
+  .description(
+    "Remove bold (**) around inline code in markdown/MDX under documentations[].contentPaths (.translate-ignore; optional --path)"
+  )
+  .option(
+    "-p, --path <path>",
+    "Only process files under this path (file or directory); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
+  .option("--dry-run", "Print files that would change; do not write", false)
+  .option("--no-backup", "Overwrite in place without writing a timestamped .backup.* copy first", false)
+  .action((opts, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean };
+    const o = opts as {
+      path?: string;
+      file?: string;
+      dryRun?: boolean;
+      noBackup?: boolean;
+    };
+    const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
+
+    if (!config.documentations?.length) {
+      console.error(chalk.red("❌ [strip-md-bold-inline] config has no documentations[] blocks."));
+      process.exit(1);
+    }
+
+    try {
+      const sum = runStripMdBoldInline({
+        cwd: projectRoot,
+        config,
+        pathRaw,
+        dryRun: Boolean(o.dryRun),
+        noBackup: Boolean(o.noBackup),
+        verbose: Boolean(g.verbose),
+      });
+      const failNote = sum.filesFailed > 0 ? `, ${sum.filesFailed} failed` : "";
+      const changedVerb = o.dryRun ? "would update" : "updated";
+      console.log(
+        chalk.green(
+          `\n✅ strip-md-bold-inline: ${sum.filesWritten} file(s) ${changedVerb}, ${sum.filesUnchanged} unchanged${failNote}`
+        )
+      );
+      if (sum.filesFailed > 0) {
+        process.exit(1);
+      }
+    } catch (e) {
+      console.error(
+        chalk.red(`❌ [strip-md-bold-inline] ${e instanceof Error ? e.message : String(e)}`)
+      );
+      process.exit(1);
     }
   });
 

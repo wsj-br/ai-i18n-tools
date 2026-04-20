@@ -195,7 +195,7 @@ describe("buildDocumentSinglePrompt", () => {
 });
 
 describe("buildUIPromptMessages", () => {
-  it("puts locale routing in system and JSON-only payload in user (prompt cache prefix)", () => {
+  it("puts locale routing in system and JSON-only payload in user", () => {
     const { systemPrompt, userContent } = buildUIPromptMessages(["Save", "Cancel"], {
       sourceLanguageLabel: "English",
       targetLanguageLabel: "German",

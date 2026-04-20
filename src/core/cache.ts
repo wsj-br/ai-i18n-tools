@@ -4,11 +4,19 @@ import { createRequire } from "node:module";
 import type * as Sqlite from "node:sqlite";
 import { CacheError } from "./errors.js";
 import { USER_EDITED_MODEL } from "./user-edited-model.js";
-import type { CacheEntry, CleanupStats, FileTracking, TranslationRow } from "./types.js";
+import type {
+  CacheEntry,
+  CleanupStats,
+  FileTracking,
+  TranslationFailureInsert,
+  TranslationFailureListRow,
+  TranslationFailureSummary,
+  TranslationRow,
+} from "./types.js";
 import { computeSegmentHash } from "../utils/hash.js";
 import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 const require = createRequire(import.meta.url);
 
 type SqliteModule = typeof Sqlite;
@@ -81,6 +89,36 @@ export class TranslationCache {
         CREATE INDEX IF NOT EXISTS idx_translations_filepath
           ON translations(filepath);
       `);
+      this.db.exec("PRAGMA user_version = 1");
+    }
+    if (current < 2) {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS translation_failures (
+          source_hash TEXT NOT NULL,
+          locale TEXT NOT NULL,
+          model TEXT,
+          model_order INTEGER,
+          quality_error TEXT NOT NULL,
+          error_message TEXT NOT NULL,
+          fatal INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_translation_failures_source_locale
+          ON translation_failures(source_hash, locale);
+
+        CREATE INDEX IF NOT EXISTS idx_translation_failures_locale
+          ON translation_failures(locale);
+
+        CREATE INDEX IF NOT EXISTS idx_translation_failures_model
+          ON translation_failures(model);
+
+        CREATE INDEX IF NOT EXISTS idx_translation_failures_quality_error
+          ON translation_failures(quality_error);
+
+        CREATE INDEX IF NOT EXISTS idx_translation_failures_fatal
+          ON translation_failures(fatal);
+      `);
       this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
     }
   }
@@ -120,7 +158,7 @@ export class TranslationCache {
       params.push(filepath);
     }
     if (startLine !== undefined && startLine !== null) {
-      updates.push("start_line = CASE WHEN start_line IS NULL THEN ? ELSE start_line END");
+      updates.push("start_line = COALESCE(?, start_line)");
       params.push(startLine);
     }
 
@@ -159,7 +197,7 @@ export class TranslationCache {
         model = excluded.model,
         filepath = excluded.filepath,
         last_hit_at = datetime('now'),
-        start_line = CASE WHEN translations.start_line IS NULL THEN excluded.start_line ELSE translations.start_line END
+        start_line = COALESCE(excluded.start_line, translations.start_line)
     `);
     stmt.run(
       sourceHash,
@@ -307,9 +345,11 @@ export class TranslationCache {
     if (locale) {
       this.db.prepare("DELETE FROM translations WHERE locale = ?").run(locale);
       this.db.prepare("DELETE FROM file_tracking WHERE locale = ?").run(locale);
+      this.db.prepare("DELETE FROM translation_failures WHERE locale = ?").run(locale);
     } else {
       this.db.prepare("DELETE FROM translations").run();
       this.db.prepare("DELETE FROM file_tracking").run();
+      this.db.prepare("DELETE FROM translation_failures").run();
     }
   }
 
@@ -441,6 +481,9 @@ export class TranslationCache {
       .all() as { source_hash: string; locale: string; filepath: string | null }[];
 
     if (!dryRun) {
+      for (const row of deletedRows) {
+        this.deleteFailuresByTranslationKey(row.source_hash, row.locale);
+      }
       this.db
         .prepare(
           `DELETE FROM translations
@@ -525,6 +568,7 @@ export class TranslationCache {
   }
 
   deleteTranslation(sourceHash: string, locale: string): void {
+    this.deleteFailuresByTranslationKey(sourceHash, locale);
     this.db
       .prepare("DELETE FROM translations WHERE source_hash = ? AND locale = ?")
       .run(sourceHash, locale);
@@ -581,6 +625,15 @@ export class TranslationCache {
 
     this.db
       .prepare(
+        `DELETE FROM translation_failures
+         WHERE (source_hash, locale) IN (
+           SELECT source_hash, locale FROM translations ${whereClause}
+         )`
+      )
+      .run(...params);
+
+    this.db
+      .prepare(
         `DELETE FROM file_tracking WHERE (source_hash, locale) IN (SELECT source_hash, locale FROM translations ${whereClause})`
       )
       .run(...params);
@@ -591,6 +644,14 @@ export class TranslationCache {
 
   /** Deletes matching rows in `translations` only (see {@link deleteFileTrackingByPath} for tracking keys). */
   deleteTranslationsByFilepath(filepath: string): number {
+    this.db
+      .prepare(
+        `DELETE FROM translation_failures
+         WHERE (source_hash, locale) IN (
+           SELECT source_hash, locale FROM translations WHERE filepath = ?
+         )`
+      )
+      .run(filepath);
     const result = this.db.prepare("DELETE FROM translations WHERE filepath = ?").run(filepath);
     return Number(result.changes);
   }
@@ -660,6 +721,216 @@ export class TranslationCache {
       )
       .all() as { model: string }[];
     return rows.map((r) => r.model);
+  }
+
+  clearSegmentFailures(sourceHash: string, locale: string): void {
+    this.db
+      .prepare("DELETE FROM translation_failures WHERE source_hash = ? AND locale = ?")
+      .run(sourceHash, locale);
+  }
+
+  addSegmentFailures(rows: TranslationFailureInsert[]): void {
+    if (rows.length === 0) {
+      return;
+    }
+    const stmt = this.db.prepare(
+      `INSERT INTO translation_failures
+       (source_hash, locale, model, model_order, quality_error, error_message, fatal, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+    );
+    for (const row of rows) {
+      stmt.run(
+        row.sourceHash,
+        row.locale,
+        row.model,
+        row.modelOrder,
+        row.qualityError,
+        row.errorMessage,
+        row.fatal ? 1 : 0
+      );
+    }
+  }
+
+  deleteFailuresByTranslationKey(sourceHash: string, locale: string): void {
+    this.clearSegmentFailures(sourceHash, locale);
+  }
+
+  listTranslationFailures(filters?: {
+    filename?: string;
+    locale?: string;
+    model?: string;
+    source_hash?: string;
+    source_text?: string;
+    quality_error?: string;
+    error_message?: string;
+    fatal?: boolean;
+    sort?: "failures_desc" | "filepath_line_asc";
+    limit?: number;
+    offset?: number;
+  }): { rows: TranslationFailureListRow[]; total: number } {
+    const limit = filters?.limit ?? 50;
+    const offset = filters?.offset ?? 0;
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (filters?.filename?.trim()) {
+      conditions.push("LOWER(t.filepath) LIKE ?");
+      params.push(`%${filters.filename.trim().toLowerCase()}%`);
+    }
+    if (filters?.locale?.trim()) {
+      conditions.push("f.locale = ?");
+      params.push(filters.locale.trim());
+    }
+    if (filters?.model?.trim()) {
+      conditions.push("f.model = ?");
+      params.push(filters.model.trim());
+    }
+    if (filters?.source_hash?.trim()) {
+      conditions.push("LOWER(f.source_hash) LIKE ?");
+      params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
+    }
+    if (filters?.source_text?.trim()) {
+      conditions.push("LOWER(t.source_text) LIKE ?");
+      params.push(`%${filters.source_text.trim().toLowerCase()}%`);
+    }
+    if (filters?.quality_error?.trim()) {
+      conditions.push("f.quality_error = ?");
+      params.push(filters.quality_error.trim());
+    }
+    if (filters?.error_message?.trim()) {
+      conditions.push("LOWER(f.error_message) LIKE ?");
+      params.push(`%${filters.error_message.trim().toLowerCase()}%`);
+    }
+    if (filters?.fatal === true) {
+      conditions.push("f.fatal = 1");
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const fromSql = `FROM translation_failures f
+      LEFT JOIN translations t
+        ON t.source_hash = f.source_hash AND t.locale = f.locale`;
+    const groupedSql = `SELECT
+        f.source_hash as source_hash,
+        f.locale as locale,
+        REPLACE(COALESCE(GROUP_CONCAT(DISTINCT f.model), ''), ',', CHAR(10)) as model,
+        MAX(t.model) as translation_model,
+        MAX(f.model_order) as model_order,
+        REPLACE(COALESCE(GROUP_CONCAT(DISTINCT f.quality_error), ''), ',', CHAR(10)) as quality_error,
+        COALESCE(GROUP_CONCAT(f.error_message, CHAR(10)), '') as error_message,
+        MAX(f.fatal) as fatal,
+        MAX(f.created_at) as created_at,
+        MAX(t.source_text) as source_text,
+        MAX(t.filepath) as filepath,
+        MIN(t.start_line) as start_line
+      ${fromSql}
+      ${whereClause}
+      GROUP BY f.source_hash, f.locale`;
+    const countStmt = this.db.prepare(`SELECT COUNT(*) as count FROM (${groupedSql}) grouped`);
+    const total = (countStmt.get(...params) as { count: number }).count;
+
+    const orderBy =
+      filters?.sort === "filepath_line_asc"
+        ? "ORDER BY COALESCE(filepath, ''), CASE WHEN start_line IS NULL THEN 1 ELSE 0 END, start_line"
+        : "ORDER BY CASE WHEN model_order IS NULL THEN 1 ELSE 0 END, model_order DESC, COALESCE(filepath, ''), start_line";
+
+    const selectStmt = this.db.prepare(
+      `SELECT * FROM (${groupedSql}) grouped
+       ${orderBy}
+       LIMIT ? OFFSET ?`
+    );
+
+    const rows = selectStmt.all(...params, limit, offset) as unknown as TranslationFailureListRow[];
+    return { rows, total };
+  }
+
+  getTranslationFailureSummary(filters?: {
+    filename?: string;
+    locale?: string;
+    model?: string;
+    source_hash?: string;
+    source_text?: string;
+    quality_error?: string;
+    error_message?: string;
+    fatal?: boolean;
+  }): TranslationFailureSummary {
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (filters?.filename?.trim()) {
+      conditions.push("LOWER(t.filepath) LIKE ?");
+      params.push(`%${filters.filename.trim().toLowerCase()}%`);
+    }
+    if (filters?.locale?.trim()) {
+      conditions.push("f.locale = ?");
+      params.push(filters.locale.trim());
+    }
+    if (filters?.model?.trim()) {
+      conditions.push("f.model = ?");
+      params.push(filters.model.trim());
+    }
+    if (filters?.source_hash?.trim()) {
+      conditions.push("LOWER(f.source_hash) LIKE ?");
+      params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
+    }
+    if (filters?.source_text?.trim()) {
+      conditions.push("LOWER(t.source_text) LIKE ?");
+      params.push(`%${filters.source_text.trim().toLowerCase()}%`);
+    }
+    if (filters?.quality_error?.trim()) {
+      conditions.push("f.quality_error = ?");
+      params.push(filters.quality_error.trim());
+    }
+    if (filters?.error_message?.trim()) {
+      conditions.push("LOWER(f.error_message) LIKE ?");
+      params.push(`%${filters.error_message.trim().toLowerCase()}%`);
+    }
+    if (filters?.fatal === true) {
+      conditions.push("f.fatal = 1");
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const segmentCounts = this.db
+      .prepare(
+        `SELECT f.source_hash, f.locale, COUNT(*) as failures
+         FROM translation_failures f
+         LEFT JOIN translations t
+           ON t.source_hash = f.source_hash AND t.locale = f.locale
+         ${whereClause}
+         GROUP BY f.source_hash, f.locale`
+      )
+      .all(...params) as { source_hash: string; locale: string; failures: number }[];
+
+    let with1 = 0;
+    let with2 = 0;
+    let with3OrMore = 0;
+    for (const row of segmentCounts) {
+      if (row.failures === 1) {
+        with1++;
+      } else if (row.failures === 2) {
+        with2++;
+      } else if (row.failures >= 3) {
+        with3OrMore++;
+      }
+    }
+
+    return {
+      segmentsWithFailure: segmentCounts.length,
+      segmentsWith1Failure: with1,
+      segmentsWith2Failures: with2,
+      segmentsWith3OrMoreFailures: with3OrMore,
+    };
+  }
+
+  getUniqueFailureQualityErrors(): string[] {
+    const rows = this.db
+      .prepare(
+        `SELECT DISTINCT quality_error
+         FROM translation_failures
+         WHERE quality_error IS NOT NULL AND quality_error != ''
+         ORDER BY quality_error`
+      )
+      .all() as { quality_error: string }[];
+    return rows.map((r) => r.quality_error);
   }
 
   close(): void {

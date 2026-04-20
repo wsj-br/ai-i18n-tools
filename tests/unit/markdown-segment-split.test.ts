@@ -32,6 +32,8 @@ describe("splitMarkdownSegmentPiece", () => {
     expect(parts[0]!.content).not.toContain("| 3 | 4 |");
     expect(parts[1]!.content.trim()).toBe("| 3 | 4 |");
     expect(parts[1]!.tightJoinPrevious).toBe(true);
+    expect(parts[0]!.startLine).toBe(10);
+    expect(parts[1]!.startLine).toBe(13);
   });
 
   it("does not split a two-row pipe table (header + sep only)", () => {
@@ -58,6 +60,8 @@ describe("splitMarkdownSegmentPiece", () => {
     for (let i = 1; i < parts.length; i++) {
       expect(parts[i]!.tightJoinPrevious).toBe(true);
     }
+    expect(parts[0]!.startLine).toBe(1);
+    expect(parts[1]!.startLine).toBe(3);
   });
 
   it("splits dense paragraphs by maxCharsPerSegment", () => {
@@ -141,6 +145,8 @@ describe("splitMarkdownSegmentPiece edge options", () => {
       cfg
     );
     expect(parts.length).toBeGreaterThan(1);
+    expect(parts[0]!.startLine).toBe(1);
+    expect(parts[1]!.startLine).toBe(3);
   });
 
   it("falls through when pipe tables disabled and body is not a list", () => {
@@ -160,5 +166,27 @@ describe("splitMarkdownSegmentPiece edge options", () => {
       cfg
     );
     expect(parts.length).toBeGreaterThan(1);
+  });
+
+  it("advances startLine for dense-paragraph chunks when startLine is not 1", () => {
+    const cfg = segmentSplittingSchema.parse({
+      enabled: true,
+      splitPipeTables: false,
+      splitLongLists: false,
+      maxLinesPerParagraphChunk: 2,
+      maxCharsPerSegment: 100_000,
+    });
+    const parts = splitMarkdownSegmentPiece(
+      {
+        type: "paragraph",
+        content: "a\nb\nc\nd",
+        translatable: true,
+        startLine: 509,
+      },
+      cfg
+    );
+    expect(parts).toHaveLength(2);
+    expect(parts[0]!.startLine).toBe(509);
+    expect(parts[1]!.startLine).toBe(511);
   });
 });

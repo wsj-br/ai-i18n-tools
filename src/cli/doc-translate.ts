@@ -7,6 +7,7 @@ import type {
   I18nConfig,
   I18nDocTranslateConfig,
   Segment,
+  TranslationFailureInsert,
 } from "../core/types.js";
 import { segmentSplittingSchema } from "../core/types.js";
 import { segmentTranslationText } from "../core/types.js";
@@ -141,10 +142,6 @@ export interface TranslateTotals {
   filesProcessed?: number;
   inputTokens: number;
   outputTokens: number;
-  /** Sum of OpenRouter `prompt_tokens_details.cached_tokens` when reported. */
-  cachedPromptTokens?: number;
-  /** Sum of OpenRouter `prompt_tokens_details.cache_write_tokens` when reported. */
-  cacheWritePromptTokens?: number;
   costUsd?: number;
   /** Translatable segments resolved from SQLite cache (per file or summed in `runTranslate`). */
   segmentsCached?: number;
@@ -530,6 +527,87 @@ function segRangeLabel(indices0: number[], totalSegments: number): string {
   return `segments ${a}–${b}/${totalSegments}`;
 }
 
+type FailureTracker = {
+  clearSegmentFailures: (sourceHash: string, locale: string) => Promise<void>;
+  addSegmentFailures: (rows: TranslationFailureInsert[]) => Promise<void>;
+};
+
+function modelOrder1Based(models: readonly string[], model: string | null): number | null {
+  if (!model) {
+    return null;
+  }
+  const idx = models.indexOf(model);
+  return idx >= 0 ? idx + 1 : null;
+}
+
+function summarizeQualityError(errorMessage: string): string {
+  const astMatch = /^AST mismatch:\s*([A-Za-z][A-Za-z0-9_-]*)\b/.exec(errorMessage);
+  if (astMatch?.[1]) {
+    return astMatch[1];
+  }
+  if (errorMessage.startsWith("Heading depth sequence changed")) {
+    return "headingDepth";
+  }
+  if (errorMessage.startsWith("Unusual length ratio")) {
+    return "lengthRatio";
+  }
+  if (errorMessage.startsWith("Code block modified")) {
+    return "codeBlock";
+  }
+  if (errorMessage.startsWith("Front matter structure changed")) {
+    return "frontmatter";
+  }
+  if (errorMessage.startsWith("Internal translation placeholder leaked")) {
+    return "placeholderLeak";
+  }
+  return "validation";
+}
+
+function buildQualityFailureRows(
+  sourceHash: string,
+  locale: string,
+  model: string,
+  modelOrder: number | null,
+  errors: readonly string[],
+  fatal: boolean
+): TranslationFailureInsert[] {
+  return errors.map((errorMessage) => {
+    const cleanMessage = sanitizeFailureMessage(errorMessage);
+    return {
+      sourceHash,
+      locale,
+      model,
+      modelOrder,
+      qualityError: summarizeQualityError(errorMessage),
+      errorMessage: cleanMessage,
+      fatal,
+    };
+  });
+}
+
+function sanitizeFailureMessage(errorMessage: string): string {
+  return errorMessage.replace(/\s*\(hash [^)]+\)\s*$/i, "").trim();
+}
+
+function buildRuntimeFailureRow(
+  sourceHash: string,
+  locale: string,
+  model: string | null,
+  modelOrder: number | null,
+  message: string,
+  fatal: boolean
+): TranslationFailureInsert {
+  return {
+    sourceHash,
+    locale,
+    model,
+    modelOrder,
+    qualityError: "runtime",
+    errorMessage: sanitizeFailureMessage(message),
+    fatal,
+  };
+}
+
 async function translateSegmentsBatched(
   batchable: Segment[],
   placeholderById: Map<string, ProtectState>,
@@ -553,14 +631,13 @@ async function translateSegmentsBatched(
     segmentIndicesInDoc: number[];
   },
   /** Absolute `cacheDir` path; writes `*-FAILED-TRANSLATION-*.log` on markdown quality failures. */
-  failureLogDirAbs?: string | null
+  failureLogDirAbs?: string | null,
+  failureTracker?: FailureTracker
 ): Promise<{
   map: Map<string, DocSegmentTranslation>;
   inTok: number;
   outTok: number;
   cost: number;
-  cachedPromptTokens: number;
-  cacheWritePromptTokens: number;
   segmentValidationFailures: number;
   individualSegmentTranslations: number;
 }> {
@@ -568,8 +645,6 @@ async function translateSegmentsBatched(
   let inTok = 0;
   let outTok = 0;
   let cost = 0;
-  let cachedPromptTok = 0;
-  let cacheWriteTok = 0;
   let segmentValidationFailures = 0;
   let individualSegmentTranslations = 0;
 
@@ -580,8 +655,6 @@ async function translateSegmentsBatched(
       inTok,
       outTok,
       cost,
-      cachedPromptTokens: 0,
-      cacheWritePromptTokens: 0,
       segmentValidationFailures: 0,
       individualSegmentTranslations: 0,
     };
@@ -605,8 +678,6 @@ async function translateSegmentsBatched(
     inTok: number;
     outTok: number;
     cost: number;
-    cachedPromptTokens: number;
-    cacheWritePromptTokens: number;
     segmentValidationFailures: number;
     individualSegmentTranslations: number;
   };
@@ -616,14 +687,19 @@ async function translateSegmentsBatched(
     let localIn = 0;
     let localOut = 0;
     let localCost = 0;
-    let localCachedPrompt = 0;
-    let localCacheWrite = 0;
     let localSegmentValidationFailures = 0;
     let localIndividualSegmentTranslations = 0;
     const batch = batches[bi]!;
     const hintText = batch.map((s) => s.content).join("\n");
     const hints = glossary.findTermsInText(hintText, locale);
     const markdownQuality = contentType === "markdown";
+    const models = client?.getConfiguredModels() ?? [];
+    const recordFailures = async (rows: TranslationFailureInsert[]) => {
+      if (!failureTracker || rows.length === 0) {
+        return;
+      }
+      await failureTracker.addSegmentFailures(rows);
+    };
 
     if (dryRun || !client) {
       if (verbose) {
@@ -641,8 +717,6 @@ async function translateSegmentsBatched(
         inTok: localIn,
         outTok: localOut,
         cost: localCost,
-        cachedPromptTokens: localCachedPrompt,
-        cacheWritePromptTokens: localCacheWrite,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
       };
@@ -671,8 +745,6 @@ async function translateSegmentsBatched(
         localIn += res.usage.inputTokens;
         localOut += res.usage.outputTokens;
         localCost += res.cost ?? 0;
-        localCachedPrompt += res.usage.cachedPromptTokens ?? 0;
-        localCacheWrite += res.usage.cacheWritePromptTokens ?? 0;
         const ph = new PlaceholderHandler();
         for (let i = 0; i < batch.length; i++) {
           const s = batch[i]!;
@@ -698,18 +770,31 @@ async function translateSegmentsBatched(
           for (const s of batch) {
             const st = placeholderById.get(s.id);
             localIndividualSegmentTranslations++;
-            const single = await client.translateDocumentSegment(s.content, locale, hints, {
-              contentType,
-              docLogContext:
-                docLog && docLog.relativePath
-                  ? { locale, relativePath: docLog.relativePath }
-                  : undefined,
-            });
+            let single;
+            try {
+              single = await client.translateDocumentSegment(s.content, locale, hints, {
+                contentType,
+                docLogContext:
+                  docLog && docLog.relativePath
+                    ? { locale, relativePath: docLog.relativePath }
+                    : undefined,
+              });
+            } catch (err) {
+              await recordFailures([
+                buildRuntimeFailureRow(
+                  s.hash,
+                  locale,
+                  models[0] ?? null,
+                  modelOrder1Based(models, models[0] ?? null),
+                  String(err),
+                  true
+                ),
+              ]);
+              throw err;
+            }
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
-            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, st);
             partial.set(s.hash, { text: restored, modelUsed: single.model });
           }
@@ -722,15 +807,12 @@ async function translateSegmentsBatched(
         inTok: localIn,
         outTok: localOut,
         cost: localCost,
-        cachedPromptTokens: localCachedPrompt,
-        cacheWritePromptTokens: localCacheWrite,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
       };
     }
 
     const ph = new PlaceholderHandler();
-    const models = client.getConfiguredModels();
 
     try {
       const res = await client.translateDocumentBatch(batch, locale, hints, {
@@ -741,8 +823,7 @@ async function translateSegmentsBatched(
       localIn += res.usage.inputTokens;
       localOut += res.usage.outputTokens;
       localCost += res.cost ?? 0;
-      localCachedPrompt += res.usage.cachedPromptTokens ?? 0;
-      localCacheWrite += res.usage.cacheWritePromptTokens ?? 0;
+      const nextStart = models.indexOf(res.model) + 1;
 
       const qualityErrors: string[] = [];
       const perSegmentLines: string[] = [];
@@ -775,6 +856,16 @@ async function translateSegmentsBatched(
         } else {
           localSegmentValidationFailures++;
           qualityErrors.push(...v.errors);
+          await recordFailures(
+            buildQualityFailureRows(
+              s.hash,
+              locale,
+              res.model,
+              modelOrder1Based(models, res.model),
+              v.errors,
+              nextStart >= models.length
+            )
+          );
           failedSegments.push({
             index: i,
             segment: s,
@@ -789,7 +880,6 @@ async function translateSegmentsBatched(
       if (failedSegments.length === 0) {
         logBatchSuccess(res);
       } else {
-        const nextStart = models.indexOf(res.model) + 1;
         const segLabel =
           docLog && batchDocIndices[bi] && batchDocIndices[bi]!.length > 0
             ? segRangeLabel(batchDocIndices[bi]!, docLog.totalSegments)
@@ -868,24 +958,33 @@ async function translateSegmentsBatched(
           let remainingErrors = failed.errors;
           while (startIdx < models.length) {
             localIndividualSegmentTranslations++;
-            const single = await client.translateDocumentSegment(
-              failed.segment.content,
-              locale,
-              hints,
-              {
+            let single;
+            const startModel = models[startIdx] ?? null;
+            try {
+              single = await client.translateDocumentSegment(failed.segment.content, locale, hints, {
                 contentType,
                 startModelIndex: startIdx,
                 docLogContext:
                   docLog && docLog.relativePath
                     ? { locale, relativePath: docLog.relativePath }
                     : undefined,
-              }
-            );
+              });
+            } catch (err) {
+              await recordFailures([
+                buildRuntimeFailureRow(
+                  failed.segment.hash,
+                  locale,
+                  startModel,
+                  modelOrder1Based(models, startModel),
+                  String(err),
+                  true
+                ),
+              ]);
+              throw err;
+            }
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
-            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, failed.state);
             const v = await validateDocTranslatePair(failed.original, restored);
             const nextIdx = models.indexOf(single.model) + 1;
@@ -924,6 +1023,16 @@ async function translateSegmentsBatched(
 
             localSegmentValidationFailures++;
             remainingErrors = v.errors;
+            await recordFailures(
+              buildQualityFailureRows(
+                failed.segment.hash,
+                locale,
+                single.model,
+                modelOrder1Based(models, single.model),
+                v.errors,
+                nextIdx >= models.length
+              )
+            );
             const perSegDetail = [perSegLine];
             let failureLogPathSingle: string | undefined;
             if (failureLogDirAbs && docLog) {
@@ -991,19 +1100,33 @@ async function translateSegmentsBatched(
           let startIdx = 0;
           while (startIdx < models.length) {
             localIndividualSegmentTranslations++;
-            const single = await client.translateDocumentSegment(s.content, locale, hints, {
-              contentType,
-              startModelIndex: startIdx,
-              docLogContext:
-                docLog && docLog.relativePath
-                  ? { locale, relativePath: docLog.relativePath }
-                  : undefined,
-            });
+            let single;
+            const startModel = models[startIdx] ?? null;
+            try {
+              single = await client.translateDocumentSegment(s.content, locale, hints, {
+                contentType,
+                startModelIndex: startIdx,
+                docLogContext:
+                  docLog && docLog.relativePath
+                    ? { locale, relativePath: docLog.relativePath }
+                    : undefined,
+              });
+            } catch (err) {
+              await recordFailures([
+                buildRuntimeFailureRow(
+                  s.hash,
+                  locale,
+                  startModel,
+                  modelOrder1Based(models, startModel),
+                  String(err),
+                  true
+                ),
+              ]);
+              throw err;
+            }
             localIn += single.usage.inputTokens;
             localOut += single.usage.outputTokens;
             localCost += single.cost ?? 0;
-            localCachedPrompt += single.usage.cachedPromptTokens ?? 0;
-            localCacheWrite += single.usage.cacheWritePromptTokens ?? 0;
             const restored = restoreSegmentTranslation(ph, single.content, st);
             const v = await validateDocTranslatePair(origSeg, restored);
             const nextIdx = models.indexOf(single.model) + 1;
@@ -1040,6 +1163,16 @@ async function translateSegmentsBatched(
               break;
             }
             localSegmentValidationFailures++;
+            await recordFailures(
+              buildQualityFailureRows(
+                s.hash,
+                locale,
+                single.model,
+                modelOrder1Based(models, single.model),
+                v.errors,
+                nextIdx >= models.length
+              )
+            );
             const perSegDetail = [perSegLine];
             let failureLogPathSingle: string | undefined;
             if (failureLogDirAbs && docLog) {
@@ -1091,8 +1224,6 @@ async function translateSegmentsBatched(
       inTok: localIn,
       outTok: localOut,
       cost: localCost,
-      cachedPromptTokens: localCachedPrompt,
-      cacheWritePromptTokens: localCacheWrite,
       segmentValidationFailures: localSegmentValidationFailures,
       individualSegmentTranslations: localIndividualSegmentTranslations,
     };
@@ -1104,8 +1235,6 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
-      cachedPromptTok += r.cachedPromptTokens;
-      cacheWriteTok += r.cacheWritePromptTokens;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
@@ -1118,8 +1247,6 @@ async function translateSegmentsBatched(
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
-      cachedPromptTok += r.cachedPromptTokens;
-      cacheWriteTok += r.cacheWritePromptTokens;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
       for (const [h, t] of r.partial) {
@@ -1133,8 +1260,6 @@ async function translateSegmentsBatched(
     inTok,
     outTok,
     cost,
-    cachedPromptTokens: cachedPromptTok,
-    cacheWritePromptTokens: cacheWriteTok,
     segmentValidationFailures,
     individualSegmentTranslations,
   };
@@ -1222,6 +1347,20 @@ export async function translateMarkdownFile(
   const originalContentByHash = new Map<string, string>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
+  const clearedFailureHashes = new Set<string>();
+  const failureTracker: FailureTracker | undefined =
+    !opts.dryRun && cache && !opts.noCache
+      ? {
+          clearSegmentFailures: async (sourceHash: string, targetLocale: string) => {
+            await withCacheMutex(opts.cacheMutex, () =>
+              cache.clearSegmentFailures(sourceHash, targetLocale)
+            );
+          },
+          addSegmentFailures: async (rows: TranslationFailureInsert[]) => {
+            await withCacheMutex(opts.cacheMutex, () => cache.addSegmentFailures(rows));
+          },
+        }
+      : undefined;
   const emphasisOn = resolveMarkdownEmphasisPlaceholders(
     locale,
     config.documentation,
@@ -1261,6 +1400,10 @@ export async function translateMarkdownFile(
         }
       }
     }
+    if (failureTracker && !clearedFailureHashes.has(s.hash)) {
+      await failureTracker.clearSegmentFailures(s.hash, locale);
+      clearedFailureHashes.add(s.hash);
+    }
     originalContentByHash.set(s.hash, s.content);
     const { text: protectedText, state: st } = protectSegmentForTranslation(
       s.content,
@@ -1283,8 +1426,6 @@ export async function translateMarkdownFile(
     inTok,
     outTok,
     cost,
-    cachedPromptTokens: batchCachedPrompt,
-    cacheWritePromptTokens: batchCacheWrite,
     segmentValidationFailures: segValFail,
     individualSegmentTranslations: indivSeg,
   } = await translateSegmentsBatched(
@@ -1306,7 +1447,8 @@ export async function translateMarkdownFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null
+    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
+    failureTracker
   );
 
   for (const [h, t] of map) {
@@ -1315,8 +1457,6 @@ export async function translateMarkdownFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPrompt;
-  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWrite;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
 
@@ -1504,6 +1644,20 @@ export async function translateJsonFile(
   const placeholderByIdJson = new Map<string, ProtectState>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
+  const clearedFailureHashes = new Set<string>();
+  const failureTracker: FailureTracker | undefined =
+    !opts.dryRun && cache && !opts.noCache
+      ? {
+          clearSegmentFailures: async (sourceHash: string, targetLocale: string) => {
+            await withCacheMutex(opts.cacheMutex, () =>
+              cache.clearSegmentFailures(sourceHash, targetLocale)
+            );
+          },
+          addSegmentFailures: async (rows: TranslationFailureInsert[]) => {
+            await withCacheMutex(opts.cacheMutex, () => cache.addSegmentFailures(rows));
+          },
+        }
+      : undefined;
   let segmentsCached = 0;
 
   for (let docIdx = 0; docIdx < segments.length; docIdx++) {
@@ -1521,6 +1675,10 @@ export async function translateJsonFile(
         segmentsCached++;
         continue;
       }
+    }
+    if (failureTracker && !clearedFailureHashes.has(s.hash)) {
+      await failureTracker.clearSegmentFailures(s.hash, locale);
+      clearedFailureHashes.add(s.hash);
     }
     const { text: protectedText, state: st } = protectSegmentForTranslation(
       s.content,
@@ -1542,8 +1700,6 @@ export async function translateJsonFile(
     inTok,
     outTok,
     cost,
-    cachedPromptTokens: batchCachedPromptJson,
-    cacheWritePromptTokens: batchCacheWriteJson,
     segmentValidationFailures: segValFailJson,
     individualSegmentTranslations: indivSegJson,
   } = await translateSegmentsBatched(
@@ -1564,7 +1720,9 @@ export async function translateJsonFile(
       relativePath: relPath,
       totalSegments: segments.length,
       segmentIndicesInDoc,
-    }
+    },
+    undefined,
+    failureTracker
   );
 
   for (const [h, t] of map) {
@@ -1573,8 +1731,6 @@ export async function translateJsonFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPromptJson;
-  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWriteJson;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailJson;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegJson;
 
@@ -1724,6 +1880,20 @@ export async function translateSvgAssetFile(
   const placeholderByIdSvg = new Map<string, ProtectState>();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
+  const clearedFailureHashes = new Set<string>();
+  const failureTracker: FailureTracker | undefined =
+    !opts.dryRun && cache && !opts.noCache
+      ? {
+          clearSegmentFailures: async (sourceHash: string, targetLocale: string) => {
+            await withCacheMutex(opts.cacheMutex, () =>
+              cache.clearSegmentFailures(sourceHash, targetLocale)
+            );
+          },
+          addSegmentFailures: async (rows: TranslationFailureInsert[]) => {
+            await withCacheMutex(opts.cacheMutex, () => cache.addSegmentFailures(rows));
+          },
+        }
+      : undefined;
   let segmentsCached = 0;
 
   for (let docIdx = 0; docIdx < segments.length; docIdx++) {
@@ -1746,6 +1916,10 @@ export async function translateSvgAssetFile(
         continue;
       }
     }
+    if (failureTracker && !clearedFailureHashes.has(s.hash)) {
+      await failureTracker.clearSegmentFailures(s.hash, locale);
+      clearedFailureHashes.add(s.hash);
+    }
     const { text: protectedText, state: st } = protectSegmentForTranslation(
       s.content,
       glossary,
@@ -1766,8 +1940,6 @@ export async function translateSvgAssetFile(
     inTok,
     outTok,
     cost,
-    cachedPromptTokens: batchCachedPromptSvg,
-    cacheWritePromptTokens: batchCacheWriteSvg,
     segmentValidationFailures: segValFailSvg,
     individualSegmentTranslations: indivSegSvg,
   } = await translateSegmentsBatched(
@@ -1788,7 +1960,9 @@ export async function translateSvgAssetFile(
       relativePath: relPathFromCwd,
       totalSegments: segments.length,
       segmentIndicesInDoc,
-    }
+    },
+    undefined,
+    failureTracker
   );
 
   for (const [h, t] of map) {
@@ -1797,8 +1971,6 @@ export async function translateSvgAssetFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.cachedPromptTokens = (totals.cachedPromptTokens ?? 0) + batchCachedPromptSvg;
-  totals.cacheWritePromptTokens = (totals.cacheWritePromptTokens ?? 0) + batchCacheWriteSvg;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFailSvg;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSegSvg;
 
@@ -1931,11 +2103,6 @@ function printTranslateDocsRunSummary(
   console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
   console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
-  if ((sum.inputTokens + sum.outputTokens) > 0) {
-    console.log(
-      `   Prompt cache (read / write): ${(sum.cachedPromptTokens ?? 0).toLocaleString()} / ${(sum.cacheWritePromptTokens ?? 0).toLocaleString()} (OpenRouter usage; 0 if not reported)`
-    );
-  }
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
   } else if ((sum.filesWritten ?? 0) > 0) {
@@ -1971,8 +2138,6 @@ export async function runTranslate(
     filesProcessed: 0,
     inputTokens: 0,
     outputTokens: 0,
-    cachedPromptTokens: 0,
-    cacheWritePromptTokens: 0,
     costUsd: 0,
     segmentsCached: 0,
     segmentsTranslated: 0,
@@ -2068,8 +2233,6 @@ export async function runTranslate(
       filesProcessed: 0,
       inputTokens: 0,
       outputTokens: 0,
-      cachedPromptTokens: 0,
-      cacheWritePromptTokens: 0,
       costUsd: 0,
       segmentsCached: 0,
       segmentsTranslated: 0,
@@ -2114,10 +2277,6 @@ export async function runTranslate(
             partial.inputTokens += totals.inputTokens;
             partial.outputTokens += totals.outputTokens;
             partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-            partial.cachedPromptTokens =
-              (partial.cachedPromptTokens ?? 0) + (totals.cachedPromptTokens ?? 0);
-            partial.cacheWritePromptTokens =
-              (partial.cacheWritePromptTokens ?? 0) + (totals.cacheWritePromptTokens ?? 0);
             partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
             partial.segmentsTranslated =
               (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
@@ -2157,10 +2316,6 @@ export async function runTranslate(
             partial.inputTokens += totals.inputTokens;
             partial.outputTokens += totals.outputTokens;
             partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-            partial.cachedPromptTokens =
-              (partial.cachedPromptTokens ?? 0) + (totals.cachedPromptTokens ?? 0);
-            partial.cacheWritePromptTokens =
-              (partial.cacheWritePromptTokens ?? 0) + (totals.cacheWritePromptTokens ?? 0);
             partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
             partial.segmentsTranslated =
               (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
@@ -2198,9 +2353,6 @@ export async function runTranslate(
       sum.inputTokens += r.partial.inputTokens;
       sum.outputTokens += r.partial.outputTokens;
       sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
-      sum.cachedPromptTokens = (sum.cachedPromptTokens ?? 0) + (r.partial.cachedPromptTokens ?? 0);
-      sum.cacheWritePromptTokens =
-        (sum.cacheWritePromptTokens ?? 0) + (r.partial.cacheWritePromptTokens ?? 0);
       sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
       sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
       sum.segmentValidationFailures =

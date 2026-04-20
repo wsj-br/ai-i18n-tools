@@ -98,7 +98,7 @@ export class MarkdownExtractor extends BaseExtractor {
     languageListBlock?: LanguageListBlockConfig
   ): Omit<Segment, "id" | "hash">[] {
     const segments: Omit<Segment, "id" | "hash">[] = [];
-    const lines = body.split("\n");
+    const lines = body.split(/\r?\n/);
     const langListExt =
       languageListBlock !== undefined ? extractLanguageListBlock(body, languageListBlock) : null;
     const langListStart = langListExt?.startLine ?? -1;

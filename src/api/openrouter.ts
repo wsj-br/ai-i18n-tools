@@ -37,15 +37,9 @@ const OPENROUTER_PROVIDER = {
   allow_fallbacks: true,
 };
 
-interface OpenRouterContentBlock {
-  type: "text";
-  text: string;
-  cache_control?: { type: "ephemeral"; ttl?: string };
-}
-
 interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
-  content: string | OpenRouterContentBlock[];
+  content: string;
 }
 
 interface OpenRouterResponse {
@@ -60,10 +54,6 @@ interface OpenRouterResponse {
     total_tokens: number;
     cost?: number;
     cost_details?: { upstream_inference_cost?: number };
-    prompt_tokens_details?: {
-      cached_tokens?: number;
-      cache_write_tokens?: number;
-    };
   };
 }
 
@@ -123,8 +113,6 @@ export class OpenRouterClient {
   private readonly sourceLanguageLabel: string;
   private readonly httpReferer: string;
   private readonly xTitle: string;
-  /** Mirrors `openrouter.promptCacheTtl`; only `"1h"` adds `ttl` on the cached system block. */
-  private readonly promptCacheTtl?: "5m" | "1h";
 
   constructor(opts: OpenRouterClientOptions) {
     this.apiKey = opts.apiKey ?? process.env.OPENROUTER_API_KEY ?? "";
@@ -159,7 +147,6 @@ export class OpenRouterClient {
     this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
-    this.promptCacheTtl = opts.config.openrouter.promptCacheTtl;
   }
 
   getConfiguredModels(): readonly string[] {
@@ -223,67 +210,25 @@ export class OpenRouterClient {
   }
 
   private extractUsage(data: OpenRouterResponse): OpenRouterUsageStats {
-    const details = data.usage.prompt_tokens_details;
-    const cached =
-      typeof details?.cached_tokens === "number" && Number.isFinite(details.cached_tokens)
-        ? details.cached_tokens
-        : undefined;
-    const cacheWrite =
-      typeof details?.cache_write_tokens === "number" &&
-      Number.isFinite(details.cache_write_tokens)
-        ? details.cache_write_tokens
-        : undefined;
-    const usage: OpenRouterUsageStats = {
+    return {
       inputTokens: data.usage.prompt_tokens,
       outputTokens: data.usage.completion_tokens,
       totalTokens: data.usage.total_tokens,
     };
-    if (cached !== undefined) {
-      usage.cachedPromptTokens = cached;
-    }
-    if (cacheWrite !== undefined) {
-      usage.cacheWritePromptTokens = cacheWrite;
-    }
-    return usage;
   }
 
   private toOpenRouterMessages(
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
   ): OpenRouterMessage[] {
-    const cacheCtl: OpenRouterContentBlock["cache_control"] =
-      this.promptCacheTtl === "1h"
-        ? { type: "ephemeral", ttl: "1h" }
-        : { type: "ephemeral" };
-    return messages.map((m, i) => {
-      if (m.role === "system" && i === 0) {
-        return {
-          role: "system",
-          content: [
-            {
-              type: "text",
-              text: m.content,
-              cache_control: cacheCtl,
-            },
-          ],
-        };
-      }
-      return { role: m.role, content: m.content };
-    });
+    return messages.map((m) => ({ role: m.role, content: m.content }));
   }
 
-  /** Single HTTP call for one model (with one 429 retry). */
-  private async fetchCompletion(
-    model: string,
-    openRouterMessages: OpenRouterMessage[]
-  ): Promise<ChatResponse> {
-    const requestPayload: OpenRouterRequestPayload = {
-      model,
-      max_tokens: this.maxTokens,
-      temperature: this.temperature,
-      messages: openRouterMessages,
-      provider: OPENROUTER_PROVIDER,
-    };
-
+  /**
+   * POST /chat/completions with one 429 follow-up (same body), then read body and optional debug log.
+   */
+  private async postChatWith429Retry(
+    requestPayload: OpenRouterRequestPayload
+  ): Promise<{ response: Response; rawBody: string }> {
     if (this.debugTrafficFilePath) {
       this.appendDebugLog("request", requestPayload);
     }
@@ -328,6 +273,21 @@ export class OpenRouterClient {
         body: parsedBody,
       });
     }
+
+    return { response, rawBody };
+  }
+
+  /** Single HTTP call for one model (one follow-up on HTTP 429 with the same body). */
+  private async fetchCompletion(model: string, openRouterMessages: OpenRouterMessage[]): Promise<ChatResponse> {
+    const requestPayload: OpenRouterRequestPayload = {
+      model,
+      max_tokens: this.maxTokens,
+      temperature: this.temperature,
+      messages: openRouterMessages,
+      provider: OPENROUTER_PROVIDER,
+    };
+
+    const { response, rawBody } = await this.postChatWith429Retry(requestPayload);
 
     if (!response.ok) {
       throw new Error(`OpenRouter API error: ${response.status} - ${rawBody}`);

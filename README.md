@@ -1,21 +1,4 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [ai-i18n-tools](#ai-i18n-tools)
-  - [Two core workflows](#two-core-workflows)
-  - [Installation](#installation)
-  - [Quick start](#quick-start)
-    - [Workflow 1 - UI strings](#workflow-1---ui-strings)
-    - [Workflow 2 - Documentation](#workflow-2---documentation)
-    - [Both workflows](#both-workflows)
-  - [Runtime helpers](#runtime-helpers)
-  - [CLI commands](#cli-commands)
-  - [Documentation](#documentation)
-  - [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
 CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and (via `features.translateSVG`, `translate-svg`, and the `svg` block) standalone SVG assets.
@@ -24,11 +7,33 @@ CLI and programmatic toolkit for internationalising JavaScript/TypeScript applic
 <small>**Read in other languages:** </small>
 <small id="lang-list">[English (GB)](./README.md) · [German](./translated-docs/README.de.md) · [Spanish](./translated-docs/README.es.md) · [French](./translated-docs/README.fr.md) · [Hindi](./translated-docs/README.hi.md) · [Japanese](./translated-docs/README.ja.md) · [Korean](./translated-docs/README.ko.md) · [Portuguese (BR)](./translated-docs/README.pt-BR.md) · [Chinese (CN)](./translated-docs/README.zh-CN.md) · [Chinese (TW)](./translated-docs/README.zh-TW.md)</small>
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents** 
+
+- [Two core workflows](#two-core-workflows)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+  - [Workflow 1 - UI strings](#workflow-1---ui-strings)
+  - [Workflow 2 - Documentation](#workflow-2---documentation)
+  - [Both workflows](#both-workflows)
+- [Runtime helpers](#runtime-helpers)
+- [CLI commands](#cli-commands)
+- [Documentation](#documentation)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
+
+
+<a id="two-core-workflows"></a>
 ## Two core workflows
 
 **Workflow 1 - UI Translation** (React, Next.js, Node.js, any i18next project)
 
-Builds a master catalog (`strings.json` with optional per-locale **`models`** metadata) from `t("…")` / `i18n.t("…")` **literals**, optionally **`package.json` `description`**, and optionally each **`englishName`** from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
+Builds a master catalog (`strings.json` with optional per-locale `models` metadata) from `t("…")` / `i18n.t("…")` **literals**, optionally `package.json` `description`, and optionally each `englishName` from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
 **Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
 
@@ -38,6 +43,7 @@ Both workflows share a single `ai-i18n-tools.config.json` file and can be used i
 
 ---
 
+<a id="installation"></a>
 ## Installation
 
 The published package is **ESM-only** (`"type": "module"`). Use `import` from Node.js, bundlers, or `import()` — `require('ai-i18n-tools')` **is not supported.**
@@ -56,8 +62,10 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ---
 
+<a id="quick-start"></a>
 ## Quick start
 
+<a id="workflow-1---ui-strings"></a>
 ### Workflow 1 - UI strings
 
 ```bash
@@ -102,6 +110,7 @@ export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCA
 export default i18n;
 ```
 
+<a id="workflow-2---documentation"></a>
 ### Workflow 2 - Documentation
 
 ```bash
@@ -115,6 +124,7 @@ npx ai-i18n-tools translate-docs
 npx ai-i18n-tools status
 ```
 
+<a id="both-workflows"></a>
 ### Both workflows
 
 ```bash
@@ -123,6 +133,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 ---
 
+<a id="runtime-helpers"></a>
 ## Runtime helpers
 
 Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next import required:
@@ -130,9 +141,9 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 | Helper | Description |
 |---|---|
 | `defaultI18nInitOptions(sourceLocale)` | Standard i18next init options for key-as-default setups. |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Recommended wiring: key-trim + plural **`wrapT`** from **`strings.json`**, optionally merges **`translate-ui`** `{sourceLocale}.json` plural keys. |
-| `wrapI18nWithKeyTrim(i18n)` | Lower-level key-trim wrapper only (deprecated for app wiring; prefer **`setupKeyAsDefaultT`**). |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the **`localeLoaders`** map for **`makeLoadLocale`** from **`ui-languages.json`** (every **`code`** except **`sourceLocale`**). |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Recommended wiring: key-trim + plural `wrapT` from `strings.json`, optionally merges `translate-ui` `{sourceLocale}.json` plural keys. |
+| `wrapI18nWithKeyTrim(i18n)` | Lower-level key-trim wrapper only (deprecated for app wiring; prefer `setupKeyAsDefaultT`). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the `localeLoaders` map for `makeLoadLocale` from `ui-languages.json` (every `code` except `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory for async locale file loading. |
 | `getTextDirection(lng)` | Returns `'ltr'` or `'rtl'` for a BCP-47 code. |
 | `applyDirection(lng, element?)` | Sets `dir` attribute on `document.documentElement`. |
@@ -143,6 +154,7 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 
 ---
 
+<a id="cli-commands"></a>
 ## CLI commands
 
 ```text
@@ -168,6 +180,7 @@ Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.j
 
 ---
 
+<a id="documentation"></a>
 ## Documentation
 
 - [Getting Started](docs/GETTING_STARTED.md) - full setup guide for both workflows, CLI reference, and config field reference.
@@ -177,6 +190,7 @@ Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.j
 
 ---
 
+<a id="license"></a>
 ## License
 
 MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)

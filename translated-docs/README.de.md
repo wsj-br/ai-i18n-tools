@@ -1,46 +1,48 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Inhaltsverzeichnis**  *erstellt mit [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [ai-i18n-tools](#ai-i18n-tools)
-  - [Zwei Hauptarbeitsabläufe](#two-core-workflows)
-  - [Installation](#installation)
-  - [Schnellstart](#quick-start)
-    - [Arbeitsablauf 1 – UI-Texte](#workflow-1---ui-strings)
-    - [Arbeitsablauf 2 – Dokumentation](#workflow-2---documentation)
-    - [Beide Arbeitsabläufe](#both-workflows)
-  - [Laufzeit-Hilfsfunktionen](#runtime-helpers)
-  - [CLI-Befehle](#cli-commands)
-  - [Dokumentation](#documentation)
-  - [Lizenz](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-CLI- und programmatisches Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Texte, übersetzt sie mithilfe von LLMs über OpenRouter und generiert sprachenspezifische JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus-JSON und (über `features.translateSVG`, `translate-svg` und den `svg`-Block) eigenständige SVG-Ressourcen.
+CLI- und programmatisches Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Texte, übersetzt sie mithilfe von LLMs über OpenRouter und generiert sprachspezifische JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus-JSON und (über `features.translateSVG`, `translate-svg` und den `svg`-Block) eigenständige SVG-Ressourcen.
 
 <small>**In anderen Sprachen lesen:** </small>
 
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
-## Zwei Kernarbeitsabläufe
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Inhaltsverzeichnis**
 
-**Arbeitsablauf 1 - UI-Übersetzung** (React, Next.js, Node.js, jedes i18next-Projekt)
+- [Zwei Haupt-Workflows](#two-core-workflows)
+- [Installation](#installation)
+- [Schnellstart](#quick-start)
+  - [Workflow 1 – UI-Texte](#workflow-1---ui-strings)
+  - [Workflow 2 – Dokumentation](#workflow-2---documentation)
+  - [Beide Workflows](#both-workflows)
+- [Laufzeit-Hilfsfunktionen](#runtime-helpers)
+- [CLI-Befehle](#cli-commands)
+- [Dokumentation](#documentation)
+- [Lizenz](#license)
 
-Erstellt einen Hauptkatalog (`strings.json` mit optionalen, sprachspezifischen **`models`**-Metadaten) aus `t("…")` / `i18n.t("…")` **Literalen**, optionalen **`package.json` `description`** und optional jeder **`englishName`** aus `ui-languages.json`, wenn dies in der Konfiguration aktiviert ist. Übersetzt fehlende Einträge pro Sprache über OpenRouter und schreibt flache JSON-Dateien (`de.json`, `pt-BR.json`, …), die für i18next bereitstehen.
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-**Arbeitsablauf 2 - Dokumentenübersetzung** (Markdown, Docusaurus JSON)
+<a id="two-core-workflows"></a>
+## Zwei zentrale Workflows
 
-Übersetzt `.md`- und `.mdx`-Dateien aus den `contentPaths` jedes `documentations`-Blocks sowie JSON-Beschriftungsdateien aus dem `jsonSource` dieses Blocks, wenn aktiviert. Unterstützt Docusaurus-artige und flache, sprachcodesuffixierte Layouts pro Block (`documentations[].markdownOutput`). Ein gemeinsames Stammverzeichnis `cacheDir` enthält den SQLite-Cache, sodass nur neue oder geänderte Segmente an das LLM gesendet werden. **SVG:** Aktivieren Sie `features.translateSVG`, fügen Sie den `svg`-Block auf oberster Ebene hinzu und verwenden Sie anschließend `translate-svg` (wird auch über `sync` ausgeführt, wenn beide aktiviert sind).
+**Workflow 1 - UI-Übersetzung** (React, Next.js, Node.js, jedes i18next-Projekt)
 
-Beide Workflows teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und können unabhängig oder zusammen verwendet werden. Die eigenständige SVG-Übersetzung nutzt `features.translateSVG` zusammen mit dem `svg`-Block auf oberster Ebene und wird über `translate-svg` ausgeführt (oder über die SVG-Phase innerhalb von `sync`).
+Erstellt einen Hauptkatalog (`strings.json` mit optionalen, sprachspezifischen `models`-Metadaten) aus `t("…")` / `i18n.t("…")` **Literals**, optional `package.json` `description` und optional jeweils `englishName` aus `ui-languages.json`, wenn dies in der Konfiguration aktiviert ist. Übersetzt fehlende Einträge pro Sprache über OpenRouter und schreibt flache JSON-Dateien (`de.json`, `pt-BR.json`, …), die für i18next bereit sind.
+
+**Workflow 2 - Dokumentenübersetzung** (Markdown, Docusaurus-JSON)
+
+Übersetzt `.md` und `.mdx` aus jedem `documentations`-Block-`contentPaths` sowie JSON-Bezeichnungsdateien aus dem `jsonSource`-Ordner dieses Blocks, falls aktiviert. Unterstützt Docusaurus-artige und flache, sprachkennzeichnende Verzeichnisstrukturen pro Block (`documentations[].markdownOutput`). Gemeinsame Stamm-`cacheDir`-Datei enthält den SQLite-Cache, sodass nur neue oder geänderte Segmente an das LLM gesendet werden. **SVG:** Aktiviere `features.translateSVG`, füge den obersten `svg`-Block hinzu und verwende dann `translate-svg` (wird auch über `sync` ausgeführt, wenn beide gesetzt sind).
+
+Beide Workflows teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und können unabhängig oder gemeinsam verwendet werden. Die eigenständige SVG-Übersetzung nutzt `features.translateSVG` sowie den obersten `svg`-Block und läuft über `translate-svg` (oder die SVG-Phase innerhalb von `sync`).
 
 ---
 
+<a id="installation"></a>
 ## Installation
 
-Das veröffentlichte Paket ist ausschließlich **ESM** (`"type": "module"`). Verwenden Sie `import` aus Node.js, Bundlern oder `import()` — `require('ai-i18n-tools')` **wird nicht unterstützt.**
+Das veröffentlichte Paket ist **ausschließlich ESM** (`"type": "module"`). Verwende `import` in Node.js, Bundlern oder `import()` — `require('ai-i18n-tools')` **wird nicht unterstützt.**
 
 ```bash
 npm install ai-i18n-tools
@@ -48,7 +50,7 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
-Setze deinen OpenRouter API-Schlüssel:
+Lege deinen OpenRouter-API-Schlüssel fest:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -56,9 +58,11 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ---
 
+<a id="quick-start"></a>
 ## Schnellstart
 
-### Arbeitsablauf 1 - UI-Strings
+<a id="workflow-1---ui-strings"></a>
+### Workflow 1 – UI-Texte
 
 ```bash
 # 1. Create config
@@ -71,7 +75,7 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-Integriere i18next in deiner App mithilfe der Helfer aus `'ai-i18n-tools/runtime'`:
+Integriere i18next in deine App mithilfe der Hilfsfunktionen aus `'ai-i18n-tools/runtime'`:
 
 ```js
 import i18n from 'i18next';
@@ -102,7 +106,8 @@ export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCA
 export default i18n;
 ```
 
-### Arbeitsablauf 2 - Dokumentation
+<a id="workflow-2---documentation"></a>
+### Workflow 2 – Dokumentation
 
 ```bash
 # 1. Create config for Docusaurus
@@ -115,7 +120,8 @@ npx ai-i18n-tools translate-docs
 npx ai-i18n-tools status
 ```
 
-### Beide Arbeitsabläufe
+<a id="both-workflows"></a>
+### Beide Workflows
 
 ```bash
 npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, and docs
@@ -123,26 +129,28 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 ---
 
-## Laufzeit-Helfer
+<a id="runtime-helpers"></a>
+## Laufzeit-Hilfsfunktionen
 
-Exportiert aus `'ai-i18n-tools/runtime'` - funktioniert in jeder JS-Umgebung, kein i18next-Import erforderlich:
+Exportiert aus `'ai-i18n-tools/runtime'` – funktionieren in jeder JS-Umgebung, kein i18next-Import erforderlich:
 
-| Hilfsfunktion | Beschreibung |
+| Helfer | Beschreibung |
 |---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Standard-i18next-Init-Optionen für Key-as-Default-Konfigurationen. |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Empfohlene Verdrahtung: Key-Trimming + Plural-**`wrapT`** aus **`strings.json`**, optional mit Zusammenführung von **`translate-ui`** `{sourceLocale}.json` Plural-Schlüsseln. |
-| `wrapI18nWithKeyTrim(i18n)` | Nur Wrapper für Key-Trimming auf niedriger Ebene (veraltet für App-Verdrahtung; bevorzugen Sie **`setupKeyAsDefaultT`**). |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Erstellt die **`localeLoaders`**-Zuordnung für **`makeLoadLocale`** aus **`ui-languages.json`** (jedes **`code`** außer **`sourceLocale`**). |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory für asynchrones Laden von Sprachdateien. |
+| `defaultI18nInitOptions(sourceLocale)` | Standard-i18next-Init-Optionen für Key-as-Default-Setups. |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Empfohlene Verkabelung: Schlüsselbereinigung + Plural-`wrapT` aus `strings.json`, optional fusioniert `translate-ui` `{sourceLocale}.json` Pluralschlüssel. |
+| `wrapI18nWithKeyTrim(i18n)` | Nur Wrapper für niedrigstufige Schlüsselbereinigung (veraltet für App-Verkabelung; bevorzugen Sie `setupKeyAsDefaultT`). |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Erstellt die `localeLoaders`-Zuordnung für `makeLoadLocale` aus `ui-languages.json` (jedes `code` außer `sourceLocale`). |
+| `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory für asynchrones Laden von Lokalisierungsdateien. |
 | `getTextDirection(lng)` | Gibt `'ltr'` oder `'rtl'` für einen BCP-47-Code zurück. |
 | `applyDirection(lng, element?)` | Setzt das `dir`-Attribut auf `document.documentElement`. |
-| `getUILanguageLabel(lang, t)` | Anzeigebezeichnung für eine Zeile im Sprachmenü (mit i18n). |
-| `getUILanguageLabelNative(lang)` | Anzeigebezeichnung ohne Aufruf von `t()` (Kopfzeilenstil). |
-| `interpolateTemplate(str, vars)` | Niedrigstufiger `{{var}}`-Ersatz in einem einfachen String (intern verwendet; Anwendungscode sollte stattdessen `t()` verwenden). |
-| `flipUiArrowsForRtl(text, isRtl)` | Dreht `→` zu `←` für LTR-Layouts. |
+| `getUILanguageLabel(lang, t)` | Anzeigelabel für eine Sprachmenüzeile (mit i18n). |
+| `getUILanguageLabelNative(lang)` | Anzeigelabel ohne Aufruf von `t()` (Kopfzeilen-Stil). |
+| `interpolateTemplate(str, vars)` | Low-Level `{{var}}`-Substitution an einem einfachen String (wird intern verwendet; Anwendungscode sollte stattdessen `t()` nutzen). |
+| `flipUiArrowsForRtl(text, isRtl)` | Kehrt `→` zu `←` für LTR-Layouts um. |
 
 ---
 
+<a id="cli-commands"></a>
 ## CLI-Befehle
 
 ```text
@@ -164,19 +172,21 @@ ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-Globale Optionen für jeden Befehl: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), optional `-w` / `--write-logs [path]` zum Weiterleiten der Konsolenausgabe in eine Protokolldatei (Standard: im Verzeichnis des Übersetzungscaches), `-V` / `--version` sowie `-h` / `--help`. Siehe [Erste Schritte](docs/GETTING_STARTED.de.md#cli-reference) für befehlsbezogene Flags.
+Globale Optionen bei jedem Befehl: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), optional `-w` / `--write-logs [path]` zum Weiterleiten der Konsolenausgabe in eine Protokolldatei (Standard: im Verzeichnis des Übersetzungscaches), `-V` / `--version` und `-h` / `--help`. Siehe [Erste Schritte](docs/GETTING_STARTED.de.md#cli-reference) für befehlsspezifische Flags.
 
 ---
 
+<a id="documentation"></a>
 ## Dokumentation
 
-- [Erste Schritte](docs/GETTING_STARTED.de.md) – umfassende Einrichtungsanleitung für beide Workflows, CLI-Referenz und Konfigurationsfeldreferenz.
-- [Paketübersicht](docs/PACKAGE_OVERVIEW.de.md) – Architektur, interne Abläufe, programmatische API und Erweiterungspunkte.
-- [KI-Agenten-Kontext](../docs/ai-i18n-tools-context.md) – **für Anwendungen, die das Paket nutzen:** Integrationshinweise für nachgelagerte Projekte (in die Agentenregeln Ihres Repositorys kopieren).
-- Interna für den **diesigen** Repository: `dev/package-context.md` (nur zum Klonen; nicht auf npm).
+- [Erste Schritte](docs/GETTING_STARTED.de.md) – vollständige Einrichtungsanleitung für beide Workflows, CLI-Referenz und Konfigurationsfeld-Referenz.
+- [Paketübersicht](docs/PACKAGE_OVERVIEW.de.md) – Architektur, Interna, programmatische API und Erweiterungspunkte.
+- [KI-Agenten-Kontext](../docs/ai-i18n-tools-context.md) – **für Apps, die das Paket nutzen:** Integrationsanweisungen für nachgelagerte Projekte (in die Agentenregeln des eigenen Repository kopieren).
+- Interna für **dieses** Repository: `dev/package-context.md` (nur zum Klonen; nicht auf npm).
 
 ---
 
+<a id="license"></a>
 ## Lizenz
 
 MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)

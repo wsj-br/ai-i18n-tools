@@ -24,18 +24,19 @@ alwaysApply: true
 - **Working on this repository:** read `dev/package-context.md` first (maintainer / package internals). It is not published on npm.
 - **Downstream / consumer angle:** `docs/ai-i18n-tools-context.md` (also shipped on npm) targets apps **using** the package in their own repos.
 - **Auto-generated — do NOT edit**: `examples/nextjs-app/docs-site/` or `translated-docs` folders; rebuilt by `pnpm sync-docs` or `ai-i18n-tools translate-docs`. Edit only canonical sources.
+- **Avoid bold with inline code**: avoid the usage of bold (`**`) around `inline code` (` `), it can cause problems with the translation.
 
 ## Minimal context (each new chat)
 
 - Prefer **searching the codebase** (e.g. SemanticSearch, Grep) over assuming structure or APIs.
 - Use **minimal necessary context**: only open or reference files relevant to the current task.
-- When unsure about stack or entrypoints, check **package.json** and key entry files (e.g. `src/main/main.js`, `src/server/index.js`) rather than guessing.
+- When unsure about stack or entrypoints, check `package.json` and key entry files (e.g. `src/main/main.js`, `src/server/index.js`) rather than guessing.
 - Keep replies **focused**: avoid repeating project overview unless the user asks.
 
 ## CHANGELOG
 
 - Maintain `dev/CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-- For **any notable change** (features, fixes, refactors, config, dependencies), **add an entry** under the **Unreleased** section of **dev/CHANGELOG.md**.
+- For **any notable change** (features, fixes, refactors, config, dependencies), **add an entry** under the **Unreleased** section of `dev/CHANGELOG.md`.
 - Don't keep changes to the documentation files.
 - **Entry format** (each bullet is one change):
 
@@ -43,9 +44,9 @@ alwaysApply: true
 
   - **{Type}**: one of Added, Changed, Deprecated, Removed, Fixed, Security (same as Keep a Changelog).
   - **{scope}**: short area or surface (e.g. `Windows NSIS`, `translate-ui-strings`, `Settings → Models`) so readers can scan by subsystem.
-  - **{description}**: full sentence(s); chain related clauses with semicolons if needed. Use backticks for identifiers, paths, flags, errors, and code snippets; use **bold** for UI labels or emphasis where it helps. No need to mirror the full commit message—summarize the user-visible or maintainer-relevant outcome.
+  - **{description}**: full sentence(s); chain related clauses with semicolons if needed. Use backticks for identifiers, paths, flags, errors, and code snippets. No need to mirror the full commit message—summarize the user-visible or maintainer-relevant outcome.
 
-- Place bullets under **`## Unreleased`**. If the file uses **`### Added` / `### Fixed`** groupings, put each bullet in the matching subsection but **keep the same** `- **{Type}**: {scope} - …` line shape so the type stays visible when reading. If the file uses a **flat** list under Unreleased (no `###`), the type is only in each bullet—both are fine.
+- Place bullets under `## Unreleased`. If the file uses `### Added` / `### Fixed` groupings, put each bullet in the matching subsection but **keep the same** `- **{Type}**: {scope} - …` line shape so the type stays visible when reading. If the file uses a **flat** list under Unreleased (no `###`), the type is only in each bullet—both are fine.
 
 - Prefer **one bullet per logical change** (one PR can add several bullets if it touched unrelated areas).
 

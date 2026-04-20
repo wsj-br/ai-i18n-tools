@@ -1,3 +1,4 @@
+<a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools: Package Overview
 
 This document describes the internal architecture of `ai-i18n-tools`, how each component fits together, and how the two core workflows are implemented.
@@ -11,7 +12,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of Contents
+**Table of Contents** 
 
 - [Architecture overview](#architecture-overview)
 - [Source tree](#source-tree)
@@ -22,6 +23,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
   - [UI Translation prompts](#ui-translation-prompts)
 - [Workflow 2 - Document Translation internals](#workflow-2---document-translation-internals)
   - [Extractors](#extractors)
+  - [Heading anchor insertion (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
   - [Placeholder protection](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
   - [Output path resolution](#output-path-resolution)
@@ -45,11 +47,12 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 ---
 
+<a id="architecture-overview"></a>
 ## Architecture overview
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
@@ -64,6 +67,7 @@ Everything that consumers may need programmatically is re-exported from `src/ind
 
 ---
 
+<a id="source-tree"></a>
 ## Source tree
 
 ```text
@@ -76,8 +80,12 @@ src/
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
 │   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
+│
+├── markdown/
+│   └── write-heading-ids-core.ts   Slug styles + `<a id="…">` insertion for `write-heading-ids`
 │
 ├── core/
 │   ├── types.ts                    Zod schemas + TypeScript types for all config shapes
@@ -130,6 +138,7 @@ src/
 
 ---
 
+<a id="workflow-1---ui-translation-internals"></a>
 ## Workflow 1 - UI Translation internals
 
 ```text
@@ -145,10 +154,12 @@ OpenRouterClient.translateUIBatch()
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
 ```
 
+<a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable. `extract` **also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled (default), and each **`englishName`** from `ui-languages.json` when `reactExtractor.includeUiLanguageEnglishNames` is `true` and `uiLanguagesPath` is set (strings already found in source keep precedence). Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
+Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in any JS/TS file. Function names and file extensions are configurable. `extract` **also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `reactExtractor.includePackageDescription` is enabled (default), and each `englishName` from `ui-languages.json` when `reactExtractor.includeUiLanguageEnglishNames` is `true` and `uiLanguagesPath` is set (strings already found in source keep precedence). Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
 
+<a id="stringsjson"></a>
 ### `strings.json`
 
 The master catalog has the shape:
@@ -176,6 +187,7 @@ The master catalog has the shape:
 
 `ui-languages.json` **manifest** — JSON array of `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` or `"rtl"`). Use `generate-ui-languages` to build a project file from `sourceLocale` + `targetLocales` and the bundled master `data/ui-languages-complete.json`.
 
+<a id="flat-locale-files"></a>
 ### Flat locale files
 
 Each target locale gets a flat JSON file (`de.json`) mapping source string → translation (no `models` field):
@@ -189,6 +201,7 @@ Each target locale gets a flat JSON file (`de.json`) mapping source string → t
 
 i18next loads these as resource bundles and looks up translations by the source string (key-as-default model).
 
+<a id="ui-translation-prompts"></a>
 ### UI Translation prompts
 
 `buildUIPromptMessages` constructs system + user messages that:
@@ -201,6 +214,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 
 ---
 
+<a id="workflow-2---document-translation-internals"></a>
 ## Workflow 2 - Document Translation internals
 
 ```text
@@ -225,6 +239,7 @@ final text  ──────────────────── placeho
 output file  ─────────────────── Docusaurus layout or flat layout
 ```
 
+<a id="extractors"></a>
 ### Extractors
 
 All extractors extend `BaseExtractor` and implement `extract(content, filepath): Segment[]`.
@@ -233,6 +248,16 @@ All extractors extend `BaseExtractor` and implement `extract(content, filepath):
 - `JsonExtractor` - extracts string values from Docusaurus JSON label files.
 - `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
 
+<a id="heading-anchor-insertion-write-heading-ids"></a>
+### Heading anchor insertion (`write-heading-ids` CLI)
+
+The `write-heading-ids` command is a **local, non-LLM** preprocessor for documentation markdown. Implementation: `src/cli/write-heading-ids.ts` orchestrates file discovery; `src/markdown/write-heading-ids-core.ts` parses lines and inserts anchors.
+
+It requires a valid config with **at least one `documentations[]` block**. For each block it gathers `.md` / `.mdx` files under `contentPaths`, applies the project’s `.translate-ignore` rules (same idea as doc translation), and optionally restricts to a subtree with `--path` / `--file`. Each file is transformed with `applyHeadingAnchorsToMarkdown`: for every **flat ATX heading** (`# …` through `###### …`) outside fenced code blocks, an empty HTML line `<a id="slug"></a>` is inserted on the line above when missing or outdated. Slug algorithms match common ecosystems — `github` (default), `bitbucket`, `gitlab`, `pymdown` (optional Unicode normalisation / percent-encoding flags), `azure-devops` — so anchor IDs stay consistent with existing tooling (doctoc, PyMdown, etc.). `--dry-run` reports would-be edits without writing.
+
+This command does **not** run inside `translate-docs` or `sync`; run it explicitly when you want stable fragment IDs in source files before translation or publishing.
+
+<a id="placeholder-protection"></a>
 ### Placeholder protection
 
 Before translation, sensitive syntax is replaced with opaque tokens to prevent LLM corruption:
@@ -241,6 +266,7 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 2. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - preserved verbatim.
 3. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
 
+<a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
 
 SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
@@ -251,6 +277,7 @@ The `translate-docs` command also uses **file tracking** so unchanged sources wi
 
 **Batch prompt format:** `translate-docs --prompt-format` selects XML (`<seg>` / `<t>`) or JSON array/object shapes for `OpenRouterClient.translateDocumentBatch` only; extraction, placeholders, and validation are unchanged. See [Batch prompt format](./GETTING_STARTED.md#batch-prompt-format).
 
+<a id="output-path-resolution"></a>
 ### Output path resolution
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` maps a source-relative path to the output path:
@@ -262,23 +289,26 @@ The `translate-docs` command also uses **file tracking** so unchanged sources wi
 - **Custom** `jsonPathTemplate`: separate custom layout for JSON label files, using the same placeholders.
 - `linkRewriteDocsRoot` helps the flat-link rewriter compute correct prefixes when translated output is rooted somewhere other than the default project root.
 
+<a id="flat-link-rewriting"></a>
 ### Flat link rewriting
 
 When `markdownOutput.style === "flat"`, translated markdown files are placed alongside the source with locale suffixes. Relative links between pages are rewritten so that `[Guide](./guide.md)` in `readme.de.md` points to `guide.de.md`. Controlled by `rewriteRelativeLinks` (auto-enabled for flat style without a custom `pathTemplate`).
 
 ---
 
+<a id="shared-infrastructure"></a>
 ## Shared infrastructure
 
+<a id="openrouterclient"></a>
 ### `OpenRouterClient`
 
 Wraps the OpenRouter chat completions API. Key behaviours:
 
 - **Model fallback**: tries each model in the resolved list in order; falls back on HTTP errors or parse failures. UI translation resolves `ui.preferredModel` first when present, then `openrouter` models.
 - **Rate limiting**: detects 429 responses, waits `retry-after` (or 2s), retries once.
-- **Prompt caching**: system message is sent with `cache_control: { type: "ephemeral" }` to enable prompt caching on supported models.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.
 
+<a id="config-loading"></a>
 ### Config loading
 
 `loadI18nConfigFromFile(configPath, cwd)` pipeline:
@@ -291,16 +321,19 @@ Wraps the OpenRouter chat completions API. Key behaviours:
 6. `applyEnvOverrides` - apply `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` - attach manifest display names.
 
+<a id="logger"></a>
 ### Logger
 
 `Logger` supports `debug`, `info`, `warn`, `error` levels with ANSI colour output. Verbose mode (`-v`) enables `debug`. When `logFilePath` is set, log lines are also written to that file.
 
 ---
 
+<a id="runtime-helpers-api"></a>
 ## Runtime helpers API
 
 These are exported from `'ai-i18n-tools/runtime'` and work in any JavaScript environment (browser, Node.js, Deno, Edge). They do **not** import from `i18next` or `react-i18next`.
 
+<a id="rtl-helpers"></a>
 ### RTL helpers
 
 ```ts
@@ -309,6 +342,7 @@ getTextDirection(lng: string): 'ltr' | 'rtl'
 applyDirection(lng: string, element?: Element): void
 ```
 
+<a id="i18next-setup-factories"></a>
 ### i18next setup factories
 
 ```ts
@@ -329,10 +363,11 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-Use **`setupKeyAsDefaultT`** as the usual app entry point (key-trim + plural **`wrapT`** + optional **`translate-ui`** `{sourceLocale}.json`). Calling **`wrapI18nWithKeyTrim`** alone is **deprecated** for application wiring.
+Use `setupKeyAsDefaultT` as the usual app entry point (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Calling `wrapI18nWithKeyTrim` alone is **deprecated** for application wiring.
 
-Build **`localeLoaders`** with **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** so keys stay aligned with **`targetLocales`** after **`generate-ui-languages`**. See **`docs/GETTING_STARTED.md`** (runtime wiring) and **`examples/nextjs-app/`** / **`examples/console-app/`**.
+Build `localeLoaders` with `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` so keys stay aligned with `targetLocales` after `generate-ui-languages`. See `docs/GETTING_STARTED.md` (runtime wiring) and `examples/nextjs-app/` / `examples/console-app/`.
 
+<a id="display-helpers"></a>
 ### Display helpers
 
 ```ts
@@ -340,6 +375,7 @@ getUILanguageLabel(lang: UiLanguageEntry, t: TranslateFn): string
 getUILanguageLabelNative(lang: UiLanguageEntry): string
 ```
 
+<a id="string-helpers"></a>
 ### String helpers
 
 ```ts
@@ -349,6 +385,7 @@ flipUiArrowsForRtl(text: string | null | undefined, isRtl: boolean): string | nu
 
 ---
 
+<a id="programmatic-api"></a>
 ## Programmatic API
 
 All public types and classes are exported from the package root. Example: running the translate-UI step from Node.js without the CLI:
@@ -392,8 +429,10 @@ Key exports:
 
 ---
 
+<a id="extension-points"></a>
 ## Extension points
 
+<a id="custom-function-names-ui-extraction"></a>
 ### Custom function names (UI extraction)
 
 Add non-standard translation function names via config:
@@ -408,6 +447,7 @@ Add non-standard translation function names via config:
 }
 ```
 
+<a id="custom-extractors"></a>
 ### Custom extractors
 
 Implement `ContentExtractor` from the package:
@@ -425,6 +465,7 @@ class MyExtractor extends BaseExtractor {
 
 Pass it to the doc-translate pipeline by importing `doc-translate.ts` utilities programmatically.
 
+<a id="custom-output-paths"></a>
 ### Custom output paths
 
 Use `markdownOutput.pathTemplate` for any file layout:

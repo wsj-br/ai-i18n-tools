@@ -5,6 +5,7 @@
   const UI_PAGE_SIZE = 25;
   const UP_PAGE_SIZE = 25;
   const GL_PAGE_SIZE = 25;
+  const FAIL_PAGE_SIZE = 50;
 
   function escapeHtml(str) {
     if (str == null) return "";
@@ -458,6 +459,306 @@
     segLoadFilepaths();
     segLoadLocales();
     segLoadModels();
+  }
+
+  // ---------- Failures ----------
+  const failState = {
+    currentPage: 1,
+    pageSize: FAIL_PAGE_SIZE,
+    total: 0,
+    filters: {
+      filename: "",
+      locale: "",
+      model: "",
+      quality_error: "",
+      fatal: "",
+      source_hash: "",
+      source_text: "",
+      error_message: "",
+    },
+    sort: "failures_desc",
+  };
+
+  function failBuildParams(includePaging) {
+    const params = new URLSearchParams();
+    if (includePaging) {
+      params.set("page", String(failState.currentPage));
+      params.set("pageSize", String(failState.pageSize));
+      params.set("sort", failState.sort);
+    }
+    if (failState.filters.filename) params.set("filename", failState.filters.filename);
+    if (failState.filters.locale) params.set("locale", failState.filters.locale);
+    if (failState.filters.model) params.set("model", failState.filters.model);
+    if (failState.filters.quality_error) params.set("quality_error", failState.filters.quality_error);
+    if (failState.filters.fatal === "true") params.set("fatal", "true");
+    if (failState.filters.source_hash) params.set("source_hash", failState.filters.source_hash);
+    if (failState.filters.source_text) params.set("source_text", failState.filters.source_text);
+    if (failState.filters.error_message) params.set("error_message", failState.filters.error_message);
+    return params.toString();
+  }
+
+  async function failFetchRows() {
+    const res = await fetch(`/api/translation-failures?${failBuildParams(true)}`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function failFetchSummary() {
+    const res = await fetch(`/api/translation-failures/summary?${failBuildParams(false)}`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function failFetchQualityErrors() {
+    const res = await fetch("/api/failure-quality-errors");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  function failRenderTable(rows) {
+    const tbody = document.getElementById("fail-table-body");
+    tbody.innerHTML = "";
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      tr.className = "fail-main-row";
+      const linkBtn = document.createElement("button");
+      linkBtn.type = "button";
+      linkBtn.className = "icon-btn log-links-btn";
+      linkBtn.title = "Show source file/line in server console";
+      linkBtn.textContent = "\uD83D\uDD17";
+      linkBtn.disabled = !row.filepath;
+      linkBtn.addEventListener("pointerdown", (e) => {
+        e.stopPropagation();
+      });
+      linkBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      linkBtn.addEventListener("click", (e) => segLogLinksToServer(row, e));
+      const failureModelHtml = escapeHtml(row.model || "").replace(/\n/g, "<br>");
+      const cacheModelRaw = row.translation_model != null ? String(row.translation_model).trim() : "";
+      const cacheModelHtml =
+        cacheModelRaw !== ""
+          ? `<span class="fail-cache-translation-model" title="Model that successfully translated this segment">${escapeHtml(
+              cacheModelRaw
+            )}</span>`
+          : "";
+      const modelCellHtml = (() => {
+        const parts = [];
+        if (failureModelHtml) parts.push(failureModelHtml);
+        if (cacheModelHtml) parts.push(cacheModelHtml);
+        if (parts.length === 0) return "\u2014";
+        return parts.join("<br>");
+      })();
+      const qualityHtml = escapeHtml(row.quality_error || "").replace(/\n/g, "<br>");
+      const errorHtml = escapeHtml(row.error_message || "").replace(/\n/g, "<br>");
+      tr.innerHTML = `
+        <td>${escapeHtml(row.filepath || "")}</td>
+        <td>${escapeHtml(row.start_line != null ? String(row.start_line) : "")}</td>
+        <td>${escapeHtml(row.locale)}</td>
+        <td><code>${escapeHtml(row.source_hash)}</code></td>
+        <td class="source-text" title="click to see the full source text">${escapeHtml(truncate(row.source_text, 200))}</td>
+        <td>${modelCellHtml}</td>
+        <td>${escapeHtml(row.model_order != null ? String(row.model_order) : "\u2014")}</td>
+        <td>${qualityHtml || "\u2014"}</td>
+        <td title="${escapeHtml(row.error_message || "")}">${errorHtml || "\u2014"}</td>
+        <td>${row.fatal === 1 ? "Yes" : "No"}</td>
+        <td class="actions"></td>
+      `;
+      tr.querySelector(".actions").append(linkBtn);
+      tbody.appendChild(tr);
+
+      const detailTr = document.createElement("tr");
+      detailTr.className = "fail-detail-row hidden-ui";
+      detailTr.innerHTML = `
+        <td colspan="11">
+          <div class="fail-detail-content">
+            <div class="fail-detail-title">Full source text</div>
+            <pre>${escapeHtml(row.source_text || "")}</pre>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(detailTr);
+
+      const toggleRow = () => {
+        detailTr.classList.toggle("hidden-ui");
+        tr.classList.toggle("expanded", !detailTr.classList.contains("hidden-ui"));
+      };
+      /** Avoid toggling when the user was selecting text (click after drag) or copy-pasting. */
+      let failTogglePtrDown = null;
+      const failToggleOnPointerDown = (e) => {
+        if (e.button !== 0) return;
+        failTogglePtrDown = { x: e.clientX, y: e.clientY };
+      };
+      const failToggleOnClick = (e) => {
+        if (e.button !== 0) return;
+        const sel = window.getSelection();
+        if (sel && sel.toString().length > 0) {
+          failTogglePtrDown = null;
+          return;
+        }
+        if (failTogglePtrDown) {
+          const dx = e.clientX - failTogglePtrDown.x;
+          const dy = e.clientY - failTogglePtrDown.y;
+          failTogglePtrDown = null;
+          if (Math.hypot(dx, dy) > 8) return;
+        }
+        toggleRow();
+      };
+      tr.addEventListener("pointerdown", failToggleOnPointerDown);
+      detailTr.addEventListener("pointerdown", failToggleOnPointerDown);
+      tr.addEventListener("click", failToggleOnClick);
+      detailTr.addEventListener("click", failToggleOnClick);
+    }
+  }
+
+  function failUpdatePagination(data) {
+    failState.total = data.total;
+    const totalPages = Math.max(1, Math.ceil(failState.total / failState.pageSize));
+    const info = `Showing ${(failState.currentPage - 1) * failState.pageSize + 1}\u2013${Math.min(failState.currentPage * failState.pageSize, failState.total)} of ${failState.total}`;
+    document.getElementById("fail-pagination-info").textContent = info;
+    document.getElementById("fail-pagination-info-bottom").textContent = info;
+    const pi = `Page ${failState.currentPage} of ${totalPages}`;
+    document.getElementById("fail-page-indicator").textContent = pi;
+    document.getElementById("fail-page-indicator-bottom").textContent = pi;
+    document.getElementById("fail-btn-prev").disabled = failState.currentPage <= 1;
+    document.getElementById("fail-btn-next").disabled = failState.currentPage >= totalPages;
+    document.getElementById("fail-btn-prev-bottom").disabled = failState.currentPage <= 1;
+    document.getElementById("fail-btn-next-bottom").disabled = failState.currentPage >= totalPages;
+  }
+
+  function failRenderSummary(summary) {
+    const el = document.getElementById("fail-summary");
+    setStatus(
+      el,
+      `Segments with failures: ${summary.segmentsWithFailure} | 1 failure: ${summary.segmentsWith1Failure} | 2 failures: ${summary.segmentsWith2Failures} | 3+ failures: ${summary.segmentsWith3OrMoreFailures}`,
+      true
+    );
+  }
+
+  async function failLoadRowsAndSummary() {
+    try {
+      const [data, summary] = await Promise.all([failFetchRows(), failFetchSummary()]);
+      failRenderTable(data.rows);
+      failUpdatePagination(data);
+      failRenderSummary(summary);
+    } catch (err) {
+      alert("Error loading failures: " + err.message);
+    }
+  }
+
+  async function failLoadFilterOptions() {
+    try {
+      const [locRes, modelRes, qRes] = await Promise.all([
+        fetch("/api/locales"),
+        fetch("/api/models"),
+        failFetchQualityErrors(),
+      ]);
+      if (locRes.ok) {
+        const locData = await locRes.json();
+        const sel = document.getElementById("fail-filter-locale");
+        const prev = sel.value;
+        sel.innerHTML = '<option value="">All locales</option>';
+        for (const loc of locData.locales || []) {
+          const opt = document.createElement("option");
+          opt.value = loc;
+          opt.textContent = loc;
+          sel.appendChild(opt);
+        }
+        if (prev && Array.from(sel.options).some((o) => o.value === prev)) sel.value = prev;
+      }
+      if (modelRes.ok) {
+        const modelData = await modelRes.json();
+        const sel = document.getElementById("fail-filter-model");
+        const prev = sel.value;
+        sel.innerHTML = '<option value="">All models</option>';
+        for (const model of modelData.models || []) {
+          const opt = document.createElement("option");
+          opt.value = model;
+          opt.textContent = model;
+          sel.appendChild(opt);
+        }
+        if (prev && Array.from(sel.options).some((o) => o.value === prev)) sel.value = prev;
+      }
+      const qualitySel = document.getElementById("fail-filter-quality");
+      const prevQuality = qualitySel.value;
+      qualitySel.innerHTML = '<option value="">All quality errors</option>';
+      for (const q of qRes.qualityErrors || []) {
+        const opt = document.createElement("option");
+        opt.value = q;
+        opt.textContent = q;
+        qualitySel.appendChild(opt);
+      }
+      if (prevQuality && Array.from(qualitySel.options).some((o) => o.value === prevQuality)) {
+        qualitySel.value = prevQuality;
+      }
+    } catch (err) {
+      console.error("Error loading failure filter options:", err);
+    }
+  }
+
+  function failApplyFilters() {
+    failState.filters.filename = document.getElementById("fail-filter-filename").value.trim();
+    failState.filters.locale = document.getElementById("fail-filter-locale").value.trim();
+    failState.filters.model = document.getElementById("fail-filter-model").value.trim();
+    failState.filters.quality_error = document.getElementById("fail-filter-quality").value.trim();
+    failState.filters.fatal = document.getElementById("fail-filter-fatal").value.trim();
+    failState.filters.source_hash = document.getElementById("fail-filter-source-hash").value.trim();
+    failState.filters.source_text = document.getElementById("fail-filter-source-text").value.trim();
+    failState.filters.error_message = document.getElementById("fail-filter-error-message").value.trim();
+    failState.sort = document.getElementById("fail-sort").value || "failures_desc";
+    failState.currentPage = 1;
+    failLoadRowsAndSummary();
+  }
+
+  function failClearFilters() {
+    document.getElementById("fail-filter-filename").value = "";
+    document.getElementById("fail-filter-locale").value = "";
+    document.getElementById("fail-filter-model").value = "";
+    document.getElementById("fail-filter-quality").value = "";
+    document.getElementById("fail-filter-fatal").value = "";
+    document.getElementById("fail-filter-source-hash").value = "";
+    document.getElementById("fail-filter-source-text").value = "";
+    document.getElementById("fail-filter-error-message").value = "";
+    document.getElementById("fail-sort").value = "failures_desc";
+    failApplyFilters();
+  }
+
+  function failInit() {
+    document.getElementById("fail-btn-apply").addEventListener("click", failApplyFilters);
+    document.getElementById("fail-btn-clear").addEventListener("click", failClearFilters);
+    document.getElementById("fail-filter-locale").addEventListener("change", failApplyFilters);
+    document.getElementById("fail-filter-model").addEventListener("change", failApplyFilters);
+    document.getElementById("fail-filter-quality").addEventListener("change", failApplyFilters);
+    document.getElementById("fail-filter-fatal").addEventListener("change", failApplyFilters);
+    document.getElementById("fail-sort").addEventListener("change", failApplyFilters);
+    for (const id of [
+      "fail-filter-filename",
+      "fail-filter-source-hash",
+      "fail-filter-source-text",
+      "fail-filter-error-message",
+    ]) {
+      document.getElementById(id).addEventListener("keydown", (e) => {
+        if (e.key === "Enter") failApplyFilters();
+      });
+    }
+    function prev() {
+      if (failState.currentPage > 1) {
+        failState.currentPage--;
+        failLoadRowsAndSummary();
+      }
+    }
+    function next() {
+      if (failState.currentPage < Math.ceil(failState.total / failState.pageSize)) {
+        failState.currentPage++;
+        failLoadRowsAndSummary();
+      }
+    }
+    document.getElementById("fail-btn-prev").addEventListener("click", prev);
+    document.getElementById("fail-btn-next").addEventListener("click", next);
+    document.getElementById("fail-btn-prev-bottom").addEventListener("click", prev);
+    document.getElementById("fail-btn-next-bottom").addEventListener("click", next);
+    failLoadFilterOptions();
+    failLoadRowsAndSummary();
   }
 
   // ---------- UI strings ----------
@@ -1848,6 +2149,10 @@
       btn.classList.add("active");
       document.getElementById(`panel-${tab}`).classList.add("active");
       if (tab === "ui") loadUiStrings();
+      if (tab === "failures") {
+        failLoadFilterOptions();
+        failLoadRowsAndSummary();
+      }
       if (tab === "ui-plurals") loadUiPlurals();
       if (tab === "glossary") loadGlossary();
       if (tab === "stats") loadStats();
@@ -1855,6 +2160,7 @@
   });
 
   segInit();
+  failInit();
   uiInitListeners();
   upInitListeners();
   glInitListeners();

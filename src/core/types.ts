@@ -106,15 +106,11 @@ export function translationTextMap(
   );
 }
 
-/** Token counts returned by OpenRouter (`usage`); optional fields mirror `prompt_tokens_details`. */
+/** Token counts returned by OpenRouter (`usage`). */
 export interface OpenRouterUsageStats {
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;
-  /** Provider prompt cache reads (discount input). */
-  cachedPromptTokens?: number;
-  /** Tokens written to prompt cache when applicable (e.g. Anthropic explicit cache). */
-  cacheWritePromptTokens?: number;
 }
 
 export interface TranslationResult {
@@ -157,6 +153,51 @@ export interface TranslationRow {
   created_at: string | null;
   last_hit_at: string | null;
   start_line: number | null;
+}
+
+export interface TranslationFailureRow {
+  source_hash: string;
+  locale: string;
+  model: string | null;
+  model_order: number | null;
+  quality_error: string;
+  error_message: string;
+  fatal: number;
+  created_at: string | null;
+}
+
+export interface TranslationFailureInsert {
+  sourceHash: string;
+  locale: string;
+  model: string | null;
+  modelOrder: number | null;
+  qualityError: string;
+  errorMessage: string;
+  fatal: boolean;
+}
+
+export interface TranslationFailureListRow {
+  source_hash: string;
+  locale: string;
+  /** Models that produced recorded failures (may be newline-separated when aggregated). */
+  model: string | null;
+  /** Model stored on the cached translation row for this segment/locale, if any. */
+  translation_model: string | null;
+  model_order: number | null;
+  quality_error: string;
+  error_message: string;
+  fatal: number;
+  created_at: string | null;
+  source_text: string | null;
+  filepath: string | null;
+  start_line: number | null;
+}
+
+export interface TranslationFailureSummary {
+  segmentsWithFailure: number;
+  segmentsWith1Failure: number;
+  segmentsWith2Failures: number;
+  segmentsWith3OrMoreFailures: number;
 }
 
 export interface CleanupStats {
@@ -220,11 +261,6 @@ const openRouterConfigSchema = z.object({
   fallbackModel: z.string().optional(),
   maxTokens: z.number().int().positive().default(8192),
   temperature: z.number().min(0).max(2).default(0.2),
-  /**
-   * Anthropic-style prompt cache TTL on the first system block (`cache_control`).
-   * Omit or `5m`: default 5-minute cache. `1h`: longer-lived cache (higher cache-write price; see OpenRouter docs).
-   */
-  promptCacheTtl: z.enum(["5m", "1h"]).optional(),
 });
 
 const featuresSchema = z.object({
@@ -322,7 +358,7 @@ export const segmentSplittingSchema = z
     splitDenseParagraphs: z.boolean().default(true),
     maxLinesPerParagraphChunk: z.number().int().positive().optional(),
     splitLongLists: z.boolean().default(true),
-    maxListItemsPerChunk: z.number().int().positive().default(12),
+    maxListItemsPerChunk: z.number().int().positive().default(4),
   })
   .strict();
 

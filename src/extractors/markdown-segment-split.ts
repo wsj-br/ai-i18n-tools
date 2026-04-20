@@ -94,15 +94,19 @@ function splitListSegment(
     return [{ ...seg }];
   }
   const out: Array<Omit<Segment, "id" | "hash">> = [];
+  let lineOffset = 0;
   for (let i = 0; i < items.length; i += maxItems) {
     const chunk = items.slice(i, i + maxItems);
     const content = chunk.map((g) => g.join("\n")).join("\n");
     const isFirst = out.length === 0;
+    const chunkStartLineOffset = lineOffset;
+    lineOffset += chunk.reduce((sum, g) => sum + g.length, 0);
     out.push({
       ...seg,
       content,
       ...(isFirst ? {} : { tightJoinPrevious: true }),
-      startLine: seg.startLine,
+      startLine:
+        seg.startLine !== undefined ? seg.startLine + chunkStartLineOffset : undefined,
     });
   }
   return out;
@@ -118,27 +122,33 @@ function splitDenseParagraph(
   if (seg.content.length <= maxChars && (!maxLines || lines.length <= maxLines)) {
     return [{ ...seg }];
   }
-  const chunks: string[] = [];
+  const chunks: Array<{ text: string; lineOffset: number }> = [];
   let buf: string[] = [];
+  let bufStartLine = 0;
   let bufChars = 0;
 
   const flushBuf = () => {
     if (buf.length > 0) {
-      chunks.push(buf.join("\n"));
+      chunks.push({ text: buf.join("\n"), lineOffset: bufStartLine });
       buf = [];
       bufChars = 0;
     }
   };
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
     const lineLen = line.length + (buf.length > 0 ? 1 : 0);
     const wouldExceedChars = buf.length > 0 && bufChars + line.length + 1 > maxChars;
     const wouldExceedLines = maxLines !== undefined && buf.length > 0 && buf.length >= maxLines;
     if (wouldExceedChars || wouldExceedLines) {
       flushBuf();
       buf = [line];
+      bufStartLine = i;
       bufChars = line.length;
     } else {
+      if (buf.length === 0) {
+        bufStartLine = i;
+      }
       buf.push(line);
       bufChars += lineLen;
     }
@@ -151,9 +161,9 @@ function splitDenseParagraph(
 
   return chunks.map((c, i) => ({
     ...seg,
-    content: c,
+    content: c.text,
     ...(i > 0 ? { tightJoinPrevious: true } : {}),
-    startLine: seg.startLine,
+    startLine: seg.startLine !== undefined ? seg.startLine + c.lineOffset : undefined,
   }));
 }
 

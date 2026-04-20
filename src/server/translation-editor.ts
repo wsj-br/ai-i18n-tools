@@ -309,6 +309,66 @@ export function createTranslationEditorApp(
     }
   });
 
+  app.get("/api/failure-quality-errors", (_req, res) => {
+    try {
+      res.json({ qualityErrors: cache.getUniqueFailureQualityErrors() });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/translation-failures", (req, res) => {
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+      const pageSize = Math.min(100, Math.max(1, parseInt(req.query.pageSize as string, 10) || 50));
+      const offset = (page - 1) * pageSize;
+      const sortRaw = (req.query.sort as string | undefined) ?? "failures_desc";
+      const sort = sortRaw === "filepath_line_asc" || sortRaw === "failures_desc" ? sortRaw : "failures_desc";
+      const fatalRaw = req.query.fatal as string | undefined;
+      const fatal = fatalRaw === "true" ? true : undefined;
+
+      const { rows, total } = cache.listTranslationFailures({
+        filename: req.query.filename as string | undefined,
+        locale: req.query.locale as string | undefined,
+        model: req.query.model as string | undefined,
+        source_hash: req.query.source_hash as string | undefined,
+        source_text: req.query.source_text as string | undefined,
+        quality_error: req.query.quality_error as string | undefined,
+        error_message: req.query.error_message as string | undefined,
+        fatal,
+        sort,
+        limit: pageSize,
+        offset,
+      });
+      res.json({ rows, total, page, pageSize, sort });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/translation-failures/summary", (req, res) => {
+    try {
+      const fatalRaw = req.query.fatal as string | undefined;
+      const fatal = fatalRaw === "true" ? true : undefined;
+      const summary = cache.getTranslationFailureSummary({
+        filename: req.query.filename as string | undefined,
+        locale: req.query.locale as string | undefined,
+        model: req.query.model as string | undefined,
+        source_hash: req.query.source_hash as string | undefined,
+        source_text: req.query.source_text as string | undefined,
+        quality_error: req.query.quality_error as string | undefined,
+        error_message: req.query.error_message as string | undefined,
+        fatal,
+      });
+      res.json(summary);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/api/filepaths", (_req, res) => {
     try {
       res.json({ filepaths: cache.getUniqueFilepaths() });

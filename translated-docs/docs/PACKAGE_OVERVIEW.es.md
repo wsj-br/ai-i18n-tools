@@ -1,8 +1,9 @@
-# ai-i18n-tools: Descripción del Paquete
+<a id="ai-i18n-tools-package-overview"></a>
+# ai-i18n-tools: Descripción del paquete
 
-Este documento describe la arquitectura interna de `ai-i18n-tools`, cómo se ensamblan los diferentes componentes y cómo se implementan los dos flujos de trabajo principales.
+Este documento describe la arquitectura interna de `ai-i18n-tools`, cómo se integra cada componente y cómo se implementan los dos flujos de trabajo principales.
 
-Para instrucciones de uso práctico, consulte [GETTING_STARTED.md](GETTING_STARTED.es.md).
+Para instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTED.es.md).
 
 <small>**Leer en otros idiomas:** </small>
 
@@ -12,7 +13,7 @@ Para instrucciones de uso práctico, consulte [GETTING_STARTED.md](GETTING_START
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Tabla de contenidos
+**Tabla de contenido**
 
 - [Descripción general de la arquitectura](#architecture-overview)
 - [Árbol de código fuente](#source-tree)
@@ -23,9 +24,10 @@ Para instrucciones de uso práctico, consulte [GETTING_STARTED.md](GETTING_START
   - [Solicitudes de traducción de interfaz](#ui-translation-prompts)
 - [Flujo de trabajo 2 - Internals de traducción de documentos](#workflow-2---document-translation-internals)
   - [Extractores](#extractors)
+  - [Inserción de anclajes de encabezado (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids)
   - [Protección de marcadores de posición](#placeholder-protection)
   - [Caché (`TranslationCache`)](#cache-translationcache)
-  - [Resolución de ruta de salida](#output-path-resolution)
+  - [Resolución de rutas de salida](#output-path-resolution)
   - [Reescritura plana de enlaces](#flat-link-rewriting)
 - [Infraestructura compartida](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
@@ -42,15 +44,16 @@ Para instrucciones de uso práctico, consulte [GETTING_STARTED.md](GETTING_START
   - [Extractores personalizados](#custom-extractors)
   - [Rutas de salida personalizadas](#custom-output-paths)
 
-<!-- FIN doctoc generado TOC por favor mantenga el comentario aquí para permitir la actualización automática -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ---
 
-## Descripción de la arquitectura
+<a id="architecture-overview"></a>
+## Visión general de la arquitectura
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
@@ -61,11 +64,12 @@ ai-i18n-tools
 └── Utils (src/utils/)         - logger, hash, ignore parser
 ```
 
-Todo lo que los consumidores pueden necesitar programáticamente se vuelve a exportar desde `src/index.ts`.
+Todo lo que los consumidores puedan necesitar programáticamente se reexporta desde `src/index.ts`.
 
 ---
 
-## Árbol de código fuente
+<a id="source-tree"></a>
+## Árbol de origen
 
 ```text
 src/
@@ -77,8 +81,12 @@ src/
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
 │   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
+│
+├── markdown/
+│   └── write-heading-ids-core.ts   Slug styles + `<a id="…">` insertion for `write-heading-ids`
 │
 ├── core/
 │   ├── types.ts                    Zod schemas + TypeScript types for all config shapes
@@ -131,7 +139,8 @@ src/
 
 ---
 
-## Flujo de trabajo 1 - Internos de la traducción de UI
+<a id="workflow-1---ui-translation-internals"></a>
+## Flujo de trabajo 1 - Internals de traducción de interfaz
 
 ```text
 source files (JS/TS)
@@ -146,13 +155,15 @@ OpenRouterClient.translateUIBatch()
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
 ```
 
+<a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Utiliza `i18next-scanner` de `Parser.parseFuncFromString` para encontrar llamadas a `t("literal")` y `i18n.t("literal")` en cualquier archivo JS/TS. Los nombres de funciones y las extensiones de archivo son configurables. `extract` **también combina entradas que no son del escáner en el mismo catálogo:** el `package.json` del proyecto `description` cuando `reactExtractor.includePackageDescription` está habilitado (comportamiento predeterminado), y cada **`englishName`** de `ui-languages.json` cuando `reactExtractor.includeUiLanguageEnglishNames` es `true` y `uiLanguagesPath` está configurado (las cadenas ya encontradas en el código fuente tienen prioridad). Los hashes de segmento son los **primeros 8 caracteres hexadecimales del hash MD5** de la cadena fuente recortada — estos se convierten en las claves de `strings.json`.
+Utiliza `i18next-scanner` de `Parser.parseFuncFromString` para encontrar llamadas a `t("literal")` y `i18n.t("literal")` en cualquier archivo JS/TS. Los nombres de funciones y las extensiones de archivo son configurables. `extract` **también combina entradas no escaneadas en el mismo catálogo:** el `package.json` `description` del proyecto cuando `reactExtractor.includePackageDescription` está habilitado (valor predeterminado), y cada `englishName` de `ui-languages.json` cuando `reactExtractor.includeUiLanguageEnglishNames` es `true` y `uiLanguagesPath` está establecido (las cadenas ya encontradas en el código fuente tienen prioridad). Los hashes de segmento son los **primeros 8 caracteres hexadecimales del MD5** de la cadena fuente recortada — estos se convierten en las claves de `strings.json`.
 
+<a id="stringsjson"></a>
 ### `strings.json`
 
-El catálogo maestro tiene la forma:
+El catálogo maestro tiene la siguiente estructura:
 
 ```json
 {
@@ -171,15 +182,16 @@ El catálogo maestro tiene la forma:
 }
 ```
 
-`models` (opcional) — por configuración regional, qué modelo produjo esa traducción tras la última ejecución exitosa de `translate-ui` para esa configuración regional (o `user-edited` si el texto se guardó desde la interfaz web `editor`). `locations` (opcional) — dónde encontró `extract` la cadena (escáner + línea de descripción del paquete; las cadenas solo del manifiesto `englishName` pueden omitir `locations`).
+`models` (opcional): por configuración regional, qué modelo produjo esa traducción tras la última ejecución exitosa de `translate-ui` para esa configuración regional (o `user-edited` si el texto se guardó desde la interfaz web de `editor`). `locations` (opcional): dónde encontró `extract` la cadena (analizador + línea de descripción del paquete; las cadenas solo del manifiesto `englishName` pueden omitir `locations`).
 
-`extract` añade nuevas claves y conserva los datos existentes de `translated` / `models` para las claves que aún están presentes en el escaneo (literales del escáner, descripción opcional, manifiesto opcional `englishName`). `translate-ui` rellena las entradas `translated` faltantes, actualiza `models` para los idiomas que traduce, y escribe archivos planos por configuración regional.
+`extract` añade nuevas claves y conserva los datos existentes de `translated` / `models` para claves que aún estén presentes en el escaneo (literales del escáner, descripción opcional, manifiesto opcional `englishName`). `translate-ui` completa las entradas `translated` faltantes, actualiza `models` para las localizaciones que traduce y escribe los archivos de localización planos.
 
-`ui-languages.json` **manifest** — matriz JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interfaz de usuario `label`, referencia `englishName`, `"ltr"` o `"rtl"`). Usa `generate-ui-languages` para generar un archivo de proyecto a partir de `sourceLocale` + `targetLocales` y el `data/ui-languages-complete.json` maestro incluido.
+`ui-languages.json` **manifest** — Matriz JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, interfaz de usuario `label`, referencia `englishName`, `"ltr"` o `"rtl"`). Usa `generate-ui-languages` para crear un archivo de proyecto a partir de `sourceLocale` + `targetLocales` y el archivo maestro incluido `data/ui-languages-complete.json`.
 
-### Archivos de localización plana
+<a id="flat-locale-files"></a>
+### Archivos de configuración regional planos
 
-Cada configuración regional de destino obtiene un archivo JSON plano (`de.json`) que asocia la cadena original con su traducción (sin el campo `models`):
+Cada localización objetivo recibe un archivo JSON plano (`de.json`) que asocia cadena fuente → traducción (sin campo `models`):
 
 ```json
 {
@@ -188,21 +200,23 @@ Cada configuración regional de destino obtiene un archivo JSON plano (`de.json`
 }
 ```
 
-i18next carga estos como paquetes de recursos y busca traducciones por la cadena de origen (modelo clave-como-predeterminado).
+i18next carga estos archivos como paquetes de recursos y busca traducciones mediante la cadena fuente (modelo de clave como valor por defecto).
 
-### Prompts de traducción de UI
+<a id="ui-translation-prompts"></a>
+### Mensajes de traducción de interfaz
 
 `buildUIPromptMessages` construye mensajes del sistema y del usuario que:
 
-- Identifican los idiomas de origen y destino (por nombre mostrado desde `localeDisplayNames` o `ui-languages.json`).
-- Envían un array JSON de cadenas y solicitan un array JSON de traducciones a cambio.
-- Incluyen sugerencias del glosario cuando están disponibles.
+- Identifique los idiomas de origen y destino (por nombre mostrado en `localeDisplayNames` o `ui-languages.json`).
+- Envíe un array JSON de cadenas y solicite un array JSON de traducciones a cambio.
+- Incluya sugerencias del glosario cuando estén disponibles.
 
-`OpenRouterClient.translateUIBatch` intenta cada modelo en orden, pasando al siguiente ante errores de análisis o de red. La CLI construye esa lista a partir de `openrouter.translationModels` (o valores predeterminados heredados); para `translate-ui`, si está definido, `ui.preferredModel` se añade al principio (eliminando duplicados respecto al resto).
+`OpenRouterClient.translateUIBatch` prueba cada modelo en orden, retrocediendo ante errores de análisis o de red. La CLI construye esa lista a partir de `openrouter.translationModels` (o predeterminado/heredado por defecto); para `translate-ui`, `ui.preferredModel` opcional se antepone cuando está configurado (eliminándose duplicados respecto al resto).
 
 ---
 
-## Flujo de trabajo 2 - Internos de la traducción de documentos
+<a id="workflow-2---document-translation-internals"></a>
+## Flujo de trabajo 2 - Internals de traducción de documentos
 
 ```text
 markdown/MDX/JSON files (`translate-docs`)
@@ -226,83 +240,102 @@ final text  ──────────────────── placeho
 output file  ─────────────────── Docusaurus layout or flat layout
 ```
 
+<a id="extractors"></a>
 ### Extractores
 
 Todos los extractores extienden `BaseExtractor` e implementan `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor`: divide el markdown en segmentos tipificados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Los segmentos no traducibles (bloques de código, HTML sin procesar) se conservan textualmente.  
-- `JsonExtractor`: extrae valores de cadena de los archivos JSON de etiquetas de Docusaurus.  
-- `SvgExtractor`: extrae el contenido de `<text>`, `<title>` y `<desc>` del SVG (usado por `translate-svg` para recursos bajo `config.svg`, no por `translate-docs`).
+- `MarkdownExtractor` - divide el markdown en segmentos tipificados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Los segmentos no traducibles (bloques de código, HTML crudo) se conservan textualmente.
+- `JsonExtractor` - extrae valores de cadena de archivos de etiquetas JSON de Docusaurus.
+- `SvgExtractor` - extrae contenido `<text>`, `<title>` y `<desc>` de SVG (usado por `translate-svg` para recursos bajo `config.svg`, no por `translate-docs`).
 
+<a id="heading-anchor-insertion-write-heading-ids"></a>
+### Inserción de anclajes de encabezado (CLI `write-heading-ids`)
+
+El comando `write-heading-ids` es un preprocesador **local y sin uso de LLM** para archivos markdown de documentación. Implementación: `src/cli/write-heading-ids.ts` coordina el descubrimiento de archivos; `src/markdown/write-heading-ids-core.ts` analiza las líneas e inserta anclajes.
+
+Requiere una configuración válida con **al menos un bloque `documentations[]`**. Por cada bloque, recopila archivos `.md` / `.mdx` bajo `contentPaths`, aplica las reglas `.translate-ignore` del proyecto (misma idea que la traducción de documentación) y opcionalmente restringe a un subárbol con `--path` / `--file`. Cada archivo se transforma con `applyHeadingAnchorsToMarkdown`: para cada **encabezado ATX plano** (`# …` hasta `###### …`) fuera de bloques de código con delimitadores, se inserta una línea HTML vacía `<a id="slug"></a>` en la línea anterior si falta o está desactualizada. Los algoritmos de slug coinciden con los ecosistemas comunes — `github` (por defecto), `bitbucket`, `gitlab`, `pymdown` (banderas opcionales de normalización Unicode y codificación porcentual), `azure-devops` — para que los IDs de anclaje sean consistentes con herramientas existentes (doctoc, PyMdown, etc.). `--dry-run` muestra los cambios previstos sin escribirlos.
+
+Este comando **no** se ejecuta dentro de `translate-docs` ni `sync`; ejecútelo explícitamente cuando desee IDs de fragmento estables en los archivos fuente antes de la traducción o publicación.
+
+<a id="placeholder-protection"></a>
 ### Protección de marcadores de posición
 
-Antes de la traducción, la sintaxis sensible se reemplaza con tokens opacos para prevenir la corrupción de LLM:
+Antes de la traducción, la sintaxis sensible se reemplaza por tokens opacos para evitar corrupción por el LLM:
 
-1. **Marcadores de admonición** (`:::note`, `:::`) - restaurados con el texto original exacto.
-2. **Anclas de documento** (HTML `<a id="…">`, encabezado de Docusaurus `{#…}`) - preservados textualmente.
-3. **URLs de Markdown** (`](url)`, `src="../…"`) - restaurados de un mapa después de la traducción.
+1. **Marcadores de advertencia** (`:::note`, `:::`) - se restauran con el texto original exacto.
+2. **Anclajes de documento** (HTML `<a id="…">`, encabezado Docusaurus `{#…}`) - se conservan textualmente.
+3. **URLs en Markdown** (`](url)`, `src="../…"`) - se restauran desde un mapa tras la traducción.
 
+<a id="cache-translationcache"></a>
 ### Caché (`TranslationCache`)
 
-La base de datos SQLite (a través de `node:sqlite`) almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash es SHA-256 de los primeros 16 caracteres hexadecimales del contenido normalizado (espacios en blanco colapsados).
+Base de datos SQLite (mediante `node:sqlite`) que almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash es el primer carácter hexadecimal de 16 caracteres SHA-256 del contenido normalizado (espacios en blanco colapsados).
 
-En cada ejecución, los segmentos se buscan por hash × locale. Solo los fallos de caché van al LLM. Después de la traducción, `last_hit_at` se restablece para las filas de segmento en el ámbito de traducción actual que no fueron alcanzadas. `cleanup` ejecuta `sync --force-update` primero, luego elimina filas de segmento obsoletas (null `last_hit_at` / filepath vacío), poda claves de `file_tracking` cuando la ruta de origen resuelta falta en el disco (`doc-block:…`, `svg-assets:…`, etc.), y elimina filas de traducción cuya metadata filepath apunta a un archivo faltante; primero hace una copia de seguridad de `cache.db` a menos que se pase `--no-backup`.
+En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo los fallos en caché van al LLM. Tras la traducción, `last_hit_at` se restablece para las filas de segmentos en el ámbito actual de traducción que no coincidieron. `cleanup` ejecuta primero `sync --force-update`, luego elimina filas de segmentos obsoletas (`last_hit_at` nulo / ruta de archivo vacía), poda claves `file_tracking` cuando la ruta fuente resuelta falta en disco (`doc-block:…`, `svg-assets:…`, etc.), y elimina filas de traducción cuyo metadato de ruta apunta a un archivo inexistente; hace una copia de seguridad de `cache.db` primero, a menos que se pase `--no-backup`.
 
-El comando `translate-docs` también utiliza **seguimiento de archivos** para que las fuentes sin cambios con salidas existentes puedan omitir todo el trabajo. `--force-update` vuelve a ejecutar el procesamiento de archivos mientras sigue utilizando la caché de segmentos; `--force` borra el seguimiento de archivos y omite las lecturas de caché de segmentos para la traducción de API. Consulta [Getting Started](GETTING_STARTED.es.md#cache-behaviour-and-translate-docs-flags) para la tabla completa de flags.
+El comando `translate-docs` también utiliza **seguimiento de archivos**, de modo que las fuentes sin cambios con salidas existentes pueden omitir completamente el trabajo. `--force-update` vuelve a ejecutar el procesamiento de archivos manteniendo la caché de segmentos; `--force` borra el seguimiento de archivos y omite lecturas de caché de segmentos para la traducción de API. Consulte [Introducción](GETTING_STARTED.es.md#cache-behaviour-and-translate-docs-flags) para obtener la tabla completa de banderas.
 
-**Formato de solicitud por lotes:** `translate-docs --prompt-format` selecciona el formato XML (`<seg>` / `<t>`) o formato de matriz/objeto JSON únicamente para `OpenRouterClient.translateDocumentBatch`; la extracción, los marcadores de posición y la validación no cambian. Consulte [Formato de solicitud por lotes](GETTING_STARTED.es.md#batch-prompt-format).
+**Formato de solicitud por lotes:** `translate-docs --prompt-format` selecciona XML (`<seg>` / `<t>`) o formas de array/objeto JSON solo para `OpenRouterClient.translateDocumentBatch`; la extracción, marcadores y validación no cambian. Consulte [Formato de solicitud por lotes](GETTING_STARTED.es.md#batch-prompt-format).
 
-### Resolución de la ruta de salida
+<a id="output-path-resolution"></a>
+### Resolución de ruta de salida
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` mapea una ruta relativa a la fuente a la ruta de salida:
 
-- Estilo `nested` (por defecto): `{outputDir}/{locale}/{relPath}` para markdown.  
-- Estilo `docusaurus`: bajo `docsRoot`, las salidas usan `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; las rutas fuera de `docsRoot` vuelven al diseño anidado.  
-- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Cuando `flatPreserveRelativeDir` es `true`, los subdirectorios de origen se mantienen bajo `outputDir`.  
-- **Plantilla personalizada** `pathTemplate`: cualquier diseño para markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.  
-- **Plantilla personalizada** `jsonPathTemplate`: diseño personalizado separado para archivos JSON de etiquetas, usando los mismos marcadores de posición.  
-- `linkRewriteDocsRoot` ayuda al reescritor de enlaces planos a calcular los prefijos correctos cuando la salida traducida está ubicada en otro lugar distinto de la raíz del proyecto predeterminada.
+- Estilo `nested` (por defecto): `{outputDir}/{locale}/{relPath}` para markdown.
+- Estilo `docusaurus`: bajo `docsRoot`, las salidas usan `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; las rutas fuera de `docsRoot` recurren al diseño anidado.
+- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Cuando `flatPreserveRelativeDir` es `true`, los subdirectorios de origen se mantienen bajo `outputDir`.
+- **Personalizado** `pathTemplate`: cualquier diseño de markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Personalizado** `jsonPathTemplate`: diseño personalizado separado para archivos de etiquetas JSON, usando los mismos marcadores.
+- `linkRewriteDocsRoot` ayuda al reescritor de enlaces planos a calcular prefijos correctos cuando la salida traducida está enraizada en otro lugar distinto de la raíz del proyecto predeterminada.
 
-### Reescritura de enlaces planos
+<a id="flat-link-rewriting"></a>
+### Reescritura plana de enlaces
 
-Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se colocan junto a la fuente con sufijos de locale. Los enlaces relativos entre páginas se reescriben para que `[Guide](../guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (habilitado automáticamente para el estilo plano sin una `pathTemplate` personalizada).
+Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se colocan junto a la fuente con sufijos de configuración regional. Los enlaces relativos entre páginas se reescriben para que `[Guide](../guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (activado automáticamente para estilo plano sin `pathTemplate` personalizado).
 
 ---
 
+<a id="shared-infrastructure"></a>
 ## Infraestructura compartida
 
+<a id="openrouterclient"></a>
 ### `OpenRouterClient`
 
-Envuelve la API de completaciones de chat de OpenRouter. Comportamientos clave:
+Envuelve la API de completado de chat de OpenRouter. Comportamientos clave:
 
-- **Modelo de reserva**: prueba cada modelo de la lista resuelta en orden; recurre a reserva en errores HTTP o fallos de análisis. La traducción de la interfaz de usuario resuelve primero `ui.preferredModel` cuando está presente, luego los modelos `openrouter`.
-- **Limitación de tasa**: detecta respuestas 429, espera `retry-after` (o 2s), reintenta una vez.
-- **Almacenamiento en caché de prompts**: el mensaje del sistema se envía con `cache_control: { type: "ephemeral" }` para habilitar el almacenamiento en caché de prompts en modelos compatibles.
-- **Registro de tráfico de depuración**: si `debugTrafficFilePath` está configurado, añade JSON de solicitud y respuesta a un archivo.
+- **Alternancia de modelos**: intenta cada modelo en la lista resuelta por orden; realiza una transición ante errores HTTP o fallos de análisis. La traducción de la interfaz intenta primero `ui.preferredModel` cuando está presente, luego los modelos `openrouter`.
+- **Limitación de tasa**: detecta respuestas 429, espera `retry-after` (o 2 segundos), reintenta una vez.
+- **Registro de depuración del tráfico**: si se establece `debugTrafficFilePath`, añade al final del archivo el JSON de la solicitud y la respuesta.
 
+<a id="config-loading"></a>
 ### Carga de configuración
 
 Canalización `loadI18nConfigFromFile(configPath, cwd)`:
 
 1. Leer y analizar `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` - fusión profunda con `defaultI18nConfigPartial`, y fusionar cualquier entrada `documentations[].sourceFiles` en `contentPaths`.
-3. `expandTargetLocalesFileReferenceInRawInput` - si `targetLocales` es una ruta de archivo, cargar el manifiesto y expandir a códigos de localización; establecer `uiLanguagesPath`.
+2. `mergeWithDefaults` - combinación profunda con `defaultI18nConfigPartial`, y combinar cualquier entrada `documentations[].sourceFiles` en `contentPaths`.
+3. `expandTargetLocalesFileReferenceInRawInput` - si `targetLocales` es una ruta de archivo, cargar el manifiesto y expandir a códigos de configuración regional; establecer `uiLanguagesPath`.
 4. `expandDocumentationTargetLocalesInRawInput` - lo mismo para cada entrada `documentations[].targetLocales`.
-5. `parseI18nConfig` - Validación Zod + `validateI18nBusinessRules`.
+5. `parseI18nConfig` - validación con Zod + `validateI18nBusinessRules`.
 6. `applyEnvOverrides` - aplicar `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
-7. `augmentConfigWithUiLanguagesFile` - adjuntar nombres de visualización del manifiesto.
+7. `augmentConfigWithUiLanguagesFile` - adjuntar nombres para mostrar del manifiesto.
 
-### Registrador
+<a id="logger"></a>
+### Registrador (Logger)
 
-`Logger` admite niveles `debug`, `info`, `warn`, `error` con salida de color ANSI. El modo detallado (`-v`) habilita `debug`. Cuando `logFilePath` está configurado, las líneas de registro también se escriben en ese archivo.
+`Logger` admite niveles `debug`, `info`, `warn`, `error` con salida de colores ANSI. El modo detallado (`-v`) habilita `debug`. Cuando se establece `logFilePath`, las líneas de registro también se escriben en ese archivo.
 
 ---
 
-## API de ayudas de tiempo de ejecución
+<a id="runtime-helpers-api"></a>
+## API de ayudantes en tiempo de ejecución
 
-Estas se exportan desde `'ai-i18n-tools/runtime'` y funcionan en cualquier entorno JavaScript (navegador, Node.js, Deno, Edge). **No** importan desde `i18next` o `react-i18next`.
+Estas se exportan desde `'ai-i18n-tools/runtime'` y funcionan en cualquier entorno JavaScript (navegador, Node.js, Deno, Edge). No **importan** desde `i18next` ni `react-i18next`.
 
-### Ayudas para RTL
+<a id="rtl-helpers"></a>
+### Ayudantes RTL
 
 ```ts
 RTL_LANGS: ReadonlySet<string>
@@ -310,6 +343,7 @@ getTextDirection(lng: string): 'ltr' | 'rtl'
 applyDirection(lng: string, element?: Element): void
 ```
 
+<a id="i18next-setup-factories"></a>
 ### Fábricas de configuración de i18next
 
 ```ts
@@ -330,18 +364,20 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-Utilice **`setupKeyAsDefaultT`** como punto de entrada habitual de la aplicación (recorte de clave + plural **`wrapT`** + **`translate-ui`** opcional `{sourceLocale}.json`). Llamar a **`wrapI18nWithKeyTrim`** por sí solo está **deprecated** para la configuración de aplicaciones.
+Use `setupKeyAsDefaultT` como punto de entrada habitual de la aplicación (eliminación de espacios en claves + plural `wrapT` + `translate-ui` opcional `{sourceLocale}.json`). Llamar solo a `wrapI18nWithKeyTrim` está **obsoleto** para la configuración de aplicaciones.
 
-Construya **`localeLoaders`** con **`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`** para que las claves permanezcan alineadas con **`targetLocales`** después de **`generate-ui-languages`**. Vea **`docs/GETTING_STARTED.md`** (configuración en tiempo de ejecución) y **`examples/nextjs-app/`** / **`examples/console-app/`**.
+Construya `localeLoaders` con `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` para que las claves permanezcan alineadas con `targetLocales` tras `generate-ui-languages`. Consulte `docs/GETTING_STARTED.md` (configuración en tiempo de ejecución) y `examples/nextjs-app/` / `examples/console-app/`.
 
-### Ayudas de visualización
+<a id="display-helpers"></a>
+### Ayudantes de visualización
 
 ```ts
 getUILanguageLabel(lang: UiLanguageEntry, t: TranslateFn): string
 getUILanguageLabelNative(lang: UiLanguageEntry): string
 ```
 
-### Ayudas de cadenas
+<a id="string-helpers"></a>
+### Ayudantes de cadenas
 
 ```ts
 interpolateTemplate(str: string, vars: Record<string, string | number | boolean>): string
@@ -350,9 +386,10 @@ flipUiArrowsForRtl(text: string | null | undefined, isRtl: boolean): string | nu
 
 ---
 
+<a id="programmatic-api"></a>
 ## API programática
 
-Todos los tipos y clases públicos se exportan desde la raíz del paquete. Ejemplo: ejecutar el paso de traducción de interfaz de usuario desde Node.js sin la CLI:
+Todos los tipos y clases públicos se exportan desde la raíz del paquete. Ejemplo: ejecutar el paso de traducción de interfaz desde Node.js sin la CLI:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -374,30 +411,32 @@ console.log(
 
 Exportaciones clave:
 
-| Exportar | Descripción |
+| Exportación | Descripción |
 |---|---|
 | `loadI18nConfigFromFile` | Carga, combina y valida la configuración desde un archivo JSON. |
 | `parseI18nConfig` | Valida un objeto de configuración sin procesar. |
 | `TranslationCache` | Caché SQLite: instanciar con una ruta `cacheDir`. |
-| `UIStringExtractor` | Extrae cadenas `t("…")` del código fuente JS/TS. |
-| `MarkdownExtractor` | Extrae segmentos traducibles del markdown. |
-| `JsonExtractor` | Extrae desde archivos JSON de etiquetas de Docusaurus. |
-| `SvgExtractor` | Extrae desde archivos SVG. |
-| `OpenRouterClient` | Realiza solicitudes de traducción a OpenRouter. |
-| `PlaceholderHandler` | Protege/restaura la sintaxis de markdown alrededor de la traducción. |
-| `splitTranslatableIntoBatches` | Agrupa segmentos en lotes del tamaño adecuado para LLM. |
+| `UIStringExtractor` | Extraer cadenas `t("…")` del código fuente JS/TS. |
+| `MarkdownExtractor` | Extraer segmentos traducibles del markdown. |
+| `JsonExtractor` | Extraer de archivos JSON de etiquetas de Docusaurus. |
+| `SvgExtractor` | Extraer de archivos SVG. |
+| `OpenRouterClient` | Realizar solicitudes de traducción a OpenRouter. |
+| `PlaceholderHandler` | Proteger/restaurar la sintaxis de markdown alrededor de la traducción. |
+| `splitTranslatableIntoBatches` | Agrupar segmentos en lotes del tamaño adecuado para los LLM. |
 | `validateTranslation` | Comprobaciones estructurales tras la traducción. |
-| `resolveDocumentationOutputPath` | Resuelve la ruta del archivo de salida para un documento traducido. |
-| `Glossary` / `GlossaryMatcher` | Carga y aplica glosarios de traducción. |
-| `runTranslateUI` | Punto de entrada de la interfaz de usuario de traducción programática. |
+| `resolveDocumentationOutputPath` | Resolver la ruta del archivo de salida para un documento traducido. |
+| `Glossary` / `GlossaryMatcher` | Cargar y aplicar glosarios de traducción. |
+| `runTranslateUI` | Punto de entrada programático para la interfaz de traducción. |
 
 ---
 
+<a id="extension-points"></a>
 ## Puntos de extensión
 
-### Nombres de funciones personalizadas (extracción de interfaz de usuario)
+<a id="custom-function-names-ui-extraction"></a>
+### Nombres personalizados de funciones (extracción de interfaz de usuario)
 
-Añadir nombres de funciones de traducción no estándar mediante configuración:
+Agrega nombres no estándar de funciones de traducción mediante la configuración:
 
 ```json
 {
@@ -409,9 +448,10 @@ Añadir nombres de funciones de traducción no estándar mediante configuración
 }
 ```
 
+<a id="custom-extractors"></a>
 ### Extractores personalizados
 
-Implementar `ContentExtractor` del paquete:
+Implementa `ContentExtractor` desde el paquete:
 
 ```ts
 import { BaseExtractor, type Segment } from 'ai-i18n-tools';
@@ -424,11 +464,12 @@ class MyExtractor extends BaseExtractor {
 }
 ```
 
-Pásalo a la tubería de traducción de documentos importando las utilidades de `doc-translate.ts` programáticamente.
+Pásalo a la canalización doc-translate importando las utilidades `doc-translate.ts` de forma programática.
 
+<a id="custom-output-paths"></a>
 ### Rutas de salida personalizadas
 
-Usa `markdownOutput.pathTemplate` para cualquier diseño de archivo:
+Usa `markdownOutput.pathTemplate` para cualquier estructura de archivos:
 
 ```json
 {

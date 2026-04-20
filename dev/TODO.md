@@ -14,7 +14,11 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## New features
 
-- add a new feature to check grammar and spelling on the UI strings, with a option to fix it automatically
+- failed segments in translation:
+    - save in a table in the database (a new one) the segments that fail translation more times, registering the locales they fail. 
+    - the user can see a list of segments that fail translation more times, and can fix them manually.
+    - add a feature to automatically fix the segments that fail translation more times.
+
 
 
 ## Improvements

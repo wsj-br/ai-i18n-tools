@@ -15,6 +15,7 @@
     "preview": "docusaurus build && docusaurus serve --port 3040",
     "clear": "docusaurus clear",
     "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
     "i18n:translate": "cd .. && ai-i18n-tools translate-docs",
     "i18n:sync": "cd .. && ai-i18n-tools sync",
     "i18n:cleanup": "cd .. && ai-i18n-tools cleanup",

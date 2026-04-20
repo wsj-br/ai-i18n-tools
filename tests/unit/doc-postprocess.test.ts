@@ -78,6 +78,30 @@ describe("doc-postprocess", () => {
     expect(ext!.startLine).toBeGreaterThanOrEqual(1);
   });
 
+  it("extractLanguageListBlock ignores start/end markers inside fenced code blocks", () => {
+    const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
+    const body = [
+      "```json",
+      '  "markdownOutput": {',
+      '    "postProcessing": {',
+      '      "languageListBlock": {',
+      '        "start": "<small id=\\"lang-list\\">",',
+      '        "end": "</small>"',
+      "      }",
+      "    }",
+      "  }",
+      "}",
+      "```",
+      "",
+      '<small id="lang-list">[en](README.md)</small>',
+    ].join("\n");
+    const ext = extractLanguageListBlock(body, cfg);
+    const lines = body.split(/\r?\n/);
+    expect(ext).not.toBeNull();
+    expect(ext!.block).toContain("[en](README.md)");
+    expect(ext!.startLine).toBe(lines.findIndex((l) => l.includes("[en](README.md)")));
+  });
+
   it("replaceLanguageListBlockInBody returns replaced false when block missing", () => {
     const cfg = { start: "<!--MISS-->", end: "<!--/MISS-->", separator: "" };
     const { body, replaced } = replaceLanguageListBlockInBody("hello", cfg, "new");
