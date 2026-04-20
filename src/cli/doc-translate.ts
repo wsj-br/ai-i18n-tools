@@ -961,14 +961,19 @@ async function translateSegmentsBatched(
             let single;
             const startModel = models[startIdx] ?? null;
             try {
-              single = await client.translateDocumentSegment(failed.segment.content, locale, hints, {
-                contentType,
-                startModelIndex: startIdx,
-                docLogContext:
-                  docLog && docLog.relativePath
-                    ? { locale, relativePath: docLog.relativePath }
-                    : undefined,
-              });
+              single = await client.translateDocumentSegment(
+                failed.segment.content,
+                locale,
+                hints,
+                {
+                  contentType,
+                  startModelIndex: startIdx,
+                  docLogContext:
+                    docLog && docLog.relativePath
+                      ? { locale, relativePath: docLog.relativePath }
+                      : undefined,
+                }
+              );
             } catch (err) {
               await recordFailures([
                 buildRuntimeFailureRow(
@@ -2244,7 +2249,9 @@ export async function runTranslate(
 
     try {
       if (shouldRunMarkdown(opts, config)) {
-        if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.documentation, config, runOpts)) {
+        if (
+          usesAutomaticEmphasisPlaceholdersForLocale(locale, config.documentation, config, runOpts)
+        ) {
           console.log(
             chalk.gray(
               `   ${locale}: Markdown emphasis placeholders is "on". Override with documentations[].emphasisPlaceholders or CLI flags)`
@@ -2393,7 +2400,9 @@ export async function runTranslate(
                 opts.pathFilter
               )
             )
-            .map((r) => path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/"))
+            .map((r) =>
+              path.relative(opts.cwd, path.join(jsonAbsRoot, r)).split(path.sep).join("/")
+            )
         : null;
       if (markdownScopeRel && markdownScopeRel.length > 0 && markdownHitKeys.size > 0) {
         cache.resetLastHitAtForUnhitMarkdownInScope(markdownHitKeys, markdownScopeRel);

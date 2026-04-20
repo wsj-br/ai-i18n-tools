@@ -30,7 +30,7 @@
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg33" />
-  <title id="title1">Übersichtsdemo-Illustration</title>
+  <title id="title1">Übersichtsdemo</title>
   <desc id="desc1">Eine farbenfrohe Szene mit Sonnenaufgang, Heißluftballon und zwei englischen Textetiketten, die für Übersetzungsdemos bereit sind.</desc>
   <defs
      id="defs1">
@@ -422,5 +422,5 @@
      x="400.75"
      y="60.75"
      style="color:#ffffff;font-weight:400;font-size:12px;font-family:sans-serif;dominant-baseline:auto;text-anchor:start;opacity:1;fill:#9ba3bf;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
-     id="text33"><tspan>Über die Landschaft fliegend</tspan></text>
+     id="text33"><tspan>Über das Land fliegend</tspan></text>
 </svg>

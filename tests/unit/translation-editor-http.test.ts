@@ -1126,4 +1126,244 @@ describe("createTranslationEditorApp", () => {
     expect(d).toContain("edit-cache-app");
     expect(fs.existsSync(d)).toBe(true);
   });
+
+  describe("Failures API (documentation translation failures)", () => {
+    function failureRow(
+      sourceHash: string,
+      locale: string,
+      overrides: Partial<{
+        model: string | null;
+        modelOrder: number | null;
+        qualityError: string;
+        errorMessage: string;
+        fatal: boolean;
+      }> = {}
+    ) {
+      return {
+        sourceHash,
+        locale,
+        model: overrides.model ?? "openrouter/test",
+        modelOrder: overrides.modelOrder ?? 1,
+        qualityError: overrides.qualityError ?? "",
+        errorMessage: overrides.errorMessage ?? "boom",
+        fatal: overrides.fatal ?? false,
+      };
+    }
+
+    it("GET /api/failure-quality-errors returns [] when no failure rows exist", async () => {
+      cache = new TranslationCache(":memory:");
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/failure-quality-errors`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as { qualityErrors: string[] };
+        expect(data.qualityErrors).toEqual([]);
+      });
+    });
+
+    it("GET /api/failure-quality-errors returns sorted distinct quality_error values", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("fh1", "de", "src", "dst", "m", "readme.md", 1);
+      cache.addSegmentFailures([
+        failureRow("fh1", "de", { qualityError: "AST_MISMATCH", errorMessage: "a" }),
+        failureRow("fh1", "de", { qualityError: "PLACEHOLDER_LEAK", errorMessage: "b", modelOrder: 2 }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/failure-quality-errors`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as { qualityErrors: string[] };
+        expect(data.qualityErrors).toEqual(["AST_MISMATCH", "PLACEHOLDER_LEAK"]);
+      });
+    });
+
+    it("GET /api/translation-failures joins translations for filepath and source_text", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("segA", "de", "Hello segment", "x", "model-a", "docs/guide.md", 99);
+      cache.addSegmentFailures([
+        failureRow("segA", "de", { qualityError: "X", errorMessage: "first pass" }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translation-failures?page=1&pageSize=10`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as {
+          rows: Array<{
+            source_hash: string;
+            filepath: string | null;
+            source_text: string | null;
+            locale: string;
+          }>;
+          total: number;
+          sort: string;
+        };
+        expect(data.total).toBe(1);
+        expect(data.sort).toBe("failures_desc");
+        expect(data.rows[0]?.source_hash).toBe("segA");
+        expect(data.rows[0]?.filepath).toBe("docs/guide.md");
+        expect(data.rows[0]?.source_text).toBe("Hello segment");
+      });
+    });
+
+    it("GET /api/translation-failures filters by locale, filename, quality_error, error_message", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("s1", "de", "alpha", "", "m", "foo/bar.md", 1);
+      cache.setSegment("s2", "fr", "beta", "", "m", "other/file.md", 2);
+      cache.addSegmentFailures([
+        failureRow("s1", "de", { qualityError: "Q1", errorMessage: "needle error" }),
+        failureRow("s2", "fr", { qualityError: "Q2", errorMessage: "other" }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de", "fr"],
+      });
+      await withHttpServer(app, async (base) => {
+        const deOnly = await fetch(`${base}/api/translation-failures?locale=de`);
+        const deJson = (await deOnly.json()) as { total: number; rows: { locale: string }[] };
+        expect(deJson.total).toBe(1);
+        expect(deJson.rows[0]?.locale).toBe("de");
+
+        const barPath = await fetch(`${base}/api/translation-failures?filename=bar`);
+        expect(((await barPath.json()) as { total: number }).total).toBe(1);
+
+        const q1 = await fetch(`${base}/api/translation-failures?quality_error=Q1`);
+        expect(((await q1.json()) as { total: number }).total).toBe(1);
+
+        const needle = await fetch(`${base}/api/translation-failures?error_message=needle`);
+        expect(((await needle.json()) as { total: number }).total).toBe(1);
+      });
+    });
+
+    it("GET /api/translation-failures respects fatal=true and bogus sort falls back", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("fatal1", "de", "x", "", "m", "a.md", 1);
+      cache.setSegment("ok1", "de", "y", "", "m", "b.md", 2);
+      cache.addSegmentFailures([
+        failureRow("fatal1", "de", { fatal: true }),
+        failureRow("ok1", "de", { fatal: false }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const fatal = await fetch(`${base}/api/translation-failures?fatal=true`);
+        const fatalJson = (await fatal.json()) as { total: number };
+        expect(fatalJson.total).toBe(1);
+
+        const weirdSort = await fetch(`${base}/api/translation-failures?sort=not-a-real-sort`);
+        const ws = (await weirdSort.json()) as { sort: string };
+        expect(ws.sort).toBe("failures_desc");
+      });
+    });
+
+    it("GET /api/translation-failures paginates and supports filepath_line_asc sort", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("zlast", "de", "", "", "m", "z-last.md", 50);
+      cache.setSegment("first", "de", "", "", "m", "a-first.md", 10);
+      cache.addSegmentFailures([
+        failureRow("zlast", "de", { modelOrder: 5 }),
+        failureRow("first", "de", { modelOrder: 5 }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const page1 = await fetch(`${base}/api/translation-failures?page=1&pageSize=1&sort=filepath_line_asc`);
+        const p1 = (await page1.json()) as {
+          rows: { filepath: string | null }[];
+          total: number;
+          sort: string;
+        };
+        expect(p1.total).toBe(2);
+        expect(p1.sort).toBe("filepath_line_asc");
+        expect(p1.rows[0]?.filepath).toBe("a-first.md");
+
+        const page2 = await fetch(`${base}/api/translation-failures?page=2&pageSize=1&sort=filepath_line_asc`);
+        const p2 = (await page2.json()) as { rows: { filepath: string | null }[] };
+        expect(p2.rows[0]?.filepath).toBe("z-last.md");
+      });
+    });
+
+    it("GET /api/translation-failures/summary aggregates failure counts per segment/locale", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("oneFail", "de", "", "", "m", "m.md", 1);
+      cache.setSegment("twoFail", "de", "", "", "m", "m.md", 2);
+      cache.setSegment("threeFail", "de", "", "", "m", "m.md", 3);
+      cache.addSegmentFailures([
+        failureRow("oneFail", "de", { errorMessage: "e1" }),
+        failureRow("twoFail", "de", { errorMessage: "e2a" }),
+        failureRow("twoFail", "de", { errorMessage: "e2b", modelOrder: 2 }),
+        failureRow("threeFail", "de", { errorMessage: "t1" }),
+        failureRow("threeFail", "de", { errorMessage: "t2", modelOrder: 2 }),
+        failureRow("threeFail", "de", { errorMessage: "t3", modelOrder: 3 }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translation-failures/summary`);
+        expect(res.ok).toBe(true);
+        const s = (await res.json()) as {
+          segmentsWithFailure: number;
+          segmentsWith1Failure: number;
+          segmentsWith2Failures: number;
+          segmentsWith3OrMoreFailures: number;
+        };
+        expect(s.segmentsWithFailure).toBe(3);
+        expect(s.segmentsWith1Failure).toBe(1);
+        expect(s.segmentsWith2Failures).toBe(1);
+        expect(s.segmentsWith3OrMoreFailures).toBe(1);
+      });
+    });
+
+    it("GET /api/translation-failures/summary honors filters like summary on list endpoint", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("x1", "de", "", "", "m", "only-de.md", 1);
+      cache.setSegment("x2", "fr", "", "", "m", "only-fr.md", 1);
+      cache.addSegmentFailures([
+        failureRow("x1", "de"),
+        failureRow("x2", "fr"),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de", "fr"],
+      });
+      await withHttpServer(app, async (base) => {
+        const sum = await fetch(`${base}/api/translation-failures/summary?locale=fr`);
+        const s = (await sum.json()) as { segmentsWithFailure: number };
+        expect(s.segmentsWithFailure).toBe(1);
+
+        const list = await fetch(`${base}/api/translation-failures?locale=fr`);
+        const l = (await list.json()) as { total: number };
+        expect(l.total).toBe(1);
+      });
+    });
+  });
 });

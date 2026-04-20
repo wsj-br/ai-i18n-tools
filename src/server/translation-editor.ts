@@ -324,7 +324,8 @@ export function createTranslationEditorApp(
       const pageSize = Math.min(100, Math.max(1, parseInt(req.query.pageSize as string, 10) || 50));
       const offset = (page - 1) * pageSize;
       const sortRaw = (req.query.sort as string | undefined) ?? "failures_desc";
-      const sort = sortRaw === "filepath_line_asc" || sortRaw === "failures_desc" ? sortRaw : "failures_desc";
+      const sort =
+        sortRaw === "filepath_line_asc" || sortRaw === "failures_desc" ? sortRaw : "failures_desc";
       const fatalRaw = req.query.fatal as string | undefined;
       const fatal = fatalRaw === "true" ? true : undefined;
 

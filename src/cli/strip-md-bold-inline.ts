@@ -74,7 +74,9 @@ export function runStripMdBoldInline(opts: StripMdBoldInlineOptions): {
     const delta = raw.length - next.length;
     if (opts.dryRun) {
       console.log(
-        chalk.cyan(`[dry-run] would update ${rel} (${raw.length} → ${next.length} chars, −${delta})`)
+        chalk.cyan(
+          `[dry-run] would update ${rel} (${raw.length} → ${next.length} chars, −${delta})`
+        )
       );
       continue;
     }
@@ -101,7 +103,9 @@ export function runStripMdBoldInline(opts: StripMdBoldInlineOptions): {
     } catch (e) {
       filesFailed += 1;
       console.error(
-        chalk.red(`[strip-md-bold-inline] Cannot write ${rel}: ${e instanceof Error ? e.message : e}`)
+        chalk.red(
+          `[strip-md-bold-inline] Cannot write ${rel}: ${e instanceof Error ? e.message : e}`
+        )
       );
     }
   }

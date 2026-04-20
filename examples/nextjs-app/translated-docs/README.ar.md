@@ -1,36 +1,43 @@
 # مثال تطبيق Next.js
 
-يوضح هذا المثال كيفية استخدام `ai-i18n-tools` مع تطبيق **TypeScript** [Next.js](https://nextjs.org/) و**pnpm**. وتطابق واجهة المستخدم مثال تطبيق [الوحدة](../../console-app/)، باستخدام نفس مفاتيح النصوص ومنتقي لغات يتم تشغيله بواسطة `locales/ui-languages.json` (اللغة المصدر `en-GB` أولاً، تليها أهداف الترجمة). يقوم [`src/lib/i18n.ts`](../src/lib/i18n.ts) ببناء **`localeLoaders`** من هذا البيان (كل `code` باستثناء `SOURCE_LOCALE`)، مثل تطبيق الوحدة؛ ويتم تحميل الحُزم باستخدام **`fetch`** إلى **`public/locales/<locale>.json`**.
+يوضح هذا المثال كيفية استخدام `ai-i18n-tools` مع تطبيق **TypeScript** [Next.js](https://nextjs.org/) و **pnpm**. يتماشى واجهة المستخدم مع [مثال تطبيق وحدة التحكم](../../console-app/)، باستخدام نفس المفاتيح النصية ومنتقي لغات يعتمد على `locales/ui-languages.json` (لغة المصدر `en-GB` أولاً، تليها اللغات المستهدفة للترجمة). يقوم `[src/lib/i18n.ts](../src/lib/i18n.ts)` ببناء `**localeLoaders`** من هذا البيان (كل `code` باستثناء `SOURCE_LOCALE`)، مثل تطبيق وحدة التحكم؛ ويتم تحميل الحزم باستخدام `**fetch**` إلى `**public/locales/<locale>.json**`.
 
-موجود ضمن هذا المجلد موقع صغير **[Docusaurus](https://docusaurus.io/)** ([`docs-site/`](../docs-site/)) يحتوي نسخًا من وثائق المشروع الرئيسية للتصفح المحلي.
+ضمن هذا المجلد يوجد موقع صغير يستخدم **[Docusaurus](https://docusaurus.io/)** (`[docs-site/](../docs-site/)`) يحتوي على مجموعة مختارة من وثائق المشروع الرئيسي للتصفح المحلي.
 
-<small>**اقرأ بلغات أخرى:** </small>
-
-<small id="lang-list">[English](../README.md) · [العربية](./README.ar.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (BR)](./README.pt-BR.md)</small>
+**اقرأ بلغات أخرى:**
+[الإنجليزية](../README.md) · [العربية](README.ar.md) · [الإسبانية](README.es.md) · [الفرنسية](README.fr.md) · [الألمانية](README.de.md) · [البرتغالية (البرازيل)](README.pt-BR.md)
 
 ## لقطة شاشة
 
-![screenshot](../images/screenshots/ar/screenshot.png)
+لقطة شاشة
 
 ## المتطلبات
 
-- Node.js >= 18
-- [pnpm](https://pnpm.io/)
-- مفتاح API من [OpenRouter](https://openrouter.ai) (لإنشاء الترجمات)
+- Node.js >= 22.16 (مطابقة لحقل `engines` في المستودع)
+- [pnpm](https://pnpm.io/) >= 10.33 (انظر `package.json` `packageManager` / `engines` في الجذر)
+- مفتاح API من [OpenRouter](https://openrouter.ai) (لتوليد الترجمات)
 
 ## التثبيت
 
-من **جذر المستودع**، قم بتشغيل:
+من الجذر **مستودع المصدر**، قم بتشغيل:
 
 ```bash
 pnpm install
 ```
 
-يتضمن ملف `pnpm-workspace.yaml` في الجذر المكتبة وعينة هذا المثال، وبالتالي يقوم pnpm بربط `ai-i18n-tools` عبر `"ai-i18n-tools": "workspace:^"` في `package.json`. ولا حاجة لخطوة بناء أو ربط منفصلة — بعد تعديل مصادر المكتبة، قم بتشغيل `pnpm run build` في جذر المستودع وسيتم تلقائيًا تحميل الملفات المحدثة من `dist/` في المثال.
+يشمل الجذر `pnpm-workspace.yaml` المكتبة وعينة هذا المثال، وبالتالي pnpm يربط `ai-i18n-tools` عبر `"ai-i18n-tools": "workspace:^"` في `package.json`. لا حاجة لخطوة بناء أو ربط منفصلة — بعد تعديل مصادر المكتبة، قم بتشغيل `pnpm run build` من جذر المستودع وسيتم تلقائياً تحميل النسخة المحدثة من `dist/` في المثال.
+
+**دليل العمل:** قم بتشغيل تطبيق Next.js وجميع أوامر `pnpm run i18n:*` من `**examples/nextjs-app`** (حيث يوجد `ai-i18n-tools.config.json`)، أو قم بتمرير `--config` / تعيين دليل العمل بحيث يستطيع واجهة سطر الأوامر تحديد هذا الإعداد.
 
 ## الاستخدام
 
 ### تطبيق Next.js (المنفذ 3030)
+
+من جذر المستودع بعد `pnpm install`:
+
+```bash
+cd examples/nextjs-app
+```
 
 خادم التطوير:
 
@@ -45,47 +52,48 @@ pnpm build
 pnpm start
 ```
 
-افتح [http://localhost:3030](http://localhost:3030). استخدم قائمة منسدلة **Locale** لتغيير اللغة (معرّف المحالة / الاسم الإنجليزي / التسمية الأصلية). يمكنك أيضًا الربط المباشر بمحالة باستخدام سلسلة الاستعلام **`?locale=<code>`** (على سبيل المثال [`?locale=ar`](http://localhost:3030/?locale=ar))؛ ويحافظ الصفحة على توافق بين القائمة المنسدلة ورابط العنوان.
+افتح [http://localhost:3030](http://localhost:3030). استخدم القائمة المنسدلة **Locale** لتغيير اللغة (معرّف اللغة / الاسم الإنجليزي / التسمية الأصلية). يمكنك أيضًا الربط المباشر بلغة معينة باستخدام سلسلة الاستعلام `**?locale=<code>`** (مثلاً `[?locale=ar](http://localhost:3030/?locale=ar)`); ويتم مزامنة الصفحة بين القائمة المنسدلة ورابط URL.
 
-### مثال على الجمع الرئيسي
+### مثال الجمع العددي
 
-تشمل الصفحة الرئيسية **عرضًا توضيحيًا للجمع** ("الجمع: مثال على استخدام التوليد التلقائي") يوضح كيف يتم ربط سلاسل واجهة المستخدم الخاصة بـ **جمع عددي** من البداية إلى النهاية:
+تتضمن الصفحة الرئيسية عرضًا توضيحيًا لـ **الجمع** ("الجمع: مثال على استخدام التوليد التلقائي") يوضح كيفية توصيل سلاسل واجهة المستخدم للجمع **الأساسي** من البداية إلى النهاية:
 
-- **العرض:** يتم تكرار نفس الرسالة بعدة أعداد تجريبية معرّفة في **`PLURAL_DEMO_COUNTS`** في [`src/app/page.tsx`](../src/app/page.tsx) (افتراضيًا **1**، **2**، **5**، و **50**) بحيث يمكنك مقارنة سلوك الجمع عبر المحالات (بما في ذلك اللغات ذات أشكال الجمع المتعددة، مثل العربية).
-- **واجهة برمجة التطبيقات (API):** يستخدم كل سطر `t("This page has {{count}} sections", { plurals: true, count })`. مرر **`plurals: true`** بحيث تتعامل الاستخراج والترجمة مع المفتاح باعتباره مجموعة جمع؛ ويحدد **`count`** الشكل الجمعي النشط أثناء التشغيل.
-- **وقت التشغيل:** "يتم حل أشكال الجمع عند وقت التشغيل باستخدام المساعدات المتصلة في [src/lib/i18n.ts](../src/lib/i18n.ts) (راجع وثائق وقت تشغيل الحزمة للحصول على الصورة الكاملة).
-- **المخرجات:** تستخدم المحالات المستهدفة إدخالات ذات بادئة في `public/locales/<locale>.json`؛ ويحافظ المحال المصدر على حزم الجمع في **`public/locales/en-GB.json`** بجانب الإدخالات المسطحة المعتادة.
+- **العرض:** يتم تكرار نفس الرسالة بعدد من الأمثلة المحددة في `**PLURAL_DEMO_COUNTS`** في `[src/app/page.tsx](../src/app/page.tsx)` (بشكل افتراضي **1**، **2**، **5**، و **50**) لكي تتمكن من مقارنة سلوك الجمع عبر اللغات (بما في ذلك اللغات ذات أشكال الجمع المتعددة مثل العربية).
+- **واجهة برمجة التطبيقات (API):** يستخدم كل سطر `t("This page has {{count}} sections", { plurals: true, count })`. مرر `**plurals: true`** بحيث تتعامل أدوات الاستخراج والترجمة مع المفتاح كمجموعة جمع؛ ويحدد `**count**` الشكل الجمعي النشط أثناء التشغيل.
+- **وقت التشغيل:** يتم حل أشكال الجمع أثناء التشغيل عبر المساعدات الموصولة في `[src/lib/i18n.ts](../src/lib/i18n.ts)`؛ راجع وثائق الحزمة الخاصة بـ **runtime** (`ai-i18n-tools/runtime`) للحصول على الصورة الكاملة.
+- **المخرجات:** تستخدم اللغات المستهدفة إدخالات ذات لواحق في `public/locales/<locale>.json`؛ بينما تحتفظ لغة المصدر بحزم الجمع في `**public/locales/en-GB.json`** بجانب الإدخالات المسطحة المعتادة.
 
-كما يعرض العرض التوضيحي **كتلة صغيرة من الشفرة الرمادية** تحتوي على مقتطف JSX فوق الأمثلة المباشرة للرجوع السريع.
+كما يعرض العرض التجريبي **كتلة رمادية صغيرة من التعليمات البرمجية** تحتوي على مقتطف JSX فوق الأمثلة المباشرة كمرجع سريع.
 
-تعرض الصفحة الرئيسية أيضًا **رسمًا بيانيًا SVG تجريبيًا** في الأسفل. يتبع عنوان URL للصورة النمط `public/assets/translation_demo_svg.<locale>.svg` (بنية مسطحة من الكتلة `svg` في ملف `ai-i18n-tools.config.json`). بعد تشغيل `translate-svg`، تحتوي كل ملف لغة على محتوى مترجم ضمن العناصر `<text>` و `<title>` و `<desc>`؛ قبل ذلك، قد تبدو النسخ المحفوظة متطابقة عبر اللغات.
+تعرض الصفحة الرئيسية أيضًا **رسم SVG تجريبي** في الأسفل. يتبع عنوان URL للصورة `public/assets/translation_demo_svg.<locale>.svg` (تخطيط مسطح من كتلة `svg` في `ai-i18n-tools.config.json`). بعد تشغيل `translate-svg`، تحتوي كل ملف لغة على محتوى مترجم لـ `<text>` و`<title>` و`<desc>`؛ وقبل ذلك، قد تبدو النسخ المحفوظة متطابقة عبر اللغات.
 
-### موقع الوثائق (المنفذ 3040)
+### موقع التوثيق (المنفذ 3040)
 
 ```bash
-cd docs-site
+cd examples/nextjs-app/docs-site
 pnpm install
+pnpm build
 pnpm start
 ```
 
-افتح [http://localhost:3040](http://localhost:3040) (باللغة الإنجليزية). في بيئة **التطوير**، يقوم Docusaurus بعرض **لغة واحدة في كل مرة**: المسارات مثل `/es/getting-started` تُرجع خطأ **404** ما لم تقم بتشغيل `pnpm run start:es` (أو `start:fr`، `start:de`، `start:pt-BR`، `start:ar`). بعد تنفيذ `pnpm build && pnpm serve`، تصبح جميع اللغات متاحة. راجع [`docs-site/README.md`](../docs-site/README.md).
+إذا لم يتم الفتح تلقائيًا، افتح متصفحك واذهب إلى [http://localhost:3040](http://localhost:3040).
 
 ## اللغات المدعومة
 
-| Code     | Language             |
-| -------- | -------------------- |
-| `en-GB`  | الإنجليزية (المملكة المتحدة) الافتراضية |
-| `es`     | الإسبانية              |
+| الكود    | اللغة             |
+| ------- | -------------------- |
+| `ar`    | العربية               |
+| `en-GB` | الإنجليزية (المملكة المتحدة) الافتراضية |
 | `fr`     | الفرنسية               |
 | `de`     | الألمانية               |
 | `pt-BR`  | البرتغالية (البرازيل)  |
-| `ar`     | العربية               |
+| `es`     | الإسبانية              |
 
 ## سير العمل
 
 ### 1. استخراج سلاسل واجهة المستخدم
 
-يقوم بمسح `src/` بحثًا عن استدعاءات `t()` ويُحدّث `locales/strings.json`:
+يقوم بمسح `src/` بحثًا عن استدعاءات `t()` ويحدّث `locales/strings.json`:
 
 ```bash
 pnpm run i18n:extract
@@ -93,18 +101,24 @@ pnpm run i18n:extract
 
 ### 2. الترجمة
 
-عيّن `OPENROUTER_API_KEY`، ثم شغّل نصوص الترجمة:
+عيّن `OPENROUTER_API_KEY`، ثم من `**examples/nextjs-app**` قم بتشغيل جميع خطوات الترجمة (JSON واجهة المستخدم المسطح → أصول SVG → الوثائق) بالترتيب:
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
-pnpm run i18n:translate-ui
-pnpm run i18n:translate-svg
-pnpm run i18n:translate-docs
+pnpm run i18n:translate
+```
+
+لتشغيل مرحلة واحدة فقط، استخدم واجهة سطر الأوامر (نفس دليل العمل):
+
+```bash
+ai-i18n-tools translate-ui
+ai-i18n-tools translate-svg
+ai-i18n-tools translate-docs
 ```
 
 ### أمر المزامنة
 
-يقوم أمر المزامنة بتشغيل خطوات الاستخراج وجميع خطوات الترجمة بشكل متسلسل:
+يُشغّل أمر المزامنة خطوات الاستخراج وجميع خطوات الترجمة بالترتيب:
 
 ```bash
 pnpm run i18n:sync
@@ -116,28 +130,28 @@ pnpm run i18n:sync
 ai-i18n-tools sync
 ```
 
-تُنفَّذ الخطوات بالترتيب:
+الخطوات تُنفّذ بالترتيب:
 
-1. **`ai-i18n-tools extract`** — يستخرج سلاسل واجهة المستخدم وحدّث `locales/strings.json`.  
-2. **`ai-i18n-tools translate-ui`** — يكتب ملف JSON للموضع بلغة مسطحة ضمن `public/locales/` من `locales/strings.json`.  
-3. **`ai-i18n-tools translate-svg`** — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون قيمة `features.translateSVG` صحيحة ويكون كتلة `svg` مضبوطة في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).  
-4. **`ai-i18n-tools translate-docs`** — يترجم ملفات Docusaurus بصيغة markdown الموجودة ضمن `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (انظر **Workflow 2** في `docs/GETTING_STARTED.md` في جذر المستودع).
+1. `**ai-i18n-tools extract**` — يستخرج سلاسل واجهة المستخدم ويحدّث `locales/strings.json`.
+2. `**ai-i18n-tools translate-ui**` — يكتب ملفات JSON للغات المسطحة ضمن `public/locales/` من `locales/strings.json`.
+3. `**ai-i18n-tools translate-svg**` — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون `features.translateSVG` صحيحة ويتم تعيين كتلة `svg` في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
+4. `**ai-i18n-tools translate-docs**` — يترجم وثائق Docusaurus بصيغة markdown والملفات JSON ذات الصلة ضمن `docs-site/i18n/` (وفقًا لـ `documentations[]` في `ai-i18n-tools.config.json`؛ انظر **التدفق 2** في `docs/GETTING_STARTED.md` في جذر المستودع).
 
-يمكنك تشغيل أي خطوة على حدة (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بسير العمل ذاك.
+يمكنك تشغيل أي خطوة بشكل منفصل (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بذلك المسار.
 
-إذا أظهرت السجلات تخطيًا عديدًا وكتابات قليلة، فإن الأداة تعيد استخدام **المخرجات الحالية** و**ذاكرة التخزين المؤقت SQLite** في `.translation-cache/`. لإجبار إعادة الترجمة، استخدم الخيار `--force` أو `--force-update` مع الأمر المعني عند دعمه، أو شغّل `pnpm run i18n:clean` ثم قم بالترجمة مرة أخرى.
+إذا أظهرت السجلات تخطيًا كثيرًا وكتابات قليلة، فإن الأداة تعيد استخدام **المخرجات الحالية** و**ذاكرة التخزين المؤقت SQLite** في `.translation-cache/`. لإجبار إعادة الترجمة، مرر `--force` أو `--force-update` على الأمر المناسب عند الدعم، أو قم بتشغيل `**pnpm run i18n:clean`** (يحذف **فقط** `.translation-cache/` في هذا المجلد) ثم قم بالترجمة مرة أخرى.
 
-يحتوي هذا المثال على `features.translateSVG` وكتلة `svg`، وبالتالي **`i18n:sync` يقوم بتشغيل خطوة SVG نفسها كما في `translate-svg`**. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للحصول على الترتيب الثابت واجهة المستخدم → SVG → المستندات **بدون** تشغيل **extract**.
+يحتوي هذا المثال على `features.translateSVG` وكتلة `svg`، لذا يقوم `**i18n:sync` بتشغيل نفس خطوة SVG كما في `translate-svg`**. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للترتيب الثابت واجهة المستخدم → SVG → الوثائق **دون** تشغيل **extract**.
 
 ### 3. تنظيف الذاكرة المؤقتة وإعادة الترجمة
 
-بعد إجراء تغييرات على واجهة المستخدم أو الوثائق، قد تصبح بعض إدخالات الذاكرة المؤقتة قديمة أو منفصلة (مثلاً، إذا تم حذف مستند أو تغيير اسمه). يقوم `i18n:cleanup` أولاً بتشغيل `sync --force-update`، ثم يزيل الإدخالات القديمة:
+بعد إجراء تغييرات على واجهة المستخدم أو الوثائق، قد تصبح بعض إدخالات الذاكرة المؤقتة قديمة أو مهجورة (مثلاً إذا تم إزالة مستند أو تغيير اسمه). يقوم `i18n:cleanup` بتشغيل `sync --force-update` أولًا، ثم يزيل الإدخالات القديمة:
 
 ```bash
 pnpm run i18n:cleanup
 ```
 
-لإجبار إعادة ترجمة واجهة المستخدم أو المستندات أو ملفات SVG، استخدم `--force`. هذا يتجاهل الذاكرة المؤقتة ويُعيد الترجمة باستخدام نماذج الذكاء الاصطناعي.
+لإجبار الأداة على إعادة ترجمة واجهة المستخدم أو المستندات أو ملفات SVG، استخدم `--force`. هذا يتجاهل الذاكرة المؤقتة ويعيد الترجمة باستخدام نماذج الذكاء الاصطناعي.
 
 لإعادة ترجمة المشروع بأكمله (واجهة المستخدم، المستندات، ملفات SVG):
 
@@ -145,13 +159,13 @@ pnpm run i18n:cleanup
 pnpm run i18n:sync --force
 ```
 
-لإعادة ترجمة لغة واحدة فقط:
+لإعادة ترجمة لغة محلية واحدة فقط:
 
 ```bash
 pnpm run i18n:sync --force --locale pt-BR
 ```
 
-لإعادة ترجمة سلاسل واجهة المستخدم فقط بلغة محددة:
+لإعادة ترجمة سلاسل واجهة المستخدم فقط بلغة محلية محددة:
 
 ```bash
 ai-i18n-tools translate-ui --force --locale pt-BR
@@ -159,19 +173,22 @@ ai-i18n-tools translate-ui --force --locale pt-BR
 
 ### 4. التعديلات اليدوية (محرر الذاكرة المؤقتة)
 
-يمكنك تشغيل واجهة ويب محلية لمراجعة الترجمات وتحريرها يدويًا في الذاكرة المؤقتة، وسلسلة واجهة المستخدم، والقاموس المسرد:
+يمكنك تشغيل واجهة ويب محلية لمراجعة الترجمات وتعديلها يدويًا في الذاكرة المؤقتة، وسلاسل واجهة المستخدم، والمعجم (من `**examples/nextjs-app**`):
 
 ```bash
 pnpm run i18n:editor
 ```
 
-> **مهم:** إذا قمت بتحرير إدخال يدويًا في محرر الذاكرة المؤقتة، فعليك تشغيل الأمر `sync --force-update` (مثل `pnpm run i18n:sync --force-update`) لإعادة كتابة الملفات المسطحة أو ملفات markdown التي تم إنشاؤها مع الترجمة المحدثة. لاحظ أيضًا أنه إذا تغير النص الأصلي في المستقبل، فستفقد التعديل اليدوي الخاص بك لأن الأداة تقوم بإنشاء تجزئة جديدة للنص الأصلي الجديد.
+من `**docs-site/**`، يقوم `**pnpm run i18n:editor**` بنفس الشيء (إنه `cd`s إلى هذا المجلد ويشغّل واجهة سطر الأوامر).
+
+> **مهم:** إذا قمت بتعديل إدخال يدويًا في محرر الذاكرة المؤقتة، فعليك تشغيل `sync --force-update` (مثلاً `pnpm run i18n:sync --force-update`) لإعادة كتابة الملفات المسطحة أو ملفات markdown التي تم إنشاؤها باستخدام الترجمة المحدثة. لاحظ أيضًا أنه إذا تغير النص الأصلي في المستقبل، فستفقد تعديلاتك اليدوية لأن الأداة ستُنشئ تجزئة جديدة للنص الأصلي الجديد.
 
 ## هيكل المشروع
 
 ```text
 nextjs-app/
-├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
+├── ai-i18n-tools.config.json # UI, docs, svg, glossary; `cacheDir`: .translation-cache/
+├── glossary-user.csv         # Optional user glossary (see config `glossary.userGlossary`)
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx
@@ -185,6 +202,8 @@ nextjs-app/
 │   ├── ui-languages.json
 │   └── strings.json          # Generated string catalogue (extract)
 ├── public/locales/           # Flat per-locale JSON (committed; regenerate with translate-ui)
+│   ├── en-GB.json            # Source locale bundle (includes plural keys)
+│   ├── ui-languages.json     # Copied/served for runtime if needed
 │   ├── es.json
 │   ├── fr.json
 │   ├── de.json
@@ -192,11 +211,13 @@ nextjs-app/
 │   └── ar.json
 ├── public/assets/            # Per-locale SVGs (translate-svg; page uses translation_demo_svg.<locale>.svg)
 │   └── translation_demo_svg.*.svg
+├── translated-docs/          # README translations (flat markdown; second `documentations` block)
 └── docs-site/                # Docusaurus docs (port 3040)
-    ├── docs/                 # Source (English)
-    └── i18n/                 # Translated docs (Docusaurus layout; committed in git)
+    ├── docs/                 # English sources for this example (curated subset)
+    ├── docusaurus.config.mjs
+    └── i18n/                 # Translated docs + Docusaurus JSON catalogs (committed in git)
 ```
 
-يمكن مزامنة مصادر الوثائق الإنجليزية الموجودة ضمن `docs-site/docs/` من جذر المستودع باستخدام الأمر `pnpm run sync-docs`، والذي يضيف عناوين `{#slug}` ويعكس سلوك `docusaurus write-heading-ids`؛ راجع رأس النص البرمجي في `scripts/sync-docs-to-nextjs-example.mjs`.
+يوجد نص ماركداون الإنجليزية للموقع التجريبي ضمن `**docs-site/docs/**`. ولا توجد مزامنة تلقائية من الجذر المستودع `**docs/**`؛ قم بتحديث تلك الملفات مباشرة عند تجديد المحتوى. وللحفاظ على عناوين روابط ثابتة، استخدم Docusaurus `**write-heading-ids**` من `**docs-site/**` (انظر `**pnpm run write-heading-ids**` في `[docs-site/package.json](../docs-site/package.json)`).
 
-تم بالفعل إدخال سلاسل واجهة المستخدم المترجمة، وملفات SVG التوضيحية، وصفحات Docusaurus ضمن `public/locales/` و`public/assets/` و`locales/strings.json` و`docs-site/i18n/`. بعد تغيير المصادر وتشغيل `i18n:translate`، أعد تشغيل خوادم التطوير الخاصة بـ Next.js وDocusaurus حسب الحاجة؛ وتظهر لغات Docusaurus في ملف `docs-site/docusaurus.config.js`.
+تُرسل السلاسل المترجمة للواجهة، وملفات SVG التوضيحية، وترجمات الجذر `README`، ونواتج Docusaurus ضمن `public/locales/` و`public/assets/` و`locales/strings.json` و`translated-docs/` و`docs-site/i18n/`. بعد تعديل المصادر وتشغيل `**pnpm run i18n:translate**` أو `**pnpm run i18n:sync**`، أعد تشغيل خوادم التطوير الخاصة بـ Next.js وDocusaurus حسب الحاجة. ويتم تعريف التوجيه حسب اللغة المحلية و`**localeConfigs**` في `**docs-site/docusaurus.config.mjs**`.

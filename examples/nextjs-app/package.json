@@ -10,21 +10,23 @@
     "i18n:extract": "ai-i18n-tools extract",
     "i18n:sync": "ai-i18n-tools sync",
     "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate-svg && ai-i18n-tools translate-docs",
-    "i18n:cleanup": "ai-i18n-tools cleanup"
+    "i18n:cleanup": "ai-i18n-tools cleanup",
+    "i18n:clean": "rm -rf .translation-cache",
+    "i18n:editor": "ai-i18n-tools editor"
   },
   "dependencies": {
     "ai-i18n-tools": "workspace:^",
-    "i18next": "^26.0.5",
+    "i18next": "^26.0.6",
     "next": "^16.2.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-i18next": "^17.0.3"
+    "react-i18next": "^17.0.4"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=22.16.0"

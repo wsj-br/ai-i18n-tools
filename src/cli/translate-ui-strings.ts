@@ -346,7 +346,10 @@ export async function runTranslateUI(
         intlPluralLocaleTag: srcNorm,
       });
       const batch = await client.translatePluralCardinalBatch(req, msgs);
-      const forms = compactIdenticalPluralForms(batch.forms) as Record<CldrPluralForm, string>;
+      const forms = compactIdenticalPluralForms(batch.forms, srcNorm) as Record<
+        CldrPluralForm,
+        string
+      >;
       console.log(
         chalk.green(
           `✔️  ${srcNorm} ${stringsRel}: plural Step 0 ${si + 1}/${step0Total} (${h}) (1 plural group in batch, ${batch.usage.totalTokens} tokens)`
@@ -540,7 +543,7 @@ export async function runTranslateUI(
             formsOut[k] = restoreGlossaryForcedTerms(formsOut[k] ?? "", allReplacements);
           }
         }
-        formsOut = compactIdenticalPluralForms(formsOut) as Record<CldrPluralForm, string>;
+        formsOut = compactIdenticalPluralForms(formsOut, locale) as Record<CldrPluralForm, string>;
         const ent = strings[h];
         if (!ent || !isPluralStringsEntry(ent)) {
           continue;

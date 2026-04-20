@@ -30,9 +30,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node scripts/write-build-info.mjs && tsc && node scripts/copy-edit-cache-app.mjs",
+    "build": "node scripts/write-build-info.mjs && tsc && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs",
     "build:ui-languages-master": "node scripts/build-ui-languages-complete.mjs",
-    "dev": "node scripts/copy-edit-cache-app.mjs && tsc --watch",
+    "dev": "node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs && tsc --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -103,8 +103,8 @@
     "globals": "^17.5.0",
     "markdownlint-cli": "^0.48.0",
     "prettier": "^3.8.3",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0",
     "vitest": "^4.1.4"
   },
   "peerDependencies": {

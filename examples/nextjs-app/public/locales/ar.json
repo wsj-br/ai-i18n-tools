@@ -1,5 +1,5 @@
 {
-  "ai-i18n-tools: Next.js example app": "ai-i18n-tools: تطبيق Next.js مثال",
+  "ai-i18n-tools: Next.js example app": "ai-i18n-tools: تطبيق تجريبي Next.js",
   "Hello World!": "مرحباً بالعالم!",
   "This line will be translated to multiple languages.": "سيتم ترجمة هذا السطر إلى لغات متعددة.",
   "This is line number {{number}}": "هذا هو السطر رقم {{number}}",
@@ -10,8 +10,8 @@
   "f9ba51ab_two": "تحتوي هذه الصفحة على {{count}} قسمين",
   "f9ba51ab_few": "تحتوي هذه الصفحة على {{count}} أقسام",
   "f9ba51ab_many": "تحتوي هذه الصفحة على {{count}} قسماً",
-  "f9ba51ab_other": "تحتوي هذه الصفحة على {{count}} أقسام",
-  "Translation demo illustration": "رسم توضيحي لعرض الترجمة",
-  "ai-i18n-tools translated the texts contained within this SVG illustration.": "قام ai-i18n-tools بترجمة النصوص الموجودة ضمن هذه الصورة التوضيحية SVG.",
-  "Example Next.js application demonstrating ai-i18n-tools": "تطبيق Next.js توضيحي يعرض ai-i18n-tools"
+  "f9ba51ab_other": "تحتوي هذه الصفحة على {{count}} قسمًا",
+  "Translation demo illustration": "عرض توضيحي للترجمة",
+  "ai-i18n-tools translated the texts contained within this SVG illustration.": "قام ai-i18n-tools بترجمة النصوص الموجودة ضمن هذا الرسم التوضيحي SVG.",
+  "Example Next.js application demonstrating ai-i18n-tools": "تطبيق تجريبي Next.js يوضح ai-i18n-tools"
 }

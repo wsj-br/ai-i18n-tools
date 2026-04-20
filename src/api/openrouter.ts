@@ -278,7 +278,10 @@ export class OpenRouterClient {
   }
 
   /** Single HTTP call for one model (one follow-up on HTTP 429 with the same body). */
-  private async fetchCompletion(model: string, openRouterMessages: OpenRouterMessage[]): Promise<ChatResponse> {
+  private async fetchCompletion(
+    model: string,
+    openRouterMessages: OpenRouterMessage[]
+  ): Promise<ChatResponse> {
     const requestPayload: OpenRouterRequestPayload = {
       model,
       max_tokens: this.maxTokens,

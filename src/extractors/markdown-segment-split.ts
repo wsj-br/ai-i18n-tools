@@ -105,8 +105,7 @@ function splitListSegment(
       ...seg,
       content,
       ...(isFirst ? {} : { tightJoinPrevious: true }),
-      startLine:
-        seg.startLine !== undefined ? seg.startLine + chunkStartLineOffset : undefined,
+      startLine: seg.startLine !== undefined ? seg.startLine + chunkStartLineOffset : undefined,
     });
   }
   return out;

@@ -1,17 +1,8 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import masterJson from "./ui-languages-complete.json" with { type: "json" };
 import { normalizeManifestLocaleKey } from "../core/locale-utils.js";
 
-/** Sync load avoids Node 20+ JSON import-attribute requirements when consumers use `module: Node16` builds. */
-const masterPath = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "data",
-  "ui-languages-complete.json"
-);
-const master = JSON.parse(fs.readFileSync(masterPath, "utf8")) as unknown[];
+/** Compile-time bundle of `data/ui-languages-complete.json` (symlink under `src/runtime/`). */
+const master = masterJson as unknown[];
 
 const DIRECTION_BY_KEY = new Map<string, "ltr" | "rtl">();
 

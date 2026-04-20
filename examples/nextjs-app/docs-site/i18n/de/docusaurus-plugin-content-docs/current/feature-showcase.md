@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
-title: Vorführung der Übersetzungsfunktionen
+title: Übersetzungs-Funktionsshowcase
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
   übersetzen kann.
-translation_last_updated: '2026-04-20T16:41:24.901Z'
-source_file_mtime: '2026-04-19T22:02:25.720Z'
-source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
+translation_last_updated: '2026-04-20T20:45:13.610Z'
+source_file_mtime: '2026-04-20T20:03:51.319Z'
+source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
 translation_language: de
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -15,77 +15,84 @@ translation_models:
 
 
 
-Diese Seite dient dazu, zu demonstrieren, wie `ai-i18n-tools` jede gängige Markdown-Konstruktion verarbeitet. Führen Sie `sync` darauf aus und vergleichen Sie die Ausgabe in jedem Sprachordner, um genau zu sehen, was übersetzt wird und was unverändert bleibt.
+Diese Seite dient dazu, zu demonstrieren, wie `ai-i18n-tools` jede gängige Markdown-Konstruktion behandelt. Führen Sie `sync` darauf aus und vergleichen Sie die Ausgabe in jedem Locale-Ordner, um genau zu sehen, was übersetzt wird und was unverändert bleibt.
 
 ---
 
-## Einfacher Fließtext
+## Nur-Text {#plain-text}
 
-Internationalisierung bedeutet mehr als nur das Austauschen von Wörtern. Eine gute Übersetzungspipeline erhält die Dokumentstruktur bei, bewahrt technische Bezeichner und sendet nur menschenlesbaren Text an das Sprachmodell.
+Internationalisierung bedeutet mehr als nur das Austauschen von Wörtern. Eine gute Übersetzungs-Pipeline erhält die Dokumentstruktur bei, bewahrt technische Kennungen und sendet nur menschlich lesbare Texte an das Sprachmodell.
 
-`ai-i18n-tools` teilt jedes Dokument in **Segmente** auf, bevor es an das LLM gesendet wird. Jedes Segment wird unabhängig übersetzt und anschließend wieder zusammengesetzt, sodass eine Änderung an einem Absatz nicht die zwischengespeicherten Übersetzungen des restlichen Dokuments ungültig macht.
+`ai-i18n-tools` teilt jedes Dokument vor dem Senden an das LLM in **Segmente** auf. Jedes Segment wird unabhängig übersetzt und anschließend wieder zusammengesetzt, sodass eine Änderung an einem Absatz nicht die zwischengespeicherten Übersetzungen des restlichen Dokuments ungültig macht.
 
 ---
 
-## Inline-Formatierung
+## Textformatierung {#text-formatting}
 
-Der Übersetzer sollte sämtliche Inline-Formatierungen übernehmen, ohne die Auszeichnung zu verändern:
+Der Übersetzer sollte alle Inline-Formatierungen übernehmen, ohne die Auszeichnung zu verändern:
 
 - **Fetter Text** signalisiert Wichtigkeit und sollte nach der Übersetzung fett bleiben.
-- _Kursiver Text_ wird zur Hervorhebung oder für Titel verwendet; die Bedeutung ist beizubehalten.
-- ~~Durchgestrichen~~ kennzeichnet veraltete oder entfernte Inhalte.
-- `inline code` wird **niemals** übersetzt – Bezeichner, Funktionsnamen und Dateipfade müssen unverändert bleiben.
-- Ein [Hyperlink](https://github.com/your-org/ai-i18n-tools) behält seine ursprüngliche URL; nur die Ankerbezeichnung wird übersetzt.
+- _Kursiver Text_ wird für Betonung oder Titel verwendet; die Bedeutung sollte erhalten bleiben.
+- ~~Durchgestrichen~~ markiert veraltete oder entfernte Inhalte.
+- `inline code` wird **niemals** übersetzt — Kennungen, Funktionsnamen und Dateipfade müssen unverändert bleiben.
+- Ein [Hyperlink](https://github.com/wsj-br/ai-i18n-tools) behält seine ursprüngliche URL bei; nur die Ankerbezeichnung wird übersetzt.
 
 ---
 
-## Überschriften auf jeder Ebene
+## Überschriften auf jeder Ebene {#headings-at-every-level}
 
-### H3 — Konfiguration
+### H3 — Konfiguration {#h3--configuration}
 
-#### H4 — Ausgabeverzeichnis
+#### H4 — Ausgabeverzeichnis {#h4--output-directory}
 
-##### H5 — Dateibenennung
+##### H5 — Dateibenennung {#h5--file-naming}
 
-###### H6 — Erweiterungsbehandlung
+###### H6 — Erweiterungshandling {#h6--extension-handling}
 
-Alle Überschriftsebenen übersetzen den Text, lassen aber die Anker-IDs unverändert, damit bestehende Deep-Links weiterhin funktionieren.
+Alle Überschriftenebenen übersetzen den Text, lassen aber Anker-IDs unverändert, sodass vorhandene Ankerlinks weiterhin funktionieren.
 
 ---
 
-## Tabellen
+## Tabellen {#tables}
 
 Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird einzeln übersetzt; Spaltentrennzeichen und Ausrichtungssyntax bleiben erhalten.
 
-| Funktion | Status | Hinweise |
-|---|---|---|
-| Markdown-Übersetzung | ✅ Stabil | Segmente im SQLite-Cache gespeichert |
+| Funktion               | Status         | Hinweise                                                         |
+|------------------------|----------------|------------------------------------------------------------------|
+| Markdown-Übersetzung   | ✅ Stabil       | Segmente im SQLite-Cache gespeichert                             |
 | UI-String-Extraktion | ✅ Stabil | Liest `t("…")`-Aufrufe |
-| Kardinal-Plural-UI-Strings | ✅ Stabil | `t("…", { plurals: true, count })`; Katalog + flache JSON-Endungen |
-| JSON-Label-Übersetzung | ✅ Stabil | Docusaurus Sidebar/Navbar JSON |
-| SVG-Text-Übersetzung | ✅ Stabil | Behält SVG-Struktur bei |
-| Glossar-Erzwingung | ✅ Stabil | Pro Projekt CSV-Glossar |
-| Stapelverarbeitung Parallelität | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
+| Plural-UI-Strings      | ✅ Stabil       | `t("…", { plurals: true, count })`; Katalog + flache JSON-Endungen |
+| JSON-Label-Übersetzung | ✅ Stabil | Docusaurus-Seitenleiste/-Navbar JSON |
+| SVG-Textübersetzung | ✅ Stabil | Behält die SVG-Struktur bei |
+| Glossar-Einhaltung | ✅ Stabil | Projektbezogenes CSV-Glossar |
+| Stapelverarbeitungskonkurrenz | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
 
-### Ausrichtungsvarianten
+### Unterstützung für links-nach-rechts und rechts-nach-links {#left-to-right-and-right-to-left-support}
 
-| Linksbündig | Zentriert | Rechtsbündig |
-|:---|:---:|---:|
-| Quelllocale | `en-GB` | erforderlich |
-| Ziellocales | bis zu 20 | empfohlen |
-| Parallelität | 4 | Standard |
+Moderne Internationalisierung muss sowohl Sprachen von links nach rechts (LTR) als auch von rechts nach links (RTL) unterstützen. `ai-i18n-tools` stellt sicher, dass die Textausrichtung im gesamten Übersetzungsprozess korrekt behandelt wird:
+
+- Die Pipeline behält automatisch die Schreibrichtung jeder Locale bei. Beispielsweise wird Arabisch (`ar`) rechtsbündig dargestellt, während Englisch (`en-GB`), Portugiesisch (`pt`) und andere weiterhin linksbündig bleiben.
+- Bei der Übersetzung von Markdown-Tabellen, Code-Beispielen oder UI-Strings bewahren die Tools die Ausrichtung und Struktur des Inhalts, sodass Tabellen und formatierte Blöcke sowohl in LTR- als auch in RTL-Kontexten natürlich angezeigt werden.
+- Docusaurus und die beispielhafte Next.js-Anwendung berücksichtigen jeweils die Schreibrichtung der Locale im Browser und wechseln Layout und Textausrichtung entsprechend.
+
+| Schreibrichtung | Beispiel-Locale        | Anzeige                |
+|:--------------:|:-----------------------|:-----------------------|
+|      LTR       | `en-GB`, `es`, `pt-BR` | Standard links-nach-rechts |
+|      RTL       | `ar`, `fa`, `he`       | Rechts-nach-links-Layout   |
+
+Dadurch wird sichergestellt, dass Dokumente und Schnittstellen korrekt aussehen, unabhängig von der Sprache oder Leserichtung des Benutzers.
 
 ---
 
-## Listen
+## Listen {#lists}
 
-### Ungeordnet
+### Ungeordnet {#unordered}
 
-- Der Übersetzungscache speichert einen Hash jedes Quellsegments.
+- Der Übersetzungs-Cache speichert einen Hash jedes Quellsegments.
 - Nur Segmente, deren Hash sich seit dem letzten Durchlauf geändert hat, werden an das LLM gesendet.
-- Dadurch sind inkrementelle Durchläufe sehr schnell – typischerweise nur wenige API-Aufrufe für kleine Änderungen.
+- Dadurch sind inkrementelle Durchläufe sehr schnell – typischerweise nur wenige API-Aufrufe bei kleinen Änderungen.
 
-### Geordnet
+### Geordnet {#ordered}
 
 1. Fügen Sie `ai-i18n-tools` als Entwicklungsabhängigkeit hinzu.
 2. Erstellen Sie `ai-i18n-tools.config.json` im Stammverzeichnis Ihres Projekts.
@@ -93,40 +100,40 @@ Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird ein
 4. Committen Sie die generierten Lokalisierungsdateien zusammen mit Ihrem Quellcode.
 5. Bei nachfolgenden Durchläufen werden nur geänderte Segmente erneut übersetzt.
 
-### Geschachtelt
+### Geschachtelt {#nested}
 
 - **Dokumenten-Pipeline**
   - Quelle: jede `.md`- oder `.mdx`-Datei
   - Ausgabe: Docusaurus `i18n/`-Baum oder flache übersetzte Kopien
   - Cache: SQLite, indiziert nach Dateipfad + Segment-Hash
 - **UI-Strings-Pipeline**
-  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich Kardinal-Plural über `{ plurals: true, count }`)
+  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich Pluralformen über `{ plurals: true, count }`)
   - Ausgabe: flache JSON-Dateien pro Locale (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
   - Cache: der Master-`strings.json`-Katalog selbst
 
 ---
 
-## Kardinale Plural-UI-Strings (Next.js-Begleit-App)
+## Plural-UI-Strings {#plural-ui-strings}
 
-Markdown-Dokumente auf dieser Seite zeigen die **Dokument**-Übersetzung. Das Verhalten von **kardinalen Pluralen** für UI-Texte lässt sich am besten im **gebündelten Next.js-Beispiel** beobachten, das neben `docs-site/` unter `examples/nextjs-app/` liegt.
+Markdown-Dokumente auf dieser Seite zeigen die **Dokument**-Übersetzung. Das **Plural**-Verhalten für UI-Texte lässt sich am besten im **beigelegten Next.js-Beispiel** nachvollziehen, das neben `docs-site/` unter `examples/nextjs-app/` liegt.
 
-Die Startseite dieser App (`src/app/page.tsx`) enthält einen Abschnitt **Plural-Demo** und wiederholt eine Nachricht bei mehreren Beispielanzahlen, sodass Sie die Grammatik zwischen Sprachen vergleichen können (z. B. Arabisch vs. Englisch). Jede Zeile ruft auf:
+Die Startseite dieser App (`src/app/page.tsx`) enthält einen **Plural-Demo**-Abschnitt und wiederholt eine Nachricht mit mehreren Beispielanzahlen, sodass Sie die Grammatik zwischen verschiedenen Locales vergleichen können (z. B. Arabisch vs. Englisch). Jede Zeile ruft auf:
 
 ```typescript
 t("This page has {{count}} sections", { plurals: true, count })
 ```
 
-Verwenden Sie **`plurals: true`**, damit **`extract`** eine Pluralgruppe in `locales/strings.json` aufzeichnet und **`translate-ui`** die flachen Dateien pro Sprache unter `public/locales/` füllt. Zur Laufzeit löst i18next den richtigen suffigierten Schlüssel für das aktive **`count`** auf; das Next.js-Beispiel bindet Hilfsfunktionen in **`src/lib/i18n.ts`** ein.
+Verwenden Sie **`plurals: true`**, damit **`extract`** eine Pluralgruppe in `locales/strings.json` aufzeichnet und **`translate-ui`** die flachen, sprachspezifischen Dateien unter `public/locales/` füllt. Zur Laufzeit löst i18next den richtigen, suffixierten Schlüssel für die aktive **`count`** auf; das Next-Beispiel verbindet Hilfsfunktionen in **`src/lib/i18n.ts`**.
 
-Für Screenshots, Sprach-URLs und die Dateistruktur siehe **Beispiel für kardinale Plurale** im [Next.js-Beispiel-README](../../README.md).
+Für Screenshots, Locale-URLs und die Dateistruktur siehe **Plural-Beispiel** in der [Next.js-Beispiel-README](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
 
 ---
 
-## Codeblöcke
+## Codeblöcke {#code-blocks}
 
-Codeblöcke werden **niemals** übersetzt. Der umgebende Text wird übersetzt, aber jedes Zeichen innerhalb des umschlossenen Blocks wird unverändert übernommen.
+Codeblöcke werden **niemals** übersetzt. Der umgebende Text wird übersetzt, aber jedes Zeichen innerhalb des umrahmten Blocks wird unverändert übernommen.
 
-### Shell
+### Shell {#shell}
 
 ```bash
 # Install the package
@@ -139,7 +146,7 @@ npx ai-i18n-tools sync
 npx ai-i18n-tools sync --no-ui --no-svg
 ```
 
-### JSON-Konfiguration
+### JSON-Konfiguration {#json-configuration}
 
 ```json
 {
@@ -159,7 +166,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 }
 ```
 
-### TypeScript
+### TypeScript {#typescript}
 
 ```typescript
 import { createI18nConfig } from 'ai-i18n-tools/runtime';
@@ -175,39 +182,39 @@ export default config;
 
 ---
 
-## Blockzitate
+## Blockzitate {#blockquotes}
 
 > „Die beste Internationalisierung ist für den Benutzer unsichtbar – er sieht einfach seine Sprache.“
 >
-> Eine ordnungsgemäße Übersetzung geht über den Wortschatz hinaus. Sie passt Ton, Datumsformate, Zahlenformatierung und Leserichtung an, um in jeder Sprachregion natürlich zu wirken.
+> Eine korrekte Übersetzung geht über den Wortschatz hinaus. Sie passt Tonlage, Datumsformate, Zahlenformate und Leserichtung an, sodass sie in jeder Sprachregion natürlich wirkt.
 
 ---
 
-## Hinweise (Docusaurus)
+## Hinweise (Docusaurus) {#admonitions-docusaurus}
 
-Docusaurus-Hinweistitel werden übersetzt; die `:::`-Umrandungen und Typ-Schlüsselwörter bleiben erhalten.
+Docusaurus-Hinweistitel werden übersetzt; die `:::`-Umrahmungen und Typ-Schlüsselwörter bleiben erhalten.
 
 :::note
-Dieses Dokument enthält absichtlich viele Markdown-Elemente. Sein Hauptzweck ist es, als Übersetzungstestfall zu dienen – führen Sie `sync` aus und prüfen Sie die Ausgabe, um sicherzustellen, dass jedes Element korrekt verarbeitet wird.
+Dieses Dokument enthält absichtlich viele Markdown-Elemente. Sein Hauptzweck ist es, als Testfall für Übersetzungen zu dienen – führen Sie `sync` aus und prüfen Sie die Ausgabe, um sicherzustellen, dass jedes Element korrekt verarbeitet wird.
 :::
 
 :::tip
-Sie können die übersetzte Formulierung für jedes Segment überschreiben, indem Sie die Ausgabedatei bearbeiten und anschließend erneut `sync` ausführen. Das Tool erkennt Ihre Änderungen und fügt die korrigierte Formulierung automatisch dem Projektglossar hinzu.
+Sie können die übersetzte Formulierung für jedes Segment überschreiben, indem Sie die Ausgabedatei bearbeiten und `sync` erneut ausführen. Das Tool erkennt Ihre Änderungen und fügt die korrigierte Formulierung automatisch dem Projektglossar hinzu.
 :::
 
 :::warning
-Committen Sie das Verzeichnis `.translation-cache/` nicht in die Versionskontrolle. Der Cache ist maschinenspezifisch und wird bei jedem frischen Checkout neu generiert.
+Committen Sie das Verzeichnis `.translation-cache/` nicht in die Versionskontrolle. Der Cache ist maschinenspezifisch und wird bei jedem neuen Checkout neu generiert.
 :::
 
 :::danger
-Wenn Sie das Cache-Verzeichnis löschen, werden alle Segmente von Grund auf neu übersetzt. Dies kann bei großen Dokumenten kostenintensiv sein. Verwenden Sie `sync --no-cache-write`, um einen Testlauf ohne Speichern der Ergebnisse durchzuführen.
+Wenn Sie das Cache-Verzeichnis löschen, muss jedes Segment von Grund auf neu übersetzt werden. Dies kann zeitaufwändig sein, wenn Ihre Dokumente groß sind. Verwenden Sie `sync --no-cache-write`, um einen Trockenlauf ohne Speicherung der Ergebnisse durchzuführen.
 :::
 
 ---
 
-## Bilder und länderspezifische Pfadumsetzung
+## Bilder und lokalitätsbewusste Pfadumsetzung {#images-and-locale-aware-path-rewriting}
 
-Der Alternativtext für Bilder wird in jede Sprache übersetzt. Darüber hinaus kann `ai-i18n-tools` auch **Bildpfade** in der übersetzten Ausgabe über `postProcessing.regexAdjustments` umschreiben – sodass jede Sprachversion auf einen eigenen Screenshot verweist, anstatt immer die englische Version anzuzeigen.
+Alternativtexte für Bilder werden in jede Sprache übersetzt. Darüber hinaus kann `ai-i18n-tools` auch **Bildpfade in der übersetzten Ausgabe umschreiben** über `postProcessing.regexAdjustments` – sodass jede Sprachversion auf ihren eigenen Screenshot verweisen kann, anstatt immer die englische Version anzuzeigen.
 
 Das Quelldokument (Englisch) verweist auf:
 
@@ -233,14 +240,14 @@ Nach der Übersetzung lautet die deutsche Ausgabe:
 ![Die Beispiel-Next.js-App auf Deutsch](/img/screenshots/de/screenshot.png)
 ```
 
-Hier ist der eigentliche englische Screenshot – wenn Sie dies in einer übersetzten Sprachversion lesen, sollte das Bild unten die Anwendung in Ihrer Sprache zeigen:
+Hier ist der eigentliche Screenshot der Next.js-App – sie ist standardmäßig auf Englisch, aber wenn Sie dies in einer übersetzten Sprachversion lesen, sollte das untenstehende Bild die App in Ihrer Sprache anzeigen:
 
 ![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/de/screenshot.png)
 
 ---
 
-## Horizontale Trennlinien und Zeilenumbrüche
+## Horizontale Linien und Zeilenumbrüche {#horizontal-rules-and-line-breaks}
 
-Eine horizontale Trennlinie (`---`) ist ein strukturelles Element und wird nicht übersetzt.
+Eine horizontale Linie (`---`) ist ein strukturelles Element und wird nicht übersetzt.
 
-Der Inhalt oberhalb und unterhalb davon wird als separater Segment behandelt, wodurch das LLM klarere Kontextfenster erhält.
+Der Inhalt oberhalb und unterhalb davon wird als separater Abschnitt behandelt, wodurch das KI-Modell klarere Kontextfenster erhält.

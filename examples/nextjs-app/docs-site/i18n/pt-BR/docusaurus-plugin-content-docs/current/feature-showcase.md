@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
-title: Exemplo de Recursos de Tradução
+title: Demonstração da Funcionalidade de Tradução
 description: >-
-  Um documento de referência que demonstra todos os elementos Markdown que o
-  ai-i18n-tools sabe como traduzir.
-translation_last_updated: '2026-04-20T16:41:25.973Z'
-source_file_mtime: '2026-04-19T22:02:25.720Z'
-source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
+  Um documento de referência que demonstra todos os elementos Markdown que
+  ai-i18n-tools sabe traduzir.
+translation_last_updated: '2026-04-20T20:45:16.943Z'
+source_file_mtime: '2026-04-20T20:03:51.319Z'
+source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
 translation_language: pt-BR
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -15,19 +15,19 @@ translation_models:
 
 
 
-Esta página existe para demonstrar como o `ai-i18n-tools` lida com todos os elementos Markdown comuns. Execute `sync` nela e compare a saída em cada pasta de localidade para ver exatamente o que é traduzido e o que permanece inalterado.
+Esta página existe para demonstrar como o `ai-i18n-tools` lida com cada construção comum do Markdown. Execute o `sync` contra ela e compare a saída em cada pasta de localidade para ver exatamente o que é traduzido e o que permanece inalterado.
 
 ---
 
-## Prosa simples
+## Texto simples {#plain-text}
 
 Internacionalização vai além de trocar palavras. Um bom pipeline de tradução preserva a estrutura do documento, mantém os identificadores técnicos intactos e envia apenas texto legível por humanos ao modelo de linguagem.
 
-O `ai-i18n-tools` divide cada documento em **segmentos** antes de enviá-los ao LLM. Cada segmento é traduzido independentemente e depois recombinado, de modo que uma alteração em um parágrafo não invalida as traduções em cache do restante do arquivo.
+O `ai-i18n-tools` divide cada documento em **segmentos** antes de enviá-los ao LLM. Cada segmento é traduzido independentemente e depois recombinado, de modo que uma alteração em um parágrafo não invalida as traduções armazenadas em cache do restante do arquivo.
 
 ---
 
-## Formatação em linha
+## Formatação de texto {#text-formatting}
 
 O tradutor deve manter toda a formatação em linha sem alterar a marcação:
 
@@ -35,57 +35,64 @@ O tradutor deve manter toda a formatação em linha sem alterar a marcação:
 - _Texto em itálico_ é usado para ênfase ou títulos; o significado deve ser preservado.
 - ~~Tachado~~ marca conteúdo obsoleto ou removido.
 - `inline code` é **nunca** traduzido — identificadores, nomes de funções e caminhos de arquivos devem permanecer inalterados.
-- Um [link](https://github.com/your-org/ai-i18n-tools) mantém sua URL original; somente o texto do link é traduzido.
+- Um [hyperlink](https://github.com/wsj-br/ai-i18n-tools) mantém sua URL original; somente o rótulo do link é traduzido.
 
 ---
 
-## Cabeçalhos em todos os níveis
+## Cabeçalhos em todos os níveis {#headings-at-every-level}
 
-### H3 — Configuração
+### H3 — Configuração {#h3--configuration}
 
-#### H4 — Diretório de saída
+#### H4 — Diretório de saída {#h4--output-directory}
 
-##### H5 — Nomeação de arquivos
+##### H5 — Nomeação de arquivos {#h5--file-naming}
 
-###### H6 — Tratamento de extensões
+###### H6 — Tratamento de extensões {#h6--extension-handling}
 
-Todos os níveis de cabeçalho traduzem o texto, mas mantêm os IDs de âncora inalterados para que links profundos existentes continuem funcionando.
+Todos os níveis de título traduzem o texto, mas mantêm os IDs de âncora inalterados para que os links de âncora existentes continuem funcionando.
 
 ---
 
-## Tabelas
+## Tabelas {#tables}
 
 Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida individualmente; os separadores de coluna e a sintaxe de alinhamento são preservados.
 
-| Recurso | Status | Observações |
-|---|---|---|
-| Tradução Markdown | ✅ Estável | Segmentos armazenados em cache no SQLite |
-| Extração de strings de interface | ✅ Estável | Lê chamadas `t("…")` |
-| Strings de interface com plurais cardinais | ✅ Estável | `t("…", { plurals: true, count })`; sufixos de catálogo + JSON plano |
-| Tradução de rótulos JSON | ✅ Estável | JSON de barra lateral/navegação do Docusaurus |
+| Recurso                | Status         | Observações                                                      |
+|------------------------|----------------|------------------------------------------------------------------|
+| Tradução Markdown      | ✅ Estável      | Segmentos armazenados em cache no SQLite                         |
+| Extração de strings da interface | ✅ Estável | Lê chamadas `t("…")` |
+| Strings de interface com plurais | ✅ Estável      | `t("…", { plurals: true, count })`; sufixos de catálogo + JSON plano |
+| Tradução de rótulos JSON | ✅ Estável | JSON da barra lateral/navegação do Docusaurus |
 | Tradução de texto SVG | ✅ Estável | Preserva a estrutura SVG |
 | Aplicação de glossário | ✅ Estável | Glossário CSV por projeto |
-| Concorrência em lote | ✅ Configurável | Chave `batchConcurrency` |
+| Concorrência em lote | ✅ Configurável | chave `batchConcurrency` |
 
-### Variantes de alinhamento
+### Suporte a Texto da Esquerda para a Direita e da Direita para a Esquerda {#left-to-right-and-right-to-left-support}
 
-| Alinhado à esquerda | Centralizado | Alinhado à direita |
-|:---|:---:|---:|
-| Localidade de origem | `en-GB` | obrigatório |
-| Localidades de destino | até 20 | recomendado |
-| Concorrência | 4 | padrão |
+A internacionalização moderna precisa acomodar tanto idiomas da esquerda para a direita (LTR) quanto da direita para a esquerda (RTL). `ai-i18n-tools` garante o tratamento correto da direção do texto em todo o fluxo de tradução:
+
+- O pipeline preserva automaticamente a direcionalidade de cada localidade. Por exemplo, o árabe (`ar`) é exibido em RTL, enquanto o inglês (`en-GB`), o português (`pt`) e outros permanecem em LTR.
+- Ao traduzir tabelas em Markdown, exemplos de código ou strings de interface, as ferramentas mantêm o alinhamento e a estrutura do conteúdo, de modo que tabelas e blocos formatados sejam exibidos naturalmente em contextos LTR e RTL.
+- O Docusaurus e o aplicativo exemplo Next.js respeitam a direção do localidade no navegador, alternando o layout e o alinhamento do texto conforme apropriado.
+
+| Direcionalidade | Exemplo de Localidade  | Exibição               |
+|:--------------:|:-----------------------|:-----------------------|
+|      LTR       | `en-GB`, `es`, `pt-BR` | Padrão da esquerda para a direita |
+|      RTL       | `ar`, `fa`, `he`       | Layout da direita para a esquerda  |
+
+Isso garante que documentos e interfaces sejam exibidos corretamente, independentemente do idioma ou direção de leitura do usuário.
 
 ---
 
-## Listas
+## Listas {#lists}
 
-### Não ordenadas
+### Não ordenadas {#unordered}
 
 - O cache de tradução armazena um hash de cada segmento de origem.
 - Apenas segmentos cujo hash foi alterado desde a última execução são enviados ao LLM.
 - Isso torna as execuções incrementais muito rápidas — normalmente apenas algumas chamadas à API para pequenas edições.
 
-### Ordenadas
+### Ordenadas {#ordered}
 
 1. Adicione `ai-i18n-tools` como dependência de desenvolvimento.
 2. Crie `ai-i18n-tools.config.json` na raiz do seu projeto.
@@ -93,40 +100,40 @@ Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida i
 4. Confirme os arquivos de localidade gerados junto com seu código-fonte.
 5. Em execuções subsequentes, apenas os segmentos alterados são traduzidos novamente.
 
-### Aninhadas
+### Aninhadas {#nested}
 
 - **Pipeline de documentos**
   - Origem: qualquer arquivo `.md` ou `.mdx`
-  - Saída: estrutura `i18n/` do Docusaurus ou cópias traduzidas planas
+  - Saída: árvore Docusaurus `i18n/` ou cópias traduzidas planas
   - Cache: SQLite, indexado por caminho do arquivo + hash do segmento
 - **Pipeline de strings de interface**
-  - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais cardinais via `{ plurals: true, count }`)
-  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias plurais quando aplicável
+  - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais via `{ plurals: true, count }`)
+  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias de plural quando aplicável
   - Cache: o próprio catálogo mestre `strings.json`
 
 ---
 
-## Strings de interface com plurais cardinais (aplicativo complementar Next.js)
+## Strings de interface com plurais {#plural-ui-strings}
 
-Os documentos Markdown neste site mostram a tradução de **documento**. O comportamento de **plurais cardinais** para textos de interface é mais fácil de observar no **exemplo Next.js agrupado**, localizado ao lado de `docs-site/` em `examples/nextjs-app/`.
+Documentos Markdown neste site mostram tradução de **documento**. O comportamento de **plural** para textos de interface é mais fácil de ver no **exemplo Next.js agrupado** localizado ao lado de `docs-site/` em `examples/nextjs-app/`.
 
-A página inicial desse aplicativo (`src/app/page.tsx`) inclui uma seção de **demonstração de plurais** e repete uma mensagem em várias contagens de exemplo para que você possa comparar a gramática entre localidades (por exemplo, árabe versus inglês). Cada linha chama:
+A página inicial desse aplicativo (`src/app/page.tsx`) inclui uma seção de **demonstração de plurais** e repete uma mensagem em várias contagens de exemplo, permitindo comparar a gramática entre localidades (por exemplo, árabe versus inglês). Cada linha chama:
 
 ```typescript
 t("This page has {{count}} sections", { plurals: true, count })
 ```
 
-Use **`plurals: true`** para que **`extract`** registre um grupo plural em `locales/strings.json` e **`translate-ui`** preencha os arquivos planos por localidade em `public/locales/`. Em tempo de execução, o i18next resolve a chave sufixada correta para o **`count`** ativo; o exemplo Next.js integra helpers em **`src/lib/i18n.ts`**.
+Use **`plurals: true`** para que **`extract`** registre um grupo plural em `locales/strings.json` e **`translate-ui`** preencha os arquivos planos por localidade em `public/locales/`. Em tempo de execução, o i18next resolve a chave com sufixo correta para o **`count`** ativo; o exemplo do Next integra helpers em **`src/lib/i18n.ts`**.
 
-Para capturas de tela, URLs de localidade e estrutura de arquivos, consulte o **exemplo de plurais cardinais** no [README do exemplo Next.js](../../README.md).
+Para capturas de tela, URLs de localidade e estrutura de arquivos, consulte o **exemplo de plurais** no [README do exemplo Next.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
 
 ---
 
-## Blocos de código
+## Blocos de código {#code-blocks}
 
-Blocos de código são **nunca** traduzidos. O texto ao redor é traduzido, mas cada caractere dentro do bloco delimitado é mantido exatamente como está.
+Blocos de código **nunca** são traduzidos. O texto ao redor é traduzido, mas cada caractere dentro do bloco delimitado é mantido exatamente como está.
 
-### Shell
+### Shell {#shell}
 
 ```bash
 # Install the package
@@ -139,7 +146,7 @@ npx ai-i18n-tools sync
 npx ai-i18n-tools sync --no-ui --no-svg
 ```
 
-### Configuração JSON
+### Configuração JSON {#json-configuration}
 
 ```json
 {
@@ -159,7 +166,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 }
 ```
 
-### TypeScript
+### TypeScript {#typescript}
 
 ```typescript
 import { createI18nConfig } from 'ai-i18n-tools/runtime';
@@ -175,7 +182,7 @@ export default config;
 
 ---
 
-## Citações em bloco
+## Citações em bloco {#blockquotes}
 
 > "A melhor internacionalização é invisível ao usuário — eles simplesmente veem seu próprio idioma."
 >
@@ -183,16 +190,16 @@ export default config;
 
 ---
 
-## Advertências (Docusaurus)
+## Avisos (Docusaurus) {#admonitions-docusaurus}
 
-Os títulos das advertências do Docusaurus são traduzidos; as cercas `:::` e palavras-chave de tipo são preservadas.
+Os títulos das advertências do Docusaurus são traduzidos; as cercas `:::` e as palavras-chave de tipo são preservadas.
 
 :::note
-Este documento é intencionalmente rico em recursos Markdown. Seu propósito principal é servir como um exemplo de teste de tradução — execute `sync` e inspecione a saída para verificar se cada elemento é tratado corretamente.
+Este documento é intencionalmente rico em recursos Markdown. Seu propósito principal é servir como um conjunto de testes para tradução — execute `sync` e inspecione a saída para verificar se cada elemento é tratado corretamente.
 :::
 
 :::tip
-Você pode substituir a redação traduzida de qualquer segmento editando o arquivo de saída e executando `sync` novamente. A ferramenta detectará suas edições e adicionará automaticamente a frase corrigida ao glossário do projeto.
+Você pode substituir a tradução de qualquer segmento editando o arquivo de saída e executando `sync` novamente. A ferramenta detectará suas edições e adicionará automaticamente a frase corrigida ao glossário do projeto.
 :::
 
 :::warning
@@ -200,14 +207,14 @@ Não confirme o diretório `.translation-cache/` no controle de versão. O cache
 :::
 
 :::danger
-Excluir o diretório de cache força a tradução de todos os segmentos do zero. Isso pode ser custoso se seus documentos forem grandes. Use `sync --no-cache-write` para fazer um teste sem salvar os resultados.
+Excluir o diretório de cache força a tradução completa de todos os segmentos do zero. Isso pode ser custoso se seus documentos forem grandes. Use `sync --no-cache-write` para fazer um teste sem salvar os resultados.
 :::
 
 ---
 
-## Imagens e reescrita de caminhos com reconhecimento de localidade
+## Imagens e reescrita de caminhos com reconhecimento de localidade {#images-and-locale-aware-path-rewriting}
 
-O texto alternativo da imagem é traduzido para cada localidade. Além disso, `ai-i18n-tools` também pode **reescrever caminhos de imagens** na saída traduzida por meio de `postProcessing.regexAdjustments` — para que cada localidade possa apontar para sua própria captura de tela, em vez de sempre mostrar a versão em inglês.
+O texto alternativo das imagens é traduzido para cada localidade. Além disso, o `ai-i18n-tools` também pode **reescrever caminhos de imagens** na saída traduzida por meio do `postProcessing.regexAdjustments` — para que cada localidade possa apontar para sua própria captura de tela, em vez de sempre mostrar a versão em inglês.
 
 O documento de origem (inglês) faz referência a:
 
@@ -233,14 +240,14 @@ Após a tradução, a saída em alemão torna-se:
 ![Die Beispiel-Next.js-App auf Deutsch](/img/screenshots/de/screenshot.png)
 ```
 
-Aqui está a captura de tela real em inglês — se você estiver lendo isto em uma localidade traduzida, a imagem abaixo deverá mostrar o aplicativo no seu idioma:
+Aqui está a captura de tela real do aplicativo Next.js — ele está em inglês por padrão, mas se você estiver lendo isto em um idioma traduzido, a imagem abaixo deve mostrar o aplicativo no seu idioma:
 
 ![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/pt-BR/screenshot.png)
 
 ---
 
-## Linhas horizontais e quebras de linha
+## Regras horizontais e quebras de linha {#horizontal-rules-and-line-breaks}
 
-Uma linha horizontal (`---`) é um elemento estrutural e não é traduzida.
+Uma regra horizontal (`---`) é um elemento estrutural e não é traduzida.
 
-O conteúdo acima e abaixo dela é tratado como segmentos separados, fornecendo janelas de contexto mais claras para o LLM.
+O conteúdo acima e abaixo dela é tratado como segmentos separados, fornecendo ao LLM janelas de contexto mais limpas.

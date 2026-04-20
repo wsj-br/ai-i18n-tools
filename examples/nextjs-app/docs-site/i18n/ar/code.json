@@ -80,18 +80,18 @@
     "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.docs.tagDocListPageTitle": {
-    "message": "{nDocsTagged} مع علامة \"{tagName}\"",
+    "message": "{nDocsTagged} مع وسم \"{tagName}\"",
     "description": "The title of the page for a docs tag"
   },
   "theme.docs.versionBadge.label": {
     "message": "الإصدار: {versionLabel}"
   },
   "theme.docs.versions.unreleasedVersionLabel": {
-    "message": "هذه وثائق غير مُصدرة لـ {siteTitle} الإصدار {versionLabel}.",
+    "message": "هذه وثائق غير منشورة لتطبيق {siteTitle} بالإصدار {versionLabel}.",
     "description": "The label used to tell the user that he's browsing an unreleased doc version"
   },
   "theme.docs.versions.unmaintainedVersionLabel": {
-    "message": "هذه وثائق لـ {siteTitle} {versionLabel}، والتي لم تعد تُصانَ بشكل نشط.",
+    "message": "هذه وثائق لتطبيق {siteTitle} بالإصدار {versionLabel}، والذي لم يعد يتم صيانته بشكل نشط.",
     "description": "The label used to tell the user that he's browsing an unmaintained doc version"
   },
   "theme.docs.versions.latestVersionSuggestionLabel": {
@@ -99,11 +99,11 @@
     "description": "The label used to tell the user to check the latest version"
   },
   "theme.docs.versions.latestVersionLinkLabel": {
-    "message": "الإصدار الأحدث",
+    "message": "أحدث إصدار",
     "description": "The label used for the latest version suggestion link label"
   },
   "theme.common.editThisPage": {
-    "message": "عدّل هذه الصفحة",
+    "message": "تعديل هذه الصفحة",
     "description": "The link label to edit the current page"
   },
   "theme.common.headingLinkTitle": {
@@ -111,11 +111,11 @@
     "description": "Title for link to heading"
   },
   "theme.lastUpdated.atDate": {
-    "message": "في {date}",
+    "message": " في {date}",
     "description": "The words used to describe on which date a page has been last updated"
   },
   "theme.lastUpdated.byUser": {
-    "message": "بواسطة {user}",
+    "message": " بواسطة {user}",
     "description": "The words used to describe by who the page has been last updated"
   },
   "theme.lastUpdated.lastUpdatedAtBy": {
@@ -139,7 +139,7 @@
     "description": "The default label used for the Caution admonition (:::caution)"
   },
   "theme.admonition.danger": {
-    "message": "خطر",
+    "message": "خطير",
     "description": "The default label used for the Danger admonition (:::danger)"
   },
   "theme.admonition.info": {
@@ -191,7 +191,7 @@
     "description": "The first paragraph of the 404 page"
   },
   "theme.NotFound.p2": {
-    "message": "يرجى التواصل مع مالك الموقع الذي قام بتوجيهك إلى الرابط الأصلي وإبلاغه بأن الرابط معطّل.",
+    "message": "يرجى التواصل مع مالك الموقع الذي قام بتوجيهك إلى الرابط الأصلي وإعلامه بأن الرابط معطّل.",
     "description": "The 2nd paragraph of the 404 page"
   },
   "theme.TOCCollapsible.toggleButtonLabel": {
@@ -223,7 +223,7 @@
     "description": "The ARIA label for copy code blocks button"
   },
   "theme.CodeBlock.wordWrapToggle": {
-    "message": "تبديل تغليف الكلمات",
+    "message": "تبديل التفاف الكلمات",
     "description": "The title attribute for toggle word wrapping button of code block lines"
   },
   "theme.docs.breadcrumbs.home": {
@@ -239,7 +239,7 @@
     "description": "The title attribute for collapse button of doc sidebar"
   },
   "theme.docs.sidebar.navAriaLabel": {
-    "message": "شريط جانبي المستندات",
+    "message": "شريط جانبي للمستندات",
     "description": "The ARIA label for the sidebar navigation"
   },
   "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
@@ -275,7 +275,7 @@
     "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.blog.tagTitle": {
-    "message": "{nPosts} مُوسومة بـ \"{tagName}\"",
+    "message": "{nPosts} مُصنّفة بـ \"{tagName}\"",
     "description": "The title of the page for a blog tag"
   },
   "theme.blog.author.pageTitle": {
@@ -283,15 +283,15 @@
     "description": "The title of the page for a blog author"
   },
   "theme.blog.authorsList.pageTitle": {
-    "message": "الكتّاب",
+    "message": "الكتاب",
     "description": "The title of the authors page"
   },
   "theme.blog.authorsList.viewAll": {
-    "message": "عرض جميع الكتّاب",
+    "message": "عرض جميع الكتاب",
     "description": "The label of the link targeting the blog authors page"
   },
   "theme.blog.author.noPosts": {
-    "message": "لم يكتب هذا الكاتب أي منشورات حتى الآن.",
+    "message": "هذا الكاتب لم يكتب أي منشورات بعد.",
     "description": "The text for authors with 0 blog post"
   },
   "theme.contentVisibility.unlistedBanner.title": {
@@ -299,7 +299,7 @@
     "description": "The unlisted content banner title"
   },
   "theme.contentVisibility.unlistedBanner.message": {
-    "message": "هذه الصفحة غير مدرجة. لن تقوم محركات البحث بفهرستها، ويمكن فقط للمستخدمين الذين يمتلكون رابطًا مباشرًا الوصول إليها.",
+    "message": "هذه الصفحة غير مدرجة. لن تقوم محركات البحث بفهرستها، وسوف يتمكن فقط المستخدمون الذين يمتلكون رابطًا مباشرًا من الوصول إليها.",
     "description": "The unlisted content banner message"
   },
   "theme.contentVisibility.draftBanner.title": {
@@ -307,7 +307,7 @@
     "description": "The draft content banner title"
   },
   "theme.contentVisibility.draftBanner.message": {
-    "message": "هذه الصفحة مسودة. ستكون مرئية فقط في بيئة التطوير وستُستثنى من البناء الإنتاجي.",
+    "message": "هذه الصفحة مسودة. ستكون مرئية فقط في بيئة التطوير ولن تُضمَّن في البناء الإنتاجي.",
     "description": "The draft content banner message"
   },
   "theme.docs.DocCard.categoryDescription.plurals": {
@@ -319,7 +319,7 @@
     "description": "The label of the button to try again rendering when the React error boundary captures an error"
   },
   "theme.common.skipToMainContent": {
-    "message": "تخطي إلى المحتوى الرئيسي",
+    "message": "الانتقال إلى المحتوى الرئيسي",
     "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
   },
   "theme.tags.tagsPageTitle": {

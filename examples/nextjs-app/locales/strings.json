@@ -3,16 +3,16 @@
     "source": "ai-i18n-tools: Next.js example app",
     "translated": {
       "fr": "ai-i18n-tools : Application exemple Next.js",
-      "de": "ai-i18n-tools: Next.js Beispiel-App",
-      "ar": "ai-i18n-tools: تطبيق Next.js مثال",
-      "es": "ai-i18n-tools: aplicación de ejemplo Next.js",
+      "es": "ai-i18n-tools: aplicación de ejemplo de Next.js",
+      "ar": "ai-i18n-tools: تطبيق تجريبي Next.js",
+      "de": "ai-i18n-tools: Next.js-Beispiel-App",
       "pt-BR": "ai-i18n-tools: aplicativo de exemplo Next.js"
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -26,16 +26,16 @@
     "source": "Hello World!",
     "translated": {
       "fr": "Bonjour le monde !",
-      "de": "Hallo Welt!",
-      "ar": "مرحباً بالعالم!",
       "es": "¡Hola mundo!",
-      "pt-BR": "Olá Mundo!"
+      "ar": "مرحباً بالعالم!",
+      "de": "Hallo Welt!",
+      "pt-BR": "Olá, mundo!"
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -49,16 +49,16 @@
     "source": "This line will be translated to multiple languages.",
     "translated": {
       "fr": "Cette ligne sera traduite dans plusieurs langues.",
-      "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
-      "ar": "سيتم ترجمة هذا السطر إلى لغات متعددة.",
       "es": "Esta línea se traducirá a varios idiomas.",
+      "ar": "سيتم ترجمة هذا السطر إلى لغات متعددة.",
+      "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
       "pt-BR": "Esta linha será traduzida para vários idiomas."
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -72,16 +72,16 @@
     "source": "This is line number {{number}}",
     "translated": {
       "fr": "Ceci est la ligne numéro {{number}}",
-      "de": "Dies ist die Zeile Nummer {{number}}",
-      "ar": "هذا هو السطر رقم {{number}}",
       "es": "Esta es la línea número {{number}}",
-      "pt-BR": "Esta é a linha número {{number}}"
+      "ar": "هذا هو السطر رقم {{number}}",
+      "de": "Dies ist die Zeile Nummer {{number}}",
+      "pt-BR": "Este é o número da linha {{number}}"
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -94,16 +94,16 @@
   "2bad7cac": {
     "source": "Plurals: automatic generation usage example",
     "translated": {
+      "fr": "Pluriels : exemple d'utilisation de la génération automatique",
       "es": "Plurales: ejemplo de uso de generación automática",
       "ar": "الجمع: مثال على استخدام التوليد التلقائي",
-      "fr": "Pluriels : exemple d'utilisation de la génération automatique",
-      "de": "Pluralformen: Beispiel für die Verwendung der automatischen Generierung",
+      "de": "Plural: Beispiel für die Verwendung der automatischen Generierung",
       "pt-BR": "Plurais: exemplo de uso da geração automática"
     },
     "models": {
+      "fr": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
       "ar": "qwen/qwen3-235b-a22b-2507",
-      "fr": "qwen/qwen3-235b-a22b-2507",
       "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
@@ -122,10 +122,6 @@
         "one": "This page has {{count}} section",
         "other": "This page has {{count}} sections"
       },
-      "de": {
-        "one": "Diese Seite hat {{count}} Abschnitt",
-        "other": "Diese Seite hat {{count}} Abschnitte"
-      },
       "fr": {
         "one": "Cette page a {{count}} section",
         "other": "Cette page a {{count}} sections"
@@ -137,8 +133,13 @@
       "ar": {
         "one": "تحتوي هذه الصفحة على {{count}} قسم",
         "two": "تحتوي هذه الصفحة على {{count}} قسمين",
+        "few": "تحتوي هذه الصفحة على {{count}} أقسام",
         "many": "تحتوي هذه الصفحة على {{count}} قسماً",
-        "other": "تحتوي هذه الصفحة على {{count}} أقسام"
+        "other": "تحتوي هذه الصفحة على {{count}} قسمًا"
+      },
+      "de": {
+        "one": "Diese Seite hat {{count}} Abschnitt",
+        "other": "Diese Seite hat {{count}} Abschnitte"
       },
       "pt-BR": {
         "one": "Esta página tem {{count}} seção",
@@ -147,10 +148,10 @@
     },
     "models": {
       "en-GB": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
       "fr": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
       "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -164,16 +165,16 @@
     "source": "Translation demo illustration",
     "translated": {
       "fr": "Illustration de démonstration de traduction",
-      "de": "Übersetzungs-Demo-Illustration",
-      "ar": "رسم توضيحي لعرض الترجمة",
       "es": "Ilustración de demostración de traducción",
+      "ar": "عرض توضيحي للترجمة",
+      "de": "Übersichtsdemo",
       "pt-BR": "Ilustração de demonstração de tradução"
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -187,16 +188,16 @@
     "source": "ai-i18n-tools translated the texts contained within this SVG illustration.",
     "translated": {
       "fr": "ai-i18n-tools a traduit les textes contenus dans cette illustration SVG.",
-      "de": "ai-i18n-tools hat die in dieser SVG-Illustration enthaltenen Texte übersetzt.",
-      "ar": "قام ai-i18n-tools بترجمة النصوص الموجودة ضمن هذه الصورة التوضيحية SVG.",
       "es": "ai-i18n-tools tradujo los textos contenidos en esta ilustración SVG.",
+      "ar": "قام ai-i18n-tools بترجمة النصوص الموجودة ضمن هذا الرسم التوضيحي SVG.",
+      "de": "ai-i18n-tools hat die in dieser SVG-Illustration enthaltenen Texte übersetzt.",
       "pt-BR": "ai-i18n-tools traduziu os textos contidos nesta ilustração SVG."
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [
@@ -210,16 +211,16 @@
     "source": "Example Next.js application demonstrating ai-i18n-tools",
     "translated": {
       "fr": "Exemple d'application Next.js illustrant ai-i18n-tools",
-      "de": "Beispiel-Next.js-Anwendung, die ai-i18n-tools demonstriert",
-      "ar": "تطبيق Next.js توضيحي يعرض ai-i18n-tools",
       "es": "Aplicación de ejemplo de Next.js que demuestra ai-i18n-tools",
-      "pt-BR": "Aplicativo exemplo Next.js demonstrando ai-i18n-tools"
+      "ar": "تطبيق تجريبي Next.js يوضح ai-i18n-tools",
+      "de": "Beispiel-Next.js-Anwendung, die ai-i18n-tools demonstriert",
+      "pt-BR": "Aplicativo de exemplo Next.js demonstrando ai-i18n-tools"
     },
     "models": {
       "fr": "qwen/qwen3-235b-a22b-2507",
-      "de": "qwen/qwen3-235b-a22b-2507",
-      "ar": "qwen/qwen3-235b-a22b-2507",
       "es": "qwen/qwen3-235b-a22b-2507",
+      "ar": "qwen/qwen3-235b-a22b-2507",
+      "de": "qwen/qwen3-235b-a22b-2507",
       "pt-BR": "qwen/qwen3-235b-a22b-2507"
     },
     "locations": [

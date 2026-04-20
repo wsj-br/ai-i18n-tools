@@ -140,10 +140,21 @@ export function pluralCategoryExamplesHint(locale: string): string {
 
 /**
  * Drop redundant duplicate strings, keeping the most general surviving key (`other` preferred).
+ *
+ * When `locale` is passed, plural keys needed for translate-ui completeness
+ * ({@link pluralFormsRequiredForTranslateUi}) are never removed: if both `one` and `other`
+ * share the same text, keeping only `other` would make {@link pluralTranslatedLocaleHasContent}
+ * fail on the next run and force endless re-translation.
  */
 export function compactIdenticalPluralForms(
-  forms: Partial<Record<CldrPluralForm, string>>
+  forms: Partial<Record<CldrPluralForm, string>>,
+  locale?: string
 ): Partial<Record<CldrPluralForm, string>> {
+  const minimal =
+    locale !== undefined && locale.trim() !== ""
+      ? new Set(pluralFormsRequiredForTranslateUi(locale))
+      : undefined;
+
   const byValue = new Map<string, CldrPluralForm[]>();
   for (const k of FORM_ORDER) {
     const v = forms[k];
@@ -159,7 +170,12 @@ export function compactIdenticalPluralForms(
     if (keys.length <= 1) {
       continue;
     }
-    const keep = keys.includes("other") ? "other" : keys[keys.length - 1]!;
+    const prot = minimal ? keys.filter((k) => minimal.has(k)) : [];
+    if (minimal && prot.length > 1) {
+      continue;
+    }
+    const keep =
+      prot.length === 1 ? prot[0]! : keys.includes("other") ? "other" : keys[keys.length - 1]!;
     for (const k of keys) {
       if (k !== keep) {
         delete result[k];

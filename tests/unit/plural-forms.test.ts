@@ -117,6 +117,18 @@ describe("compactIdenticalPluralForms", () => {
     expect(out.other).toBe("same");
   });
 
+  it("keeps both one and other when they match and locale is passed (translate-ui idempotency)", () => {
+    const out = compactIdenticalPluralForms(
+      {
+        one: "same",
+        other: "same",
+      },
+      "en"
+    );
+    expect(out.one).toBe("same");
+    expect(out.other).toBe("same");
+  });
+
   it("leaves distinct values", () => {
     const out = compactIdenticalPluralForms({
       one: "one cat",

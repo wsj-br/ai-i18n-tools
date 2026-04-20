@@ -16,7 +16,7 @@
     "description": "The page & hero description of the blog archive page"
   },
   "theme.blog.paginator.navAriaLabel": {
-    "message": "Navegação da página da lista de blog",
+    "message": "Navegação da página da lista de blogs",
     "description": "The ARIA label for the blog pagination"
   },
   "theme.blog.paginator.newerEntries": {
@@ -91,7 +91,7 @@
     "description": "The label used to tell the user that he's browsing an unreleased doc version"
   },
   "theme.docs.versions.unmaintainedVersionLabel": {
-    "message": "Esta é a documentação para {siteTitle} {versionLabel}, que não é mais mantida ativamente.",
+    "message": "Esta é a documentação para {siteTitle} {versionLabel}, que não é mais ativamente mantida.",
     "description": "The label used to tell the user that he's browsing an unmaintained doc version"
   },
   "theme.docs.versions.latestVersionSuggestionLabel": {
@@ -111,11 +111,11 @@
     "description": "Title for link to heading"
   },
   "theme.lastUpdated.atDate": {
-    "message": "em {date}",
+    "message": " em {date}",
     "description": "The words used to describe on which date a page has been last updated"
   },
   "theme.lastUpdated.byUser": {
-    "message": "por {user}",
+    "message": " por {user}",
     "description": "The words used to describe by who the page has been last updated"
   },
   "theme.lastUpdated.lastUpdatedAtBy": {
@@ -147,7 +147,7 @@
     "description": "The default label used for the Info admonition (:::info)"
   },
   "theme.admonition.note": {
-    "message": "nota",
+    "message": "observação",
     "description": "The default label used for the Note admonition (:::note)"
   },
   "theme.admonition.tip": {
@@ -187,7 +187,7 @@
     "description": "The label for the mobile language switcher dropdown"
   },
   "theme.NotFound.p1": {
-    "message": "Não conseguimos encontrar o que você estava procurando.",
+    "message": "Não foi possível encontrar o que você estava procurando.",
     "description": "The first paragraph of the 404 page"
   },
   "theme.NotFound.p2": {
@@ -207,7 +207,7 @@
     "description": "The ARIA label for the link to full blog posts from excerpts"
   },
   "theme.blog.post.readingTime.plurals": {
-    "message": "Um minuto de leitura|{readingTime} minutos de leitura",
+    "message": "Leitura de um minuto|Leitura de {readingTime} minutos",
     "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.CodeBlock.copy": {
@@ -223,7 +223,7 @@
     "description": "The ARIA label for copy code blocks button"
   },
   "theme.CodeBlock.wordWrapToggle": {
-    "message": "Alternar quebra de palavras",
+    "message": "Alternar quebra de linha",
     "description": "The title attribute for toggle word wrapping button of code block lines"
   },
   "theme.docs.breadcrumbs.home": {
@@ -271,7 +271,7 @@
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "theme.blog.post.plurals": {
-    "message": "Uma publicação|{count} publicações",
+    "message": "Um post|{count} posts",
     "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.blog.tagTitle": {
@@ -291,7 +291,7 @@
     "description": "The label of the link targeting the blog authors page"
   },
   "theme.blog.author.noPosts": {
-    "message": "Este autor ainda não escreveu nenhuma publicação.",
+    "message": "Este autor ainda não escreveu nenhum post.",
     "description": "The text for authors with 0 blog post"
   },
   "theme.contentVisibility.unlistedBanner.title": {
@@ -299,7 +299,7 @@
     "description": "The unlisted content banner title"
   },
   "theme.contentVisibility.unlistedBanner.message": {
-    "message": "Esta página não está listada. Os mecanismos de busca não a indexarão, e somente usuários com o link direto poderão acessá-la.",
+    "message": "Esta página não está listada. Os mecanismos de busca não a indexarão, e somente usuários com o link direto podem acessá-la.",
     "description": "The unlisted content banner message"
   },
   "theme.contentVisibility.draftBanner.title": {
@@ -319,7 +319,7 @@
     "description": "The label of the button to try again rendering when the React error boundary captures an error"
   },
   "theme.common.skipToMainContent": {
-    "message": "Pular para o conteúdo principal",
+    "message": "Ir para o conteúdo principal",
     "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
   },
   "theme.tags.tagsPageTitle": {

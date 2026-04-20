@@ -4,7 +4,7 @@
     "description": "The title of the fallback page when the page crashed"
   },
   "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Desplázate hacia arriba",
+    "message": "Desplazarse al principio",
     "description": "The ARIA label for the back to top button"
   },
   "theme.blog.archive.title": {
@@ -16,7 +16,7 @@
     "description": "The page & hero description of the blog archive page"
   },
   "theme.blog.paginator.navAriaLabel": {
-    "message": "Navegación por la lista de entradas del blog",
+    "message": "Navegación por la página de lista de blogs",
     "description": "The ARIA label for the blog pagination"
   },
   "theme.blog.paginator.newerEntries": {
@@ -28,15 +28,15 @@
     "description": "The label used to navigate to the older blog posts page (next page)"
   },
   "theme.blog.post.paginator.navAriaLabel": {
-    "message": "Navegación por entradas del blog",
+    "message": "Navegación por la página de publicación de blog",
     "description": "The ARIA label for the blog posts pagination"
   },
   "theme.blog.post.paginator.newerPost": {
-    "message": "Entrada más reciente",
+    "message": "Publicación más reciente",
     "description": "The blog post button label to navigate to the newer/previous post"
   },
   "theme.blog.post.paginator.olderPost": {
-    "message": "Entrada más antigua",
+    "message": "Publicación más antigua",
     "description": "The blog post button label to navigate to the older/next post"
   },
   "theme.tags.tagsPageLink": {
@@ -111,11 +111,11 @@
     "description": "Title for link to heading"
   },
   "theme.lastUpdated.atDate": {
-    "message": "el {date}",
+    "message": " el {date}",
     "description": "The words used to describe on which date a page has been last updated"
   },
   "theme.lastUpdated.byUser": {
-    "message": "por {user}",
+    "message": " por {user}",
     "description": "The words used to describe by who the page has been last updated"
   },
   "theme.lastUpdated.lastUpdatedAtBy": {
@@ -175,7 +175,7 @@
     "description": "The ARIA label to collapse the sidebar category"
   },
   "theme.IconExternalLink.ariaLabel": {
-    "message": "(abre en una nueva pestaña)",
+    "message": "(se abre en una pestaña nueva)",
     "description": "The ARIA label for the external link icon"
   },
   "theme.NavBar.navAriaLabel": {
@@ -191,7 +191,7 @@
     "description": "The first paragraph of the 404 page"
   },
   "theme.NotFound.p2": {
-    "message": "Por favor, contacta al propietario del sitio que te dirigió a la URL original y hazle saber que su enlace está roto.",
+    "message": "Por favor, contacta con el propietario del sitio que te enlazó a la URL original y avísale de que su enlace está roto.",
     "description": "The 2nd paragraph of the 404 page"
   },
   "theme.TOCCollapsible.toggleButtonLabel": {
@@ -207,7 +207,7 @@
     "description": "The ARIA label for the link to full blog posts from excerpts"
   },
   "theme.blog.post.readingTime.plurals": {
-    "message": "Un minuto de lectura|{readingTime} min de lectura",
+    "message": "Un minuto de lectura|{readingTime} minutos de lectura",
     "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.CodeBlock.copy": {
@@ -299,7 +299,7 @@
     "description": "The unlisted content banner title"
   },
   "theme.contentVisibility.unlistedBanner.message": {
-    "message": "Esta página no está listada. Los motores de búsqueda no la indexarán, y solo los usuarios con un enlace directo podrán acceder a ella.",
+    "message": "Esta página no está listada. Los motores de búsqueda no la indexarán, y solo los usuarios con un enlace directo pueden acceder a ella.",
     "description": "The unlisted content banner message"
   },
   "theme.contentVisibility.draftBanner.title": {

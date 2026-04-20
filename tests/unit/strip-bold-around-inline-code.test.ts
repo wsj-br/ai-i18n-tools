@@ -11,10 +11,9 @@ describe("stripBoldAroundInlineCode", () => {
   });
 
   it("handles template-literal-heavy inline code ending before **", () => {
-    const s =
-      'dynamic **`import(\\`./locales/${x}.json\\`)`**, **`fetch`**';
+    const s = "dynamic **`import(\\`./locales/${x}.json\\`)`**, **`fetch`**";
     expect(stripBoldAroundInlineCode(s)).toBe(
-      'dynamic `import(\\`./locales/${x}.json\\`)`, `fetch`'
+      "dynamic `import(\\`./locales/${x}.json\\`)`, `fetch`"
     );
   });
 

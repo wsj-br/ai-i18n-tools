@@ -12,6 +12,17 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 ## [Unreleased]
 
 
+
+## [1.2.1] - 2026-04-20
+
+- **Fixed**: Runtime — **`ui-languages-master-direction`** loads **`data/ui-languages-complete.json`** via **`import … with { type: "json" }`** (resolved through a symlink **`src/runtime/ui-languages-complete.json`**) instead of **`node:fs`**, so **`ai-i18n-tools/runtime`** bundles in Next.js / Turbopack client chunks without **`node:fs`**; **`pnpm build`** copies the JSON beside **`dist/runtime`** for Node consumers.
+
+- **Changed**: TypeScript — **`module`** / **`moduleResolution`** use **`NodeNext`** so JSON import attributes compile and **`dist/runtime`** stays loadable under Node’s JSON module semantics.
+
+- **Fixed**: CLI — **`translate-ui`** / **`sync`** plural compaction (`compactIdenticalPluralForms`): when optional **`locale`** is passed (source locale for Step 0, target locale for Pass B), duplicate cardinal strings no longer drop **`one`** while keeping **`other`** alone—doing so broke **`pluralTranslatedLocaleHasContent`** and caused repeated Arabic (and similar) plural API runs every sync.
+
+- **Changed**: Examples — **`examples/nextjs-app/README.md`** aligned with current scripts and layout (engines, **`i18n:translate`** / per-step CLI, **`i18n:clean`** / **`i18n:editor`**, project tree, Docusaurus **`docusaurus.config.mjs`**, removed stale **`sync-docs`** references); **`examples/nextjs-app/package.json`** adds **`i18n:clean`** and **`i18n:editor`** scripts.
+
 - **Added**: Translation Cache Editor — **Failures** page with paginated, filterable translation failure rows and summary metrics; **`GET /api/translation-failures`**, **`GET /api/translation-failures/summary`**, and **`GET /api/failure-quality-errors`**; **`TranslationCache`** adds **`listTranslationFailures`**, **`getTranslationFailureSummary`**, and **`getUniqueFailureQualityErrors`**.
 
 - **Changed**: Dependencies — add **`emoji-regex`** and **`remove-markdown`**; remove devDependency **`github-slugger`** (slug styles are implemented in **`write-heading-ids-core`**).

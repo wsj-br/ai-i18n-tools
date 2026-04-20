@@ -7,6 +7,12 @@
       "de": "ai-i18n-tools Beispiel-Konsolen-App",
       "pt-BR": "ai-i18n-tools exemplo de app de console"
     },
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini"
+    },
     "locations": [
       {
         "file": "src/main.js",
@@ -21,6 +27,12 @@
       "fr": "Bonjour le monde !!",
       "de": "Hallo Welt!!",
       "pt-BR": "Olá Mundo!!"
+    },
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini"
     },
     "locations": [
       {
@@ -37,6 +49,12 @@
       "de": "Diese Zeile wird in mehrere Sprachen übersetzt.",
       "pt-BR": "Esta linha será traduzida para vários idiomas."
     },
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini"
+    },
     "locations": [
       {
         "file": "src/main.js",
@@ -51,6 +69,12 @@
       "fr": "Ceci est la ligne numéro {{number}}",
       "de": "Dies ist Zeile Nummer {{number}}",
       "pt-BR": "Esta é a linha número {{number}}"
+    },
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini"
     },
     "locations": [
       {
@@ -97,7 +121,7 @@
         "other": "Esta página tem {{count}} seções"
       },
       "fr": {
-        "many": "Cette page contient {{count}} section",
+        "one": "Cette page contient {{count}} section",
         "other": "Cette page contient {{count}} sections"
       },
       "de": {
@@ -126,6 +150,12 @@
       "fr": "Exemple d'application console démontrant ai-i18n-tools",
       "de": "Beispiel-Konsolenanwendung zur Demonstration von ai-i18n-tools",
       "pt-BR": "Aplicativo de console de exemplo demonstrando o ai-i18n-tools"
+    },
+    "models": {
+      "es": "openai/gpt-5.4-mini",
+      "fr": "openai/gpt-5.4-mini",
+      "de": "openai/gpt-5.4-mini",
+      "pt-BR": "openai/gpt-5.4-mini"
     },
     "locations": [
       {

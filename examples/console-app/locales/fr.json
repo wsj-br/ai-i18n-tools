@@ -6,7 +6,7 @@
   "Plurals: automatic generation usage example": "Pluriels : exemple d’utilisation de la génération automatique",
   "f9ba51ab_original": "This page has {{count}} sections",
   "f9ba51ab_one": "Cette page contient {{count}} section",
-  "f9ba51ab_many": "Cette page contient {{count}} section",
+  "f9ba51ab_many": "Cette page contient {{count}} sections",
   "f9ba51ab_other": "Cette page contient {{count}} sections",
   "Example console application demonstrating ai-i18n-tools": "Exemple d'application console démontrant ai-i18n-tools"
 }

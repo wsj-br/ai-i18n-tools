@@ -69,11 +69,7 @@ import { pluralTranslatedLocaleHasContent } from "../core/plural-forms.js";
 import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
 import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
-import {
-  parseSlugStyle,
-  resolvePymdownOptions,
-  runWriteHeadingIds,
-} from "./write-heading-ids.js";
+import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runStripMdBoldInline } from "./strip-md-bold-inline.js";
 
 function openBrowser(url: string): void {
@@ -320,11 +316,7 @@ program
     "Only process files under this path (file or directory); project-relative or absolute"
   )
   .option("-f, --file <path>", "Same as --path")
-  .option(
-    "--slug-style <mode>",
-    "github | bitbucket | gitlab | pymdown | azure-devops",
-    "github"
-  )
+  .option("--slug-style <mode>", "github | bitbucket | gitlab | pymdown | azure-devops", "github")
   .option("--pymdown-case <mode>", "With pymdown: lower | title | none (default: lower)")
   .option("--pymdown-normalize <mode>", "With pymdown: nfc | nfd | none (default: nfc)")
   .option("--pymdown-percent-encode", "With pymdown: percent-encode slug (default on)", false)
@@ -360,16 +352,16 @@ program
       o.noPymdownPercentEncode;
 
     if (pymdownFlagsUsed && slugStyle !== "pymdown") {
-      console.error(
-        chalk.red(
-          "❌ --pymdown-* options are only valid with --slug-style pymdown."
-        )
-      );
+      console.error(chalk.red("❌ --pymdown-* options are only valid with --slug-style pymdown."));
       process.exit(1);
     }
 
     if (o.pymdownPercentEncode && o.noPymdownPercentEncode) {
-      console.error(chalk.red("❌ Use either --pymdown-percent-encode or --no-pymdown-percent-encode, not both."));
+      console.error(
+        chalk.red(
+          "❌ Use either --pymdown-percent-encode or --no-pymdown-percent-encode, not both."
+        )
+      );
       process.exit(1);
     }
 
@@ -428,7 +420,11 @@ program
   )
   .option("-f, --file <path>", "Same as --path")
   .option("--dry-run", "Print files that would change; do not write", false)
-  .option("--no-backup", "Overwrite in place without writing a timestamped .backup.* copy first", false)
+  .option(
+    "--no-backup",
+    "Overwrite in place without writing a timestamped .backup.* copy first",
+    false
+  )
   .action((opts, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
@@ -746,7 +742,7 @@ program
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (configuration has precedence over CLI flags)",	
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (configuration has precedence over CLI flags)",
     false
   )
   .option(

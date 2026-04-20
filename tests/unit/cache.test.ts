@@ -7,8 +7,24 @@ describe("TranslationCache", () => {
   it("updates start_line on upsert when a new non-null line is written", () => {
     const cache = new TranslationCache(":memory:");
     const h = TranslationCache.computeHash("duplicate segment text");
-    cache.setSegment(h, "pt-BR", "duplicate segment text", "tr1", "m", "docs/GETTING_STARTED.md", 71);
-    cache.setSegment(h, "pt-BR", "duplicate segment text", "tr2", "m", "docs/GETTING_STARTED.md", 75);
+    cache.setSegment(
+      h,
+      "pt-BR",
+      "duplicate segment text",
+      "tr1",
+      "m",
+      "docs/GETTING_STARTED.md",
+      71
+    );
+    cache.setSegment(
+      h,
+      "pt-BR",
+      "duplicate segment text",
+      "tr2",
+      "m",
+      "docs/GETTING_STARTED.md",
+      75
+    );
     const { rows } = cache.listTranslations({ locale: "pt-BR", limit: 10, offset: 0 });
     const row = rows.find((r) => r.source_hash === h);
     expect(row?.start_line).toBe(75);

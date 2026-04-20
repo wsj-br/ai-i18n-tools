@@ -61,9 +61,9 @@ describe("resolveMarkdownEmphasisPlaceholders", () => {
   });
 
   it("uses CLI when documentation omits emphasisPlaceholders", () => {
-    expect(resolveMarkdownEmphasisPlaceholders("de", doc(), {}, { emphasisPlaceholdersCli: true })).toBe(
-      true
-    );
+    expect(
+      resolveMarkdownEmphasisPlaceholders("de", doc(), {}, { emphasisPlaceholdersCli: true })
+    ).toBe(true);
     expect(
       resolveMarkdownEmphasisPlaceholders("ja", doc(), {}, { noEmphasisPlaceholdersCli: true })
     ).toBe(false);
@@ -87,14 +87,17 @@ describe("usesAutomaticEmphasisPlaceholdersForLocale", () => {
   it("is true only for heuristic-on locales without config or CLI", () => {
     expect(usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(), {}, {})).toBe(true);
     expect(usesAutomaticEmphasisPlaceholdersForLocale("de", doc(), {}, {})).toBe(false);
-    expect(
-      usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(true), {}, {})
-    ).toBe(false);
+    expect(usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(true), {}, {})).toBe(false);
     expect(
       usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(), {}, { emphasisPlaceholdersCli: true })
     ).toBe(false);
     expect(
-      usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(), {}, { noEmphasisPlaceholdersCli: true })
+      usesAutomaticEmphasisPlaceholdersForLocale(
+        "ja",
+        doc(),
+        {},
+        { noEmphasisPlaceholdersCli: true }
+      )
     ).toBe(false);
   });
 });
@@ -106,9 +109,9 @@ describe("describeEmphasisPlaceholdersPolicy", () => {
       outputDir: "./out",
       markdownOutput: { style: "nested", flatPreserveRelativeDir: false },
     } as DocumentationBlock;
-    expect(describeEmphasisPlaceholdersPolicy({ ...base, emphasisPlaceholders: true }, {})).toContain(
-      "documentations"
-    );
+    expect(
+      describeEmphasisPlaceholdersPolicy({ ...base, emphasisPlaceholders: true }, {})
+    ).toContain("documentations");
     expect(describeEmphasisPlaceholdersPolicy(base, { emphasisPlaceholdersCli: true })).toContain(
       "--emphasis-placeholders"
     );

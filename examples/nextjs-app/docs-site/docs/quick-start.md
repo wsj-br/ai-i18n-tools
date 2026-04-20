@@ -8,17 +8,17 @@ Follow the steps below to run your first translation with `ai-i18n-tools`. This 
 
 ---
 
-## Prerequisites
+## Prerequisites {#prerequisites}
 
 Before you start, make sure you have the following:
 
-- **Node.js 18+** — check with `node --version`
+- **Node.js 22.16+** — check with `node --version`
 - **An OpenRouter API key** — sign up at [openrouter.ai](https://openrouter.ai) and copy your key from the dashboard
-- **npm or pnpm** — either package manager works
+- **pnpm 10.33+** — check with `pnpm --version`
 
 ---
 
-## Step 1 — Install dependencies
+## Step 1 — Install dependencies {#step-1--install-dependencies}
 
 ```bash
 cd examples/nextjs-app
@@ -29,7 +29,7 @@ This installs `ai-i18n-tools` along with the Next.js and Docusaurus packages use
 
 ---
 
-## Step 2 — Set your API key
+## Step 2 — Set your API key {#step-2--set-your-api-key}
 
 Create a `.env` file in the `examples/nextjs-app/` directory:
 
@@ -41,7 +41,7 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
 
 ---
 
-## Step 3 — Review the configuration
+## Step 3 — Review the configuration {#step-3--review-the-configuration}
 
 Open `ai-i18n-tools.config.json`. The relevant section for documentation translation looks like this:
 
@@ -71,7 +71,7 @@ The `contentPaths` array tells the tool which directories (or individual files) 
 
 ---
 
-## Step 4 — Run the sync
+## Step 4 — Run the sync {#step-4--run-the-sync}
 
 Translate only the documentation (skip UI strings and SVGs for now):
 
@@ -93,7 +93,7 @@ On the second run, most segments will be **cache hits** and the translation will
 
 ---
 
-## Step 5 — Inspect the output
+## Step 5 — Inspect the output {#step-5--inspect-the-output}
 
 Translated files are written to `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`. Open one to compare it with the source:
 
@@ -112,7 +112,7 @@ Key things to verify:
 
 ---
 
-## Step 6 — Start Docusaurus
+## Step 6 — Start Docusaurus {#step-6--start-docusaurus}
 
 ```bash
 cd docs-site
@@ -123,7 +123,7 @@ This starts the Docusaurus dev server in German. Open [http://localhost:3000/de/
 
 ---
 
-## Step 7 — Explore the Next.js demo (locale + cardinal plurals)
+## Step 7 — Explore the Next.js demo (locale + cardinal plurals) {#step-7--explore-the-nextjs-demo-locale--cardinal-plurals}
 
 Documentation translation in this tutorial uses **Markdown only**. The same example repo also ships a **Next.js** UI on port **3030** where you can see **`t()`** calls, **`?locale=`** URLs, and a **cardinal plural** demo.
 
@@ -137,11 +137,11 @@ Then open [http://localhost:3030](http://localhost:3030).
 
 - Switch languages with the **Locale** dropdown, or append **`?locale=<code>`** (for example `http://localhost:3030/?locale=ar`). The UI keeps the query string and dropdown in sync.
 - Scroll to **Plurals: automatic generation usage example**. The page repeats “This page has … sections” for fixed sample counts (**1**, **2**, **5**, **50**) so you can compare plural rules across locales (including languages with multiple plural forms).
-- Calls use **`t("…", { plurals: true, count })`**. With **`extract`** / **`translate-ui`**, that key becomes a plural group in `locales/strings.json`; flat **`public/locales/*.json`** files carry the suffixed forms. Runtime wiring lives in **`src/lib/i18n.ts`** — see the **Cardinal plurals example** section in the [example README](../../README.md) for a concise walk-through.
+- Calls use **`t("…", { plurals: true, count })`**. With **`extract`** / **`translate-ui`**, that key becomes a plural group in `locales/strings.json`; flat **`public/locales/*.json`** files carry the suffixed forms. Runtime wiring lives in **`src/lib/i18n.ts`** — see the **Cardinal plurals example** section in the [example README](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md) for a concise walk-through.
 
 ---
 
-## What to explore next
+## What to explore next {#what-to-explore-next}
 
 - Read the [Translation Feature Showcase](./feature-showcase) to see every Markdown element that `ai-i18n-tools` can handle — including how **cardinal plural UI strings** relate to this docs pipeline.
 - Edit a sentence in `docs-site/docs/feature-showcase.md` and re-run `sync` — only that segment will be sent to the LLM; the rest are served from cache.
