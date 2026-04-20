@@ -4,9 +4,9 @@ title: Primeiros Passos
 description: >-
   Obtenha seu primeiro documento traduzido em menos de cinco minutos usando o
   ai-i18n-tools com este projeto de exemplo Next.js.
-translation_last_updated: '2026-04-18T22:42:46.122Z'
-source_file_mtime: '2026-04-18T18:55:03.274Z'
-source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
+translation_last_updated: '2026-04-20T16:41:26.407Z'
+source_file_mtime: '2026-04-19T22:02:25.396Z'
+source_file_hash: 7219aa1172ff751727e6c970f03fee92f43ac00820ceba38d0e47c86b5ba1448
 translation_language: pt-BR
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Primeiros Passos
 
 Siga os passos abaixo para executar sua primeira tradução com o `ai-i18n-tools`. Este guia utiliza o projeto de exemplo Next.js que você já está lendo — todos os comandos devem ser executados no diretório `examples/nextjs-app/`.
 
@@ -94,7 +92,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 
 Você verá uma saída semelhante a esta:
 
-```
+```text
 [docs] Scanning docs-site/docs/ — 2 files found
 [docs] Translating to: es, fr, de, pt-BR
 [docs] feature-showcase.md — 14 segments translated (4 locales)

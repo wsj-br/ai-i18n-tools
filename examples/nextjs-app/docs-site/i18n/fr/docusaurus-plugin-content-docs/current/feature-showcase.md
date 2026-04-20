@@ -4,9 +4,9 @@ title: Exemple de fonctionnalités de traduction
 description: >-
   Un document de référence démontrant chaque élément Markdown que ai-i18n-tools
   sait traduire.
-translation_last_updated: '2026-04-18T22:42:42.298Z'
-source_file_mtime: '2026-04-18T18:55:00.042Z'
-source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
+translation_last_updated: '2026-04-20T16:41:23.920Z'
+source_file_mtime: '2026-04-19T22:02:25.720Z'
+source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
 translation_language: fr
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Exemple de fonctionnalités de traduction
 
 Cette page a pour but de montrer comment `ai-i18n-tools` gère chaque construction Markdown courante. Exécutez `sync` sur ce fichier et comparez la sortie dans chaque dossier de langue pour voir exactement ce qui est traduit et ce qui reste inchangé.
 
@@ -34,10 +32,10 @@ L'internationalisation va au-delà du simple remplacement de mots. Un bon pipeli
 Le traducteur doit conserver toute la mise en forme en ligne sans modifier le balisage :
 
 - **Texte en gras** indique une importance et doit rester en gras après traduction.
-- _Texte en italique_ est utilisé pour l'accent ou les titres ; le sens doit être préservé.
+- _Texte en italique_ utilisé pour l'accent ou les titres ; le sens doit être préservé.
 - ~~Barré~~ marque un contenu obsolète ou supprimé.
-- `inline code` est **jamais** traduit — les identifiants, noms de fonctions et chemins de fichiers doivent rester inchangés.
-- Un [hyperlien](https://github.com/your-org/ai-i18n-tools) conserve son URL d'origine ; seul le libellé de l'ancre est traduit.
+- `inline code` n'est **jamais** traduit — les identifiants, noms de fonctions et chemins de fichiers doivent rester inchangés.
+- Un [lien hypertexte](https://github.com/your-org/ai-i18n-tools) conserve son URL d'origine ; seul le libellé du lien est traduit.
 
 ---
 
@@ -63,11 +61,11 @@ Les tableaux sont une source fréquente d'erreurs de traduction. Chaque cellule 
 |---|---|---|
 | Traduction Markdown | ✅ Stable | Segments mis en cache dans SQLite |
 | Extraction des chaînes d'interface | ✅ Stable | Lit les appels `t("…")` |
-| Chaînes d'interface pluriels cardinaux | ✅ Stable | `t("…", { plurals: true, count })` ; catalogue + suffixes JSON plats |
-| Traduction des libellés JSON | ✅ Stable | JSON de barre latérale/navbar Docusaurus |
+| Chaînes d'interface plurielles cardinales | ✅ Stable | `t("…", { plurals: true, count })` ; suffixes catalog + JSON plats |
+| Traduction des libellés JSON | ✅ Stable | JSON de barre latérale/navigation Docusaurus |
 | Traduction du texte SVG | ✅ Stable | Préserve la structure SVG |
 | Application du glossaire | ✅ Stable | Glossaire CSV par projet |
-| Concurrency par lots | ✅ Configurable | clé `batchConcurrency` |
+| Concurrency par lot | ✅ Configurable | clé `batchConcurrency` |
 
 ### Variantes d'alignement
 
@@ -92,18 +90,18 @@ Les tableaux sont une source fréquente d'erreurs de traduction. Chaque cellule 
 1. Ajoutez `ai-i18n-tools` comme dépendance de développement.
 2. Créez `ai-i18n-tools.config.json` à la racine de votre projet.
 3. Exécutez `npx ai-i18n-tools sync` pour effectuer la première traduction complète.
-4. Validez les fichiers de langue générés aux côtés de votre code source.
+4. Validez les fichiers de langue générés avec votre code source.
 5. Lors des exécutions suivantes, seuls les segments modifiés sont retraduits.
 
 ### Imbriquées
 
 - **Pipeline des documents**
   - Source : tout fichier `.md` ou `.mdx`
-  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites plates
-  - Cache : SQLite, indexé par chemin de fichier + hachage de segment
+  - Sortie : arborescence `i18n/` Docusaurus ou copies traduites plates
+  - Cache : SQLite, indexé par chemin de fichier + hachage du segment
 - **Pipeline des chaînes d'interface**
   - Source : fichiers JS/TS avec appels `t("…")` (y compris pluriels cardinaux via `{ plurals: true, count }`)
-  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …) avec clés suffixées pour les catégories plurielles le cas échéant
+  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …) avec clés suffixées selon les catégories plurielles si nécessaire
   - Cache : le catalogue maître `strings.json` lui-même
 
 ---

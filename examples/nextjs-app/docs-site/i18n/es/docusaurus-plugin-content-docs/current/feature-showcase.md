@@ -4,9 +4,9 @@ title: Muestra de funciones de traducción
 description: >-
   Un documento de referencia que demuestra cada elemento Markdown que
   ai-i18n-tools sabe cómo traducir.
-translation_last_updated: '2026-04-18T22:42:42.078Z'
-source_file_mtime: '2026-04-18T18:55:00.042Z'
-source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
+translation_last_updated: '2026-04-20T16:41:22.630Z'
+source_file_mtime: '2026-04-19T22:02:25.720Z'
+source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
 translation_language: es
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Muestra de funciones de traducción
 
 Esta página existe para demostrar cómo `ai-i18n-tools` maneja cada construcción común de Markdown. Ejecuta `sync` en ella y compara la salida en cada carpeta de configuración regional para ver exactamente qué se traduce y qué permanece sin cambios.
 
@@ -33,11 +31,11 @@ La internacionalización es más que intercambiar palabras. Una buena canalizaci
 
 El traductor debe mantener todo el formato en línea sin alterar la marcación:
 
-- **Texto en negrita** indica importancia y debe permanecer en negrita tras la traducción.
-- _Texto en cursiva_ se usa para énfasis o títulos; el significado debe conservarse.
+- **Texto en negrita** indica importancia y debe mantenerse en negrita tras la traducción.
+- _Texto en cursiva_ se usa para énfasis o títulos; debe conservarse el significado.
 - ~~Tachado~~ marca contenido obsoleto o eliminado.
-- `inline code` es **nunca** traducido — los identificadores, nombres de funciones y rutas de archivos deben permanecer igual.
-- Un [hipervínculo](https://github.com/your-org/ai-i18n-tools) mantiene su URL original; solo se traduce la etiqueta del enlace.
+- `inline code` **nunca** se traduce — los identificadores, nombres de funciones y rutas de archivos deben permanecer igual.
+- Un [hipervínculo](https://github.com/your-org/ai-i18n-tools) conserva su URL original; solo se traduce la etiqueta del enlace.
 
 ---
 
@@ -61,10 +59,10 @@ Las tablas son una fuente común de errores de traducción. Cada celda se traduc
 
 | Característica | Estado | Notas |
 |---|---|---|
-| Traducción de Markdown | ✅ Estable | Segmentos almacenados en caché en SQLite |
-| Extracción de cadenas de interfaz | ✅ Estable | Lee llamadas `t("…")` |
-| Cadenas de interfaz con plurales cardinales | ✅ Estable | `t("…", { plurals: true, count })`; catálogo y sufijos JSON planos |
-| Traducción de etiquetas JSON | ✅ Estable | JSON de barra lateral/barra de navegación de Docusaurus |
+| Traducción de Markdown | ✅ Estable | Segmentos en caché en SQLite |
+| Extracción de cadenas de interfaz | ✅ Estable | Lee llamadas a `t("…")` |
+| Cadenas de interfaz plurales cardinales | ✅ Estable | `t("…", { plurals: true, count })`; sufijos de catálogo y JSON plano |
+| Traducción de etiquetas JSON | ✅ Estable | JSON de barra lateral/navegación de Docusaurus |
 | Traducción de texto SVG | ✅ Estable | Conserva la estructura SVG |
 | Aplicación de glosario | ✅ Estable | Glosario CSV por proyecto |
 | Concurrencia por lotes | ✅ Configurable | Clave `batchConcurrency` |
@@ -73,8 +71,8 @@ Las tablas son una fuente común de errores de traducción. Cada celda se traduc
 
 | Alineado a la izquierda | Centrado | Alineado a la derecha |
 |:---|:---:|---:|
-| Configuración regional de origen | `en-GB` | requerido |
-| Configuraciones regionales de destino | hasta 20 | recomendado |
+| Idioma de origen | `en-GB` | requerido |
+| Idiomas de destino | hasta 20 | recomendado |
 | Concurrencia | 4 | predeterminado |
 
 ---
@@ -89,22 +87,22 @@ Las tablas son una fuente común de errores de traducción. Cada celda se traduc
 
 ### Ordenadas
 
-1. Agrega `ai-i18n-tools` como dependencia de desarrollo.
-2. Crea `ai-i18n-tools.config.json` en la raíz de tu proyecto.
-3. Ejecuta `npx ai-i18n-tools sync` para realizar la primera traducción completa.
-4. Confirma los archivos de idioma generados junto con tu código fuente.
-5. En ejecuciones posteriores, solo se vuelven a traducir los segmentos modificados.
+1. Añada `ai-i18n-tools` como dependencia de desarrollo.
+2. Cree `ai-i18n-tools.config.json` en la raíz de su proyecto.
+3. Ejecute `npx ai-i18n-tools sync` para realizar la primera traducción completa.
+4. Confirme los archivos de idioma generados junto con su código fuente.
+5. En ejecuciones posteriores, solo se volverán a traducir los segmentos modificados.
 
 ### Anidadas
 
-- **Canalización de documentos**
-  - Origen: cualquier archivo `.md` o `.mdx`
+- **Canal de documentos**
+  - Fuente: cualquier archivo `.md` o `.mdx`
   - Salida: árbol `i18n/` de Docusaurus o copias traducidas planas
-  - Caché: SQLite, indexado por ruta de archivo + hash de segmento
-- **Canalización de cadenas de interfaz**
-  - Origen: archivos JS/TS con llamadas `t("…")` (incluyendo plurales cardinales mediante `{ plurals: true, count }`)
+  - Caché: SQLite, indexado por ruta de archivo + hash del segmento
+- **Canal de cadenas de interfaz**
+  - Fuente: archivos JS/TS con llamadas a `t("…")` (incluyendo plurales cardinales mediante `{ plurals: true, count }`)
   - Salida: JSON plano por idioma (`de.json`, `fr.json`, …) con claves sufijadas para categorías plurales cuando corresponda
-  - Caché: el catálogo maestro `strings.json` mismo
+  - Caché: el propio catálogo maestro `strings.json`
 
 ---
 

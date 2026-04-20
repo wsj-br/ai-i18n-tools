@@ -4,9 +4,9 @@ title: البدء السريع
 description: >-
   احصل على أول مستند مترجم لك في أقل من خمس دقائق باستخدام ai-i18n-tools مع
   مشروع المثال هذا الخاص بـ Next.js.
-translation_last_updated: '2026-04-18T22:42:43.514Z'
-source_file_mtime: '2026-04-18T18:55:03.274Z'
-source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
+translation_last_updated: '2026-04-20T16:41:27.381Z'
+source_file_mtime: '2026-04-19T22:02:25.396Z'
+source_file_hash: 7219aa1172ff751727e6c970f03fee92f43ac00820ceba38d0e47c86b5ba1448
 translation_language: ar
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# البدء السريع
 
 اتبع الخطوات أدناه لتشغيل أول ترجمة لك باستخدام `ai-i18n-tools`. يستخدم هذا الدليل مشروع المثال Next.js الذي تقرأه حاليًا — يجب تنفيذ كل أمر من الأوامر من داخل الدليل `examples/nextjs-app/`.
 
@@ -94,7 +92,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 
 سترى مخرجات مشابهة لما يلي:
 
-```
+```text
 [docs] Scanning docs-site/docs/ — 2 files found
 [docs] Translating to: es, fr, de, pt-BR
 [docs] feature-showcase.md — 14 segments translated (4 locales)

@@ -72,7 +72,7 @@ pnpm start
 
 ## اللغات المدعومة
 
-| الكود     | اللغة             |
+| Code     | Language             |
 | -------- | -------------------- |
 | `en-GB`  | الإنجليزية (المملكة المتحدة) الافتراضية |
 | `es`     | الإسبانية              |
@@ -169,7 +169,7 @@ pnpm run i18n:editor
 
 ## هيكل المشروع
 
-```
+```text
 nextjs-app/
 ├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
 ├── src/

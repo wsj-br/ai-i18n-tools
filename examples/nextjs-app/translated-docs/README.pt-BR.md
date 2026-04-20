@@ -72,14 +72,14 @@ Abra [http://localhost:3040](http://localhost:3040) (em inglês). Em **desenvolv
 
 ## Idiomas Suportados
 
-| Código     | Idioma                   |
-| -------- | ------------------------ |
+| Code     | Language             |
+| -------- | -------------------- |
 | `en-GB`  | Inglês (Reino Unido) padrão |
-| `es`     | Espanhol                 |
-| `fr`     | Francês                  |
-| `de`     | Alemão                   |
-| `pt-BR`  | Português (Brasil)       |
-| `ar`     | Árabe                    |
+| `es`     | Espanhol              |
+| `fr`     | Francês               |
+| `de`     | Alemão               |
+| `pt-BR`  | Português (Brasil)  |
+| `ar`     | Árabe               |
 
 ## Fluxo de trabalho
 
@@ -169,7 +169,7 @@ pnpm run i18n:editor
 
 ## Estrutura do Projeto
 
-```
+```text
 nextjs-app/
 ├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
 ├── src/

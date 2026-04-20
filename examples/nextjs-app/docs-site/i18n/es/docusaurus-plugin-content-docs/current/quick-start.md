@@ -4,9 +4,9 @@ title: Introducción rápida
 description: >-
   Obtén tu primer documento traducido en menos de cinco minutos usando
   ai-i18n-tools con este proyecto de ejemplo de Next.js.
-translation_last_updated: '2026-04-18T22:42:43.625Z'
-source_file_mtime: '2026-04-18T18:55:03.274Z'
-source_file_hash: 3959ea2c2c86befb8702ecbb126b291ff7bf1392e0bc282080c16ea52e8e1a3b
+translation_last_updated: '2026-04-20T16:41:23.089Z'
+source_file_mtime: '2026-04-19T22:02:25.396Z'
+source_file_hash: 7219aa1172ff751727e6c970f03fee92f43ac00820ceba38d0e47c86b5ba1448
 translation_language: es
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Introducción rápida
 
 Sigue los pasos a continuación para ejecutar tu primera traducción con `ai-i18n-tools`. Esta guía utiliza el proyecto de ejemplo de Next.js que ya estás leyendo — todos los comandos deben ejecutarse desde el directorio `examples/nextjs-app/`.
 
@@ -94,7 +92,7 @@ npx ai-i18n-tools sync --no-ui --no-svg
 
 Verás una salida similar a esta:
 
-```
+```text
 [docs] Scanning docs-site/docs/ — 2 files found
 [docs] Translating to: es, fr, de, pt-BR
 [docs] feature-showcase.md — 14 segments translated (4 locales)

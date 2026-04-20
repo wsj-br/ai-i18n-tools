@@ -72,13 +72,13 @@ pnpm start
 
 ## Unterstützte Sprachen
 
-| Code     | Sprache              |
+| Code     | Language             |
 | -------- | -------------------- |
-| `en-GB`  | Englisch (GB) Standard |
-| `es`     | Spanisch               |
-| `fr`     | Französisch            |
-| `de`     | Deutsch                |
-| `pt-BR`  | Portugiesisch (Brasilien) |
+| `en-GB`  | Englisch (GB), Standard |
+| `es`     | Spanisch              |
+| `fr`     | Französisch               |
+| `de`     | Deutsch               |
+| `pt-BR`  | Portugiesisch (Brasilien)  |
 | `ar`     | Arabisch               |
 
 ## Workflow
@@ -169,7 +169,7 @@ pnpm run i18n:editor
 
 ## Projektstruktur
 
-```
+```text
 nextjs-app/
 ├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
 ├── src/

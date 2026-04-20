@@ -67,18 +67,18 @@
       "pt-BR": "Plurais: exemplo de uso da geração automática",
       "de": "Plural: Beispiel für die automatische Generierung"
     },
-    "locations": [
-      {
-        "file": "src/main.js",
-        "line": 27
-      }
-    ],
     "models": {
       "es": "openai/gpt-5.4-mini",
       "fr": "openai/gpt-5.4-mini",
       "pt-BR": "openai/gpt-5.4-mini",
       "de": "openai/gpt-5.4-mini"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/main.js",
+        "line": 27
+      }
+    ]
   },
   "f9ba51ab": {
     "plural": true,
@@ -97,27 +97,27 @@
         "other": "Esta página tem {{count}} seções"
       },
       "fr": {
-        "many": "Cette page comporte {{count}} section",
-        "other": "Cette page comporte {{count}} sections"
+        "many": "Cette page contient {{count}} section",
+        "other": "Cette page contient {{count}} sections"
       },
       "de": {
         "one": "Diese Seite hat {{count}} Abschnitt",
         "other": "Diese Seite hat {{count}} Abschnitte"
       }
     },
-    "locations": [
-      {
-        "file": "src/main.js",
-        "line": 30
-      }
-    ],
     "models": {
       "en-GB": "openai/gpt-5.4-mini",
       "es": "openai/gpt-5.4-mini",
       "pt-BR": "openai/gpt-5.4-mini",
       "fr": "openai/gpt-5.4-mini",
       "de": "openai/gpt-5.4-mini"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/main.js",
+        "line": 30
+      }
+    ]
   },
   "30eadb0c": {
     "source": "Example console application demonstrating ai-i18n-tools",

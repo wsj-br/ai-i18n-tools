@@ -4,9 +4,9 @@ title: Exemplo de Recursos de Tradução
 description: >-
   Um documento de referência que demonstra todos os elementos Markdown que o
   ai-i18n-tools sabe como traduzir.
-translation_last_updated: '2026-04-18T22:42:45.762Z'
-source_file_mtime: '2026-04-18T18:55:00.042Z'
-source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
+translation_last_updated: '2026-04-20T16:41:25.973Z'
+source_file_mtime: '2026-04-19T22:02:25.720Z'
+source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
 translation_language: pt-BR
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Exemplo de Recursos de Tradução
 
 Esta página existe para demonstrar como o `ai-i18n-tools` lida com todos os elementos Markdown comuns. Execute `sync` nela e compare a saída em cada pasta de localidade para ver exatamente o que é traduzido e o que permanece inalterado.
 
@@ -33,11 +31,11 @@ O `ai-i18n-tools` divide cada documento em **segmentos** antes de enviá-los ao 
 
 O tradutor deve manter toda a formatação em linha sem alterar a marcação:
 
-- **Texto em negrito** sinaliza importância e deve permanecer em negrito após a tradução.
+- **Texto em negrito** indica importância e deve permanecer em negrito após a tradução.
 - _Texto em itálico_ é usado para ênfase ou títulos; o significado deve ser preservado.
 - ~~Tachado~~ marca conteúdo obsoleto ou removido.
-- `código em linha` é **nunca** traduzido — identificadores, nomes de funções e caminhos de arquivos devem permanecer inalterados.
-- Um [hiperlink](https://github.com/your-org/ai-i18n-tools) mantém sua URL original; apenas o rótulo do link é traduzido.
+- `inline code` é **nunca** traduzido — identificadores, nomes de funções e caminhos de arquivos devem permanecer inalterados.
+- Um [link](https://github.com/your-org/ai-i18n-tools) mantém sua URL original; somente o texto do link é traduzido.
 
 ---
 
@@ -59,15 +57,15 @@ Todos os níveis de cabeçalho traduzem o texto, mas mantêm os IDs de âncora i
 
 Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida individualmente; os separadores de coluna e a sintaxe de alinhamento são preservados.
 
-| Recurso | Status | Notas |
+| Recurso | Status | Observações |
 |---|---|---|
-| Tradução de Markdown | ✅ Estável | Segmentos armazenados em cache no SQLite |
-| Extração de strings da interface | ✅ Estável | Lê chamadas `t("…")` |
-| Strings de interface com plurais cardinais | ✅ Estável | `t("…", { plurals: true, count })`; catálogo + sufixos JSON planos |
-| Tradução de rótulos JSON | ✅ Estável | JSON de barra lateral/barra de navegação do Docusaurus |
+| Tradução Markdown | ✅ Estável | Segmentos armazenados em cache no SQLite |
+| Extração de strings de interface | ✅ Estável | Lê chamadas `t("…")` |
+| Strings de interface com plurais cardinais | ✅ Estável | `t("…", { plurals: true, count })`; sufixos de catálogo + JSON plano |
+| Tradução de rótulos JSON | ✅ Estável | JSON de barra lateral/navegação do Docusaurus |
 | Tradução de texto SVG | ✅ Estável | Preserva a estrutura SVG |
 | Aplicação de glossário | ✅ Estável | Glossário CSV por projeto |
-| Concorrência em lote | ✅ Configurável | chave `batchConcurrency`
+| Concorrência em lote | ✅ Configurável | Chave `batchConcurrency` |
 
 ### Variantes de alinhamento
 
@@ -99,7 +97,7 @@ Tabelas são uma fonte comum de erros de tradução. Cada célula é traduzida i
 
 - **Pipeline de documentos**
   - Origem: qualquer arquivo `.md` ou `.mdx`
-  - Saída: árvore Docusaurus `i18n/` ou cópias traduzidas planas
+  - Saída: estrutura `i18n/` do Docusaurus ou cópias traduzidas planas
   - Cache: SQLite, indexado por caminho do arquivo + hash do segmento
 - **Pipeline de strings de interface**
   - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais cardinais via `{ plurals: true, count }`)

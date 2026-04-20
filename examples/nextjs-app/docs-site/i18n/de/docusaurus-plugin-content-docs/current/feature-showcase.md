@@ -4,9 +4,9 @@ title: Vorführung der Übersetzungsfunktionen
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
   übersetzen kann.
-translation_last_updated: '2026-04-18T22:42:42.524Z'
-source_file_mtime: '2026-04-18T18:55:00.042Z'
-source_file_hash: 9a1262e2b79dcc6a169c7429b15224715eea5880586ab4d9763c1176ae358e99
+translation_last_updated: '2026-04-20T16:41:24.901Z'
+source_file_mtime: '2026-04-19T22:02:25.720Z'
+source_file_hash: 4cd8d12313cf2fabc4090fad6b6c2b117c3483b6a324be245b134b1f4b94a013
 translation_language: de
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -14,8 +14,6 @@ translation_models:
 ---
 
 
-
-# Vorführung der Übersetzungsfunktionen
 
 Diese Seite dient dazu, zu demonstrieren, wie `ai-i18n-tools` jede gängige Markdown-Konstruktion verarbeitet. Führen Sie `sync` darauf aus und vergleichen Sie die Ausgabe in jedem Sprachordner, um genau zu sehen, was übersetzt wird und was unverändert bleibt.
 
@@ -33,11 +31,11 @@ Internationalisierung bedeutet mehr als nur das Austauschen von Wörtern. Eine g
 
 Der Übersetzer sollte sämtliche Inline-Formatierungen übernehmen, ohne die Auszeichnung zu verändern:
 
-- **Fetter Text** signalisiert Wichtigkeit und sollte nach der Übersetzung weiterhin fett sein.
-- _Kursiver Text_ wird zur Hervorhebung oder für Titel verwendet; die Bedeutung sollte erhalten bleiben.
-- ~~Durchgestrichener Text~~ kennzeichnet veraltete oder entfernte Inhalte.
+- **Fetter Text** signalisiert Wichtigkeit und sollte nach der Übersetzung fett bleiben.
+- _Kursiver Text_ wird zur Hervorhebung oder für Titel verwendet; die Bedeutung ist beizubehalten.
+- ~~Durchgestrichen~~ kennzeichnet veraltete oder entfernte Inhalte.
 - `inline code` wird **niemals** übersetzt – Bezeichner, Funktionsnamen und Dateipfade müssen unverändert bleiben.
-- Ein [Hyperlink](https://github.com/your-org/ai-i18n-tools) behält seine ursprüngliche URL bei; nur die Ankerbeschriftung wird übersetzt.
+- Ein [Hyperlink](https://github.com/your-org/ai-i18n-tools) behält seine ursprüngliche URL; nur die Ankerbezeichnung wird übersetzt.
 
 ---
 
@@ -61,20 +59,20 @@ Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird ein
 
 | Funktion | Status | Hinweise |
 |---|---|---|
-| Markdown-Übersetzung | ✅ Stabil | Segmente im SQLite-Cache |
+| Markdown-Übersetzung | ✅ Stabil | Segmente im SQLite-Cache gespeichert |
 | UI-String-Extraktion | ✅ Stabil | Liest `t("…")`-Aufrufe |
-| Kardinal-Plural UI-Strings | ✅ Stabil | `t("…", { plurals: true, count })`; Katalog + flache JSON-Endungen |
+| Kardinal-Plural-UI-Strings | ✅ Stabil | `t("…", { plurals: true, count })`; Katalog + flache JSON-Endungen |
 | JSON-Label-Übersetzung | ✅ Stabil | Docusaurus Sidebar/Navbar JSON |
 | SVG-Text-Übersetzung | ✅ Stabil | Behält SVG-Struktur bei |
-| Glossar-Einhaltung | ✅ Stabil | Pro Projekt CSV-Glossar |
-| Stapelweise Parallelität | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
+| Glossar-Erzwingung | ✅ Stabil | Pro Projekt CSV-Glossar |
+| Stapelverarbeitung Parallelität | ✅ Konfigurierbar | `batchConcurrency`-Schlüssel |
 
 ### Ausrichtungsvarianten
 
-| Links ausgerichtet | Zentriert | Rechts ausgerichtet |
+| Linksbündig | Zentriert | Rechtsbündig |
 |:---|:---:|---:|
-| Quellsprache | `en-GB` | erforderlich |
-| Zielsprachen | bis zu 20 | empfohlen |
+| Quelllocale | `en-GB` | erforderlich |
+| Ziellocales | bis zu 20 | empfohlen |
 | Parallelität | 4 | Standard |
 
 ---
@@ -92,18 +90,18 @@ Tabellen sind eine häufige Quelle für Übersetzungsfehler. Jede Zelle wird ein
 1. Fügen Sie `ai-i18n-tools` als Entwicklungsabhängigkeit hinzu.
 2. Erstellen Sie `ai-i18n-tools.config.json` im Stammverzeichnis Ihres Projekts.
 3. Führen Sie `npx ai-i18n-tools sync` aus, um die erste vollständige Übersetzung durchzuführen.
-4. Committen Sie die generierten Sprachdateien zusammen mit Ihrem Quellcode.
+4. Committen Sie die generierten Lokalisierungsdateien zusammen mit Ihrem Quellcode.
 5. Bei nachfolgenden Durchläufen werden nur geänderte Segmente erneut übersetzt.
 
 ### Geschachtelt
 
-- **Dokumente-Pipeline**
-  - Quelle: beliebige `.md`- oder `.mdx`-Datei
+- **Dokumenten-Pipeline**
+  - Quelle: jede `.md`- oder `.mdx`-Datei
   - Ausgabe: Docusaurus `i18n/`-Baum oder flache übersetzte Kopien
   - Cache: SQLite, indiziert nach Dateipfad + Segment-Hash
 - **UI-Strings-Pipeline**
-  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich kardinaler Plurale über `{ plurals: true, count }`)
-  - Ausgabe: pro Sprache flache JSON-Dateien (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
+  - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich Kardinal-Plural über `{ plurals: true, count }`)
+  - Ausgabe: flache JSON-Dateien pro Locale (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
   - Cache: der Master-`strings.json`-Katalog selbst
 
 ---

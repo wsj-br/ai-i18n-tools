@@ -3,6 +3,9 @@ node_modules/
 dist/
 build/
 
+# build info
+src/build-info.generated.ts
+
 # Cache
 .translation-cache/*
 !.translation-cache/cache.db

@@ -72,14 +72,14 @@ Ouvrez [http://localhost:3040](http://localhost:3040) (anglais). En **développe
 
 ## Langues prises en charge
 
-| Code     | Langue                   |
-| -------- | ------------------------ |
+| Code     | Language             |
+| -------- | -------------------- |
 | `en-GB`  | Anglais (Royaume-Uni) par défaut |
-| `es`     | Espagnol                 |
-| `fr`     | Français                 |
-| `de`     | Allemand                 |
-| `pt-BR`  | Portugais (Brésil)       |
-| `ar`     | Arabe                    |
+| `es`     | Espagnol              |
+| `fr`     | Français               |
+| `de`     | Allemand               |
+| `pt-BR`  | Portugais (Brésil)  |
+| `ar`     | Arabe               |
 
 ## Flux de travail
 
@@ -169,7 +169,7 @@ pnpm run i18n:editor
 
 ## Structure du projet
 
-```
+```text
 nextjs-app/
 ├── ai-i18n-tools.config.json # `svg` block: images/ → public/assets/ (translate-svg)
 ├── src/
