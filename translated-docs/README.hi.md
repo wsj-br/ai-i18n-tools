@@ -11,14 +11,14 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **विषय सूची**
 
-- [दो मुख्य कार्यप्रवाह](#two-core-workflows)
+- [दो मूल कार्यप्रवाह](#two-core-workflows)
 - [स्थापना](#installation)
 - [त्वरित शुरुआत](#quick-start)
-  - [कार्यप्रवाह 1 - यूआई स्ट्रिंग्स](#workflow-1---ui-strings)
+  - [कार्यप्रवाह 1 - UI स्ट्रिंग्स](#workflow-1---ui-strings)
   - [कार्यप्रवाह 2 - दस्तावेज़ीकरण](#workflow-2---documentation)
   - [दोनों कार्यप्रवाह](#both-workflows)
-- [रनटाइम हेल्पर्स](#runtime-helpers)
-- [CLI कमांड्स](#cli-commands)
+- [रनटाइम सहायक](#runtime-helpers)
+- [CLI कमांड](#cli-commands)
 - [दस्तावेज़ीकरण](#documentation)
 - [लाइसेंस](#license)
 

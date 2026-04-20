@@ -11,13 +11,13 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目录**
 
-- [两个核心工作流](#two-core-workflows)
+- [两个核心工作流程](#two-core-workflows)
 - [安装](#installation)
 - [快速开始](#quick-start)
-  - [工作流 1 - UI 字符串](#workflow-1---ui-strings)
-  - [工作流 2 - 文档](#workflow-2---documentation)
-  - [两种工作流](#both-workflows)
-- [运行时辅助工具](#runtime-helpers)
+  - [工作流程 1 - 用户界面字符串](#workflow-1---ui-strings)
+  - [工作流程 2 - 文档](#workflow-2---documentation)
+  - [两个工作流程](#both-workflows)
+- [运行时助手](#runtime-helpers)
 - [CLI 命令](#cli-commands)
 - [文档](#documentation)
 - [许可证](#license)

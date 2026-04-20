@@ -21,17 +21,17 @@ Für praktische Anweisungen zur Nutzung siehe [GETTING_STARTED.md](GETTING_START
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
   - [Flache Sprachdateien](#flat-locale-files)
-  - [Eingabeaufforderungen für UI-Übersetzung](#ui-translation-prompts)
-- [Workflow 2 – Interna der Dokumentenübersetzung](#workflow-2---document-translation-internals)
+  - [UI-Übersetzungsanweisungen](#ui-translation-prompts)
+- [Workflow 2 – Interna der Dokumentübersetzung](#workflow-2---document-translation-internals)
   - [Extraktoren](#extractors)
-  - [Einfügen von Überschriften-Ankern (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [Einfügen von Überschriftenankern (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Schutz von Platzhaltern](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
   - [Auflösung des Ausgabepfads](#output-path-resolution)
   - [Umschreibung flacher Links](#flat-link-rewriting)
 - [Gemeinsame Infrastruktur](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [Laden der Konfiguration](#config-loading)
+  - [Konfiguration laden](#config-loading)
   - [Protokollierungstool (Logger)](#logger)
 - [Laufzeit-Hilfs-API](#runtime-helpers-api)
   - [RTL-Hilfsfunktionen](#rtl-helpers)
@@ -284,11 +284,11 @@ Der Befehl `translate-docs` nutzt außerdem **Datei-Tracking**, sodass unveränd
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` ordnet einen quellbezogenen Pfad dem Ausgabepfad zu:
 
 - `nested`-Stil (Standard): `{outputDir}/{locale}/{relPath}` für Markdown.
-- `docusaurus`-Stil: unter `docsRoot`, Ausgaben verwenden `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; Pfade außerhalb von `docsRoot` fallen auf das geschachtelte Layout zurück.
-- `flat`-Stil: `{outputDir}/{stem}.{locale}{extension}`. Wenn `flatPreserveRelativeDir` `true` ist, werden Quellunterverzeichnisse unter `outputDir` beibehalten.
-- **Benutzerdefiniert** `pathTemplate`: beliebiges Markdown-Layout unter Verwendung von `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
-- **Benutzerdefiniert** `jsonPathTemplate`: separates benutzerdefiniertes Layout für JSON-Beschriftungsdateien, mit denselben Platzhaltern.
-- `linkRewriteDocsRoot` hilft dem Flat-Link-Rewriter, korrekte Präfixe zu berechnen, wenn die übersetzte Ausgabe an einem anderen Ort als der standardmäßige Projektstamm verwurzelt ist.
+- `docusaurus`-Stil: unter `docsRoot`, Ausgaben verwenden `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; Pfade außerhalb von `docsRoot` greifen auf das geschachtelte Layout zurück.
+- `flat`-Stil: `{outputDir}/{stem}.{locale}{extension}`. Wenn `flatPreserveRelativeDir` auf `true` gesetzt ist, bleiben Quellunterverzeichnisse unter `outputDir` erhalten.
+- **Benutzerdefinierter** `pathTemplate`: beliebiges Markdown-Layout unter Verwendung von `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Benutzerdefinierter** `jsonPathTemplate`: separates benutzerdefiniertes Layout für JSON-Beschriftungsdateien, unter Verwendung derselben Platzhalter.
+- `linkRewriteDocsRoot` hilft dem Umschreiber flacher Links, korrekte Präfixe zu berechnen, wenn die übersetzte Ausgabe nicht im standardmäßigen Projektstamm verwurzelt ist.
 
 <a id="flat-link-rewriting"></a>
 ### Umsetzung flacher Links
@@ -314,13 +314,13 @@ Umhüllt die OpenRouter Chat Completions API. Wichtige Verhaltensweisen:
 
 `loadI18nConfigFromFile(configPath, cwd)`-Pipeline:
 
-1. Lese und parse `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` – führe ein tiefes Zusammenführen mit `defaultI18nConfigPartial` durch und füge alle `documentations[].sourceFiles`-Einträge in `contentPaths` ein.
-3. `expandTargetLocalesFileReferenceInRawInput` – falls `targetLocales` ein Dateipfad ist, lade das Manifest und erweitere es zu Locale-Codes; setze `uiLanguagesPath`.
+1. `ai-i18n-tools.config.json` lesen und parsen (JSON).
+2. `mergeWithDefaults` – Tiefen-Zusammenführung mit `defaultI18nConfigPartial` und Zusammenführung aller `documentations[].sourceFiles`-Einträge in `contentPaths`.
+3. `expandTargetLocalesFileReferenceInRawInput` – Wenn `targetLocales` ein Dateipfad ist, Manifest laden und auf Sprachcodes erweitern; `uiLanguagesPath` setzen.
 4. `expandDocumentationTargetLocalesInRawInput` – dasselbe für jeden `documentations[].targetLocales`-Eintrag.
 5. `parseI18nConfig` – Zod-Validierung + `validateI18nBusinessRules`.
-6. `applyEnvOverrides` – wende `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` usw. an.
-7. `augmentConfigWithUiLanguagesFile` – hänge Anzeigenamen aus dem Manifest an.
+6. `applyEnvOverrides` – Anwendung von `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
+7. `augmentConfigWithUiLanguagesFile` – Anzeigenamen aus Manifest anhängen.
 
 <a id="logger"></a>
 ### Protokollierung (Logger)

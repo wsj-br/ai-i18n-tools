@@ -11,12 +11,12 @@ JavaScript/TypeScript 애플리케이션 및 문서 사이트의 국제화를 �
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **목차**
 
-- [두 가지 핵심 워크플로우](#two-core-workflows)
+- [두 가지 핵심 워크플로](#two-core-workflows)
 - [설치](#installation)
 - [빠른 시작](#quick-start)
-  - [워크플로우 1 - UI 문자열](#workflow-1---ui-strings)
-  - [워크플로우 2 - 문서화](#workflow-2---documentation)
-  - [두 가지 워크플로우](#both-workflows)
+  - [워크플로 1 - UI 문자열](#workflow-1---ui-strings)
+  - [워크플로 2 - 문서화](#workflow-2---documentation)
+  - [두 워크플로 모두](#both-workflows)
 - [런타임 헬퍼](#runtime-helpers)
 - [CLI 명령어](#cli-commands)
 - [문서화](#documentation)

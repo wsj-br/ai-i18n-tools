@@ -11,7 +11,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目錄**
 
-- [兩種核心工作流程](#two-core-workflows)
+- [兩個核心工作流程](#two-core-workflows)
 - [安裝](#installation)
 - [快速開始](#quick-start)
   - [工作流程 1 - UI 字串](#workflow-1---ui-strings)
@@ -20,7 +20,7 @@
 - [執行階段輔助工具](#runtime-helpers)
 - [CLI 指令](#cli-commands)
 - [文件](#documentation)
-- [授權](#license)
+- [授權條款](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

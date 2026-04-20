@@ -21,29 +21,34 @@
   - [步驟 1：初始化](#step-1-initialise)
   - [步驟 2：提取字串](#step-2-extract-strings)
   - [步驟 3：翻譯 UI 字串](#step-3-translate-ui-strings)
-  - [匯出為 XLIFF 2.0（可選）](#exporting-to-xliff-20-optional)
-  - [步驟 4：於執行階段整合 i18next](#step-4-wire-i18next-at-runtime)
+  - [匯出至 XLIFF 2.0（可選）](#exporting-to-xliff-20-optional)
+  - [步驟 4：在執行階段整合 i18next](#step-4-wire-i18next-at-runtime)
   - [在原始碼中使用 `t()`](#using-t-in-source-code)
   - [插值](#interpolation)
-  - [基數複數形式（`plurals: true`）](#cardinal-plurals-plurals-true)
-  - [語言切換器 UI](#language-switcher-ui)
+  - [基數複數（`plurals: true`）](#cardinal-plurals-plurals-true)
+  - [語言切換 UI](#language-switcher-ui)
   - [RTL 語言](#rtl-languages)
 - [工作流程 2 - 文件翻譯](#workflow-2---document-translation)
   - [步驟 1：為文件初始化](#step-1-initialise-for-documentation)
   - [步驟 2：翻譯文件](#step-2-translate-documents)
-    - [複雜的 Markdown 和失敗的品質檢查](#complex-markdown-and-failed-quality-checks)
+    - [複雜 Markdown 與品質檢查失敗](#complex-markdown-and-failed-quality-checks)
     - [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags)
     - [批次提示格式](#batch-prompt-format)
-    - [SQLite 中的區段去重和路徑](#segment-dedupe-and-paths-in-sqlite)
+    - [SQLite 中的區段去重與路徑](#segment-dedupe-and-paths-in-sqlite)
   - [輸出佈局](#output-layouts)
     - [平面佈局中的錨點連結](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` 樣板](#markdown-output-path-template-placeholders)
-- [合併工作流程 (UI + 文件)](#combined-workflow-ui--docs)
-  - [混合文件工作流程 (Docusaurus + 平面)](#mixed-documentation-workflow-docusaurus--flat)
+    - [`pathTemplate` / `jsonPathTemplate` 暫存變數](#pathtemplate--jsonpathtemplate-placeholders)
+- [合併工作流程（UI + 文件）](#combined-workflow-ui--docs)
+  - [混合文件工作流程（Docusaurus + 平面）](#mixed-documentation-workflow-docusaurus--flat)
+- [翻譯快取編輯器](#translation-cache-editor)
+  - [失敗項目（文件翻譯）](#failures-document-translation)
+    - [何時使用](#when-to-use-it)
+    - [為何原始內容的編輯很重要](#why-source-edits-matter)
+    - [如何使用此分頁](#how-to-use-the-tab)
 - [設定參考](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
-  - [`uiLanguagesPath` (選用)](#uilanguagespath-optional)
+  - [`uiLanguagesPath`（可選）](#uilanguagespath-optional)
   - [`concurrency`（可選）](#concurrency-optional)
   - [`batchConcurrency`（可選）](#batchconcurrency-optional)
   - [`batchSize` / `maxBatchChars`（可選）](#batchsize--maxbatchchars-optional)
@@ -146,12 +151,12 @@ npx ai-i18n-tools init
 
 此操作會寫入使用 `ui-markdown` 範本的 `ai-i18n-tools.config.json`。請編輯設定以指定：
 
-- `sourceLocale` - 您的原始語言 BCP-47 代碼（例如 `"en-GB"`）。**必須與** 從執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE` 相符。
-- `targetLocales` - 目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 可根據此清單建立 `ui-languages.json` 檔案清單。
-- `ui.sourceRoots` - 用於掃描 `t("…")` 呼叫的目錄（例如 `["src/"]`）。
-- `ui.stringsJson` - 主目錄檔案的輸出位置（例如 `"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - `de.json`、`pt-BR.json` 等檔案的輸出位置（例如 `"src/locales/"`）。
-- `ui.preferredModel`（選填）- 僅針對 `translate-ui` 嘗試使用的 OpenRouter 模型 ID **優先**；若失敗，CLI 將依序繼續使用 `openrouter.translationModels`（或舊版 `defaultModel` / `fallbackModel`），並跳過重複項目。
+- `sourceLocale` - 您的原始語言 BCP-47 代碼（例如 `"en-GB"`）。**必須與** 執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）中匯出的 `SOURCE_LOCALE` 相符。
+- `targetLocales` - 目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 從此清單建立 `ui-languages.json` 清單。
+- `ui.sourceRoots` - 掃描 `t("…")` 呼叫的目錄（例如 `["src/"]`）。
+- `ui.stringsJson` - 主目錄的寫入位置（例如 `"src/locales/strings.json"`）。
+- `ui.flatOutputDir` - 寫入 `de.json`、`pt-BR.json` 等的位置（例如 `"src/locales/"`）。
+- `ui.preferredModel`（可選）- 僅針對 `translate-ui` 嘗試使用的 OpenRouter 模型 ID **優先**；若失敗，CLI 將依序繼續使用 `openrouter.translationModels`（或舊版 `defaultModel` / `fallbackModel`），跳過重複項目。
 
 <a id="step-2-extract-strings"></a>
 ### 步驟 2：提取字串
@@ -452,14 +457,14 @@ npx ai-i18n-tools init -t ui-docusaurus
 
 編輯生成的 `ai-i18n-tools.config.json`：
 
-- `sourceLocale` - 原始語言（必須與 `defaultLocale` 中的 `docusaurus.config.js` 一致）。
-- `targetLocales` - BCP-47 語系代碼陣列（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有文件管線共用的 SQLite 快取目錄（也是 `--write-logs` 的預設日誌目錄）。
+- `sourceLocale` - 原始語言（必須與 `defaultLocale` 在 `docusaurus.config.js` 中相符）。
+- `targetLocales` - BCP-47 區域代碼陣列（例如 `["de", "fr", "es"]`）。
+- `cacheDir` - 所有文件管道共用的 SQLite 快取目錄（也是 `--write-logs` 的預設日誌目錄）。
 - `documentations` - 文件區塊陣列。每個區塊包含可選的 `description`、`contentPaths`、`outputDir`、可選的 `jsonSource`、`markdownOutput`、可選的 `segmentSplitting`、`targetLocales`、`addFrontmatter` 等。
-- `documentations[].description` - 維護者可選的簡短註解（說明此區塊涵蓋內容）。設定後，會出現在 `translate-docs` 標題（`🌐 …: translating …`）與 `status` 區塊標頭中。
-- `documentations[].contentPaths` - Markdown/MDX 原始碼目錄或檔案（另見 `documentations[].jsonSource` 用於 JSON 標籤）。
+- `documentations[].description` - 維護人員的選用簡短註解（說明此區塊涵蓋的內容）。設定後，會顯示在 `translate-docs` 標題（`🌐 …: translating …`）以及 `status` 章節標頭中。
+- `documentations[].contentPaths` - Markdown/MDX 原始碼目錄或檔案（另請參閱 `documentations[].jsonSource` 以取得 JSON 標籤）。
 - `documentations[].outputDir` - 該區塊的翻譯輸出根目錄。
-- `documentations[].markdownOutput.style` - `"nested"`（預設）、`"docusaurus"` 或 `"flat"`（參見 [輸出佈局](#output-layouts)）。
+- `documentations[].markdownOutput.style` - `"nested"`（預設）、`"docusaurus"` 或 `"flat"`（請參閱[輸出版面配置](#output-layouts)）。
 
 <a id="step-2-translate-documents"></a>
 ### 步驟 2：翻譯文件
@@ -488,6 +493,8 @@ npx ai-i18n-tools status
 `translate-docs` 會檢查每個翻譯片段是否保留了 Markdown 結構（包括從文件解析出的強調格式）。若段落中大量堆疊 `bold` 區塊包圍 `` `inline code` ``、在粗體內嵌套反引號（例如範本字面值如 `` `fetch(\`/locales/${code}.json\`)` ``），或在長句中交錯使用粗體與程式碼，則結構較脆弱：某些語區需要不同的詞序，可能導致翻譯後 `**` 和 `` ` `` 的對應錯亂，進而觸發 CLI 錯誤如 `AST mismatch`。
 
 **若遇到此類驗證失敗，建議簡化原始語言文字** — 拆分段落、將範例移至圍欄式程式碼區塊，或以較少的粗體/程式碼組合描述相同概念 — 而非期望所有模型與語區都能完美重現密集的內嵌標記。本頁其他位置（特別是步驟 4 關於 `SOURCE_LOCALE`、載入器與 `public/` 路徑的說明）的格式刻意模擬真實情境；當你在自己的文件中重用類似表述時，翻譯至多語區時請盡量簡化。
+
+若要查看 **哪些片段失敗**、失敗頻率以及儲存的 **品質/錯誤訊息**，請使用翻譯快取編輯器的 **失敗** 標籤頁（[翻譯快取編輯器 → 失敗](#translation-cache-editor-failures)）。
 
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### 快取行為與 `translate-docs` 標記
@@ -756,6 +763,52 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 - 第一個文件區塊將 markdown 和 JSON 標籤翻譯為 Docusaurus 的 `i18n/<locale>/...` 佈局。
 - 第二個文件區塊將 `README.md` 翻譯為 `translated-docs/` 下的平坦語系後綴檔案。
 - 所有文件區塊共用 `cacheDir`，因此未變更的段落會在執行間重複使用，以減少 API 呼叫次數與成本。
+
+---
+
+<a id="translation-cache-editor"></a>
+## 翻譯快取編輯器
+
+執行：
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+這將啟動一個本地 Web UI，後端為您設定的 **`cacheDir`** SQLite 資料庫——與 CLI 用於文件區段、日誌及相關中繼資料的目錄相同。包含以下分頁：**文件**（快取的文件區段）、**UI 字串**、**UI 複數**、**詞彙表**、**失敗項目** 與 **統計資料**。
+
+如果您在此應用程式中**編輯快取資料列**（例如文件段落），請執行`sync --force-update`或使用等效的翻譯指令並搭配`--force-update`，以確保磁碟上的輸出與快取一致；若稍後儲存庫中的**原始文字**變更，段落雜湊值也會改變，針對舊文字的手動編輯將被取代。
+
+<a id="translation-cache-editor-failures"></a>
+### 失敗記錄（文件翻譯）
+
+**失敗記錄**分頁僅適用於**文件**翻譯。它會讀取當某段文字無法成功翻譯至特定語系時寫入 SQLite 的錯誤紀錄——例如空的或無效的模型輸出、翻譯後驗證錯誤（`AST mismatch`、佔位符洩漏及其他類似**品質**檢查問題），或是阻礙進程的**嚴重**錯誤。此功能可協助您回答：*哪個原始段落出錯？針對哪個語系與模型？記錄的錯誤訊息為何？*
+
+<a id="when-to-use-it"></a>
+#### 何時使用
+
+- 當 `translate-docs` 或 `sync` 執行完畢後出現錯誤、部分語系或混亂的記錄時，您可透過排序與篩選失敗項目，而不必僅靠捲動終端機輸出內容。
+- 當您想 **優先處理重做**時：可依 **# 失敗次數**排序，讓在多次重試中反覆失敗的段落排在最前面；這些段落很適合在原始 Markdown 中進行 **簡化或重新格式化**，以利後續執行成功。
+- 當您需要取得 **確切的段落**資訊——檔案路徑、行號提示、原始內容雜湊值及完整原始文字——以便在您的儲存庫中編輯正確的段落。
+
+<a id="why-source-edits-matter"></a>
+#### 為何原始內容編輯很重要
+
+密集的內嵌標記（**粗體**混用`` `code` ``、嵌套強調、包含多個片段的長句子）會讓模型更難返回能通過結構檢查的翻譯結果。通常具有**多次記錄失敗**的段落，透過**重寫或拆分**原始內容（或將範例移至 fenced code block）所獲得的改善，遠比在未變更的原文上反覆執行翻譯來得有效。這與[複雜 Markdown 與失敗的品質檢查](#complex-markdown-and-failed-quality-checks)的建議一致。
+
+<a id="how-to-use-the-tab"></a>
+#### 如何使用此分頁
+
+1. 在編輯器中開啟 **失敗**（與[翻譯快取編輯器](#translation-cache-editor) 使用相同的瀏覽器工作階段）。
+2. 讀取 **摘要** 列（包含任何失敗的區段，以及分別有 **1**、**2** 或 **3+** 個失敗記錄的區段數量）。
+3. 依部分 **檔案名稱**、**語系**、**模型**、**品質錯誤**（數值來自您的快取）、僅 **致命錯誤**，以及選擇性的 **來源雜湊**、**來源文字** 或 **錯誤訊息** 子字串進行篩選，然後按一下 **套用**。
+4. 選擇 **排序：失敗次數**（預設）或 **排序：檔案路徑 + 行號**。
+5. 使用表格頂部或底部的分頁功能。**點選資料列**可切換顯示完整原始文字。資料列中的連結控制項（若已啟用）會要求伺服器程序將檔案/行號提示記錄至執行`ai-i18n-tools editor`的**終端機**——方便您從瀏覽器跳轉至編輯器。
+6. 在您的專案中修正**原始檔案**，然後再次執行`translate-docs`或`sync`。若成功執行後清單看起來**過時**，請執行`ai-i18n-tools sync --force-update`並重新載入編輯器（失敗記錄面板會顯示相同提示）。
+
+若您希望在使用 UI 的同時搭配檔案式除錯，仍可使用`translate-docs --debug-failed`在重試期間將`FAILED-TRANSLATION`詳細資訊寫入`cacheDir`——詳見[快取行為與`translate-docs`旗標](#cache-behaviour-and-translate-docs-flags)。
 
 ---
 

@@ -32,14 +32,19 @@
   - [步骤 1：为文档初始化](#step-1-initialise-for-documentation)
   - [步骤 2：翻译文档](#step-2-translate-documents)
     - [复杂 Markdown 和质量检查失败](#complex-markdown-and-failed-quality-checks)
-    - [缓存行为与 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags)
+    - [缓存行为和 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags)
     - [批量提示格式](#batch-prompt-format)
-    - [SQLite 中的片段去重与路径](#segment-dedupe-and-paths-in-sqlite)
+    - [SQLite 中的片段去重和路径](#segment-dedupe-and-paths-in-sqlite)
   - [输出布局](#output-layouts)
     - [扁平布局中的锚点链接](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` 占位符](#markdown-output-path-template-placeholders)
+    - [`pathTemplate` / `jsonPathTemplate` 占位符](#pathtemplate--jsonpathtemplate-placeholders)
 - [组合工作流（UI + 文档）](#combined-workflow-ui--docs)
   - [混合文档工作流（Docusaurus + 扁平）](#mixed-documentation-workflow-docusaurus--flat)
+- [翻译缓存编辑器](#translation-cache-editor)
+  - [失败（文档翻译）](#failures-document-translation)
+    - [何时使用](#when-to-use-it)
+    - [为何源文本编辑很重要](#why-source-edits-matter)
+    - [如何使用该标签页](#how-to-use-the-tab)
 - [配置参考](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -53,7 +58,7 @@
   - [`cacheDir`](#cachedir)
   - [`documentations`](#documentations)
   - [`svg`（可选）](#svg-optional)
-  - [`glossary`（可选）](#glossary)
+  - [`glossary`](#glossary)
 - [CLI 参考](#cli-reference)
 - [环境变量](#environment-variables)
 
@@ -489,6 +494,8 @@ npx ai-i18n-tools status
 
 **如果遇到此类验证失败，建议简化源语言文本**——拆分段落、将示例移至围栏代码块，或用更少的粗体/代码组合描述相同概念——而不是期望每个模型和区域设置都能完美复现密集的内联标记。本页其他位置（特别是步骤 4 中关于 `SOURCE_LOCALE`、加载器和 `public/` 路径的说明）的格式是刻意贴近实际的；当你在自己的文档中复用类似表述时，在广泛翻译时应保持更简洁。
 
+要查看 **哪些片段失败**、失败频率以及存储的 **质量/错误消息**，请使用翻译缓存编辑器的 **失败** 标签页（[翻译缓存编辑器 → 失败](#translation-cache-editor-failures)）。
+
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### 缓存行为和 `translate-docs` 标志
 
@@ -756,6 +763,52 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 - 第一个文档块将 Markdown 和 JSON 标签翻译为 Docusaurus 的 `i18n/<locale>/...` 布局。
 - 第二个文档块将 `README.md` 翻译为 `translated-docs/` 下带区域设置后缀的扁平文件。
 - 所有文档块共享 `cacheDir`，因此未更改的片段会在多次运行中复用，以减少 API 调用和成本。
+
+---
+
+<a id="translation-cache-editor"></a>
+## 翻译缓存编辑器
+
+运行：
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+这将启动一个本地 Web UI，其后端为已配置的 **`cacheDir`** SQLite 数据库——与 CLI 用于文档片段、日志及相关元数据的文件夹相同。它包含以下标签页：**文档**（缓存的文档片段）、**UI 字符串**、**UI 复数形式**、**术语表**、**失败** 和 **统计信息**。
+
+如果您在此应用中 **编辑缓存行**（例如文档片段），请运行 `sync --force-update` 或使用 `--force-update` 参数执行等效的翻译命令，以确保磁盘上的输出与缓存一致；如果稍后仓库中的 **源文本** 发生更改，片段哈希值会变化，之前对旧文本的手动编辑将被覆盖。
+
+<a id="translation-cache-editor-failures"></a>
+### 失败（文档翻译）
+
+**失败** 标签页仅用于 **文档** 翻译。它读取写入 SQLite 的失败记录，这些记录表示某个片段在特定语言环境中无法成功翻译的情况——例如模型输出为空或无效、翻译后验证错误（`AST mismatch`、占位符泄漏等 **质量** 检查问题），或导致流程中断的 **严重** 错误。它帮助您回答以下问题：*哪个源片段出错，针对的是哪种语言和模型，记录了什么错误信息？*
+
+<a id="when-to-use-it"></a>
+#### 何时使用
+
+- 在 `translate-docs` 或 `sync` 执行完成后出现错误、部分语言未完成或日志混乱时——您可以在此处排序和筛选失败项，而不必仅依赖滚动终端输出。
+- 当您需要 **优先处理重做** 时：按 **# 失败次数** 排序，使在多次重试中反复失败的片段排在前面；这些片段通常更适合在源 Markdown 中进行 **简化或重新格式化**，以便后续运行成功。
+- 当您需要获取 **确切的片段**——文件路径、行号提示、源哈希值和完整源文本——以在仓库中编辑正确的段落。
+
+<a id="why-source-edits-matter"></a>
+#### 为何源文本编辑很重要
+
+密集的内联标记（**粗体** 与 `` `code` `` 混合、嵌套强调、包含多个跨度的长句）会使模型更难返回仍能通过结构检查的翻译。对于 **有多个记录失败** 的片段，通常通过 **重写或拆分** 源文本（或将示例移至代码块中）比在未更改的文本上重新运行翻译能获得更好的改善效果。这与 [复杂 Markdown 和质量检查失败](#complex-markdown-and-failed-quality-checks) 中的建议一致。
+
+<a id="how-to-use-the-tab"></a>
+#### 如何使用该标签页
+
+1. 在编辑器中打开 **Failures**（与 [Translation Cache Editor](#translation-cache-editor) 使用相同的浏览器会话）。
+2. 阅读 **summary** 栏（包含存在任何失败的片段，以及分别有 **1**、**2** 或 **3+** 条失败记录的片段数量统计）。
+3. 按部分 **filename**、**locale**、**model**、**quality error**（值来自您的缓存）、仅 **fatal only**，以及可选的 **source hash**、**source text** 或 **error message** 子字符串进行筛选，然后点击 **Apply**。
+4. 选择 **Sort: # Failures**（默认）或 **Sort: filepath + line #**。
+5. 使用表格顶部或底部的分页控件。**单击某一行** 可展开查看完整的源文本。行内的链接控件（启用时）会请求服务器进程将文件/行号提示信息输出到运行 `ai-i18n-tools editor` 的 **terminal**——便于从浏览器跳转至您的编辑器。
+6. 在您的项目中修复 **source file**，然后再次运行 `translate-docs` 或 `sync`。如果成功运行后列表看起来 **过期了**，请运行 `ai-i18n-tools sync --force-update` 并重新加载编辑器（Failures 面板会显示相同的提示）。
+
+若要在使用 UI 的同时进行基于文件的调试，您仍可使用 `translate-docs --debug-failed` 在重试期间将 `FAILED-TRANSLATION` 的详细信息写入 `cacheDir`——参见 [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags)。
 
 ---
 

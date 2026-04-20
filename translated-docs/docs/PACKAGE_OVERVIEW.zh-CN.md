@@ -24,9 +24,9 @@
   - [UI 翻译提示](#ui-translation-prompts)
 - [工作流 2 - 文档翻译内部机制](#workflow-2---document-translation-internals)
   - [提取器](#extractors)
-  - [标题锚点插入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [标题锚点插入（`write-heading-ids` CLI）](#heading-anchor-insertion-write-heading-ids-cli)
   - [占位符保护](#placeholder-protection)
-  - [缓存 (`TranslationCache`)](#cache-translationcache)
+  - [缓存（`TranslationCache`）](#cache-translationcache)
   - [输出路径解析](#output-path-resolution)
   - [扁平化链接重写](#flat-link-rewriting)
 - [共享基础设施](#shared-infrastructure)
@@ -283,12 +283,12 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` 将源相对路径映射到输出路径：
 
-- `nested` 风格（默认）：`{outputDir}/{locale}/{relPath}` 用于 Markdown。
-- `docusaurus` 风格：在 `docsRoot` 下，输出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 外的路径回退到嵌套布局。
+- `nested` 风格（默认）：用于 markdown 的是 `{outputDir}/{locale}/{relPath}`。
+- `docusaurus` 风格：位于 `docsRoot` 下，输出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 外的路径会回退到嵌套布局。
 - `flat` 风格：`{outputDir}/{stem}.{locale}{extension}`。当 `flatPreserveRelativeDir` 为 `true` 时，源子目录保留在 `outputDir` 下。
-- **自定义** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任意 Markdown 布局。
-- **自定义** `jsonPathTemplate`：JSON 标签文件的独立自定义布局，使用相同的占位符。
-- `linkRewriteDocsRoot` 有助于扁平链接重写器在翻译输出根目录不同于默认项目根目录时计算正确的前缀。
+- **自定义** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任意 markdown 布局。
+- **自定义** `jsonPathTemplate`：用于 JSON 标签文件的独立自定义布局，使用相同的占位符。
+- `linkRewriteDocsRoot` 可帮助扁平化链接重写器在翻译输出根目录不同于默认项目根目录时计算正确的前缀。
 
 <a id="flat-link-rewriting"></a>
 ### 扁平化链接重写
@@ -314,13 +314,13 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 
 `loadI18nConfigFromFile(configPath, cwd)` 流程：
 
-1. 读取并解析 `ai-i18n-tools.config.json`（JSON 格式）。
-2. `mergeWithDefaults` —— 与 `defaultI18nConfigPartial` 深层合并，并将任何 `documentations[].sourceFiles` 条目合并到 `contentPaths` 中。
-3. `expandTargetLocalesFileReferenceInRawInput` —— 如果 `targetLocales` 是文件路径，则加载清单并展开为区域设置代码；设置 `uiLanguagesPath`。
-4. `expandDocumentationTargetLocalesInRawInput` —— 对每个 `documentations[].targetLocales` 条目执行相同操作。
-5. `parseI18nConfig` —— Zod 验证 + `validateI18nBusinessRules`。
-6. `applyEnvOverrides` —— 应用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等。
-7. `augmentConfigWithUiLanguagesFile` —— 附加清单中的显示名称。
+1. 读取并解析 `ai-i18n-tools.config.json`（JSON）。
+2. `mergeWithDefaults` - 与 `defaultI18nConfigPartial` 深层合并，并将任何 `documentations[].sourceFiles` 条目合并到 `contentPaths` 中。
+3. `expandTargetLocalesFileReferenceInRawInput` - 如果 `targetLocales` 是文件路径，则加载清单并展开为语言代码；设置 `uiLanguagesPath`。
+4. `expandDocumentationTargetLocalesInRawInput` - 对每个 `documentations[].targetLocales` 条目执行相同操作。
+5. `parseI18nConfig` - 使用 Zod 验证 + `validateI18nBusinessRules`。
+6. `applyEnvOverrides` - 应用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等。
+7. `augmentConfigWithUiLanguagesFile` - 附加清单显示名称。
 
 <a id="logger"></a>
 ### 日志记录器

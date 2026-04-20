@@ -4,12 +4,19 @@
 
 All notable changes to this project will be documented in this file.
 
-Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scope** (subsystem or UI area), and a clear description—see `.cursor/rules/project.mdc` (CHANGELOG section) for the full bullet pattern.
+Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scope** (subsystem or UI area), and a clear description—see `.cursor/rules/project.mdc` for when to log and the bullet shape.
 
 Add new entries in the `## [Unreleased]` section. When releasing a new version, move all entries in "[Unreleased]" to a new entry `## [x.y.z] - YYYY-MM-DD`.
 
 
 ## [Unreleased]
+
+
+- **Added**: Translation Cache Editor — **Failures** page with paginated, filterable translation failure rows and summary metrics; **`GET /api/translation-failures`**, **`GET /api/translation-failures/summary`**, and **`GET /api/failure-quality-errors`**; **`TranslationCache`** adds **`listTranslationFailures`**, **`getTranslationFailureSummary`**, and **`getUniqueFailureQualityErrors`**.
+
+- **Changed**: Dependencies — add **`emoji-regex`** and **`remove-markdown`**; remove devDependency **`github-slugger`** (slug styles are implemented in **`write-heading-ids-core`**).
+
+- **Changed**: Docs — **`README.md`** (TOC and sections), **`docs/GETTING_STARTED.md`**, and **`docs/PACKAGE_OVERVIEW.md`** expanded for recent CLI commands, config options, plural workflows, and cache tooling.
 
 - **Added**: CLI — `strip-md-bold-inline` walks all `documentations[].contentPaths` markdown/MDX files (same discovery as `write-heading-ids`, including `.translate-ignore` and optional `--path` / `--file`), rewrites bold-wrapped inline code to plain code spans, writes a timestamped `.backup.<ISO>.md` sibling before overwrite unless `--no-backup`, and supports `--dry-run`.
 
@@ -52,6 +59,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Added**: `extract` / `translate-ui` — cardinal plural support via `t('…', { plurals: true, zeroDigit?: boolean })`; Babel-AST scan of call options; single-entry plural rows in `strings.json`; Step 0 + Pass A/B in `translate-ui`; suffixed flat JSON (`<id>_original`, `<id>_one`, …) plus `{sourceLocale}.json` for plural keys; runtime **`wrapT`** + **`buildPluralIndexFromStringsJson`**; XLIFF export emits multi-segment units for plural groups; docs in `GETTING_STARTED.md` / `ai-i18n-tools-context.md`.
 - **Changed**: root `package.json` — set `pnpm.onlyBuiltDependencies` to include `sharp` (Next’s optional dep in `examples/nextjs-app`); pnpm only honors this list on the workspace root, so the Next example’s manifest alone does not apply.
 - **Changed**: `.github/workflows/ci.yml` — bump `actions/checkout` to `v6`, `actions/setup-node` to `v6` (drops deprecated `always-auth` from generated `.npmrc`; aligns action runtime with Node 24), and `pnpm/action-setup` to `v5`; remove `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` now that those actions ship on Node 24; drop `token` on the publish job’s `setup-node` step (`v6` uses `token` only for Node downloads; publish auth stays on `NODE_AUTH_TOKEN`).
+
+## [1.1.1] - 2026-04-16
+
 - **Fixed**: `examples/nextjs-app/docs-site` — set `pnpm.onlyBuiltDependencies` to include `core-js` so pnpm v10 runs its postinstall (removes the misleading "run pnpm approve-builds" banner; `approve-builds` from that folder targets the monorepo workspace and often shows no pending packages).
 - **Changed**: `scripts/upgrade-dependencies.sh` — runs `npm-check-updates` and `pnpm audit` (with fix pass) for the repo root, `examples/console-app`, `examples/nextjs-app`, and `examples/nextjs-app/docs-site`; preserves `workspace:^` for `ai-i18n-tools` in examples; uses `pnpm install` / `pnpm audit --ignore-workspace` for the nested Docusaurus app; comments explain nested install vs `approve-builds`.
 - **Security**: `examples/nextjs-app/docs-site` — raised pnpm overrides so `webpack`, `serialize-javascript`, and `follow-redirects` resolve to patched releases; pin `webpack` to `5.105.0` because `5.106.x` rejects webpackbar’s legacy `ProgressPlugin` options and breaks `docusaurus build`.

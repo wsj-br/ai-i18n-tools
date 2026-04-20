@@ -24,21 +24,21 @@
   - [UI 翻訳プロンプト](#ui-translation-prompts)
 - [ワークフロー 2 - ドキュメント翻訳の内部構造](#workflow-2---document-translation-internals)
   - [エクストラクター](#extractors)
-  - [見出しアンカー挿入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [見出しアンカー挿入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [プレースホルダー保護](#placeholder-protection)
   - [キャッシュ (`TranslationCache`)](#cache-translationcache)
   - [出力パスの解決](#output-path-resolution)
   - [フラットリンクの書き換え](#flat-link-rewriting)
-- [共有インフラストラクチャー](#shared-infrastructure)
+- [共有インフラ](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [設定の読み込み](#config-loading)
   - [ロガー](#logger)
-- [ランタイムヘルパー API](#runtime-helpers-api)
+- [ランタイムヘルパーAPI](#runtime-helpers-api)
   - [RTL ヘルパー](#rtl-helpers)
-  - [i18next 設定ファクトリー](#i18next-setup-factories)
+  - [i18next 設定ファクトリ](#i18next-setup-factories)
   - [表示ヘルパー](#display-helpers)
   - [文字列ヘルパー](#string-helpers)
-- [プログラムによる API](#programmatic-api)
+- [プログラムによるAPI](#programmatic-api)
 - [拡張ポイント](#extension-points)
   - [カスタム関数名 (UI 抽出)](#custom-function-names-ui-extraction)
   - [カスタムエクストラクター](#custom-extractors)
@@ -283,12 +283,12 @@ SQLiteデータベース（`node:sqlite`経由）は、`(source_hash, locale)`�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`はソース相対パスを出力パスにマッピングします：
 
-- `nested`スタイル（デフォルト）：Markdown用に`{outputDir}/{locale}/{relPath}`。
-- `docusaurus`スタイル：`docsRoot`の下に配置され、出力には`{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`を使用します。`docsRoot`の外にあるパスはネストされたレイアウトにフォールバックします。
-- `flat`スタイル：`{outputDir}/{stem}.{locale}{extension}`。`flatPreserveRelativeDir`が`true`の場合、ソースのサブディレクトリは`outputDir`の下に保持されます。
-- **カスタム** `pathTemplate`：`{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}`を使用した任意のMarkdownレイアウト。
-- **カスタム** `jsonPathTemplate`：JSONラベルファイル専用のカスタムレイアウト。同じプレースホルダーを使用します。
-- `linkRewriteDocsRoot`は、翻訳された出力がデフォルトのプロジェクトルート以外に配置された場合に、フラットリンクリライターが正しいプレフィックスを計算できるようにします。
+- `nested` スタイル (デフォルト): markdown 用に `{outputDir}/{locale}/{relPath}` を使用。
+- `docusaurus` スタイル: `docsRoot` 配下で、出力は `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` を使用。`docsRoot` 外のパスはネストされたレイアウトにフォールバック。
+- `flat` スタイル: `{outputDir}/{stem}.{locale}{extension}`。`flatPreserveRelativeDir` が `true` の場合、ソースのサブディレクトリは `outputDir` 配下に保持される。
+- **カスタム** `pathTemplate`: `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` を使用した任意の markdown レイアウト。
+- **カスタム** `jsonPathTemplate`: JSON ラベルファイル用の個別のカスタムレイアウト。同じプレースホルダーを使用。
+- `linkRewriteDocsRoot` は、翻訳された出力がデフォルトのプロジェクトルート以外に配置される場合に、フラットリンク書き換えツールが正しいプレフィックスを計算できるようにする。
 
 <a id="flat-link-rewriting"></a>
 ### フラットリンクの書き換え
@@ -314,13 +314,13 @@ OpenRouterのチャット補完APIをラップします。主な動作：
 
 `loadI18nConfigFromFile(configPath, cwd)`パイプライン：
 
-1. `ai-i18n-tools.config.json`（JSON）を読み込み、解析します。
-2. `mergeWithDefaults` - `defaultI18nConfigPartial`をディープマージし、`documentations[].sourceFiles`エントリをすべて`contentPaths`にマージします。
-3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`がファイルパスの場合、マニフェストを読み込み、ロケールコードに展開し、`uiLanguagesPath`を設定します。
-4. `expandDocumentationTargetLocalesInRawInput` - 各`documentations[].targetLocales`エントリについて同様に処理します。
-5. `parseI18nConfig` - Zodによるバリデーションと`validateI18nBusinessRules`。
-6. `applyEnvOverrides` - `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE`などを適用します。
-7. `augmentConfigWithUiLanguagesFile` - マニフェストの表示名を付加します。
+1. `ai-i18n-tools.config.json` (JSON) を読み込んで解析。
+2. `mergeWithDefaults` - `defaultI18nConfigPartial` とディープマージを行い、`documentations[].sourceFiles` エントリを `contentPaths` にマージ。
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales` がファイルパスの場合、マニフェストを読み込み、ロケールコードに展開。`uiLanguagesPath` を設定。
+4. `expandDocumentationTargetLocalesInRawInput` - 各 `documentations[].targetLocales` エントリについて同様に処理。
+5. `parseI18nConfig` - Zod によるバリデーション + `validateI18nBusinessRules`。
+6. `applyEnvOverrides` - `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` などを適用。
+7. `augmentConfigWithUiLanguagesFile` - マニフェストの表示名を関連付ける。
 
 <a id="logger"></a>
 ### ロガー

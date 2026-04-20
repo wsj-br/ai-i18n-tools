@@ -20,18 +20,18 @@
 - [워크플로 1 - UI 번역 내부 구조](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [플랫 로케일 파일](#flat-locale-files)
+  - [평면화된 로케일 파일](#flat-locale-files)
   - [UI 번역 프롬프트](#ui-translation-prompts)
 - [워크플로 2 - 문서 번역 내부 구조](#workflow-2---document-translation-internals)
   - [추출기](#extractors)
-  - [제목 앵커 삽입 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [제목 앵커 삽입 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [플레이스홀더 보호](#placeholder-protection)
   - [캐시 (`TranslationCache`)](#cache-translationcache)
   - [출력 경로 결정](#output-path-resolution)
-  - [플랫 링크 재작성](#flat-link-rewriting)
+  - [평면화된 링크 재작성](#flat-link-rewriting)
 - [공유 인프라](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [설정 로드](#config-loading)
+  - [설정 로딩](#config-loading)
   - [로거](#logger)
 - [런타임 헬퍼 API](#runtime-helpers-api)
   - [RTL 헬퍼](#rtl-helpers)
@@ -283,12 +283,12 @@ SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 �
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`은 소스 기준 경로를 출력 경로에 매핑합니다:
 
-- `nested` 스타일(기본값): 마크다운의 경우 `{outputDir}/{locale}/{relPath}`.
-- `docusaurus` 스타일: `docsRoot` 아래에서 출력은 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`를 사용합니다. `docsRoot` 외부의 경로는 중첩된 레이아웃으로 대체됩니다.
-- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`이 `true`일 경우, 소스 하위 디렉터리는 `outputDir` 아래에 유지됩니다.
-- **사용자 정의** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`을 사용하는 임의의 마크다운 레이아웃.
-- **사용자 정의** `jsonPathTemplate`: 동일한 자리 표시자를 사용하는 JSON 레이블 파일 전용 사용자 정의 레이아웃.
-- `linkRewriteDocsRoot`는 번역된 출력이 기본 프로젝트 루트가 아닌 다른 위치에 루트를 둘 때, 평면 링크 재작성기가 올바른 접두사를 계산할 수 있도록 도와줍니다.
+- `nested` 스타일(기본값): 마크다운은 `{outputDir}/{locale}/{relPath}` 사용.
+- `docusaurus` 스타일: `docsRoot` 아래에 위치하며 출력은 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` 사용; `docsRoot` 외부의 경로는 중첩된 레이아웃으로 대체됨.
+- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`이 `true`일 때, 소스 하위 디렉터리는 `outputDir` 아래에 유지됨.
+- **사용자 정의** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`를 사용하는 임의의 마크다운 레이아웃.
+- **사용자 정의** `jsonPathTemplate`: JSON 레이블 파일을 위한 별도의 사용자 정의 레이아웃으로, 동일한 플레이스홀더 사용.
+- `linkRewriteDocsRoot`은 번역된 출력이 기본 프로젝트 루트가 아닌 다른 위치에 루트를 둘 때, 평면화된 링크 재작성기가 올바른 접두사를 계산하도록 도와줍니다.
 
 <a id="flat-link-rewriting"></a>
 ### 단일 링크 재작성
@@ -314,13 +314,13 @@ OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 
 `loadI18nConfigFromFile(configPath, cwd)` 파이프라인:
 
-1. `ai-i18n-tools.config.json`을 읽고 파싱합니다(JSON 형식).
-2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합을 수행하고, `documentations[].sourceFiles` 항목을 `contentPaths`에 병합합니다.
-3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`이 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장한 후 `uiLanguagesPath`을 설정합니다.
-4. `expandDocumentationTargetLocalesInRawInput` - 각 `documentations[].targetLocales` 항목에 대해 동일하게 수행합니다.
+1. `ai-i18n-tools.config.json` 읽고 파싱(JSON).
+2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합 수행, 그리고 `documentations[].sourceFiles` 항목들을 `contentPaths`에 병합.
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`이 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장; `uiLanguagesPath` 설정.
+4. `expandDocumentationTargetLocalesInRawInput` - 각 `documentations[].targetLocales` 항목에 대해 동일하게 수행.
 5. `parseI18nConfig` - Zod 유효성 검사 + `validateI18nBusinessRules`.
-6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등을 적용합니다.
-7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름을 연결합니다.
+6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등을 적용.
+7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름 연결.
 
 <a id="logger"></a>
 ### 로거

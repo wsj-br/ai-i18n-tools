@@ -31,15 +31,20 @@ Ambos os fluxos de trabalho utilizam o OpenRouter (qualquer LLM compatível) e c
 - [Fluxo de trabalho 2 - Tradução de documentos](#workflow-2---document-translation)
   - [Etapa 1: Inicializar para documentação](#step-1-initialise-for-documentation)
   - [Etapa 2: Traduzir documentos](#step-2-translate-documents)
-    - [Markdown complexo e falhas em verificações de qualidade](#complex-markdown-and-failed-quality-checks)
-    - [Comportamento de cache e flags `translate-docs`](#cache-behaviour-and-translate-docs-flags)
+    - [Markdown complexo e falhas nas verificações de qualidade](#complex-markdown-and-failed-quality-checks)
+    - [Comportamento do cache e flags `translate-docs`](#cache-behaviour-and-translate-docs-flags)
     - [Formato de prompt em lote](#batch-prompt-format)
     - [Dedupe de segmentos e caminhos no SQLite](#segment-dedupe-and-paths-in-sqlite)
   - [Layouts de saída](#output-layouts)
     - [Links âncora no layout plano](#anchor-links-in-flat-layout)
-    - [Placeholders `pathTemplate` / `jsonPathTemplate`](#markdown-output-path-template-placeholders)
+    - [Placeholders `pathTemplate` / `jsonPathTemplate`](#pathtemplate--jsonpathtemplate-placeholders)
 - [Fluxo de trabalho combinado (UI + Docs)](#combined-workflow-ui--docs)
-  - [Fluxo de trabalho misto (Docusaurus + plano)](#mixed-documentation-workflow-docusaurus--flat)
+  - [Fluxo de trabalho de documentação mista (Docusaurus + plano)](#mixed-documentation-workflow-docusaurus--flat)
+- [Editor de Cache de Tradução](#translation-cache-editor)
+  - [Falhas (tradução de documentos)](#failures-document-translation)
+    - [Quando usá-lo](#when-to-use-it)
+    - [Por que edições na origem são importantes](#why-source-edits-matter)
+    - [Como usar a aba](#how-to-use-the-tab)
 - [Referência de configuração](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -489,6 +494,8 @@ npx ai-i18n-tools status
 
 **Se você se deparar com esse tipo de falha de validação, prefira simplificar o texto no idioma original** — divida o parágrafo, mova um exemplo para um bloco de código com bordas, ou descreva a mesma ideia com menos pares sobrepostos de negrito/código — em vez de esperar que todos os modelos e idiomas reproduzam perfeitamente marcações embutidas densas. Em outras partes desta página (notadamente nas notas da Etapa 4 sobre `SOURCE_LOCALE`, loaders e caminhos `public/`), a formatação é intencionalmente realista; quando reutilizar redações semelhantes em sua própria documentação, mantenha-a mais simples ao traduzir amplamente.
 
+Para ver **quais segmentos falharam**, com que frequência e as mensagens armazenadas de **qualidade / erro**, use a aba **Falhas** do Editor de Cache de Tradução ([Editor de Cache de Tradução → Falhas](#translation-cache-editor-failures)).
+
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### Comportamento do cache e flags `translate-docs`
 
@@ -756,6 +763,52 @@ Como isso é executado com `npx ai-i18n-tools sync`:
 - O primeiro bloco de documentação traduz markdown e rótulos JSON para o layout Docusaurus `i18n/<locale>/...`.
 - O segundo bloco de documentação traduz `README.md` para arquivos planos com sufixo de localidade em `translated-docs/`.
 - Todos os blocos de documentação compartilham `cacheDir`, portanto segmentos inalterados são reutilizados entre execuções para reduzir chamadas à API e custos.
+
+---
+
+<a id="translation-cache-editor"></a>
+## Editor de Cache de Tradução
+
+Execute:
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+Isso inicia uma interface web local alimentada pelo banco de dados **`cacheDir`** SQLite configurado — a mesma pasta usada pela CLI para segmentos de documentação, logs e metadados relacionados. Inclui as abas **Documentação** (segmentos de doc em cache), **Strings de UI**, **Plurais de UI**, **Glossário**, **Falhas** e **Estatísticas**.
+
+Se você **editar linhas do cache** neste aplicativo (por exemplo, segmentos de documentação), execute `sync --force-update` ou o comando de tradução equivalente com `--force-update` para que as saídas em disco correspondam ao cache; se o **texto de origem** no repositório for alterado posteriormente, os hashes dos segmentos mudarão e as edições manuais para o texto antigo serão substituídas.
+
+<a id="translation-cache-editor-failures"></a>
+### Falhas (tradução de documentos)
+
+A aba **Falhas** é destinada apenas à tradução de **documentação**. Ela lê registros de falhas escritos no SQLite quando um segmento não pôde ser traduzido com sucesso para um idioma — por exemplo, saída do modelo vazia ou inválida, erros de validação pós-tradução (`AST mismatch`, vazamentos de placeholders e verificações de **qualidade** semelhantes) ou uma condição **fatal** que impediu o progresso. Ela ajuda a responder: *qual segmento de origem falhou, para qual idioma e modelo, e qual mensagem de erro foi registrada?*
+
+<a id="when-to-use-it"></a>
+#### Quando usá-lo
+
+- Depois que `translate-docs` ou `sync` terminar com erros, idiomas parciais ou logs confusos — você pode classificar e filtrar falhas em vez de apenas rolar a saída do terminal.
+- Quando desejar **priorizar retrabalho**: ordene por **# Falhas** para que segmentos que falharam repetidamente em novas tentativas apareçam primeiro; esses são fortes candidatos para **simplificar ou reformatar** no markdown de origem, para que execuções futuras tenham sucesso.
+- Quando precisar do **segmento exato** — caminho do arquivo, dica de linha, hash de origem e texto completo de origem — para editar o parágrafo correto no seu repositório.
+
+<a id="why-source-edits-matter"></a>
+#### Por que edições na origem são importantes
+
+Marcação embutida densa (**negrito** misturado com `` `code` ``, ênfase aninhada, frases longas com muitos spans) dificulta que os modelos retornem traduções que ainda passem nas verificações estruturais. Segmentos com **múltiplas falhas registradas** geralmente melhoram mais com **reescrita ou divisão** da origem (ou movendo exemplos para blocos de código destacados) do que com a repetição da tradução em texto inalterado. Isso está alinhado com [Markdown complexo e falhas nas verificações de qualidade](#complex-markdown-and-failed-quality-checks).
+
+<a id="how-to-use-the-tab"></a>
+#### Como usar a aba
+
+1. Abra **Falhas** no editor (mesma sessão do navegador que o [Editor de Cache de Tradução](#translation-cache-editor)).
+2. Leia a faixa de **resumo** (segmentos com qualquer falha, mais contagens de segmentos com **1**, **2** ou **3+** registros de falha).
+3. Filtre por **nome de arquivo** parcial, **localidade**, **modelo**, **erro de qualidade** (valores provenientes do seu cache), **somente fatais** e opcionalmente por **hash de origem**, **texto de origem** ou substring de **mensagem de erro** — depois clique em **Aplicar**.
+4. Escolha **Ordenar: # Falhas** (padrão) ou **Ordenar: caminho do arquivo + número da linha**.
+5. Use a paginação no topo ou na parte inferior da tabela. **Clique em uma linha** para alternar a exibição completa do texto de origem. O controle de link na linha (quando habilitado) solicita ao processo do servidor que registre dicas de arquivo/linha no **terminal** onde `ai-i18n-tools editor` está em execução — útil para saltar do navegador para o seu editor.
+6. Corrija o **arquivo de origem** no seu projeto e execute `translate-docs` ou `sync` novamente. Se a lista parecer **desatualizada** após uma execução bem-sucedida, execute `ai-i18n-tools sync --force-update` e recarregue o editor (o painel de Falhas exibe a mesma dica).
+
+Para depuração baseada em arquivos ao lado da interface, você ainda pode usar `translate-docs --debug-failed` para gravar detalhes de `FAILED-TRANSLATION` em `cacheDir` durante novas tentativas — consulte [Comportamento do cache e flags `translate-docs`](#cache-behaviour-and-translate-docs-flags).
 
 ---
 

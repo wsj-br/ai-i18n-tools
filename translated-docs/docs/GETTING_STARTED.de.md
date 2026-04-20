@@ -22,13 +22,13 @@ Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine e
   - [Schritt 2: Zeichenketten extrahieren](#step-2-extract-strings)
   - [Schritt 3: UI-Zeichenketten übersetzen](#step-3-translate-ui-strings)
   - [Export nach XLIFF 2.0 (optional)](#exporting-to-xliff-20-optional)
-  - [Schritt 4: i18next zur Laufzeit einbinden](#step-4-wire-i18next-at-runtime)
+  - [Schritt 4: i18next zur Laufzeit verbinden](#step-4-wire-i18next-at-runtime)
   - [Verwendung von `t()` im Quellcode](#using-t-in-source-code)
   - [Interpolation](#interpolation)
   - [Kardinal-Pluralformen (`plurals: true`)](#cardinal-plurals-plurals-true)
-  - [Sprachwechsler-Benutzeroberfläche](#language-switcher-ui)
+  - [Sprachumschalter-UI](#language-switcher-ui)
   - [RTL-Sprachen](#rtl-languages)
-- [Workflow 2 – Dokumentübersetzung](#workflow-2---document-translation)
+- [Workflow 2 – Dokumentenübersetzung](#workflow-2---document-translation)
   - [Schritt 1: Für Dokumentation initialisieren](#step-1-initialise-for-documentation)
   - [Schritt 2: Dokumente übersetzen](#step-2-translate-documents)
     - [Komplexes Markdown und fehlgeschlagene Qualitätsprüfungen](#complex-markdown-and-failed-quality-checks)
@@ -37,9 +37,14 @@ Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine e
     - [Segment-Dedupe und Pfade in SQLite](#segment-dedupe-and-paths-in-sqlite)
   - [Ausgabe-Layouts](#output-layouts)
     - [Ankerlinks im flachen Layout](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate`-Platzhalter](#markdown-output-path-template-placeholders)
+    - [`pathTemplate` / `jsonPathTemplate`-Platzhalter](#pathtemplate--jsonpathtemplate-placeholders)
 - [Kombinierter Workflow (UI + Docs)](#combined-workflow-ui--docs)
   - [Gemischter Dokumentationsworkflow (Docusaurus + flach)](#mixed-documentation-workflow-docusaurus--flat)
+- [Übersetzungs-Cache-Editor](#translation-cache-editor)
+  - [Fehler (Dokumentenübersetzung)](#failures-document-translation)
+    - [Wann er verwendet werden sollte](#when-to-use-it)
+    - [Warum Quelltextänderungen wichtig sind](#why-source-edits-matter)
+    - [Verwendung des Tabs](#how-to-use-the-tab)
 - [Konfigurationsreferenz](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -148,10 +153,10 @@ Dies schreibt `ai-i18n-tools.config.json` mit der `ui-markdown`-Vorlage. Bearbei
 
 - `sourceLocale` – Ihr BCP-47-Sprachcode für die Ausgangssprache (z. B. `"en-GB"`). **Muss übereinstimmen** mit `SOURCE_LOCALE`, das aus Ihrer Laufzeit-i18n-Konfigurationsdatei exportiert wird (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` – Array aus BCP-47-Codes für Ihre Zielsprachen (z. B. `["de", "fr", "pt-BR"]`). Führen Sie `generate-ui-languages` aus, um das `ui-languages.json`-Manifest aus dieser Liste zu erstellen.
-- `ui.sourceRoots` – Verzeichnisse, in denen nach `t("…")`-Aufrufen gesucht werden soll (z. B. `["src/"]`).
-- `ui.stringsJson` – Speicherort für den Master-Katalog (z. B. `"src/locales/strings.json"`).
-- `ui.flatOutputDir` – Speicherort für `de.json`, `pt-BR.json` usw. (z. B. `"src/locales/"`).
-- `ui.preferredModel` (optional) – OpenRouter-Modell-ID, die **zuerst** für `translate-ui` versucht wird; bei Fehlschlag setzt die CLI mit `openrouter.translationModels` (oder veraltetem `defaultModel` / `fallbackModel`) in der Reihenfolge fort, wobei Duplikate übersprungen werden.
+- `ui.sourceRoots` – Verzeichnisse, die nach `t("…")`-Aufrufen durchsucht werden sollen (z. B. `["src/"]`).
+- `ui.stringsJson` – Speicherort für den Hauptkatalog (z. B. `"src/locales/strings.json"`).
+- `ui.flatOutputDir` – Speicherort für `de.json`, `pt-BR.json`, etc. (z. B. `"src/locales/"`).
+- `ui.preferredModel` (optional) – OpenRouter-Modell-ID, die **zuerst** nur für `translate-ui` versucht wird; bei Fehlschlag setzt die CLI mit `openrouter.translationModels` (oder veraltetem `defaultModel` / `fallbackModel`) in der Reihenfolge fort, wobei Duplikate übersprungen werden.
 
 <a id="step-2-extract-strings"></a>
 ### Schritt 2: Zeichenketten extrahieren
@@ -453,12 +458,12 @@ npx ai-i18n-tools init -t ui-docusaurus
 Bearbeiten Sie die generierte `ai-i18n-tools.config.json`:
 
 - `sourceLocale` – Ausgangssprache (muss mit `defaultLocale` in `docusaurus.config.js` übereinstimmen).
-- `targetLocales` – Array aus BCP-47-Gebietsschemacodes (z. B. `["de", "fr", "es"]`).
+- `targetLocales` – Array aus BCP-47-Lokalisierungscodes (z. B. `["de", "fr", "es"]`).
 - `cacheDir` – gemeinsames SQLite-Cache-Verzeichnis für alle Dokumentations-Pipelines (und Standard-Protokollverzeichnis für `--write-logs`).
-- `documentations` – Array aus Dokumentationsblöcken. Jeder Block hat optionale `description`, `contentPaths`, `outputDir`, optionale `jsonSource`, `markdownOutput`, optionale `segmentSplitting`, `targetLocales`, `addFrontmatter` usw.
-- `documentations[].description` – optionale kurze Notiz für Maintainer (was dieser Block abdeckt). Falls gesetzt, erscheint sie in der `translate-docs`-Überschrift (`🌐 …: translating …`) und in den `status`-Abschnittsüberschriften.
-- `documentations[].contentPaths` – Markdown/MDX-Quellverzeichnisse oder -Dateien (siehe auch `documentations[].jsonSource` für JSON-Beschriftungen).
-- `documentations[].outputDir` – Übersetzungszielverzeichnis für diesen Block.
+- `documentations` – Array aus Dokumentationsblöcken. Jeder Block hat optionale `description`, `contentPaths`, `outputDir`, optionale `jsonSource`, `markdownOutput`, optionale `segmentSplitting`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations[].description` – optionale kurze Notiz für Maintainer (was dieser Block abdeckt). Wenn gesetzt, erscheint sie in der `translate-docs`-Überschrift (`🌐 …: translating …`) und in `status`-Abschnittsüberschriften.
+- `documentations[].contentPaths` – Markdown/MDX-Quellverzeichnisse oder -Dateien (siehe auch `documentations[].jsonSource` für JSON-Labels).
+- `documentations[].outputDir` – Stammverzeichnis für die übersetzte Ausgabe dieses Blocks.
 - `documentations[].markdownOutput.style` – `"nested"` (Standard), `"docusaurus"` oder `"flat"` (siehe [Ausgabe-Layouts](#output-layouts)).
 
 <a id="step-2-translate-documents"></a>
@@ -488,6 +493,8 @@ npx ai-i18n-tools status
 `translate-docs` prüft, ob jede übersetzte Segment die Markdown-Struktur beibehält (einschließlich Hervorhebungen, die aus dem Dokument geparst wurden). Absätze, die viele `bold`-Spanne um `` `inline code` `` stapeln, Backticks innerhalb von Fett schachteln (z. B. Template-Literale wie `` `fetch(\`/locales/${code}.json\`)` ``) oder Fett und Code in einem langen Satz verweben, sind empfindlich: Einige Sprachgebiete benötigen eine andere Wortreihenfolge, wodurch sich die Ausrichtung von `**` und `` ` `` nach der Übersetzung ändern kann und CLI-Fehler wie `AST mismatch` ausgelöst werden.
 
 **Wenn Sie auf solche Validierungsfehler stoßen, vereinfachen Sie lieber den Quelltext** – teilen Sie den Absatz auf, verschieben Sie ein Beispiel in einen abgegrenzten Codeblock oder beschreiben Sie die gleiche Idee mit weniger verschachtelten Fett-/Code-Paaren – anstatt von jedem Modell und jeder Sprache zu erwarten, dass es dichte Inline-Markierungen perfekt reproduziert. An anderen Stellen auf dieser Seite (insbesondere in den Hinweisen zu Schritt 4 über `SOURCE_LOCALE`, Loader und `public/`-Pfade) ist die Formatierung bewusst realistisch gehalten; wenn Sie ähnliche Formulierungen in Ihren eigenen Dokumenten wiederverwenden, halten Sie sie bei breiter Übersetzung einfacher.
+
+Um zu sehen, **welche Segmente fehlgeschlagen sind**, wie oft und die gespeicherten **Qualitäts- / Fehlermeldungen**, verwenden Sie den **Fehler**-Tab im Übersetzungs-Cache-Editor ([Übersetzungs-Cache-Editor → Fehler](#translation-cache-editor-failures)).
 
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### Cache-Verhalten und `translate-docs`-Flags
@@ -756,6 +763,52 @@ So wird es mit `npx ai-i18n-tools sync` ausgeführt:
 - Der erste Dokumentationsblock übersetzt Markdown und JSON-Beschriftungen in das Docusaurus-`i18n/<locale>/...`-Layout.
 - Der zweite Dokumentationsblock übersetzt `README.md` in flache, sprachsuffixierte Dateien unter `translated-docs/`.
 - Alle Dokumentationsblöcke teilen sich `cacheDir`, sodass unveränderte Segmente zwischen Läufen wiederverwendet werden, um API-Aufrufe und Kosten zu reduzieren.
+
+---
+
+<a id="translation-cache-editor"></a>
+## Übersetzungs-Cache-Editor
+
+Ausführen:
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+Dies startet eine lokale Web-UI, die auf Ihrer konfigurierten **`cacheDir`**-SQLite-Datenbank basiert – demselben Verzeichnis, das die CLI für Dokumentationssegmente, Protokolle und verwandte Metadaten verwendet. Enthalten sind die Tabs **Dokumentation** (zwischengespeicherte Dokumentensegmente), **UI-Zeichenketten**, **UI-Pluralformen**, **Glossar**, **Fehler** und **Statistiken**.
+
+Wenn Sie **Cache-Zeilen** in dieser App bearbeiten (z. B. Dokumentationsabschnitte), führen Sie `sync --force-update` oder den entsprechenden Übersetzungsbefehl mit `--force-update` aus, damit die Ausgaben auf der Festplatte mit dem Cache übereinstimmen. Wenn sich später der **Quelltext** im Repository ändert, ändern sich die Segment-Hashes und manuelle Bearbeitungen des alten Textes werden überschrieben.
+
+<a id="translation-cache-editor-failures"></a>
+### Fehler (Dokumentationsübersetzung)
+
+Die Registerkarte **Fehler** dient ausschließlich der **Dokumentations**übersetzung. Sie liest Fehlerdatensätze aus der SQLite-Datenbank, die geschrieben werden, wenn ein Segment nicht erfolgreich für ein Gebietsschema übersetzt werden konnte – beispielsweise leere oder ungültige Modellausgaben, Validierungsfehler nach der Übersetzung (`AST mismatch`, Platzhalterlecks und ähnliche **Qualitäts**prüfungen) oder eine **fatale** Bedingung, die den Fortschritt blockiert hat. Sie hilft Ihnen dabei, folgende Frage zu beantworten: *Welches Quellsegment ist fehlgeschlagen, für welches Gebietsschema und welches Modell, und welcher Fehlertext wurde aufgezeichnet?*
+
+<a id="when-to-use-it"></a>
+#### Wann Sie es verwenden sollten
+
+- Nachdem `translate-docs` oder `sync` mit Fehlern, teilweisen Gebietsschemata oder unklaren Protokollen abgeschlossen wurde – Sie können Fehler sortieren und filtern, anstatt nur durch die Terminalausgabe zu scrollen.
+- Wenn Sie **Nacharbeiten priorisieren** möchten: Sortieren Sie nach **# Fehler**, sodass Segmente, die über mehrere Wiederholungen hinweg fehlgeschlagen sind, zuerst erscheinen; diese eignen sich besonders dafür, im Quell-Markdown **vereinfacht oder umformatiert** zu werden, damit zukünftige Durchläufe erfolgreich sind.
+- Wenn Sie das **genaue Segment** benötigen – Dateipfad, Zeilenhinweis, Quell-Hash und vollständigen Quelltext – um den richtigen Absatz in Ihrem Repository zu bearbeiten.
+
+<a id="why-source-edits-matter"></a>
+#### Warum Quelltextänderungen wichtig sind
+
+Dichtes Inline-Markup (**fett** kombiniert mit `` `code` ``, verschachtelte Hervorhebungen, lange Sätze mit vielen Abschnitten) erschwert es Modellen, Übersetzungen zurückzugeben, die weiterhin strukturelle Prüfungen bestehen. Segmente mit **mehreren aufgezeichneten Fehlern** profitieren in der Regel stärker von einer **Umschreibung oder Aufteilung** der Quelle (oder dem Verschieben von Beispielen in gefährmete Codeblöcke), als von erneuten Übersetzungsversuchen mit unverändertem Text. Dies entspricht [Komplexes Markdown und fehlgeschlagene Qualitätsprüfungen](#complex-markdown-and-failed-quality-checks).
+
+<a id="how-to-use-the-tab"></a>
+#### So verwenden Sie die Registerkarte
+
+1. Öffnen Sie **Fehler** im Editor (derselbe Browsersitz wie beim [Übersetzungscache-Editor](#translation-cache-editor)).
+2. Lesen Sie den **Zusammenfassungs**balken (Segmente mit einem Fehler sowie Anzahlen für Segmente mit **1**, **2** oder **3+** Fehlerdatensätzen).
+3. Filtern Sie nach Teil-**Dateinamen**, **Gebietsschema**, **Modell**, **Qualitätsfehler** (Werte stammen aus Ihrem Cache), **nur fatale Fehler** und optional nach **Quell-Hash**, **Quelltext** oder **Fehlermeldungs**teilstring – klicken Sie dann auf **Übernehmen**.
+4. Wählen Sie **Sortierung: # Fehler** (Standard) oder **Sortierung: Dateipfad + Zeilennummer**.
+5. Verwenden Sie die Paginierung oben oder unten in der Tabelle. **Klicken Sie auf eine Zeile**, um den vollständigen Quelltext anzuzeigen. Die Linksteuerung in der Zeile (falls aktiviert) fordert den Serverprozess auf, Datei-/Zeilenhinweise im **Terminal** zu protokollieren, in dem `ai-i18n-tools editor` ausgeführt wird – nützlich, um vom Browser direkt in Ihren Editor zu springen.
+6. Beheben Sie die **Quelldatei** in Ihrem Projekt und führen Sie anschließend erneut `translate-docs` oder `sync` aus. Wenn die Liste nach einem erfolgreichen Durchlauf **veraltet** erscheint, führen Sie `ai-i18n-tools sync --force-update` aus und laden Sie den Editor neu (der Fehlerbereich zeigt denselben Hinweis an).
+
+Für die dateibasierte Fehlersuche parallel zur Benutzeroberfläche können Sie weiterhin `translate-docs --debug-failed` verwenden, um `FAILED-TRANSLATION`-Details unter `cacheDir` während Wiederholungen zu schreiben – siehe [Cache-Verhalten und `translate-docs`-Flags](#cache-behaviour-and-translate-docs-flags).
 
 ---
 

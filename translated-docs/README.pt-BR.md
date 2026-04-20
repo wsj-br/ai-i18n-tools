@@ -9,16 +9,16 @@ Kit de ferramentas CLI e programático para internacionalização de aplicaçõe
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Sumário**
+**Tabela de Conteúdos**
 
 - [Dois fluxos de trabalho principais](#two-core-workflows)
 - [Instalação](#installation)
-- [Primeiros passos](#quick-start)
-  - [Fluxo de trabalho 1 - Strings de interface](#workflow-1---ui-strings)
+- [Início rápido](#quick-start)
+  - [Fluxo de trabalho 1 - Strings da UI](#workflow-1---ui-strings)
   - [Fluxo de trabalho 2 - Documentação](#workflow-2---documentation)
   - [Ambos os fluxos de trabalho](#both-workflows)
 - [Auxiliares de tempo de execução](#runtime-helpers)
-- [Comandos da CLI](#cli-commands)
+- [Comandos do CLI](#cli-commands)
 - [Documentação](#documentation)
 - [Licença](#license)
 

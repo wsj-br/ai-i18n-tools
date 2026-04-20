@@ -17,27 +17,27 @@ Pour des instructions d'utilisation pratique, consultez [GETTING_STARTED.md](GET
 
 - [Aperçu de l'architecture](#architecture-overview)
 - [Arborescence source](#source-tree)
-- [Workflow 1 - Internes de la traduction d'interface](#workflow-1---ui-translation-internals)
+- [Workflow 1 - Internals de la traduction d'interface](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [Fichiers de langue plats](#flat-locale-files)
+  - [Fichiers localisés plats](#flat-locale-files)
   - [Invites de traduction d'interface](#ui-translation-prompts)
-- [Workflow 2 - Internes de la traduction de documents](#workflow-2---document-translation-internals)
+- [Workflow 2 - Internals de la traduction de documents](#workflow-2---document-translation-internals)
   - [Extracteurs](#extractors)
-  - [Insertion d'ancre de titre (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids)
+  - [Insertion d'ancre de titre (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Protection des espaces réservés](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
   - [Résolution du chemin de sortie](#output-path-resolution)
-  - [Réécriture des liens plats](#flat-link-rewriting)
+  - [Réécriture de liens plats](#flat-link-rewriting)
 - [Infrastructure partagée](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Chargement de la configuration](#config-loading)
-  - [Enregistreur (Logger)](#logger)
-- [API d'aides au runtime](#runtime-helpers-api)
+  - [Logger](#logger)
+- [API d'aide au runtime](#runtime-helpers-api)
   - [Aides RTL](#rtl-helpers)
   - [Fabriques de configuration i18next](#i18next-setup-factories)
   - [Aides d'affichage](#display-helpers)
-  - [Aides sur les chaînes](#string-helpers)
+  - [Aides de chaînes](#string-helpers)
 - [API programmatique](#programmatic-api)
 - [Points d'extension](#extension-points)
   - [Noms de fonctions personnalisés (extraction d'interface)](#custom-function-names-ui-extraction)
@@ -284,11 +284,11 @@ La commande `translate-docs` utilise également un **suivi des fichiers** afin q
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` associe un chemin relatif à la source au chemin de sortie :
 
 - Style `nested` (par défaut) : `{outputDir}/{locale}/{relPath}` pour le markdown.
-- Style `docusaurus` : sous `docsRoot`, les sorties utilisent `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` ; les chemins situés en dehors de `docsRoot` reviennent au layout imbriqué.
+- Style `docusaurus` : sous `docsRoot`, les sorties utilisent `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` ; les chemins en dehors de `docsRoot` reviennent à la disposition imbriquée.
 - Style `flat` : `{outputDir}/{stem}.{locale}{extension}`. Lorsque `flatPreserveRelativeDir` vaut `true`, les sous-répertoires sources sont conservés sous `outputDir`.
-- **Personnalisé** `pathTemplate` : tout agencement markdown utilisant `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
-- **Personnalisé** `jsonPathTemplate` : agencement personnalisé distinct pour les fichiers d'étiquettes JSON, utilisant les mêmes espaces réservés.
-- `linkRewriteDocsRoot` aide le réécritureur de liens plats à calculer les préfixes corrects lorsque la sortie traduite est située ailleurs que dans le répertoire racine par défaut du projet.
+- **Personnalisé** `pathTemplate` : n'importe quelle disposition markdown utilisant `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Personnalisé** `jsonPathTemplate` : disposition personnalisée séparée pour les fichiers d'étiquettes JSON, utilisant les mêmes espaces réservés.
+- `linkRewriteDocsRoot` aide le réécriture de liens plats à calculer les préfixes corrects lorsque la sortie traduite est située ailleurs que dans le répertoire racine par défaut du projet.
 
 <a id="flat-link-rewriting"></a>
 ### Réécriture des liens plats
@@ -314,13 +314,13 @@ Encapsule l'API OpenRouter de complétion de chat. Comportements clés :
 
 Pipeline `loadI18nConfigFromFile(configPath, cwd)` :
 
-1. Lecture et analyse de `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` - fusion profonde avec `defaultI18nConfigPartial`, et fusion des entrées `documentations[].sourceFiles` dans `contentPaths`.
-3. `expandTargetLocalesFileReferenceInRawInput` - si `targetLocales` est un chemin de fichier, charge le manifeste et l'étend aux codes de langue ; définit `uiLanguagesPath`.
-4. `expandDocumentationTargetLocalesInRawInput` - idem pour chaque entrée `documentations[].targetLocales`.
+1. Lire et analyser `ai-i18n-tools.config.json` (JSON).
+2. `mergeWithDefaults` - fusion profonde avec `defaultI18nConfigPartial`, et fusionner toutes les entrées `documentations[].sourceFiles` dans `contentPaths`.
+3. `expandTargetLocalesFileReferenceInRawInput` - si `targetLocales` est un chemin de fichier, charger le manifeste et l'étendre aux codes de langue ; définir `uiLanguagesPath`.
+4. `expandDocumentationTargetLocalesInRawInput` - même chose pour chaque entrée `documentations[].targetLocales`.
 5. `parseI18nConfig` - validation Zod + `validateI18nBusinessRules`.
-6. `applyEnvOverrides` - applique `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
-7. `augmentConfigWithUiLanguagesFile` - attache les noms d'affichage du manifeste.
+6. `applyEnvOverrides` - appliquer `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
+7. `augmentConfigWithUiLanguagesFile` - attacher les noms d'affichage du manifeste.
 
 <a id="logger"></a>
 ### Journalisation (Logger)

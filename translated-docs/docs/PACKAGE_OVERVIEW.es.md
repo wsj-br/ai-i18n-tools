@@ -24,11 +24,11 @@ Para instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STAR
   - [Solicitudes de traducción de interfaz](#ui-translation-prompts)
 - [Flujo de trabajo 2 - Internals de traducción de documentos](#workflow-2---document-translation-internals)
   - [Extractores](#extractors)
-  - [Inserción de anclajes de encabezado (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids)
+  - [Inserción de anclas de encabezado (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Protección de marcadores de posición](#placeholder-protection)
   - [Caché (`TranslationCache`)](#cache-translationcache)
   - [Resolución de rutas de salida](#output-path-resolution)
-  - [Reescritura plana de enlaces](#flat-link-rewriting)
+  - [Reescritura de enlaces planos](#flat-link-rewriting)
 - [Infraestructura compartida](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Carga de configuración](#config-loading)
@@ -37,7 +37,7 @@ Para instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STAR
   - [Ayudantes RTL](#rtl-helpers)
   - [Fábricas de configuración de i18next](#i18next-setup-factories)
   - [Ayudantes de visualización](#display-helpers)
-  - [Ayudantes de cadenas](#string-helpers)
+  - [Ayudantes de cadenas de texto](#string-helpers)
 - [API programática](#programmatic-api)
 - [Puntos de extensión](#extension-points)
   - [Nombres personalizados de funciones (extracción de interfaz)](#custom-function-names-ui-extraction)
@@ -284,11 +284,11 @@ El comando `translate-docs` también utiliza **seguimiento de archivos**, de mod
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` mapea una ruta relativa a la fuente a la ruta de salida:
 
 - Estilo `nested` (por defecto): `{outputDir}/{locale}/{relPath}` para markdown.
-- Estilo `docusaurus`: bajo `docsRoot`, las salidas usan `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; las rutas fuera de `docsRoot` recurren al diseño anidado.
-- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Cuando `flatPreserveRelativeDir` es `true`, los subdirectorios de origen se mantienen bajo `outputDir`.
+- Estilo `docusaurus`: dentro de `docsRoot`, las salidas usan `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; las rutas fuera de `docsRoot` vuelven al diseño anidado.
+- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Cuando `flatPreserveRelativeDir` es `true`, los subdirectorios de origen se mantienen dentro de `outputDir`.
 - **Personalizado** `pathTemplate`: cualquier diseño de markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
-- **Personalizado** `jsonPathTemplate`: diseño personalizado separado para archivos de etiquetas JSON, usando los mismos marcadores.
-- `linkRewriteDocsRoot` ayuda al reescritor de enlaces planos a calcular prefijos correctos cuando la salida traducida está enraizada en otro lugar distinto de la raíz del proyecto predeterminada.
+- **Personalizado** `jsonPathTemplate`: diseño personalizado separado para archivos JSON de etiquetas, usando los mismos marcadores de posición.
+- `linkRewriteDocsRoot` ayuda al reescritor de enlaces planos a calcular los prefijos correctos cuando la salida traducida se encuentra en una ubicación distinta a la raíz del proyecto por defecto.
 
 <a id="flat-link-rewriting"></a>
 ### Reescritura plana de enlaces

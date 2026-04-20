@@ -20,24 +20,24 @@
 - [工作流程 1 - UI 翻譯內部機制](#workflow-1---ui-translation-internals)
   - [`UIStringExtractor`](#uistringextractor)
   - [`strings.json`](#stringsjson)
-  - [平面化語系檔案](#flat-locale-files)
+  - [平面式語系檔案](#flat-locale-files)
   - [UI 翻譯提示](#ui-translation-prompts)
 - [工作流程 2 - 文件翻譯內部機制](#workflow-2---document-translation-internals)
   - [提取器](#extractors)
-  - [標題錨點插入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [標題錨點插入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [佔位符保護](#placeholder-protection)
   - [快取 (`TranslationCache`)](#cache-translationcache)
   - [輸出路徑解析](#output-path-resolution)
-  - [平面化連結重寫](#flat-link-rewriting)
+  - [平面式連結重寫](#flat-link-rewriting)
 - [共用基礎設施](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [設定載入](#config-loading)
   - [記錄器](#logger)
 - [執行階段輔助 API](#runtime-helpers-api)
-  - [RTL 輔助函式](#rtl-helpers)
+  - [RTL 輔助工具](#rtl-helpers)
   - [i18next 設定工廠](#i18next-setup-factories)
-  - [顯示輔助函式](#display-helpers)
-  - [字串輔助函式](#string-helpers)
+  - [顯示輔助工具](#display-helpers)
+  - [字串輔助工具](#string-helpers)
 - [程式化 API](#programmatic-api)
 - [擴充點](#extension-points)
   - [自訂函式名稱 (UI 提取)](#custom-function-names-ui-extraction)
@@ -283,12 +283,12 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` 將來源相對路徑對應至輸出路徑：
 
-- `nested` 風格（預設）：`{outputDir}/{locale}/{relPath}` 用於 Markdown。
-- `docusaurus` 風格：在 `docsRoot` 下，輸出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 外的路徑會回退至巢狀佈局。
-- `flat` 風格：`{outputDir}/{stem}.{locale}{extension}`。當 `flatPreserveRelativeDir` 為 `true` 時，來源子目錄會保留在 `outputDir` 下。
+- `nested` 樣式 (預設)：針對 Markdown 使用 `{outputDir}/{locale}/{relPath}`。
+- `docusaurus` 樣式：位於 `docsRoot` 底下，輸出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 之外的路徑會回退至巢狀佈局。
+- `flat` 樣式：`{outputDir}/{stem}.{locale}{extension}`。當 `flatPreserveRelativeDir` 為 `true` 時，原始碼子目錄會保留在 `outputDir` 底下。
 - **自訂** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任意 Markdown 佈局。
-- **自訂** `jsonPathTemplate`：JSON 標籤檔的獨立自訂佈局，使用相同的佔位符。
-- `linkRewriteDocsRoot` 協助平面連結重寫器在翻譯輸出的根目錄非預設專案根目錄時計算正確的前置詞。
+- **自訂** `jsonPathTemplate`：JSON 標籤檔案的獨立自訂佈局，使用相同的佔位符。
+- `linkRewriteDocsRoot` 可協助平面式連結重寫器在翻譯輸出的根目錄不同於預設專案根目錄時，計算出正確的前置字串。
 
 <a id="flat-link-rewriting"></a>
 ### 平坦式連結重寫
@@ -314,12 +314,12 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 
 `loadI18nConfigFromFile(configPath, cwd)` 流程：
 
-1. 讀取並解析 `ai-i18n-tools.config.json`（JSON 格式）。
-2. `mergeWithDefaults` - 深層合併 `defaultI18nConfigPartial`，並將任何 `documentations[].sourceFiles` 項目合併至 `contentPaths`。
-3. `expandTargetLocalesFileReferenceInRawInput` - 若 `targetLocales` 為檔案路徑，載入 manifest 並展開為區域設定代碼；設定 `uiLanguagesPath`。
+1. 讀取並解析 `ai-i18n-tools.config.json` (JSON)。
+2. `mergeWithDefaults` - 與 `defaultI18nConfigPartial` 深層合併，並將任何 `documentations[].sourceFiles` 項目合併至 `contentPaths`。
+3. `expandTargetLocalesFileReferenceInRawInput` - 若 `targetLocales` 為檔案路徑，載入 manifest 並展開為語系代碼；設定 `uiLanguagesPath`。
 4. `expandDocumentationTargetLocalesInRawInput` - 對每個 `documentations[].targetLocales` 項目執行相同操作。
-5. `parseI18nConfig` - 進行 Zod 驗證 + `validateI18nBusinessRules`。
-6. `applyEnvOverrides` - 應用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等設定。
+5. `parseI18nConfig` - Zod 驗證 + `validateI18nBusinessRules`。
+6. `applyEnvOverrides` - 套用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等。
 7. `augmentConfigWithUiLanguagesFile` - 附加 manifest 顯示名稱。
 
 <a id="logger"></a>

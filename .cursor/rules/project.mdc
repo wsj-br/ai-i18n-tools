@@ -1,57 +1,36 @@
 ---
-description: Minimal context for new chats and CHANGELOG updates
+description: Minimal context for new chats; enforce CHANGELOG with code changes
 alwaysApply: true
 ---
 
-# Minimal Context and CHANGELOG
+# ai-i18n-tools — project rule
 
-## Project baseline
+## Stack and purpose
 
-- **App and Project name**: `ai-i18n-tools`
-- **Stack**: TypeScript (strict), ESM-only, Node.js ≥ 22.16, pnpm ≥ 10.33. Build: `tsc` (ES2020, Node16). Test: Vitest + `@vitest/coverage-v8`. Lint/format: ESLint + Prettier.
-- **Key deps**: Commander (CLI), Zod (config validation), Express (local editor), i18next-scanner (extractor), mdast/micromark (markdown parsing).
-- **What it does**: CLI + library that automates i18n for JS/TS projects. Two independent workflows: **UI Strings** — extract `t("…")` calls → master catalog (`strings.json`) → per-locale flat JSON via OpenRouter LLMs. **Document translation** — markdown/mdx/JSON → segment-level SQLite cache → translated output files.
-- **Config**: `ai-i18n-tools.config.json`. Runtime helpers exported from `ai-i18n-tools/runtime`.
+TypeScript (strict), ESM, Node ≥ 22.16, pnpm ≥ 10.33; build `tsc`, test Vitest, lint ESLint + Prettier. CLI + library: **UI strings** (`t("…")` → catalog → locales) and **document translation** (markdown/mdx/JSON → SQLite cache → outputs). Config: `ai-i18n-tools.config.json`; runtime: `ai-i18n-tools/runtime`.
 
-## Source layout
+## Layout
 
-- All source in `src/`; public API re-exported from `src/index.ts`. Tests in `tests/` mirroring `src/` structure.
-- **Key dirs**: `cli/` (Commander commands), `core/` (config, Zod types, SQLite cache, prompt builder), `extractors/` (JS/TS, Markdown, JSON, SVG), `processors/` (placeholder protection, batch splitting, validation, link rewriting), `api/` (OpenRouter HTTP client), `glossary/` (CSV + auto glossary), `runtime/` (i18next/RTL/display helpers), `server/` (Express web editor), `utils/` (logger, SHA-256, .translate-ignore parser).
+Source `src/` (API from `src/index.ts`), tests `tests/`. Main areas: `cli/`, `core/`, `extractors/`, `processors/`, `api/`, `glossary/`, `runtime/`, `server/`, `utils/`. CLI entry: `dist/cli/index.js` (`package.json` `"bin"`).
 
-## Documentation
+## Docs
 
-- **Canonical locations**: `README.md` (root) and `docs/` folder.
-- **Working on this repository:** read `dev/package-context.md` first (maintainer / package internals). It is not published on npm.
-- **Downstream / consumer angle:** `docs/ai-i18n-tools-context.md` (also shipped on npm) targets apps **using** the package in their own repos.
-- **Auto-generated — do NOT edit**: `examples/nextjs-app/docs-site/` or `translated-docs` folders; rebuilt by `pnpm sync-docs` or `ai-i18n-tools translate-docs`. Edit only canonical sources.
-- **Avoid bold with inline code**: avoid the usage of bold (`**`) around `inline code` (` `), it can cause problems with the translation.
+Canonical package docs: `README.md`, `docs/`. Maintainer internals: `dev/package-context.md`. Consumer-facing shipped doc: `docs/ai-i18n-tools-context.md`.
 
-## Minimal context (each new chat)
+Treat `translated-docs/` as pipeline output from `translate-docs` (do not hand-edit unless you intend to refresh generated artifacts). Avoid bold around inline code in prose (translation tooling).
 
-- Prefer **searching the codebase** (e.g. SemanticSearch, Grep) over assuming structure or APIs.
-- Use **minimal necessary context**: only open or reference files relevant to the current task.
-- When unsure about stack or entrypoints, check `package.json` and key entry files (e.g. `src/main/main.js`, `src/server/index.js`) rather than guessing.
-- Keep replies **focused**: avoid repeating project overview unless the user asks.
+## How to work
 
-## CHANGELOG
+Prefer repo search over guessing. For entrypoints and scripts, read `package.json` and the files you touch—do not assume paths like `src/main/`.
 
-- Maintain `dev/CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-- For **any notable change** (features, fixes, refactors, config, dependencies), **add an entry** under the **Unreleased** section of `dev/CHANGELOG.md`.
-- Don't keep changes to the documentation files.
-- **Entry format** (each bullet is one change):
+## CHANGELOG — required with behavioral changes
 
-  `- **{Type}**: {scope} - {description}`
+**Whenever you change behavior, fix bugs, change config/schema, or touch dependencies**, finish the task by adding at least one bullet under `## [Unreleased]` in `dev/CHANGELOG.md` in the **same edit session** as the code—not as a follow-up.
 
-  - **{Type}**: one of Added, Changed, Deprecated, Removed, Fixed, Security (same as Keep a Changelog).
-  - **{scope}**: short area or surface (e.g. `Windows NSIS`, `translate-ui-strings`, `Settings → Models`) so readers can scan by subsystem.
-  - **{description}**: full sentence(s); chain related clauses with semicolons if needed. Use backticks for identifiers, paths, flags, errors, and code snippets. No need to mirror the full commit message—summarize the user-visible or maintainer-relevant outcome.
+**Skip a CHANGELOG bullet only** when the change is documentation-only, comments-only, or otherwise has no user-visible or maintainer-relevant effect.
 
-- Place bullets under `## Unreleased`. If the file uses `### Added` / `### Fixed` groupings, put each bullet in the matching subsection but **keep the same** `- **{Type}**: {scope} - …` line shape so the type stays visible when reading. If the file uses a **flat** list under Unreleased (no `###`), the type is only in each bullet—both are fine.
+Match existing Unreleased lines: `- **{Type}**: {scope} - …` where Type is Added, Changed, Deprecated, Removed, Fixed, or Security; scope is a short subsystem name; description is one or two clear sentences (backticks for identifiers and paths). One bullet per logical change.
 
-- Prefer **one bullet per logical change** (one PR can add several bullets if it touched unrelated areas).
+## Code habits
 
-## Coding conventions
-
-- Prefer `async/await` over raw Promises; always handle errors (no empty catches).
-- Use Zod for any config or external-data validation.
-- Use Vitest `describe`/`it`. Run `pnpm test` to verify changes; run `pnpm lint` before committing.
+Prefer `async/await`; no empty catches. Validate config and external shapes with Zod. Tests: Vitest `describe`/`it`. Verify with `pnpm test` / `pnpm lint` when you change code.

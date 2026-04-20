@@ -12,7 +12,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents** 
+**Table of Contents**
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -37,9 +37,14 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
     - [Segment dedupe and paths in SQLite](#segment-dedupe-and-paths-in-sqlite)
   - [Output layouts](#output-layouts)
     - [Anchor links in flat layout](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` placeholders](#markdown-output-path-template-placeholders)
+    - [`pathTemplate` / `jsonPathTemplate` placeholders](#pathtemplate--jsonpathtemplate-placeholders)
 - [Combined workflow (UI + Docs)](#combined-workflow-ui--docs)
   - [Mixed documentation workflow (Docusaurus + flat)](#mixed-documentation-workflow-docusaurus--flat)
+- [Translation Cache Editor](#translation-cache-editor)
+  - [Failures (document translation)](#failures-document-translation)
+    - [When to use it](#when-to-use-it)
+    - [Why source edits matter](#why-source-edits-matter)
+    - [How to use the tab](#how-to-use-the-tab)
 - [Configuration reference](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -487,6 +492,8 @@ npx ai-i18n-tools status
 
 **If you hit that kind of validation failure, prefer simplifying the source language text**—split the paragraph, move an example into a fenced code block, or describe the same idea with fewer layered bold/code pairs—rather than expecting every model and locale to reproduce dense inline markup perfectly. Elsewhere on this page (notably Step 4’s notes on `SOURCE_LOCALE`, loaders, and `public/` paths), the formatting is intentionally realistic; when you reuse similar wording in your own docs, keep it simpler when you translate broadly.
 
+To see **which segments failed**, how often, and the stored **quality / error messages**, use the Translation Cache Editor’s **Failures** tab ([Translation Cache Editor → Failures](#translation-cache-editor-failures)).
+
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### Cache behaviour and `translate-docs` flags
 
@@ -757,6 +764,51 @@ How this runs with `npx ai-i18n-tools sync`:
 - The second docs block translates `README.md` into flat locale-suffixed files under `translated-docs/`.
 - All docs blocks share `cacheDir`, so unchanged segments are reused across runs to reduce API calls and cost.
 
+---
+
+<a id="translation-cache-editor"></a>
+## Translation Cache Editor
+
+Run:
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+This starts a local web UI backed by your configured **`cacheDir`** SQLite database—the same folder the CLI uses for documentation segments, logs, and related metadata. It includes the tabs **Documentation** (cached doc segments), **UI strings**, **UI plurals**, **Glossary**, **Failures**, and **Statistics**.
+
+If you **edit cache rows** in this app (for example documentation segments), run `sync --force-update` or the equivalent translate command with `--force-update` so on-disk outputs match the cache; if **source text** in the repo changes later, segment hashes change and manual edits for the old text are superseded.
+
+<a id="translation-cache-editor-failures"></a>
+### Failures (document translation)
+
+The **Failures** tab is for **documentation** translation only. It reads failure records written to SQLite when a segment could not be translated successfully for a locale—for example empty or invalid model output, post-translation validation errors (`AST mismatch`, placeholder leaks, and similar **quality** checks), or a **fatal** condition that blocked progress. It helps you answer: *which source segment broke, for which locale and model, and what error text was recorded?*
+
+<a id="when-to-use-it"></a>
+#### When to use it
+
+- After `translate-docs` or `sync` finishes with errors, partial locales, or confusing logs—you can sort and filter failures instead of scrolling terminal output alone.
+- When you want to **prioritize rework**: sort by **# Failures** so segments that failed repeatedly across retries appear first; those are strong candidates to **simplify or reformat** in the source markdown so future runs succeed.
+- When you need the **exact segment**—filepath, line hint, source hash, and full source text—to edit the right paragraph in your repo.
+
+<a id="why-source-edits-matter"></a>
+#### Why source edits matter
+
+Dense inline markup (**bold** mixed with `` `code` ``, nested emphasis, long sentences with many spans) makes it harder for models to return translations that still pass structural checks. Segments with **multiple recorded failures** usually improve more from **rewriting or splitting** the source (or moving examples into fenced code blocks) than from re-running translation on unchanged text. That aligns with [Complex Markdown and failed quality checks](#complex-markdown-and-failed-quality-checks).
+
+<a id="how-to-use-the-tab"></a>
+#### How to use the tab
+
+1. Open **Failures** in the editor (same browser session as [Translation Cache Editor](#translation-cache-editor)).
+2. Read the **summary** strip (segments with any failure, plus counts for segments with **1**, **2**, or **3+** failure records).
+3. Filter by partial **filename**, **locale**, **model**, **quality error** (values come from your cache), **fatal only**, and optional **source hash**, **source text**, or **error message** substring—then click **Apply**.
+4. Choose **Sort: # Failures** (default) or **Sort: filepath + line #**.
+5. Use pagination at the top or bottom of the table. **Click a row** to toggle full source text. The link control in the row (when enabled) asks the server process to log file/line hints to the **terminal** where `ai-i18n-tools editor` is running—useful for jumping from the browser to your editor.
+6. Fix the **source file** in your project, then run `translate-docs` or `sync` again. If the list looks **out of date** after a successful run, run `ai-i18n-tools sync --force-update` and reload the editor (the Failures panel shows the same hint).
+
+For file-based debugging alongside the UI, you can still use `translate-docs --debug-failed` to write `FAILED-TRANSLATION` detail under `cacheDir` during retries—see [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags).
 
 ---
 

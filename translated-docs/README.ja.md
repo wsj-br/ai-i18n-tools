@@ -11,15 +11,15 @@ JavaScript/TypeScriptアプリケーションおよびドキュメントサイ�
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目次**
 
-- [2つのコアワークフロー](#two-core-workflows)
+- [2つの主要なワークフロー](#two-core-workflows)
 - [インストール](#installation)
 - [クイックスタート](#quick-start)
   - [ワークフロー1 - UI文字列](#workflow-1---ui-strings)
-  - [ワークフロー2 - ドキュメント](#workflow-2---documentation)
+  - [ワークフロー2 - ドキュメンテーション](#workflow-2---documentation)
   - [両方のワークフロー](#both-workflows)
 - [ランタイムヘルパー](#runtime-helpers)
 - [CLIコマンド](#cli-commands)
-- [ドキュメント](#documentation)
+- [ドキュメンテーション](#documentation)
 - [ライセンス](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

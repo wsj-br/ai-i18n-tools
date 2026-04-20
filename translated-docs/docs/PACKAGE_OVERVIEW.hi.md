@@ -24,21 +24,21 @@
   - [यूआई अनुवाद संकेत](#ui-translation-prompts)
 - [वर्कफ़्लो 2 - दस्तावेज़ अनुवाद आंतरिक](#workflow-2---document-translation-internals)
   - [एक्सट्रैक्टर](#extractors)
-  - [शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids)
+  - [शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [प्लेसहोल्डर संरक्षण](#placeholder-protection)
   - [कैश (`TranslationCache`)](#cache-translationcache)
-  - [आउटपुट पथ संकल्पना](#output-path-resolution)
+  - [आउटपुट पथ संकल्प](#output-path-resolution)
   - [फ्लैट लिंक पुनःलेखन](#flat-link-rewriting)
 - [साझा बुनियादी ढांचा](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [कॉन्फ़िग लोडिंग](#config-loading)
   - [लॉगर](#logger)
-- [रनटाइम हेल्पर्स API](#runtime-helpers-api)
-  - [RTL हेल्पर्स](#rtl-helpers)
-  - [i18next सेटअप फ़ैक्टरीज़](#i18next-setup-factories)
+- [रनटाइम हेल्पर्स एपीआई](#runtime-helpers-api)
+  - [आरटीएल हेल्पर्स](#rtl-helpers)
+  - [i18next सेटअप फैक्ट्रियाँ](#i18next-setup-factories)
   - [डिस्प्ले हेल्पर्स](#display-helpers)
   - [स्ट्रिंग हेल्पर्स](#string-helpers)
-- [प्रोग्रामेटिक API](#programmatic-api)
+- [प्रोग्रामेटिक एपीआई](#programmatic-api)
 - [एक्सटेंशन पॉइंट्स](#extension-points)
   - [कस्टम फ़ंक्शन नाम (यूआई एक्सट्रैक्शन)](#custom-function-names-ui-extraction)
   - [कस्टम एक्सट्रैक्टर्स](#custom-extractors)
@@ -284,11 +284,11 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` स्रोत-सापेक्ष पथ को आउटपुट पथ पर मैप करता है:
 
 - `nested` शैली (डिफ़ॉल्ट): मार्कडाउन के लिए `{outputDir}/{locale}/{relPath}`।
-- `docusaurus` शैली: `docsRoot` के तहत, आउटपुट `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` का उपयोग करते हैं; `docsRoot` के बाहर के पथ नेस्टेड लेआउट पर वापस आ जाते हैं।
-- `flat` शैली: `{outputDir}/{stem}.{locale}{extension}`। जब `flatPreserveRelativeDir` `true` होता है, तो स्रोत उपनिर्देशिकाओं को `outputDir` के तहत रखा जाता है।
-- **कस्टम** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` का उपयोग करके कोई भी मार्कडाउन लेआउट।
-- **कस्टम** `jsonPathTemplate`: JSON लेबल फ़ाइलों के लिए एक अलग कस्टम लेआउट, समान प्लेसहोल्डर का उपयोग करके।
-- `linkRewriteDocsRoot` तब सही उपसर्ग की गणना करने में सपाट-लिंक पुनर्लेखक की सहायता करता है जब अनुवादित आउटपुट डिफ़ॉल्ट परियोजना रूट के बजाय कहीं और स्थित होता है।
+- `docusaurus` शैली: `docsRoot` के अंतर्गत, आउटपुट `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` का उपयोग करते हैं; `docsRoot` के बाहर के पथ नेस्टेड लेआउट पर वापस आ जाते हैं।
+- `flat` शैली: `{outputDir}/{stem}.{locale}{extension}`। जब `flatPreserveRelativeDir` `true` होता है, तो स्रोत उपडायरेक्टरियों को `outputDir` के अंतर्गत रखा जाता है।
+- **कस्टम** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` का उपयोग करके मार्कडाउन लेआउट के लिए कोई भी।
+- **कस्टम** `jsonPathTemplate`: JSON लेबल फ़ाइलों के लिए अलग कस्टम लेआउट, समान प्लेसहोल्डर का उपयोग करके।
+- `linkRewriteDocsRoot` फ्लैट-लिंक पुनःलेखक को सही उपसर्ग की गणना करने में मदद करता है जब अनुवादित आउटपुट डिफ़ॉल्ट प्रोजेक्ट रूट के बजाय कहीं और स्थित होता है।
 
 <a id="flat-link-rewriting"></a>
 ### सपाट लिंक पुन:लेखन
@@ -314,13 +314,13 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 
 `loadI18nConfigFromFile(configPath, cwd)` पाइपलाइन:
 
-1. `ai-i18n-tools.config.json` (JSON) पढ़ें और पार्स करें।
+1. `ai-i18n-tools.config.json` पढ़ें और पार्स करें (JSON)।
 2. `mergeWithDefaults` - `defaultI18nConfigPartial` के साथ गहराई से मर्ज करें, और किसी भी `documentations[].sourceFiles` प्रविष्टियों को `contentPaths` में मर्ज करें।
-3. `expandTargetLocalesFileReferenceInRawInput` - यदि `targetLocales` एक फ़ाइल पथ है, तो मैनिफेस्ट लोड करें और स्थानीयकरण कोड में विस्तार करें; `uiLanguagesPath` सेट करें।
+3. `expandTargetLocalesFileReferenceInRawInput` - यदि `targetLocales` एक फ़ाइल पथ है, तो मैनिफेस्ट लोड करें और स्थानीय कोड में विस्तार करें; `uiLanguagesPath` सेट करें।
 4. `expandDocumentationTargetLocalesInRawInput` - प्रत्येक `documentations[].targetLocales` प्रविष्टि के लिए समान।
 5. `parseI18nConfig` - Zod वैधीकरण + `validateI18nBusinessRules`।
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, आदि लागू करें।
-7. `augmentConfigWithUiLanguagesFile` - मैनिफेस्ट प्रदर्शन नाम संलग्न करें।
+7. `augmentConfigWithUiLanguagesFile` - मैनिफेस्ट डिस्प्ले नाम संलग्न करें।
 
 <a id="logger"></a>
 ### लॉगर

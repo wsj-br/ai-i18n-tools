@@ -16,7 +16,7 @@ Ambos flujos de trabajo utilizan OpenRouter (cualquier LLM compatible) y compart
 
 - [Instalación](#installation)
 - [Inicio rápido](#quick-start)
-  - [Scripts recomendados de `package.json`](#recommended-packagejson-scripts)
+  - [Scripts recomendados `package.json`](#recommended-packagejson-scripts)
 - [Flujo de trabajo 1 - Traducción de interfaz](#workflow-1---ui-translation)
   - [Paso 1: Inicializar](#step-1-initialise)
   - [Paso 2: Extraer cadenas](#step-2-extract-strings)
@@ -26,20 +26,25 @@ Ambos flujos de trabajo utilizan OpenRouter (cualquier LLM compatible) y compart
   - [Usar `t()` en el código fuente](#using-t-in-source-code)
   - [Interpolación](#interpolation)
   - [Plurales cardinales (`plurals: true`)](#cardinal-plurals-plurals-true)
-  - [Interfaz del selector de idioma](#language-switcher-ui)
+  - [Interfaz de selector de idioma](#language-switcher-ui)
   - [Idiomas RTL](#rtl-languages)
 - [Flujo de trabajo 2 - Traducción de documentos](#workflow-2---document-translation)
   - [Paso 1: Inicializar para documentación](#step-1-initialise-for-documentation)
   - [Paso 2: Traducir documentos](#step-2-translate-documents)
     - [Markdown complejo y verificaciones de calidad fallidas](#complex-markdown-and-failed-quality-checks)
     - [Comportamiento de caché y banderas `translate-docs`](#cache-behaviour-and-translate-docs-flags)
-    - [Formato de solicitud por lotes](#batch-prompt-format)
-    - [Dedupe de segmentos y rutas en SQLite](#segment-dedupe-and-paths-in-sqlite)
-  - [Distribuciones de salida](#output-layouts)
-    - [Enlaces de anclaje en distribución plana](#anchor-links-in-flat-layout)
-    - [Marcadores de posición `pathTemplate` / `jsonPathTemplate`](#markdown-output-path-template-placeholders)
-- [Flujo de trabajo combinado (UI + Docs)](#combined-workflow-ui--docs)
+    - [Formato de lote de indicaciones](#batch-prompt-format)
+    - [Deduplicación de segmentos y rutas en SQLite](#segment-dedupe-and-paths-in-sqlite)
+  - [Diseños de salida](#output-layouts)
+    - [Enlaces de anclaje en diseño plano](#anchor-links-in-flat-layout)
+    - [Marcadores de posición `pathTemplate` / `jsonPathTemplate`](#pathtemplate--jsonpathtemplate-placeholders)
+- [Flujo de trabajo combinado (UI + Documentos)](#combined-workflow-ui--docs)
   - [Flujo de trabajo mixto de documentación (Docusaurus + plano)](#mixed-documentation-workflow-docusaurus--flat)
+- [Editor de caché de traducción](#translation-cache-editor)
+  - [Errores (traducción de documentos)](#failures-document-translation)
+    - [Cuándo usarlo](#when-to-use-it)
+    - [Por qué son importantes las ediciones en el origen](#why-source-edits-matter)
+    - [Cómo usar la pestaña](#how-to-use-the-tab)
 - [Referencia de configuración](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -54,7 +59,7 @@ Ambos flujos de trabajo utilizan OpenRouter (cualquier LLM compatible) y compart
   - [`documentations`](#documentations)
   - [`svg` (opcional)](#svg-optional)
   - [`glossary`](#glossary)
-- [Referencia CLI](#cli-reference)
+- [Referencia de CLI](#cli-reference)
 - [Variables de entorno](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -146,9 +151,9 @@ npx ai-i18n-tools init
 
 Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown`. Edítalo para configurar:
 
-- `sourceLocale` - código BCP-47 del idioma fuente (por ejemplo, `"en-GB"`). **Debe coincidir** con el `SOURCE_LOCALE` exportado desde tu archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` - array de códigos BCP-47 para los idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecuta `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
-- `ui.sourceRoots` - directorios a escanear en busca de llamadas a `t("…")` (por ejemplo, `["src/"]`).
+- `sourceLocale` - código BCP-47 de tu idioma fuente (por ejemplo, `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde tu archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
+- `targetLocales` - matriz de códigos BCP-47 para tus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecuta `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
+- `ui.sourceRoots` - directorios a escanear en busca de llamadas `t("…")` (por ejemplo, `["src/"]`).
 - `ui.stringsJson` - dónde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
 - `ui.preferredModel` (opcional) - ID del modelo OpenRouter a intentar **primero** solo para `translate-ui`; si falla, la CLI continúa con `openrouter.translationModels` (o `defaultModel` / `fallbackModel` heredados) en orden, omitiendo duplicados.
@@ -452,14 +457,14 @@ npx ai-i18n-tools init -t ui-docusaurus
 
 Edite el `ai-i18n-tools.config.json` generado:
 
-- `sourceLocale` - idioma origen (debe coincidir con `defaultLocale` en `docusaurus.config.js`).
-- `targetLocales` - array de códigos de configuración regional BCP-47 (por ejemplo, `["de", "fr", "es"]`).
-- `cacheDir` - directorio de caché compartido en SQLite para todos los flujos de documentación (y directorio de registro por defecto para `--write-logs`).
-- `documentations` - array de bloques de documentación. Cada bloque tiene `description`, `contentPaths`, `outputDir`, `jsonSource` opcional, `markdownOutput`, `segmentSplitting` opcional, `targetLocales`, `addFrontmatter`, etc.
+- `sourceLocale` - idioma fuente (debe coincidir con `defaultLocale` en `docusaurus.config.js`).
+- `targetLocales` - matriz de códigos de configuración regional BCP-47 (por ejemplo, `["de", "fr", "es"]`).
+- `cacheDir` - directorio de caché compartido de SQLite para todas las canalizaciones de documentación (y directorio de registro predeterminado para `--write-logs`).
+- `documentations` - matriz de bloques de documentación. Cada bloque tiene `description`, `contentPaths`, `outputDir` opcionales, `jsonSource` opcional, `markdownOutput`, `segmentSplitting` opcional, `targetLocales`, `addFrontmatter`, etc.
 - `documentations[].description` - nota corta opcional para mantenedores (qué cubre este bloque). Cuando se establece, aparece en el encabezado `translate-docs` (`🌐 …: translating …`) y en los encabezados de sección `status`.
-- `documentations[].contentPaths` - directorios o archivos fuente en markdown/MDX (véase también `documentations[].jsonSource` para etiquetas JSON).
+- `documentations[].contentPaths` - directorios o archivos fuente en markdown/MDX (ver también `documentations[].jsonSource` para etiquetas JSON).
 - `documentations[].outputDir` - raíz de salida traducida para ese bloque.
-- `documentations[].markdownOutput.style` - `"nested"` (por defecto), `"docusaurus"` o `"flat"` (véase [Diseños de salida](#output-layouts)).
+- `documentations[].markdownOutput.style` - `"nested"` (predeterminado), `"docusaurus"` o `"flat"` (ver [Diseños de salida](#output-layouts)).
 
 <a id="step-2-translate-documents"></a>
 ### Paso 2: Traducir documentos
@@ -488,6 +493,8 @@ npx ai-i18n-tools status
 `translate-docs` verifica que cada segmento traducido preserve la estructura de markdown (incluido el énfasis analizado desde el documento). Párrafos que acumulan muchos elementos `bold` alrededor de `` `inline code` ``, anidan comillas invertidas dentro de negritas (por ejemplo, literales de plantilla como `` `fetch(\`/locales/${code}.json\`)` ``), o entrelazan negritas y código en una oración larga son frágiles: algunas configuraciones regionales necesitan un orden de palabras diferente, lo cual puede alterar cómo coinciden `**` y `` ` `` tras la traducción y provocar errores en la CLI como `AST mismatch`.
 
 **Si encuentra este tipo de fallo de validación, prefiera simplificar el texto del idioma fuente** — divida el párrafo, mueva un ejemplo a un bloque de código delimitado, o describa la misma idea con menos pares anidados de negritas/código — en lugar de esperar que cada modelo y configuración regional reproduzca perfectamente un marcado en línea denso. En otras partes de esta página (notablemente en las notas del Paso 4 sobre `SOURCE_LOCALE`, cargadores y rutas `public/`), el formato es intencionadamente realista; cuando reutilice redacciones similares en sus propios documentos, manténgalas más simples al traducir ampliamente.
+
+Para ver **qué segmentos fallaron**, con qué frecuencia y los **mensajes de error o calidad** almacenados, usa la pestaña **Errores** del Editor de caché de traducción ([Editor de caché de traducción → Errores](#translation-cache-editor-failures)).
 
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### Comportamiento de caché y banderas `translate-docs`
@@ -756,6 +763,52 @@ Cómo se ejecuta esto con `npx ai-i18n-tools sync`:
 - El primer bloque de documentación traduce markdown y etiquetas JSON al diseño Docusaurus `i18n/<locale>/...`.
 - El segundo bloque de documentación traduce `README.md` a archivos planos con sufijo de configuración regional bajo `translated-docs/`.
 - Todos los bloques de documentación comparten `cacheDir`, por lo que los segmentos sin cambios se reutilizan entre ejecuciones para reducir llamadas a la API y costos.
+
+---
+
+<a id="translation-cache-editor"></a>
+## Editor de caché de traducción
+
+Ejecuta:
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+Esto inicia una interfaz web local respaldada por tu base de datos **`cacheDir`** SQLite configurada, la misma carpeta que la CLI usa para segmentos de documentación, registros y metadatos relacionados. Incluye las pestañas **Documentación** (segmentos de documento en caché), **Cadenas de interfaz**, **Plurales de interfaz**, **Glosario**, **Errores** y **Estadísticas**.
+
+Si **edita filas de caché** en esta aplicación (por ejemplo, segmentos de documentación), ejecute `sync --force-update` o el comando de traducción equivalente con `--force-update` para que las salidas en disco coincidan con el caché; si el **texto fuente** en el repositorio cambia más adelante, los hashes de los segmentos cambian y las ediciones manuales del texto anterior quedan obsoletas.
+
+<a id="translation-cache-editor-failures"></a>
+### Fallos (traducción de documentación)
+
+La pestaña **Fallos** es solo para la traducción de **documentación**. Lee los registros de fallos escritos en SQLite cuando un segmento no pudo traducirse correctamente para una configuración regional, por ejemplo, salida del modelo vacía o inválida, errores de validación posteriores a la traducción (`AST mismatch`, fugas de marcadores de posición y comprobaciones de **calidad** similares), o una condición **fatal** que bloqueó el progreso. Le ayuda a responder: *¿qué segmento de origen falló, para qué configuración regional y modelo, y qué texto de error se registró?*
+
+<a id="when-to-use-it"></a>
+#### Cuándo usarlo
+
+- Después de que `translate-docs` o `sync` finalice con errores, configuraciones regionales parciales o registros confusos: puede ordenar y filtrar los fallos en lugar de desplazarse solo por la salida del terminal.
+- Cuando desee **priorizar el trabajo de corrección**: ordene por **# Fallos** para que los segmentos que fallaron repetidamente en varios intentos aparezcan primero; estos son candidatos fuertes para **simplificar o reformatear** en el markdown de origen, de modo que las ejecuciones futuras tengan éxito.
+- Cuando necesite el **segmento exacto** —ruta del archivo, indicación de línea, hash de origen y texto completo de origen— para editar el párrafo correcto en su repositorio.
+
+<a id="why-source-edits-matter"></a>
+#### Por qué son importantes las ediciones del origen
+
+El marcado en línea denso (**negrita** mezclada con `` `code` ``, énfasis anidados, oraciones largas con muchos fragmentos) dificulta que los modelos devuelvan traducciones que aún pasen las comprobaciones estructurales. Los segmentos con **múltiples fallos registrados** suelen mejorar más si se **reescribe o divide** el origen (o se mueven ejemplos a bloques de código delimitados) que si se vuelve a ejecutar la traducción sobre texto sin cambios. Esto concuerda con [Markdown complejo y comprobaciones de calidad fallidas](#complex-markdown-and-failed-quality-checks).
+
+<a id="how-to-use-the-tab"></a>
+#### Cómo usar la pestaña
+
+1. Abra **Fallos** en el editor (misma sesión del navegador que [Editor de caché de traducción](#translation-cache-editor)).
+2. Lea la franja de **resumen** (segmentos con algún fallo, más recuentos de segmentos con **1**, **2** o **3+** registros de fallo).
+3. Filtre por **nombre de archivo** parcial, **configuración regional**, **modelo**, **error de calidad** (los valores provienen de su caché), **solo fatales** y opcionalmente por **hash de origen**, **texto de origen** o subcadena de **mensaje de error**; luego haga clic en **Aplicar**.
+4. Elija **Ordenar: # Fallos** (predeterminado) u **Ordenar: ruta del archivo + número de línea**.
+5. Use la paginación en la parte superior o inferior de la tabla. **Haga clic en una fila** para alternar el texto completo de origen. El control de enlace en la fila (cuando está habilitado) solicita al proceso del servidor que registre pistas de archivo/línea en el **terminal** donde se está ejecutando `ai-i18n-tools editor`; útil para saltar desde el navegador a su editor.
+6. Corrija el **archivo de origen** en su proyecto, luego vuelva a ejecutar `translate-docs` o `sync`. Si la lista parece **desactualizada** después de una ejecución exitosa, ejecute `ai-i18n-tools sync --force-update` y recargue el editor (el panel de Fallos muestra la misma sugerencia).
+
+Para depuración basada en archivos junto con la interfaz, aún puede usar `translate-docs --debug-failed` para escribir detalles de `FAILED-TRANSLATION` bajo `cacheDir` durante los reintentos — consulte [Comportamiento del caché y banderas `translate-docs`](#cache-behaviour-and-translate-docs-flags).
 
 ---
 

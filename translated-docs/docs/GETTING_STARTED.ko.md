@@ -17,7 +17,7 @@
 - [설치](#installation)
 - [빠른 시작](#quick-start)
   - [권장 `package.json` 스크립트](#recommended-packagejson-scripts)
-- [워크플로우 1 - UI 번역](#workflow-1---ui-translation)
+- [워크플로 1 - UI 번역](#workflow-1---ui-translation)
   - [1단계: 초기화](#step-1-initialise)
   - [2단계: 문자열 추출](#step-2-extract-strings)
   - [3단계: UI 문자열 번역](#step-3-translate-ui-strings)
@@ -28,8 +28,8 @@
   - [기수 복수형 (`plurals: true`)](#cardinal-plurals-plurals-true)
   - [언어 전환기 UI](#language-switcher-ui)
   - [RTL 언어](#rtl-languages)
-- [워크플로우 2 - 문서 번역](#workflow-2---document-translation)
-  - [1단계: 문서화를 위해 초기화](#step-1-initialise-for-documentation)
+- [워크플로 2 - 문서 번역](#workflow-2---document-translation)
+  - [1단계: 문서용 초기화](#step-1-initialise-for-documentation)
   - [2단계: 문서 번역](#step-2-translate-documents)
     - [복잡한 마크다운 및 품질 검사 실패](#complex-markdown-and-failed-quality-checks)
     - [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags)
@@ -37,9 +37,14 @@
     - [SQLite의 세그먼트 중복 제거 및 경로](#segment-dedupe-and-paths-in-sqlite)
   - [출력 레이아웃](#output-layouts)
     - [평면 레이아웃의 앵커 링크](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` 자리 표시자](#markdown-output-path-template-placeholders)
-- [통합 워크플로우 (UI + 문서)](#combined-workflow-ui--docs)
-  - [혼합 문서 워크플로우 (Docusaurus + 평면)](#mixed-documentation-workflow-docusaurus--flat)
+    - [`pathTemplate` / `jsonPathTemplate` 자리표시자](#pathtemplate--jsonpathtemplate-placeholders)
+- [통합 워크플로 (UI + 문서)](#combined-workflow-ui--docs)
+  - [혼합 문서 워크플로 (Docusaurus + 평면)](#mixed-documentation-workflow-docusaurus--flat)
+- [번역 캐시 편집기](#translation-cache-editor)
+  - [실패 (문서 번역)](#failures-document-translation)
+    - [사용 시기](#when-to-use-it)
+    - [소스 편집이 중요한 이유](#why-source-edits-matter)
+    - [탭 사용 방법](#how-to-use-the-tab)
 - [구성 참조](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -146,12 +151,12 @@ npx ai-i18n-tools init
 
 이 명령어는 `ui-markdown` 템플릿으로 `ai-i18n-tools.config.json` 파일을 생성합니다. 다음 항목을 설정하려면 파일을 편집하세요:
 
-- `sourceLocale` - 소스 언어의 BCP-47 코드(예: `"en-GB"`). 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`와 **일치해야 합니다**.
-- `targetLocales` - 대상 언어의 BCP-47 코드 배열(예: `["de", "fr", "pt-BR"]`). 이 목록에서 `ui-languages.json` 매니페스트를 생성하려면 `generate-ui-languages`을 실행하세요.
-- `ui.sourceRoots` - `t("…")` 호출을 검색할 디렉터리(예: `["src/"]`).
-- `ui.stringsJson` - 마스터 카탈로그를 저장할 위치(예: `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등이 저장될 위치(예: `"src/locales/"`).
-- `ui.preferredModel` (선택 사항) - `translate-ui` 전용으로 **최우선**으로 시도할 OpenRouter 모델 ID. 실패 시 CLI는 중복을 건너뛰며 `openrouter.translationModels`(또는 이전 버전의 `defaultModel` / `fallbackModel`) 순서대로 계속 시도합니다.
+- `sourceLocale` - 소스 언어 BCP-47 코드 (예: `"en-GB"`). 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`와 **일치해야 합니다**.
+- `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). 이 목록에서 `ui-languages.json` 매니페스트를 생성하려면 `generate-ui-languages`을 실행하세요.
+- `ui.sourceRoots` - `t("…")` 호출을 검색할 디렉터리 (예: `["src/"]`).
+- `ui.stringsJson` - 마스터 카탈로그를 저장할 위치 (예: `"src/locales/strings.json"`).
+- `ui.flatOutputDir` - `de.json`, `pt-BR.json`, 등을 어디에 작성할지 (예: `"src/locales/"`).
+- `ui.preferredModel` (선택 사항) - `translate-ui`에 대해서만 **먼저** 시도할 OpenRouter 모델 ID; 실패 시 CLI는 중복을 건너뛰고 `openrouter.translationModels` (또는 레거시 `defaultModel` / `fallbackModel`)로 계속 진행합니다.
 
 <a id="step-2-extract-strings"></a>
 ### 단계 2: 문자열 추출
@@ -452,14 +457,14 @@ npx ai-i18n-tools init -t ui-docusaurus
 
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`과 일치해야 함).
-- `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 문서 파이프라인용 공유 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리).
-- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `targetLocales`, `addFrontmatter` 등을 가집니다.
-- `documentations[].description` - 유지 관리자를 위한 선택적 짧은 메모(이 블록의 범위). 설정 시 `translate-docs` 제목(`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됩니다.
-- `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일(`documentations[].jsonSource`은 JSON 레이블 참조).
+- `sourceLocale` - 소스 언어 (`docusaurus.config.js`의 `defaultLocale`와 일치해야 함).
+- `targetLocales` - BCP-47 로케일 코드 배열 (예: `["de", "fr", "es"]`).
+- `cacheDir` - 모든 문서 파이프라인에 공유되는 SQLite 캐시 디렉터리 (및 `--write-logs`의 기본 로그 디렉터리).
+- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `targetLocales`, `addFrontmatter` 등을 포함합니다.
+- `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모 (이 블록의 범위). 설정 시 `translate-docs` 제목 (`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됩니다.
+- `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일 (JSON 레이블은 `documentations[].jsonSource` 참조).
 - `documentations[].outputDir` - 해당 블록의 번역된 출력 루트.
-- `documentations[].markdownOutput.style` - `"nested"`(기본값), `"docusaurus"`, 또는 `"flat"`([출력 레이아웃](#output-layouts) 참조).
+- `documentations[].markdownOutput.style` - `"nested"` (기본값), `"docusaurus"`, 또는 `"flat"` ([출력 레이아웃](#output-layouts) 참조).
 
 <a id="step-2-translate-documents"></a>
 ### 단계 2: 문서 번역
@@ -488,6 +493,8 @@ npx ai-i18n-tools status
 `translate-docs`은 각 번역된 구문이 문서에서 파싱된 강조 표현을 포함한 마크다운 구조를 유지하는지 확인합니다. 여러 `bold` 범위가 연속된 문단이나 `` `inline code` `` 주위에 백틱을 굵은 글씨 안에 중첩한 경우(예: `` `fetch(\`/locales/${code}.json\`)` `` 같은 템플릿 리터럴), 또는 긴 문장 전체에 걸쳐 굵은 글씨와 코드를 교차 사용하는 경우는 취약합니다. 일부 로케일은 다른 어순이 필요할 수 있으므로 번역 후 `**`와 `` ` ``의 위치가 달라질 수 있으며, 이로 인해 `AST mismatch` 같은 CLI 오류가 발생할 수 있습니다.
 
 **이러한 유형의 검증 오류가 발생하면 원문 텍스트를 단순화하는 것이 더 낫습니다** — 단락을 분할하거나, 예제를 코드 블록으로 옮기거나, 볼드/코드 쌍을 덜 사용하여 동일한 아이디어를 설명하세요 — 밀집된 인라인 마크업을 모든 모델과 로케일이 완벽하게 재현하도록 기대하기보다는 이렇게 하세요. 이 페이지의 다른 부분(특히 `SOURCE_LOCALE`, 로더, `public/` 경로에 대한 4단계의 설명 등)은 의도적으로 현실적인 형식을 사용하고 있지만, 자신의 문서에서 유사한 표현을 재사용할 때는 번역 범위가 넓어질 경우 더 단순하게 유지하세요.
+
+**어떤 세그먼트가 실패했는지**, 얼마나 자주 실패했는지, 저장된 **품질/오류 메시지**를 확인하려면 번역 캐시 편집기의 **실패** 탭을 사용하세요 ([번역 캐시 편집기 → 실패](#translation-cache-editor-failures)).
 
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### 캐시 동작 및 `translate-docs` 플래그
@@ -756,6 +763,52 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 - 첫 번째 문서 블록은 마크다운 및 JSON 레이블을 Docusaurus `i18n/<locale>/...` 레이아웃으로 번역합니다.
 - 두 번째 문서 블록은 `README.md`을 `translated-docs/` 아래에 로케일 접미어가 붙은 평면 파일로 번역합니다.
 - 모든 문서 블록은 `cacheDir`를 공유하므로, 변경되지 않은 세그먼트가 실행 간에 재사용되어 API 호출과 비용을 줄입니다.
+
+---
+
+<a id="translation-cache-editor"></a>
+## 번역 캐시 편집기
+
+실행:
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+이 명령은 구성된 **`cacheDir`** SQLite 데이터베이스를 기반으로 로컬 웹 UI를 시작합니다. CLI가 문서 세그먼트, 로그 및 관련 메타데이터에 사용하는 동일한 폴더입니다. **문서** (캐시된 문서 세그먼트), **UI 문자열**, **UI 복수형**, **용어집**, **실패**, **통계** 탭을 포함합니다.
+
+이 앱에서 캐시 행(**예: 문서 세그먼트**)을 편집하는 경우, 디스크에 저장된 출력 결과가 캐시와 일치하도록 `sync --force-update` 또는 `--force-update`과 동일한 번역 명령을 실행하세요. 이후 저장소의 **원본 텍스트**가 변경되면 세그먼트 해시도 변경되며, 이전 텍스트에 대한 수동 편집 내용은 더 이상 유효하지 않게 됩니다.
+
+<a id="translation-cache-editor-failures"></a>
+### 실패 (문서 번역)
+
+**실패** 탭은 **문서** 번역 전용입니다. 로케일별로 세그먼트 번역에 실패했을 때(예: 빈 출력 또는 잘못된 모델 출력, 번역 후 검증 오류(`AST mismatch`, 자리 표시자 누수 등 **품질** 검사), 또는 진행을 차단하는 **치명적** 오류) SQLite에 기록된 실패 기록을 읽어옵니다. 이를 통해 다음 질문에 답할 수 있습니다: *어느 원본 세그먼트가 어떤 로케일과 모델에서 오류가 발생했으며, 어떤 오류 메시지가 기록되었는가?*
+
+<a id="when-to-use-it"></a>
+#### 언제 사용해야 하나요
+
+- `translate-docs` 또는 `sync` 실행 후 오류, 부분적으로 완료된 로케일, 혹은 혼란스러운 로그가 발생했을 때 — 터미널 출력만 스크롤하는 대신 실패 내역을 정렬하고 필터링할 수 있습니다.
+- **재작업 우선순위**를 정하고 싶을 때: **실패 횟수**로 정렬하면 재시도 시 반복적으로 실패한 세그먼트가 먼저 표시됩니다. 이러한 세그먼트는 향후 실행 시 성공 가능성을 높이기 위해 원본 마크다운에서 **간소화하거나 재구성**하는 후보가 됩니다.
+- 정확한 **세그먼트** 정보(파일 경로, 라인 힌트, 원본 해시, 전체 원본 텍스트)가 필요할 때 — 저장소에서 올바른 단락을 편집할 수 있습니다.
+
+<a id="why-source-edits-matter"></a>
+#### 원본 편집이 중요한 이유
+
+인라인 마크업이 복잡할 경우(**볼드**와 `` `code` ``가 혼합되거나, 강조가 중첩되거나, 많은 스팬을 포함한 긴 문장 등) 모델이 구조적 검사를 통과하는 번역을 반환하기 어려워집니다. **여러 번 실패 기록**이 있는 세그먼트는 원본 텍스트를 그대로 두고 번역을 다시 실행하는 것보다, 원본을 **다시 작성하거나 분할**하거나 예제를 fenced 코드 블록으로 옮기는 것이 더 큰 개선을 이룹니다. 이는 [복잡한 마크다운 및 실패한 품질 검사](#complex-markdown-and-failed-quality-checks)와 일치합니다.
+
+<a id="how-to-use-the-tab"></a>
+#### 탭 사용 방법
+
+1. **실패**를 편집기에서 엽니다 ( [번역 캐시 편집기](#translation-cache-editor)와 동일한 브라우저 세션).
+2. **요약** 스트립을 읽습니다 (실패가 있는 세그먼트와 **1**, **2**, 또는 **3+** 실패 기록이 있는 세그먼트의 수).
+3. 부분 **파일 이름**, **로케일**, **모델**, **품질 오류** (값은 캐시에서 가져옴), **치명적만**, 선택적 **소스 해시**, **소스 텍스트**, 또는 **오류 메시지** 부분 문자열로 필터링한 후 **적용**를 클릭합니다.
+4. **정렬: # 실패** (기본값) 또는 **정렬: 파일 경로 + 줄 번호**를 선택합니다.
+5. 테이블 상단 또는 하단의 페이지네이션을 사용하세요. **행 클릭**으로 전체 원본 텍스트를 토글할 수 있습니다. 활성화된 경우 행의 링크 컨트롤은 `ai-i18n-tools editor`가 실행 중인 **터미널**로 파일/라인 힌트를 기록하도록 서버 프로세스에 요청합니다 — 브라우저에서 편집기로 이동할 때 유용합니다.
+6. 프로젝트의 **원본 파일**을 수정한 후 `translate-docs` 또는 `sync`를 다시 실행하세요. 성공적인 실행 후에도 목록이 **오래된 것처럼** 보이면 `ai-i18n-tools sync --force-update`을 실행하고 에디터를 새로고침하세요(실패 패널에 동일한 힌트가 표시됨).
+
+UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시도 중 `translate-docs --debug-failed`를 사용해 `cacheDir` 아래에 `FAILED-TRANSLATION` 세부 정보를 기록할 수 있습니다 — [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 참조.
 
 ---
 

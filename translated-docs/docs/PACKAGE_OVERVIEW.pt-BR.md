@@ -13,7 +13,7 @@ Para instruções práticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTE
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Sumário**
+**Tabela de Conteúdos**
 
 - [Visão geral da arquitetura](#architecture-overview)
 - [Árvore de origem](#source-tree)
@@ -24,11 +24,11 @@ Para instruções práticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTE
   - [Solicitações de tradução de interface](#ui-translation-prompts)
 - [Fluxo de trabalho 2 - Internals da tradução de documentos](#workflow-2---document-translation-internals)
   - [Extratores](#extractors)
-  - [Inserção de âncoras de títulos (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids)
+  - [Inserção de âncoras de títulos (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Proteção de espaços reservados](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
   - [Resolução de caminho de saída](#output-path-resolution)
-  - [Reescrita plana de links](#flat-link-rewriting)
+  - [Reescrita de links planos](#flat-link-rewriting)
 - [Infraestrutura compartilhada](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Carregamento de configuração](#config-loading)
@@ -285,10 +285,10 @@ O comando `translate-docs` também usa **rastreamento de arquivos**, de modo que
 
 - Estilo `nested` (padrão): `{outputDir}/{locale}/{relPath}` para markdown.
 - Estilo `docusaurus`: dentro de `docsRoot`, as saídas usam `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; caminhos fora de `docsRoot` retornam ao layout aninhado.
-- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Quando `flatPreserveRelativeDir` é `true`, subdiretórios da fonte são mantidos sob `outputDir`.
-- **Personalizado** `pathTemplate`: qualquer layout de markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
-- **Personalizado** `jsonPathTemplate`: layout personalizado separado para arquivos de rótulo JSON, usando os mesmos marcadores.
-- `linkRewriteDocsRoot` ajuda o reescritor de links planos a calcular prefixos corretos quando a saída traduzida é enraizada em outro local além da raiz padrão do projeto.
+- Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Quando `flatPreserveRelativeDir` é `true`, os subdiretórios de origem são mantidos dentro de `outputDir`.
+- **Personalizado** `pathTemplate`: qualquer layout markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- **Personalizado** `jsonPathTemplate`: layout personalizado separado para arquivos de rótulos JSON, usando os mesmos espaços reservados.
+- `linkRewriteDocsRoot` ajuda o reescritor de links planos a calcular os prefixos corretos quando a saída traduzida está localizada em outro lugar além da raiz padrão do projeto.
 
 <a id="flat-link-rewriting"></a>
 ### Reescrita plana de links
@@ -318,7 +318,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 2. `mergeWithDefaults` - mesclar profundamente com `defaultI18nConfigPartial`, e mesclar quaisquer entradas `documentations[].sourceFiles` em `contentPaths`.
 3. `expandTargetLocalesFileReferenceInRawInput` - se `targetLocales` for um caminho de arquivo, carregar o manifesto e expandir para códigos de localidade; definir `uiLanguagesPath`.
 4. `expandDocumentationTargetLocalesInRawInput` - o mesmo para cada entrada `documentations[].targetLocales`.
-5. `parseI18nConfig` - validação Zod + `validateI18nBusinessRules`.
+5. `parseI18nConfig` - Validação Zod + `validateI18nBusinessRules`.
 6. `applyEnvOverrides` - aplicar `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` - anexar nomes de exibição do manifesto.
 

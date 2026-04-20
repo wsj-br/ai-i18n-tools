@@ -30,29 +30,34 @@
   - [RTL言語](#rtl-languages)
 - [ワークフロー2 - ドキュメントの翻訳](#workflow-2---document-translation)
   - [ステップ1: ドキュメント用に初期化](#step-1-initialise-for-documentation)
-  - [ステップ2: ドキュメントの翻訳](#step-2-translate-documents)
-    - [複雑なMarkdownおよび品質チェックの失敗](#complex-markdown-and-failed-quality-checks)
+  - [ステップ 2: ドキュメントの翻訳](#step-2-translate-documents)
+    - [複雑なMarkdownと品質チェックの失敗](#complex-markdown-and-failed-quality-checks)
     - [キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)
-    - [バッチプロンプト形式](#batch-prompt-format)
-    - [SQLiteにおけるセグメント重複排除とパス](#segment-dedupe-and-paths-in-sqlite)
+    - [バッチプロンプトの形式](#batch-prompt-format)
+    - [SQLiteにおけるセグメントの重複排除とパス](#segment-dedupe-and-paths-in-sqlite)
   - [出力レイアウト](#output-layouts)
     - [フラットレイアウトでのアンカーリンク](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` プレースホルダー](#markdown-output-path-template-placeholders)
-- [統合ワークフロー（UI + ドキュメント）](#combined-workflow-ui--docs)
-  - [混合ドキュメントワークフロー（Docusaurus + フラット）](#mixed-documentation-workflow-docusaurus--flat)
-- [設定リファレンス](#configuration-reference)
+    - [`pathTemplate` / `jsonPathTemplate` プレースホルダー](#pathtemplate--jsonpathtemplate-placeholders)
+- [統合ワークフロー (UI + ドキュメント)](#combined-workflow-ui--docs)
+  - [混合ドキュメントワークフロー (Docusaurus + フラット)](#mixed-documentation-workflow-docusaurus--flat)
+- [翻訳キャッシュエディター](#translation-cache-editor)
+  - [失敗 (ドキュメント翻訳)](#failures-document-translation)
+    - [使用するタイミング](#when-to-use-it)
+    - [ソース編集が重要な理由](#why-source-edits-matter)
+    - [タブの使い方](#how-to-use-the-tab)
+- [構成リファレンス](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
-  - [`uiLanguagesPath`（オプション）](#uilanguagespath-optional)
-  - [`concurrency`（オプション）](#concurrency-optional)
-  - [`batchConcurrency`（オプション）](#batchconcurrency-optional)
-  - [`batchSize` / `maxBatchChars`（オプション）](#batchsize--maxbatchchars-optional)
+  - [`uiLanguagesPath` (オプション)](#uilanguagespath-optional)
+  - [`concurrency` (オプション)](#concurrency-optional)
+  - [`batchConcurrency` (オプション)](#batchconcurrency-optional)
+  - [`batchSize` / `maxBatchChars` (オプション)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
   - [`documentations`](#documentations)
-  - [`svg`（オプション）](#svg-optional)
+  - [`svg` (オプション)](#svg-optional)
   - [`glossary`](#glossary)
 - [CLIリファレンス](#cli-reference)
 - [環境変数](#environment-variables)
@@ -489,6 +494,8 @@ npx ai-i18n-tools status
 
 **このような検証エラーが発生した場合は、すべてのモデルとロケールが複雑なインラインマークアップを完璧に再現できるように期待するのではなく、ソース言語のテキストを簡略化することを推奨します**—段落を分割したり、例をフェンスされたコードブロックに移動したり、太字／コードの組み合わせを減らして同じ内容を表現する—ようにしてください。このページの他の場所（特にステップ4の`SOURCE_LOCALE`、ローダー、`public/`パスに関する注意）では、意図的に現実的なフォーマットを使用しています。同様の表現を自身のドキュメントで再利用する場合、広範囲に翻訳する際にはよりシンプルに保つようにしてください。
 
+**どのセグメントが失敗したか**、その頻度、および保存された**品質／エラーメッセージ**を確認するには、翻訳キャッシュエディターの**失敗**タブ（[翻訳キャッシュエディター → 失敗](#translation-cache-editor-failures)）を使用してください。
+
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### キャッシュの動作と `translate-docs` フラグ
 
@@ -756,6 +763,52 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 - 最初のドキュメントブロックは、MarkdownおよびJSONラベルをDocusaurusの `i18n/<locale>/...` レイアウトに翻訳します。
 - 2番目のドキュメントブロックは `README.md` を `translated-docs/` 配下のロケールサフィックス付き平坦ファイルに翻訳します。
 - すべてのドキュメントブロックは `cacheDir` を共有するため、変更されていないセグメントは実行間で再利用され、API呼び出しとコストを削減できます。
+
+---
+
+<a id="translation-cache-editor"></a>
+## 翻訳キャッシュエディター
+
+実行方法：
+
+```bash
+ai-i18n-tools editor
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools editor -p 8765 --no-open
+```
+
+これは、設定済みの **`cacheDir`** SQLite データベース（CLI がドキュメントセグメント、ログ、および関連メタデータに使用するのと同じフォルダー）をバックエンドとして使用するローカルWeb UI を起動します。UI には、**Documentation**（キャッシュされたドキュメントセグメント）、**UI strings**、**UI plurals**、**Glossary**、**Failures**、および **Statistics** のタブが含まれます。
+
+このアプリでキャッシュ行（たとえばドキュメントセグメント）を**編集する場合**、ディスク上の出力がキャッシュと一致するように、`sync --force-update`または同等の翻訳コマンドを`--force-update`オプション付きで実行してください。後でリポジトリ内の**ソーステキスト**が変更されると、セグメントのハッシュが変化し、以前のテキストに対する手動編集は上書きされます。
+
+<a id="translation-cache-editor-failures"></a>
+### 失敗 (ドキュメント翻訳)
+
+**失敗**タブは、**ドキュメント**の翻訳にのみ使用されます。これは、セグメントが特定のロケールに対して正常に翻訳できなかった場合にSQLiteに書き込まれる失敗レコードを読み取ります。たとえば、空または無効なモデル出力、翻訳後の検証エラー（`AST mismatch`、プレースホルダーの漏洩、および同様の**品質**チェック）、または進行をブロックする**致命的**な状態などが該当します。これにより、次の質問に答えることができます：*どのソースセグメントが、どのロケールおよびモデルで失敗し、どのようなエラーテキストが記録されたか？*
+
+<a id="when-to-use-it"></a>
+#### 使用するタイミング
+
+- `translate-docs`または`sync`がエラー、部分的なロケール、またはわかりにくいログで終了した後——ターミナル出力だけをスクロールするのではなく、失敗を並べ替えたりフィルタリングしたりできます。
+- **再作業を優先順位付け**したいとき：**# 失敗**で並べ替えることで、リトライのたびに繰り返し失敗したセグメントが上位に表示されます。これらは、将来の実行で成功するように、ソースMarkdownで**簡略化または再フォーマット**する候補となります。
+- **正確なセグメント**（ファイルパス、行ヒント、ソースハッシュ、完全なソーステキスト）が必要で、リポジトリ内の正しい段落を編集したいとき。
+
+<a id="why-source-edits-matter"></a>
+#### ソース編集が重要な理由
+
+インラインマークアップが凝縮している（**太字**と`` `code` ``が混在、強調が入れ子になっている、多くのスパンを含む長文）と、モデルが構造チェックを通過する翻訳を返すのが難しくなります。**複数回の失敗記録がある**セグメントは、変更しないテキストで翻訳を再実行するよりも、ソースの**書き直しまたは分割**（または例をフェンス付きコードブロックに移動）により、通常はより改善されます。これは[複雑なMarkdownと品質チェックの失敗](#complex-markdown-and-failed-quality-checks)と一致しています。
+
+<a id="how-to-use-the-tab"></a>
+#### タブの使い方
+
+1. エディターで **失敗** を開きます（[翻訳キャッシュエディター](#translation-cache-editor) と同じブラウザセッションを使用）。
+2. **概要**バーを確認します（いずれかの失敗があるセグメント、および **1**、**2**、**3+** 件の失敗レコードを持つセグメントの件数を表示）。
+3. 部分一致する **ファイル名**、**ロケール**、**モデル**、**品質エラー**（値はキャッシュから取得）、**致命的エラーのみ**、および任意の **ソースハッシュ**、**ソーステキスト**、**エラーメッセージ**の部分文字列でフィルターし、次に **適用** をクリックします。
+4. **並べ替え：失敗数**（既定）または **並べ替え：ファイルパス＋行番号** を選択します。
+5. テーブルの上部または下部にあるページネーションを使用します。**行をクリック**すると、完全なソーステキストの表示を切り替えられます。行内のリンクコントロール（有効な場合）は、サーバープロセスに `ai-i18n-tools editor` を実行中の **ターミナル** にファイル／行のヒントをログ出力するよう要求します。これは、ブラウザからエディターへ移動する際に便利です。
+6. プロジェクト内の **ソースファイル** を修正し、その後 `translate-docs` または `sync` を再実行します。成功した実行後にリストが **古くなっている** ように見える場合は、`ai-i18n-tools sync --force-update` を実行してエディターを再読み込みしてください（失敗パネルも同じヒントを表示します）。
+
+UI と並行してファイル単位のデバッグを行う場合、リトライ中に `translate-docs --debug-failed` を使用して `cacheDir` の下に `FAILED-TRANSLATION` の詳細を書き出すこともできます。詳細は [キャッシュの動作および `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags) を参照してください。
 
 ---
 
