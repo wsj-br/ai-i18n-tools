@@ -118,6 +118,7 @@ named `NPM_TOKEN`. You only need to set this up once.
 
 ### Pre-release checklist
 
+- [ ] Run the pre-release script  (`pnpm pre-release`)
 - [ ] All tests pass (`pnpm test`)
 - [ ] Linting is clean (`pnpm lint`)
 - [ ] Version number in `package.json` is correct

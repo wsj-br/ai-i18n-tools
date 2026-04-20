@@ -43,6 +43,7 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "clean": "rm -rf dist/",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm test",
+    "pre-release": "pnpm run format && pnpm run lint && pnpm run clean && pnpm run build && pnpm test",
     "i18n:extract": "ai-i18n-tools extract",
     "i18n:sync": "ai-i18n-tools sync",
     "i18n:translate": "ai-i18n-tools translate-docs",

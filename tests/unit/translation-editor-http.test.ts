@@ -1170,7 +1170,11 @@ describe("createTranslationEditorApp", () => {
       cache.setSegment("fh1", "de", "src", "dst", "m", "readme.md", 1);
       cache.addSegmentFailures([
         failureRow("fh1", "de", { qualityError: "AST_MISMATCH", errorMessage: "a" }),
-        failureRow("fh1", "de", { qualityError: "PLACEHOLDER_LEAK", errorMessage: "b", modelOrder: 2 }),
+        failureRow("fh1", "de", {
+          qualityError: "PLACEHOLDER_LEAK",
+          errorMessage: "b",
+          modelOrder: 2,
+        }),
       ]);
 
       const app = createTranslationEditorApp(cache, {
@@ -1290,7 +1294,9 @@ describe("createTranslationEditorApp", () => {
         targetLocales: ["de"],
       });
       await withHttpServer(app, async (base) => {
-        const page1 = await fetch(`${base}/api/translation-failures?page=1&pageSize=1&sort=filepath_line_asc`);
+        const page1 = await fetch(
+          `${base}/api/translation-failures?page=1&pageSize=1&sort=filepath_line_asc`
+        );
         const p1 = (await page1.json()) as {
           rows: { filepath: string | null }[];
           total: number;
@@ -1300,7 +1306,9 @@ describe("createTranslationEditorApp", () => {
         expect(p1.sort).toBe("filepath_line_asc");
         expect(p1.rows[0]?.filepath).toBe("a-first.md");
 
-        const page2 = await fetch(`${base}/api/translation-failures?page=2&pageSize=1&sort=filepath_line_asc`);
+        const page2 = await fetch(
+          `${base}/api/translation-failures?page=2&pageSize=1&sort=filepath_line_asc`
+        );
         const p2 = (await page2.json()) as { rows: { filepath: string | null }[] };
         expect(p2.rows[0]?.filepath).toBe("z-last.md");
       });
@@ -1345,10 +1353,7 @@ describe("createTranslationEditorApp", () => {
       cache = new TranslationCache(":memory:");
       cache.setSegment("x1", "de", "", "", "m", "only-de.md", 1);
       cache.setSegment("x2", "fr", "", "", "m", "only-fr.md", 1);
-      cache.addSegmentFailures([
-        failureRow("x1", "de"),
-        failureRow("x2", "fr"),
-      ]);
+      cache.addSegmentFailures([failureRow("x1", "de"), failureRow("x2", "fr")]);
 
       const app = createTranslationEditorApp(cache, {
         cwd: "/tmp",

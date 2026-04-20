@@ -36,7 +36,9 @@ class HarnessExtractor extends BaseExtractor {
   }
 }
 
-function seg(partial: Partial<Segment> & Pick<Segment, "id" | "hash" | "content" | "translatable">): Segment {
+function seg(
+  partial: Partial<Segment> & Pick<Segment, "id" | "hash" | "content" | "translatable">
+): Segment {
   return {
     type: "paragraph",
     ...partial,
