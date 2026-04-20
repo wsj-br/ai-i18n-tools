@@ -4,7 +4,6 @@
 Kit de herramientas CLI y programático para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación. Extrae cadenas de interfaz, las traduce mediante LLMs a través de OpenRouter y genera archivos JSON listos para distintos idiomas para i18next, además de incluir pipelines para markdown, JSON de Docusaurus y (mediante `features.translateSVG`, `translate-svg` y el bloque `svg`) recursos SVG independientes.
 
 <small>**Leer en otros idiomas:** </small>
-
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

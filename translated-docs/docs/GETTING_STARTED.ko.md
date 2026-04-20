@@ -8,6 +8,9 @@
 
 두 워크플로우 모두 OpenRouter(호환 가능한 모든 LLM)를 사용하며, 하나의 설정 파일을 공유합니다.
 
+<small>**다른 언어로 읽기:** </small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

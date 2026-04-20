@@ -93,4 +93,44 @@ Paragraph after.`;
     const para = segs.find((s) => s.type === "paragraph" && s.content.includes("Paragraph after"));
     expect(para?.translatable).toBe(true);
   });
+
+  it("joins language-list block to the preceding line with a single newline when adjacent", () => {
+    const md = `<small>**Read in other languages:** </small>
+<small id="lang-list">[en](a.md)</small>
+
+Next para.`;
+    const segs = ex.extract(md, "x.md", {
+      languageListBlock: {
+        start: '<small id="lang-list">',
+        end: "</small>",
+        separator: " · ",
+      },
+    });
+    const langSeg = segs.find((s) => s.content.includes("lang-list"));
+    expect(langSeg?.tightJoinPrevious).toBe(true);
+    const map = new Map<string, string>();
+    for (const s of segs) {
+      if (s.translatable) {
+        map.set(s.hash, s.content);
+      }
+    }
+    const out = ex.reassemble(segs, map);
+    expect(out).toMatch(/<\/small>\n<small id="lang-list">/);
+    expect(out).not.toMatch(/<\/small>\n\n<small id="lang-list">/);
+  });
+
+  it("does not set tightJoinPrevious when the language-list line is the first body line", () => {
+    const md = `<small id="lang-list">[en](a.md)</small>`;
+    const segs = ex.extract(md, "x.md", {
+      languageListBlock: {
+        start: '<small id="lang-list">',
+        end: "</small>",
+        separator: " · ",
+      },
+    });
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.tightJoinPrevious).toBeFalsy();
+    const out = ex.reassemble(segs, new Map());
+    expect(out.trim()).toContain("lang-list");
+  });
 });

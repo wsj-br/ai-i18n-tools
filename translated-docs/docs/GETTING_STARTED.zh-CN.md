@@ -8,6 +8,9 @@
 
 两个工作流均使用 OpenRouter（任何兼容的 LLM）并共享一个配置文件。
 
+<small>**阅读其他语言版本：** </small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

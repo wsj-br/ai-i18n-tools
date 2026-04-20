@@ -150,6 +150,7 @@ export class MarkdownExtractor extends BaseExtractor {
       }
 
       if (langListStart !== -1 && lineIndex === langListStart && !inAdmonition) {
+        const joinTightToPrevious = currentSegment.length > 0;
         flushCurrentSegment();
         const blockLines = lines.slice(langListStart, langListEnd + 1);
         segments.push({
@@ -157,6 +158,7 @@ export class MarkdownExtractor extends BaseExtractor {
           content: blockLines.join("\n"),
           translatable: false,
           startLine: bodyStartLine + langListStart,
+          ...(joinTightToPrevious ? { tightJoinPrevious: true as const } : {}),
         });
         lineIndex = langListEnd;
         continue;

@@ -4,7 +4,6 @@
 JavaScript/TypeScriptアプリケーションおよびドキュメントサイトの国際化のためのCLIおよびプログラムツールキットです。UI文字列を抽出し、OpenRouter経由でLLMを使って翻訳し、i18next向けのロケール対応JSONファイルを生成します。また、Markdown、Docusaurus JSON、および（`features.translateSVG`、`translate-svg`、`svg`ブロック経由の）スタンドアロンSVGアセット向けのパイプラインも提供します。
 
 <small>**他の言語で読む：** </small>
-
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

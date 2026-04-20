@@ -8,6 +8,9 @@
 
 両方のワークフローはOpenRouter（互換性のある任意のLLM）を使用し、単一の設定ファイルを共有します。
 
+<small>**他の言語で読む：** </small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

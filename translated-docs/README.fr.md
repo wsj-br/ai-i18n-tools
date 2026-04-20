@@ -4,7 +4,6 @@
 Outil en ligne de commande et programme permettant d'assurer l'internationalisation des applications JavaScript/TypeScript et des sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de modèles linguistiques (LLM) via OpenRouter, puis génère des fichiers JSON prêts à l'emploi pour i18next, ainsi que des pipelines pour les fichiers markdown, JSON Docusaurus, et (via les blocs `features.translateSVG`, `translate-svg` et `svg`) des ressources SVG autonomes.
 
 <small>**Lire dans d'autres langues :** </small>
-
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

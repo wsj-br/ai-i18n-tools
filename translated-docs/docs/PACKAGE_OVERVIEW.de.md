@@ -6,7 +6,6 @@ Dieses Dokument beschreibt die interne Architektur von `ai-i18n-tools`, wie die 
 Für praktische Anweisungen zur Nutzung siehe [GETTING_STARTED.md](GETTING_STARTED.de.md).
 
 <small>**In anderen Sprachen lesen:** </small>
-
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [German](./PACKAGE_OVERVIEW.de.md) · [Spanish](./PACKAGE_OVERVIEW.es.md) · [French](./PACKAGE_OVERVIEW.fr.md) · [Hindi](./PACKAGE_OVERVIEW.hi.md) · [Japanese](./PACKAGE_OVERVIEW.ja.md) · [Korean](./PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](./PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](./PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---

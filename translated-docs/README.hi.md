@@ -4,7 +4,6 @@
 जावास्क्रिप्ट/टाइपस्क्रिप्ट एप्लिकेशन और दस्तावेज़ीकरण साइटों के लिए CLI और प्रोग्रामेटिक टूलकिट। UI स्ट्रिंग्स निकालता है, OpenRouter के माध्यम से LLMs का उपयोग करके उनका अनुवाद करता है, और i18next के लिए तैयार लोकेल-तैयार JSON फ़ाइलें उत्पन्न करता है, साथ ही मार्कडाउन, डॉक्यूसॉरस JSON, और (`features.translateSVG`, `translate-svg`, और `svg` ब्लॉक के माध्यम से) स्वतंत्र SVG एसेट्स के लिए पाइपलाइन।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
-
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

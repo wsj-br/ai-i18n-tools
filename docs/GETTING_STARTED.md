@@ -8,6 +8,10 @@
 
 Both workflows use OpenRouter (any compatible LLM) and share a single config file.
 
+
+<small>**Read in other languages:** </small>
+<small id="lang-list">[English (GB)](./GETTING_STARTED.md) · [German](../translated-docs/docs/GETTING_STARTED.de.md) · [Spanish](../translated-docs/docs/GETTING_STARTED.es.md) · [French](../translated-docs/docs/GETTING_STARTED.fr.md) · [Hindi](../translated-docs/docs/GETTING_STARTED.hi.md) · [Japanese](../translated-docs/docs/GETTING_STARTED.ja.md) · [Korean](../translated-docs/docs/GETTING_STARTED.ko.md) · [Portuguese (BR)](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [Chinese (CN)](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [Chinese (TW)](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
+
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

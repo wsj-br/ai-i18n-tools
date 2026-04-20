@@ -4,7 +4,6 @@
 用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 及编程工具包。通过 OpenRouter 使用 LLM 提取 UI 字符串并进行翻译，并为 i18next 生成适用于各语言环境的 JSON 文件，同时支持 Markdown、Docusaurus JSON 的流水线，以及（通过 `features.translateSVG`、`translate-svg` 和 `svg` 块）独立 SVG 资源。
 
 <small>**阅读其他语言版本：** </small>
-
 <small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
