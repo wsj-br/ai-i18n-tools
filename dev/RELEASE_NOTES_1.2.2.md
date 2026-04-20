@@ -1,4 +1,4 @@
-# v1.2.1 — Cardinal plurals, docs tooling, cache editor failures, and bundler-safe runtime
+# v1.2.2 — Cardinal plurals, docs tooling, cache editor failures, and bundler-safe runtime
 
 This major release delivers **cardinal plural UI strings** end to end (extract, `translate-ui`, flat JSON, XLIFF, runtime helpers), hardens **plural completion and compaction** for RTL and compacted locales, improves **document translation** (emphasis defaults for CJK/RTL, segment splitting, fatal-error summaries), adds **CLI** commands for documentation maintenance (`write-heading-ids`, `strip-md-bold-inline`), extends **`lint-source`** and **`statistics`**, ships a **Translation Cache Editor** **Failures** view with APIs, makes **`ai-i18n-tools/runtime`** **Next.js / Turbopack–friendly** by loading UI-language master data via JSON imports instead of `node:fs`, and **removes OpenRouter prompt-cache** plumbing from the client and command summaries.
 

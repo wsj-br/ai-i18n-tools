@@ -15,7 +15,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 
 
-## [1.2.1] - 2026-04-20
+## [1.2.2] - 2026-04-20
 
 - **Fixed**: Packaging — removed erroneous **`dependencies`** entry **`link:…/ai-i18n-tools`** from root **`package.json`** (local-only symlink must not ship in the npm manifest).
 
