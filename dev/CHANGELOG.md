@@ -11,6 +11,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: UI languages catalog build — `scripts/build-ui-languages-complete.mjs` now adds a Wikimedia fallback source for missing bare 2–3 letter language tags when glibc locales do not include them (for example `jv` / Javanese), while still excluding non-primary wiki keys like `be-x-old`; `scripts/fill-ui-language-labels.mjs` now fixes both `label` and `direction` in one OpenRouter pass (same `openrouter.translationModels` fallback chain), and the separate in-build review pass/`--no-label-review` flow was removed to avoid duplicate full-model runs.
 
 
 

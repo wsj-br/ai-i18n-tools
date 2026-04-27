@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 /**
- * Fill `label` (native / endonym) and repair `direction` (ltr/rtl) on ui-languages master JSON
- * using OpenRouter. Reads batches of rows and merges back by `code`.
- * After each translated label, if the first character is a letter (any script), it is uppercased.
- * Writes the same one-object-per-line JSON array format as build-ui-languages-complete.mjs.
+ * Validate and repair `label` (native endonym) and `direction` (ltr|rtl)
+ * on ui-languages master JSON using OpenRouter.
  *
- * Configuration (in order): `--config <path>`, then `./ai-i18n-tools.config.json` (cwd), then repo root.
- * Uses `openrouter.translationModels` (fallback chain), `openrouter.baseUrl`, `maxTokens`, `temperature`,
- * plus top-level `batchSize`, `batchConcurrency` or `concurrency` — same as the main translate pipelines.
- * Override batch tuning: `UI_LABEL_BATCH_SIZE`, `UI_LABEL_CONCURRENCY`.
- * If no config or empty `translationModels`, falls back to `OPENROUTER_MODEL` / `OPENROUTER_TRANSLATION_MODEL` or `openai/gpt-4o-mini`.
+ * Uses the same runtime/model chain as fill-ui-language-labels:
+ * - openrouter.translationModels from ai-i18n-tools.config.json
+ * - baseUrl / maxTokens / temperature
+ * - batchSize / batchConcurrency (or concurrency)
  *
- *   node scripts/fill-ui-language-labels.mjs --input data/ui-languages-complete.json [--output <json>] [--config <path>]
+ * Usage:
+ *   node scripts/validate-ui-language-labels.mjs --input data/ui-languages-complete.json [--output <json>] [--config <path>]
  *
  * Requires OPENROUTER_API_KEY.
  */
@@ -48,26 +46,38 @@ function extractJsonArray(text) {
   return arr;
 }
 
-const SYSTEM_PROMPT = `You are a linguistics assistant. Given rows describing UI locales, output corrected language-picker metadata for each row.
+const SYSTEM_PROMPT = `You are a senior localization QA reviewer for language-picker metadata.
+
+Task:
+- Audit each locale row and correct mistakes in:
+  1) "label": the language name shown to users, ideally in that language's customary autonym/endonym
+  2) "direction": writing direction ("ltr" or "rtl")
+
+Input guarantees:
+- Every item has: "code", "englishName", "label", "direction".
 
 Rules:
-- Use the locale \`code\` (glibc-style, e.g. ar_SA, zh_CN, be_BY@latin) to infer script/variant when relevant.
-- \`englishName\` is a hint only; the \`label\` must NOT be English unless it is genuinely the usual autonym (e.g. "Deutsch").
-- Preserve correct script (Arabic, Devanagari, CJK, etc.).
-- \`direction\` must be exactly \`"ltr"\` or \`"rtl"\`.
-- Keep \`code\` exactly unchanged.
-- Return one result for every input row.
-- Return **only** valid JSON: a JSON array of objects, each with exactly \`"code"\` (string), \`"label"\` (string), and \`"direction"\` (\`"ltr"\` or \`"rtl"\`). No markdown, no commentary.`;
+- Keep "code" EXACTLY unchanged.
+- Return one item for every input code.
+- "direction" must be exactly "ltr" or "rtl".
+- Use "rtl" only for languages/scripts that are normally right-to-left.
+- Keep labels concise and natural for a language selector.
+- Prefer native-script/autonym labels when widely used; avoid transliteration unless native script is impractical.
+- Do not translate country suffixes into English; preserve locale specificity when the label includes it.
+- If current value is already correct, keep it.
 
-/** OpenRouter: prefer throughput; allow backup providers (same as src/api/openrouter.ts). */
+Output contract (strict):
+- Output ONLY valid JSON (no markdown, no commentary).
+- JSON array of objects, each with exactly:
+  - "code": string (same as input)
+  - "label": string (non-empty)
+  - "direction": "ltr" | "rtl"`;
+
 const OPENROUTER_PROVIDER = {
   sort: "throughput",
   allow_fallbacks: true,
 };
 
-/**
- * @returns {Promise<{ labels: unknown[], modelUsed: string }>}
- */
 async function callModelsWithFallback(apiKey, runtime, userContent) {
   const url = `${runtime.baseUrl}/chat/completions`;
   const messages = [
@@ -84,7 +94,7 @@ async function callModelsWithFallback(apiKey, runtime, userContent) {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://github.com/wsj-br/ai-i18n-tools",
-          "X-Title": "ai-i18n-tools fill-ui-language-labels",
+          "X-Title": "ai-i18n-tools validate-ui-language-labels",
         },
         body: JSON.stringify({
           model,
@@ -103,9 +113,9 @@ async function callModelsWithFallback(apiKey, runtime, userContent) {
       if (typeof content !== "string") {
         throw new Error("OpenRouter: missing message content");
       }
-      const labels = extractJsonArray(content);
+      const reviewRows = extractJsonArray(content);
       const ms = Date.now() - t0;
-      return { labels, modelUsed: model, ms };
+      return { reviewRows, modelUsed: model, ms };
     } catch (e) {
       lastError = e;
       const msg = e instanceof Error ? e.message : String(e);
@@ -120,22 +130,6 @@ async function callModelsWithFallback(apiKey, runtime, userContent) {
   throw new Error(
     `All translation models failed (${runtime.models.join(", ")}). Last: ${lastError instanceof Error ? lastError.message : String(lastError)}`
   );
-}
-
-/**
- * After translation: if the first character is a letter (any script), uppercase it; otherwise leave unchanged.
- */
-function ensureFirstLetterUppercase(label) {
-  const s = typeof label === "string" ? label.trim() : "";
-  if (!s) {
-    return label;
-  }
-  const chars = Array.from(s);
-  const first = chars[0];
-  if (!/\p{L}/u.test(first)) {
-    return s;
-  }
-  return first.toLocaleUpperCase("und") + chars.slice(1).join("");
 }
 
 function normalizeDirection(value) {
@@ -176,7 +170,7 @@ async function main() {
   if (!input) {
     console.error(
       chalk.red("❌"),
-      "Usage: fill-ui-language-labels.mjs --input <json> [--output <json>] [--config <path>]"
+      "Usage: validate-ui-language-labels.mjs --input <json> [--output <json>] [--config <path>]"
     );
     process.exit(1);
   }
@@ -187,12 +181,16 @@ async function main() {
   }
 
   console.log();
-  console.log(chalk.bold.cyan("🏷️  fill-ui-language-labels"));
+  console.log(chalk.bold.cyan("🧪 validate-ui-language-labels"));
   console.log(chalk.gray("─".repeat(52)));
 
   const runtime = getFillLabelRuntimeOptions({ explicitConfigPath: configPath });
   if (runtime.configPath) {
-    console.log(chalk.blue("📋"), chalk.bold("Config"), chalk.gray(path.relative(process.cwd(), runtime.configPath) || runtime.configPath));
+    console.log(
+      chalk.blue("📋"),
+      chalk.bold("Config"),
+      chalk.gray(path.relative(process.cwd(), runtime.configPath) || runtime.configPath)
+    );
   } else {
     console.log(
       chalk.yellow("⚠️ "),
@@ -202,10 +200,7 @@ async function main() {
   }
 
   console.log(chalk.blue("🤖"), chalk.bold("OpenRouter"));
-  console.log(
-    chalk.gray("   baseUrl:"),
-    chalk.white(runtime.baseUrl)
-  );
+  console.log(chalk.gray("   baseUrl:"), chalk.white(runtime.baseUrl));
   console.log(
     chalk.gray("   maxTokens:"),
     chalk.white(String(runtime.maxTokens)),
@@ -243,7 +238,7 @@ async function main() {
   );
 
   console.log();
-  console.log(chalk.magenta("🌐"), chalk.bold("Calling OpenRouter (labels + direction)…"));
+  console.log(chalk.magenta("🌐"), chalk.bold("Calling OpenRouter (label + direction QA)…"));
   console.log();
 
   let labelChanges = 0;
@@ -256,25 +251,25 @@ async function main() {
         label: r.label,
         direction: r.direction ?? "ltr",
       }));
-      const userContent = `Return a JSON array of { "code", "label", "direction" } for these locales (same order not required; match by code):\n${JSON.stringify(payload, null, 2)}`;
-      const { labels, modelUsed, ms } = await callModelsWithFallback(apiKey, runtime, userContent);
-      const byCode = new Map(labels.map((x) => [x.code, x]));
-      for (const r of batch) {
-        const item = byCode.get(r.code);
-        if (!item || typeof item !== "object") {
+      const userContent = `Validate and repair these locale rows:\n${JSON.stringify(payload, null, 2)}`;
+      const { reviewRows, modelUsed, ms } = await callModelsWithFallback(apiKey, runtime, userContent);
+      const byCode = new Map(reviewRows.map((x) => [x.code, x]));
+      for (const row of batch) {
+        const reviewed = byCode.get(row.code);
+        if (!reviewed || typeof reviewed !== "object") {
           continue;
         }
-        const lab = item.label;
-        if (typeof lab === "string" && lab.trim()) {
-          const nextLabel = ensureFirstLetterUppercase(lab.trim());
-          if (nextLabel !== r.label) {
-            r.label = nextLabel;
-            labelChanges++;
-          }
+        const reviewedLabel =
+          typeof reviewed.label === "string" && reviewed.label.trim()
+            ? reviewed.label.trim()
+            : null;
+        const reviewedDirection = normalizeDirection(reviewed.direction);
+        if (reviewedLabel && reviewedLabel !== row.label) {
+          row.label = reviewedLabel;
+          labelChanges++;
         }
-        const dir = normalizeDirection(item.direction);
-        if (dir && dir !== r.direction) {
-          r.direction = dir;
+        if (reviewedDirection && reviewedDirection !== row.direction) {
+          row.direction = reviewedDirection;
           directionChanges++;
         }
       }

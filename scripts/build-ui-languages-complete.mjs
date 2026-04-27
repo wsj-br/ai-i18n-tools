@@ -5,9 +5,12 @@
  * - lh.2xlibre.net/locales/ (glibc locale ids: first column)
  *
  * Each output row: code is BCP-47-style (`de`, `de-DE`, `fr-FR`) plus bare 2–3 letter ISO 639 tags for each
- * language that appears in the glibc list; englishName = "{Wiki English}" for bare tags and "{Wiki English} ({CC})"
- * for regional rows; direction from wiki base language,
- * label starts as englishName; native endonyms are filled by scripts/fill-ui-language-labels.mjs when OPENROUTER_API_KEY is set (skip with --no-labels). The fill step reads ai-i18n-tools.config.json (see that script for --config and paths).
+ * language that appears in the glibc list, with a Wikimedia fallback for missing tags (e.g. `jv`);
+ * englishName = "{Wiki English}" for bare tags and "{Wiki English} ({CC})" for regional rows; direction from wiki
+ * base language,
+ * label starts as englishName; native endonyms and direction fixes are filled by
+ * scripts/fill-ui-language-labels.mjs when OPENROUTER_API_KEY is set (skip with --no-labels).
+ * The fill step reads ai-i18n-tools.config.json (see that script for --config and paths).
  *
  * Usage: node scripts/build-ui-languages-complete.mjs [--no-labels] [--no-fetch] [--wiki-cache path] [--libre-cache path]
  */
@@ -191,6 +194,11 @@ function buildBareLanguageRows(wiki, localeIds) {
   for (const localeId of localeIds) {
     langs.add(wikiLangKey(localeId));
   }
+  for (const lang of wiki.keys()) {
+    if (isIso639PrimaryTag(lang)) {
+      langs.add(lang);
+    }
+  }
   const rows = [];
   for (const lang of langs) {
     const w = wiki.get(lang);
@@ -205,6 +213,14 @@ function buildBareLanguageRows(wiki, localeIds) {
     });
   }
   return rows;
+}
+
+/**
+ * Keep fallback tags limited to primary ISO 639-like subtags.
+ * Excludes wiki aliases and extended keys (e.g. be-x-old, zh-min-nan).
+ */
+function isIso639PrimaryTag(lang) {
+  return /^[a-z]{2,3}$/i.test(lang);
 }
 
 function mergeAndSortRows(bare, regional) {
@@ -336,7 +352,7 @@ async function main() {
   const shouldFillLabels = !noLabels && Boolean(apiKey);
   console.log();
   if (shouldFillLabels) {
-    console.log(chalk.cyan("🏷️ "), chalk.bold("Filling native labels via OpenRouter"));
+    console.log(chalk.cyan("🏷️ "), chalk.bold("Filling labels + direction via OpenRouter"));
     console.log(chalk.gray("   Spawning scripts/fill-ui-language-labels.mjs …"));
     const fillScript = path.join(__dirname, "fill-ui-language-labels.mjs");
     const t0 = Date.now();
@@ -350,12 +366,12 @@ async function main() {
       console.log(chalk.red("❌"), `fill-ui-language-labels exited with code ${res.status ?? "?"}`);
       process.exit(res.status ?? 1);
     }
-    console.log(chalk.green("✅"), `Native labels done in ${chalk.white(formatDurationMs(ms))}`);
+    console.log(chalk.green("✅"), `Labels/direction done in ${chalk.white(formatDurationMs(ms))}`);
   } else if (!noLabels && !apiKey) {
     console.log(chalk.yellow("⚠️ "), chalk.bold("Skipping native labels"));
     console.log(
       chalk.gray(
-        "   OPENROUTER_API_KEY is not set — `label` stays English (same as englishName)."
+        "   OPENROUTER_API_KEY is not set — `label` stays English and `direction` stays source-derived."
       )
     );
     console.log(chalk.gray("   Export the key and re-run, or pass --no-labels to silence this."));
@@ -364,7 +380,7 @@ async function main() {
   }
 
   console.log();
-  console.log(chalk.bold.green("Done."));
+  console.log(chalk.bold.green("✅ build-ui-languages-complete finished."));
   console.log();
 }
 
