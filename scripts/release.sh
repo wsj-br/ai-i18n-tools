@@ -5,6 +5,10 @@ set -euo pipefail
 # - tag/title: v<package.json version>
 # - notes file: dev/RELEASE_NOTES_<version>.md
 #
+# If the tag (or a GitHub release for it) already exists, it is removed and
+# the tag is recreated at the current HEAD, then pushed — so you can fix a
+# mistaken tag or re-run the release after new commits.
+#
 # Usage:
 #   ./scripts/release.sh
 #   ./scripts/release.sh --dry-run
@@ -23,9 +27,12 @@ for arg in "$@"; do
 Usage: ./scripts/release.sh [--dry-run] [--verify-clean=true|false]
 
 Options:
-  --dry-run            Validate checks and print the release command without executing it.
+  --dry-run            Validate and print planned steps; no deletes, tag, push, or release.
   --verify-clean=true  Require clean git working tree (default).
   --verify-clean=false Skip clean-tree check.
+
+If tag v<version> or a GitHub release for it already exists, they are removed
+and the tag is recreated at HEAD, then pushed to origin.
 EOF
       exit 0
       ;;
@@ -68,21 +75,59 @@ if [[ "$VERIFY_CLEAN" == "true" ]] && [[ -n "$(git status --porcelain)" ]]; then
   fail "Working tree is not clean. Commit/stash changes or run with --verify-clean=false"
 fi
 
-git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null 2>&1 || fail "Local tag ${TAG} does not exist."
 git remote get-url origin >/dev/null 2>&1 || fail "Remote 'origin' not configured."
 
-if ! git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[dry-run] Would push missing tag to origin: ${TAG}"
-  else
-    echo "Tag ${TAG} not found on origin. Pushing tag..."
-    git push origin "refs/tags/${TAG}"
-  fi
-fi
+HEAD_COMMIT="$(git rev-parse HEAD)"
 
-if gh release view "$TAG" >/dev/null 2>&1; then
-  fail "Release ${TAG} already exists on GitHub."
-fi
+remote_tag_exists() {
+  [[ -n "$(git ls-remote origin "refs/tags/${TAG}")" ]]
+}
+
+local_tag_exists() {
+  git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null 2>&1
+}
+
+release_exists() {
+  gh release view "$TAG" >/dev/null 2>&1
+}
+
+recreate_tag_at_head() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[dry-run] HEAD commit: ${HEAD_COMMIT}"
+    if release_exists; then
+      echo "[dry-run] Would delete GitHub release: ${TAG}"
+    fi
+    if remote_tag_exists; then
+      echo "[dry-run] Would delete remote tag: origin ${TAG}"
+    fi
+    if local_tag_exists; then
+      echo "[dry-run] Would delete local tag: ${TAG}"
+    fi
+    echo "[dry-run] Would create annotated tag ${TAG} at HEAD and push to origin."
+    return 0
+  fi
+
+  if release_exists; then
+    echo "Deleting existing GitHub release ${TAG} (and its tag on the remote)..."
+    gh release delete "$TAG" --yes --cleanup-tag
+  elif remote_tag_exists; then
+    echo "Deleting remote tag ${TAG}..."
+    git push origin ":refs/tags/${TAG}"
+  fi
+
+  if local_tag_exists; then
+    echo "Deleting local tag ${TAG}..."
+    git tag -d "$TAG"
+  fi
+
+  echo "Creating annotated tag ${TAG} at HEAD (${HEAD_COMMIT})..."
+  git tag -a "$TAG" -m "Release ${TAG}" HEAD
+
+  echo "Pushing tag ${TAG} to origin..."
+  git push origin "refs/tags/${TAG}"
+}
+
+recreate_tag_at_head
 
 CMD=(gh release create "$TAG" --title "$TAG" --notes-file "$NOTES_FILE")
 
@@ -92,7 +137,7 @@ echo "  Title:      ${TAG}"
 echo "  Notes file: ${NOTES_FILE}"
 
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[dry-run] Checks passed. Would run:"
+  echo "[dry-run] Would run:"
   printf '  %q' "${CMD[@]}"
   echo
   exit 0
