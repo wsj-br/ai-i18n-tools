@@ -221,6 +221,7 @@ describe("parseI18nConfig", () => {
                   start: "<s>",
                   end: "</s>",
                   separator: " ",
+                  label: "english",
                 },
               },
             },
@@ -245,6 +246,7 @@ describe("parseI18nConfig", () => {
     const pp = c.documentations[0]!.markdownOutput.postProcessing;
     expect(pp?.regexAdjustments).toHaveLength(1);
     expect(pp?.languageListBlock?.start).toBe("<s>");
+    expect(pp?.languageListBlock?.label).toBe("english");
   });
 
   it("accepts documentations[].segmentSplitting alongside markdownOutput", () => {

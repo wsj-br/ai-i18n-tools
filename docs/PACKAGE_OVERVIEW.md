@@ -6,7 +6,7 @@ This document describes the internal architecture of `ai-i18n-tools`, how each c
 For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md).
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./PACKAGE_OVERVIEW.md) · [German](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [Spanish](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [French](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [Hindi](../translated-docs/docs/PACKAGE_OVERVIEW.hi.md) · [Japanese](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [Korean](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [Portuguese (BR)](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [Chinese (CN)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-CN.md) · [Chinese (TW)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](./PACKAGE_OVERVIEW.md) · [Deutsch](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [Español](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [Français](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [हिन्दी](../translated-docs/docs/PACKAGE_OVERVIEW.hi.md) · [日本語](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [한국어](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-TW.md)</small>
 
 ---
 

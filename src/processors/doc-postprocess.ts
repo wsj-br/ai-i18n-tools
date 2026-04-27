@@ -10,6 +10,11 @@ import type {
 } from "../core/types.js";
 import { normalizeLocale } from "../core/config.js";
 import { resolveDocumentationOutputPath, toPosix } from "../core/output-paths.js";
+import {
+  loadUiLanguagesMaster,
+  resolveBundledUiLanguagesCompletePath,
+} from "../core/ui-languages-catalog.js";
+import { normalizeManifestLocaleKey } from "../core/locale-utils.js";
 import { loadUiLanguageEntries, resolveUiLanguagesAbsPath } from "../core/ui-languages.js";
 
 const ADJUSTMENT_PLACEHOLDER_RE = /\$\{([a-zA-Z][a-zA-Z0-9_]*)\}/g;
@@ -154,13 +159,44 @@ export function buildLanguageSwitcherRows(
   config: I18nDocTranslateConfig,
   cwd: string
 ): Array<{ code: string; label: string }> {
+  const labelStyle =
+    config.documentation.markdownOutput.postProcessing?.languageListBlock?.label ?? "local";
   const abs = resolveUiLanguagesAbsPath(config as unknown as I18nConfig, cwd);
   if (abs && fs.existsSync(abs)) {
     const entries = loadUiLanguageEntries(abs);
     return entries.map((e) => ({
       code: normalizeLocale(e.code),
-      label: (e.label && e.label.trim()) || e.englishName.trim(),
+      label:
+        labelStyle === "english"
+          ? e.englishName.trim()
+          : (e.label && e.label.trim()) || normalizeLocale(e.code),
     }));
+  }
+
+  // Fallback: use bundled master labels so defaults work without a project `ui-languages.json`.
+  const masterPath = resolveBundledUiLanguagesCompletePath();
+  if (fs.existsSync(masterPath)) {
+    const master = loadUiLanguagesMaster(masterPath);
+    const src = normalizeLocale(config.sourceLocale);
+    const doc = config.documentation.targetLocales;
+    const useDoc = Array.isArray(doc) && doc.length > 0;
+    const rawList = useDoc ? doc : config.targetLocales;
+    const targets = [...new Set(rawList.map((l) => normalizeLocale(l)))].filter((c) => c !== src);
+    const rows: Array<{ code: string; label: string }> = [];
+
+    for (const code of [src, ...targets]) {
+      const hit = master.get(normalizeManifestLocaleKey(code));
+      const englishName = hit?.englishName?.trim();
+      const localLabel = hit?.label?.trim();
+      rows.push({
+        code,
+        label:
+          labelStyle === "english"
+            ? englishName || config.localeDisplayNames?.[code] || code
+            : localLabel || config.localeDisplayNames?.[code] || code,
+      });
+    }
+    return rows;
   }
 
   const src = normalizeLocale(config.sourceLocale);

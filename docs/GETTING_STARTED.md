@@ -10,7 +10,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./GETTING_STARTED.md) · [German](../translated-docs/docs/GETTING_STARTED.de.md) · [Spanish](../translated-docs/docs/GETTING_STARTED.es.md) · [French](../translated-docs/docs/GETTING_STARTED.fr.md) · [Hindi](../translated-docs/docs/GETTING_STARTED.hi.md) · [Japanese](../translated-docs/docs/GETTING_STARTED.ja.md) · [Korean](../translated-docs/docs/GETTING_STARTED.ko.md) · [Portuguese (BR)](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [Chinese (CN)](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [Chinese (TW)](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](./GETTING_STARTED.md) · [Deutsch](../translated-docs/docs/GETTING_STARTED.de.md) · [Español](../translated-docs/docs/GETTING_STARTED.es.md) · [Français](../translated-docs/docs/GETTING_STARTED.fr.md) · [हिन्दी](../translated-docs/docs/GETTING_STARTED.hi.md) · [日本語](../translated-docs/docs/GETTING_STARTED.ja.md) · [한국어](../translated-docs/docs/GETTING_STARTED.ko.md) · [Português (Brasil)](../translated-docs/docs/GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](../translated-docs/docs/GETTING_STARTED.zh-CN.md) · [中文 (台灣)](../translated-docs/docs/GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -752,7 +752,8 @@ You can combine multiple documentation pipelines in the same config by adding mo
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -972,7 +973,7 @@ Array of documentation pipeline blocks. `translate-docs` and the docs phase of `
 | `markdownOutput.postProcessing`                | Optional transforms on the translated **markdown body** (YAML front matter is preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | Same level as `markdownOutput` (per `documentations[]` block). Optional finer-grained segments for `translate-docs` extraction: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. When `enabled` is `true` (default when `segmentSplitting` is omitted), dense paragraphs, GFM pipe tables (first chunk includes header, separator, and first data row), and long lists are split; sub-parts rejoin with single newlines (`tightJoinPrevious`). Set `"enabled": false` to use one segment per blank-line-delimited body block only. |
 | `markdownOutput.postProcessing.regexAdjustments`  | Ordered list of `{ "description"?, "search", "replace" }`. `search` is a regex pattern (plain string uses flag `g`, or `/pattern/flags`). `replace` supports placeholders such as `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — the translator finds the first line containing `start` and the matching `end` line, then replaces that slice with a canonical language switcher. Links are built with paths relative to the translated file; labels come from `uiLanguagesPath` / `ui-languages.json` when configured, otherwise from `localeDisplayNames` and locale codes.                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — the translator finds the first line containing `start` and the matching `end` line, then replaces that slice with a canonical language switcher. `label` controls manifest label source: `"local"` (default, uses `ui-languages.json` `label`) or `"english"` (uses `englishName`). Links are built with paths relative to the translated file; when no manifest is configured, labels come from `localeDisplayNames` and locale codes.                                                                                                                                                                                                                  |
 | `addFrontmatter`                                  | When `true` (default when omitted), translated markdown files include YAML keys: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, and when at least one segment has model metadata, `translation_models` (sorted list of OpenRouter model ids used). Set to `false` to skip.                                                                                                                                                                                                                                                                                                                           |
 
 
@@ -992,7 +993,8 @@ Example (flat README pipeline — screenshot paths + optional language list wrap
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

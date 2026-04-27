@@ -11,6 +11,15 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+
+
+## [1.2.3] - 2026-04-27
+
+- **Changed**: Markdown post-processing — `documentations[].markdownOutput.postProcessing.languageListBlock` now supports `label` (`local` or `english`) for switcher labels; generation uses `ui-languages.json` when present, otherwise falls back to bundled `data/ui-languages-complete.json` for `sourceLocale` + target locales. Default is `local` so generated links use each locale endonym unless explicitly overridden.
+
+- **Added**: Release tooling — add `scripts/release.sh` to create GitHub releases locally with `gh release create` using versioned markdown notes from `dev/RELEASE_NOTES_<version>.md`, including preflight checks and `--dry-run`; root `package.json` now provides `pnpm release:github` and `pnpm release:github:dry`.
+
 - **Changed**: UI languages catalog build — `scripts/build-ui-languages-complete.mjs` now adds a Wikimedia fallback source for missing bare 2–3 letter language tags when glibc locales do not include them (for example `jv` / Javanese), while still excluding non-primary wiki keys like `be-x-old`; `scripts/fill-ui-language-labels.mjs` now fixes both `label` and `direction` in one OpenRouter pass (same `openrouter.translationModels` fallback chain), and the separate in-build review pass/`--no-label-review` flow was removed to avoid duplicate full-model runs.
 
 

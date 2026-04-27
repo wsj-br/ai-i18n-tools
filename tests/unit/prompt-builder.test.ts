@@ -1,13 +1,20 @@
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
+  buildPluralPassBPrompt,
+  buildPluralStep0Prompt,
+  buildLintSourcePromptMessages,
   buildUIPromptMessages,
+  parseLintSourceBatchResponse,
+  parsePluralFormsJsonResponse,
   parseBatchJsonArrayResponse,
   parseBatchJsonObjectResponse,
   parseBatchTranslationResponse,
   parseUIJsonArrayResponse,
   PromptParseError,
   DocumentBatchJsonParseError,
+  LintSourceJsonParseError,
+  PluralFormsParseError,
   UIJsonArrayParseError,
   PROMPTS,
 } from "../../src/core/prompt-builder.js";
@@ -220,6 +227,82 @@ describe("buildUIPromptMessages", () => {
     expect(systemPrompt).toContain("<glossary>");
     expect(systemPrompt).toContain(PROMPTS.ui.glossaryPreamble);
     expect(systemPrompt.indexOf('- "a"')).toBeLessThan(systemPrompt.indexOf('- "z"'));
+  });
+});
+
+describe("plural prompt builders and parsers", () => {
+  it("buildPluralStep0Prompt includes intl hint and zeroDigit note", () => {
+    const { systemPrompt, userContent } = buildPluralStep0Prompt({
+      sourceLanguageLabel: "Arabic",
+      originalLiteral: "You have {{count}} message",
+      requiredForms: ["zero", "one", "other"],
+      zeroDigit: true,
+      intlPluralLocaleTag: "ar",
+      glossaryHints: ['- "message" → "رسالة"'],
+    });
+    expect(systemPrompt).toContain("<glossary>");
+    expect(userContent).toContain('For the "zero" category, prefer the literal digit 0');
+    expect(userContent).toContain("Intl.PluralRules");
+    expect(userContent).toContain("zero, one, other");
+  });
+
+  it("buildPluralPassBPrompt omits intl hint when empty tag", () => {
+    const { userContent } = buildPluralPassBPrompt({
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "German",
+      sourceForms: { one: "1 file", other: "{{count}} files" },
+      requiredTargetForms: ["one", "other"],
+      originalLiteral: "{{count}} files",
+      intlPluralLocaleTag: "   ",
+    });
+    expect(userContent).toContain("Translate cardinal plural UI strings from English to German.");
+    expect(userContent).not.toContain("Intl.PluralRules");
+  });
+
+  it("parsePluralFormsJsonResponse parses required forms and rejects missing keys", () => {
+    const ok = parsePluralFormsJsonResponse('{"one":"1 Datei","other":"{{count}} Dateien"}', [
+      "one",
+      "other",
+    ]);
+    expect(ok.one).toBe("1 Datei");
+    expect(ok.other).toContain("{{count}}");
+    expect(() => parsePluralFormsJsonResponse('{"one":"1 Datei"}', ["one", "other"])).toThrow(
+      PluralFormsParseError
+    );
+  });
+});
+
+describe("lint-source prompt and parser", () => {
+  it("buildLintSourcePromptMessages includes locale line and output contract", () => {
+    const { systemPrompt, userContent } = buildLintSourcePromptMessages(["Save"], {
+      languageLabel: "German",
+      glossaryHints: ['- "Save" → "Speichern"'],
+    });
+    expect(systemPrompt).toContain("Locale / language of the strings under review: German");
+    expect(systemPrompt).toContain(PROMPTS.lintSource.outputContract.trim());
+    expect(systemPrompt).toContain("<glossary>");
+    expect(userContent).toBe(JSON.stringify(["Save"], null, 2));
+  });
+
+  it("parseLintSourceBatchResponse normalizes and pads malformed slots", () => {
+    const { slots, lengthWarning } = parseLintSourceBatchResponse(
+      '[{"issues":[{"severity":"warn","message":"m1","suggestedText":"s1"}]}]',
+      2
+    );
+    expect(lengthWarning).toContain("expected 2 slot objects, got 1");
+    expect(slots).toHaveLength(2);
+    expect(slots[0]?.issues[0]).toEqual({
+      severity: "warning",
+      message: "m1",
+      suggestedText: "s1",
+    });
+    expect(slots[1]?.issues).toEqual([]);
+  });
+
+  it("parseLintSourceBatchResponse throws on non-array", () => {
+    expect(() => parseLintSourceBatchResponse('{"issues":[]}', 1)).toThrow(
+      LintSourceJsonParseError
+    );
   });
 });
 

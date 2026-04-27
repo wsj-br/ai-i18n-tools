@@ -1,11 +1,17 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and (via `features.translateSVG`, `translate-svg`, and the `svg` block) standalone SVG assets.
+[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+CLI and programmatic toolkit for internationalising JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them with LLMs via OpenRouter, and generates locale-ready JSON files for i18next, plus pipelines for markdown, Docusaurus JSON, and standalone SVG assets.
 
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./README.md) · [German](./translated-docs/README.de.md) · [Spanish](./translated-docs/README.es.md) · [French](./translated-docs/README.fr.md) · [Hindi](./translated-docs/README.hi.md) · [Japanese](./translated-docs/README.ja.md) · [Korean](./translated-docs/README.ko.md) · [Portuguese (BR)](./translated-docs/README.pt-BR.md) · [Chinese (CN)](./translated-docs/README.zh-CN.md) · [Chinese (TW)](./translated-docs/README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](./README.md) · [Deutsch](./translated-docs/README.de.md) · [Español](./translated-docs/README.es.md) · [Français](./translated-docs/README.fr.md) · [हिन्दी](./translated-docs/README.hi.md) · [日本語](./translated-docs/README.ja.md) · [한국어](./translated-docs/README.ko.md) · [Português (Brasil)](./translated-docs/README.pt-BR.md) · [中文 (中国大陆)](./translated-docs/README.zh-CN.md) · [中文 (台灣)](./translated-docs/README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

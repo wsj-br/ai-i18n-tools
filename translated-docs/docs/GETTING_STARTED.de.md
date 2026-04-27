@@ -9,7 +9,7 @@
 Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine einzige Konfigurationsdatei.
 
 <small>**In anderen Sprachen lesen:** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -751,7 +751,8 @@ Sie können mehrere Dokumentations-Pipelines in derselben Konfiguration kombinie
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -967,7 +968,7 @@ Array von Dokumentations-Pipeline-Blöcken. `translate-docs` und die Docs-Phase 
 | `markdownOutput.postProcessing`                | Optionale Transformationen des übersetzten **Markdown-Textes** (YAML-Front Matter bleibt erhalten). Wird ausgeführt nach der Segmentzusammenführung und dem Umschreiben flacher Links, und vor `addFrontmatter`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | Auf derselben Ebene wie `markdownOutput` (gemäß `documentations[]`-Block). Optionale feinere Segmente zur `translate-docs`-Extraktion: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. Wenn `enabled` auf `true` gesetzt ist (Standard, wenn `segmentSplitting` weggelassen wird), werden dichte Absätze, GFM-Tabellen mit senkrechten Strichen (der erste Teil enthält Kopfzeile, Trennzeile und erste Datenzeile) und lange Listen aufgeteilt; Teilabschnitte werden mit einzelnen Zeilenumbrüchen wieder zusammengefügt (`tightJoinPrevious`). Setzen Sie `"enabled": false`, um nur ein Segment pro durch Leerzeilen getrenntem Textblock zu verwenden. |
 | `markdownOutput.postProcessing.regexAdjustments`  | Geordnete Liste von `{ "description"?, "search", "replace" }`. `search` ist ein Regex-Muster (einfache Zeichenfolge verwendet Flag `g` oder `/pattern/flags`). `replace` unterstützt Platzhalter wie `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — der Übersetzer sucht die erste Zeile, die `start` enthält, sowie die passende `end`-Zeile und ersetzt diesen Bereich durch einen standardisierten Sprachumschalter. Die Links werden mit Pfaden relativ zur übersetzten Datei erstellt; die Beschriftungen stammen aus `uiLanguagesPath` / `ui-languages.json`, falls konfiguriert, andernfalls aus `localeDisplayNames` und den Sprachcodes.                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — der Übersetzer sucht die erste Zeile, die `start` enthält, und die entsprechende `end`-Zeile, und ersetzt diesen Bereich dann durch einen kanonischen Sprachwechsler. `label` steuert die Quelle der Manifest-Bezeichnung: `"local"` (Standard, verwendet `ui-languages.json` `label`) oder `"english"` (verwendet `englishName`). Die Links werden mit Pfaden relativ zur übersetzten Datei erstellt; wenn kein Manifest konfiguriert ist, stammen die Bezeichnungen aus `localeDisplayNames` und den Gebietsschemacodes. |
 | `addFrontmatter`                                  | Wenn `true` (Standard, wenn weggelassen), enthalten die übersetzten Markdown-Dateien YAML-Schlüssel: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path` und, falls mindestens ein Segment über Modell-Metadaten verfügt, `translation_models` (sortierte Liste der verwendeten OpenRouter-Modell-IDs). Auf `false` setzen, um dies zu überspringen.                                                                                                                                                                                                                                                                                                                           |
 
 Beispiel (flache README-Pipeline — Pfade zu Screenshots + optionaler Wrapper mit Sprachliste):
@@ -986,7 +987,8 @@ Beispiel (flache README-Pipeline — Pfade zu Screenshots + optionaler Wrapper m
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

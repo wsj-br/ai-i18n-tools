@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-Outil en ligne de commande et programme permettant d'assurer l'internationalisation des applications JavaScript/TypeScript et des sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de modèles linguistiques (LLM) via OpenRouter, puis génère des fichiers JSON prêts à l'emploi pour i18next, ainsi que des pipelines pour les fichiers markdown, JSON Docusaurus, et (via les blocs `features.translateSVG`, `translate-svg` et `svg`) des ressources SVG autonomes.
+[![Version de npm](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Téléchargements de npm](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![Licence : MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+Outil en ligne de commande et programme pour l'internationalisation d'applications JavaScript/TypeScript et de sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de modèles linguistiques (LLM) via OpenRouter, puis génère des fichiers JSON prêts à l'emploi par locale pour i18next, ainsi que des pipelines pour les fichiers markdown, les fichiers JSON Docusaurus et les ressources SVG autonomes.
 
 <small>**Lire dans d'autres langues :** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

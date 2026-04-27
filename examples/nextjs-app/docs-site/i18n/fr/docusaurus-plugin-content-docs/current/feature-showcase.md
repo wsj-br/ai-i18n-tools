@@ -4,7 +4,7 @@ title: Exemple de fonctionnalité de traduction
 description: >-
   Un document de référence qui montre chaque élément Markdown que ai-i18n-tools
   sait traduire.
-translation_last_updated: '2026-04-20T20:45:13.340Z'
+translation_last_updated: '2026-04-27T15:58:04.679Z'
 source_file_mtime: '2026-04-20T20:03:51.319Z'
 source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
 translation_language: fr

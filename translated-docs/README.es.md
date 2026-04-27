@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-Kit de herramientas CLI y programático para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación. Extrae cadenas de interfaz, las traduce mediante LLMs a través de OpenRouter y genera archivos JSON listos para distintos idiomas para i18next, además de incluir pipelines para markdown, JSON de Docusaurus y (mediante `features.translateSVG`, `translate-svg` y el bloque `svg`) recursos SVG independientes.
+[![Versión de npm](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Descargas de npm](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![Licencia: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+Kit de herramientas CLI y programático para internacionalizar aplicaciones y sitios de documentación en JavaScript/TypeScript. Extrae cadenas de interfaz de usuario, las traduce mediante modelos de lenguaje grande (LLM) a través de OpenRouter y genera archivos JSON listos para distintos idiomas para i18next, además de incluir canalizaciones para markdown, JSON de Docusaurus y recursos SVG independientes.
 
 <small>**Leer en otros idiomas:** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

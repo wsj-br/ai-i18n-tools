@@ -102,9 +102,9 @@ pnpm add ai-i18n-tools
 
 ## Documentation
 
-- [Getting Started](docs/GETTING_STARTED.md) — full setup guide, all CLI flags, and config reference.
-- [Package Overview](docs/PACKAGE_OVERVIEW.md) — architecture, internals, and extension points.
-- [AI Agent Context](docs/ai-i18n-tools-context.md) — concise project context for agents and maintainers.
+- [Getting Started](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/GETTING_STARTED.md) — setup, CLI flags, and config reference.  
+- [Package Overview](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/PACKAGE_OVERVIEW.md) — architecture and extension points.  
+- [AI Agent Context (consumers)](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — concise context for apps **using** the npm package.
 
 ---
 

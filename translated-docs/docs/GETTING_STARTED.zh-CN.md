@@ -9,7 +9,7 @@
 两个工作流均使用 OpenRouter（任何兼容的 LLM）并共享一个配置文件。
 
 <small>**阅读其他语言版本：** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -751,7 +751,8 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -967,7 +968,7 @@ ai-i18n-tools editor
 | `markdownOutput.postProcessing`                | 对翻译后的 **markdown 正文** 应用可选的转换（YAML 页面前置内容保持不变）。在片段重新组装和扁平链接重写之后、`addFrontmatter` 之前执行。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | 与 `markdownOutput` 相同层级（按 `documentations[]` 块划分）。用于 `translate-docs` 提取的更细粒度的可选片段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。当 `enabled` 为 `true` 时（`segmentSplitting` 省略时的默认值），密集段落、GFM 管道表格（第一个片段包含表头、分隔符和首行数据）以及长列表将被拆分；子片段以单个换行符重新连接（`tightJoinPrevious`）。将 `"enabled": false` 设为该值则仅按空行分隔的正文块划分片段。 |
 | `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }` 的有序列表。`search` 是正则表达式模式（纯字符串使用标志 `g`，或 `/pattern/flags`）。`replace` 支持占位符，例如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`。                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 翻译器查找包含 `start` 的第一行及对应的 `end` 行，然后将该片段替换为标准语言切换器。链接使用相对于翻译后文件的路径构建；标签来自 `uiLanguagesPath` / `ui-languages.json`（若已配置），否则来自 `localeDisplayNames` 和区域代码。                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — 翻译器会查找包含 `start` 的第一行以及对应的 `end` 行，然后将该部分内容替换为标准的语言切换器。`label` 控制清单标签的来源：`"local"`（默认，使用 `ui-languages.json` `label`）或 `"english"`（使用 `englishName`）。链接的路径相对于翻译后的文件生成；当未配置清单时，标签来自 `localeDisplayNames` 和区域设置代码。|
 | `addFrontmatter`                                  | 当 `true` 时（省略时的默认值），翻译后的 markdown 文件包含以下 YAML 键：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，以及当至少一个片段具有模型元数据时的 `translation_models`（所用 OpenRouter 模型 ID 的排序列表）。设为 `false` 可跳过。                                                                                                                                                                                                                                                                                                                           |
 
 示例（扁平 README 流水线 — 截图路径 + 可选语言列表包装器）：
@@ -986,7 +987,8 @@ ai-i18n-tools editor
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

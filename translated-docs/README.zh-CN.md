@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 及编程工具包。通过 OpenRouter 使用 LLM 提取 UI 字符串并进行翻译，并为 i18next 生成适用于各语言环境的 JSON 文件，同时支持 Markdown、Docusaurus JSON 的流水线，以及（通过 `features.translateSVG`、`translate-svg` 和 `svg` 块）独立 SVG 资源。
+[![npm 版本](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![npm 下载量](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![许可证: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 及编程工具包。通过 OpenRouter 使用大语言模型（LLM）提取 UI 字符串并进行翻译，并为 i18next 生成适配各区域设置的 JSON 文件，同时提供用于 Markdown、Docusaurus JSON 和独立 SVG 资源的处理管道。
 
 <small>**阅读其他语言版本：** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

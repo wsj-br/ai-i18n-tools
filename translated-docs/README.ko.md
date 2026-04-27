@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-JavaScript/TypeScript 애플리케이션 및 문서 사이트의 국제화를 위한 CLI 및 프로그래밍 도구 세트입니다. UI 문자열을 추출하고 OpenRouter를 통해 LLM로 번역한 후 i18next용 로케일 대비 JSON 파일을 생성합니다. 또한 마크다운, Docusaurus JSON용 파이프라인과 (`features.translateSVG`, `translate-svg`, `svg` 블록을 통해) 독립형 SVG 자산도 지원합니다.
+[![npm 버전](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![npm 다운로드 수](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![라이선스: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+JavaScript/TypeScript 애플리케이션 및 문서 사이트의 국제화를 위한 CLI 및 프로그래밍 도구 키트입니다. UI 문자열을 추출하고 OpenRouter를 통해 LLM로 번역한 후 i18next용 로케일 대비 JSON 파일을 생성하며, 마크다운, Docusaurus JSON, 독립형 SVG 자산을 위한 파이프라인도 제공합니다.
 
 <small>**다른 언어로 읽기:** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

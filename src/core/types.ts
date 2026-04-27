@@ -325,6 +325,11 @@ const languageListBlockSchema = z
     end: z.string().min(1),
     /** Separator used between generated locale links. */
     separator: z.string(),
+    /**
+     * Label source for generated language links when `ui-languages.json` is available.
+     * `local` uses each entry's `label` (endonym); `english` uses `englishName`.
+     */
+    label: z.enum(["local", "english"]).default("local"),
   })
   .strict();
 

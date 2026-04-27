@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-04-20T20:45:10.467Z'
-source_file_mtime: '2026-04-20T20:43:01.452Z'
-source_file_hash: 8fa4172580eba1e11b2904097edae7d5af19b54a6bb75a051dcbe1f16c0e13a4
+translation_last_updated: '2026-04-27T15:58:01.855Z'
+source_file_mtime: '2026-04-27T15:22:27.402Z'
+source_file_hash: 1b21705d678f79373b61dafb5fcfbd31653504487dec048503730b7228bd8c4b
 translation_language: pt-BR
 source_file_path: README.md
 translation_models:
@@ -11,8 +11,7 @@ translation_models:
 # Exemplo de Aplicativo de Console
 
 <small>**Leia em outros idiomas:**</small>
-
-<small id="lang-list">[English](../README.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (BR)](./README.pt-BR.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Deutsch](./README.de.md) · [Português (Brasil)](./README.pt-BR.md)</small>
 
 Este exemplo demonstra como usar `ai-i18n-tools` para internacionalizar um aplicativo de console Node.js.
 

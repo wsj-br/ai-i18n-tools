@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-Kit de ferramentas CLI e programático para internacionalização de aplicações JavaScript/TypeScript e sites de documentação. Extrai strings da interface, traduz com LLMs via OpenRouter e gera arquivos JSON prontos para uso com i18next, além de pipelines para markdown, JSON do Docusaurus e (por meio do `features.translateSVG`, `translate-svg` e bloco `svg`) ativos SVG autônomos.
+[![Versão do npm](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Downloads do npm](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![Licença: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+Kit de ferramentas CLI e programático para internacionalização de aplicações e sites de documentação em JavaScript/TypeScript. Extrai strings da interface, traduz com LLMs via OpenRouter e gera arquivos JSON prontos para uso com i18next, além de pipelines para markdown, JSON do Docusaurus e ativos SVG autônomos.
 
 <small>**Leia em outros idiomas:** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

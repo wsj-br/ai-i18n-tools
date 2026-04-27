@@ -1,7 +1,7 @@
 [
   {
     "code": "en-GB",
-    "label": "English",
+    "label": "English (GB)",
     "englishName": "English (GB)",
     "direction": "ltr"
   },
@@ -31,7 +31,7 @@
   },
   {
     "code": "pt-BR",
-    "label": "Português (BR)",
+    "label": "Português (Brasil)",
     "englishName": "Portuguese (BR)",
     "direction": "ltr"
   }

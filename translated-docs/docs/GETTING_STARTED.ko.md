@@ -9,7 +9,7 @@
 두 워크플로우 모두 OpenRouter(호환 가능한 모든 LLM)를 사용하며, 하나의 설정 파일을 공유합니다.
 
 <small>**다른 언어로 읽기:** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -751,7 +751,8 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -967,7 +968,7 @@ VCS 제외를 위한 모범 사례:
 | `markdownOutput.postProcessing`                | 번역된 **마크다운 본문**에 대한 선택적 변환(YAML 프론트 매터는 보존됨). 세그먼트 재조합 및 평면 링크 재작성 후, `addFrontmatter` 이전에 실행됨.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | `markdownOutput`과 동일한 수준(`documentations[]` 블록 기준). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. `enabled`가 `true`일 때(`segmentSplitting`이 생략된 경우 기본값), 밀집된 단락, GFM 파이프 테이블(첫 번째 청크는 헤더, 구분자, 첫 번째 데이터 행 포함), 긴 목록이 분할되며, 하위 부분은 단일 줄바꿈(`tightJoinPrevious`)으로 다시 결합됩니다. 본문 블록을 구분하는 빈 줄 단위로 각각 하나의 세그먼트를 사용하려면 `"enabled": false`로 설정하십시오. |
 | `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }`의 순서 목록. `search`는 정규식 패턴임(일반 문자열은 `g` 플래그 또는 `/pattern/flags` 사용). `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` 등의 자리표시자를 지원함.                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 번역기는 `start`를 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾은 후, 해당 영역을 표준 언어 전환기로 대체함. 링크는 번역된 파일을 기준으로 상대 경로로 생성되며, 레이블은 설정 시 `uiLanguagesPath` / `ui-languages.json`에서, 그렇지 않으면 `localeDisplayNames` 및 로케일 코드에서 가져옴.                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — 번역기는 `start`를 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾아내고, 해당 범위를 표준 언어 전환기로 대체합니다. `label`는 매니페스트 레이블 소스를 제어합니다: `"local"` (기본값, `ui-languages.json` `label` 사용) 또는 `"english"` (`englishName` 사용). 링크는 번역된 파일을 기준으로 한 상대 경로로 생성되며, 매니페스트가 구성되어 있지 않은 경우 레이블은 `localeDisplayNames` 및 로케일 코드에서 가져옵니다. |
 | `addFrontmatter`                                  | `true`일 경우(생략 시 기본값), 번역된 마크다운 파일에는 YAML 키 `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`가 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models`(사용된 OpenRouter 모델 ID의 정렬된 목록)도 포함됨. 생략하려면 `false`로 설정.                                                                                                                                                                                                                                                                                                                           |
 
 예시(단순 README 파이프라인 — 스크린샷 경로 + 선택적 언어 목록 래퍼):
@@ -986,7 +987,8 @@ VCS 제외를 위한 모범 사례:
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

@@ -9,7 +9,7 @@
 両方のワークフローはOpenRouter（互換性のある任意のLLM）を使用し、単一の設定ファイルを共有します。
 
 <small>**他の言語で読む：** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -751,7 +751,8 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -967,7 +968,7 @@ VCS 除外のベストプラクティス:
 | `markdownOutput.postProcessing`                | 翻訳された**markdown本文**にオプションの変換を適用（YAMLフロントマターは保持される）。セグメントの再結合およびフラットリンクの書き換え後、`addFrontmatter`の前に行われる。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | `markdownOutput`と同じレベル（`documentations[]`ブロックごと）。`translate-docs`抽出用のより細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密度の高い段落、GFMパイプテーブル（最初のチャンクにヘッダー、セパレーター、および最初のデータ行を含む）、長いリストが分割される。サブパートは単一の改行で再結合される（`tightJoinPrevious`）。`"enabled": false`を設定すると、空行で区切られた本文ブロックごとに1つのセグメントのみを使用する。 |
 | `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターン（プレーン文字列の場合はフラグ`g`、または`/pattern/flags`を使用）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポート。                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — 翻訳ツールは`start`を含む最初の行と一致する`end`行を検出し、その範囲を標準の言語切り替えウィジェットに置き換える。リンクは翻訳されたファイルからの相対パスで構築される。ラベルは設定されていれば`uiLanguagesPath` / `ui-languages.json`から、それ以外は`localeDisplayNames`およびロケールコードから取得される。                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — トランスレーターは、最初に `start` を含む行と一致する `end` 行を検索し、その範囲を標準の言語切り替えウィジェットに置き換えます。`label` はマニフェストのラベルのソースを制御します: `"local"` (デフォルト、`ui-languages.json` `label` を使用) または `"english"` (`englishName` を使用)。リンクは翻訳されたファイルからの相対パスで構築されます。マニフェストが設定されていない場合、ラベルは `localeDisplayNames` とロケールコードから取得されます。|
 | `addFrontmatter`                                  | `true`の場合（省略時のデフォルト）、翻訳されたMarkdownファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれる。`false`に設定するとスキップされる。                                                                                                                                                                                                                                                                                                                           |
 
 例（フラットREADMEパイプライン — スクリーンショットパス＋オプションの言語リストラッパー）:
@@ -986,7 +987,8 @@ VCS 除外のベストプラクティス:
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

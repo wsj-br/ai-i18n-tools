@@ -1,10 +1,16 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-जावास्क्रिप्ट/टाइपस्क्रिप्ट एप्लिकेशन और दस्तावेज़ीकरण साइटों के लिए CLI और प्रोग्रामेटिक टूलकिट। UI स्ट्रिंग्स निकालता है, OpenRouter के माध्यम से LLMs का उपयोग करके उनका अनुवाद करता है, और i18next के लिए तैयार लोकेल-तैयार JSON फ़ाइलें उत्पन्न करता है, साथ ही मार्कडाउन, डॉक्यूसॉरस JSON, और (`features.translateSVG`, `translate-svg`, और `svg` ब्लॉक के माध्यम से) स्वतंत्र SVG एसेट्स के लिए पाइपलाइन।
+[![npm संस्करण](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![npm डाउनलोड](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
+[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
+[![लाइसेंस: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+
+जावास्क्रिप्ट/टाइपस्क्रिप्ट एप्लिकेशन और डॉक्यूमेंटेशन साइट्स के लिए अंतरराष्ट्रीयकरण के लिए CLI और प्रोग्रामैटिक टूलकिट। UI स्ट्रिंग्स निकालता है, OpenRouter के माध्यम से LLMs का उपयोग करके उनका अनुवाद करता है, और i18next के लिए स्थानीयकृत JSON फ़ाइलें उत्पन्न करता है, साथ ही मार्कडाउन, डॉकुसॉरस JSON और स्वतंत्र SVG एसेट्स के लिए पाइपलाइन्स प्रदान करता है।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
-<small id="lang-list">[English (GB)](../README.md) · [German](./README.de.md) · [Spanish](./README.es.md) · [French](./README.fr.md) · [Hindi](./README.hi.md) · [Japanese](./README.ja.md) · [Korean](./README.ko.md) · [Portuguese (BR)](./README.pt-BR.md) · [Chinese (CN)](./README.zh-CN.md) · [Chinese (TW)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

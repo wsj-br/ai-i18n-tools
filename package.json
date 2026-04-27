@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.2.2",
-  "packageManager": "pnpm@10.33.0",
+  "version": "1.2.3",
+  "packageManager": "pnpm@10.33.2",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -49,7 +49,9 @@
     "i18n:translate": "ai-i18n-tools translate-docs",
     "i18n:cleanup": "ai-i18n-tools cleanup",
     "update-all": "pnpm build && ai-i18n-tools cleanup && cd examples/console-app && ai-i18n-tools cleanup && cd ../nextjs-app && ai-i18n-tools cleanup",
-    "clean-temp": "find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -print && read -p '\nDelete these files? (y/n) ' ans && [ \"$ans\" = \"y\" ] && find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -delete"
+    "clean-temp": "find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -print && read -p '\nDelete these files? (y/n) ' ans && [ \"$ans\" = \"y\" ] && find . \\( -name '*.log' -o -name 'cache.db.backup*.sqlite' \\) -delete",
+    "release:github": "bash scripts/release.sh",
+    "release:github:dry": "bash scripts/release.sh --dry-run"
   },
   "keywords": [
     "i18n",
@@ -99,14 +101,14 @@
     "@types/mdast": "^4.0.4",
     "@types/node": "^25.6.0",
     "@types/unist": "^3.0.3",
-    "@vitest/coverage-v8": "^4.1.4",
-    "eslint": "^10.2.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^10.2.1",
     "globals": "^17.5.0",
     "markdownlint-cli": "^0.48.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.0",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -128,6 +130,10 @@
     "test-exclude": "^8.0.0"
   },
   "pnpm": {
+    "overrides": {
+      "uuid@<14.0.0": ">=14.0.0",
+      "postcss@<8.5.10": ">=8.5.10"
+    },
     "onlyBuiltDependencies": [
       "sharp"
     ]

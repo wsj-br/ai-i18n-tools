@@ -4,7 +4,7 @@ title: Primeiros Passos
 description: >-
   Obtenha seu primeiro documento traduzido em menos de cinco minutos usando
   ai-i18n-tools com este projeto de exemplo em Next.js.
-translation_last_updated: '2026-04-20T20:45:17.382Z'
+translation_last_updated: '2026-04-27T15:58:08.923Z'
 source_file_mtime: '2026-04-20T20:03:51.319Z'
 source_file_hash: 3781b3b6f01b12a0aa8b7f15cc792f0282715729066828ccf371d959d933a447
 translation_language: pt-BR

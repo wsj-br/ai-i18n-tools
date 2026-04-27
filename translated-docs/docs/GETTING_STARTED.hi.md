@@ -9,7 +9,7 @@
 दोनों कार्यप्रवाह OpenRouter (कोई भी संगत LLM) का उपयोग करते हैं और एकल कॉन्फ़िगरेशन फ़ाइल साझा करते हैं।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [German](./GETTING_STARTED.de.md) · [Spanish](./GETTING_STARTED.es.md) · [French](./GETTING_STARTED.fr.md) · [Hindi](./GETTING_STARTED.hi.md) · [Japanese](./GETTING_STARTED.ja.md) · [Korean](./GETTING_STARTED.ko.md) · [Portuguese (BR)](./GETTING_STARTED.pt-BR.md) · [Chinese (CN)](./GETTING_STARTED.zh-CN.md) · [Chinese (TW)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
 
 ---
 
@@ -751,7 +751,8 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",
-            "separator": " · "
+            "separator": " · ",
+            "label": "local"
           }
         }
       }
@@ -967,7 +968,7 @@ VCS बहिष्करण के लिए सर्वोत्तम प्
 | `markdownOutput.postProcessing`                | अनुवादित **मार्कडाउन बॉडी** पर वैकल्पिक ट्रांसफ़ॉर्म (YAML फ्रंट मैटर संरक्षित रहता है)। खंड पुनर्मिलन और फ्लैट लिंक पुनर्लेखन के बाद, और `addFrontmatter` से पहले चलता है।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `segmentSplitting`                             | `markdownOutput` के समान स्तर पर (`documentations[]` ब्लॉक के अनुसार)। `translate-docs` निकासी के लिए वैकल्पिक सूक्ष्म खंड: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`। जब `enabled` `true` होता है (`segmentSplitting` छोड़े जाने पर डिफ़ॉल्ट), घने पैराग्राफ़, GFM पाइप टेबल (पहला चंक हैडर, सेपरेटर और पहली डेटा पंक्ति शामिल करता है), और लंबी सूचियाँ विभाजित होती हैं; उप-भाग एकल न्यूलाइन (`tightJoinPrevious`) के साथ पुनः जुड़ते हैं। केवल एक खाली पंक्ति से अलग किए गए बॉडी ब्लॉक के लिए एक खंड का उपयोग करने के लिए `"enabled": false` सेट करें। |
 | `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }` की क्रमबद्ध सूची। `search` एक रेगेक्स पैटर्न है (सादे स्ट्रिंग के लिए फ्लैग `g`, या `/pattern/flags` का उपयोग करें)। `replace` में `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` जैसे प्लेसहोल्डर का समर्थन करता है।                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator" }` — अनुवादक `start` युक्त पहली पंक्ति और मिलान वाली `end` पंक्ति ढूंढता है, फिर उस स्लाइस को एक मानक भाषा स्विचर से बदल देता है। लिंक अनुवादित फ़ाइल के सापेक्ष पथ के साथ बनाए जाते हैं; लेबल `uiLanguagesPath` / `ui-languages.json` से लिए जाते हैं यदि कॉन्फ़िगर किया गया हो, अन्यथा `localeDisplayNames` और स्थानीय कोड से।                                                                                                                                                                                                                                                                                       |
+| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — अनुवादक `start` युक्त पहली पंक्ति और संगत `end` पंक्ति खोजता है, फिर उस स्लाइस को एक मानक भाषा स्विचर से बदल देता है। `label` मैनिफेस्ट लेबल स्रोत को नियंत्रित करता है: `"local"` (डिफ़ॉल्ट, `ui-languages.json` `label` का उपयोग करता है) या `"english"` (`englishName` का उपयोग करता है)। लिंक अनुवादित फ़ाइल के सापेक्ष पथ के साथ बनाए जाते हैं; जब कोई मैनिफेस्ट कॉन्फ़िगर नहीं किया गया होता, तो लेबल `localeDisplayNames` और स्थानीयकरण कोड से आते हैं। |
 | `addFrontmatter`                                  | जब `true` (छोड़े जाने पर डिफ़ॉल्ट), अनुवादित मार्कडाउन फ़ाइलों में YAML कुंजियां शामिल होती हैं: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, और जब कम से कम एक खंड में मॉडल मेटाडेटा होता है, तो `translation_models` (उपयोग किए गए OpenRouter मॉडल आईडी की क्रमबद्ध सूची)। छोड़ने के लिए `false` पर सेट करें।                                                                                                                                                                                                                                                                                                                           |
 
 उदाहरण (फ्लैट README पाइपलाइन — स्क्रीनशॉट पथ + वैकल्पिक भाषा सूची रैपर):
@@ -986,7 +987,8 @@ VCS बहिष्करण के लिए सर्वोत्तम प्
     "languageListBlock": {
       "start": "<small id=\"lang-list\">",
       "end": "</small>",
-      "separator": " · "
+      "separator": " · ",
+      "label": "local"
     }
   }
 }

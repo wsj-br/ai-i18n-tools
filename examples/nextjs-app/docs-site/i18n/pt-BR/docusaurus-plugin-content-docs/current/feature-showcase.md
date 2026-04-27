@@ -4,7 +4,7 @@ title: Demonstração da Funcionalidade de Tradução
 description: >-
   Um documento de referência que demonstra todos os elementos Markdown que
   ai-i18n-tools sabe traduzir.
-translation_last_updated: '2026-04-20T20:45:16.943Z'
+translation_last_updated: '2026-04-27T15:58:08.479Z'
 source_file_mtime: '2026-04-20T20:03:51.319Z'
 source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
 translation_language: pt-BR

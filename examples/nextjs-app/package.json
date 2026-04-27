@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "ai-i18n-tools": "workspace:^",
-    "i18next": "^26.0.6",
+    "i18next": "^26.0.8",
     "next": "^16.2.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-i18next": "^17.0.4"
+    "react-i18next": "^17.0.6"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
