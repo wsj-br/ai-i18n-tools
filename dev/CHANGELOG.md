@@ -11,6 +11,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: CI — `pnpm/action-setup` no longer pins a pnpm version that conflicts with `packageManager` in `package.json` (the action reads the version from `package.json` when `version` is omitted).
+
 - **Changed**: Release tooling — `scripts/release.sh` removes an existing GitHub release (`gh release delete --cleanup-tag`), an orphan remote tag, or a local tag when needed, then recreates an annotated tag at HEAD and pushes before `gh release create`; `--dry-run` still performs no deletes.
 
 ## [1.2.3] - 2026-04-27
