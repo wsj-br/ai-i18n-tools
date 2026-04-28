@@ -23,6 +23,7 @@ import chalk from "chalk";
 import { formatUiLanguagesJson } from "./lib/format-ui-languages-json.mjs";
 import { formatDurationMs } from "./lib/format-duration.mjs";
 import { loadRepoDotenv } from "./lib/load-repo-dotenv.mjs";
+import { decodeHtmlEntities } from "./lib/decode-html-entities-ui-languages.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -32,25 +33,6 @@ const OUT = path.join(ROOT, "data", "ui-languages-complete.json");
 const WIKI_API =
   "https://meta.wikimedia.org/w/api.php?action=parse&page=Template:List_of_language_names_ordered_by_code&prop=text&format=json";
 const LIBRE_URL = "https://lh.2xlibre.net/locales/";
-
-/** Decode common Wikimedia/HTML character references (template HTML keeps e.g. &#160; around "/"). */
-function decodeHtmlEntities(s) {
-  return s
-    .replace(/&#x([0-9a-fA-F]+);/gi, (_, hex) => {
-      const cp = parseInt(hex, 16);
-      return Number.isFinite(cp) ? String.fromCodePoint(cp) : _;
-    })
-    .replace(/&#(\d+);/g, (_, dec) => {
-      const cp = parseInt(dec, 10);
-      return Number.isFinite(cp) ? String.fromCodePoint(cp) : _;
-    })
-    .replace(/&nbsp;/gi, "\u00A0")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
-}
 
 function stripTags(s) {
   const noTags = s.replace(/<[^>]+>/g, " ");

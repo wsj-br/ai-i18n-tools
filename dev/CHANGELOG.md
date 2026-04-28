@@ -12,6 +12,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 ## [Unreleased]
 
 
+## [1.2.5] - 2026-04-28
+
+- **Fixed**: UI languages master build — `decodeHtmlEntities` in `scripts/lib/decode-html-entities-ui-languages.mjs` peels `&amp;` before numeric/hex references and repeats decoding until stable so sequences like `&amp;#160;` cannot leave literal `&#160;` in `data/ui-languages-complete.json`.
+
 ## [1.2.4] - 2026-04-28
 
 - **Changed**: UI languages scripts — `pnpm run build:ui-languages-master` uses `node --env-file-if-exists=.env`, and `scripts/build-ui-languages-complete.mjs`, `scripts/fill-ui-language-labels.mjs`, and `scripts/validate-ui-language-labels.mjs` load repo-root `.env` via `scripts/lib/load-repo-dotenv.mjs` (`process.loadEnvFile`) so `OPENROUTER_API_KEY` is picked up without exporting it in the shell.
