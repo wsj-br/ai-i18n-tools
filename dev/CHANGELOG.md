@@ -12,6 +12,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 ## [Unreleased]
 
 
+## [1.2.6] - 2026-04-28
+
+- **Fixed**: UI translation (`translate-ui` / `sync`) — parallel locale workers no longer each atomically rewrite `strings.json` on Windows (that caused `EPERM` on rename); the catalog is written once per parallel batch (and for a single locale after it finishes). `writeAtomicUtf8` retries rename on Windows for transient `EPERM`/`EACCES`/`EBUSY`.
+
 ## [1.2.5] - 2026-04-28
 
 - **Fixed**: UI languages master build — `decodeHtmlEntities` in `scripts/lib/decode-html-entities-ui-languages.mjs` peels `&amp;` before numeric/hex references and repeats decoding until stable so sequences like `&amp;#160;` cannot leave literal `&#160;` in `data/ui-languages-complete.json`.

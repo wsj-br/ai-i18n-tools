@@ -110,10 +110,66 @@ export function ensureDirForFile(filePath: string): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
 }
 
+/** Blocking sleep for synchronous retry paths (Windows rename contention). */
+function sleepSyncMs(ms: number): void {
+  if (ms <= 0) return;
+  try {
+    const sab = new SharedArrayBuffer(4);
+    const ia = new Int32Array(sab);
+    Atomics.wait(ia, 0, 0, ms);
+  } catch {
+    const until = Date.now() + ms;
+    while (Date.now() < until) {
+      /* fallback if Atomics.wait is unavailable */
+    }
+  }
+}
+
+/**
+ * Write UTF-8 via temp file + rename. On Windows, retries rename on EPERM/EACCES/EBUSY
+ * (concurrent writers, indexer, AV) so replacement of an existing file is more reliable.
+ */
 export function writeAtomicUtf8(filePath: string, data: string): void {
   ensureDirForFile(filePath);
   const dir = path.dirname(filePath);
-  const tmp = path.join(dir, `.${path.basename(filePath)}.${process.pid}.tmp`);
-  fs.writeFileSync(tmp, data, "utf8");
-  fs.renameSync(tmp, filePath);
+  const base = path.basename(filePath);
+  const maxAttempts = process.platform === "win32" ? 10 : 1;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const tmp = path.join(
+      dir,
+      `.${base}.${process.pid}.${crypto.randomBytes(4).toString("hex")}.tmp`
+    );
+    try {
+      fs.writeFileSync(tmp, data, "utf8");
+    } catch (e) {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        /* ignore */
+      }
+      throw e;
+    }
+
+    try {
+      fs.renameSync(tmp, filePath);
+      return;
+    } catch (renameErr) {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        /* ignore */
+      }
+      const code = (renameErr as NodeJS.ErrnoException)?.code;
+      const retry =
+        process.platform === "win32" &&
+        attempt < maxAttempts - 1 &&
+        (code === "EPERM" || code === "EACCES" || code === "EBUSY");
+      if (retry) {
+        sleepSyncMs(40 + attempt * 25);
+        continue;
+      }
+      throw renameErr;
+    }
+  }
 }

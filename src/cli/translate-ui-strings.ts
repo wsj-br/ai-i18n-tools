@@ -559,10 +559,6 @@ export async function runTranslateUI(
       }
     }
 
-    if (!opts.dryRun && (missingPlain.length > 0 || pluralTargets.length > 0)) {
-      writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
-    }
-
     const flat = buildFlatJsonForLocale(strings, locale);
     const localePath = path.join(outDir, `${locale}.json`);
     if (!opts.dryRun) {
@@ -583,6 +579,10 @@ export async function runTranslateUI(
 
   if (targets.length <= 1) {
     await translateOneTargetLocale(targets[0]!);
+    if (!opts.dryRun) {
+      console.log(chalk.blue(`💾 Writing strings.json`));
+      writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
+    }
   } else {
     for (let i = 0; i < targets.length; i += parallelLimit) {
       const batch = targets.slice(i, i + parallelLimit);
