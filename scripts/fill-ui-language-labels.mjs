@@ -13,14 +13,19 @@
  *
  *   node scripts/fill-ui-language-labels.mjs --input data/ui-languages-complete.json [--output <json>] [--config <path>]
  *
- * Requires OPENROUTER_API_KEY.
+ * Requires OPENROUTER_API_KEY (env or repo-root `.env` loaded at startup).
  */
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import chalk from "chalk";
 import { formatUiLanguagesJson } from "./lib/format-ui-languages-json.mjs";
 import { getFillLabelRuntimeOptions } from "./lib/load-fill-label-config.mjs";
 import { formatDurationMs } from "./lib/format-duration.mjs";
+import { loadRepoDotenv } from "./lib/load-repo-dotenv.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+loadRepoDotenv(path.join(__dirname, ".."));
 
 function parseArgs() {
   const a = process.argv.slice(2);

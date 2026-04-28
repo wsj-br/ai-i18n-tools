@@ -11,6 +11,13 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+## [1.2.4] - 2026-04-28
+
+- **Changed**: UI languages scripts — `pnpm run build:ui-languages-master` uses `node --env-file-if-exists=.env`, and `scripts/build-ui-languages-complete.mjs`, `scripts/fill-ui-language-labels.mjs`, and `scripts/validate-ui-language-labels.mjs` load repo-root `.env` via `scripts/lib/load-repo-dotenv.mjs` (`process.loadEnvFile`) so `OPENROUTER_API_KEY` is picked up without exporting it in the shell.
+
+- **Fixed**: UI languages master catalog — `scripts/build-ui-languages-complete.mjs` now decodes HTML character references (for example `&#160;` from Wikimedia table cells) when extracting English names so `data/ui-languages-complete.json` stores plain Unicode text instead of literal entity strings.
+
 - **Fixed**: CI — `pnpm/action-setup` no longer pins a pnpm version that conflicts with `packageManager` in `package.json` (the action reads the version from `package.json` when `version` is omitted).
 
 - **Changed**: Release tooling — `scripts/release.sh` removes an existing GitHub release (`gh release delete --cleanup-tag`), an orphan remote tag, or a local tag when needed, then recreates an annotated tag at HEAD and pushes before `gh release create`; `--dry-run` still performs no deletes.

@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "packageManager": "pnpm@10.33.2",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build": "node scripts/write-build-info.mjs && tsc && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs",
-    "build:ui-languages-master": "node scripts/build-ui-languages-complete.mjs",
+    "build:ui-languages-master": "node --env-file-if-exists=.env scripts/build-ui-languages-complete.mjs",
     "dev": "node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs && tsc --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
