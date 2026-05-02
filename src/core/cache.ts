@@ -16,7 +16,7 @@ import type {
 import { computeSegmentHash } from "../utils/hash.js";
 import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 const require = createRequire(import.meta.url);
 
 type SqliteModule = typeof Sqlite;
@@ -118,6 +118,13 @@ export class TranslationCache {
 
         CREATE INDEX IF NOT EXISTS idx_translation_failures_fatal
           ON translation_failures(fatal);
+      `);
+      this.db.exec("PRAGMA user_version = 2");
+    }
+    if (current < 3) {
+      this.db.exec(`
+        ALTER TABLE translation_failures ADD COLUMN filepath TEXT;
+        ALTER TABLE translation_failures ADD COLUMN source_text TEXT;
       `);
       this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
     }
@@ -735,8 +742,8 @@ export class TranslationCache {
     }
     const stmt = this.db.prepare(
       `INSERT INTO translation_failures
-       (source_hash, locale, model, model_order, quality_error, error_message, fatal, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+       (source_hash, locale, model, model_order, quality_error, error_message, fatal, created_at, filepath, source_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)`
     );
     for (const row of rows) {
       stmt.run(
@@ -746,7 +753,9 @@ export class TranslationCache {
         row.modelOrder,
         row.qualityError,
         row.errorMessage,
-        row.fatal ? 1 : 0
+        row.fatal ? 1 : 0,
+        row.filepath ?? null,
+        row.sourceText ?? null
       );
     }
   }
@@ -774,7 +783,7 @@ export class TranslationCache {
     const params: (string | number)[] = [];
 
     if (filters?.filename?.trim()) {
-      conditions.push("LOWER(t.filepath) LIKE ?");
+      conditions.push("LOWER(COALESCE(t.filepath, f.filepath)) LIKE ?");
       params.push(`%${filters.filename.trim().toLowerCase()}%`);
     }
     if (filters?.locale?.trim()) {
@@ -790,7 +799,7 @@ export class TranslationCache {
       params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
     }
     if (filters?.source_text?.trim()) {
-      conditions.push("LOWER(t.source_text) LIKE ?");
+      conditions.push("LOWER(COALESCE(t.source_text, f.source_text)) LIKE ?");
       params.push(`%${filters.source_text.trim().toLowerCase()}%`);
     }
     if (filters?.quality_error?.trim()) {
@@ -819,8 +828,8 @@ export class TranslationCache {
         COALESCE(GROUP_CONCAT(f.error_message, CHAR(10)), '') as error_message,
         MAX(f.fatal) as fatal,
         MAX(f.created_at) as created_at,
-        MAX(t.source_text) as source_text,
-        MAX(t.filepath) as filepath,
+        MAX(COALESCE(t.source_text, f.source_text)) as source_text,
+        MAX(COALESCE(t.filepath, f.filepath)) as filepath,
         MIN(t.start_line) as start_line
       ${fromSql}
       ${whereClause}
@@ -857,7 +866,7 @@ export class TranslationCache {
     const params: (string | number)[] = [];
 
     if (filters?.filename?.trim()) {
-      conditions.push("LOWER(t.filepath) LIKE ?");
+      conditions.push("LOWER(COALESCE(t.filepath, f.filepath)) LIKE ?");
       params.push(`%${filters.filename.trim().toLowerCase()}%`);
     }
     if (filters?.locale?.trim()) {
@@ -873,7 +882,7 @@ export class TranslationCache {
       params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
     }
     if (filters?.source_text?.trim()) {
-      conditions.push("LOWER(t.source_text) LIKE ?");
+      conditions.push("LOWER(COALESCE(t.source_text, f.source_text)) LIKE ?");
       params.push(`%${filters.source_text.trim().toLowerCase()}%`);
     }
     if (filters?.quality_error?.trim()) {

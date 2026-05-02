@@ -1137,6 +1137,8 @@ describe("createTranslationEditorApp", () => {
         qualityError: string;
         errorMessage: string;
         fatal: boolean;
+        filepath: string | null;
+        sourceText: string | null;
       }> = {}
     ) {
       return {
@@ -1147,6 +1149,8 @@ describe("createTranslationEditorApp", () => {
         qualityError: overrides.qualityError ?? "",
         errorMessage: overrides.errorMessage ?? "boom",
         fatal: overrides.fatal ?? false,
+        filepath: overrides.filepath,
+        sourceText: overrides.sourceText,
       };
     }
 
@@ -1220,6 +1224,34 @@ describe("createTranslationEditorApp", () => {
         expect(data.rows[0]?.source_hash).toBe("segA");
         expect(data.rows[0]?.filepath).toBe("docs/guide.md");
         expect(data.rows[0]?.source_text).toBe("Hello segment");
+      });
+    });
+
+    it("GET /api/translation-failures uses filepath/source_text stored on failures when translations row is missing", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.addSegmentFailures([
+        failureRow("orphanSeg", "de", {
+          qualityError: "validation",
+          filepath: "docs/orphan.md",
+          sourceText: "orphan source text",
+        }),
+      ]);
+
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translation-failures?page=1&pageSize=10`);
+        expect(res.ok).toBe(true);
+        const data = (await res.json()) as {
+          rows: Array<{ filepath: string | null; source_text: string | null }>;
+          total: number;
+        };
+        expect(data.total).toBe(1);
+        expect(data.rows[0]?.filepath).toBe("docs/orphan.md");
+        expect(data.rows[0]?.source_text).toBe("orphan source text");
       });
     });
 

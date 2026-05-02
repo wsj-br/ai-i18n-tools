@@ -174,6 +174,10 @@ export interface TranslationFailureInsert {
   qualityError: string;
   errorMessage: string;
   fatal: boolean;
+  /** Cwd-relative doc path for UI when no `translations` row exists yet (or row lacks filepath). */
+  filepath?: string | null;
+  /** Original segment source for UI when the cache row is missing. */
+  sourceText?: string | null;
 }
 
 export interface TranslationFailureListRow {

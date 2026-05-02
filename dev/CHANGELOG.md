@@ -12,6 +12,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 ## [Unreleased]
 
 
+## [1.2.7] - 2026-05-02
+
+- **Fixed**: documentation cache / translation editor — `translation_failures` now stores optional `filepath` and `source_text` when recording doc translation failures, and list/summary queries use `COALESCE` with `translations` so the editor shows file and source for segments that never got a cached translation row (fatal quality/API errors). SQLite schema v3 adds these columns; existing DBs migrate on open.
+
+- **Changed**: CLI `editor` — default HTTP port is now `8675` (previous default `8787` often falls in Windows Hyper-V / excluded TCP ranges such as 8705–8804). If binding fails (`EADDRINUSE`, `EACCES`, etc.), the server retries the next port until one succeeds (up to 1000 attempts) and logs the chosen port.
+
 ## [1.2.6] - 2026-04-28
 
 - **Fixed**: UI translation (`translate-ui` / `sync`) — parallel locale workers no longer each atomically rewrite `strings.json` on Windows (that caused `EPERM` on rename); the catalog is written once per parallel batch (and for a single locale after it finishes). `writeAtomicUtf8` retries rename on Windows for transient `EPERM`/`EACCES`/`EBUSY`.

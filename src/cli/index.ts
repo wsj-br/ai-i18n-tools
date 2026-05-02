@@ -90,6 +90,41 @@ function openBrowser(url: string): void {
   }
 }
 
+/** Default for `editor --port`. Avoids common Windows TCP excluded ranges (e.g. Hyper-V 8705–8804). */
+const DEFAULT_EDITOR_PORT = 8675;
+
+function listenTranslationEditorServer(
+  server: http.Server,
+  requestedPort: number,
+  onListening: (actualPort: number) => void
+): void {
+  const maxPort = Math.min(requestedPort + 999, 65535);
+  let current = requestedPort;
+
+  const attempt = (): void => {
+    server.removeAllListeners("error");
+    server.once("error", (err: NodeJS.ErrnoException) => {
+      const retryable =
+        err.code === "EADDRINUSE" ||
+        err.code === "EACCES" ||
+        err.code === "EPERM" ||
+        err.code === "EADDRNOTAVAIL";
+      if (retryable && current < maxPort) {
+        current += 1;
+        attempt();
+      } else {
+        console.error(chalk.red(`[editor] Failed to bind (port ${current}): ${err.message}`));
+        process.exit(1);
+      }
+    });
+    server.listen(current, "127.0.0.1", () => {
+      server.removeAllListeners("error");
+      onListening(current);
+    });
+  };
+  attempt();
+}
+
 const pkgPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json");
 let version = "0.0.0";
 try {
@@ -1866,13 +1901,13 @@ program
 program
   .command("editor")
   .description("Launch local web UI for cache segments, strings.json, and glossary CSV")
-  .option("-p, --port <n>", "Port", "8787")
+  .option("-p, --port <n>", "Port", String(DEFAULT_EDITOR_PORT))
   .option("--no-open", "Do not open the default browser")
   .action((_opts: { port?: string }, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
-    const port = parseInt(cmdOpts.port || "8787", 10);
+    const port = parseInt(cmdOpts.port || String(DEFAULT_EDITOR_PORT), 10);
     const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
     const stringsPath = config.glossary?.uiGlossary
       ? path.join(projectRoot, config.glossary.uiGlossary)
@@ -1899,8 +1934,16 @@ program
     }
 
     const server = http.createServer(app);
-    server.listen(port, () => {
-      const url = `http://127.0.0.1:${port}/`;
+    listenTranslationEditorServer(server, port, (actualPort) => {
+      console.log(chalk.green(`[editor] Listening on TCP port ${actualPort}`));
+      if (actualPort !== port) {
+        console.log(
+          chalk.yellow(
+            `[editor] Requested port ${port} was unavailable; using port ${actualPort} instead.`
+          )
+        );
+      }
+      const url = `http://127.0.0.1:${actualPort}/`;
       console.log(chalk.green("-------------------------------------------"));
       console.log(chalk.green("  ai-i18n-tools Translation Cache Editor"));
       console.log(chalk.green("-------------------------------------------\n"));

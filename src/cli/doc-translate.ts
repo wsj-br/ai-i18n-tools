@@ -569,7 +569,9 @@ function buildQualityFailureRows(
   model: string,
   modelOrder: number | null,
   errors: readonly string[],
-  fatal: boolean
+  fatal: boolean,
+  filepath: string | null,
+  sourceText: string
 ): TranslationFailureInsert[] {
   return errors.map((errorMessage) => {
     const cleanMessage = sanitizeFailureMessage(errorMessage);
@@ -581,6 +583,8 @@ function buildQualityFailureRows(
       qualityError: summarizeQualityError(errorMessage),
       errorMessage: cleanMessage,
       fatal,
+      filepath,
+      sourceText,
     };
   });
 }
@@ -595,7 +599,9 @@ function buildRuntimeFailureRow(
   model: string | null,
   modelOrder: number | null,
   message: string,
-  fatal: boolean
+  fatal: boolean,
+  filepath: string | null,
+  sourceText: string
 ): TranslationFailureInsert {
   return {
     sourceHash,
@@ -605,6 +611,8 @@ function buildRuntimeFailureRow(
     qualityError: "runtime",
     errorMessage: sanitizeFailureMessage(message),
     fatal,
+    filepath,
+    sourceText,
   };
 }
 
@@ -632,7 +640,9 @@ async function translateSegmentsBatched(
   },
   /** Absolute `cacheDir` path; writes `*-FAILED-TRANSLATION-*.log` on markdown quality failures. */
   failureLogDirAbs?: string | null,
-  failureTracker?: FailureTracker
+  failureTracker?: FailureTracker,
+  /** Cwd-relative source path stored on failure rows for editor UI when cache has no segment yet. */
+  failureDocMeta?: { filepath: string }
 ): Promise<{
   map: Map<string, DocSegmentTranslation>;
   inTok: number;
@@ -694,6 +704,9 @@ async function translateSegmentsBatched(
     const hints = glossary.findTermsInText(hintText, locale);
     const markdownQuality = contentType === "markdown";
     const models = client?.getConfiguredModels() ?? [];
+    const failureFp = failureDocMeta?.filepath ?? null;
+    const failureSrc = (seg: Segment): string =>
+      segmentOriginalContent(seg, originalContentByHash).content;
     const recordFailures = async (rows: TranslationFailureInsert[]) => {
       if (!failureTracker || rows.length === 0) {
         return;
@@ -787,7 +800,9 @@ async function translateSegmentsBatched(
                   models[0] ?? null,
                   modelOrder1Based(models, models[0] ?? null),
                   String(err),
-                  true
+                  true,
+                  failureFp,
+                  failureSrc(s)
                 ),
               ]);
               throw err;
@@ -863,7 +878,9 @@ async function translateSegmentsBatched(
               res.model,
               modelOrder1Based(models, res.model),
               v.errors,
-              nextStart >= models.length
+              nextStart >= models.length,
+              failureFp,
+              origSeg.content
             )
           );
           failedSegments.push({
@@ -982,7 +999,9 @@ async function translateSegmentsBatched(
                   startModel,
                   modelOrder1Based(models, startModel),
                   String(err),
-                  true
+                  true,
+                  failureFp,
+                  failed.original.content
                 ),
               ]);
               throw err;
@@ -1035,7 +1054,9 @@ async function translateSegmentsBatched(
                 single.model,
                 modelOrder1Based(models, single.model),
                 v.errors,
-                nextIdx >= models.length
+                nextIdx >= models.length,
+                failureFp,
+                failed.original.content
               )
             );
             const perSegDetail = [perSegLine];
@@ -1124,7 +1145,9 @@ async function translateSegmentsBatched(
                   startModel,
                   modelOrder1Based(models, startModel),
                   String(err),
-                  true
+                  true,
+                  failureFp,
+                  origSeg.content
                 ),
               ]);
               throw err;
@@ -1175,7 +1198,9 @@ async function translateSegmentsBatched(
                 single.model,
                 modelOrder1Based(models, single.model),
                 v.errors,
-                nextIdx >= models.length
+                nextIdx >= models.length,
+                failureFp,
+                origSeg.content
               )
             );
             const perSegDetail = [perSegLine];
@@ -1453,7 +1478,8 @@ export async function translateMarkdownFile(
       segmentIndicesInDoc,
     },
     opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
-    failureTracker
+    failureTracker,
+    { filepath: translationFilepathMeta }
   );
 
   for (const [h, t] of map) {
@@ -1727,7 +1753,8 @@ export async function translateJsonFile(
       segmentIndicesInDoc,
     },
     undefined,
-    failureTracker
+    failureTracker,
+    { filepath: relPathFromCwd }
   );
 
   for (const [h, t] of map) {
@@ -1967,7 +1994,8 @@ export async function translateSvgAssetFile(
       segmentIndicesInDoc,
     },
     undefined,
-    failureTracker
+    failureTracker,
+    { filepath: translationSvgFilepathMeta }
   );
 
   for (const [h, t] of map) {
