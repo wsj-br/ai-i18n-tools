@@ -304,8 +304,9 @@ Lorsque `markdownOutput.style === "flat"`, les fichiers markdown traduits sont p
 
 Encapsule l'API OpenRouter de complétion de chat. Comportements clés :
 
-- **Rétrogradation du modèle** : tente chaque modèle de la liste résolue dans l'ordre ; passe au suivant en cas d'erreur HTTP ou d'échec d'analyse. La traduction de l'interface utilisateur résout d'abord `ui.preferredModel` s'il est présent, puis les modèles `openrouter`.
-- **Limitation de débit** : détecte les réponses 429, attend `retry-after` (ou 2 s), puis effectue une nouvelle tentative.
+- **Rétrogradation du modèle** : tente chaque modèle de la liste résolue dans l'ordre ; passe au suivant en cas d'erreur HTTP ou d'échec d'analyse. La traduction de l'interface utilisateur résout d'abord `ui.preferredModel` lorsqu'il est présent, puis les modèles `openrouter`.
+- **Délai d'expiration de la requête** : `openrouter.requestTimeoutMs` (par défaut 30 secondes) interrompt chaque requête de complétion conversationnelle via `AbortSignal.timeout`. La même valeur s'applique à `GET /models` lorsque l'interface en ligne de commande charge le catalogue (par exemple `check-models` et le filtre préalable facultatif qui rejette les identifiants de modèle inconnus).
+- **Limitation de débit** : détecte les réponses 429, attend `retry-after` (ou 2 secondes), puis effectue une nouvelle tentative.
 - **Journal de trafic de débogage** : si `debugTrafficFilePath` est défini, ajoute les données JSON de la requête et de la réponse à un fichier.
 
 <a id="config-loading"></a>

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import * as main from "../../src/index.js";
 import * as runtime from "../../src/runtime/index.js";
 

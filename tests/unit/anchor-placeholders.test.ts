@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { protectDocAnchors, restoreDocAnchors } from "../../src/processors/anchor-placeholders.js";
 
 describe("anchor-placeholders", () => {

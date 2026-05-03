@@ -3,6 +3,8 @@ import {
   applyHeadingAnchorsToMarkdown,
   defaultPymdownOptions,
   injectHtmlHeadingAnchors,
+  slugAzureDevOps,
+  slugPymdown,
   type SlugContext,
 } from "../../src/markdown/write-heading-ids-core.js";
 
@@ -116,7 +118,27 @@ describe("injectHtmlHeadingAnchors", () => {
   });
 });
 
+describe("slug helpers", () => {
+  it("slugAzureDevOps adds repetition suffix", () => {
+    expect(slugAzureDevOps("Section", 1)).toContain("-1");
+  });
+
+  it("slugPymdown percent-encodes when requested", () => {
+    const id = slugPymdown("café", 0, {
+      case: "lower",
+      normalize: "nfc",
+      percentEncode: true,
+    });
+    expect(id.startsWith("%")).toBe(true);
+  });
+});
+
 describe("applyHeadingAnchorsToMarkdown", () => {
+  it("returns original markdown when body has no headings", () => {
+    const md = "plain paragraph\n";
+    expect(applyHeadingAnchorsToMarkdown(md, "github")).toBe(md);
+  });
+
   it("preserves YAML front matter", () => {
     const md = `---
 title: T

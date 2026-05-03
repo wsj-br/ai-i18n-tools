@@ -34,14 +34,15 @@ Les deux flux de travail utilisent OpenRouter (n'importe quel LLM compatible) et
 - [Flux de travail 2 - Traduction de documents](#workflow-2---document-translation)
   - [Étape 1 : Initialiser pour la documentation](#step-1-initialise-for-documentation)
   - [Étape 2 : Traduire les documents](#step-2-translate-documents)
-    - [Markdown complexe et échecs des contrôles de qualité](#complex-markdown-and-failed-quality-checks)
+    - [Markdown complexe et échecs des contrôles qualité](#complex-markdown-and-failed-quality-checks)
     - [Comportement du cache et indicateurs `translate-docs`](#cache-behaviour-and-translate-docs-flags)
     - [Format de prompt par lot](#batch-prompt-format)
     - [Dédoublonnage des segments et chemins dans SQLite](#segment-dedupe-and-paths-in-sqlite)
   - [Dispositions de sortie](#output-layouts)
-    - [Liens d'ancre en disposition plate](#anchor-links-in-flat-layout)
+    - [Liens d'ancre dans la disposition plate](#anchor-links-in-flat-layout)
+    - [Images et ressources matricielles dans les documents traduits](#images-and-raster-assets-in-translated-docs)
     - [Espaces réservés `pathTemplate` / `jsonPathTemplate`](#pathtemplate--jsonpathtemplate-placeholders)
-- [Flux de travail combiné (UI + Docs)](#combined-workflow-ui--docs)
+- [Flux de travail combiné (interface utilisateur + documentation)](#combined-workflow-ui--docs)
   - [Flux de documentation mixte (Docusaurus + plat)](#mixed-documentation-workflow-docusaurus--flat)
 - [Éditeur de cache de traduction](#translation-cache-editor)
   - [Échecs (traduction de documents)](#failures-document-translation)
@@ -449,7 +450,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## Flux de travail 2 - Traduction de documents
 
-Conçu pour la documentation en markdown, les sites Docusaurus et les fichiers d'étiquettes JSON. Les ressources SVG autonomes sont traduites via [`translate-svg`](#cli-reference) lorsque `features.translateSVG` est activé et que le bloc `svg` de niveau supérieur est défini — et non via `documentations[].contentPaths`.
+Conçu pour la documentation en markdown, les sites Docusaurus et les fichiers d'étiquettes JSON. Pour les images PNG et autres images matricielles intégrées au markdown, voir [Images et ressources matricielles dans les documents traduits](#images-and-raster-assets-in-translated-docs). Les ressources SVG autonomes sont traduites via [`translate-svg`](#cli-reference) lorsque `features.translateSVG` est activé et que le bloc `svg` de niveau supérieur est défini — et non via `documentations[].contentPaths`.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### Étape 1 : Initialiser pour la documentation
@@ -582,8 +583,8 @@ Ici, la cible du lien est `setup.md`, et `#first-run` est l'ancre : elle doit fa
 
 **Que faire**
 
-1. Exécutez `ai-i18n-tools write-heading-ids` sur votre `.md` **source** / `.mdx` **avant** `translate-docs` (même `documentations[]` / `contentPaths` que d'habitude). Cet outil insère des ancres HTML explicites sur la ligne précédant chaque en-tête, afin que les valeurs `id` soient partagées par chaque version traduite.  
-2. Faites pointer vos **liens d’ancre** Markdown vers ces identifiants stables, par exemple `[label](../other.md#section-id)`, où `section-id` correspond exactement à l’ancre insérée par l’outil — et non à une déduction basée uniquement sur les mots anglais.
+1. Exécutez `ai-i18n-tools write-heading-ids` sur votre source `.md` / `.mdx` avant `translate-docs` (même `documentations[]` / `contentPaths` que d'habitude). Cet outil insère des ancres HTML explicites sur la ligne précédant chaque en-tête, afin que les valeurs `id` soient partagées par chaque version traduite.
+2. Faites pointer vos **liens d'ancre** en markdown vers ces identifiants stables, par exemple `[label](../other.md#section-id)`, où `section-id` correspond à l'ancre insérée par l'outil — et non à une déduction basée uniquement sur les mots anglais.
 
 **Exemple**
 
@@ -609,6 +610,77 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 ```
 
 L'ancre `#tls-configuration` est identique dans toutes les langues car le `id` est fixé dans la source ; seuls le **texte** du titre et l'**étiquette** du lien sont traduits.
+
+<a id="images-and-raster-assets-in-translated-docs"></a>
+#### Images et ressources matricielles dans les documents traduits
+
+`translate-docs` traduit les segments markdown (y compris le texte alternatif des images). Il ne copie **pas** les fichiers matriciels (PNG, JPEG, WebP, GIF) dans votre dossier `outputDir` de documentation. Placez soit les fichiers là où les URL réécrites pointent, soit ajustez les URL après la traduction (généralement avec `markdownOutput.postProcessing.regexAdjustments`).
+
+**SVG** destiné à être utilisé comme ressource illustrée utilise le bloc `svg` et `translate-svg` — voir [`svg` (facultatif)](#svg-optional). Les chemins répertoriés dans `documentations[].contentPaths` concernent le markdown/MDX (et les étiquettes JSON facultatives), pas la traduction de fichiers SVG autonomes.
+
+**Pourquoi la disposition plate nécessite souvent une correction**
+
+Avec `markdownOutput.style` `flat` et la réécriture de liens relatifs par défaut, les liens entre les pages traduites sont réécrits selon la langue. Les liens vers des fichiers non markdown reçoivent un préfixe de profondeur afin de rester relatifs à chaque fichier de sortie (par exemple, `figure.png` à côté de la source peut devenir `../figure.png` dans le fichier traduit). Cette URL ne résout généralement que **dans** le répertoire de sortie. L'interface en ligne de commande (CLI) n'émet pas le fichier binaire à cet emplacement, donc les lecteurs rencontrent une erreur 404 sauf si vous copiez les ressources, les servez ailleurs ou réécrivez le lien. Appliquez vos règles après la traduction : `postProcessing` s'exécute après le réassemblage des segments et la réécriture des liens plats (voir la ligne `markdownOutput.postProcessing` dans [Référence de configuration](#configuration-reference)).
+
+**Modèle 1 — Ressource dans le même dépôt, à côté de la source anglaise (ce package)**
+
+Ce dépôt traduit `docs/GETTING_STARTED.md` en `translated-docs/docs/GETTING_STARTED.<locale>.md`. La source utilise une image sœur, `translation-cache-editor.png`. La réécriture plate ciblerait `translated-docs/translation-cache-editor.png`, qui n'est jamais écrite. Le `ai-i18n-tools.config.json` racine ajoute une règle qui correspond à la partie stable finale de l'image markdown (le segment d'URL `](…)`, pas le texte alternatif traduit) et redirige vers `docs/` :
+
+```json
+{
+  "description": "Editor screenshot: flat link rewrite points to translated-docs/; asset lives in docs/",
+  "search": "\\]\\(\\.\\./translation-cache-editor\\.png\\)",
+  "replace": "](../../docs/translation-cache-editor.png)"
+}
+```
+
+**Modèle 2 — Dossiers de captures d'écran par langue (`examples/nextjs-app`)**
+
+L'exemple Next.js utilise deux blocs `documentations[]` dans `examples/nextjs-app/ai-i18n-tools.config.json`.
+
+- **Documentation Docusaurus** (`markdownOutput.style` `docusaurus`) : les pages anglaises sous `docs-site/docs/` font référence à des captures d'écran avec un segment de langue fixe dans l'URL, par exemple `/img/screenshots/en-GB/screenshot.png` dans `feature-showcase.md`. Le post-traitement remplace ce segment afin que chaque page traduite sous `docs-site/i18n/<locale>/…/current/` accède à son propre dossier :
+
+```json
+{
+  "description": "Per-locale screenshot folders in docs-site static assets",
+  "search": "screenshots/en-GB/",
+  "replace": "screenshots/${translatedLocale}/"
+}
+```
+
+Fournissez les fichiers PNG correspondants dans l'arborescence statique de votre site (par exemple `docs-site/static/img/screenshots/<locale>/` pour les URL commençant par `/img/screenshots/`).
+
+- **README racine, sortie plate** (deuxième bloc `documentations[]` dans le même fichier) : seul `README.md` est traduit, avec `markdownOutput.style` `flat` et `outputDir` `translated-docs`, ce qui donne `translated-docs/README.<locale>.md`. Les images en anglais utilisent souvent un segment de dossier stable au milieu du chemin (par exemple `images/screenshots/en-GB/overview.png`). Un post-traitement remplace le segment de chemin unique situé entre `images/screenshots/` et le reste de l'URL par le `${translatedLocale}` actif, de sorte que chaque README traduit pointe vers `images/screenshots/de/…`, `images/screenshots/fr/…`, etc. Ce modèle diffère de la règle Docusaurus : ici, `search` correspond à **n'importe quel** nom de dossier (`[^/]+/`), et pas seulement à `en-GB/`.
+
+```json
+{
+  "description": "Per-locale screenshot folders under translated-docs",
+  "search": "images/screenshots/[^/]+/",
+  "replace": "images/screenshots/${translatedLocale}/"
+}
+```
+
+Conservez les fichiers PNG sur le disque sous `images/screenshots/<locale>/` (même organisation que celle utilisée par les URL après réécriture).
+
+**Modèle 3 — SVG autonome (`examples/nextjs-app`)**
+
+Le même exemple active `features.translateSVG` et mappe les SVG sources vers le dossier public de l'application web :
+
+```json
+"svg": {
+  "sourcePath": "images",
+  "outputDir": "public/assets",
+  "style": "flat"
+}
+```
+
+Exécutez `translate-svg` (ou `sync`) pour que `images/*.svg` devienne des sorties par langue sous `public/assets/`. Les références markdown pointent vers ces URL indépendamment de `translate-docs`.
+
+**Exemple minimal README uniquement (`examples/console-app`)**
+
+`examples/console-app/ai-i18n-tools.config.json` traduit `README.md` en `translated-docs/` avec uniquement `postProcessing.languageListBlock`. Il ne définit aucune règle d'image — ce qui convient lorsque le README n'a pas de fichiers matriciels associés ou utilise uniquement des URL absolues que votre hébergeur sert déjà.
+
+Les modèles de remplacement prennent en charge des espaces réservés tels que `${translatedLocale}` et `${translatedBasedir}` (liste complète dans la ligne `markdownOutput.postProcessing.regexAdjustments` de [Référence de configuration](#configuration-reference)).
 
 <a id="markdown-output-path-template-placeholders"></a>
 #### Espaces réservés `pathTemplate` / `jsonPathTemplate`
@@ -783,6 +855,8 @@ ai-i18n-tools editor
 
 Cela démarre une interface web locale alimentée par votre base de données SQLite **`cacheDir`** configurée — le même dossier que celui utilisé par la CLI pour les segments de documentation, les journaux et les métadonnées associées. Elle inclut les onglets **Documentation** (segments de doc mis en cache), **Chaînes d'interface**, **Pluriels d'interface**, **Glossaire**, **Échecs** et **Statistiques**.
 
+![Translation Cache Editor](../../docs/translation-cache-editor.png)
+
 Si vous **modifiez des lignes du cache** dans cette application (par exemple des segments de documentation), exécutez `sync --force-update` ou la commande de traduction équivalente avec `--force-update` afin que les sorties sur disque correspondent au cache ; si le **texte source** dans le dépôt change ultérieurement, les hachages des segments changent et les modifications manuelles apportées à l'ancien texte sont remplacées.
 
 <a id="translation-cache-editor-failures"></a>
@@ -870,6 +944,7 @@ Regroupement des segments pour la traduction de documents : nombre de segments p
 | `fallbackModel`     | Modèle de secours unique (obsolète). Utilisé après `defaultModel` si `translationModels` n'est pas défini ou vide.                                                                                                              |
 | `maxTokens`         | Nombre maximal de jetons de complétion par requête. Par défaut : `8192`.                                                                                                                                                              |
 | `temperature`       | Température d'échantillonnage. Par défaut : `0.2`.                                                                                                                                                                            |
+| `requestTimeoutMs` | Durée maximale, en millisecondes, d'attente pour chaque requête HTTP vers OpenRouter (génération de conversations et appels internes `GET /models`). Par défaut : `30000` (30 secondes). |
 
 **Pourquoi utiliser plusieurs modèles :** Différents fournisseurs et modèles ont des coûts variables et offrent des niveaux de qualité différents selon les langues et les paramètres régionaux. Configurez `openrouter.translationModels` **comme une chaîne de secours ordonnée** (plutôt qu'un seul modèle), afin que la CLI puisse essayer le modèle suivant en cas d'échec d'une requête.
 
@@ -887,13 +962,17 @@ Exemple `translationModels` (mêmes valeurs par défaut que `npx ai-i18n-tools i
   "anthropic/claude-3-haiku",
   "qwen/qwen3.6-plus",
   "anthropic/claude-3.5-haiku",
-  "openai/gpt-5.3-codex",
-  "anthropic/claude-sonnet-4.6",
-  "google/gemini-3-flash-preview"
+  "google/gemini-3-flash-preview",
+  "~anthropic/claude-haiku-latest",
+  "google/gemma-4-31b-it",
+  "~anthropic/claude-sonnet-latest",
+  "openai/gpt-5.3-codex"
 ]
 ```
 
 Définissez `OPENROUTER_API_KEY` dans votre environnement ou dans le fichier `.env`.
+
+Avant de changer `translationModels`, exécutez `npx ai-i18n-tools check-models` pour vérifier chaque identifiant de modèle configuré par rapport au catalogue en direct d'OpenRouter (`GET /models`). Il signale les identifiants manquants ou dépassés `expiration_date`, liste les modèles valides avec une estimation des prix d'entrée/sortie (USD par 1M de tokens), et se termine avec un statut non nul lorsque tout identifiant configuré est invalide. Nécessite `OPENROUTER_API_KEY`.
 
 <a id="features"></a>
 ### `features`
@@ -1032,6 +1111,7 @@ npx ai-i18n-tools glossary-generate
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version`                                                                   | Affiche la version de l'interface en ligne de commande et l'horodatage de compilation (les mêmes informations que `-V` / `--version` du programme racine).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`  | Écrire un fichier de configuration de démarrage (inclut `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `documentations[].addFrontmatter`). `--with-translate-ignore` crée un `.translate-ignore` de démarrage.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `check-models` | Valide chaque identifiant de modèle OpenRouter configuré par rapport à `GET /models` (appartenance au catalogue, `expiration_date`, coût en dollars américains par million de jetons pour les invites et les complétions). Nécessite `OPENROUTER_API_KEY`. Se termine avec un statut non nul si un identifiant configuré est manquant ou expiré. Respecte `openrouter.requestTimeoutMs` pour la requête de catalogue. |
 | `extract`                                                                   | Mettre à jour `strings.json` à partir des littéraux `t("…")` / `i18n.t("…")`, d'une description facultative `package.json` et d'entrées facultatives du manifeste `englishName` (voir `ui.reactExtractor`). Nécessite `features.extractUIStrings`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `generate-ui-languages [--master <path>] [--dry-run]`                       | Écrire `ui-languages.json` dans `ui.flatOutputDir` (ou `uiLanguagesPath` si défini) en utilisant `sourceLocale` + `targetLocales` et le `data/ui-languages-complete.json` intégré (ou `--master`). Affiche un avertissement et émet des espaces réservés `TODO` pour les paramètres régionaux manquants dans le fichier maître. Si vous disposez d'un manifeste existant avec des valeurs personnalisées pour `label` ou `englishName`, celles-ci seront remplacées par les valeurs par défaut du catalogue maître — veuillez examiner et ajuster le fichier généré par la suite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `translate-docs …`                                                          | Traduire le markdown/MDX et le JSON pour chaque bloc `documentations` (`contentPaths`, `jsonSource` facultatif). `-j` : nombre maximal de langues en parallèle ; `-b` : nombre maximal d'appels d'API par lot par fichier. `--prompt-format` : format de transmission par lot (`xml` \| `json-array` \| `json-object`). Voir [Comportement du cache et indicateurs `translate-docs`](#cache-behaviour-and-translate-docs-flags) et [Format des invites par lot](#batch-prompt-format).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |

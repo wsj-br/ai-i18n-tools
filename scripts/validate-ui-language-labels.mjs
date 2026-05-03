@@ -108,6 +108,7 @@ async function callModelsWithFallback(apiKey, runtime, userContent) {
           messages,
           provider: OPENROUTER_PROVIDER,
         }),
+        signal: AbortSignal.timeout(runtime.requestTimeoutMs),
       });
       if (!r.ok) {
         const errText = await r.text();

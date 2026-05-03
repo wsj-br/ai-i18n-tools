@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildUiXliffString } from "../../src/cli/export-ui-xliff.js";
-import type { I18nConfig } from "../../src/core/types.js";
+import type { I18nConfig, StringsJsonEntry } from "../../src/core/types.js";
 
 const minimalConfig = {
   sourceLocale: "en-GB",
@@ -36,7 +36,7 @@ describe("buildUiXliffString", () => {
   it("omits target when missing translation", () => {
     const xml = buildUiXliffString(
       minimalConfig,
-      { abc12345: { source: "Hello" } },
+      { abc12345: { source: "Hello" } as StringsJsonEntry },
       "de",
       false,
       "strings"
@@ -67,7 +67,7 @@ describe("buildUiXliffString", () => {
       minimalConfig,
       {
         a: { source: "One", translated: { de: "Eins" } },
-        b: { source: "Two" },
+        b: { source: "Two" } as StringsJsonEntry,
       },
       "de",
       true,
@@ -85,7 +85,7 @@ describe("buildUiXliffString", () => {
         h: {
           source: "Hi",
           locations: [{ file: "src/x.tsx", line: 10 }],
-        },
+        } as StringsJsonEntry,
       },
       "de",
       false,

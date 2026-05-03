@@ -16,13 +16,15 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目录**
 
-- [两个核心工作流程](#two-core-workflows)
+- [两种核心工作流](#two-core-workflows)
 - [安装](#installation)
+  - [使用 CLI](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [快速开始](#quick-start)
-  - [工作流程 1 - 用户界面字符串](#workflow-1---ui-strings)
-  - [工作流程 2 - 文档](#workflow-2---documentation)
-  - [两个工作流程](#both-workflows)
-- [运行时助手](#runtime-helpers)
+  - [工作流 1 - UI 字符串](#workflow-1---ui-strings)
+  - [工作流 2 - 文档](#workflow-2---documentation)
+  - [两种工作流](#both-workflows)
+- [运行时辅助工具](#runtime-helpers)
 - [CLI 命令](#cli-commands)
 - [文档](#documentation)
 - [许可证](#license)
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### 使用 CLI
+
+**按项目安装（推荐）** — 作为依赖项或 devDependency 安装，然后通过 `npx`、`pnpm exec` 或 `package.json` 脚本调用：
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+在 Linux 和 macOS 上，包管理器会以正确的权限写入 `node_modules/.bin/ai-i18n-tools`；在 Windows 上则生成 `.cmd` / `.ps1` shim；脚本运行器会自动识别。
+
+**Bare** `ai-i18n-tools` **在终端中** — `package.json` 脚本在 `PATH` 上运行时已自带 `node_modules/.bin`，因此像 `pnpm run i18n:sync` 这样的命令无需输入 `npx` 即可调用 CLI。若要在交互式 shell 中直接运行 `ai-i18n-tools`（在本地安装后，从项目根目录执行），请将本地 bin 目录添加到 `PATH` 前面：
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+使用 [direnv](https://direnv.net/)，在项目根目录中添加 `PATH_add node_modules/.bin` 到 `.envrc`，以便在 `cd` 进入仓库后可以使用裸命令。无需调整 `PATH`，继续使用 `npx ai-i18n-tools …` 或 `pnpm exec ai-i18n-tools …`。
+
+**零安装一次性执行** — 使用 `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（仅下载该次调用所需的包，不会在 `package.json` 中添加条目）。
+
+在 Linux、macOS 和 WSL 上，注册表安装会自动为 CLI 脚本设置可执行权限。在 Windows 上，包管理器会生成 `.cmd` 和 `.ps1` shim，以显式调用 Node。
+
 设置您的 OpenRouter API 密钥：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+调用 OpenRouter 的命令（`translate-ui`、`translate-docs`、`sync`、`check-models` 及相关脚本）需要在环境中设置 `OPENROUTER_API_KEY`。
+
+在 `ai-i18n-tools.config.json` 中，`openrouter` 对象包含模型列表、`baseUrl`、`maxTokens`、`temperature` 和 `requestTimeoutMs`：即对 OpenRouter 的每个 HTTP 请求（聊天补全和内部 `GET /models` 调用）等待的最长时间（毫秒）。默认值为 `30000`（30 秒）。
+
+运行 `ai-i18n-tools check-models` 以验证每个配置的模型 ID 是否与 OpenRouter 的实时目录相符。它会报告缺失的 ID 或过期的 `expiration_date`，列出有效模型及其估计的输入/输出定价（每百万个令牌的美元），并在任何配置的 ID 无效时以非零状态退出。它需要 `OPENROUTER_API_KEY`。
 
 ---
 
@@ -162,6 +213,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

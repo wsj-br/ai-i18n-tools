@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
@@ -269,6 +270,19 @@ describe("plural prompt builders and parsers", () => {
     expect(() => parsePluralFormsJsonResponse('{"one":"1 Datei"}', ["one", "other"])).toThrow(
       PluralFormsParseError
     );
+  });
+
+  it("parsePluralFormsJsonResponse rejects invalid JSON and non-objects", () => {
+    expect(() => parsePluralFormsJsonResponse("not-json", ["one"])).toThrow(PluralFormsParseError);
+    expect(() => parsePluralFormsJsonResponse("[1,2]", ["one"])).toThrow(PluralFormsParseError);
+  });
+
+  it("parseBatchJsonObjectResponse rejects invalid JSON", () => {
+    expect(() => parseBatchJsonObjectResponse("{", 1)).toThrow(DocumentBatchJsonParseError);
+  });
+
+  it("parseUIJsonArrayResponse rejects invalid JSON", () => {
+    expect(() => parseUIJsonArrayResponse("{", 1)).toThrow(UIJsonArrayParseError);
   });
 });
 

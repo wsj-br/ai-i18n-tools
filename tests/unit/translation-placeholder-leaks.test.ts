@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { hasInternalPlaceholderLeak } from "../../src/processors/translation-placeholder-leaks.js";
 
 describe("hasInternalPlaceholderLeak", () => {

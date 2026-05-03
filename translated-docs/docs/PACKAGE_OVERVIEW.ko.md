@@ -304,8 +304,9 @@ SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 �
 
 OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 
-- **모델 폴백**: 확인된 목록의 각 모델을 순서대로 시도하며, HTTP 오류나 구문 분석 실패 시 폴백합니다. UI 번역은 존재할 경우 먼저 `ui.preferredModel`을 확인하고, 그다음 `openrouter` 모델을 확인합니다.
-- **속도 제한**: 429 응답을 감지하면 `retry-after` 동안(또는 2초 동안) 대기한 후 한 번 재시도합니다.
+- **모델 폴백**: 확인된 목록에 있는 각 모델을 순서대로 시도하며, HTTP 오류 또는 구문 분석 실패 시 폴백합니다. UI 번역은 존재할 경우 먼저 `ui.preferredModel`, 그다음 `openrouter` 모델을 확인합니다.
+- **요청 타임아웃**: `openrouter.requestTimeoutMs`(기본값 30초)이 `AbortSignal.timeout`를 통해 각 채팅 완성 요청을 중단합니다. 동일한 값이 CLI가 카탈로그를 로드할 때 `GET /models`에도 적용됩니다(예: `check-models` 및 알 수 없는 모델 ID를 제거하는 선택적 사전 필터).
+- **속도 제한**: 429 응답을 감지하면 `retry-after`(또는 2초) 동안 대기한 후 한 번 재시도합니다.
 - **디버그 트래픽 로그**: `debugTrafficFilePath`이 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다.
 
 <a id="config-loading"></a>

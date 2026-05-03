@@ -29,8 +29,7 @@ export default tseslint.config(
       sourceType: "module",
       globals: globals.node,
       parserOptions: {
-        // Root `tsconfig.json` only includes `src/`; ESLint uses `tsconfig.eslint.json` (`src/` + `tests/`).
-        project: ["./tsconfig.eslint.json"],
+        project: ["./tsconfig.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -61,7 +60,7 @@ export default tseslint.config(
         vi: true,
       },
       parserOptions: {
-        project: ["./tsconfig.eslint.json"],
+        project: ["./tsconfig.tests.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -75,9 +74,9 @@ export default tseslint.config(
     },
   },
   {
-    files: ["src/**/*.ts", "tests/**/*.ts"],
+    files: ["src/**/*.ts"],
     rules: {
-      // Type-aware parsing is on (`projectService`); keep only rules that pay off here. These `@typescript-eslint` presets assume stricter hygiene than this CLI-heavy codebase provides (Commander `any`, JSON `unknown`, intentional `async` without `await`, etc.).
+      // Production code: still allow `any` at JSON/CLI boundaries; stricter than tests for async hygiene.
       "@typescript-eslint/no-base-to-string": "off",
       "@typescript-eslint/no-redundant-type-constituents": "off",
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
@@ -88,6 +87,26 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/require-await": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
+    },
+  },
+  {
+    files: ["tests/**/*.ts"],
+    rules: {
+      // Tests: allow loose `any`, Commander-style patterns, and Vitest ergonomics without noisy reports.
+      "@typescript-eslint/no-base-to-string": "off",
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
     },
   },
   {

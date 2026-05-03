@@ -113,6 +113,7 @@ export class OpenRouterClient {
   private readonly sourceLanguageLabel: string;
   private readonly httpReferer: string;
   private readonly xTitle: string;
+  private readonly requestTimeoutMs: number;
 
   constructor(opts: OpenRouterClientOptions) {
     this.apiKey = opts.apiKey ?? process.env.OPENROUTER_API_KEY ?? "";
@@ -147,6 +148,7 @@ export class OpenRouterClient {
     this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
+    this.requestTimeoutMs = opts.config.openrouter.requestTimeoutMs ?? 30_000;
   }
 
   getConfiguredModels(): readonly string[] {
@@ -233,7 +235,7 @@ export class OpenRouterClient {
       this.appendDebugLog("request", requestPayload);
     }
 
-    let response = await fetch(`${this.baseUrl}/chat/completions`, {
+    const fetchOpts: RequestInit = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
@@ -242,19 +244,16 @@ export class OpenRouterClient {
         "X-Title": this.xTitle,
       },
       body: JSON.stringify(requestPayload),
-    });
+      signal: AbortSignal.timeout(this.requestTimeoutMs),
+    };
+
+    let response = await fetch(`${this.baseUrl}/chat/completions`, fetchOpts);
 
     if (response.status === 429) {
       await this.handleRateLimit(response);
       response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": this.httpReferer,
-          "X-Title": this.xTitle,
-        },
-        body: JSON.stringify(requestPayload),
+        ...fetchOpts,
+        signal: AbortSignal.timeout(this.requestTimeoutMs),
       });
     }
 

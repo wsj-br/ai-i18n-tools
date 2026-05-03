@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "../../src/processors/url-placeholders.js";
 
 describe("url-placeholders", () => {

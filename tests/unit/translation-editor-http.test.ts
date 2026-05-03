@@ -52,6 +52,27 @@ describe("createTranslationEditorApp", () => {
     });
   });
 
+  it("GET /api/stats returns 500 when strings.json is not valid JSON", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-stats-bad-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(sj, "{ not json", "utf8");
+    try {
+      const app = createTranslationEditorApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/stats`);
+        expect(res.status).toBe(500);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("GET /api/stats returns cache, uiStrings, and glossary aggregates", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("abc", "de", "src", "dst", "m1", "f.md", 1);
@@ -1401,6 +1422,484 @@ describe("createTranslationEditorApp", () => {
         const l = (await list.json()) as { total: number };
         expect(l.total).toBe(1);
       });
+    });
+  });
+
+  describe("translation-editor branch coverage", () => {
+    it("GET /api/translation-failures?fatal=true only returns fatal rows", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("f1", "de", "a", "b", "m", "a.md", 1);
+      cache.addSegmentFailures([
+        {
+          sourceHash: "f1",
+          locale: "de",
+          model: "m",
+          modelOrder: 1,
+          qualityError: "",
+          errorMessage: "fatal err",
+          fatal: true,
+          filepath: null,
+          sourceText: null,
+        },
+        {
+          sourceHash: "f1",
+          locale: "de",
+          model: "m",
+          modelOrder: 2,
+          qualityError: "",
+          errorMessage: "soft err",
+          fatal: false,
+          filepath: null,
+          sourceText: null,
+        },
+      ]);
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translation-failures?fatal=true`);
+        const data = (await res.json()) as { total: number };
+        expect(data.total).toBe(1);
+      });
+    });
+
+    it("GET /api/translation-failures/summary?fatal=true applies fatal filter", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.setSegment("sumF", "de", "a", "b", "m", "x.md", 1);
+      cache.addSegmentFailures([
+        {
+          sourceHash: "sumF",
+          locale: "de",
+          model: "m",
+          modelOrder: 1,
+          qualityError: "",
+          errorMessage: "e",
+          fatal: true,
+          filepath: null,
+          sourceText: null,
+        },
+      ]);
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translation-failures/summary?fatal=true`);
+        expect(res.ok).toBe(true);
+        const s = (await res.json()) as { segmentsWithFailure: number };
+        expect(s.segmentsWithFailure).toBe(1);
+      });
+    });
+
+    it("POST /api/log-links defaults line suffix to :1 when start_line omitted", async () => {
+      cache = new TranslationCache(":memory:");
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        jsonSource: "docs/i18n/en",
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/log-links`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filepath: "page.json", locale: "de" }),
+        });
+        expect(res.ok).toBe(true);
+      });
+    });
+
+    it("POST /api/ui-log-links uses empty locations when omitted", async () => {
+      cache = new TranslationCache(":memory:");
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/ui-log-links`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        expect(res.ok).toBe(true);
+      });
+    });
+
+    it("POST /api/ui-log-links skips entries without filepath", async () => {
+      cache = new TranslationCache(":memory:");
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/ui-log-links`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locations: [{ line: 3 }, { filepath: "ok.tsx", line: 1 }] }),
+        });
+        expect(res.ok).toBe(true);
+      });
+    });
+
+    it("GET /api/ui-strings tolerates rows missing translated or source", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-sparse-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({
+          sparse: { translated: { de: "d" } },
+          nosrc: { source: "", translated: {} },
+        }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: sj,
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings`);
+          expect(res.ok).toBe(true);
+          const data = (await res.json()) as {
+            entries: Array<{ id: string; source: string }>;
+          };
+          expect(data.entries.find((e) => e.id === "sparse")?.source).toBe("");
+          expect(data.entries.find((e) => e.id === "nosrc")?.source).toBe("");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH /api/ui-strings returns 404 for unknown id", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-patch-404-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(sj, JSON.stringify({ a: { source: "s", translated: {} } }), "utf8");
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings/nope`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ translated: { de: "x" } }),
+          });
+          expect(res.status).toBe(404);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH /api/ui-strings can update source without translated", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-patch-src-only-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({ k: { source: "old", translated: { de: "hallo" } } }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings/k`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ source: "new source" }),
+          });
+          expect(res.ok).toBe(true);
+          const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+            k: { source: string; translated: { de: string } };
+          };
+          expect(doc.k.source).toBe("new source");
+          expect(doc.k.translated.de).toBe("hallo");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH /api/ui-strings returns 400 when plural form value is not a string", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-plural-bad-type-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({
+          pg: {
+            plural: true,
+            source: "n",
+            translated: { de: { one: "1", other: "2" } },
+          },
+        }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings/pg`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ translated: { de: { other: 42 } } }),
+          });
+          expect(res.status).toBe(400);
+          const body = (await res.json()) as { error: string };
+          expect(body.error).toMatch(/must be a string/);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("DELETE /api/ui-strings returns 404 when locale has no translation", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-del-no-locale-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({ x: { source: "a", translated: { de: "b" } } }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de", "fr"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings/x`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ locale: "fr" }),
+          });
+          expect(res.status).toBe(404);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("POST /api/ui-strings/delete-rows skips dup keys and empty ids", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-bulk-skip-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({ z: { source: "a", translated: { de: "b", fr: "c" } } }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de", "fr"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings/delete-rows`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              rows: [
+                { id: "", locale: "de" },
+                { id: "z", locale: "de" },
+                { id: "z", locale: "de" },
+                { id: "ghost", locale: "de" },
+              ],
+            }),
+          });
+          expect(res.ok).toBe(true);
+          const data = (await res.json()) as { deleted: number };
+          expect(data.deleted).toBe(1);
+          const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
+            z: { translated: Record<string, string> };
+          };
+          expect(doc.z.translated.de).toBe(undefined);
+          expect(doc.z.translated.fr).toBe("c");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("GET /api/glossary-user maps legacy lowercase CSV columns", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-legacy-"));
+      const gp = path.join(dir, "g.csv");
+      fs.writeFileSync(
+        gp,
+        "en,locale,translation,force\nLegacy term,de,Legacy übersetzung,yes\n",
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          glossaryUserPath: "g.csv",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/glossary-user`);
+          expect(res.ok).toBe(true);
+          const data = (await res.json()) as {
+            rows: Array<{
+              "Original language string": string;
+              Translation: string;
+              force: string;
+            }>;
+          };
+          const row = data.rows.find((r) => r["Original language string"] === "Legacy term");
+          expect(row?.Translation).toBe("Legacy übersetzung");
+          expect(row?.force).toBe("yes");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("POST /api/glossary-user escapes CSV cells with commas", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-csv-esc-"));
+      const gp = path.join(dir, "g.csv");
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          glossaryUserPath: "g.csv",
+        });
+        await withHttpServer(app, async (base) => {
+          const post = await fetch(`${base}/api/glossary-user`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              original: 'Hello, "world"',
+              locale: "de",
+              translation: "Hallo, Welt",
+            }),
+          });
+          expect(post.ok).toBe(true);
+          const raw = fs.readFileSync(gp, "utf8");
+          expect(raw).toContain('"Hello, ""world"""');
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH /api/glossary-user preserves force when force omitted", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-force-keep-"));
+      const gp = path.join(dir, "g.csv");
+      fs.writeFileSync(
+        gp,
+        "Original language string,locale,Translation,Force\nfoo,de,bar,keep-me\n",
+        "utf8"
+      );
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          glossaryUserPath: "g.csv",
+        });
+        await withHttpServer(app, async (base) => {
+          const patch = await fetch(`${base}/api/glossary-user/0`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              original: "foo",
+              locale: "de",
+              translation: "bar2",
+            }),
+          });
+          expect(patch.ok).toBe(true);
+          const raw = fs.readFileSync(gp, "utf8");
+          expect(raw).toContain("keep-me");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("uses absolute stringsJsonPath and glossaryUserPath when provided", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-abs-paths-"));
+      const sj = path.join(dir, "strings.json");
+      const gv = path.join(dir, "glossary-user.csv");
+      fs.writeFileSync(sj, JSON.stringify({}), "utf8");
+      fs.writeFileSync(gv, "Original language string,locale,Translation,Force\n", "utf8");
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: "/tmp",
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: sj,
+          glossaryUserPath: gv,
+        });
+        await withHttpServer(app, async (base) => {
+          const um = await fetch(`${base}/api/ui-strings/meta`);
+          const gm = await fetch(`${base}/api/glossary-user/meta`);
+          const u = (await um.json()) as { path: string | null; available: boolean };
+          const g = (await gm.json()) as { path: string | null; available: boolean };
+          expect(u.path).toBe(sj);
+          expect(u.available).toBe(true);
+          expect(g.path).toBe(gv);
+          expect(g.available).toBe(true);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH /api/glossary-user/-1 returns 400 for invalid index", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-neg-"));
+      const gp = path.join(dir, "g.csv");
+      fs.writeFileSync(gp, "Original language string,locale,Translation,Force\na,de,b,\n", "utf8");
+      try {
+        const app = createTranslationEditorApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          glossaryUserPath: "g.csv",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/glossary-user/-1`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ original: "x", locale: "de", translation: "y" }),
+          });
+          expect(res.status).toBe(400);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
     });
   });
 });

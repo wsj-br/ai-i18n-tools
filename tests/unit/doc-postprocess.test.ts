@@ -2,7 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { describe, expect, it, vi } from "vitest";
-import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config";
+import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
 import {
   applyMarkdownPostProcessing,
   applyRegexAdjustmentsToBody,
@@ -12,7 +12,7 @@ import {
   interpolateAdjustmentTemplate,
   parseAdjustmentSearchToRegExp,
   replaceLanguageListBlockInBody,
-} from "../../src/processors/doc-postprocess";
+} from "../../src/processors/doc-postprocess.js";
 
 describe("doc-postprocess", () => {
   it("parseAdjustmentSearchToRegExp uses plain pattern with g flag", () => {
@@ -58,7 +58,12 @@ describe("doc-postprocess", () => {
   });
 
   it("extractLanguageListBlock finds line-bounded block", () => {
-    const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
+    const cfg = {
+      start: '<small id="lang-list">',
+      end: "</small>",
+      separator: " · ",
+      label: "english" as const,
+    };
     const body = 'Intro\n<small id="lang-list">old</small>\nRest';
     const ext = extractLanguageListBlock(body, cfg);
     expect(ext).not.toBeNull();
@@ -66,12 +71,12 @@ describe("doc-postprocess", () => {
   });
 
   it("extractLanguageListBlock returns null when start missing", () => {
-    const cfg = { start: "<!--X-->", end: "<!--/X-->", separator: "" };
+    const cfg = { start: "<!--X-->", end: "<!--/X-->", separator: "", label: "english" as const };
     expect(extractLanguageListBlock("no markers", cfg)).toBeNull();
   });
 
   it("extractLanguageListBlock spans lines when end on later line", () => {
-    const cfg = { start: "<!--A-->", end: "<!--/A-->", separator: "" };
+    const cfg = { start: "<!--A-->", end: "<!--/A-->", separator: "", label: "english" as const };
     const body = "x\n<!--A-->\nmid\n<!--/A-->\nz";
     const ext = extractLanguageListBlock(body, cfg);
     expect(ext).not.toBeNull();
@@ -79,7 +84,12 @@ describe("doc-postprocess", () => {
   });
 
   it("extractLanguageListBlock ignores start/end markers inside fenced code blocks", () => {
-    const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
+    const cfg = {
+      start: '<small id="lang-list">',
+      end: "</small>",
+      separator: " · ",
+      label: "english" as const,
+    };
     const body = [
       "```json",
       '  "markdownOutput": {',
@@ -103,14 +113,24 @@ describe("doc-postprocess", () => {
   });
 
   it("replaceLanguageListBlockInBody returns replaced false when block missing", () => {
-    const cfg = { start: "<!--MISS-->", end: "<!--/MISS-->", separator: "" };
+    const cfg = {
+      start: "<!--MISS-->",
+      end: "<!--/MISS-->",
+      separator: "",
+      label: "english" as const,
+    };
     const { body, replaced } = replaceLanguageListBlockInBody("hello", cfg, "new");
     expect(replaced).toBe(false);
     expect(body).toBe("hello");
   });
 
   it("replaceLanguageListBlockInBody replaces block", () => {
-    const cfg = { start: '<small id="lang-list">', end: "</small>", separator: " · " };
+    const cfg = {
+      start: '<small id="lang-list">',
+      end: "</small>",
+      separator: " · ",
+      label: "english" as const,
+    };
     const body = 'X\n<small id="lang-list">old</small>\nY';
     const { body: next, replaced } = replaceLanguageListBlockInBody(
       body,
@@ -145,6 +165,7 @@ describe("doc-postprocess", () => {
                   start: "<!--LL-->",
                   end: "<!--/LL-->",
                   separator: " | ",
+                  label: "english",
                 },
               },
             },
@@ -308,6 +329,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
                   start: "<!--LL-->",
                   end: "<!--/LL-->",
                   separator: " | ",
+                  label: "english",
                 },
               },
             },
@@ -344,7 +366,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
   });
 
   it("extractLanguageListBlock same-line start and end", () => {
-    const cfg = { start: "<s>", end: "</s>", separator: "" };
+    const cfg = { start: "<s>", end: "</s>", separator: "", label: "english" as const };
     const ext = extractLanguageListBlock("pre\n<s>one line</s>\npost", cfg);
     expect(ext).not.toBeNull();
     expect(ext!.startLine).toBe(ext!.endLine);

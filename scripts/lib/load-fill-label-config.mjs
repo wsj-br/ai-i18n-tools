@@ -76,6 +76,7 @@ export function findAiI18nConfigPath(explicitPath) {
  *   models: string[],
  *   maxTokens: number,
  *   temperature: number,
+ *   requestTimeoutMs: number,
  *   batchSize: number,
  *   concurrency: number,
  * }}
@@ -109,6 +110,13 @@ export function getFillLabelRuntimeOptions(opts = {}) {
   const temperature =
     typeof or.temperature === "number" && Number.isFinite(or.temperature) ? or.temperature : 0.2;
 
+  const requestTimeoutMs =
+    typeof or.requestTimeoutMs === "number" &&
+    Number.isFinite(or.requestTimeoutMs) &&
+    or.requestTimeoutMs > 0
+      ? Math.floor(or.requestTimeoutMs)
+      : 30_000;
+
   const defaultBatch =
     typeof cfg?.batchSize === "number" && cfg.batchSize > 0 ? Math.floor(cfg.batchSize) : 12;
   const defaultConc =
@@ -127,6 +135,7 @@ export function getFillLabelRuntimeOptions(opts = {}) {
     models,
     maxTokens,
     temperature,
+    requestTimeoutMs,
     batchSize,
     concurrency,
   };

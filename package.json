@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "packageManager": "pnpm@10.33.2",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
@@ -30,12 +30,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node scripts/write-build-info.mjs && tsc && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs",
+    "build": "node scripts/write-build-info.mjs && tsc && node scripts/chmod-cli-bin.mjs && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs",
     "build:ui-languages-master": "node --env-file-if-exists=.env scripts/build-ui-languages-complete.mjs",
     "dev": "node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs && tsc --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
-    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json",
+    "lint": "eslint . && pnpm run typecheck",
     "lint:fix": "eslint . --fix",
     "lint:md": "markdownlint \"*.md\" \"dev/*.md\" \"docs/*.md\" \"examples/console-app/*.md\" \"examples/nextjs-app/*.md\" \"examples/nextjs-app/docs-site/docs/*.md\"",
     "lint:md:fix": "markdownlint \"*.md\" \"dev/*.md\" \"docs/*.md\" \"examples/console-app/*.md\" \"examples/nextjs-app/*.md\" \"examples/nextjs-app/docs-site/docs/*.md\" -f",
@@ -78,7 +79,7 @@
   },
   "homepage": "https://github.com/wsj-br/ai-i18n-tools#readme",
   "dependencies": {
-    "@babel/parser": "^7.29.2",
+    "@babel/parser": "^7.29.3",
     "@babel/types": "^7.29.0",
     "chalk": "^5.6.2",
     "commander": "^14.0.3",
@@ -93,7 +94,7 @@
     "micromark-extension-gfm": "^3.0.0",
     "remove-markdown": "^0.6.3",
     "unist-util-visit": "^5.1.0",
-    "zod": "^4.3.6"
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -102,12 +103,12 @@
     "@types/node": "^25.6.0",
     "@types/unist": "^3.0.3",
     "@vitest/coverage-v8": "^4.1.5",
-    "eslint": "^10.2.1",
-    "globals": "^17.5.0",
+    "eslint": "^10.3.0",
+    "globals": "^17.6.0",
     "markdownlint-cli": "^0.48.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.0",
+    "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5"
   },
   "peerDependencies": {

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { SvgExtractor } from "../../src/extractors/svg-extractor.js";
 import type { Segment } from "../../src/core/types.js";
 

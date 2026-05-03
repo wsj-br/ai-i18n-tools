@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { resolveSegmentLogFilepath } from "../../src/server/translation-editor.js";
 
 describe("resolveSegmentLogFilepath", () => {

@@ -305,6 +305,7 @@ When `markdownOutput.style === "flat"`, translated markdown files are placed alo
 Wraps the OpenRouter chat completions API. Key behaviours:
 
 - **Model fallback**: tries each model in the resolved list in order; falls back on HTTP errors or parse failures. UI translation resolves `ui.preferredModel` first when present, then `openrouter` models.
+- **Request timeout**: `openrouter.requestTimeoutMs` (default 30 seconds) aborts each chat-completion request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads the catalog (for example `check-models` and the optional pre-flight filter that drops unknown model ids).
 - **Rate limiting**: detects 429 responses, waits `retry-after` (or 2s), retries once.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.
 

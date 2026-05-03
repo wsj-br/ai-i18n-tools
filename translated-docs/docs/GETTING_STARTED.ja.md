@@ -35,11 +35,12 @@
   - [ステップ1: ドキュメント用に初期化](#step-1-initialise-for-documentation)
   - [ステップ 2: ドキュメントの翻訳](#step-2-translate-documents)
     - [複雑なMarkdownと品質チェックの失敗](#complex-markdown-and-failed-quality-checks)
-    - [キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)
-    - [バッチプロンプトの形式](#batch-prompt-format)
+    - [キャッシュの動作と `translate-docs` フラグ](#cache-behaviour-and-translate-docs-flags)
+    - [バッチプロンプトのフォーマット](#batch-prompt-format)
     - [SQLiteにおけるセグメントの重複排除とパス](#segment-dedupe-and-paths-in-sqlite)
   - [出力レイアウト](#output-layouts)
-    - [フラットレイアウトでのアンカーリンク](#anchor-links-in-flat-layout)
+    - [フラットレイアウト内のアンカーリンク](#anchor-links-in-flat-layout)
+    - [翻訳されたドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)
     - [`pathTemplate` / `jsonPathTemplate` プレースホルダー](#pathtemplate--jsonpathtemplate-placeholders)
 - [統合ワークフロー (UI + ドキュメント)](#combined-workflow-ui--docs)
   - [混合ドキュメントワークフロー (Docusaurus + フラット)](#mixed-documentation-workflow-docusaurus--flat)
@@ -449,7 +450,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## ワークフロー2 - 文書翻訳
 
-Markdownドキュメント、Docusaurusサイト、JSONラベルファイル向けに設計されています。スタンドアロンのSVGアセットは、`features.translateSVG`が有効で、トップレベルの`svg`ブロックが設定されている場合に[`translate-svg`](#cli-reference)を通じて翻訳されます。`documentations[].contentPaths`では翻訳されません。
+Markdownドキュメント、Docusaurusサイト、JSONラベルファイル向けに設計されています。Markdownに埋め込まれたPNGその他のラスターアイメージについては、[翻訳されたドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)を参照してください。スタンドアロンのSVGアセットは、`features.translateSVG`が有効で、最上位の`svg`ブロックが設定されている場合に、`documentations[].contentPaths`ではなく[`translate-svg`](#cli-reference)を通じて翻訳されます。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### ステップ1：ドキュメント用に初期化
@@ -582,8 +583,8 @@ Read the [installation checklist](../setup.md#first-run) before you deploy.
 
 **対処方法**
 
-1. `ai-i18n-tools write-heading-ids`をあなたの**ソース** `.md` / `.mdx` **の前に** `translate-docs`を実行します（通常と同じ`documentations[]` / `contentPaths`）。これは、各見出しの前の行に明示的なHTMLアンカーを挿入し、すべての翻訳コピーで`id`の値が共有されるようにします。
-2. あなたのマークダウン**アンカーリンク**をそれらの安定したID、例えば`[label](../other.md#section-id)`に向けて設定します。ここで`section-id`はツールが書いたアンカーと一致します — 英単語だけからの推測ではありません。
+1. `translate-docs` の前（通常通りの同じ `documentations[]` / `contentPaths`）に、ソースの `.md` / `.mdx` で `ai-i18n-tools write-heading-ids` を実行します。これにより、各見出しの前の行に明示的なHTMLアンカーが挿入され、`id` 値がすべての翻訳コピーで共有されます。
+2. マークダウンの**アンカーリンク**をそれらの固定IDを指すようにしてください。たとえば `[label](../other.md#section-id)` のように記述します。ここで `section-id` は、ツールが書き込んだアンカーと一致している必要があります。英語の単語から推測したものではなく、正確に一致させる必要があります。
 
 **例**
 
@@ -609,6 +610,77 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 ```
 
 `#tls-configuration`アンカーは、`id`がソースで固定されているため、すべてのロケールで同じです。見出しの**テキスト**とリンクの**ラベル**のみが翻訳されます。
+
+<a id="images-and-raster-assets-in-translated-docs"></a>
+#### 翻訳されたドキュメント内の画像およびラスターアセット
+
+`translate-docs` はMarkdownセグメント（画像のaltテキストを含む）を翻訳します。ただし、ラスターファイル（PNG、JPEG、WebP、GIF）をドキュメントに**コピーしません**。ファイルを書き換えられたURLが指す場所に配置するか、翻訳後にURLを調整してください（通常は`markdownOutput.postProcessing.regexAdjustments`を使用して）。`outputDir`。
+
+**図版として使用されるSVG**は`svg`ブロックと`translate-svg`を使用します — [`svg` (オプション)](#svg-optional)を参照してください。`documentations[].contentPaths`にリストされたパスは、スタンドアロンのSVG翻訳ではなく、Markdown/MDX（およびオプションのJSONラベル）用です。
+
+**フラットレイアウトで修正が必要になることが多い理由**
+
+`markdownOutput.style` `flat` とデフォルトの相対リンク書き換えにより、翻訳されたページ間のリンクはロケールごとに書き換えられます。非マークダウンファイルへのリンクには、各出力ファイルに対して相対的な位置を保つために深さプレフィックスが付与されます（例えば、ソースファイルの横にある `figure.png` は、翻訳されたファイル内で `../figure.png` になる可能性があります）。そのURLは通常、出力ディレクトリー**内**でのみ解決されます。CLIはバイナリをそこに出力しないため、アセットをコピーするか、別の場所で提供するか、リンクを書き換えない限り、読者はファイルが見つからない状態になります。変換後にルールをフックしてください：`postProcessing` はセグメントの再構築とフラットリンク書き換えの後に実行されます（[設定リファレンス](#configuration-reference) の `markdownOutput.postProcessing` 行を参照してください）。
+
+**パターン1 — 英語ソース横に同じリポジトリ内のアセットを配置（このパッケージ）**
+
+このリポジトリは`docs/GETTING_STARTED.md`を`translated-docs/docs/GETTING_STARTED.<locale>.md`に翻訳します。ソースは兄弟画像`translation-cache-editor.png`を使用しています。フラット書き換えでは`translated-docs/translation-cache-editor.png`をターゲットにしますが、これは書き出されません。ルートの`ai-i18n-tools.config.json`は、Markdown画像の安定した末尾部分（翻訳された代替テキストではなく、`](…)`URLセグメント）に一致するルールを追加し、`docs/`に戻るように指定しています：
+
+```json
+{
+  "description": "Editor screenshot: flat link rewrite points to translated-docs/; asset lives in docs/",
+  "search": "\\]\\(\\.\\./translation-cache-editor\\.png\\)",
+  "replace": "](../../docs/translation-cache-editor.png)"
+}
+```
+
+**パターン2 — ロケールごとのスクリーンショットフォルダー（`examples/nextjs-app`）**
+
+Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`documentations[]`ブロックを使用しています。
+
+- **Docusaurusドキュメント** (`markdownOutput.style` `docusaurus`)：`docs-site/docs/`以下の英語ページは、URLに固定されたロケールセグメントを使用してスクリーンショットを参照します。たとえば、`feature-showcase.md`内の`/img/screenshots/en-GB/screenshot.png`です。ポストプロセッシングでそのセグメントを置き換えることで、`docs-site/i18n/<locale>/…/current/`以下の各翻訳ページがそれぞれのフォルダーを解決できるようにします：
+
+```json
+{
+  "description": "Per-locale screenshot folders in docs-site static assets",
+  "search": "screenshots/en-GB/",
+  "replace": "screenshots/${translatedLocale}/"
+}
+```
+
+サイトの静的ツリー内に一致するPNGを配置してください（たとえば、`/img/screenshots/`で始まるURLに対して`docs-site/static/img/screenshots/<locale>/`）。
+
+- **ルートのREADME、フラット出力**（同じファイル内の2番目の`documentations[]`ブロック）：`README.md`のみが翻訳され、`markdownOutput.style` `flat`および`outputDir` `translated-docs`が付随するため、結果として`translated-docs/README.<locale>.md`が得られます。英語版の画像では、パスの中間に安定したフォルダー名のセグメントを使用することがよくあります（たとえば`images/screenshots/en-GB/overview.png`）。後処理により、`images/screenshots/`とURLの残りの部分の間に位置する単一のパスセグメントが、現在有効な`${translatedLocale}`に置き換えられるため、各翻訳されたREADMEはそれぞれ`images/screenshots/de/…`、`images/screenshots/fr/…`などを参照します。このパターンはDocusaurusのルールとは異なります。ここでは`search`は**任意の**フォルダー名（`[^/]+/`）に一致し、`en-GB/`に限定されません。
+
+```json
+{
+  "description": "Per-locale screenshot folders under translated-docs",
+  "search": "images/screenshots/[^/]+/",
+  "replace": "images/screenshots/${translatedLocale}/"
+}
+```
+
+`images/screenshots/<locale>/`の下にディスク上にPNGファイルを維持してください（URLを書き換えた後に使用されるのと同じレイアウト）。
+
+**パターン3 — スタンドアロンSVG（`examples/nextjs-app`）**
+
+同じ例では`features.translateSVG`が有効になっており、ソースSVGはWebアプリのpublicフォルダーにマッピングされています：
+
+```json
+"svg": {
+  "sourcePath": "images",
+  "outputDir": "public/assets",
+  "style": "flat"
+}
+```
+
+`translate-svg`（または`sync`）を実行して、`images/*.svg`が`public/assets/`以下のロケールごとの出力になります。MarkdownはそれらのURLを`translate-docs`とは別に参照します。
+
+**最小限のREADME専用の例（`examples/console-app`）**
+
+`examples/console-app/ai-i18n-tools.config.json`は`README.md`を`translated-docs/`に`postProcessing.languageListBlock`のみで翻訳します。READMEに兄弟のラスターファイルがなく、またはホストが既に提供している絶対URLのみを使用する場合に適しています。
+
+置換テンプレートは`${translatedLocale}`や`${translatedBasedir}`などのプレースホルダーをサポートしています（完全なリストは[構成リファレンス](#configuration-reference)の`markdownOutput.postProcessing.regexAdjustments`行を参照）
 
 <a id="markdown-output-path-template-placeholders"></a>
 #### `pathTemplate` / `jsonPathTemplate` プレースホルダー
@@ -783,6 +855,8 @@ ai-i18n-tools editor
 
 これは、設定済みの **`cacheDir`** SQLite データベース（CLI がドキュメントセグメント、ログ、および関連メタデータに使用するのと同じフォルダー）をバックエンドとして使用するローカルWeb UI を起動します。UI には、**Documentation**（キャッシュされたドキュメントセグメント）、**UI strings**、**UI plurals**、**Glossary**、**Failures**、および **Statistics** のタブが含まれます。
 
+![Translation Cache Editor](../../docs/translation-cache-editor.png)
+
 このアプリでキャッシュ行（たとえばドキュメントセグメント）を**編集する場合**、ディスク上の出力がキャッシュと一致するように、`sync --force-update`または同等の翻訳コマンドを`--force-update`オプション付きで実行してください。後でリポジトリ内の**ソーステキスト**が変更されると、セグメントのハッシュが変化し、以前のテキストに対する手動編集は上書きされます。
 
 <a id="translation-cache-editor-failures"></a>
@@ -870,6 +944,7 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 | `fallbackModel`     | 従来の単一フォールバックモデル。`translationModels`が未設定または空の場合に、`defaultModel`の後に使用されます。                                                                                                              |
 | `maxTokens`         | 要求ごとの最大完了トークン数。デフォルト: `8192`。                                                                                                                                                              |
 | `temperature`       | サンプリング温度。デフォルト: `0.2`。                                                                                                                                                                            |
+| `requestTimeoutMs` | OpenRouter への各 HTTP リクエスト（チャット完了および内部の `GET /models` 呼び出し）を待機する最大時間（ミリ秒単位）。デフォルト: `30000`（30秒）。|
 
 **複数のモデルを使用する理由:** プロバイダーおよびモデルごとにコストが異なり、言語やロケールごとに品質のレベルも異なります。CLIがリクエストに失敗した場合に次のモデルを試行できるように、`openrouter.translationModels`を**順序付きフォールバックチェーン**（単一のモデルではなく）として構成してください。
 
@@ -887,13 +962,17 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
   "anthropic/claude-3-haiku",
   "qwen/qwen3.6-plus",
   "anthropic/claude-3.5-haiku",
-  "openai/gpt-5.3-codex",
-  "anthropic/claude-sonnet-4.6",
-  "google/gemini-3-flash-preview"
+  "google/gemini-3-flash-preview",
+  "~anthropic/claude-haiku-latest",
+  "google/gemma-4-31b-it",
+  "~anthropic/claude-sonnet-latest",
+  "openai/gpt-5.3-codex"
 ]
 ```
 
 環境変数または`.env`ファイルで`OPENROUTER_API_KEY`を設定します。
+
+`translationModels` を変更する前に、`npx ai-i18n-tools check-models` を実行して、構成された各モデル ID を OpenRouter のライブカタログ（`GET /models`）に対して検証してください。このコマンドは存在しないか、`expiration_date` を過ぎた ID を報告し、有効なモデルを100万トークンあたりの推定入出力価格（USD）とともに一覧表示し、構成された ID のいずれかが無効な場合に非ゼロのステータスで終了します。`OPENROUTER_API_KEY` が必要です。
 
 <a id="features"></a>
 ### `features`
@@ -1032,6 +1111,7 @@ npx ai-i18n-tools glossary-generate
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version` | CLIのバージョンとビルドタイムスタンプを表示します（ルートプログラムの`-V` / `--version`と同様の情報）。 |
 | `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`  | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`はスターターの`.translate-ignore`を作成します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `check-models` | 設定された各 OpenRouter モデル ID を `GET /models` に対して検証します（カタログ登録の有無、`expiration_date`、プロンプト／コンプリートの100万トークンあたりの米ドル価格）。`OPENROUTER_API_KEY` を必要とします。設定された ID のいずれかが存在しないか期限切れの場合、非ゼロで終了します。カタログリクエストでは `openrouter.requestTimeoutMs` を尊重します。|
 | `extract`                                                                   | `t("…")` / `i18n.t("…")`リテラル、任意の`package.json`説明、および任意のマニフェスト`englishName`エントリから`strings.json`を更新します（`ui.reactExtractor`を参照）。`features.extractUIStrings`が必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `generate-ui-languages [--master <path>] [--dry-run]`                       | `sourceLocale` + `targetLocales`およびバンドルされた`data/ui-languages-complete.json`（または`--master`）を使用して、`ui-languages.json`を`ui.flatOutputDir`（または設定されている場合は`uiLanguagesPath`）に書き込みます。マスターファイルに存在しないロケールについては警告を出し、`TODO`のプレースホルダーを出力します。カスタマイズされた`label`または`englishName`値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値に置き換えられます。生成されたファイルは、後で確認して調整してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `translate-docs …`                                                          | 各`documentations`ブロック（`contentPaths`、省略可能な`jsonSource`）のMarkdown/MDXおよびJSONを翻訳します。`-j`：並列処理可能なロケールの最大数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチのワイヤーフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |

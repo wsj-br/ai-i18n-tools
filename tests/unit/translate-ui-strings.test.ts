@@ -93,19 +93,29 @@ describe("runTranslateUI", () => {
       "utf8"
     );
 
-    const fetchMock = vi.fn().mockResolvedValue(
-      mockJsonResponse({
-        id: "r1",
-        choices: [
-          { message: { content: '["Speichern","Konto schliessen"]' }, finish_reason: "stop" },
-        ],
-        usage: {
-          prompt_tokens: 1,
-          completion_tokens: 2,
-          total_tokens: 3,
-        },
-      })
-    );
+    const completionBody = {
+      id: "r1",
+      choices: [
+        { message: { content: '["Speichern","Konto schliessen"]' }, finish_reason: "stop" },
+      ],
+      usage: {
+        prompt_tokens: 1,
+        completion_tokens: 2,
+        total_tokens: 3,
+      },
+    };
+    const fetchMock = vi.fn().mockImplementation((reqUrl: string | URL | Request) => {
+      const u =
+        typeof reqUrl === "string" ? reqUrl : reqUrl instanceof URL ? reqUrl.href : reqUrl.url;
+      if (u.includes("/models")) {
+        return Promise.resolve(
+          mockJsonResponse({
+            data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+          })
+        );
+      }
+      return Promise.resolve(mockJsonResponse(completionBody));
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     await runTranslateUI(buildConfig(), {
@@ -116,8 +126,9 @@ describe("runTranslateUI", () => {
       verbose: false,
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const init = fetchMock.mock.calls[0]?.[1] as { body?: string } | undefined;
+    const chatCalls = fetchMock.mock.calls.filter((c) => !String(c[0]).includes("/models"));
+    expect(chatCalls.length).toBe(1);
+    const init = chatCalls[0]?.[1] as { body?: string } | undefined;
     const payload = JSON.parse(String(init?.body)) as {
       messages: Array<{ content: string | Array<{ text?: string }> }>;
     };
@@ -157,6 +168,28 @@ describe("runTranslateUI", () => {
       path.join(tmp, "glossary-user.csv"),
       ["Original language string,locale,Translation", "Other,de,Anders"].join("\n") + "\n",
       "utf8"
+    );
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((reqUrl: string | URL | Request) => {
+        const u =
+          typeof reqUrl === "string" ? reqUrl : reqUrl instanceof URL ? reqUrl.href : reqUrl.url;
+        if (u.includes("/models")) {
+          return Promise.resolve(
+            mockJsonResponse({
+              data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+            })
+          );
+        }
+        return Promise.resolve(
+          mockJsonResponse({
+            id: "r1",
+            choices: [{ message: { content: "[]" }, finish_reason: "stop" }],
+            usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+          })
+        );
+      })
     );
 
     await runTranslateUI(buildConfig(), {

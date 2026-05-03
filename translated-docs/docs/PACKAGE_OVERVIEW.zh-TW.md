@@ -304,9 +304,10 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 
 包裝 OpenRouter 對話補全 API。主要行為：
 
-- **模型備援**：依順序嘗試已解析清單中的每個模型；在發生 HTTP 錯誤或解析失敗時進行備援。使用者介面翻譯會優先解析 `ui.preferredModel`，若存在，再解析 `openrouter` 模型。
-- **速率限制**：偵測到 429 回應時，等待 `retry-after`（或 2 秒）後重試一次。
-- **除錯流量記錄**：若設定 `debugTrafficFilePath`，則將請求與回應的 JSON 附加至檔案。
+- **模型備援**：依序嘗試已解析清單中的每個模型；在發生 HTTP 錯誤或解析失敗時進行備援。UI 翻譯會優先解析 `ui.preferredModel`，若存在，再解析 `openrouter` 模型。
+- **請求逾時**：`openrouter.requestTimeoutMs`（預設 30 秒）透過 `AbortSignal.timeout` 中止每次聊天補全請求。同一數值也適用於 CLI 載入目錄時的 `GET /models`（例如 `check-models` 以及選擇性預先篩選以排除未知模型 ID 的機制）。
+- **速率限制**：偵測 429 回應，等待 `retry-after`（或 2 秒），並重試一次。
+- **除錯流量記錄**：若設定 `debugTrafficFilePath`，則將請求與回應的 JSON 附加至檔案中。
 
 <a id="config-loading"></a>
 ### 設定載入

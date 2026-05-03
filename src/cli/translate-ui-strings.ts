@@ -14,6 +14,11 @@ import {
   normalizeLocale,
   resolveUITranslationModels,
 } from "../core/config.js";
+import {
+  filterTranslationModelsAgainstOpenRouterCatalog,
+  MODELS_ALL_UNKNOWN_AFTER_FILTER,
+  warnIgnoredUnknownOpenRouterModels,
+} from "./openrouter-catalog-model-filter.js";
 import { buildPluralPassBPrompt, buildPluralStep0Prompt } from "../core/prompt-builder.js";
 import {
   compactIdenticalPluralForms,
@@ -269,10 +274,20 @@ export async function runTranslateUI(
 
   let client: OpenRouterClient | null = null;
   if (!opts.dryRun) {
+    const resolvedUi = resolveUITranslationModels(config);
+    let translationModelsForClient: string[] | undefined = undefined;
+    if (resolvedUi.length > 0) {
+      const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedUi, config);
+      warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
+      if (filtered.models.length === 0) {
+        throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
+      }
+      translationModelsForClient = filtered.models;
+    }
     try {
       client = new OpenRouterClient({
         config,
-        translationModels: resolveUITranslationModels(config),
+        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
       });
     } catch (e) {
       throw new Error(

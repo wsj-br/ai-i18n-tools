@@ -1,6 +1,60 @@
-/* global fetch, document, alert, confirm */
+/* global fetch, document, alert, confirm, window */
 (function () {
   "use strict";
+
+  const nativeFetch = window.fetch.bind(window);
+  const HEALTH_PATH = "/api/health";
+  const HEALTH_POLL_MS = 10_000; // 10 seconds
+
+  function editorFetchFailureMeansServerGone(err) {
+    if (!err || err.name === "AbortError") return false;
+    return err instanceof TypeError;
+  }
+
+  function showEditorServerDown() {
+    const el = document.getElementById("editor-server-down-overlay");
+    if (el) el.classList.remove("hidden");
+  }
+
+  function hideEditorServerDown() {
+    const el = document.getElementById("editor-server-down-overlay");
+    if (el) el.classList.add("hidden");
+  }
+
+  window.fetch = function (input, init) {
+    return nativeFetch(input, init).catch(function (err) {
+      if (editorFetchFailureMeansServerGone(err)) {
+        showEditorServerDown();
+      }
+      return Promise.reject(err);
+    });
+  };
+
+  function editorHealthPollTick() {
+    if (document.visibilityState !== "visible") return;
+    nativeFetch(HEALTH_PATH, { cache: "no-store", method: "GET" })
+      .then(function (res) {
+        if (res.ok) hideEditorServerDown();
+      })
+      .catch(function () {
+        showEditorServerDown();
+      });
+  }
+
+  setInterval(editorHealthPollTick, HEALTH_POLL_MS);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") editorHealthPollTick();
+  });
+  setTimeout(editorHealthPollTick, 0);
+
+  (function attachEditorServerDownClose() {
+    const closeBtn = document.getElementById("editor-server-down-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        window.close();
+      });
+    }
+  })();
 
   const UI_PAGE_SIZE = 25;
   const UP_PAGE_SIZE = 25;

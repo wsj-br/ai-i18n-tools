@@ -1,6 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { describe, expect, it } from "vitest";
 import {
   applyEnvOverrides,
   loadI18nConfigFromFile,
@@ -35,6 +36,7 @@ describe("resolveTranslationModels", () => {
         translationModels: ["a", "b"],
         maxTokens: 100,
         temperature: 0.1,
+        requestTimeoutMs: 30_000,
       })
     ).toEqual(["a", "b"]);
   });
@@ -45,6 +47,7 @@ describe("resolveTranslationModels", () => {
         baseUrl: "https://openrouter.ai/api/v1",
         maxTokens: 100,
         temperature: 0.1,
+        requestTimeoutMs: 30_000,
         defaultModel: "x",
         fallbackModel: "y",
       })
@@ -57,6 +60,7 @@ describe("resolveTranslationModels", () => {
         baseUrl: "https://openrouter.ai/api/v1",
         maxTokens: 100,
         temperature: 0.1,
+        requestTimeoutMs: 30_000,
         defaultModel: "same",
         fallbackModel: "same",
       })

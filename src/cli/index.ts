@@ -71,6 +71,7 @@ import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runStripMdBoldInline } from "./strip-md-bold-inline.js";
+import { runCheckModels } from "./check-models.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -103,6 +104,8 @@ function listenTranslationEditorServer(
 
   const attempt = (): void => {
     server.removeAllListeners("error");
+    /** Avoid stacking `listening` callbacks when retrying after `listen()` fails (e.g. `EADDRINUSE`). */
+    server.removeAllListeners("listening");
     server.once("error", (err: NodeJS.ErrnoException) => {
       const retryable =
         err.code === "EADDRINUSE" ||
@@ -306,6 +309,22 @@ program
   .description("Show version and build time")
   .action(() => {
     console.log(formatVersionOutput());
+  });
+
+program
+  .command("check-models")
+  .description(
+    "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)"
+  )
+  .action(async (_opts, cmd: Command) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config } = loadConfigOrExit(configFlag, cwd);
+    try {
+      const { exitCode } = await runCheckModels(config);
+      process.exitCode = exitCode;
+    } catch {
+      process.exitCode = 1;
+    }
   });
 
 program

@@ -18,14 +18,16 @@
 
 - [兩個核心工作流程](#two-core-workflows)
 - [安裝](#installation)
+  - [使用 CLI](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [快速開始](#quick-start)
   - [工作流程 1 - UI 字串](#workflow-1---ui-strings)
   - [工作流程 2 - 文件](#workflow-2---documentation)
-  - [兩種工作流程](#both-workflows)
+  - [兩個工作流程](#both-workflows)
 - [執行階段輔助工具](#runtime-helpers)
 - [CLI 指令](#cli-commands)
 - [文件](#documentation)
-- [授權條款](#license)
+- [授權](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### 使用 CLI
+
+**依專案安裝（建議）** — 作為相依性或開發相依性安裝，然後透過 `npx`、`pnpm exec` 或 `package.json` 指令碼呼叫：
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+套件管理工具會在 Linux 和 macOS 上以正確的權限寫入 `node_modules/.bin/ai-i18n-tools`，並在 Windows 上建立 `.cmd` / `.ps1` shim；指令碼執行器會自動偵測。
+
+**Bare** `ai-i18n-tools` **在終端機中** — `package.json` 指令碼在 `PATH` 上執行時已包含 `node_modules/.bin`，因此像 `pnpm run i18n:sync` 這樣的命令無需輸入 `npx` 即可調用 CLI。若要在互動式殼層中直接執行 `ai-i18n-tools`（在本機安裝後，從專案根目錄執行），請將本機的 bin 目錄前置到 `PATH`：
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+使用 [direnv](https://direnv.net/)，在專案根目錄中添加 `PATH_add node_modules/.bin` 到 `.envrc`，以便在 `cd` 進入倉庫後可以使用基本命令。在不調整 `PATH` 的情況下，繼續使用 `npx ai-i18n-tools …` 或 `pnpm exec ai-i18n-tools …`。
+
+**免安裝一次性執行** — 使用 `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（僅針對此次執行下載套件；不會寫入 `package.json`）。
+
+在 Linux、macOS 和 WSL 上，註冊表安裝會自動為 CLI 指令碼設定可執行權限。在 Windows 上，套件管理工具會產生 `.cmd` 和 `.ps1` shim 來明確呼叫 Node。
+
 設定您的 OpenRouter API 金鑰：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+呼叫 OpenRouter 的指令（`translate-ui`、`translate-docs`、`sync`、`check-models` 以及相關腳本）需要在環境中設定 `OPENROUTER_API_KEY`。
+
+在 `ai-i18n-tools.config.json` 中，`openrouter` 物件包含模型列表、`baseUrl`、`maxTokens`、`temperature` 以及 `requestTimeoutMs`：表示對 OpenRouter 的每個 HTTP 請求（聊天完成和內部 `GET /models` 呼叫）等待的最長時間（毫秒）。預設值為 `30000`（30 秒）。
+
+執行 `ai-i18n-tools check-models` 以根據 OpenRouter 的即時目錄驗證每個已設定的模型 ID。此命令會報告遺失或已過期的 ID `expiration_date`，列出有效模型及其估計的輸入/輸出價格（每百萬 tokens 的美元價格），並在任何已設定的 ID 無效時以非零狀態碼結束。此操作需要 `OPENROUTER_API_KEY`。
 
 ---
 
@@ -162,6 +213,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

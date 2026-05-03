@@ -18,6 +18,8 @@ JavaScript/TypeScript アプリケーションおよびドキュメントサイ�
 
 - [2つの主要なワークフロー](#two-core-workflows)
 - [インストール](#installation)
+  - [CLIの使用](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [クイックスタート](#quick-start)
   - [ワークフロー1 - UI文字列](#workflow-1---ui-strings)
   - [ワークフロー2 - ドキュメンテーション](#workflow-2---documentation)
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### CLIの使用
+
+**プロジェクトごと（推奨）** — 依存関係または開発依存関係としてインストールし、次に`npx`、`pnpm exec`、または`package.json`スクリプト経由で呼び出します。
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+パッケージマネージャーはLinuxおよびmacOSでは適切な権限で`node_modules/.bin/ai-i18n-tools`を書き込み、Windowsでは`.cmd` / `.ps1`のシャムを生成します。スクリプトランナーはこれを自動的に検出します。
+
+**Bare** `ai-i18n-tools` **をターミナルで使用するには** — `package.json` スクリプトは `PATH` 上で既に `node_modules/.bin` を使用して実行されているため、`pnpm run i18n:sync` のようなコマンドは `npx` を入力せずにCLIを呼び出せます。ローカルインストール後にプロジェクトルートからインタラクティブシェル内で `ai-i18n-tools` を直接実行するには、ローカルのbinディレクトリを `PATH` に追加します：
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+[direnv](https://direnv.net/) を使用して、プロジェクトのルートにある `.envrc` に `PATH_add node_modules/.bin` を追加することで、リポジトリに `cd` した後は簡略化されたコマンドが利用可能になります。`PATH` を変更せずに、`npx ai-i18n-tools …` または `pnpm exec ai-i18n-tools …` を使い続けてください。
+
+**インストール不要のワンタイム実行** — `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`（その実行のためにパッケージをダウンロード。`package.json` にエントリは追加されません）。
+
+Linux、macOS、およびWSLでは、レジストリからのインストールによりCLIスクリプトの実行ビットが自動的に設定されます。Windowsでは、パッケージマネージャーがNodeを明示的に呼び出す`.cmd`および`.ps1`のシャムを生成します。
+
 OpenRouterのAPIキーを設定してください。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+OpenRouterを呼び出すコマンド（`translate-ui`、`translate-docs`、`sync`、`check-models`、および関連スクリプト）は、環境に`OPENROUTER_API_KEY`が必要です。
+
+`ai-i18n-tools.config.json`では、`openrouter`オブジェクトにモデル一覧、`baseUrl`、`maxTokens`、`temperature`、および`requestTimeoutMs`（OpenRouterへの各HTTPリクエスト（チャット補完および内部`GET /models`呼び出し）の最大待機時間（ミリ秒単位））が含まれます。デフォルトは`30000`（30秒）です。
+
+設定された各モデルIDをOpenRouterのライブカタログに対して検証するには、`ai-i18n-tools check-models`を実行します。存在しない、または`expiration_date`を過ぎたIDを報告し、有効なモデルを100万トークンあたりの推定入出力価格（USD）とともに一覧表示します。設定されたIDのいずれかが無効な場合、終了ステータスはゼロ以外になります。`OPENROUTER_API_KEY`が必要です。
 
 ---
 
@@ -162,6 +213,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

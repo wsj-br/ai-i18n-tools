@@ -18,11 +18,13 @@ Kit de herramientas CLI y programático para internacionalizar aplicaciones y si
 
 - [Dos flujos de trabajo principales](#two-core-workflows)
 - [Instalación](#installation)
+  - [Uso de la CLI](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [Inicio rápido](#quick-start)
-  - [Flujo de trabajo 1 - Cadenas de interfaz de usuario](#workflow-1---ui-strings)
+  - [Flujo de trabajo 1 - Cadenas de interfaz](#workflow-1---ui-strings)
   - [Flujo de trabajo 2 - Documentación](#workflow-2---documentation)
   - [Ambos flujos de trabajo](#both-workflows)
-- [Ayudantes en tiempo de ejecución](#runtime-helpers)
+- [Ayudantes de tiempo de ejecución](#runtime-helpers)
 - [Comandos de CLI](#cli-commands)
 - [Documentación](#documentation)
 - [Licencia](#license)
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### Uso de la CLI
+
+**Por proyecto (recomendado)** — instalar como dependencia o devDependency, luego invocar mediante `npx`, `pnpm exec` o un script `package.json`:
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+El gestor de paquetes escribe `node_modules/.bin/ai-i18n-tools` con los permisos correctos en Linux y macOS y crea shim `.cmd` / `.ps1` en Windows; los ejecutores de scripts los detectan automáticamente.
+
+**Bare** `ai-i18n-tools` **en la terminal** — `package.json` los scripts ya se ejecutan con `node_modules/.bin` en `PATH`, por lo que comandos como `pnpm run i18n:sync` invocan la CLI sin necesidad de escribir `npx`. Para ejecutar `ai-i18n-tools` directamente en una shell interactiva (desde la raíz del proyecto, tras una instalación local), anteponga el directorio bin local a `PATH`:
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+Con [direnv](https://direnv.net/), agregue `PATH_add node_modules/.bin` a un `.envrc` en la raíz del proyecto para que el comando directo esté disponible tras `cd` en el repositorio. Sin modificar `PATH`, siga usando `npx ai-i18n-tools …` o `pnpm exec ai-i18n-tools …`.
+
+**Ejecución única sin instalación** — `npx ai-i18n-tools <cmd>` o `pnpm dlx ai-i18n-tools <cmd>` (descarga el paquete para esa invocación; sin entrada en `package.json`).
+
+En Linux, macOS y WSL, las instalaciones desde el registro establecen automáticamente el bit ejecutable en el script de la CLI. En Windows, los gestores de paquetes generan shim `.cmd` y `.ps1` que invocan Node explícitamente.
+
 Establece tu clave de API de OpenRouter:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+Los comandos que invocan OpenRouter (`translate-ui`, `translate-docs`, `sync`, `check-models` y scripts relacionados) necesitan `OPENROUTER_API_KEY` en el entorno.
+
+En `ai-i18n-tools.config.json`, el objeto `openrouter` incluye listas de modelos, `baseUrl`, `maxTokens`, `temperature` y `requestTimeoutMs`: el tiempo máximo en milisegundos que se espera por cada solicitud HTTP a OpenRouter (complementos de chat y llamadas internas `GET /models`). El valor predeterminado es `30000` (30 segundos).
+
+Ejecuta `ai-i18n-tools check-models` para verificar cada id de modelo configurado contra el catálogo en vivo de OpenRouter. Informa los ids que faltan o que han pasado `expiration_date`, lista los modelos válidos con precios estimados de entrada/salida (USD por 1M de tokens) y sale con un estado distinto de cero cuando cualquier id configurado es inválido. Requiere `OPENROUTER_API_KEY`.
 
 ---
 
@@ -162,6 +213,7 @@ Exportados desde `'ai-i18n-tools/runtime'` - funcionan en cualquier entorno JS, 
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

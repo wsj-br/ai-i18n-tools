@@ -304,9 +304,10 @@ Wenn `markdownOutput.style === "flat"`, werden übersetzte Markdown-Dateien nebe
 
 Umhüllt die OpenRouter Chat Completions API. Wichtige Verhaltensweisen:
 
-- **Modell-Fallback**: versucht nacheinander jedes Modell aus der aufgelösten Liste; greift bei HTTP-Fehlern oder Analysefehlern zurück. Bei der UI-Übersetzung werden zunächst `ui.preferredModel` und anschließend `openrouter`-Modelle verwendet.
+- **Modell-Fallback**: versucht nacheinander jedes Modell aus der aufgelösten Liste; greift bei HTTP-Fehlern oder Parse-Fehlern zurück. Bei vorhandener UI-Übersetzung werden zuerst `ui.preferredModel`, danach `openrouter`-Modelle verwendet.
+- **Anfrage-Timeout**: `openrouter.requestTimeoutMs` (Standardwert: 30 Sekunden) bricht jede Chat-Vervollständigungsanfrage über `AbortSignal.timeout` ab. Derselbe Wert gilt für `GET /models`, wenn die CLI den Katalog lädt (z. B. `check-models` und den optionalen Pre-Flight-Filter, der unbekannte Modell-IDs entfernt).
 - **Ratenbegrenzung**: erkennt 429-Antworten, wartet `retry-after` (oder 2 Sekunden) und versucht es einmal erneut.
-- **Debug-Verkehrsprotokoll**: falls `debugTrafficFilePath` gesetzt ist, werden Anfrage- und Antwort-JSON an eine Datei angehängt.
+- **Debug-Protokoll für Datenverkehr**: falls `debugTrafficFilePath` gesetzt ist, werden Anfrage- und Antwort-JSON an eine Datei angehängt.
 
 <a id="config-loading"></a>
 ### Laden der Konfiguration

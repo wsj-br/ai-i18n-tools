@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { classifySegmentType } from "../../src/extractors/classify-segment.js";
 
 describe("classifySegmentType", () => {

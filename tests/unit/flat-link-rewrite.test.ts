@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
 import type { I18nDocTranslateConfig } from "../../src/core/types.js";
 import {

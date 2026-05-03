@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { PlaceholderHandler } from "../../src/processors/placeholder-handler.js";
 import { protectDocAnchors, restoreDocAnchors } from "../../src/processors/anchor-placeholders.js";
 

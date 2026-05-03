@@ -20,6 +20,8 @@ npm install ai-i18n-tools
 
 Configuration lives in **`ai-i18n-tools.config.json`** at the project root (or pass `-c <path>`).
 
+Set **`openrouter.requestTimeoutMs`** if the default per-request wait (**30000** ms) is too short or long for your network; it applies to OpenRouter HTTP calls (including the catalog fetch used by `check-models`).
+
 ---
 
 ## Non-negotiable: `sourceLocale` and `SOURCE_LOCALE`
@@ -68,6 +70,7 @@ Re-running **`extract`** is safe: existing `translated` / `models` entries are p
 | Goal | Command |
 |------|---------|
 | First-time config | `npx ai-i18n-tools init` |
+| Validate OpenRouter model ids (catalog + pricing) | `npx ai-i18n-tools check-models` (needs `OPENROUTER_API_KEY`) |
 | (Optional) Build `ui-languages.json` from locales + master | `npx ai-i18n-tools generate-ui-languages` |
 | Refresh UI catalog | `npx ai-i18n-tools extract` |
 | Translate UI strings | `npx ai-i18n-tools translate-ui` (needs `OPENROUTER_API_KEY`) |

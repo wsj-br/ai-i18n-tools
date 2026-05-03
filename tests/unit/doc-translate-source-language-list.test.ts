@@ -2,8 +2,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { describe, expect, it } from "vitest";
-import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config";
-import { rewriteSourceMarkdownLanguageListBlocks } from "../../src/cli/doc-translate";
+import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
+import { rewriteSourceMarkdownLanguageListBlocks } from "../../src/cli/doc-translate.js";
 
 describe("rewriteSourceMarkdownLanguageListBlocks", () => {
   it("rewrites the original markdown language list with all locales", () => {

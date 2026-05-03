@@ -393,6 +393,33 @@
       </footer>
     </div>
 
+    <div
+      id="editor-server-down-overlay"
+      class="editor-server-down-overlay hidden"
+      role="alertdialog"
+      aria-live="assertive"
+      aria-modal="true"
+      aria-labelledby="editor-server-down-title"
+    >
+      <div class="editor-server-down-card">
+        <h2 id="editor-server-down-title">Editor server unavailable</h2>
+        <p>The local translation editor HTTP server is not responding. It may have stopped (for example after Ctrl+C in the terminal).</p>
+        <p class="editor-server-down-hint">
+          Start it again from your project with <code class="code-inline">ai-i18n-tools editor</code>. This message disappears automatically when the server is reachable again.
+        </p>
+        <div class="editor-server-down-actions">
+          <button
+            type="button"
+            id="editor-server-down-close"
+            class="btn-save"
+            title="Browsers may block closing tabs not opened by script; close the tab manually if nothing happens."
+          >
+            Close window
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="seg-modal-overlay" class="modal-overlay hidden">
       <div class="modal">
         <h2>Edit translated text</h2>

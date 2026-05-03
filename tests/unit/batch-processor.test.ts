@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { splitTranslatableIntoBatches } from "../../src/processors/batch-processor.js";
 import type { Segment } from "../../src/core/types.js";
 

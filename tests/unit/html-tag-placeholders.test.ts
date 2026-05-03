@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { protectHtmlTags, restoreHtmlTags } from "../../src/processors/html-tag-placeholders.js";
 
 describe("html-tag-placeholders", () => {

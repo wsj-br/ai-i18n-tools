@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { computeSegmentHash } from "../../src/utils/hash.js";
 import { TranslationCache } from "../../src/core/cache.js";
 

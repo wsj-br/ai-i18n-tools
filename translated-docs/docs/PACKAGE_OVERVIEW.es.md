@@ -304,9 +304,10 @@ Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se co
 
 Envuelve la API de completado de chat de OpenRouter. Comportamientos clave:
 
-- **Alternancia de modelos**: intenta cada modelo en la lista resuelta por orden; realiza una transición ante errores HTTP o fallos de análisis. La traducción de la interfaz intenta primero `ui.preferredModel` cuando está presente, luego los modelos `openrouter`.
+- **Alternativa de modelo**: intenta cada modelo en la lista resuelta por orden; recurre a errores HTTP o fallos de análisis. La traducción de la interfaz primero resuelve `ui.preferredModel` cuando está presente, luego los modelos `openrouter`.
+- **Tiempo de espera de solicitud**: `openrouter.requestTimeoutMs` (por defecto 30 segundos) aborta cada solicitud de finalización de chat mediante `AbortSignal.timeout`. El mismo valor se aplica a `GET /models` cuando la CLI carga el catálogo (por ejemplo `check-models` y el filtro previo opcional que descarta identificadores de modelo desconocidos).
 - **Limitación de tasa**: detecta respuestas 429, espera `retry-after` (o 2 segundos), reintenta una vez.
-- **Registro de depuración del tráfico**: si se establece `debugTrafficFilePath`, añade al final del archivo el JSON de la solicitud y la respuesta.
+- **Registro de depuración del tráfico**: si se establece `debugTrafficFilePath`, añade al final del archivo el JSON de solicitud y respuesta.
 
 <a id="config-loading"></a>
 ### Carga de configuración

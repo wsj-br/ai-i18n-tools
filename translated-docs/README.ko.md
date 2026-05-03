@@ -18,13 +18,15 @@ JavaScript/TypeScript 애플리케이션 및 문서 사이트의 국제화를 �
 
 - [두 가지 핵심 워크플로](#two-core-workflows)
 - [설치](#installation)
+  - [CLI 사용하기](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [빠른 시작](#quick-start)
   - [워크플로 1 - UI 문자열](#workflow-1---ui-strings)
-  - [워크플로 2 - 문서화](#workflow-2---documentation)
-  - [두 워크플로 모두](#both-workflows)
+  - [워크플로 2 - 문서](#workflow-2---documentation)
+  - [두 가지 워크플로](#both-workflows)
 - [런타임 헬퍼](#runtime-helpers)
 - [CLI 명령어](#cli-commands)
-- [문서화](#documentation)
+- [문서](#documentation)
 - [라이선스](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### CLI 사용하기
+
+**프로젝트별 설치 (권장)** — 종속성 또는 개발 종속성으로 설치한 후 `npx`, `pnpm exec`, 또는 `package.json` 스크립트를 통해 호출:
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+패키지 관리자는 Linux 및 macOS에서는 올바른 권한으로 `node_modules/.bin/ai-i18n-tools`를 작성하고, Windows에서는 `.cmd` / `.ps1` 쉼(Shim)을 생성합니다. 스크립트 실행기는 이를 자동으로 인식합니다.
+
+**터미널에서** `ai-i18n-tools` **베어** — `package.json` 스크립트는 이미 `PATH`에서 `node_modules/.bin`로 실행되므로, `pnpm run i18n:sync`와 같은 명령어는 `npx`를 입력하지 않고도 CLI를 호출합니다. 대화형 셸에서 `ai-i18n-tools`를 직접 실행하려면(로컬 설치 후 프로젝트 루트에서), 로컬 bin 디렉터리를 `PATH` 앞에 추가하세요:
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+[direnv](https://direnv.net/)를 사용하여 프로젝트 루트의 `.envrc`에 `PATH_add node_modules/.bin`을 추가하면, 저장소로 `cd`한 후에 베어 명령어를 사용할 수 있습니다. `PATH`을 조정하지 않고도 `npx ai-i18n-tools …` 또는 `pnpm exec ai-i18n-tools …`를 계속 사용할 수 있습니다.
+
+**설치 없이 일회성 실행** — `npx ai-i18n-tools <cmd>` 또는 `pnpm dlx ai-i18n-tools <cmd>` 사용 (해당 실행 시에만 패키지를 다운로드; `package.json`에 항목 추가 없음).
+
+Linux, macOS 및 WSL에서는 레지스트리 설치 시 CLI 스크립트의 실행 권한 비트가 자동으로 설정됩니다. Windows에서는 패키지 관리자가 Node.js를 명시적으로 호출하는 `.cmd` 및 `.ps1` 쉼(Shim)을 생성합니다.
+
 OpenRouter API 키를 설정하세요:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+OpenRouter를 호출하는 명령어(`translate-ui`, `translate-docs`, `sync`, `check-models` 및 관련 스크립트)는 환경 변수에 `OPENROUTER_API_KEY`가 필요합니다.
+
+`ai-i18n-tools.config.json`에서, `openrouter` 객체는 모델 목록, `baseUrl`, `maxTokens`, `temperature`, 그리고 `requestTimeoutMs`: OpenRouter에 대한 각 HTTP 요청(채팅 완성 및 내부 `GET /models` 호출)을 기다리는 최대 시간(밀리초 단위)을 포함합니다. 기본값은 `30000`(30초)입니다.
+
+설정된 각 모델 ID를 OpenRouter의 실시간 카탈로그와 비교하려면 `ai-i18n-tools check-models`을 실행하세요. 이 명령어는 누락되었거나 `expiration_date`을 초과한 ID를 보고하고, 유효한 모델을 100만 토큰당 예상 입력/출력 가격(USD)과 함께 나열하며, 설정된 ID 중 하나라도 유효하지 않으면 0이 아닌 상태 코드로 종료됩니다. 이 명령어는 `OPENROUTER_API_KEY`를 필요로 합니다.
 
 ---
 
@@ -162,6 +213,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

@@ -59,6 +59,7 @@ describe("generate-ui-languages", () => {
       const written = JSON.parse(fs.readFileSync(path.join(tmp, outRel), "utf8")) as Array<{
         code: string;
         englishName: string;
+        direction?: string;
       }>;
       expect(written).toHaveLength(3);
       const xx = written.find((x) => x.code === "xx-YY");

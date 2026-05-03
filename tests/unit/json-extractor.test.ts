@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { JsonExtractor } from "../../src/extractors/json-extractor.js";
 
 describe("JsonExtractor", () => {
@@ -107,5 +108,66 @@ describe("JsonExtractor", () => {
     const out = ex.reassemble(segs, new Map());
     const parsed = JSON.parse(out) as { n: number };
     expect(parsed.n).toBe(3);
+  });
+
+  it("extract returns no segments for non-object JSON roots", () => {
+    expect(ex.extract("null", "null.json")).toEqual([]);
+    expect(ex.extract("42", "num.json")).toEqual([]);
+    expect(ex.extract('"only"', "str.json")).toEqual([]);
+    expect(ex.extract("[]", "arr.json")).toEqual([]);
+  });
+
+  it("extract matches line via key regex for keys with regex metacharacters", () => {
+    const json = `{
+  "plus+plus": {
+    "message": "Regex key line"
+  }
+}`;
+    const segs = ex.extract(json, "meta.json");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.jsonKey).toBe("plus+plus");
+    expect(segs[0]!.content).toBe("Regex key line");
+    expect(segs[0]!.startLine).toBeGreaterThanOrEqual(2);
+  });
+
+  it("reassemble walks a root JSON array", () => {
+    const json = `[
+  { "message": "One", "description": "a" },
+  { "message": "Two" }
+]`;
+    const segs = ex.extract(json, "root-arr.json");
+    expect(segs).toHaveLength(0);
+    const out = ex.reassemble(segs, new Map());
+    const parsed = JSON.parse(out) as Array<{ message: string; description?: string }>;
+    expect(Array.isArray(parsed)).toBe(true);
+    expect(parsed[0]!.message).toBe("One");
+    expect(parsed[0]!.description).toBe("a");
+    expect(parsed[1]!.message).toBe("Two");
+    expect(parsed[1]!.description).toBeUndefined();
+  });
+
+  it("reassemble translates nested message paths and keeps sibling primitives", () => {
+    const json = `{
+  "flag": true,
+  "outer": {
+    "inner": {
+      "message": "Nested msg",
+      "description": "nested desc"
+    }
+  }
+}`;
+    const segs = ex.extract(json, "nest.json");
+    const nested = segs.find((s) => s.jsonKey === "outer.inner");
+    expect(nested).toBeDefined();
+    const map = new Map<string, string>();
+    map.set(nested!.hash, "Nested translated");
+    const out = ex.reassemble(segs, map);
+    const parsed = JSON.parse(out) as {
+      flag: boolean;
+      outer: { inner: { message: string; description: string } };
+    };
+    expect(parsed.flag).toBe(true);
+    expect(parsed.outer.inner.message).toBe("Nested translated");
+    expect(parsed.outer.inner.description).toBe("nested desc");
   });
 });

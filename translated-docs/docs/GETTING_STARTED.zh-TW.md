@@ -34,15 +34,16 @@
 - [工作流程 2 - 文件翻譯](#workflow-2---document-translation)
   - [步驟 1：為文件初始化](#step-1-initialise-for-documentation)
   - [步驟 2：翻譯文件](#step-2-translate-documents)
-    - [複雜 Markdown 與品質檢查失敗](#complex-markdown-and-failed-quality-checks)
+    - [複雜的 Markdown 和失敗的品質檢查](#complex-markdown-and-failed-quality-checks)
     - [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags)
     - [批次提示格式](#batch-prompt-format)
     - [SQLite 中的區段去重與路徑](#segment-dedupe-and-paths-in-sqlite)
   - [輸出佈局](#output-layouts)
     - [平面佈局中的錨點連結](#anchor-links-in-flat-layout)
-    - [`pathTemplate` / `jsonPathTemplate` 暫存變數](#pathtemplate--jsonpathtemplate-placeholders)
-- [合併工作流程（UI + 文件）](#combined-workflow-ui--docs)
-  - [混合文件工作流程（Docusaurus + 平面）](#mixed-documentation-workflow-docusaurus--flat)
+    - [翻譯文件中的圖片與點陣資源](#images-and-raster-assets-in-translated-docs)
+    - [`pathTemplate` / `jsonPathTemplate` 樣板](#pathtemplate--jsonpathtemplate-placeholders)
+- [合併工作流程 (UI + 文件)](#combined-workflow-ui--docs)
+  - [混合文件工作流程 (Docusaurus + 平面)](#mixed-documentation-workflow-docusaurus--flat)
 - [翻譯快取編輯器](#translation-cache-editor)
   - [失敗項目（文件翻譯）](#failures-document-translation)
     - [何時使用](#when-to-use-it)
@@ -449,7 +450,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## 工作流程 2 - 文件翻譯
 
-專為 Markdown 文件、Docusaurus 網站與 JSON 標籤檔案設計。當啟用 `features.translateSVG` 且設定頂層 `svg` 區塊時，獨立的 SVG 資產會透過 [`translate-svg`](#cli-reference) 進行翻譯，而非透過 `documentations[].contentPaths`。
+專為 Markdown 文件、Docusaurus 網站和 JSON 標籤檔案設計。若 Markdown 中嵌入了 PNG 或其他點陣圖像，請參閱[翻譯文件中的圖片與點陣資源](#images-and-raster-assets-in-translated-docs)。獨立的 SVG 資源在啟用 `features.translateSVG` 且頂層設定 `svg` 區塊時，會透過 [`translate-svg`](#cli-reference) 進行翻譯，而非透過 `documentations[].contentPaths`。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### 步驟 1：為文件初始化
@@ -582,8 +583,8 @@ Read the [installation checklist](../setup.md#first-run) before you deploy.
 
 **應對方式**
 
-1. 在執行 `translate-docs`（與平常相同的 `documentations[]` / `contentPaths`）**之前**，先對您的 **原始碼** `.md` / `.mdx` 執行 `ai-i18n-tools write-heading-ids`。此操作會在每個標題前一行插入明確的 HTML 錨點，使 `id` 值在所有翻譯版本中保持一致。
-2. 將您的 Markdown **錨點連結**指向這些穩定的 ID，例如 `[label](../other.md#section-id)`，其中 `section-id` 必須與工具寫入的錨點相符 —— 而非僅根據英文單字猜測。
+1. 在 `.md` / `.mdx` 上執行 `ai-i18n-tools write-heading-ids`，然後再進行 `translate-docs`（使用的 `documentations[]` / `contentPaths` 與平常相同）。此操作會在每個標題的前一行插入明確的 HTML 錨點，讓每個翻譯版本都能共用相同的 `id` 值。
+2. 將您的 Markdown **錨點連結**指向這些穩定的 ID，例如 `[label](../other.md#section-id)`，其中 `section-id` 必須符合工具所寫入的錨點 ID——而不單只是根據英文單字猜測。
 
 **範例**
 
@@ -609,6 +610,77 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 ```
 
 `#tls-configuration` 錨點在所有語系中都相同，因為 `id` 在原始碼中已固定；僅標題的 **文字** 和連結的 **標籤** 會被翻譯。
+
+<a id="images-and-raster-assets-in-translated-docs"></a>
+#### 翻譯文件中的圖片與點陣資源
+
+`translate-docs` 會翻譯 Markdown 區段（包含圖片的替代文字）。但它 **不會** 將點陣檔案（PNG、JPEG、WebP、GIF）複製到您的文件 `outputDir` 中。您必須將檔案放在重寫後的 URL 所指向的位置，或在翻譯後調整 URL（通常使用 `markdownOutput.postProcessing.regexAdjustments`）。
+
+**作為插圖資產使用的 SVG** 應使用 `svg` 區塊與 `translate-svg` — 請參閱[`svg` (選用)](#svg-optional)。`documentations[].contentPaths` 中列出的路徑僅適用於 Markdown/MDX（以及選用的 JSON 標籤），不適用於獨立 SVG 的翻譯。
+
+**為何平面佈局通常需要修正**
+
+使用 `markdownOutput.style` `flat` 和預設的相對連結重寫功能時，翻譯頁面之間的連結會依語系重寫。對非 Markdown 檔案的連結會加上深度前綴，以保持相對於每個輸出檔案的路徑（例如，原始檔旁的 `figure.png` 在翻譯後可能變成 `../figure.png`）。此 URL 通常僅在輸出目錄 **內** 才能解析。CLI 不會在此處輸出二進位檔案，因此除非您複製資源、從其他位置提供服務或重寫連結，否則讀者會遇到檔案遺失的問題。請在翻譯後套用您的規則：`postProcessing` 會在區段重新組合和平面連結重寫後執行（詳見[設定參考](#configuration-reference)中的 `markdownOutput.postProcessing` 欄位）。
+
+**模式 1 — 與英文原始檔同存於同一個儲存庫的資源（此套件）**
+
+此儲存庫將 `docs/GETTING_STARTED.md` 翻譯為 `translated-docs/docs/GETTING_STARTED.<locale>.md`。原始檔使用同層級的圖片 `translation-cache-editor.png`。平面重寫會指向 `translated-docs/translation-cache-editor.png`，但該路徑從未被寫入。根目錄的 `ai-i18n-tools.config.json` 新增了一條規則，用來比對 Markdown 圖片中穩定的結尾部分（即 `](…)` URL 片段，而非翻譯後的替代文字），並將其重新導向至 `docs/`：
+
+```json
+{
+  "description": "Editor screenshot: flat link rewrite points to translated-docs/; asset lives in docs/",
+  "search": "\\]\\(\\.\\./translation-cache-editor\\.png\\)",
+  "replace": "](../../docs/translation-cache-editor.png)"
+}
+```
+
+**模式 2 — 按語系分開的截圖資料夾（`examples/nextjs-app`）**
+
+Next.js 範例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了兩個 `documentations[]` 區塊。
+
+- **Docusaurus 文件**（`markdownOutput.style` `docusaurus`）：位於 `docs-site/docs/` 下的英文頁面，使用 URL 中包含固定語系片段的截圖，例如 `/img/screenshots/en-GB/screenshot.png` 在 `feature-showcase.md` 中。後處理會替換該語系片段，使每個位於 `docs-site/i18n/<locale>/…/current/` 下的翻譯頁面都能解析到對應的資料夾：
+
+```json
+{
+  "description": "Per-locale screenshot folders in docs-site static assets",
+  "search": "screenshots/en-GB/",
+  "replace": "screenshots/${translatedLocale}/"
+}
+```
+
+在您的網站靜態樹中部署對應的 PNG 檔案（例如，對於以 `docs-site/static/img/screenshots/<locale>/` 開頭的 URL，將檔案放在 `/img/screenshots/`）。
+
+- **根目錄 README，平面輸出**（同一檔案中的第二個 `documentations[]` 區塊）：僅 `README.md` 被翻譯，並包含 `markdownOutput.style` `flat` 和 `outputDir` `translated-docs`，因此你會得到 `translated-docs/README.<locale>.md`。英文圖片的路徑中通常在中間使用穩定的資料夾區段（例如 `images/screenshots/en-GB/overview.png`）。後處理會將 `images/screenshots/` 與 URL 其餘部分之間的單一路徑區段替換為目前啟用的 `${translatedLocale}`，因此每個翻譯後的 README 都會指向 `images/screenshots/de/…`、`images/screenshots/fr/…` 等。此模式與 Docusaurus 規則不同：在此處 `search` 符合 **任意** 資料夾名稱（`[^/]+/`），而不僅是 `en-GB/`。
+
+```json
+{
+  "description": "Per-locale screenshot folders under translated-docs",
+  "search": "images/screenshots/[^/]+/",
+  "replace": "images/screenshots/${translatedLocale}/"
+}
+```
+
+將 PNG 檔案保留在磁碟上的 `images/screenshots/<locale>/` 目錄下（與重寫後 URL 使用的相同結構）。
+
+**模式 3 — 獨立 SVG（`examples/nextjs-app`）**
+
+相同的範例啟用了 `features.translateSVG`，並將原始 SVG 對應至 Web 應用程式的公開資料夾：
+
+```json
+"svg": {
+  "sourcePath": "images",
+  "outputDir": "public/assets",
+  "style": "flat"
+}
+```
+
+執行 `translate-svg`（或 `sync`），使 `images/*.svg` 產生對應語系的輸出，存放於 `public/assets/` 下。Markdown 則個別引用這些 URL，與 `translate-docs` 分開。
+
+**最小化的僅 README 範例（`examples/console-app`）**
+
+`examples/console-app/ai-i18n-tools.config.json` 使用 `postProcessing.languageListBlock` 將 `README.md` 翻譯為 `translated-docs/`。它未定義任何圖片規則 — 當 README 沒有同層級的點陣圖檔，或僅使用主機已提供服務的絕對 URL 時，這種做法是合適的。
+
+取代樣板支援諸如 `${translatedLocale}` 和 `${translatedBasedir}` 等樣板（完整列表請見[設定參考](#configuration-reference)中的 `markdownOutput.postProcessing.regexAdjustments` 欄位）。
 
 <a id="markdown-output-path-template-placeholders"></a>
 #### `pathTemplate` / `jsonPathTemplate` 標記
@@ -783,6 +855,8 @@ ai-i18n-tools editor
 
 這將啟動一個本地 Web UI，後端為您設定的 **`cacheDir`** SQLite 資料庫——與 CLI 用於文件區段、日誌及相關中繼資料的目錄相同。包含以下分頁：**文件**（快取的文件區段）、**UI 字串**、**UI 複數**、**詞彙表**、**失敗項目** 與 **統計資料**。
 
+![Translation Cache Editor](../../docs/translation-cache-editor.png)
+
 如果您在此應用程式中**編輯快取資料列**（例如文件段落），請執行`sync --force-update`或使用等效的翻譯指令並搭配`--force-update`，以確保磁碟上的輸出與快取一致；若稍後儲存庫中的**原始文字**變更，段落雜湊值也會改變，針對舊文字的手動編輯將被取代。
 
 <a id="translation-cache-editor-failures"></a>
@@ -870,6 +944,7 @@ ai-i18n-tools editor
 | `fallbackModel`     | 已淘汰的單一備援模型。在 `defaultModel` 之後使用，當 `translationModels` 未設定或為空時生效。                                                                                                              |
 | `maxTokens`         | 每次請求的最大完成 token 數。預設值：`8192`。                                                                                                                                                              |
 | `temperature`       | 取樣溫度。預設值：`0.2`。                                                                                                                                                                            |
+| `requestTimeoutMs` | 等待每個傳送至 OpenRouter 的 HTTP 請求（對話完成及內部 `GET /models` 呼叫）的最長時間（毫秒）。預設值：`30000`（30 秒）。|
 
 **為何使用多個模型：** 不同供應商和模型在各語言與語系上的成本與品質表現各異。將 `openrouter.translationModels` 設定為 **有序的備援鏈**（而非單一模型），讓 CLI 在請求失敗時可嘗試下一個模型。
 
@@ -887,13 +962,17 @@ ai-i18n-tools editor
   "anthropic/claude-3-haiku",
   "qwen/qwen3.6-plus",
   "anthropic/claude-3.5-haiku",
-  "openai/gpt-5.3-codex",
-  "anthropic/claude-sonnet-4.6",
-  "google/gemini-3-flash-preview"
+  "google/gemini-3-flash-preview",
+  "~anthropic/claude-haiku-latest",
+  "google/gemma-4-31b-it",
+  "~anthropic/claude-sonnet-latest",
+  "openai/gpt-5.3-codex"
 ]
 ```
 
 在您的環境或 `.env` 檔案中設定 `OPENROUTER_API_KEY`。
+
+在變更 `translationModels` 之前，請先執行 `npx ai-i18n-tools check-models`，以根據 OpenRouter 的即時目錄（`GET /models`）驗證每個已設定的模型 ID。此指令會報告遺失或已過期（`expiration_date`）的 ID，列出有效模型及其預估的輸入/輸出價格（每百萬 tokens 的美元價格），並在任何已設定的 ID 無效時以非零狀態碼結束。需要 `OPENROUTER_API_KEY`。
 
 <a id="features"></a>
 ### `features`
@@ -1032,6 +1111,7 @@ npx ai-i18n-tools glossary-generate
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version`                                                                   | 列印 CLI 版本和建置時間戳記（與根程式上的 `-V` / `--version` 相同的資訊）。
 | `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`  | 寫入起始設定檔（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 會建立一個起始的 `.translate-ignore`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `check-models`                                                              | 根據 `GET /models` 驗證每個設定的 OpenRouter 模型 id（目錄成員資格、`expiration_date`、每百萬 token 的提示/補齊美元價格）。需要 `OPENROUTER_API_KEY`。當任何設定的 id 缺失或已過期時，會以非零值退出。對於目錄請求，會遵守 `openrouter.requestTimeoutMs`。 |
 | `extract`                                                                   | 從 `t("…")` / `i18n.t("…")` 字面值更新 `strings.json`，可選擇性加入 `package.json` 說明和可選的 manifest `englishName` 項目（參見 `ui.reactExtractor`）。需要 `features.extractUIStrings`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `generate-ui-languages [--master <path>] [--dry-run]`                       | 使用 `sourceLocale` + `targetLocales` 和內建的 `data/ui-languages-complete.json`（或 `--master`）將 `ui-languages.json` 寫入 `ui.flatOutputDir`（或設定時使用 `uiLanguagesPath`）。若主檔案中缺少某些語系，會發出警告並產生 `TODO` 佔位符。如果您現有的 manifest 中包含自訂的 `label` 或 `englishName` 值，這些值將被主目錄中的預設值取代——請在產生檔案後審查並調整。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `translate-docs …`                                                          | 為每個 `documentations` 區塊（`contentPaths`，可選的 `jsonSource`）翻譯 Markdown/MDX 和 JSON。`-j`：最多平行處理的語系數量；`-b`：每份檔案最多平行處理的批次 API 呼叫數。`--prompt-format`：批次傳輸格式（`xml` \| `json-array` \| `json-object`）。請參閱 [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags) 和 [批次提示格式](#batch-prompt-format)。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |

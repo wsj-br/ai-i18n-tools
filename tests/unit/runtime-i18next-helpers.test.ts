@@ -207,7 +207,7 @@ describe("makeLocaleLoadersFromManifest", () => {
   it("filters out manifest row when normalizeLocale(code) equals normalizeLocale(sourceLocale)", () => {
     const spy = vi.fn(() => () => Promise.resolve({}));
     makeLocaleLoadersFromManifest([{ code: "pt-BR" }, { code: "fr" }], "pt-br", spy);
-    expect(spy.mock.calls.map((c) => c[0])).toEqual(["fr"]);
+    expect((spy.mock.calls as unknown as [string][]).map((c) => c[0])).toEqual(["fr"]);
   });
 
   it("passes trimmed codes to makeLoaderForLocale", () => {

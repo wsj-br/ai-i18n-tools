@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -266,5 +267,64 @@ describe("TranslationCache", () => {
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it("getDetailedStats reports stale vs active and model breakdown", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("h1", "de", "a", "b", "m1", "doc.md", 1);
+    cache.setSegment("h2", "de", "c", "d", "", "other.md", 1);
+    const d = cache.getDetailedStats();
+    expect(d.totalSegments).toBe(2);
+    expect(d.byLocale.some((r) => r.locale === "de" && r.total === 2)).toBe(true);
+    expect(d.byModel.some((r) => r.model === "m1")).toBe(true);
+    expect(d.uniqueFilepaths).toBeGreaterThanOrEqual(1);
+    cache.close();
+  });
+
+  it("translation failure listing and summary aggregate rows", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("sh", "de", "orig", "tr", "mx", "fail.md", 2);
+    cache.addSegmentFailures([
+      {
+        sourceHash: "sh",
+        locale: "de",
+        model: "mx",
+        modelOrder: 0,
+        qualityError: "placeholder",
+        errorMessage: "bad",
+        fatal: false,
+        filepath: "fail.md",
+        sourceText: "orig",
+      },
+      {
+        sourceHash: "sh",
+        locale: "de",
+        model: "mx",
+        modelOrder: 1,
+        qualityError: "placeholder",
+        errorMessage: "still bad",
+        fatal: false,
+      },
+    ]);
+    const listed = cache.listTranslationFailures({ locale: "de", limit: 10, offset: 0 });
+    expect(listed.total).toBeGreaterThanOrEqual(1);
+    expect(listed.rows.some((r) => r.source_hash === "sh")).toBe(true);
+    const summary = cache.getTranslationFailureSummary({ locale: "de" });
+    expect(summary.segmentsWithFailure).toBeGreaterThanOrEqual(1);
+    expect(cache.getUniqueFailureQualityErrors()).toContain("placeholder");
+    cache.close();
+  });
+
+  it("resetLastHitAtForUnhitJsonInScope respects allowed paths only", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("hit", "de", "a", "b", "m", "in.json", 1);
+    cache.setSegment("stale", "de", "c", "d", "m", "in.json", 1);
+    cache.setSegment("other", "de", "e", "f", "m", "out.json", 1);
+    const n = cache.resetLastHitAtForUnhitJsonInScope(new Set(["hit|de"]), ["in.json"]);
+    expect(n).toBeGreaterThanOrEqual(1);
+    const nullHits = cache.listTranslations({ last_hit_at_null: true, limit: 50, offset: 0 });
+    expect(nullHits.rows.some((r) => r.source_hash === "stale")).toBe(true);
+    expect(nullHits.rows.some((r) => r.source_hash === "other")).toBe(false);
+    cache.close();
   });
 });

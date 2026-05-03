@@ -33,6 +33,12 @@ import {
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { OpenRouterClient } from "../api/openrouter.js";
+import { resolveTranslationModels } from "../core/config.js";
+import {
+  filterTranslationModelsAgainstOpenRouterCatalog,
+  MODELS_ALL_UNKNOWN_AFTER_FILTER,
+  warnIgnoredUnknownOpenRouterModels,
+} from "./openrouter-catalog-model-filter.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
 import {
   computeFlatLinkRewritePrefixes,
@@ -2184,7 +2190,26 @@ export async function runTranslate(
 
   const needsApi =
     !opts.dryRun && (config.features.translateMarkdown || config.features.translateJSON);
-  const client = needsApi ? new OpenRouterClient({ config }) : null;
+
+  let translationModelsForClient: string[] | undefined = undefined;
+  if (needsApi) {
+    const resolved = resolveTranslationModels(config.openrouter);
+    if (resolved.length > 0) {
+      const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolved, config);
+      warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
+      if (filtered.models.length === 0) {
+        throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
+      }
+      translationModelsForClient = filtered.models;
+    }
+  }
+
+  const client = needsApi
+    ? new OpenRouterClient({
+        config,
+        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
+      })
+    : null;
 
   const glossaryUi = config.glossary?.uiGlossary
     ? path.join(opts.cwd, config.glossary.uiGlossary)

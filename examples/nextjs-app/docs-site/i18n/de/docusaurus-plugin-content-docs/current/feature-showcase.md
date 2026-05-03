@@ -4,7 +4,7 @@ title: Übersetzungs-Funktionsshowcase
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
   übersetzen kann.
-translation_last_updated: '2026-04-27T15:58:04.951Z'
+translation_last_updated: '2026-05-02T23:39:39.439Z'
 source_file_mtime: '2026-04-20T20:03:51.319Z'
 source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
 translation_language: de

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   MODELS_TRY_ORDER_LOG_INDENT,
   MODELS_TRY_ORDER_LOG_PREFIX,
@@ -14,9 +15,11 @@ describe("wrapCommaSeparatedListForWidth", () => {
       "anthropic/claude-3-haiku",
       "qwen/qwen3.6-plus",
       "anthropic/claude-3.5-haiku",
-      "openai/gpt-5.3-codex",
-      "anthropic/claude-sonnet-4.6",
       "google/gemini-3-flash-preview",
+      "~anthropic/claude-haiku-latest",
+      "google/gemma-4-31b-it",
+      "~anthropic/claude-sonnet-latest",
+      "openai/gpt-5.3-codex",
     ];
     const joined = models.join(", ");
     const parts = wrapCommaSeparatedListForWidth(

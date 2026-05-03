@@ -43,7 +43,7 @@ export class UIStringExtractor extends BaseExtractor {
     this.defaultReassembleLocale = options.defaultReassembleLocale ?? "en";
   }
 
-  protected computeHash(content: string): string {
+  protected override computeHash(content: string): string {
     return crypto.createHash("md5").update(content).digest("hex").slice(0, 8);
   }
 

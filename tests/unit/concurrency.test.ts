@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../../src/utils/concurrency.js";
 
 describe("runMapWithConcurrency", () => {

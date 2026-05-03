@@ -39,9 +39,11 @@ const DEFAULT_OPENROUTER_MODELS: string[] = [
   "anthropic/claude-3-haiku",
   "qwen/qwen3.6-plus",
   "anthropic/claude-3.5-haiku",
-  "openai/gpt-5.3-codex",
-  "anthropic/claude-sonnet-4.6",
   "google/gemini-3-flash-preview",
+  "~anthropic/claude-haiku-latest",
+  "google/gemma-4-31b-it",
+  "~anthropic/claude-sonnet-latest",
+  "openai/gpt-5.3-codex",
 ];
 
 /**
@@ -50,8 +52,8 @@ const DEFAULT_OPENROUTER_MODELS: string[] = [
 export function resolveTranslationModels(o: OpenRouterConfig): string[] {
   if (Array.isArray(o.translationModels) && o.translationModels.length > 0) {
     const list = o.translationModels
-      .filter((m): m is string => typeof m === "string" && m.trim().length > 0)
-      .map((m) => m.trim());
+      .filter((m: unknown): m is string => typeof m === "string" && m.trim().length > 0)
+      .map((m: string) => m.trim());
     if (list.length > 0) {
       return list;
     }
@@ -161,6 +163,7 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     translationModels: [...DEFAULT_OPENROUTER_MODELS],
     maxTokens: 8192,
     temperature: 0.2,
+    requestTimeoutMs: 30_000,
   },
   features: {
     extractUIStrings: false,
@@ -293,7 +296,9 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
   }
 
   if (needsDocTranslation) {
-    const hasPaths = config.documentations.some((d) => d.contentPaths.length > 0);
+    const hasPaths = config.documentations.some(
+      (d: DocumentationBlock) => d.contentPaths.length > 0
+    );
     if (!hasPaths) {
       throw new ConfigValidationError(
         "documentations[].contentPaths must be non-empty in at least one block when translateMarkdown / translateJSON is enabled"
@@ -329,12 +334,15 @@ export function assertSvgCommandConfig(config: I18nConfig): void {
 export function parseI18nConfig(input: RawI18nConfigInput): I18nConfig {
   const parsed = i18nConfigSchema.safeParse(input);
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((e) => ({
-      path: e.path.join(".") || "(root)",
-      message: e.message,
-    }));
+    type ZodParseIssue = (typeof parsed.error.issues)[number];
+    const issues: { path: string; message: string }[] = parsed.error.issues.map(
+      (e: ZodParseIssue) => ({
+        path: e.path.join(".") || "(root)",
+        message: e.message,
+      })
+    );
     throw new ConfigValidationError(
-      `Invalid ai-i18n-tools config: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}`,
+      `Invalid ai-i18n-tools config: ${issues.map((issue) => `${issue.path}: ${issue.message}`).join("; ")}`,
       issues
     );
   }
@@ -423,6 +431,7 @@ export const initConfigTemplates = {
       translationModels: [...DEFAULT_OPENROUTER_MODELS],
       maxTokens: 8192,
       temperature: 0.2,
+      requestTimeoutMs: 30_000,
     },
     features: {
       // Workflow 1: UI string extraction and translation
@@ -471,6 +480,7 @@ export const initConfigTemplates = {
       translationModels: [...DEFAULT_OPENROUTER_MODELS],
       maxTokens: 8192,
       temperature: 0.2,
+      requestTimeoutMs: 30_000,
     },
     features: {
       // Workflow 1: enable if you also have a React UI with t() calls to extract

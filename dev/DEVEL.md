@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Development Guide](#development-guide)
+  - [Prerequisites](#prerequisites)
+    - [Optional: locale screenshots (`examples/nextjs-app`)](#optional-locale-screenshots-examplesnextjs-app)
+  - [Setting Up the Workspace](#setting-up-the-workspace)
+    - [Exposing the CLI globally during development](#exposing-the-cli-globally-during-development)
+  - [Common Scripts](#common-scripts)
+  - [Project Structure](#project-structure)
+  - [Running Examples](#running-examples)
+  - [Testing](#testing)
+  - [Publishing to npm](#publishing-to-npm)
+    - [One-time setup: `NPM_TOKEN` secret](#one-time-setup-npm_token-secret)
+    - [Pre-release checklist](#pre-release-checklist)
+    - [Bumping the version](#bumping-the-version)
+    - [Dry run (optional)](#dry-run-optional)
+    - [Creating a GitHub Release](#creating-a-github-release)
+    - [What gets published](#what-gets-published)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Development Guide
 
 ## Prerequisites
@@ -32,6 +55,39 @@ pnpm build
 ```
 
 After building, the CLI is available locally via `pnpm exec ai-i18n-tools` or through the npm scripts (e.g. `pnpm i18n:extract`).
+
+### Exposing the CLI globally during development
+
+`pnpm exec ai-i18n-tools` and the `pnpm i18n:*` scripts work from inside this repo without any extra setup (after `pnpm build`, which also sets mode `0o755` on `dist/cli/index.js` via `scripts/chmod-cli-bin.mjs`). To call the bare `ai-i18n-tools` command from any directory against your local working tree:
+
+```bash
+pnpm install
+pnpm build
+pnpm link --global
+which ai-i18n-tools          # expect: $(pnpm bin -g)/ai-i18n-tools
+```
+
+If `pnpm link --global` fails with:
+
+```text
+ERR_PNPM_NO_GLOBAL_BIN_DIR  Unable to find the global bin directory
+```
+
+pnpm has never set up a global bin on this account. Run the one-time bootstrap and then open a new shell so the updated `PATH` is loaded:
+
+```bash
+pnpm setup                   # appends PNPM_HOME + PATH to ~/.bashrc (or ~/.zshrc)
+exec $SHELL -l               # reload the shell
+pnpm bin -g                  # sanity check: prints e.g. /home/<user>/.local/share/pnpm
+pnpm link --global           # retry from the repo root
+```
+
+Undo with `pnpm uninstall -g ai-i18n-tools`.
+
+**Cross-platform notes**
+
+- Linux, macOS, and WSL: the CLI needs the executable bit on `dist/cli/index.js`; `pnpm build` sets it (see `scripts/chmod-cli-bin.mjs`).
+- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account.
 
 ## Common Scripts
 

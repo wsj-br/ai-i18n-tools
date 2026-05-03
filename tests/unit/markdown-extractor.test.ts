@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { DocSegmentTranslation } from "../../src/core/types.js";
 import { segmentSplittingSchema } from "../../src/core/types.js";
 import { MarkdownExtractor } from "../../src/extractors/markdown-extractor.js";
@@ -85,6 +86,7 @@ Paragraph after.`;
         start: "**LANGS_START**",
         end: "**LANGS_END**",
         separator: " | ",
+        label: "english",
       },
     });
     const langSeg = segs.find((s) => s.type === "other" && s.content.includes("**LANGS_START**"));
@@ -104,6 +106,7 @@ Next para.`;
         start: '<small id="lang-list">',
         end: "</small>",
         separator: " · ",
+        label: "english",
       },
     });
     const langSeg = segs.find((s) => s.content.includes("lang-list"));
@@ -126,6 +129,7 @@ Next para.`;
         start: '<small id="lang-list">',
         end: "</small>",
         separator: " · ",
+        label: "english",
       },
     });
     expect(segs).toHaveLength(1);

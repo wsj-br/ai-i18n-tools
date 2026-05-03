@@ -1,7 +1,12 @@
+import { describe, expect, it } from "vitest";
 import {
   assignCoercedTargetLocales,
   coerceTargetLocalesField,
   englishLanguageNameForLocale,
+  normalizeLocale,
+  normalizeManifestLocaleKey,
+  parseLocaleList,
+  primaryLanguageSubtag,
 } from "../../src/core/locale-utils.js";
 
 describe("coerceTargetLocalesField", () => {
@@ -33,6 +38,41 @@ describe("englishLanguageNameForLocale", () => {
     expect(englishLanguageNameForLocale("ko")).toBe("Korean");
     expect(englishLanguageNameForLocale("en-GB")).toBe("British English");
     expect(englishLanguageNameForLocale("de")).toBe("German");
+  });
+
+  it("returns undefined for empty input", () => {
+    expect(englishLanguageNameForLocale("   ")).toBeUndefined();
+  });
+});
+
+describe("normalizeLocale", () => {
+  it("normalizes two-part tags and lowercases single-tag locales", () => {
+    expect(normalizeLocale("  PT-br  ")).toBe("pt-BR");
+    expect(normalizeLocale("DE")).toBe("de");
+  });
+});
+
+describe("primaryLanguageSubtag", () => {
+  it("returns empty string for blank input", () => {
+    expect(primaryLanguageSubtag("")).toBe("");
+    expect(primaryLanguageSubtag("   ")).toBe("");
+  });
+
+  it("takes first segment before hyphen or underscore", () => {
+    expect(primaryLanguageSubtag("zh_CN")).toBe("zh");
+    expect(primaryLanguageSubtag("en-GB")).toBe("en");
+  });
+});
+
+describe("normalizeManifestLocaleKey", () => {
+  it("maps hyphens to underscores and lowercases", () => {
+    expect(normalizeManifestLocaleKey("pt-BR")).toBe("pt_br");
+  });
+});
+
+describe("parseLocaleList", () => {
+  it("splits on commas and whitespace and dedupes in order", () => {
+    expect(parseLocaleList("de, fr  de")).toEqual(["de", "fr"]);
   });
 });
 

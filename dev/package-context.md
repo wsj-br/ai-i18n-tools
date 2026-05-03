@@ -55,9 +55,11 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
       "anthropic/claude-3-haiku",
       "qwen/qwen3.6-plus",
       "anthropic/claude-3.5-haiku",
-      "openai/gpt-5.3-codex",
-      "anthropic/claude-sonnet-4.6",
-      "google/gemini-3-flash-preview"
+      "google/gemini-3-flash-preview",
+      "~anthropic/claude-haiku-latest",
+      "google/gemma-4-31b-it",
+      "~anthropic/claude-sonnet-latest",
+      "openai/gpt-5.3-codex"
     ],
     "maxTokens": 8192,
     "temperature": 0.2

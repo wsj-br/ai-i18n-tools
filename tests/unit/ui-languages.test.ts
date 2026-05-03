@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -162,6 +163,7 @@ describe("ui-languages", () => {
         translateUIStrings: false,
         translateMarkdown: false,
         translateJSON: false,
+        translateSVG: false,
       },
     });
     const codes = resolveUiTranslationTargetCodes(c, [
@@ -334,6 +336,7 @@ describe("ui-languages", () => {
         translateMarkdown: true,
         translateJSON: false,
         extractUIStrings: false,
+        translateSVG: false,
       },
     });
     expect(() => resolveLocalesForDocumentation(c, tmp, "es")).toThrow(/None of the requested/);
@@ -357,6 +360,7 @@ describe("ui-languages", () => {
         translateMarkdown: true,
         translateJSON: false,
         extractUIStrings: false,
+        translateSVG: false,
       },
     });
     expect(resolveLocalesForDocumentation(c, tmp, "de, es")).toEqual(["de"]);

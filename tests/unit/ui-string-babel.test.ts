@@ -52,4 +52,35 @@ describe("calleeMatchesTranslatedFunc", () => {
     const callee = { type: "Identifier", name: "t" } as Expression;
     expect(calleeMatchesTranslatedFunc(callee, ["t"])).toBe(true);
   });
+
+  it("matches nested member callee like i18n.t", () => {
+    const callee = {
+      type: "MemberExpression",
+      object: { type: "Identifier", name: "i18n" },
+      property: { type: "Identifier", name: "t" },
+      computed: false,
+    } as Expression;
+    expect(calleeMatchesTranslatedFunc(callee, ["i18n.t"])).toBe(true);
+  });
+
+  it("does not match when middle link breaks member chain", () => {
+    const callee = {
+      type: "MemberExpression",
+      object: { type: "Identifier", name: "x" },
+      property: { type: "Identifier", name: "t" },
+      computed: false,
+    } as Expression;
+    expect(calleeMatchesTranslatedFunc(callee, ["app.i18n.t"])).toBe(false);
+  });
+});
+
+describe("extractUiCallsFromSource edge cases", () => {
+  it("returns empty array when parse fails completely", () => {
+    expect(extractUiCallsFromSource("export default <<<<<", "bad.ts", ["t"])).toEqual([]);
+  });
+
+  it("does not collect calls whose first argument is not a string literal", () => {
+    const src = `import { t } from 'x'; const k='Hi'; t(k);`;
+    expect(extractUiCallsFromSource(src, "x.ts", ["t"])).toEqual([]);
+  });
 });

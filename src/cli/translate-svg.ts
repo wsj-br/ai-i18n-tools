@@ -13,6 +13,11 @@ import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
 import { OpenRouterClient } from "../api/openrouter.js";
 import {
+  filterTranslationModelsAgainstOpenRouterCatalog,
+  MODELS_ALL_UNKNOWN_AFTER_FILTER,
+  warnIgnoredUnknownOpenRouterModels,
+} from "./openrouter-catalog-model-filter.js";
+import {
   translateSvgAssetFile,
   type TranslateRunOptions,
   type TranslateTotals,
@@ -62,9 +67,25 @@ export async function runTranslateSvg(
   const hasNonSourceTarget = locales.some(
     (l) => normalizeLocale(l) !== normalizeLocale(config.sourceLocale)
   );
-  const models = resolveTranslationModels(config.openrouter);
-  const needsApi = !opts.dryRun && hasNonSourceTarget && models.length > 0;
-  const client = needsApi ? new OpenRouterClient({ config }) : null;
+  const resolvedModels = resolveTranslationModels(config.openrouter);
+  const needsApi = !opts.dryRun && hasNonSourceTarget && resolvedModels.length > 0;
+
+  let translationModelsForClient: string[] | undefined = undefined;
+  if (needsApi && resolvedModels.length > 0) {
+    const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedModels, config);
+    warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
+    if (filtered.models.length === 0) {
+      throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
+    }
+    translationModelsForClient = filtered.models;
+  }
+
+  const client = needsApi
+    ? new OpenRouterClient({
+        config,
+        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
+      })
+    : null;
 
   const glossaryUi = config.glossary?.uiGlossary
     ? path.join(opts.cwd, config.glossary.uiGlossary)
@@ -76,7 +97,7 @@ export async function runTranslateSvg(
   const noopHitKeys = new Set<string>();
 
   const totalFileCount = files.length;
-  const displayModels = client?.getConfiguredModels() ?? models;
+  const displayModels = client?.getConfiguredModels() ?? resolvedModels;
 
   console.log(
     chalk.gray(

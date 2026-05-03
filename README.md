@@ -19,6 +19,8 @@ CLI and programmatic toolkit for internationalising JavaScript/TypeScript applic
 
 - [Two core workflows](#two-core-workflows)
 - [Installation](#installation)
+  - [Using the CLI](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [Quick start](#quick-start)
   - [Workflow 1 - UI strings](#workflow-1---ui-strings)
   - [Workflow 2 - Documentation](#workflow-2---documentation)
@@ -60,11 +62,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### Using the CLI
+
+**Per-project (recommended)** — install as a dependency or devDependency, then call via `npx`, `pnpm exec`, or a `package.json` script:
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+The package manager writes `node_modules/.bin/ai-i18n-tools` with the correct permissions on Linux and macOS and `.cmd` / `.ps1` shims on Windows; script runners pick it up automatically.
+
+**Bare** `ai-i18n-tools` **in the terminal** — `package.json` scripts already run with `node_modules/.bin` on `PATH`, so commands like `pnpm run i18n:sync` invoke the CLI without typing `npx`. To run `ai-i18n-tools` directly in an interactive shell (from the project root, after a local install), prepend the local bin directory to `PATH`:
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+With [direnv](https://direnv.net/), add `PATH_add node_modules/.bin` to a `.envrc` in the project root so the bare command is available after `cd` into the repo. Without adjusting `PATH`, keep using `npx ai-i18n-tools …` or `pnpm exec ai-i18n-tools …`.
+
+**Zero-install one-off** — `npx ai-i18n-tools <cmd>` or `pnpm dlx ai-i18n-tools <cmd>` (downloads the package for that invocation; no entry in `package.json`).
+
+On Linux, macOS, and WSL, registry installs set the executable bit on the CLI script automatically. On Windows, package managers generate `.cmd` and `.ps1` shims that invoke Node explicitly.
+
 Set your OpenRouter API key:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+Commands that call OpenRouter (`translate-ui`, `translate-docs`, `sync`, `check-models`, and related scripts) need `OPENROUTER_API_KEY` in the environment.
+
+In `ai-i18n-tools.config.json`, the `openrouter` object includes model lists, `baseUrl`, `maxTokens`, `temperature`, and `requestTimeoutMs`: the maximum time in milliseconds to wait for each HTTP request to OpenRouter (chat completions and internal `GET /models` calls). The default is `30000` (30 seconds).
+
+Run `ai-i18n-tools check-models` to verify each configured model id against OpenRouter’s live catalog. It reports ids that are missing or past `expiration_date`, lists valid models with estimated input/output pricing (USD per 1M tokens), and exits with a non-zero status when any configured id is invalid. It requires `OPENROUTER_API_KEY`.
 
 ---
 
@@ -167,6 +218,7 @@ Exported from `'ai-i18n-tools/runtime'` - work in any JS environment, no i18next
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

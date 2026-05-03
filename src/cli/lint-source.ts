@@ -13,6 +13,11 @@ import {
   normalizeLocale,
   resolveUITranslationModels,
 } from "../core/config.js";
+import {
+  filterTranslationModelsAgainstOpenRouterCatalog,
+  MODELS_ALL_UNKNOWN_AFTER_FILTER,
+  warnIgnoredUnknownOpenRouterModels,
+} from "./openrouter-catalog-model-filter.js";
 import type { LintSourceIssue } from "../core/prompt-builder.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
@@ -402,11 +407,26 @@ export async function runLintSource(
     return { report, logFilePath };
   }
 
+  const resolvedUi = resolveUITranslationModels(config);
+  let translationModelsForClient: string[] | undefined = undefined;
+  if (resolvedUi.length > 0) {
+    const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedUi, config);
+    warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
+    if (filtered.models.length === 0) {
+      return {
+        report: emptyReport(config, cwd, stringsPath, units.length),
+        logFilePath,
+        exitWithError: MODELS_ALL_UNKNOWN_AFTER_FILTER,
+      };
+    }
+    translationModelsForClient = filtered.models;
+  }
+
   let client: OpenRouterClient;
   try {
     client = new OpenRouterClient({
       config,
-      translationModels: resolveUITranslationModels(config),
+      ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
     });
   } catch (e) {
     return {

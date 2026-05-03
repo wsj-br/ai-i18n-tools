@@ -304,8 +304,9 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 
 封装 OpenRouter 聊天补全 API。主要行为：
 
-- **模型回退**：按解析出的列表顺序依次尝试每个模型；在发生 HTTP 错误或解析失败时进行回退。UI 翻译会优先解析 `ui.preferredModel`，如果存在，然后是 `openrouter` 模型。
-- **速率限制**：检测到 429 响应时，等待 `retry-after`（或 2 秒），重试一次。
+- **模型回退**：按顺序尝试已解析列表中的每个模型；在发生 HTTP 错误或解析失败时进行回退。UI 翻译会优先解析 `ui.preferredModel`，如果存在，然后是 `openrouter` 模型。
+- **请求超时**：`openrouter.requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个聊天补全请求。同一值也适用于 CLI 加载目录时的 `GET /models`（例如 `check-models` 以及可选的预检过滤器，用于丢弃未知的模型 ID）。
+- **速率限制**：检测到 429 响应后，等待 `retry-after`（或 2 秒），重试一次。
 - **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应的 JSON 追加到文件中。
 
 <a id="config-loading"></a>

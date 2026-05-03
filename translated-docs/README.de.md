@@ -18,6 +18,8 @@ CLI und programmatisches Toolkit zur Internationalisierung von JavaScript-/TypeS
 
 - [Zwei Haupt-Workflows](#two-core-workflows)
 - [Installation](#installation)
+  - [Über die CLI](#using-the-cli)
+- [OpenRouter](#openrouter)
 - [Schnellstart](#quick-start)
   - [Workflow 1 – UI-Texte](#workflow-1---ui-strings)
   - [Workflow 2 – Dokumentation](#workflow-2---documentation)
@@ -55,11 +57,60 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+### Verwendung der CLI
+
+**Pro Projekt (empfohlen)** – als Abhängigkeit oder devDependency installieren und anschließend über `npx`, `pnpm exec` oder ein `package.json`-Skript aufrufen:
+
+```bash
+pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
+npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
+```
+
+```json
+"scripts": {
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate": "ai-i18n-tools translate-docs"
+}
+```
+
+Der Paketmanager schreibt `node_modules/.bin/ai-i18n-tools` mit den korrekten Berechtigungen unter Linux und macOS und `.cmd` / `.ps1`-Shims unter Windows; Skript-Runner erkennen dies automatisch.
+
+**Ohne Präfix** `ai-i18n-tools` **im Terminal** — `package.json`-Skripte werden bereits mit `node_modules/.bin` auf `PATH` ausgeführt, sodass Befehle wie `pnpm run i18n:sync` die CLI aufrufen, ohne `npx` eingeben zu müssen. Um `ai-i18n-tools` direkt in einer interaktiven Shell auszuführen (im Projektstammverzeichnis nach einer lokalen Installation), fügen Sie das lokale Bin-Verzeichnis an `PATH` an:
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+Mit [direnv](https://direnv.net/) fügen Sie `PATH_add node_modules/.bin` zu einer `.envrc` im Projektstammverzeichnis hinzu, damit der einfache Befehl nach dem `cd` in das Repository verfügbar ist. Ohne `PATH` anzupassen, weiterhin `npx ai-i18n-tools …` oder `pnpm exec ai-i18n-tools …` verwenden.
+
+**Null-Installations-Einzelbefehl** — `npx ai-i18n-tools <cmd>` oder `pnpm dlx ai-i18n-tools <cmd>` (lädt das Paket für diesen Aufruf herunter; kein Eintrag in `package.json`).
+
+Unter Linux, macOS und WSL setzen Registry-Installationen automatisch das Ausführbar-Bit für das CLI-Skript. Unter Windows erzeugen Paketmanager `.cmd`- und `.ps1`-Shims, die Node explizit aufrufen.
+
 Lege deinen OpenRouter-API-Schlüssel fest:
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
+
+---
+
+<a id="openrouter"></a>
+## OpenRouter
+
+Befehle, die OpenRouter aufrufen (`translate-ui`, `translate-docs`, `sync`, `check-models` und verwandte Skripte), benötigen `OPENROUTER_API_KEY` in der Umgebung.
+
+In `ai-i18n-tools.config.json` enthält das `openrouter`-Objekt Modelllisten, `baseUrl`, `maxTokens`, `temperature` und `requestTimeoutMs`: die maximale Wartezeit in Millisekunden pro HTTP-Anfrage an OpenRouter (für Chat-Vervollständigungen und interne `GET /models`-Aufrufe). Der Standardwert ist `30000` (30 Sekunden).
+
+Führen Sie `ai-i18n-tools check-models` aus, um jede konfigurierte Modell-ID mit dem Live-Katalog von OpenRouter zu überprüfen. Es meldet IDs, die fehlen oder abgelaufen sind `expiration_date`, listet gültige Modelle mit geschätzten Ein-/Ausgabepreisen (USD pro 1M Tokens) auf und beendet sich mit einem Status ungleich Null, wenn eine konfigurierte ID ungültig ist. Es erfordert `OPENROUTER_API_KEY`.
 
 ---
 
@@ -162,6 +213,7 @@ Exportiert aus `'ai-i18n-tools/runtime'` – funktionieren in jeder JS-Umgebung,
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for

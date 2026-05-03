@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import path from "path";
 import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
 import {

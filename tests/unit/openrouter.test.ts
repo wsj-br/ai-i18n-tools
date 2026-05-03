@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as config from "../../src/core/config.js";
 import { DocumentBatchAllModelsFailedError, OpenRouterClient } from "../../src/api/openrouter.js";
 import type { I18nConfig } from "../../src/core/types.js";
 
@@ -16,6 +17,7 @@ function openRouterConfig(
       translationModels: models,
       maxTokens: 100,
       temperature: 0,
+      requestTimeoutMs: 30_000,
     },
   };
 }
@@ -569,5 +571,109 @@ describe("OpenRouterClient", () => {
     expect(log).toContain("REQUEST");
     expect(log).toContain("RESPONSE");
     fs.rmSync(path.dirname(tmp), { recursive: true, force: true });
+  });
+
+  it("logs debug-traffic write failures without throwing", async () => {
+    const warn = vi.fn();
+    const badPath = fs.mkdtempSync(path.join(os.tmpdir(), "or-debug-dir-"));
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockJsonResponse(completionBody("x"))));
+    const c = new OpenRouterClient({
+      config: openRouterConfig(["m"]),
+      apiKey: "k",
+      debugTrafficFilePath: badPath,
+      logger: { warn } as never,
+    });
+    await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
+    expect(warn.mock.calls.some((c) => String(c[0]).includes("debug-traffic"))).toBe(true);
+    fs.rmSync(badPath, { recursive: true, force: true });
+  });
+
+  it("uses raw locale in prompts when Intl and localeDisplayNames yield no label", async () => {
+    const spy = vi.spyOn(config, "englishLanguageNameForLocale").mockReturnValue(undefined);
+    const fetchMock = vi.fn().mockResolvedValue(mockJsonResponse(completionBody('["t"]')));
+    vi.stubGlobal("fetch", fetchMock);
+    const c = new OpenRouterClient({
+      config: { ...openRouterConfig(["m"]), localeDisplayNames: {} },
+      apiKey: "k",
+    });
+    await c.translateUIBatch(["a"], "qaa-QQ");
+    const init = fetchMock.mock.calls[0]![1] as { body?: string };
+    const payload = JSON.parse(init.body ?? "{}") as { messages: Array<{ role: string; content: string }> };
+    const sys = payload.messages.find((m) => m.role === "system")?.content ?? "";
+    expect(sys).toContain("qaa-QQ");
+    spy.mockRestore();
+  });
+
+  it("lintUISourceBatch returns empty slots for no texts", async () => {
+    const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
+    const r = await c.lintUISourceBatch([], "German");
+    expect(r.slots).toEqual([]);
+    expect(r.lengthWarning).toBeNull();
+  });
+
+  it("lintUISourceBatch parses model JSON response", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        mockJsonResponse(
+          completionBody('[{"issues":[{"severity":"warn","message":"ok","suggestedText":"s"}]}]')
+        )
+      )
+    );
+    const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
+    const r = await c.lintUISourceBatch(["Save"], "German");
+    expect(r.slots).toHaveLength(1);
+    expect(r.slots[0]?.issues[0]?.message).toBe("ok");
+  });
+
+  it("translatePluralCardinalBatch returns empty forms when expectedForms is empty", async () => {
+    const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
+    const r = await c.translatePluralCardinalBatch([], {
+      systemPrompt: "s",
+      userContent: "u",
+    });
+    expect(r.forms).toEqual({});
+  });
+
+  it("translatePluralCardinalBatch parses plural JSON object", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(mockJsonResponse(completionBody('{"one":"1 file","other":"n files"}')))
+    );
+    const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
+    const r = await c.translatePluralCardinalBatch(
+      ["one", "other"],
+      {
+        systemPrompt: "sys",
+        userContent: "usr",
+      }
+    );
+    expect(r.forms.one).toBe("1 file");
+    expect(r.forms.other).toBe("n files");
+  });
+
+  it("translateDocumentBatch logs non-BatchTranslationError parse failures without docLogContext", async () => {
+    const warn = vi.fn();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(mockJsonResponse(completionBody("not-json-array")))
+      .mockResolvedValueOnce(mockJsonResponse(completionBody('["A","B"]')));
+    vi.stubGlobal("fetch", fetchMock);
+    const c = new OpenRouterClient({
+      config: openRouterConfig(["bad", "good"]),
+      apiKey: "k",
+      logger: { warn } as never,
+    });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    await c.translateDocumentBatch(segs, "de", [], { responseFormat: "json-array" });
+    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch parse failed"))).toBe(
+      true
+    );
   });
 });

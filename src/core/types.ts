@@ -265,6 +265,8 @@ const openRouterConfigSchema = z.object({
   fallbackModel: z.string().optional(),
   maxTokens: z.number().int().positive().default(8192),
   temperature: z.number().min(0).max(2).default(0.2),
+  /** Max time to wait for each OpenRouter HTTP request (chat completions and `GET /models`). Default 30s. */
+  requestTimeoutMs: z.number().int().positive().default(30_000),
 });
 
 const featuresSchema = z.object({

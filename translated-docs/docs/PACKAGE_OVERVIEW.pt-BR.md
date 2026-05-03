@@ -304,9 +304,10 @@ Quando `markdownOutput.style === "flat"`, arquivos markdown traduzidos são colo
 
 Envolve a API de conclusão de chat do OpenRouter. Principais comportamentos:
 
-- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; recorre a um modelo alternativo em caso de erros HTTP ou falhas de análise. A tradução da interface tenta primeiro `ui.preferredModel`, quando presente, e depois os modelos `openrouter`.
+- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; recorre a erros HTTP ou falhas de análise. A tradução da interface tenta primeiro `ui.preferredModel`, quando presente, e depois os modelos `openrouter`.
+- **Tempo limite da solicitação**: `openrouter.requestTimeoutMs` (padrão de 30 segundos) aborta cada solicitação de conclusão de chat por meio de `AbortSignal.timeout`. O mesmo valor se aplica a `GET /models` quando a CLI carrega o catálogo (por exemplo, `check-models` e o filtro opcional de pré-verificação que descarta IDs de modelos desconhecidos).
 - **Limitação de taxa**: detecta respostas 429, aguarda `retry-after` (ou 2s), tenta novamente uma vez.
-- **Log de tráfego de depuração**: se `debugTrafficFilePath` estiver definido, acrescenta as requisições e respostas JSON a um arquivo.
+- **Log de depuração de tráfego**: se `debugTrafficFilePath` estiver definido, acrescenta as solicitações e as respostas JSON a um arquivo.
 
 <a id="config-loading"></a>
 ### Carregamento de configuração
