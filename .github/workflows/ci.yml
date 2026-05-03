@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `src/build-info.generated.ts` is gitignored; `pnpm build` writes it, but CI runs `lint` (typecheck)
+      # before `build`, so generate the stub here so `tsc` can resolve `../build-info.generated.js`.
+      - name: Generate build metadata
+        run: node scripts/write-build-info.mjs
+
       - name: Lint
         run: pnpm run lint
 

@@ -11,7 +11,11 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+
 ## [1.2.8] - 2026-05-03
+
+- **Fixed**: CI — `.github/workflows/ci.yml` runs `node scripts/write-build-info.mjs` after install and before `pnpm run lint`, because `src/build-info.generated.ts` is gitignored and typecheck requires it (same output as the first step of `pnpm build`).
 
 - **Changed**: docs — UK spelling and light grammar edits in `README.md`, `docs/GETTING_STARTED.md`, and `dev/DEVEL.md` (for example **-ise** verbs, **licence** where appropriate, clearer phrasing for runtime helpers, version bumping, `editor --no-open`, and the `"flat"` layout line).
 
