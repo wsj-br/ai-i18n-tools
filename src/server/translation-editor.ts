@@ -15,6 +15,7 @@ import {
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
+import { docBlockFileTrackingKeyToRelPath } from "../core/doc-file-tracking.js";
 
 /** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
 const GLOSSARY_USER_HEADERS = [
@@ -370,6 +371,55 @@ export function createTranslationEditorApp(
     }
   });
 
+  app.get("/api/markdown-source-issue-codes", (_req, res) => {
+    try {
+      res.json({ issueCodes: cache.getUniqueMarkdownSourceIssueCodes() });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/markdown-source-issues", (req, res) => {
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+      const pageSize = Math.min(100, Math.max(1, parseInt(req.query.pageSize as string, 10) || 50));
+      const offset = (page - 1) * pageSize;
+      const sortRaw = (req.query.sort as string | undefined) ?? "filepath_line_asc";
+      const sort =
+        sortRaw === "filepath_line_asc" || sortRaw === "scanned_desc"
+          ? sortRaw
+          : "filepath_line_asc";
+
+      const { rows, total } = cache.listMarkdownSourceIssues({
+        filename: req.query.filename as string | undefined,
+        issue_code: req.query.issue_code as string | undefined,
+        source_hash: req.query.source_hash as string | undefined,
+        sort,
+        limit: pageSize,
+        offset,
+      });
+      res.json({ rows, total, page, pageSize, sort });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/markdown-source-issues/summary", (req, res) => {
+    try {
+      const summary = cache.getMarkdownSourceIssueSummary({
+        filename: req.query.filename as string | undefined,
+        issue_code: req.query.issue_code as string | undefined,
+        source_hash: req.query.source_hash as string | undefined,
+      });
+      res.json(summary);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/api/filepaths", (_req, res) => {
     try {
       res.json({ filepaths: cache.getUniqueFilepaths() });
@@ -387,8 +437,9 @@ export function createTranslationEditorApp(
         return;
       }
       const resolved = resolveSegmentLogFilepath(String(filepath), opts.jsonSource);
+      const displayPath = docBlockFileTrackingKeyToRelPath(resolved);
       const lineSuffix = start_line != null ? `:${start_line}` : ":1";
-      console.log(`[editor] link: ` + chalk.cyan(`${resolved}${lineSuffix}`));
+      console.log(`[editor] link: ` + chalk.cyan(`${displayPath}${lineSuffix}`));
       res.json({ ok: true });
     } catch (err) {
       console.error(err);

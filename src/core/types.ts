@@ -204,6 +204,31 @@ export interface TranslationFailureSummary {
   segmentsWith3OrMoreFailures: number;
 }
 
+/** One row in `markdown_source_issues` (pre-translation / static analysis). */
+export interface MarkdownSourceIssueListRow {
+  id: number;
+  filepath: string;
+  source_hash: string;
+  start_line: number | null;
+  issue_code: string;
+  detail: string;
+  scanned_at: string | null;
+}
+
+export interface MarkdownSourceIssueSummary {
+  rowsWithIssues: number;
+  byCode: Record<string, number>;
+}
+
+/** Row for {@link import("./cache.js").TranslationCache.replaceMarkdownIssuesForFilepath}. */
+export interface MarkdownSourceIssueInsert {
+  filepath: string;
+  sourceHash: string;
+  startLine: number | null;
+  issueCode: string;
+  detail: string;
+}
+
 export interface CleanupStats {
   staleTranslationsRemoved: number;
   deletedRows: Array<{ source_hash: string; locale: string; filepath: string | null }>;
@@ -501,6 +526,11 @@ const documentationBlockSchema = z
      * Root `rtlLocales` extends RTL detection alongside built-in RTL language codes.
      */
     emphasisPlaceholders: z.boolean().optional(),
+    /**
+     * When true (default), `translate-docs` scans translatable markdown segments for risky delimiter
+     * / inline-code patterns, logs warnings, and refreshes `markdown_source_issues` in the cache DB.
+     */
+    warnMarkdownSourceIssues: z.boolean().optional(),
   })
   .strict();
 

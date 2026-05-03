@@ -8,6 +8,9 @@ import type {
   CacheEntry,
   CleanupStats,
   FileTracking,
+  MarkdownSourceIssueInsert,
+  MarkdownSourceIssueListRow,
+  MarkdownSourceIssueSummary,
   TranslationFailureInsert,
   TranslationFailureListRow,
   TranslationFailureSummary,
@@ -16,7 +19,7 @@ import type {
 import { computeSegmentHash } from "../utils/hash.js";
 import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 const require = createRequire(import.meta.url);
 
 type SqliteModule = typeof Sqlite;
@@ -125,6 +128,29 @@ export class TranslationCache {
       this.db.exec(`
         ALTER TABLE translation_failures ADD COLUMN filepath TEXT;
         ALTER TABLE translation_failures ADD COLUMN source_text TEXT;
+      `);
+      this.db.exec("PRAGMA user_version = 3");
+    }
+    if (current < 4) {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS markdown_source_issues (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          filepath TEXT NOT NULL,
+          source_hash TEXT NOT NULL,
+          start_line INTEGER,
+          issue_code TEXT NOT NULL,
+          detail TEXT NOT NULL,
+          scanned_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_markdown_source_issues_filepath
+          ON markdown_source_issues(filepath);
+
+        CREATE INDEX IF NOT EXISTS idx_markdown_source_issues_source_hash
+          ON markdown_source_issues(source_hash);
+
+        CREATE INDEX IF NOT EXISTS idx_markdown_source_issues_issue_code
+          ON markdown_source_issues(issue_code);
       `);
       this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
     }
@@ -488,8 +514,12 @@ export class TranslationCache {
       .all() as { source_hash: string; locale: string; filepath: string | null }[];
 
     if (!dryRun) {
+      const staleFilepaths = new Set<string>();
       for (const row of deletedRows) {
         this.deleteFailuresByTranslationKey(row.source_hash, row.locale);
+        if (row.filepath) {
+          staleFilepaths.add(row.filepath);
+        }
       }
       this.db
         .prepare(
@@ -497,6 +527,16 @@ export class TranslationCache {
          WHERE last_hit_at IS NULL OR filepath IS NULL OR filepath = ''`
         )
         .run();
+      for (const fp of staleFilepaths) {
+        const remaining = (
+          this.db.prepare("SELECT COUNT(*) as c FROM translations WHERE filepath = ?").get(fp) as {
+            c: number;
+          }
+        ).c;
+        if (remaining === 0) {
+          this.db.prepare("DELETE FROM markdown_source_issues WHERE filepath = ?").run(fp);
+        }
+      }
     }
 
     return { count: deletedRows.length, deletedRows };
@@ -630,6 +670,13 @@ export class TranslationCache {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
+    const filepathClause = whereClause
+      ? `${whereClause} AND filepath IS NOT NULL AND filepath != ''`
+      : `WHERE filepath IS NOT NULL AND filepath != ''`;
+    const touchedFilepaths = this.db
+      .prepare(`SELECT DISTINCT filepath FROM translations ${filepathClause}`)
+      .all(...params) as { filepath: string }[];
+
     this.db
       .prepare(
         `DELETE FROM translation_failures
@@ -646,6 +693,18 @@ export class TranslationCache {
       .run(...params);
 
     const result = this.db.prepare(`DELETE FROM translations ${whereClause}`).run(...params);
+
+    for (const { filepath: fp } of touchedFilepaths) {
+      const remaining = (
+        this.db.prepare("SELECT COUNT(*) as c FROM translations WHERE filepath = ?").get(fp) as {
+          c: number;
+        }
+      ).c;
+      if (remaining === 0) {
+        this.db.prepare("DELETE FROM markdown_source_issues WHERE filepath = ?").run(fp);
+      }
+    }
+
     return Number(result.changes);
   }
 
@@ -659,6 +718,7 @@ export class TranslationCache {
          )`
       )
       .run(filepath);
+    this.db.prepare("DELETE FROM markdown_source_issues WHERE filepath = ?").run(filepath);
     const result = this.db.prepare("DELETE FROM translations WHERE filepath = ?").run(filepath);
     return Number(result.changes);
   }
@@ -940,6 +1000,121 @@ export class TranslationCache {
       )
       .all() as { quality_error: string }[];
     return rows.map((r) => r.quality_error);
+  }
+
+  /** Replace all markdown diagnostic rows for one cache filepath (doc tracking key). */
+  replaceMarkdownIssuesForFilepath(filepath: string, rows: MarkdownSourceIssueInsert[]): void {
+    this.db.prepare("DELETE FROM markdown_source_issues WHERE filepath = ?").run(filepath);
+    if (rows.length === 0) {
+      return;
+    }
+    const stmt = this.db.prepare(
+      `INSERT INTO markdown_source_issues (filepath, source_hash, start_line, issue_code, detail)
+       VALUES (?, ?, ?, ?, ?)`
+    );
+    for (const r of rows) {
+      stmt.run(r.filepath, r.sourceHash, r.startLine, r.issueCode, r.detail);
+    }
+  }
+
+  listMarkdownSourceIssues(filters?: {
+    filename?: string;
+    issue_code?: string;
+    source_hash?: string;
+    sort?: "filepath_line_asc" | "scanned_desc";
+    limit?: number;
+    offset?: number;
+  }): { rows: MarkdownSourceIssueListRow[]; total: number } {
+    const limit = filters?.limit ?? 50;
+    const offset = filters?.offset ?? 0;
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (filters?.filename?.trim()) {
+      conditions.push("LOWER(filepath) LIKE ?");
+      params.push(`%${filters.filename.trim().toLowerCase()}%`);
+    }
+    if (filters?.issue_code?.trim()) {
+      conditions.push("issue_code = ?");
+      params.push(filters.issue_code.trim());
+    }
+    if (filters?.source_hash?.trim()) {
+      conditions.push("LOWER(source_hash) LIKE ?");
+      params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const countStmt = this.db.prepare(
+      `SELECT COUNT(*) as count FROM markdown_source_issues ${whereClause}`
+    );
+    const total = (countStmt.get(...params) as { count: number }).count;
+
+    const orderBy =
+      filters?.sort === "scanned_desc"
+        ? "ORDER BY scanned_at DESC, id DESC"
+        : "ORDER BY filepath, CASE WHEN start_line IS NULL THEN 1 ELSE 0 END, start_line, issue_code";
+
+    const selectStmt = this.db.prepare(
+      `SELECT id, filepath, source_hash, start_line, issue_code, detail, scanned_at
+       FROM markdown_source_issues ${whereClause}
+       ${orderBy}
+       LIMIT ? OFFSET ?`
+    );
+    const rows = selectStmt.all(
+      ...params,
+      limit,
+      offset
+    ) as unknown as MarkdownSourceIssueListRow[];
+    return { rows, total };
+  }
+
+  getMarkdownSourceIssueSummary(filters?: {
+    filename?: string;
+    issue_code?: string;
+    source_hash?: string;
+  }): MarkdownSourceIssueSummary {
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (filters?.filename?.trim()) {
+      conditions.push("LOWER(filepath) LIKE ?");
+      params.push(`%${filters.filename.trim().toLowerCase()}%`);
+    }
+    if (filters?.issue_code?.trim()) {
+      conditions.push("issue_code = ?");
+      params.push(filters.issue_code.trim());
+    }
+    if (filters?.source_hash?.trim()) {
+      conditions.push("LOWER(source_hash) LIKE ?");
+      params.push(`%${filters.source_hash.trim().toLowerCase()}%`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const rows = this.db
+      .prepare(
+        `SELECT issue_code, COUNT(*) as c FROM markdown_source_issues ${whereClause} GROUP BY issue_code`
+      )
+      .all(...params) as { issue_code: string; c: number }[];
+
+    const byCode: Record<string, number> = {};
+    const countAll = this.db
+      .prepare(`SELECT COUNT(*) as count FROM markdown_source_issues ${whereClause}`)
+      .get(...params) as { count: number };
+    const rowsWithIssues = countAll.count;
+    for (const r of rows) {
+      byCode[r.issue_code] = r.c;
+    }
+
+    return { rowsWithIssues, byCode };
+  }
+
+  getUniqueMarkdownSourceIssueCodes(): string[] {
+    const rows = this.db
+      .prepare(
+        `SELECT DISTINCT issue_code FROM markdown_source_issues WHERE issue_code != '' ORDER BY issue_code`
+      )
+      .all() as { issue_code: string }[];
+    return rows.map((r) => r.issue_code);
   }
 
   close(): void {

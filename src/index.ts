@@ -36,6 +36,9 @@ export {
   type FileTracking,
   type CacheEntry,
   type TranslationRow,
+  type MarkdownSourceIssueInsert,
+  type MarkdownSourceIssueListRow,
+  type MarkdownSourceIssueSummary,
   type CleanupStats,
   type ContentExtractor,
   type GlossaryTerm,
@@ -157,6 +160,15 @@ export {
   compareMarkdownAST,
   type ValidationResult,
 } from "./processors/validator.js";
+
+export {
+  collectMarkdownSourceIssues,
+  collectMarkdownIssuesForSegment,
+  shouldDiagnoseMarkdownSegment,
+  MARKDOWN_SOURCE_ISSUE_CODES,
+  type MarkdownSourceIssue,
+  type MarkdownSourceIssueCode,
+} from "./processors/markdown-source-diagnostics.js";
 
 export { hasInternalPlaceholderLeak } from "./processors/translation-placeholder-leaks.js";
 export {

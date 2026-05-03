@@ -52,6 +52,7 @@ import {
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { runLintSource } from "./lint-source.js";
+import { runCheckMarkdown } from "./check-markdown.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
 import {
   logGenerateUiLanguagesWarnings,
@@ -72,6 +73,7 @@ import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runStripMdBoldInline } from "./strip-md-bold-inline.js";
 import { runCheckModels } from "./check-models.js";
+import { runCleanTemp } from "./clean-temp.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -142,7 +144,7 @@ try {
 
 function formatVersionOutput(): string {
   const build = BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
-  return `ai-i18n-tools ${version}\nBuild: ${build}`;
+  return `${version} - ${build}`;
 }
 
 /** Plain entries store `translated[locale]` as a string; plural entries store per-CLDR-form maps. */
@@ -1110,6 +1112,43 @@ program
   });
 
 program
+  .command("check-markdown")
+  .description(
+    "Scan documentation markdown for unpaired emphasis / unclosed inline code; print path:line issues; refresh SQLite markdown_source_issues (use --no-cache to skip DB)"
+  )
+  .option(
+    "-p, --path <path>",
+    "Only check files under this path (project-relative or absolute); same idea as translate-docs --path"
+  )
+  .option("-f, --file <path>", "Same as --path")
+  .option("--json", "Write JSON report to stdout (human lines go to stderr)", false)
+  .option("--no-cache", "Do not read or write the translation cache database", false)
+  .action(async (_a, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean };
+    const o = cmd.opts() as { path?: string; file?: string; json?: boolean; noCache?: boolean };
+    const pathFilter = normalizePathFilterForProjectRoot(
+      projectRoot,
+      resolveCliPathOrFile({ path: o.path, file: o.file })
+    );
+    try {
+      const { exitCode } = await runCheckMarkdown({
+        cwd: projectRoot,
+        config,
+        pathFilter,
+        json: Boolean(o.json),
+        noCache: Boolean(o.noCache),
+        verbose: Boolean(g.verbose),
+      });
+      process.exit(exitCode);
+    } catch (e) {
+      console.error(chalk.red(`❌ [check-markdown] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+  });
+
+program
   .command("export-ui-xliff")
   .description(
     "Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)"
@@ -1915,6 +1954,23 @@ program
     );
 
     cache.close();
+  });
+
+program
+  .command("clean-temp")
+  .description(
+    "Find `*.log` and `cache.db.backup*.sqlite` under a directory tree, print paths (like find -print), then delete after `y` or with `-f` / `--force`"
+  )
+  .option("-r, --root <path>", "Directory to search (default: current working directory)", ".")
+  .option("-f, --force", "Delete matching files without prompting", false)
+  .option("--dry-run", "Print matching paths only; do not prompt or delete", false)
+  .action(async (opts: { root?: string; dryRun?: boolean; force?: boolean }) => {
+    const rootDir = path.resolve(process.cwd(), opts.root ?? ".");
+    await runCleanTemp({
+      rootDir,
+      dryRun: Boolean(opts.dryRun),
+      force: Boolean(opts.force),
+    });
   });
 
 program

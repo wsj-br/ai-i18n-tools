@@ -11,7 +11,29 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — expanded `docs/ai-i18n-tools-context.md` with code patterns, a runtime wiring sketch, RTL notes, generated-file layout, and extra CLI entries; remains audience-agnostic for downstream agents.
 
+- **Fixed**: markdown source diagnostics — `STRONG_OUTSIDE_INLINE_CODE` no longer treats the closer of `**word**` / `__word__` (a letter or digit immediately before the delimiter run) as an opener wrapping a following `` `...` `` span; fixes false positives such as `**Bare** `ai-i18n-tools` **in the terminal**`. Strong/link issues now apply `segmentStartLine` to reported file lines like other diagnostics.
+
+- **Added**: markdown source diagnostics — `STRONG_OUTSIDE_INLINE_CODE` and `STRONG_OUTSIDE_LINK` detect `**`/`__` wrapping a `` `...` `` span or a `[text](url)` link (same segment scan as existing checks); reported by `check-markdown`, `translate-docs` when `warnMarkdownSourceIssues` is enabled, and the Translation Cache Editor **Markdown issues** tab.
+
+- **Changed**: translate-docs — markdown source diagnostics (`warnMarkdownSourceIssues`) run **once per source file** (after the same segment extraction as translation) before locale-parallel work, so `markdown_source_issues` refresh and stderr warnings are not duplicated for each target locale.
+
+- **Fixed**: Translation Cache Editor — `POST /api/log-links` (cache segments and **Markdown issues** link button) logs `path:line` with the project-relative file path only, omitting the `doc-block:{n}:` cache key prefix (for example `README.md:57` instead of `doc-block:0:README.md:57`).
+
+- **Added**: CLI `clean-temp` — walks a tree for `*.log` and `cache.db.backup*.sqlite`, prints `./…` lines like `find -print`; `-f` / `--force` deletes without prompting, otherwise prompts `Delete these files? (y/n)` and deletes only on exact `y`; no prompt when nothing matches; optional `-r` / `--root` and `--dry-run` (list only, overrides `--force`). The `package.json` `clean-temp` script invokes this command.
+
+- **Added**: CLI `check-markdown` — scans each `documentations[]` markdown/MDX source (same paths and segment extraction as `translate-docs`, honours `.translate-ignore` and `--path`), prints `path:line: [CODE] detail` to stderr (or JSON with `--json`), exits **1** when issues exist, and refreshes the `markdown_source_issues` SQLite table unless `--no-cache`.
+
+- **Added**: Translation Cache Editor — **Markdown issues** tab with filters, pagination, and `GET /api/markdown-source-issues`, `GET /api/markdown-source-issues/summary`, and `GET /api/markdown-source-issue-codes` (static delimiter / inline-code diagnostics, not translation failures).
+
+- **Added**: SQLite `markdown_source_issues` table (schema version **4**) with `TranslationCache.replaceMarkdownIssuesForFilepath`, `listMarkdownSourceIssues`, `getMarkdownSourceIssueSummary`, and `getUniqueMarkdownSourceIssueCodes`; rows are replaced per cache filepath on scan and removed when translations for that filepath are deleted.
+
+- **Added**: `documentations[].warnMarkdownSourceIssues` (optional, default **true**) — during `translate-docs`, log markdown source warnings and refresh `markdown_source_issues` for each processed file.
+
+- **Added**: `src/processors/markdown-source-diagnostics.ts` and exports `collectMarkdownSourceIssues`, `collectMarkdownIssuesForSegment`, `shouldDiagnoseMarkdownSegment`, and `MARKDOWN_SOURCE_ISSUE_CODES`; `emphasis-placeholders` exports `collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, `findCodeSpanEnd`, `findUnclosedInlineCodeLine1Starts`, and `MarkdownDelimiterRun` for shared pairing rules.
+
+- **Added**: `buildMarkdownExtractOpts` in `doc-translate.ts` so `translate-docs` and `check-markdown` share the same markdown extractor options.
 
 ## [1.2.8] - 2026-05-03
 

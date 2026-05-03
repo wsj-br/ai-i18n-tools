@@ -105,7 +105,7 @@ Undo with `pnpm uninstall -g ai-i18n-tools`.
 | `pnpm format:check`       | Check formatting without writing                                                            |
 | `pnpm clean`              | Remove the `dist/` directory                                                                |
 | `pnpm update-all`         | Build, then run `cleanup` on the root and both example projects                             |
-| `pnpm clean-temp`         | Interactively delete log files and SQLite backups                                           |
+| `pnpm clean-temp`         | List temp `*.log` / `cache.db.backup*.sqlite` files; delete after confirm, or pass `-f` for no prompt |
 | `pnpm release:github`     | Create the GitHub release from `dev/RELEASE_NOTES_<version>.md` (runs `scripts/release.sh`) |
 | `pnpm release:github:dry` | Dry-run the release script (validate inputs; no tag push or GitHub release)                 |
 

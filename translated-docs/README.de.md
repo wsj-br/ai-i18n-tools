@@ -7,7 +7,7 @@
 [![Lizenz: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI und programmatisches Toolkit zur Internationalisierung von JavaScript-/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Texte, übersetzt sie mithilfe von LLMs über OpenRouter und generiert sprachspezifische JSON-Dateien für i18next sowie Pipelines für Markdown, Docusaurus-JSON und eigenständige SVG-Ressourcen.
+CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten. Extrahiert UI-Texte, übersetzt sie mithilfe großer Sprachmodelle über OpenRouter und generiert lokalisierte JSON-Dateien für i18next. Enthält außerdem Pipelines für Markdown, Docusaurus-JSON und eigenständige SVG-Ressourcen.
 
 <small>**In anderen Sprachen lesen:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -49,7 +49,7 @@ Beide Workflows teilen sich eine einzige `ai-i18n-tools.config.json`-Datei und k
 <a id="installation"></a>
 ## Installation
 
-Das veröffentlichte Paket ist **nur ESM** (`"type": "module"`). Verwenden Sie `import` ab Node.js, Bundlern oder `import()` — `require('ai-i18n-tools')` **wird nicht unterstützt.** Das Paket deklariert **`engines.node` `>=22.16.0`**; ältere Node.js-Versionen werden nicht unterstützt.
+Das veröffentlichte Paket ist **ausschließlich ESM** (`"type": "module"`). Verwenden Sie `import` ab Node.js, Bundlern oder `import()` — `require('ai-i18n-tools')` **wird nicht unterstützt.** Das Paket deklariert `engines.node` `>=22.16.0`; ältere Node.js-Versionen werden nicht unterstützt.
 
 ```bash
 npm install ai-i18n-tools
@@ -75,7 +75,7 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 
 Der Paketmanager schreibt `node_modules/.bin/ai-i18n-tools` mit den korrekten Berechtigungen unter Linux und macOS und `.cmd` / `.ps1`-Shims unter Windows; Skript-Runner erkennen dies automatisch.
 
-**Ohne Präfix** `ai-i18n-tools` **im Terminal** — `package.json`-Skripte werden bereits mit `node_modules/.bin` auf `PATH` ausgeführt, sodass Befehle wie `pnpm run i18n:sync` die CLI aufrufen, ohne `npx` eingeben zu müssen. Um `ai-i18n-tools` direkt in einer interaktiven Shell auszuführen (im Projektstammverzeichnis nach einer lokalen Installation), fügen Sie das lokale Bin-Verzeichnis an `PATH` an:
+**Ohne Präfix** `ai-i18n-tools` **im Terminal:** `package.json`-Skripte werden bereits mit `node_modules/.bin` auf `PATH` ausgeführt, sodass Befehle wie `pnpm run i18n:sync` die CLI aufrufen, ohne `npx` eingeben zu müssen. Um `ai-i18n-tools` direkt in einer interaktiven Shell auszuführen (vom Projektstamm aus, nach einer lokalen Installation), fügen Sie das lokale Bin-Verzeichnis an `PATH` an:
 
 ```bash
 # bash/zsh — project root
@@ -89,7 +89,7 @@ $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
 
-Mit [direnv](https://direnv.net/) fügen Sie `PATH_add node_modules/.bin` zu einer `.envrc` im Projektstammverzeichnis hinzu, damit der einfache Befehl nach dem `cd` in das Repository verfügbar ist. Ohne `PATH` anzupassen, weiterhin `npx ai-i18n-tools …` oder `pnpm exec ai-i18n-tools …` verwenden.
+Mit [**direnv**](https://direnv.net/) fügen Sie `PATH_add node_modules/.bin` zu einer `.envrc` im Projektstammverzeichnis hinzu, damit der einfache Befehl verfügbar ist, nachdem in das Repository gewechselt wurde (`cd`). Ohne `PATH` anzupassen, weiterhin `npx ai-i18n-tools …` oder `pnpm exec ai-i18n-tools …` verwenden.
 
 **Null-Installations-Einzelbefehl** — `npx ai-i18n-tools <cmd>` oder `pnpm dlx ai-i18n-tools <cmd>` (lädt das Paket für diesen Aufruf herunter; kein Eintrag in `package.json`).
 
@@ -106,7 +106,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## OpenRouter
 
-Befehle, die OpenRouter aufrufen (`translate-ui`, `translate-docs`, `sync`, `check-models` und verwandte Skripte), benötigen `OPENROUTER_API_KEY` in der Umgebung.
+Befehle, die OpenRouter aufrufen (`translate-ui`, `translate-docs`, `sync`, `check-models` und verwandte Skripte), benötigen `OPENROUTER_API_KEY` in der Umgebung. `check-markdown` verwendet OpenRouter nicht.
 
 In `ai-i18n-tools.config.json` enthält das `openrouter`-Objekt Modelllisten, `baseUrl`, `maxTokens`, `temperature` und `requestTimeoutMs`: die maximale Wartezeit in Millisekunden pro HTTP-Anfrage an OpenRouter (für Chat-Vervollständigungen und interne `GET /models`-Aufrufe). Der Standardwert ist `30000` (30 Sekunden).
 
@@ -221,6 +221,7 @@ ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (mar
                                                     --prompt-format (xml | json-array | json-object)
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
 ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
+ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
 ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
@@ -230,6 +231,7 @@ ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per f
 ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
+ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.log and cache.db.backup*.sqlite; delete after `y`, with `-f`, or skip if none match
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 

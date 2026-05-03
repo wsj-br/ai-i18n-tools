@@ -40,6 +40,7 @@
           <button type="button" data-tab="ui-plurals">UI plurals</button>
           <button type="button" data-tab="glossary">Glossary</button>
           <button type="button" data-tab="failures">Failures</button>
+          <button type="button" data-tab="md-issues">Markdown issues</button>
           <button type="button" data-tab="stats">Statistics</button>
         </nav>
       </header>
@@ -201,6 +202,65 @@
             <button type="button" id="fail-btn-prev-bottom" disabled>Previous</button>
             <span id="fail-page-indicator-bottom"></span>
             <button type="button" id="fail-btn-next-bottom" disabled>Next</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="panel-md-issues" class="panel">
+        <p class="hint">
+          Static markdown checks (unpaired emphasis delimiters, unclosed inline code) using the same rules as
+          <code class="code-inline">translate-docs</code>. Refresh by running
+          <code class="code-inline">ai-i18n-tools check-markdown</code> or translating docs. Not the same as
+          <strong>Failures</strong> (model / validation errors).
+        </p>
+        <div id="mdiss-summary" class="status"></div>
+        <div class="filters">
+          <div class="filter-row filter-row-ui-primary">
+            <input type="text" id="mdiss-filter-filename" placeholder="Filename / filepath (partial)" />
+            <select id="mdiss-filter-issue-code">
+              <option value="">All issue codes</option>
+            </select>
+            <select id="mdiss-sort">
+              <option value="filepath_line_asc">Sort: filepath + line</option>
+              <option value="scanned_desc">Sort: scanned (newest)</option>
+            </select>
+            <button type="button" id="mdiss-btn-clear" class="seg-btn-clear">Clear</button>
+            <button type="button" id="mdiss-btn-apply">Apply</button>
+          </div>
+          <div class="filter-row filter-row-seg-secondary">
+            <input type="text" id="mdiss-filter-source-hash" placeholder="Source hash" />
+          </div>
+        </div>
+        <section class="pagination-top">
+          <span id="mdiss-pagination-info"></span>
+          <div class="pagination-controls">
+            <button type="button" id="mdiss-btn-prev" disabled>Previous</button>
+            <span id="mdiss-page-indicator"></span>
+            <button type="button" id="mdiss-btn-next" disabled>Next</button>
+          </div>
+        </section>
+        <section class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Filepath (cache key)</th>
+                <th>Line</th>
+                <th>Source hash</th>
+                <th>Code</th>
+                <th>Detail</th>
+                <th>Scanned</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="mdiss-table-body"></tbody>
+          </table>
+        </section>
+        <section class="pagination-bottom">
+          <span id="mdiss-pagination-info-bottom"></span>
+          <div class="pagination-controls">
+            <button type="button" id="mdiss-btn-prev-bottom" disabled>Previous</button>
+            <span id="mdiss-page-indicator-bottom"></span>
+            <button type="button" id="mdiss-btn-next-bottom" disabled>Next</button>
           </div>
         </section>
       </section>

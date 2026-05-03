@@ -7,7 +7,7 @@
 [![授權許可：MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-用於國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 及程式化工具包。可提取 UI 字串，透過 OpenRouter 使用 LLM 進行翻譯，並為 i18next 生成符合地區設定的 JSON 檔案，同時提供用於 Markdown、Docusaurus JSON 與獨立 SVG 資源的處理流程。
+用於國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 與工具包。透過 OpenRouter 使用大型語言模型擷取 UI 字串，並為 i18next 生成符合地區設定的 JSON 檔案。同時包含用於 Markdown、Docusaurus JSON 與獨立 SVG 資源的處理流程。
 
 <small>**以其他語言閱讀：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -49,7 +49,7 @@
 <a id="installation"></a>
 ## 安裝
 
-發布的套件僅支援 **ESM**（`"type": "module"`）。請從 Node.js、打包工具或 `import()` 使用 `import` — `require('ai-i18n-tools')` **不被支援。** 該套件宣告了 **`engines.node` `>=22.16.0`**；較舊的 Node.js 版本不受支援。
+發布的套件僅支援 **ESM**（`"type": "module"`）。請從 Node.js、打包工具或 `import()` 使用 `import` — `require('ai-i18n-tools')` **不受支援**。此套件宣告了 `engines.node` `>=22.16.0`；較舊的 Node.js 版本不受支援。
 
 ```bash
 npm install ai-i18n-tools
@@ -75,7 +75,7 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 
 套件管理工具會在 Linux 和 macOS 上以正確的權限寫入 `node_modules/.bin/ai-i18n-tools`，並在 Windows 上建立 `.cmd` / `.ps1` shim；指令碼執行器會自動偵測。
 
-**Bare** `ai-i18n-tools` **在終端機中** — `package.json` 指令碼在 `PATH` 上執行時已包含 `node_modules/.bin`，因此像 `pnpm run i18n:sync` 這樣的命令無需輸入 `npx` 即可調用 CLI。若要在互動式殼層中直接執行 `ai-i18n-tools`（在本機安裝後，從專案根目錄執行），請將本機的 bin 目錄前置到 `PATH`：
+**終端機中的** `ai-i18n-tools` **：** `package.json` 已經在 `PATH` 上以 `node_modules/.bin` 執行，因此像 `pnpm run i18n:sync` 這樣的命令可以直接呼叫 CLI，而無需輸入 `npx`。若要在互動式殼層中直接執行 `ai-i18n-tools`（在本機安裝後，從專案根目錄執行），請將本機的 bin 目錄前置到 `PATH`：
 
 ```bash
 # bash/zsh — project root
@@ -89,7 +89,7 @@ $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
 
-使用 [direnv](https://direnv.net/)，在專案根目錄中添加 `PATH_add node_modules/.bin` 到 `.envrc`，以便在 `cd` 進入倉庫後可以使用基本命令。在不調整 `PATH` 的情況下，繼續使用 `npx ai-i18n-tools …` 或 `pnpm exec ai-i18n-tools …`。
+使用 [**direnv**](https://direnv.net/)，在專案根目錄中添加 `PATH_add node_modules/.bin` 到 `.envrc`，以便在 `cd` 進入倉庫後可以使用基本命令。無需調整 `PATH`，繼續使用 `npx ai-i18n-tools …` 或 `pnpm exec ai-i18n-tools …`。
 
 **免安裝一次性執行** — 使用 `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（僅針對此次執行下載套件；不會寫入 `package.json`）。
 
@@ -106,7 +106,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## OpenRouter
 
-呼叫 OpenRouter 的指令（`translate-ui`、`translate-docs`、`sync`、`check-models` 以及相關腳本）需要在環境中設定 `OPENROUTER_API_KEY`。
+呼叫 OpenRouter 的指令（`translate-ui`、`translate-docs`、`sync`、`check-models` 及相關腳本）需要在環境中設定 `OPENROUTER_API_KEY`。`check-markdown` 不使用 OpenRouter。
 
 在 `ai-i18n-tools.config.json` 中，`openrouter` 物件包含模型列表、`baseUrl`、`maxTokens`、`temperature` 以及 `requestTimeoutMs`：表示對 OpenRouter 的每個 HTTP 請求（聊天完成和內部 `GET /models` 呼叫）等待的最長時間（毫秒）。預設值為 `30000`（30 秒）。
 
@@ -221,6 +221,7 @@ ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (mar
                                                     --prompt-format (xml | json-array | json-object)
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
 ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
+ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
 ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
 ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
@@ -230,6 +231,7 @@ ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per f
 ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
+ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.log and cache.db.backup*.sqlite; delete after `y`, with `-f`, or skip if none match
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 

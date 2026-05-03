@@ -327,4 +327,48 @@ describe("TranslationCache", () => {
     expect(nullHits.rows.some((r) => r.source_hash === "other")).toBe(false);
     cache.close();
   });
+
+  it("replaceMarkdownIssuesForFilepath replaces markdown_source_issues rows", () => {
+    const cache = new TranslationCache(":memory:");
+    const fp = "doc-block:0:guide.md";
+    cache.replaceMarkdownIssuesForFilepath(fp, [
+      {
+        filepath: fp,
+        sourceHash: "abc",
+        startLine: 2,
+        issueCode: "UNPAIRED_EMPHASIS",
+        detail: "test",
+      },
+    ]);
+    const listed = cache.listMarkdownSourceIssues({ filename: "guide", limit: 10, offset: 0 });
+    expect(listed.total).toBe(1);
+    expect(listed.rows[0]?.source_hash).toBe("abc");
+    const summary = cache.getMarkdownSourceIssueSummary({ filename: "guide" });
+    expect(summary.rowsWithIssues).toBe(1);
+    expect(summary.byCode.UNPAIRED_EMPHASIS).toBe(1);
+    expect(cache.getUniqueMarkdownSourceIssueCodes()).toContain("UNPAIRED_EMPHASIS");
+    cache.replaceMarkdownIssuesForFilepath(fp, []);
+    expect(cache.listMarkdownSourceIssues({ limit: 20, offset: 0 }).total).toBe(0);
+    cache.close();
+  });
+
+  it("deleteTranslationsByFilepath deletes markdown_source_issues for same filepath", () => {
+    const cache = new TranslationCache(":memory:");
+    const fp = "docs/a.md";
+    cache.setSegment("h", "de", "s", "t", "m", fp, 1);
+    cache.replaceMarkdownIssuesForFilepath(fp, [
+      {
+        filepath: fp,
+        sourceHash: "h",
+        startLine: 1,
+        issueCode: "UNCLOSED_INLINE_CODE",
+        detail: "x",
+      },
+    ]);
+    cache.deleteTranslationsByFilepath(fp);
+    expect(cache.listMarkdownSourceIssues({ filename: "a.md", limit: 10, offset: 0 }).total).toBe(
+      0
+    );
+    cache.close();
+  });
 });

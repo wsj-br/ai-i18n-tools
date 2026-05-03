@@ -1425,6 +1425,45 @@ describe("createTranslationEditorApp", () => {
     });
   });
 
+  describe("Markdown source issues API", () => {
+    it("GET /api/markdown-source-issue-codes and list/summary", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.replaceMarkdownIssuesForFilepath("doc-block:0:x.md", [
+        {
+          filepath: "doc-block:0:x.md",
+          sourceHash: "hh",
+          startLine: 4,
+          issueCode: "UNPAIRED_EMPHASIS",
+          detail: "d1",
+        },
+      ]);
+      const app = createTranslationEditorApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const codes = await fetch(`${base}/api/markdown-source-issue-codes`);
+        expect(codes.ok).toBe(true);
+        const cj = (await codes.json()) as { issueCodes: string[] };
+        expect(cj.issueCodes).toContain("UNPAIRED_EMPHASIS");
+
+        const list = await fetch(
+          `${base}/api/markdown-source-issues?page=1&pageSize=10&filename=x`
+        );
+        expect(list.ok).toBe(true);
+        const lj = (await list.json()) as { total: number; rows: { source_hash: string }[] };
+        expect(lj.total).toBe(1);
+        expect(lj.rows[0]?.source_hash).toBe("hh");
+
+        const sum = await fetch(`${base}/api/markdown-source-issues/summary?filename=x`);
+        expect(sum.ok).toBe(true);
+        const sj = (await sum.json()) as { rowsWithIssues: number };
+        expect(sj.rowsWithIssues).toBe(1);
+      });
+    });
+  });
+
   describe("translation-editor branch coverage", () => {
     it("GET /api/translation-failures?fatal=true only returns fatal rows", async () => {
       cache = new TranslationCache(":memory:");

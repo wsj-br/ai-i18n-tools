@@ -60,6 +60,7 @@
   const UP_PAGE_SIZE = 25;
   const GL_PAGE_SIZE = 25;
   const FAIL_PAGE_SIZE = 50;
+  const MDISS_PAGE_SIZE = 50;
 
   function escapeHtml(str) {
     if (str == null) return "";
@@ -813,6 +814,215 @@
     document.getElementById("fail-btn-next-bottom").addEventListener("click", next);
     failLoadFilterOptions();
     failLoadRowsAndSummary();
+  }
+
+  // ---------- Markdown source issues ----------
+  const mdissState = {
+    currentPage: 1,
+    pageSize: MDISS_PAGE_SIZE,
+    total: 0,
+    filters: {
+      filename: "",
+      issue_code: "",
+      source_hash: "",
+    },
+    sort: "filepath_line_asc",
+  };
+
+  function mdissBuildParams(includePaging) {
+    const params = new URLSearchParams();
+    if (includePaging) {
+      params.set("page", String(mdissState.currentPage));
+      params.set("pageSize", String(mdissState.pageSize));
+      params.set("sort", mdissState.sort);
+    }
+    if (mdissState.filters.filename) params.set("filename", mdissState.filters.filename);
+    if (mdissState.filters.issue_code) params.set("issue_code", mdissState.filters.issue_code);
+    if (mdissState.filters.source_hash) params.set("source_hash", mdissState.filters.source_hash);
+    return params.toString();
+  }
+
+  async function mdissFetchRows() {
+    const res = await fetch(`/api/markdown-source-issues?${mdissBuildParams(true)}`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function mdissFetchSummary() {
+    const res = await fetch(`/api/markdown-source-issues/summary?${mdissBuildParams(false)}`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function mdissFetchIssueCodes() {
+    const res = await fetch("/api/markdown-source-issue-codes");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function mdissLogLinks(row, e) {
+    try {
+      const locRes = await fetch("/api/locales");
+      if (!locRes.ok) throw new Error(await locRes.text());
+      const locData = await locRes.json();
+      const locale = locData.sourceLocale || "en";
+      const res = await fetch("/api/log-links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filepath: row.filepath,
+          start_line: row.start_line,
+          locale,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const btn = e && e.target && e.target.closest(".log-links-btn");
+      if (btn) {
+        const origTitle = btn.title;
+        btn.title = "Links logged to server console";
+        setTimeout(() => {
+          btn.title = origTitle;
+        }, 2000);
+      }
+    } catch (err) {
+      alert("Error logging links: " + err.message);
+    }
+  }
+
+  function mdissRenderTable(rows) {
+    const tbody = document.getElementById("mdiss-table-body");
+    tbody.innerHTML = "";
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      const linkBtn = document.createElement("button");
+      linkBtn.type = "button";
+      linkBtn.className = "icon-btn log-links-btn";
+      linkBtn.title = "Show source file/line in server console";
+      linkBtn.textContent = "\uD83D\uDD17";
+      linkBtn.disabled = !row.filepath;
+      linkBtn.addEventListener("pointerdown", (ev) => {
+        ev.stopPropagation();
+      });
+      linkBtn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        mdissLogLinks(row, ev);
+      });
+      tr.innerHTML = `
+        <td>${escapeHtml(row.filepath || "")}</td>
+        <td>${escapeHtml(row.start_line != null ? String(row.start_line) : "")}</td>
+        <td><code>${escapeHtml(row.source_hash)}</code></td>
+        <td><code>${escapeHtml(row.issue_code)}</code></td>
+        <td class="source-text">${escapeHtml(truncate(row.detail, 400))}</td>
+        <td>${escapeHtml(row.scanned_at || "")}</td>
+        <td class="actions"></td>
+      `;
+      tr.querySelector(".actions").append(linkBtn);
+      tbody.appendChild(tr);
+    }
+  }
+
+  function mdissUpdatePagination(data) {
+    mdissState.total = data.total;
+    const totalPages = Math.max(1, Math.ceil(mdissState.total / mdissState.pageSize));
+    const lo = (mdissState.currentPage - 1) * mdissState.pageSize + 1;
+    const hi = Math.min(mdissState.currentPage * mdissState.pageSize, mdissState.total);
+    const info = mdissState.total === 0 ? "No rows" : `Showing ${lo}\u2013${hi} of ${mdissState.total}`;
+    document.getElementById("mdiss-pagination-info").textContent = info;
+    document.getElementById("mdiss-pagination-info-bottom").textContent = info;
+    const pi = `Page ${mdissState.currentPage} of ${totalPages}`;
+    document.getElementById("mdiss-page-indicator").textContent = pi;
+    document.getElementById("mdiss-page-indicator-bottom").textContent = pi;
+    document.getElementById("mdiss-btn-prev").disabled = mdissState.currentPage <= 1;
+    document.getElementById("mdiss-btn-next").disabled = mdissState.currentPage >= totalPages;
+    document.getElementById("mdiss-btn-prev-bottom").disabled = mdissState.currentPage <= 1;
+    document.getElementById("mdiss-btn-next-bottom").disabled = mdissState.currentPage >= totalPages;
+  }
+
+  function mdissRenderSummary(summary) {
+    const el = document.getElementById("mdiss-summary");
+    const parts = [`Issue rows: ${summary.rowsWithIssues}`];
+    const codes = summary.byCode || {};
+    const keys = Object.keys(codes).sort();
+    for (const k of keys) {
+      parts.push(`${k}: ${codes[k]}`);
+    }
+    setStatus(el, parts.join(" | "), summary.rowsWithIssues === 0);
+  }
+
+  async function mdissLoadRowsAndSummary() {
+    try {
+      const [data, summary] = await Promise.all([mdissFetchRows(), mdissFetchSummary()]);
+      mdissRenderTable(data.rows);
+      mdissUpdatePagination(data);
+      mdissRenderSummary(summary);
+    } catch (err) {
+      alert("Error loading markdown issues: " + err.message);
+    }
+  }
+
+  async function mdissLoadFilterOptions() {
+    try {
+      const qRes = await mdissFetchIssueCodes();
+      const sel = document.getElementById("mdiss-filter-issue-code");
+      const prev = sel.value;
+      sel.innerHTML = '<option value="">All issue codes</option>';
+      for (const q of qRes.issueCodes || []) {
+        const opt = document.createElement("option");
+        opt.value = q;
+        opt.textContent = q;
+        sel.appendChild(opt);
+      }
+      if (prev && Array.from(sel.options).some((o) => o.value === prev)) sel.value = prev;
+    } catch (err) {
+      console.error("Error loading markdown issue codes:", err);
+    }
+  }
+
+  function mdissApplyFilters() {
+    mdissState.filters.filename = document.getElementById("mdiss-filter-filename").value.trim();
+    mdissState.filters.issue_code = document.getElementById("mdiss-filter-issue-code").value.trim();
+    mdissState.filters.source_hash = document.getElementById("mdiss-filter-source-hash").value.trim();
+    mdissState.sort = document.getElementById("mdiss-sort").value || "filepath_line_asc";
+    mdissState.currentPage = 1;
+    mdissLoadRowsAndSummary();
+  }
+
+  function mdissClearFilters() {
+    document.getElementById("mdiss-filter-filename").value = "";
+    document.getElementById("mdiss-filter-issue-code").value = "";
+    document.getElementById("mdiss-filter-source-hash").value = "";
+    document.getElementById("mdiss-sort").value = "filepath_line_asc";
+    mdissApplyFilters();
+  }
+
+  function mdissInit() {
+    document.getElementById("mdiss-btn-apply").addEventListener("click", mdissApplyFilters);
+    document.getElementById("mdiss-btn-clear").addEventListener("click", mdissClearFilters);
+    document.getElementById("mdiss-filter-issue-code").addEventListener("change", mdissApplyFilters);
+    document.getElementById("mdiss-sort").addEventListener("change", mdissApplyFilters);
+    for (const id of ["mdiss-filter-filename", "mdiss-filter-source-hash"]) {
+      document.getElementById(id).addEventListener("keydown", (e) => {
+        if (e.key === "Enter") mdissApplyFilters();
+      });
+    }
+    function prev() {
+      if (mdissState.currentPage > 1) {
+        mdissState.currentPage--;
+        mdissLoadRowsAndSummary();
+      }
+    }
+    function next() {
+      if (mdissState.currentPage < Math.ceil(mdissState.total / mdissState.pageSize)) {
+        mdissState.currentPage++;
+        mdissLoadRowsAndSummary();
+      }
+    }
+    document.getElementById("mdiss-btn-prev").addEventListener("click", prev);
+    document.getElementById("mdiss-btn-next").addEventListener("click", next);
+    document.getElementById("mdiss-btn-prev-bottom").addEventListener("click", prev);
+    document.getElementById("mdiss-btn-next-bottom").addEventListener("click", next);
+    mdissLoadFilterOptions();
+    mdissLoadRowsAndSummary();
   }
 
   // ---------- UI strings ----------
@@ -2207,6 +2417,10 @@
         failLoadFilterOptions();
         failLoadRowsAndSummary();
       }
+      if (tab === "md-issues") {
+        mdissLoadFilterOptions();
+        mdissLoadRowsAndSummary();
+      }
       if (tab === "ui-plurals") loadUiPlurals();
       if (tab === "glossary") loadGlossary();
       if (tab === "stats") loadStats();
@@ -2215,6 +2429,7 @@
 
   segInit();
   failInit();
+  mdissInit();
   uiInitListeners();
   upInitListeners();
   glInitListeners();

@@ -4,7 +4,8 @@ const STRONG_ASTERISK_PLACEHOLDER = "{{SE}}";
 const STRONG_UNDERSCORE_PLACEHOLDER = "{{SU}}";
 const STRIKETHROUGH_PLACEHOLDER = "{{ST}}";
 
-interface DelimiterRun {
+/** Delimiter run for CommonMark-style `*` / `_` / `~` pairing (used by emphasis protection and markdown diagnostics). */
+export interface MarkdownDelimiterRun {
   marker: "*" | "_" | "~";
   start: number;
   count: number;
@@ -13,6 +14,8 @@ interface DelimiterRun {
   openerUsed: number;
   closerUsed: number;
 }
+
+type DelimiterRun = MarkdownDelimiterRun;
 
 interface Replacement {
   start: number;
@@ -103,7 +106,7 @@ function findPlaceholderEnd(text: string, start: number): number {
   return -1;
 }
 
-function findCodeSpanEnd(text: string, tickStart: number, tickCount: number): number {
+export function findCodeSpanEnd(text: string, tickStart: number, tickCount: number): number {
   let i = tickStart + tickCount;
   while (i < text.length) {
     if (text[i] !== "`") {
@@ -119,7 +122,39 @@ function findCodeSpanEnd(text: string, tickStart: number, tickCount: number): nu
   return -1;
 }
 
-function collectDelimiterRuns(text: string): DelimiterRun[] {
+/** 1-based start indices of inline code openings whose closing backticks never appear (same rules as delimiter scan). */
+export function findUnclosedInlineCodeLine1Starts(text: string): number[] {
+  const lines: number[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+
+    if (ch === "{" && text[i + 1] === "{") {
+      const end = findPlaceholderEnd(text, i);
+      if (end !== -1) {
+        i = end;
+        continue;
+      }
+    }
+
+    if (ch === "`") {
+      const tickCount = readRun(text, i, "`");
+      const end = findCodeSpanEnd(text, i, tickCount);
+      if (end === -1) {
+        lines.push(1 + (text.slice(0, i).match(/\n/g)?.length ?? 0));
+        i += tickCount;
+      } else {
+        i = end;
+      }
+      continue;
+    }
+
+    i++;
+  }
+  return lines;
+}
+
+export function collectMarkdownDelimiterRuns(text: string): MarkdownDelimiterRun[] {
   const runs: DelimiterRun[] = [];
   let i = 0;
   while (i < text.length) {
@@ -292,10 +327,11 @@ function buildProtectedText(source: string, replacements: Replacement[]): string
 /**
  * Same opener/closer pairing as {@link protectMarkdownEmphasis}, returning replacement spans
  * plus each **closing** delimiter span in source order (for post-translation spacing fixes).
+ * Mutates `runs` (openerUsed / closerUsed); pass a **deep copy** if you need to preserve the original.
  */
-function pairEmphasisDelimitersFromRuns(
+export function pairMarkdownEmphasisDelimitersFromRuns(
   text: string,
-  runs: DelimiterRun[]
+  runs: MarkdownDelimiterRun[]
 ): {
   replacements: Replacement[];
   closerSpans: Array<{ start: number; end: number }>;
@@ -358,7 +394,7 @@ function pairEmphasisDelimiters(text: string): {
   replacements: Replacement[];
   closerSpans: Array<{ start: number; end: number }>;
 } {
-  return pairEmphasisDelimitersFromRuns(text, collectDelimiterRuns(text));
+  return pairMarkdownEmphasisDelimitersFromRuns(text, collectMarkdownDelimiterRuns(text));
 }
 
 export function protectMarkdownEmphasis(text: string): ProtectedEmphasisResult {
@@ -442,7 +478,7 @@ function closerNeedsTrailingSpace(marker: string, prevChar: string, nextChar: st
  * included in `closerSpans` even though strict CommonMark marks it `canClose=false`.
  */
 export function applyEmphasisCloserSpacing(text: string): string {
-  const { closerSpans } = pairEmphasisDelimitersFromRuns(
+  const { closerSpans } = pairMarkdownEmphasisDelimitersFromRuns(
     text,
     collectDelimiterRunsForSpacing(text)
   );

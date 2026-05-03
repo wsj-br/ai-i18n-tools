@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import path from "path";
 import {
+  docBlockFileTrackingKeyToRelPath,
   documentationFileTrackingKey,
   resolveDocTrackingKeyToAbs,
 } from "../../src/core/doc-file-tracking.js";
@@ -36,6 +37,24 @@ describe("doc-file-tracking", () => {
     it("falls back to full resolve when prefix present but no colon after block id", () => {
       const abs = resolveDocTrackingKeyToAbs("/project/root", "doc-block:orphan");
       expect(abs).toBe(path.resolve(root, "doc-block:orphan"));
+    });
+  });
+
+  describe("docBlockFileTrackingKeyToRelPath", () => {
+    it("strips doc-block index prefix", () => {
+      expect(docBlockFileTrackingKeyToRelPath("doc-block:0:README.md")).toBe("README.md");
+      expect(docBlockFileTrackingKeyToRelPath("doc-block:12:docs/guide.md")).toBe("docs/guide.md");
+    });
+
+    it("returns input unchanged for non doc-block keys", () => {
+      expect(docBlockFileTrackingKeyToRelPath("README.md")).toBe("README.md");
+      expect(docBlockFileTrackingKeyToRelPath("svg-assets:icons/x.svg")).toBe(
+        "svg-assets:icons/x.svg"
+      );
+    });
+
+    it("returns input unchanged when doc-block prefix is malformed", () => {
+      expect(docBlockFileTrackingKeyToRelPath("doc-block:orphan")).toBe("doc-block:orphan");
     });
   });
 });

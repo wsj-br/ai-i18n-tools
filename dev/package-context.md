@@ -176,6 +176,10 @@ npx ai-i18n-tools translate-docs [--locale <code>] [--force | --force-update] �
     --prompt-format xml|json-array|json-object: batch wire format to the model (default json-array); does not change validation or cache.
     Do not combine --force with --force-update (when the docs step runs).
 
+npx ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]
+    Scan documentation markdown/MDX for unpaired emphasis delimiters and unclosed inline code (no API).
+    stderr: path:line: [CODE] message; exit 1 if any issue. Refreshes markdown_source_issues in cache unless --no-cache.
+
 npx ai-i18n-tools translate-svg [--locale <code>] [--force | --force-update] [--no-cache] …
     Standalone SVG assets from config.svg. Requires features.translateSVG. --no-cache: skip SQLite reads/writes for this run only.
 
@@ -256,6 +260,8 @@ resolveDocumentationOutputPath  → write to output file
 ```
 
 **Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (a `cache.db` SQLite file), shared by all `documentations` blocks. Each row stores the `model` that last translated the segment; saving an edit in the `editor` sets `model` to `user-edited` (same sentinel as UI `strings.json` `models`).
+
+**`markdown_source_issues` (schema ≥ 4):** pre-translation static findings per documentation cache filepath (`doc-block:{i}:{relPath}` keys, same as `translations.filepath` for markdown). `check-markdown` and `translate-docs` (when `warnMarkdownSourceIssues` is not `false`) call `TranslationCache.replaceMarkdownIssuesForFilepath` to delete-then-insert all rows for that filepath. `deleteTranslationsByFilepath` and filtered bulk deletes remove markdown issue rows when the last translation row for that filepath is gone. Editor tab **Markdown issues** reads `GET /api/markdown-source-issues` (+ summary / issue-code list). Processor: `src/processors/markdown-source-diagnostics.ts` (includes `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for `**`/`__` wrapping `` `code` `` or `[text](url)`); pairing primitives exported from `emphasis-placeholders.ts` (`collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, …).
 
 **CLI**: `--force-update` bypasses only the *file-level* skip (rebuild outputs) while still using segment cache. `--force` clears per-file tracking and skips segment cache reads for API calls. See the getting started guide for the full flag table.
 

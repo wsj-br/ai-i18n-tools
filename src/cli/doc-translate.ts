@@ -4,6 +4,7 @@ import { matter, stringify as matterStringify } from "gray-matter-es";
 import chalk from "chalk";
 import type {
   DocSegmentTranslation,
+  DocumentationBlock,
   I18nConfig,
   I18nDocTranslateConfig,
   Segment,
@@ -23,6 +24,7 @@ import {
 } from "./format.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
+import type { MarkdownExtractOptions } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
 import { SvgExtractor } from "../extractors/svg-extractor.js";
 import { PlaceholderHandler } from "../processors/placeholder-handler.js";
@@ -72,6 +74,23 @@ import {
   resolveMarkdownEmphasisPlaceholders,
   usesAutomaticEmphasisPlaceholdersForLocale,
 } from "../core/markdown-emphasis-defaults.js";
+import { collectMarkdownIssuesForSegment } from "../processors/markdown-source-diagnostics.js";
+import type { MarkdownSourceIssueInsert } from "../core/types.js";
+
+/** Same segment-extraction options as `translate-docs` for one documentation block. */
+export function buildMarkdownExtractOpts(
+  documentation: DocumentationBlock
+): MarkdownExtractOptions | undefined {
+  const langListCfg = documentation.markdownOutput.postProcessing?.languageListBlock;
+  const splitCfg = segmentSplittingSchema.parse(documentation.segmentSplitting ?? {});
+  if (!langListCfg && !splitCfg.enabled) {
+    return undefined;
+  }
+  return {
+    ...(langListCfg ? { languageListBlock: langListCfg } : {}),
+    ...(splitCfg.enabled ? { segmentSplitting: splitCfg } : {}),
+  };
+}
 
 /** Batch segment prompt/response shape for `translate-docs --prompt-format`. */
 export type TranslatePromptFormat = "xml" | "json-array" | "json-object";
@@ -1301,6 +1320,44 @@ async function translateSegmentsBatched(
   };
 }
 
+/**
+ * Locale-independent: read source, extract segments (same options as translation), then refresh
+ * `markdown_source_issues` and stderr warnings. Call once per markdown file before parallel
+ * per-locale work so diagnostics are not repeated for every locale.
+ */
+export async function scanAndRecordMarkdownSourceIssuesForTranslate(
+  absSource: string,
+  relPath: string,
+  config: I18nDocTranslateConfig,
+  cache: TranslationCache,
+  opts: TranslateRunOptions
+): Promise<void> {
+  if (config.documentation.warnMarkdownSourceIssues === false || opts.noCache || opts.dryRun) {
+    return;
+  }
+  const content = fs.readFileSync(absSource, "utf8");
+  const blockIdx = opts.documentationBlockIndex ?? 0;
+  const fileTrackingKey = documentationFileTrackingKey(blockIdx, relPath);
+  const md = new MarkdownExtractor();
+  const mdExtractOpts = buildMarkdownExtractOpts(config.documentation);
+  const segments = md.extract(content, relPath, mdExtractOpts);
+  const markdownIssueRows: MarkdownSourceIssueInsert[] = [];
+  for (const s of segments) {
+    markdownIssueRows.push(...collectMarkdownIssuesForSegment(s, fileTrackingKey));
+  }
+  await withCacheMutex(opts.cacheMutex, () =>
+    cache.replaceMarkdownIssuesForFilepath(fileTrackingKey, markdownIssueRows)
+  );
+  if (markdownIssueRows.length > 0) {
+    for (const row of markdownIssueRows) {
+      const ln = row.startLine ?? "?";
+      console.warn(
+        chalk.yellow(`  ⚠️  Markdown source ${relPath}:${ln} [${row.issueCode}] ${row.detail}\n`)
+      );
+    }
+  }
+}
+
 export async function translateMarkdownFile(
   absSource: string,
   relPath: string,
@@ -1362,16 +1419,9 @@ export async function translateMarkdownFile(
 
   const fileStartTime = Date.now();
   const md = new MarkdownExtractor();
-  const langListCfg = config.documentation.markdownOutput.postProcessing?.languageListBlock;
-  const splitCfg = segmentSplittingSchema.parse(config.documentation.segmentSplitting ?? {});
-  const mdExtractOpts =
-    langListCfg || splitCfg.enabled
-      ? {
-          ...(langListCfg ? { languageListBlock: langListCfg } : {}),
-          ...(splitCfg.enabled ? { segmentSplitting: splitCfg } : {}),
-        }
-      : undefined;
+  const mdExtractOpts = buildMarkdownExtractOpts(config.documentation);
   const segments = md.extract(content, relPath, mdExtractOpts);
+
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
@@ -2282,6 +2332,16 @@ export async function runTranslate(
     batchConcurrency: batchConcurrencyEffective,
     cacheMutex,
   };
+
+  if (shouldRunMarkdown(opts, config) && cache && !opts.noCache && !opts.dryRun) {
+    for (const rel of files.markdown) {
+      if (!matchesPathFilter(rel, opts.pathFilter)) {
+        continue;
+      }
+      const abs = path.join(opts.cwd, rel);
+      await scanAndRecordMarkdownSourceIssuesForTranslate(abs, rel, config, cache, runOpts);
+    }
+  }
 
   const processLocale = async (locale: string) => {
     const markdownHitKeysLocal = new Set<string>();

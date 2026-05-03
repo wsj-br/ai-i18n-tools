@@ -27,3 +27,15 @@ export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string
   }
   return path.resolve(projectRoot, filepath);
 }
+
+/**
+ * For editor / server console links: `doc-block:{n}:rel/path` → `rel/path`; returns `filepath` unchanged
+ * when it is not a documentation file-tracking key (e.g. plain paths, `svg-assets:…`).
+ */
+export function docBlockFileTrackingKeyToRelPath(filepath: string): string {
+  if (!filepath.startsWith(PREFIX)) return filepath;
+  const rest = filepath.slice(PREFIX.length);
+  const idx = rest.indexOf(":");
+  if (idx < 0) return filepath;
+  return rest.slice(idx + 1);
+}

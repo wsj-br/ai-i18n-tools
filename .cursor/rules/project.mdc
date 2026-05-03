@@ -15,9 +15,11 @@ Source `src/` (API from `src/index.ts`), tests `tests/`. Main areas: `cli/`, `co
 
 ## Docs
 
-Canonical package docs: `README.md`, `docs/`. Maintainer internals: `dev/package-context.md`. Consumer-facing shipped doc: `docs/ai-i18n-tools-context.md`.
+- Canonical package docs: `README.md`, `docs/`. Maintainer internals: `dev/package-context.md`. Consumer-facing shipped doc: `docs/ai-i18n-tools-context.md`.
+- Treat `translated-docs/` as pipeline output from `translate-docs` (do not hand-edit unless you intend to refresh generated artifacts). Avoid bold around inline code in prose (translation tooling).
+- Do **not** use bold formatting around inline code—avoid putting asterisks outside a backtick span. Use plain `` `code` `` spans, or apply emphasis and code styling separately; never nest both on the same element.
+- Do **not** use bold formatting around links—avoid putting asterisks outside a link. Use plain `` [link text](url) `` spans, or apply emphasis and link styling separately; never nest both on the same element. If needed a bold use it inside the link text.
 
-Treat `translated-docs/` as pipeline output from `translate-docs` (do not hand-edit unless you intend to refresh generated artifacts). Avoid bold around inline code in prose (translation tooling).
 
 ## How to work
 
