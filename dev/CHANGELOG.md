@@ -11,6 +11,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.2.8] - 2026-05-03
+
 - **Changed**: docs — UK spelling and light grammar edits in `README.md`, `docs/GETTING_STARTED.md`, and `dev/DEVEL.md` (for example **-ise** verbs, **licence** where appropriate, clearer phrasing for runtime helpers, version bumping, `editor --no-open`, and the `"flat"` layout line).
 
 - **Changed**: docs — `docs/GETTING_STARTED.md` recommended `package.json` scripts now prefer `sync` over chaining `translate-ui && translate-svg && translate-docs`.
