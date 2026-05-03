@@ -11,6 +11,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+## [1.3.1] - 2026-05-03
+
 - **Changed**: docs — expanded `docs/ai-i18n-tools-context.md` with code patterns, a runtime wiring sketch, RTL notes, generated-file layout, and extra CLI entries; remains audience-agnostic for downstream agents.
 
 - **Fixed**: markdown source diagnostics — `STRONG_OUTSIDE_INLINE_CODE` no longer treats the closer of `**word**` / `__word__` (a letter or digit immediately before the delimiter run) as an opener wrapping a following `` `...` `` span; fixes false positives such as `**Bare** `ai-i18n-tools` **in the terminal**`. Strong/link issues now apply `segmentStartLine` to reported file lines like other diagnostics.
