@@ -240,7 +240,10 @@ describe("UIStringExtractor", () => {
     const docMap = new Map<string, SegmentTranslationMapValue>([[h, { text: "Etikett" }]]);
 
     const outEmpty = ex.buildStringsJson(segs, { de: emptyMap });
-    const parsedEmpty = JSON.parse(outEmpty) as Record<string, { translated: Record<string, string> }>;
+    const parsedEmpty = JSON.parse(outEmpty) as Record<
+      string,
+      { translated: Record<string, string> }
+    >;
     expect(parsedEmpty[h]!.translated.de).toBeUndefined();
 
     const outDoc = ex.buildStringsJson(segs, { de: docMap });
@@ -291,7 +294,10 @@ describe("UIStringExtractor", () => {
       const ex = new UIStringExtractor();
       const segs = ex.extract(`t("Fresh")`, "x.tsx");
       const out = ex.buildStringsJson(segs, { en: new Map([[segs[0]!.hash, "New"]]) }, existing);
-      const parsed = JSON.parse(out) as Record<string, { source: string; translated: { en: string } }>;
+      const parsed = JSON.parse(out) as Record<
+        string,
+        { source: string; translated: { en: string } }
+      >;
       const h = segs[0]!.hash;
       expect(parsed[h]!.translated.en).toBe("New");
     } finally {

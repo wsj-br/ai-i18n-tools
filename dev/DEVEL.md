@@ -13,10 +13,12 @@
   - [Testing](#testing)
   - [Publishing to npm](#publishing-to-npm)
     - [One-time setup: `NPM_TOKEN` secret](#one-time-setup-npm_token-secret)
+    - [Starting a release](#starting-a-release)
     - [Pre-release checklist](#pre-release-checklist)
     - [Bumping the version](#bumping-the-version)
-    - [Dry run (optional)](#dry-run-optional)
-    - [Creating a GitHub Release](#creating-a-github-release)
+    - [Release notes and changelog](#release-notes-and-changelog)
+    - [Creating the GitHub release (`scripts/release.sh`)](#creating-the-github-release-scriptsreleasesh)
+    - [npm package dry run (optional)](#npm-package-dry-run-optional)
     - [What gets published](#what-gets-published)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -91,25 +93,28 @@ Undo with `pnpm uninstall -g ai-i18n-tools`.
 
 ## Common Scripts
 
-| Command             | Description                                                     |
-|---------------------|-----------------------------------------------------------------|
-| `pnpm build`        | Compile TypeScript and copy static assets to `dist/`            |
-| `pnpm dev`          | Watch mode — recompiles on file changes                         |
-| `pnpm test`         | Run the full test suite with coverage                           |
-| `pnpm test:watch`   | Run tests in watch mode                                         |
-| `pnpm lint`         | Lint the codebase with ESLint                                   |
-| `pnpm lint:fix`     | Auto-fix lint issues                                            |
-| `pnpm format`       | Format source files with Prettier                               |
-| `pnpm format:check` | Check formatting without writing                                |
-| `pnpm clean`        | Remove the `dist/` directory                                    |
-| `pnpm update-all`   | Build, then run `cleanup` on the root and both example projects |
-| `pnpm clean-temp`   | Interactively delete log files and SQLite backups               |
+| Command                   | Description                                                                                 |
+|---------------------------|---------------------------------------------------------------------------------------------|
+| `pnpm build`              | Compile TypeScript and copy static assets to `dist/`                                        |
+| `pnpm dev`                | Watch mode — recompiles on file changes                                                     |
+| `pnpm test`               | Run the full test suite with coverage                                                       |
+| `pnpm test:watch`         | Run tests in watch mode                                                                     |
+| `pnpm lint`               | Lint the codebase with ESLint                                                               |
+| `pnpm lint:fix`           | Auto-fix lint issues                                                                        |
+| `pnpm format`             | Format source files with Prettier                                                           |
+| `pnpm format:check`       | Check formatting without writing                                                            |
+| `pnpm clean`              | Remove the `dist/` directory                                                                |
+| `pnpm update-all`         | Build, then run `cleanup` on the root and both example projects                             |
+| `pnpm clean-temp`         | Interactively delete log files and SQLite backups                                           |
+| `pnpm release:github`     | Create the GitHub release from `dev/RELEASE_NOTES_<version>.md` (runs `scripts/release.sh`) |
+| `pnpm release:github:dry` | Dry-run the release script (validate inputs; no tag push or GitHub release)                 |
 
 ## Project Structure
 
 ```text
 src/            TypeScript source (compiles to dist/)
 tests/          Vitest test files
+data/           Bundled JSON (e.g. ui-languages master catalog; published to npm)
 docs/           English documentation (published to npm)
 translated-docs/  Translated docs (published to npm)
 dev/            Developer-only files (changelog, this guide)
@@ -172,17 +177,26 @@ named `NPM_TOKEN`. You only need to set this up once.
    variables** > **Actions** > **New repository secret**.
 5. Name: `NPM_TOKEN`, Value: paste the token from step 2.
 
+### Starting a release
+
+When you start a new release, make sure all documents are translated and the pre-release check is successful:
+
+```bash
+pnpm update-all
+pnpm pre-release
+```
+
+That script runs format, lint, clean, build, and tests (see the `pre-release` script in `package.json`). Resolve any failures locally; CI applies the same checks before npm publish.
+
 ### Pre-release checklist
 
-- [ ] Run the pre-release script  (`pnpm pre-release`)
-- [ ] All tests pass (`pnpm test`)
-- [ ] Linting is clean (`pnpm lint`)
-- [ ] Version number in `package.json` is correct
-- [ ] `dev/CHANGELOG.md` is up to date
+- [ ] `pnpm i18n:sync` completed successfully
+- [ ] `pnpm pre-release` completed successfully
+- [ ] You have a clear target version and `dev/CHANGELOG.md` still has everything under `## [Unreleased]` that belongs in this release
 
 ### Bumping the version
 
-Use `pnpm version` to bump and create a git tag in one step:
+If the version in `package.json` is not yet set for this release, use `pnpm version` to bump it and create a git commit:
 
 ```bash
 pnpm version patch   # 1.0.0 → 1.0.1  (bug fixes)
@@ -190,39 +204,64 @@ pnpm version minor   # 1.0.0 → 1.1.0  (new features, backward-compatible)
 pnpm version major   # 1.0.0 → 2.0.0  (breaking changes)
 ```
 
-Then push the commit and tag:
+### Release notes and changelog
 
-```bash
-git push && git push --tags
-```
+Before you run the release script, the repo must contain **`dev/RELEASE_NOTES_<version>.md`** for the exact version in `package.json` (for example `dev/RELEASE_NOTES_1.2.8.md` when the package version is `1.2.8`).
 
-### Dry run (optional)
+Copy and paste **[`dev/release-new-version-prompt.md`](release-new-version-prompt.md)** into a Cursor chat to:
 
-Inspect what will be included in the tarball before creating the release:
+1. Draft **`dev/RELEASE_NOTES_<version>.md`** in the same style as prior `dev/RELEASE_NOTES_*.md` files.
+2. Update **`dev/CHANGELOG.md`**: move the `## [Unreleased]` bullets into a new `## [x.y.z] - YYYY-MM-DD` section and leave an empty `[Unreleased]` section for the next cycle.
+
+Commit the new or updated release-notes file and changelog together with any other release prep so **`git status` is clean** before you publish the GitHub release.
+
+### Creating the GitHub release (`scripts/release.sh`)
+
+Publishing the GitHub release is done with the release script (wrapper: **`pnpm release:github`**, which runs `bash scripts/release.sh` from the repository root).
+
+**Prerequisites**
+
+- [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated (`gh auth login`).
+- Working tree clean unless you intentionally pass `--verify-clean=false` to the script.
+- **`dev/RELEASE_NOTES_<version>.md`** present for the current `package.json` version.
+
+**Steps**
+
+1. Push your release branch to `origin` (include all commits for the release, including changelog and release notes).
+
+   ```bash
+   git push origin HEAD
+   ```
+
+2. Suggested: dry-run (prints planned steps; no tag deletion, push, or release):
+
+   ```bash
+   pnpm release:github:dry
+   ```
+
+3. Create the release:
+
+   ```bash
+   pnpm release:github
+   ```
+
+   Equivalent: `./scripts/release.sh` from the repo root. Use `./scripts/release.sh --help` for flags (`--dry-run`, `--verify-clean=false`).
+
+The script creates an annotated tag **`v<version>`** at **HEAD**, pushes it to **`origin`**, and creates a GitHub release whose body is **`dev/RELEASE_NOTES_<version>.md`**. If that tag or a GitHub release for it already exists, the script removes them and recreates the tag at the current HEAD so you can fix a mistaken tag or add follow-up commits before releasing.
+
+That GitHub release triggers CI, which runs lint, format check, build, and tests; if all checks pass, it publishes the package to npm. Check the **Actions** tab to verify.
+
+**Manual alternative:** you can still create a release from the GitHub **Releases** UI if needed; prefer the script so the tag, title, and notes stay aligned with `package.json` and `dev/RELEASE_NOTES_<version>.md`.
+
+### npm package dry run (optional)
+
+Inspect what will be included in the tarball:
 
 ```bash
 pnpm publish --dry-run
 ```
 
-Verify that the output includes `dist/`, `docs/`, `translated-docs/`, `README.md`, and `LICENSE`.
-
-### Creating a GitHub Release
-
-1. Go to **Releases** on the GitHub repo:
-   <https://github.com/wsj-br/ai-i18n-tools/releases/new>
-2. In **Choose a tag**, select the tag you just pushed (e.g. `v1.0.1`).
-3. Set the **Release title** to the same tag name (e.g. `v1.0.1`).
-4. In the description, paste or summarize the matching section from
-   `dev/CHANGELOG.md`. You can also click **Generate release notes** to
-   auto-include the commit list.
-5. Click **Publish release**.
-
-This triggers the CI workflow which:
-
-1. Runs lint, format check, build, and tests on Node.js 22.x and 24.x.
-2. If all checks pass, publishes the package to npm.
-
-Check the **Actions** tab to verify everything passes.
+Verify that the output includes `dist/`, `data/`, `docs/`, `translated-docs/`, `README.md`, and `LICENSE`.
 
 ### What gets published
 
@@ -231,9 +270,10 @@ Controlled by the `files` field in `package.json`:
 | Path               | Contents                                                           |
 |--------------------|--------------------------------------------------------------------|
 | `dist/`            | Compiled JavaScript, type declarations, source maps                |
+| `data/`            | Bundled data (for example `ui-languages-complete.json` for `generate-ui-languages`) |
 | `README.md`        | Main English README                                                |
 | `docs/`            | English docs (GETTING_STARTED, PACKAGE_OVERVIEW, AI agent context) |
 | `translated-docs/` | All translated READMEs and docs                                    |
-| `LICENSE`          | MIT license                                                        |
+| `LICENSE`          | MIT licence                                                        |
 
 Everything else (source, tests, examples, dev files) is excluded from the published package.

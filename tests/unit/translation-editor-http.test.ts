@@ -1679,11 +1679,7 @@ describe("createTranslationEditorApp", () => {
       cache = new TranslationCache(":memory:");
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-del-no-locale-"));
       const sj = path.join(dir, "strings.json");
-      fs.writeFileSync(
-        sj,
-        JSON.stringify({ x: { source: "a", translated: { de: "b" } } }),
-        "utf8"
-      );
+      fs.writeFileSync(sj, JSON.stringify({ x: { source: "a", translated: { de: "b" } } }), "utf8");
       try {
         const app = createTranslationEditorApp(cache, {
           cwd: dir,

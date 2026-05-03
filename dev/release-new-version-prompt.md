@@ -1,10 +1,6 @@
-# Prompt to release a new version of the package
-
-The following instructions will help you create a new release notes file for the `ai-i18n-tools` package. This will be used as part of the GitHub release process.
-
----
-
 Create a new release notes file `dev/RELEASE_NOTES_<version>.md` for the `ai-i18n-tools` package using the instructions below. This will be used as part of the GitHub release process.
+
+Before you start, run **`pnpm pre-release`** from the repository root and fix any failures so format, lint, build, and tests match what CI runs before publish.
 
 **Instructions:**
 

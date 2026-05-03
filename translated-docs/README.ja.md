@@ -49,7 +49,7 @@ JavaScript/TypeScript アプリケーションおよびドキュメントサイ�
 <a id="installation"></a>
 ## インストール
 
-公開されているパッケージは**ESMのみ対応**（`"type": "module"`）です。Node.js、バンドラー、または`import()`から`import`を使用してください。`require('ai-i18n-tools')` **はサポートされていません。**
+パブリッシュされたパッケージは**ESMのみ**(`"type": "module"`)です。Node.js、バンドラー、または`import()`から`import`を使用してください。**`require('ai-i18n-tools')`はサポートされていません。**パッケージは**`engines.node` `>=22.16.0`** を宣言しており、古いNode.jsバージョンはサポートされていません。
 
 ```bash
 npm install ai-i18n-tools
@@ -188,7 +188,7 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 <a id="runtime-helpers"></a>
 ## ランタイムヘルパー
 
-`'ai-i18n-tools/runtime'` からエクスポート - 任意のJS環境で動作、i18nextのインポートは不要:
+`'ai-i18n-tools/runtime'` からエクスポートされる以下のヘルパーは、任意のJavaScript環境で使用できます。i18nextをインポートする必要はありません：
 
 | ヘルパー | 説明 |
 |---|---|
@@ -212,18 +212,22 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 ```text
 ai-i18n-tools version                               Print version and build timestamp
 ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus]   Create config file
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]   Create config file
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
 ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
                                                     --force-update, --force, --stats, --clear-cache,
                                                     --prompt-format (xml | json-array | json-object)
+ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
+ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
 ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
 ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
+ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
 ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
 ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
 ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
+ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
 ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template

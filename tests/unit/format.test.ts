@@ -11,7 +11,7 @@ describe("wrapCommaSeparatedListForWidth", () => {
     const models = [
       "qwen/qwen3-235b-a22b-2507",
       "openai/gpt-4o-mini",
-      "deepseek/deepseek-v3.2",
+      "deepseek/deepseek-v4-flash",
       "anthropic/claude-3-haiku",
       "qwen/qwen3.6-plus",
       "anthropic/claude-3.5-haiku",

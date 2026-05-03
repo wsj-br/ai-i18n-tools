@@ -11,6 +11,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — UK spelling and light grammar edits in `README.md`, `docs/GETTING_STARTED.md`, and `dev/DEVEL.md` (for example **-ise** verbs, **licence** where appropriate, clearer phrasing for runtime helpers, version bumping, `editor --no-open`, and the `"flat"` layout line).
+
+- **Changed**: docs — `docs/GETTING_STARTED.md` recommended `package.json` scripts now prefer `sync` over chaining `translate-ui && translate-svg && translate-docs`.
+
+- **Changed**: docs — `README.md`, `docs/GETTING_STARTED.md`, and `dev/DEVEL.md` now match the CLI (`write-heading-ids`, `strip-md-bold-inline`, `lint-source`, `statistics`), `package.json` `engines.node`, published `data/`, and `init` flags (`-o`, `--with-translate-ignore`).
+
 - **Fixed**: `ai-i18n-tools.config.json` — `markdownOutput.postProcessing.regexAdjustments` rewrites the Translation Cache Editor screenshot link so flat outputs under `translated-docs/docs/` resolve to `../../docs/translation-cache-editor.png` (the image is not emitted into `translated-docs/`).
 
 - **Added**: tests — expanded Vitest coverage for `openrouter`, `cache`, `locale-utils`, `prompt-builder`, `ui-languages-catalog`, `ui-string-babel`, `write-heading-ids-core`, and the translation editor HTTP app (including `GET /api/stats` error handling and OpenRouter `lintUISourceBatch` / plural batch paths).

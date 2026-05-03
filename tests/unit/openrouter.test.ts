@@ -601,7 +601,9 @@ describe("OpenRouterClient", () => {
     });
     await c.translateUIBatch(["a"], "qaa-QQ");
     const init = fetchMock.mock.calls[0]![1] as { body?: string };
-    const payload = JSON.parse(init.body ?? "{}") as { messages: Array<{ role: string; content: string }> };
+    const payload = JSON.parse(init.body ?? "{}") as {
+      messages: Array<{ role: string; content: string }>;
+    };
     const sys = payload.messages.find((m) => m.role === "system")?.content ?? "";
     expect(sys).toContain("qaa-QQ");
     spy.mockRestore();
@@ -617,11 +619,13 @@ describe("OpenRouterClient", () => {
   it("lintUISourceBatch parses model JSON response", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        mockJsonResponse(
-          completionBody('[{"issues":[{"severity":"warn","message":"ok","suggestedText":"s"}]}]')
+      vi
+        .fn()
+        .mockResolvedValue(
+          mockJsonResponse(
+            completionBody('[{"issues":[{"severity":"warn","message":"ok","suggestedText":"s"}]}]')
+          )
         )
-      )
     );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
     const r = await c.lintUISourceBatch(["Save"], "German");
@@ -641,16 +645,15 @@ describe("OpenRouterClient", () => {
   it("translatePluralCardinalBatch parses plural JSON object", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(mockJsonResponse(completionBody('{"one":"1 file","other":"n files"}')))
+      vi
+        .fn()
+        .mockResolvedValue(mockJsonResponse(completionBody('{"one":"1 file","other":"n files"}')))
     );
     const c = new OpenRouterClient({ config: openRouterConfig(["m"]), apiKey: "k" });
-    const r = await c.translatePluralCardinalBatch(
-      ["one", "other"],
-      {
-        systemPrompt: "sys",
-        userContent: "usr",
-      }
-    );
+    const r = await c.translatePluralCardinalBatch(["one", "other"], {
+      systemPrompt: "sys",
+      userContent: "usr",
+    });
     expect(r.forms.one).toBe("1 file");
     expect(r.forms.other).toBe("n files");
   });
