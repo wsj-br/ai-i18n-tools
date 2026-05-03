@@ -52,9 +52,9 @@ describe("collectMarkdownSourceIssues", () => {
 
   it("flags ** outside inline code, not ** inside a code span", () => {
     const bad = collectMarkdownSourceIssues("Use **`rm`** sparingly.", { segmentStartLine: 1 });
-    expect(
-      bad.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
-    ).toBe(true);
+    expect(bad.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)).toBe(
+      true
+    );
 
     const ok = collectMarkdownSourceIssues("Use `**rm**` sparingly.", { segmentStartLine: 1 });
     expect(
@@ -78,7 +78,9 @@ describe("collectMarkdownSourceIssues", () => {
     const ok = collectMarkdownSourceIssues("See [**home**](https://example.com).", {
       segmentStartLine: 1,
     });
-    expect(ok.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toEqual([]);
+    expect(ok.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toEqual(
+      []
+    );
   });
 
   it("maps STRONG_OUTSIDE_INLINE_CODE line with segment startLine", () => {
@@ -91,11 +93,12 @@ describe("collectMarkdownSourceIssues", () => {
   });
 
   it("parses link destination with nested parentheses", () => {
-    const issues = collectMarkdownSourceIssues(
-      "**[a](https://example.com/path(1)ok)** tail",
-      { segmentStartLine: 1 }
+    const issues = collectMarkdownSourceIssues("**[a](https://example.com/path(1)ok)** tail", {
+      segmentStartLine: 1,
+    });
+    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toBe(
+      true
     );
-    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toBe(true);
   });
 });
 

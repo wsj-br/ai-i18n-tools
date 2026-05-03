@@ -86,9 +86,10 @@ export async function runCheckMarkdown(opts: CheckMarkdownOptions): Promise<{ ex
             const line = row.startLine ?? "?";
             console.error(
               chalk.cyan(`${relPath}:${line}`) +
-              chalk.yellow(`: [${row.issueCode}] ${row.detail}${opts.verbose ? ` (hash ${row.sourceHash})` : ""}`)
+                chalk.yellow(
+                  `: [${row.issueCode}] ${row.detail}${opts.verbose ? ` (hash ${row.sourceHash})` : ""}`
+                )
             );
-       
           }
         }
       }
