@@ -145,3 +145,7 @@ fi
 
 "${CMD[@]}"
 echo "Release created successfully: ${TAG}"
+
+echo ""
+echo "See the progress at the github repository https://github.com/wsj-br/ai-i18n-tools"
+echo ""
