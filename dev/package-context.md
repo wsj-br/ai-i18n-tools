@@ -16,7 +16,7 @@ This document gives the mental model, key decisions, and patterns needed to work
 
 1. **Extracts** UI strings into a master catalog: `t("…")` / `i18n.t("…")` literals (configurable), optionally `package.json` `description`, and optionally each `englishName` from `ui-languages.json` when `ui.reactExtractor.includeUiLanguageEnglishNames` is true.
 2. **Translates** that catalog and documentation files via LLMs (through OpenRouter).
-3. **Writes** locale-ready JSON files for i18next, plus translated markdown, Docusaurus JSON labels, and standalone SVG assets.
+3. **Writes** locale-ready JSON files for i18next, plus translated markdown, Docusaurus JSON labels, and  SVG files.
 4. **Exports runtime helpers** for wiring i18next, RTL support, and language selection in any JS environment.
 
 Everything is driven by a single config file: `ai-i18n-tools.config.json`.
@@ -181,7 +181,7 @@ npx ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]
     stderr: path:line: [CODE] message; exit 1 if any issue. Refreshes markdown_source_issues in cache unless --no-cache.
 
 npx ai-i18n-tools translate-svg [--locale <code>] [--force | --force-update] [--no-cache] …
-    Standalone SVG assets from config.svg. Requires features.translateSVG. --no-cache: skip SQLite reads/writes for this run only.
+     SVG files from config.svg. Requires features.translateSVG. --no-cache: skip SQLite reads/writes for this run only.
 
 npx ai-i18n-tools sync [--locale <code>] [--force | --force-update] [--no-ui] [--no-svg] [--no-docs] …
     extract (if enabled), translate-ui (unless --no-ui), translate-svg when features.translateSVG and config.svg (unless --no-svg),
@@ -194,7 +194,7 @@ npx ai-i18n-tools editor
     Launch a local web editor for the SQLite cache, strings.json, and glossary.
 
 npx ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
-    Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, svg-assets:, …);
+    Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, svg-files:, …);
     orphaned translation rows whose filepath metadata points at a missing file.
     Backs up cache.db under the cache dir before modifications unless --no-backup.
 

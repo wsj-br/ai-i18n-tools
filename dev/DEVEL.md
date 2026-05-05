@@ -11,6 +11,8 @@
   - [Project Structure](#project-structure)
   - [Running Examples](#running-examples)
   - [Testing](#testing)
+    - [Testing Placeholders Handling](#testing-placeholders-handling)
+    - [Test the translation end-to-end on the ai-i18n-tools documentation and the example projects](#test-the-translation-end-to-end-on-the-ai-i18n-tools-documentation-and-the-example-projects)
   - [Publishing to npm](#publishing-to-npm)
     - [One-time setup: `NPM_TOKEN` secret](#one-time-setup-npm_token-secret)
     - [Starting a release](#starting-a-release)
@@ -129,10 +131,13 @@ Both example projects live under `examples/` and use the locally-built CLI.
 ```bash
 pnpm build
 cd examples/console-app
-ai-i18n-tools cleanup
+ai-i18n-tools sync --force-update
 
 cd ../nextjs-app
-ai-i18n-tools cleanup
+ai-i18n-tools sync --force-update
+pnpm dev   # check the application in the browser at http://localhost:3030
+cd docs-site
+pnpm preview   # check the documentation in the browser at http://localhost:3040
 ```
 
 ## Testing
@@ -143,6 +148,28 @@ Tests use [Vitest](https://vitest.dev/) with V8 coverage:
 pnpm test              # single run + coverage report
 pnpm test:watch        # re-run on changes
 ```
+
+### Testing Placeholders Handling
+
+```bash
+ai-i18n-tools translate-docs --path docs/markdown-mdx-stress-test.md --locale=pt-BR --force
+```
+
+check the output in `translated-docs/docs/markdown-mdx-stress-test.pt-BR.md`
+
+### Test the translation end-to-end on the ai-i18n-tools documentation and the example projects
+
+```bash
+ai-i18n-tools sync --force-update
+cd examples/nextjs-app
+ai-i18n-tools sync --force-update
+cd ../console-app
+ai-i18n-tools sync --force-update
+```
+
+check if the translations are correct in the `translated-docs/` directory
+
+
 
 ---
 

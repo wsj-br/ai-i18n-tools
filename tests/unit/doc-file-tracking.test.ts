@@ -48,8 +48,8 @@ describe("doc-file-tracking", () => {
 
     it("returns input unchanged for non doc-block keys", () => {
       expect(docBlockFileTrackingKeyToRelPath("README.md")).toBe("README.md");
-      expect(docBlockFileTrackingKeyToRelPath("svg-assets:icons/x.svg")).toBe(
-        "svg-assets:icons/x.svg"
+      expect(docBlockFileTrackingKeyToRelPath("svg-files:icons/x.svg")).toBe(
+        "svg-files:icons/x.svg"
       );
     });
 

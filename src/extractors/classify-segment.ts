@@ -11,10 +11,7 @@ export function classifySegmentType(text: string): SegmentType {
   if (/^!\[.*\]\(.*\)/.test(t)) {
     return "other";
   }
-  if (/^import /.test(t)) {
-    return "other";
-  }
-  if (/^</.test(t)) {
+  if (/^(?:import|export)\b/.test(t)) {
     return "other";
   }
   return "paragraph";

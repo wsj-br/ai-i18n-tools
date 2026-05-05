@@ -22,7 +22,7 @@ Before you start, make sure you have the following:
 
 ```bash
 cd examples/nextjs-app
-npm install
+pnpm install
 ```
 
 This installs `ai-i18n-tools` along with the Next.js and Docusaurus packages used by this example.
@@ -48,22 +48,75 @@ Open `ai-i18n-tools.config.json`. The relevant section for documentation transla
 ```json
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["es", "fr", "de", "pt-BR"],
-  "features": {
+  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
+    "features": {
+    "extractUIStrings": true,
+    "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": true
+    "translateJSON": true,
+    "translateSVG": true
   },
+  "glossary": {
+    "uiGlossary": "locales/strings.json",
+    "userGlossary": "glossary-user.csv",
+    "autoAddUserEditedToGlossary": true
+  },
+  "ui": {
+    "sourceRoots": ["src/"],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "public/locales/"
+  },
+  "cacheDir": ".translation-cache",
   "documentations": [
     {
       "description": "Docusaurus docs and JSON UI strings under docs-site",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
+      "jsonSource": "docs-site/i18n/en",
+      "addFrontmatter": true,
       "markdownOutput": {
         "style": "docusaurus",
-        "docsRoot": "docs-site/docs"
+        "docsRoot": "docs-site/docs",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders in docs-site static assets",
+              "search": "screenshots/en-GB/",
+              "replace": "screenshots/${translatedLocale}/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "description": "Root README only (flat markdown output)",
+      "contentPaths": ["README.md"],
+      "outputDir": "translated-docs",
+      "addFrontmatter": false,
+      "markdownOutput": {
+        "style": "flat",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders under translated-docs",
+              "search": "images/screenshots/[^/]+/",
+              "replace": "images/screenshots/${translatedLocale}/"
+            }
+          ],
+          "languageListBlock": {
+            "start": "<small id=\"lang-list\">",
+            "end": "</small>",
+            "separator": " · "
+          }
+        }
       }
     }
-  ]
+  ],
+  "svg": {
+    "sourcePath": "images",
+    "outputDir": "public/assets",
+    "style": "flat"
+  }
 }
 ```
 
@@ -83,9 +136,9 @@ You will see output similar to:
 
 ```text
 [docs] Scanning docs-site/docs/ — 2 files found
-[docs] Translating to: es, fr, de, pt-BR
-[docs] feature-showcase.md — 14 segments translated (4 locales)
-[docs] quick-start.md — 11 segments translated (4 locales)
+[docs] Translating to: ar, es, fr, de, pt-BR
+[docs] feature-showcase.md — 14 segments translated (5 locales)
+[docs] quick-start.md — 11 segments translated (5 locales)
 [docs] Done in 8.3 s (cache: 0 hits, 100 misses)
 ```
 
@@ -116,28 +169,28 @@ Key things to verify:
 
 ```bash
 cd docs-site
-npm run start -- --locale de
+pnpm start -- --locale de
 ```
 
-This starts the Docusaurus dev server in German. Open [http://localhost:3000/de/](http://localhost:3000/de/) in your browser to browse the translated docs.
+This starts the Docusaurus dev server in German. Open [http://localhost:3040/de/](http://localhost:3040/de/) in your browser to browse the translated docs.
 
 ---
 
 ## Step 7 — Explore the Next.js demo (locale + cardinal plurals) {#step-7--explore-the-nextjs-demo-locale--cardinal-plurals}
 
-Documentation translation in this tutorial uses **Markdown only**. The same example repo also ships a **Next.js** UI on port **3030** where you can see **`t()`** calls, **`?locale=`** URLs, and a **cardinal plural** demo.
+Documentation translation in this tutorial uses **Markdown only**. The same example repo also ships a **Next.js** UI on port **3030** where you can see `t()` calls, `?locale=` URLs, and a **cardinal plural** demo.
 
 From `examples/nextjs-app/`:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Then open [http://localhost:3030](http://localhost:3030).
 
-- Switch languages with the **Locale** dropdown, or append **`?locale=<code>`** (for example `http://localhost:3030/?locale=ar`). The UI keeps the query string and dropdown in sync.
+- Switch languages with the **Locale** dropdown, or append `?locale=<code>` (for example `http://localhost:3030/?locale=ar`). The UI keeps the query string and dropdown in sync.
 - Scroll to **Plurals: automatic generation usage example**. The page repeats “This page has … sections” for fixed sample counts (**1**, **2**, **5**, **50**) so you can compare plural rules across locales (including languages with multiple plural forms).
-- Calls use **`t("…", { plurals: true, count })`**. With **`extract`** / **`translate-ui`**, that key becomes a plural group in `locales/strings.json`; flat **`public/locales/*.json`** files carry the suffixed forms. Runtime wiring lives in **`src/lib/i18n.ts`** — see the **Cardinal plurals example** section in the [example README](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md) for a concise walk-through.
+- Calls use `t("…", { plurals: true, count })`. With `extract` / `translate-ui`, that key becomes a plural group in `locales/strings.json`; flat `public/locales/*.json` files carry the suffixed forms. Runtime wiring lives in `src/lib/i18n.ts` — see the **Cardinal plurals example** section in the [example README](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md) for a concise walk-through.
 
 ---
 

@@ -55,7 +55,7 @@ ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
-├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
+├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
 ├── API (src/api/)             - OpenRouter HTTP client
 ├── Glossary (src/glossary/)   - glossary loading and term matching
 ├── Runtime (src/runtime/)     - i18next helpers, display helpers (no i18next import)
@@ -106,10 +106,12 @@ src/
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
-│   ├── placeholder-handler.ts      Chain: admonitions → anchors → URLs
+│   ├── placeholder-handler.ts      Chain: HTML → admonitions → anchors → MDX → URLs → emphasis
 │   ├── url-placeholders.ts         Markdown URL protection/restore
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
+│   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
@@ -224,7 +226,8 @@ markdown/MDX/JSON files (`translate-docs`)
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
-protected text  ──────────────── URLs, admonitions, anchors replaced with tokens
+protected text  ──────────────── HTML tags, admonitions, anchors, MDX comments/JSX/braces,
+                                URLs, inline code, emphasis masked as tokens
       │
       ▼  splitTranslatableIntoBatches
 batches[]  ───────────────────── grouped by count + char limit
@@ -244,7 +247,7 @@ output file  ─────────────────── Docusauru
 
 All extractors extend `BaseExtractor` and implement `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
+- `MarkdownExtractor` - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter is classified as **non-translatable** (`slug`, `id`, and other routing keys stay stable). Top-level `export ...` blocks (e.g. React component definitions) are classified as non-translatable `other` segments alongside existing `import ...` handling. Multi-line blocks starting with a capital JSX tag (e.g. a `<Tabs>` block) are classified as translatable paragraphs. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
 - `JsonExtractor` - extracts string values from Docusaurus JSON label files.
 - `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
 
@@ -260,18 +263,25 @@ This command does **not** run inside `translate-docs` or `sync`; run it explicit
 <a id="placeholder-protection"></a>
 ### Placeholder protection
 
-Before translation, sensitive syntax is replaced with opaque tokens to prevent LLM corruption:
+Before translation, sensitive syntax is replaced with opaque tokens to prevent LLM corruption, applied in this order (restore is the reverse):
 
-1. **Admonition markers** (`:::note`, `:::`) - restored with exact original text.
-2. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - preserved verbatim.
-3. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
+1. **HTML tags and comments** (`<strong>`, `<!-- ... -->`, etc.) - lowercase HTML tags from a known allowlist are replaced with `{{HTM_N}}` tokens. Capitalised JSX tags (`<Highlight>`, `<Tabs>`, `</Tab>`) are handled separately by the MDX layer (step 4).
+2. **Admonition markers** (`:::note`, `:::`) - only the directive prefix on the opening line is replaced with `{{ADM_OPEN_N}}`; any same-line title is left for the model to translate. Restored with exact original text.
+3. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - preserved verbatim.
+4. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
+   - **MDX comments** (`{/* … */}`, including Docusaurus heading-id form `{/* #my-id */}`) replaced with `{{MDX_N}}`.
+   - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as `{{MDX_N}}` with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to `{{JXA_N}}` inside the tag; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
+   - **MDX brace expressions** (`{frontMatter.title}`, `style={{…}}`) - depth-aware matching, replaced with `{{MDX_N}}`.
+5. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
+6. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
+7. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
 
 SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
 
-On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `svg-assets:…`, etc.), and removes translation rows whose metadata filepath points at a missing file; it backs up `cache.db` first unless `--no-backup` is passed.
+On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `svg-files:…`, etc.), and removes translation rows whose metadata filepath points at a missing file; it backs up `cache.db` first unless `--no-backup` is passed.
 
 The `translate-docs` command also uses **file tracking** so unchanged sources with existing outputs can skip work entirely. `--force-update` re-runs file processing while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. See [Getting Started](./GETTING_STARTED.md#cache-behaviour-and-translate-docs-flags) for the full flag table.
 
@@ -421,7 +431,8 @@ Key exports:
 | `JsonExtractor` | Extract from Docusaurus JSON label files. |
 | `SvgExtractor` | Extract from SVG files. |
 | `OpenRouterClient` | Make translation requests to OpenRouter. |
-| `PlaceholderHandler` | Protect/restore markdown syntax around translation. |
+| `PlaceholderHandler` | Protect/restore markdown syntax around translation (HTML tags, admonitions, anchors, MDX comments/JSX/braces, URLs, inline code, emphasis). |
+| `protectMdx` / `restoreMdx` | Protect/restore MDX comments, JSX tags, brace expressions, and JSX string attributes (called by `PlaceholderHandler`; also exported for direct use). |
 | `splitTranslatableIntoBatches` | Group segments into LLM-sized batches. |
 | `validateTranslation` | Structural checks after translation. |
 | `resolveDocumentationOutputPath` | Resolve output file path for a translated document. |

@@ -11,12 +11,13 @@ import {
   restoreMarkdownEmphasis,
 } from "./emphasis-placeholders.js";
 import { protectHtmlTags, restoreHtmlTags } from "./html-tag-placeholders.js";
+import { protectMdx, restoreMdx } from "./mdx-placeholders.js";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
  * Chains placeholder protection for document translation:
- * html tags/comments → admonitions → doc anchors → markdown URLs → **`inline`** (whole span)
- * → remaining `` `code` `` → emphasis (optional).
+ * html tags/comments → admonitions → doc anchors → MDX (comments/JSX/expressions) → markdown URLs
+ * → **`inline`** (whole span) → remaining `` `code` `` → emphasis (optional).
  * Restore is the inverse order.
  */
 export class PlaceholderHandler {
@@ -30,6 +31,11 @@ export class PlaceholderHandler {
     endMap: string[];
     htmlAnchors: string[];
     docusaurusHeadingIds: string[];
+    mdxMap: string[];
+    /** Optional: JSX attribute values extracted from MDX tags */
+    jsxAttributeMap?: string[];
+    /** Optional: appendix sent with the segment so JSX attribute strings are translated */
+    jsxAttributeText?: string;
     urlMap: string[];
     boldCodeMap: string[];
     ilcMap: string[];
@@ -39,7 +45,8 @@ export class PlaceholderHandler {
     const htmlTags = protectHtmlTags(text);
     const ad = protectAdmonitionSyntax(htmlTags.protected);
     const doc = protectDocAnchors(ad.protected);
-    const urls = protectMarkdownUrls(doc.protected);
+    const mdx = protectMdx(doc.protected);
+    const urls = protectMarkdownUrls(mdx.protected);
     const boldCode = protectBoldWrappedInlineCode(urls.protected);
     const ilc = protectInlineCodeSpans(boldCode.protected);
     const body = emphasisOn ? protectMarkdownEmphasis(ilc.protected).protected : ilc.protected;
@@ -50,6 +57,9 @@ export class PlaceholderHandler {
       endMap: ad.endMap,
       htmlAnchors: doc.htmlAnchors,
       docusaurusHeadingIds: doc.docusaurusHeadingIds,
+      mdxMap: mdx.mdxMap,
+      jsxAttributeMap: mdx.jsxAttributeMap ?? [],
+      jsxAttributeText: mdx.jsxAttributeText,
       urlMap: urls.urlMap,
       boldCodeMap: boldCode.boldCodeMap,
       ilcMap: ilc.ilcMap,
@@ -65,6 +75,10 @@ export class PlaceholderHandler {
       endMap: string[];
       htmlAnchors: string[];
       docusaurusHeadingIds: string[];
+      /** Optional for backward compatibility with callers that protected before MDX support shipped. */
+      mdxMap?: string[];
+      /** Optional: JSX attribute values extracted from MDX tags */
+      jsxAttributeMap?: string[];
       urlMap: string[];
       boldCodeMap: string[];
       ilcMap: string[];
@@ -79,6 +93,7 @@ export class PlaceholderHandler {
     s = restoreInlineCodeSpans(s, state.ilcMap);
     s = restoreBoldWrappedInlineCode(s, state.boldCodeMap);
     s = restoreMarkdownUrls(s, state.urlMap);
+    s = restoreMdx(s, state.mdxMap ?? [], state.jsxAttributeMap ?? []);
     s = restoreDocAnchors(s, state.htmlAnchors, state.docusaurusHeadingIds);
     s = restoreAdmonitionSyntax(s, state.openMap, state.endMap);
     s = restoreHtmlTags(s, state.htmlTagMap);

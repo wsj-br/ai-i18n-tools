@@ -3,8 +3,9 @@ const OPEN_SUFFIX = "}}";
 const END_PREFIX = "{{ADM_END_";
 const END_SUFFIX = "}}";
 
-const ADMONITION_DIRECTIVES =
-  /^\s*(:::(?:note|tip|info|warning|danger|caution|important)(?:\[[^\]]*\])?(?:\s+[^\n]*)?)\s*$/;
+/** Same directive vocabulary as before; split into prefix (placeholder) + optional title remainder on the line. */
+const ADMONITION_DIRECTIVE_WITH_TAIL =
+  /^(\s*)(:::(?:note|tip|info|warning|danger|caution|important)(?:\[[^\]]*\])?)(\s*)([^\n]*)$/;
 
 const ADMONITION_CLOSING = /^\s*(:::+)\s*$/;
 
@@ -26,12 +27,20 @@ export function protectAdmonitionSyntax(text: string): AdmonitionProtectedResult
   const result: string[] = [];
 
   for (const line of lines) {
-    const openMatch = line.match(ADMONITION_DIRECTIVES);
+    const openMatch = line.match(ADMONITION_DIRECTIVE_WITH_TAIL);
     if (openMatch) {
+      const indent = openMatch[1]!;
+      const directive = openMatch[2]!;
+      const spacing = openMatch[3]!;
+      const titleRest = openMatch[4]!;
       const placeholder = `${OPEN_PREFIX}${openIndex}${OPEN_SUFFIX}`;
-      openMap.push(line);
+      const hasVisibleTitle = titleRest.trim().length > 0;
+      /** Directive plus delimiter space before title only when a title exists — restores `:::note Title`. */
+      openMap.push(hasVisibleTitle ? directive + spacing : directive);
       openIndex++;
-      result.push(placeholder);
+      result.push(
+        hasVisibleTitle ? `${indent}${placeholder}${titleRest}` : `${indent}${placeholder}`
+      );
       continue;
     }
 

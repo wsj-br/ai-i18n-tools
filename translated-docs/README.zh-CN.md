@@ -7,7 +7,7 @@
 [![许可证: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 工具包。通过 OpenRouter 使用大语言模型提取 UI 字符串并进行翻译，并为 i18next 生成适用于各区域设置的 JSON 文件。还包含用于 Markdown、Docusaurus JSON 和独立 SVG 资源的处理流程。
+用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 工具包。通过 OpenRouter 使用大语言模型提取 UI 字符串并进行翻译，并为 i18next 生成适用于各区域设置的 JSON 文件。还包括用于 Markdown、Docusaurus JSON 和 SVG 文件的处理管道。
 
 <small>**阅读其他语言版本：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -57,6 +57,7 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+<a id="using-the-cli"></a>
 ### 使用 CLI
 
 **按项目安装（推荐）** — 作为依赖项或 devDependency 安装，然后通过 `npx`、`pnpm exec` 或 `package.json` 脚本调用：
@@ -216,17 +217,20 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
-                                                    --force-update, --force, --stats, --clear-cache,
-                                                    --prompt-format (xml | json-array | json-object)
+ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+                                                    --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
+                                                    --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
 ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
 ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
-ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
-ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
+ai-i18n-tools translate-svg …                        SVG files (features.translateSVG + config.svg); flags include -l/--locale <codes>,
+                                                    -p/-f path, --dry-run, --force, --force-update, --no-cache, -j, -b
+ai-i18n-tools translate-ui …                        Translate UI strings only; flags include -l/--locale <codes>, --dry-run, --force, -j
 ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
-ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
-ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
+ai-i18n-tools export-ui-xliff …                   Export UI strings to XLIFF 2.0 (one file per locale); -l, -o, --untranslated-only, --dry-run
+ai-i18n-tools sync …                                Extract, then UI / SVG / docs; flags include -l/--locale <codes>, -p/-f path, --dry-run, --force,
+                                                    --force-update, --no-ui, --no-svg, --no-docs, -j, -b, --emphasis-placeholders,
+                                                    --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
@@ -235,7 +239,9 @@ ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.lo
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-每个命令的全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细模式）、可选的 `-w` / `--write-logs [path]` 将控制台输出同时写入日志文件（默认位置：翻译缓存目录下）、`-V` / `--version`，以及 `-h` / `--help`。有关各命令的标志，请参见 [入门指南](docs/GETTING_STARTED.zh-CN.md#cli-reference)。
+每个命令的完整标志列表位于 [CLI flags by command](docs/GETTING_STARTED.zh-CN.md#cli-flags-by-command) 中的 `src/cli/index.ts` 旁边。运行 `ai-i18n-tools <command> --help` 可查看内置的使用说明。
+
+每个命令的全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细模式）、可选的 `-w` / `--write-logs [path]` 用于将控制台输出同时写入日志文件（默认存储在翻译缓存目录下）、`-V` / `--version`，以及 `-h` / `--help`。有关命令概览表，请参阅 [Getting Started](docs/GETTING_STARTED.zh-CN.md#cli-reference)。
 
 ---
 

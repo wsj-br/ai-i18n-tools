@@ -9,7 +9,7 @@ import { documentationFileTrackingKey } from "../../src/core/doc-file-tracking.j
 describe("cache-tracking-keys", () => {
   const root = path.resolve("/proj/root");
 
-  it("resolves svg-assets: prefix to project-relative path", () => {
+  it("resolves svg-files: prefix to project-relative path", () => {
     const key = `${SVG_ASSETS_PREFIX}images/x.svg`;
     expect(resolveCacheTrackingKeyToAbs(root, key)).toBe(path.resolve(root, "images/x.svg"));
   });

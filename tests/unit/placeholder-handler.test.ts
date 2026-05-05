@@ -58,4 +58,35 @@ describe("PlaceholderHandler", () => {
     const out = restoreDocAnchors(corrupted, [], p.docusaurusHeadingIds);
     expect(out).toBe(line);
   });
+
+  it("protects MDX heading-id comment `{/* #id */}` end-to-end", () => {
+    const h = new PlaceholderHandler();
+    const src = "### Hello World {/* #my-explicit-id */}";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.mdxMap).toEqual(["{/* #my-explicit-id */}"]);
+    expect(st.text).toBe("### Hello World {{MDX_0}}");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
+  it("exposes only translatable text inside <Highlight> while protecting tags + brace expressions", () => {
+    const h = new PlaceholderHandler();
+    const src = `Use <Highlight color="#25c2a0">Docusaurus green</Highlight> for {frontMatter.title}.`;
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.mdxMap).toEqual([
+      `<Highlight color="#25c2a0">`,
+      "</Highlight>",
+      "{frontMatter.title}",
+    ]);
+    expect(st.text).toBe("Use {{MDX_0}}Docusaurus green{{MDX_1}} for {{MDX_2}}.");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
+  it("keeps legacy `{#id}` heading id as `{{HDG_N}}` even when MDX brace protection runs after it", () => {
+    const h = new PlaceholderHandler();
+    const src = "### Step {#my-id} and {value}";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.docusaurusHeadingIds).toEqual(["{#my-id}"]);
+    expect(st.mdxMap).toEqual(["{value}"]);
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
 });

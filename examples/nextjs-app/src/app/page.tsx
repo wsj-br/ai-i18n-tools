@@ -82,16 +82,13 @@ function HomePageContent() {
         <br />
         <p>
           <strong>{t("Plurals: automatic generation usage example")}</strong>
-     
-     
-          <br />
-          <pre className="code-block">
-            <code>
+        </p>
+        <pre className="code-block">
+          <code>
 {`<i>count = {{count}}</i>: &nbsp; 
 {t("This page has {{count}} sections", { plurals: true, count })}`}
-            </code>
-          </pre>
-        </p>
+          </code>
+        </pre>
         {PLURAL_DEMO_COUNTS.map((count) => (
           <p key={count} style={{ marginLeft: "18px" }}>
             <i>count = {count}</i>: &nbsp;

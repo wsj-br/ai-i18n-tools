@@ -300,7 +300,7 @@ const featuresSchema = z.object({
   translateUIStrings: z.boolean().default(false),
   translateMarkdown: z.boolean().default(false),
   translateJSON: z.boolean().default(false),
-  /** Standalone SVG assets via `translate-svg` / `sync` when `svg` is configured. */
+  /**  SVG files via `translate-svg` / `sync` when `svg` is configured. */
   translateSVG: z.boolean().default(false),
 });
 
@@ -455,7 +455,7 @@ const uiConfigSchema = z
   })
   .strict();
 
-const svgAssetsConfigSchema = z
+const SvgFilesConfigSchema = z
   .object({
     /** One directory or several (relative to cwd); each is scanned recursively for `*.svg`. */
     sourcePath: z.preprocess(
@@ -581,7 +581,7 @@ export const i18nConfigSchema = z
      */
     uiLanguagesPath: z.string().optional(),
     /** Standalone SVG translation (`translate-svg`): sources + output layout. */
-    svg: svgAssetsConfigSchema.optional(),
+    svg: SvgFilesConfigSchema.optional(),
     batchSize: z.number().int().positive().optional(),
     maxBatchChars: z.number().int().positive().optional(),
     /**
@@ -609,7 +609,7 @@ export type MarkdownPostProcessingConfig = z.infer<typeof markdownPostProcessing
 export type MarkdownOutputConfig = z.infer<typeof markdownOutputSchema>;
 export type UiConfig = z.infer<typeof uiConfigSchema>;
 export type DocumentationBlock = z.infer<typeof documentationBlockSchema>;
-export type SvgAssetsConfig = z.infer<typeof svgAssetsConfigSchema>;
+export type SvgFilesConfig = z.infer<typeof SvgFilesConfigSchema>;
 
 /**
  * View passed to translate-docs internals: one active `documentation` block plus root fields.

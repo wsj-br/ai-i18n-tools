@@ -18,7 +18,7 @@ export {
   type MarkdownPostProcessingConfig,
   type LanguageListBlockConfig,
   type RegexAdjustmentConfig,
-  type SvgAssetsConfig,
+  type SvgFilesConfig,
   type RawI18nConfigInput,
   type CldrPluralForm,
   type StringsJsonEntry,
@@ -153,6 +153,7 @@ export {
   restoreAdmonitionSyntax,
 } from "./processors/admonition-placeholders.js";
 export { protectDocAnchors, restoreDocAnchors } from "./processors/anchor-placeholders.js";
+export { protectMdx, restoreMdx } from "./processors/mdx-placeholders.js";
 export { splitTranslatableIntoBatches, type BatchConfig } from "./processors/batch-processor.js";
 export {
   validateTranslation,

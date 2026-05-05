@@ -729,7 +729,7 @@ export class TranslationCache {
     return Number(result.changes);
   }
 
-  /** Distinct `filepath` values in `file_tracking` (cache keys: `doc-block:…`, `svg-assets:…`, etc.). */
+  /** Distinct `filepath` values in `file_tracking` (cache keys: `doc-block:…`, `svg-files:…`, etc.). */
   listFileTrackingPaths(): string[] {
     const rows = this.db
       .prepare(

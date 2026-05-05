@@ -100,6 +100,39 @@ describe("collectMarkdownSourceIssues", () => {
       true
     );
   });
+
+  it("does not treat * inside MDX `{/* … */}` comments as markdown emphasis", () => {
+    const md = `{/*
+  Fixture * asterisk
+*/}`;
+    const issues = collectMarkdownSourceIssues(md);
+    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS)).toEqual(
+      []
+    );
+  });
+
+  it("does not treat `/*` `*/` on a heading line as emphasis when used for MDX heading ids", () => {
+    const md = "### MDX heading {/* #my-explicit-id */}";
+    const issues = collectMarkdownSourceIssues(md);
+    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS)).toEqual(
+      []
+    );
+  });
+
+  it("does not treat * inside HTML comments as emphasis", () => {
+    const md = "See <!-- * not emphasis --> after.";
+    const issues = collectMarkdownSourceIssues(md);
+    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS)).toEqual(
+      []
+    );
+  });
+
+  it("still reports STRONG_OUTSIDE_INLINE_CODE when **`code`** appears outside comments", () => {
+    const issues = collectMarkdownSourceIssues("Use **`rm`** sparingly.", { segmentStartLine: 1 });
+    expect(
+      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
+    ).toBe(true);
+  });
 });
 
 describe("shouldDiagnoseMarkdownSegment", () => {

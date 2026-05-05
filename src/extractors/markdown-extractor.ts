@@ -18,6 +18,9 @@ export type MarkdownExtractOptions = {
 /** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
 const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
 
+/** MDX top-level ESM (`import …`, `export …`) — those segments are component code, not prose. */
+const MDX_TOPLEVEL_ESM_RE = /^(?:import|export)\b/;
+
 export class MarkdownExtractor extends BaseExtractor {
   readonly name = "markdown";
 
@@ -39,7 +42,8 @@ export class MarkdownExtractor extends BaseExtractor {
         type: "frontmatter",
         content: frontMatterStr,
         hash: this.computeHash(frontMatterStr),
-        translatable: true,
+        /** IDs, slug, nav keys, etc. must stay stable across locales. */
+        translatable: false,
         startLine: 1,
       });
     }
@@ -259,7 +263,7 @@ export class MarkdownExtractor extends BaseExtractor {
       return { type: "other", content, translatable: false, startLine };
     }
 
-    if (content.startsWith("import ") || /^<[A-Z]/.test(trimmed) || /^<\/\w+>$/.test(trimmed)) {
+    if (MDX_TOPLEVEL_ESM_RE.test(trimmed)) {
       return { type: "other", content, translatable: false, startLine };
     }
 

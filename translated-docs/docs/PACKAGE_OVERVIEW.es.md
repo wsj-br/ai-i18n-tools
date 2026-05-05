@@ -55,7 +55,7 @@ ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
-├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
+├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
 ├── API (src/api/)             - OpenRouter HTTP client
 ├── Glossary (src/glossary/)   - glossary loading and term matching
 ├── Runtime (src/runtime/)     - i18next helpers, display helpers (no i18next import)
@@ -106,10 +106,12 @@ src/
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
-│   ├── placeholder-handler.ts      Chain: admonitions → anchors → URLs
+│   ├── placeholder-handler.ts      Chain: HTML → admonitions → anchors → MDX → URLs → emphasis
 │   ├── url-placeholders.ts         Markdown URL protection/restore
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
+│   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
@@ -224,7 +226,8 @@ markdown/MDX/JSON files (`translate-docs`)
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
-protected text  ──────────────── URLs, admonitions, anchors replaced with tokens
+protected text  ──────────────── HTML tags, admonitions, anchors, MDX comments/JSX/braces,
+                                URLs, inline code, emphasis masked as tokens
       │
       ▼  splitTranslatableIntoBatches
 batches[]  ───────────────────── grouped by count + char limit
@@ -244,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 Todos los extractores extienden `BaseExtractor` e implementan `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` - divide el markdown en segmentos tipificados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Los segmentos no traducibles (bloques de código, HTML crudo) se conservan textualmente.
-- `JsonExtractor` - extrae valores de cadena de archivos de etiquetas JSON de Docusaurus.
-- `SvgExtractor` - extrae contenido `<text>`, `<title>` y `<desc>` de SVG (usado por `translate-svg` para recursos bajo `config.svg`, no por `translate-docs`).
+- `MarkdownExtractor` - divide el markdown en segmentos tipificados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. La información YAML frontmatter se clasifica como **no traducible** (`slug`, `id` y otras claves de enrutamiento permanecen estables). Los bloques `export ...` de nivel superior (por ejemplo, definiciones de componentes React) se clasifican como segmentos no traducibles `other`, junto con el manejo existente de `import ...`. Los bloques multilínea que comienzan con una etiqueta JSX en mayúscula (por ejemplo, un bloque `<Tabs>`) se clasifican como párrafos traducibles. Los segmentos no traducibles (bloques de código, HTML sin procesar) se conservan textualmente.
+- `JsonExtractor` - extrae valores de cadena de archivos JSON de etiquetas de Docusaurus.
+- `SvgExtractor` - extrae contenido `<text>`, `<title>` y `<desc>` de SVG (utilizado por `translate-svg` para recursos bajo `config.svg`, no por `translate-docs`).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### Inserción de anclajes de encabezado (CLI `write-heading-ids`)
@@ -260,18 +263,25 @@ Este comando **no** se ejecuta dentro de `translate-docs` ni `sync`; ejecútelo 
 <a id="placeholder-protection"></a>
 ### Protección de marcadores de posición
 
-Antes de la traducción, la sintaxis sensible se reemplaza por tokens opacos para evitar corrupción por el LLM:
+Antes de la traducción, la sintaxis sensible se sustituye por tokens opacos para evitar corrupción por parte del LLM, aplicado en este orden (la restauración es el proceso inverso):
 
-1. **Marcadores de advertencia** (`:::note`, `:::`) - se restauran con el texto original exacto.
-2. **Anclajes de documento** (HTML `<a id="…">`, encabezado Docusaurus `{#…}`) - se conservan textualmente.
-3. **URLs en Markdown** (`](url)`, `src="../…"`) - se restauran desde un mapa tras la traducción.
+1. **Etiquetas HTML y comentarios** (`<strong>`, `<!-- ... -->`, etc.) - las etiquetas HTML en minúsculas de una lista permitida conocida se sustituyen por tokens `{{HTM_N}}`. Las etiquetas JSX en mayúsculas (`<Highlight>`, `<Tabs>`, `</Tab>`) se manejan por separado mediante la capa MDX (paso 4).
+2. **Marcadores de advertencias** (`:::note`, `:::`) - solo el prefijo de directiva en la línea de apertura se sustituye por `{{ADM_OPEN_N}}`; cualquier título en la misma línea se deja para que el modelo lo traduzca. Se restaura con el texto original exacto.
+3. **Anclajes de documentación** (HTML `<a id="…">`, encabezado Docusaurus `{#…}`) - se conservan textualmente.
+4. **Constructos exclusivos de MDX** (`src/processors/mdx-placeholders.ts`):
+   - **Comentarios MDX** (`{/* … */}`, incluyendo la forma de identificador de encabezado de Docusaurus `{/* #my-id */}`) sustituidos por `{{MDX_N}}`.
+   - **Etiquetas JSX en mayúsculas** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - se conservan como `{{MDX_N}}` con atributos de cadena traducibles (`label`, `tooltip`, `aria-label`) reescritos como `{{JXA_N}}` dentro de la etiqueta; también se extraen `label:` dentro de literales de objetos `<Tabs values={[ { label: '…' } ]}>` y `<TabItem value="…">` (cuando no existe un atributo `label`, omitiendo valores en minúsculas tipo slug). Se añaden al segmento como líneas `||JXA_N: …||`, que luego se reintegran mediante `restoreMdx`.
+   - **Expresiones entre llaves en MDX** (`{frontMatter.title}`, `style={{…}}`) - coincidencia sensible a la profundidad, sustituidas por `{{MDX_N}}`.
+5. **URLs en markdown** (`](url)`, `src="../…"`) - se restauran desde un mapa tras la traducción.
+6. **Fragmentos de código en línea** (`` `code` ``) y **código en línea con negrita** (`**`code`**`) - se conservan.
+7. **Énfasis en markdown** (opcional, habilitado automáticamente para configuraciones regionales CJK/RTL) - los delimitadores de énfasis se enmascaran.
 
 <a id="cache-translationcache"></a>
 ### Caché (`TranslationCache`)
 
 Base de datos SQLite (mediante `node:sqlite`) que almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash es el primer carácter hexadecimal de 16 caracteres SHA-256 del contenido normalizado (espacios en blanco colapsados).
 
-En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo los fallos en caché van al LLM. Tras la traducción, `last_hit_at` se restablece para las filas de segmentos en el ámbito actual de traducción que no coincidieron. `cleanup` ejecuta primero `sync --force-update`, luego elimina filas de segmentos obsoletas (`last_hit_at` nulo / ruta de archivo vacía), poda claves `file_tracking` cuando la ruta fuente resuelta falta en disco (`doc-block:…`, `svg-assets:…`, etc.), y elimina filas de traducción cuyo metadato de ruta apunta a un archivo inexistente; hace una copia de seguridad de `cache.db` primero, a menos que se pase `--no-backup`.
+En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo las ausencias de caché pasan al LLM. Después de la traducción, se restablece `last_hit_at` para las filas de segmento en el ámbito actual de traducción que no fueron alcanzadas. `cleanup` ejecuta primero `sync --force-update`, luego elimina las filas de segmento obsoletas (`last_hit_at` nulo / ruta de archivo vacía), poda las claves `file_tracking` cuando la ruta de origen resuelta no existe en el disco (`doc-block:…`, `svg-files:…`, etc.) y elimina las filas de traducción cuya ruta de archivo en los metadatos apunta a un archivo inexistente; primero realiza una copia de seguridad de `cache.db` a menos que se pase `--no-backup`.
 
 El comando `translate-docs` también utiliza **seguimiento de archivos**, de modo que las fuentes sin cambios con salidas existentes pueden omitir completamente el trabajo. `--force-update` vuelve a ejecutar el procesamiento de archivos manteniendo la caché de segmentos; `--force` borra el seguimiento de archivos y omite lecturas de caché de segmentos para la traducción de API. Consulte [Introducción](GETTING_STARTED.es.md#cache-behaviour-and-translate-docs-flags) para obtener la tabla completa de banderas.
 
@@ -421,7 +431,8 @@ Exportaciones clave:
 | `JsonExtractor` | Extraer de archivos JSON de etiquetas de Docusaurus. |
 | `SvgExtractor` | Extraer de archivos SVG. |
 | `OpenRouterClient` | Realizar solicitudes de traducción a OpenRouter. |
-| `PlaceholderHandler` | Proteger/restaurar la sintaxis de markdown alrededor de la traducción. |
+| `PlaceholderHandler` | Protege/restaura la sintaxis de markdown alrededor de la traducción (etiquetas HTML, advertencias, anclajes, comentarios/JSX/llaves MDX, URLs, código en línea, énfasis). |
+| `protectMdx` / `restoreMdx` | Protege/restaura comentarios MDX, etiquetas JSX, expresiones entre llaves y atributos de cadena JSX (llamado por `PlaceholderHandler`; también exportado para uso directo). |
 | `splitTranslatableIntoBatches` | Agrupar segmentos en lotes del tamaño adecuado para los LLM. |
 | `validateTranslation` | Comprobaciones estructurales tras la traducción. |
 | `resolveDocumentationOutputPath` | Resolver la ruta del archivo de salida para un documento traducido. |

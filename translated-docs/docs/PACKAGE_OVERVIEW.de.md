@@ -55,7 +55,7 @@ ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
-├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
+├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
 ├── API (src/api/)             - OpenRouter HTTP client
 ├── Glossary (src/glossary/)   - glossary loading and term matching
 ├── Runtime (src/runtime/)     - i18next helpers, display helpers (no i18next import)
@@ -106,10 +106,12 @@ src/
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
-│   ├── placeholder-handler.ts      Chain: admonitions → anchors → URLs
+│   ├── placeholder-handler.ts      Chain: HTML → admonitions → anchors → MDX → URLs → emphasis
 │   ├── url-placeholders.ts         Markdown URL protection/restore
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
+│   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
@@ -224,7 +226,8 @@ markdown/MDX/JSON files (`translate-docs`)
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
-protected text  ──────────────── URLs, admonitions, anchors replaced with tokens
+protected text  ──────────────── HTML tags, admonitions, anchors, MDX comments/JSX/braces,
+                                URLs, inline code, emphasis masked as tokens
       │
       ▼  splitTranslatableIntoBatches
 batches[]  ───────────────────── grouped by count + char limit
@@ -244,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 Alle Extraktoren erweitern `BaseExtractor` und implementieren `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` – teilt Markdown in typisierte Segmente auf: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Nicht zu übersetzende Segmente (Codeblöcke, rohes HTML) werden wortwörtlich beibehalten.
-- `JsonExtractor` – extrahiert Zeichenkettenwerte aus Docusaurus JSON-Beschriftungsdateien.
-- `SvgExtractor` – extrahiert `<text>`, `<title>` und `<desc>` Inhalt aus SVG (verwendet von `translate-svg` für Assets unter `config.svg`, nicht von `translate-docs`).
+- `MarkdownExtractor` – unterteilt Markdown in typisierte Segmente: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML-Frontmatter wird als **nicht übersetzbar** klassifiziert (`slug`, `id` und andere Routing-Schlüssel bleiben unverändert). `export ...`-Blöcke auf oberster Ebene (z. B. React-Komponentendefinitionen) werden als nicht übersetzbare `other`-Segmente klassifiziert, analog zur bestehenden `import ...`-Behandlung. Mehrzeilige Blöcke, die mit einem großgeschriebenen JSX-Tag beginnen (z. B. ein `<Tabs>`-Block), werden als übersetzbare Absätze klassifiziert. Nicht übersetzbare Segmente (Codeblöcke, rohes HTML) bleiben unverändert erhalten.
+- `JsonExtractor` – extrahiert Zeichenkettenwerte aus Docusaurus JSON-Label-Dateien.
+- `SvgExtractor` – extrahiert `<text>`, `<title>` und `<desc>` Inhalte aus SVG (wird von `translate-svg` für Assets unter `config.svg` verwendet, nicht von `translate-docs`).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### Einfügen von Überschriften-Ankern (`write-heading-ids` CLI)
@@ -260,18 +263,25 @@ Dieser Befehl wird **nicht** innerhalb von `translate-docs` oder `sync` ausgefü
 <a id="placeholder-protection"></a>
 ### Platzhalter-Schutz
 
-Empfindliche Syntax wird vor der Übersetzung durch undurchsichtige Token ersetzt, um LLM-Beschädigungen zu verhindern:
+Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetzt, um LLM-Beschädigungen zu verhindern. Die Ersetzung erfolgt in dieser Reihenfolge (die Wiederherstellung erfolgt umgekehrt):
 
-1. **Hinweis-Markierungen** (`:::note`, `:::`) – werden mit exaktem Originaltext wiederhergestellt.
-2. **Dok-Anker** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) – werden wortwörtlich beibehalten.
-3. **Markdown-URLs** (`](url)`, `src="../…"`) – werden nach der Übersetzung aus einer Zuordnung wiederhergestellt.
+1. **HTML-Tags und -Kommentare** (`<strong>`, `<!-- ... -->` usw.) – Kleinbuchstaben-HTML-Tags aus einer bekannten Zulassungsliste werden durch `{{HTM_N}}`-Token ersetzt. Großgeschriebene JSX-Tags (`<Highlight>`, `<Tabs>`, `</Tab>`) werden separat durch die MDX-Schicht (Schritt 4) behandelt.
+2. **Hinweis-Marker** (`:::note`, `:::`) – nur das Direktiv-Präfix in der öffnenden Zeile wird durch `{{ADM_OPEN_N}}` ersetzt; etwaige Titel in derselben Zeile verbleiben zur Übersetzung durch das Modell. Die Wiederherstellung erfolgt mit exaktem Originaltext.
+3. **Dok-Anker** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) – bleiben unverändert erhalten.
+4. **Nur-MDX-Konstrukte** (`src/processors/mdx-placeholders.ts`):
+   - **MDX-Kommentare** (`{/* … */}`, einschließlich der Docusaurus-Form für Überschrift-IDs `{/* #my-id */}`) werden durch `{{MDX_N}}` ersetzt.
+   - **Großgeschriebene JSX-Tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) – bleiben als `{{MDX_N}}` erhalten, wobei übersetzbare String-Attribute (`label`, `tooltip`, `aria-label`) innerhalb des Tags in `{{JXA_N}}` umgeschrieben werden; `label:` innerhalb von `<Tabs values={[ { label: '…' } ]}>` Objektliteralen und `<TabItem value="…">` (wenn kein `label`-Attribut existiert, wobei klein geschriebene slug-ähnliche Werte übersprungen werden) werden ebenfalls extrahiert. An das Segment als `||JXA_N: …||`-Zeilen angehängt und von `restoreMdx` wieder zusammengeführt.
+   - **MDX-Geschweifte-Ausdrücke** (`{frontMatter.title}`, `style={{…}}`) – tiefebewusste Abgleichung, ersetzt durch `{{MDX_N}}`.
+5. **Markdown-URLs** (`](url)`, `src="../…"`) – werden nach der Übersetzung aus einer Zuordnung wiederhergestellt.
+6. **Inline-Code-Abschnitte** (`` `code` ``) und **fett formatierte Inline-Codes** (`**`code`**`) – bleiben erhalten.
+7. **Markdown-Hervorhebungen** (optional, automatisch aktiviert für CJK-/RTL-Lokalisierungen) – Hervorhebungs-Trennzeichen werden maskiert.
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
 
 SQLite-Datenbank (über `node:sqlite`) speichert Zeilen, die nach `(source_hash, locale)` indiziert sind, mit `translated_text`, `model`, `filepath`, `last_hit_at` und verwandten Feldern. Der Hash ist die ersten 16 Hex-Zeichen des SHA-256-Hashs des normalisierten Inhalts (Leerzeichen zusammengefasst).
 
-Bei jedem Durchlauf werden Segmente nach Hash × Gebietsschema abgeglichen. Nur Cache-Misses werden an das LLM übermittelt. Nach der Übersetzung wird `last_hit_at` für Segmentzeilen im aktuellen Übersetzungsbereich, die nicht getroffen wurden, zurückgesetzt. `cleanup` führt zuerst `sync --force-update` aus, entfernt dann veraltete Segmentzeilen (null `last_hit_at` / leere Dateipfade), bereinigt `file_tracking` Schlüssel, wenn der aufgelöste Quellpfad auf dem Datenträger fehlt (`doc-block:…`, `svg-assets:…`, etc.), und entfernt Übersetzungszeilen, deren Metadaten-Dateipfad auf eine fehlende Datei verweist; es sichert zuerst `cache.db`, es sei denn, `--no-backup` wird übergeben.
+Bei jedem Durchlauf werden Segmente anhand von Hash × Gebietsschema nachgeschlagen. Nur Cache-Misses werden an das LLM weitergeleitet. Nach der Übersetzung wird `last_hit_at` für Segmentzeilen im aktuellen Übersetzungsbereich zurückgesetzt, die nicht getroffen wurden. `cleanup` führt zuerst `sync --force-update` aus, entfernt anschließend veraltete Segmentzeilen (null `last_hit_at` / leere Dateipfade), bereinigt `file_tracking`-Schlüssel, wenn der aufgelöste Quellpfad auf dem Datenträger fehlt (`doc-block:…`, `svg-files:…` usw.) und löscht Übersetzungszeilen, deren Metadaten-Dateipfad auf eine fehlende Datei verweist; dabei wird zuerst eine Sicherungskopie von `cache.db` angelegt, es sei denn, `--no-backup` wird übergeben.
 
 Der Befehl `translate-docs` nutzt außerdem **Datei-Tracking**, sodass unveränderte Quellen mit vorhandenen Ausgaben die Verarbeitung vollständig überspringen können. `--force-update` führt die Dateiverarbeitung erneut aus, nutzt dabei aber weiterhin den Segment-Cache; `--force` löscht das Datei-Tracking und umgeht Lesezugriffe auf den Segment-Cache für API-Übersetzungen. Siehe [Erste Schritte](GETTING_STARTED.de.md#cache-behaviour-and-translate-docs-flags) für die vollständige Flag-Tabelle.
 
@@ -421,7 +431,8 @@ Wichtige Exporte:
 | `JsonExtractor` | Extrahiere aus Docusaurus JSON-Beschriftungsdateien. |
 | `SvgExtractor` | Extrahiere aus SVG-Dateien. |
 | `OpenRouterClient` | Sende Übersetzungsanfragen an OpenRouter. |
-| `PlaceholderHandler` | Schütze/Wiederherstellung der Markdown-Syntax während der Übersetzung. |
+| `PlaceholderHandler` | Schützt und stellt Markdown-Syntax um die Übersetzung herum wieder her (HTML-Tags, Hinweise, Anker, MDX-Kommentare/JSX/Geschweifte Klammern, URLs, Inline-Code, Hervorhebungen). |
+| `protectMdx` / `restoreMdx` | Schützt und stellt MDX-Kommentare, JSX-Tags, geschweifte Ausdrücke und JSX-String-Attribute wieder her (wird von `PlaceholderHandler` aufgerufen; auch für direkte Nutzung exportiert). |
 | `splitTranslatableIntoBatches` | Gruppiere Segmente in LLM-gerechte Batches. |
 | `validateTranslation` | Strukturelle Prüfungen nach der Übersetzung. |
 | `resolveDocumentationOutputPath` | Ermittle Ausgabedateipfad für ein übersetztes Dokument. |

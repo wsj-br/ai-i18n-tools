@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import readline from "node:readline/promises";
+import chalk from "chalk";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   formatFindPrintLine,
@@ -30,8 +31,8 @@ describe("matchesCleanTempBasename", () => {
 describe("formatFindPrintLine", () => {
   it("prefixes with ./ for relative paths", () => {
     const root = path.resolve("/proj");
-    expect(formatFindPrintLine(root, path.join(root, "a.log"))).toBe("./a.log");
-    expect(formatFindPrintLine(root, path.join(root, "d", "b.log"))).toBe("./d/b.log");
+    expect(formatFindPrintLine(root, path.join(root, "a.log"))).toContain("./a.log");
+    expect(formatFindPrintLine(root, path.join(root, "d", "b.log"))).toContain("./d/b.log");
   });
 });
 
@@ -61,6 +62,7 @@ describe("runCleanTemp", () => {
     const rootAbs = path.resolve(root);
     expect(lines.sort()).toEqual(
       [
+        chalk.gray("Dry run mode: no files will be deleted."),
         formatFindPrintLine(rootAbs, path.join(root, "a.log")),
         formatFindPrintLine(rootAbs, path.join(root, "sub", "cache.db.backup.2024.sqlite")),
       ].sort()

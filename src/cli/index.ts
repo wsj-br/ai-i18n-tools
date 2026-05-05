@@ -48,6 +48,7 @@ import {
   matchesPathFilter,
   normalizePathFilterForProjectRoot,
   jsonFileProjectRelativePath,
+  augmentMarkdownFilesFromPathFilter,
 } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
@@ -190,6 +191,26 @@ function filterDocumentationFilesByPathFilter(
   };
 }
 
+function warnAndAugmentMarkdownForExplicitPath(
+  projectRoot: string,
+  pathFilter: string | undefined,
+  blockIndex: number,
+  config: I18nConfig,
+  markdownDiscovered: string[]
+): string[] {
+  const { markdown, warnings } = augmentMarkdownFilesFromPathFilter(
+    projectRoot,
+    pathFilter,
+    blockIndex,
+    config.documentations,
+    markdownDiscovered
+  );
+  for (const w of warnings) {
+    console.warn(chalk.yellow(`⚠️  ${w}`));
+  }
+  return markdown;
+}
+
 function resolveCliPathOrFile(opts: { path?: string; file?: string }): string | undefined {
   const hasP = opts.path !== undefined && String(opts.path).trim() !== "";
   const hasF = opts.file !== undefined && String(opts.file).trim() !== "";
@@ -203,6 +224,29 @@ function resolveCliPathOrFile(opts: { path?: string; file?: string }): string | 
     return String(opts.file).trim();
   }
   return undefined;
+}
+
+/** Warn when `--path` / `--file` was set and the path does not exist (file or directory). */
+function warnIfCliPathOrFileNotFound(
+  projectRoot: string,
+  opts: { path?: string; file?: string }
+): void {
+  let raw: string | undefined;
+  try {
+    raw = resolveCliPathOrFile(opts);
+  } catch {
+    return;
+  }
+  if (raw === undefined) {
+    return;
+  }
+  const trimmed = String(raw).trim();
+  const resolved = path.isAbsolute(trimmed)
+    ? path.normalize(trimmed)
+    : path.resolve(projectRoot, trimmed);
+  if (!fs.existsSync(resolved)) {
+    console.warn(chalk.yellow(`⚠️  path/file does not exist: ${trimmed}`));
+  }
 }
 
 function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string } {
@@ -285,6 +329,22 @@ function formatCliHelp(cmd: Command, helper: Help): string {
 
   return output.join("\n");
 }
+
+/** Appended after the root command list (`ai-i18n-tools --help`). */
+const ROOT_CLI_HELP_AFTER = `
+More detail:
+  ai-i18n-tools <command> --help          all options for that command
+  ai-i18n-tools help <command>            same output
+
+Target locales (-l / --locale):
+  translate-docs, translate-svg, translate-ui, sync, and export-ui-xliff accept
+  -l, --locale <codes> with comma-separated BCP-47 codes (e.g. de,fr,pt-BR).
+  When omitted, defaults come from config and ui-languages.json (see docs).
+
+  lint-source uses -l, --locale <code> for a single source locale to review.
+
+Related globals (every command): -c/--config, -v/--verbose, -w/--write-logs.
+`;
 
 const program = new Command();
 
@@ -393,6 +453,7 @@ program
       dryRun?: boolean;
     };
     const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
+    warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
     let slugStyle;
     try {
       slugStyle = parseSlugStyle(o.slugStyle);
@@ -492,6 +553,7 @@ program
       noBackup?: boolean;
     };
     const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
+    warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
 
     if (!config.documentations?.length) {
       console.error(chalk.red("❌ [strip-md-bold-inline] config has no documentations[] blocks."));
@@ -597,6 +659,7 @@ function buildTranslateOpts(
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
   const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
   const pathFilterRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
+  warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
   const translateOpts: TranslateRunOptions = {
     cwd: projectRoot,
     locales,
@@ -723,9 +786,16 @@ async function runSyncPipeline(args: {
       for (let bi = 0; bi < config.documentations.length; bi++) {
         const block = config.documentations[bi]!;
         const view = toDocTranslateConfig(config, block);
-        const md = filterIgnored(
+        const mdBase = filterIgnored(
           collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
           projectRoot
+        );
+        const md = warnAndAugmentMarkdownForExplicitPath(
+          projectRoot,
+          translateOpts.pathFilter,
+          bi,
+          config,
+          mdBase
         );
         const jsonRoot = block.jsonSource
           ? path.resolve(projectRoot, block.jsonSource)
@@ -760,7 +830,9 @@ async function runSyncPipeline(args: {
 
 program
   .command("translate-docs")
-  .description("Translate documentation files (markdown, JSON) per config features")
+  .description(
+    "Translate documentation (markdown, JSON) per config; -l/--locale <codes> limits targets (comma-separated; optional)"
+  )
   .option(
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: documentation targets from config (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
@@ -895,9 +967,16 @@ program
       for (let bi = 0; bi < config.documentations.length; bi++) {
         const block = config.documentations[bi]!;
         const view = toDocTranslateConfig(config, block);
-        const md = filterIgnored(
+        const mdBase = filterIgnored(
           collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
           projectRoot
+        );
+        const md = warnAndAugmentMarkdownForExplicitPath(
+          projectRoot,
+          translateOpts.pathFilter,
+          bi,
+          config,
+          mdBase
         );
         const jsonRoot = block.jsonSource
           ? path.resolve(projectRoot, block.jsonSource)
@@ -951,11 +1030,22 @@ program
       console.error(chalk.red(`❌ [translate-docs] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
-  });
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools translate-docs -l de,fr
+  ai-i18n-tools translate-docs --locale pt-BR --dry-run
+  ai-i18n-tools translate-docs --path docs/guide --force-update
+`
+  );
 
 program
   .command("translate-svg")
-  .description("Translate standalone SVG assets per config.svg (requires features.translateSVG)")
+  .description(
+    "Translate  SVG files per config.svg (requires features.translateSVG); -l/--locale <codes> limits targets (comma-separated; optional)"
+  )
   .option(
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales)"
@@ -1019,11 +1109,21 @@ program
       console.error(chalk.red(`❌ [translate-svg] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
-  });
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools translate-svg -l de,ja
+  ai-i18n-tools translate-svg --path assets/icons --no-cache
+`
+  );
 
 program
   .command("translate-ui")
-  .description("Translate UI strings (strings.json → locale JSON via OpenRouter)")
+  .description(
+    "Translate UI strings (strings.json → locale JSON via OpenRouter); -l/--locale <codes> limits targets (comma-separated; optional)"
+  )
   .option(
     "-l, --locale <codes>",
     "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
@@ -1065,7 +1165,15 @@ program
       console.error(chalk.red(`❌ [translate-ui] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
-  });
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools translate-ui -l de,fr
+  ai-i18n-tools translate-ui --force --locale es
+`
+  );
 
 program
   .command("lint-source")
@@ -1128,6 +1236,7 @@ program
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
     const g = cmd.optsWithGlobals() as { verbose?: boolean };
     const o = cmd.opts() as { path?: string; file?: string; json?: boolean; noCache?: boolean };
+    warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
     const pathFilter = normalizePathFilterForProjectRoot(
       projectRoot,
       resolveCliPathOrFile({ path: o.path, file: o.file })
@@ -1151,7 +1260,7 @@ program
 program
   .command("export-ui-xliff")
   .description(
-    "Export UI strings from strings.json to XLIFF 2.0 (one .xliff file per target locale)"
+    "Export UI strings from strings.json to XLIFF 2.0 (one .xliff per target locale); -l/--locale <codes> selects targets (comma-separated; optional)"
   )
   .option(
     "-l, --locale <codes>",
@@ -1190,14 +1299,25 @@ program
       );
       process.exit(1);
     }
-  });
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools export-ui-xliff -l de,fr
+  ai-i18n-tools export-ui-xliff --locale ja --untranslated-only --dry-run
+`
+  );
 
 program
   .command("sync")
   .description(
-    "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*"
+    "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*; -l/--locale <codes> applies to UI, SVG, and docs targets (comma-separated; optional)"
   )
-  .option("-l, --locale <codes>", "Target locales for translate step")
+  .option(
+    "-l, --locale <codes>",
+    "Comma-separated target locales for translate-ui, translate-svg, and translate-docs steps (optional; defaults from config / ui-languages.json)"
+  )
   .option(
     "-p, --path <path>",
     "Only translate files under this path (docs/SVG); project-relative or absolute"
@@ -1295,7 +1415,16 @@ program
     } catch {
       process.exit(1);
     }
-  });
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools sync -l de,fr
+  ai-i18n-tools sync --locale ja --no-svg --dry-run
+  ai-i18n-tools sync --no-docs --path docs/tutorial
+`
+  );
 
 const DEFAULT_STATUS_MAX_COLUMNS = 9;
 /** Default `--max-columns` for `statistics` only (narrower matrices than `status` markdown tables). */
@@ -2089,5 +2218,7 @@ program
     writeAtomicUtf8(out, header);
     console.log(`Wrote ${out}`);
   });
+
+program.addHelpText("after", ROOT_CLI_HELP_AFTER);
 
 program.parse();

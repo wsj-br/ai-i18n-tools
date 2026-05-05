@@ -7,7 +7,7 @@
 [![लाइसेंस: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-JavaScript/TypeScript अनुप्रयोगों और दस्तावेज़ीकरण साइटों के लिए अंतरराष्ट्रीयकरण के लिए CLI और टूलकिट। UI स्ट्रिंग्स निकालता है, OpenRouter के माध्यम से बड़े भाषा मॉडल का उपयोग करके उनका अनुवाद करता है, और i18next के लिए स्थानीयकृत JSON फ़ाइलें उत्पन्न करता है। इसमें मार्कडाउन, डॉक्यूसॉरस JSON और स्वतंत्र SVG एसेट्स के लिए पाइपलाइन भी शामिल हैं।
+JavaScript/TypeScript एप्लिकेशन और डॉक्यूमेंटेशन साइट्स के लिए अंतर्राष्ट्रीयकरण के लिए CLI और टूलकिट। UI स्ट्रिंग्स निकालता है, OpenRouter के माध्यम से बड़े भाषा मॉडल्स का उपयोग करके उनका अनुवाद करता है, और i18next के लिए स्थानीयकृत JSON फ़ाइलें उत्पन्न करता है। इसमें मार्कडाउन, डॉक्यूसॉरस JSON और SVG फ़ाइलों के लिए पाइपलाइन भी शामिल हैं।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -57,6 +57,7 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
+<a id="using-the-cli"></a>
 ### CLI का उपयोग करना
 
 **प्रति-प्रोजेक्ट (अनुशंसित)** — एक निर्भरता या devDependency के रूप में स्थापित करें, फिर `npx`, `pnpm exec`, या `package.json` स्क्रिप्ट के माध्यम से कॉल करें:
@@ -216,17 +217,20 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
-                                                    --force-update, --force, --stats, --clear-cache,
-                                                    --prompt-format (xml | json-array | json-object)
+ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+                                                    --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
+                                                    --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
 ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
 ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
-ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
-ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
+ai-i18n-tools translate-svg …                        SVG files (features.translateSVG + config.svg); flags include -l/--locale <codes>,
+                                                    -p/-f path, --dry-run, --force, --force-update, --no-cache, -j, -b
+ai-i18n-tools translate-ui …                        Translate UI strings only; flags include -l/--locale <codes>, --dry-run, --force, -j
 ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
-ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
-ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
+ai-i18n-tools export-ui-xliff …                   Export UI strings to XLIFF 2.0 (one file per locale); -l, -o, --untranslated-only, --dry-run
+ai-i18n-tools sync …                                Extract, then UI / SVG / docs; flags include -l/--locale <codes>, -p/-f path, --dry-run, --force,
+                                                    --force-update, --no-ui, --no-svg, --no-docs, -j, -b, --emphasis-placeholders,
+                                                    --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
@@ -235,7 +239,9 @@ ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.lo
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-प्रत्येक कमांड पर वैश्विक विकल्प: `-c <config>` (डिफ़ॉल्ट: `ai-i18n-tools.config.json`), `-v` (विस्तृत), वैकल्पिक `-w` / `--write-logs [path]` कंसोल आउटपुट को लॉग फ़ाइल में टी करने के लिए (डिफ़ॉल्ट: अनुवाद कैश निर्देशिका के अंदर), `-V` / `--version`, और `-h` / `--help`। प्रति-कमांड झंडों के लिए [प्रारंभ करने के लिए](docs/GETTING_STARTED.hi.md#cli-reference) देखें।
+प्रति-कमांड फ्लैग सूची `src/cli/index.ts` के पास [CLI flags by command](docs/GETTING_STARTED.hi.md#cli-flags-by-command) में बनाए रखी जाती है। अंतर्निर्मित उपयोग पाठ के लिए `ai-i18n-tools <command> --help` चलाएं।
+
+हर कमांड पर वैश्विक विकल्प: `-c <config>` (डिफ़ॉल्ट: `ai-i18n-tools.config.json`), `-v` (विस्तृत), वैकल्पिक `-w` / `--write-logs [path]` कंसोल आउटपुट को लॉग फ़ाइल में टी करने के लिए (डिफ़ॉल्ट: अनुवाद कैश निर्देशिका के अंतर्गत), `-V` / `--version`, और `-h` / `--help`। कमांड अवलोकन तालिका के लिए [Getting Started](docs/GETTING_STARTED.hi.md#cli-reference) देखें।
 
 ---
 

@@ -20,12 +20,54 @@ Paragraph one.
     expect(segs.some((s) => s.type === "paragraph")).toBe(true);
   });
 
+  it("does not translate YAML front matter (stable ids and paths)", () => {
+    const md = `---
+title: Hello
+---
+Body.
+`;
+    const fm = ex.extract(md, "x.md").find((s) => s.type === "frontmatter");
+    expect(fm?.translatable).toBe(false);
+  });
+
   it("extracts fenced code and admonition segments", () => {
     const md = "```ts\nconst x = 1;\n```\n\n:::note\nN\n:::\n\nPara.";
     const segs = ex.extract(md, "doc.md");
     expect(segs.some((s) => s.type === "code")).toBe(true);
     expect(segs.some((s) => s.type === "admonition")).toBe(true);
     expect(segs.some((s) => s.type === "paragraph")).toBe(true);
+  });
+
+  it("treats top-level MDX `import` and `export` blocks as non-translatable code", () => {
+    const md = `import Foo from '@site/src/components/Foo';
+
+export const Highlight = ({children, color}) => (
+  <span style={{backgroundColor: color}}>
+    {children}
+  </span>
+);
+
+Body paragraph.`;
+    const segs = ex.extract(md, "x.mdx");
+    const importSeg = segs.find((s) => s.content.startsWith("import "));
+    expect(importSeg?.type).toBe("other");
+    expect(importSeg?.translatable).toBe(false);
+    const exportSeg = segs.find((s) => s.content.startsWith("export "));
+    expect(exportSeg?.type).toBe("other");
+    expect(exportSeg?.translatable).toBe(false);
+    const para = segs.find((s) => s.type === "paragraph");
+    expect(para?.content).toBe("Body paragraph.");
+  });
+
+  it("treats multi-line MDX blocks that start with a capital JSX tag as translatable paragraphs", () => {
+    const md = `<Tabs>
+<TabItem value="a" label="First tab label">
+Tab panel prose with {frontMatter.title} reference.
+</TabItem>
+</Tabs>`;
+    const seg = ex.extract(md, "fixture.mdx").find((s) => s.content.includes("<Tabs>"));
+    expect(seg?.type).toBe("paragraph");
+    expect(seg?.translatable).toBe(true);
   });
 
   it("reassembles with translations map", () => {

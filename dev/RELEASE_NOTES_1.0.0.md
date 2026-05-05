@@ -48,7 +48,7 @@ Unified internationalization toolkit for JavaScript/TypeScript projects and docu
 | `extract` | Scan source for `t("…")` calls |
 | `translate-ui` | Translate UI strings |
 | `translate-docs` | Translate markdown and JSON documentation |
-| `translate-svg` | Translate SVG assets |
+| `translate-svg` | Translate SVG files |
 | `sync` | Run extract → translate-ui → translate-svg → translate-docs |
 | `status` | Translation coverage per file × locale |
 | `editor` | Local web editor for cache, strings, and glossary |

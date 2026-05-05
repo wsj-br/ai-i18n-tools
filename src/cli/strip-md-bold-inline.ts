@@ -21,7 +21,7 @@ function defaultBackupAbsolutePath(absSource: string): string {
   const ext = path.extname(absSource);
   const stem = path.basename(absSource, ext);
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
-  return path.join(dir, `${stem}.backup.${ts}${ext}`);
+  return path.join(dir, `${stem}${ext}.backup.${ts}.tmp`);
 }
 
 export function runStripMdBoldInline(opts: StripMdBoldInlineOptions): {

@@ -1,10 +1,12 @@
 ---
 sidebar_position: 1
-title: عرض ميزة الترجمة
-description: مستند مرجعي يُظهر كل عنصر في Markdown تعرفه ai-i18n-tools كيف تترجمه.
-translation_last_updated: '2026-05-03T13:26:49.723Z'
-source_file_mtime: '2026-04-20T20:03:51.319Z'
-source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
+title: Translation Feature Showcase
+description: >-
+  A reference document demonstrating every Markdown element that ai-i18n-tools
+  knows how to translate.
+translation_last_updated: '2026-05-04T22:27:20.121Z'
+source_file_mtime: '2026-05-04T21:42:57.361Z'
+source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
 translation_language: ar
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -12,6 +14,9 @@ translation_models:
 ---
 
 
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 توجد هذه الصفحة لتوضيح كيفية تعامل `ai-i18n-tools` مع كل بنية شائعة في Markdown. قم بتشغيل `sync` ضدها وقارن المخرجات في كل مجلد لغة لمعرفة بدقة ما يتم ترجمته وما يظل دون تغيير.
 
@@ -121,7 +126,7 @@ translation_models:
 t("This page has {{count}} sections", { plurals: true, count })
 ```
 
-استخدم **`plurals: true`** بحيث يقوم **`extract`** بتسجيل مجموعة جمعية في `locales/strings.json` ويقوم **`translate-ui`** بتعبئة الملفات المسطحة لكل لغة محلية ضمن `public/locales/`. أثناء التشغيل، يقوم i18next بحل المفتاح المُلصَق المناسب للغة النشطة **`count`**؛ ويُظهر مثال Next أدوات مساعدة في **`src/lib/i18n.ts`**.
+استخدم `plurals: true` بحيث يقوم `extract` بتسجيل مجموعة جمعية في `locales/strings.json` ويقوم `translate-ui` بتعبئة الملفات المسطحة لكل لغة محلية ضمن `public/locales/`. أثناء التشغيل، يقوم i18next بحل المفتاح المُسند باللاحقة الصحيحة للغة النشطة `count`؛ ويُظهر مثال Next كيفية توصيل المساعدات في `src/lib/i18n.ts`.
 
 لعرض لقطات الشاشة وعناوين URLs الخاصة باللغات المحلية وتخطيط الملفات، انظر إلى **مثال الجمع** في [ملف README الخاص بمثال Next.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
 
@@ -185,6 +190,22 @@ export default config;
 > "أفضل توطين هو الذي يكون غير مرئي للمستخدم — فالمستخدم يرى ببساطة لغته."
 >
 > الترجمة السليمة تتجاوز المفردات. فهي تُعدّل النبرة وتنسيقات التواريخ وتنسيق الأرقام واتجاه القراءة بحيث تبدو طبيعية في كل لغة محلية.
+
+---
+
+## علامات التبويب (Docusaurus) {#tabs-docusaurus}
+
+<Tabs>
+  <TabItem value="apple" label="تفاحة" default>
+    هذه تفاحة 🍎
+  </TabItem>
+  <TabItem value="orange" label="برتقالة">
+    هذه برتقالة 🍊
+  </TabItem>
+  <TabItem value="banana" label="موزة">
+    هذه موزة 🍌
+  </TabItem>
+</Tabs>
 
 ---
 

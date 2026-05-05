@@ -21,4 +21,11 @@ describe("anchor-placeholders", () => {
     const corrupted = "x {{HDG-0}} y";
     expect(restoreDocAnchors(corrupted, [], ["{#z}"])).toContain("{#z}");
   });
+
+  it("does not falsely match the MDX heading-id comment form `{/* #my-id */}`", () => {
+    const src = `### Hello World {/* #my-explicit-id */}\n`;
+    const p = protectDocAnchors(src);
+    expect(p.docusaurusHeadingIds).toEqual([]);
+    expect(p.protected).toBe(src);
+  });
 });

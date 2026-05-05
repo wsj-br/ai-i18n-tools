@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
-title: البدء السريع
+title: Quick Start
 description: >-
-  احصل على أول مستند مترجم لك في أقل من خمس دقائق باستخدام ai-i18n-tools من خلال
-  مشروع Next.js التوضيحي هذا.
-translation_last_updated: '2026-05-03T13:26:51.508Z'
-source_file_mtime: '2026-04-20T20:03:51.319Z'
-source_file_hash: 3781b3b6f01b12a0aa8b7f15cc792f0282715729066828ccf371d959d933a447
+  Get your first translated document in under five minutes using ai-i18n-tools
+  with this Next.js example project.
+translation_last_updated: '2026-05-04T22:27:21.915Z'
+source_file_mtime: '2026-05-04T22:22:41.551Z'
+source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
 translation_language: ar
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -33,7 +33,7 @@ translation_models:
 
 ```bash
 cd examples/nextjs-app
-npm install
+pnpm install
 ```
 
 يقوم هذا بالتثبيت `ai-i18n-tools` مع حزم Next.js وDocusaurus المستخدمة في هذا المثال.
@@ -59,22 +59,75 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
 ```json
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["es", "fr", "de", "pt-BR"],
-  "features": {
+  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
+    "features": {
+    "extractUIStrings": true,
+    "translateUIStrings": true,
     "translateMarkdown": true,
-    "translateJSON": true
+    "translateJSON": true,
+    "translateSVG": true
   },
+  "glossary": {
+    "uiGlossary": "locales/strings.json",
+    "userGlossary": "glossary-user.csv",
+    "autoAddUserEditedToGlossary": true
+  },
+  "ui": {
+    "sourceRoots": ["src/"],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "public/locales/"
+  },
+  "cacheDir": ".translation-cache",
   "documentations": [
     {
       "description": "Docusaurus docs and JSON UI strings under docs-site",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
+      "jsonSource": "docs-site/i18n/en",
+      "addFrontmatter": true,
       "markdownOutput": {
         "style": "docusaurus",
-        "docsRoot": "docs-site/docs"
+        "docsRoot": "docs-site/docs",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders in docs-site static assets",
+              "search": "screenshots/ar/",
+              "replace": "screenshots/${translatedLocale}/"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "description": "Root README only (flat markdown output)",
+      "contentPaths": ["README.md"],
+      "outputDir": "translated-docs",
+      "addFrontmatter": false,
+      "markdownOutput": {
+        "style": "flat",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders under translated-docs",
+              "search": "images/screenshots/[^/]+/",
+              "replace": "images/screenshots/${translatedLocale}/"
+            }
+          ],
+          "languageListBlock": {
+            "start": "<small id=\"lang-list\">",
+            "end": "</small>",
+            "separator": " · "
+          }
+        }
       }
     }
-  ]
+  ],
+  "svg": {
+    "sourcePath": "images",
+    "outputDir": "public/assets",
+    "style": "flat"
+  }
 }
 ```
 
@@ -94,9 +147,9 @@ npx ai-i18n-tools sync --no-ui --no-svg
 
 ```text
 [docs] Scanning docs-site/docs/ — 2 files found
-[docs] Translating to: es, fr, de, pt-BR
-[docs] feature-showcase.md — 14 segments translated (4 locales)
-[docs] quick-start.md — 11 segments translated (4 locales)
+[docs] Translating to: ar, es, fr, de, pt-BR
+[docs] feature-showcase.md — 14 segments translated (5 locales)
+[docs] quick-start.md — 11 segments translated (5 locales)
 [docs] Done in 8.3 s (cache: 0 hits, 100 misses)
 ```
 
@@ -127,28 +180,28 @@ diff docs-site/docs/quick-start.md \
 
 ```bash
 cd docs-site
-npm run start -- --locale de
+pnpm start -- --locale de
 ```
 
-يبدأ هذا الخادم التجريبي لـ Docusaurus باللغة الألمانية. افتح [http://localhost:3000/de/](http://localhost:3000/de/) في متصفحك لاستعراض الوثائق المترجمة.
+يبدأ هذا خادم التطوير Docusaurus باللغة الألمانية. افتح [http://localhost:3040/de/](http://localhost:3040/de/) في متصفحك لاستعراض الوثائق المترجمة.
 
 ---
 
 ## الخطوة 7 — استكشاف عرض Next.js (اللغة المحلية + أشكال الجمع) {#step-7--explore-the-nextjs-demo-locale--cardinal-plurals}
 
-تستخدم ترجمة الوثائق في هذا البرنامج التعليمي **اللغة Markdown فقط**. كما يحتوي نفس مستودع الأمثلة على واجهة مستخدم **Next.js** على المنفذ **3030** حيث يمكنك رؤية استدعاءات **`t()`**، وعناوين URL **`?locale=`**، وعرض توضيحي لـ **صيغ الجمع العددي**.
+يستخدم ترجمة الوثائق في هذا البرنامج التعليمي **Markdown فقط**. يأتي مستودع المثال نفسه مع واجهة مستخدم **Next.js** على المنفذ **3030** حيث يمكنك رؤية استدعاءات `t()`، وعناوين URL `?locale=`، وعرض توضيحي لـ **جمع أساسي**.
 
 من `examples/nextjs-app/`:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ثم افتح [http://localhost:3030](http://localhost:3030).
 
-- قم بتبديل اللغات باستخدام قائمة منسدلة **Locale**، أو أضف **`?locale=<code>`** (على سبيل المثال `http://localhost:3030/?locale=ar`). تحافظ الواجهة على توافق سلسلة الاستعلام مع القائمة المنسدلة.
-- مرر لأسفل إلى **الجمع: مثال على استخدام التوليد التلقائي**. تتكرر الصفحة عبارة "تحتوي هذه الصفحة على ... أقسام" بعدد ثابت من العينات (**1**، **2**، **5**، **50**) لكي تتمكن من مقارنة قواعد الجمع عبر اللغات المحلية (بما في ذلك اللغات التي تحتوي على أشكال جمع متعددة).
-- تستخدم الاستدعاءات **`t("…", { plurals: true, count })`**. مع **`extract`** / **`translate-ui`**، يصبح هذا المفتاح مجموعة جمع في `locales/strings.json`؛ تحمل الملفات المسطحة **`public/locales/*.json`** الأشكال المزودة بلاحقة. يتم التعامل مع الربط أثناء التشغيل في **`src/lib/i18n.ts`** — راجع قسم **مثال الجمع العددي** في [دليل المثال](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md) للحصول على شرح موجز.
+- قم بالتبديل بين اللغات باستخدام قائمة منسدلة **Locale**، أو أضف `?locale=<code>` (مثلاً `http://localhost:3030/?locale=ar`). تحافظ الواجهة على توافق سلسلة الاستعلام مع القائمة المنسدلة.
+- مرر لأسفل إلى **الجمع: مثال على استخدام التوليد التلقائي**. تتكرر العبارة "تحتوي هذه الصفحة على ... أقسام" بعدد عينات ثابت (**1**، **2**، **5**، **50**) لكي تتمكن من مقارنة قواعد الجمع عبر المحال (بما في ذلك اللغات التي تحتوي على أشكال جمع متعددة).
+- تستخدم الاستدعاءات `t("…", { plurals: true, count })`. مع `extract` / `translate-ui`، يصبح هذا المفتاح مجموعة جمع في `locales/strings.json`؛ تحمل الملفات المسطحة `public/locales/*.json` الأشكال المزودة بلاحقة. أما الربط أثناء التشغيل فيوجد في `src/lib/i18n.ts` — انظر قسم **مثال الجمع الأساسي** في [ملف README المثال](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md) للحصول على شرح موجز.
 
 ---
 

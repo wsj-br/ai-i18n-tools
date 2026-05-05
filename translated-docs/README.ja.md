@@ -7,7 +7,7 @@
 [![ライセンス: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-JavaScript/TypeScript アプリケーションおよびドキュメントサイトの国際化のための CLI およびツールキット。UI 文字列を抽出し、OpenRouter 経由で大規模言語モデルを使用して翻訳を行い、i18next 向けのロケール対応 JSON ファイルを生成します。また、Markdown、Docusaurus JSON、スタンドアロン SVG アセット向けのパイプラインも含まれます。
+JavaScript/TypeScript アプリケーションおよびドキュメントサイトの国際化のための CLI およびツールキット。UI 文字列を抽出し、OpenRouter 経由で大規模言語モデルを使用して翻訳を行い、i18next 向けのロケール対応 JSON ファイルを生成します。また、Markdown、Docusaurus JSON、SVG ファイル向けのパイプラインも含まれます。
 
 <small>**他の言語で読む：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -57,7 +57,8 @@ npm install ai-i18n-tools
 pnpm add ai-i18n-tools
 ```
 
-### CLIの使用
+<a id="using-the-cli"></a>
+### CLI の使用方法
 
 **プロジェクトごと（推奨）** — 依存関係または開発依存関係としてインストールし、次に`npx`、`pnpm exec`、または`package.json`スクリプト経由で呼び出します。
 
@@ -216,17 +217,20 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs [--locale <code>]      Translate documentation (markdown, JSON); see docs for
-                                                    --force-update, --force, --stats, --clear-cache,
-                                                    --prompt-format (xml | json-array | json-object)
+ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+                                                    --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
+                                                    --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
 ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
 ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
-ai-i18n-tools translate-svg [--locale <code>]       Standalone SVG assets (features.translateSVG + config.svg); see --no-cache
-ai-i18n-tools translate-ui [--locale <code>]        Translate UI strings only; see --force, --dry-run
+ai-i18n-tools translate-svg …                        SVG files (features.translateSVG + config.svg); flags include -l/--locale <codes>,
+                                                    -p/-f path, --dry-run, --force, --force-update, --no-cache, -j, -b
+ai-i18n-tools translate-ui …                        Translate UI strings only; flags include -l/--locale <codes>, --dry-run, --force, -j
 ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
-ai-i18n-tools export-ui-xliff [--locale <code>]     Export UI strings to XLIFF 2.0 (one file per locale); see --untranslated-only, -o
-ai-i18n-tools sync                                  Extract UI strings, then translate UI strings, SVG, and docs
+ai-i18n-tools export-ui-xliff …                   Export UI strings to XLIFF 2.0 (one file per locale); -l, -o, --untranslated-only, --dry-run
+ai-i18n-tools sync …                                Extract, then UI / SVG / docs; flags include -l/--locale <codes>, -p/-f path, --dry-run, --force,
+                                                    --force-update, --no-ui, --no-svg, --no-docs, -j, -b, --emphasis-placeholders,
+                                                    --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
 ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
 ai-i18n-tools editor                                Open cache/glossary web editor
@@ -235,7 +239,9 @@ ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.lo
 ai-i18n-tools glossary-generate                     Create empty glossary CSV template
 ```
 
-すべてのコマンドに共通のグローバルオプション: `-c <config>`（デフォルト: `ai-i18n-tools.config.json`）、`-v`（詳細出力）、任意の`-w` / `--write-logs [path]`（コンソール出力をログファイルに同時出力、デフォルトは翻訳キャッシュディレクトリ配下）、`-V` / `--version`、および`-h` / `--help`。コマンドごとのフラグは[Getting Started](docs/GETTING_STARTED.ja.md#cli-reference)を参照。
+コマンドごとのフラグ一覧は、[コマンド別の CLI フラグ](docs/GETTING_STARTED.ja.md#cli-flags-by-command) の `src/cli/index.ts` の隣に記載されています。組み込みの使用方法テキストを表示するには、`ai-i18n-tools <command> --help` を実行してください。
+
+すべてのコマンドに共通するグローバルオプション：`-c <config>`（デフォルト：`ai-i18n-tools.config.json`）、`-v`（詳細出力）、コンソール出力をログファイルに同時出力するためのオプション `-w` / `--write-logs [path]`（デフォルト：翻訳キャッシュディレクトリ内）、`-V` / `--version`、および `-h` / `--help`。コマンド概要表については、[はじめに](docs/GETTING_STARTED.ja.md#cli-reference) を参照してください。
 
 ---
 

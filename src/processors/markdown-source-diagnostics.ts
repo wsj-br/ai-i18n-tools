@@ -220,7 +220,7 @@ function collectStrongOutsideInlineCodeIssues(text: string): MarkdownSourceIssue
         issues.push({
           code: MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE,
           message:
-            "Do not wrap an inline code span with ** or __ outside the backticks. Use a plain `code` span, put emphasis inside the backticks, or keep emphasis and code separate.",
+            "Do not wrap an inline code span with ** or __. Use a plain `code` span or keep emphasis and code separate. Run `ai-i18n-tools strip-md-bold-inline` to automatically fix this issue.",
           line1: line1FromOffset(text, left.start),
         });
       }
@@ -303,6 +303,17 @@ function markerSample(run: { marker: string; count: number }): string {
 }
 
 /**
+ * Replace MDX JSX comments and HTML comments with spaces of equal length so characters inside
+ * (`*` in `/*`, `` ` `` in examples, etc.) are not scanned as markdown emphasis or inline code.
+ * Offsets and line numbers stay aligned with the original `text`.
+ */
+function neutralizeCommentsForMarkdownDiagnostics(text: string): string {
+  let s = text.replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, (m) => " ".repeat(m.length));
+  s = s.replace(/<!--[\s\S]*?-->/g, (m) => " ".repeat(m.length));
+  return s;
+}
+
+/**
  * Detect risky markdown in one segment using the same delimiter pairing as
  * {@link protectMarkdownEmphasis} and the same inline-code scan as translation placeholders.
  */
@@ -313,7 +324,9 @@ export function collectMarkdownSourceIssues(
   const issues: MarkdownSourceIssue[] = [];
   const base = opts?.segmentStartLine;
 
-  for (const lineInSeg of findUnclosedInlineCodeLine1Starts(text)) {
+  const scanText = neutralizeCommentsForMarkdownDiagnostics(text);
+
+  for (const lineInSeg of findUnclosedInlineCodeLine1Starts(scanText)) {
     issues.push({
       code: MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE,
       message:
@@ -322,14 +335,14 @@ export function collectMarkdownSourceIssues(
     });
   }
 
-  const runs = collectMarkdownDelimiterRuns(text);
+  const runs = collectMarkdownDelimiterRuns(scanText);
   const cloned = runs.map((r) => ({ ...r }));
-  pairMarkdownEmphasisDelimitersFromRuns(text, cloned);
+  pairMarkdownEmphasisDelimitersFromRuns(scanText, cloned);
   for (const r of cloned) {
     const consumed = r.openerUsed + r.closerUsed;
     if (consumed < r.count) {
       const unused = r.count - consumed;
-      const lineInSeg = line1FromOffset(text, r.start);
+      const lineInSeg = line1FromOffset(scanText, r.start);
       issues.push({
         code: MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS,
         message: `Unpaired markdown delimiter (${markerSample(r)}…): ${unused} marker character(s) not used as emphasis/strikethrough under the same rules as document translation.`,
@@ -338,13 +351,13 @@ export function collectMarkdownSourceIssues(
     }
   }
 
-  for (const issue of collectStrongOutsideInlineCodeIssues(text)) {
+  for (const issue of collectStrongOutsideInlineCodeIssues(scanText)) {
     issues.push({
       ...issue,
       line1: toFileLine(base, issue.line1),
     });
   }
-  for (const issue of collectStrongOutsideLinkIssues(text)) {
+  for (const issue of collectStrongOutsideLinkIssues(scanText)) {
     issues.push({
       ...issue,
       line1: toFileLine(base, issue.line1),

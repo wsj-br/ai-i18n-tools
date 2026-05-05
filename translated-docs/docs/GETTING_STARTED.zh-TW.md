@@ -3,8 +3,8 @@
 
 `ai-i18n-tools` 提供兩個獨立且可組合的工作流程：
 
-- **工作流程 1 - UI 翻譯**：從任何 JS/TS 原始碼中提取 `t("…")` 呼叫，透過 OpenRouter 進行翻譯，並輸出扁平化的每種語言 JSON 檔案，可直接供 i18next 使用。
-- **工作流程 2 - 文件翻譯**：將 Markdown（MDX）和 Docusaurus JSON 標籤檔案翻譯成任意數量的語系，並具備智慧快取功能。**SVG** 資源使用 `features.translateSVG`、頂層 `svg` 區塊，以及 `translate-svg`（參見 [CLI 參考](#cli-reference))。
+- **工作流程 1 - UI 翻譯**：從任何 JS/TS 原始碼中提取 `t("…")` 呼叫，透過 OpenRouter 進行翻譯，並寫入扁平化的每區域設定 JSON 檔案，供 i18next 直接使用。
+- **工作流程 2 - 文件翻譯**：將 Markdown（MDX）與 Docusaurus JSON 標籤檔案翻譯至任意數量的語系，並具備智慧快取機制。**SVG** 檔案使用 `features.translateSVG`、頂層 `svg` 區塊，以及 `translate-svg`（參見 [CLI 參考](#cli-reference)）。
 
 兩個工作流程皆使用 OpenRouter（任何相容的 LLM），並共用單一設定檔。
 
@@ -61,8 +61,9 @@
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
+    - [Git 排除的最佳實務:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
-  - [`svg`（選用）](#svg-optional)
+  - [`svg`](#svg)
   - [`glossary`](#glossary)
 - [CLI 參考](#cli-reference)
 - [環境變數](#environment-variables)
@@ -452,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## 工作流程 2 - 文件翻譯
 
-專為 Markdown 文件、Docusaurus 網站和 JSON 標籤檔案設計。若 Markdown 中嵌入了 PNG 或其他點陣圖像，請參閱[翻譯文件中的圖片與點陣資源](#images-and-raster-assets-in-translated-docs)。獨立的 SVG 資源在啟用 `features.translateSVG` 且頂層設定 `svg` 區塊時，會透過 [`translate-svg`](#cli-reference) 進行翻譯，而非透過 `documentations[].contentPaths`。
+專為 Markdown 文件、Docusaurus 網站與 JSON 標籤檔案設計。對於嵌入 Markdown 中的 PNG 與其他點陣圖像，請參見 [翻譯文件中的圖像與點陣資源](#images-and-raster-assets-in-translated-docs)。SVG 檔案在啟用 `features.translateSVG` 且設定頂層 `svg` 區塊時，透過 [`translate-svg`](#cli-reference) 進行翻譯——而非透過 `documentations[].contentPaths`。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### 步驟 1：為文件初始化
@@ -543,10 +544,10 @@ CLI 會在 SQLite 中保存 **檔案追蹤**（每檔案每語系的原始內容
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### 區段去重與 SQLite 中的路徑
 
-- 區段列以 `(source_hash, locale)` 全域鍵控（雜湊值 = 正規化內容）。兩個檔案中的相同文字共用一列；`translations.filepath` 是後設資料（最後寫入者），並非每個檔案的第二個快取項目。
-- `file_tracking.filepath` 使用命名空間鍵：每個 `documentations` 區塊的 `doc-block:{index}:{relPath}`（`relPath` 是相對於專案根目錄的 POSIX 路徑：收集的 Markdown 路徑；**JSON 標籤檔案使用相對於當前工作目錄的來源檔案路徑**，例如 `docs-site/i18n/en/code.json`，以便清理時能解析實際檔案），以及 `svg-assets:{relPath}` 用於 `translate-svg` 下的獨立 SVG 資產。
-- `translations.filepath` 儲存 Markdown、JSON 和 SVG 區段的相對於當前工作目錄的 POSIX 路徑（SVG 使用與其他資產相同的路徑結構；`svg-assets:…` 前綴 **僅** 用於 `file_tracking`）。
-- 執行後，`last_hit_at` 僅會清除 **相同翻譯範圍內**（遵循 `--path` 和啟用的類型）且未被命中的區段列，因此篩選過或僅限文件的執行不會將不相關的檔案標記為過時。
+- 段落行由 `(source_hash, locale)` (hash = 已標準化內容) 全域編號。兩個檔案中的相同文字共用一個行；`translations.filepath` 是元資料 (最後編寫者)，而非每個檔案的第二個快取項目。
+- `file_tracking.filepath` 使用命名空間化的鍵值：每個 `documentations` 區塊使用 `doc-block:{index}:{relPath}` (`relPath` 是相對於專案根目錄的 POSIX 路徑：收集的 Markdown 路徑；**JSON 標籤檔案使用相對於 cwd 的來源檔案路徑**，例如 `docs-site/i18n/en/code.json`，以便清理可解析實際檔案)，以及 `svg-files:{relPath}` 用於 `translate-svg` 下的 SVG 檔案。
+- `translations.filepath` 儲存 Markdown、JSON 和 SVG 段落的相對於 cwd 的 POSIX 路徑 (SVG 使用與其他資產相同的路徑形式；`svg-files:…` 前綴**僅**出現在 `file_tracking`)。
+- 執行後，`last_hit_at` 僅針對**相同翻譯範圍**內 (尊重 `--path` 和啟用的類型) 未命中的段落行進行清除，因此經過篩選或僅文件的執行不會將無關的檔案標記為過期。
 
 <a id="output-layouts"></a>
 ### 輸出佈局
@@ -618,7 +619,7 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 
 `translate-docs` 會翻譯 Markdown 區段（包含圖片的替代文字）。但它 **不會** 將點陣檔案（PNG、JPEG、WebP、GIF）複製到您的文件 `outputDir` 中。您必須將檔案放在重寫後的 URL 所指向的位置，或在翻譯後調整 URL（通常使用 `markdownOutput.postProcessing.regexAdjustments`）。
 
-**作為插圖資產使用的 SVG** 應使用 `svg` 區塊與 `translate-svg` — 請參閱[`svg` (選用)](#svg-optional)。`documentations[].contentPaths` 中列出的路徑僅適用於 Markdown/MDX（以及選用的 JSON 標籤），不適用於獨立 SVG 的翻譯。
+**SVG** 作為插圖資產使用時，應搭配 `svg` 區塊與 `translate-svg`——參見 [`svg`](#svg)。`documentations[].contentPaths` 中列出的路徑適用於 Markdown/MDX（及可選的 JSON 標籤），不適用於獨立 SVG 翻譯。
 
 **為何平面佈局通常需要修正**
 
@@ -764,7 +765,7 @@ Next.js 範例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了�
 
 `glossary.uiGlossary` 讓文件翻譯指向與 UI 相同的 `strings.json` 目錄，以保持術語一致性；`glossary.userGlossary` 添加 CSV 覆寫以處理產品術語。
 
-執行 `npx ai-i18n-tools sync` 來運行單一流水線：**提取** UI 字串（若設定 `features.extractUIStrings`）、**翻譯 UI** 字串（若設定 `features.translateUIStrings`）、**翻譯獨立 SVG 資產**（若設定 `features.translateSVG` 且有 `svg` 區塊），然後 **翻譯文件**（每個 `documentations` 區塊依設定處理 markdown/JSON）。可使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過部分步驟。文件步驟接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（後兩者僅在執行文件翻譯時生效；若傳入 `--no-docs` 則會被忽略）。
+執行 `npx ai-i18n-tools sync` 以運行單一管線：**提取** UI 字串（若啟用 `features.extractUIStrings`），**翻譯 UI** 字串（若啟用 `features.translateUIStrings`），**翻譯 SVG 檔案**（若啟用 `features.translateSVG` 且設定頂層 `svg` 區塊），然後 **翻譯文件**（每個 `documentations` 區塊：依設定處理 Markdown/JSON）。可使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過部分步驟。文件步驟接受 `--dry-run`、`-p` / `--path`、`--force` 與 `--force-update`（後兩者僅在執行文件翻譯時生效；若傳入 `--no-docs` 則忽略）。
 
 在區塊上使用 `documentations[].targetLocales` 可將該區塊的檔案翻譯成比 UI **更小的子集**（有效文件語系為所有區塊的 **聯集**）：
 
@@ -947,15 +948,20 @@ ai-i18n-tools editor
 <a id="openrouter"></a>
 ### `openrouter`
 
-| 欄位               | 說明                                                                                                                                                                                                      |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `baseUrl`           | OpenRouter API 基本 URL。預設值：`https://openrouter.ai/api/v1`。                                                                                                                                                |
-| `translationModels` | 優先使用的模型 ID 有序清單。會先嘗試第一個；若發生錯誤則依序使用後續項目作為備援。僅針對 `translate-ui`，您也可以設定 `ui.preferredModel` 以在清單前嘗試單一模型（參見 `ui`）。 |
-| `defaultModel`      | 已淘汰的單一主要模型。僅在 `translationModels` 未設定或為空時使用。                                                                                                                               |
-| `fallbackModel`     | 已淘汰的單一備援模型。在 `defaultModel` 之後使用，當 `translationModels` 未設定或為空時生效。                                                                                                              |
-| `maxTokens`         | 每次請求的最大完成 token 數。預設值：`8192`。                                                                                                                                                              |
-| `temperature`       | 取樣溫度。預設值：`0.2`。                                                                                                                                                                            |
-| `requestTimeoutMs` | 等待每個傳送至 OpenRouter 的 HTTP 請求（對話完成及內部 `GET /models` 呼叫）的最長時間（毫秒）。預設值：`30000`（30 秒）。|
+- `baseUrl`
+  OpenRouter API 基本 URL。預設值：`https://openrouter.ai/api/v1`。
+- `translationModels`
+  優先使用的模型 ID 有序清單。優先嘗試第一個；發生錯誤時依序使用後續項目作為備援。僅針對 `translate-ui`，您也可設定 `ui.preferredModel` 以在清單前嘗試單一模型（參見 `ui`）。
+- `defaultModel`
+  傳統的單一主要模型。僅當 `translationModels` 未設定或為空時使用。
+- `fallbackModel`
+  傳統的單一備援模型。當 `translationModels` 未設定或為空時，在 `defaultModel` 之後使用。
+- `maxTokens`
+  每次請求的最大完成 token 數。預設值：`8192`。
+- `temperature`
+  取樣溫度。預設值：`0.2`。
+- `requestTimeoutMs`
+  每次對 OpenRouter 發出 HTTP 請求（聊天完成與內部 `GET /models` 呼叫）的最大等待時間（毫秒）。預設值：`30000`（30 秒）。
 
 **為何使用多個模型：** 不同供應商和模型在各語言與語系上的成本與品質表現各異。將 `openrouter.translationModels` 設定為 **有序的備援鏈**（而非單一模型），讓 CLI 在請求失敗時可嘗試下一個模型。
 
@@ -996,36 +1002,52 @@ ai-i18n-tools editor
 | `translateJSON`      | 2        | 翻譯 Docusaurus JSON 標籤檔案。                                                                                                                             |
 | `translateSVG`       | 2        | 翻譯獨立的 `.svg` 資產（需要頂層的 `svg` 區塊）。                                                                                         |
 
-**翻譯獨立的** SVG 資產時，若 `features.translateSVG` 為 true 且已設定頂層的 `svg` 區塊，則使用 `translate-svg`。當這兩個條件都滿足時（除非設定 `--no-svg`），`sync` 命令會執行該步驟。
+**翻譯** SVG 檔案時，若 `features.translateSVG` 為 true 且已設定頂層 `svg` 區塊，則使用 `translate-svg`。當兩者皆設定時，`sync` 指令會執行該步驟（除非指定 `--no-svg`）。
 
 <a id="ui"></a>
 ### `ui`
 
-| 欄位                                          | 說明                                                                                                                                                                                                                                                        |
-|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourceRoots`                                  | 相對於目前工作目錄的目錄，用於掃描 `t("…")` 呼叫。                                                                                                                                                                                                          |
-| `stringsJson`                                  | 主目錄檔案的路徑。由 `extract` 更新。                                                                                                                                                                                                             |
-| `flatOutputDir`                                | 寫入各地區 JSON 檔案的目錄（例如 `de.json` 等）。                                                                                                                                                                                               |
-| `preferredModel`                               | 選填。優先嘗試用於 `translate-ui` 的 OpenRouter 模型 ID；若失敗則依序嘗試 `openrouter.translationModels`（或舊版模型），但不會重複此 ID。                                                                                                   |
-| `reactExtractor.funcNames`                     | 要掃描的額外函數名稱（預設值：`["t", "i18n.t"]`）。                                                                                                                                                                                                    |
-| `reactExtractor.extensions`                    | 要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。                                                                                                                                                                                            |
-| `reactExtractor.includePackageDescription`     | 當設定為 `true`（預設值）時，`extract` 在存在的情況下也會將 `package.json` `description` 包含為 UI 字串。                                                                                                                                                           |
-| `reactExtractor.packageJsonPath`               | 用於提取可選描述的自訂 `package.json` 檔案路徑。                                                                                                                                                                              |
-| `reactExtractor.includeUiLanguageEnglishNames` | 當設定為 `true`（預設值 `false`）時，若來源掃描尚未包含（相同雜湊鍵），`extract` 也會將 manifest 中 `uiLanguagesPath` 的每個 `englishName` 加入 `strings.json`。需要 `uiLanguagesPath` 指向有效的 `ui-languages.json`。 |
+- `sourceRoots`  
+  要掃描 `t("…")` 呼叫的目錄（相對於 cwd）。
+- `stringsJson`  
+  主目錄檔案的路徑。由 `extract` 更新。
+- `flatOutputDir`  
+  寫入每區域設定 JSON 檔案的目錄（例如 `de.json` 等）。
+- `preferredModel`  
+  選填。僅針對 `translate-ui` 優先嘗試的 OpenRouter 模型 ID；之後依序嘗試 `openrouter.translationModels`（或傳統模型），且不重複此 ID。
+- `reactExtractor.funcNames`  
+  要掃描的額外函式名稱（預設值：`["t", "i18n.t"]`）。
+- `reactExtractor.extensions`  
+  要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。
+- `reactExtractor.includePackageDescription`  
+  當啟用 `true`（預設）時，`extract` 也會在存在時將 `package.json` `description` 視為 UI 字串。
+- `reactExtractor.packageJsonPath`  
+  用於提取可選描述的 `package.json` 檔案的自訂路徑。
+- `reactExtractor.includeUiLanguageEnglishNames`
+
+當 `true`（預設 `false`）時，若 manifest 中 `uiLanguagesPath` 的 `englishName` 尚未在原始碼掃描中存在（相同雜湊鍵），`extract` 也會將其加入 `strings.json`。需要 `uiLanguagesPath` 指向有效的 `ui-languages.json`。
+
+| 欄位         | 說明                                               |
+|---------------|-----------------------------------------------------------|
+| `sourceRoots` | 掃描 `t("…")` 呼叫的目錄（相對於目前工作目錄）。 |
+| `stringsJson` | 主目錄檔案的路徑。由 `extract` 更新。    |
 
 <a id="cachedir"></a>
 ### `cacheDir`
 
-| 欄位      | 說明                                                                 |
-| ---------- | ----------------------------------------------------------------------------- |
-| `cacheDir` | SQLite 快取目錄（所有 `documentations` 區塊共用）。可在多次執行間重複使用。若您正從自訂的文件翻譯快取遷移，請封存或刪除舊快取 — `cacheDir` 會建立自己的 SQLite 資料庫，且不相容於其他結構。 |
+- `cacheDir`
+SQLite 快取目錄（所有 `documentations` 區塊共用）。可在執行間重複使用。若您正從自訂的文件翻譯快取遷移，請封存或刪除舊快取 — `cacheDir` 會建立自己的 SQLite 資料庫，且不相容於其他結構。
 
-版本控制系統（VCS）排除的最佳實務：
+<a id="best-practice-for-git-exclusions"></a>
+#### Git 排除的最佳實踐：
 
-- 排除翻譯快取資料夾內容（例如透過 `.gitignore` 或 `.git/info/exclude`），以避免提交暫存的快取產物。
-- 請保留 `cache.db`（不要經常刪除），因為保留 SQLite 快取可避免重新翻譯未變更的片段，在使用 `ai-i18n-tools` 的軟體變更或升級時節省執行時間與 API 成本。
+- 排除翻譯快取資料夾的內容（例如使用 `.gitignore` 或 `.git/info/exclude`），以避免提交臨時快取副檔名。
+- 保留 `cache.db`（不要例行刪除），因為保留 SQLite 快取可防止重新翻譯未變更的片段。在更新或修改使用 `ai-i18n-tools` 的軟體時，這可節省執行時間與 API 成本。
+- 排除臨時檔與記錄檔，以避免提交備份和除錯相關的檔案。
 
-範例：
+<br/>
+
+**範例：**
 
 ```gitignore
 # Translation cache directory
@@ -1033,6 +1055,10 @@ ai-i18n-tools editor
 
 # Keep SQLite cache for reuse
 !.translation-cache/cache.db
+
+# Temporary and log files
+*.tmp
+*.log
 ```
 
 <a id="documentations"></a>
@@ -1040,29 +1066,48 @@ ai-i18n-tools editor
 
 文件處理流程區塊的陣列。`translate-docs` 和 `sync` 的文件階段 **會依序處理每個** 區塊。
 
-| 欄位                                             | 說明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `description`                                     | 此區塊的可選人類可讀備註（不適用於翻譯）。設定時會作為 `translate-docs` `🌐` 標題的前綴；也會顯示在 `status` 章節標頭中。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `contentPaths`                                    | 要翻譯的 Markdown/MDX 原始檔（`translate-docs` 會掃描這些檔案以取得 `.md` / `.mdx`）。JSON 標籤來自此區塊中的 `jsonSource`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `outputDir`                                       | 此區塊翻譯輸出的根目錄。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `sourceFiles`                                     | 載入時合併至 `contentPaths` 的選擇性別名。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `targetLocales`                                   | 僅針對此區塊的選擇性語系子集（否則使用根層級的 `targetLocales`）。實際生效的文件語系為所有區塊的語系聯集。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `jsonSource`                                      | 此區塊的 Docusaurus JSON 標籤檔案來源目錄（例如 `"i18n/en"`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.style`                            | `"nested"`（預設）、`"docusaurus"` 或 `"flat"`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `markdownOutput.docsRoot`                         | Docusaurus 版面配置的原始文件根目錄（例如 `"docs"`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `markdownOutput.pathTemplate`                     | 自訂的 Markdown 輸出路徑。可用的佔位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。                                                                                                                                                                                                                                                                                                                                                     |
-| `markdownOutput.jsonPathTemplate`                 | 標籤檔案的自訂 JSON 輸出路徑。支援與 `pathTemplate` 相同的佔位符。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `markdownOutput.flatPreserveRelativeDir`          | 對於 `flat` 樣式，保留原始的子目錄結構，以避免檔名相同的檔案發生衝突。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `markdownOutput.rewriteRelativeLinks`             | 翻譯後重新撰寫相對連結（針對 `flat` 樣式會自動啟用）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `markdownOutput.linkRewriteDocsRoot`              | 計算扁平化連結重寫前綴時所使用的儲存庫根目錄。除非你的翻譯文件位於不同的專案根目錄下，否則通常應保留為 `"."`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `markdownOutput.postProcessing`                | 對翻譯後的 **markdown 內容** 進行可選的轉換（YAML 前置內容會保留）。此步驟在片段重新組合與扁平連結重寫之後執行，在 `addFrontmatter` 之前執行。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `segmentSplitting`                             | 與 `markdownOutput` 相同層級（依據 `documentations[]` 區塊）。可選更細緻的段落用於 `translate-docs` 提取：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。當 `enabled` 為 `true` 時（`segmentSplitting` 省略時的預設值），密集段落、GFM 管線表格（第一個區塊包含標題、分隔線與第一筆資料列）以及長列表會被分割；子部分以單一換行符重新連接（`tightJoinPrevious`）。設定 `"enabled": false` 則僅針對以空白行分隔的主體區塊各使用一個段落。 |
-| `warnMarkdownSourceIssues`                     | 當啟用 `true`（未指定時為預設值），每次執行 `translate-docs` 時會重新掃描 Markdown 片段中的風險符號或未關閉的內聯程式碼，輸出終端機警告，並替換該檔案快取路徑對應的 `markdown_source_issues` 資料列。設定 `false` 可跳過此區塊的警告與 SQLite 更新。                                                                                                                                                                                                                                                                                                                                                           |
-| `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }` 的有序列表。`search` 為正規表示式模式（純字串使用旗標 `g`，或 `/pattern/flags`）。`replace` 支援諸如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}` 等佔位符。                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — 轉譯器會尋找包含 `start` 的第一行以及對應的 `end` 行，然後將該段落替換為標準的語言切換器。`label` 控制 manifest 標籤的來源：`"local"`（預設，使用 `ui-languages.json` `label`）或 `"english"`（使用 `englishName`）。連結的路徑是相對於翻譯後的檔案來建立；當未設定 manifest 時，標籤會來自 `localeDisplayNames` 和語系代碼。|
-| `addFrontmatter`                                  | 當設定為 `true`（省略時預設值）時，翻譯後的 markdown 檔案會包含以下 YAML 欄位：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，且當至少一個片段具有模型中繼資料時，還會包含 `translation_models`（所使用的 OpenRouter 模型 ID 的排序清單）。設定為 `false` 可跳過此步驟。                                                                                                                                                                                                                                                                                                                           |
+- `description`
+此區塊的可選人類可讀註解（不供翻譯使用）。設定時會作為前綴出現在 `translate-docs` `🌐` 標題中；也會顯示在 `status` 區段標頭中。
+- `contentPaths`
+要翻譯的 Markdown/MDX 來源（`translate-docs` 會掃描這些內容中的 `.md` / `.mdx`）。JSON 標籤來自同一區塊上的 `jsonSource`。
+- `outputDir`
+此區塊翻譯輸出的根目錄。
+- `sourceFiles`
+在載入時合併至 `contentPaths` 的可選別名。
+- `targetLocales`
+僅限此區塊的可選語系子集（否則使用根層級 `targetLocales`）。有效文件語系為所有區塊的聯集。
+- `jsonSource`
+此區塊 Docusaurus JSON 標籤檔案的來源目錄（例如 `"i18n/en"`）。
+- `markdownOutput.style`
+`"nested"`（預設）、`"docusaurus"` 或 `"flat"`。
+- `markdownOutput.docsRoot`
+Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。
+- `markdownOutput.pathTemplate`
+自訂 Markdown 輸出路徑。可用的佔位符：<code>{"{outputDir}"}</code>、<code>{"{locale}"}</code>、<code>{"{LOCALE}"}</code>、<code>{"{relPath}"}</code>、<code>{"{stem}"}</code>、<code>{"{basename}"}</code>、<code>{"{extension}"}</code>、<code>{"{docsRoot}"}</code>、<code>{"{relativeToDocsRoot}"}</code>。
+- `markdownOutput.jsonPathTemplate`
+標籤檔案的自訂 JSON 輸出路徑。支援與 `pathTemplate` 相同的佔位符。
+- `markdownOutput.flatPreserveRelativeDir`
+對於 `flat` 風格，保留來源子目錄，以避免同檔名的檔案發生衝突。
+- `markdownOutput.rewriteRelativeLinks`
+翻譯後重寫相對連結（`flat` 風格將自動啟用此功能）。
+- `markdownOutput.linkRewriteDocsRoot`
+計算扁平連結重寫前綴時使用的儲存庫根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常保持為 `"."`。
+- `markdownOutput.postProcessing`
+對翻譯後的 **markdown 內容** 進行可選的轉換（YAML 前置內容會保留）。此步驟在片段重新組合與扁平連結重寫之後、`addFrontmatter` 之前執行。
+- `segmentSplitting`
+與 `markdownOutput` 同一層級（依據 `documentations[]` 區塊）。用於 `translate-docs` 提取的更細緻片段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。當 `enabled` 為 `true` 時（`segmentSplitting` 省略時的預設值），密集段落、GFM 管線表格（第一個片段包含標題、分隔線與第一筆資料列）以及長列表會被分割；子片段以單一換行重新連接（`tightJoinPrevious`）。設定 `"enabled": false` 則僅以空白行分隔的正文區塊作為單一片段。
+- `warnMarkdownSourceIssues`
+當 `true` 時（省略時的預設值），每次 `translate-docs` 執行都會重新掃描 Markdown 片段是否存在風險分隔符或未閉合的內嵌程式碼，輸出終端警告，並替換該檔案快取路徑對應的 `markdown_source_issues` 資料列。設定 `false` 可跳過此區塊的警告與 SQLite 更新。
+- `markdownOutput.postProcessing.regexAdjustments`
+`{ "description"?, "search", "replace" }` 的有序列表。`search` 為正規表示式模式（純字串使用旗標 `g` 或 `/pattern/flags`）。`replace` 支援諸如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}` 等佔位符。
+- `markdownOutput.postProcessing.languageListBlock`
+`{ "start", "end", "separator", "label" }` — 翻譯器會尋找包含 `start` 的第一行與對應的 `end` 行，然後將該片段替換為標準化的語言切換器。`label` 控制清單標籤來源：`"local"`（預設，使用 `ui-languages.json` `label`）或 `"english"`（使用 `englishName`）。連結使用相對於翻譯檔案的路徑建立；當未設定清單時，標籤來自 `localeDisplayNames` 與語系代碼。
+- `addFrontmatter`
+當 `true` 時（省略時的預設值），翻譯後的 Markdown 檔案包含 YAML 欄位：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，且當至少一個片段具有模型中繼資料時，還會包含 `translation_models`（使用的 OpenRouter 模型 ID 排序清單）。設定為 `false` 可跳過。
 
-範例（扁平 README 流程 — 截圖路徑 + 可選的語言清單包裝）：
+<br/>
+
+**範例（扁平 README 流程 — 截圖路徑 + 可選語言清單包裝）：**
 
 ```json
 "markdownOutput": {
@@ -1085,10 +1130,10 @@ ai-i18n-tools editor
 }
 ```
 
-<a id="svg-optional"></a>
-### `svg`（選用）
+<a id="svg"></a>
+### `svg`
 
-獨立 SVG 資產的頂層路徑與佈局。僅當 `features.translateSVG` 為 true 時執行翻譯（透過 `translate-svg` 或 `sync` 的 SVG 階段）。
+SVG 檔案的頂層路徑與佈局。僅當 `features.translateSVG` 為 true 時（透過 `translate-svg` 或 `sync` 的 SVG 階段）才會執行翻譯。
 
 | 欄位                         | 說明                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1106,9 +1151,7 @@ ai-i18n-tools editor
 | `uiGlossary`   | 指向 `strings.json` 的路徑 - 從現有翻譯自動建立詞彙表。                                                                                                 |
 | `userGlossary` | 指向 CSV 檔案的路徑，欄位包含 `Original language string`（或 `en`）、`locale`、`Translation` - 每個原始術語與目標語系各佔一行（`locale` 可為所有目標語系指定為 `*`）。 |
 
-舊版鍵值 `uiGlossaryFromStringsJson` 仍被接受，並在載入設定時對應至 `uiGlossary`。
-
-產生一個空白的詞彙表 CSV：
+**產生空白詞彙表 CSV：**
 
 ```bash
 npx ai-i18n-tools glossary-generate
@@ -1119,30 +1162,70 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLI 參考
 
-| 命令                                                                     | 說明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                   | 列印 CLI 版本和建置時間戳記（與根程式上的 `-V` / `--version` 相同的資訊）。
-| `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`  | 寫入起始設定檔（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 會建立一個起始的 `.translate-ignore`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `check-models`                                                              | 根據 `GET /models` 驗證每個設定的 OpenRouter 模型 id（目錄成員資格、`expiration_date`、每百萬 token 的提示/補齊美元價格）。需要 `OPENROUTER_API_KEY`。當任何設定的 id 缺失或已過期時，會以非零值退出。對於目錄請求，會遵守 `openrouter.requestTimeoutMs`。 |
-| `extract`                                                                   | 從 `t("…")` / `i18n.t("…")` 字面值更新 `strings.json`，可選擇性加入 `package.json` 說明和可選的 manifest `englishName` 項目（參見 `ui.reactExtractor`）。需要 `features.extractUIStrings`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `generate-ui-languages [--master <path>] [--dry-run]`                       | 使用 `sourceLocale` + `targetLocales` 和內建的 `data/ui-languages-complete.json`（或 `--master`）將 `ui-languages.json` 寫入 `ui.flatOutputDir`（或設定時使用 `uiLanguagesPath`）。若主檔案中缺少某些語系，會發出警告並產生 `TODO` 佔位符。如果您現有的 manifest 中包含自訂的 `label` 或 `englishName` 值，這些值將被主目錄中的預設值取代——請在產生檔案後審查並調整。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `translate-docs …`                                                          | 為每個 `documentations` 區塊（`contentPaths`，可選的 `jsonSource`）翻譯 Markdown/MDX 和 JSON。`-j`：最多平行處理的語系數量；`-b`：每份檔案最多平行處理的批次 API 呼叫數。`--prompt-format`：批次傳輸格式（`xml` \| `json-array` \| `json-object`）。請參閱 [快取行為與 `translate-docs` 標記](#cache-behaviour-and-translate-docs-flags) 和 [批次提示格式](#batch-prompt-format)。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `write-heading-ids …`                                                       | **無 API。** 至少需要一個 `documentations[]` 區塊。蒐集每個區塊下的 `.md` / `.mdx` 並置於該區塊的 `contentPaths` 中（遵循 `.translate-ignore`）。在每個平面 ATX `#` 標題的**之前**立即插入 HTML 錨點行 `<a id="slug"></a>`（跳過 fenced code block 內的標題）。`-p` / `--path` 或 `-f` / `--file`：限制為專案相對路徑的檔案或目錄。`--slug-style`：`github`（預設；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。搭配 `pymdown`，可選擇性使用 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--dry-run`：僅列出變更。 |
-| `strip-md-bold-inline …`                                                    | **無 API。** 至少需要一個 `documentations[]` 區塊。會在每個區塊的 `contentPaths` 下方的 `.md` / `.mdx` 中移除圍繞內聯程式碼的 `**`（遵守 `.translate-ignore`）。`-p` / `--path` 或 `-f` / `--file`、`--dry-run`、`--no-backup`（覆寫前跳過帶時間戳記的 `.backup.*`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `check-markdown …`                                                            | **無 API。** 掃描每個 `documentations[]` 區塊下 `contentPaths` 中的 Markdown/MDX 檔案（發現邏輯與 `translate-docs` 相同，並遵循 `.translate-ignore`）：檢查分隔符配對、未關閉的內聯程式碼，以及 `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` 當 `**`/`__` 包住 `` `...` `` 區塊或 `[text](../url)` 連結的情況。`-p` / `--path` 或 `-f` / `--file`：可選的作用範圍。將 `relativePath:line: [ISSUE_CODE] message` 行輸出至 **stderr**；若有任何問題則回傳錯誤碼 **1**。`--json`：於 **stdout** 輸出 JSON 報告。除非指定 `--no-cache`，否則會在 `cacheDir` 寫入 `markdown_source_issues`。`-v` 會在 stderr 輸出行中加入來源雜湊。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `translate-svg …`                                                           | 翻譯在 `config.svg` 中設定的獨立 SVG 資產（與文件分開）。需要 `features.translateSVG`。與文件相同的快取機制；支援 `--no-cache` 以在此次執行中跳過 SQLite 讀寫操作。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`             | 僅翻譯使用者介面字串。`--force`：針對每種語系重新翻譯所有項目（忽略現有翻譯）。`--dry-run`：不寫入、不呼叫 API。`-j`：最多平行處理的語系數量。需要 `features.translateUIStrings`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                                                    | 執行 `extract` **first**（需要 `features.extractUIStrings`），使 `strings.json` 與原始來源相符，然後由 LLM 審查 **source-locale** 的 UI 字串（拼字、文法）。**術語提示** 僅來自 `glossary.userGlossary` CSV（範圍與 `translate-ui` 相同 — 不包含 `strings.json` / `uiGlossary`，因此不會將不良文案強化為術語表）。使用 OpenRouter（`OPENROUTER_API_KEY`）。僅供建議用途（執行完畢後以 **0** 狀態結束）。將 `lint-source-results_<timestamp>.log` 寫入 `cacheDir` 下作為 **人類可讀** 的報告（包含摘要、問題及每條字串的 **OK** 列）；終端機僅顯示摘要統計與問題（每條字串不顯示 `[ok]` 行）。最後一行會列印出日誌檔名。`--json`：僅在 stdout 輸出完整機器可讀的 JSON 報告（日誌檔維持人類可讀格式）。`--dry-run`：仍會執行 `extract`，但僅輸出批次計畫（不進行 API 呼叫）。`--chunk`：每次 API 批次處理的字串數量（預設為 **50**）。`-j`：最大並行批次數（預設為 `concurrency`）。搭配 `--json` 時，人類可讀格式的輸出會導向 stderr。連結使用 `path:line`，如同 `editor` UI 字串中的「連結」按鈕。 |
-| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | 匯出 `strings.json` 為 XLIFF 2.0 格式（每個目標語系產生一個 `.xliff`）。`-o` / `--output-dir`：輸出目錄（預設：與目錄檔相同資料夾）。`--untranslated-only`：僅包含該語系尚未翻譯的單元。唯讀模式；不呼叫 API。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `sync …`                                                                    | 若已啟用則先提取，接著進行 UI 翻譯，當 `features.translateSVG` 與 `config.svg` 已設定時再執行 `translate-svg`，最後進行文件翻譯 — 除非使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過。共用旗標：`-l`、`-p` / `-f`、`--dry-run`、`-j`、`-b`（僅文件批次處理使用）、`--force` / `--force-update`（僅文件使用；文件執行時互斥）。文件階段也會轉傳 `--emphasis-placeholders` 與 `--debug-failed`（意義與 `translate-docs` 相同）。`--prompt-format` 不是 `sync` 旗標；文件步驟使用內建預設值（`json-array`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `status [--max-columns <n>]`                                                | 當 `features.translateUIStrings` 啟用時，會列印每個語系的 UI 覆蓋率（`Translated` / `Missing` / `Total`）。然後列印每個檔案 × 語系的 Markdown 翻譯狀態（無 `--locale` 篩選；語系來自設定）。若語系清單過長，將會分割成多個表格，每個表格最多 `n` 個語系欄位（預設值為 **9**），以確保終端機中的行寬不會過寬。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `statistics [--max-columns <n>]`                                             | 印出文件快取與 `strings.json` 統計資料（與「翻譯快取編輯器」→ **統計資料** 中的彙總相同）。`--max-columns`：每個模型 × 語系表格的最大語系欄數（預設值與編輯器相符）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                       | 先執行 `sync --force-update`（提取、UI、SVG、文件），然後移除過時的片段列（`last_hit_at` 為 null 或檔案路徑為空）；刪除解析後原始路徑在磁碟上不存在的 `file_tracking` 列；移除 `filepath` 元資料指向不存在檔案的翻譯列。記錄三項計數（過時、孤立的 `file_tracking`、孤立的翻譯）。除非指定 `--no-backup`，否則會在快取目錄下建立帶有時間戳記的 SQLite 備份。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`                     | **無設定檔。** 遍歷目錄樹（預設為目前工作目錄）尋找 `*.log` 和 `cache.db.backup*.sqlite`，列印出類似 `find -print` 的 `./…` 路徑。若找到相符項目：除非使用 `-f` / `--force`（無需確認直接刪除），否則會提示 `Delete these files? (y/n)`。若無相符項目：不進行提示直接結束。`--dry-run`：僅列出項目，不提示也不刪除（優先於 `--force`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `editor [-p <port>] [--no-open]`                                            | 啟動快取、`strings.json` 和詞彙表 CSV 的本機網頁編輯器。使用 `--no-open` 時，預設瀏覽器不會自動開啟。<br><br>**注意：** 如果您在快取編輯器中編輯了項目，必須執行 `sync --force-update` 來使用更新後的快取項目重寫輸出檔案。此外，如果稍後來源文字變更，手動編輯將會遺失，因為會產生新的快取鍵。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `glossary-generate [-o <path>]`                                             | 寫入一個空的 `glossary-user.csv` 模板。`-o`：覆寫輸出路徑（預設值：來自設定的 `glossary.userGlossary`，或 `glossary-user.csv`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+- `version`
+輸出 CLI 版本與建置時間戳（與根程式上的 `-V` / `--version` 相同資訊）。
 
-所有指令都接受 `-c <path>` 來指定非預設的設定檔，`-v` 用於詳細輸出，以及 `-w` / `--write-logs [path]` 將主控台輸出複製到日誌檔（預設路徑：位於根目錄 `cacheDir` 下）。根程式也支援 `-V` / `--version` 和 `-h` / `--help`；`ai-i18n-tools help [command]` 會顯示與 `ai-i18n-tools <command> --help` 相同的每指令用法。
+- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
+寫入起始設定檔（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 與 `documentations[].addFrontmatter`）。`--with-translate-ignore` 會建立一個起始 `.translate-ignore`。
+
+- `check-models`
+根據 `GET /models` 驗證每個設定的 OpenRouter 模型 ID（目錄成員資格、`expiration_date`、每百萬 tokens 的 USD 價格，用於提示/完成）。需要 `OPENROUTER_API_KEY`。當任何設定的 ID 缺失或過期時，會以非零值退出。尊重 `openrouter.requestTimeoutMs` 用於目錄請求。
+
+- `extract`
+從 `t("…")` / `i18n.t("…")` 字面值、可選的 `package.json` 說明與可選的 manifest `englishName` 項目（參見 `ui.reactExtractor`）更新 `strings.json`。需要 `features.extractUIStrings`。
+
+- `generate-ui-languages [--master <path>] [--dry-run]`
+使用 `sourceLocale` + `targetLocales` 與內建的 `data/ui-languages-complete.json`（或 `--master`）將 `ui-languages.json` 寫入 `ui.flatOutputDir`（或設定時的 `uiLanguagesPath`）。若主檔案中缺少某些語系，會發出警告並插入 `TODO` 佔位符。若您現有的 manifest 中有自訂的 `label` 或 `englishName` 值，它們將被主目錄的預設值取代 — 請在產生後審查並調整該檔案。
+
+- `translate-docs …`
+針對每個 `documentations` 區塊（`contentPaths`、可選 `jsonSource`）翻譯 markdown/MDX 與 JSON。`-j`：最大並行語系數；`-b`：每檔案最大並行批次 API 呼叫數。`--prompt-format`：批次傳輸格式（`xml` \| `json-array` \| `json-object`）。參見 [快取行為與 `translate-docs` 旗標](#cache-behaviour-and-translate-docs-flags) 與 [批次提示格式](#batch-prompt-format)。
+
+- `write-heading-ids …`
+**無 API。** 至少需要一個 `documentations[]` 區塊。收集每個區塊 `contentPaths` 下的 `.md` / `.mdx`（遵守 `.translate-ignore`）。在每個平面 ATX `#` 標題**之前**立即插入 HTML 錨點行 `<a id="slug"></a>`（跳過 fenced code block 內的標題）。`-p` / `--path` 或 `-f` / `--file`：限制為專案相對路徑的檔案或目錄。`--slug-style`：`github`（預設；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。搭配 `pymdown`，可選擇性使用 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--dry-run`：僅列出變更。
+
+- `strip-md-bold-inline …`
+**無 API。** 至少需要一個 `documentations[]` 區塊。會移除每個區塊的 `contentPaths` 底下 `.md` / `.mdx` 中內嵌程式碼前後的 `**`（遵守 `.translate-ignore`）。`-p` / `--path` 或 `-f` / `--file`、`--dry-run`、`--no-backup`（覆寫前會跳過帶有時間戳記的 `.backup.*`）。
+
+- `check-markdown …`
+**無 API。** 掃描每個 `documentations[]` 區塊 `contentPaths` 下的 Markdown/MDX（發現方式與 `translate-docs` 相同，遵守 `.translate-ignore`）：分隔符配對、未關閉的內聯程式碼，以及當 `**`/`__` 包裹 `` `...` `` 範圍或 `[text](../url)` 連結時的 `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK`。`-p` / `--path` 或 `-f` / `--file`：可選範圍。將 `relativePath:line: [ISSUE_CODE] message` 行輸出至 **stderr**；若有任何問題則回傳退出碼 **1**。`--json`：於 **stdout** 輸出 JSON 報告。除非使用 `--no-cache`，否則會在 `cacheDir` 寫入 `markdown_source_issues`。`-v` 將來源雜湊新增至 stderr 輸出行。
+
+- `translate-svg …`
+翻譯在 `config.svg` 中設定的 SVG 檔案（與文件分開）。需要 `features.translateSVG`。快取概念與文件相同；支援 `--no-cache` 以跳過該次執行的 SQLite 讀寫操作。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。
+
+- `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`
+僅翻譯 UI 字串。`--force`：依照每個語系重新翻譯所有項目（忽略現有翻譯）。`--dry-run`：不寫入，不呼叫 API。`-j`：最大並行語系數。需要 `features.translateUIStrings`。
+
+- `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
+先執行 `extract` **first**（需要 `features.extractUIStrings`），使 `strings.json` 與原始內容相符，然後進行 LLM 審查 **source-locale** 的 UI 字串（拼字、文法）。**術語提示** 僅來自 `glossary.userGlossary` CSV（範圍與 `translate-ui` 相同——不包含 `strings.json` / `uiGlossary`，因此不會將不良文案強化為術語表）。使用 OpenRouter（`OPENROUTER_API_KEY`）。僅供建議用途（執行完畢後以 **0** 結束）。將 `lint-source-results_<timestamp>.log` 寫入 `cacheDir` 下作為 **人類可讀** 報告（包含摘要、問題及每條字串的 **OK** 列）；終端機僅輸出摘要統計與問題（每條字串不顯示 `[ok]` 行）。最後一行會列印出日誌檔案名稱。`--json`：僅在標準輸出（stdout）產生完整的機器可讀 JSON 報告（日誌檔案仍保持人類可讀）。`--dry-run`：仍會執行 `extract`，但僅輸出批次計畫（不進行 API 呼叫）。`--chunk`：每批 API 處理的字串數量（預設為 **50**）。`-j`：最大並行批次數（預設為 `concurrency`）。搭配 `--json` 時，人工格式的輸出會導向 stderr。連結使用 `path:line`，類似 `editor` UI 字串中的「連結」按鈕。
+
+- `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`
+將 `strings.json` 匯出為 XLIFF 2.0（每個目標語系一個 `.xliff`）。`-o` / `--output-dir`：輸出目錄（預設：與目錄檔相同資料夾）。`--untranslated-only`：僅包含該語系缺少翻譯的單元。唯讀；無 API。
+
+- `sync …`
+若已啟用則先提取，接著進行 UI 翻譯，當 `features.translateSVG` 與 `config.svg` 已設定時再執行 `translate-svg`，然後進行文件翻譯 — 除非使用 `--no-ui`、`--no-svg` 或 `--no-docs` 跳過。共用旗標：`-l`、`-p` / `-f`、`--dry-run`、`-j`、`-b`（僅文件批次處理）、`--force` / `--force-update`（僅文件使用；文件執行時互斥）。文件階段也會轉發 `--emphasis-placeholders` 與 `--debug-failed`（意義與 `translate-docs` 相同）。`--prompt-format` 不是 `sync` 旗標；文件步驟使用內建預設值（`json-array`）。
+
+- `status [--max-columns <n>]`
+當 `features.translateUIStrings` 啟用時，會列印每個語系的 UI 覆蓋率（`Translated` / `Missing` / `Total`）。然後列印每個檔案 × 語系的 Markdown 翻譯狀態（無 `--locale` 篩選；語系來自設定）。若語系清單過長，會分割成多個表格，每個表格最多 `n` 個語系欄位（預設值 **9**），以確保終端機中的行寬不會過寬。
+
+- `statistics [--max-columns <n>]`
+列印文件快取與 `strings.json` 統計資料（與「翻譯快取編輯器 → **統計資料**」相同彙總資訊）。`--max-columns`：每個「模型 × 語系」表格的最大語系欄位數（預設值與編輯器相同）。
+
+- `cleanup [--dry-run] [--no-backup] [--backup <path>]`
+先執行 `sync --force-update`（提取、UI、SVG、文件），然後移除過時的片段資料列（`last_hit_at` 為 null 或檔案路徑為空）；刪除解析後原始路徑在磁碟上不存在的 `file_tracking` 資料列；移除其 `filepath` 中繼資料指向已不存在檔案的翻譯資料列。記錄三項計數（過時、孤立的 `file_tracking`、孤立的翻譯）。除非指定 `--no-backup`，否則會在快取目錄下建立帶有時間戳記的 SQLite 備份。
+
+- `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`
+**無設定。** 遍歷目錄樹（預設：目前工作目錄）尋找 `*.log` 與 `cache.db.backup*.sqlite`，並列印類似 `find -print` 的 `./…` 路徑。若有符合項目：除非指定 `-f` / `--force`（無提示直接刪除），否則會提示 `Delete these files? (y/n)`。若無符合項目：直接結束，不進行提示。`--dry-run`：僅列出項目，不提示也不刪除（優先於 `--force`）。
+
+- `editor [-p <port>] [--no-open]`
+啟動快取、`strings.json` 與詞彙表 CSV 的本機網頁編輯器。若指定 `--no-open`，則不會自動開啟預設瀏覽器。  
+**注意：** 若在快取編輯器中編輯了項目，必須執行 `sync --force-update` 才能將更新後的快取項目寫入輸出檔案。此外，若原始文字日後變更，手動編輯的內容將會遺失，因為會產生新的快取金鑰。
+
+- `glossary-generate [-o <path>]`
+寫入一個空白的 `glossary-user.csv` 範本。`-o`：覆寫輸出路徑（預設：來自設定的 `glossary.userGlossary`，或 `glossary-user.csv`）。
+
+所有指令都接受 `-c <path>` 來指定非預設的設定檔，`-v` 用於詳細輸出，以及 `-w` / `--write-logs [path]` 將主控台輸出同時寫入日誌檔案（預設路徑：位於根目錄的 `cacheDir` 下）。
+
+主程式也支援 `-V` / `--version` 與 `-h` / `--help`；`ai-i18n-tools help [command]` 會顯示與 `ai-i18n-tools <command> --help` 相同的每指令使用說明。
 
 ---
 

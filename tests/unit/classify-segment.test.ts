@@ -8,7 +8,8 @@ describe("classifySegmentType", () => {
     ["  ### spaced ", "heading"],
     ["![alt](url)", "other"],
     ["import x from 'y'", "other"],
-    ["<Component />", "other"],
+    ["export const X = 1", "other"],
+    ["<Component />", "paragraph"],
     ["Plain text.", "paragraph"],
     ["", "paragraph"],
   ])("classifies %p as %s", (text, expected) => {

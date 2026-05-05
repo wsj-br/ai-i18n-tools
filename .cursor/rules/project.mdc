@@ -1,8 +1,6 @@
 ---
-description: Minimal context for new chats; enforce CHANGELOG with code changes
 alwaysApply: true
 ---
-
 # ai-i18n-tools — project rule
 
 ## Stack and purpose

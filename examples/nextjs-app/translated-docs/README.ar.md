@@ -1,8 +1,8 @@
 # مثال تطبيق Next.js
 
-يوضح هذا المثال كيفية استخدام `ai-i18n-tools` مع تطبيق **TypeScript** [Next.js](https://nextjs.org/) و **pnpm**. يتماشى واجهة المستخدم مع [مثال تطبيق وحدة التحكم](../../console-app/)، باستخدام نفس المفاتيح النصية ومنتقي لغات يعتمد على `locales/ui-languages.json` (لغة المصدر `en-GB` أولاً، تليها اللغات المستهدفة للترجمة). يقوم `[src/lib/i18n.ts](../src/lib/i18n.ts)` ببناء `**localeLoaders`** من هذا البيان (كل `code` باستثناء `SOURCE_LOCALE`)، مثل تطبيق وحدة التحكم؛ ويتم تحميل الحزم باستخدام `**fetch**` إلى `**public/locales/<locale>.json**`.
+يوضح هذا المثال كيفية استخدام `ai-i18n-tools` مع تطبيق **TypeScript** [Next.js](https://nextjs.org/) وـ pnpm. ويوافق واجهة المستخدم مثال تطبيق [الوحدة](../../console-app/)، باستخدام نفس مفاتيح النصوص ومنتقي موقعية يتم تشغيله بواسطة `locales/ui-languages.json` (محلية المصدر `en-GB` أولاً، تليها أهداف الترجمة). يقوم `[src/lib/i18n.ts](../src/lib/i18n.ts)` ببناء `localeLoaders` من هذا البيان (كل `code` باستثناء `SOURCE_LOCALE`)، مثل تطبيق الوحدة؛ ويتم تحميل الحُزم باستخدام `fetch` إلى `public/locales/<locale>.json`.
 
-ضمن هذا المجلد يوجد موقع صغير يستخدم **[Docusaurus](https://docusaurus.io/)** (`[docs-site/](../docs-site/)`) يحتوي على مجموعة مختارة من وثائق المشروع الرئيسي للتصفح المحلي.
+ضمن هذا المجلد يوجد موقع صغير مبني على [Docusaurus](https://docusaurus.io/) (`[docs-site/](../docs-site/)`) يحتوي على مجموعة مختارة من وثائق المشروع الرئيسي للتصفح المحلي.
 
 **اقرأ بلغات أخرى:**
 [الإنجليزية](../README.md) · [العربية](README.ar.md) · [الإسبانية](README.es.md) · [الفرنسية](README.fr.md) · [الألمانية](README.de.md) · [البرتغالية (البرازيل)](README.pt-BR.md)
@@ -19,7 +19,7 @@
 
 ## التثبيت
 
-من الجذر **مستودع المصدر**، قم بتشغيل:
+من الجذر الخاص بالمستودع، قم بتشغيل:
 
 ```bash
 pnpm install
@@ -27,7 +27,7 @@ pnpm install
 
 يشمل الجذر `pnpm-workspace.yaml` المكتبة وعينة هذا المثال، وبالتالي pnpm يربط `ai-i18n-tools` عبر `"ai-i18n-tools": "workspace:^"` في `package.json`. لا حاجة لخطوة بناء أو ربط منفصلة — بعد تعديل مصادر المكتبة، قم بتشغيل `pnpm run build` من جذر المستودع وسيتم تلقائياً تحميل النسخة المحدثة من `dist/` في المثال.
 
-**دليل العمل:** قم بتشغيل تطبيق Next.js وجميع أوامر `pnpm run i18n:*` من `**examples/nextjs-app`** (حيث يوجد `ai-i18n-tools.config.json`)، أو قم بتمرير `--config` / تعيين دليل العمل بحيث يستطيع واجهة سطر الأوامر تحديد هذا الإعداد.
+**دليل العمل:** قم بتشغيل تطبيق Next.js وجميع أوامر `pnpm run i18n:*` من `examples/nextjs-app` (حيث يوجد `ai-i18n-tools.config.json`)، أو قم بتمرير `--config` / تعيين دليل العمل بحيث يمكن للأداة سطر الأوامر (CLI) تحديد هذا الإعداد.
 
 ## الاستخدام
 
@@ -52,20 +52,20 @@ pnpm build
 pnpm start
 ```
 
-افتح [http://localhost:3030](http://localhost:3030). استخدم القائمة المنسدلة **Locale** لتغيير اللغة (معرّف اللغة / الاسم الإنجليزي / التسمية الأصلية). يمكنك أيضًا الربط المباشر بلغة معينة باستخدام سلسلة الاستعلام `**?locale=<code>`** (مثلاً `[?locale=ar](http://localhost:3030/?locale=ar)`); ويتم مزامنة الصفحة بين القائمة المنسدلة ورابط URL.
+افتح [http://localhost:3030](http://localhost:3030). استخدم القائمة المنسدلة للموقعية لتغيير اللغة (معرّف الموقعية / الاسم الإنجليزي / التسمية الأصلية). يمكنك أيضًا الربط المباشر بموقعية باستخدام سلسلة الاستعلام `?locale=<code>` (على سبيل المثال `[?locale=ar](http://localhost:3030/?locale=ar)`); حيث تحتفظ الصفحة بتناسق بين القائمة المنسدلة وعنوان URL.
 
 ### مثال الجمع العددي
 
-تتضمن الصفحة الرئيسية عرضًا توضيحيًا لـ **الجمع** ("الجمع: مثال على استخدام التوليد التلقائي") يوضح كيفية توصيل سلاسل واجهة المستخدم للجمع **الأساسي** من البداية إلى النهاية:
+تشمل الصفحة الرئيسية عرضًا تجريبيًا للجمع ("الجمع: مثال على استخدام التوليد التلقائي") يوضح كيفية ربط سلاسل واجهة المستخدم للجمع الأساسي من البداية إلى النهاية:
 
-- **العرض:** يتم تكرار نفس الرسالة بعدد من الأمثلة المحددة في `**PLURAL_DEMO_COUNTS`** في `[src/app/page.tsx](../src/app/page.tsx)` (بشكل افتراضي **1**، **2**، **5**، و **50**) لكي تتمكن من مقارنة سلوك الجمع عبر اللغات (بما في ذلك اللغات ذات أشكال الجمع المتعددة مثل العربية).
-- **واجهة برمجة التطبيقات (API):** يستخدم كل سطر `t("This page has {{count}} sections", { plurals: true, count })`. مرر `**plurals: true`** بحيث تتعامل أدوات الاستخراج والترجمة مع المفتاح كمجموعة جمع؛ ويحدد `**count**` الشكل الجمعي النشط أثناء التشغيل.
-- **وقت التشغيل:** يتم حل أشكال الجمع أثناء التشغيل عبر المساعدات الموصولة في `[src/lib/i18n.ts](../src/lib/i18n.ts)`؛ راجع وثائق الحزمة الخاصة بـ **runtime** (`ai-i18n-tools/runtime`) للحصول على الصورة الكاملة.
-- **المخرجات:** تستخدم اللغات المستهدفة إدخالات ذات لواحق في `public/locales/<locale>.json`؛ بينما تحتفظ لغة المصدر بحزم الجمع في `**public/locales/en-GB.json`** بجانب الإدخالات المسطحة المعتادة.
+- **العرض:** يتم تكرار نفس الرسالة بعدد من القيم النموذجية محددة في `PLURAL_DEMO_COUNTS` ضمن `[src/app/page.tsx](../src/app/page.tsx)` (بشكل افتراضي 1، 2، 5، و50) لكي تتمكن من مقارنة سلوك الجمع عبر اللغات (بما في ذلك اللغات ذات أشكال الجمع المتعددة مثل العربية).
+- **واجهة برمجة التطبيقات (API):** يستخدم كل سطر `t("This page has {{count}} sections", { plurals: true, count })`. قم بتمرير `plurals: true` بحيث تتعامل أدوات الاستخراج والترجمة مع المفتاح كمجموعة جمع؛ ويحدد `count` شكل الجمع النشط أثناء التشغيل.
+- **التشغيل:** يتم حل أشكال الجمع أثناء التشغيل عبر المساعدات الموصولة في `[src/lib/i18n.ts](../src/lib/i18n.ts)`؛ راجع وثائق التشغيل الخاصة بالحزمة (`ai-i18n-tools/runtime`) للحصول على الصورة الكاملة.
+- **المخرجات:** تستخدم اللغات المستهدفة إدخالات ذات لواحق في `public/locales/<locale>.json`؛ بينما تحتفظ اللغة المصدر بحزم الجمع في `public/locales/en-GB.json` إلى جانب الإدخالات المسطحة المعتادة.
 
-كما يعرض العرض التجريبي **كتلة رمادية صغيرة من التعليمات البرمجية** تحتوي على مقتطف JSX فوق الأمثلة المباشرة كمرجع سريع.
+كما يعرض العرض التجريبي كتلة صغيرة رمادية من الكود تحتوي على مقتطف JSX فوق الأمثلة المباشرة كمرجع سريع.
 
-تعرض الصفحة الرئيسية أيضًا **رسم SVG تجريبي** في الأسفل. يتبع عنوان URL للصورة `public/assets/translation_demo_svg.<locale>.svg` (تخطيط مسطح من كتلة `svg` في `ai-i18n-tools.config.json`). بعد تشغيل `translate-svg`، تحتوي كل ملف لغة على محتوى مترجم لـ `<text>` و`<title>` و`<desc>`؛ وقبل ذلك، قد تبدو النسخ المحفوظة متطابقة عبر اللغات.
+تُظهر الصفحة الرئيسية أيضًا صورة SVG تجريبية في أسفل الصفحة. يتبع عنوان URL للصورة `public/assets/translation_demo_svg.<locale>.svg` (تخطيط مسطح من كتلة `svg` في `ai-i18n-tools.config.json`). بعد تشغيل `translate-svg`، تحتوي كل ملف لغة على محتوى مترجم لـ `<text>` و`<title>` و`<desc>`؛ قبل ذلك، قد تبدو النسخ المحفوظة متطابقة عبر اللغات.
 
 ### موقع التوثيق (المنفذ 3040)
 
@@ -101,7 +101,7 @@ pnpm run i18n:extract
 
 ### 2. الترجمة
 
-عيّن `OPENROUTER_API_KEY`، ثم من `**examples/nextjs-app**` قم بتشغيل جميع خطوات الترجمة (JSON واجهة المستخدم المسطح → أصول SVG → الوثائق) بالترتيب:
+عيّن `OPENROUTER_API_KEY`، ثم من ``examples/nextjs-app`` قم بتشغيل جميع خطوات الترجمة (JSON واجهة المستخدم المسطح → أصول SVG → الوثائق) بالترتيب:
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
@@ -132,16 +132,16 @@ ai-i18n-tools sync
 
 الخطوات تُنفّذ بالترتيب:
 
-1. `**ai-i18n-tools extract**` — يستخرج سلاسل واجهة المستخدم ويحدّث `locales/strings.json`.
-2. `**ai-i18n-tools translate-ui**` — يكتب ملفات JSON للغات المسطحة ضمن `public/locales/` من `locales/strings.json`.
-3. `**ai-i18n-tools translate-svg**` — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون `features.translateSVG` صحيحة ويتم تعيين كتلة `svg` في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
-4. `**ai-i18n-tools translate-docs**` — يترجم وثائق Docusaurus بصيغة markdown والملفات JSON ذات الصلة ضمن `docs-site/i18n/` (وفقًا لـ `documentations[]` في `ai-i18n-tools.config.json`؛ انظر **التدفق 2** في `docs/GETTING_STARTED.md` في جذر المستودع).
+1. ``ai-i18n-tools extract`` — يستخرج سلاسل واجهة المستخدم ويحدّث `locales/strings.json`.
+2. ``ai-i18n-tools translate-ui`` — يكتب ملفات JSON للغات المسطحة ضمن `public/locales/` من `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون `features.translateSVG` بقيمة true ويتم تعيين كتلة `svg` في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — يترجم وثائق Docusaurus بصيغة markdown والملفات JSON ذات الصلة ضمن `docs-site/i18n/` (حسب `documentations[]` في `ai-i18n-tools.config.json`؛ راجع سير العمل 2 في `docs/GETTING_STARTED.md` في جذر المستودع).
 
 يمكنك تشغيل أي خطوة بشكل منفصل (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بذلك المسار.
 
-إذا أظهرت السجلات تخطيًا كثيرًا وكتابات قليلة، فإن الأداة تعيد استخدام **المخرجات الحالية** و**ذاكرة التخزين المؤقت SQLite** في `.translation-cache/`. لإجبار إعادة الترجمة، مرر `--force` أو `--force-update` على الأمر المناسب عند الدعم، أو قم بتشغيل `**pnpm run i18n:clean`** (يحذف **فقط** `.translation-cache/` في هذا المجلد) ثم قم بالترجمة مرة أخرى.
+إذا أظهرت السجلات تخطيًا كثيرًا وكتابة قليلة، فإن الأداة تعيد استخدام المخرجات الحالية والذاكرة المؤقتة SQLite في `.translation-cache/`. لإجبار إعادة الترجمة، مرر `--force` أو `--force-update` في الأمر المناسب عند دعم ذلك، أو قم بتشغيل `pnpm run i18n:clean` (يحذف فقط `.translation-cache/` في هذا المجلد) ثم قم بالترجمة مجددًا.
 
-يحتوي هذا المثال على `features.translateSVG` وكتلة `svg`، لذا يقوم `**i18n:sync` بتشغيل نفس خطوة SVG كما في `translate-svg`**. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للترتيب الثابت واجهة المستخدم → SVG → الوثائق **دون** تشغيل **extract**.
+يحتوي هذا المثال على `features.translateSVG` وكتلة `svg`، لذا يقوم `i18n:sync` بتشغيل نفس خطوة SVG كما في `translate-svg`. لا يزال بإمكانك استدعاء `ai-i18n-tools translate-svg` وحدها لتلك الخطوة، أو استخدام `pnpm run i18n:translate` للترتيب الثابت واجهة المستخدم → SVG → الوثائق دون تشغيل `extract`.
 
 ### 3. تنظيف الذاكرة المؤقتة وإعادة الترجمة
 
@@ -173,13 +173,13 @@ ai-i18n-tools translate-ui --force --locale pt-BR
 
 ### 4. التعديلات اليدوية (محرر الذاكرة المؤقتة)
 
-يمكنك تشغيل واجهة ويب محلية لمراجعة الترجمات وتعديلها يدويًا في الذاكرة المؤقتة، وسلاسل واجهة المستخدم، والمعجم (من `**examples/nextjs-app**`):
+يمكنك تشغيل واجهة ويب محلية لمراجعة الترجمات وتحريرها يدويًا في الذاكرة المؤقتة، وسلاسل واجهة المستخدم، والمعجم (من ``examples/nextjs-app``):
 
 ```bash
 pnpm run i18n:editor
 ```
 
-من `**docs-site/**`، يقوم `**pnpm run i18n:editor**` بنفس الشيء (إنه `cd`s إلى هذا المجلد ويشغّل واجهة سطر الأوامر).
+من ``docs-site/``، يقوم ``pnpm run i18n:editor`` بنفس الشيء (إذ يُحوّل `cd` إلى هذا المجلد ويشغّل واجهة سطر الأوامر CLI).
 
 > **مهم:** إذا قمت بتعديل إدخال يدويًا في محرر الذاكرة المؤقتة، فعليك تشغيل `sync --force-update` (مثلاً `pnpm run i18n:sync --force-update`) لإعادة كتابة الملفات المسطحة أو ملفات markdown التي تم إنشاؤها باستخدام الترجمة المحدثة. لاحظ أيضًا أنه إذا تغير النص الأصلي في المستقبل، فستفقد تعديلاتك اليدوية لأن الأداة ستُنشئ تجزئة جديدة للنص الأصلي الجديد.
 
@@ -218,6 +218,6 @@ nextjs-app/
     └── i18n/                 # Translated docs + Docusaurus JSON catalogs (committed in git)
 ```
 
-يوجد نص ماركداون الإنجليزية للموقع التجريبي ضمن `**docs-site/docs/**`. ولا توجد مزامنة تلقائية من الجذر المستودع `**docs/**`؛ قم بتحديث تلك الملفات مباشرة عند تجديد المحتوى. وللحفاظ على عناوين روابط ثابتة، استخدم Docusaurus `**write-heading-ids**` من `**docs-site/**` (انظر `**pnpm run write-heading-ids**` في `[docs-site/package.json](../docs-site/package.json)`).
+يوجد الملف markdown باللغة الإنجليزية لموقع المثال ضمن `docs-site/docs/`. لا يوجد مزامنة تلقائية من الجذر `docs/` للمستودع؛ قم بتحديث تلك الملفات مباشرة عند تجديد المحتوى. لروابط العناوين المستقرة، استخدم ``write-heading-ids`` من Docusaurus من ``docs-site/`` (انظر ``pnpm run write-heading-ids`` في `[docs-site/package.json](../docs-site/package.json)`).
 
-تُرسل السلاسل المترجمة للواجهة، وملفات SVG التوضيحية، وترجمات الجذر `README`، ونواتج Docusaurus ضمن `public/locales/` و`public/assets/` و`locales/strings.json` و`translated-docs/` و`docs-site/i18n/`. بعد تعديل المصادر وتشغيل `**pnpm run i18n:translate**` أو `**pnpm run i18n:sync**`، أعد تشغيل خوادم التطوير الخاصة بـ Next.js وDocusaurus حسب الحاجة. ويتم تعريف التوجيه حسب اللغة المحلية و`**localeConfigs**` في `**docs-site/docusaurus.config.mjs**`.
+تُرجمت سلاسل واجهة المستخدم، وملفات SVG التوضيحية، وترجمات الجذر `README`، ومخرجات Docusaurus وتُخزن ضمن `public/locales/`، `public/assets/`، `locales/strings.json`، `translated-docs/`، و`docs-site/i18n/`. بعد تعديل المصادر وتشغيل ``pnpm run i18n:translate`` أو ``pnpm run i18n:sync``، أعد تشغيل خوادم التطوير لـ Next.js وDocusaurus عند الحاجة. ويتم تعريف التوجيه حسب اللغة و``localeConfigs`` في `**docs-site/docusaurus.config.mjs**`.

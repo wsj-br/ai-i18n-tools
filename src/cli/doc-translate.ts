@@ -64,6 +64,7 @@ import {
   writeAtomicUtf8,
 } from "./helpers.js";
 import { normalizeLocale } from "../core/config.js";
+import { collectFilesByExtension } from "./file-utils.js";
 import type {
   DocumentBatchResponseFormat,
   DocumentPromptContentType,
@@ -192,6 +193,9 @@ function emptyMarkdownProtectShell(): Omit<
     endMap: [],
     htmlAnchors: [],
     docusaurusHeadingIds: [],
+    mdxMap: [],
+    jsxAttributeMap: [],
+    jsxAttributeText: undefined,
     urlMap: [],
     boldCodeMap: [],
     ilcMap: [],
@@ -213,8 +217,12 @@ export function protectSegmentForTranslation(
   if (useMarkdownPlaceholders) {
     const ph = new PlaceholderHandler();
     const st = ph.protectForTranslation(g.text, { emphasis: emphasisPlaceholders });
+    let segmentText = st.text;
+    if (st.jsxAttributeText) {
+      segmentText = `${segmentText}\n${st.jsxAttributeText}`;
+    }
     return {
-      text: st.text,
+      text: segmentText,
       state: {
         ...st,
         glossaryForceReplacements:
@@ -485,6 +493,150 @@ export function normalizePathFilterForProjectRoot(
     throw new Error(`Path filter must be inside the project root (${projectRoot}). Got: ${raw}`);
   }
   return norm;
+}
+
+const DOC_MARKDOWN_EXTENSIONS = [".md", ".mdx"] as const;
+
+/**
+ * True if `relPosix` (project-relative, forward slashes) is under one of the block's
+ * `contentPaths` (file or directory roots).
+ */
+export function isProjectRelUnderBlockContentPath(
+  projectRoot: string,
+  relPosix: string,
+  block: { contentPaths: string[] }
+): boolean {
+  const r = relPosix.replace(/\\/g, "/");
+  for (const cp of block.contentPaths) {
+    const rootRel = path
+      .relative(projectRoot, path.resolve(projectRoot, cp))
+      .split(path.sep)
+      .join("/");
+    if (rootRel === "" || rootRel === ".") {
+      return true;
+    }
+    if (r === rootRel || r.startsWith(`${rootRel}/`)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function isProjectRelUnderAnyDocumentationContentPath(
+  projectRoot: string,
+  relPosix: string,
+  documentations: Array<{ contentPaths: string[] }>
+): boolean {
+  for (const block of documentations) {
+    if (isProjectRelUnderBlockContentPath(projectRoot, relPosix, block)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Expand a normalized project-root `--path` / `--file` to concrete `.md` / `.mdx` paths
+ * (single file or all markdown files under a directory).
+ */
+export function expandPathFilterToMarkdownPaths(
+  projectRoot: string,
+  pathFilter: string | undefined
+): string[] {
+  if (!pathFilter?.trim()) {
+    return [];
+  }
+  const abs = path.resolve(projectRoot, pathFilter);
+  if (!fs.existsSync(abs)) {
+    return [];
+  }
+  const st = fs.statSync(abs);
+  if (st.isFile()) {
+    const ext = path.extname(abs).toLowerCase();
+    if (ext === ".md" || ext === ".mdx") {
+      return [path.relative(projectRoot, abs).split(path.sep).join("/")];
+    }
+    return [];
+  }
+  if (st.isDirectory()) {
+    return collectFilesByExtension([abs], [...DOC_MARKDOWN_EXTENSIONS], projectRoot);
+  }
+  return [];
+}
+
+export interface AugmentMarkdownFromPathFilterResult {
+  markdown: string[];
+  warnings: string[];
+}
+
+/**
+ * When the user passes `--path` / `--file`, include matching markdown that normal discovery
+ * skipped (outside `contentPaths`, or under this block but filtered e.g. by `.translate-ignore`).
+ * Paths outside every `contentPaths` are only attached to `documentations[0]`.
+ */
+export function augmentMarkdownFilesFromPathFilter(
+  projectRoot: string,
+  pathFilter: string | undefined,
+  documentationBlockIndex: number,
+  documentations: Array<{ contentPaths: string[] }>,
+  markdownDiscovered: string[]
+): AugmentMarkdownFromPathFilterResult {
+  const warnings: string[] = [];
+  if (!pathFilter?.trim() || documentations.length === 0) {
+    return { markdown: markdownDiscovered, warnings };
+  }
+
+  const block = documentations[documentationBlockIndex];
+  if (!block) {
+    return { markdown: markdownDiscovered, warnings };
+  }
+
+  const candidates = expandPathFilterToMarkdownPaths(projectRoot, pathFilter);
+  if (candidates.length === 0) {
+    return { markdown: markdownDiscovered, warnings };
+  }
+
+  const seen = new Set(markdownDiscovered);
+  let md = markdownDiscovered;
+
+  for (const rel of candidates) {
+    if (seen.has(rel)) {
+      continue;
+    }
+    const abs = path.join(projectRoot, rel);
+    if (!fs.existsSync(abs)) {
+      continue;
+    }
+
+    const underThis = isProjectRelUnderBlockContentPath(projectRoot, rel, block);
+    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, documentations);
+
+    if (underThis) {
+      if (!md.includes(rel)) {
+        md = [...md, rel];
+        seen.add(rel);
+        warnings.push(
+          `${rel}: explicit --path/--file was not in the discovered file set (e.g. outside contentPaths or excluded by .translate-ignore); translating with documentations[${documentationBlockIndex}].`
+        );
+      }
+      continue;
+    }
+
+    if (underAny) {
+      /* Owned by another documentations[] block; that iteration handles it (or augments there). */
+      continue;
+    }
+
+    if (documentationBlockIndex === 0) {
+      md = [...md, rel];
+      seen.add(rel);
+      warnings.push(
+        `${rel} is outside every documentations[].contentPaths — translating with documentations[0] output settings.`
+      );
+    }
+  }
+
+  return { markdown: [...new Set(md)].sort(), warnings };
 }
 
 async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Promise<T> {

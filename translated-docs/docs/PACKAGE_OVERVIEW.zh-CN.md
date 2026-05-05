@@ -55,7 +55,7 @@ ai-i18n-tools
 ├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
-├── Processors (src/processors/)  - placeholders, batching, validation, link rewriting
+├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
 ├── API (src/api/)             - OpenRouter HTTP client
 ├── Glossary (src/glossary/)   - glossary loading and term matching
 ├── Runtime (src/runtime/)     - i18next helpers, display helpers (no i18next import)
@@ -106,10 +106,12 @@ src/
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
-│   ├── placeholder-handler.ts      Chain: admonitions → anchors → URLs
+│   ├── placeholder-handler.ts      Chain: HTML → admonitions → anchors → MDX → URLs → emphasis
 │   ├── url-placeholders.ts         Markdown URL protection/restore
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
+│   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
@@ -224,7 +226,8 @@ markdown/MDX/JSON files (`translate-docs`)
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
-protected text  ──────────────── URLs, admonitions, anchors replaced with tokens
+protected text  ──────────────── HTML tags, admonitions, anchors, MDX comments/JSX/braces,
+                                URLs, inline code, emphasis masked as tokens
       │
       ▼  splitTranslatableIntoBatches
 batches[]  ───────────────────── grouped by count + char limit
@@ -244,7 +247,7 @@ output file  ─────────────────── Docusauru
 
 所有提取器都继承自 `BaseExtractor` 并实现 `extract(content, filepath): Segment[]`。
 
-- `MarkdownExtractor` - 将 Markdown 拆分为带类型片段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。不可翻译的片段（代码块、原始 HTML）保持原样保留。
+- `MarkdownExtractor` - 将 Markdown 拆分为带类型的部分：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML 前置内容被归类为**不可翻译**（`slug`、`id` 等其他路由键保持不变）。顶级 `export ...` 块（例如 React 组件定义）与现有的 `import ...` 处理方式一样，被归类为不可翻译的 `other` 段落。以大写 JSX 标签开头的多行块（例如 `<Tabs>` 块）被归类为可翻译段落。不可翻译的段落（代码块、原始 HTML）将原样保留。
 - `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值。
 - `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的资源，`translate-docs` 不使用）。
 
@@ -260,18 +263,25 @@ output file  ─────────────────── Docusauru
 <a id="placeholder-protection"></a>
 ### 占位符保护
 
-翻译前，敏感语法会被替换为不透明的令牌，以防止 LLM 破坏：
+翻译前，敏感语法会被替换为不透明的占位符以防止 LLM 破坏，按以下顺序处理（恢复顺序相反）：
 
-1. **警告标记**（`:::note`、`:::`） - 使用原始文本精确恢复。
-2. **文档锚点**（HTML `<a id="…">`，Docusaurus 标题 `{#…}`） - 原样保留。
-3. **Markdown 链接**（`](url)`、`src="../…"`） - 翻译后从映射表中恢复。
+1. **HTML 标签和注释**（`<strong>`、`<!-- ... -->` 等） - 来自已知白名单的小写 HTML 标签被替换为 `{{HTM_N}}` 占位符。大写 JSX 标签（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 层（第 4 步）单独处理。
+2. **提示块标记**（`:::note`、`:::`） - 仅替换起始行的指令前缀为 `{{ADM_OPEN_N}}`；同一行的标题保留，由模型翻译。恢复时使用原始文本精确还原。
+3. **文档锚点**（HTML `<a id="…">`、Docusaurus 标题 `{#…}`） - 原样保留。
+4. **仅限 MDX 的结构**（`src/processors/mdx-placeholders.ts`）：
+   - **MDX 注释**（`{/* … */}`，包括 Docusaurus heading-id 形式 `{/* #my-id */}`）替换为 `{{MDX_N}}`。
+   - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`） - 保留为 `{{MDX_N}}`，其可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 `{{JXA_N}}`；在 `<Tabs values={[ { label: '…' } ]}>` 对象字面量和 `<TabItem value="…">` 内的 `label:`（当不存在 `label` 属性时，跳过类似小写 slug 的值）也会被提取。作为 `||JXA_N: …||` 行附加到段落末尾，由 `restoreMdx` 合并还原。
+   - **MDX 大括号表达式**（`{frontMatter.title}`、`style={{…}}`） - 按深度匹配，替换为 `{{MDX_N}}`。
+5. **Markdown 链接**（`](url)`、`src="../…"`） - 翻译后从映射表中还原。
+6. **行内代码段**（`` `code` ``）和 **加粗包裹的行内代码**（`**`code`**`） - 保留不变。
+7. **Markdown 强调语法**（可选，针对 CJK/RTL 语言区域自动启用） - 强调符号被屏蔽。
 
 <a id="cache-translationcache"></a>
 ### 缓存 (`TranslationCache`)
 
 SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存储行，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相关字段。哈希值是规范化内容（空白字符已压缩）的 SHA-256 前 16 位十六进制字符。
 
-每次运行时，片段通过哈希 × 区域设置进行查找。只有未命中缓存的条目才会发送到 LLM。翻译完成后，`last_hit_at` 会重置当前翻译范围内未命中的片段行。`cleanup` 首先运行 `sync --force-update`，然后移除陈旧的片段行（`last_hit_at` 为 null / 文件路径为空），当解析的源路径在磁盘上不存在时修剪 `file_tracking` 键（如 `doc-block:…`、`svg-assets:…` 等），并删除元数据文件路径指向缺失文件的翻译行；除非传入 `--no-backup`，否则会先备份 `cache.db`。
+每次运行时，会通过哈希值 × 区域设置来查找片段。只有未命中缓存的片段才会发送到大语言模型（LLM）。翻译完成后，`last_hit_at` 会重置当前翻译范围内未命中的片段行。`cleanup` 首先运行 `sync --force-update`，然后移除过时的片段行（`last_hit_at` 为 null 或文件路径为空），当解析出的源路径在磁盘上不存在时，清理 `file_tracking` 键（如 `doc-block:…`、`svg-files:…` 等），并删除元数据文件路径指向缺失文件的翻译行；除非传入 `--no-backup`，否则会先备份 `cache.db`。
 
 `translate-docs` 命令还使用 **文件跟踪**，因此源文件未更改且已有输出时可以完全跳过处理。`--force-update` 重新运行文件处理但仍使用片段缓存；`--force` 清除文件跟踪并绕过片段缓存读取以进行 API 翻译。有关完整标志表，请参阅 [入门指南](GETTING_STARTED.zh-CN.md#cache-behaviour-and-translate-docs-flags)。
 
@@ -421,7 +431,8 @@ console.log(
 | `JsonExtractor` | 从 Docusaurus JSON 标签文件中提取。 |
 | `SvgExtractor` | 从 SVG 文件中提取。 |
 | `OpenRouterClient` | 向 OpenRouter 发送翻译请求。 |
-| `PlaceholderHandler` | 在翻译过程中保护/恢复 Markdown 语法。 |
+| `PlaceholderHandler` | 保护/还原翻译周围的 Markdown 语法（HTML 标签、提示块、锚点、MDX 注释/JSX/大括号、链接、行内代码、强调）。 |
+| `protectMdx` / `restoreMdx` | 保护/还原 MDX 注释、JSX 标签、大括号表达式以及 JSX 字符串属性（由 `PlaceholderHandler` 调用；也可直接导出使用）。 |
 | `splitTranslatableIntoBatches` | 将片段分组为适合 LLM 处理的批次。 |
 | `validateTranslation` | 翻译后的结构检查。 |
 | `resolveDocumentationOutputPath` | 解析翻译文档的输出文件路径。 |

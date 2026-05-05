@@ -32,7 +32,7 @@ function filterIgnored(files: string[], cwd: string): string[] {
 }
 
 /**
- * Translate standalone SVG assets per `config.svg` (`translate-svg` command).
+ * Translate  SVG files per `config.svg` (`translate-svg` command).
  */
 export async function runTranslateSvg(
   config: I18nConfig,

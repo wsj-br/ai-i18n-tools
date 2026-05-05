@@ -13,6 +13,14 @@ describe("admonition-placeholders", () => {
     expect(restoreAdmonitionSyntax(p.protected, p.openMap, p.endMap)).toBe(src);
   });
 
+  it("masks only the directive prefix on the opener line so title text remains on that line", () => {
+    const src = `:::note Title text\nBody\n:::`;
+    const p = protectAdmonitionSyntax(src);
+    expect(p.openMap).toEqual([":::note "]);
+    expect(p.protected).toBe(`{{ADM_OPEN_0}}Title text\nBody\n{{ADM_END_0}}`);
+    expect(restoreAdmonitionSyntax(p.protected, p.openMap, p.endMap)).toBe(src);
+  });
+
   it("protects GitHub alert syntax line", () => {
     const src = "> [!NOTE]\n> body";
     const p = protectAdmonitionSyntax(src);

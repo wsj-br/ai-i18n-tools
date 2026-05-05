@@ -11,6 +11,30 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: mdx-placeholders / `translate-docs` — user-facing JSX string attributes (`label`, `tooltip`, `aria-label`) are rewritten to `{{JXA_N}}` inside preserved tags, appended for translation as `||JXA_N: …||` lines after `protectSegmentForTranslation`, merged back in `restoreMdx`, and called out in document core rules and placeholder leak checks. Previously attributes were recorded but not appended to segments or substituted after translation.
+
+- **Changed**: mdx-placeholders — also extracts translatable copy from `label: '…'` inside `<Tabs values={[ … ]}>` objects and from `<TabItem value="…">` when that opener has no `label` attribute (skips lowercase slug-like values so keys stay aligned with `defaultValue` / `values`).
+
+- **Fixed**: markdown extractor — YAML front matter is no longer translated (`translatable: false`), so `slug`, `id`, and other routing keys stay stable across locales.
+
+- **Fixed**: admonition placeholders — only the directive prefix on the opening line (for example `:::note` or `:::note ` when a same-line title exists) is replaced by `{{ADM_OPEN_N}}`; the title suffix on that line is left for the model to translate.
+
+- **Fixed**: markdown extractor — multi-line MDX that starts with a capital JSX tag (for example a `<Tabs>` block) is classified as a translatable paragraph; inner prose is no longer skipped because the whole block was treated as a non-translatable `other` segment.
+
+- **Changed**: cli `strip-md-bold-inline` — backup files now use `.tmp` extension (e.g., `file.backup.2026-05-04T22-46-00-000Z.md.tmp`) to prevent accidental translation.
+
+- **Fixed**: cli — warn when `--path` / `--file` points to a path that does not exist (`translate-docs`, `translate-svg`, `sync`, `write-heading-ids`, `strip-md-bold-inline`, `check-markdown`).
+
+- **Fixed**: cli — `translate-docs` / `sync` (docs step) with `--path` / `--file` now translate matching `.md` / `.mdx` that sit outside `documentations[].contentPaths` (using `documentations[0]` output settings, with a warning) or that were left out of discovery (e.g. `.translate-ignore`), with a warning. Unit tests: `tests/unit/path-filter-markdown-augment.test.ts`.
+
+- **Changed**: cli — root `ai-i18n-tools --help` appends a short guide (`--help` per command, `-l` / `--locale` on translation commands, `lint-source` semantics); `translate-docs`, `translate-svg`, `translate-ui`, `sync`, and `export-ui-xliff` append Examples after `--help`; command descriptions and `sync -l` hint text mention comma-separated locale codes.
+
+- **Fixed**: doc-translate — protect MDX-only constructs that previously leaked into the translation prompt: heading-id comments `{/* #my-id */}`, generic MDX comments `{/* … */}`, capitalized JSX tag pairs (`<Highlight …>` / `</Highlight>`, `<TOCInline />`), and depth-aware brace expressions (`{frontMatter.title}`, `style={{…}}`). Each match is replaced by a `{{MDX_N}}` token via the new `src/processors/mdx-placeholders.ts`, threaded through `PlaceholderHandler.protectForTranslation` after `protectDocAnchors` and before URL/inline-code/emphasis scanners.
+
+- **Fixed**: markdown extractor — top-level MDX `export …` blocks (e.g. `export const Highlight = (...) => (...)`) are now classified as non-translatable code in `MarkdownExtractor.classifySegment`, matching the existing `import …` rule, so React component source no longer reaches the model.
+
+- **Added**: `{{MDX_N}}` to the document core-rules prompt (`src/core/prompts.ts`) and the internal-placeholder leak detector (`src/processors/translation-placeholder-leaks.ts`); `protectMdx` / `restoreMdx` re-exported from `src/index.ts`.
+
 
 ## [1.3.1] - 2026-05-03
 
@@ -203,7 +227,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Added**: Tests — `tests/unit/path-filter.test.ts` for `normalizePathFilterForProjectRoot`, `matchesPathFilter`, and `jsonFileProjectRelativePath`; `tests/unit/html-tag-placeholders.test.ts` for HTML masking.
 - **Changed**: Default `--prompt-format` for documentation translation from **`xml`** to **`json-array`** (including the `cleanup` / `sync` translate step defaults).
 - **Changed**: Single-segment document prompts — user message is **raw segment text** (no `<translate>` wrapper); system prompt uses `singleSegmentOutputInstruction` instead of `translateFooter`.
-- **Changed**: `--path` / `--file` — `-f` is an alias for `-p` (using both throws); filter paths normalized to project-relative POSIX form (rejects paths outside the project root). Scopes **markdown + JSON** under `translate-docs` and `sync`, and **SVG assets** under `translate-svg`. **`--emphasis-placeholders`** and **`--debug-failed`** are on **`translate-docs`** and **`sync`**. **`--prompt-format`** is only on **`translate-docs`** (`sync` / `cleanup` use the internal **`json-array`** default for docs, no CLI flag). **`translate-svg`** only gains path scoping (no emphasis, debug, or prompt-format flags).
+- **Changed**: `--path` / `--file` — `-f` is an alias for `-p` (using both throws); filter paths normalized to project-relative POSIX form (rejects paths outside the project root). Scopes **markdown + JSON** under `translate-docs` and `sync`, and **SVG files** under `translate-svg`. **`--emphasis-placeholders`** and **`--debug-failed`** are on **`translate-docs`** and **`sync`**. **`--prompt-format`** is only on **`translate-docs`** (`sync` / `cleanup` use the internal **`json-array`** default for docs, no CLI flag). **`translate-svg`** only gains path scoping (no emphasis, debug, or prompt-format flags).
 - **Changed**: `status` — UI string coverage is a **per-locale** table; markdown file × locale tables are **chunked** with `--max-columns <n>` (default 9).
 - **Changed**: `config` / `init` defaults — `DEFAULT_OPENROUTER_MODELS` list updated (reordered; adds e.g. `qwen/qwen3-235b-a22b-2507`, Anthropic Haiku variants, `openai/gpt-5.3-codex`, `google/gemini-3-flash-preview`).
 - **Changed**: `translate-svg` (and shared doc totals) — summary prints **segment cache hit rate**; reports `segmentValidationFailures` and `individualSegmentTranslations`; quality-retry warnings include fallback position `(k/n)` in the model list.

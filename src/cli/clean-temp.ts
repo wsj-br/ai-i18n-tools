@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
+import chalk from "chalk";
 
 /** Basenames matched by `find … \( -name '*.log' -o -name 'cache.db.backup*.sqlite' \)`. */
 export function matchesCleanTempBasename(basename: string): boolean {
   if (basename.endsWith(".log")) return true;
+  if (basename.endsWith(".tmp")) return true;
   if (basename.startsWith("cache.db.backup") && basename.endsWith(".sqlite")) return true;
   return false;
 }
@@ -14,7 +16,7 @@ export function formatFindPrintLine(rootAbs: string, fileAbs: string): string {
   const rel = path.relative(rootAbs, fileAbs);
   const norm = rel.split(path.sep).join("/");
   if (norm === "" || norm === ".") return "./";
-  return `./${norm}`;
+  return `[clean-temp]` + chalk.cyan(` ./${norm}`);
 }
 
 async function collectCleanTempFiles(rootAbs: string): Promise<string[]> {
@@ -55,7 +57,7 @@ async function collectCleanTempFiles(rootAbs: string): Promise<string[]> {
 async function promptDeleteConfirmed(): Promise<boolean> {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   try {
-    const ans = await rl.question("\nDelete these files? (y/n) ");
+    const ans = await rl.question(chalk.red("\nDelete these files? (y/n) "));
     return ans === "y";
   } finally {
     rl.close();
@@ -94,10 +96,16 @@ export async function runCleanTemp(opts: RunCleanTempOptions): Promise<void> {
   }
 
   if (opts.dryRun) {
+    if (files.length > 0) {
+      console.log(chalk.gray("Dry run mode: no files will be deleted."));
+    } else {
+      console.log(chalk.green("Dry run mode: no files to delete."));
+    }
     return;
   }
 
   if (files.length === 0) {
+    console.log(chalk.green("No files to delete."));
     return;
   }
 

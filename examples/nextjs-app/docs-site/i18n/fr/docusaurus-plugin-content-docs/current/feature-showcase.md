@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
-title: Exemple de fonctionnalité de traduction
+title: Translation Feature Showcase
 description: >-
-  Un document de référence qui montre chaque élément Markdown que ai-i18n-tools
-  sait traduire.
-translation_last_updated: '2026-05-03T13:26:50.262Z'
-source_file_mtime: '2026-04-20T20:03:51.319Z'
-source_file_hash: 484a88ede308074262952fd383f1b2a8e284df2d675734c9deab22b8d374a36d
+  A reference document demonstrating every Markdown element that ai-i18n-tools
+  knows how to translate.
+translation_last_updated: '2026-05-04T22:27:20.663Z'
+source_file_mtime: '2026-05-04T21:42:57.361Z'
+source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
 translation_language: fr
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
@@ -14,6 +14,9 @@ translation_models:
 ---
 
 
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 Cette page a pour but de montrer comment `ai-i18n-tools` gère chaque construction Markdown courante. Exécutez `sync` sur ce fichier et comparez la sortie dans chaque dossier de langue pour voir exactement ce qui est traduit et ce qui reste inchangé.
 
@@ -123,7 +126,7 @@ La page d'accueil de cette application (`src/app/page.tsx`) inclut une section *
 t("This page has {{count}} sections", { plurals: true, count })
 ```
 
-Utilisez **`plurals: true`** afin que **`extract`** enregistre un groupe pluriel dans `locales/strings.json` et que **`translate-ui`** remplisse les fichiers plats par langue situés dans `public/locales/`. Au moment de l'exécution, i18next résout la clé suffixée appropriée pour la **`count`** active ; l'exemple Next intègre des utilitaires dans **`src/lib/i18n.ts`**.
+Utilisez `plurals: true` afin que `extract` enregistre un groupe pluriel dans `locales/strings.json` et que `translate-ui` remplisse les fichiers plats par langue situés sous `public/locales/`. Au moment de l'exécution, i18next résout la clé suffixée appropriée pour la `count` active ; l'exemple Next intègre des utilitaires dans `src/lib/i18n.ts`.
 
 Pour des captures d'écran, des URL de langue et la structure des fichiers, consultez l'**exemple de pluriels** dans le [README de l'exemple Next.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
 
@@ -187,6 +190,22 @@ export default config;
 > « La meilleure internationalisation est invisible pour l'utilisateur — ils voient simplement leur langue. »
 >
 > Une traduction correcte va au-delà du vocabulaire. Elle adapte le ton, les formats de date, la mise en forme des nombres et le sens de lecture afin de paraître naturelle dans chaque langue.
+
+---
+
+## Onglets (Docusaurus) {#tabs-docusaurus}
+
+<Tabs>
+  <TabItem value="apple" label="Pomme" default>
+    Ceci est une pomme 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    Ceci est une orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banane">
+    Ceci est une banane 🍌
+  </TabItem>
+</Tabs>
 
 ---
 

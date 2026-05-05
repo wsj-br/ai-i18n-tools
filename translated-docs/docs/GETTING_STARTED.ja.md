@@ -3,8 +3,8 @@
 
 `ai-i18n-tools` は、2つの独立した組み合わせ可能なワークフローを提供します。
 
-- **ワークフロー1 - UIの翻訳**: 任意のJS/TSソースから`t("…")`呼び出しを抽出し、OpenRouterを介して翻訳を行い、i18next向けにロケールごとのフラットなJSONファイルを出力します。
-- **ワークフロー2 - ドキュメントの翻訳**: Markdown（MDX）およびDocusaurusのJSONラベルファイルを任意のロケールに翻訳し、スマートキャッシュを活用します。**SVG**アセットは`features.translateSVG`、最上位の`svg`ブロック、および`translate-svg`を使用します（[CLIリファレンス](#cli-reference)を参照）。
+- **ワークフロー 1 - UI 翻訳**: 任意の JS/TS ソースから `t("…")` 呼び出しを抽出し、OpenRouter 経由で翻訳を行い、i18next 向けにフラットなロケール別 JSON ファイルを出力します。
+- **ワークフロー 2 - ドキュメント翻訳**: markdown (MDX) および Docusaurus JSON ラベルファイルを任意の数のロケールに翻訳。スマートキャッシュ付き。**SVG** ファイルは `features.translateSVG`、トップレベルの `svg` ブロック、および `translate-svg` を使用します（[CLI リファレンス](#cli-reference)を参照）。
 
 両方のワークフローはOpenRouter（互換性のある任意のLLM）を使用し、単一の設定ファイルを共有します。
 
@@ -61,8 +61,9 @@
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
+    - [Gitの除外に関するベストプラクティス:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
-  - [`svg` (オプション)](#svg-optional)
+  - [`svg`](#svg)
   - [`glossary`](#glossary)
 - [CLIリファレンス](#cli-reference)
 - [環境変数](#environment-variables)
@@ -452,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## ワークフロー2 - 文書翻訳
 
-Markdownドキュメント、Docusaurusサイト、JSONラベルファイル向けに設計されています。Markdownに埋め込まれたPNGその他のラスターアイメージについては、[翻訳されたドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)を参照してください。スタンドアロンのSVGアセットは、`features.translateSVG`が有効で、最上位の`svg`ブロックが設定されている場合に、`documentations[].contentPaths`ではなく[`translate-svg`](#cli-reference)を通じて翻訳されます。
+markdown ドキュメント、Docusaurus サイト、JSON ラベルファイル向けに設計されています。markdown に埋め込まれた PNG およびその他のラスターアイメージについては、[翻訳ドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)を参照してください。SVG ファイルは、`features.translateSVG` が有効で、トップレベルの `svg` ブロックが設定されている場合に [`translate-svg`](#cli-reference) 経由で翻訳されます。`documentations[].contentPaths` 経由ではありません。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### ステップ1：ドキュメント用に初期化
@@ -543,10 +544,10 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### SQLiteにおけるセグメントの重複排除とパス
 
-- セグメント行は`(source_hash, locale)`（ハッシュ = 正規化されたコンテンツ）によってグローバルにキー付けされています。2つのファイルに同一のテキストがある場合、1つの行を共有します; `translations.filepath`はメタデータ（最終編集者）であり、ファイルごとの2番目のキャッシュエントリではありません。
-- `file_tracking.filepath`は名前空間付きキーを使用します: `doc-block:{index}:{relPath}`は`documentations`ブロックごと（`relPath`はプロジェクトルート相対のposix: 収集されたmarkdownパス; **JSONラベルファイルはソースファイルへのcwd相対パスを使用します**、例: `docs-site/i18n/en/code.json`、したがってクリーンアップは実際のファイルを解決できます）、および`svg-assets:{relPath}`は`translate-svg`の下のスタンドアロンSVGアセット用です。
-- `translations.filepath`はmarkdown、JSON、およびSVGセグメントのcwd相対posixパスを保存します（SVGは他のアセットと同じパス形状を使用します; `svg-assets:…`プレフィックスは**のみ**`file_tracking`にあります）。
-- 実行後、`last_hit_at`はセグメント行**同じ翻訳スコープ内**（`--path`および有効な種類を尊重）でヒットしなかったものに対してのみクリアされるため、フィルタリングされたまたはドキュメント専用の実行は無関係なファイルを古くなったとマークしません。
+- セグメント行は、`(source_hash, locale)`（ハッシュ＝正規化されたコンテンツ）によってグローバルにキー付けされます。2つのファイル内で同じテキストは1つの行を共有します。`translations.filepath`はメタデータ（最終更新者）であり、ファイルごとに2つ目のキャッシュエントリがあるわけではありません。
+- `file_tracking.filepath` は名前空間付きキーを使用します。`documentations` ブロックごとに `doc-block:{index}:{relPath}`（`relPath` はプロジェクトルートからの相対的なPOSIXパス：収集されたmarkdownパス。**JSONラベルファイルはソースファイルに対するカレントワーキングディレクトリからの相対パスを使用**するため、例として`docs-site/i18n/en/code.json`、クリーンアップ処理が実際のファイルを解決できるようになります）および`translate-svg`以下のSVGファイル用の`svg-files:{relPath}`です。
+- `translations.filepath` は、markdown、JSON、SVGセグメントのカレントワーキングディレクトリからの相対POSIXパスを格納します（SVGは他のアセットと同様のパス形式を使用。`svg-files:…`プレフィックスは**のみ**`file_tracking`に存在します）。
+- 実行後、`last_hit_at`は、**同じ翻訳スコープ内**で（`--path`および有効な種類を尊重して）ヒットしなかったセグメント行に対してのみクリアされるため、フィルターされた実行やドキュメントのみの実行が関係のないファイルを古く扱うことはありません。
 
 <a id="output-layouts"></a>
 ### 出力レイアウト
@@ -618,7 +619,7 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 
 `translate-docs` はMarkdownセグメント（画像のaltテキストを含む）を翻訳します。ただし、ラスターファイル（PNG、JPEG、WebP、GIF）をドキュメントに**コピーしません**。ファイルを書き換えられたURLが指す場所に配置するか、翻訳後にURLを調整してください（通常は`markdownOutput.postProcessing.regexAdjustments`を使用して）。`outputDir`。
 
-**図版として使用されるSVG**は`svg`ブロックと`translate-svg`を使用します — [`svg` (オプション)](#svg-optional)を参照してください。`documentations[].contentPaths`にリストされたパスは、スタンドアロンのSVG翻訳ではなく、Markdown/MDX（およびオプションのJSONラベル）用です。
+**SVG** は、図解アセットとして使用する場合、`svg` ブロックと `translate-svg` を使用します — [`svg`](#svg) を参照。`documentations[].contentPaths` にリストされたパスは、スタンドアロンの SVG 翻訳ではなく、markdown/MDX（およびオプションの JSON ラベル）用です。
 
 **フラットレイアウトで修正が必要になることが多い理由**
 
@@ -764,7 +765,7 @@ Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`
 
 `glossary.uiGlossary` は、ドキュメント翻訳をUIと同じ `strings.json` カタログを指すようにして用語の一貫性を保ちます。`glossary.userGlossary` は製品用語のCSVオーバーライドを追加します。
 
-`npx ai-i18n-tools sync` を実行して1つのパイプラインを実行します: **抽出** UI文字列（`features.extractUIStrings` の場合）、**UI文字列の翻訳**（`features.translateUIStrings` の場合）、**スタンドアロンSVGアセットの翻訳**（`features.translateSVG` かつ `svg` ブロックが設定されている場合）、その後 **ドキュメントの翻訳**（各 `documentations` ブロック：設定に応じてmarkdown/JSON）。`--no-ui`、`--no-svg`、または `--no-docs` を使用して、一部をスキップできます。ドキュメントのステップでは `--dry-run`、`-p` / `--path`、`--force`、`--force-update` を受け入れます（最後の2つはドキュメント翻訳が実行される場合にのみ適用され、`--no-docs` を渡すと無視されます）。
+`npx ai-i18n-tools sync` を実行して1つのパイプラインを実行：`features.extractUIStrings` の場合 **UI 文字列の抽出**、`features.translateUIStrings` の場合 **UI 文字列の翻訳**、`features.translateSVG` かつ `svg` ブロックが設定されている場合 **SVG ファイルの翻訳**、その後 **ドキュメントの翻訳**（各 `documentations` ブロック：設定どおりに markdown/JSON を処理）。`--no-ui`、`--no-svg`、または `--no-docs` で部分をスキップできます。ドキュメント処理ステップは `--dry-run`、`-p` / `--path`、`--force`、および `--force-update` を受け入れます（最後の2つはドキュメント翻訳実行時のみ適用。`--no-docs` を渡すと無視されます）。
 
 `documentations[].targetLocales` ブロックを使用して、そのブロックのファイルをUIよりも**少ないロケール数**に翻訳します（有効なドキュメントロケールはブロック間の**和集合**になります）:
 
@@ -947,15 +948,20 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 <a id="openrouter"></a>
 ### `openrouter`
 
-| フィールド               | 説明                                                                                                                                                                                                      |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `baseUrl`           | OpenRouter APIのベースURL。デフォルト：`https://openrouter.ai/api/v1`。                                                                                                                                                |
-| `translationModels` | 優先順に並べたモデルIDのリスト。最初のモデルから順に試行され、エラー時には後続のモデルがフォールバックとして使用されます。`translate-ui`の場合のみ、`ui.preferredModel`を設定して、このリストの前に1つのモデルを試行することもできます（`ui`を参照）。
-| `defaultModel`      | 従来の単一プライマリモデル。`translationModels`が未設定または空の場合にのみ使用されます。                                                                                                                               |
-| `fallbackModel`     | 従来の単一フォールバックモデル。`translationModels`が未設定または空の場合に、`defaultModel`の後に使用されます。                                                                                                              |
-| `maxTokens`         | 要求ごとの最大完了トークン数。デフォルト: `8192`。                                                                                                                                                              |
-| `temperature`       | サンプリング温度。デフォルト: `0.2`。                                                                                                                                                                            |
-| `requestTimeoutMs` | OpenRouter への各 HTTP リクエスト（チャット完了および内部の `GET /models` 呼び出し）を待機する最大時間（ミリ秒単位）。デフォルト: `30000`（30秒）。|
+- `baseUrl`
+  OpenRouter API のベース URL。デフォルト：`https://openrouter.ai/api/v1`。
+- `translationModels`
+  優先順に並べたモデル ID のリスト。最初のものが最初に試されます。エラー時には後続のエントリがフォールバックとして使用されます。`translate-ui` 専用に、`ui.preferredModel` を設定してこのリストの前に1つのモデルを試すこともできます（`ui` を参照）。
+- `defaultModel`
+  従来の単一プライマリモデル。`translationModels` が未設定または空の場合にのみ使用されます。
+- `fallbackModel`
+  従来の単一フォールバックモデル。`translationModels` が未設定または空の場合、`defaultModel` の後に使用されます。
+- `maxTokens`
+  リクエストごとの最大完了トークン数。デフォルト：`8192`。
+- `temperature`
+  サンプリング温度。デフォルト：`0.2`。
+- `requestTimeoutMs`
+  OpenRouter への各 HTTP リクエスト（チャット完了および内部 `GET /models` 呼び出し）の最大待機時間（ミリ秒単位）。デフォルト：`30000`（30秒）。
 
 **複数のモデルを使用する理由:** プロバイダーおよびモデルごとにコストが異なり、言語やロケールごとに品質のレベルも異なります。CLIがリクエストに失敗した場合に次のモデルを試行できるように、`openrouter.translationModels`を**順序付きフォールバックチェーン**（単一のモデルではなく）として構成してください。
 
@@ -996,36 +1002,52 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 | `translateJSON`      | 2        | DocusaurusのJSONラベルファイルを翻訳します。                                                                                                                             |
 | `translateSVG`       | 2        | スタンドアロンの`.svg`アセットを翻訳します（トップレベルの`svg`ブロックが必要です）。                                                                                         |
 
-**スタンドアロンの**SVGアセットは、`features.translateSVG`がtrueかつトップレベルの`svg`ブロックが設定されている場合に`translate-svg`で翻訳されます。`sync`コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg`でない限り）。
+`features.translateSVG` が true かつトップレベルの `svg` ブロックが設定されている場合、`translate-svg` で **SVG** ファイルを翻訳します。`sync` コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg` でない限り）。
 
 <a id="ui"></a>
 ### `ui`
 
-| フィールド                                          | 説明                                                                                                                                                                                                                                                        |
-|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourceRoots`                                  | `t("…")`呼び出しをスキャンするディレクトリ（カレントワーキングディレクトリからの相対パス）。                                                                                                                                                                                                          |
-| `stringsJson`                                  | マスターカタログファイルへのパス。`extract` によって更新されます。                                                                                                                                                                                                             |
-| `flatOutputDir`                                | ロケールごとの JSON ファイルが書き出されるディレクトリ（`de.json` など）。                                                                                                                                                                                               |
-| `preferredModel`                               | オプション。`translate-ui` のみに最初に試行される OpenRouter モデル ID。次に、この ID を重複させずに順に `openrouter.translationModels`（またはレガシーモデル）が試行されます。                                                                                                   |
-| `reactExtractor.funcNames`                     | スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。                                                                                                                                                                                                    |
-| `reactExtractor.extensions`                    | 含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。                                                                                                                                                                                            |
-| `reactExtractor.includePackageDescription`     | `true` の場合（デフォルト）、`extract` は存在する場合に `package.json` `description` を UI 文字列として含めます。                                                                                                                                                           |
-| `reactExtractor.packageJsonPath`               | オプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。                                                                                                                                                                              |
-| `reactExtractor.includeUiLanguageEnglishNames` | `true` の場合（デフォルト `false`）、`extract` は、ソーススキャンから既に存在しない場合に、マニフェストの `uiLanguagesPath` にある各 `englishName` を `strings.json` に追加します（同じハッシュキー）。有効な `ui-languages.json` を指す `uiLanguagesPath` が必要です。 |
+- `sourceRoots`  
+  `t("…")` 呼び出しをスキャンするディレクトリ（カレントワーキングディレクトリからの相対パス）。
+- `stringsJson`  
+  マスターカタログファイルのパス。`extract` によって更新されます。
+- `flatOutputDir`  
+  ロケールごとの JSON ファイルが出力されるディレクトリ（`de.json` など）。
+- `preferredModel`  
+  オプション。`translate-ui` 専用に最初に試行される OpenRouter モデル ID。その後、この ID を重複させずに `openrouter.translationModels`（または従来のモデル）が順に試行されます。
+- `reactExtractor.funcNames`  
+  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
+- `reactExtractor.extensions`  
+  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。
+- `reactExtractor.includePackageDescription`  
+  `true` の場合（デフォルト）、`extract` は、存在する場合に `package.json` `description` を UI 文字列としても含めます。
+- `reactExtractor.packageJsonPath`  
+  オプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。
+- `reactExtractor.includeUiLanguageEnglishNames`
+
+`true` の場合（デフォルト `false`）、`extract` は、ソーススキャンから既に存在しない場合に、`uiLanguagesPath` のマニフェストから各 `englishName` を `strings.json` に追加します（同じハッシュキー）。有効な `ui-languages.json` を指す `uiLanguagesPath` が必要です。
+
+| フィールド         | 説明                                               |
+|---------------|-----------------------------------------------------------|
+| `sourceRoots` | `t("…")` コールのためにスキャンされたディレクトリ（cwd に対して相対）。 |
+| `stringsJson` | マスターカタログファイルへのパス。`extract` によって更新されます。    |
 
 <a id="cachedir"></a>
 ### `cacheDir`
 
-| フィールド      | 説明                                                                 |
-| ---------- | ----------------------------------------------------------------------------- |
-| `cacheDir` | すべての `documentations` ブロックで共有される SQLite キャッシュディレクトリ。実行間で再利用されます。カスタムドキュメント翻訳キャッシュから移行する場合は、アーカイブまたは削除してください。`cacheDir` は独自の SQLite データベースを作成し、他のスキーマとは互換性がありません。 |
+- `cacheDir`
+SQLite キャッシュディレクトリ（すべての `documentations` ブロックで共有）。実行間で再利用します。カスタムドキュメント翻訳キャッシュから移行する場合は、アーカイブまたは削除してください — `cacheDir` は独自の SQLite データベースを作成し、他のスキーマとは互換性がありません。
 
-VCS 除外のベストプラクティス:
+<a id="best-practice-for-git-exclusions"></a>
+#### Git 除外のベストプラクティス:
 
-- 一時的なキャッシュ成果物のコミットを避けるため、翻訳キャッシュフォルダーの内容を除外してください（たとえば `.gitignore` または `.git/info/exclude` 経由で）。
-- ソースの変更されていないセグメントの再翻訳を回避し、`ai-i18n-tools` を使用するソフトウェアの変更やアップグレード時に実行時間と API コストを節約するために、`cache.db` を保持してください（通常は削除しないでください）。
+- 一時的なキャッシュアーティファクトをコミットしないように、翻訳キャッシュフォルダーの内容を除外します（例: `.gitignore` または `.git/info/exclude` を使用）。
+- `cache.db` を保持します（定期的に削除しないでください）。SQLite キャッシュを保持することで、変更されていないセグメントの再翻訳を防ぎます。これにより、`ai-i18n-tools` を使用するソフトウェアの更新や修正時に、ランタイムと API コストの両方を節約できます。
+- バックアップやデバッグ関連のファイルをコミットしないように、一時ファイルとログファイルを除外します。
 
-例:
+<br/>
+
+**例:**
 
 ```gitignore
 # Translation cache directory
@@ -1033,6 +1055,10 @@ VCS 除外のベストプラクティス:
 
 # Keep SQLite cache for reuse
 !.translation-cache/cache.db
+
+# Temporary and log files
+*.tmp
+*.log
 ```
 
 <a id="documentations"></a>
@@ -1040,29 +1066,48 @@ VCS 除外のベストプラクティス:
 
 ドキュメントパイプラインブロックの配列。`translate-docs` と `sync` のドキュメントフェーズが各ブロックを順番に**処理します**。
 
-| フィールド                                             | 説明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `description`                                     | このブロックの任意の人が読めるメモ（翻訳では使用されません）。設定されている場合、`translate-docs` `🌐`見出しの前に接頭辞として表示されます。また、`status`セクションヘッダーにも表示されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `contentPaths`                                    | 翻訳対象のMarkdown/MDXソース（`translate-docs`はこれらを`.md` / `.mdx`用にスキャンします）。JSONラベルは、同じブロック内の`jsonSource`から取得されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `outputDir`                                       | このブロックの翻訳出力のルートディレクトリ。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `sourceFiles`                                     | 読み込み時に `contentPaths` にマージされるオプションのエイリアスです。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `targetLocales`                                   | このブロック専用のロケールのオプションのサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックにわたる和集合となります。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `jsonSource`                                      | このブロックの Docusaurus JSON ラベルファイルのソースディレクトリ（例: `"i18n/en"`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.style`                            | `"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `markdownOutput.docsRoot`                         | Docusaurus レイアウト用のソースドキュメントのルート（例: `"docs"`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `markdownOutput.pathTemplate`                     | カスタムマークダウン出力パス。使用可能なプレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。                                                                                                                                                                                                                                                                                                                                                     |
-| `markdownOutput.jsonPathTemplate`                 | ラベルファイルのカスタムJSON出力パス。`pathTemplate`と同じプレースホルダーをサポートします。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `markdownOutput.flatPreserveRelativeDir`          | `flat`スタイルの場合、同じベース名を持つファイルが衝突しないように、ソースのサブディレクトリを保持します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `markdownOutput.rewriteRelativeLinks`             | 翻訳後に相対リンクを書き換えます（`flat`スタイルでは自動的に有効になります）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `markdownOutput.linkRewriteDocsRoot`              | フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。通常は`"."`のままにしてください。翻訳されたドキュメントが別のプロジェクトルート下にある場合を除きます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `markdownOutput.postProcessing`                | 翻訳された**markdown本文**にオプションの変換を適用（YAMLフロントマターは保持される）。セグメントの再結合およびフラットリンクの書き換え後、`addFrontmatter`の前に行われる。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `segmentSplitting`                             | `markdownOutput`と同じレベル（`documentations[]`ブロックごと）。`translate-docs`抽出用のより細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密度の高い段落、GFMパイプテーブル（最初のチャンクにヘッダー、セパレーター、および最初のデータ行を含む）、長いリストが分割される。サブパートは単一の改行で再結合される（`tightJoinPrevious`）。`"enabled": false`を設定すると、空行で区切られた本文ブロックごとに1つのセグメントのみを使用する。 |
-| `warnMarkdownSourceIssues`                     | `true`が指定された場合（省略時はデフォルト）、各`translate-docs`の実行時にリスクのあるデリミタや閉じられていないインラインコードのMarkdownセグメントを再スキャンし、端末に警告を出力し、そのファイルのキャッシュファイルパスに対応する`markdown_source_issues`の行を置き換えます。このブロックの警告とSQLiteの更新をスキップするには、`false`を設定します。                                                                                                                                                                                                                                                                                                                                                           |
-| `markdownOutput.postProcessing.regexAdjustments`  | `{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターン（プレーン文字列の場合はフラグ`g`、または`/pattern/flags`を使用）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポート。                                                                                                                                                                                                                                                                                                    |
-| `markdownOutput.postProcessing.languageListBlock` | `{ "start", "end", "separator", "label" }` — トランスレーターは、最初に `start` を含む行と一致する `end` 行を検索し、その範囲を標準の言語切り替えウィジェットに置き換えます。`label` はマニフェストのラベルのソースを制御します: `"local"` (デフォルト、`ui-languages.json` `label` を使用) または `"english"` (`englishName` を使用)。リンクは翻訳されたファイルからの相対パスで構築されます。マニフェストが設定されていない場合、ラベルは `localeDisplayNames` とロケールコードから取得されます。|
-| `addFrontmatter`                                  | `true`の場合（省略時のデフォルト）、翻訳されたMarkdownファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれる。`false`に設定するとスキップされる。                                                                                                                                                                                                                                                                                                                           |
+- `description`
+このブロックのためのオプションの人間可読ノート（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐` ヘッドラインにプレフィックスが付けられます。また、`status` セクションヘッダーにも表示されます。
+- `contentPaths`
+翻訳するための Markdown/MDX ソース（`translate-docs` はこれらを `.md` / `.mdx` のためにスキャンします）。JSON ラベルは同じブロックの `jsonSource` から来ます。
+- `outputDir`
+このブロックの翻訳出力のルートディレクトリ。
+- `sourceFiles`
+読み込み時に `contentPaths` にマージされるオプションのエイリアス。
+- `targetLocales`
+このブロックのためのオプションのロケールのサブセット（そうでない場合はルート `targetLocales`）。有効なドキュメントロケールはブロック間の和集合です。
+- `jsonSource`
+このブロックのための Docusaurus JSON ラベルファイルのソースディレクトリ（例: `"i18n/en"`）。
+- `markdownOutput.style`
+`"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`。
+- `markdownOutput.docsRoot`
+Docusaurus レイアウトのためのソースドキュメントルート（例: `"docs"`）。
+- `markdownOutput.pathTemplate`
+カスタム Markdown 出力パス。プレースホルダー: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>。
+- `markdownOutput.jsonPathTemplate`
+ラベルファイルのためのカスタム JSON 出力パス。`pathTemplate` と同じプレースホルダーをサポートします。
+- `markdownOutput.flatPreserveRelativeDir`
+`flat` スタイルの場合、同じベース名のファイルが衝突しないようにソースサブディレクトリを保持します。
+- `markdownOutput.rewriteRelativeLinks`
+翻訳後に相対リンクを書き換えます（`flat` スタイルの場合は自動的に有効）。
+- `markdownOutput.linkRewriteDocsRoot`
+フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルートの下にある場合を除き、通常は`"."`のままにしてください。
+- `markdownOutput.postProcessing`
+翻訳された**markdown本文**へのオプションの変換（YAMLフロントマターは保持される）。セグメントの再構成およびフラットリンクの書き換えの後、`addFrontmatter`の前に行われる。
+- `segmentSplitting`
+`markdownOutput`と同じレベル（`documentations[]`ブロックごと）。`translate-docs`抽出用のより細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密度の高い段落、GFMパイプテーブル（最初のチャンクにヘッダー、セパレーター、および最初のデータ行を含む）、長いリストが分割される。サブパートは単一の改行で再結合される（`tightJoinPrevious`）。`"enabled": false`を設定すると、空行で区切られた本文ブロックごとに1つのセグメントのみを使用する。
+- `warnMarkdownSourceIssues`
+`true`が有効の場合（省略された場合のデフォルト）、各`translate-docs`の実行時にマークダウンセグメント内の危険な区切り文字／閉じられていないインラインコードを再スキャンし、端末に警告を表示し、そのファイルのキャッシュファイルパス用に`markdown_source_issues`行を置き換える。このブロックの警告とSQLiteの更新をスキップするには`false`を設定する。
+- `markdownOutput.postProcessing.regexAdjustments`
+`{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターン（プレーン文字列はフラグ`g`または`/pattern/flags`を使用）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポートする。
+- `markdownOutput.postProcessing.languageListBlock`
+`{ "start", "end", "separator", "label" }` — 翻訳ツールは、`start`を含む最初の行と一致する`end`行を検出し、その範囲を標準の言語切り替えスイッチャーに置き換える。`label`はマニフェストラベルのソースを制御：`"local"`（デフォルト、`ui-languages.json` `label`を使用）または`"english"`（`englishName`を使用）。リンクは翻訳されたファイルからの相対パスで作成される。マニフェストが設定されていない場合、ラベルは`localeDisplayNames`とロケールコードから取得される。
+- `addFrontmatter`
+`true`が有効の場合（省略された場合のデフォルト）、翻訳されたマークダウンファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれる。`false`に設定するとスキップされる。
 
-例（フラットREADMEパイプライン — スクリーンショットパス＋オプションの言語リストラッパー）:
+<br/>
+
+**例（フラットREADMEパイプライン — スクリーンショットパス＋オプションの言語リストラッパー）：**
 
 ```json
 "markdownOutput": {
@@ -1085,10 +1130,10 @@ VCS 除外のベストプラクティス:
 }
 ```
 
-<a id="svg-optional"></a>
-### `svg`（オプション）
+<a id="svg"></a>
+### `svg`
 
-スタンドアロンSVGアセットのトップレベルのパスおよびレイアウト。`features.translateSVG`がtrueの場合（`translate-svg`または`sync`のSVGステージ経由）にのみ翻訳が実行される。
+SVGファイルのトップレベルのパスとレイアウト。`features.translateSVG`がtrueの場合（`translate-svg`または`sync`のSVGステージ経由）にのみ翻訳が実行される。
 
 | フィールド | 説明 |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1106,9 +1151,7 @@ VCS 除外のベストプラクティス:
 | `uiGlossary`   | 既存の翻訳から自動的に用語集を生成するための `strings.json` へのパス。                                                                                                 |
 | `userGlossary` | `Original language string`（または `en`）、`locale`、`Translation` の列を持つCSVファイルへのパス。各行は1つのソース用語と対象ロケールに対応します（`locale` はすべての対象言語で `*` でも可）。 |
 
-レガシーのキー `uiGlossaryFromStringsJson` は、設定読み込み時に `uiGlossary` にマッピングされ、引き続き使用可能です。
-
-空の用語集CSVを生成するには:
+**空の用語集CSVを生成する：**
 
 ```bash
 npx ai-i18n-tools glossary-generate
@@ -1119,30 +1162,70 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLIリファレンス
 
-| コマンド | 説明 |
-|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version` | CLIのバージョンとビルドタイムスタンプを表示します（ルートプログラムの`-V` / `--version`と同様の情報）。 |
-| `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`  | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`はスターターの`.translate-ignore`を作成します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `check-models` | 設定された各 OpenRouter モデル ID を `GET /models` に対して検証します（カタログ登録の有無、`expiration_date`、プロンプト／コンプリートの100万トークンあたりの米ドル価格）。`OPENROUTER_API_KEY` を必要とします。設定された ID のいずれかが存在しないか期限切れの場合、非ゼロで終了します。カタログリクエストでは `openrouter.requestTimeoutMs` を尊重します。|
-| `extract`                                                                   | `t("…")` / `i18n.t("…")`リテラル、任意の`package.json`説明、および任意のマニフェスト`englishName`エントリから`strings.json`を更新します（`ui.reactExtractor`を参照）。`features.extractUIStrings`が必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `generate-ui-languages [--master <path>] [--dry-run]`                       | `sourceLocale` + `targetLocales`およびバンドルされた`data/ui-languages-complete.json`（または`--master`）を使用して、`ui-languages.json`を`ui.flatOutputDir`（または設定されている場合は`uiLanguagesPath`）に書き込みます。マスターファイルに存在しないロケールについては警告を出し、`TODO`のプレースホルダーを出力します。カスタマイズされた`label`または`englishName`値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値に置き換えられます。生成されたファイルは、後で確認して調整してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `translate-docs …`                                                          | 各`documentations`ブロック（`contentPaths`、省略可能な`jsonSource`）のMarkdown/MDXおよびJSONを翻訳します。`-j`：並列処理可能なロケールの最大数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチのワイヤーフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `write-heading-ids …`                                                       | **APIなし。**少なくとも1つの`documentations[]`ブロックが必要です。各ブロックの`contentPaths`以下にある`.md` / `.mdx`を収集します（`.translate-ignore`を尊重）。各フラットなATX `#`見出しの**直前**にHTMLアンカー行`<a id="slug"></a>`を挿入します（コードブロック内の見出しはスキップ）。`-p` / `--path`または`-f` / `--file`：プロジェクト相対のファイルまたはディレクトリに限定。`--slug-style`：`github`（デフォルト；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。`pymdown`とともに、省略可能な`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--dry-run`：変更点のみをリスト表示。                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `strip-md-bold-inline …`                                                    | **APIはありません。** 少なくとも1つの`documentations[]`ブロックが必要です。各ブロックの`contentPaths`にある`.md` / `.mdx`内のインラインコードの周囲の`**`を削除します（`.translate-ignore`を尊重）。`-p` / `--path`または`-f` / `--file`、`--dry-run`、`--no-backup`（上書き前にタイムスタンプ付き`.backup.*`をスキップ）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `check-markdown …`                                                            | **APIはありません。** 各`documentations[]`ブロックの`contentPaths`以下のmarkdown/MDXをスキャンします（`translate-docs`と同じ検出方法、`.translate-ignore`を尊重）。デリミタのペア、閉じられていないインラインコード、`**`/`__`が`` `...` ``スパンまたは`[text](../url)`リンクを囲んでいる場合の`STRONG_OUTSIDE_INLINE_CODE`／`STRONG_OUTSIDE_LINK`をチェックします。`-p`／`--path`または`-f`／`--file`：オプションのスコープ。問題がある場合は**stderr**に`relativePath:line: [ISSUE_CODE] message`行を出力します。問題が1つでもあれば終了コードは**1**です。`--json`：**stdout**にJSON形式のレポートを出力します。`--no-cache`が指定されていない限り、`cacheDir`に`markdown_source_issues`を書き込みます。`-v`はstderrの各行にソースのハッシュを追加します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `translate-svg …`                                                           | `config.svg`で設定されたスタンドアロンのSVGアセットを翻訳（ドキュメントとは別）。`features.translateSVG`が必要。ドキュメントと同じキャッシュの考え方を採用。その実行ではSQLiteの読み書きをスキップするための`--no-cache`をサポート。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`             | UI文字列のみを翻訳します。`--force`: すべてのエントリをロケールごとに再翻訳（既存の翻訳を無視）。`--dry-run`: 書き込みなし、API呼び出しもなし。`-j`: 最大並列ロケール数。`features.translateUIStrings`が必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                                                    | 最初に`extract` **first**を実行（`features.extractUIStrings`が必要）して、`strings.json`がソースと一致させた後、**source-locale**のUI文字列に対するLLMによるレビュー（スペル、文法）を行います。**用語のヒント**は`glossary.userGlossary`のCSVからのみ取得（`translate-ui`と同じ範囲 — `strings.json` / `uiGlossary`ではないため、誤ったコピーが用語集として強化されることはありません）。OpenRouter（`OPENROUTER_API_KEY`）を使用します。アドバイスのみ（実行終了時に**0**で終了）。`cacheDir`の下に**人間が読める形式**のレポート（要約、問題点、および文字列ごとの**OK**行）として`lint-source-results_<timestamp>.log`を出力。端末には要約カウントと問題点のみを表示（文字列ごとに`[ok]`行は表示しない）。最後の行にログファイル名を出力します。`--json`: 機械読み取り可能なJSONレポートをstdoutにのみ出力（ログファイルは人間が読める形式のまま）。`--dry-run`: 依然として`extract`を実行し、バッチ計画のみを出力（API呼び出しはなし）。`--chunk`: APIバッチごとの文字列数（デフォルト**50**）。`-j`: 最大並列バッチ数（デフォルト`concurrency`）。`--json`指定時は、人間向けの出力をstderrに出力。リンクには`path:line`を使用（`editor` UI文字列の「リンク」ボタンと同様）。 |
-| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]` | `strings.json`をXLIFF 2.0形式でエクスポート（対象ロケールごとに`.xliff`を1つ作成）。`-o` / `--output-dir`: 出力ディレクトリ（デフォルト: カタログと同じフォルダ）。`--untranslated-only`: そのロケールで翻訳が欠落しているユニットのみ。読み取り専用。APIは使用しません。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `sync …`                                                                    | 有効になっている場合に抽出を行い、次にUIの翻訳、次に`features.translateSVG`と`config.svg`が設定されている場合に`translate-svg`を実行し、その後にドキュメントの翻訳を実行します。ただし、`--no-ui`、`--no-svg`、または`--no-docs`でスキップされる場合を除きます。共有フラグ: `-l`、`-p` / `-f`、`--dry-run`、`-j`、`-b`（ドキュメントのバッチ処理のみ）、`--force` / `--force-update`（ドキュメントのみ、ドキュメント実行時は相互に排他的）。ドキュメントフェーズでは、`--emphasis-placeholders`および`--debug-failed`も転送されます（意味は`translate-docs`と同じ）。`--prompt-format`は`sync`フラグではありません。ドキュメントステップでは組み込みのデフォルト（`json-array`）が使用されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `status [--max-columns <n>]`                                                | `features.translateUIStrings`が有効の場合、ロケールごとのUIカバレッジ（`Translated` / `Missing` / `Total`）を出力します。次に、ファイル×ロケールごとのMarkdown翻訳ステータスを出力します（`--locale`フィルターなし。ロケールは設定から取得）。ロケール数が多い場合は、端末での行幅が狭くなるよう、最大`n`列（デフォルト**9**）の繰り返しテーブルに分割して出力します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `statistics [--max-columns <n>]`                                             | ドキュメントキャッシュと`strings.json`の統計情報を出力（翻訳キャッシュエディターの「**統計**」と同じ集計値）。`--max-columns`：モデルごとのロケールテーブルあたりの最大ロケール列数（デフォルトはエディターに一致）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                       | 最初に`sync --force-update`を実行（抽出、UI、SVG、ドキュメント）、次に古くなったセグメント行（`last_hit_at`がnullまたはファイルパスが空）を削除。解決されたソースパスがディスク上に存在しない`file_tracking`行を破棄。`filepath`メタデータが存在しないファイルを指している翻訳行を削除。3つのカウント（古くなった行、孤立した`file_tracking`、孤立した翻訳）をログ出力。`--no-backup`を指定しない限り、キャッシュディレクトリ内にタイムスタンプ付きのSQLiteバックアップを作成します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`                     | **設定なし。** ディレクトリツリー（デフォルト: 現在の作業ディレクトリ）を走査して `*.log` および `cache.db.backup*.sqlite` を検索し、`./…` パス（例: `find -print`）を出力します。一致するファイルがある場合: `Delete these files? (y/n)` で確認を表示（ただし `-f` / `--force` 指定時は確認なしで削除）。一致するファイルがない場合: 確認なしで終了。`--dry-run`: 一覧表示のみで、確認や削除は行わない（`--force` を無効化）。 |
-| `editor [-p <port>] [--no-open]`                                            | キャッシュ、`strings.json`、および用語集CSV用のローカルWebエディタを起動します。`--no-open` を指定すると、デフォルトブラウザは自動的に開かれません。<br><br>**注意：** キャッシュエディタでエントリを編集した場合、更新されたキャッシュエントリを出力ファイルに反映させるために `sync --force-update` を実行する必要があります。また、後でソーステキストが変更されると、新しいキャッシュキーが生成されるため、手動での編集は失われます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `glossary-generate [-o <path>]`                                             | 空の`glossary-user.csv`テンプレートを書き出します。`-o`：出力パスを上書きします（既定値：設定からの`glossary.userGlossary`、または`glossary-user.csv`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+- `version`
+CLIのバージョンとビルドタイムスタンプを出力（ルートプログラムの`-V` / `--version`と同じ情報）。
 
-すべてのコマンドは、既定以外の設定ファイルを指定する`-c <path>`、詳細出力の`-v`、およびログファイルにコンソール出力を同時に出力するための`-w` / `--write-logs [path]`（既定のパス：ルートの`cacheDir`以下）を受け入れます。ルートプログラムは、`-V` / `--version`および`-h` / `--help`もサポートしています。`ai-i18n-tools help [command]`は`ai-i18n-tools <command> --help`と同じコマンドごとの使用法を表示します。
+- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
+スターターコンフィグファイルを書き出す（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`はスターター`.translate-ignore`を作成する。
+
+- `check-models`
+`GET /models`に対して各設定されたOpenRouterモデルIDを検証（カタログメンバーシップ、`expiration_date`、1MトークンあたりのUSD単価（プロンプト／コンプリーション））。`OPENROUTER_API_KEY`が必要。設定されたIDのいずれかが存在しないまたは期限切れの場合、エラーコードを返して終了。カタログリクエストに対して`openrouter.requestTimeoutMs`を尊重する。
+
+- `extract`
+`t("…")` / `i18n.t("…")`リテラル、オプションの`package.json`説明、およびオプションのマニフェスト`englishName`エントリから`strings.json`を更新（`ui.reactExtractor`を参照）。`features.extractUIStrings`が必要。
+
+- `generate-ui-languages [--master <path>] [--dry-run]`
+`sourceLocale` + `targetLocales`およびバンドルされた`data/ui-languages-complete.json`（または`--master`）を使用して、`ui-languages.json`を`ui.flatOutputDir`（または設定されている場合は`uiLanguagesPath`）に書き出す。マスターファイルに存在しないロケールに対しては警告を出し、`TODO`プレースホルダーを出力。カスタマイズされた`label`または`englishName`値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値で置き換えられるため、生成されたファイルを確認して調整してください。
+
+- `translate-docs …`
+各`documentations`ブロック（`contentPaths`、オプションの`jsonSource`）に対してマークダウン／MDXおよびJSONを翻訳。`-j`：並列処理する最大ロケール数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチ通信フォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照。
+
+- `write-heading-ids …`
+**API は不要です。** 少なくとも 1 つの `documentations[]` ブロックが必要です。各ブロック内の `contentPaths` の下にある `.md` / `.mdx` を収集します（`.translate-ignore` を尊重します）。各フラットな ATX `#` 見出しの **直前**に HTML アンカー行 `<a id="slug"></a>` を挿入します（コードブロック内の見出しはスキップします）。`-p` / `--path` または `-f` / `--file`：プロジェクト相対パスのファイルまたはディレクトリに制限します。`--slug-style`：`github`（デフォルト；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。`pymdown` とともに、オプションで `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode` を指定可能。`--dry-run`：変更内容のみをリスト表示。
+
+- `strip-md-bold-inline …`
+**API なし。** 少なくとも1つの `documentations[]` ブロックが必要です。各ブロックの `contentPaths` 配下にある `.md` / `.mdx` 内のインラインコードの前後にある `**` を削除します（`.translate-ignore` を尊重）。`-p` / `--path` または `-f` / `--file`、`--dry-run`、`--no-backup`（上書き前のタイムスタンプ付き `.backup.*` はスキップ）。
+
+- `check-markdown …`
+**API なし。** 各 `documentations[]` ブロックの `contentPaths` 配下のMarkdown/MDXをスキャン（`translate-docs` と同じ検出方法、`.translate-ignore` を尊重）：デリミタの対応、閉じられていないインラインコード、`**`/`__` が `` `...` `` スパンまたは `[text](../url)` リンクを囲む場合の `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK`。`-p` / `--path` または `-f` / `--file`：オプションのスコープ。問題がある場合は **stderr** に `relativePath:line: [ISSUE_CODE] message` 行を出力。問題が1つ以上あれば終了コードは **1**。`--json`：**stdout** に出力するJSON形式のレポート。`--no-cache` を指定しない限り、`cacheDir` 内に `markdown_source_issues` を書き込み。`-v` はstderr出力行にソースのハッシュ値を追加。
+
+- `translate-svg …`
+`config.svg` で設定されたSVGファイルを翻訳（ドキュメントとは別）。`features.translateSVG` が必要。ドキュメントと同じキャッシュ方式を採用。その実行時のSQLiteの読み書きをスキップするための `--no-cache` をサポート。`-j`、`-b`、`--force`、`--force-update`、`-p` / `--path`、`--dry-run`。
+
+- `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`
+UI文字列のみを翻訳。`--force`：すべてのエントリをロケールごとに再翻訳（既存の翻訳を無視）。`--dry-run`：書き込みなし、API呼び出しもなし。`-j`：並列処理する最大ロケール数。`features.translateUIStrings` が必要。
+
+- `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
+最初に `extract` **first** を実行（`features.extractUIStrings` が必要）して、`strings.json` をソースと一致させた後、**source-locale** の UI 文字列に対して LLM によるレビュー（スペル、文法）を実施します。**用語のヒント** は `glossary.userGlossary` CSV からのみ取得されます（`translate-ui` と同じ範囲 — `strings.json` / `uiGlossary` ではないため、誤ったコピーが用語集として強化されることはありません）。OpenRouter（`OPENROUTER_API_KEY`）を使用します。アドバイスのみを提供（実行終了時に **0** で終了）。`cacheDir` 配下に **人間が読みやすい** 形式のレポート（要約、問題点、および文字列ごとの **OK** 行）として `lint-source-results_<timestamp>.log` を出力します。端末には要約カウントと問題点のみを表示（文字列ごとの `[ok]` 行は表示しない）。最後の行にログファイル名を出力します。`--json`：機械可読の完全な JSON レポートを標準出力にのみ出力（ログファイルは人間が読みやすいまま）。`--dry-run`：依然として `extract` を実行し、バッチ計画のみを出力（API 呼び出しは行わない）。`--chunk`：API バッチごとの文字列数（デフォルト **50**）。`-j`：並列実行可能な最大バッチ数（デフォルト `concurrency`）。`--json` を指定すると、人間向けの出力は stderr に出力されます。リンクには `path:line` を使用します。これは `editor` UI 文字列の「リンク」ボタンと同様です。
+
+- `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`
+`strings.json` をXLIFF 2.0形式でエクスポート（対象ロケールごとに1つの `.xliff`）。`-o` / `--output-dir`：出力ディレクトリ（デフォルト：カタログと同じフォルダ）。`--untranslated-only`：そのロケールで翻訳が欠落しているユニットのみ。読み取り専用。APIなし。
+
+- `sync …`
+有効化されている場合は抽出、次にUI翻訳、次に `features.translateSVG` と `config.svg` が設定されている場合に `translate-svg`、その後ドキュメント翻訳 — ただし `--no-ui`、`--no-svg`、`--no-docs` でスキップ可能。共通フラグ：`-l`、`-p` / `-f`、`--dry-run`、`-j`、`-b`（ドキュメントのバッチ処理のみ）、`--force` / `--force-update`（ドキュメントのみ；ドキュメント実行時は相互に排他的）。ドキュメントフェーズでは `--emphasis-placeholders` および `--debug-failed` も引き継がれる（`translate-docs` と同じ意味）。`--prompt-format` は `sync` フラグではない。ドキュメントステップでは組み込みのデフォルト（`json-array`）を使用。
+
+- `status [--max-columns <n>]`
+`features.translateUIStrings`がオンの場合、ロケールごとのUIカバレッジ（`Translated` / `Missing` / `Total`）を出力します。次に、ファイル×ロケールごとのMarkdown翻訳ステータスを出力します（`--locale`フィルターなし。ロケールは設定ファイルから取得）。ロケール数が多い場合は、最大`n`列（デフォルトは**9**）の繰り返しテーブルに分割して、端末での行幅が狭くなるようにします。
+
+- `statistics [--max-columns <n>]`
+ドキュメントキャッシュおよび`strings.json`の統計情報を出力します（翻訳キャッシュエディターの「**統計**」と同じ集計値）。`--max-columns`：モデル×ロケールテーブルごとの最大ロケール列数（デフォルトはエディターと一致）。
+
+- `cleanup [--dry-run] [--no-backup] [--backup <path>]`
+まず`sync --force-update`を実行（抽出、UI、SVG、ドキュメント）し、その後、古くなったセグメント行（`last_hit_at`がnullまたはファイルパスが空）を削除します。解決されたソースパスがディスク上に存在しない`file_tracking`行を削除。`filepath`メタデータが存在しないファイルを指している翻訳行を削除します。3つのカウント（古くなった行、孤立した`file_tracking`、孤立した翻訳）をログ出力します。`--no-backup`でない限り、キャッシュディレクトリ内にタイムスタンプ付きのSQLiteバックアップを作成します。
+
+- `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`
+**設定なし。** ディレクトリツリーを走査（デフォルト: 現在の作業ディレクトリ）して `*.log` および `cache.db.backup*.sqlite` を検索し、`./…` パスを `find -print` のように出力します。一致がある場合：`Delete these files? (y/n)` をプロンプト表示（ただし `-f` / `--force` の場合はプロンプトなしで削除）。一致がない場合：プロンプトせずに終了。`--dry-run`：一覧表示のみ、プロンプトや削除は行わない（`--force` を上書き）。
+
+- `editor [-p <port>] [--no-open]`
+キャッシュ、`strings.json`、および用語集CSV用のローカルWebエディターを起動します。`--no-open`を指定すると、デフォルトブラウザは自動的に開かれません。  
+**注意：** キャッシュエディターでエントリを編集した場合、更新されたキャッシュエントリを出力ファイルに反映させるために`sync --force-update`を実行する必要があります。また、後でソーステキストが変更された場合、新しいキャッシュキーが生成されるため、手動での編集は失われます。
+
+- `glossary-generate [-o <path>]`
+空の`glossary-user.csv`テンプレートを書き出します。`-o`：出力パスを上書き（デフォルトは設定ファイルの`glossary.userGlossary`、または`glossary-user.csv`）。
+
+すべてのコマンドは、非デフォルトの設定ファイルを指定する`-c <path>`、詳細出力の`-v`、およびコンソール出力をログファイルに同時出力するための`-w` / `--write-logs [path]`（デフォルトパス：ルートの`cacheDir`以下）を受け入れます。
+
+ルートプログラムも`-V` / `--version`および`-h` / `--help`をサポートしています。`ai-i18n-tools help [command]`は`ai-i18n-tools <command> --help`と同じコマンドごとの使い方を表示します。
 
 ---
 

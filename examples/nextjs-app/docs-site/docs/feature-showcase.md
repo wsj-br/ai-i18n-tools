@@ -4,6 +4,10 @@ title: Translation Feature Showcase
 description: A reference document demonstrating every Markdown element that ai-i18n-tools knows how to translate.
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
 This page exists to demonstrate how `ai-i18n-tools` handles every common Markdown construct. Run `sync` against it and compare the output in each locale folder to see exactly what gets translated and what stays untouched.
 
 ---
@@ -112,7 +116,7 @@ That app’s home page (`src/app/page.tsx`) includes a **plurals demo** section 
 t("This page has {{count}} sections", { plurals: true, count })
 ```
 
-Use **`plurals: true`** so **`extract`** records a plural group in `locales/strings.json` and **`translate-ui`** fills the per-locale flat files under `public/locales/`. At runtime, i18next resolves the right suffixed key for the active **`count`**; the Next example wires helpers in **`src/lib/i18n.ts`**.
+Use `plurals: true` so `extract` records a plural group in `locales/strings.json` and `translate-ui` fills the per-locale flat files under `public/locales/`. At runtime, i18next resolves the right suffixed key for the active `count`; the Next example wires helpers in `src/lib/i18n.ts`.
 
 For screenshots, locale URLs, and file layout, see **Plurals example** in the [Next.js example README](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
 
@@ -176,6 +180,22 @@ export default config;
 > "The best internationalization is invisible to the user — they simply see their language."
 >
 > Proper translation goes beyond vocabulary. It adapts tone, date formats, number formatting, and reading direction to feel native in each locale.
+
+---
+
+## Tabs (Docusaurus) {#tabs-docusaurus}
+
+<Tabs>
+  <TabItem value="apple" label="Apple" default>
+    This is an apple 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    This is an orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banana">
+    This is a banana 🍌
+  </TabItem>
+</Tabs>
 
 ---
 

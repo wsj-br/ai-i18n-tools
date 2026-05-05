@@ -116,11 +116,11 @@ describe("svg-asset-paths", () => {
     expect(abs).toBe(path.join(cwd, "public/assets/pt-BR/icons/a.svg"));
   });
 
-  it("svgAssetCacheFilepath prefixes svg-assets:", () => {
-    expect(svgAssetCacheFilepath("images/x.svg")).toBe("svg-assets:images/x.svg");
+  it("svgAssetCacheFilepath prefixes svg-files:", () => {
+    expect(svgAssetCacheFilepath("images/x.svg")).toBe("svg-files:images/x.svg");
   });
 
-  it("svgTranslationFilepathMetadata is cwd-relative posix without svg-assets prefix", () => {
+  it("svgTranslationFilepathMetadata is cwd-relative posix without svg-files prefix", () => {
     expect(svgTranslationFilepathMetadata("images/x.svg")).toBe("images/x.svg");
     expect(svgTranslationFilepathMetadata("a\\b.svg")).toBe("a/b.svg");
   });
