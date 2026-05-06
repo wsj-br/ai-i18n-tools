@@ -1,7 +1,5 @@
 Create a new release notes file `dev/RELEASE_NOTES_<version>.md` for the `ai-i18n-tools` package using the instructions below. This will be used as part of the GitHub release process.
 
-Before you start, run **`pnpm pre-release`** from the repository root and fix any failures so format, lint, build, and tests match what CI runs before publish.
-
 **Instructions:**
 
 1. **Read `package.json`** to get the current version number (`x.y.z`).

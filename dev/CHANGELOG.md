@@ -40,6 +40,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-05-06
+
+- **Changed**: dependencies — downgraded `express` from `^5.2.1` to `^4.22.1` for Docusaurus 3.x compatibility.
 
 ## [1.3.1] - 2026-05-03
 
