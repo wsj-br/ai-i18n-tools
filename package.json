@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
   "version": "1.4.0",
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@10.33.4",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -98,7 +98,7 @@
     "micromark-extension-gfm": "^3.0.0",
     "remove-markdown": "^0.6.3",
     "unist-util-visit": "^5.1.0",
-    "zod": "^4.4.2"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -112,7 +112,7 @@
     "markdownlint-cli": "^0.48.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.1",
+    "typescript-eslint": "^8.59.2",
     "vitest": "^4.1.5"
   },
   "peerDependencies": {
