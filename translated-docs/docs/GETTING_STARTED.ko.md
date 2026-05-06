@@ -3,8 +3,8 @@
 
 `ai-i18n-tools`는 두 가지 독립적이면서도 조합 가능한 워크플로우를 제공합니다:
 
-- **워크플로 1 - UI 번역**: JS/TS 소스에서 `t("…")` 호출을 추출하고 OpenRouter를 통해 번역한 후 i18next에서 바로 사용할 수 있는 평면화된 지역별 JSON 파일을 생성합니다.
-- **워크플로 2 - 문서 번역**: 마크다운(MDX) 및 Docusaurus JSON 레이블 파일을 여러 지역 언어로 번역하며, 스마트 캐싱을 지원합니다. **SVG** 파일은 `features.translateSVG`, 최상위 `svg` 블록, 그리고 `translate-svg`를 사용합니다(자세한 내용은 [CLI 참조](#cli-reference) 참조).
+- **워크플로 1 - UI 번역**: JS/TS 소스에서 `t("…")` 호출을 추출하고 OpenRouter를 통해 번역한 후, i18next에서 바로 사용할 수 있는 평면 구조의 언어별 JSON 파일을 생성합니다.
+- **워크플로 2 - 문서 번역**: `contentPaths`에 나열된 **마크다운 및 MDX 페이지**를 여러 로케일로 번역하며, 스마트 캐싱을 사용합니다. 이는 사이트에서 사용자가 열어보는 현지화된 문서입니다. 선택적 **Docusaurus JSON** (`jsonSource`, `docusaurus write-translations`에서 생성됨)은 **사이트 크롬**(네비게이션 바, 푸터, 테마/플러그인 UI 문자열)을 다루며, `docs/`의 본문은 포함하지 않습니다. **SVG** 파일은 `features.translateSVG`, 최상위 `svg` 블록, 그리고 `translate-svg`을 사용하여 번역됩니다 ([CLI 참조](#cli-reference) 참조).
 
 두 워크플로우 모두 OpenRouter(호환 가능한 모든 LLM)를 사용하며, 하나의 설정 파일을 공유합니다.
 
@@ -102,7 +102,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 빠른 시작
 
-기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. 설정에 따라 추출, UI 번역, 선택적 독립 SVG 번역, 문서 번역을 하나의 명령어로 실행하려면 `sync`를 사용하세요.
+기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 하나의 명령으로 실행하려는 경우 `sync`를 사용하세요.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -453,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## 워크플로 2 - 문서 번역
 
-마크다운 문서, Docusaurus 사이트 및 JSON 레이블 파일을 위한 설계입니다. 마크다운에 포함된 PNG 및 기타 래스터 이미지의 경우 [번역된 문서의 이미지 및 래스터 자산](#images-and-raster-assets-in-translated-docs)을 참조하세요. SVG 파일은 `features.translateSVG`이 활성화되고 최상위 `svg` 블록이 설정된 경우 [`translate-svg`](#cli-reference)를 통해 번역되며, `documentations[].contentPaths`를 통해 번역되지 않습니다.
+**마크다운 및 MDX 문서**를 주로 `contentPaths` 아래에서 다룹니다(사용자가 읽는 페이지). Docusaurus 사이트에서는 `docusaurus write-translations`이 생성하는 **JSON 레이블 파일**도 번역할 수 있습니다. 이 파일들은 테마, 네비게이션 바, 푸터, 플러그인 UI 문자열(셸 i18n)을 포함하며, `docs/`의 본문과는 별개입니다. 마크다운에 포함된 PNG 및 기타 래스터 이미지의 경우 [번역된 문서의 이미지 및 래스터 에셋](#images-and-raster-assets-in-translated-docs)을 참조하세요. SVG 파일은 `features.translateSVG`가 활성화되고 최상위 `svg` 블록이 설정된 경우 [`translate-svg`](#cli-reference)을 통해 번역되며, `documentations[].contentPaths`을 통해 번역되지 않습니다.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### 단계 1: 문서용 초기화
@@ -472,6 +472,8 @@ npx ai-i18n-tools init -t ui-docusaurus
 - `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일 (JSON 레이블은 `documentations[].jsonSource` 참조).
 - `documentations[].outputDir` - 해당 블록의 번역된 출력 루트.
 - `documentations[].markdownOutput.style` - `"nested"` (기본값), `"docusaurus"`, 또는 `"flat"` ([출력 레이아웃](#output-layouts) 참조).
+
+**주요 대 보조:** 작성 및 번역 작업은 `contentPaths`에 집중하세요. 이 출력물이 현지화된 문서입니다. `jsonSource`은 **Docusaurus 셸**을 현지화하는 팀을 위한 것이며, Docusaurus를 업그레이드하거나 네비게이션 바, 푸터, 테마 문자열을 변경할 때 `docusaurus write-translations`를 실행하여 기본 로케일 폴더 아래의 소스 카탈로그를 최신 상태로 유지하세요. 번역된 페이지만 필요하고 UI 문자열은 별도로 처리할 계획이라면 `features.translateJSON`을 `false`로 설정할 수 있습니다.
 
 <a id="step-2-translate-documents"></a>
 ### 단계 2: 문서 번역
@@ -508,9 +510,9 @@ npx ai-i18n-tools status
 
 CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세그먼트** 행(번역 가능한 청크별 해시 × 로캘)을 저장합니다. 일반 실행 시 추적된 해시가 현재 소스와 일치하고 **그리고** 출력 파일이 이미 존재하면 해당 파일을 완전히 건너뜁니다. 그렇지 않은 경우 파일을 처리하며 세그먼트 캐시를 사용하여 변경되지 않은 텍스트는 API를 호출하지 않습니다.
 
-| 플래그                          | 효과                                                                                                                                                                                                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *(기본값)*                   | 추적 정보와 디스크상 출력이 일치할 경우 변경되지 않은 파일 건너뛰기; 나머지에는 세그먼트 캐시 사용.                                                                                                                                                                              |
+| 플래그                          | 효과                                                                                                                                                                                                                                                              |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *(기본값)*                   | 추적 중인 파일과 디스크에 있는 출력이 동일할 경우 건너뛰고, 나머지에는 세그먼트 캐시를 사용합니다.                                                                                                                                                                          |
 | `-l, --locale <codes>`        | 쉼표로 구분된 대상 로케일(생략 시 루트 `targetLocales`과 각 `documentations[]` 블록의 선택적 `targetLocales`의 통합값을 기본값으로 사용).                                                                                                                                                          |
 | `-p, --path` / `-f, --file`   | 이 경로 아래의 마크다운/JSON만 번역(프로젝트 기준 또는 절대 경로); `--file`는 `--path`의 별칭입니다.                                                                                                                                                         |
 | `--dry-run`                   | 파일 쓰기 및 API 호출 없음.                                                                                                                                                                                                                                        |
@@ -533,13 +535,13 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 
 `translate-docs`은 번역 가능한 세그먼트를 OpenRouter에 **배치** 단위로 전송함 (`batchSize` / `maxBatchChars` 기준으로 그룹화됨). `--prompt-format` 플래그는 해당 배치의 **전송 형식**만 변경함; `PlaceholderHandler` 토큰, 마크다운 AST 검사, SQLite 캐시 키, 배치 파싱 실패 시 세그먼트별 대체 동작은 변경되지 않음.
 
-| 모드                       | 사용자 메시지                                                           | 모델 응답                                                 |
-|----------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
-| `xml`                  | 의사-XML: 세그먼트당 하나의 `<seg id="N">…</seg>` (XML 이스케이프 포함). | 세그먼트 인덱스당 하나씩, `<t id="N">…</t>` 블록만 포함.       |
+| 모드                   | 사용자 메시지                                                           | 모델 응답                                                 |
+|------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
+| `xml`                  | 의사-XML: 각 세그먼트에 하나의 `<seg id="N">…</seg>` 포함(XML 이스케이프 적용). | 각 세그먼트 인덱스에 하나의 `<t id="N">…</t>` 블록만 포함.       |
 | `json-array` (기본값) | 순서대로 세그먼트당 하나의 항목을 가진 문자열의 JSON 배열.               | **동일한 길이**의 JSON 배열 (동일한 순서).           |
 | `json-object`          | 세그먼트 인덱스로 키가 지정된 JSON 객체 `{"0":"…","1":"…",…}`.            | **동일한 키**를 가지고 번역된 값을 포함하는 JSON 객체. |
 
-실행 헤더는 활성 모드를 확인할 수 있도록 `Batch prompt format: …`도 출력합니다. JSON 레이블 파일(`jsonSource`)과 독립형 SVG 배치는 이러한 단계가 `translate-docs`의 일부로 실행될 때 동일한 설정을 사용합니다(또는 `sync`의 docs 단계 — `sync`는 이 플래그를 노출하지 않으며 기본값은 `json-array`입니다).
+실행 헤더는 활성화된 모드를 확인할 수 있도록 `Batch prompt format: …`도 출력합니다. JSON 레이블 파일(`jsonSource`)과 SVG 파일 배치는 해당 단계가 `translate-docs`의 일부로 실행될 때(또는 `sync`의 문서 단계 — `sync`는 이 플래그를 노출하지 않으며 기본값은 `json-array`임) 동일한 설정을 사용합니다.
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### 세그먼트 중복 제거 및 SQLite의 경로
@@ -556,9 +558,16 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 
 `"docusaurus"` — 일반적인 Docusaurus i18n 레이아웃과 일치하도록 `docsRoot` 아래에 있는 파일을 `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`에 배치합니다. `documentations[].markdownOutput.docsRoot`을 문서 소스 루트로 설정하세요(예: `"docs"`).
 
+문서 페이지 (주요):
+
 ```text
-docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
-i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+선택적 JSON 레이블 — `jsonSource`에서 가져온 Docusaurus 셸 문자열(MDX 본문 복사본 아님):
+
+```text
+i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
 `"flat"` — 번역된 파일을 소스 옆에 로케일 접미어를 붙이거나 하위 디렉터리에 배치합니다. 페이지 간의 상대 링크는 자동으로 재작성됩니다.
@@ -619,7 +628,7 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 
 `translate-docs`은 마크다운 세그먼트(이미지 대체 텍스트 포함)를 번역합니다. 하지만 `outputDir`에 래스터 파일(PNG, JPEG, WebP, GIF)을 복사하지는 **않습니다**. 재작성된 URL이 가리키는 위치에 파일을 배치하거나, 번역 후 URL을 조정하세요(일반적으로 `markdownOutput.postProcessing.regexAdjustments`를 사용).
 
-**SVG**는 일러스트 자산으로 사용되며, `svg` 블록과 `translate-svg`을 사용합니다 — [`svg`](#svg) 참조. `documentations[].contentPaths`에 나열된 경로는 독립형 SVG 번역이 아닌 마크다운/MDX(및 선택적 JSON 레이블)용입니다.
+**SVG**를 일러스트 자산으로 사용할 경우 `svg` 블록과 `translate-svg`을 사용하세요 — [`svg`](#svg) 참조. `documentations[].contentPaths`에 나열된 경로는 SVG 파일 번역이 아닌 마크다운/MDX(및 선택적 JSON 레이블)용입니다.
 
 **평면 레이아웃이 종종 수정이 필요한 이유**
 
@@ -665,7 +674,7 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 
 `images/screenshots/<locale>/` 아래 디스크에 PNG 파일을 그대로 유지합니다 (URL 재작성 후 사용하는 것과 동일한 구조).
 
-**패턴 3 — 독립형 SVG** (`examples/nextjs-app`)
+**패턴 3 — SVG 파일** (`examples/nextjs-app`)
 
 동일한 예제에서 `features.translateSVG`을 활성화하고 소스 SVG를 웹 앱의 public 폴더로 매핑합니다:
 
@@ -692,9 +701,9 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 
 사용자 정의 `pathTemplate`을 사용하는 경우, 명시적으로 설정하지 않으면 `rewriteRelativeLinks`은 기본적으로 `false`가 됩니다 — 평면 스타일 링크 재작성은 기본 `flat` 레이아웃을 위해 설계되었습니다.
 
-| 플레이스홀더 | 역할 | 예시 |
-|-------------|------|---------|
-| `{outputDir}` | 이 문서 블록의 `outputDir`에 대한 절대 해결 경로 | `/home/acme/repo/i18n` |
+| 자리 표시자            | 역할                                                                                                       | 예시                                                          |
+|------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `{outputDir}`          | 이 문서 블록의 `outputDir`에 대한 절대 해결 경로                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | 대상 로캘 코드(설정/CLI에서와 동일한 형식) | `de`, `pt-BR` |
 | `{LOCALE}` | 동일한 로캘을 대문자로 표기 | `DE`, `PT-BR` |
 | `{relPath}` | 프로젝트 루트를 기준으로 한 소스 파일 경로, POSIX `/` | `docs/guide.md`, `README.md` |
@@ -805,7 +814,7 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Docusaurus docs and JSON labels",
+      "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
@@ -838,10 +847,11 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 
 `npx ai-i18n-tools sync`으로 실행할 경우:
 
-- UI 문자열은 `src/`에서 `public/locales/`로 추출/번역됩니다.
-- 첫 번째 문서 블록은 마크다운 및 JSON 레이블을 Docusaurus `i18n/<locale>/...` 레이아웃으로 번역합니다.
-- 두 번째 문서 블록은 `README.md`을 `translated-docs/` 아래에 로케일 접미어가 붙은 평면 파일로 번역합니다.
-- 모든 문서 블록은 `cacheDir`를 공유하므로, 변경되지 않은 세그먼트가 실행 간에 재사용되어 API 호출과 비용을 줄입니다.
+- UI 문자열은 `src/`에서 추출되어 `public/locales/`로 번역됩니다.
+- 첫 번째 docs 블록은 `docs-site/docs/`의 **마크다운**을 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`로 번역합니다(지역화된 문서 페이지).
+- `features.translateJSON` 및 `jsonSource`를 사용하면 동일한 블록에서 `docs-site/i18n/en/` 하위의 **Docusaurus 셸 JSON**도 각 대상 로케일 폴더로 번역됩니다. 여기에는 내비게이션 바, 푸터, 테마/플러그인 카탈로그가 포함되며, MDX 본문은 제외됩니다.
+- 두 번째 docs 블록은 `README.md`을 `translated-docs/` 아래의 로케일 접미사가 붙은 평면 파일로 번역합니다.
+- 모든 docs 블록은 `cacheDir`을 공유하므로 변경되지 않은 세그먼트는 실행 간에 재사용되어 API 호출과 비용을 줄입니다.
 
 ---
 
@@ -998,9 +1008,9 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `extractUIStrings`   | 1        | 소스에서 `t("…")` / `i18n.t("…")`를 스캔하고, 선택적 `package.json` 설명과 (활성화된 경우) `ui-languages.json` `englishName` 값을 `strings.json`에 병합합니다. |
 | `translateUIStrings` | 1        | `strings.json` 항목을 번역하고 로케일별 JSON 파일을 작성합니다.                                                                                                  |
-| `translateMarkdown`  | 2        | `.md` / `.mdx` 파일을 번역합니다.                                                                                                                                    |
-| `translateJSON`      | 2        | Docusaurus JSON 레이블 파일을 번역합니다.                                                                                                                             |
-| `translateSVG`       | 2        | 독립형 `.svg` 리소스 번역 (최상위 `svg` 블록 필요).                                                                                         |
+| `translateMarkdown`  | 2        | `.md` / `.mdx` 파일(평면 또는 Docusaurus 문서) 번역.                                                                                                                                   |
+| `translateJSON`      | 2        | `docusaurus write-translations`의 Docusaurus 레이블 JSON (테마/내비게이션 바/푸터/플러그인 UI), **마크다운 페이지 본문은 제외**.                                             |
+| `translateSVG`       | 2        | `.svg` 파일 번역 (최상위 `svg` 블록 필요).                                                                                                       |
 
 `features.translateSVG`이 true이고 최상위 `svg` 블록이 구성된 경우, `translate-svg`으로 SVG 파일을 **번역**합니다. `sync` 명령은 두 조건이 모두 충족될 때(단, `--no-svg`가 아닐 경우) 해당 단계를 실행합니다.
 
@@ -1067,17 +1077,17 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 문서 파이프라인 블록의 배열입니다. `translate-docs`과 `sync`의 docs 단계는 각 블록을 순서대로 **처리합니다**.
 
 - `description`
-이 블록에 대한 선택적 인간이 읽을 수 있는 메모(번역에는 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목 앞에 접두사로 붙으며, `status` 섹션 헤더에도 표시됨.
+이 블록에 대한 선택적 사람이 읽을 수 있는 메모(번역에 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목 앞에 접두사로 붙으며, `status` 섹션 헤더에도 표시됩니다.
 - `contentPaths`
-번역할 Markdown/MDX 소스(`translate-docs`는 이들에서 `.md` / `.mdx`를 스캔함). JSON 레이블은 동일한 블록의 `jsonSource`에서 가져옴.
+번역할 마크다운/MDX 페이지 본문(`translate-docs`가 `.md` / `.mdx`을 검색함). 지역화된 문서 본문은 여기서 생성됩니다.
 - `outputDir`
-이 블록에 대한 번역 출력의 루트 디렉터리.
+이 블록의 번역된 출력물에 대한 루트 디렉터리.
 - `sourceFiles`
 로드 시 `contentPaths`에 병합되는 선택적 별칭.
 - `targetLocales`
-이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 효과적인 문서 로케일은 모든 블록의 합집합입니다.
+이 블록 전용으로 선택할 수 있는 로케일의 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록의 합집합입니다.
 - `jsonSource`
-이 블록에 대한 Docusaurus JSON 레이블 파일의 소스 디렉터리(예: `"i18n/en"`).
+선택 사항. 이 블록의 Docusaurus JSON 레이블 카탈로그에 대한 소스 디렉터리(예: `"i18n/en"`의 `docusaurus write-translations`). 페이지 본문은 항상 `contentPaths`에서 가져오며, `jsonSource`는 셸/UI JSON만 제공하고 MDX는 제공하지 않습니다.
 - `markdownOutput.style`
 `"nested"`(기본값), `"docusaurus"`, 또는 `"flat"`.
 - `markdownOutput.docsRoot`
@@ -1232,9 +1242,9 @@ UI 문자열만 번역. `--force`: 기존 번역 무시하고 로케일별 모�
 <a id="environment-variables"></a>
 ## 환경 변수
 
-| 변수                    | 설명                                                         |
-|-------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`    | **필수 항목.** OpenRouter API 키입니다.                     |
+| 변수               | 설명                                                |
+|------------------------|------------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | **필수 항목.** OpenRouter API 키.                     |
 | `OPENROUTER_BASE_URL`   | API 기본 URL을 재정의합니다.                                 |
 | `I18N_SOURCE_LOCALE`    | 런타임에 `sourceLocale`을 재정의합니다.                        |
 | `I18N_TARGET_LOCALES`   | `targetLocales`을 재정의할 쉼표로 구분된 로케일 코드입니다.  |

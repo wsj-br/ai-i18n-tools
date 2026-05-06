@@ -7,7 +7,7 @@
 [![ライセンス: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-JavaScript/TypeScript アプリケーションおよびドキュメントサイトの国際化のための CLI およびツールキット。UI 文字列を抽出し、OpenRouter 経由で大規模言語モデルを使用して翻訳を行い、i18next 向けのロケール対応 JSON ファイルを生成します。また、Markdown、Docusaurus JSON、SVG ファイル向けのパイプラインも含まれます。
+JavaScript/TypeScript アプリケーションおよびドキュメントサイトの国際化のための CLI およびツールキットです。UI 文字列を抽出し、OpenRouter 経由で大規模言語モデルを使用して翻訳を行い、i18next 向けのロケール対応 JSON ファイルを生成します。ドキュメントの場合、`contentPaths` 内の markdown および MDX を翻訳します（読者が開くローカライズされたページ）。オプションで `jsonSource` から出力される Docusaurus ラベル用 JSON は、ページ本文のコピーとは別に、サイトシェルの文字列（`write-translations` カタログ：テーマ/ナビ/フッターなど）をカバーします。SVG ファイルの翻訳には `features.translateSVG` と最上位の `svg` ブロックを使用します。
 
 <small>**他の言語で読む：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -38,11 +38,11 @@ JavaScript/TypeScript アプリケーションおよびドキュメントサイ�
 
 マスター カタログ（オプションでロケールごとの `models` メタデータ付きの `strings.json`）を、`t("…")` / `i18n.t("…")` の **literals**、オプションの `package.json` `description`、および設定で有効化されている場合の `ui-languages.json` からの各 `englishName` から構築します。未翻訳エントリをロケールごとに OpenRouter を使用して翻訳し、i18next 向けのフラットな JSON ファイル（`de.json`、`pt-BR.json` など）を出力します。
 
-**ワークフロー2 - ドキュメント翻訳**（Markdown、Docusaurus JSON）
+**ワークフロー 2 - ドキュメント翻訳**（Markdown / MDX、オプションの Docusaurus シェル JSON）
 
-各`documentations`ブロックの`contentPaths`にある`.md`および`.mdx`を翻訳します。有効にした場合、そのブロックの`jsonSource`にあるJSONラベルファイルも翻訳します。ブロックごとにDocusaurusスタイルまたはフラットなロケール接尾辞付きレイアウト（`documentations[].markdownOutput`）をサポートします。共有ルートの`cacheDir`にSQLiteキャッシュを保持するため、LLMに送信されるのは新規または変更されたセグメントのみです。**SVG：**`features.translateSVG`を有効にし、トップレベルに`svg`ブロックを追加して、`translate-svg`を使用します（両方が設定されている場合は`sync`からも実行可能）。
+`documentations` ブロックの `contentPaths` から `.md` および `.mdx` を翻訳します。つまり、ローカライズされたドキュメントです。`features.translateJSON` および `jsonSource` が設定されている場合、MDX 本文ではなく、Docusaurus の **ラベル JSON**（`write-translations` からのナビバー、フッター、テーマ/プラグイン UI）も翻訳します。ブロックごとに、Docusaurus スタイルおよびフラットなロケール接尾辞付きレイアウトをサポートします（`documentations[].markdownOutput`）。共有ルートの `cacheDir` に SQLite キャッシュを保持するため、新規または変更されたセグメントのみが LLM に送信されます。**SVG：** `features.translateSVG` を有効にし、トップレベルの `svg` ブロックを追加して、`translate-svg` を使用します（両方が設定されている場合は `sync` から実行することもできます）。
 
-両方のワークフローは単一の`ai-i18n-tools.config.json`ファイルを共有しており、個別または併用が可能です。スタンドアロンSVG翻訳は`features.translateSVG`とトップレベルの`svg`ブロックを使用し、`translate-svg`を通じて実行されます（または`sync`内のSVGステージで実行）。
+両方のワークフローは単一の `ai-i18n-tools.config.json` ファイルを共有しており、個別または併用が可能です。SVG ファイルの翻訳は `features.translateSVG` と最上位の `svg` ブロックを使用し、`translate-svg` 経由（または `sync` 内の SVG ステージ）で実行されます。
 
 ---
 
@@ -217,7 +217,7 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+ai-i18n-tools translate-docs …                      Translate documentation: markdown/MDX from contentPaths; optional Docusaurus label JSON from jsonSource. Flags include -l/--locale <codes>, -p/-f path, --dry-run,
                                                     --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
                                                     --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])

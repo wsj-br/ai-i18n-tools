@@ -3,8 +3,8 @@
 
 `ai-i18n-tools` は、2つの独立した組み合わせ可能なワークフローを提供します。
 
-- **ワークフロー 1 - UI 翻訳**: 任意の JS/TS ソースから `t("…")` 呼び出しを抽出し、OpenRouter 経由で翻訳を行い、i18next 向けにフラットなロケール別 JSON ファイルを出力します。
-- **ワークフロー 2 - ドキュメント翻訳**: markdown (MDX) および Docusaurus JSON ラベルファイルを任意の数のロケールに翻訳。スマートキャッシュ付き。**SVG** ファイルは `features.translateSVG`、トップレベルの `svg` ブロック、および `translate-svg` を使用します（[CLI リファレンス](#cli-reference)を参照）。
+- **ワークフロー 1 - UI 翻訳**: 任意の JS/TS ソースから `t("…")` 呼び出しを抽出し、OpenRouter 経由で翻訳して、i18next で使用可能なフラットなロケール別 JSON ファイルを出力します。
+- **ワークフロー 2 - ドキュメント翻訳**: `contentPaths` にリストされた **Markdown および MDX ページ** を任意の数のロケールに翻訳し、スマートキャッシュを活用します。これはサイトで読者が開くローカライズされたドキュメントです。オプションの **Docusaurus JSON** (`jsonSource`、`docusaurus write-translations` から生成) は **サイト全体のUI** (ナビゲーションバー、フッター、テーマ/プラグインのUI文字列) を対象とし、`docs/` 内の本文は対象外です。**SVG** ファイルは `features.translateSVG`、トップレベルの `svg` ブロック、および `translate-svg` を使用して翻訳されます（[CLI リファレンス](#cli-reference)を参照）。
 
 両方のワークフローはOpenRouter（互換性のある任意のLLM）を使用し、単一の設定ファイルを共有します。
 
@@ -102,7 +102,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## クイックスタート
 
-デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` テンプレートは **ドキュメント** 翻訳 (`translate-docs`) を有効にします。設定に基づき、抽出、UI 翻訳、オプションのスタンドアロン SVG 翻訳、ドキュメント翻訳を1つのコマンドで実行したい場合は `sync` を使用してください。
+デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` テンプレートは **ドキュメント** の翻訳を有効にします (`translate-docs`)。設定に基づき、抽出、UI 翻訳、オプションの SVG ファイル翻訳、およびドキュメント翻訳を1つのコマンドで実行したい場合に `sync` を使用します。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -453,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## ワークフロー2 - 文書翻訳
 
-markdown ドキュメント、Docusaurus サイト、JSON ラベルファイル向けに設計されています。markdown に埋め込まれた PNG およびその他のラスターアイメージについては、[翻訳ドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)を参照してください。SVG ファイルは、`features.translateSVG` が有効で、トップレベルの `svg` ブロックが設定されている場合に [`translate-svg`](#cli-reference) 経由で翻訳されます。`documentations[].contentPaths` 経由ではありません。
+**Markdown および MDX ドキュメント**（読者が重視するページ）を `contentPaths` 配下で翻訳することを主目的として設計されています。Docusaurus サイトでは、`docusaurus write-translations` によって生成される **JSON ラベルファイル** も翻訳できます。これらはテーマ、ナビゲーションバー、フッター、プラグインのUI文字列（シェルのi18n）を含み、`docs/` 内の本文とは別です。Markdown に埋め込まれた PNG その他のラスターアイコンについては、[翻訳ドキュメント内の画像およびラスターアセット](#images-and-raster-assets-in-translated-docs)を参照してください。SVG ファイルは、`features.translateSVG` が有効で、トップレベルの `svg` ブロックが設定されている場合に [`translate-svg`](#cli-reference) 経由で翻訳されます。`documentations[].contentPaths` 経由ではありません。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### ステップ1：ドキュメント用に初期化
@@ -472,6 +472,8 @@ npx ai-i18n-tools init -t ui-docusaurus
 - `documentations[].contentPaths` - Markdown/MDXのソースディレクトリまたはファイル（JSONラベルについては`documentations[].jsonSource`も参照）。
 - `documentations[].outputDir` - そのブロックの翻訳出力ルート。
 - `documentations[].markdownOutput.style` - `"nested"`（デフォルト）、`"docusaurus"`、または`"flat"`（[出力レイアウト](#output-layouts)を参照）。
+
+**主たる翻訳対象と補助的翻訳対象:** 作成および翻訳の重点は `contentPaths` に置きます。この出力がローカライズされたドキュメントです。`jsonSource` は **Docusaurus シェル** をローカライズするチーム向けです。Docusaurus のアップグレードやナビゲーションバー、フッター、テーマ文字列の変更時に `docusaurus write-translations` を実行し、デフォルトロケールのフォルダー内のソースカタログを最新の状態に保ちます。翻訳済みページのみが必要で、UI 文字列は別途処理する場合は、`features.translateJSON` を `false` に設定できます。
 
 <a id="step-2-translate-documents"></a>
 ### ステップ2：文書を翻訳
@@ -508,9 +510,9 @@ npx ai-i18n-tools status
 
 CLIはSQLiteで**ファイルトラッキング**を維持します（ファイルごとのソースハッシュ×ロケール）および**セグメント**行（翻訳可能なチャンクごとのハッシュ×ロケール）。通常の実行では、トラッキングされたハッシュが現在のソース**と**一致し、出力ファイルがすでに存在する場合、ファイル全体をスキップします。それ以外の場合は、ファイルを処理し、セグメントキャッシュを使用して変更されていないテキストがAPIを呼び出さないようにします。
 
-| フラグ                          | 効果                                                                                                                                                                                                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *(デフォルト)*                   | 追跡情報とディスク上の出力が一致している場合に変更のないファイルをスキップ。それ以外の処理ではセグメントキャッシュを使用。                                                                                                                                                                              |
+| フラグ                          | 機能                                                                                                                                                                                                                                                              |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *(デフォルト)*                   | 追跡対象とディスク上の出力が一致する場合、変更のないファイルをスキップします。それ以外はセグメントキャッシュを使用します。                                                                                                                                                                          |
 | `-l, --locale <codes>`        | カンマ区切りのターゲットロケール（省略された場合は、ルートの`targetLocales`および各`documentations[]`ブロックのオプション`targetLocales`の和集合がデフォルトになります）。                                                                                                                                                          |
 | `-p, --path` / `-f, --file`   | このパス以下のMarkdown/JSONのみを翻訳（プロジェクト相対または絶対パス）; `--file`は`--path`のエイリアスです。                                                                                                                                                         |
 | `--dry-run`                   | ファイル書き込みもAPI呼び出しも行いません。                                                                                                                                                                                                                                        |
@@ -533,13 +535,13 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 
 `translate-docs` は、翻訳可能なセグメントを **バッチ** 単位で OpenRouter に送信します（`batchSize` / `maxBatchChars` ごとにグループ化）。`--prompt-format` フラグはそのバッチの **送信形式** のみを変更します。`PlaceholderHandler` トークン、マークダウンASTチェック、SQLiteキャッシュキー、バッチ解析失敗時のセグメント単位のフォールバックは変更されません。
 
-| モード                       | ユーザーメッセージ                                                           | モデルの応答                                                 |
-|----------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
-| `xml`                  | パセドXML：セグメントごとに1つの`<seg id="N">…</seg>`（XMLエスケープ付き）。 | セグメントインデックスごとに1つずつの`<t id="N">…</t>`ブロックのみ。       |
+| モード                   | ユーザーメッセージ                                                           | モデルの応答                                                 |
+|------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
+| `xml`                  | ダミーXML形式: セグメントごとに1つの `<seg id="N">…</seg>` (XMLエスケープ済み)。 | セグメントインデックスごとに1つの `<t id="N">…</t>` ブロックのみ。       |
 | `json-array` (デフォルト) | 順序通りのセグメントごとに1つのエントリを持つJSON配列。               | **同じ長さ**のJSON配列（同じ順序）。           |
 | `json-object`          | セグメントインデックスをキーとするJSONオブジェクト `{"0":"…","1":"…",…}`。            | **同じキー**と翻訳された値を持つJSONオブジェクト。 |
 
-実行ヘッダーには `Batch prompt format: …` も表示されるため、現在のモードを確認できます。JSONラベルファイル（`jsonSource`）およびスタンドアロンSVGバッチは、それらのステップが `translate-docs` の一部として実行される場合（または `sync` のドキュメントフェーズ）に同じ設定を使用します（`sync` はこのフラグを公開せず、デフォルトは `json-array` です）。
+実行ヘッダーは `Batch prompt format: …` も出力するため、アクティブなモードを確認できます。JSON ラベルファイル (`jsonSource`) および SVG ファイルのバッチは、それらのステップが `translate-docs` の一部として実行される場合（または `sync` のドキュメントフェーズ — `sync` はこのフラグを公開しないため、デフォルトは `json-array` になります）に同じ設定を使用します。
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### SQLiteにおけるセグメントの重複排除とパス
@@ -556,9 +558,16 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 
 `"docusaurus"` — 通常のDocusaurus i18nレイアウトに従って、`i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`にある`docsRoot`以下のファイルを配置します。`documentations[].markdownOutput.docsRoot`をドキュメントのソースルートに設定してください（例: `"docs"`）。
 
+ドキュメントページ（主たる対象）:
+
 ```text
-docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
-i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+オプションの JSON ラベル — `jsonSource` から生成される Docusaurus シェル用文字列 (MDX 本文は対象外):
+
+```text
+i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
 `"flat"` — 翻訳済みファイルをソースの隣にロケールのサフィックス付き、またはサブディレクトリ内に配置します。ページ間の相対リンクは自動的に書き換えられます。
@@ -619,7 +628,7 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 
 `translate-docs` はMarkdownセグメント（画像のaltテキストを含む）を翻訳します。ただし、ラスターファイル（PNG、JPEG、WebP、GIF）をドキュメントに**コピーしません**。ファイルを書き換えられたURLが指す場所に配置するか、翻訳後にURLを調整してください（通常は`markdownOutput.postProcessing.regexAdjustments`を使用して）。`outputDir`。
 
-**SVG** は、図解アセットとして使用する場合、`svg` ブロックと `translate-svg` を使用します — [`svg`](#svg) を参照。`documentations[].contentPaths` にリストされたパスは、スタンドアロンの SVG 翻訳ではなく、markdown/MDX（およびオプションの JSON ラベル）用です。
+図解アセットとして使用される **SVG** は `svg` ブロックと `translate-svg` を使用します — [`svg`](#svg) を参照してください。`documentations[].contentPaths` にリストされたパスは、SVG ファイルの翻訳ではなく、Markdown/MDX（およびオプションの JSON ラベル）用です。
 
 **フラットレイアウトで修正が必要になることが多い理由**
 
@@ -665,7 +674,7 @@ Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`
 
 `images/screenshots/<locale>/`の下にディスク上にPNGファイルを維持してください（URLを書き換えた後に使用されるのと同じレイアウト）。
 
-**パターン3 — 個別のSVG**（`examples/nextjs-app`）
+**パターン 3 — SVG ファイル** (`examples/nextjs-app`)
 
 同じ例では`features.translateSVG`が有効になっており、ソースSVGはWebアプリのpublicフォルダーにマッピングされています：
 
@@ -692,9 +701,9 @@ Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`
 
 カスタムの`pathTemplate`を使用する場合、明示的に設定しない限り、`rewriteRelativeLinks`はデフォルトで`false`になります — フラットスタイルのリンク書き換えは、組み込みの`flat`レイアウト向けに設計されています。
 
-| プレースホルダー | 役割 | 例 |
-|-------------|------|---------|
-| `{outputDir}` | このドキュメントブロックの`outputDir`の絶対解決パス | `/home/acme/repo/i18n` |
+| プレースホルダー            | 役割                                                                                                       | 例                                                          |
+|------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `{outputDir}`          | このドキュメントブロックの `outputDir` の絶対パス（解決済み）                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | ターゲットロケールコード（設定/CLIと同じ形式） | `de`, `pt-BR` |
 | `{LOCALE}` | 同じロケールを大文字にしたもの | `DE`, `PT-BR` |
 | `{relPath}` | プロジェクトルートからの相対ソースファイルパス（POSIX `/`） | `docs/guide.md`, `README.md` |
@@ -805,7 +814,7 @@ Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Docusaurus docs and JSON labels",
+      "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
@@ -838,10 +847,11 @@ Next.jsの例では、`examples/nextjs-app/ai-i18n-tools.config.json`に2つの`
 
 `npx ai-i18n-tools sync` で実行した場合の動作:
 
-- UI文字列は `src/` から `public/locales/` に抽出／翻訳されます。
-- 最初のドキュメントブロックは、MarkdownおよびJSONラベルをDocusaurusの `i18n/<locale>/...` レイアウトに翻訳します。
-- 2番目のドキュメントブロックは `README.md` を `translated-docs/` 配下のロケールサフィックス付き平坦ファイルに翻訳します。
-- すべてのドキュメントブロックは `cacheDir` を共有するため、変更されていないセグメントは実行間で再利用され、API呼び出しとコストを削減できます。
+- UI 文字列は `src/` から `public/locales/` へ抽出および翻訳されます。
+- 最初のドキュメントブロックは、`docs-site/docs/` から `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` へ **Markdown** を翻訳します（ローカライズされたドキュメントページ）。
+- `features.translateJSON` および `jsonSource` を使用することで、同じブロックが `docs-site/i18n/en/` 配下の **Docusaurus シェル JSON** を各ターゲットロケールフォルダーに翻訳します（ナビゲーションバー、フッター、テーマ／プラグインカタログ。MDX本文は対象外）。
+- 2番目のドキュメントブロックは、`README.md` を `translated-docs/` 配下のフラットなロケール接尾付きファイルに翻訳します。
+- すべてのドキュメントブロックは `cacheDir` を共有するため、変更されていないセグメントは実行間で再利用され、API 呼び出し回数とコストを削減します。
 
 ---
 
@@ -998,9 +1008,9 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `extractUIStrings`   | 1        | ソース内の`t("…")` / `i18n.t("…")`をスキャンし、オプションの`package.json`説明および（有効な場合）`ui-languages.json` `englishName`値を`strings.json`にマージします。 |
 | `translateUIStrings` | 1        | `strings.json`エントリを翻訳し、ロケールごとのJSONファイルを出力します。                                                                                                  |
-| `translateMarkdown`  | 2        | `.md` / `.mdx`ファイルを翻訳します。                                                                                                                                    |
-| `translateJSON`      | 2        | DocusaurusのJSONラベルファイルを翻訳します。                                                                                                                             |
-| `translateSVG`       | 2        | スタンドアロンの`.svg`アセットを翻訳します（トップレベルの`svg`ブロックが必要です）。                                                                                         |
+| `translateMarkdown`  | 2        | `.md` / `.mdx` ファイル（フラットまたは Docusaurus ドキュメント）の翻訳。                                                                                                                                   |
+| `translateJSON`      | 2        | `docusaurus write-translations` からの Docusaurus ラベル JSON（テーマ／ナビ／フッター／プラグイン UI）。**Markdown ページ本文は対象外**。                                             |
+| `translateSVG`       | 2        | `.svg` ファイルの翻訳を実行します（最上位の `svg` ブロックが必要です）。                                                                                                       |
 
 `features.translateSVG` が true かつトップレベルの `svg` ブロックが設定されている場合、`translate-svg` で **SVG** ファイルを翻訳します。`sync` コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg` でない限り）。
 
@@ -1067,21 +1077,21 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 ドキュメントパイプラインブロックの配列。`translate-docs` と `sync` のドキュメントフェーズが各ブロックを順番に**処理します**。
 
 - `description`
-このブロックのためのオプションの人間可読ノート（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐` ヘッドラインにプレフィックスが付けられます。また、`status` セクションヘッダーにも表示されます。
+このブロック用の任意の人が読めるメモ（翻訳では使用されません）。設定されている場合、`translate-docs` `🌐` の見出しに接頭辞として付加され、`status` のセクション見出しにも表示されます。
 - `contentPaths`
-翻訳するための Markdown/MDX ソース（`translate-docs` はこれらを `.md` / `.mdx` のためにスキャンします）。JSON ラベルは同じブロックの `jsonSource` から来ます。
+翻訳対象の Markdown／MDX ページ本文（`translate-docs` が `.md`／`.mdx` をスキャンします）。ローカライズされたドキュメント本文はここから生成されます。
 - `outputDir`
-このブロックの翻訳出力のルートディレクトリ。
+このブロックの翻訳出力先ルートディレクトリ。
 - `sourceFiles`
-読み込み時に `contentPaths` にマージされるオプションのエイリアス。
+読み込み時に `contentPaths` にマージされる任意のエイリアス。
 - `targetLocales`
-このブロックのためのオプションのロケールのサブセット（そうでない場合はルート `targetLocales`）。有効なドキュメントロケールはブロック間の和集合です。
+このブロック専用の任意のロケールサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合となります。
 - `jsonSource`
-このブロックのための Docusaurus JSON ラベルファイルのソースディレクトリ（例: `"i18n/en"`）。
+任意。このブロック用の Docusaurus JSON ラベルカタログのソースディレクトリ（例：`"i18n/en"` は `docusaurus write-translations` から）。ページ本文は常に `contentPaths` から取得されます。`jsonSource` はシェル／UI用JSONのみを提供し、MDXは対象外です。
 - `markdownOutput.style`
 `"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`。
 - `markdownOutput.docsRoot`
-Docusaurus レイアウトのためのソースドキュメントルート（例: `"docs"`）。
+Docusaurus レイアウト用のソースドキュメントルート（例：`"docs"`）。
 - `markdownOutput.pathTemplate`
 カスタム Markdown 出力パス。プレースホルダー: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>。
 - `markdownOutput.jsonPathTemplate`
@@ -1232,9 +1242,9 @@ UI文字列のみを翻訳。`--force`：すべてのエントリをロケール
 <a id="environment-variables"></a>
 ## 環境変数
 
-| 変数                | 説明                                                |
-|-------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`    | **必須。** OpenRouter APIキー。                     |
+| 変数               | 説明                                                |
+|------------------------|------------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | **必須**。OpenRouter API キー。                     |
 | `OPENROUTER_BASE_URL`   | APIのベースURLを上書きします。                                 |
 | `I18N_SOURCE_LOCALE`    | 実行時に`sourceLocale`を上書きします。                        |
 | `I18N_TARGET_LOCALES`   | `targetLocales`を上書きするためのカンマ区切りのロケールコード。  |

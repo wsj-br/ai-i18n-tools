@@ -7,7 +7,7 @@
 [![Licence : MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI et outil pour l'internationalisation d'applications JavaScript/TypeScript et de sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de grands modèles linguistiques via OpenRouter, puis génère des fichiers JSON prêts à l'emploi par locale pour i18next. Inclut également des pipelines pour les fichiers markdown, JSON Docusaurus et SVG.
+CLI et outil pour l'internalisation des applications JavaScript/TypeScript et des sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de grands modèles linguistiques via OpenRouter, puis génère des fichiers JSON prêts pour les locales utilisées par i18next. Pour la documentation, il traduit les fichiers markdown et MDX situés dans `contentPaths` (les pages localisées que les lecteurs ouvrent). Le JSON optionnel des libellés Docusaurus provenant de `jsonSource` couvre les chaînes du conteneur du site (catalogues `write-translations` tels que thème/navigation/pied de page), distinctes du contenu des pages. La traduction des fichiers SVG utilise `features.translateSVG` et le bloc de niveau supérieur `svg`.
 
 <small>**Lire dans d'autres langues :** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -38,11 +38,11 @@ CLI et outil pour l'internationalisation d'applications JavaScript/TypeScript et
 
 Construit un catalogue principal (`strings.json` avec des métadonnées optionnelles par langue `models`) à partir des **littéraux** `t("…")` / `i18n.t("…")`, éventuellement `package.json` `description`, et éventuellement chaque `englishName` provenant de `ui-languages.json` lorsque cette fonction est activée dans la configuration. Traduit les entrées manquantes par langue via OpenRouter et génère des fichiers JSON plats (`de.json`, `pt-BR.json`, …) prêts à être utilisés avec i18next.
 
-**Flux de travail 2 - Traduction de la documentation** (Markdown, JSON Docusaurus)
+**Workflow 2 - Traduction de documents** (Markdown / MDX, JSON optionnel du conteneur Docusaurus)
 
-Traduit les contenus `.md` et `.mdx` de chaque bloc `documentations` provenant de `contentPaths`, ainsi que les fichiers JSON d'étiquettes issus du bloc `jsonSource` lorsque cette fonction est activée. Prend en charge les structures de dossiers par bloc au style Docusaurus ou à plat avec suffixe de langue (`documentations[].markdownOutput`). Un fichier `cacheDir` racine partagé contient le cache SQLite afin que seuls les segments nouveaux ou modifiés soient envoyés au LLM. **SVG :** activez `features.translateSVG`, ajoutez le bloc `svg` au niveau supérieur, puis utilisez `translate-svg` (également exécuté depuis `sync` lorsque les deux sont configurés).
+Traduit `.md` et `.mdx` à partir du `contentPaths` de chaque bloc `documentations` — autrement dit, la documentation localisée. Lorsque `features.translateJSON` et `jsonSource` sont définis, il traduit également le **JSON des étiquettes** Docusaurus (barre de navigation, pied de page, interface des thèmes/plugins provenant de `write-translations`), mais pas le texte du corps MDX. Prend en charge les structures de dossiers localisés au style Docusaurus ou plates, par bloc (`documentations[].markdownOutput`). Le `cacheDir` racine partagé contient le cache SQLite afin que seuls les segments nouveaux ou modifiés soient envoyés au LLM. **SVG :** activez `features.translateSVG`, ajoutez le bloc `svg` au niveau supérieur, puis utilisez `translate-svg` (également exécuté depuis `sync` lorsque les deux sont définis).
 
-Les deux flux de travail partagent un même fichier `ai-i18n-tools.config.json` et peuvent être utilisés indépendamment ou conjointement. La traduction autonome des fichiers SVG utilise `features.translateSVG` ainsi que le bloc `svg` au niveau supérieur, et s'exécute via `translate-svg` (ou l'étape SVG incluse dans `sync`).
+Les deux flux de travail partagent un seul fichier `ai-i18n-tools.config.json` et peuvent être utilisés indépendamment ou ensemble. La traduction des fichiers SVG utilise `features.translateSVG` ainsi que le bloc de niveau supérieur `svg` et s'exécute via `translate-svg` (ou l'étape SVG incluse dans `sync`).
 
 ---
 
@@ -217,7 +217,7 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+ai-i18n-tools translate-docs …                      Translate documentation: markdown/MDX from contentPaths; optional Docusaurus label JSON from jsonSource. Flags include -l/--locale <codes>, -p/-f path, --dry-run,
                                                     --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
                                                     --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])

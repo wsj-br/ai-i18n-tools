@@ -580,7 +580,7 @@ export const i18nConfigSchema = z
      * Used for display labels in translated markdown and as the app-facing manifest; `extract` overwrites it.
      */
     uiLanguagesPath: z.string().optional(),
-    /** Standalone SVG translation (`translate-svg`): sources + output layout. */
+    /** SVG file translation (`translate-svg`): sources + output layout. */
     svg: SvgFilesConfigSchema.optional(),
     batchSize: z.number().int().positive().optional(),
     maxBatchChars: z.number().int().positive().optional(),

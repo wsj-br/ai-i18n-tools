@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 Alle Extraktoren erweitern `BaseExtractor` und implementieren `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` – unterteilt Markdown in typisierte Segmente: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML-Frontmatter wird als **nicht übersetzbar** klassifiziert (`slug`, `id` und andere Routing-Schlüssel bleiben unverändert). `export ...`-Blöcke auf oberster Ebene (z. B. React-Komponentendefinitionen) werden als nicht übersetzbare `other`-Segmente klassifiziert, analog zur bestehenden `import ...`-Behandlung. Mehrzeilige Blöcke, die mit einem großgeschriebenen JSX-Tag beginnen (z. B. ein `<Tabs>`-Block), werden als übersetzbare Absätze klassifiziert. Nicht übersetzbare Segmente (Codeblöcke, rohes HTML) bleiben unverändert erhalten.
-- `JsonExtractor` – extrahiert Zeichenkettenwerte aus Docusaurus JSON-Label-Dateien.
-- `SvgExtractor` – extrahiert `<text>`, `<title>` und `<desc>` Inhalte aus SVG (wird von `translate-svg` für Assets unter `config.svg` verwendet, nicht von `translate-docs`).
+- `MarkdownExtractor` - teilt Markdown in typisierte Segmente: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML-Frontmatter wird als **nicht übersetzbar** klassifiziert (`slug`, `id` und andere Routing-Schlüssel bleiben stabil). Top-Level `export ...`-Blöcke (z. B. React-Komponenten-Definitionen) werden als nicht übersetzbare `other`-Segmente zusammen mit der bestehenden `import ...`-Verarbeitung klassifiziert. Mehrzeilige Blöcke, die mit einem Großbuchstaben-JSX-Tag beginnen (z. B. ein `<Tabs>`-Block), werden als übersetzbare Absätze klassifiziert. Nicht übersetzbare Segmente (Code-Blöcke, rohes HTML) werden unverändert beibehalten.
+- `JsonExtractor` - extrahiert Zeichenfolgenwerte aus Docusaurus-JSON-Labeldateien (Docusaurus UI-Kataloge, nicht MDX-Body).
+- `SvgExtractor` - extrahiert `<text>`, `<title>` und `<desc>`-Inhalte aus SVG (verwendet von `translate-svg` für Dateien unter `config.svg`, nicht von `translate-docs`).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### Einfügen von Überschriften-Ankern (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ Wichtige Exporte:
 | `TranslationCache` | SQLite-Cache – Instanziierung mit einem `cacheDir` Pfad. |
 | `UIStringExtractor` | Extrahiere `t("…")`-Zeichenketten aus JS/TS-Quellcode. |
 | `MarkdownExtractor` | Extrahiere übersetzbare Segmente aus Markdown. |
-| `JsonExtractor` | Extrahiere aus Docusaurus JSON-Beschriftungsdateien. |
+| `JsonExtractor` | Aus Docusaurus JSON-Beschriftungsdateien extrahieren (Benutzeroberflächenkataloge, nicht MDX-Inhalt). |
 | `SvgExtractor` | Extrahiere aus SVG-Dateien. |
 | `OpenRouterClient` | Sende Übersetzungsanfragen an OpenRouter. |
 | `PlaceholderHandler` | Schützt und stellt Markdown-Syntax um die Übersetzung herum wieder her (HTML-Tags, Hinweise, Anker, MDX-Kommentare/JSX/Geschweifte Klammern, URLs, Inline-Code, Hervorhebungen). |

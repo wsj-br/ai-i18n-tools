@@ -101,7 +101,7 @@ pnpm run i18n:extract
 
 ### 2. Traducir
 
-Establezca `OPENROUTER_API_KEY`, luego desde ``examples/nextjs-app`` ejecute todos los pasos de traducción (JSON plano de interfaz de usuario → recursos SVG → documentación) en orden:
+Establezca `OPENROUTER_API_KEY`, luego desde ``examples/nextjs-app`` ejecute todos los pasos de traducción en orden (JSON plano de la interfaz → archivos SVG → documentación):
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
@@ -132,10 +132,10 @@ ai-i18n-tools sync
 
 Los pasos se ejecutan en orden:
 
-1. ``ai-i18n-tools extract`` — extrae cadenas de interfaz de usuario y actualiza `locales/strings.json`.
-2. ``ai-i18n-tools translate-ui`` — escribe JSON plano de configuración regional en `public/locales/` a partir de `locales/strings.json`.
-3. ``ai-i18n-tools translate-svg`` — traduce recursos SVG desde `images/` a `public/assets/` cuando `features.translateSVG` es verdadero y el bloque `svg` está establecido en `ai-i18n-tools.config.json` (este ejemplo usa nombres planos: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — traduce el markdown de Docusaurus y JSON relacionado en `docs-site/i18n/` (según `documentations[]` en `ai-i18n-tools.config.json`; vea Flujo de trabajo 2 en `docs/GETTING_STARTED.md` en la raíz del repositorio).
+1. ``ai-i18n-tools extract`` — extrae las cadenas de la interfaz y actualiza `locales/strings.json`.
+2. ``ai-i18n-tools translate-ui`` — genera JSON plano por idioma en `public/locales/` a partir de `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — traduce los archivos SVG de `images/` a `public/assets/` cuando `features.translateSVG` es verdadero y el bloque `svg` está definido en `ai-i18n-tools.config.json` (este ejemplo usa nombres planos: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — traduce el **contenido de las páginas** de Docusaurus (markdown/MDX en `docs-site/docs/`) a `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, y cuando `features.translateJSON` y `jsonSource` están definidos, también traduce el **JSON de shell** desde `docs-site/i18n/en/` (según `documentations[]` en `ai-i18n-tools.config.json`; véase el flujo de trabajo 2 en `docs/GETTING_STARTED.md` en la raíz del repositorio).
 
 Puede ejecutar cualquier paso individualmente (por ejemplo, `ai-i18n-tools translate-svg`) cuando solo hayan cambiado las fuentes de ese flujo de trabajo.
 

@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 모든 추출기는 `BaseExtractor`를 확장하고 `extract(content, filepath): Segment[]`를 구현합니다.
 
-- `MarkdownExtractor` - 마크다운을 유형별 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML 프론트매터는 **번역 불가능**로 분류됩니다 (`slug`, `id`, 및 기타 라우팅 키는 안정적으로 유지됩니다). 최상위 `export ...` 블록(예: React 컴포넌트 정의)은 기존 `import ...` 처리와 함께 번역 불가능 `other` 세그먼트로 분류됩니다. 대문자로 시작하는 JSX 태그(예: `<Tabs>` 블록)로 시작하는 다중 행 블록은 번역 가능한 단락으로 분류됩니다. 번역 불가능한 세그먼트(코드 블록, 원시 HTML)는 원문 그대로 보존됩니다.
-- `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다.
-- `SvgExtractor` - SVG에서 `<text>`, `<title>`, 및 `<desc>` 콘텐츠를 추출합니다 (`translate-svg`가 `config.svg` 아래의 자산에 사용하며, `translate-docs`에서는 사용되지 않습니다).
+- `MarkdownExtractor` - 마크다운을 유형이 지정된 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML 프론트매터는 **비번역 대상**으로 분류되며(`slug`, `id` 및 기타 라우팅 키는 그대로 유지됨). 최상위 `export ...` 블록(예: React 컴포넌트 정의)은 기존 `import ...` 처리와 함께 비번역 대상 `other` 세그먼트로 분류됩니다. 대문자 JSX 태그로 시작하는 다중 라인 블록(예: `<Tabs>` 블록)은 번역 가능한 단락으로 분류됩니다. 비번역 대상 세그먼트(코드 블록, 원시 HTML)는 원문 그대로 보존됩니다.
+- `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다(Docusaurus UI 카탈로그, MDX 본문 아님).
+- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`config.svg` 하위 파일에 대해 `translate-svg`에서 사용하며, `translate-docs`에서는 사용하지 않음).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### 제목 앵커 삽입 (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ console.log(
 | `TranslationCache` | SQLite 캐시 - `cacheDir` 경로로 인스턴스 생성. |
 | `UIStringExtractor` | JS/TS 소스에서 `t("…")` 문자열 추출. |
 | `MarkdownExtractor` | 마크다운에서 번역 가능한 구문 추출. |
-| `JsonExtractor` | Docusaurus JSON 레이블 파일에서 추출. |
+| `JsonExtractor` | Docusaurus JSON 레이블 파일(UI 카탈로그, MDX 본문 아님)에서 추출합니다. |
 | `SvgExtractor` | SVG 파일에서 추출. |
 | `OpenRouterClient` | OpenRouter로 번역 요청 전송. |
 | `PlaceholderHandler` | 번역 주위의 마크다운 구문 보호/복원 (HTML 태그, 주석, 앵커, MDX 주석/JSX/중괄호, URL, 인라인 코드, 강조). |

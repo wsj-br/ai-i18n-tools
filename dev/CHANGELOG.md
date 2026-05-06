@@ -9,7 +9,9 @@ Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scop
 Add new entries in the `## [Unreleased]` section. When releasing a new version, move all entries in "[Unreleased]" to a new entry `## [x.y.z] - YYYY-MM-DD`.
 
 
-## [Unreleased]
+## [1.4.0] - 2026-05-06
+
+- **Changed**: docs — `README.md`, `GETTING_STARTED.md`, `docs-site` example README, and `PACKAGE_OVERVIEW.md` clarify that Docusaurus **markdown/MDX** under `contentPaths` is the primary documentation output; JSON from `jsonSource` / `write-translations` is **site shell** (theme/nav/footer), not page body copy.
 
 - **Fixed**: mdx-placeholders / `translate-docs` — user-facing JSX string attributes (`label`, `tooltip`, `aria-label`) are rewritten to `{{JXA_N}}` inside preserved tags, appended for translation as `||JXA_N: …||` lines after `protectSegmentForTranslation`, merged back in `restoreMdx`, and called out in document core rules and placeholder leak checks. Previously attributes were recorded but not appended to segments or substituted after translation.
 
@@ -34,6 +36,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Fixed**: markdown extractor — top-level MDX `export …` blocks (e.g. `export const Highlight = (...) => (...)`) are now classified as non-translatable code in `MarkdownExtractor.classifySegment`, matching the existing `import …` rule, so React component source no longer reaches the model.
 
 - **Added**: `{{MDX_N}}` to the document core-rules prompt (`src/core/prompts.ts`) and the internal-placeholder leak detector (`src/processors/translation-placeholder-leaks.ts`); `protectMdx` / `restoreMdx` re-exported from `src/index.ts`.
+
+
+## [Unreleased]
 
 
 ## [1.3.1] - 2026-05-03

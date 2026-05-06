@@ -1,7 +1,7 @@
 import path from "path";
 import { resolveDocTrackingKeyToAbs } from "./doc-file-tracking.js";
 
-/** Namespace prefix for standalone SVG asset rows in `translations.filepath` / `file_tracking.filepath`. */
+/** Namespace prefix for SVG file asset rows in `translations.filepath` / `file_tracking.filepath`. */
 export const SVG_ASSETS_PREFIX = "svg-files:";
 
 /**

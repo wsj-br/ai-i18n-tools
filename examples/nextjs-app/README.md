@@ -139,7 +139,7 @@ Steps run in order:
 1. ``ai-i18n-tools extract`` — extracts UI strings and updates `locales/strings.json`.
 2. ``ai-i18n-tools translate-ui`` — writes flat locale JSON under `public/locales/` from `locales/strings.json`.
 3. ``ai-i18n-tools translate-svg`` — translates SVG files from `images/` to `public/assets/` when `features.translateSVG` is true and the `svg` block is set in `ai-i18n-tools.config.json` (this example uses flat names: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — translates Docusaurus markdown and related JSON under `docs-site/i18n/` (per `documentations[]` in `ai-i18n-tools.config.json`; see Workflow 2 in `docs/GETTING_STARTED.md` at the repository root).
+4. ``ai-i18n-tools translate-docs`` — translates Docusaurus **page content** (markdown/MDX under `docs-site/docs/`) into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, and when `features.translateJSON` and `jsonSource` are set, also translates **shell JSON** from `docs-site/i18n/en/` (per `documentations[]` in `ai-i18n-tools.config.json`; see Workflow 2 in `docs/GETTING_STARTED.md` at the repository root).
 
 You can run any step individually (e.g. `ai-i18n-tools translate-svg`) when only the sources for that workflow have changed.
 

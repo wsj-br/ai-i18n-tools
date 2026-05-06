@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 所有提取器均繼承自 `BaseExtractor` 並實作 `extract(content, filepath): Segment[]`。
 
-- `MarkdownExtractor` - 將 Markdown 拆分為帶類型的段落：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML 前置內容被歸類為**不可翻譯**（`slug`、`id` 和其他路由鍵保持不變）。頂層的 `export ...` 區塊（例如 React 組件定義）與現有的 `import ...` 處理方式一樣，被歸類為不可翻譯的 `other` 段落。以大寫 JSX 標籤開頭的多行區塊（例如 `<Tabs>` 區塊）被歸類為可翻譯段落。不可翻譯的段落（如程式碼區塊、原始 HTML）將原樣保留。
-- `JsonExtractor` - 從 Docusaurus JSON 標籤檔案中提取字串值。
-- `SvgExtractor` - 從 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 內容（由 `translate-svg` 用於 `config.svg` 下的資源，`translate-docs` 不使用）。
+- `MarkdownExtractor` - 將 Markdown 拆分為帶有類型的區段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML 前置內容被歸類為**不可翻譯**（`slug`、`id` 和其他路由鍵保持不變）。頂層的 `export ...` 區塊（例如 React 組件定義）與現有的 `import ...` 處理方式一樣，被歸類為不可翻譯的 `other` 區段。以大寫 JSX 標籤開頭的多行區塊（例如 `<Tabs>` 區塊）被歸類為可翻譯段落。不可翻譯的區段（程式碼區塊、原始 HTML）將原樣保留。
+- `JsonExtractor` - 從 Docusaurus JSON 標籤檔案中提取字串值（Docusaurus 使用者介面目錄，非 MDX 內容）。
+- `SvgExtractor` - 從 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 內容（由 `translate-svg` 用於 `config.svg` 下的檔案，`translate-docs` 不使用）。
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### 標題錨點插入 (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ console.log(
 | `TranslationCache` | SQLite 快取 - 使用 `cacheDir` 路徑進行實例化。 |
 | `UIStringExtractor` | 從 JS/TS 原始碼中提取 `t("…")` 字串。 |
 | `MarkdownExtractor` | 從 Markdown 中提取可翻譯的段落。 |
-| `JsonExtractor` | 從 Docusaurus JSON 標籤檔案中提取。 |
+| `JsonExtractor` | 從 Docusaurus JSON 標籤檔案中提取字串值（使用者介面目錄，而非 MDX 內容主體）。 |
 | `SvgExtractor` | 從 SVG 檔案中提取。 |
 | `OpenRouterClient` | 向 OpenRouter 發送翻譯請求。 |
 | `PlaceholderHandler` | 保護/還原翻譯周圍的 Markdown 語法（HTML 標籤、提示、錨點、MDX 註解/JSX/大括號、網址、行內程式碼、強調）。 |

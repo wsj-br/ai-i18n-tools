@@ -101,7 +101,7 @@ pnpm run i18n:extract
 
 ### 2. الترجمة
 
-عيّن `OPENROUTER_API_KEY`، ثم من ``examples/nextjs-app`` قم بتشغيل جميع خطوات الترجمة (JSON واجهة المستخدم المسطح → أصول SVG → الوثائق) بالترتيب:
+اضبط `OPENROUTER_API_KEY`، ثم نفّذ من ``examples/nextjs-app`` جميع خطوات الترجمة بالترتيب (واجهة المستخدم بصيغة JSON مسطّحة → ملفات SVG → الوثائق):
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
@@ -133,9 +133,9 @@ ai-i18n-tools sync
 الخطوات تُنفّذ بالترتيب:
 
 1. ``ai-i18n-tools extract`` — يستخرج سلاسل واجهة المستخدم ويحدّث `locales/strings.json`.
-2. ``ai-i18n-tools translate-ui`` — يكتب ملفات JSON للغات المسطحة ضمن `public/locales/` من `locales/strings.json`.
-3. ``ai-i18n-tools translate-svg`` — يترجم أصول SVG من `images/` إلى `public/assets/` عندما تكون `features.translateSVG` بقيمة true ويتم تعيين كتلة `svg` في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — يترجم وثائق Docusaurus بصيغة markdown والملفات JSON ذات الصلة ضمن `docs-site/i18n/` (حسب `documentations[]` في `ai-i18n-tools.config.json`؛ راجع سير العمل 2 في `docs/GETTING_STARTED.md` في جذر المستودع).
+2. ``ai-i18n-tools translate-ui`` — يُولّد ملفات JSON مسطّحة حسب اللغة ضمن `public/locales/` من `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — يترجم ملفات SVG من `images/` إلى `public/assets/` عندما تكون قيمة `features.translateSVG` صحيحة ويكون كتلة `svg` مضبوطة في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطّحة: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — يترجم محتوى **الصفحة** في Docusaurus (ملفات markdown/MDX ضمن `docs-site/docs/`) إلى `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`، وعند تعيين `features.translateJSON` و `jsonSource`، يترجم أيضًا **ملفات JSON للواجهة** من `docs-site/i18n/en/` (حسب `documentations[]` في `ai-i18n-tools.config.json`؛ انظر سير العمل 2 في `docs/GETTING_STARTED.md` في جذر المستودع).
 
 يمكنك تشغيل أي خطوة بشكل منفصل (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بذلك المسار.
 

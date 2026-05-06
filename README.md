@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them using large language models via OpenRouter, and generates locale-ready JSON files for i18next. Also includes pipelines for markdown, Docusaurus JSON, and  SVG files.
+CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites. Extracts UI strings, translates them using large language models via OpenRouter, and generates locale-ready JSON files for i18next. For documentation, it translates markdown and MDX under `contentPaths` (the localized pages readers open). Optional Docusaurus label JSON from `jsonSource` covers site shell strings (`write-translations` catalogs such as theme/nav/footer), distinct from page body copy. SVG file translation uses `features.translateSVG` and the top-level `svg` block.
 
 
 <small>**Read in other languages:** </small>
@@ -43,11 +43,11 @@ CLI and toolkit for internationalizing JavaScript/TypeScript applications and do
 
 Builds a master catalog (`strings.json` with optional per-locale `models` metadata) from `t("…")` / `i18n.t("…")` **literals**, optionally `package.json` `description`, and optionally each `englishName` from `ui-languages.json` when enabled in config. Translates missing entries per locale via OpenRouter and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
-**Workflow 2 - Document translation** (Markdown, Docusaurus JSON)
+**Workflow 2 - Document translation** (Markdown / MDX, optional Docusaurus shell JSON)
 
-Translates `.md` and `.mdx` from each `documentations` block’s `contentPaths` and JSON label files from that block’s `jsonSource` when enabled. Supports Docusaurus-style and flat locale-suffixed layouts per block (`documentations[].markdownOutput`). Shared root `cacheDir` holds the SQLite cache so only new or changed segments are sent to the LLM. **SVG:** enable `features.translateSVG`, add the top-level `svg` block, then use `translate-svg` (also run from `sync` when both are set).
+Translates `.md` and `.mdx` from each `documentations` block’s `contentPaths` — that is the localized documentation. When `features.translateJSON` and `jsonSource` are set, it also translates Docusaurus **label JSON** (navbar, footer, theme/plugin UI from `write-translations`), not MDX body text. Supports Docusaurus-style and flat locale-suffixed layouts per block (`documentations[].markdownOutput`). Shared root `cacheDir` holds the SQLite cache so only new or changed segments are sent to the LLM. **SVG:** enable `features.translateSVG`, add the top-level `svg` block, then use `translate-svg` (also run from `sync` when both are set).
 
-Both workflows share a single `ai-i18n-tools.config.json` file and can be used independently or together. Standalone SVG translation uses `features.translateSVG` plus the top-level `svg` block and runs through `translate-svg` (or the SVG stage inside `sync`).
+Both workflows share a single `ai-i18n-tools.config.json` file and can be used independently or together. SVG file translation uses `features.translateSVG` plus the top-level `svg` block and runs through `translate-svg` (or the SVG stage inside `sync`).
 
 ---
 
@@ -222,7 +222,7 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+ai-i18n-tools translate-docs …                      Translate documentation: markdown/MDX from contentPaths; optional Docusaurus label JSON from jsonSource. Flags include -l/--locale <codes>, -p/-f path, --dry-run,
                                                     --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
                                                     --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])

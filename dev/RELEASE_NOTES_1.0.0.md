@@ -36,7 +36,7 @@ Unified internationalization toolkit for JavaScript/TypeScript projects and docu
 
 ### SVG Translation
 
-- Standalone SVG asset translation via `translate-svg` command.
+- SVG file asset translation via `translate-svg` command.
 - Enabled through `features.translateSVG` + top-level `svg` config block.
 - Integrated into the `sync` pipeline.
 

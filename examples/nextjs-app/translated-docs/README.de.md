@@ -101,7 +101,7 @@ pnpm run i18n:extract
 
 ### 2. Übersetzen
 
-Legen Sie `OPENROUTER_API_KEY` fest und führen Sie dann aus ``examples/nextjs-app`` alle Übersetzungsschritte (UI-flaches JSON → SVG-Ressourcen → Dokumentation) nacheinander aus:
+`OPENROUTER_API_KEY` festlegen und dann aus ``examples/nextjs-app`` alle Übersetzungsschritte (UI-Flach-JSON → SVG-Dateien → Dokumentation) nacheinander ausführen:
 
 ```bash
 export OPENROUTER_API_KEY=your_key_here
@@ -132,10 +132,10 @@ ai-i18n-tools sync
 
 Die Schritte werden in folgender Reihenfolge ausgeführt:
 
-1. ``ai-i18n-tools extract`` — extrahiert UI-Zeichenfolgen und aktualisiert `locales/strings.json`.
-2. ``ai-i18n-tools translate-ui`` — schreibt flaches Lokalisierungs-JSON unter `public/locales/` aus `locales/strings.json`.
-3. ``ai-i18n-tools translate-svg`` — übersetzt SVG-Ressourcen von `images/` nach `public/assets/`, wenn `features.translateSVG` wahr ist und der `svg`-Block in `ai-i18n-tools.config.json` gesetzt ist (dieses Beispiel verwendet flache Namen: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — übersetzt Docusaurus-Markdown und zugehörige JSON-Dateien unter `docs-site/i18n/` (gemäß `documentations[]` in `ai-i18n-tools.config.json`; siehe Workflow 2 in `docs/GETTING_STARTED.md` im Stammverzeichnis des Repositorys).
+1. ``ai-i18n-tools extract`` — extrahiert UI-Texte und aktualisiert `locales/strings.json`.
+2. ``ai-i18n-tools translate-ui`` — erstellt flache Locale-JSON-Dateien unter `public/locales/` aus `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — übersetzt SVG-Dateien von `images/` nach `public/assets/`, wenn `features.translateSVG` auf „true“ steht und der `svg`-Block in `ai-i18n-tools.config.json` gesetzt ist (dieses Beispiel verwendet flache Namen: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — übersetzt Docusaurus-**Seiteninhalte** (Markdown/MDX unter `docs-site/docs/`) nach `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`; wenn `features.translateJSON` und `jsonSource` gesetzt sind, werden außerdem **Shell-JSON**-Dateien aus `docs-site/i18n/en/` übersetzt (gemäß `documentations[]` in `ai-i18n-tools.config.json`; siehe Workflow 2 in `docs/GETTING_STARTED.md` im Repository-Stammverzeichnis).
 
 Sie können jeden Schritt einzeln ausführen (z. B. `ai-i18n-tools translate-svg`), wenn sich nur die Quellen für diesen Teil des Workflows geändert haben.
 

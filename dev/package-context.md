@@ -34,7 +34,7 @@ Everything is driven by a single config file: `ai-i18n-tools.config.json`.
 | **Sync command** | `sync` | `sync` |
 | **Feature flags** | `extractUIStrings`, `translateUIStrings` | `translateMarkdown`, `translateJSON`, `translateSVG` |
 
-They can be used independently or together in the same config. `sync` runs, in order: `extract` (if enabled), `translate-ui` (if enabled, unless `--no-ui`), `translate-svg` when `features.translateSVG` is true and `config.svg` is set (unless `--no-svg`), then `translate-docs` (unless `--no-docs`). Standalone SVG translation requires the **`translateSVG`** feature plus the top-level **`svg`** block (paths and layout). See the [CLI cheat sheet](#cli-commands-cheat-sheet) for flags.
+They can be used independently or together in the same config. `sync` runs, in order: `extract` (if enabled), `translate-ui` (if enabled, unless `--no-ui`), `translate-svg` when `features.translateSVG` is true and `config.svg` is set (unless `--no-svg`), then `translate-docs` (unless `--no-docs`). SVG file translation requires the **`translateSVG`** feature plus the top-level **`svg`** block (paths and layout). See the [CLI cheat sheet](#cli-commands-cheat-sheet) for flags.
 
 ---
 
@@ -265,7 +265,7 @@ resolveDocumentationOutputPath  → write to output file
 
 **CLI**: `--force-update` bypasses only the *file-level* skip (rebuild outputs) while still using segment cache. `--force` clears per-file tracking and skips segment cache reads for API calls. See the getting started guide for the full flag table.
 
-**Standalone SVGs**: handled by `translate-svg` when `features.translateSVG` is true and the top-level `svg` config block is set. They use the same OpenRouter/cache ideas, but not the `documentations` pipeline.
+**SVG files**: handled by `translate-svg` when `features.translateSVG` is true and the top-level `svg` config block is set. They use the same OpenRouter/cache ideas, but not the `documentations` pipeline.
 
 **Output styles** (`markdownOutput.style`):
 

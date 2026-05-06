@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 सभी एक्सट्रैक्टर `BaseExtractor` का विस्तार करते हैं और `extract(content, filepath): Segment[]` को लागू करते हैं।
 
-- `MarkdownExtractor` - टाइप किए गए खंडों में मार्कडाउन को विभाजित करता है: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`। YAML फ्रंटमैटर को **गैर-अनुवर्तनीय** के रूप में वर्गीकृत किया गया है (`slug`, `id`, और अन्य रूटिंग कुंजियाँ स्थिर रहती हैं)। शीर्ष-स्तरीय `export ...` ब्लॉक (उदाहरण के लिए, रिएक्ट घटक परिभाषाएँ) को मौजूदा `import ...` हैंडलिंग के साथ-साथ गैर-अनुवर्तनीय `other` खंडों के रूप में वर्गीकृत किया गया है। एक बड़े अक्षर JSX टैग के साथ शुरू होने वाले बहु-पंक्ति ब्लॉक (उदाहरण के लिए, एक `<Tabs>` ब्लॉक) को अनुवर्तनीय पैराग्राफ के रूप में वर्गीकृत किया गया है। गैर-अनुवर्तनीय खंड (कोड ब्लॉक, रॉ HTML) को शाब्दिक रूप से संरक्षित किया जाता है।
-- `JsonExtractor` - डॉक्यूसॉरस JSON लेबल फ़ाइलों से स्ट्रिंग मान निकालता है।
-- `SvgExtractor` - `<text>`, `<title>`, और `<desc>` सामग्री को SVG से निकालता है (`config.svg` के तहत संपत्तियों के लिए `translate-svg` द्वारा उपयोग किया जाता है, `translate-docs` द्वारा नहीं)।
+- `MarkdownExtractor` - मार्कडाउन को टाइप किए गए खंडों में विभाजित करता है: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`। YAML फ्रंटमैटर को **गैर-अनुवर्तनीय** के रूप में वर्गीकृत किया गया है (`slug`, `id`, और अन्य रूटिंग कुंजियाँ स्थिर रहती हैं)। शीर्ष-स्तरीय `export ...` ब्लॉक (उदाहरण के लिए, रिएक्ट घटक परिभाषाएँ) को मौजूदा `import ...` हैंडलिंग के साथ गैर-अनुवर्तनीय `other` खंडों के रूप में वर्गीकृत किया गया है। बड़े अक्षर JSX टैग के साथ शुरू होने वाले बहु-पंक्ति ब्लॉक (उदाहरण के लिए, एक `<Tabs>` ब्लॉक) को अनुवर्तनीय पैराग्राफ के रूप में वर्गीकृत किया गया है। गैर-अनुवर्तनीय खंड (कोड ब्लॉक, मूल HTML) को शाब्दिक रूप से संरक्षित किया जाता है।
+- `JsonExtractor` - डॉक्यूसॉरस JSON लेबल फ़ाइलों से स्ट्रिंग मान निकालता है (डॉक्यूसॉरस UI कैटलॉग, MDX बॉडी नहीं)।
+- `SvgExtractor` - SVG से `<text>`, `<title>`, और `<desc>` सामग्री निकालता है (`config.svg` के तहत फ़ाइलों के लिए `translate-svg` द्वारा उपयोग किया जाता है, `translate-docs` द्वारा नहीं)।
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ console.log(
 | `TranslationCache` | SQLite कैश - एक `cacheDir` पथ के साथ उदाहरण बनाएँ। |
 | `UIStringExtractor` | JS/TS स्रोत से `t("…")` स्ट्रिंग्स निकालें। |
 | `MarkdownExtractor` | मार्कडाउन से अनुवाद योग्य खंड निकालें। |
-| `JsonExtractor` | डॉक्यूसॉरस JSON लेबल फ़ाइलों से निकालें। |
+| `JsonExtractor` | डॉक्यूसॉरस JSON लेबल फ़ाइलों से निकालें (UI कैटलॉग, MDX बॉडी नहीं)। |
 | `SvgExtractor` | SVG फ़ाइलों से निकालें। |
 | `OpenRouterClient` | OpenRouter को अनुवाद अनुरोध भेजें। |
 | `PlaceholderHandler` | अनुवाद के आसपास मार्कडाउन वाक्यविन्यास की रक्षा/पुनर्स्थापना करें (HTML टैग, उपदेशक, एंकर, MDX टिप्पणियाँ/JSX/ब्रेस, URL, इनलाइन कोड, जोर)। |

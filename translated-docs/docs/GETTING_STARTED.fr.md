@@ -3,8 +3,8 @@
 
 `ai-i18n-tools` propose deux flux de travail indépendants et composable :
 
-- **Workflow 1 - Traduction d'interface** : extraire les appels `t("…")` depuis n'importe quelle source JS/TS, les traduire via OpenRouter, puis générer des fichiers JSON plats par langue prêts pour i18next.
-- **Workflow 2 - Traduction de documents** : traduire les fichiers markdown (MDX) et les fichiers d'étiquettes JSON de Docusaurus vers un nombre quelconque de langues, avec mise en cache intelligente. Les fichiers **SVG** utilisent `features.translateSVG`, le bloc racine `svg` et `translate-svg` (voir [référence CLI](#cli-reference)).
+- **Flux de travail 1 - Traduction d'interface** : extraire les appels `t("…")` depuis n'importe quelle source JS/TS, les traduire via OpenRouter, puis générer des fichiers JSON plats par langue prêts à être utilisés avec i18next.
+- **Flux de travail 2 - Traduction de documents** : traduire les **pages markdown et MDX** listées dans `contentPaths` vers un nombre quelconque de langues, avec mise en cache intelligente — ce sont les documents localisés que les lecteurs ouvrent sur le site. Les fichiers **JSON Docusaurus** facultatifs (`jsonSource`, provenant de `docusaurus write-translations`) couvrent les éléments d’**interface du site** (barre de navigation, pied de page, chaînes d’interface de thème/plugins), mais pas le texte des `docs/`. Les fichiers **SVG** utilisent `features.translateSVG`, le bloc `svg` au niveau racine, et `translate-svg` (voir [référence CLI](#cli-reference)).
 
 Les deux flux de travail utilisent OpenRouter (n'importe quel LLM compatible) et partagent un seul fichier de configuration.
 
@@ -102,7 +102,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Démarrage rapide
 
-Le modèle `init` par défaut (`ui-markdown`) active uniquement l'extraction et la traduction **UI**. Le modèle `ui-docusaurus` active la traduction de **documents** (`translate-docs`). Utilisez `sync` lorsque vous souhaitez une seule commande qui exécute l'extraction, la traduction UI, la traduction SVG autonome (facultative) et la traduction de documentation selon votre configuration.
+Le modèle par défaut `init` (`ui-markdown`) active uniquement l'extraction et la traduction de l'**interface utilisateur**. Le modèle `ui-docusaurus` active la traduction de **documents** (`translate-docs`). Utilisez `sync` lorsque vous souhaitez une commande unique qui exécute l'extraction, la traduction de l'interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation selon votre configuration.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -453,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## Flux de travail 2 - Traduction de documents
 
-Conçu pour la documentation en markdown, les sites Docusaurus et les fichiers d'étiquettes JSON. Pour les images PNG et autres images matricielles intégrées dans le markdown, voir [Images et ressources matricielles dans les documents traduits](#images-and-raster-assets-in-translated-docs). Les fichiers SVG sont traduits via [`translate-svg`](#cli-reference) lorsque `features.translateSVG` est activé et que le bloc racine `svg` est défini — et non via `documentations[].contentPaths`.
+Conçu principalement pour la **documentation en markdown et MDX** située sous `contentPaths` (les pages qui intéressent les lecteurs). Sur les sites Docusaurus, vous pouvez également traduire les **fichiers d’étiquettes JSON** générés par `docusaurus write-translations` — ils contiennent les chaînes du thème, de la barre de navigation, du pied de page et des plugins (i18n de l’interface), distinctes du contenu principal dans `docs/`. Pour les images PNG et autres ressources matricielles intégrées en markdown, voir [Images et ressources matricielles dans la documentation traduite](#images-and-raster-assets-in-translated-docs). Les fichiers SVG sont traduits via [`translate-svg`](#cli-reference) lorsque `features.translateSVG` est activé et que le bloc `svg` au niveau racine est défini — et non via `documentations[].contentPaths`.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### Étape 1 : Initialiser pour la documentation
@@ -472,6 +472,8 @@ Modifiez le fichier `ai-i18n-tools.config.json` généré :
 - `documentations[].contentPaths` - répertoires ou fichiers sources en markdown/MDX (voir aussi `documentations[].jsonSource` pour les libellés JSON).
 - `documentations[].outputDir` - racine de sortie traduite pour ce bloc.
 - `documentations[].markdownOutput.style` - `"nested"` (par défaut), `"docusaurus"` ou `"flat"` (voir [Dispositions de sortie](#output-layouts)).
+
+**Principal contre secondaire** : concentrez les efforts d’écriture et de traduction sur `contentPaths` — ce résultat constitue la documentation localisée. `jsonSource` concerne les équipes qui localisent l’**interface Docusaurus** ; exécutez `docusaurus write-translations` lorsque vous mettez à jour Docusaurus ou modifiez les chaînes de la barre de navigation, du pied de page ou du thème, afin que les catalogues sources dans le dossier de langue par défaut restent à jour. Vous pouvez définir `features.translateJSON` à `false` si vous n’avez besoin que de pages traduites et que vous gérez les chaînes d’interface différemment.
 
 <a id="step-2-translate-documents"></a>
 ### Étape 2 : Traduire les documents
@@ -508,9 +510,9 @@ Pour voir **quels segments ont échoué**, combien de fois, et les **messages d'
 
 L'interface en ligne de commande (CLI) conserve le **suivi des fichiers** dans SQLite (hachage source par fichier × langue) et des lignes de **segment** (hachage × langue par fragment traduisible). Une exécution normale ignore entièrement un fichier lorsque le hachage suivi correspond à la source actuelle **et** que le fichier de sortie existe déjà ; sinon, elle traite le fichier et utilise le cache de segments afin que le texte inchangé n'appelle pas l'API.
 
-| Drapeau                          | Effet                                                                                                                                                                                                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *(par défaut)*                   | Ignorer les fichiers inchangés lorsque le suivi et la sortie sur disque correspondent ; utiliser le cache de segments pour le reste.                                                                                                                                                                              |
+| Option                          | Effet                                                                                                                                                                                                                                                              |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *(par défaut)*                   | Ignorer les fichiers inchangés lorsque le suivi et la sortie sur disque correspondent ; utiliser le cache de segments pour les autres.                                                                                                                                                                          |
 | `-l, --locale <codes>`        | Langues cibles séparées par des virgules (lorsqu'omis, les valeurs par défaut correspondent à l'union de `targetLocales` racine et des `targetLocales` optionnels de chaque bloc `documentations[]`).                                                                                                                                                          |
 | `-p, --path` / `-f, --file`   | Ne traduire que le markdown/JSON situé sous ce chemin (relatif au projet ou absolu) ; `--file` est un alias pour `--path`.                                                                                                                                                         |
 | `--dry-run`                   | Aucune écriture de fichier ni appel d'API.                                                                                                                                                                                                                                        |
@@ -533,13 +535,13 @@ Vous ne pouvez pas combiner `--force` avec `--force-update` (ils sont mutuelleme
 
 `translate-docs` envoie les segments traduisibles à OpenRouter par **lots** (groupés par `batchSize` / `maxBatchChars`). Le drapeau `--prompt-format` modifie uniquement le **format sur le réseau** de ce lot ; les jetons `PlaceholderHandler`, les vérifications AST markdown, les clés de cache SQLite et le secours par segment en cas d'échec d'analyse par lot restent inchangés.
 
-| Mode                       | Message utilisateur                                                           | Réponse du modèle                                                 |
-|----------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
+| Mode                   | Message utilisateur                                                           | Réponse du modèle                                                 |
+|------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
 | `xml`                  | Pseudo-XML : un `<seg id="N">…</seg>` par segment (avec échappement XML). | Uniquement des blocs `<t id="N">…</t>`, un par index de segment.       |
 | `json-array` (par défaut) | Un tableau JSON de chaînes, une entrée par segment, dans l'ordre.               | Un tableau JSON de la **même longueur** (même ordre).           |
 | `json-object`          | Un objet JSON `{"0":"…","1":"…",…}` indexé par l'index du segment.            | Un objet JSON avec les **mêmes clés** et des valeurs traduites. |
 
-L'en-tête de l'exécution imprime également `Batch prompt format: …` afin que vous puissiez confirmer le mode actif. Les fichiers d'étiquettes JSON (`jsonSource`) et les lots SVG autonomes utilisent le même paramètre lorsque ces étapes s'exécutent dans le cadre de `translate-docs` (ou de la phase de documentation de `sync` — `sync` n'expose pas ce drapeau ; il prend par défaut la valeur `json-array`).
+L'en-tête d'exécution affiche également `Batch prompt format: …`, afin que vous puissiez confirmer le mode actif. Les fichiers d'étiquettes JSON (`jsonSource`) et les lots de fichiers SVG utilisent le même paramètre lorsque ces étapes sont exécutées dans le cadre de `translate-docs` (ou de la phase de documentation de `sync` — `sync` n'expose pas ce drapeau ; il prend par défaut la valeur `json-array`).
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### Déduplication des segments et chemins dans SQLite
@@ -556,9 +558,16 @@ L'en-tête de l'exécution imprime également `Batch prompt format: …` afin qu
 
 `"docusaurus"` — place les fichiers situés sous `docsRoot` dans `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`, conformément à la disposition i18n Docusaurus habituelle. Définissez `documentations[].markdownOutput.docsRoot` sur la racine source de votre documentation (par exemple, `"docs"`).
 
+Pages de documentation (principales) :
+
 ```text
-docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
-i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Étiquettes JSON facultatives — chaînes de l’interface Docusaurus provenant de `jsonSource` (pas le contenu des MDX) :
+
+```text
+i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
 `"flat"` — place les fichiers traduits à côté des sources avec un suffixe de langue, ou dans un sous-répertoire. Les liens relatifs entre pages sont réécrits automatiquement.
@@ -619,7 +628,7 @@ L'ancre `#tls-configuration` est identique dans toutes les langues car le `id` e
 
 `translate-docs` traduit les segments markdown (y compris le texte alternatif des images). Il ne copie **pas** les fichiers matriciels (PNG, JPEG, WebP, GIF) dans votre dossier `outputDir` de documentation. Placez soit les fichiers là où les URL réécrites pointent, soit ajustez les URL après la traduction (généralement avec `markdownOutput.postProcessing.regexAdjustments`).
 
-Les **SVG** destinés à être des illustrations utilisent le bloc `svg` et `translate-svg` — voir [`svg`](#svg). Les chemins listés dans `documentations[].contentPaths` concernent le markdown/MDX (et les étiquettes JSON facultatives), pas la traduction autonome des fichiers SVG.
+Les **SVG** destinés à être des éléments graphiques utilisent le bloc `svg` et `translate-svg` — voir [`svg`](#svg). Les chemins répertoriés dans `documentations[].contentPaths` concernent le markdown/MDX (et les étiquettes JSON facultatives), et non la traduction des fichiers SVG.
 
 **Pourquoi la disposition plate nécessite souvent une correction**
 
@@ -665,7 +674,7 @@ Fournissez les fichiers PNG correspondants dans l'arborescence statique de votre
 
 Conservez les fichiers PNG sur le disque sous `images/screenshots/<locale>/` (même organisation que celle utilisée par les URL après réécriture).
 
-**Modèle 3 — SVG autonome** (`examples/nextjs-app`)
+**Motif 3 — fichier SVG** (`examples/nextjs-app`)
 
 Le même exemple active `features.translateSVG` et mappe les SVG sources vers le dossier public de l'application web :
 
@@ -692,9 +701,9 @@ Remplacez l'emplacement où les fichiers traduits sont écrits en définissant `
 
 Si vous utilisez un `pathTemplate` personnalisé, `rewriteRelativeLinks` prend par défaut la valeur `false` sauf si vous le définissez explicitement — la réécriture des liens en mode plat est conçue pour la disposition intégrée `flat`.
 
-| Espace réservé | Rôle | Exemple |
-|-------------|------|---------|
-| `{outputDir}` | Chemin absolu résolu du `outputDir` de ce bloc de documentation | `/home/acme/repo/i18n` |
+| Espace réservé            | Rôle                                                                                                       | Exemple                                                          |
+|------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `{outputDir}`          | Chemin absolu résolu du `outputDir` de ce bloc de documentation                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | Code de langue cible (même forme que dans la configuration / CLI) | `de`, `pt-BR` |
 | `{LOCALE}` | Même code langue en majuscules | `DE`, `PT-BR` |
 | `{relPath}` | Chemin du fichier source relatif à la racine du projet, en notation POSIX `/` | `docs/guide.md`, `README.md` |
@@ -805,7 +814,7 @@ Vous pouvez combiner plusieurs pipelines de documentation dans la même configur
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Docusaurus docs and JSON labels",
+      "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
@@ -839,9 +848,10 @@ Vous pouvez combiner plusieurs pipelines de documentation dans la même configur
 Comment cela s'exécute avec `npx ai-i18n-tools sync` :
 
 - Les chaînes d'interface sont extraites/traduites depuis `src/` vers `public/locales/`.
-- Le premier bloc docs traduit les fichiers markdown et les étiquettes JSON selon la disposition Docusaurus `i18n/<locale>/...`.
-- Le second bloc docs traduit `README.md` en fichiers plats suffixés par langue sous `translated-docs/`.
-- Tous les blocs docs partagent `cacheDir`, de sorte que les segments inchangés sont réutilisés entre les exécutions pour réduire les appels API et les coûts.
+- Le premier bloc de documentation traduit le **markdown** depuis `docs-site/docs/` vers `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (pages de documentation localisées).
+- Avec `features.translateJSON` et `jsonSource`, ce même bloc traduit également le **JSON Docusaurus shell** situé dans `docs-site/i18n/en/` vers chaque dossier de langue cible — barre de navigation, pied de page et catalogues de thèmes/plugins, mais pas le contenu des fichiers MDX.
+- Le second bloc de documentation traduit `README.md` en fichiers plats suffixés par la langue dans `translated-docs/`.
+- Tous les blocs de documentation partagent `cacheDir`, ainsi les segments inchangés sont réutilisés entre les exécutions afin de réduire le nombre d'appels API et les coûts.
 
 ---
 
@@ -998,9 +1008,9 @@ Avant de changer `translationModels`, exécutez `npx ai-i18n-tools check-models`
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `extractUIStrings`   | 1        | Analyser la source pour `t("…")` / `i18n.t("…")`, fusionner la description facultative `package.json` et (si activé) les valeurs `ui-languages.json` `englishName` dans `strings.json`.
 | `translateUIStrings` | 1        | Traduire les entrées `strings.json` et générer des fichiers JSON par paramètre régional.                                                                                                  |
-| `translateMarkdown`  | 2        | Traduire les fichiers `.md` / `.mdx`.                                                                                                                                    |
-| `translateJSON`      | 2        | Traduire les fichiers JSON d'étiquettes Docusaurus.                                                                                                                             |
-| `translateSVG`       | 2        | Traduire les ressources autonomes `.svg` (nécessite un bloc de niveau supérieur `svg`).                                                                                         |
+| `translateMarkdown`  | 2        | Traduire les fichiers `.md` / `.mdx` (documents plats ou Docusaurus).                                                                                                                                   |
+| `translateJSON`      | 2        | JSON des libellés Docusaurus provenant de `docusaurus write-translations` (interface du thème/barre de navigation/pied de page/plugin), **pas** les corps de pages markdown.                                             |
+| `translateSVG`       | 2        | Traduire les fichiers `.svg` (nécessite le bloc `svg` au niveau supérieur).                                                                                                       |
 
 Traduire les fichiers **SVG** avec `translate-svg` lorsque `features.translateSVG` est à true et qu'un bloc racine `svg` est configuré. La commande `sync` exécute cette étape lorsque les deux conditions sont remplies (sauf si `--no-svg`).
 
@@ -1067,21 +1077,21 @@ Répertoire du cache SQLite (partagé par tous les blocs `documentations`). Réu
 Tableau de blocs de pipeline de documentation. `translate-docs` et la phase docs de `sync` **traitent chacun** des blocs dans l'ordre.
 
 - `description`
-Note facultative lisible par l'humain pour ce bloc (non utilisée pour la traduction). Préfixée dans le titre `translate-docs` `🌐` lorsqu'elle est définie ; également affichée dans les en-têtes de section `status`.
+Note facultative lisible par l'humain pour ce bloc (non utilisée pour la traduction). Préfixe dans le titre `translate-docs` `🌐` lorsqu'elle est définie ; également affichée dans les en-têtes de section `status`.
 - `contentPaths`
-Sources Markdown/MDX à traduire (`translate-docs` analyse ceux-ci pour `.md` / `.mdx`). Les libellés JSON proviennent de `jsonSource` sur le même bloc.
+Corps des pages Markdown/MDX à traduire (`translate-docs` analyse ceux-ci pour `.md` / `.mdx`). C'est là que provient le texte localisé de la documentation.
 - `outputDir`
 Répertoire racine pour la sortie traduite de ce bloc.
 - `sourceFiles`
 Alias facultatif fusionné dans `contentPaths` au chargement.
 - `targetLocales`
-Sous-ensemble facultatif de paramètres régionaux pour ce bloc uniquement (sinon, paramètres régionaux racine `targetLocales`). Les paramètres régionaux de documentation effectifs sont l'union entre les blocs.
+Sous-ensemble facultatif de langues pour ce bloc uniquement (sinon utilise la racine `targetLocales`). Les langues effectives de documentation sont l'union des langues définies dans tous les blocs.
 - `jsonSource`
-Répertoire source des fichiers de libellés JSON Docusaurus pour ce bloc (par exemple, `"i18n/en"`).
+Facultatif. Répertoire source des catalogues JSON de libellés Docusaurus pour ce bloc (par exemple `"i18n/en"` depuis `docusaurus write-translations`). Les corps de pages proviennent toujours de `contentPaths` ; `jsonSource` fournit uniquement le JSON de l'interface (shell), pas les fichiers MDX.
 - `markdownOutput.style`
-`"nested"` (par défaut), `"docusaurus"`, ou `"flat"`.
+`"nested"` (par défaut), `"docusaurus"` ou `"flat"`.
 - `markdownOutput.docsRoot`
-Répertoire racine de la documentation source pour la disposition Docusaurus (par exemple, `"docs"`).
+Répertoire racine des documents source pour la mise en page Docusaurus (par exemple `"docs"`).
 - `markdownOutput.pathTemplate`
 Chemin de sortie Markdown personnalisé. Espaces réservés : <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>.
 - `markdownOutput.jsonPathTemplate`
@@ -1232,9 +1242,9 @@ Le programme principal prend également en charge `-V` / `--version` et `-h` / `
 <a id="environment-variables"></a>
 ## Variables d'environnement
 
-| Variable                | Description                                                |
-|-------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`    | **Requis.** Votre clé API OpenRouter.                     |
+| Variable               | Description                                                |
+|------------------------|------------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | **Obligatoire.** Votre clé API OpenRouter.                     |
 | `OPENROUTER_BASE_URL`   | Remplacer l'URL de base de l'API.                                 |
 | `I18N_SOURCE_LOCALE`    | Remplacer `sourceLocale` au moment de l'exécution.                        |
 | `I18N_TARGET_LOCALES`   | Codes de langue séparés par des virgules pour remplacer `targetLocales`.  |

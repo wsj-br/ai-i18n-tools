@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 すべてのエクストラクターは `BaseExtractor` を継承し、`extract(content, filepath): Segment[]` を実装しています。
 
-- `MarkdownExtractor` - Markdownを型付きセグメントに分割します：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAMLフロントマターは**翻訳不可**として分類されます（`slug`、`id`、およびその他のルーティングキーは変更されません）。トップレベルの`export ...`ブロック（例：Reactコンポーネント定義）は、既存の`import ...`処理と同様に、翻訳不可の`other`セグメントとして分類されます。大文字で始まるJSXタグで始まる複数行のブロック（例：`<Tabs>`ブロック）は、翻訳可能な段落として分類されます。翻訳不可のセグメント（コードブロック、生のHTML）はそのまま保持されます。
-- `JsonExtractor` - DocusaurusのJSONラベルファイルから文字列値を抽出します。
-- `SvgExtractor` - SVG内の`<text>`、`<title>`、`<desc>`コンテンツを抽出します（`config.svg`以下のアセットに対して`translate-svg`で使用され、`translate-docs`では使用されません）。
+- `MarkdownExtractor` - Markdownを型付きセグメントに分割します：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAMLフロントマターは**非翻訳対象**として分類されます（`slug`、`id`、およびその他のルーティングキーは変更されません）。トップレベルの`export ...`ブロック（例：Reactコンポーネント定義）は、既存の`import ...`処理と同様に、非翻訳対象の`other`セグメントとして分類されます。大文字のJSXタグで始まる複数行のブロック（例：`<Tabs>`ブロック）は、翻訳対象の段落として分類されます。非翻訳対象のセグメント（コードブロック、生のHTML）はそのまま保持されます。
+- `JsonExtractor` - Docusaurus JSONラベルファイルから文字列値を抽出します（MDX本文ではなく、Docusaurus UIカタログ用）。
+- `SvgExtractor` - SVGから`<text>`、`<title>`、`<desc>`の内容を抽出します（`config.svg`以下のファイルに対して`translate-svg`で使用され、`translate-docs`では使用されません）。
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### 見出しアンカー挿入 (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ console.log(
 | `TranslationCache` | SQLite キャッシュ - `cacheDir` パスでインスタンス化します。 |
 | `UIStringExtractor` | JS/TS ソースから `t("…")` 文字列を抽出します。 |
 | `MarkdownExtractor` | Markdown から翻訳対象のセグメントを抽出します。 |
-| `JsonExtractor` | Docusaurus の JSON ラベルファイルから抽出します。 |
+| `JsonExtractor` | DocusaurusのJSONラベルファイルから抽出（UIカタログ、MDX本文ではない）。 |
 | `SvgExtractor` | SVG ファイルから抽出します。 |
 | `OpenRouterClient` | OpenRouter に翻訳リクエストを送信します。 |
 | `PlaceholderHandler` | 翻訳前後にMarkdown構文（HTMLタグ、注記、アンカー、MDXコメント/JSX/波括弧、URL、インラインコード、強調）を保護・復元します。 |

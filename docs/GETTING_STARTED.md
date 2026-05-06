@@ -4,7 +4,7 @@
 `ai-i18n-tools` provides two independent, composable workflows:
 
 - **Workflow 1 - UI Translation**: extract `t("…")` calls from any JS/TS source, translate them via OpenRouter, and write flat per-locale JSON files ready for i18next.
-- **Workflow 2 - Document Translation**: translate markdown (MDX) and Docusaurus JSON label files to any number of locales, with smart caching. **SVG** files use `features.translateSVG`, the top-level `svg` block, and `translate-svg` (see [CLI reference](#cli-reference)).
+- **Workflow 2 - Document Translation**: translate **markdown and MDX pages** listed in `contentPaths` to any number of locales, with smart caching — that is the localized documentation readers open in the site. Optional **Docusaurus JSON** (`jsonSource`, from `docusaurus write-translations`) covers **site chrome** (navbar, footer, theme/plugin UI strings), not the prose in `docs/`. **SVG** files use `features.translateSVG`, the top-level `svg` block, and `translate-svg` (see [CLI reference](#cli-reference)).
 
 Both workflows use OpenRouter (any compatible LLM) and share a single config file.
 
@@ -103,7 +103,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Quick Start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` template enables **document** translation (`translate-docs`). Use `sync` when you want one command that runs extract, UI translation, optional standalone SVG translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` template enables **document** translation (`translate-docs`). Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -452,7 +452,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## Workflow 2 - Document Translation
 
-Designed for markdown documentation, Docusaurus sites, and JSON label files. For PNG and other raster images embedded in markdown, see [Images and raster assets in translated docs](#images-and-raster-assets-in-translated-docs).  SVG files are translated via [`translate-svg`](#cli-reference) when `features.translateSVG` is enabled and the top-level `svg` block is set — not via `documentations[].contentPaths`.
+Designed primarily for **markdown and MDX documentation** under `contentPaths` (the pages readers care about). On Docusaurus sites you can also translate **JSON label files** produced by `docusaurus write-translations` — those carry theme, navbar, footer, and plugin UI strings (shell i18n), distinct from body copy in `docs/`. For PNG and other raster images embedded in markdown, see [Images and raster assets in translated docs](#images-and-raster-assets-in-translated-docs). SVG files are translated via [`translate-svg`](#cli-reference) when `features.translateSVG` is enabled and the top-level `svg` block is set — not via `documentations[].contentPaths`.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### Step 1: Initialise for documentation
@@ -471,6 +471,8 @@ Edit the generated `ai-i18n-tools.config.json`:
 - `documentations[].contentPaths` - markdown/MDX source directories or files (see also `documentations[].jsonSource` for JSON labels).
 - `documentations[].outputDir` - translated output root for that block.
 - `documentations[].markdownOutput.style` - `"nested"` (default), `"docusaurus"`, or `"flat"` (see [Output layouts](#output-layouts)).
+
+**Primary vs supplementary:** Focus authoring and translation effort on `contentPaths` — that output is the localized documentation. `jsonSource` is for teams that localize the **Docusaurus shell**; run `docusaurus write-translations` when you upgrade Docusaurus or change navbar, footer, or theme strings so source catalogs under the default locale folder stay current. You can set `features.translateJSON` to `false` if you only need translated pages and will handle UI strings another way.
 
 <a id="step-2-translate-documents"></a>
 ### Step 2: Translate documents
@@ -508,22 +510,22 @@ To see **which segments failed**, how often, and the stored **quality / error me
 The CLI keeps **file tracking** in SQLite (source hash per file × locale) and **segment** rows (hash × locale per translatable chunk). A normal run skips a file entirely when the tracked hash matches the current source **and** the output file already exists; otherwise it processes the file and uses the segment cache so unchanged text does not call the API.
 
 
-| Flag                          | Effect                                                                                                                                                                                                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *(default)*                   | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                                                                                              |
-| `-l, --locale <codes>`        | Comma-separated target locales (when omitted, defaults match the union of root `targetLocales` and each `documentations[]` block’s optional `targetLocales`).                                                                                                                                                          |
-| `-p, --path` / `-f, --file`   | Only translate markdown/JSON under this path (project-relative or absolute); `--file` is an alias for `--path`.                                                                                                                                                         |
-| `--dry-run`                   | No file writes and no API calls.                                                                                                                                                                                                                                        |
-| `--type <kind>`               | Restrict to `markdown` or `json` (otherwise both when enabled in config).                                                                                                                                                                                               |
-| `--json-only` / `--no-json`   | Translate only JSON label files, or skip JSON and translate markdown only.                                                                                                                                                                                              |
-| `-j, --concurrency <n>`       | Max parallel target locales (default from config or CLI built-in default).                                                                                                                                                                                              |
-| `-b, --batch-concurrency <n>` | Max parallel batch API calls per file (docs; default from config or CLI).                                                                                                                                                                                               |
-| `--emphasis-placeholders`     | Mask markdown emphasis markers as placeholders before translation (optional; default off).                                                                                                                                                                              |
-| `--debug-failed`              | Write detailed `FAILED-TRANSLATION` logs under `cacheDir` when validation fails.                                                                                                                                                                                        |
-| `--force-update`              | Re-process every matched file (extract, reassemble, write outputs) even when file tracking would skip. **Segment cache still applies** — unchanged segments are not sent to the LLM.                                                                                    |
-| `--force`                     | Clears file tracking for each processed file and **does not read** the segment cache for API translation (full re-translation). New results are still **written** to the segment cache.                                                                                 |
-| `--stats`                     | Print segment counts, tracked file counts, and per-locale segment totals, then exit.                                                                                                                                                                                    |
-| `--clear-cache [locale]`      | Delete cached translations (and file tracking): all locales, or a single locale, then exit.                                                                                                                                                                             |
+| Flag                          | Effect                                                                                                                                                                                                                                                              |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *(default)*                   | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                                                                                          |
+| `-l, --locale <codes>`        | Comma-separated target locales (when omitted, defaults match the union of root `targetLocales` and each `documentations[]` block’s optional `targetLocales`).                                                                                                       |
+| `-p, --path` / `-f, --file`   | Only translate markdown/JSON under this path (project-relative or absolute); `--file` is an alias for `--path`.                                                                                                                                                     |
+| `--dry-run`                   | No file writes and no API calls.                                                                                                                                                                                                                                    |
+| `--type <kind>`               | Restrict to `markdown` or `json` (otherwise both when enabled in config).                                                                                                                                                                                           |
+| `--json-only` / `--no-json`   | Translate only JSON label files, or skip JSON and translate markdown only.                                                                                                                                                                                          |
+| `-j, --concurrency <n>`       | Max parallel target locales (default from config or CLI built-in default).                                                                                                                                                                                          |
+| `-b, --batch-concurrency <n>` | Max parallel batch API calls per file (docs; default from config or CLI).                                                                                                                                                                                           |
+| `--emphasis-placeholders`     | Mask markdown emphasis markers as placeholders before translation (optional; default off).                                                                                                                                                                          |
+| `--debug-failed`              | Write detailed `FAILED-TRANSLATION` logs under `cacheDir` when validation fails.                                                                                                                                                                                    |
+| `--force-update`              | Re-process every matched file (extract, reassemble, write outputs) even when file tracking would skip. **Segment cache still applies** — unchanged segments are not sent to the LLM.                                                                                |
+| `--force`                     | Clears file tracking for each processed file and **does not read** the segment cache for API translation (full re-translation). New results are still **written** to the segment cache.                                                                             |
+| `--stats`                     | Print segment counts, tracked file counts, and per-locale segment totals, then exit.                                                                                                                                                                                |
+| `--clear-cache [locale]`      | Delete cached translations (and file tracking): all locales, or a single locale, then exit.                                                                                                                                                                         |
 | `--prompt-format <mode>`      | How each **batch** of segments is sent to the model and parsed (`xml`, `json-array`, or `json-object`). Default `json-array`. Does not change extraction, placeholders, validation, cache, or fallback behaviour — see [Batch prompt format](#batch-prompt-format). |
 
 
@@ -534,13 +536,13 @@ You cannot combine `--force` with `--force-update` (they are mutually exclusive)
 
 `translate-docs` sends translatable segments to OpenRouter in **batches** (grouped by `batchSize` / `maxBatchChars`). The `--prompt-format` flag only changes that batch’s **wire format**; `PlaceholderHandler` tokens, markdown AST checks, SQLite cache keys, and per-segment fallback when batch parsing fails are unchanged.
 
-| Mode                       | User message                                                           | Model reply                                                 |
-|----------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
+| Mode                   | User message                                                           | Model reply                                                 |
+|------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
 | `xml`                  | Pseudo-XML: one `<seg id="N">…</seg>` per segment (with XML escaping). | Only `<t id="N">…</t>` blocks, one per segment index.       |
 | `json-array` (default) | A JSON array of strings, one entry per segment in order.               | A JSON array of the **same length** (same order).           |
 | `json-object`          | A JSON object `{"0":"…","1":"…",…}` keyed by segment index.            | A JSON object with the **same keys** and translated values. |
 
-The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and standalone SVG batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to `json-array`).
+The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and SVG file batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to `json-array`).
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### Segment dedupe and paths in SQLite
@@ -557,9 +559,16 @@ The run header also prints `Batch prompt format: …` so you can confirm the act
 
 `"docusaurus"` — places files that lie under `docsRoot` at `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`, matching the usual Docusaurus i18n layout. Set `documentations[].markdownOutput.docsRoot` to your docs source root (e.g. `"docs"`).
 
+Documentation pages (primary):
+
 ```text
-docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
-i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Optional JSON labels — Docusaurus shell strings from `jsonSource` (not MDX body copy):
+
+```text
+i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
 `"flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically.
@@ -620,7 +629,7 @@ The `#tls-configuration` anchor is the same in all locales because the `id` is f
 
 `translate-docs` translates markdown segments (including image alt text). It does **not** copy raster files (PNG, JPEG, WebP, GIF) into your documentation `outputDir`. Either place files where the rewritten URLs point, or adjust URLs after translation (usually with `markdownOutput.postProcessing.regexAdjustments`).
 
-**SVG** intended as illustrated assets use the `svg` block and `translate-svg` — see [`svg`](#svg). Paths listed in `documentations[].contentPaths` are for markdown/MDX (and optional JSON labels), not for standalone SVG translation.
+**SVG** intended as illustrated assets use the `svg` block and `translate-svg` — see [`svg`](#svg). Paths listed in `documentations[].contentPaths` are for markdown/MDX (and optional JSON labels), not for SVG file translation.
 
 **Why flat layout often needs a fix**
 
@@ -666,7 +675,7 @@ Ship matching PNGs under your site static tree (for example `docs-site/static/im
 
 Keep the PNG files on disk under `images/screenshots/<locale>/` (same layout the URLs use after rewriting).
 
-**Pattern 3 — Standalone SVG** (`examples/nextjs-app`)
+**Pattern 3 — SVG file** (`examples/nextjs-app`)
 
 The same example enables `features.translateSVG` and maps source SVGs to the web app public folder:
 
@@ -693,16 +702,16 @@ Override where translated files are written by setting `documentations[].markdow
 
 If you use a custom `pathTemplate`, `rewriteRelativeLinks` defaults to `false` unless you set it explicitly — flat-style link rewriting is built for the built-in `flat` layout.
 
-| Placeholder | Role | Example |
-|-------------|------|---------|
-| `{outputDir}` | Absolute resolved path of this documentation block’s `outputDir` | `/home/acme/repo/i18n` |
-| `{locale}` | Target locale code (same form as in config / CLI) | `de`, `pt-BR` |
-| `{LOCALE}` | Same locale uppercased | `DE`, `PT-BR` |
-| `{relPath}` | Source file path relative to the project root, POSIX `/` | `docs/guide.md`, `README.md` |
-| `{stem}` | File name **without** extension | `guide` for `docs/guide.md` |
-| `{basename}` | File name **with** extension | `guide.md` |
-| `{extension}` | Extension **including** the dot | `.md`, `.mdx` |
-| `{docsRoot}` | Absolute resolved path of `markdownOutput.docsRoot` (default `docs` if omitted) | `/home/acme/repo/docs` |
+| Placeholder            | Role                                                                                                       | Example                                                          |
+|------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `{outputDir}`          | Absolute resolved path of this documentation block’s `outputDir`                                           | `/home/acme/repo/i18n`                                           |
+| `{locale}`             | Target locale code (same form as in config / CLI)                                                          | `de`, `pt-BR`                                                    |
+| `{LOCALE}`             | Same locale uppercased                                                                                     | `DE`, `PT-BR`                                                    |
+| `{relPath}`            | Source file path relative to the project root, POSIX `/`                                                   | `docs/guide.md`, `README.md`                                     |
+| `{stem}`               | File name **without** extension                                                                            | `guide` for `docs/guide.md`                                      |
+| `{basename}`           | File name **with** extension                                                                               | `guide.md`                                                       |
+| `{extension}`          | Extension **including** the dot                                                                            | `.md`, `.mdx`                                                    |
+| `{docsRoot}`           | Absolute resolved path of `markdownOutput.docsRoot` (default `docs` if omitted)                            | `/home/acme/repo/docs`                                           |
 | `{relativeToDocsRoot}` | `{relPath}` with a matching `docsRoot` prefix removed when path strings align (POSIX); otherwise unchanged | `docs/guide.md` (common); `guide.md` only when stripping applies |
 
 **Example**
@@ -806,7 +815,7 @@ You can combine multiple documentation pipelines in the same config by adding mo
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Docusaurus docs and JSON labels",
+      "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
@@ -840,7 +849,8 @@ You can combine multiple documentation pipelines in the same config by adding mo
 How this runs with `npx ai-i18n-tools sync`:
 
 - UI strings are extracted/translated from `src/` into `public/locales/`.
-- The first docs block translates markdown and JSON labels into Docusaurus `i18n/<locale>/...` layout.
+- The first docs block translates **markdown** from `docs-site/docs/` into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (localized documentation pages).
+- With `features.translateJSON` and `jsonSource`, that same block also translates **Docusaurus shell JSON** under `docs-site/i18n/en/` into each target locale folder — navbar, footer, and theme/plugin catalogs, not MDX body copy.
 - The second docs block translates `README.md` into flat locale-suffixed files under `translated-docs/`.
 - All docs blocks share `cacheDir`, so unchanged segments are reused across runs to reduce API calls and cost.
 
@@ -1000,9 +1010,9 @@ Before changing `translationModels`, run `npx ai-i18n-tools check-models` to ver
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `extractUIStrings`   | 1        | Scan source for `t("…")` / `i18n.t("…")`, merge optional `package.json` description and (if enabled) `ui-languages.json` `englishName` values into `strings.json`. |
 | `translateUIStrings` | 1        | Translate `strings.json` entries and write per-locale JSON files.                                                                                                  |
-| `translateMarkdown`  | 2        | Translate `.md` / `.mdx` files.                                                                                                                                    |
-| `translateJSON`      | 2        | Translate Docusaurus JSON label files.                                                                                                                             |
-| `translateSVG`       | 2        | Translate standalone `.svg` assets (requires the top-level `svg` block).                                                                                         |
+| `translateMarkdown`  | 2        | Translate `.md` / `.mdx`  files (flat or Docusaurus documents).                                                                                                    |
+| `translateJSON`      | 2        | Docusaurus label JSON from `docusaurus write-translations` (theme/nav/footer/plugin UI), **not** markdown page bodies.                                             |
+| `translateSVG`       | 2        | Translate `.svg` files (requires the top-level `svg` block).                                                                                                       |
 
 **Translate** SVG files with `translate-svg` when `features.translateSVG` is true and a top-level `svg` block is configured. The `sync` command runs that step when both are set (unless `--no-svg`).
 
@@ -1077,7 +1087,7 @@ Array of documentation pipeline blocks. `translate-docs` and the docs phase of `
 - `description`
 Optional human-readable note for this block (not used for translation). Prefixed in the `translate-docs` `🌐` headline when set; also shown in `status` section headers.
 - `contentPaths`
-Markdown/MDX sources to translate (`translate-docs` scans these for `.md` / `.mdx`). JSON labels come from `jsonSource` on the same block.
+Markdown/MDX page bodies to translate (`translate-docs` scans these for `.md` / `.mdx`). That is where localized documentation prose comes from.
 - `outputDir`
 Root directory for translated output for this block.
 - `sourceFiles`
@@ -1085,7 +1095,7 @@ Optional alias merged into `contentPaths` at load.
 - `targetLocales`
 Optional subset of locales for this block only (otherwise root `targetLocales`). Effective documentation locales are the union across blocks.
 - `jsonSource`
-Source directory for Docusaurus JSON label files for this block (e.g. `"i18n/en"`).
+Optional. Source directory for Docusaurus JSON label catalogs for this block (e.g. `"i18n/en"` from `docusaurus write-translations`). Page bodies always come from `contentPaths`; `jsonSource` only supplies shell/UI JSON, not MDX.
 - `markdownOutput.style`
 `"nested"` (default), `"docusaurus"`, or `"flat"`.
 - `markdownOutput.docsRoot`
@@ -1243,14 +1253,14 @@ The root program also supports `-V` / `--version` and `-h` / `--help`; `ai-i18n-
 ## Environment variables
 
 
-| Variable                | Description                                                |
-|-------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`    | **Required.** Your OpenRouter API key.                     |
-| `OPENROUTER_BASE_URL`   | Override the API base URL.                                 |
-| `I18N_SOURCE_LOCALE`    | Override `sourceLocale` at runtime.                        |
-| `I18N_TARGET_LOCALES`   | Comma-separated locale codes to override `targetLocales`.  |
-| `I18N_LOG_LEVEL`        | Logger level (`debug`, `info`, `warn`, `error`, `silent`). |
-| `NO_COLOR`              | When `1`, disable ANSI colours in log output.              |
-| `I18N_LOG_SESSION_MAX`  | Max lines kept per log session (default `5000`).           |
+| Variable               | Description                                                |
+|------------------------|------------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | **Required.** Your OpenRouter API key.                     |
+| `OPENROUTER_BASE_URL`  | Override the API base URL.                                 |
+| `I18N_SOURCE_LOCALE`   | Override `sourceLocale` at runtime.                        |
+| `I18N_TARGET_LOCALES`  | Comma-separated locale codes to override `targetLocales`.  |
+| `I18N_LOG_LEVEL`       | Logger level (`debug`, `info`, `warn`, `error`, `silent`). |
+| `NO_COLOR`             | When `1`, disable ANSI colours in log output.              |
+| `I18N_LOG_SESSION_MAX` | Max lines kept per log session (default `5000`).           |
 
 

@@ -1337,7 +1337,7 @@ program
   .option("--no-ui", "Skip UI strings translation", false)
   .option(
     "--no-svg",
-    "Skip standalone SVG translation (when features.translateSVG and config.svg)",
+    "Skip SVG file translation (when features.translateSVG and config.svg)",
     false
   )
   .option("--no-docs", "Skip markdown/JSON documentation translation", false)

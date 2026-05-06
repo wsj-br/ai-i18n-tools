@@ -7,7 +7,7 @@
 [![授權許可：MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-用於國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 工具套件。透過 OpenRouter 使用大型語言模型提取 UI 字串並進行翻譯，並為 i18next 生成符合各語系需求的 JSON 檔案。同時包含用於 Markdown、Docusaurus JSON 和 SVG 檔案的處理流程。
+用於國際化 JavaScript/TypeScript 應用程式和文件網站的 CLI 與工具包。透過 OpenRouter 使用大型語言模型提取 UI 字串並進行翻譯，並為 i18next 生成符合語系格式的 JSON 檔案。針對文件內容，它會翻譯 `contentPaths` 底下的 Markdown 和 MDX 檔案（讀者所開啟的本地化頁面）。選用的 Docusaurus 標籤 JSON 來自 `jsonSource`，用以處理網站外殼字串（如 `write-translations` 目錄中的主題、導覽列、頁尾等），與頁面主內容分開處理。SVG 檔案的翻譯則使用 `features.translateSVG` 和頂層的 `svg` 區塊。
 
 <small>**以其他語言閱讀：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -38,11 +38,11 @@
 
 從 `t("…")` / `i18n.t("…")` **literals** 建立主目錄 (`strings.json`，包含可選的每區域設定 `models` 元數據)，可選擇性加入 `package.json` `description`，並在設定中啟用時，從 `ui-languages.json` 匯入各個 `englishName`。透過 OpenRouter 翻譯各區域設定中遺漏的項目，並輸出扁平化的 JSON 檔案 (`de.json`、`pt-BR.json` 等)，可直接供 i18next 使用。
 
-**工作流程 2 - 文件翻譯**（Markdown、Docusaurus JSON）
+**工作流程 2 - 文件翻譯**（Markdown / MDX，可選 Docusaurus 外殼 JSON）
 
-翻譯 `.md` 和 `.mdx` 從每個 `documentations` 區塊的 `contentPaths` 和 JSON 標籤檔案，當啟用時來自該區塊的 `jsonSource`。支持 Docusaurus 風格和平面區域後綴佈局每個區塊 (`documentations[].markdownOutput`)。共享根 `cacheDir` 保存 SQLite 快取，因此只有新的或更改的段落會發送到 LLM。 **SVG:** 啟用 `features.translateSVG`，添加頂層 `svg` 區塊，然後使用 `translate-svg`（當兩者都設置時也從 `sync` 運行）。
+翻譯每個 `documentations` 區塊中 `contentPaths` 的 `.md` 與 `.mdx` — 也就是本地化的文件內容。當設定 `features.translateJSON` 與 `jsonSource` 時，也會翻譯 Docusaurus **標籤 JSON**（來自 `write-translations` 的導覽列、頁尾、主題/外掛 UI），但不包含 MDX 主體文字。支援依區塊設定 Docusaurus 風格或扁平式語系後綴的目錄結構（`documentations[].markdownOutput`）。共用的根目錄 `cacheDir` 儲存 SQLite 快取，因此僅有新增或變更的片段會傳送至 LLM。**SVG：** 啟用 `features.translateSVG`，加入頂層 `svg` 區塊，然後使用 `translate-svg`（若兩者皆設定，也可從 `sync` 執行）。
 
-兩種工作流程共用單一 `ai-i18n-tools.config.json` 檔案，可獨立或同時使用。獨立 SVG 翻譯使用 `features.translateSVG` 搭配頂層 `svg` 區塊，並透過 `translate-svg` 執行（或在 `sync` 內的 SVG 階段執行）。
+這兩種工作流程共用單一的 `ai-i18n-tools.config.json` 檔案，可獨立或同時使用。SVG 檔案翻譯使用 `features.translateSVG` 搭配頂層 `svg` 區塊，並透過 `translate-svg`（或 `sync` 內的 SVG 階段）執行。
 
 ---
 
@@ -217,7 +217,7 @@ ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ig
 ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
 ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs …                      Translate documentation (markdown, JSON); flags include -l/--locale <codes>, -p/-f path, --dry-run,
+ai-i18n-tools translate-docs …                      Translate documentation: markdown/MDX from contentPaths; optional Docusaurus label JSON from jsonSource. Flags include -l/--locale <codes>, -p/-f path, --dry-run,
                                                     --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
                                                     --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
 ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])

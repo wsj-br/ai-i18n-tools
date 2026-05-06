@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -248,8 +248,8 @@ output file  ─────────────────── Docusauru
 All extractors extend `BaseExtractor` and implement `extract(content, filepath): Segment[]`.
 
 - `MarkdownExtractor` - splits markdown into typed segments: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter is classified as **non-translatable** (`slug`, `id`, and other routing keys stay stable). Top-level `export ...` blocks (e.g. React component definitions) are classified as non-translatable `other` segments alongside existing `import ...` handling. Multi-line blocks starting with a capital JSX tag (e.g. a `<Tabs>` block) are classified as translatable paragraphs. Non-translatable segments (code blocks, raw HTML) are preserved verbatim.
-- `JsonExtractor` - extracts string values from Docusaurus JSON label files.
-- `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for assets under `config.svg`, not by `translate-docs`).
+- `JsonExtractor` - extracts string values from Docusaurus JSON label files (Docusaurus UI catalogs, not MDX body).
+- `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for files under `config.svg`, not by `translate-docs`).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### Heading anchor insertion (`write-heading-ids` CLI)
@@ -428,7 +428,7 @@ Key exports:
 | `TranslationCache` | SQLite cache - instantiate with a `cacheDir` path. |
 | `UIStringExtractor` | Extract `t("…")` strings from JS/TS source. |
 | `MarkdownExtractor` | Extract translatable segments from markdown. |
-| `JsonExtractor` | Extract from Docusaurus JSON label files. |
+| `JsonExtractor` | Extract from Docusaurus JSON label files (UI catalogs, not MDX body). |
 | `SvgExtractor` | Extract from SVG files. |
 | `OpenRouterClient` | Make translation requests to OpenRouter. |
 | `PlaceholderHandler` | Protect/restore markdown syntax around translation (HTML tags, admonitions, anchors, MDX comments/JSX/braces, URLs, inline code, emphasis). |

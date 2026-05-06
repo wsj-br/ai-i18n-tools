@@ -3,8 +3,8 @@
 
 `ai-i18n-tools` 提供两种独立且可组合的工作流：
 
-- **工作流 1 - UI 翻译**：从任意 JS/TS 源码中提取 `t("…")` 调用，通过 OpenRouter 进行翻译，并生成适用于 i18next 的扁平化按语言环境划分的 JSON 文件。
-- **工作流 2 - 文档翻译**：将 Markdown（MDX）和 Docusaurus JSON 标签文件翻译为任意数量的语言环境，并支持智能缓存。**SVG** 文件使用 `features.translateSVG`、顶级 `svg` 块和 `translate-svg`（参见 [CLI 参考](#cli-reference)）。
+- **工作流 1 - UI 翻译**：从任意 JS/TS 源码中提取 `t("…")` 调用，通过 OpenRouter 进行翻译，并生成扁平化的按语言划分的 JSON 文件，供 i18next 使用。
+- **工作流 2 - 文档翻译**：翻译 `contentPaths` 中列出的 **Markdown 和 MDX 页面** 至任意数量的目标语言，并支持智能缓存——即网站读者所访问的本地化文档。可选的 **Docusaurus JSON**（`jsonSource`，来自 `docusaurus write-translations`）用于翻译 **站点外壳**（导航栏、页脚、主题/插件 UI 字符串），而非 `docs/` 中的正文内容。**SVG** 文件使用 `features.translateSVG`、顶级 `svg` 块以及 `translate-svg` 进行翻译（参见 [CLI 参考](#cli-reference)）。
 
 两个工作流均使用 OpenRouter（任何兼容的 LLM）并共享一个配置文件。
 
@@ -102,7 +102,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 快速开始
 
-默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus` 模板启用 **文档** 翻译（`translate-docs`）。当您希望使用一个命令根据配置运行提取、UI 翻译、可选的独立 SVG 翻译和文档翻译时，请使用 `sync`。
+默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus` 模板启用 **文档** 翻译（`translate-docs`）。当您希望使用一个命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译和文档翻译时，请使用 `sync`。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -453,7 +453,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## 工作流程 2 - 文档翻译
 
-专为 Markdown 文档、Docusaurus 站点和 JSON 标签文件设计。对于嵌入在 Markdown 中的 PNG 和其他光栅图像，请参见 [翻译文档中的图像和光栅资源](#images-and-raster-assets-in-translated-docs)。SVG 文件在启用 `features.translateSVG` 并设置了顶级 `svg` 块时，通过 [`translate-svg`](#cli-reference) 进行翻译——而不是通过 `documentations[].contentPaths`。
+主要设计用于 `contentPaths` 下的 **Markdown 和 MDX 文档**（即读者关注的页面内容）。在 Docusaurus 站点中，您还可以翻译由 `docusaurus write-translations` 生成的 **JSON 标签文件**——这些文件包含主题、导航栏、页脚和插件的 UI 字符串（外壳 i18n），与 `docs/` 中的正文内容不同。对于嵌入 Markdown 中的 PNG 及其他光栅图像，请参阅 [翻译文档中的图像和光栅资源](#images-and-raster-assets-in-translated-docs)。当启用 `features.translateSVG` 并设置了顶级 `svg` 块时，SVG 文件通过 [`translate-svg`](#cli-reference) 进行翻译，而非通过 `documentations[].contentPaths`。
 
 <a id="step-1-initialise-for-documentation"></a>
 ### 步骤 1：为文档初始化
@@ -472,6 +472,8 @@ npx ai-i18n-tools init -t ui-docusaurus
 - `documentations[].contentPaths` - Markdown/MDX 源目录或文件（另见 `documentations[].jsonSource` 获取 JSON 标签）。
 - `documentations[].outputDir` - 该块的翻译输出根目录。
 - `documentations[].markdownOutput.style` - `"nested"`（默认）、`"docusaurus"` 或 `"flat"`（参见 [输出布局](#output-layouts)）。
+
+**主要与辅助的区别：** 应将编写和翻译的重点放在 `contentPaths` 上——该输出即为本地化文档。`jsonSource` 适用于需要本地化 **Docusaurus 外壳** 的团队；当您升级 Docusaurus 或更改导航栏、页脚或主题字符串时，运行 `docusaurus write-translations` 以确保默认语言目录下的源目录保持最新。如果您仅需翻译页面内容，并通过其他方式处理 UI 字符串，可将 `features.translateJSON` 设置为 `false`。
 
 <a id="step-2-translate-documents"></a>
 ### 步骤 2：翻译文档
@@ -508,9 +510,9 @@ npx ai-i18n-tools status
 
 CLI 使用 SQLite 保存 **文件跟踪**信息（每个文件 × 区域设置的源哈希）和 **段落**记录（每个可翻译块 × 区域设置的哈希）。正常运行时，如果已记录的哈希与当前源匹配 **且**输出文件已存在，则完全跳过该文件；否则处理该文件，并使用段落缓存，以避免对未更改的文本调用 API。
 
-| 标志                          | 效果                                                                                                                                                                                                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *(默认)*                   | 当跟踪记录和磁盘上的输出匹配时跳过未更改的文件；其余情况使用段落缓存。                                                                                                                                                                              |
+| 标志                          | 效果                                                                                                                                                                                                                                                              |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *(默认)*                   | 当跟踪内容与磁盘上的输出一致时跳过未更改的文件；其余内容使用片段缓存。                                                                                                                                                                          |
 | `-l, --locale <codes>`        | 以逗号分隔的目标区域设置（若省略，则默认为根 `targetLocales` 和每个 `documentations[]` 块中可选的 `targetLocales` 的并集）。                                                                                                                                                          |
 | `-p, --path` / `-f, --file`   | 仅翻译此路径下的 Markdown/JSON（项目相对路径或绝对路径）；`--file` 是 `--path` 的别名。                                                                                                                                                         |
 | `--dry-run`                   | 不写入文件且不调用 API。                                                                                                                                                                                                                                        |
@@ -533,13 +535,13 @@ CLI 使用 SQLite 保存 **文件跟踪**信息（每个文件 × 区域设置�
 
 `translate-docs` 将可翻译的分段以**批处理**形式发送到 OpenRouter（按 `batchSize` / `maxBatchChars` 分组）。`--prompt-format` 标志仅更改该批处理的**线上传输格式**；`PlaceholderHandler` 令牌、Markdown AST 检查、SQLite 缓存键以及批处理解析失败时的每分段回退机制均保持不变。
 
-| 模式                       | 用户消息                                                           | 模型回复                                                 |
-|----------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
-| `xml`                  | 伪 XML：每个分段一个 `<seg id="N">…</seg>`（含 XML 转义）。 | 仅包含 `<t id="N">…</t>` 块，每个分段索引一个。       |
+| 模式                   | 用户消息                                                           | 模型回复                                                 |
+|------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
+| `xml`                  | 伪 XML：每个片段一个 `<seg id="N">…</seg>`（含 XML 转义）。 | 仅 `<t id="N">…</t>` 块，每个片段索引对应一个。       |
 | `json-array` (默认) | 一个字符串的 JSON 数组，按顺序每个分段一个条目。               | 一个 **相同长度**的 JSON 数组（顺序相同）。           |
 | `json-object`          | 一个以分段索引为键的 JSON 对象 `{"0":"…","1":"…",…}`。            | 一个具有**相同键**和翻译后值的 JSON 对象。 |
 
-运行头信息还会打印 `Batch prompt format: …`，以便您确认当前活动模式。JSON 标签文件（`jsonSource`）和独立 SVG 批处理在作为 `translate-docs`（或 `sync` 的文档阶段 —— `sync` 不暴露此标志，默认为 `json-array`）的一部分运行时，使用相同的设置。
+运行时的标题还会打印 `Batch prompt format: …`，以便您确认当前的活动模式。当 JSON 标签文件（`jsonSource`）和 SVG 文件批处理作为 `translate-docs`（或 `sync` 的文档阶段——`sync` 不公开此标志，默认为 `json-array`）的一部分运行时，它们使用相同的设置。
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### SQLite 中的分段去重和路径
@@ -556,9 +558,16 @@ CLI 使用 SQLite 保存 **文件跟踪**信息（每个文件 × 区域设置�
 
 `"docusaurus"` — 将位于 `docsRoot` 下的文件放置到 `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`，符合通常的 Docusaurus i18n 布局。将 `documentations[].markdownOutput.docsRoot` 设置为你的文档源根目录（例如 `"docs"`）。
 
+文档页面（主要）：
+
 ```text
-docs/guide.md         → i18n/de/docusaurus-plugin-content-docs/current/guide.md
-i18n/en/sidebar.json  → i18n/de/sidebar.json  (JSON label files)
+docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+可选 JSON 标签——来自 `jsonSource` 的 Docusaurus 外壳字符串（非 MDX 正文内容）：
+
+```text
+i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
 `"flat"` — 将翻译后的文件放置在源文件旁边，并添加语言环境后缀，或放入子目录中。页面之间的相对链接会自动重写。
@@ -619,7 +628,7 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 
 `translate-docs` 会翻译 Markdown 段落（包括图像的 alt 文本）。但它 **不会** 将光栅文件（PNG、JPEG、WebP、GIF）复制到您的文档 `outputDir` 中。您需要将文件放置在重写后的 URL 所指向的位置，或在翻译后调整 URL（通常使用 `markdownOutput.postProcessing.regexAdjustments`）。
 
-**SVG** 作为插图资源使用时，应使用 `svg` 块和 `translate-svg` —— 参见 [`svg`](#svg)。`documentations[].contentPaths` 中列出的路径用于 Markdown/MDX（以及可选的 JSON 标签），不用于独立 SVG 翻译。
+用作插图资源的 **SVG** 应使用 `svg` 块和 `translate-svg` —— 参见 [`svg`](#svg)。在 `documentations[].contentPaths` 中列出的路径适用于 Markdown/MDX（以及可选的 JSON 标签），不适用于 SVG 文件翻译。
 
 **为何扁平布局通常需要修复**
 
@@ -665,7 +674,7 @@ Next.js 示例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了�
 
 将 PNG 文件保留在磁盘上的 `images/screenshots/<locale>/` 目录下（与重写后的 URL 使用的结构相同）。
 
-**模式 3 — 独立的 SVG** (`examples/nextjs-app`)
+**模式 3 — SVG 文件**（`examples/nextjs-app`）
 
 同一示例启用了 `features.translateSVG`，并将源 SVG 映射到 Web 应用的 public 文件夹：
 
@@ -692,11 +701,11 @@ Next.js 示例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了�
 
 如果你使用了自定义的 `pathTemplate`，除非显式设置，否则 `rewriteRelativeLinks` 默认为 `false` —— 扁平式链接重写是为内置的 `flat` 布局设计的。
 
-| 占位符 | 作用 | 示例 |
-|-------------|------|---------|
-| `{outputDir}` | 本文档块 `outputDir` 的绝对解析路径 | `/home/acme/repo/i18n` |
+| 占位符            | 角色                                                                                                       | 示例                                                          |
+|------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `{outputDir}`          | 当前文档块的 `outputDir` 的绝对解析路径                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | 目标语言环境代码（与配置/CLI 中的形式相同） | `de`, `pt-BR` |
-| `{LOCALE}` | 同上，但大写 | `DE`, `PT-BR` |
+| `{LOCALE}`             | 相同语言代码的大写形式                                                                                     | `DE`, `PT-BR`                                                    |
 | `{relPath}` | 相对于项目根目录的源文件路径，使用 POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | 文件名 **无**扩展名 | `guide` 用于 `docs/guide.md` |
 | `{basename}` | 文件名 **与** 扩展名 | `guide.md` |
@@ -805,7 +814,7 @@ Next.js 示例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了�
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Docusaurus docs and JSON labels",
+      "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
       "jsonSource": "docs-site/i18n/en",
@@ -838,10 +847,11 @@ Next.js 示例在 `examples/nextjs-app/ai-i18n-tools.config.json` 中使用了�
 
 使用 `npx ai-i18n-tools sync` 时的执行方式：
 
-- 从 `src/` 提取/翻译 UI 字符串到 `public/locales/`。
-- 第一个文档块将 Markdown 和 JSON 标签翻译为 Docusaurus 的 `i18n/<locale>/...` 布局。
-- 第二个文档块将 `README.md` 翻译为 `translated-docs/` 下带区域设置后缀的扁平文件。
-- 所有文档块共享 `cacheDir`，因此未更改的片段会在多次运行中复用，以减少 API 调用和成本。
+- UI 字符串从 `src/` 提取/翻译为 `public/locales/`。
+- 第一个文档块将 **markdown** 从 `docs-site/docs/` 翻译为 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`（本地化文档页面）。
+- 使用 `features.translateJSON` 和 `jsonSource`，同一块还会将 `docs-site/i18n/en/` 下的 **Docusaurus shell JSON** 翻译为每个目标语言区域文件夹——包括导航栏、页脚和主题/插件目录，但不包括 MDX 正文内容。
+- 第二个文档块将 `README.md` 翻译为 `translated-docs/` 下带语言区域后缀的平面文件。
+- 所有文档块共享 `cacheDir`，因此未更改的片段会在多次运行中重复使用，以减少 API 调用和成本。
 
 ---
 
@@ -998,9 +1008,9 @@ The **Markdown issues** tab lists rows from the `markdown_source_issues` SQLite 
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `extractUIStrings`   | 1        | 扫描源码中的 `t("…")` / `i18n.t("…")`，将可选的 `package.json` 描述以及（若启用）`ui-languages.json` `englishName` 值合并到 `strings.json` 中。 |
 | `translateUIStrings` | 1        | 翻译 `strings.json` 条目并生成各区域对应的 JSON 文件。                                                                                                  |
-| `translateMarkdown`  | 2        | 翻译 `.md` / `.mdx` 文件。                                                                                                                                    |
-| `translateJSON`      | 2        | 翻译 Docusaurus JSON 标签文件。                                                                                                                             |
-| `translateSVG`       | 2        | 翻译独立的 `.svg` 资源（需要顶层配置 `svg` 块）。                                                                                         |
+| `translateMarkdown`  | 2        | 翻译 `.md` / `.mdx` 文件（平面文件或 Docusaurus 文档）。                                                                                                                                   |
+| `translateJSON`      | 2        | 从 `docusaurus write-translations` 翻译 Docusaurus 标签 JSON（主题/导航栏/页脚/插件 UI），**不包括** markdown 页面正文。                                             |
+| `translateSVG`       | 2        | 翻译 `.svg` 文件（需要顶层的 `svg` 块）。                                                                                                       |
 
 **翻译** SVG 文件时，需启用 `features.translateSVG` 并配置顶级 `svg` 块，并使用 `translate-svg`。当两者均设置时（除非使用 `--no-svg`），`sync` 命令将执行该步骤。
 
@@ -1067,17 +1077,17 @@ SQLite 缓存目录（所有 `documentations` 块共享）。可在多次运行�
 文档处理流水线模块的数组。`translate-docs` 和 `sync` 的文档阶段 **按顺序处理每个** 模块。
 
 - `description`
-此块的可选人类可读备注（不用于翻译）。设置后，会在 `translate-docs` `🌐` 标题前添加前缀；也会显示在 `status` 的章节标题中。
+此块的可选人类可读备注（不用于翻译）。设置时会作为前缀添加到 `translate-docs` `🌐` 标题中；也会显示在 `status` 的章节标题中。
 - `contentPaths`
-要翻译的 Markdown/MDX 源文件（`translate-docs` 会扫描这些文件中的 `.md` / `.mdx`）。JSON 标签来自同一块中的 `jsonSource`。
+需要翻译的 Markdown/MDX 页面正文（`translate-docs` 会扫描这些内容以提取 `.md` / `.mdx`）。本地化文档正文内容即来源于此。
 - `outputDir`
 此块翻译输出的根目录。
 - `sourceFiles`
-可选的别名，在加载时合并到 `contentPaths` 中。
+加载时可选合并到 `contentPaths` 的别名。
 - `targetLocales`
-仅针对此块的可选区域设置子集（否则使用根级 `targetLocales`）。有效文档区域是所有块的并集。
+仅限此块的可选语言区域子集（否则使用根级 `targetLocales`）。有效文档语言区域是所有块的并集。
 - `jsonSource`
-此块的 Docusaurus JSON 标签文件的源目录（例如 `"i18n/en"`）。
+可选。此块的 Docusaurus JSON 标签目录的源目录（例如来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`jsonSource` 仅提供 shell/UI JSON，不包含 MDX。
 - `markdownOutput.style`
 `"nested"`（默认）、`"docusaurus"` 或 `"flat"`。
 - `markdownOutput.docsRoot`
@@ -1232,9 +1242,9 @@ npx ai-i18n-tools glossary-generate
 <a id="environment-variables"></a>
 ## 环境变量
 
-| 变量                | 说明                                                |
-|-------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`    | **必填。** 您的 OpenRouter API 密钥。                     |
+| 变量               | 说明                                                |
+|------------------------|------------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | **必填。** 您的 OpenRouter API 密钥。                     |
 | `OPENROUTER_BASE_URL`   | 覆盖 API 基础 URL。                                 |
 | `I18N_SOURCE_LOCALE`    | 在运行时覆盖 `sourceLocale`。                        |
 | `I18N_TARGET_LOCALES`   | 用逗号分隔的区域设置代码，用于覆盖 `targetLocales`。  |

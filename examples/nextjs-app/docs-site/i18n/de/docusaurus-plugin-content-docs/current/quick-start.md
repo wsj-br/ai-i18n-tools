@@ -4,7 +4,7 @@ title: Quick Start
 description: >-
   Get your first translated document in under five minutes using ai-i18n-tools
   with this Next.js example project.
-translation_last_updated: '2026-05-04T22:27:22.175Z'
+translation_last_updated: '2026-05-06T20:54:07.266Z'
 source_file_mtime: '2026-05-04T22:22:41.551Z'
 source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
 translation_language: de

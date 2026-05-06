@@ -79,7 +79,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
-│   ├── translate-svg.ts            `translate-svg` command (standalone assets from `config.svg`)
+│   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
 │   └── file-utils.ts               File collection helpers
@@ -247,9 +247,9 @@ output file  ─────────────────── Docusauru
 
 Todos os extratores estendem `BaseExtractor` e implementam `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` - divide o markdown em segmentos tipados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. O frontmatter YAML é classificado como **não traduzível** (`slug`, `id` e outras chaves de roteamento permanecem inalteradas). Blocos `export ...` de nível superior (por exemplo, definições de componentes React) são classificados como segmentos `other` não traduzíveis, juntamente com o tratamento existente de `import ...`. Blocos multilinha que começam com uma tag JSX em maiúscula (por exemplo, um bloco `<Tabs>`) são classificados como parágrafos traduzíveis. Segmentos não traduzíveis (blocos de código, HTML bruto) são preservados textualmente.
-- `JsonExtractor` - extrai valores de string de arquivos de rótulos JSON do Docusaurus.
-- `SvgExtractor` - extrai conteúdo de `<text>`, `<title>` e `<desc>` de SVG (usado por `translate-svg` para ativos em `config.svg`, não por `translate-docs`).
+- `MarkdownExtractor` - divide o markdown em segmentos tipados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. O YAML frontmatter é classificado como **não traduzível** (`slug`, `id` e outras chaves de roteamento permanecem inalteradas). Blocos `export ...` de nível superior (por exemplo, definições de componentes React) são classificados como segmentos `other` não traduzíveis, juntamente com o tratamento existente de `import ...`. Blocos multilinha que começam com uma tag JSX em letra maiúscula (por exemplo, um bloco `<Tabs>`) são classificados como parágrafos traduzíveis. Segmentos não traduzíveis (blocos de código, HTML bruto) são preservados textualmente.
+- `JsonExtractor` - extrai valores de string dos arquivos de rótulo JSON do Docusaurus (catálogos de interface do Docusaurus, não o corpo MDX).
+- `SvgExtractor` - extrai conteúdo `<text>`, `<title>` e `<desc>` de SVG (usado por `translate-svg` para arquivos em `config.svg`, não por `translate-docs`).
 
 <a id="heading-anchor-insertion-write-heading-ids"></a>
 ### Inserção de âncoras de títulos (CLI `write-heading-ids`)
@@ -428,7 +428,7 @@ Principais exportações:
 | `TranslationCache` | Cache SQLite - instanciar com um caminho `cacheDir`. |
 | `UIStringExtractor` | Extrair strings `t("…")` do código-fonte JS/TS. |
 | `MarkdownExtractor` | Extrair segmentos traduzíveis do markdown. |
-| `JsonExtractor` | Extrair de arquivos JSON de rótulos do Docusaurus. |
+| `JsonExtractor` | Extrair de arquivos de rótulo JSON do Docusaurus (catálogos de interface, não corpo MDX). |
 | `SvgExtractor` | Extrair de arquivos SVG. |
 | `OpenRouterClient` | Fazer solicitações de tradução para o OpenRouter. |
 | `PlaceholderHandler` | Protege/restaura a sintaxe markdown ao redor da tradução (tags HTML, advertências, âncoras, comentários MDX/JSX/chaves, URLs, código embutido, ênfase). |
