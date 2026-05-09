@@ -24,6 +24,8 @@ export interface UiLanguageEntry {
   englishName: string;
   /** Text direction for layout / `dir` (see `getTextDirection`). Required in `ui-languages.json`. */
   direction: "ltr" | "rtl";
+  /** True if this entry is the source locale (optional, only present for source locale). */
+  isSourceLocale?: boolean;
 }
 
 /** True if a string looks like a file path (not a BCP-47 locale code). */
@@ -222,7 +224,12 @@ export function loadUiLanguageEntries(absPath: string): UiLanguageEntry[] {
       );
     }
     const direction = dirRaw;
-    out.push({ code, label, englishName, direction });
+    const entry: UiLanguageEntry = { code, label, englishName, direction };
+    // Optional isSourceLocale field
+    if (typeof o.isSourceLocale === "boolean") {
+      entry.isSourceLocale = o.isSourceLocale;
+    }
+    out.push(entry);
   }
   if (out.length === 0) {
     throw new Error("ui-languages.json: no valid entries with a `code` field");

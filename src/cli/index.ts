@@ -337,7 +337,7 @@ More detail:
   ai-i18n-tools help <command>            same output
 
 Target locales (-l / --locale):
-  translate-docs, translate-svg, translate-ui, sync, and export-ui-xliff accept
+  translate-docs, translate-svg, translate-ui, sync, sync-ui, and export-ui-xliff accept
   -l, --locale <codes> with comma-separated BCP-47 codes (e.g. de,fr,pt-BR).
   When omitted, defaults come from config and ui-languages.json (see docs).
 
@@ -1172,6 +1172,78 @@ program
 Examples:
   ai-i18n-tools translate-ui -l de,fr
   ai-i18n-tools translate-ui --force --locale es
+`
+  );
+
+program
+  .command("sync-ui")
+  .description(
+    "Extract UI strings (if features.extractUIStrings is enabled), then translate UI strings (if features.translateUIStrings is enabled); -l/--locale <codes> limits targets (comma-separated; optional)"
+  )
+  .option(
+    "-l, --locale <codes>",
+    "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
+  )
+  .option("--dry-run", "No writes / no API", false)
+  .option("--force", "Re-translate all UI entries per locale", false)
+  .option("-j, --concurrency <n>", "Max parallel target locales (default: config)")
+  .action(async (_a, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
+    const o = cmd.opts() as {
+      locale?: string;
+      dryRun?: boolean;
+      force?: boolean;
+      concurrency?: string;
+    };
+    const cacheDir = path.join(projectRoot, config.cacheDir);
+    const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync-ui");
+
+    if (config.features.extractUIStrings) {
+      try {
+        const s = runExtract(config, projectRoot);
+        console.log(
+          chalk.green(
+            `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+          )
+        );
+      } catch (e) {
+        console.error(chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`));
+        process.exit(1);
+      }
+    }
+
+    if (!config.features.translateUIStrings) {
+      console.error(chalk.red("❌ [sync-ui] Enable features.translateUIStrings in config."));
+      process.exit(1);
+    }
+
+    const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
+    try {
+      await runTranslateUI(config, {
+        cwd: projectRoot,
+        locales,
+        force: Boolean(o.force),
+        dryRun: Boolean(o.dryRun),
+        verbose: Boolean(g.verbose),
+        logPath,
+        concurrency:
+          o.concurrency !== undefined
+            ? parsePositiveInt("Concurrency (-j)", o.concurrency)
+            : undefined,
+      });
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync-ui][ui] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools sync-ui -l de,fr
+  ai-i18n-tools sync-ui --locale ja --force
 `
   );
 

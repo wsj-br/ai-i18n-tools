@@ -124,13 +124,14 @@ describe("ui-languages", () => {
     fs.writeFileSync(
       p,
       JSON.stringify([
-        { code: "en-GB", label: "English", englishName: "English (UK)", direction: "ltr" },
+        { code: "en-GB", label: "English", englishName: "English (UK)", direction: "ltr", isSourceLocale: true },
         { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
       ]),
       "utf8"
     );
     const rows = loadUiLanguageEntries(p);
     expect(rows.map((r) => r.code)).toEqual(["en-GB", "de"]);
+    expect(rows[0].isSourceLocale).toBe(true);
     expect(rows[1].englishName).toBe("German");
   });
 

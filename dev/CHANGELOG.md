@@ -9,6 +9,15 @@ Use conventional types (**Added**, **Changed**, **Fixed**, etc.), a short **scop
 Add new entries in the `## [Unreleased]` section. When releasing a new version, move all entries in "[Unreleased]" to a new entry `## [x.y.z] - YYYY-MM-DD`.
 
 
+## [Unreleased]
+
+- **Added**: CLI `sync-ui` — run extract (if `features.extractUIStrings` is enabled) then translate UI strings (if `features.translateUIStrings` is enabled); same `-l/--locale`, `--force`, `--dry-run`, and `-j/--concurrency` options as `translate-ui` for syncing just UI without documentation or SVG translation.
+
+- **Changed**: ui-languages — `isSourceLocale` is now only included in `ui-languages.json` for the source locale (previously it was included for all locales as `true`/`false`).
+
+
+---
+
 ## [1.4.0] - 2026-05-06
 
 - **Changed**: docs — `README.md`, `GETTING_STARTED.md`, `docs-site` example README, and `PACKAGE_OVERVIEW.md` clarify that Docusaurus **markdown/MDX** under `contentPaths` is the primary documentation output; JSON from `jsonSource` / `write-translations` is **site shell** (theme/nav/footer), not page body copy.
@@ -37,12 +46,13 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 - **Added**: `{{MDX_N}}` to the document core-rules prompt (`src/core/prompts.ts`) and the internal-placeholder leak detector (`src/processors/translation-placeholder-leaks.ts`); `protectMdx` / `restoreMdx` re-exported from `src/index.ts`.
 
-
-## [Unreleased]
+---
 
 ## [1.4.1] - 2026-05-06
 
 - **Changed**: dependencies — downgraded `express` from `^5.2.1` to `^4.22.1` for Docusaurus 3.x compatibility.
+
+---
 
 ## [1.3.1] - 2026-05-03
 
@@ -69,6 +79,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Added**: `src/processors/markdown-source-diagnostics.ts` and exports `collectMarkdownSourceIssues`, `collectMarkdownIssuesForSegment`, `shouldDiagnoseMarkdownSegment`, and `MARKDOWN_SOURCE_ISSUE_CODES`; `emphasis-placeholders` exports `collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, `findCodeSpanEnd`, `findUnclosedInlineCodeLine1Starts`, and `MarkdownDelimiterRun` for shared pairing rules.
 
 - **Added**: `buildMarkdownExtractOpts` in `doc-translate.ts` so `translate-docs` and `check-markdown` share the same markdown extractor options.
+
+---
 
 ## [1.2.8] - 2026-05-03
 
@@ -116,19 +128,27 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 - **Changed**: cli — Before calling OpenRouter for translation, `sync`, `translate-docs`, `translate-ui`, `translate-svg`, `lint-source`, and `cleanup` (via sync) fetch the OpenRouter model catalog and drop configured ids that are not listed; a `[models]` warning names ignored ids and suggests editing `openrouter.translationModels` and running `check-models`. If every id is unknown, the command fails with a clear error.
 
+---
+
 ## [1.2.7] - 2026-05-02
 
 - **Fixed**: documentation cache / translation editor — `translation_failures` now stores optional `filepath` and `source_text` when recording doc translation failures, and list/summary queries use `COALESCE` with `translations` so the editor shows file and source for segments that never got a cached translation row (fatal quality/API errors). SQLite schema v3 adds these columns; existing DBs migrate on open.
 
 - **Changed**: CLI `editor` — default HTTP port is now `8675` (previous default `8787` often falls in Windows Hyper-V / excluded TCP ranges such as 8705–8804). If binding fails (`EADDRINUSE`, `EACCES`, etc.), the server retries the next port until one succeeds (up to 1000 attempts) and logs the chosen port.
 
+---
+
 ## [1.2.6] - 2026-04-28
 
 - **Fixed**: UI translation (`translate-ui` / `sync`) — parallel locale workers no longer each atomically rewrite `strings.json` on Windows (that caused `EPERM` on rename); the catalog is written once per parallel batch (and for a single locale after it finishes). `writeAtomicUtf8` retries rename on Windows for transient `EPERM`/`EACCES`/`EBUSY`.
 
+---
+
 ## [1.2.5] - 2026-04-28
 
 - **Fixed**: UI languages master build — `decodeHtmlEntities` in `scripts/lib/decode-html-entities-ui-languages.mjs` peels `&amp;` before numeric/hex references and repeats decoding until stable so sequences like `&amp;#160;` cannot leave literal `&#160;` in `data/ui-languages-complete.json`.
+
+---
 
 ## [1.2.4] - 2026-04-28
 
@@ -140,6 +160,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 - **Changed**: Release tooling — `scripts/release.sh` removes an existing GitHub release (`gh release delete --cleanup-tag`), an orphan remote tag, or a local tag when needed, then recreates an annotated tag at HEAD and pushes before `gh release create`; `--dry-run` still performs no deletes.
 
+---
+
 ## [1.2.3] - 2026-04-27
 
 - **Changed**: Markdown post-processing — `documentations[].markdownOutput.postProcessing.languageListBlock` now supports `label` (`local` or `english`) for switcher labels; generation uses `ui-languages.json` when present, otherwise falls back to bundled `data/ui-languages-complete.json` for `sourceLocale` + target locales. Default is `local` so generated links use each locale endonym unless explicitly overridden.
@@ -148,7 +170,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 - **Changed**: UI languages catalog build — `scripts/build-ui-languages-complete.mjs` now adds a Wikimedia fallback source for missing bare 2–3 letter language tags when glibc locales do not include them (for example `jv` / Javanese), while still excluding non-primary wiki keys like `be-x-old`; `scripts/fill-ui-language-labels.mjs` now fixes both `label` and `direction` in one OpenRouter pass (same `openrouter.translationModels` fallback chain), and the separate in-build review pass/`--no-label-review` flow was removed to avoid duplicate full-model runs.
 
-
+---
 
 
 ## [1.2.2] - 2026-04-20
@@ -211,11 +233,15 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Changed**: root `package.json` — set `pnpm.onlyBuiltDependencies` to include `sharp` (Next’s optional dep in `examples/nextjs-app`); pnpm only honors this list on the workspace root, so the Next example’s manifest alone does not apply.
 - **Changed**: `.github/workflows/ci.yml` — bump `actions/checkout` to `v6`, `actions/setup-node` to `v6` (drops deprecated `always-auth` from generated `.npmrc`; aligns action runtime with Node 24), and `pnpm/action-setup` to `v5`; remove `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` now that those actions ship on Node 24; drop `token` on the publish job’s `setup-node` step (`v6` uses `token` only for Node downloads; publish auth stays on `NODE_AUTH_TOKEN`).
 
+---
+
 ## [1.1.1] - 2026-04-16
 
 - **Fixed**: `examples/nextjs-app/docs-site` — set `pnpm.onlyBuiltDependencies` to include `core-js` so pnpm v10 runs its postinstall (removes the misleading "run pnpm approve-builds" banner; `approve-builds` from that folder targets the monorepo workspace and often shows no pending packages).
 - **Changed**: `scripts/upgrade-dependencies.sh` — runs `npm-check-updates` and `pnpm audit` (with fix pass) for the repo root, `examples/console-app`, `examples/nextjs-app`, and `examples/nextjs-app/docs-site`; preserves `workspace:^` for `ai-i18n-tools` in examples; uses `pnpm install` / `pnpm audit --ignore-workspace` for the nested Docusaurus app; comments explain nested install vs `approve-builds`.
 - **Security**: `examples/nextjs-app/docs-site` — raised pnpm overrides so `webpack`, `serialize-javascript`, and `follow-redirects` resolve to patched releases; pin `webpack` to `5.105.0` because `5.106.x` rejects webpackbar’s legacy `ProgressPlugin` options and breaks `docusaurus build`.
+
+---
 
 ## [1.1.0] - 2026-04-16
 
@@ -243,6 +269,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Changed**: `emphasis-placeholders` — delimiter pairing fixes and `applyEmphasisCloserSpacing` when emphasis masking is off so closers stay valid CommonMark near CJK and similar edges.
 - **Changed**: `dev/package-context.md` — `translate-docs` default `--prompt-format` noted as `json-array`.
 
+---
 
 ## [1.0.0] - 2023-04-14
 

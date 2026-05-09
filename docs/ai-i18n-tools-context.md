@@ -71,11 +71,30 @@ Use `getTextDirection` for layout decisions, `applyDirection` on `languageChange
 
 ## `ui-languages.json` (generated manifest)
 
-Each row: `code` (BCP-47), `label`, `englishName`, `direction` (`ltr` | `rtl`). `targetLocales` in config is a BCP-47 array. Generate with:
+Each row: `code` (BCP-47), `label`, `englishName`, `direction` (`ltr` | `rtl`), and optionally `isSourceLocale` (boolean) for the source locale entry. `targetLocales` in config is a BCP-47 array. Generate with:
 
 `npx ai-i18n-tools generate-ui-languages`
 
 Writes `ui-languages.json` to root `uiLanguagesPath` if set, otherwise `{ui.flatOutputDir}/ui-languages.json`. Unknown locales get TODO placeholders and a warning; customised `label`/`englishName` may be overwritten by the bundled master list — review after generate. At runtime, `makeLoadLocale` maps should align bundle keys with `targetLocales` (omit `sourceLocale` from dynamic import maps).
+
+Example with source locale marked:
+```jsonc
+[
+  {
+    "code": "en-GB",
+    "label": "English (GB)",
+    "englishName": "English (GB)",
+    "direction": "ltr",
+    "isSourceLocale": true
+  },
+  {
+    "code": "de",
+    "label": "Deutsch",
+    "englishName": "German",
+    "direction": "ltr"
+  }
+]
+```
 
 ---
 
@@ -84,7 +103,21 @@ Writes `ui-languages.json` to root `uiLanguagesPath` if set, otherwise `{ui.flat
 - **Keys:** MD5 of trimmed **source string**, first **8** hex chars (same id in per-locale flat JSON).
 - **Sources:** string literals to `t` / `i18n.t` (and names in `ui.reactExtractor.funcNames`) under `ui.sourceRoots`; optionally `package.json` `description` and manifest `englishName` rows when the matching extractor flags are on. **Literal keys only** — variables are not extracted.
 - **Re-runs:** existing `translated` / `models` for surviving keys are kept.
-- **Plurals:** `t('…', { plurals: true, … })` → catalog row with `plural": true` and per-locale CLDR-shaped objects; `translate-ui` expands flat bundles with suffix keys as needed. Use `setupKeyAsDefaultT` from `ai-i18n-tools/runtime` with `strings.json` and optional `sourcePluralFlatBundle` so the source locale resolves plural suffixes.
+- **Plurals:** `t('…', { plurals: true, … })` → catalog row with `"plural": true` and per-locale CLDR-shaped objects; `translate-ui` expands flat bundles with suffix keys as needed. Use `setupKeyAsDefaultT` from `ai-i18n-tools/runtime` with `strings.json` and optional `sourcePluralFlatBundle` so the source locale resolves plural suffixes.
+
+---
+
+## Source locale JSON generation
+
+The `translate-ui` command **only generates a source locale JSON file** (e.g., `en-GB.json`) **if there are plural strings** in `strings.json`. This file contains plural form keys (e.g., `key_original`, `key_zero`, `key_one`, `key_other`, etc.) needed for i18next plural resolution.
+
+If your source code contains **no plural strings** (no `t()` calls with `{ plurals: true }`), **no source locale JSON file is generated**. In this case:
+
+- The `t()` function returns the source string key directly (e.g., `t("Save")` → `"Save"`).
+- You do not need a source locale flat JSON bundle.
+- Omit the `sourcePluralFlatBundle` parameter in `setupKeyAsDefaultT`.
+
+The source locale JSON file is purely for plural handling — it is never required for plain string localization since the source string itself is already the correct value in the source locale.
 
 ---
 
@@ -94,6 +127,7 @@ Paths depend on your config; common artifacts:
 
 - `strings.json` — master catalog (hash key → `source`, `translated`, optional `models`).
 - Per-locale flat JSON — for example `de.json`, `pt-BR.json` under your configured UI output (often next to `strings.json`).
+- **Source locale JSON** — only if plurals exist (e.g., `en-GB.json` with plural suffix keys).
 - `ui-languages.json` — manifest rows (`code`, `label`, `englishName`, `direction`).
 - `cacheDir` — SQLite cache for documentation translation (`translate-docs`).
 - Optional CSV at `glossary.userGlossary` — influences `translate-ui` and `lint-source` when present.

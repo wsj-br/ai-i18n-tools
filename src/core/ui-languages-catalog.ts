@@ -20,6 +20,7 @@ export type UiLanguageRow = {
   label: string;
   englishName: string;
   direction: "ltr" | "rtl";
+  isSourceLocale?: boolean;
 };
 
 /**
@@ -79,18 +80,26 @@ export function buildUiLanguageRowsFromMaster(
   for (const code of codes) {
     const hit = master.get(normalizeManifestLocaleKey(code));
     if (hit) {
-      rows.push({
+      const row: UiLanguageRow = {
         ...hit,
         direction: hit.direction ?? "ltr",
-      });
+      };
+      if (code === config.sourceLocale) {
+        row.isSourceLocale = true;
+      }
+      rows.push(row);
     } else {
       warnings.push(`No master entry for locale "${code}"; using placeholders`);
-      rows.push({
+      const row: UiLanguageRow = {
         code,
         label: code,
         englishName: `TODO (${code})`,
         direction: "ltr",
-      });
+      };
+      if (code === config.sourceLocale) {
+        row.isSourceLocale = true;
+      }
+      rows.push(row);
     }
   }
 
