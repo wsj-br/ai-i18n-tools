@@ -11,6 +11,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: SVG — `translate-svg` reassembly decodes XML entities in model output (`&gt;`, `&amp;`, etc.) before writing, matching batch XML unescape behavior so text is not double-escaped (e.g. `&amp;gt;`).
+
+- **Changed**: config — `svg.forceLowercase` replaces nested `svg.svgExtractor.forceLowercase` (`translate-svg`); legacy nested keys are still accepted and hoisted when loading config.
+
+- **Fixed**: cli — `collectFilesByExtension` glob handling when the pattern resolves to a single file (`fullPath` / `relFromCwd` were undefined in that branch).
+
 - **Added**: CLI `sync-ui` — run extract (if `features.extractUIStrings` is enabled) then translate UI strings (if `features.translateUIStrings` is enabled); same `-l/--locale`, `--force`, `--dry-run`, and `-j/--concurrency` options as `translate-ui` for syncing just UI without documentation or SVG translation.
 
 - **Changed**: ui-languages — `isSourceLocale` is now only included in `ui-languages.json` for the source locale (previously it was included for all locales as `true`/`false`).

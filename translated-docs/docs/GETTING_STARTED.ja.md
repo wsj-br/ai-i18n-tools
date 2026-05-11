@@ -158,10 +158,10 @@ npx ai-i18n-tools init
 
 これにより、`ui-markdown` テンプレートを使用して `ai-i18n-tools.config.json` が作成されます。以下の設定を編集してください。
 
-- `sourceLocale` - ソース言語の BCP-47 コード（例：`"en-GB"`）。ランタイムの i18n 設定ファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされる `SOURCE_LOCALE` と**一致している必要があります**。
-- `targetLocales` - ターゲット言語の BCP-47 コードの配列（例：`["de", "fr", "pt-BR"]`）。このリストから `ui-languages.json` マニフェストを作成するには `generate-ui-languages` を実行します。
-- `ui.sourceRoots` - `t("…")` 呼び出しをスキャンするディレクトリ（例：`["src/"]`）。
-- `ui.stringsJson` - マスターカタログの出力先（例：`"src/locales/strings.json"`）。
+- `sourceLocale` - ソース言語のBCP-47コード（例：`"en-GB"`）。 **一致する必要があります** `SOURCE_LOCALE` あなたのランタイムi18n設定ファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされたもの。
+- `targetLocales` - 目標言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。 このリストから`ui-languages.json`マニフェストを作成するには`generate-ui-languages`を実行します。
+- `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン（例：`["src/"]`, `["src/**/*.ts"]`）。
+- `ui.stringsJson` - マスターカタログを書き込む場所（例：`"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - `de.json`、`pt-BR.json` などを出力する場所（例：`"src/locales/"`）。
 - `ui.preferredModel`（オプション） - `translate-ui` のみに使用する**最初に試す** OpenRouter モデル ID。失敗した場合、CLI は `openrouter.translationModels`（またはレガシー `defaultModel` / `fallbackModel`）を順に試行し、重複はスキップします。
 
@@ -279,7 +279,7 @@ JSONバンドルが `public/` の下にある場合（典型的なNext.jsの設�
 - `nsSeparator: false` はコロンを含むキーを許可します。
 - `interpolation.escapeValue: false` - 安全に無効化可能：React 自体が値をエスケープするため、Node.js/CLI 出力にはエスケープすべきHTMLがありません。
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` は ai-i18n-tools プロジェクト向けの **推奨される**接続方法です。キーのトリムとソースロケールの <code>{"{{var}}"}</code> インターポレーションフォールバックを適用（低レベルの `wrapI18nWithKeyTrim` と同じ動作）し、オプションで `addResourceBundle` 経由で `translate-ui` `{sourceLocale}.json` 複数形サフィックス付きキーをマージし、その後、`strings.json` から複数形対応の `wrapT` をインストールします。このバンドルされたファイルは、**設定された**ソースロケールの複数形フラットJSONでなければなりません — つまり、i18nブートストラップ（上記ステップ4参照）の `ai-i18n-tools.config.json` と `SOURCE_LOCALE` で使用される `sourceLocale` と同じものです。ブートストラップ中は `sourcePluralFlatBundle` を省略してください（`translate-ui` が `{sourceLocale}.json` を出力した後にマージします）。アプリケーションコードでは `wrapI18nWithKeyTrim` 単体の使用は **非推奨**です — 代わりに `setupKeyAsDefaultT` を使用してください。
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`はai-i18n-toolsプロジェクトのための**推奨される**配線です：これはキーのトリム + ソースロケール<code>"{{var}}"</code>の補間フォールバックを適用します（低レベルの`wrapI18nWithKeyTrim`と同じ動作）、オプションで`translate-ui` `{sourceLocale}.json`の複数形サフィックスキーを`addResourceBundle`を介してマージし、その後`wrapT`をあなたの`strings.json`からインストールします。そのバンドルされたファイルは、あなたの**設定された**ソースロケールのための複数形フラットでなければなりません — あなたのi18nブートストラップの中の`sourceLocale`と`ai-i18n-tools.config.json`および`SOURCE_LOCALE`と同じです（上記のステップ4を参照）。ブートストラップ中は`sourcePluralFlatBundle`を省略します（`translate-ui`が`{sourceLocale}.json`を出力した後にマージします）。 `wrapI18nWithKeyTrim`単独はアプリケーションコードに対して**非推奨**です — 代わりに`setupKeyAsDefaultT`を使用してください。
 
 `makeLoadLocale(i18n, loaders, sourceLocale)` は、ロケールのJSONバンドルを動的にインポートしてi18nextに登録する非同期の `loadLocale(lang)` 関数を返します。
 
@@ -313,7 +313,7 @@ console.log(i18n.t('Processing complete'));
 <a id="interpolation"></a>
 ### インターポレーション
 
-<code>{"{{var}}"}</code>プレースホルダーには、i18nextのネイティブな第2引数インターポレーションを使用します。
+i18nextのネイティブな第二引数補間を使用して<code>"{{var}}"</code>プレースホルダーを処理します：
 
 ```js
 // i18next handles substitution natively, even in key-as-default mode
@@ -323,7 +323,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 extractコマンドは、第**2引数**が単純なオブジェクトリテラルである場合にそれを解析し、`plurals: true`や`zeroDigit`といったツール用途専用のフラグを読み取ります（下記の**基数複数形**を参照）。通常の文字列では、ハッシュ化にはリテラルキーのみが使用されます。インターポレーションのオプションは実行時にi18nextに引き渡されます。
 
-プロジェクトでカスタムインターポレーションユーティリティを使用している場合（たとえば、`t('key')`を呼び出してから、`interpolateTemplate(t('Hello {{name}}'), { name })`のようなテンプレート関数に結果をパイプするなど）、「`setupKeyAsDefaultT`（`wrapI18nWithKeyTrim`経由）」によりその必要がなくなります。これは、ソースロケールが生のキーを返す場合でも<code>{"{{var}}"}</code>インターポレーションを適用します。呼び出し元を`t('Hello {{name}}', { name })`に移行し、カスタムユーティリティを削除してください。
+プロジェクトがカスタム補間ユーティリティを使用している場合（例：`t('key')`を呼び出してから、`interpolateTemplate(t('Hello {{name}}'), { name })`のようなテンプレート関数を通して結果をパイプする）、`setupKeyAsDefaultT`（`wrapI18nWithKeyTrim`を介して）はそれを不要にします — ソースロケールが生のキーを返す場合でも<code>"{{var}}"</code>の補間を適用します。呼び出しサイトを`t('Hello {{name}}', { name })`に移行し、カスタムユーティリティを削除してください。
 
 <a id="cardinal-plurals-plurals-true"></a>
 ### 基数複数形（`plurals: true`）
@@ -409,7 +409,7 @@ function LanguageSelect({
 
 `getUILanguageLabelNative(lang)` - `englishName / label`を表示します（各行で`t()`呼び出しはありません）。ネイティブ名を表示したいヘッダーメニューに適しています。
 
-`ui-languages.json`マニフェストは、<code>{"{ code, label, englishName, direction }"}</code>エントリのJSON配列です（`direction`は`"ltr"`または`"rtl"`です）。例：
+`ui-languages.json`マニフェストは<code>"{ code, label, englishName, direction }"</code>エントリのJSON配列です（`direction`は`"ltr"`または`"rtl"`です）。例：
 
 ```json
 [
@@ -514,7 +514,7 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(デフォルト)*                   | 追跡対象とディスク上の出力が一致する場合、変更のないファイルをスキップします。それ以外はセグメントキャッシュを使用します。                                                                                                                                                                          |
 | `-l, --locale <codes>`        | カンマ区切りのターゲットロケール（省略された場合は、ルートの`targetLocales`および各`documentations[]`ブロックのオプション`targetLocales`の和集合がデフォルトになります）。                                                                                                                                                          |
-| `-p, --path` / `-f, --file`   | このパス以下のMarkdown/JSONのみを翻訳（プロジェクト相対または絶対パス）; `--file`は`--path`のエイリアスです。                                                                                                                                                         |
+| `-p, --path` / `-f, --file`   | このパスの下でのみマークダウン/JSONを翻訳します（プロジェクト相対、絶対、またはグロブパターン）； `--file`は`--path`のエイリアスです。                                                                                                                                 |
 | `--dry-run`                   | ファイル書き込みもAPI呼び出しも行いません。                                                                                                                                                                                                                                        |
 | `--type <kind>`               | `markdown`または`json`に制限（それ以外の場合は設定で有効になっていれば両方を対象）。                                                                                                                                                                                               |
 | `--json-only` / `--no-json`   | JSONラベルファイルのみを翻訳、またはJSONをスキップしてMarkdownのみを翻訳。                                                                                                                                                                                              |
@@ -1018,13 +1018,13 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")` 呼び出しをスキャンするディレクトリ（カレントワーキングディレクトリからの相対パス）。
+  `t("…")`呼び出しのためにスキャンされるディレクトリまたはグロブパターン（cwdに対して相対）。 `src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
 - `stringsJson`  
-  マスターカタログファイルのパス。`extract` によって更新されます。
+  マスターカタログファイルへのパス。 `extract`によって更新されます。
 - `flatOutputDir`  
-  ロケールごとの JSON ファイルが出力されるディレクトリ（`de.json` など）。
+  ロケールごとのJSONファイルが書き込まれるディレクトリ（`de.json`など）。
 - `preferredModel`  
-  オプション。`translate-ui` 専用に最初に試行される OpenRouter モデル ID。その後、この ID を重複させずに `openrouter.translationModels`（または従来のモデル）が順に試行されます。
+  オプション。 `translate-ui`のために最初に試みられるOpenRouterモデルID；その後、重複しないようにこのIDなしで`openrouter.translationModels`（またはレガシーモデル）を順番に使用します。
 - `reactExtractor.funcNames`  
   スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
 - `reactExtractor.extensions`  
@@ -1039,7 +1039,7 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 
 | フィールド         | 説明                                               |
 |---------------|-----------------------------------------------------------|
-| `sourceRoots` | `t("…")` コールのためにスキャンされたディレクトリ（cwd に対して相対）。 |
+| `sourceRoots` | `t("…")`呼び出しのためにスキャンされるディレクトリまたはグロブパターン（cwdに対して相対）。 |
 | `stringsJson` | マスターカタログファイルへのパス。`extract` によって更新されます。    |
 
 <a id="cachedir"></a>
@@ -1077,13 +1077,13 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 ドキュメントパイプラインブロックの配列。`translate-docs` と `sync` のドキュメントフェーズが各ブロックを順番に**処理します**。
 
 - `description`
-このブロック用の任意の人が読めるメモ（翻訳では使用されません）。設定されている場合、`translate-docs` `🌐` の見出しに接頭辞として付加され、`status` のセクション見出しにも表示されます。
+このブロックのためのオプションの人間可読なノート（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐`見出しにプレフィックスされます；また、`status`セクションヘッダーにも表示されます。
 - `contentPaths`
-翻訳対象の Markdown／MDX ページ本文（`translate-docs` が `.md`／`.mdx` をスキャンします）。ローカライズされたドキュメント本文はここから生成されます。
+翻訳するためのMarkdown/MDXページ本文（`translate-docs`はこれらを`.md` / `.mdx`のためにスキャンします）。 **ディレクトリパスまたはグロブパターン**をサポートします（例：`"docs/**/*.md"`, `"guides/*.mdx"`）。それがローカライズされたドキュメントの文章の出所です。
 - `outputDir`
-このブロックの翻訳出力先ルートディレクトリ。
+このブロックのための翻訳された出力のルートディレクトリ。
 - `sourceFiles`
-読み込み時に `contentPaths` にマージされる任意のエイリアス。
+ロード時に`contentPaths`にマージされるオプションのエイリアス。
 - `targetLocales`
 このブロック専用の任意のロケールサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合となります。
 - `jsonSource`
@@ -1093,13 +1093,13 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 - `markdownOutput.docsRoot`
 Docusaurus レイアウト用のソースドキュメントルート（例：`"docs"`）。
 - `markdownOutput.pathTemplate`
-カスタム Markdown 出力パス。プレースホルダー: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>。
+カスタムマークダウン出力パス。 プレースホルダー：<code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
-ラベルファイルのためのカスタム JSON 出力パス。`pathTemplate` と同じプレースホルダーをサポートします。
+ラベルファイルのためのカスタムJSON出力パス。 `pathTemplate`と同じプレースホルダーをサポートします。
 - `markdownOutput.flatPreserveRelativeDir`
-`flat` スタイルの場合、同じベース名のファイルが衝突しないようにソースサブディレクトリを保持します。
+`flat`スタイルの場合、同じベース名のファイルが衝突しないようにソースのサブディレクトリを保持します。
 - `markdownOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`flat` スタイルの場合は自動的に有効）。
+翻訳後に相対リンクを書き換えます（`flat`スタイルの場合は自動的に有効）。
 - `markdownOutput.linkRewriteDocsRoot`
 フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルートの下にある場合を除き、通常は`"."`のままにしてください。
 - `markdownOutput.postProcessing`
@@ -1145,13 +1145,13 @@ Docusaurus レイアウト用のソースドキュメントルート（例：`"d
 
 SVGファイルのトップレベルのパスとレイアウト。`features.translateSVG`がtrueの場合（`translate-svg`または`sync`のSVGステージ経由）にのみ翻訳が実行される。
 
-| フィールド | 説明 |
+| フィールド                         | 説明                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | `.svg` ファイルを再帰的にスキャンするディレクトリ、またはディレクトリの配列。                                                                                                                                                                                                     |
+| `sourcePath`                  | 1つ以上のディレクトリ、**またはグロブパターン**（例: `"images/*.svg"`、`"**/icons/*.svg"`）。これらのパターンはプロジェクトルートを基準として解決され、`.svg`ファイルを再帰的にスキャンします。                                                                                       |
 | `outputDir`                   | 翻訳されたSVG出力のルートディレクトリ。                                                                                                                                                                                                                                          |
 | `style`                       | `pathTemplate` が設定されていない場合のデフォルト値。`"flat"` または `"nested"`。                                                                                                                                                                                                                               |
-| `pathTemplate`                | カスタムSVG出力パス。使用可能なプレースホルダー: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{relativeToSourceRoot}"}</code>。 |
-| `svgExtractor.forceLowercase` | SVG再構築時のテキストを小文字に変換します。すべて小文字のラベルに依存するデザインに便利です。                                                                                                                                                                                |
+| `pathTemplate`                | カスタムSVG出力パス。プレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `forceLowercase` | SVGを再構成する際にテキストを小文字に変換します。すべて小文字のラベルに依存するデザインで有用です。                                                                                                                                                                                |
 
 <a id="glossary"></a>
 ### `glossary`

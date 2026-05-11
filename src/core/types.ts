@@ -341,13 +341,6 @@ const reactExtractorSchema = z
   })
   .strict();
 
-const svgExtractorSchema = z
-  .object({
-    /** When true, translated text is lowercased on SVG reassembly (optional layout tweak). */
-    forceLowercase: z.boolean().default(false),
-  })
-  .strict();
-
 const languageListBlockSchema = z
   .object({
     /** Marker that identifies the language-list block start line in markdown body. */
@@ -455,7 +448,7 @@ const uiConfigSchema = z
   })
   .strict();
 
-const SvgFilesConfigSchema = z
+const svgFilesConfigInnerSchema = z
   .object({
     /** One directory or several (relative to cwd); each is scanned recursively for `*.svg`. */
     sourcePath: z.preprocess(
@@ -472,9 +465,27 @@ const SvgFilesConfigSchema = z
     pathTemplate: z.string().optional(),
     /** `flat`: `{stem}.{locale}.svg`; `nested`: `{locale}/{relPathUnderSourceRoot}`. Ignored when `pathTemplate` is set. */
     style: z.enum(["flat", "nested"]),
-    svgExtractor: svgExtractorSchema.optional(),
+    /** When true, translated text is lowercased on SVG reassembly (optional layout tweak). */
+    forceLowercase: z.boolean().default(false),
   })
   .strict();
+
+/** Hoists legacy `svg.svgExtractor.forceLowercase` to `svg.forceLowercase` before validation. */
+const SvgFilesConfigSchema = z.preprocess((raw) => {
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const o = { ...(raw as Record<string, unknown>) };
+    const nested = o.svgExtractor;
+    if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+      const fl = (nested as Record<string, unknown>).forceLowercase;
+      if (typeof fl === "boolean" && o.forceLowercase === undefined) {
+        o.forceLowercase = fl;
+      }
+      delete o.svgExtractor;
+    }
+    return o;
+  }
+  return raw;
+}, svgFilesConfigInnerSchema);
 
 /** One documentation pipeline (markdown/JSON layout under `outputDir`, optional Docusaurus `jsonSource`). */
 const documentationBlockSchema = z
@@ -602,7 +613,6 @@ export type GlossaryConfig = z.infer<typeof glossarySchema>;
 export type UIStringExtractorConfig = z.infer<typeof reactExtractorSchema>;
 /** @deprecated Use {@link UIStringExtractorConfig} */
 export type ReactExtractorConfig = UIStringExtractorConfig;
-export type SvgExtractorConfig = z.infer<typeof svgExtractorSchema>;
 export type LanguageListBlockConfig = z.infer<typeof languageListBlockSchema>;
 export type RegexAdjustmentConfig = z.infer<typeof regexAdjustmentSchema>;
 export type MarkdownPostProcessingConfig = z.infer<typeof markdownPostProcessingSchema>;
@@ -610,6 +620,11 @@ export type MarkdownOutputConfig = z.infer<typeof markdownOutputSchema>;
 export type UiConfig = z.infer<typeof uiConfigSchema>;
 export type DocumentationBlock = z.infer<typeof documentationBlockSchema>;
 export type SvgFilesConfig = z.infer<typeof SvgFilesConfigSchema>;
+/**
+ * @deprecated Nested `svg.svgExtractor` was removed; use top-level `svg.forceLowercase` in config.
+ * Alias kept for packages that referenced this shape.
+ */
+export type SvgExtractorConfig = Pick<SvgFilesConfig, "forceLowercase">;
 
 /**
  * View passed to translate-docs internals: one active `documentation` block plus root fields.

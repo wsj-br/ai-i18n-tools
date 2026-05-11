@@ -19,8 +19,11 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## Improvements
 
-> no improvements
+- when the glossary-user.csv has a error, the error message is not helpful.
+  current: `❌ [sync-ui][ui] Invalid Closing Quote: got "S" at line 8 instead of delimiter, record delimiter, trimable character (if activated) or comment`
+  expected: `❌ [sync-ui][ui] glossary-user.csv: Invalid Closing Quote: got "S" at line 8 instead of delimiter, record delimiter, trimable character (if activated) or comment`
 
+  
 ## Fixes
 
 > no fixes

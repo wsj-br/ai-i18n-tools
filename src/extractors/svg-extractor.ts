@@ -21,6 +21,28 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * Reverse XML escapes models often echo in translated text (aligned with batch XML response
+ * decoding in `prompt-builder`). Applied before {@link escapeXml} so e.g. `&gt;` from the model
+ * does not become `&amp;gt;`. Iterates until stable so values like `&amp;gt;` decode fully.
+ */
+function decodeXmlEntitiesFromModel(text: string): string {
+  let s = text;
+  for (let round = 0; round < 8; round++) {
+    const next = s
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+    if (next === s) {
+      break;
+    }
+    s = next;
+  }
+  return s;
+}
+
 export interface SvgExtractorOptions {
   forceLowercase?: boolean;
 }
@@ -128,6 +150,7 @@ export class SvgExtractor extends BaseExtractor {
       if (this.options.forceLowercase) {
         out = out.toLowerCase();
       }
+      out = decodeXmlEntitiesFromModel(out);
       const escaped = escapeXml(out);
       if (meta.element === "text") {
         const newContent = `${meta.openingTag}<tspan>${escaped}</tspan></text>`;

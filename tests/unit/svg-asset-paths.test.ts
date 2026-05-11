@@ -129,4 +129,64 @@ describe("svg-asset-paths", () => {
     expect(relPathUnderSvgSource("images/a.svg", ["images"])).toBe("a.svg");
     expect(relPathUnderSvgSource("images/sub/a.svg", ["images"])).toBe("sub/a.svg");
   });
+
+  it("relPathUnderSvgSource handles glob patterns", () => {
+    // Single * matches any characters except /
+    expect(relPathUnderSvgSource("images/duplistatus_foo.svg", ["images/duplistatus_*.svg"])).toBe(
+      "duplistatus_foo.svg"
+    );
+    // ** matches any characters including /
+    expect(relPathUnderSvgSource("images/icons/a.svg", ["images/**/*.svg"])).toBe("icons/a.svg");
+    // Multiple patterns - longest match wins
+    expect(relPathUnderSvgSource("images/icons/a.svg", ["images/*", "images/icons/*"])).toBe("a.svg");
+  });
+
+  it("parses legacy svg.svgExtractor.forceLowercase into svg.forceLowercase", () => {
+    const cfg = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en-GB",
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        cacheDir: ".cache",
+        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        svg: {
+          sourcePath: ["images"],
+          outputDir: "public/assets",
+          style: "flat",
+          svgExtractor: { forceLowercase: true },
+        },
+      })
+    );
+    expect(cfg.svg?.forceLowercase).toBe(true);
+  });
+
+  it("top-level svg.forceLowercase overrides legacy svgExtractor when both present", () => {
+    const cfg = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en-GB",
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        cacheDir: ".cache",
+        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        svg: {
+          sourcePath: ["images"],
+          outputDir: "public/assets",
+          style: "flat",
+          forceLowercase: false,
+          svgExtractor: { forceLowercase: true },
+        },
+      })
+    );
+    expect(cfg.svg?.forceLowercase).toBe(false);
+  });
 });

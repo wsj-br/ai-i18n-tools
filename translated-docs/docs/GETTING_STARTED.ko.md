@@ -158,10 +158,10 @@ npx ai-i18n-tools init
 
 이 명령어는 `ui-markdown` 템플릿으로 `ai-i18n-tools.config.json` 파일을 생성합니다. 다음 항목을 설정하려면 파일을 편집하세요:
 
-- `sourceLocale` - 소스 언어 BCP-47 코드 (예: `"en-GB"`). 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`와 **일치해야 합니다**.
-- `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). 이 목록에서 `ui-languages.json` 매니페스트를 생성하려면 `generate-ui-languages`을 실행하세요.
-- `ui.sourceRoots` - `t("…")` 호출을 검색할 디렉터리 (예: `["src/"]`).
-- `ui.stringsJson` - 마스터 카탈로그를 저장할 위치 (예: `"src/locales/strings.json"`).
+- `sourceLocale` - 소스 언어 BCP-47 코드 (예: `"en-GB"`). **일치해야 합니다** `SOURCE_LOCALE` 런타임 i18n 설정 파일에서 내보낸 `src/i18n.ts` / `src/i18n.js`.
+- `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). `generate-ui-languages`를 실행하여 이 목록에서 `ui-languages.json` 매니페스트를 생성합니다.
+- `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 glob 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
+- `ui.stringsJson` - 마스터 카탈로그를 작성할 위치 (예: `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - `de.json`, `pt-BR.json`, 등을 어디에 작성할지 (예: `"src/locales/"`).
 - `ui.preferredModel` (선택 사항) - `translate-ui`에 대해서만 **먼저** 시도할 OpenRouter 모델 ID; 실패 시 CLI는 중복을 건너뛰고 `openrouter.translationModels` (또는 레거시 `defaultModel` / `fallbackModel`)로 계속 진행합니다.
 
@@ -279,7 +279,7 @@ JSON 번들을 `public/` 아래에 두었다면(일반적인 Next.js 설정), �
 - `nsSeparator: false`은 콜론을 포함하는 키를 허용합니다.
 - `interpolation.escapeValue: false` - 안전하게 비활성화 가능: React는 자체적으로 값을 이스케이프 처리하며, Node.js/CLI 출력에는 이스케이프할 HTML이 없습니다.
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`은 ai-i18n-tools 프로젝트에서 **권장되는** 연결 방식입니다. 키 자르기 + 소스 로케일 <code>{"{{var}}"}</code> 보간 폴백을 적용하며(하위 수준 `wrapI18nWithKeyTrim`과 동일한 동작), 선택적으로 `addResourceBundle`를 통해 `translate-ui` `{sourceLocale}.json` 복수형 접미사 키를 병합한 다음, `strings.json`에서 복수형 인식 `wrapT`를 설치합니다. 이 번들된 파일은 **구성된** 소스 로케일에 대한 복수형 평면이어야 하며, i18n 부트스트랩의 `ai-i18n-tools.config.json` 및 `SOURCE_LOCALE`와 동일한 `sourceLocale`이어야 합니다(위의 4단계 참조). 부트스트래핑 중일 때만 `sourcePluralFlatBundle`을 생략하세요(`translate-ui`이 `{sourceLocale}.json`을 출력한 후 병합하세요). 애플리케이션 코드에서는 `wrapI18nWithKeyTrim`만 사용하는 것이 **사용 중단됨** — 대신 `setupKeyAsDefaultT`를 사용하세요.
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`는 ai-i18n-tools 프로젝트에 대한 **추천** 배선입니다: 이는 키 트림 + 소스 로케일 <code>"{{var}}"</code> 보간 대체를 적용하며 (하위 수준의 `wrapI18nWithKeyTrim`와 동일한 동작), 선택적으로 `translate-ui` `{sourceLocale}.json` 복수 접미사가 있는 키를 `addResourceBundle`를 통해 병합한 다음, 귀하의 `strings.json`에서 복수 인식 `wrapT`를 설치합니다. 해당 번들 파일은 귀하의 **구성된** 소스 로케일에 대한 복수 평면이어야 하며 — 귀하의 i18n 부트스트랩에서 `sourceLocale`와 `ai-i18n-tools.config.json` 및 `SOURCE_LOCALE`와 동일합니다 (위의 4단계 참조). 부트스트랩하는 동안에만 `sourcePluralFlatBundle`을 생략하십시오 (`translate-ui`이 `{sourceLocale}.json`를 방출한 후에 병합하십시오). `wrapI18nWithKeyTrim`만으로는 **더 이상 사용되지 않습니다** — 대신 `setupKeyAsDefaultT`를 사용하십시오.
 
 `makeLoadLocale(i18n, loaders, sourceLocale)`은 로케일에 대한 JSON 번들을 동적으로 가져와 i18next에 등록하는 비동기 `loadLocale(lang)` 함수를 반환합니다.
 
@@ -313,7 +313,7 @@ console.log(i18n.t('Processing complete'));
 <a id="interpolation"></a>
 ### 보간
 
-<code>{"{{var}}"}</code> 자리 표시자에 대해 i18next의 기본 두 번째 인수 보간을 사용하세요:
+i18next의 기본 두 번째 인수 보간을 사용하여 <code>"{{var}}"</code> 자리 표시자를 처리합니다:
 
 ```js
 // i18next handles substitution natively, even in key-as-default mode
@@ -323,7 +323,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 추출 명령은 일반 객체 리터럴일 때 **두 번째 인수**를 구문 분석하고 `plurals: true` 및 `zeroDigit`과 같은 도구 전용 플래그를 읽습니다(아래 **카디널 복수형** 참조). 일반 문자열의 경우 해싱에는 리터럴 키만 사용되며, 보간 옵션은 여전히 런타임에 i18next로 전달됩니다.
 
-프로젝트에서 사용자 지정 보간 유틸리티를 사용하는 경우(예: `t('key')`을 호출한 후 `interpolateTemplate(t('Hello {{name}}'), { name })`과 같은 템플릿 함수로 결과를 파이프 처리), `wrapI18nWithKeyTrim`을 통한 `setupKeyAsDefaultT`는 이를 불필요하게 만듭니다 — 소스 로케일이 원시 키를 반환할 때도 <code>{"{{var}}"}</code> 보간을 적용합니다. 호출 지점을 `t('Hello {{name}}', { name })`로 마이그레이션하고 사용자 지정 유틸리티를 제거하세요.
+프로젝트에서 사용자 정의 보간 유틸리티를 사용하는 경우 (예: `t('key')`를 호출한 다음 결과를 `interpolateTemplate(t('Hello {{name}}'), { name })`와 같은 템플릿 함수로 파이프하는 경우), `setupKeyAsDefaultT` (`wrapI18nWithKeyTrim`를 통해) 이를 불필요하게 만듭니다 — 소스 로케일이 원시 키를 반환할 때도 <code>"{{var}}"</code> 보간을 적용합니다. 호출 사이트를 `t('Hello {{name}}', { name })`로 마이그레이션하고 사용자 정의 유틸리티를 제거하십시오.
 
 <a id="cardinal-plurals-plurals-true"></a>
 ### 기수 복수형(`plurals: true`)
@@ -409,7 +409,7 @@ function LanguageSelect({
 
 `getUILanguageLabelNative(lang)` - `englishName / label`을 표시합니다(`t()` 호출 없이 각 행에 대해). 헤더 메뉴에서 네이티브 이름을 표시하고자 할 때 적합합니다.
 
-`ui-languages.json` 매니페스트는 <code>{"{ code, label, englishName, direction }"}</code> 항목의 JSON 배열입니다(`direction`은 `"ltr"` 또는 `"rtl"`). 예시:
+`ui-languages.json` 매니페스트는 <code>"{ code, label, englishName, direction }"</code> 항목의 JSON 배열입니다 (`direction`은 `"ltr"` 또는 `"rtl"`입니다). 예:
 
 ```json
 [
@@ -514,7 +514,7 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(기본값)*                   | 추적 중인 파일과 디스크에 있는 출력이 동일할 경우 건너뛰고, 나머지에는 세그먼트 캐시를 사용합니다.                                                                                                                                                                          |
 | `-l, --locale <codes>`        | 쉼표로 구분된 대상 로케일(생략 시 루트 `targetLocales`과 각 `documentations[]` 블록의 선택적 `targetLocales`의 통합값을 기본값으로 사용).                                                                                                                                                          |
-| `-p, --path` / `-f, --file`   | 이 경로 아래의 마크다운/JSON만 번역(프로젝트 기준 또는 절대 경로); `--file`는 `--path`의 별칭입니다.                                                                                                                                                         |
+| `-p, --path` / `-f, --file`   | 이 경로 아래에서만 markdown/JSON을 번역합니다 (프로젝트 상대, 절대 또는 glob 패턴); `--file`는 `--path`의 별칭입니다.                                                                                                                                 |
 | `--dry-run`                   | 파일 쓰기 및 API 호출 없음.                                                                                                                                                                                                                                        |
 | `--type <kind>`               | `markdown` 또는 `json`로 제한(구성에서 활성화된 경우 둘 다가 기본값).                                                                                                                                                                                               |
 | `--json-only` / `--no-json`   | JSON 레이블 파일만 번역하거나, JSON은 건너뛰고 마크다운만 번역합니다.                                                                                                                                                                                              |
@@ -1018,13 +1018,13 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")` 호출을 검색할 디렉터리(cwd 기준 상대 경로).
+  `t("…")` 호출을 위해 스캔된 디렉토리 또는 glob 패턴 (cwd에 상대적). `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
 - `stringsJson`  
-  마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됨.
+  마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됩니다.
 - `flatOutputDir`  
-  지역별 JSON 파일이 작성되는 디렉터리(`de.json` 등).
+  로케일별 JSON 파일이 작성되는 디렉토리 (`de.json`, 등).
 - `preferredModel`  
-  선택 사항. `translate-ui`에 대해서만 먼저 시도할 OpenRouter 모델 ID; 그 후 `openrouter.translationModels`(또는 레거시 모델)이 중복 없이 순서대로 시도됨.
+  선택 사항. `translate-ui`에 대해서만 먼저 시도되는 OpenRouter 모델 ID; 그런 다음 `openrouter.translationModels` (또는 레거시 모델) 순서대로, 이 ID를 중복하지 않고.
 - `reactExtractor.funcNames`  
   스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
 - `reactExtractor.extensions`  
@@ -1039,7 +1039,7 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 | 필드         | 설명                                               |
 |---------------|-----------------------------------------------------------|
-| `sourceRoots` | `t("…")` 호출을 위해 스캔할 디렉터리(cwd 기준 상대 경로). |
+| `sourceRoots` | `t("…")` 호출을 위해 스캔된 디렉토리 또는 glob 패턴 (cwd에 상대적). |
 | `stringsJson` | 마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됨.    |
 
 <a id="cachedir"></a>
@@ -1077,13 +1077,13 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 문서 파이프라인 블록의 배열입니다. `translate-docs`과 `sync`의 docs 단계는 각 블록을 순서대로 **처리합니다**.
 
 - `description`
-이 블록에 대한 선택적 사람이 읽을 수 있는 메모(번역에 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목 앞에 접두사로 붙으며, `status` 섹션 헤더에도 표시됩니다.
+이 블록에 대한 선택적 인간 가독성 노트 (번역에 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목에 접두사가 붙으며; `status` 섹션 헤더에도 표시됩니다.
 - `contentPaths`
-번역할 마크다운/MDX 페이지 본문(`translate-docs`가 `.md` / `.mdx`을 검색함). 지역화된 문서 본문은 여기서 생성됩니다.
+번역할 Markdown/MDX 페이지 본문 (`translate-docs`가 `.md` / `.mdx`를 스캔합니다). **디렉토리 경로 또는 glob 패턴**를 지원합니다 (예: `"docs/**/*.md"`, `"guides/*.mdx"`). 로컬라이즈된 문서 본문이 여기에서 나옵니다.
 - `outputDir`
-이 블록의 번역된 출력물에 대한 루트 디렉터리.
+이 블록에 대한 번역된 출력의 루트 디렉토리.
 - `sourceFiles`
-로드 시 `contentPaths`에 병합되는 선택적 별칭.
+로드 시 `contentPaths`에 병합된 선택적 별칭.
 - `targetLocales`
 이 블록 전용으로 선택할 수 있는 로케일의 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록의 합집합입니다.
 - `jsonSource`
@@ -1093,13 +1093,13 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 - `markdownOutput.docsRoot`
 Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`).
 - `markdownOutput.pathTemplate`
-사용자 정의 마크다운 출력 경로. 자리표시자: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>.
+사용자 정의 markdown 출력 경로. 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-레이블 파일을 위한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리표시자를 지원함.
+레이블 파일에 대한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리 표시자를 지원합니다.
 - `markdownOutput.flatPreserveRelativeDir`
-`flat` 스타일의 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다.
+`flat` 스타일의 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉토리를 유지합니다.
 - `markdownOutput.rewriteRelativeLinks`
-번역 후 상대 링크 재작성(`flat` 스타일의 경우 자동 활성화됨).
+번역 후 상대 링크를 재작성합니다 (`flat` 스타일에 대해 자동으로 활성화됨).
 - `markdownOutput.linkRewriteDocsRoot`
 플랫 링크 재작성 접두사를 계산할 때 사용하는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 그대로 두는 것이 좋습니다.
 - `markdownOutput.postProcessing`
@@ -1145,13 +1145,13 @@ Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`).
 
 SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG`이 true일 때만 번역이 실행됩니다(`translate-svg` 또는 `sync`의 SVG 단계를 통해).
 
-| 필드                         | 설명                                                                                                                                                                                                                                                                        |
+| Field                         | Description                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | `.svg` 파일을 재귀적으로 검색할 하나 이상의 디렉터리입니다.                                                                                                                                                                                                     |
+| `sourcePath`                  | 하나 이상의 디렉터리 **또는 glob 패턴** (예: `"images/*.svg"`, `"**/icons/*.svg"`). 패턴은 프로젝트 루트를 기준으로 상대적으로 확인되며, `.svg` 파일을 찾기 위해 재귀적으로 검색됩니다.                                                                                       |
 | `outputDir`                   | 번역된 SVG 출력의 루트 디렉터리입니다.                                                                                                                                                                                                                                          |
 | `style`                       | `pathTemplate`이 설정되지 않은 경우 `"flat"` 또는 `"nested"`입니다.                                                                                                                                                                                                                               |
-| `pathTemplate`                | 사용자 정의 SVG 출력 경로. 자리표시자: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{relativeToSourceRoot}"}</code>. |
-| `svgExtractor.forceLowercase` | SVG 재조합 시 소문자로 번역된 텍스트입니다. 모두 소문자 레이블을 사용하는 디자인에 유용합니다.                                                                                                                                                                                |
+| `pathTemplate`                | 사용자 정의 SVG 출력 경로. 자리표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `forceLowercase` | SVG 재조합 시 소문자로 변환된 텍스트입니다. 모두 소문자 레이블에 의존하는 디자인에 유용합니다.                                                                                                                                                                                |
 
 <a id="glossary"></a>
 ### `glossary`

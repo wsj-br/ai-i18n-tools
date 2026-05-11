@@ -109,20 +109,90 @@ export function svgTranslationFilepathMetadata(relPathFromCwd: string): string {
 }
 
 /**
+ * Check if a file path matches a glob pattern (supports * and **).
+ */
+export function matchesGlobPattern(filePath: string, pattern: string): boolean {
+  // Exact match
+  if (filePath === pattern) {
+    return true;
+  }
+  // Check if pattern contains glob chars
+  if (!/[*?[\]]/.test(pattern)) {
+    return filePath.startsWith(pattern);
+  }
+  // Convert glob pattern to regex
+  let regexStr = pattern
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*\*/g, "__GLOB_DOUBLE_STAR__")
+    .replace(/\*/g, "[^/]*")
+    .replace(/__GLOB_DOUBLE_STAR__/g, ".*");
+  regexStr = "^" + regexStr;
+  const regex = new RegExp(regexStr);
+  return regex.test(filePath);
+}
+
+/**
+ * Extract the non-glob prefix from a pattern (the part before first glob char).
+ */
+function getNonGlobPrefix(pattern: string): string {
+  const match = pattern.match(/^[^*?[\]]*/);
+  return match ? match[0] : "";
+}
+
+/**
  * Path under a configured `svg.sourcePath` root (posix), for nested output layout.
  * Returns `null` if `fileRelCwd` is not under any root.
+ * Supports glob patterns in sourceRoots.
  */
 export function relPathUnderSvgSource(fileRelCwd: string, sourceRoots: string[]): string | null {
   const posix = toPosix(fileRelCwd.replace(/\\/g, "/"));
   const sorted = [...sourceRoots].sort((a, b) => b.length - a.length);
   for (const root of sorted) {
-    const r = toPosix(root.replace(/\\/g, "/")).replace(/\/$/, "");
-    if (posix === r) {
+    const r = toPosix(root.replace(/\\/g, "/"));
+
+    // Standard path (no globs)
+    if (!/[*?[\]]/.test(r)) {
+      const normalized = r.replace(/\/$/, "");
+      if (posix === normalized) {
+        return path.posix.basename(posix);
+      }
+      if (posix.startsWith(`${normalized}/`)) {
+        return posix.slice(normalized.length + 1);
+      }
+      continue;
+    }
+
+    // Glob pattern: first ensure the file matches
+    if (!matchesGlobPattern(posix, r)) {
+      continue;
+    }
+
+    // Determine static root: the longest path prefix with no glob characters in any segment
+    const segments = r.split('/');
+    let staticRoot = "";
+    for (let i = 0; i < segments.length; i++) {
+      if (/[*?[\]]/.test(segments[i])) {
+        break;
+      }
+      staticRoot += (i > 0 ? "/" : "") + segments[i];
+    }
+
+    if (staticRoot === "") {
+      // No static prefix, return the full file path
+      return posix;
+    }
+
+    const normalizedRoot = staticRoot.replace(/\/$/, "");
+    const rootWithSlash = normalizedRoot + "/";
+
+    if (posix === normalizedRoot) {
       return path.posix.basename(posix);
     }
-    if (posix.startsWith(`${r}/`)) {
-      return posix.slice(r.length + 1);
+    if (posix.startsWith(rootWithSlash)) {
+      return posix.slice(rootWithSlash.length);
     }
+    // Fallback (should not usually happen)
+    return posix;
   }
   return null;
 }

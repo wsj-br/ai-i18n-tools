@@ -160,8 +160,8 @@ Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown`. Edítal
 
 - `sourceLocale` - código BCP-47 de tu idioma fuente (por ejemplo, `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde tu archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` - matriz de códigos BCP-47 para tus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecuta `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
-- `ui.sourceRoots` - directorios a escanear en busca de llamadas `t("…")` (por ejemplo, `["src/"]`).
-- `ui.stringsJson` - dónde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
+- `ui.sourceRoots` - directorios o patrones glob para escanear llamadas a `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
+- `ui.stringsJson` - ubicación donde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
 - `ui.preferredModel` (opcional) - ID del modelo OpenRouter a intentar **primero** solo para `translate-ui`; si falla, la CLI continúa con `openrouter.translationModels` (o `defaultModel` / `fallbackModel` heredados) en orden, omitiendo duplicados.
 
@@ -279,7 +279,7 @@ Las importaciones nombradas (`import { defaultI18nInitOptions, … } from 'ai-i1
 - `nsSeparator: false` permite claves que contienen dos puntos.
 - `interpolation.escapeValue: false` - seguro desactivarlo: React escapa los valores por sí mismo, y la salida en Node.js/CLI no tiene HTML que escapar.
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` es la conexión **recomendada** para proyectos ai-i18n-tools: aplica recorte de claves + interpolación de reserva con <code>{"{{var}}"}</code> del idioma fuente (mismo comportamiento que el `wrapI18nWithKeyTrim` de nivel inferior), opcionalmente combina claves plurales con sufijo `translate-ui` `{sourceLocale}.json` mediante `addResourceBundle`, y luego instala `wrapT` conscientes del plural desde su `strings.json`. Ese archivo agrupado debe ser el plano plural para su idioma fuente **configurado** — el mismo `sourceLocale` que en `ai-i18n-tools.config.json` y `SOURCE_LOCALE` en su inicialización de i18n (véase el Paso 4 anterior). Omita `sourcePluralFlatBundle` solo durante la inicialización (incorpórelo una vez `translate-ui` haya emitido `{sourceLocale}.json`). `wrapI18nWithKeyTrim` solo está **obsoleto** para código de aplicación — use `setupKeyAsDefaultT` en su lugar.
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` es la conexión **recomendada** para proyectos ai-i18n-tools: aplica recorte de claves + retroceso de interpolación de <code>"{{var}}"</code> para el idioma fuente (mismo comportamiento que el nivel inferior `wrapI18nWithKeyTrim`), opcionalmente combina claves con sufijos plurales de `translate-ui` `{sourceLocale}.json` mediante `addResourceBundle`, y luego instala `wrapT` con reconocimiento de plural desde tu `strings.json`. El archivo agrupado debe ser el plano plural para tu idioma fuente **configurado** — el mismo `sourceLocale` que en `ai-i18n-tools.config.json` y `SOURCE_LOCALE` en tu inicialización de i18n (ver Paso 4 anterior). Omite `sourcePluralFlatBundle` solo durante la inicialización (incorpóralo una vez que `translate-ui` haya emitido `{sourceLocale}.json`). `wrapI18nWithKeyTrim` solo está **obsoleto** para código de aplicación — usa `setupKeyAsDefaultT` en su lugar.
 
 `makeLoadLocale(i18n, loaders, sourceLocale)` devuelve una función `loadLocale(lang)` asíncrona que importa dinámicamente el paquete JSON para una configuración regional y lo registra con i18next.
 
@@ -313,7 +313,7 @@ console.log(i18n.t('Processing complete'));
 <a id="interpolation"></a>
 ### Interpolación
 
-Usa la interpolación nativa de i18next mediante el segundo argumento para los marcadores de posición <code>{"{{var}}"}</code>:
+Usa la interpolación nativa del segundo argumento de i18next para los marcadores de posición <code>"{{var}}"</code>:
 
 ```js
 // i18next handles substitution natively, even in key-as-default mode
@@ -323,7 +323,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 El comando extract analiza el **segundo argumento** cuando es un objeto literal plano y lee banderas solo para herramientas como `plurals: true` y `zeroDigit` (véase **Plurales cardinales** más abajo). Para cadenas normales, solo se usa la clave literal para el hash; las opciones de interpolación aún se pasan a i18next en tiempo de ejecución.
 
-Si su proyecto usa una utilidad personalizada de interpolación (por ejemplo, llamando a `t('key')` y luego pasando el resultado por una función de plantilla como `interpolateTemplate(t('Hello {{name}}'), { name })`), `setupKeyAsDefaultT` (a través de `wrapI18nWithKeyTrim`) hace innecesaria esa utilidad — aplica interpolación <code>{"{{var}}"}</code> incluso cuando el idioma fuente devuelve la clave cruda. Migre los sitios de llamada a `t('Hello {{name}}', { name })` y elimine la utilidad personalizada.
+Si tu proyecto usa una utilidad personalizada de interpolación (por ejemplo, llamando a `t('key')` y luego pasando el resultado por una función de plantilla como `interpolateTemplate(t('Hello {{name}}'), { name })`), `setupKeyAsDefaultT` (a través de `wrapI18nWithKeyTrim`) hace innecesaria dicha utilidad — aplica interpolación <code>"{{var}}"</code> incluso cuando el idioma fuente devuelve la clave sin procesar. Migrar los sitios de llamada a `t('Hello {{name}}', { name })` y eliminar la utilidad personalizada.
 
 <a id="cardinal-plurals-plurals-true"></a>
 ### Plurales cardinales (`plurals: true`)
@@ -409,7 +409,7 @@ function LanguageSelect({
 
 `getUILanguageLabelNative(lang)` - muestra `englishName / label` (sin llamada `t()` en cada fila). Adecuado para menús de cabecera donde desea que el nombre nativo sea visible.
 
-El manifiesto `ui-languages.json` es un array JSON de entradas <code>{"{ code, label, englishName, direction }"}</code> (`direction` es `"ltr"` o `"rtl"`). Ejemplo:
+El manifiesto `ui-languages.json` es un array JSON de entradas <code>"{ code, label, englishName, direction }"</code> (`direction` es `"ltr"` o `"rtl"`). Ejemplo:
 
 ```json
 [
@@ -514,7 +514,7 @@ La CLI mantiene el **seguimiento de archivos** en SQLite (hash de origen por arc
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(predeterminado)*              | Omite archivos sin cambios cuando la huella + la salida en disco coinciden; usa la caché de segmentos para el resto.                                                                                                                                                  |
 | `-l, --locale <codes>`        | Idiomas de destino separados por comas (cuando se omite, los valores predeterminados coinciden con la unión del `targetLocales` raíz y el `targetLocales` opcional de cada bloque `documentations[]`).                                                                                                                                                          |
-| `-p, --path` / `-f, --file`   | Solo traduce markdown/JSON bajo esta ruta (relativa al proyecto o absoluta); `--file` es un alias para `--path`.                                                                                                                                                         |
+| `-p, --path` / `-f, --file`   | Traduce únicamente markdown/JSON bajo esta ruta (relativa al proyecto, absoluta o patrón glob); `--file` es un alias para `--path`.                                                                                                                                 |
 | `--dry-run`                   | Sin escritura de archivos ni llamadas a la API.                                                                                                                                                                                                                                        |
 | `--type <kind>`               | Restringe a `markdown` o `json` (de lo contrario ambos cuando están habilitados en la configuración).                                                                                                                                                                                               |
 | `--json-only` / `--no-json`   | Traduce solo archivos de etiquetas JSON, o salta JSON y traduce solo markdown.                                                                                                                                                                                              |
@@ -1018,13 +1018,13 @@ Antes de cambiar `translationModels`, ejecute `npx ai-i18n-tools check-models` p
 ### `ui`
 
 - `sourceRoots`  
-  Directorios (relativos al directorio de trabajo actual) escaneados en busca de llamadas `t("…")`.
+  Directorios o patrones glob (relativos al directorio actual) escaneados en busca de llamadas a `t("…")`. Admite patrones como `src/` o `["src/**/*.ts"]`.
 - `stringsJson`  
-  Ruta al archivo de catálogo maestro. Actualizado por `extract`.
+  Ruta al archivo del catálogo maestro. Actualizado por `extract`.
 - `flatOutputDir`  
-  Directorio donde se escriben los archivos JSON por configuración regional (`de.json`, etc.).
+  Directorio donde se escriben los archivos JSON por idioma (`de.json`, etc.).
 - `preferredModel`  
-  Opcional. ID del modelo OpenRouter que se intenta primero solo para `translate-ui`; luego `openrouter.translationModels` (o modelos heredados) en orden, sin duplicar este ID.
+  Opcional. ID del modelo OpenRouter que se intenta primero solo para `translate-ui`; luego `openrouter.translationModels` (o modelos antiguos) en orden, sin duplicar este ID.
 - `reactExtractor.funcNames`  
   Nombres adicionales de funciones para escanear (predeterminado: `["t", "i18n.t"]`).
 - `reactExtractor.extensions`  
@@ -1039,7 +1039,7 @@ Cuando `true` (predeterminado `false`), `extract` también agrega cada `englishN
 
 | Campo         | Descripción                                               |
 |---------------|-----------------------------------------------------------|
-| `sourceRoots` | Directorios (relativos al directorio de trabajo actual) escaneados en busca de llamadas a `t("…")`. |
+| `sourceRoots` | Directorios o patrones glob (relativos al directorio actual) escaneados en busca de llamadas a `t("…")`. |
 | `stringsJson` | Ruta al archivo de catálogo maestro. Actualizado por `extract`.    |
 
 <a id="cachedir"></a>
@@ -1077,13 +1077,13 @@ Directorio de caché SQLite (compartido por todos los bloques `documentations`).
 Matriz de bloques de la canalización de documentación. `translate-docs` y la fase de documentación de `sync` **procesan cada** bloque en orden.
 
 - `description`
-Nota opcional legible por humanos para este bloque (no se usa para traducción). Se antepone al título en el encabezado `translate-docs` `🌐` cuando está definida; también se muestra en los encabezados de sección de `status`.
+Nota opcional legible por humanos para este bloque (no se usa para traducción). Se antepone en el encabezado `translate-docs` `🌐` cuando está definido; también se muestra en los encabezados de sección de `status`.
 - `contentPaths`
-Cuerpos de páginas Markdown/MDX que se traducirán (`translate-docs` analiza estos para `.md` / `.mdx`). Aquí es de donde proviene el contenido textual de la documentación localizada.
+Cuerpos de páginas en Markdown/MDX que se traducirán (`translate-docs` escanea estos para `.md` / `.mdx`). Admite **rutas de directorio o patrones glob** (por ejemplo, `"docs/**/*.md"`, `"guides/*.mdx"`). Es ahí de donde proviene el texto documental localizado.
 - `outputDir`
 Directorio raíz para la salida traducida de este bloque.
 - `sourceFiles`
-Alias opcional que se fusiona en `contentPaths` al cargar.
+Alias opcional que se combina en `contentPaths` al cargar.
 - `targetLocales`
 Subconjunto opcional de idiomas solo para este bloque (en caso contrario, se usa el `targetLocales` raíz). Los idiomas de documentación efectivos son la unión entre todos los bloques.
 - `jsonSource`
@@ -1093,13 +1093,13 @@ Opcional. Directorio fuente para los catálogos JSON de etiquetas de Docusaurus 
 - `markdownOutput.docsRoot`
 Raíz de documentación fuente para el diseño de Docusaurus (por ejemplo, `"docs"`).
 - `markdownOutput.pathTemplate`
-Ruta de salida personalizada para markdown. Marcadores de posición: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>.
+Ruta personalizada de salida para markdown. Marcadores de posición: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-Ruta de salida personalizada para archivos JSON de etiquetas. Admite los mismos marcadores de posición que `pathTemplate`.
+Ruta personalizada de salida JSON para archivos de etiquetas. Admite los mismos marcadores de posición que `pathTemplate`.
 - `markdownOutput.flatPreserveRelativeDir`
-Para el estilo `flat`, mantenga los subdirectorios de origen para que los archivos con el mismo nombre base no entren en conflicto.
+Para el estilo `flat`, mantener los subdirectorios fuente para que los archivos con el mismo nombre base no colisionen.
 - `markdownOutput.rewriteRelativeLinks`
-Vuelva a escribir enlaces relativos después de la traducción (activado automáticamente para el estilo `flat`).
+Reescribir enlaces relativos tras la traducción (activado automáticamente para el estilo `flat`).
 - `markdownOutput.linkRewriteDocsRoot`
 Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Por lo general, déjelo como `"."` a menos que sus documentos traducidos estén ubicados bajo una raíz de proyecto diferente.
 - `markdownOutput.postProcessing`
@@ -1147,11 +1147,11 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 
 | Campo                         | Descripción                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | Un directorio o una matriz de directorios escaneados recursivamente en busca de archivos `.svg`.                                                                                                                                                                                                     |
+| `sourcePath`                  | Uno o más directorios **o patrones globales** (por ejemplo, `"images/*.svg"`, `"**/icons/*.svg"`). Los patrones se resuelven respecto a la raíz del proyecto y se exploran recursivamente en busca de archivos `.svg`.                                                                                       |
 | `outputDir`                   | Directorio raíz para la salida SVG traducida.                                                                                                                                                                                                                                          |
 | `style`                       | `"flat"` o `"nested"` cuando `pathTemplate` no está definido.                                                                                                                                                                                                                               |
-| `pathTemplate`                | Ruta personalizada de salida SVG. Marcadores de posición: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{relativeToSourceRoot}"}</code>. |
-| `svgExtractor.forceLowercase` | Texto traducido en minúsculas al volver a ensamblar el SVG. Útil para diseños que dependen de etiquetas completamente en minúsculas.                                                                                                                                                                                |
+| `pathTemplate`                | Ruta personalizada de salida SVG. Marcadores de posición: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `forceLowercase` | Texto traducido en minúsculas durante la reensamblaje SVG. Útil para diseños que dependen de etiquetas completamente en minúsculas.                                                                                                                                                                                |
 
 <a id="glossary"></a>
 ### `glossary`

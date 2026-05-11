@@ -161,7 +161,7 @@ This writes `ai-i18n-tools.config.json` with the `ui-markdown` template. Edit it
 
 - `sourceLocale` - your source language BCP-47 code (e.g. `"en-GB"`). **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` - array of BCP-47 codes for your target languages (e.g. `["de", "fr", "pt-BR"]`). Run `generate-ui-languages` to create the `ui-languages.json` manifest from this list.
-- `ui.sourceRoots` - directories to scan for `t("…")` calls (e.g. `["src/"]`).
+- `ui.sourceRoots` - directories or glob patterns to scan for `t("…")` calls (e.g. `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - where to write the master catalog (e.g. `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - where to write `de.json`, `pt-BR.json`, etc. (e.g. `"src/locales/"`).
 - `ui.preferredModel` (optional) - OpenRouter model id to try **first** for `translate-ui` only; on failure the CLI continues with `openrouter.translationModels` (or legacy `defaultModel` / `fallbackModel`) in order, skipping duplicates.
@@ -278,7 +278,7 @@ Named imports (`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runti
 - `nsSeparator: false` allows keys that contain colons.
 - `interpolation.escapeValue: false` - safe to disable: React escapes values itself, and Node.js/CLI output has no HTML to escape.
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` is the **recommended** wiring for ai-i18n-tools projects: it applies key-trim + source-locale <code>{"{{var}}"}</code> interpolation fallback (same behaviour as the lower-level `wrapI18nWithKeyTrim`), optionally merges `translate-ui` `{sourceLocale}.json` plural suffixed keys via `addResourceBundle`, then installs plural-aware `wrapT` from your `strings.json`. That bundled file must be the plural flat for your **configured** source locale — the same `sourceLocale` as in `ai-i18n-tools.config.json` and `SOURCE_LOCALE` in your i18n bootstrap (see Step 4 above). Omit `sourcePluralFlatBundle` only while bootstrapping (merge it once `translate-ui` has emitted `{sourceLocale}.json`). `wrapI18nWithKeyTrim` alone is **deprecated** for application code — use `setupKeyAsDefaultT` instead.
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` is the **recommended** wiring for ai-i18n-tools projects: it applies key-trim + source-locale <code>"{{var}}"</code> interpolation fallback (same behaviour as the lower-level `wrapI18nWithKeyTrim`), optionally merges `translate-ui` `{sourceLocale}.json` plural suffixed keys via `addResourceBundle`, then installs plural-aware `wrapT` from your `strings.json`. That bundled file must be the plural flat for your **configured** source locale — the same `sourceLocale` as in `ai-i18n-tools.config.json` and `SOURCE_LOCALE` in your i18n bootstrap (see Step 4 above). Omit `sourcePluralFlatBundle` only while bootstrapping (merge it once `translate-ui` has emitted `{sourceLocale}.json`). `wrapI18nWithKeyTrim` alone is **deprecated** for application code — use `setupKeyAsDefaultT` instead.
 
 `makeLoadLocale(i18n, loaders, sourceLocale)` returns an async `loadLocale(lang)` function that dynamically imports the JSON bundle for a locale and registers it with i18next.
 
@@ -312,7 +312,7 @@ console.log(i18n.t('Processing complete'));
 <a id="interpolation"></a>
 ### Interpolation
 
-Use i18next's native second-argument interpolation for <code>{"{{var}}"}</code> placeholders:
+Use i18next's native second-argument interpolation for <code>"{{var}}"</code> placeholders:
 
 ```js
 // i18next handles substitution natively, even in key-as-default mode
@@ -322,7 +322,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 The extract command parses the **second argument** when it is a plain object literal and reads tooling-only flags such as `plurals: true` and `zeroDigit` (see **Cardinal plurals** below). For ordinary strings, only the literal key is used for hashing; interpolation options are still passed through to i18next at runtime.
 
-If your project uses a custom interpolation utility (e.g. calling `t('key')` then piping the result through a template function like `interpolateTemplate(t('Hello {{name}}'), { name })`), `setupKeyAsDefaultT` (via `wrapI18nWithKeyTrim`) makes that unnecessary — it applies <code>{"{{var}}"}</code> interpolation even when the source locale returns the raw key. Migrate call sites to `t('Hello {{name}}', { name })` and remove the custom utility.
+If your project uses a custom interpolation utility (e.g. calling `t('key')` then piping the result through a template function like `interpolateTemplate(t('Hello {{name}}'), { name })`), `setupKeyAsDefaultT` (via `wrapI18nWithKeyTrim`) makes that unnecessary — it applies <code>"{{var}}"</code> interpolation even when the source locale returns the raw key. Migrate call sites to `t('Hello {{name}}', { name })` and remove the custom utility.
 
 <a id="cardinal-plurals-plurals-true"></a>
 ### Cardinal plurals (`plurals: true`)
@@ -408,7 +408,7 @@ function LanguageSelect({
 
 `getUILanguageLabelNative(lang)` - shows `englishName / label` (no `t()` call on each row). Suitable for header menus where you want the native name visible.
 
-The `ui-languages.json` manifest is a JSON array of <code>{"{ code, label, englishName, direction }"}</code> entries (`direction` is `"ltr"` or `"rtl"`). Example:
+The `ui-languages.json` manifest is a JSON array of <code>"{ code, label, englishName, direction }"</code> entries (`direction` is `"ltr"` or `"rtl"`). Example:
 
 ```json
 [
@@ -514,7 +514,7 @@ The CLI keeps **file tracking** in SQLite (source hash per file × locale) and *
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(default)*                   | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                                                                                          |
 | `-l, --locale <codes>`        | Comma-separated target locales (when omitted, defaults match the union of root `targetLocales` and each `documentations[]` block’s optional `targetLocales`).                                                                                                       |
-| `-p, --path` / `-f, --file`   | Only translate markdown/JSON under this path (project-relative or absolute); `--file` is an alias for `--path`.                                                                                                                                                     |
+| `-p, --path` / `-f, --file`   | Only translate markdown/JSON under this path (project-relative, absolute, or glob pattern); `--file` is an alias for `--path`.                                                                                                                                 |
 | `--dry-run`                   | No file writes and no API calls.                                                                                                                                                                                                                                    |
 | `--type <kind>`               | Restrict to `markdown` or `json` (otherwise both when enabled in config).                                                                                                                                                                                           |
 | `--json-only` / `--no-json`   | Translate only JSON label files, or skip JSON and translate markdown only.                                                                                                                                                                                          |
@@ -1021,7 +1021,7 @@ Before changing `translationModels`, run `npx ai-i18n-tools check-models` to ver
 
 
 - `sourceRoots`  
-  Directories (relative to cwd) scanned for `t("…")` calls.
+  Directories or glob patterns (relative to cwd) scanned for `t("…")` calls. Supports patterns like `src/` or `["src/**/*.ts"]`.
 - `stringsJson`  
   Path to the master catalog file. Updated by `extract`.
 - `flatOutputDir`  
@@ -1044,7 +1044,7 @@ Before changing `translationModels`, run `npx ai-i18n-tools check-models` to ver
 
 | Field         | Description                                               |
 |---------------|-----------------------------------------------------------|
-| `sourceRoots` | Directories (relative to cwd) scanned for `t("…")` calls. |
+| `sourceRoots` | Directories or glob patterns (relative to cwd) scanned for `t("…")` calls. |
 | `stringsJson` | Path to the master catalog file. Updated by `extract`.    |
 
 
@@ -1087,7 +1087,7 @@ Array of documentation pipeline blocks. `translate-docs` and the docs phase of `
 - `description`
 Optional human-readable note for this block (not used for translation). Prefixed in the `translate-docs` `🌐` headline when set; also shown in `status` section headers.
 - `contentPaths`
-Markdown/MDX page bodies to translate (`translate-docs` scans these for `.md` / `.mdx`). That is where localized documentation prose comes from.
+Markdown/MDX page bodies to translate (`translate-docs` scans these for `.md` / `.mdx`). Supports **directory paths or glob patterns** (e.g. `"docs/**/*.md"`, `"guides/*.mdx"`). That is where localized documentation prose comes from.
 - `outputDir`
 Root directory for translated output for this block.
 - `sourceFiles`
@@ -1101,7 +1101,7 @@ Optional. Source directory for Docusaurus JSON label catalogs for this block (e.
 - `markdownOutput.docsRoot`
 Source docs root for Docusaurus layout (e.g. `"docs"`).
 - `markdownOutput.pathTemplate`
-Custom markdown output path. Placeholders: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{docsRoot}"}</code>, <code>{"{relativeToDocsRoot}"}</code>.
+Custom markdown output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
 Custom JSON output path for label files. Supports the same placeholders as `pathTemplate`.
 - `markdownOutput.flatPreserveRelativeDir`
@@ -1155,11 +1155,11 @@ Top-level paths and layout for  SVG files. Translation runs only when `features.
 
 | Field                         | Description                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | One directory or an array of directories scanned recursively for `.svg` files.                                                                                                                                                                                                     |
+| `sourcePath`                  | One or more directories **or glob patterns** (e.g. `"images/*.svg"`, `"**/icons/*.svg"`). The patterns are resolved relative to the project root and scanned recursively for `.svg` files.                                                                                       |
 | `outputDir`                   | Root directory for translated SVG output.                                                                                                                                                                                                                                          |
 | `style`                       | `"flat"` or `"nested"` when `pathTemplate` is unset.                                                                                                                                                                                                                               |
-| `pathTemplate`                | Custom SVG output path. Placeholders: <code>{"{outputDir}"}</code>, <code>{"{locale}"}</code>, <code>{"{LOCALE}"}</code>, <code>{"{relPath}"}</code>, <code>{"{stem}"}</code>, <code>{"{basename}"}</code>, <code>{"{extension}"}</code>, <code>{"{relativeToSourceRoot}"}</code>. |
-| `svgExtractor.forceLowercase` | Lower-case translated text on SVG reassembly. Useful for designs that rely on all-lowercase labels.                                                                                                                                                                                |
+| `pathTemplate`                | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `forceLowercase` | Lower-case translated text on SVG reassembly. Useful for designs that rely on all-lowercase labels.                                                                                                                                                                                |
 
 <a id="glossary"></a>
 ### `glossary`

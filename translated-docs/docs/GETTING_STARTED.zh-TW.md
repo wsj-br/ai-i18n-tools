@@ -158,10 +158,10 @@ npx ai-i18n-tools init
 
 此操作會寫入使用 `ui-markdown` 範本的 `ai-i18n-tools.config.json`。請編輯設定以指定：
 
-- `sourceLocale` - 您的原始語言 BCP-47 代碼（例如 `"en-GB"`）。**必須與** 執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）中匯出的 `SOURCE_LOCALE` 相符。
-- `targetLocales` - 目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 從此清單建立 `ui-languages.json` 清單。
-- `ui.sourceRoots` - 掃描 `t("…")` 呼叫的目錄（例如 `["src/"]`）。
-- `ui.stringsJson` - 主目錄的寫入位置（例如 `"src/locales/strings.json"`）。
+- `sourceLocale` - 您的原始語言 BCP-47 代碼（例如 `"en-GB"`）。**必須與** 從執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE` 相符。
+- `targetLocales` - 目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 從此清單建立 `ui-languages.json` 檔案清單。
+- `ui.sourceRoots` - 用於掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
+- `ui.stringsJson` - 寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - 寫入 `de.json`、`pt-BR.json` 等的位置（例如 `"src/locales/"`）。
 - `ui.preferredModel`（可選）- 僅針對 `translate-ui` 嘗試使用的 OpenRouter 模型 ID **優先**；若失敗，CLI 將依序繼續使用 `openrouter.translationModels`（或舊版 `defaultModel` / `fallbackModel`），跳過重複項目。
 
@@ -279,7 +279,7 @@ export default i18n;
 - `nsSeparator: false` 允許鍵中包含冒號。
 - `interpolation.escapeValue: false` — 可安全停用：React 本身會轉義值，而 Node.js/CLI 輸出沒有 HTML 需要轉義。
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` 是 ai-i18n-tools 專案的 **推薦**整合方式：它會套用鍵名修剪 + 來源語系 <code>{"{{var}}"}</code> 插值回退（行為與底層 `wrapI18nWithKeyTrim` 相同），選擇性地透過 `addResourceBundle` 合併 `translate-ui` `{sourceLocale}.json` 複數後綴鍵，然後從您的 `strings.json` 安裝支援複數的 `wrapT`。此捆綁檔案必須是您 **已設定**的來源語系的複數平面檔案——與 i18n 初始化（見上方步驟 4）中的 `ai-i18n-tools.config.json` 和 `SOURCE_LOCALE` 使用的 `sourceLocale` 相同。僅在初始化期間省略 `sourcePluralFlatBundle`（一旦 `translate-ui` 產生 `{sourceLocale}.json` 後即合併）。`wrapI18nWithKeyTrim` 單獨用於應用程式碼中已 **棄用**——請改用 `setupKeyAsDefaultT`。
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` 是 ai-i18n-tools 專案的 **建議** 設定方式：它會套用鍵名修剪 + 原始語系 <code>"{{var}}"</code> 插值回退（行為與底層 `wrapI18nWithKeyTrim` 相同），選擇性地透過 `addResourceBundle` 合併 `translate-ui` `{sourceLocale}.json` 複數後綴鍵，然後安裝來自您 `strings.json` 的複數感知 `wrapT`。此捆綁檔案必須是您 **已設定** 原始語系的複數扁平化檔案 — 與 i18n 啟動設定中 `ai-i18n-tools.config.json` 和 `SOURCE_LOCALE` 使用的 `sourceLocale` 相同。僅在啟動階段可省略 `sourcePluralFlatBundle`（一旦 `translate-ui` 產生 `{sourceLocale}.json` 後即應合併）。在應用程式碼中單獨使用 `wrapI18nWithKeyTrim` 已 **棄用** — 請改用 `setupKeyAsDefaultT`。
 
 `makeLoadLocale(i18n, loaders, sourceLocale)` 回傳一個非同步的 `loadLocale(lang)` 函式，該函式會動態匯入指定語言環境的 JSON 捆綁檔並向 i18next 註冊。
 
@@ -313,7 +313,7 @@ console.log(i18n.t('Processing complete'));
 <a id="interpolation"></a>
 ### 插值
 
-使用 i18next 原生的第二個參數進行 <code>{"{{var}}"}</code> 佔位符的插值：
+使用 i18next 原生的第二個參數進行 <code>"{{var}}"</code> 插值：
 
 ```js
 // i18next handles substitution natively, even in key-as-default mode
@@ -323,7 +323,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 extract 命令會解析 **第二個參數**，當其為純物件字面量時，會讀取僅供工具使用的標記，例如 `plurals: true` 和 `zeroDigit`（參見下方 **基數複數**）。對於一般字串，僅使用字面鍵進行雜湊；插值選項仍會在執行時傳遞給 i18next。
 
-如果您的專案使用自訂插值工具（例如呼叫 `t('key')`，然後將結果傳遞給像 `interpolateTemplate(t('Hello {{name}}'), { name })` 這樣的模板函式），則 `setupKeyAsDefaultT`（透過 `wrapI18nWithKeyTrim`）可使此類工具不再必要——即使來源語系回傳原始鍵，它仍會套用 <code>{"{{var}}"}</code> 插值。請將呼叫點遷移至 `t('Hello {{name}}', { name })` 並移除自訂工具。
+如果您的專案使用自訂插值工具（例如呼叫 `t('key')` 後再將結果傳遞給像 `interpolateTemplate(t('Hello {{name}}'), { name })` 這樣的模板函式），則 `setupKeyAsDefaultT`（透過 `wrapI18nWithKeyTrim`）可使此操作不再必要 — 即使原始語系回傳原始鍵，它仍會套用 <code>"{{var}}"</code> 插值。請將呼叫點遷移至 `t('Hello {{name}}', { name })` 並移除自訂工具。
 
 <a id="cardinal-plurals-plurals-true"></a>
 ### 基數複數（`plurals: true`）
@@ -409,7 +409,7 @@ function LanguageSelect({
 
 `getUILanguageLabelNative(lang)` — 僅顯示 `englishName / label`（每列不需 `t()` 呼叫）。適用於希望顯示本地名稱的頁首選單。
 
-`ui-languages.json` 指引檔是一個 JSON 陣列，內容為 <code>{"{ code, label, englishName, direction }"}</code> 項目（`direction` 為 `"ltr"` 或 `"rtl"`）。範例：
+`ui-languages.json` 檔案清單是一個包含 <code>"{ code, label, englishName, direction }"</code> 項目的 JSON 陣列（`direction` 為 `"ltr"` 或 `"rtl"`）。範例：
 
 ```json
 [
@@ -514,7 +514,7 @@ CLI 會在 SQLite 中保存 **檔案追蹤**（每檔案每語系的原始內容
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(預設)*                   | 當追蹤內容與磁碟上的輸出相符時，跳過未變更的檔案；其餘內容使用片段快取。                                                                                                                                                                          |
 | `-l, --locale <codes>`        | 以逗號分隔的目標在地化語言（若省略，預設值為根層級 `targetLocales` 與各 `documentations[]` 區塊中可選的 `targetLocales` 的聯集）。                                                                                                                                                          |
-| `-p, --path` / `-f, --file`   | 僅翻譯此路徑下的 Markdown/JSON（專案相對路徑或絕對路徑）；`--file` 是 `--path` 的別名。                                                                                                                                                         |
+| `-p, --path` / `-f, --file`   | 僅翻譯此路徑下的 markdown/JSON（專案相對路徑、絕對路徑或 glob 模式）；`--file` 是 `--path` 的別名。                                                                                                                                 |
 | `--dry-run`                   | 不寫入檔案，也不呼叫 API。                                                                                                                                                                                                                                        |
 | `--type <kind>`               | 僅限 `markdown` 或 `json`（否則若設定中啟用則兩者皆行）。                                                                                                                                                                                               |
 | `--json-only` / `--no-json`   | 僅翻譯 JSON 標籤檔案，或跳過 JSON 僅翻譯 Markdown 檔案。                                                                                                                                                                                              |
@@ -1018,13 +1018,13 @@ ai-i18n-tools editor
 ### `ui`
 
 - `sourceRoots`  
-  要掃描 `t("…")` 呼叫的目錄（相對於 cwd）。
+  用於掃描 `t("…")` 呼叫的目錄或 glob 模式（相對於目前工作目錄）。支援 `src/` 或 `["src/**/*.ts"]` 等模式。
 - `stringsJson`  
   主目錄檔案的路徑。由 `extract` 更新。
 - `flatOutputDir`  
-  寫入每區域設定 JSON 檔案的目錄（例如 `de.json` 等）。
+  寫入各語系 JSON 檔案的目錄（例如 `de.json` 等）。
 - `preferredModel`  
-  選填。僅針對 `translate-ui` 優先嘗試的 OpenRouter 模型 ID；之後依序嘗試 `openrouter.translationModels`（或傳統模型），且不重複此 ID。
+  選填。僅針對 `translate-ui` 優先嘗試的 OpenRouter 模型 ID；之後依序嘗試 `openrouter.translationModels`（或舊版模型），不再重複此 ID。
 - `reactExtractor.funcNames`  
   要掃描的額外函式名稱（預設值：`["t", "i18n.t"]`）。
 - `reactExtractor.extensions`  
@@ -1039,7 +1039,7 @@ ai-i18n-tools editor
 
 | 欄位         | 說明                                               |
 |---------------|-----------------------------------------------------------|
-| `sourceRoots` | 掃描 `t("…")` 呼叫的目錄（相對於目前工作目錄）。 |
+| `sourceRoots` | 用於掃描 `t("…")` 呼叫的目錄或 glob 模式（相對於目前工作目錄）。 |
 | `stringsJson` | 主目錄檔案的路徑。由 `extract` 更新。    |
 
 <a id="cachedir"></a>
@@ -1077,13 +1077,13 @@ SQLite 快取目錄（所有 `documentations` 區塊共用）。可在執行間�
 文件處理流程區塊的陣列。`translate-docs` 和 `sync` 的文件階段 **會依序處理每個** 區塊。
 
 - `description`
-此區塊的可選人類可讀備註（不供翻譯使用）。設定時會作為 `translate-docs` `🌐` 標題的前綴；也會顯示於 `status` 區段標題中。
+此區塊的選填人類可讀註解（不供翻譯使用）。設定時會作為 `translate-docs` `🌐` 標題的前綴；也會顯示在 `status` 區段標題中。
 - `contentPaths`
-要翻譯的 Markdown/MDX 頁面內文（`translate-docs` 會掃描這些內容以取得 `.md` / `.mdx`）。本地化文件內文即來自此處。
+要翻譯的 Markdown/MDX 頁面內容（`translate-docs` 會掃描這些內容中的 `.md` / `.mdx`）。支援 **目錄路徑或 glob 模式**（例如 `"docs/**/*.md"`、`"guides/*.mdx"`）。這是本地化文件文字的來源。
 - `outputDir`
 此區塊翻譯輸出的根目錄。
 - `sourceFiles`
-載入時合併至 `contentPaths` 的可選別名。
+載入時合併至 `contentPaths` 的選填別名。
 - `targetLocales`
 僅供此區塊使用的可選語系子集（否則使用根層級的 `targetLocales`）。實際生效的文件語系為所有區塊的聯集。
 - `jsonSource`
@@ -1093,13 +1093,13 @@ SQLite 快取目錄（所有 `documentations` 區塊共用）。可在執行間�
 - `markdownOutput.docsRoot`
 Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。
 - `markdownOutput.pathTemplate`
-自訂 Markdown 輸出路徑。可用的佔位符：<code>{"{outputDir}"}</code>、<code>{"{locale}"}</code>、<code>{"{LOCALE}"}</code>、<code>{"{relPath}"}</code>、<code>{"{stem}"}</code>、<code>{"{basename}"}</code>、<code>{"{extension}"}</code>、<code>{"{docsRoot}"}</code>、<code>{"{relativeToDocsRoot}"}</code>。
+自訂 markdown 輸出路徑。可用的佔位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
 標籤檔案的自訂 JSON 輸出路徑。支援與 `pathTemplate` 相同的佔位符。
 - `markdownOutput.flatPreserveRelativeDir`
-對於 `flat` 風格，保留來源子目錄，以避免同檔名的檔案發生衝突。
+對於 `flat` 風格，保留原始子目錄以避免同檔名檔案衝突。
 - `markdownOutput.rewriteRelativeLinks`
-翻譯後重寫相對連結（`flat` 風格將自動啟用此功能）。
+翻譯後重寫相對連結（`flat` 風格將自動啟用）。
 - `markdownOutput.linkRewriteDocsRoot`
 計算扁平連結重寫前綴時使用的儲存庫根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常保持為 `"."`。
 - `markdownOutput.postProcessing`
@@ -1147,11 +1147,11 @@ SVG 檔案的頂層路徑與佈局。僅當 `features.translateSVG` 為 true 時
 
 | 欄位                         | 說明                                                                                                                                                                                                                                                                        |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | 一個目錄或目錄陣列，會遞迴掃描 `.svg` 檔案。                                                                                                                                                                                                     |
+| `sourcePath`                  | 一個或多個目錄 **或 glob 模式**（例如 `"images/*.svg"`、`"**/icons/*.svg"`）。這些模式會相對於專案根目錄解析，並遞迴掃描 `.svg` 檔案。                                                                                       |
 | `outputDir`                   | 已翻譯 SVG 輸出的根目錄。                                                                                                                                                                                                                                          |
 | `style`                       | 當 `pathTemplate` 未設定時，為 `"flat"` 或 `"nested"`。                                                                                                                                                                                                                               |
-| `pathTemplate`                | 自訂 SVG 輸出路徑。可用的佔位符：<code>{"{outputDir}"}</code>、<code>{"{locale}"}</code>、<code>{"{LOCALE}"}</code>、<code>{"{relPath}"}</code>、<code>{"{stem}"}</code>、<code>{"{basename}"}</code>、<code>{"{extension}"}</code>、<code>{"{relativeToSourceRoot}"}</code>。 |
-| `svgExtractor.forceLowercase` | 在 SVG 重組時使用小寫翻譯文字。適用於依賴全小寫標籤的設計。                                                                                                                                                                                |
+| `pathTemplate`                | 自訂 SVG 輸出路徑。可用的佔位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `forceLowercase` | 在 SVG 重新組合時將文字轉為小寫。適用於依賴全小寫標籤的設計。                                                                                                                                                                                |
 
 <a id="glossary"></a>
 ### `glossary`

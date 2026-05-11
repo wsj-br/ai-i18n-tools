@@ -2026,7 +2026,7 @@ export async function translateJsonFile(
   return { skipped: false, totals };
 }
 
-/** Translate one SVG asset (`translate-svg`); uses `config.svg` for paths and optional `svg.svgExtractor`. */
+/** Translate one SVG asset (`translate-svg`); uses `config.svg` for paths and optional `svg.forceLowercase`. */
 export async function translateSvgAssetFile(
   absSource: string,
   relPathFromCwd: string,
@@ -2056,7 +2056,7 @@ export async function translateSvgAssetFile(
     relPathFromCwd,
     relPathFromSourceRoot
   );
-  const forceLc = config.svg?.svgExtractor?.forceLowercase ?? false;
+  const forceLc = config.svg?.forceLowercase ?? false;
   const content = fs.readFileSync(absSource, "utf8");
   const fileHash = hashFileContent(content);
 

@@ -112,6 +112,26 @@ describe("SvgExtractor", () => {
     expect(out).toContain("&quot;");
   });
 
+  it("decodes XML entities in model output before re-escaping (avoids &amp;gt;)", () => {
+    const svg = `<svg><text>x</text></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "ent.svg");
+    const h = segs[0]!.hash;
+    const out = ex.reassemble(segs, new Map([[h, "a &gt; b"]]));
+    expect(out).toMatch(/<tspan>a &gt; b<\/tspan>/);
+    expect(out).not.toContain("&amp;gt;");
+  });
+
+  it("decodes doubly-encoded entities from model output", () => {
+    const svg = `<svg><text>x</text></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "ent2.svg");
+    const h = segs[0]!.hash;
+    const out = ex.reassemble(segs, new Map([[h, "&amp;gt;"]]));
+    expect(out).toMatch(/<tspan>&gt;<\/tspan>/);
+    expect(out).not.toContain("&amp;gt;");
+  });
+
   it("reassemble throws when extract was not called", () => {
     const ex = new SvgExtractor();
     expect(() => ex.reassemble([], new Map())).toThrow(/call extract\(\) first/);
