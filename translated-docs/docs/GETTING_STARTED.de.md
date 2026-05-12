@@ -56,12 +56,13 @@ Beide Workflows nutzen OpenRouter (jeden kompatiblen LLM) und teilen sich eine e
   - [`uiLanguagesPath` (optional)](#uilanguagespath-optional)
   - [`concurrency` (optional)](#concurrency-optional)
   - [`batchConcurrency` (optional)](#batchconcurrency-optional)
+  - [`fileConcurrency` (optional)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (optional)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Best Practice für Git-Ausschlüsse:](#best-practice-for-git-exclusions)
+    - [Bewährte Methode für Git-Ausschlüsse:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
@@ -949,6 +950,21 @@ Maximale Anzahl gleichzeitig übersetzter **Zielgebietsschemata** (`translate-ui
 ### `batchConcurrency` (optional)
 
 **translate-docs** und **translate-svg** (sowie der Dokumentationsschritt von `sync`): maximale parallele OpenRouter-**Batch**-Anfragen pro Datei (jeder Batch kann viele Segmente enthalten). Standardwert ist **4**, wenn nicht angegeben. Wird von `translate-ui` ignoriert. Kann mit `-b` / `--batch-concurrency` überschrieben werden. Unter `sync` gilt `-b` nur für den Dokumentationsübersetzungsschritt.
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (optional)
+
+Maximale Anzahl gleichzeitig verarbeiteter Dateien **innerhalb einer einzelnen Sprachumgebung** während `translate-docs` und `sync`. Bei Werten größer als **1** werden Dateien innerhalb derselben Sprachumgebung parallel verarbeitet, wobei ein Semaphore zur Steuerung des Speicherverbrauchs verwendet wird. Standardwert ist **1** (sequenzielle Verarbeitung), wenn nicht angegeben. Höhere Werte können den Durchsatz bei I/O-gebundenen Operationen erheblich verbessern, insbesondere wenn alle Segmente bereits zwischengespeichert sind (keine API-Aufrufe erforderlich).
+
+**Beispiel:**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**Anwendungsfall:** Setzen Sie dies auf `2-4`, wenn Sie `sync --force-update` mit 100 % Cache-Treffern ausführen, um die Gesamtverarbeitungszeit zu verkürzen. Die Verbesserung ist besonders bei vielen kleinen Dateien deutlich spürbar.
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (optional)

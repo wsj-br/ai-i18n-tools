@@ -56,12 +56,13 @@
   - [`uiLanguagesPath` (वैकल्पिक)](#uilanguagespath-optional)
   - [`concurrency` (वैकल्पिक)](#concurrency-optional)
   - [`batchConcurrency` (वैकल्पिक)](#batchconcurrency-optional)
+  - [`fileConcurrency` (वैकल्पिक)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (वैकल्पिक)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [गिट बहिष्करण के लिए सर्वोत्तम प्रथा:](#best-practice-for-git-exclusions)
+    - [गिट बहिष्करण के लिए सर्वोत्तम अभ्यास:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
@@ -949,6 +950,21 @@ ai-i18n-tools editor
 ### `batchConcurrency` (वैकल्पिक)
 
 **translate-docs** और **translate-svg** (और `sync` का दस्तावेज़ीकरण चरण): प्रति फ़ाइल अधिकतम समानांतर OpenRouter **बैच** अनुरोध (प्रत्येक बैच में कई खंड हो सकते हैं)। छोड़ने पर डिफ़ॉल्ट **4**। `translate-ui` द्वारा अनदेखा। `-b` / `--batch-concurrency` के साथ अधिरोपित करें। `sync` पर, `-b` केवल दस्तावेज़ीकरण अनुवाद चरण पर लागू होता है।
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (वैकल्पिक)
+
+`translate-docs` और `sync` के दौरान **एक ही लोकेल के भीतर** एक साथ संसाधित की जाने वाली फ़ाइलों की अधिकतम संख्या। जब **1** से अधिक मान पर सेट किया जाता है, तो मेमोरी उपयोग को नियंत्रित करने के लिए सेमाफोर का उपयोग करके एक ही लोकेल के भीतर फ़ाइलों को समानांतर रूप से संसाधित किया जाता है। डिफ़ॉल्ट रूप से **1** (अनुक्रमिक प्रसंस्करण) जब छोड़ा जाता है। उच्च मान I/O-बाउंड संचालनों के लिए थ्रूपुट में काफी सुधार कर सकते हैं, विशेष रूप से जब सभी सेगमेंट पहले से कैश किए गए हों (कोई API कॉल आवश्यक नहीं)।
+
+**उदाहरण:**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**उपयोग का मामला:** `sync --force-update` चलाते समय 100% कैश हिट के साथ कुल संसाधन समय को कम करने के लिए इसे `2-4` पर सेट करें। सुधार बहुत सारी छोटी फ़ाइलों के साथ सबसे अधिक ध्यान देने योग्य होता है।
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (वैकल्पिक)

@@ -56,16 +56,17 @@ Ambos os fluxos de trabalho utilizam o OpenRouter (qualquer LLM compatível) e c
   - [`uiLanguagesPath` (opcional)](#uilanguagespath-optional)
   - [`concurrency` (opcional)](#concurrency-optional)
   - [`batchConcurrency` (opcional)](#batchconcurrency-optional)
+  - [`fileConcurrency` (opcional)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (opcional)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Boas práticas para exclusões no git:](#best-practice-for-git-exclusions)
+    - [Melhor prática para exclusões no git:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
-- [Referência de CLI](#cli-reference)
+- [Referência da CLI](#cli-reference)
 - [Variáveis de ambiente](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -949,6 +950,21 @@ Número máximo de **locales de destino** traduzidos simultaneamente (`translate
 ### `batchConcurrency` (opcional)
 
 **translate-docs** e **translate-svg** (e a etapa de documentação do `sync`): número máximo de requisições paralelas em **lote** para OpenRouter por arquivo (cada lote pode conter muitos segmentos). Padrão é **4** quando omitido. Ignorado pelo `translate-ui`. Substitua com `-b` / `--batch-concurrency`. Em `sync`, `-b` aplica-se apenas à etapa de tradução de documentação.
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (opcional)
+
+Número máximo de arquivos processados simultaneamente **dentro de um único idioma** durante `translate-docs` e `sync`. Quando definido como um valor maior que **1**, os arquivos dentro do mesmo idioma são processados em paralelo usando um semáforo para controlar o uso de memória. O valor padrão é **1** (processamento sequencial) quando omitido. Valores mais altos podem melhorar significativamente o desempenho em operações limitadas por E/S, especialmente quando todos os segmentos já estão em cache (sem chamadas à API necessárias).
+
+**Exemplo:**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**Caso de uso:** Defina isso como `2-4` ao executar `sync --force-update` com 100% de acertos no cache para reduzir o tempo total de processamento. A melhoria é mais perceptível com muitos arquivos pequenos.
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (opcional)

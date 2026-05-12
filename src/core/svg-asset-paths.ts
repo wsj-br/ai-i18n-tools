@@ -132,14 +132,6 @@ export function matchesGlobPattern(filePath: string, pattern: string): boolean {
 }
 
 /**
- * Extract the non-glob prefix from a pattern (the part before first glob char).
- */
-function getNonGlobPrefix(pattern: string): string {
-  const match = pattern.match(/^[^*?[\]]*/);
-  return match ? match[0] : "";
-}
-
-/**
  * Path under a configured `svg.sourcePath` root (posix), for nested output layout.
  * Returns `null` if `fileRelCwd` is not under any root.
  * Supports glob patterns in sourceRoots.
@@ -168,7 +160,7 @@ export function relPathUnderSvgSource(fileRelCwd: string, sourceRoots: string[])
     }
 
     // Determine static root: the longest path prefix with no glob characters in any segment
-    const segments = r.split('/');
+    const segments = r.split("/");
     let staticRoot = "";
     for (let i = 0; i < segments.length; i++) {
       if (/[*?[\]]/.test(segments[i])) {

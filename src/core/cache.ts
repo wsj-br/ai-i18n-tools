@@ -5,6 +5,7 @@ import type * as Sqlite from "node:sqlite";
 import { CacheError } from "./errors.js";
 import { USER_EDITED_MODEL } from "./user-edited-model.js";
 import type {
+  BatchCacheResult,
   CacheEntry,
   CleanupStats,
   FileTracking,
@@ -61,6 +62,10 @@ export class TranslationCache {
   }
 
   private applyMigrations(): void {
+    // Enable WAL mode for better write performance (ignored for :memory: databases)
+    this.db.exec("PRAGMA journal_mode = WAL");
+    this.db.exec("PRAGMA synchronous = NORMAL");
+
     const current = (this.db.prepare("PRAGMA user_version").get() as { user_version: number })
       .user_version;
     if (current < 1) {
@@ -210,6 +215,74 @@ export class TranslationCache {
     startLine?: number
   ): string | null {
     return this.getSegmentDetails(sourceHash, locale, filepath, startLine)?.text ?? null;
+  }
+
+  /**
+   * Batch fetch cached segments without updating last_hit_at.
+   * Use batchUpdateLastHitAt() after processing to update timestamps.
+   */
+  getSegmentsBatch(sourceHashes: readonly string[], locale: string): BatchCacheResult {
+    const result: BatchCacheResult = new Map();
+    if (sourceHashes.length === 0) {
+      return result;
+    }
+
+    // SQLite has a limit on the number of parameters (usually 999 or 32766)
+    // Process in chunks to stay well below limits
+    const CHUNK_SIZE = 500;
+    for (let i = 0; i < sourceHashes.length; i += CHUNK_SIZE) {
+      const chunk = sourceHashes.slice(i, i + CHUNK_SIZE);
+      const placeholders = chunk.map(() => "?").join(",");
+      const stmt = this.db.prepare(`
+        SELECT source_hash, translated_text, model
+        FROM translations
+        WHERE source_hash IN (${placeholders}) AND locale = ?
+      `);
+      const rows = stmt.all(...chunk, locale) as Array<{
+        source_hash: string;
+        translated_text: string;
+        model: string | null;
+      }>;
+
+      for (const row of rows) {
+        result.set(row.source_hash, { text: row.translated_text, model: row.model });
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Batch update last_hit_at for multiple segments.
+   * Keys should be formatted as "sourceHash|locale".
+   */
+  batchUpdateLastHitAt(keys: readonly string[]): void {
+    if (keys.length === 0) {
+      return;
+    }
+
+    // Use a temp table approach for efficient batching
+    this.db.exec("CREATE TEMP TABLE IF NOT EXISTS _batch_hit_keys (source_hash TEXT, locale TEXT)");
+    this.db.exec("DELETE FROM _batch_hit_keys");
+
+    const insertStmt = this.db.prepare("INSERT INTO _batch_hit_keys VALUES (?, ?)");
+
+    for (const key of keys) {
+      const [sourceHash, locale] = key.split("|");
+      if (sourceHash && locale) {
+        insertStmt.run(sourceHash, locale);
+      }
+    }
+
+    this.db.exec(`
+      UPDATE translations
+      SET last_hit_at = datetime('now')
+      WHERE (source_hash, locale) IN (
+        SELECT source_hash, locale FROM _batch_hit_keys
+      )
+    `);
+
+    this.db.exec("DROP TABLE IF EXISTS _batch_hit_keys");
   }
 
   setSegment(

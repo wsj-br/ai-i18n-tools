@@ -124,7 +124,13 @@ describe("ui-languages", () => {
     fs.writeFileSync(
       p,
       JSON.stringify([
-        { code: "en-GB", label: "English", englishName: "English (UK)", direction: "ltr", isSourceLocale: true },
+        {
+          code: "en-GB",
+          label: "English",
+          englishName: "English (UK)",
+          direction: "ltr",
+          isSourceLocale: true,
+        },
         { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
       ]),
       "utf8"

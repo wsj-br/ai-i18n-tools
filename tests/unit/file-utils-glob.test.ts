@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { collectFilesByExtension, isGlobPattern, matchGlob } from "../../src/cli/file-utils.js";
-import fs from "fs";
-import path from "path";
 
 describe("file-utils glob support", () => {
   describe("isGlobPattern", () => {
@@ -44,8 +42,6 @@ describe("file-utils glob support", () => {
   });
 
   describe("collectFilesByExtension with glob patterns", () => {
-    const fixturesDir = path.join(import.meta.dirname, "fixtures-glob");
-
     it("collects files from a directory", () => {
       const files = collectFilesByExtension(["src"], [".ts"], process.cwd());
       // This will depend on actual project structure - just checking it runs

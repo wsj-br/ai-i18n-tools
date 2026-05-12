@@ -138,7 +138,9 @@ describe("svg-asset-paths", () => {
     // ** matches any characters including /
     expect(relPathUnderSvgSource("images/icons/a.svg", ["images/**/*.svg"])).toBe("icons/a.svg");
     // Multiple patterns - longest match wins
-    expect(relPathUnderSvgSource("images/icons/a.svg", ["images/*", "images/icons/*"])).toBe("a.svg");
+    expect(relPathUnderSvgSource("images/icons/a.svg", ["images/*", "images/icons/*"])).toBe(
+      "a.svg"
+    );
   });
 
   it("parses legacy svg.svgExtractor.forceLowercase into svg.forceLowercase", () => {

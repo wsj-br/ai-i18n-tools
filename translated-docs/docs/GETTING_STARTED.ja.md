@@ -56,16 +56,17 @@
   - [`uiLanguagesPath` (オプション)](#uilanguagespath-optional)
   - [`concurrency` (オプション)](#concurrency-optional)
   - [`batchConcurrency` (オプション)](#batchconcurrency-optional)
+  - [`fileConcurrency` (オプション)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (オプション)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Gitの除外に関するベストプラクティス:](#best-practice-for-git-exclusions)
+    - [git の除外に関するベスト プラクティス:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
-- [CLIリファレンス](#cli-reference)
+- [CLI リファレンス](#cli-reference)
 - [環境変数](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -949,6 +950,21 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
 ### `batchConcurrency`（オプション）
 
 **translate-docs**および**translate-svg**（および`sync`のドキュメント翻訳ステップ）：ファイルごとの最大並列OpenRouter**バッチ**リクエスト数（各バッチには多数のセグメントを含められます）。省略時はデフォルトで**4**。`translate-ui`では無視されます。`-b` / `--batch-concurrency`で上書き可能。`sync`では、`-b`はドキュメント翻訳ステップにのみ適用されます。
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (オプション)
+
+同一ロケール内で同時に処理されるファイルの最大数 **（`translate-docs` および `sync` の間）**。**1** より大きい値に設定すると、同じロケール内のファイルがメモリ使用量を制御するセマフォを使用して並行して処理されます。省略した場合のデフォルトは **1**（逐次処理）です。より高い値は、特にすべてのセグメントがすでにキャッシュされている場合（API 呼び出しが不要な場合）、I/O バウンド操作のスループットを大幅に改善できます。
+
+**例:**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**使用例:** キャッシュヒット率100%で`sync --force-update`を実行する際に、この値を`2-4`に設定して総処理時間を短縮します。この改善は、多数の小規模ファイルを処理する場合に特に顕著です。
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars`（オプション）

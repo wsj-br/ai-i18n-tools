@@ -371,4 +371,117 @@ describe("TranslationCache", () => {
     );
     cache.close();
   });
+
+  describe("batch operations", () => {
+    it("getSegmentsBatch returns cached segments without updating last_hit_at", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.setSegment("h1", "de", "source1", "trans1", "m1", "doc.md", 1);
+      cache.setSegment("h2", "de", "source2", "trans2", "m2", "doc.md", 2);
+      cache.setSegment("h3", "fr", "source3", "trans3", "m3", "doc.md", 3); // different locale
+
+      // Clear last_hit_at to simulate segments that haven't been accessed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (cache as any).db.exec("UPDATE translations SET last_hit_at = NULL");
+
+      const batch = cache.getSegmentsBatch(["h1", "h2", "h3"], "de");
+
+      expect(batch.size).toBe(2);
+      expect(batch.get("h1")?.text).toBe("trans1");
+      expect(batch.get("h1")?.model).toBe("m1");
+      expect(batch.get("h2")?.text).toBe("trans2");
+      expect(batch.get("h2")?.model).toBe("m2");
+      expect(batch.get("h3")).toBeUndefined();
+
+      // last_hit_at should still be null (batch read doesn't update)
+      const row1 = cache.listTranslations({ source_hash: "h1", limit: 1, offset: 0 }).rows[0];
+      expect(row1?.last_hit_at).toBeNull();
+
+      cache.close();
+    });
+
+    it("getSegmentsBatch handles empty hash list", () => {
+      const cache = new TranslationCache(":memory:");
+      const batch = cache.getSegmentsBatch([], "de");
+      expect(batch.size).toBe(0);
+      cache.close();
+    });
+
+    it("getSegmentsBatch handles large hash lists by chunking", () => {
+      const cache = new TranslationCache(":memory:");
+      const hashes: string[] = [];
+      for (let i = 0; i < 600; i++) {
+        const h = `hash${i.toString().padStart(4, "0")}`;
+        hashes.push(h);
+        cache.setSegment(h, "de", `source${i}`, `trans${i}`, "m", "doc.md", i);
+      }
+
+      const batch = cache.getSegmentsBatch(hashes, "de");
+
+      expect(batch.size).toBe(600);
+      expect(batch.get("hash0000")?.text).toBe("trans0");
+      expect(batch.get("hash0599")?.text).toBe("trans599");
+      cache.close();
+    });
+
+    it("batchUpdateLastHitAt updates timestamps for multiple segments", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.setSegment("h1", "de", "s1", "t1", "m", "doc.md", 1);
+      cache.setSegment("h2", "de", "s2", "t2", "m", "doc.md", 2);
+      cache.setSegment("h3", "de", "s3", "t3", "m", "doc.md", 3);
+
+      // Clear last_hit_at to simulate segments that haven't been accessed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (cache as any).db.exec("UPDATE translations SET last_hit_at = NULL");
+
+      // Initially no last_hit_at
+      let nullHits = cache.listTranslations({ last_hit_at_null: true, limit: 10, offset: 0 });
+      expect(nullHits.total).toBe(3);
+
+      // Batch update last_hit_at
+      cache.batchUpdateLastHitAt(["h1|de", "h2|de"]);
+
+      // h1 and h2 should now have last_hit_at
+      nullHits = cache.listTranslations({ last_hit_at_null: true, limit: 10, offset: 0 });
+      expect(nullHits.total).toBe(1);
+      expect(nullHits.rows[0]?.source_hash).toBe("h3");
+
+      cache.close();
+    });
+
+    it("batchUpdateLastHitAt handles empty key list", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.setSegment("h1", "de", "s1", "t1", "m", "doc.md", 1);
+
+      // Should not throw
+      expect(() => cache.batchUpdateLastHitAt([])).not.toThrow();
+      cache.close();
+    });
+
+    it("batchUpdateLastHitAt ignores malformed keys", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.setSegment("h1", "de", "s1", "t1", "m", "doc.md", 1);
+
+      // Malformed keys (no pipe separator) should be ignored
+      cache.batchUpdateLastHitAt(["h1|de", "invalid", "also|invalid|extra"]);
+
+      const row = cache.listTranslations({ source_hash: "h1", limit: 1, offset: 0 }).rows[0];
+      expect(row?.last_hit_at).not.toBeNull();
+      cache.close();
+    });
+
+    it("getSegmentsBatch respects locale filtering", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.setSegment("h1", "de", "s1", "t1-de", "m", "doc.md", 1);
+      cache.setSegment("h1", "fr", "s1", "t1-fr", "m", "doc.md", 1);
+      cache.setSegment("h1", "es", "s1", "t1-es", "m", "doc.md", 1);
+
+      const deBatch = cache.getSegmentsBatch(["h1"], "de");
+      expect(deBatch.get("h1")?.text).toBe("t1-de");
+
+      const frBatch = cache.getSegmentsBatch(["h1"], "fr");
+      expect(frBatch.get("h1")?.text).toBe("t1-fr");
+
+      cache.close();
+    });
+  });
 });

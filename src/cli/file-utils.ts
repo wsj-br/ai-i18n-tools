@@ -132,7 +132,10 @@ export function collectFilesByExtension(
             walkWithGlob(fullPath);
           } else {
             // Check if file matches the pattern
-            if (matchGlob(ent.name, filePattern) || matchGlob(path.basename(fullPath), filePattern)) {
+            if (
+              matchGlob(ent.name, filePattern) ||
+              matchGlob(path.basename(fullPath), filePattern)
+            ) {
               addFile(fullPath, relFromCwd);
             }
           }

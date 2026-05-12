@@ -57,6 +57,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
   - [`uiLanguagesPath` (optional)](#uilanguagespath-optional)
   - [`concurrency` (optional)](#concurrency-optional)
   - [`batchConcurrency` (optional)](#batchconcurrency-optional)
+  - [`fileConcurrency` (optional)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (optional)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
@@ -950,6 +951,20 @@ Maximum **target locales** translated at the same time (`translate-ui`, `transla
 ### `batchConcurrency` (optional)
 
 **translate-docs** and **translate-svg** (and the documentation step of `sync`): maximum parallel OpenRouter **batch** requests per file (each batch can contain many segments). Default **4** when omitted. Ignored by `translate-ui`. Override with `-b` / `--batch-concurrency`. On `sync`, `-b` applies to the documentation translation step only.
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (optional)
+
+Maximum number of files processed concurrently **within a single locale** during `translate-docs` and `sync`. When set to a value greater than **1**, files within the same locale are processed in parallel using a semaphore to control memory usage. Default **1** (sequential processing) when omitted. Higher values can significantly improve throughput for I/O-bound operations, especially when all segments are already cached (no API calls needed).
+
+**Example:**
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**Use case:** Set this to `2-4` when running `sync --force-update` with 100% cache hits to reduce total processing time. The improvement is most noticeable with many small files.
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (optional)

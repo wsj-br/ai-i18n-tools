@@ -56,12 +56,13 @@
   - [`uiLanguagesPath`（可选）](#uilanguagespath-optional)
   - [`concurrency`（可选）](#concurrency-optional)
   - [`batchConcurrency`（可选）](#batchconcurrency-optional)
+  - [`fileConcurrency`（可选）](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars`（可选）](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Git 排除规则的最佳实践:](#best-practice-for-git-exclusions)
+    - [Git 排除的最佳实践:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
@@ -949,6 +950,21 @@ The **Markdown issues** tab lists rows from the `markdown_source_issues` SQLite 
 ### `batchConcurrency`（可选）
 
 **translate-docs** 和 **translate-svg**（以及 `sync` 的文档步骤）：每个文件的最大并行 OpenRouter **批处理**请求数（每个批处理可包含多个片段）。若省略，默认为 **4**。`translate-ui` 忽略此设置。可通过 `-b` / `--batch-concurrency` 覆盖。在 `sync` 上，`-b` 仅适用于文档翻译步骤。
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency`（可选）
+
+单个区域设置内并发处理的文件最大数量 **（在单个区域设置内）**，适用于 `translate-docs` 和 `sync`。当设置为大于 **1** 的值时，同一区域设置内的文件将通过信号量控制内存使用量进行并行处理。省略时默认为 **1**（顺序处理）。对于 I/O 密集型操作，较高的值可显著提高吞吐量，尤其是在所有片段均已缓存（无需 API 调用）的情况下。
+
+**示例：**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**使用场景：** 当以 100% 缓存命中率运行 `sync --force-update` 时，将此值设为 `2-4` 可减少总处理时间。在处理大量小文件时，性能提升尤为明显。
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars`（可选）

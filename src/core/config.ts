@@ -425,7 +425,7 @@ export const initConfigTemplates = {
   uiMarkdown: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
-    targetLocales: ["de", "fr", "es"],
+    targetLocales: ["de", "fr", "es", "pt-BR"],
     openrouter: {
       baseUrl: "https://openrouter.ai/api/v1",
       translationModels: [...DEFAULT_OPENROUTER_MODELS],
@@ -474,7 +474,7 @@ export const initConfigTemplates = {
   uiDocusaurus: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
-    targetLocales: ["de", "fr", "ja"],
+    targetLocales: ["de", "fr", "ja", "pt-BR"],
     openrouter: {
       baseUrl: "https://openrouter.ai/api/v1",
       translationModels: [...DEFAULT_OPENROUTER_MODELS],

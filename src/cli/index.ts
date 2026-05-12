@@ -1209,7 +1209,9 @@ program
           )
         );
       } catch (e) {
-        console.error(chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`));
+        console.error(
+          chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`)
+        );
         process.exit(1);
       }
     }

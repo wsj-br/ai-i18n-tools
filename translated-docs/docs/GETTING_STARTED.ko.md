@@ -56,12 +56,13 @@
   - [`uiLanguagesPath` (선택 사항)](#uilanguagespath-optional)
   - [`concurrency` (선택 사항)](#concurrency-optional)
   - [`batchConcurrency` (선택 사항)](#batchconcurrency-optional)
+  - [`fileConcurrency` (선택 사항)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (선택 사항)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Git 제외를 위한 모범 사례:](#best-practice-for-git-exclusions)
+    - [git 제외를 위한 모범 사례:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
@@ -949,6 +950,21 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 ### `batchConcurrency` (선택 사항)
 
 **translate-docs** 및 **translate-svg** (그리고 `sync`의 문서 번역 단계): 파일당 최대 병렬 OpenRouter **배치** 요청 수 (각 배치는 여러 세그먼트를 포함할 수 있음). 생략 시 기본값은 **4**입니다. `translate-ui`에서는 무시됩니다. `-b` / `--batch-concurrency`로 재정의할 수 있습니다. `sync`에서는 `-b`가 문서 번역 단계에만 적용됩니다.
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (선택 사항)
+
+단일 로케일 내에서 동시에 처리되는 파일의 최대 개수 **(하나의 로케일 내)**. `translate-docs` 및 `sync` 중에 사용됩니다.  **1**보다 큰 값으로 설정된 경우, 동일한 로케일 내 파일들이 메모리 사용량을 제어하기 위한 세마포어를 사용하여 병렬로 처리됩니다. 생략 시 기본값은 **1**(순차 처리)입니다. 더 높은 값은 I/O에 의해 제한되는 작업의 처리량을 크게 향상시킬 수 있으며, 특히 모든 세그먼트가 이미 캐시되어 있는 경우(별도의 API 호출이 필요 없는 경우) 더욱 효과적입니다.
+
+**예시:**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**사용 사례:** 전체 처리 시간을 줄이기 위해 캐시 적중률이 100%인 상태에서 `sync --force-update`을 실행할 때 이 값을 `2-4`으로 설정합니다. 이는 작은 파일이 많은 경우에 특히 두드러진 개선을 보입니다.
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (선택 사항)

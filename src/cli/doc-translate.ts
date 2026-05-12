@@ -70,6 +70,7 @@ import type {
   DocumentPromptContentType,
 } from "../core/prompt-builder.js";
 import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../utils/concurrency.js";
+import { FileContentCache } from "./file-content-cache.js";
 import {
   describeEmphasisPlaceholdersPolicy,
   resolveMarkdownEmphasisPlaceholders,
@@ -159,6 +160,12 @@ export interface TranslateRunOptions {
    * Default: off.
    */
   debugFailed?: boolean;
+  /**
+   * Max concurrent files processed within a single locale.
+   * When > 1, files within the same locale are processed in parallel using AsyncSemaphore.
+   * Default: 1 (sequential processing).
+   */
+  fileConcurrency?: number;
 }
 
 export interface TranslateTotals {
@@ -1520,7 +1527,8 @@ export async function translateMarkdownFile(
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>,
-  translatedMarkdownRelPaths: ReadonlySet<string>
+  translatedMarkdownRelPaths: ReadonlySet<string>,
+  fileContentCache?: FileContentCache
 ): Promise<{ skipped: boolean; totals: TranslateTotals }> {
   const totals: TranslateTotals = {
     filesWritten: 0,
@@ -1530,9 +1538,17 @@ export async function translateMarkdownFile(
     costUsd: 0,
   };
 
-  const content = fs.readFileSync(absSource, "utf8");
-  const fileHash = hashFileContent(content);
-  const sourceFileMtime = fs.statSync(absSource).mtime.toISOString();
+  // Use file content cache if provided, otherwise fall back to direct reads
+  const fileData = fileContentCache
+    ? fileContentCache.readFile(absSource)
+    : {
+        content: fs.readFileSync(absSource, "utf8"),
+        hash: hashFileContent(fs.readFileSync(absSource, "utf8")),
+        mtime: fs.statSync(absSource).mtime.toISOString(),
+      };
+  const content = fileData.content;
+  const fileHash = fileData.hash;
+  const sourceFileMtime = fileData.mtime;
   /** Cwd-relative posix path for `translations.filepath` metadata (aligned with JSON/SVG). */
   const translationFilepathMeta = relPath.split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "markdown");
@@ -1608,36 +1624,48 @@ export async function translateMarkdownFile(
 
   let segmentsCached = 0;
 
+  // Collect translatable segment hashes for batch cache lookup
+  const translatableSegments: { s: Segment; docIdx: number }[] = [];
   for (let docIdx = 0; docIdx < segments.length; docIdx++) {
     const s = segments[docIdx]!;
-    if (!s.translatable) {
-      continue;
+    if (s.translatable) {
+      translatableSegments.push({ s, docIdx });
     }
-    if (!opts.force && cache && !opts.noCache) {
-      const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegmentDetails(s.hash, locale, translationFilepathMeta, s.startLine)
-      );
-      if (hit) {
-        const quality = await validateDocTranslatePair(s, hit.text);
-        if (quality.ok) {
-          const modelUsed = hit.model?.trim();
-          translations.set(s.hash, {
-            text: hit.text,
-            ...(modelUsed ? { modelUsed } : {}),
-          });
-          hitKeys.add(`${s.hash}|${locale}`);
-          segmentsCached++;
-          continue;
-        }
-        if (opts.verbose) {
-          console.warn(
-            chalk.yellow(
-              `  ⚠️  ${relPath} (${locale}): cache rejected for segment (hash ${s.hash}): ${quality.errors.join("; ")}`
-            )
-          );
-        }
+  }
+
+  // Batch cache lookup: fetch all cached segments in one query
+  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
+    const hashes = translatableSegments.map(({ s }) => s.hash);
+    batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
+      cache.getSegmentsBatch(hashes, locale)
+    );
+  }
+
+  // Process segments: use batch cache results and validate
+  for (const { s, docIdx } of translatableSegments) {
+    const cached = batchCacheHits?.get(s.hash);
+    if (cached) {
+      const quality = await validateDocTranslatePair(s, cached.text);
+      if (quality.ok) {
+        const modelUsed = cached.model?.trim();
+        translations.set(s.hash, {
+          text: cached.text,
+          ...(modelUsed ? { modelUsed } : {}),
+        });
+        hitKeys.add(`${s.hash}|${locale}`);
+        segmentsCached++;
+        continue;
+      } else if (opts.verbose) {
+        console.warn(
+          chalk.yellow(
+            `  ⚠️  ${relPath} (${locale}): cache rejected for segment (hash ${s.hash}): ${quality.errors.join("; ")}`
+          )
+        );
       }
     }
+
+    // Cache miss or validation failed: prepare for translation
     if (failureTracker && !clearedFailureHashes.has(s.hash)) {
       await failureTracker.clearSegmentFailures(s.hash, locale);
       clearedFailureHashes.add(s.hash);
@@ -1821,7 +1849,8 @@ export async function translateJsonFile(
   client: OpenRouterClient | null,
   glossary: Glossary,
   opts: TranslateRunOptions,
-  hitKeys: Set<string>
+  hitKeys: Set<string>,
+  fileContentCache?: FileContentCache
 ): Promise<{ skipped: boolean; totals: TranslateTotals }> {
   const totals: TranslateTotals = {
     filesWritten: 0,
@@ -1831,8 +1860,16 @@ export async function translateJsonFile(
     costUsd: 0,
   };
 
-  const content = fs.readFileSync(absSource, "utf8");
-  const fileHash = hashFileContent(content);
+  // Use file content cache if provided, otherwise fall back to direct reads
+  const fileData = fileContentCache
+    ? fileContentCache.readFile(absSource)
+    : {
+        content: fs.readFileSync(absSource, "utf8"),
+        hash: hashFileContent(fs.readFileSync(absSource, "utf8")),
+        mtime: fs.statSync(absSource).mtime.toISOString(),
+      };
+  const content = fileData.content;
+  const fileHash = fileData.hash;
   /** Cwd-relative path for cache/UI and `file_tracking` (must match `resolveDocTrackingKeyToAbs` under project root). */
   const relPathFromCwd = path.relative(opts.cwd, absSource).split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "json");
@@ -2461,8 +2498,15 @@ export async function runTranslate(
     1,
     Math.floor(opts.batchConcurrency ?? config.batchConcurrency ?? 4)
   );
+  const fileConcurrencyEffective = Math.max(
+    1,
+    Math.floor(opts.fileConcurrency ?? config.fileConcurrency ?? 1)
+  );
 
   console.log(chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`));
+  console.log(
+    chalk.cyan(`File concurrency per locale: `) + chalk.magenta(`${fileConcurrencyEffective}`)
+  );
   console.log(
     chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
   );
@@ -2479,9 +2523,11 @@ export async function runTranslate(
   const localeTimes: Array<{ locale: string; elapsedMs: number }> = [];
 
   const cacheMutex = cache && locales.length > 1 ? new AsyncMutex() : undefined;
+  const fileContentCache = new FileContentCache();
   const runOpts: TranslateRunOptions = {
     ...opts,
     batchConcurrency: batchConcurrencyEffective,
+    fileConcurrency: fileConcurrencyEffective,
     cacheMutex,
   };
 
@@ -2523,10 +2569,11 @@ export async function runTranslate(
             )
           );
         }
-        for (const rel of files.markdown) {
-          if (!matchesPathFilter(rel, opts.pathFilter)) {
-            continue;
-          }
+        const markdownFilesToProcess = files.markdown.filter((rel) =>
+          matchesPathFilter(rel, opts.pathFilter)
+        );
+
+        const processMarkdownFile = async (rel: string) => {
           const abs = path.join(opts.cwd, rel);
           const { skipped, totals } = await translateMarkdownFile(
             abs,
@@ -2538,35 +2585,70 @@ export async function runTranslate(
             glossary,
             runOpts,
             markdownHitKeysLocal,
-            translatedMarkdownRelPaths
+            translatedMarkdownRelPaths,
+            fileContentCache
           );
-          if (skipped) {
-            partial.filesSkipped += totals.filesSkipped;
-            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-          } else {
-            partial.filesWritten += totals.filesWritten;
-            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            partial.inputTokens += totals.inputTokens;
-            partial.outputTokens += totals.outputTokens;
-            partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-            partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-            partial.segmentsTranslated =
-              (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-            partial.segmentValidationFailures =
-              (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-            partial.individualSegmentTranslations =
-              (partial.individualSegmentTranslations ?? 0) +
-              (totals.individualSegmentTranslations ?? 0);
+          return { skipped, totals };
+        };
+
+        if (fileConcurrencyEffective > 1) {
+          const results = await runMapWithConcurrency(
+            markdownFilesToProcess,
+            fileConcurrencyEffective,
+            processMarkdownFile
+          );
+          for (const { skipped, totals } of results) {
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
+          }
+        } else {
+          for (const rel of markdownFilesToProcess) {
+            const { skipped, totals } = await processMarkdownFile(rel);
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
           }
         }
       }
 
       if (shouldRunJson(opts, config)) {
-        for (const rel of files.json) {
+        const jsonFilesToProcess = files.json.filter((rel) => {
           const jsonRelFromProjectRoot = jsonFileProjectRelativePath(opts.cwd, jsonAbsRoot, rel);
-          if (!matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter)) {
-            continue;
-          }
+          return matchesPathFilter(jsonRelFromProjectRoot, opts.pathFilter);
+        });
+
+        const processJsonFile = async (rel: string) => {
           const abs = path.join(jsonAbsRoot, rel);
           const { skipped, totals } = await translateJsonFile(
             abs,
@@ -2577,27 +2659,68 @@ export async function runTranslate(
             client,
             glossary,
             runOpts,
-            hitKeys
+            hitKeys,
+            fileContentCache
           );
-          if (skipped) {
-            partial.filesSkipped += totals.filesSkipped;
-            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-          } else {
-            partial.filesWritten += totals.filesWritten;
-            partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            partial.inputTokens += totals.inputTokens;
-            partial.outputTokens += totals.outputTokens;
-            partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-            partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-            partial.segmentsTranslated =
-              (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-            partial.segmentValidationFailures =
-              (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-            partial.individualSegmentTranslations =
-              (partial.individualSegmentTranslations ?? 0) +
-              (totals.individualSegmentTranslations ?? 0);
+          return { skipped, totals };
+        };
+
+        if (fileConcurrencyEffective > 1) {
+          const results = await runMapWithConcurrency(
+            jsonFilesToProcess,
+            fileConcurrencyEffective,
+            processJsonFile
+          );
+          for (const { skipped, totals } of results) {
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
+          }
+        } else {
+          for (const rel of jsonFilesToProcess) {
+            const { skipped, totals } = await processJsonFile(rel);
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
           }
         }
+      }
+
+      // Batch update last_hit_at for all cached segments in this locale
+      if (cache && !opts.noCache && markdownHitKeysLocal.size > 0) {
+        await withCacheMutex(opts.cacheMutex, () =>
+          cache.batchUpdateLastHitAt(Array.from(markdownHitKeysLocal))
+        );
       }
     } catch (e) {
       error = e;

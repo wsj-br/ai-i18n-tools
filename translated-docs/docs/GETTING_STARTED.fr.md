@@ -56,12 +56,13 @@ Les deux flux de travail utilisent OpenRouter (n'importe quel LLM compatible) et
   - [`uiLanguagesPath` (facultatif)](#uilanguagespath-optional)
   - [`concurrency` (facultatif)](#concurrency-optional)
   - [`batchConcurrency` (facultatif)](#batchconcurrency-optional)
+  - [`fileConcurrency` (facultatif)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (facultatif)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Meilleures pratiques pour les exclusions git :](#best-practice-for-git-exclusions)
+    - [Meilleure pratique pour les exclusions git :](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
@@ -949,6 +950,21 @@ Nombre maximal de **paramètres régionaux cibles** traduits simultanément (`tr
 ### `batchConcurrency` (facultatif)
 
 **translate-docs** et **translate-svg** (ainsi que l'étape de documentation de `sync`) : nombre maximal de requêtes par lot (**batch**) OpenRouter en parallèle par fichier (chaque lot pouvant contenir de nombreux segments). Valeur par défaut : **4** si omis. Ignoré par `translate-ui`. Remplaçable avec `-b` / `--batch-concurrency`. Sur `sync`, `-b` s'applique uniquement à l'étape de traduction de la documentation.
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (facultatif)
+
+Nombre maximal de fichiers traités simultanément **dans une même langue** pendant `translate-docs` et `sync`. Lorsqu’il est défini à une valeur supérieure à **1**, les fichiers de la même langue sont traités en parallèle à l’aide d’un sémaphore pour contrôler l’utilisation de la mémoire. Valeur par défaut : **1** (traitement séquentiel) si omis. Des valeurs plus élevées peuvent améliorer significativement le débit pour les opérations liées aux E/S, en particulier lorsque tous les segments sont déjà mis en cache (aucun appel API nécessaire).
+
+**Exemple :**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**Cas d’usage :** Définissez cette valeur à `2-4` lors de l’exécution de `sync --force-update` avec 100 % de succès de cache pour réduire le temps total de traitement. L’amélioration est particulièrement notable avec de nombreux petits fichiers.
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (facultatif)

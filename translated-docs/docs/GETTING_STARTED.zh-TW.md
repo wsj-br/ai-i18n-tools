@@ -55,17 +55,18 @@
   - [`targetLocales`](#targetlocales)
   - [`uiLanguagesPath`（選用）](#uilanguagespath-optional)
   - [`concurrency`（選用）](#concurrency-optional)
-  - [`batchConcurrency`（選用）](#batchconcurrency-optional)
-  - [`batchSize` / `maxBatchChars`（選用）](#batchsize--maxbatchchars-optional)
+  - [`batchConcurrency` (選擇性)](#batchconcurrency-optional)
+  - [`fileConcurrency` (選擇性)](#fileconcurrency-optional)
+  - [`batchSize` / `maxBatchChars` (選擇性)](#batchsize--maxbatchchars-optional)
   - [`openrouter`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
-    - [Git 排除的最佳實務:](#best-practice-for-git-exclusions)
+    - [git 排除規則的最佳實務:](#best-practice-for-git-exclusions)
   - [`documentations`](#documentations)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
-- [CLI 參考](#cli-reference)
+- [CLI 參考資料](#cli-reference)
 - [環境變數](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -949,6 +950,21 @@ ai-i18n-tools editor
 ### `batchConcurrency`（選用）
 
 **translate-docs** 與 **translate-svg**（以及 `sync` 的文件步驟）：每個檔案最多並行的 OpenRouter **批次** 請求數（每批次可包含多個片段）。若省略，預設為 **4**。`translate-ui` 會忽略此設定。可透過 `-b` / `--batch-concurrency` 覆寫。在 `sync` 上，`-b` 僅適用於文件翻譯步驟。
+
+<a id="fileconcurrency-optional"></a>
+### `fileConcurrency` (選擇性)
+
+單一語系內同時處理的檔案最大數量 **（在單一語系內）**，於 `translate-docs` 和 `sync` 期間生效。設定為大於 **1** 的值時，將使用信號量（semaphore）以控制記憶體使用量，並行處理同一語系內的檔案。若省略此設定，預設值為 **1**（依序處理）。較高的數值可顯著提升 I/O 密集型作業的吞吐量，特別是在所有片段均已快取（無需呼叫 API）的情況下。
+
+**範例：**
+
+```json
+{
+  "fileConcurrency": 4
+}
+```
+
+**使用情境：** 當執行 `sync --force-update` 且快取命中率為 100% 時，將此值設為 `2-4` 可減少總處理時間。此優化在處理大量小檔案時最為明顯。
 
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars`（選用）

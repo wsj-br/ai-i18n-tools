@@ -11,6 +11,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-05-12
+
 - **Fixed**: SVG — `translate-svg` reassembly decodes XML entities in model output (`&gt;`, `&amp;`, etc.) before writing, matching batch XML unescape behavior so text is not double-escaped (e.g. `&amp;gt;`).
 
 - **Changed**: config — `svg.forceLowercase` replaces nested `svg.svgExtractor.forceLowercase` (`translate-svg`); legacy nested keys are still accepted and hoisted when loading config.

@@ -143,6 +143,9 @@ export interface CacheEntry {
   startLine?: number | null;
 }
 
+/** Result type for {@link import("./cache.js").TranslationCache.getSegmentsBatch}. */
+export type BatchCacheResult = Map<string, { text: string; model: string | null }>;
+
 export interface TranslationRow {
   source_hash: string;
   locale: string;
@@ -603,6 +606,12 @@ export const i18nConfigSchema = z
      * Max parallel OpenRouter **batch** requests per file (`translate-docs`, `translate-svg`). Default `4` when unset.
      */
     batchConcurrency: z.number().int().positive().optional(),
+    /**
+     * Max concurrent files processed within a single locale (`translate-docs`).
+     * When > 1, files within the same locale are processed in parallel.
+     * Default `1` (sequential) when unset to preserve existing behavior.
+     */
+    fileConcurrency: z.number().int().positive().optional(),
   })
   .strict();
 
