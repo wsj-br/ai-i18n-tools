@@ -94,6 +94,8 @@ _transrewrt_upgrade_dependencies() {
   # Update pnpm lockfile and install updated dependencies (root + workspace packages)
   echo -e "${BLUE}⬆️  [repo root] Running pnpm install...${RESET}"
   pnpm install 2>&1 | pr -o 4 -T
+  pnpm approve-builds --all 2>&1 | pr -o 4 -T
+  pnpm install 2>&1 | pr -o 4 -T
 
   # check for vulnerabilities
   echo -e "${BLUE}🔍  [repo root] Checking for vulnerabilities...${RESET}"
@@ -101,7 +103,7 @@ _transrewrt_upgrade_dependencies() {
 
   # fix vulnerabilities
   echo -e "${BLUE}🔧  [repo root] Fixing vulnerabilities...${RESET}"
-  pnpm audit fix 2>&1 | pr -o 4 -T
+  pnpm audit --fix override 2>&1 | pr -o 4 -T
 
   # check for vulnerabilities again
   echo -e "${BLUE}🔍  [repo root] Checking for vulnerabilities again...${RESET}"
@@ -121,12 +123,13 @@ _transrewrt_upgrade_dependencies() {
 
     echo -e "${BLUE}⬆️  [docs-site] pnpm install --ignore-workspace...${RESET}"
     (cd "${_docs_site}" && pnpm install --ignore-workspace) 2>&1 | pr -o 4 -T
+    (cd "${_docs_site}" && pnpm approve-builds --all) 2>&1 | pr -o 4 -T
 
     echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities...${RESET}"
     (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T
 
     echo -e "${BLUE}🔧  [docs-site] Fixing vulnerabilities (audit --fix)...${RESET}"
-    (cd "${_docs_site}" && pnpm audit --ignore-workspace --fix) 2>&1 | pr -o 4 -T
+    (cd "${_docs_site}" && pnpm audit --ignore-workspace --fix override) 2>&1 | pr -o 4 -T
 
     echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities again...${RESET}"
     (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T

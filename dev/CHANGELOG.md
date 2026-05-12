@@ -11,6 +11,17 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-05-13
+
+- **Security**: dependencies — fixed high/moderate vulnerabilities via pnpm overrides:
+  - `serialize-javascript@7.0.5` (RCE via RegExp.flags/Date.toISOString and CPU exhaustion DoS)
+  - `fast-uri@3.1.2` (path traversal and host confusion via percent-encoded delimiters)
+  - `@babel/plugin-transform-modules-systemjs@7.29.4` (arbitrary code generation when compiling malicious input)
+
+- **Changed**: workspace — `examples/nextjs-app/docs-site` added to root `pnpm-workspace.yaml` packages so overrides apply correctly; removed nested `pnpm-workspace.yaml` and local `pnpm.overrides` from docs-site.
+
+- **Changed**: dependencies — unified `express` to `^5.2.1` across the entire workspace via pnpm override (previously `webpack-dev-server` brought in `express@4.22.2`).
+
 ## [1.4.2] - 2026-05-12
 
 - **Fixed**: SVG — `translate-svg` reassembly decodes XML entities in model output (`&gt;`, `&amp;`, etc.) before writing, matching batch XML unescape behavior so text is not double-escaped (e.g. `&amp;gt;`).

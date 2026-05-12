@@ -39,13 +39,6 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "core-js"
-    ],
-    "overrides": {
-      "webpack": "5.105.0",
-      "serialize-javascript": "7.0.5",
-      "follow-redirects": "1.16.0",
-      "uuid@<14.0.0": ">=14.0.0",
-      "postcss@<8.5.10": ">=8.5.10"
-    }
+    ]
   }
 }
