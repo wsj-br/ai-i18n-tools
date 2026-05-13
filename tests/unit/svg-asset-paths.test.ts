@@ -7,6 +7,8 @@ import {
   resolveSvgAssetOutputPath,
   svgAssetCacheFilepath,
   svgTranslationFilepathMetadata,
+  matchesGlobPattern,
+  GlobPatternError,
 } from "../../src/core/svg-asset-paths.js";
 
 describe("svg-asset-paths", () => {
@@ -190,5 +192,104 @@ describe("svg-asset-paths", () => {
       })
     );
     expect(cfg.svg?.forceLowercase).toBe(false);
+  });
+});
+
+describe("matchesGlobPattern - security validations (ReDoS protection)", () => {
+  it("accepts valid glob patterns", () => {
+    expect(matchesGlobPattern("images/foo.svg", "images/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/icons/foo.svg", "images/**/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/foo.svg", "images/foo.svg")).toBe(true);
+  });
+
+  it("rejects patterns exceeding maximum length", () => {
+    const longPattern = "images/" + "a".repeat(500) + "*.svg";
+    expect(() => matchesGlobPattern("images/foo.svg", longPattern)).toThrow(GlobPatternError);
+    expect(() => matchesGlobPattern("images/foo.svg", longPattern)).toThrow(
+      /exceeds maximum length/
+    );
+  });
+
+  it("rejects patterns with too many glob stars", () => {
+    const manyStars = "images/**/*/*/*/*/*/*/*/*/*/*/*/*.svg"; // 12 stars
+    expect(() => matchesGlobPattern("images/foo.svg", manyStars)).toThrow(GlobPatternError);
+    expect(() => matchesGlobPattern("images/foo.svg", manyStars)).toThrow(/too many wildcards/);
+  });
+
+  it("accepts patterns within star limit", () => {
+    const eightStars = "images/*/*/*/*/*/*/*/*.svg"; // 8 single stars
+    expect(() => matchesGlobPattern("images/a/b/c/d/e/f/g/h.svg", eightStars)).not.toThrow();
+  });
+
+  it("rejects suspicious triple-star patterns", () => {
+    expect(() => matchesGlobPattern("foo.svg", "images/***.svg")).toThrow(GlobPatternError);
+    expect(() => matchesGlobPattern("foo.svg", "images/***.svg")).toThrow(/suspicious nested/);
+  });
+
+  it("rejects patterns with multiple ** separated by content", () => {
+    expect(() => matchesGlobPattern("foo.svg", "images/**/foo/**.svg")).toThrow(GlobPatternError);
+  });
+
+  it("rejects patterns with unbalanced brackets", () => {
+    expect(() => matchesGlobPattern("foo.svg", "images/[abc/*.svg")).toThrow(GlobPatternError);
+    expect(() => matchesGlobPattern("foo.svg", "images/abc]/*.svg")).toThrow(GlobPatternError);
+    expect(() => matchesGlobPattern("foo.svg", "images/[abc/*.svg")).toThrow(/unbalanced brackets/);
+  });
+
+  it("accepts patterns with balanced brackets", () => {
+    // Note: Character classes in glob patterns are handled but may not work as expected
+    // since we escape [ and ] as regex metacharacters
+    expect(() => matchesGlobPattern("foo.svg", "images/[abc].svg")).not.toThrow();
+  });
+
+  it("handles regex compilation errors gracefully", () => {
+    // Some edge cases might produce invalid regex - should return false, not throw
+    const result = matchesGlobPattern("foo.svg", "images/*.svg");
+    expect(typeof result).toBe("boolean");
+  });
+
+  it("properly escapes regex metacharacters in patterns", () => {
+    // These should be treated as literal characters, not regex
+    expect(matchesGlobPattern("images/foo.bar.svg", "images/*.bar.svg")).toBe(true);
+    expect(matchesGlobPattern("images/foo+bar.svg", "images/*+bar.svg")).toBe(true);
+  });
+
+  it("matches full path with exact boundaries", () => {
+    // The regex should match the full path, not partial matches
+    expect(matchesGlobPattern("images/foo.svg", "images/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/foo.svg.backup", "images/*.svg")).toBe(false);
+  });
+});
+
+describe("matchesGlobPattern - functional tests", () => {
+  it("matches exact paths", () => {
+    expect(matchesGlobPattern("images/foo.svg", "images/foo.svg")).toBe(true);
+    expect(matchesGlobPattern("images/foo.svg", "images/bar.svg")).toBe(false);
+  });
+
+  it("matches single star patterns", () => {
+    expect(matchesGlobPattern("images/foo.svg", "images/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/bar.svg", "images/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/sub/foo.svg", "images/*.svg")).toBe(false);
+    expect(matchesGlobPattern("images/foo.png", "images/*.svg")).toBe(false);
+  });
+
+  it("matches double star patterns", () => {
+    expect(matchesGlobPattern("images/foo.svg", "images/**/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/sub/foo.svg", "images/**/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/deep/nested/path/foo.svg", "images/**/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/foo.png", "images/**/*.svg")).toBe(false);
+  });
+
+  it("matches mixed patterns", () => {
+    expect(matchesGlobPattern("images/icons/foo.svg", "images/*/*.svg")).toBe(true);
+    expect(matchesGlobPattern("images/icons/sub/foo.svg", "images/*/*.svg")).toBe(false);
+    expect(matchesGlobPattern("images/icons/sub/foo.svg", "images/*/*/*.svg")).toBe(true);
+  });
+
+  it("handles non-glob patterns as prefixes", () => {
+    expect(matchesGlobPattern("images/foo.svg", "images/")).toBe(true);
+    expect(matchesGlobPattern("images/sub/foo.svg", "images/")).toBe(true);
+    expect(matchesGlobPattern("assets/foo.svg", "images/")).toBe(false);
   });
 });

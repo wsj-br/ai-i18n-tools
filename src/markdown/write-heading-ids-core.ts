@@ -3,7 +3,8 @@
  */
 
 import emojiRegex from "emoji-regex";
-import { matter, stringify as matterStringify } from "gray-matter-es";
+import matter from "gray-matter";
+const matterStringify = matter.stringify;
 import removeMarkdown from "remove-markdown";
 
 /** Slug algorithms aligned with doctoc / anchor-markdown-header modes. */

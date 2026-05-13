@@ -1,4 +1,5 @@
-import { matter, stringify as matterStringify } from "gray-matter-es";
+import matter from "gray-matter";
+const matterStringify = matter.stringify;
 import type {
   LanguageListBlockConfig,
   Segment,

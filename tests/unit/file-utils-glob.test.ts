@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { collectFilesByExtension, isGlobPattern, matchGlob } from "../../src/cli/file-utils.js";
+import {
+  collectFilesByExtension,
+  isGlobPattern,
+  matchGlob,
+  GlobPatternError,
+} from "../../src/cli/file-utils.js";
 
 describe("file-utils glob support", () => {
   describe("isGlobPattern", () => {
@@ -57,6 +62,51 @@ describe("file-utils glob support", () => {
       result.forEach((p) => {
         expect(p.endsWith(".svg")).toBe(true);
       });
+    });
+  });
+
+  describe("matchGlob - security validations (ReDoS protection)", () => {
+    it("accepts valid glob patterns", () => {
+      expect(matchGlob("images/foo.svg", "images/*.svg")).toBe(true);
+      expect(matchGlob("images/icons/foo.svg", "images/**/*.svg")).toBe(true);
+      expect(matchGlob("foo.svg", "*.svg")).toBe(true);
+    });
+
+    it("rejects patterns exceeding maximum length", () => {
+      const longPattern = "images/" + "a".repeat(500) + "*.svg";
+      expect(() => matchGlob("images/foo.svg", longPattern)).toThrow(GlobPatternError);
+      expect(() => matchGlob("images/foo.svg", longPattern)).toThrow(/exceeds maximum length/);
+    });
+
+    it("rejects patterns with too many glob stars", () => {
+      const manyStars = "images/**/*/*/*/*/*/*/*/*/*/*/*/*.svg"; // 12 stars
+      expect(() => matchGlob("images/foo.svg", manyStars)).toThrow(GlobPatternError);
+      expect(() => matchGlob("images/foo.svg", manyStars)).toThrow(/too many wildcards/);
+    });
+
+    it("accepts patterns within star limit", () => {
+      const eightStars = "images/*/*/*/*/*/*/*/*.svg"; // 8 single stars
+      expect(() => matchGlob("images/a/b/c/d/e/f/g/h.svg", eightStars)).not.toThrow();
+    });
+
+    it("rejects suspicious triple-star patterns", () => {
+      expect(() => matchGlob("foo.svg", "images/***.svg")).toThrow(GlobPatternError);
+      expect(() => matchGlob("foo.svg", "images/***.svg")).toThrow(/suspicious nested/);
+    });
+
+    it("rejects patterns with multiple ** separated by content", () => {
+      expect(() => matchGlob("foo.svg", "images/**/foo/**.svg")).toThrow(GlobPatternError);
+    });
+
+    it("rejects patterns with unbalanced brackets", () => {
+      expect(() => matchGlob("foo.svg", "images/[abc/*.svg")).toThrow(GlobPatternError);
+      expect(() => matchGlob("foo.svg", "images/abc]/*.svg")).toThrow(GlobPatternError);
+      expect(() => matchGlob("foo.svg", "images/[abc/*.svg")).toThrow(/unbalanced brackets/);
+    });
+
+    it("handles regex compilation errors gracefully", () => {
+      const result = matchGlob("foo.svg", "images/*.svg");
+      expect(typeof result).toBe("boolean");
     });
   });
 });

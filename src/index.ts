@@ -65,6 +65,8 @@ export {
   svgAssetCacheFilepath,
   svgTranslationFilepathMetadata,
   relPathUnderSvgSource,
+  matchesGlobPattern,
+  GlobPatternError,
 } from "./core/svg-asset-paths.js";
 
 export {

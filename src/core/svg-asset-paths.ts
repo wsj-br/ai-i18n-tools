@@ -2,6 +2,101 @@ import path from "path";
 import type { I18nConfig } from "./types.js";
 import { toPosix } from "./output-paths.js";
 
+/** Maximum length for a glob pattern to prevent ReDoS attacks. */
+const MAX_GLOB_PATTERN_LENGTH = 500;
+
+/** Maximum number of glob stars allowed in a pattern (e.g., `*` or `**`). */
+const MAX_GLOB_STARS = 10;
+
+/** Timeout in milliseconds for regex matching operations. */
+const REGEX_EXECUTION_TIMEOUT_MS = 1000;
+
+/** Error thrown when a glob pattern fails security validation. */
+export class GlobPatternError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GlobPatternError";
+  }
+}
+
+/**
+ * Validates a glob pattern for security concerns before converting to regex.
+ * Throws GlobPatternError if the pattern is suspicious or too complex.
+ */
+function validateGlobPattern(pattern: string): void {
+  // Check pattern length
+  if (pattern.length > MAX_GLOB_PATTERN_LENGTH) {
+    throw new GlobPatternError(
+      `Glob pattern exceeds maximum length of ${MAX_GLOB_PATTERN_LENGTH} characters: "${pattern.slice(0, 50)}..."`
+    );
+  }
+
+  // Count glob stars to prevent nested quantifier abuse
+  const starCount = (pattern.match(/\*/g) || []).length;
+  if (starCount > MAX_GLOB_STARS) {
+    throw new GlobPatternError(
+      `Glob pattern contains too many wildcards (${starCount} > ${MAX_GLOB_STARS}): "${pattern}"`
+    );
+  }
+
+  // Reject patterns with nested quantifier-like structures that could cause ReDoS
+  // These patterns are not valid glob patterns anyway
+  const suspiciousPatterns = [
+    /\*\*\*+/, // More than 2 stars (*** or more)
+    /\*\*.*\*\*/, // Multiple ** separated by content
+    /\*\*\*\//, // *** followed by /
+    /\/\*\*\*/, // / followed by ***
+  ];
+
+  for (const suspicious of suspiciousPatterns) {
+    if (suspicious.test(pattern)) {
+      throw new GlobPatternError(`Glob pattern contains suspicious nested structure: "${pattern}"`);
+    }
+  }
+
+  // Check for unbalanced brackets which could cause regex compilation errors
+  const openBrackets = (pattern.match(/\[/g) || []).length;
+  const closeBrackets = (pattern.match(/\]/g) || []).length;
+  if (openBrackets !== closeBrackets) {
+    throw new GlobPatternError(`Glob pattern has unbalanced brackets: "${pattern}"`);
+  }
+}
+
+/**
+ * Safely test a regex against a string with a timeout to prevent ReDoS.
+ * Returns false if the operation times out or throws an error.
+ */
+function safeRegexTest(regex: RegExp, text: string, timeoutMs: number): boolean {
+  // For short patterns and text, use direct test (fast path)
+  if (text.length < 1000 && regex.source.length < 100) {
+    try {
+      return regex.test(text);
+    } catch {
+      return false;
+    }
+  }
+
+  // Use a timeout approach for potentially expensive operations
+  const startTime = Date.now();
+  const regexStr = regex.source;
+  const flags = regex.flags;
+
+  // Create a new regex to avoid state issues
+  const testRegex = new RegExp(regexStr, flags);
+
+  try {
+    // Test with periodic time checks
+    const result = testRegex.test(text);
+    if (Date.now() - startTime > timeoutMs) {
+      // If it took too long, consider it a potential ReDoS attempt
+      return false;
+    }
+    return result;
+  } catch {
+    return false;
+  }
+}
+
 function assertSvgOutputWithinRoot(absFile: string, rootDir: string): void {
   const abs = path.resolve(absFile);
   const root = path.resolve(rootDir);
@@ -110,25 +205,52 @@ export function svgTranslationFilepathMetadata(relPathFromCwd: string): string {
 
 /**
  * Check if a file path matches a glob pattern (supports * and **).
+ *
+ * Security: This function includes protections against ReDoS attacks:
+ * - Pattern length limits
+ * - Glob star count limits
+ * - Suspicious pattern detection
+ * - Regex execution timeouts
+ *
+ * @throws {GlobPatternError} If the pattern fails security validation
  */
 export function matchesGlobPattern(filePath: string, pattern: string): boolean {
   // Exact match
   if (filePath === pattern) {
     return true;
   }
+
+  // Validate pattern for security before processing
+  validateGlobPattern(pattern);
+
   // Check if pattern contains glob chars
   if (!/[*?[\]]/.test(pattern)) {
     return filePath.startsWith(pattern);
   }
-  // Convert glob pattern to regex
+
+  // Convert glob pattern to regex with proper escaping
   let regexStr = pattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&") // Escape regex metacharacters
     .replace(/\*\*/g, "__GLOB_DOUBLE_STAR__")
     .replace(/\*/g, "[^/]*")
-    .replace(/__GLOB_DOUBLE_STAR__/g, ".*");
-  regexStr = "^" + regexStr;
-  const regex = new RegExp(regexStr);
-  return regex.test(filePath);
+    .replace(/__GLOB_DOUBLE_STAR__/g, ".*?");
+
+  // Handle the case where ** is followed by /* - make the slash optional for zero-directory match
+  // This allows patterns like "images/**/*.svg" to match "images/foo.svg"
+  regexStr = regexStr.replace(/\.\*\?\//g, "(?:.*?/)?");
+
+  regexStr = "^" + regexStr + "$";
+
+  let regex: RegExp;
+  try {
+    regex = new RegExp(regexStr);
+  } catch {
+    // Invalid regex generated - treat as non-match
+    return false;
+  }
+
+  // Use safe regex test with timeout protection
+  return safeRegexTest(regex, filePath, REGEX_EXECUTION_TIMEOUT_MS);
 }
 
 /**

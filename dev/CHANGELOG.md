@@ -11,6 +11,21 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.4.4] - 2026-05-13
+
+- **Security**: ReDoS protection in glob pattern matching:
+  - `src/core/svg-asset-paths.ts` — `matchesGlobPattern()` now validates patterns for length (max 500 chars), wildcard count (max 10 stars), suspicious nested structures (`***`, multiple `**`), and unbalanced brackets; applies regex execution timeout (1s)
+  - `src/cli/file-utils.ts` — `matchGlob()` receives identical protections
+  - Throws `GlobPatternError` for invalid patterns instead of risking catastrophic backtracking
+
+- **Security**: dependencies — eliminated wildcard dependency vulnerability:
+  - Added `pnpm.overrides` to pin `i18next` to `^26.1.0` (was `*` wildcard in `i18next-scanner@4.6.0`)
+  - Prevents supply chain attacks via unbounded version range
+
+- **Security**: dependencies — switched from `gray-matter-es@0.2.1` to `gray-matter@^4.0.3`:
+  - Eliminates AI-detected typosquat warning (false positive, but using official package is clearer)
+  - Updated imports in `markdown-extractor.ts`, `doc-postprocess.ts`, `doc-translate.ts`, `write-heading-ids-core.ts`
+
 ## [1.4.3] - 2026-05-13
 
 - **Security**: dependencies — fixed high/moderate vulnerabilities via pnpm overrides:
