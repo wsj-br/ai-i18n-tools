@@ -12,6 +12,8 @@ JavaScript/TypeScript アプリケーションおよびドキュメントサイ�
 <small>**他の言語で読む：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
+<small>翻訳されたREADMEおよびドキュメントは、GitHub上の[`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs)にコミットされています。npmパッケージには英語の`docs/`のみが含まれます。</small>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目次**
@@ -192,8 +194,8 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 `'ai-i18n-tools/runtime'` からエクスポートされる以下のヘルパーは、任意のJavaScript環境で使用できます。i18nextをインポートする必要はありません：
 
 | ヘルパー | 説明 |
-|---|---|
-| `defaultI18nInitOptions(sourceLocale)` | キーをデフォルト値として使用する設定向けの標準的なi18next初期化オプション。 |
+|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultI18nInitOptions(sourceLocale)` | キーをデフォルト値として使用する設定向けの標準的な i18next 初期化オプション。 |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推奨される構成：`wrapT`からのキーのトリムおよび複数形`strings.json`、オプションで`translate-ui` `{sourceLocale}.json`の複数形キーをマージします。 |
 | `wrapI18nWithKeyTrim(i18n)` | 下位レベルのキー・トリムラッパーのみ（アプリ構成では非推奨。代わりに`setupKeyAsDefaultT`を使用してください）。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `localeLoaders`の`makeLoadLocale`マップを`ui-languages.json`から構築します（`code`を除くすべての`sourceLocale`）。 |

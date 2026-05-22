@@ -12,6 +12,8 @@ JavaScript/TypeScript एप्लिकेशन और डॉक्यूम�
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
+<small>अनुवादित README और दस्तावेज़ GitHub पर [`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) के अंतर्गत प्रतिबद्ध हैं; npm पैकेज केवल अंग्रेज़ी `docs/` शिप करता है।</small>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **विषय सूची**
@@ -191,9 +193,9 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 `'ai-i18n-tools/runtime'` से निम्नलिखित सहायक निर्यात किए जाते हैं और किसी भी जावास्क्रिप्ट वातावरण में काम करते हैं। उनका उपयोग करने के लिए आपको i18next आयात करने की आवश्यकता नहीं है:
 
-| सहायक | विवरण |
-|---|---|
-| `defaultI18nInitOptions(sourceLocale)` | कुंजी-के-रूप-में-डिफ़ॉल्ट सेटअप के लिए मानक i18next प्रारंभिक विकल्प। |
+| सहायक                                                                 | विवरण                                                                                                                            |
+|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultI18nInitOptions(sourceLocale)`                                 | कुंजी-के-रूप-में-डिफ़ॉल्ट सेटअप के लिए मानक i18next प्रारंभिकीकरण विकल्प।                                                                               |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | अनुशंसित वायरिंग: `strings.json` से कुंजी-ट्रिम + बहुवचन `wrapT`, वैकल्पिक रूप से `translate-ui` `{sourceLocale}.json` बहुवचन कुंजी मर्ज करता है। |
 | `wrapI18nWithKeyTrim(i18n)` | केवल निम्न-स्तरीय कुंजी-ट्रिम रैपर (ऐप वायरिंग के लिए अप्रचलित; `setupKeyAsDefaultT` को प्राथमिकता दें)। |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `ui-languages.json` से `makeLoadLocale` के लिए `localeLoaders` मैप बनाता है (`sourceLocale` को छोड़कर प्रत्येक `code`)। |

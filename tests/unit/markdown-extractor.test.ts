@@ -20,14 +20,63 @@ Paragraph one.
     expect(segs.some((s) => s.type === "paragraph")).toBe(true);
   });
 
-  it("does not translate YAML front matter (stable ids and paths)", () => {
+  it("does not translate YAML front matter when translateFrontmatterFields is false", () => {
     const md = `---
 title: Hello
 ---
 Body.
 `;
-    const fm = ex.extract(md, "x.md").find((s) => s.type === "frontmatter");
+    const fm = ex
+      .extract(md, "x.md", { translateFrontmatterFields: false })
+      .find((s) => s.type === "frontmatter");
     expect(fm?.translatable).toBe(false);
+    expect(fm?.content).toContain("title: Hello");
+  });
+
+  it("extracts translatable front matter fields as separate segments", () => {
+    const md = `---
+title: Translation Feature Showcase
+description: A reference document.
+sidebar:
+  order: 1
+---
+Body.
+`;
+    const segs = ex.extract(md, "x.mdx");
+    const shell = segs.find((s) => s.type === "frontmatter");
+    expect(shell?.content.startsWith("__I18N_FM_SHELL__")).toBe(true);
+    const titleField = segs.find((s) => s.frontmatterPath === "title");
+    const descField = segs.find((s) => s.frontmatterPath === "description");
+    expect(titleField?.translatable).toBe(true);
+    expect(titleField?.content).toBe("Translation Feature Showcase");
+    expect(descField?.translatable).toBe(true);
+    expect(segs.find((s) => s.frontmatterPath === "sidebar.order")).toBeUndefined();
+  });
+
+  it("reassembles translated front matter fields into YAML", () => {
+    const md = `---
+title: Quick Start
+description: Short summary.
+sidebar:
+  order: 2
+---
+Paragraph.
+`;
+    const segs = ex.extract(md, "quick-start.md");
+    const map = new Map<string, string>();
+    for (const s of segs) {
+      if (s.frontmatterPath === "title") {
+        map.set(s.hash, "Schnellstart");
+      } else if (s.frontmatterPath === "description") {
+        map.set(s.hash, "Kurze Zusammenfassung.");
+      }
+    }
+    const out = ex.reassemble(segs, map);
+    expect(out).toMatch(/^---\n/);
+    expect(out).toContain("title: Schnellstart");
+    expect(out).toContain("Kurze Zusammenfassung.");
+    expect(out).toContain("order: 2");
+    expect(out).toContain("Paragraph.");
   });
 
   it("extracts fenced code and admonition segments", () => {

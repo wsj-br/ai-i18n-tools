@@ -118,7 +118,7 @@ src/            TypeScript source (compiles to dist/)
 tests/          Vitest test files
 data/           Bundled JSON (e.g. ui-languages master catalog; published to npm)
 docs/           English documentation (published to npm)
-translated-docs/  Translated docs (published to npm)
+translated-docs/  Translated docs (Git repo only; not in the npm tarball)
 dev/            Developer-only files (changelog, this guide)
 examples/       Example projects (console-app, nextjs-app)
 scripts/        Build helper scripts
@@ -288,7 +288,7 @@ Inspect what will be included in the tarball:
 pnpm publish --dry-run
 ```
 
-Verify that the output includes `dist/`, `data/`, `docs/`, `translated-docs/`, `README.md`, and `LICENSE`.
+Verify that the output includes `dist/`, `data/`, `docs/`, `README.md`, and `LICENSE` (not `translated-docs/`).
 
 ### What gets published
 
@@ -300,7 +300,8 @@ Controlled by the `files` field in `package.json`:
 | `data/`            | Bundled data (for example `ui-languages-complete.json` for `generate-ui-languages`) |
 | `README.md`        | Main English README                                                |
 | `docs/`            | English docs (GETTING_STARTED, PACKAGE_OVERVIEW, AI agent context) |
-| `translated-docs/` | All translated READMEs and docs                                    |
 | `LICENSE`          | MIT licence                                                        |
+
+Translated READMEs and docs live under `translated-docs/` in the Git repository only (see links in `README.md` / `docs/*.md` on GitHub).
 
 Everything else (source, tests, examples, dev files) is excluded from the published package.

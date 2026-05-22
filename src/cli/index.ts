@@ -19,6 +19,7 @@ import { exec, execFile } from "node:child_process";
 import chalk from "chalk";
 import {
   DEFAULT_CONFIG_FILENAME,
+  initConfigTemplates,
   writeInitConfigFile,
   toDocTranslateConfig,
 } from "../core/config.js";
@@ -395,18 +396,23 @@ program
   .option("-o, --output <path>", "config file path", DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown (UI + app markdown) | ui-docusaurus (UI + Docusaurus docs)",
+    "ui-markdown (UI + app markdown) | ui-docusaurus (Docusaurus docs) | ui-starlight (Astro Starlight docs)",
     "ui-markdown"
   )
   .option("--with-translate-ignore", "Create a starter .translate-ignore", false)
   .action((opts: { output: string; template: string; withTranslateIgnore?: boolean }) => {
     const t = opts.template.toLowerCase();
-    if (t !== "ui-markdown" && t !== "ui-docusaurus") {
-      console.error('Template must be "ui-markdown" or "ui-docusaurus".');
+    const templateMap: Record<string, keyof typeof initConfigTemplates> = {
+      "ui-markdown": "uiMarkdown",
+      "ui-docusaurus": "uiDocusaurus",
+      "ui-starlight": "uiStarlight",
+    };
+    const key = templateMap[t];
+    if (!key) {
+      console.error('Template must be "ui-markdown", "ui-docusaurus", or "ui-starlight".');
       process.exitCode = 1;
       return;
     }
-    const key = t === "ui-markdown" ? "uiMarkdown" : "uiDocusaurus";
     writeInitConfigFile(opts.output, key);
     console.log(`Wrote ${opts.output} (${key})`);
     if (opts.withTranslateIgnore) {

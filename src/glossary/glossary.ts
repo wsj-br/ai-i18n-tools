@@ -1,6 +1,6 @@
 import fs from "fs";
-import { parse } from "csv-parse/sync";
 import type { GlossaryTerm } from "../core/types.js";
+import { parseGlossaryCsv } from "./parse-glossary-csv.js";
 
 function looksLikeStringsJson(filepath: string): boolean {
   if (filepath.toLowerCase().endsWith(".json")) {
@@ -124,11 +124,7 @@ export class Glossary {
 
   private loadUiCsv(filepath: string): void {
     const content = fs.readFileSync(filepath, "utf8");
-    const rows = parse(content, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true,
-    }) as Record<string, string>[];
+    const rows = parseGlossaryCsv(filepath, content);
 
     for (const row of rows) {
       const english = row["en"]?.trim() || pickEnglish(row);
@@ -162,11 +158,7 @@ export class Glossary {
    */
   private loadUserCsv(filepath: string, targetLocales: string[]): void {
     const content = fs.readFileSync(filepath, "utf8");
-    const rows = parse(content, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true,
-    }) as Record<string, string>[];
+    const rows = parseGlossaryCsv(filepath, content);
 
     const starRows: Array<{ english: string; translation: string; force: boolean }> = [];
     const exactRows: Array<{

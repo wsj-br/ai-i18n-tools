@@ -292,9 +292,9 @@ SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 �
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`은 소스 기준 경로를 출력 경로에 매핑합니다:
 
-- `nested` 스타일(기본값): 마크다운은 `{outputDir}/{locale}/{relPath}` 사용.
-- `docusaurus` 스타일: `docsRoot` 아래에 위치하며 출력은 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` 사용; `docsRoot` 외부의 경로는 중첩된 레이아웃으로 대체됨.
-- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`이 `true`일 때, 소스 하위 디렉터리는 `outputDir` 아래에 유지됨.
+- `nested` 스타일(기본값): 마크다운용 `{outputDir}/{locale}/{relPath}`.
+- `doc-system` 스타일: `docsRoot` 아래에서 출력은 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`를 사용함. `docsRoot` 외부의 경로는 중첩된 레이아웃으로 대체됨. 별칭: `docusaurus`(기본값 `localeSubpath` = Docusaurus 플러그인 경로), `astro-starlight`(기본값 빈 `localeSubpath`).
+- `flat` 스타일: `{outputDir}/{stem}.{locale}{extension}`. `flatPreserveRelativeDir`가 `true`일 때, 소스 하위 디렉터리는 `outputDir` 아래에 유지됨.
 - **사용자 정의** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`를 사용하는 임의의 마크다운 레이아웃.
 - **사용자 정의** `jsonPathTemplate`: JSON 레이블 파일을 위한 별도의 사용자 정의 레이아웃으로, 동일한 플레이스홀더 사용.
 - `linkRewriteDocsRoot`은 번역된 출력이 기본 프로젝트 루트가 아닌 다른 위치에 루트를 둘 때, 평면화된 링크 재작성기가 올바른 접두사를 계산하도록 도와줍니다.

@@ -12,6 +12,8 @@
 <small>**阅读其他语言版本：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
+<small>翻译后的 README 和文档已提交至 GitHub 上的 [`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs)；npm 包仅包含英文 `docs/`。</small>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目录**
@@ -191,9 +193,9 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 以下辅助函数从 `'ai-i18n-tools/runtime'` 导出，可在任何 JavaScript 环境中使用。使用它们时无需导入 i18next：
 
-| 辅助工具 | 说明 |
-|---|---|
-| `defaultI18nInitOptions(sourceLocale)` | 用于键即默认值配置的标准 i18next 初始化选项。 |
+| 辅助工具                                                                 | 描述                                                                                                                            |
+|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultI18nInitOptions(sourceLocale)`                                 | 用于键值作为默认值配置的标准 i18next 初始化选项。                                                                               |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推荐的集成方式：从 `strings.json` 获取 key-trim + plural `wrapT`，可选择性合并 `translate-ui` `{sourceLocale}.json` 的复数键。 |
 | `wrapI18nWithKeyTrim(i18n)` | 仅提供底层的 key-trim 封装（在应用集成中已弃用；推荐使用 `setupKeyAsDefaultT`）。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 从 `ui-languages.json` 构建 `localeLoaders` 映射（包含除 `sourceLocale` 外的每个 `code`）以用于 `makeLoadLocale`。 |

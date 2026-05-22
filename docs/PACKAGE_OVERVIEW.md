@@ -293,7 +293,7 @@ The `translate-docs` command also uses **file tracking** so unchanged sources wi
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` maps a source-relative path to the output path:
 
 - `nested` style (default): `{outputDir}/{locale}/{relPath}` for markdown.
-- `docusaurus` style: under `docsRoot`, outputs use `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; paths outside `docsRoot` fall back to the nested layout.
+- `doc-system` style: under `docsRoot`, outputs use `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`; paths outside `docsRoot` fall back to the nested layout. Aliases: `docusaurus` (default `localeSubpath` = Docusaurus plugin path), `astro-starlight` (default empty `localeSubpath`).
 - `flat` style: `{outputDir}/{stem}.{locale}{extension}`. When `flatPreserveRelativeDir` is `true`, source subdirectories are kept under `outputDir`.
 - **Custom** `pathTemplate`: any markdown layout using `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 - **Custom** `jsonPathTemplate`: separate custom layout for JSON label files, using the same placeholders.

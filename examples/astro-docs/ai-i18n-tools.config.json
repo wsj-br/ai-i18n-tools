@@ -1,6 +1,6 @@
 {
-  "sourceLocale": "fr",
-  "targetLocales": ["en-GB", "de", "es"],
+  "sourceLocale": "en-GB",
+  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -24,37 +24,42 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": true,
-    "translateUIStrings": true,
+    "extractUIStrings": false,
+    "translateUIStrings": false,
     "translateMarkdown": true,
     "translateJSON": false,
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "locales/strings.json",
-    "userGlossary": "glossary-user.csv"
+    "userGlossary": "glossary-user.csv",
+    "autoAddUserEditedToGlossary": true
   },
   "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "locales/strings.json",
-    "flatOutputDir": "locales/",
-    "preferredModel": "openai/gpt-5.4-mini"
+    "sourceRoots": [],
+    "stringsJson": "strings.json",
+    "flatOutputDir": "./locales"
   },
   "cacheDir": ".translation-cache",
   "documentations": [
     {
-      "description": "Project README translated to locale-suffixed files",
-      "contentPaths": ["README.md"],
-      "outputDir": "translated-docs",
+      "description": "Starlight docs under src/content/docs",
+      "contentPaths": [
+        "src/content/docs/quick-start.md",
+        "src/content/docs/feature-showcase.mdx"
+      ],
+      "outputDir": "src/content/docs",
       "addFrontmatter": true,
       "markdownOutput": {
-        "style": "flat",
+        "style": "astro-starlight",
+        "docsRoot": "src/content/docs",
         "postProcessing": {
-          "languageListBlock": {
-            "start": "<small id=\"lang-list\">",
-            "end": "</small>",
-            "separator": " · "
-          }
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders in public assets",
+              "search": "screenshots/en-GB/",
+              "replace": "screenshots/${translatedLocale}/"
+            }
+          ]
         }
       }
     }

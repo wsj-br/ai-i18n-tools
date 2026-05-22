@@ -74,7 +74,7 @@ Les deux flux de travail utilisent OpenRouter (n'importe quel LLM compatible) et
 <a id="installation"></a>
 ## Installation
 
-Le package publié est uniquement en **format ESM**. Utilisez `import`/`import()` dans Node.js ou votre outil de regroupement ; n'utilisez pas `require('ai-i18n-tools')`. Le package déclare `engines.node` `>=22.16.0` ; les anciennes versions de Node.js ne sont pas prises en charge.
+Le package publié est uniquement **ESM**. Utilisez `import`/`import()` dans Node.js ou votre outil de regroupement, et non `require('ai-i18n-tools')`. Le package déclare `engines.node` `>=22.16.0` ; les anciennes versions de Node.js ne sont pas prises en charge. L'archive tar de npm inclut uniquement les fichiers en anglais sous `docs/` ; les copies spécifiques aux paramètres régionaux situées sous `translated-docs/` se trouvent dans le [dépôt GitHub](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
 
 ```bash
 npm install ai-i18n-tools
@@ -103,7 +103,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Démarrage rapide
 
-Le modèle par défaut `init` (`ui-markdown`) active uniquement l'extraction et la traduction de l'**interface utilisateur**. Le modèle `ui-docusaurus` active la traduction de **documents** (`translate-docs`). Utilisez `sync` lorsque vous souhaitez une commande unique qui exécute l'extraction, la traduction de l'interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation selon votre configuration.
+Le modèle par défaut `init` (`ui-markdown`) active uniquement l'extraction et la traduction de l'**interface utilisateur**. Les modèles `ui-docusaurus` et `ui-starlight` activent la traduction de **documents** (`translate-docs`). Utilisez `sync` lorsque vous souhaitez une commande unique qui exécute l'extraction, la traduction de l'interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation selon votre configuration.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -113,6 +113,7 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -463,16 +464,22 @@ Conçu principalement pour la **documentation en markdown et MDX** située sous 
 npx ai-i18n-tools init -t ui-docusaurus
 ```
 
+Pour les sites de documentation Astro Starlight :
+
+```bash
+npx ai-i18n-tools init -t ui-starlight
+```
+
 Modifiez le fichier `ai-i18n-tools.config.json` généré :
 
 - `sourceLocale` - langue source (doit correspondre à `defaultLocale` dans `docusaurus.config.js`).
-- `targetLocales` - tableau de codes de localité BCP-47 (par exemple `["de", "fr", "es"]`).
-- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines de documentation (et répertoire de journalisation par défaut pour `--write-logs`).
-- `documentations` - tableau de blocs de documentation. Chaque bloc possède des champs facultatifs `description`, `contentPaths`, `outputDir`, `jsonSource` facultatif, `markdownOutput`, `segmentSplitting` facultatif, `targetLocales`, `addFrontmatter`, etc.
-- `documentations[].description` - note courte facultative destinée aux mainteneurs (ce que couvre ce bloc). Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` (`🌐 …: translating …`) et dans les en-têtes de section `status`.
+- `targetLocales` - tableau de codes de langue BCP-47 (par exemple `["de", "fr", "es"]`).
+- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines de documentation (et répertoire de journal par défaut pour `--write-logs`).
+- `documentations` - tableau de blocs de documentation. Chaque bloc possède des champs facultatifs `description`, `contentPaths`, `outputDir`, `jsonSource` facultatif, `markdownOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations[].description` - note courte facultative destinée aux mainteneurs (indiquant la portée de ce bloc). Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` (`🌐 …: translating …`) et dans les en-têtes de section `status`.
 - `documentations[].contentPaths` - répertoires ou fichiers sources en markdown/MDX (voir aussi `documentations[].jsonSource` pour les libellés JSON).
-- `documentations[].outputDir` - racine de sortie traduite pour ce bloc.
-- `documentations[].markdownOutput.style` - `"nested"` (par défaut), `"docusaurus"` ou `"flat"` (voir [Dispositions de sortie](#output-layouts)).
+- `documentations[].outputDir` - répertoire racine de sortie traduit pour ce bloc.
+- `documentations[].markdownOutput.style` - `"nested"` (par défaut), `"flat"`, `"doc-system"`, ou alias `"docusaurus"` / `"astro-starlight"` (voir [Dispositions de sortie](#output-layouts)).
 
 **Principal contre secondaire** : concentrez les efforts d’écriture et de traduction sur `contentPaths` — ce résultat constitue la documentation localisée. `jsonSource` concerne les équipes qui localisent l’**interface Docusaurus** ; exécutez `docusaurus write-translations` lorsque vous mettez à jour Docusaurus ou modifiez les chaînes de la barre de navigation, du pied de page ou du thème, afin que les catalogues sources dans le dossier de langue par défaut restent à jour. Vous pouvez définir `features.translateJSON` à `false` si vous n’avez besoin que de pages traduites et que vous gérez les chaînes d’interface différemment.
 
@@ -557,12 +564,23 @@ L'en-tête d'exécution affiche également `Batch prompt format: …`, afin que 
 
 `"nested"` (par défaut lorsqu'omis) — reflète l'arborescence source sous `{outputDir}/{locale}/` (par exemple, `docs/guide.md` → `i18n/de/docs/guide.md`).
 
-`"docusaurus"` — place les fichiers situés sous `docsRoot` dans `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`, conformément à la disposition i18n Docusaurus habituelle. Définissez `documentations[].markdownOutput.docsRoot` sur la racine source de votre documentation (par exemple, `"docs"`).
+`"doc-system"` — arborescence de documentation préfixée par langue pour les sites statiques. Les fichiers situés sous `docsRoot` sont écrits dans `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`. Les chemins situés en dehors de `docsRoot` reviennent à la disposition imbriquée. Définissez `documentations[].markdownOutput.docsRoot` sur votre racine source anglaise (par exemple `"docs"` ou `"src/content/docs"`). Lorsque `style` vaut `"doc-system"`, vous devez définir `localeSubpath` explicitement (utilisez un alias ci-dessous pour les préréglages).
 
-Pages de documentation (principales) :
+**Alias** (moteur de disposition identique, valeur prédéfinie pour `localeSubpath`) :
+
+- `"docusaurus"` — `localeSubpath` prend par défaut la valeur `docusaurus-plugin-content-docs/current` (disposition du plugin i18n Docusaurus).
+- `"astro-starlight"` — `localeSubpath` prend par défaut la valeur `""` (pages traduites directement sous `{outputDir}/{locale}/`, conforme à [Starlight](https://starlight.astro.build/guides/i18n/) lorsque l'anglais est à la racine du contenu et que `outputDir` est égal à `docsRoot`).
+
+Préréglage Docusaurus (pages principales de documentation) :
 
 ```text
 docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Préréglage Starlight (forme de bloc identique, chemins différents) :
+
+```text
+src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
 Étiquettes JSON facultatives — chaînes de l’interface Docusaurus provenant de `jsonSource` (pas le contenu des MDX) :
@@ -570,6 +588,8 @@ docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
+
+Starlight fournit des chaînes d'interface utilisateur pour de nombreuses langues ; les remplacements personnalisés facultatifs utilisent `src/content/i18n/en.json` avec `jsonPathTemplate: "{outputDir}/{locale}.json"` dans un bloc `documentations[]` séparé si nécessaire.
 
 `"flat"` — place les fichiers traduits à côté des sources avec un suffixe de langue, ou dans un sous-répertoire. Les liens relatifs entre pages sont réécrits automatiquement.
 
@@ -1101,35 +1121,39 @@ Répertoire racine pour la sortie traduite de ce bloc.
 - `sourceFiles`
 Alias facultatif fusionné dans `contentPaths` au chargement.
 - `targetLocales`
-Sous-ensemble facultatif de langues pour ce bloc uniquement (sinon utilise la racine `targetLocales`). Les langues effectives de documentation sont l'union des langues définies dans tous les blocs.
+Sous-ensemble facultatif de langues pour ce bloc uniquement (sinon, utilise la valeur racine `targetLocales`). Les langues effectives de documentation sont l'union des blocs.
 - `jsonSource`
-Facultatif. Répertoire source des catalogues JSON de libellés Docusaurus pour ce bloc (par exemple `"i18n/en"` depuis `docusaurus write-translations`). Les corps de pages proviennent toujours de `contentPaths` ; `jsonSource` fournit uniquement le JSON de l'interface (shell), pas les fichiers MDX.
+Facultatif. Répertoire source des catalogues de libellés JSON Docusaurus pour ce bloc (par exemple `"i18n/en"` depuis `docusaurus write-translations`). Le corps des pages provient toujours de `contentPaths` ; `jsonSource` fournit uniquement les fichiers JSON de l'interface, pas les fichiers MDX.
 - `markdownOutput.style`
-`"nested"` (par défaut), `"docusaurus"` ou `"flat"`.
+`"nested"` (par défaut), `"flat"`, `"doc-system"`, ou alias `"docusaurus"` / `"astro-starlight"`.
+- `markdownOutput.localeSubpath`
+Segment de chemin entre `{locale}/` et `{relativeToDocsRoot}` pour `doc-system` (obligatoire lors de l'utilisation directe de `style: "doc-system"` ; prédéfini lors de l'utilisation d'un alias). Utilisez `""` pour des dossiers de langue au style Starlight.
 - `markdownOutput.docsRoot`
-Répertoire racine des documents source pour la mise en page Docusaurus (par exemple `"docs"`).
+Répertoire racine des documents source pour la disposition Docusaurus (par exemple `"docs"`).
 - `markdownOutput.pathTemplate`
-Chemin personnalisé de sortie en markdown. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+Chemin de sortie personnalisé pour les fichiers markdown. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-Chemin personnalisé de sortie JSON pour les fichiers d'étiquettes. Prend en charge les mêmes espaces réservés que `pathTemplate`.
+Chemin de sortie personnalisé pour les fichiers de libellés JSON. Prend en charge les mêmes espaces réservés que `pathTemplate`.
 - `markdownOutput.flatPreserveRelativeDir`
 Pour le style `flat`, conservez les sous-répertoires sources afin d'éviter les conflits entre fichiers ayant le même nom de base.
 - `markdownOutput.rewriteRelativeLinks`
 Réécrit les liens relatifs après traduction (activé automatiquement pour le style `flat`).
 - `markdownOutput.linkRewriteDocsRoot`
-Répertoire racine du dépôt utilisé pour calculer les préfixes de réécriture des liens plats. Conservez généralement la valeur `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
+Répertoire racine du dépôt utilisé pour le calcul des préfixes de réécriture des liens plats. Conservez généralement la valeur `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
 - `markdownOutput.postProcessing`
-Transformations facultatives appliquées au **corps du markdown** (le YAML front matter est préservé). S'exécute après le réassemblage des segments et la réécriture des liens plats, et avant `addFrontmatter`.
+Transformations facultatives appliquées au **corps du markdown** après la traduction (les clés YAML et les valeurs non rédactionnelles du front matter sont conservées). S’exécute après le réassemblage des segments et la réécriture des liens plats, et avant `addFrontmatter`.
+- `translateFrontmatterFields`
+Au même niveau que `markdownOutput` (par bloc `documentations[]`). Par défaut `true` : traduit le texte YAML destiné aux utilisateurs pour Starlight/Docusaurus (étiquettes `title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next`). Définissez `false` pour conserver l’ensemble du bloc de front matter inchangé ; passez un tableau de chaînes pour limiter aux chemins pointés spécifiques.
 - `segmentSplitting`
-Au même niveau que `markdownOutput` (par bloc `documentations[]`). Segments facultatifs plus précis pour l'extraction `translate-docs` : `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. Lorsque `enabled` vaut `true` (valeur par défaut si `segmentSplitting` est omis), les paragraphes denses, les tableaux GFM avec délimiteur (le premier segment inclut l'en-tête, le séparateur et la première ligne de données) et les longues listes sont divisés ; les sous-parties sont réunies avec un saut de ligne simple (`tightJoinPrevious`). Définissez `"enabled": false` pour utiliser un segment par bloc de corps séparé par une ligne vide uniquement.
+Au même niveau que `markdownOutput` (par bloc `documentations[]`). Segments facultatifs plus fins pour l’extraction `translate-docs` : `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. Lorsque `enabled` vaut `true` (valeur par défaut si `segmentSplitting` est omis), les paragraphes denses, les tableaux GFM avec délimiteurs (le premier segment inclut l’en-tête, le séparateur et la première ligne de données) et les longues listes sont divisés ; les sous-parties sont réassemblées avec des sauts de ligne simples (`tightJoinPrevious`). Définissez `"enabled": false` pour utiliser un segment par bloc de texte séparé par des lignes vides uniquement.
 - `warnMarkdownSourceIssues`
-Lorsque `true` (valeur par défaut si omis), chaque exécution de `translate-docs` analyse à nouveau les segments markdown à la recherche de délimiteurs risqués ou de code en ligne non fermé, affiche des avertissements dans le terminal, et remplace les lignes `markdown_source_issues` pour le chemin de cache de ce fichier. Définissez `false` pour ignorer les avertissements et les mises à jour SQLite pour ce bloc.
+Lorsque `true` (valeur par défaut si omis), chaque exécution de `translate-docs` analyse à nouveau les segments markdown à la recherche de délimiteurs risqués ou de code en ligne non fermé, affiche des avertissements dans le terminal, et remplace les lignes `markdown_source_issues` pour le chemin du fichier cache de ce fichier. Définissez `false` pour ignorer les avertissements et les mises à jour SQLite pour ce bloc.
 - `markdownOutput.postProcessing.regexAdjustments`
 Liste ordonnée de `{ "description"?, "search", "replace" }`. `search` est un motif regex (une chaîne simple utilise le drapeau `g`, ou `/pattern/flags`). `replace` prend en charge des espaces réservés tels que `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.
 - `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label" }` — le traducteur recherche la première ligne contenant `start` et la ligne `end` correspondante, puis remplace cette portion par un sélecteur de langue normalisé. `label` contrôle la source des libellés du manifeste : `"local"` (par défaut, utilise `ui-languages.json` `label`) ou `"english"` (utilise `englishName`). Les liens sont construits avec des chemins relatifs au fichier traduit ; lorsqu'aucun manifeste n'est configuré, les libellés proviennent de `localeDisplayNames` et des codes de langue.
+`{ "start", "end", "separator", "label" }` — le traducteur recherche la première ligne contenant `start` et la ligne `end` correspondante, puis remplace cette portion par un sélecteur de langue normalisé. `label` contrôle la source des libellés du manifeste : `"local"` (par défaut, utilise `ui-languages.json` `label`) ou `"english"` (utilise `englishName`). Les liens sont construits avec des chemins relatifs au fichier traduit ; lorsqu’aucun manifeste n’est configuré, les libellés proviennent de `localeDisplayNames` et des codes de langue.
 - `addFrontmatter`
-Lorsque `true` (par défaut si omis), les fichiers markdown traduits incluent les clés YAML : `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, et lorsqu'au moins un segment possède des métadonnées de modèle, `translation_models` (liste triée des identifiants de modèles OpenRouter utilisés). Définissez la valeur `false` pour ignorer.
+Lorsque `true` (valeur par défaut si omis), les fichiers markdown traduits incluent les clés YAML suivantes : `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, et, lorsqu’au moins un segment contient des métadonnées de modèle, `translation_models` (liste triée des identifiants de modèles OpenRouter utilisés). Définissez sur `false` pour ignorer.
 
 <br/>
 
@@ -1191,8 +1215,8 @@ npx ai-i18n-tools glossary-generate
 - `version`
 Afficher la version CLI et l'horodatage de compilation (les mêmes informations que `-V` / `--version` sur le programme racine).
 
-- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
-Écrire un fichier de configuration de démarrage (inclut `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `documentations[].addFrontmatter`). `--with-translate-ignore` crée un fichier `.translate-ignore` de démarrage.
+- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
+Écrit un fichier de configuration de démarrage (inclut `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, et `documentations[].addFrontmatter`). `--with-translate-ignore` crée un `.translate-ignore` de démarrage.
 
 - `check-models`
 Valider chaque identifiant de modèle OpenRouter configuré contre `GET /models` (appartenance au catalogue, `expiration_date`, USD par million de jetons pour l'invite et la complétion). Nécessite `OPENROUTER_API_KEY`. Quitte avec un code d'erreur si un identifiant configuré est manquant ou expiré. Respecte `openrouter.requestTimeoutMs` pour la requête du catalogue.

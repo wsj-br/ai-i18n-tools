@@ -1,11 +1,11 @@
-Create a new release notes file `dev/RELEASE_NOTES_<version>.md` for the `ai-i18n-tools` package using the instructions below. This will be used as part of the GitHub release process.
+Create a new release notes file `release-notes/RELEASE_NOTES_<version>.md` for the `ai-i18n-tools` package using the instructions below. This will be used as part of the GitHub release process.
 
 **Instructions:**
 
 1. **Read `package.json`** to get the current version number (`x.y.z`).
 2. **Open `dev/CHANGELOG.md`**.
 3. **Copy all entries under the `## [Unreleased]` section** up to (but not including) the next `## [` heading (which marks the last released version).
-4. **Format the new file** according to the prior release notes in `dev/RELEASE_NOTES_x.y.z.md`:
+4. **Format the new file** according to the prior release notes in `release-notes/RELEASE_NOTES_x.y.z.md`:
    - Title: `# ai-i18n-tools <version> Release Notes`
    - Sections:
      - `## Highlights` — Summarize the most important user-facing changes from the changelog bullets (focus on features, fixes, major improvements; don't list every change verbatim—write clear, user-focused summaries).

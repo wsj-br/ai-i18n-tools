@@ -293,9 +293,9 @@ La commande `translate-docs` utilise également un **suivi des fichiers** afin q
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` associe un chemin relatif à la source au chemin de sortie :
 
 - Style `nested` (par défaut) : `{outputDir}/{locale}/{relPath}` pour le markdown.
-- Style `docusaurus` : sous `docsRoot`, les sorties utilisent `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` ; les chemins en dehors de `docsRoot` reviennent à la disposition imbriquée.
-- Style `flat` : `{outputDir}/{stem}.{locale}{extension}`. Lorsque `flatPreserveRelativeDir` vaut `true`, les sous-répertoires sources sont conservés sous `outputDir`.
-- **Personnalisé** `pathTemplate` : n'importe quelle disposition markdown utilisant `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- Style `doc-system` : sous `docsRoot`, les sorties utilisent `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` ; les chemins situés en dehors de `docsRoot` reviennent au mode imbriqué. Alias : `docusaurus` (`localeSubpath` par défaut = chemin du plugin Docusaurus), `astro-starlight` (`localeSubpath` vide par défaut).
+- Style `flat` : `{outputDir}/{stem}.{locale}{extension}`. Lorsque `flatPreserveRelativeDir` est défini sur `true`, les sous-répertoires sources sont conservés sous `outputDir`.
+- **Personnalisé** `pathTemplate` : n’importe quelle disposition en markdown utilisant `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 - **Personnalisé** `jsonPathTemplate` : disposition personnalisée séparée pour les fichiers d'étiquettes JSON, utilisant les mêmes espaces réservés.
 - `linkRewriteDocsRoot` aide le réécriture de liens plats à calculer les préfixes corrects lorsque la sortie traduite est située ailleurs que dans le répertoire racine par défaut du projet.
 

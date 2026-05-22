@@ -372,21 +372,21 @@ const summary = await runTranslateUI(config, {
 
 Other useful exports for custom pipelines:
 
-| Export | Use when |
-|---|---|
-| `loadI18nConfigFromFile(path, cwd?)` | Load and validate the config |
-| `parseI18nConfig(rawObject)` | Validate a config object you built in code |
-| `TranslationCache` | Direct SQLite cache access |
-| `UIStringExtractor` | Extract `t("…")` calls from JS/TS files |
-| `MarkdownExtractor` | Parse markdown into translatable segments |
-| `JsonExtractor` | Parse Docusaurus JSON label files |
-| `SvgExtractor` | Parse SVG text elements |
-| `OpenRouterClient` | Make translation requests directly |
-| `PlaceholderHandler` | Protect/restore markdown syntax around translation |
-| `splitTranslatableIntoBatches` | Group segments into LLM-sized batches |
-| `validateTranslation` | Structural checks after a translation call |
-| `resolveDocumentationOutputPath` | Compute the output file path for a translated document |
-| `Glossary` / `GlossaryMatcher` | Load and apply a translation glossary |
+| Export                               | Use when                                               |
+|--------------------------------------|--------------------------------------------------------|
+| `loadI18nConfigFromFile(path, cwd?)` | Load and validate the config                           |
+| `parseI18nConfig(rawObject)`         | Validate a config object you built in code             |
+| `TranslationCache`                   | Direct SQLite cache access                             |
+| `UIStringExtractor`                  | Extract `t("…")` calls from JS/TS files                |
+| `MarkdownExtractor`                  | Parse markdown into translatable segments              |
+| `JsonExtractor`                      | Parse Docusaurus JSON label files                      |
+| `SvgExtractor`                       | Parse SVG text elements                                |
+| `OpenRouterClient`                   | Make translation requests directly                     |
+| `PlaceholderHandler`                 | Protect/restore markdown syntax around translation     |
+| `splitTranslatableIntoBatches`       | Group segments into LLM-sized batches                  |
+| `validateTranslation`                | Structural checks after a translation call             |
+| `resolveDocumentationOutputPath`     | Compute the output file path for a translated document |
+| `Glossary` / `GlossaryMatcher`       | Load and apply a translation glossary                  |
 
 ---
 

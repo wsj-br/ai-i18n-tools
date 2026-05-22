@@ -18,6 +18,8 @@ export default tseslint.config(
       "examples/**/node_modules/**",
       "examples/**/.docusaurus/**",
       "examples/**/docs-site/build/**",
+      "examples/**/dist/**",
+      "examples/**/.astro/**",
     ],
   },
   eslint.configs.recommended,
@@ -122,7 +124,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["scripts/**/*.{mjs,js}"],
+    files: ["scripts/**/*.{mjs,js}", "dev/scripts/**/*.{mjs,js}"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",

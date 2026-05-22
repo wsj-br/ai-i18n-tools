@@ -7,6 +7,14 @@ import type {
   SegmentTranslationMapValue,
 } from "../core/types.js";
 import { extractLanguageListBlock } from "../processors/doc-postprocess.js";
+import {
+  collectTranslatableFrontmatterFields,
+  encodeFrontmatterShell,
+  decodeFrontmatterShell,
+  applyFrontmatterFieldTranslations,
+  FRONTMATTER_SHELL_PREFIX,
+  resolveFrontmatterFieldAllowList,
+} from "./frontmatter-fields.js";
 import { BaseExtractor } from "./base-extractor.js";
 import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 
@@ -14,6 +22,8 @@ import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 export type MarkdownExtractOptions = {
   languageListBlock?: LanguageListBlockConfig;
   segmentSplitting?: SegmentSplittingConfig;
+  /** When false, entire YAML front matter stays non-translatable. Default true. */
+  translateFrontmatterFields?: boolean | string[];
 };
 
 /** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
@@ -37,16 +47,47 @@ export class MarkdownExtractor extends BaseExtractor {
     const { data: frontMatter, content: body } = matter(content);
 
     if (Object.keys(frontMatter).length > 0) {
-      const frontMatterStr = matterStringify("", frontMatter).trim();
-      segments.push({
-        id: `seg-${segmentIndex++}`,
-        type: "frontmatter",
-        content: frontMatterStr,
-        hash: this.computeHash(frontMatterStr),
-        /** IDs, slug, nav keys, etc. must stay stable across locales. */
-        translatable: false,
-        startLine: 1,
-      });
+      const fmRecord = frontMatter as Record<string, unknown>;
+      const allowList = resolveFrontmatterFieldAllowList(options?.translateFrontmatterFields);
+      const translatableFields =
+        allowList === null || allowList.length > 0
+          ? collectTranslatableFrontmatterFields(
+              fmRecord,
+              allowList === null ? undefined : allowList
+            )
+          : [];
+
+      if (translatableFields.length > 0) {
+        segments.push({
+          id: `seg-${segmentIndex++}`,
+          type: "frontmatter",
+          content: encodeFrontmatterShell(fmRecord),
+          hash: this.computeHash(encodeFrontmatterShell(fmRecord)),
+          translatable: false,
+          startLine: 1,
+        });
+        for (const field of translatableFields) {
+          segments.push({
+            id: `seg-${segmentIndex++}`,
+            type: "frontmatter-field",
+            content: field.value,
+            hash: this.computeHash(field.value),
+            translatable: true,
+            frontmatterPath: field.path,
+            startLine: 1,
+          });
+        }
+      } else {
+        const frontMatterStr = matterStringify("", frontMatter).trim();
+        segments.push({
+          id: `seg-${segmentIndex++}`,
+          type: "frontmatter",
+          content: frontMatterStr,
+          hash: this.computeHash(frontMatterStr),
+          translatable: false,
+          startLine: 1,
+        });
+      }
     }
 
     const bodyStartLine =
@@ -81,8 +122,31 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
       if (segment.type === "frontmatter") {
+        if (segment.content.startsWith(FRONTMATTER_SHELL_PREFIX)) {
+          const data = decodeFrontmatterShell(segment.content);
+          const fieldUpdates: Array<{ path: string; value: string }> = [];
+          let j = i + 1;
+          while (j < merged.length && merged[j]?.type === "frontmatter-field") {
+            const fieldSeg = merged[j]!;
+            if (fieldSeg.frontmatterPath) {
+              fieldUpdates.push({
+                path: fieldSeg.frontmatterPath,
+                value: fieldSeg.content,
+              });
+            }
+            j++;
+          }
+          applyFrontmatterFieldTranslations(data, fieldUpdates);
+          parts.push(matterStringify("", data).trim());
+          parts.push("");
+          i = j - 1;
+          continue;
+        }
         parts.push(segment.content);
         parts.push("");
+        continue;
+      }
+      if (segment.type === "frontmatter-field") {
         continue;
       }
       let chunk = segment.content;

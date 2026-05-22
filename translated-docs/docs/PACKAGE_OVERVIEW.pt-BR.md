@@ -293,9 +293,9 @@ O comando `translate-docs` também usa **rastreamento de arquivos**, de modo que
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` mapeia um caminho relativo à fonte para o caminho de saída:
 
 - Estilo `nested` (padrão): `{outputDir}/{locale}/{relPath}` para markdown.
-- Estilo `docusaurus`: dentro de `docsRoot`, as saídas usam `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; caminhos fora de `docsRoot` retornam ao layout aninhado.
+- Estilo `doc-system`: dentro de `docsRoot`, as saídas usam `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`; caminhos fora de `docsRoot` retornam ao layout aninhado. Apelidos: `docusaurus` (padrão `localeSubpath` = caminho do plugin Docusaurus), `astro-starlight` (padrão `localeSubpath` vazio).
 - Estilo `flat`: `{outputDir}/{stem}.{locale}{extension}`. Quando `flatPreserveRelativeDir` é `true`, os subdiretórios de origem são mantidos dentro de `outputDir`.
-- **Personalizado** `pathTemplate`: qualquer layout markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
+- `pathTemplate` **personalizado**: qualquer layout markdown usando `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 - **Personalizado** `jsonPathTemplate`: layout personalizado separado para arquivos de rótulos JSON, usando os mesmos espaços reservados.
 - `linkRewriteDocsRoot` ajuda o reescritor de links planos a calcular os prefixos corretos quando a saída traduzida está localizada em outro lugar além da raiz padrão do projeto.
 

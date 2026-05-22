@@ -293,8 +293,8 @@ Der Befehl `translate-docs` nutzt außerdem **Datei-Tracking**, sodass unveränd
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` ordnet einen quellbezogenen Pfad dem Ausgabepfad zu:
 
 - `nested`-Stil (Standard): `{outputDir}/{locale}/{relPath}` für Markdown.
-- `docusaurus`-Stil: unter `docsRoot`, Ausgaben verwenden `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`; Pfade außerhalb von `docsRoot` greifen auf das geschachtelte Layout zurück.
-- `flat`-Stil: `{outputDir}/{stem}.{locale}{extension}`. Wenn `flatPreserveRelativeDir` auf `true` gesetzt ist, bleiben Quellunterverzeichnisse unter `outputDir` erhalten.
+- `doc-system`-Stil: unter `docsRoot`, verwenden Ausgaben `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`; Pfade außerhalb von `docsRoot` wechseln zum geschachtelten Layout. Aliase: `docusaurus` (Standard `localeSubpath` = Docusaurus-Plugin-Pfad), `astro-starlight` (Standard leer `localeSubpath`).
+- `flat`-Stil: `{outputDir}/{stem}.{locale}{extension}`. Wenn `flatPreserveRelativeDir` auf `true` gesetzt ist, werden Quell-Unterverzeichnisse unter `outputDir` beibehalten.
 - **Benutzerdefinierter** `pathTemplate`: beliebiges Markdown-Layout unter Verwendung von `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
 - **Benutzerdefinierter** `jsonPathTemplate`: separates benutzerdefiniertes Layout für JSON-Beschriftungsdateien, unter Verwendung derselben Platzhalter.
 - `linkRewriteDocsRoot` hilft dem Umschreiber flacher Links, korrekte Präfixe zu berechnen, wenn die übersetzte Ausgabe nicht im standardmäßigen Projektstamm verwurzelt ist.

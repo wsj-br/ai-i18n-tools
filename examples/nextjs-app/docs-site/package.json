@@ -35,10 +35,5 @@
   },
   "engines": {
     "node": ">=22.16.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "core-js"
-    ]
   }
 }

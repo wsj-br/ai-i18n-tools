@@ -293,9 +293,9 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` स्रोत-सापेक्ष पथ को आउटपुट पथ पर मैप करता है:
 
 - `nested` शैली (डिफ़ॉल्ट): मार्कडाउन के लिए `{outputDir}/{locale}/{relPath}`।
-- `docusaurus` शैली: `docsRoot` के अंतर्गत, आउटपुट `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` का उपयोग करते हैं; `docsRoot` के बाहर के पथ नेस्टेड लेआउट पर वापस आ जाते हैं।
-- `flat` शैली: `{outputDir}/{stem}.{locale}{extension}`। जब `flatPreserveRelativeDir` `true` होता है, तो स्रोत उपडायरेक्टरियों को `outputDir` के अंतर्गत रखा जाता है।
-- **कस्टम** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` का उपयोग करके मार्कडाउन लेआउट के लिए कोई भी।
+- `doc-system` शैली: `docsRoot` के अंतर्गत, आउटपुट `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` का उपयोग करते हैं; `docsRoot` के बाहर के मार्ग नेस्टेड लेआउट पर वापस आ जाते हैं। उपनाम: `docusaurus` (डिफ़ॉल्ट `localeSubpath` = डॉक्यूसॉरस प्लगइन मार्ग), `astro-starlight` (डिफ़ॉल्ट खाली `localeSubpath`)।
+- `flat` शैली: `{outputDir}/{stem}.{locale}{extension}`। जब `flatPreserveRelativeDir` `true` होता है, तो स्रोत उपडायरेक्टरियाँ `outputDir` के अंतर्गत बनी रहती हैं।
+- **कस्टम** `pathTemplate`: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` का उपयोग करके कोई भी मार्कडाउन लेआउट।
 - **कस्टम** `jsonPathTemplate`: JSON लेबल फ़ाइलों के लिए अलग कस्टम लेआउट, समान प्लेसहोल्डर का उपयोग करके।
 - `linkRewriteDocsRoot` फ्लैट-लिंक पुनःलेखक को सही उपसर्ग की गणना करने में मदद करता है जब अनुवादित आउटपुट डिफ़ॉल्ट प्रोजेक्ट रूट के बजाय कहीं और स्थित होता है।
 

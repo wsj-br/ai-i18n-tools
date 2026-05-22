@@ -12,6 +12,8 @@ CLI e toolkit para internacionalização de aplicações e sites de documentaç�
 <small>**Leia em outros idiomas:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
 
+<small>Os READMEs e documentos traduzidos são enviados em [`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) no GitHub; o pacote npm inclui apenas `docs/` em inglês.</small>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Tabela de Conteúdos**
@@ -191,9 +193,9 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 Os seguintes auxiliares são exportados de `'ai-i18n-tools/runtime'` e funcionam em qualquer ambiente JavaScript. Você não precisa importar o i18next para usá-los:
 
-| Auxiliar | Descrição |
-|---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Opções padrão de inicialização do i18next para configurações com chave como valor padrão. |
+| Auxiliar                                                               | Descrição                                                                                                                              |
+|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultI18nInitOptions(sourceLocale)`                                 | Opções padrão de inicialização do i18next para configurações com chave como valor padrão.                                              |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Conexão recomendada: key-trim + plural `wrapT` de `strings.json`, opcionalmente mescla chaves plurais `translate-ui` `{sourceLocale}.json`. |
 | `wrapI18nWithKeyTrim(i18n)` | Apenas um invólucro de nível inferior para key-trim (obsoleto para conexão de aplicativo; prefira `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Gera o mapa `localeLoaders` para `makeLoadLocale` a partir de `ui-languages.json` (cada `code` exceto `sourceLocale`). |

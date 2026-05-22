@@ -57,6 +57,88 @@ describe("output-paths", () => {
     expect(toPosix(out)).toBe("/proj/i18n/de/docusaurus-plugin-content-docs/current/intro.md");
   });
 
+  it("doc-system style uses localeSubpath under docsRoot", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "i18n",
+          markdownOutput: {
+            style: "doc-system",
+            docsRoot: "docs",
+            localeSubpath: "custom/prefix",
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "de", "docs/intro.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/i18n/de/custom/prefix/intro.md");
+  });
+
+  it("astro-starlight alias writes directly under locale folder", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["src/content/docs/quick-start.md"],
+          outputDir: "src/content/docs",
+          markdownOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "de",
+      "src/content/docs/quick-start.md",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/src/content/docs/de/quick-start.md");
+  });
+
+  it("astro-starlight lowercases regional locale folders for Starlight", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["src/content/docs/feature-showcase.mdx"],
+          outputDir: "src/content/docs",
+          markdownOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt-BR",
+      "src/content/docs/feature-showcase.mdx",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/src/content/docs/pt-br/feature-showcase.mdx");
+  });
+
+  it("doc-system with empty localeSubpath writes directly under locale folder", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["src/content/docs/quick-start.md"],
+          outputDir: "src/content/docs",
+          markdownOutput: {
+            style: "doc-system",
+            docsRoot: "src/content/docs",
+            localeSubpath: "",
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "de",
+      "src/content/docs/quick-start.md",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/src/content/docs/de/quick-start.md");
+  });
+
   it("flat style writes stem.locale.ext in outputDir", () => {
     const c = cfg({
       documentations: [
@@ -124,6 +206,24 @@ describe("output-paths", () => {
           contentPaths: ["other/"],
           outputDir: "i18n",
           markdownOutput: { style: "docusaurus", docsRoot: "docs" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "de", "other/intro.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/i18n/de/other/intro.md");
+  });
+
+  it("doc-system style uses nested path when source is outside docsRoot", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["other/"],
+          outputDir: "i18n",
+          markdownOutput: {
+            style: "doc-system",
+            docsRoot: "docs",
+            localeSubpath: "plugin/current",
+          },
         },
       ],
     });

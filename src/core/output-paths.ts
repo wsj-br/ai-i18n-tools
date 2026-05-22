@@ -1,9 +1,11 @@
 import path from "path";
 import type { I18nDocTranslateConfig } from "./types.js";
+import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
 
 export type DocArtifactKind = "markdown" | "json";
 
-const DOCUSAURUS_PLUGIN = "docusaurus-plugin-content-docs/current";
+/** @deprecated Use {@link DOCUSAURUS_LOCALE_SUBPATH} */
+const DOCUSAURUS_PLUGIN = DOCUSAURUS_LOCALE_SUBPATH;
 
 /** Normalize to forward slashes for template keys and comparisons. */
 export function toPosix(p: string): string {
@@ -73,6 +75,14 @@ function assertOutputWithinRoot(absFile: string, rootDir: string): void {
   }
 }
 
+/** Starlight locale folders use lowercase keys (e.g. `pt-BR` → `pt-br`). */
+function docSystemLocaleDir(locale: string, localeSubpath: string | undefined): string {
+  if ((localeSubpath?.trim() ?? "") === "") {
+    return locale.toLowerCase();
+  }
+  return locale;
+}
+
 function resolveByStyle(
   config: I18nDocTranslateConfig,
   cwd: string,
@@ -94,7 +104,9 @@ function resolveByStyle(
   switch (mo.style) {
     case "nested":
       return path.join(outBase, locale, relPath);
-    case "docusaurus": {
+    case "doc-system":
+    case "docusaurus":
+    case "astro-starlight": {
       const under =
         posixRel === docsRootPosix ||
         posixRel.startsWith(`${docsRootPosix}/`) ||
@@ -103,7 +115,22 @@ function resolveByStyle(
         return path.join(outBase, locale, relPath);
       }
       const rest = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
-      return path.join(outBase, locale, DOCUSAURUS_PLUGIN, rest);
+      let subpath: string;
+      if (mo.style === "docusaurus") {
+        subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
+      } else if (mo.style === "astro-starlight") {
+        subpath = mo.localeSubpath?.trim() ?? "";
+      } else {
+        subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
+      }
+      const localeDir =
+        mo.style === "doc-system" || mo.style === "astro-starlight"
+          ? docSystemLocaleDir(locale, subpath)
+          : locale;
+      if (!subpath || subpath === ".") {
+        return path.join(outBase, localeDir, rest);
+      }
+      return path.join(outBase, localeDir, subpath, rest);
     }
     case "flat": {
       const parsed = path.posix.parse(posixRel);

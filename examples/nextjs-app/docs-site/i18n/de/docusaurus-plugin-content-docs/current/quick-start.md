@@ -1,10 +1,10 @@
 ---
 sidebar_position: 2
-title: Quick Start
+title: Schnellstart
 description: >-
-  Get your first translated document in under five minutes using ai-i18n-tools
-  with this Next.js example project.
-translation_last_updated: '2026-05-06T20:54:07.266Z'
+  Erhalten Sie Ihr erstes übersetzte Dokument in unter fünf Minuten mithilfe von
+  ai-i18n-tools mit diesem Next.js-Beispielprojekt.
+translation_last_updated: '2026-05-22T22:38:13.077Z'
 source_file_mtime: '2026-05-04T22:22:41.551Z'
 source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
 translation_language: de

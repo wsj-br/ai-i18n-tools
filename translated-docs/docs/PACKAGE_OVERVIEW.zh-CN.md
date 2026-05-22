@@ -292,9 +292,9 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` 将源相对路径映射到输出路径：
 
-- `nested` 风格（默认）：用于 markdown 的是 `{outputDir}/{locale}/{relPath}`。
-- `docusaurus` 风格：位于 `docsRoot` 下，输出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 外的路径会回退到嵌套布局。
-- `flat` 风格：`{outputDir}/{stem}.{locale}{extension}`。当 `flatPreserveRelativeDir` 为 `true` 时，源子目录保留在 `outputDir` 下。
+- `nested` 样式（默认）：用于 markdown 的 `{outputDir}/{locale}/{relPath}`。
+- `doc-system` 样式：位于 `docsRoot` 下，输出使用 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`；在 `docsRoot` 外的路径会回退到嵌套布局。别名：`docusaurus`（默认 `localeSubpath` = Docusaurus 插件路径），`astro-starlight`（默认为空 `localeSubpath`）。
+- `flat` 样式：`{outputDir}/{stem}.{locale}{extension}`。当 `flatPreserveRelativeDir` 为 `true` 时，源子目录会保留在 `outputDir` 下。
 - **自定义** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任意 markdown 布局。
 - **自定义** `jsonPathTemplate`：用于 JSON 标签文件的独立自定义布局，使用相同的占位符。
 - `linkRewriteDocsRoot` 可帮助扁平化链接重写器在翻译输出根目录不同于默认项目根目录时计算正确的前缀。

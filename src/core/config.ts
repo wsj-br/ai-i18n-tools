@@ -1,5 +1,9 @@
 import fs from "fs";
 import path from "path";
+import {
+  assertDocSystemLocaleSubpath,
+  normalizeI18nConfigMarkdownOutput,
+} from "./markdown-output-normalize.js";
 import { ConfigValidationError } from "./errors.js";
 import {
   coerceTargetLocalesField,
@@ -346,8 +350,10 @@ export function parseI18nConfig(input: RawI18nConfigInput): I18nConfig {
       issues
     );
   }
-  validateI18nBusinessRules(parsed.data);
-  return parsed.data;
+  const normalized = normalizeI18nConfigMarkdownOutput(parsed.data);
+  assertDocSystemLocaleSubpath(normalized);
+  validateI18nBusinessRules(normalized);
+  return normalized;
 }
 
 /**
@@ -417,6 +423,7 @@ export const DEFAULT_CONFIG_FILENAME = "ai-i18n-tools.config.json";
  *
  * `ui-markdown` - Workflow 1 (UI string extraction/translation) for a React/Next.js app.
  * `ui-docusaurus` - Workflow 2 (markdown/JSON document translation) for Docusaurus sites.
+ * `ui-starlight` - Workflow 2 (markdown document translation) for Astro Starlight sites.
  *
  * Both templates include all top-level fields so the generated file is self-documenting.
  * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
@@ -483,10 +490,8 @@ export const initConfigTemplates = {
       requestTimeoutMs: 30_000,
     },
     features: {
-      // Workflow 1: enable if you also have a React UI with t() calls to extract
       extractUIStrings: false,
       translateUIStrings: false,
-      // Workflow 2: Docusaurus document translation
       translateMarkdown: true,
       translateJSON: true,
       translateSVG: false,
@@ -500,7 +505,6 @@ export const initConfigTemplates = {
       stringsJson: "src/locales/strings.json",
       flatOutputDir: "src/locales/",
     },
-    // Docs-focused template: match translate-docs default (3) for parallel locales.
     concurrency: 3,
     batchConcurrency: 4,
     batchSize: 20,
@@ -512,9 +516,61 @@ export const initConfigTemplates = {
         outputDir: "i18n/",
         jsonSource: "i18n/en",
         markdownOutput: {
-          // 'docusaurus' places translated files under i18n/<locale>/docusaurus-plugin-content-docs/current/
           style: "docusaurus",
           docsRoot: "docs",
+        },
+        addFrontmatter: true,
+      },
+    ],
+  }),
+
+  uiStarlight: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en-GB",
+    targetLocales: ["ar", "es", "fr", "de", "pt-BR"],
+    openrouter: {
+      baseUrl: "https://openrouter.ai/api/v1",
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      maxTokens: 8192,
+      temperature: 0.2,
+      requestTimeoutMs: 30_000,
+    },
+    features: {
+      extractUIStrings: false,
+      translateUIStrings: false,
+      translateMarkdown: true,
+      translateJSON: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "./locales",
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    documentations: [
+      {
+        contentPaths: ["src/content/docs/quick-start.md", "src/content/docs/feature-showcase.mdx"],
+        outputDir: "src/content/docs",
+        markdownOutput: {
+          style: "astro-starlight",
+          docsRoot: "src/content/docs",
+          postProcessing: {
+            regexAdjustments: [
+              {
+                description: "Per-locale screenshot folders in public assets",
+                search: "screenshots/en-GB/",
+                replace: "screenshots/${translatedLocale}/",
+              },
+            ],
+          },
         },
         addFrontmatter: true,
       },

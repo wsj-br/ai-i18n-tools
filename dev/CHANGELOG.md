@@ -1,5 +1,3 @@
-<!-- DOCTOC SKIP -->
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -10,6 +8,17 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 
 ## [Unreleased]
+
+- **Changed**: npm publish — remove `translated-docs/` from `package.json` `files`; localized README and docs remain in the Git repository only (English `docs/` still ship on npm).
+- **Security**: workspace — `pnpm-workspace.yaml` overrides bump transitive `qs` (≥6.15.2) and `ws` (≥8.20.1) to address moderate advisories in Express and Docusaurus dev-server chains.
+- **Added**: NOTICES — `pnpm notices:write` generates `NOTICES` from production deps of `ai-i18n-tools` and workspace examples via `license-checker-rseidelsohn`; `3p-lic-clarifications.json` reuses transrewrt clarifications for overlapping packages (e.g. `esrecurse`, `spdy`, `@jsonjoy.com/json-pointer`).
+- **Added**: translate-docs — selective YAML front matter translation via `documentations[].translateFrontmatterFields` (default `true`): built-in Starlight/Docusaurus prose fields (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, hero/pagination/prev-next labels, …) while routing keys (`slug`, `sidebar.order`, translation metadata) stay unchanged.
+- **Fixed**: output-paths — `doc-system` / `astro-starlight` with empty `localeSubpath` now lowercases locale folder names (e.g. `pt-BR` → `pt-br`) to match Starlight’s content directory convention.
+- **Added**: examples — `examples/astro-docs` Starlight documentation site (same locales as `docs-site`) demonstrating `style: "astro-starlight"`.
+- **Changed**: workspace — allow `esbuild` postinstall in `pnpm-workspace.yaml` for Astro Starlight example builds.
+- **Fixed**: editor — glossary tab hides add-row, filter, table, and pagination controls when `glossary.userGlossary` is not configured, instead of leaving them visible until an API error.
+- **Changed**: pnpm - moved `overrides` and `allowBuilds` settings from `package.json#pnpm` into `pnpm-workspace.yaml` for pnpm 11 compatibility (restores previously ignored `i18next` and `uuid` overrides).
+- **Fixed**: glossary - CSV parse failures now include the glossary filename in the error message (e.g. `glossary-user.csv: Invalid Closing Quote: …`) across CLI commands, stats, and the translation editor.
 
 ## [1.4.4] - 2026-05-13
 

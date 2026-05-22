@@ -148,7 +148,12 @@ export async function compareMarkdownAST(
 }
 
 function shouldCompareMarkdownStructure(source: Segment): boolean {
-  return source.type === "paragraph" || source.type === "heading" || source.type === "admonition";
+  return (
+    source.type === "paragraph" ||
+    source.type === "heading" ||
+    source.type === "admonition" ||
+    source.type === "frontmatter-field"
+  );
 }
 
 /**
@@ -194,10 +199,19 @@ export async function validateTranslation(
     }
 
     if (source.type === "frontmatter") {
-      const sourceFmKeys = source.content.match(/^[a-z_]+:/gm) || [];
-      const translatedFmKeys = translated.content.match(/^[a-z_]+:/gm) || [];
-      if (sourceFmKeys.length !== translatedFmKeys.length) {
-        errors.push(`Front matter structure changed at segment ${i} (hash ${source.hash})`);
+      if (
+        source.content.startsWith("__I18N_FM_SHELL__") ||
+        translated.content.startsWith("__I18N_FM_SHELL__")
+      ) {
+        if (source.content !== translated.content) {
+          errors.push(`Front matter shell modified at segment ${i} (hash ${source.hash})`);
+        }
+      } else {
+        const sourceFmKeys = source.content.match(/^[a-z_]+:/gm) || [];
+        const translatedFmKeys = translated.content.match(/^[a-z_]+:/gm) || [];
+        if (sourceFmKeys.length !== translatedFmKeys.length) {
+          errors.push(`Front matter structure changed at segment ${i} (hash ${source.hash})`);
+        }
       }
     }
   }
@@ -239,10 +253,16 @@ export async function validateDocTranslatePair(
   }
 
   if (source.type === "frontmatter") {
-    const sourceFmKeys = source.content.match(/^[a-z_]+:/gm) || [];
-    const translatedFmKeys = translatedText.match(/^[a-z_]+:/gm) || [];
-    if (sourceFmKeys.length !== translatedFmKeys.length) {
-      errors.push(`Front matter structure changed (hash ${source.hash})`);
+    if (source.content.startsWith("__I18N_FM_SHELL__")) {
+      if (source.content !== translatedText) {
+        errors.push(`Front matter shell modified (hash ${source.hash})`);
+      }
+    } else {
+      const sourceFmKeys = source.content.match(/^[a-z_]+:/gm) || [];
+      const translatedFmKeys = translatedText.match(/^[a-z_]+:/gm) || [];
+      if (sourceFmKeys.length !== translatedFmKeys.length) {
+        errors.push(`Front matter structure changed (hash ${source.hash})`);
+      }
     }
   }
 

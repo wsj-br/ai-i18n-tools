@@ -74,7 +74,7 @@
 <a id="installation"></a>
 ## 安装
 
-发布的包是 **仅支持 ESM**。在 Node.js 或您的打包工具中使用 `import`/`import()`；请勿使用 `require('ai-i18n-tools')`。该包声明了 `engines.node` `>=22.16.0`；旧版本的 Node.js 不受支持。
+发布的包仅包含 **ESM**。在 Node.js 或打包工具中使用 `import`/`import()`；请勿使用 `require('ai-i18n-tools')`。该包声明了 `engines.node` `>=22.16.0`；不支持较旧版本的 Node.js。npm 压缩包仅在 `docs/` 下包含英文文件；特定区域设置的副本位于 [GitHub 仓库](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) 中的 `translated-docs/` 下。
 
 ```bash
 npm install ai-i18n-tools
@@ -103,7 +103,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 快速开始
 
-默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus` 模板启用 **文档** 翻译（`translate-docs`）。当您希望使用一个命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译和文档翻译时，请使用 `sync`。
+默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus` 和 `ui-starlight` 模板启用 **文档** 翻译（`translate-docs`）。当您希望使用一条命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译和文档翻译时，请使用 `sync`。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -113,6 +113,7 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -463,16 +464,22 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 npx ai-i18n-tools init -t ui-docusaurus
 ```
 
+适用于 Astro Starlight 文档站点：
+
+```bash
+npx ai-i18n-tools init -t ui-starlight
+```
+
 编辑生成的 `ai-i18n-tools.config.json`：
 
-- `sourceLocale` - 源语言（必须与 `defaultLocale` 中的 `docusaurus.config.js` 匹配）。
-- `targetLocales` - BCP-47 区域代码数组（例如 `["de", "fr", "es"]`）。
+- `sourceLocale` - 源语言（必须与 `defaultLocale` 中的 `docusaurus.config.js` 一致）。
+- `targetLocales` - BCP-47 语言区域代码数组（例如 `["de", "fr", "es"]`）。
 - `cacheDir` - 所有文档流水线共享的 SQLite 缓存目录（也是 `--write-logs` 的默认日志目录）。
-- `documentations` - 文档块数组。每个块包含可选的 `description`、`contentPaths`、`outputDir`、可选的 `jsonSource`、`markdownOutput`、可选的 `segmentSplitting`、`targetLocales`、`addFrontmatter` 等。
-- `documentations[].description` - 维护者的可选简短说明（说明此块涵盖的内容）。设置后，它会出现在 `translate-docs` 标题（`🌐 …: translating …`）和 `status` 的节标题中。
-- `documentations[].contentPaths` - Markdown/MDX 源目录或文件（另见 `documentations[].jsonSource` 获取 JSON 标签）。
+- `documentations` - 文档块数组。每个块包含可选的 `description`、`contentPaths`、`outputDir`、可选的 `jsonSource`、`markdownOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`targetLocales`、`addFrontmatter` 等。
+- `documentations[].description` - 维护者的可选简短说明（说明此块涵盖的内容）。设置后，它会显示在 `translate-docs` 标题（`🌐 …: translating …`）和 `status` 的章节标题中。
+- `documentations[].contentPaths` - Markdown/MDX 源目录或文件（JSON 标签请参见 `documentations[].jsonSource`）。
 - `documentations[].outputDir` - 该块的翻译输出根目录。
-- `documentations[].markdownOutput.style` - `"nested"`（默认）、`"docusaurus"` 或 `"flat"`（参见 [输出布局](#output-layouts)）。
+- `documentations[].markdownOutput.style` - `"nested"`（默认）、`"flat"`、`"doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"`（参见 [输出布局](#output-layouts)）。
 
 **主要与辅助的区别：** 应将编写和翻译的重点放在 `contentPaths` 上——该输出即为本地化文档。`jsonSource` 适用于需要本地化 **Docusaurus 外壳** 的团队；当您升级 Docusaurus 或更改导航栏、页脚或主题字符串时，运行 `docusaurus write-translations` 以确保默认语言目录下的源目录保持最新。如果您仅需翻译页面内容，并通过其他方式处理 UI 字符串，可将 `features.translateJSON` 设置为 `false`。
 
@@ -557,12 +564,23 @@ CLI 使用 SQLite 保存 **文件跟踪**信息（每个文件 × 区域设置�
 
 `"nested"`（省略时的默认值）—— 在 `{outputDir}/{locale}/` 下镜像源树（例如 `docs/guide.md` → `i18n/de/docs/guide.md`）。
 
-`"docusaurus"` — 将位于 `docsRoot` 下的文件放置到 `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`，符合通常的 Docusaurus i18n 布局。将 `documentations[].markdownOutput.docsRoot` 设置为你的文档源根目录（例如 `"docs"`）。
+`"doc-system"` — 静态文档站点的区域设置前缀文档树。`docsRoot` 下的文件将写入 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`。在 `docsRoot` 之外的路径将回退到嵌套布局。将 `documentations[].markdownOutput.docsRoot` 设置为您的英文源根目录（例如 `"docs"` 或 `"src/content/docs"`）。当 `style` 为 `"doc-system"` 时，必须显式设置 `localeSubpath`（可使用下方的别名预设）。
 
-文档页面（主要）：
+**别名**（相同的布局引擎，预设 `localeSubpath`）：
+
+- `"docusaurus"` — `localeSubpath` 默认为 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 插件布局）。
+- `"astro-starlight"` — `localeSubpath` 默认为 `""`（翻译后的页面直接位于 `{outputDir}/{locale}/` 下，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配，当英文内容位于内容根目录且 `outputDir` 等于 `docsRoot` 时）。
+
+Docusaurus 预设（主要文档页面）：
 
 ```text
 docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Starlight 预设（相同的块结构，不同的路径）：
+
+```text
+src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
 可选 JSON 标签——来自 `jsonSource` 的 Docusaurus 外壳字符串（非 MDX 正文内容）：
@@ -570,6 +588,8 @@ docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
+
+Starlight 为多种语言区域提供了 UI 字符串；可选的自定义 UI 覆盖在需要时使用 `src/content/i18n/en.json` 和 `jsonPathTemplate: "{outputDir}/{locale}.json"` 在单独的 `documentations[]` 块中。
 
 `"flat"` — 将翻译后的文件放置在源文件旁边，并添加语言环境后缀，或放入子目录中。页面之间的相对链接会自动重写。
 
@@ -1101,35 +1121,39 @@ SQLite 缓存目录（所有 `documentations` 块共享）。可在多次运行�
 - `sourceFiles`
 可选别名，在加载时合并到 `contentPaths` 中。
 - `targetLocales`
-仅限此块的可选语言区域子集（否则使用根级 `targetLocales`）。有效文档语言区域是所有块的并集。
+仅为该块指定的可选语言区域子集（否则使用根 `targetLocales`）。有效文档语言区域是所有块的并集。
 - `jsonSource`
-可选。此块的 Docusaurus JSON 标签目录的源目录（例如来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`jsonSource` 仅提供 shell/UI JSON，不包含 MDX。
+可选。该块的 Docusaurus JSON 标签目录的源目录（例如来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`jsonSource` 仅提供外壳/UI 的 JSON，不包含 MDX。
 - `markdownOutput.style`
-`"nested"`（默认）、`"docusaurus"` 或 `"flat"`。
+`"nested"`（默认）、`"flat"`、`"doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"`。
+- `markdownOutput.localeSubpath`
+在 `{locale}/` 和 `{relativeToDocsRoot}` 之间用于 `doc-system` 的路径段（直接使用 `style: "doc-system"` 时必需；使用别名时为预设）。对 Starlight 风格的语言区域文件夹使用 `""`。
 - `markdownOutput.docsRoot`
 Docusaurus 布局的源文档根目录（例如 `"docs"`）。
 - `markdownOutput.pathTemplate`
-自定义 markdown 输出路径。占位符：<code>"{outputDir}"</code>，<code>"{locale}"</code>，<code>"{LOCALE}"</code>，<code>"{relPath}"</code>，<code>"{stem}"</code>，<code>"{basename}"</code>，<code>"{extension}"</code>，<code>"{docsRoot}"</code>，<code>"{relativeToDocsRoot}"</code>。
+自定义 Markdown 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
 标签文件的自定义 JSON 输出路径。支持与 `pathTemplate` 相同的占位符。
 - `markdownOutput.flatPreserveRelativeDir`
-对于 `flat` 风格，保留源子目录，以便具有相同基本名称的文件不会冲突。
+对于 `flat` 风格，保留源子目录以避免同名文件冲突。
 - `markdownOutput.rewriteRelativeLinks`
-翻译后重写相对链接（对于 `flat` 风格自动启用）。
+翻译后重写相对链接（在 `flat` 风格下自动启用）。
 - `markdownOutput.linkRewriteDocsRoot`
-计算扁平链接重写前缀时使用的仓库根目录。除非你的翻译文档位于不同的项目根目录下，否则通常应保持为 `"."`。
+计算扁平链接重写前缀时使用的仓库根目录。除非你的翻译文档位于不同的项目根目录下，否则通常保持为 `"."` 即可。
 - `markdownOutput.postProcessing`
-对翻译后的 **markdown 内容** 应用的可选转换（YAML 前置内容将保留）。在段落重组和扁平链接重写之后、`addFrontmatter` 之前执行。
+对翻译后的 **markdown 内容** 进行可选的转换（YAML 键和非文本的前置内容值将保留）。在片段重组和扁平链接重写之后、`addFrontmatter` 之前执行。
+- `translateFrontmatterFields`
+与 `markdownOutput` 同级（按 `documentations[]` 块）。默认 `true`：翻译面向用户的 YAML 文本，适用于 Starlight/Docusaurus（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next` 标签）。设置为 `false` 可保持整个前置内容块不变；传入字符串数组可限制为特定的点路径。
 - `segmentSplitting`
-与 `markdownOutput` 处于相同层级（按 `documentations[]` 块定义）。用于 `translate-docs` 提取的可选细粒度分段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。当 `enabled` 为 `true` 时（`segmentSplitting` 缺省时的默认值），密集段落、GFM 管道表格（首个片段包含表头、分隔行和第一行数据）以及长列表将被拆分；子片段以单个换行符重新连接（`tightJoinPrevious`）。设置 `"enabled": false` 以仅对每个由空行分隔的正文块使用一个段落。
+与 `markdownOutput` 同级（按 `documentations[]` 块）。用于 `translate-docs` 提取的可选细粒度分段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。当 `enabled` 为 `true` 时（`segmentSplitting` 被省略时的默认值），密集段落、GFM 管道表格（第一块包含表头、分隔符和第一行数据）以及长列表将被拆分；子部分以单个换行符重新连接（`tightJoinPrevious`）。设置为 `"enabled": false` 则仅按空行分隔的正文块进行分段。
 - `warnMarkdownSourceIssues`
-当 `true` 时（缺省时的默认值），每次 `translate-docs` 运行都会重新扫描 Markdown 段落中的高风险分隔符或未闭合的行内代码，打印终端警告，并更新该文件缓存路径对应的 `markdown_source_issues` 行。设置 `false` 可跳过对此块的警告和 SQLite 更新。
+当启用 `true` 时（省略时的默认值），每次 `translate-docs` 运行都会重新扫描 Markdown 片段中的高风险分隔符或未闭合的行内代码，打印终端警告，并更新该文件缓存路径的 `markdown_source_issues` 行。设置为 `false` 可跳过此块的警告和 SQLite 更新。
 - `markdownOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }` 的有序列表。`search` 是一个正则表达式模式（纯字符串使用标志 `g` 或 `/pattern/flags`）。`replace` 支持占位符，例如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`。
+`{ "description"?, "search", "replace" }` 的有序列表。`search` 是一个正则表达式模式（纯字符串使用标志 `g` 或 `/pattern/flags`）。`replace` 支持诸如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}` 等占位符。
 - `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label" }` —— 翻译器会查找包含 `start` 的第一行以及匹配的 `end` 行，然后用标准语言切换器替换该片段。`label` 控制清单标签来源：`"local"`（默认，使用 `ui-languages.json` `label`）或 `"english"`（使用 `englishName`）。链接使用相对于翻译文件的路径构建；当未配置清单时，标签来自 `localeDisplayNames` 和区域代码。
+`{ "start", "end", "separator", "label" }` —— 翻译器会查找包含 `start` 的第一行以及对应的 `end` 行，然后用标准的语言切换器替换该片段。`label` 控制清单标签来源：`"local"`（默认，使用 `ui-languages.json` `label`）或 `"english"`（使用 `englishName`）。链接使用相对于翻译文件的路径构建；当未配置清单时，标签来自 `localeDisplayNames` 和区域代码。
 - `addFrontmatter`
-当 `true` 时（缺省时的默认值），翻译后的 Markdown 文件包含以下 YAML 键：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，以及当至少一个段落包含模型元数据时，还包括 `translation_models`（所用 OpenRouter 模型 ID 的排序列表）。设置为 `false` 可跳过。
+当启用 `true` 时（省略时的默认值），翻译后的 Markdown 文件将包含以下 YAML 键：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，以及当至少有一个片段包含模型元数据时的 `translation_models`（所使用的 OpenRouter 模型 ID 的排序列表）。设置为 `false` 可跳过。
 
 <br/>
 
@@ -1191,8 +1215,8 @@ npx ai-i18n-tools glossary-generate
 - `version`
 打印 CLI 版本和构建时间戳（与根程序上的 `-V` / `--version` 提供的信息相同）。
 
-- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
-写入一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 创建一个初始的 `.translate-ignore`。
+- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
+写入一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 将创建一个初始的 `.translate-ignore`。
 
 - `check-models`
 根据 `GET /models` 验证每个配置的 OpenRouter 模型 ID（目录成员资格、`expiration_date`、每百万 token 的提示/补全 USD 价格）。需要 `OPENROUTER_API_KEY`。当任何配置的 ID 缺失或过期时，以非零状态退出。目录请求时会遵守 `openrouter.requestTimeoutMs`。

@@ -157,4 +157,15 @@ describe("Glossary", () => {
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  it("wraps CSV parse errors with the filename", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-bad-csv-"));
+    const user = path.join(dir, "glossary-user.csv");
+    fs.writeFileSync(user, '"broken', "utf8");
+    try {
+      expect(() => new Glossary(undefined, user, ["de"])).toThrow(/glossary-user\.csv:/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });

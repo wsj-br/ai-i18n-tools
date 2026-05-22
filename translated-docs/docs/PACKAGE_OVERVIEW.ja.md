@@ -292,8 +292,8 @@ SQLiteデータベース（`node:sqlite`経由）は、`(source_hash, locale)`�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)`はソース相対パスを出力パスにマッピングします：
 
-- `nested` スタイル (デフォルト): markdown 用に `{outputDir}/{locale}/{relPath}` を使用。
-- `docusaurus` スタイル: `docsRoot` 配下で、出力は `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}` を使用。`docsRoot` 外のパスはネストされたレイアウトにフォールバック。
+- `nested` スタイル（デフォルト）: markdown 用の `{outputDir}/{locale}/{relPath}`。
+- `doc-system` スタイル: `docsRoot` 配下で、出力は `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` を使用。`docsRoot` の外側のパスは入れ子レイアウトにフォールバック。エイリアス: `docusaurus`（デフォルト `localeSubpath` = Docusaurus プラグインパス）、`astro-starlight`（デフォルトの `localeSubpath` は空）。
 - `flat` スタイル: `{outputDir}/{stem}.{locale}{extension}`。`flatPreserveRelativeDir` が `true` の場合、ソースのサブディレクトリは `outputDir` 配下に保持される。
 - **カスタム** `pathTemplate`: `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` を使用した任意の markdown レイアウト。
 - **カスタム** `jsonPathTemplate`: JSON ラベルファイル用の個別のカスタムレイアウト。同じプレースホルダーを使用。

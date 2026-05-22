@@ -75,7 +75,7 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 <a id="installation"></a>
 ## Installation
 
-The published package is **ESM-only**. Use `import`/`import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported.
+The published package is **ESM-only**. Use `import`/`import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported. The npm tarball includes English files under `docs/` only; locale-specific copies under `translated-docs/` are in the [GitHub repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
 
 ```bash
 npm install ai-i18n-tools
@@ -104,7 +104,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Quick Start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` template enables **document** translation (`translate-docs`). Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` and `ui-starlight` templates enable **document** translation (`translate-docs`). Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -114,6 +114,7 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -462,16 +463,22 @@ Designed primarily for **markdown and MDX documentation** under `contentPaths` (
 npx ai-i18n-tools init -t ui-docusaurus
 ```
 
+For Astro Starlight documentation sites:
+
+```bash
+npx ai-i18n-tools init -t ui-starlight
+```
+
 Edit the generated `ai-i18n-tools.config.json`:
 
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all documentation pipelines (and default log directory for `--write-logs`).
-- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, optional `segmentSplitting`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter`, etc.
 - `documentations[].description` - optional short note for maintainers (what this block covers). When set, it appears in the `translate-docs` headline (`🌐 …: translating …`) and in `status` section headers.
 - `documentations[].contentPaths` - markdown/MDX source directories or files (see also `documentations[].jsonSource` for JSON labels).
 - `documentations[].outputDir` - translated output root for that block.
-- `documentations[].markdownOutput.style` - `"nested"` (default), `"docusaurus"`, or `"flat"` (see [Output layouts](#output-layouts)).
+- `documentations[].markdownOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` (see [Output layouts](#output-layouts)).
 
 **Primary vs supplementary:** Focus authoring and translation effort on `contentPaths` — that output is the localized documentation. `jsonSource` is for teams that localize the **Docusaurus shell**; run `docusaurus write-translations` when you upgrade Docusaurus or change navbar, footer, or theme strings so source catalogs under the default locale folder stay current. You can set `features.translateJSON` to `false` if you only need translated pages and will handle UI strings another way.
 
@@ -558,12 +565,23 @@ The run header also prints `Batch prompt format: …` so you can confirm the act
 
 `"nested"` (default when omitted) — mirrors the source tree under `{outputDir}/{locale}/` (e.g. `docs/guide.md` → `i18n/de/docs/guide.md`).
 
-`"docusaurus"` — places files that lie under `docsRoot` at `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`, matching the usual Docusaurus i18n layout. Set `documentations[].markdownOutput.docsRoot` to your docs source root (e.g. `"docs"`).
+`"doc-system"` — locale-prefixed documentation tree for static docs sites. Files under `docsRoot` are written to `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`. Paths outside `docsRoot` fall back to the nested layout. Set `documentations[].markdownOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When `style` is `"doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets).
 
-Documentation pages (primary):
+**Aliases** (same layout engine, preset `localeSubpath`):
+
+- `"docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
+- `"astro-starlight"` — `localeSubpath` defaults to `""` (translated pages directly under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`).
+
+Docusaurus preset (primary documentation pages):
 
 ```text
 docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Starlight preset (same block shape, different paths):
+
+```text
+src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
 Optional JSON labels — Docusaurus shell strings from `jsonSource` (not MDX body copy):
@@ -571,6 +589,8 @@ Optional JSON labels — Docusaurus shell strings from `jsonSource` (not MDX bod
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
+
+Starlight ships UI strings for many locales; optional custom UI overrides use `src/content/i18n/en.json` with `jsonPathTemplate: "{outputDir}/{locale}.json"` in a separate `documentations[]` block when needed.
 
 `"flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically.
 
@@ -1112,7 +1132,9 @@ Optional subset of locales for this block only (otherwise root `targetLocales`).
 - `jsonSource`
 Optional. Source directory for Docusaurus JSON label catalogs for this block (e.g. `"i18n/en"` from `docusaurus write-translations`). Page bodies always come from `contentPaths`; `jsonSource` only supplies shell/UI JSON, not MDX.
 - `markdownOutput.style`
-`"nested"` (default), `"docusaurus"`, or `"flat"`.
+`"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"`.
+- `markdownOutput.localeSubpath`
+Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` (required when using `style: "doc-system"` directly; preset when using an alias). Use `""` for Starlight-style locale folders.
 - `markdownOutput.docsRoot`
 Source docs root for Docusaurus layout (e.g. `"docs"`).
 - `markdownOutput.pathTemplate`
@@ -1126,7 +1148,9 @@ Rewrite relative links after translation (auto-enabled for `flat` style).
 - `markdownOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `markdownOutput.postProcessing`
-Optional transforms on the translated **markdown body** (YAML front matter is preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`.
+Optional transforms on the translated **markdown body** (YAML keys and non-prose front matter values are preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`.
+- `translateFrontmatterFields`
+Same level as `markdownOutput` (per `documentations[]` block). Default `true`: translate user-facing YAML prose for Starlight/Docusaurus (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` labels). Set `false` to keep the entire front matter block unchanged; pass a string array to restrict to specific dot-paths.
 - `segmentSplitting`
 Same level as `markdownOutput` (per `documentations[]` block). Optional finer-grained segments for `translate-docs` extraction: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. When `enabled` is `true` (default when `segmentSplitting` is omitted), dense paragraphs, GFM pipe tables (first chunk includes header, separator, and first data row), and long lists are split; sub-parts rejoin with single newlines (`tightJoinPrevious`). Set `"enabled": false` to use one segment per blank-line-delimited body block only.
 - `warnMarkdownSourceIssues`
@@ -1199,7 +1223,7 @@ npx ai-i18n-tools glossary-generate
 - `version`
 Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).
 
-- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
+- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
 Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.
 
 - `check-models`

@@ -74,7 +74,7 @@
 <a id="installation"></a>
 ## 설치
 
-게시된 패키지는 **ESM 전용**입니다. Node.js 또는 번들러에서 `import`/`import()`를 사용하세요; `require('ai-i18n-tools')`는 사용하지 마세요. 이 패키지는 `engines.node` `>=22.16.0`를 선언하며, 이전 Node.js 버전은 지원되지 않습니다.
+게시된 패키지는 **ESM 전용**입니다. Node.js 또는 번들러에서는 `import`/`import()`을 사용하고, `require('ai-i18n-tools')`는 사용하지 마십시오. 이 패키지는 `engines.node` `>=22.16.0`를 선언합니다. 이전 버전의 Node.js는 지원되지 않습니다. npm tarball에는 `docs/` 아래에 있는 영문 파일만 포함되어 있으며, `translated-docs/` 아래의 지역화된 사본은 [GitHub 저장소](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs)에 있습니다.
 
 ```bash
 npm install ai-i18n-tools
@@ -103,7 +103,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 빠른 시작
 
-기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 하나의 명령으로 실행하려는 경우 `sync`를 사용하세요.
+기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 및 `ui-starlight` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 하나의 명령으로 실행하려는 경우 `sync`를 사용하세요.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -113,6 +113,7 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -463,16 +464,22 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 npx ai-i18n-tools init -t ui-docusaurus
 ```
 
+Astro Starlight 문서 사이트의 경우:
+
+```bash
+npx ai-i18n-tools init -t ui-starlight
+```
+
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `sourceLocale` - 소스 언어 (`docusaurus.config.js`의 `defaultLocale`와 일치해야 함).
-- `targetLocales` - BCP-47 로케일 코드 배열 (예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 문서 파이프라인에 공유되는 SQLite 캐시 디렉터리 (및 `--write-logs`의 기본 로그 디렉터리).
-- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `targetLocales`, `addFrontmatter` 등을 포함합니다.
-- `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모 (이 블록의 범위). 설정 시 `translate-docs` 제목 (`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됩니다.
-- `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일 (JSON 레이블은 `documentations[].jsonSource` 참조).
-- `documentations[].outputDir` - 해당 블록의 번역된 출력 루트.
-- `documentations[].markdownOutput.style` - `"nested"` (기본값), `"docusaurus"`, 또는 `"flat"` ([출력 레이아웃](#output-layouts) 참조).
+- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`과 일치해야 함).
+- `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
+- `cacheDir` - 모든 문서 파이프라인에 대한 공유 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리이기도 함).
+- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter` 등을 포함할 수 있음.
+- `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모(이 블록의 범위). 설정된 경우 `translate-docs` 제목(`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됨.
+- `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일(JSON 레이블은 `documentations[].jsonSource` 참조).
+- `documentations[].outputDir` - 해당 블록의 번역 출력 루트.
+- `documentations[].markdownOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"`, 또는 별칭 `"docusaurus"` / `"astro-starlight"`(자세한 내용은 [출력 레이아웃](#output-layouts) 참조).
 
 **주요 대 보조:** 작성 및 번역 작업은 `contentPaths`에 집중하세요. 이 출력물이 현지화된 문서입니다. `jsonSource`은 **Docusaurus 셸**을 현지화하는 팀을 위한 것이며, Docusaurus를 업그레이드하거나 네비게이션 바, 푸터, 테마 문자열을 변경할 때 `docusaurus write-translations`를 실행하여 기본 로케일 폴더 아래의 소스 카탈로그를 최신 상태로 유지하세요. 번역된 페이지만 필요하고 UI 문자열은 별도로 처리할 계획이라면 `features.translateJSON`을 `false`로 설정할 수 있습니다.
 
@@ -557,12 +564,23 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 
 `"nested"` (생략 시 기본값) — `{outputDir}/{locale}/` 아래에 소스 트리를 미러링합니다(예: `docs/guide.md` → `i18n/de/docs/guide.md`).
 
-`"docusaurus"` — 일반적인 Docusaurus i18n 레이아웃과 일치하도록 `docsRoot` 아래에 있는 파일을 `i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`에 배치합니다. `documentations[].markdownOutput.docsRoot`을 문서 소스 루트로 설정하세요(예: `"docs"`).
+`"doc-system"` — 정적 문서 사이트를 위한 로케일 접두사가 붙은 문서 트리. `docsRoot` 하위의 파일은 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`에 작성됨. `docsRoot` 외부의 경로는 중첩된 레이아웃으로 전환됨. 영어 소스 루트를 `"docs"` 또는 `"src/content/docs"`과 같이 `documentations[].markdownOutput.docsRoot`에 설정하세요. `style`이 `"doc-system"`인 경우 `localeSubpath`를 명시적으로 설정해야 하며(미리 설정된 별칭 중 하나 사용),
 
-문서 페이지 (주요):
+**별칭**(동일한 레이아웃 엔진, 사전 설정된 `localeSubpath`):
+
+- `"docusaurus"` — `localeSubpath`이 `docusaurus-plugin-content-docs/current`로 기본 설정됨(Docusaurus i18n 플러그인 레이아웃).
+- `"astro-starlight"` — `localeSubpath`이 `""`로 기본 설정됨(`outputDir`이 `docsRoot`과 같고 영어 콘텐츠가 콘텐츠 루트에 있을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치하는 방식으로, 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치함).
+
+Docusaurus 사전 설정(기본 문서 페이지):
 
 ```text
 docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Starlight 사전 설정(동일한 블록 구조, 다른 경로):
+
+```text
+src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
 선택적 JSON 레이블 — `jsonSource`에서 가져온 Docusaurus 셸 문자열(MDX 본문 복사본 아님):
@@ -570,6 +588,8 @@ docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
+
+Starlight는 여러 로케일의 UI 문자열을 기본 제공하며, 필요 시 별도의 `documentations[]` 블록에서 `jsonPathTemplate: "{outputDir}/{locale}.json"`과 함께 `src/content/i18n/en.json`를 사용하여 선택적으로 사용자 정의 UI를 재정의할 수 있음.
 
 `"flat"` — 번역된 파일을 소스 옆에 로케일 접미어를 붙이거나 하위 디렉터리에 배치합니다. 페이지 간의 상대 링크는 자동으로 재작성됩니다.
 
@@ -1101,35 +1121,39 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 - `sourceFiles`
 로드 시 `contentPaths`에 병합된 선택적 별칭.
 - `targetLocales`
-이 블록 전용으로 선택할 수 있는 로케일의 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록의 합집합입니다.
+이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록에서의 합집합임.
 - `jsonSource`
-선택 사항. 이 블록의 Docusaurus JSON 레이블 카탈로그에 대한 소스 디렉터리(예: `"i18n/en"`의 `docusaurus write-translations`). 페이지 본문은 항상 `contentPaths`에서 가져오며, `jsonSource`는 셸/UI JSON만 제공하고 MDX는 제공하지 않습니다.
+선택 사항. 이 블록의 Docusaurus JSON 레이블 카탈로그를 위한 소스 디렉터리(예: `docusaurus write-translations`의 `"i18n/en"`). 페이지 본문은 항상 `contentPaths`에서 가져옴. `jsonSource`은 쉘/UI용 JSON만 제공하며 MDX는 제공하지 않음.
 - `markdownOutput.style`
-`"nested"`(기본값), `"docusaurus"`, 또는 `"flat"`.
+`"nested"`(기본값), `"flat"`, `"doc-system"`, 또는 별칭 `"docusaurus"` / `"astro-starlight"`.
+- `markdownOutput.localeSubpath`
+`doc-system`을 위한 `{locale}/`와 `{relativeToDocsRoot}` 사이의 경로 세그먼트(`style: "doc-system"`을 직접 사용할 때 필요; 별칭 사용 시 사전 설정됨). Starlight 스타일의 로케일 폴더에는 `""` 사용.
 - `markdownOutput.docsRoot`
 Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`).
 - `markdownOutput.pathTemplate`
-사용자 정의 markdown 출력 경로. 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+사용자 정의 마크다운 출력 경로. 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-레이블 파일에 대한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리 표시자를 지원합니다.
+레이블 파일을 위한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리 표시자를 지원함.
 - `markdownOutput.flatPreserveRelativeDir`
-`flat` 스타일의 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉토리를 유지합니다.
+`flat` 스타일의 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지하세요.
 - `markdownOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 재작성합니다 (`flat` 스타일에 대해 자동으로 활성화됨).
+번역 후 상대 링크를 다시 작성합니다(`flat` 스타일에서는 자동으로 활성화됨).
 - `markdownOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용하는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 그대로 두는 것이 좋습니다.
+평면 링크 재작성 접두사를 계산할 때 사용하는 리포지터리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`으로 그대로 두는 것이 좋습니다.
 - `markdownOutput.postProcessing`
-번역된 **마크다운 본문**에 대한 선택적 변환입니다(YAML 프론트 매터는 유지됨). 세그먼트 재조합 및 플랫 링크 재작성 후, `addFrontmatter` 이전에 실행됩니다.
+번역된 **마크다운 본문**에 대한 선택적 변환(YAML 키와 비서사적 front matter 값은 보존됨). 세그먼트 재조합 및 평면 링크 재작성 후, `addFrontmatter` 이전에 실행됩니다.
+- `translateFrontmatterFields`
+`markdownOutput`과 동일한 수준임(`documentations[]` 블록 기준). 기본값 `true`: Starlight/Docusaurus용 사용자 인터페이스 YAML 서사문 번역(`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` 레이블). 전체 front matter 블록을 변경 없이 유지하려면 `false`로 설정하고, 특정 점 표기 경로로 제한하려면 문자열 배열을 전달하세요.
 - `segmentSplitting`
-`markdownOutput`과 동일한 수준(각 `documentations[]` 블록 기준). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. `enabled`가 `true`인 경우(기본값이며 `segmentSplitting` 생략 시 적용됨), 밀집된 단락, GFM 파이프 테이블(첫 번째 청크는 헤더, 구분자 및 첫 번째 데이터 행 포함), 긴 목록이 분할되며, 하위 부분은 단일 줄바꿈으로 다시 결합됩니다(`tightJoinPrevious`). `"enabled": false`을 설정하면 빈 줄로 구분된 본문 블록마다 하나의 세그먼트만 사용합니다.
+`markdownOutput`과 동일한 수준입니다(`documentations[]` 블록 기준). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. `enabled`가 `true`일 때(`segmentSplitting` 생략 시 기본값) 밀집된 단락, GFM 파이프 테이블(첫 번째 청크는 헤더, 구분자, 첫 번째 데이터 행 포함), 긴 목록이 분할되며, 하위 부분은 단일 줄바꿈으로 다시 결합됩니다(`tightJoinPrevious`). 각 빈 줄로 구분된 본문 블록마다 하나의 세그먼트만 사용하려면 `"enabled": false`를 설정하세요.
 - `warnMarkdownSourceIssues`
-`true`인 경우(생략 시 기본값), 각 `translate-docs` 실행 시 마크다운 세그먼트에서 위험한 구분자/닫히지 않은 인라인 코드를 다시 검사하고 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 대체합니다. 이 블록에 대해 경고 및 SQLite 업데이트를 건너뛰려면 `false`을 설정합니다.
+`true`일 경우(생략 시 기본값) 각 `translate-docs` 실행 시 마크다운 세그먼트에서 위험한 구분자/닫히지 않은 인라인 코드를 다시 검사하고 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 대체합니다. 이 블록에 대해 경고 및 SQLite 업데이트를 건너뛰려면 `false`를 설정하세요.
 - `markdownOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }`의 순서가 지정된 목록입니다. `search`는 정규식 패턴이며(일반 문자열은 플래그 `g` 또는 `/pattern/flags` 사용), `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`과 같은 자리표시자(placeholder)를 지원합니다.
+`{ "description"?, "search", "replace" }`의 순서 있는 목록입니다. `search`은 정규식 패턴이며(일반 문자열은 `g` 플래그 또는 `/pattern/flags` 사용). `replace`은 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`과 같은 자리표시자를 지원합니다.
 - `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label" }` — 번역기는 `start`을 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾아, 해당 구간을 표준 언어 전환기로 대체합니다. `label`은 매니페스트 레이블 소스를 제어합니다: `"local"`(기본값, `ui-languages.json` `label` 사용) 또는 `"english"`(`englishName` 사용). 링크는 번역된 파일을 기준으로 상대 경로로 생성되며, 매니페스트가 구성되지 않은 경우 레이블은 `localeDisplayNames` 및 로케일 코드에서 가져옵니다.
+`{ "start", "end", "separator", "label" }` — 번역기는 `start`을 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾아 해당 범위를 표준 언어 전환기로 대체합니다. `label`은 매니페스트 레이블 소스를 제어합니다: `"local"`(기본값, `ui-languages.json` `label` 사용) 또는 `"english"`(`englishName` 사용). 링크는 번역된 파일을 기준으로 상대 경로로 생성되며, 매니페스트가 구성되지 않은 경우 레이블은 `localeDisplayNames` 및 로케일 코드에서 가져옵니다.
 - `addFrontmatter`
-`true`인 경우(생략 시 기본값), 번역된 마크다운 파일에는 YAML 키 `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`이 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models`(사용된 OpenRouter 모델 ID의 정렬된 목록)도 포함됩니다. 생략하려면 `false`로 설정합니다.
+`true`일 경우(생략 시 기본값), 번역된 마크다운 파일에는 YAML 키가 포함됩니다: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, 그리고 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models`(사용된 OpenRouter 모델 ID의 정렬된 목록). 건너뛰려면 `false`로 설정하세요.
 
 <br/>
 
@@ -1191,7 +1215,7 @@ npx ai-i18n-tools glossary-generate
 - `version`
 CLI 버전 및 빌드 타임스탬프 출력(루트 프로그램의 `-V` / `--version`와 동일한 정보).
 
-- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
+- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
 시작 구성 파일 작성(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`이 시작용 `.translate-ignore`을 생성합니다.
 
 - `check-models`

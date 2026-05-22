@@ -292,10 +292,10 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 
 `resolveDocumentationOutputPath(config, cwd, locale, relPath, kind)` 將來源相對路徑對應至輸出路徑：
 
-- `nested` 樣式 (預設)：針對 Markdown 使用 `{outputDir}/{locale}/{relPath}`。
-- `docusaurus` 樣式：位於 `docsRoot` 底下，輸出使用 `{outputDir}/{locale}/docusaurus-plugin-content-docs/current/{relativeToDocsRoot}`；在 `docsRoot` 之外的路徑會回退至巢狀佈局。
-- `flat` 樣式：`{outputDir}/{stem}.{locale}{extension}`。當 `flatPreserveRelativeDir` 為 `true` 時，原始碼子目錄會保留在 `outputDir` 底下。
-- **自訂** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任意 Markdown 佈局。
+- `nested` 樣式（預設）：適用於 markdown 的 `{outputDir}/{locale}/{relPath}`。
+- `doc-system` 樣式：位於 `docsRoot` 之下，輸出使用 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`；位於 `docsRoot` 之外的路徑將回退至巢狀版面配置。別名：`docusaurus`（預設 `localeSubpath` = Docusaurus 外掛程式路徑），`astro-starlight`（預設為空 `localeSubpath`）。
+- `flat` 樣式：`{outputDir}/{stem}.{locale}{extension}`。當 `flatPreserveRelativeDir` 為 `true` 時，原始碼子目錄會保留在 `outputDir` 之下。
+- **自訂** `pathTemplate`：使用 `{outputDir}`、`{locale}`、`{LOCALE}`、`{relPath}`、`{stem}`、`{basename}`、`{extension}`、`{docsRoot}`、`{relativeToDocsRoot}` 的任何 Markdown 版面配置。
 - **自訂** `jsonPathTemplate`：JSON 標籤檔案的獨立自訂佈局，使用相同的佔位符。
 - `linkRewriteDocsRoot` 可協助平面式連結重寫器在翻譯輸出的根目錄不同於預設專案根目錄時，計算出正確的前置字串。
 

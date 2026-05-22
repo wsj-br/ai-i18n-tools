@@ -1,10 +1,10 @@
 ---
 sidebar_position: 1
-title: Translation Feature Showcase
+title: Übersicht der Übersetzungsfunktionen
 description: >-
-  A reference document demonstrating every Markdown element that ai-i18n-tools
-  knows how to translate.
-translation_last_updated: '2026-05-06T20:54:06.060Z'
+  Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
+  übersetzen kann.
+translation_last_updated: '2026-05-22T22:38:12.913Z'
 source_file_mtime: '2026-05-04T21:42:57.361Z'
 source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
 translation_language: de

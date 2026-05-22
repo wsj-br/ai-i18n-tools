@@ -24,6 +24,10 @@ import {
 } from "../../src/core/ui-languages.js";
 
 const defaultMarkdownOutput = { style: "nested" as const, flatPreserveRelativeDir: false };
+const defaultDocumentationFields = {
+  markdownOutput: defaultMarkdownOutput,
+  translateFrontmatterFields: true,
+};
 
 function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
   return parseI18nConfig(
@@ -270,7 +274,7 @@ describe("ui-languages", () => {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
           targetLocales: ["de", "fr"],
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
     });
@@ -286,7 +290,7 @@ describe("ui-languages", () => {
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
     });
@@ -302,7 +306,7 @@ describe("ui-languages", () => {
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
     });
@@ -318,7 +322,7 @@ describe("ui-languages", () => {
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
     });
@@ -335,7 +339,7 @@ describe("ui-languages", () => {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
           targetLocales: ["de"],
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
       features: {
@@ -359,7 +363,7 @@ describe("ui-languages", () => {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
           targetLocales: ["de", "fr"],
-          markdownOutput: defaultMarkdownOutput,
+          ...defaultDocumentationFields,
         },
       ],
       features: {

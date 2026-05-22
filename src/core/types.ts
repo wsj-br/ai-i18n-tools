@@ -5,6 +5,7 @@ import { coerceTargetLocalesField } from "./locale-utils.js";
 export type SegmentType =
   | "ui-string"
   | "frontmatter"
+  | "frontmatter-field"
   | "heading"
   | "paragraph"
   | "code"
@@ -29,6 +30,8 @@ export interface Segment {
   /** When true, this segment reassembles with a single `\n` after the previous segment (no blank line). */
   tightJoinPrevious?: boolean;
   startLine?: number;
+  /** Dot-path for selective front matter field segments (e.g. `title`, `sidebar.label`). */
+  frontmatterPath?: string;
   jsonKey?: string;
   jsonDescription?: string;
   svg?: SvgSegmentMeta;
@@ -402,15 +405,32 @@ export function mergeSegmentSplittingOpts(
   return segmentSplittingSchema.parse(partial ?? {});
 }
 
+/** Default locale folder segment for the `docusaurus` style alias (doc-system preset). */
+export const DOCUSAURUS_LOCALE_SUBPATH = "docusaurus-plugin-content-docs/current";
+
+const markdownOutputStyleSchema = z.enum([
+  "nested",
+  "flat",
+  "doc-system",
+  "docusaurus",
+  "astro-starlight",
+]);
+
 const markdownOutputSchema = z
   .object({
     /** Built-in layout when `pathTemplate` is unset. */
-    style: z.enum(["nested", "docusaurus", "flat"]).default("nested"),
+    style: markdownOutputStyleSchema.default("nested"),
     /**
-     * Directory prefix (posix, relative to cwd) for doc sources that use the Docusaurus plugin path.
-     * Only paths under this prefix use `…/docusaurus-plugin-content-docs/current/…` when style is `docusaurus`.
+     * Directory prefix (posix, relative to cwd) for doc sources under `doc-system` layout.
+     * Only paths under this prefix use `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`.
      */
     docsRoot: z.string().optional(),
+    /**
+     * Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` style.
+     * Required when `style` is `doc-system` (may be `""`). Set automatically for `docusaurus` and
+     * `astro-starlight` aliases at config load.
+     */
+    localeSubpath: z.string().optional(),
     /** When set, overrides `style` for markdown output paths. */
     pathTemplate: z.string().optional(),
     /** Optional overrides for JSON outputs (default: nested `outputDir/locale/relPath`). */
@@ -545,6 +565,12 @@ const documentationBlockSchema = z
      * / inline-code patterns, logs warnings, and refreshes `markdown_source_issues` in the cache DB.
      */
     warnMarkdownSourceIssues: z.boolean().optional(),
+    /**
+     * Selective YAML front matter translation for doc-site metadata (Starlight / Docusaurus).
+     * `true` (default) translates built-in prose fields (`title`, `description`, `sidebar.label`, …).
+     * `false` keeps the entire front matter block unchanged. A string array restricts translation to those dot-paths.
+     */
+    translateFrontmatterFields: z.union([z.boolean(), z.array(z.string().min(1))]).default(true),
   })
   .strict();
 
@@ -584,6 +610,7 @@ export const i18nConfigSchema = z
           style: "nested",
           flatPreserveRelativeDir: false,
         },
+        translateFrontmatterFields: true,
       },
     ]),
     /** BCP-47-ish codes that use RTL typography; layout `dir` stays the app’s i18next concern. */

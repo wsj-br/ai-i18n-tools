@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
-import { parse } from "csv-parse/sync";
 import { TranslationCache } from "../core/cache.js";
+import { parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
 import type { CldrPluralForm } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import {
@@ -714,10 +714,7 @@ export function createTranslationEditorApp(
         return;
       }
       const raw = fs.readFileSync(glossaryPath, "utf8");
-      const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<
-        string,
-        string
-      >[];
+      const records = parseGlossaryCsv(glossaryPath, raw);
       const rows = records.map((r, rowIndex) => ({
         rowIndex,
         "Original language string": r["Original language string"] ?? r["en"] ?? "",
@@ -750,10 +747,7 @@ export function createTranslationEditorApp(
       let rows: string[][] = [];
       if (fs.existsSync(glossaryPath)) {
         const raw = fs.readFileSync(glossaryPath, "utf8");
-        const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<
-          string,
-          string
-        >[];
+        const records = parseGlossaryCsv(glossaryPath, raw);
         rows = records.map((r) => [
           r["Original language string"] ?? r["en"] ?? "",
           r["locale"] ?? "",
@@ -775,10 +769,7 @@ export function createTranslationEditorApp(
       return [];
     }
     const raw = fs.readFileSync(glossaryPath, "utf8");
-    const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<
-      string,
-      string
-    >[];
+    const records = parseGlossaryCsv(glossaryPath, raw);
     return records.map((r) => [
       r["Original language string"] ?? r["en"] ?? "",
       r["locale"] ?? "",

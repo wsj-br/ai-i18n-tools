@@ -83,15 +83,13 @@ import type { MarkdownSourceIssueInsert } from "../core/types.js";
 /** Same segment-extraction options as `translate-docs` for one documentation block. */
 export function buildMarkdownExtractOpts(
   documentation: DocumentationBlock
-): MarkdownExtractOptions | undefined {
+): MarkdownExtractOptions {
   const langListCfg = documentation.markdownOutput.postProcessing?.languageListBlock;
   const splitCfg = segmentSplittingSchema.parse(documentation.segmentSplitting ?? {});
-  if (!langListCfg && !splitCfg.enabled) {
-    return undefined;
-  }
   return {
     ...(langListCfg ? { languageListBlock: langListCfg } : {}),
     ...(splitCfg.enabled ? { segmentSplitting: splitCfg } : {}),
+    translateFrontmatterFields: documentation.translateFrontmatterFields,
   };
 }
 

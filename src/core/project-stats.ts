@@ -1,6 +1,6 @@
 import fs from "fs";
-import { parse } from "csv-parse/sync";
 import type { TranslationCache } from "./cache.js";
+import { parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
 import { pluralTranslatedLocaleHasContent } from "./plural-forms.js";
 import { isPluralStringsEntry } from "./types.js";
 
@@ -29,10 +29,7 @@ export type ProjectStatsPayload = {
 
 function readUserGlossaryRows(glossaryPath: string): string[][] {
   const raw = fs.readFileSync(glossaryPath, "utf8");
-  const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true }) as Record<
-    string,
-    string
-  >[];
+  const records = parseGlossaryCsv(glossaryPath, raw);
   return records.map((r) => [
     r["Original language string"] ?? r["en"] ?? "",
     r["locale"] ?? "",

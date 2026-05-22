@@ -1982,6 +1982,10 @@
     page: 1,
   };
 
+  function glSetEditingVisible(visible) {
+    document.getElementById("gl-editing-wrap").classList.toggle("hidden-ui", !visible);
+  }
+
   function glFillLocaleSelect(selectEl) {
     selectEl.innerHTML = "";
     const tl = (glState.meta && glState.meta.targetLocales) || [];
@@ -2139,6 +2143,7 @@
 
   async function loadGlossary() {
     setStatus(document.getElementById("gl-status"), "Loading\u2026", false);
+    glSetEditingVisible(false);
     try {
       const meta = await fetch("/api/glossary-user/meta").then((r) => r.json());
       glState.meta = meta;
@@ -2155,10 +2160,12 @@
       glFilterLocale.value =
         prevGlFilterLocale && tlHas(prevGlFilterLocale, glFilterLocale) ? prevGlFilterLocale : "*";
       if (!meta.available) {
+        glSetEditingVisible(false);
         setStatus(document.getElementById("gl-status"), "No glossary path", false);
         document.getElementById("gl-table-body").innerHTML = "";
         return;
       }
+      glSetEditingVisible(true);
       const data = await fetch("/api/glossary-user").then((r) => r.json());
       glState.rows = data.rows || [];
       glApplyFilters();

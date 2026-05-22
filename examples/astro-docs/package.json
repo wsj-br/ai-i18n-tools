@@ -1,0 +1,28 @@
+{
+  "name": "astro-docs",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev --port 3050",
+    "start": "astro dev --port 3050",
+    "build": "astro build",
+    "preview": "astro preview --port 3050",
+    "astro": "astro",
+    "i18n:translate": "ai-i18n-tools translate-docs",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:cleanup": "ai-i18n-tools cleanup",
+    "i18n:editor": "ai-i18n-tools editor"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.39.2",
+    "astro": "^6.3.1",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "ai-i18n-tools": "workspace:^"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

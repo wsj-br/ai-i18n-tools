@@ -74,7 +74,7 @@
 <a id="installation"></a>
 ## インストール
 
-公開されたパッケージは**ESM専用**です。Node.jsまたはバンドラーでは`import`/`import()`を使用してください。`require('ai-i18n-tools')`は使用しないでください。このパッケージは`engines.node` `>=22.16.0`を宣言しています。古いNode.jsバージョンはサポートされていません。
+公開されたパッケージは**ESM専用**です。Node.jsまたはバンドラーでは`import`/`import()`を使用してください。`require('ai-i18n-tools')`は使用しないでください。このパッケージは`engines.node` `>=22.16.0`を宣言しています。古いNode.jsバージョンはサポートされていません。npmのtarballには`docs/`配下の英語ファイルのみが含まれています。`translated-docs/`配下の言語ごとのコピーは[GitHubリポジトリ](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs)にあります。
 
 ```bash
 npm install ai-i18n-tools
@@ -103,7 +103,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## クイックスタート
 
-デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` テンプレートは **ドキュメント** の翻訳を有効にします (`translate-docs`)。設定に基づき、抽出、UI 翻訳、オプションの SVG ファイル翻訳、およびドキュメント翻訳を1つのコマンドで実行したい場合に `sync` を使用します。
+デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` および `ui-starlight` テンプレートは **ドキュメント** 翻訳（`translate-docs`）を有効にします。設定に従って抽出、UI 翻訳、オプションの SVG ファイル翻訳、およびドキュメント翻訳を1つのコマンドで実行する場合、`sync` を使用します。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -113,6 +113,7 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -463,16 +464,22 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 npx ai-i18n-tools init -t ui-docusaurus
 ```
 
+Astro Starlight ドキュメントサイトの場合：
+
+```bash
+npx ai-i18n-tools init -t ui-starlight
+```
+
 生成された`ai-i18n-tools.config.json`を編集します。
 
-- `sourceLocale` - ソース言語（`docusaurus.config.js`の`defaultLocale`と一致している必要があります）。
-- `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
-- `cacheDir` - すべてのドキュメントパイプライン用の共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
-- `documentations` - ドキュメントブロックの配列。各ブロックには、オプションの`description`、`contentPaths`、`outputDir`、オプションの`jsonSource`、`markdownOutput`、オプションの`segmentSplitting`、`targetLocales`、`addFrontmatter`などが含まれます。
-- `documentations[].description` - メンテナー向けのオプションの短いメモ（このブロックの対象範囲）。設定されている場合、`translate-docs`の見出し（`🌐 …: translating …`）および`status`のセクションヘッダーに表示されます。
-- `documentations[].contentPaths` - Markdown/MDXのソースディレクトリまたはファイル（JSONラベルについては`documentations[].jsonSource`も参照）。
+- `sourceLocale` - ソース言語（`docusaurus.config.js` 内の `defaultLocale` と一致している必要があります）。
+- `targetLocales` - BCP-47 ロケールコードの配列（例：`["de", "fr", "es"]`）。
+- `cacheDir` - すべてのドキュメントパイプライン用の共有 SQLite キャッシュディレクトリ（および `--write-logs` のデフォルトログディレクトリ）。
+- `documentations` - ドキュメントブロックの配列。各ブロックには、オプションの `description`、`contentPaths`、`outputDir`、オプションの `jsonSource`、`markdownOutput`、オプションの `segmentSplitting`、`translateFrontmatterFields`、`targetLocales`、`addFrontmatter` などがあります。
+- `documentations[].description` - メンテナ向けのオプションの短いメモ（このブロックの対象範囲）。設定されている場合、`🌐 …: translating …` の `translate-docs` 見出しや `status` のセクション見出しに表示されます。
+- `documentations[].contentPaths` - markdown/MDX ソースディレクトリまたはファイル（JSON ラベルについては `documentations[].jsonSource` も参照）。
 - `documentations[].outputDir` - そのブロックの翻訳出力ルート。
-- `documentations[].markdownOutput.style` - `"nested"`（デフォルト）、`"docusaurus"`、または`"flat"`（[出力レイアウト](#output-layouts)を参照）。
+- `documentations[].markdownOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス `"docusaurus"` / `"astro-starlight"`（[出力レイアウト](#output-layouts) を参照）。
 
 **主たる翻訳対象と補助的翻訳対象:** 作成および翻訳の重点は `contentPaths` に置きます。この出力がローカライズされたドキュメントです。`jsonSource` は **Docusaurus シェル** をローカライズするチーム向けです。Docusaurus のアップグレードやナビゲーションバー、フッター、テーマ文字列の変更時に `docusaurus write-translations` を実行し、デフォルトロケールのフォルダー内のソースカタログを最新の状態に保ちます。翻訳済みページのみが必要で、UI 文字列は別途処理する場合は、`features.translateJSON` を `false` に設定できます。
 
@@ -557,12 +564,23 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 
 `"nested"`（省略時のデフォルト） — ソースツリーを `{outputDir}/{locale}/` 配下にミラー（例：`docs/guide.md` → `i18n/de/docs/guide.md`）。
 
-`"docusaurus"` — 通常のDocusaurus i18nレイアウトに従って、`i18n/<locale>/docusaurus-plugin-content-docs/current/<relativeToDocsRoot>`にある`docsRoot`以下のファイルを配置します。`documentations[].markdownOutput.docsRoot`をドキュメントのソースルートに設定してください（例: `"docs"`）。
+`"doc-system"` — 静的ドキュメントサイト向けのロケール接頭辞付きドキュメントツリー。`docsRoot` 配下のファイルは `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` に書き出されます。`docsRoot` の外側のパスは入れ子レイアウトにフォールバックします。英語ソースルートに `"docs"` または `"src/content/docs"` のように `documentations[].markdownOutput.docsRoot` を設定します。`style` が `"doc-system"` の場合、明示的に `localeSubpath` を設定する必要があります（プリセット用のエイリアスを使用できます）。
 
-ドキュメントページ（主たる対象）:
+**エイリアス**（同じレイアウトエンジン、プリセット済み `localeSubpath`）：
+
+- `"docusaurus"` — `localeSubpath` はデフォルトで `docusaurus-plugin-content-docs/current` になります（Docusaurus i18n プラグインのレイアウト）。
+- `"astro-starlight"` — `localeSubpath` はデフォルトで `""` になります（翻訳されたページが直接 `{outputDir}/{locale}/` 配下に配置され、英語コンテンツがコンテンツルートにあり、`outputDir` が `docsRoot` に等しい場合の [Starlight](https://starlight.astro.build/guides/i18n/) と一致します）。
+
+Docusaurus プリセット（主なドキュメントページ）：
 
 ```text
 docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
+```
+
+Starlight プリセット（同じブロック構造、異なるパス）：
+
+```text
+src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
 オプションの JSON ラベル — `jsonSource` から生成される Docusaurus シェル用文字列 (MDX 本文は対象外):
@@ -570,6 +588,8 @@ docs/guide.md  →  i18n/de/docusaurus-plugin-content-docs/current/guide.md
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
+
+Starlight は多くのロケール向けに UI 文字列を提供しています。カスタム UI の上書きが必要な場合は、必要に応じて別の `documentations[]` ブロックで `src/content/i18n/en.json` と `jsonPathTemplate: "{outputDir}/{locale}.json"` を使用します。
 
 `"flat"` — 翻訳済みファイルをソースの隣にロケールのサフィックス付き、またはサブディレクトリ内に配置します。ページ間の相対リンクは自動的に書き換えられます。
 
@@ -1101,35 +1121,39 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 - `sourceFiles`
 ロード時に`contentPaths`にマージされるオプションのエイリアス。
 - `targetLocales`
-このブロック専用の任意のロケールサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合となります。
+このブロック専用のオプションのロケールサブセット（それ以外の場合はルートの `targetLocales`）。有効なドキュメントロケールは、すべてのブロックの和集合になります。
 - `jsonSource`
-任意。このブロック用の Docusaurus JSON ラベルカタログのソースディレクトリ（例：`"i18n/en"` は `docusaurus write-translations` から）。ページ本文は常に `contentPaths` から取得されます。`jsonSource` はシェル／UI用JSONのみを提供し、MDXは対象外です。
+オプション。このブロックの Docusaurus JSON ラベルカタログのソースディレクトリ（例：`docusaurus write-translations` の `"i18n/en"`）。ページ本文は常に `contentPaths` から取得されます。`jsonSource` はシェル/UI の JSON のみを提供し、MDX は提供しません。
 - `markdownOutput.style`
-`"nested"`（デフォルト）、`"docusaurus"`、または `"flat"`。
+`"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス `"docusaurus"` / `"astro-starlight"`。
+- `markdownOutput.localeSubpath`
+`doc-system` 用に `{locale}/` と `{relativeToDocsRoot}` の間のパスセグメント（直接 `style: "doc-system"` を使用する場合は必須。エイリアス使用時はプリセット）。Starlight スタイルのロケールフォルダには `""` を使用します。
 - `markdownOutput.docsRoot`
-Docusaurus レイアウト用のソースドキュメントルート（例：`"docs"`）。
+Docusaurus レイアウトのソースドキュメントルート（例：`"docs"`）。
 - `markdownOutput.pathTemplate`
-カスタムマークダウン出力パス。 プレースホルダー：<code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>。
+カスタムマークダウン出力パス。プレースホルダー： <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
-ラベルファイルのためのカスタムJSON出力パス。 `pathTemplate`と同じプレースホルダーをサポートします。
+ラベルファイル用のカスタムJSON出力パス。`pathTemplate` と同じプレースホルダーをサポートします。
 - `markdownOutput.flatPreserveRelativeDir`
-`flat`スタイルの場合、同じベース名のファイルが衝突しないようにソースのサブディレクトリを保持します。
+`flat` スタイルの場合、同じベース名のファイルが衝突しないように、ソースのサブディレクトリを維持します。
 - `markdownOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`flat`スタイルの場合は自動的に有効）。
+翻訳後に相対リンクを書き換えます（`flat`スタイルでは自動的に有効化されます）。
 - `markdownOutput.linkRewriteDocsRoot`
-フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルートの下にある場合を除き、通常は`"."`のままにしてください。
+フラットリンクの書き換え接頭辞の計算に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルート下にある場合を除き、通常は`"."`のままにしてください。
 - `markdownOutput.postProcessing`
-翻訳された**markdown本文**へのオプションの変換（YAMLフロントマターは保持される）。セグメントの再構成およびフラットリンクの書き換えの後、`addFrontmatter`の前に行われる。
+翻訳された**markdown本文**へのオプションの変換（YAMLキーおよび散文以外のフロントマターの値は保持されます）。セグメントの再結合およびフラットリンクの書き換えの後、`addFrontmatter`の前に行われます。
+- `translateFrontmatterFields`
+`markdownOutput`と同じレベル（`documentations[]`ブロックごと）。Starlight/Docusaurus向けのユーザー向けYAML散文の翻訳（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next`ラベル）用のデフォルト`true`。フロントマターブロック全体を変更せずに保つには`false`を設定します。特定のドットパスに制限するには文字列配列を渡します。
 - `segmentSplitting`
-`markdownOutput`と同じレベル（`documentations[]`ブロックごと）。`translate-docs`抽出用のより細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密度の高い段落、GFMパイプテーブル（最初のチャンクにヘッダー、セパレーター、および最初のデータ行を含む）、長いリストが分割される。サブパートは単一の改行で再結合される（`tightJoinPrevious`）。`"enabled": false`を設定すると、空行で区切られた本文ブロックごとに1つのセグメントのみを使用する。
+`markdownOutput`と同じレベル（`documentations[]`ブロックごと）。`translate-docs`抽出用のオプションのより細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密度の高い段落、GFMパイプテーブル（最初のチャンクにヘッダー、セパレーター、最初のデータ行を含む）、長いリストが分割されます。サブパートは単一の改行で再結合されます（`tightJoinPrevious`）。このブロックでは、空白行で区切られた本文ブロックごとに1つのセグメントのみを使用するには`"enabled": false`を設定します。
 - `warnMarkdownSourceIssues`
-`true`が有効の場合（省略された場合のデフォルト）、各`translate-docs`の実行時にマークダウンセグメント内の危険な区切り文字／閉じられていないインラインコードを再スキャンし、端末に警告を表示し、そのファイルのキャッシュファイルパス用に`markdown_source_issues`行を置き換える。このブロックの警告とSQLiteの更新をスキップするには`false`を設定する。
+`true`の場合（省略時はデフォルト）、各`translate-docs`実行時にマークダウンセグメントをリスクのあるデリミターや閉じられていないインラインコードで再スキャンし、端末に警告を表示し、そのファイルのキャッシュファイルパスの`markdown_source_issues`行を置き換えます。このブロックの警告とSQLite更新をスキップするには`false`を設定します。
 - `markdownOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターン（プレーン文字列はフラグ`g`または`/pattern/flags`を使用）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポートする。
+`{ "description"?, "search", "replace" }`の順序付きリスト。`search`は正規表現パターンです（プレーン文字列はフラグ`g`、または`/pattern/flags`を使用）。`replace`は`${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`などのプレースホルダーをサポートしています。
 - `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label" }` — 翻訳ツールは、`start`を含む最初の行と一致する`end`行を検出し、その範囲を標準の言語切り替えスイッチャーに置き換える。`label`はマニフェストラベルのソースを制御：`"local"`（デフォルト、`ui-languages.json` `label`を使用）または`"english"`（`englishName`を使用）。リンクは翻訳されたファイルからの相対パスで作成される。マニフェストが設定されていない場合、ラベルは`localeDisplayNames`とロケールコードから取得される。
+`{ "start", "end", "separator", "label" }` — 翻訳ツールは、`start`を含む最初の行と一致する`end`行を検出し、その範囲を標準的な言語スイッチャーに置き換えます。`label`はマニフェストラベルのソースを制御します：`"local"`（デフォルト、`ui-languages.json` `label`を使用）または`"english"`（`englishName`を使用）。リンクは翻訳されたファイルからの相対パスで構築されます。マニフェストが設定されていない場合、ラベルは`localeDisplayNames`とロケールコードから取得されます。
 - `addFrontmatter`
-`true`が有効の場合（省略された場合のデフォルト）、翻訳されたマークダウンファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれる。`false`に設定するとスキップされる。
+`true`の場合（省略時はデフォルト）、翻訳されたマークダウンファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合、`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれます。スキップするには`false`に設定します。
 
 <br/>
 
@@ -1191,8 +1215,8 @@ npx ai-i18n-tools glossary-generate
 - `version`
 CLIのバージョンとビルドタイムスタンプを出力（ルートプログラムの`-V` / `--version`と同じ情報）。
 
-- `init [-t ui-markdown\|ui-docusaurus] [-o path] [--with-translate-ignore]`
-スターターコンフィグファイルを書き出す（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`はスターター`.translate-ignore`を作成する。
+- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
+スターター設定ファイルを作成します（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`はスターター`.translate-ignore`を作成します。
 
 - `check-models`
 `GET /models`に対して各設定されたOpenRouterモデルIDを検証（カタログメンバーシップ、`expiration_date`、1MトークンあたりのUSD単価（プロンプト／コンプリーション））。`OPENROUTER_API_KEY`が必要。設定されたIDのいずれかが存在しないまたは期限切れの場合、エラーコードを返して終了。カタログリクエストに対して`openrouter.requestTimeoutMs`を尊重する。

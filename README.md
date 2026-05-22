@@ -13,6 +13,8 @@ CLI and toolkit for internationalizing JavaScript/TypeScript applications and do
 <small>**Read in other languages:** </small>
 <small id="lang-list">[English (GB)](./README.md) · [Deutsch](./translated-docs/README.de.md) · [Español](./translated-docs/README.es.md) · [Français](./translated-docs/README.fr.md) · [हिन्दी](./translated-docs/README.hi.md) · [日本語](./translated-docs/README.ja.md) · [한국어](./translated-docs/README.ko.md) · [Português (Brasil)](./translated-docs/README.pt-BR.md) · [中文 (中国大陆)](./translated-docs/README.zh-CN.md) · [中文 (台灣)](./translated-docs/README.zh-TW.md)</small>
 
+<small>Translated READMEs and docs are committed under [`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) on GitHub; the npm package ships English `docs/` only.</small>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents** 
@@ -196,19 +198,19 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 The following helpers are exported from `'ai-i18n-tools/runtime'` and work in any JavaScript environment. You do not need to import i18next to use them:
 
-| Helper | Description |
-|---|---|
-| `defaultI18nInitOptions(sourceLocale)` | Standard i18next init options for key-as-default setups. |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Recommended wiring: key-trim + plural `wrapT` from `strings.json`, optionally merges `translate-ui` `{sourceLocale}.json` plural keys. |
-| `wrapI18nWithKeyTrim(i18n)` | Lower-level key-trim wrapper only (deprecated for app wiring; prefer `setupKeyAsDefaultT`). |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the `localeLoaders` map for `makeLoadLocale` from `ui-languages.json` (every `code` except `sourceLocale`). |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory for async locale file loading. |
-| `getTextDirection(lng)` | Returns `'ltr'` or `'rtl'` for a BCP-47 code. |
-| `applyDirection(lng, element?)` | Sets `dir` attribute on `document.documentElement`. |
-| `getUILanguageLabel(lang, t)` | Display label for a language menu row (with i18n). |
-| `getUILanguageLabelNative(lang)` | Display label without calling `t()` (header-style). |
-| `interpolateTemplate(str, vars)` | Low-level `{{var}}` substitution on a plain string (used internally; app code should use `t()` instead). |
-| `flipUiArrowsForRtl(text, isRtl)` | Flip `→` to `←` for RTL layouts. |
+| Helper                                                                 | Description                                                                                                                            |
+|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultI18nInitOptions(sourceLocale)`                                 | Standard i18next init options for key-as-default setups.                                                                               |
+| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`   | Recommended wiring: key-trim + plural `wrapT` from `strings.json`, optionally merges `translate-ui` `{sourceLocale}.json` plural keys. |
+| `wrapI18nWithKeyTrim(i18n)`                                            | Lower-level key-trim wrapper only (deprecated for app wiring; prefer `setupKeyAsDefaultT`).                                            |
+| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the `localeLoaders` map for `makeLoadLocale` from `ui-languages.json` (every `code` except `sourceLocale`).                     |
+| `makeLoadLocale(i18n, loaders, sourceLocale)`                          | Factory for async locale file loading.                                                                                                 |
+| `getTextDirection(lng)`                                                | Returns `'ltr'` or `'rtl'` for a BCP-47 code.                                                                                          |
+| `applyDirection(lng, element?)`                                        | Sets `dir` attribute on `document.documentElement`.                                                                                    |
+| `getUILanguageLabel(lang, t)`                                          | Display label for a language menu row (with i18n).                                                                                     |
+| `getUILanguageLabelNative(lang)`                                       | Display label without calling `t()` (header-style).                                                                                    |
+| `interpolateTemplate(str, vars)`                                       | Low-level `{{var}}` substitution on a plain string (used internally; app code should use `t()` instead).                               |
+| `flipUiArrowsForRtl(text, isRtl)`                                      | Flip `→` to `←` for RTL layouts.                                                                                                       |
 
 ---
 

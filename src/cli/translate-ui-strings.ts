@@ -30,13 +30,12 @@ import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { Glossary } from "../glossary/glossary.js";
+import { parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
 import {
   protectGlossaryForcedTerms,
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
-import { parse as parseCsv } from "csv-parse/sync";
-
 const UI_CHUNK = 50;
 
 const RULE = "-".repeat(100);
@@ -215,11 +214,7 @@ export async function runTranslateUI(
 
     if (fs.existsSync(glossaryUser)) {
       const raw = fs.readFileSync(glossaryUser, "utf8");
-      const records = parseCsv(raw, {
-        columns: true,
-        skip_empty_lines: true,
-        trim: true,
-      }) as Record<string, string>[];
+      const records = parseGlossaryCsv(glossaryUser, raw);
       csvRows = records.map((r) => [
         r["Original language string"] ?? r["en"] ?? "",
         r["locale"] ?? "",

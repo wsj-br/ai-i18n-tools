@@ -3,7 +3,7 @@
 #
 # Upgrades dependencies and runs pnpm audit for:
 #   - Repository root (ai-i18n-tools package + pnpm workspace lockfile)
-#   - examples/console-app and examples/nextjs-app (workspace members; share root lockfile)
+#   - examples/console-app, examples/nextjs-app, and examples/astro-docs (workspace members; share root lockfile)
 #   - examples/nextjs-app/docs-site (standalone lockfile; Docusaurus — use --ignore-workspace)
 #
 # Shells cannot export environment changes to a parent process; nvm must run in your
@@ -84,7 +84,7 @@ _transrewrt_upgrade_dependencies() {
 
   # Workspace examples: bump direct deps but keep the local workspace link to ai-i18n-tools
   echo -e "${BLUE}📦  [examples] npm-check-updates (console-app, nextjs-app)...${RESET}"
-  for _ex in "examples/console-app" "examples/nextjs-app"; do
+  for _ex in "examples/console-app" "examples/nextjs-app" "examples/astro-docs"; do
     if [ -f "${REPO_ROOT}/${_ex}/package.json" ]; then
       echo -e "${BLUE}   → ${_ex}${RESET}"
       (cd "${REPO_ROOT}/${_ex}" && ncu --upgrade -x ai-i18n-tools) 2>&1 | pr -o 4 -T

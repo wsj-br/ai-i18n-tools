@@ -1,0 +1,302 @@
+---
+title: Muestra de la función de traducción
+description: >-
+  Un documento de referencia que muestra cada elemento de Markdown que
+  ai-i18n-tools sabe cómo traducir.
+sidebar:
+  order: 1
+translation_last_updated: '2026-05-22T22:38:14.811Z'
+source_file_mtime: '2026-05-22T21:44:09.983Z'
+source_file_hash: d3d3dd388c0d11e4249034ea4b4cde10d52d966291352c6ccfbdcfc9e0b2ff1e
+translation_language: es
+source_file_path: src/content/docs/feature-showcase.mdx
+translation_models:
+  - openai/gpt-4o-mini
+  - qwen/qwen3-235b-a22b-2507
+---
+
+
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Esta página existe para demostrar cómo `ai-i18n-tools` maneja cada construcción común de Markdown. Ejecute `sync` contra ella y compare la salida en cada carpeta de configuración regional para ver exactamente qué se traduce y qué permanece intacto.
+
+---
+
+<a id="plain-text"></a>
+
+## Texto plano
+La internacionalización va más allá de intercambiar palabras. Una buena canalización de traducción preserva la estructura del documento, mantiene intactos los identificadores técnicos y solo envía texto legible por humanos al modelo de lenguaje.
+
+`ai-i18n-tools` divide cada documento en **segmentos** antes de enviarlos al LLM. Cada segmento se traduce de forma independiente y luego se vuelve a ensamblar, por lo que un cambio en un párrafo no invalida las traducciones en caché del resto del archivo.
+
+---
+
+<a id="text-formatting"></a>
+
+## Formato de texto
+El traductor debe mantener todo el formato en línea sin alterar la marcación:
+
+- **Texto en negrita** indica importancia y debe permanecer en negrita tras la traducción.
+- _Texto en cursiva_ se usa para énfasis o títulos; el significado debe conservarse.
+- ~~Tachado~~ marca contenido obsoleto o eliminado.
+- `inline code` **nunca** se traduce — los identificadores, nombres de funciones y rutas de archivos deben permanecer igual.
+- Un [hipervínculo](https://github.com/wsj-br/ai-i18n-tools) conserva su URL original; solo se traduce la etiqueta del enlace.
+
+---
+
+<a id="headings-at-every-level"></a>
+
+## Encabezados en todos los niveles
+<a id="h3--configuration"></a>
+
+### H3 — Configuración
+<a id="h4--output-directory"></a>
+
+#### H4 — Directorio de salida
+<a id="h5--file-naming"></a>
+
+##### H5 — Nombrado de archivos
+<a id="h6--extension-handling"></a>
+
+###### H6 — Manejo de extensiones
+Todos los niveles de encabezado traducen el texto pero dejan los ID de anclaje sin cambios para que los enlaces de anclaje existentes sigan funcionando.
+
+---
+
+<a id="tables"></a>
+
+## Tablas
+Las tablas son una fuente común de errores de traducción. Cada celda se traduce individualmente; se conservan los separadores de columnas y la sintaxis de alineación.
+
+| Característica                | Estado         | Notas                                                            |
+|-------------------------------|----------------|------------------------------------------------------------------|
+| Traducción de Markdown        | ✅ Estable      | Segmentos en caché en SQLite                                     |
+| Extracción de cadenas de UI | ✅ Estable      | Lee llamadas a `t("…")`                                         |
+| Cadenas de UI plurales       | ✅ Estable      | `t("…", { plurals: true, count })`; catálogo + sufijos JSON planos                        |
+| Traducción de etiquetas JSON | ✅ Estable      | JSON de barra lateral/barra de navegación de Docusaurus          |
+| Traducción de texto SVG   | ✅ Estable       | Preserva la estructura SVG                                          |
+| Aplicación del glosario   | ✅ Estable       | Glosario CSV por proyecto                                         |
+| Concurrencia por lotes      | ✅ Configurable | `batchConcurrency` clave                                           |
+
+<a id="left-to-right-and-right-to-left-support"></a>
+
+### Soporte de izquierda a derecha y de derecha a izquierda
+La internacionalización moderna debe acomodar tanto idiomas de izquierda a derecha (LTR) como de derecha a izquierda (RTL). `ai-i18n-tools` asegura el manejo correcto de la dirección del texto a lo largo del flujo de trabajo de traducción:
+
+- La tubería preserva automáticamente la direccionalidad de cada localidad. Por ejemplo, el árabe (`ar`) se representa en RTL, mientras que el inglés (`en-GB`), el portugués (`pt`) y otros permanecen en LTR.
+- Al traducir tablas markdown, muestras de código o cadenas de UI, las herramientas mantienen la alineación y la estructura del contenido, por lo que las tablas y los bloques formateados se muestran de manera natural en contextos tanto LTR como RTL.
+- Starlight y la aplicación de ejemplo Next.js respetan la dirección de la localidad en el navegador, cambiando el diseño y la alineación del texto según sea apropiado.
+
+| Direccionalidad | Ejemplo de localidad         | Visualización                |
+|:--------------:|:-----------------------|:-----------------------|
+|      LTR       | `en-GB`, `es`, `pt-BR` | Estándar de izquierda a derecha |
+|      RTL       | `ar`, `fa`, `he`       | Diseño de derecha a izquierda   |
+
+Esto asegura que los documentos y las interfaces se vean correctos, independientemente del idioma o la dirección de lectura del usuario.
+
+---
+
+<a id="lists"></a>
+
+## Listas
+<a id="unordered"></a>
+
+### No ordenadas
+- La caché de traducción almacena un hash de cada segmento fuente.
+- Solo los segmentos cuyo hash ha cambiado desde la última ejecución se envían al LLM.
+- Esto hace que las ejecuciones incrementales sean muy rápidas: típicamente solo unas pocas llamadas a la API para pequeñas ediciones.
+
+<a id="ordered"></a>
+
+### Ordenadas
+1. Agrega `ai-i18n-tools` como una dependencia de desarrollo.
+2. Crea `ai-i18n-tools.config.json` en la raíz de tu proyecto.
+3. Ejecuta `npx ai-i18n-tools sync` para realizar la primera traducción completa.
+4. Confirma los archivos de localidad generados junto a tu fuente.
+5. En ejecuciones posteriores, solo se vuelven a traducir los segmentos cambiados.
+
+<a id="nested"></a>
+
+### Anidadas
+- **Tubería de documentos**
+  - Fuente: cualquier archivo `.md` o `.mdx`
+  - Salida: árbol de localidad `doc-system` (`docusaurus` / `astro-starlight` alias) o copias traducidas planas
+  - Caché: SQLite, indexada por ruta de archivo + hash de segmento
+- **Tubería de cadenas de UI**
+  - Fuente: archivos JS/TS con llamadas `t("…")` (incluyendo plurales a través de `{ plurals: true, count }`)
+  - Salida: JSON plano por localidad (`de.json`, `fr.json`, …) con claves sufijadas para categorías plurales cuando sea aplicable
+  - Caché: el catálogo maestro `strings.json` en sí
+
+---
+
+<a id="plural-ui-strings"></a>
+
+## Cadenas de interfaz de usuario en plural
+Los documentos Markdown en este sitio muestran la traducción del **documento**. El comportamiento de **plural** en el texto de la interfaz es más fácil de ver en el **ejemplo integrado de Next.js** bajo `examples/nextjs-app/`.
+
+La página principal de esa aplicación (`src/app/page.tsx`) incluye una sección de **demostración de plurales** y repite un mensaje con varios recuentos de ejemplo para que puedas comparar la gramática entre localidades (por ejemplo, árabe frente a inglés). Cada línea llama a:
+
+```typescript
+t("This page has {{count}} sections", { plurals: true, count })
+```
+
+Usa `plurals: true` para que `extract` registre un grupo plural en `locales/strings.json` y `translate-ui` rellene los archivos planos por localidad bajo `public/locales/`. En tiempo de ejecución, i18next resuelve la clave con el sufijo correcto para el `count` activo; el ejemplo de Next.js conecta ayudantes en `src/lib/i18n.ts`.
+
+Para capturas de pantalla, URLs de localidad y estructura de archivos, consulta el **ejemplo de plurales** en el [README del ejemplo de Next.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/README.md).
+
+---
+
+<a id="code-blocks"></a>
+
+## Bloques de código
+Los bloques de código **nunca** se traducen. Se traduce el texto circundante, pero cada carácter dentro del bloque delimitado se pasa textualmente.
+
+<a id="shell"></a>
+
+### Shell
+
+```bash
+# Install the package
+npm install --save-dev ai-i18n-tools
+
+# Run a full sync
+npx ai-i18n-tools sync
+
+# Translate only documentation
+npx ai-i18n-tools sync --no-ui --no-svg
+```
+
+<a id="json-configuration"></a>
+
+### Configuración JSON
+
+```json
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["de", "es", "fr", "pt-BR"],
+  "features": {
+    "translateMarkdown": true,
+    "translateJSON": true
+  },
+  "documentations": [
+    {
+      "contentPaths": ["src/content/docs/"],
+      "outputDir": "src/content/docs",
+      "markdownOutput": {
+        "style": "astro-starlight",
+        "docsRoot": "src/content/docs"
+      }
+    }
+  ]
+}
+```
+
+<a id="typescript"></a>
+
+### TypeScript
+
+```typescript
+import { createI18nConfig } from 'ai-i18n-tools/runtime';
+
+const config = createI18nConfig({
+  defaultLocale: 'en-GB',
+  supportedLocales: ['de', 'es', 'fr', 'pt-BR'],
+  fallback: 'en-GB',
+});
+
+export default config;
+```
+
+---
+
+<a id="blockquotes"></a>
+
+## Citas en bloque
+> "La mejor internacionalización es invisible para el usuario: simplemente ven su idioma."
+>
+> Una traducción adecuada va más allá del vocabulario. Adapta el tono, formatos de fecha, formato de números y dirección de lectura para que se sienta nativo en cada localidad.
+
+---
+
+<a id="tabs-starlight"></a>
+
+## Pestañas (Starlight)
+<Tabs>
+  <TabItem label="Apple" default>
+    Esto es una manzana 🍎
+  </TabItem>
+  <TabItem label="Orange">
+    Esto es una naranja 🍊
+  </TabItem>
+  <TabItem label="Banana">
+    Esto es un plátano 🍌
+  </TabItem>
+</Tabs>
+
+---
+
+<a id="admonitions-starlight"></a>
+
+## Advertencias (Starlight)
+Los títulos de los recuadros de Starlight se traducen; se conserva el marcado del componente.
+
+<Aside type="note">
+Este documento tiene intencionadamente muchas características de Markdown. Su propósito principal es servir como prueba de traducción: ejecuta `sync` e inspecciona la salida para verificar que cada elemento se maneje correctamente.
+</Aside>
+
+<Aside type="tip">
+Puedes sobrescribir la redacción traducida de cualquier segmento editando el archivo de salida y ejecutando `sync` nuevamente. La herramienta detectará tus ediciones y agregará automáticamente la redacción corregida al glosario del proyecto.
+</Aside>
+
+<Aside type="caution">
+No confirme el directorio `.translation-cache/` al control de versiones. La caché es específica de la máquina y se regenera en cada nueva extracción.
+</Aside>
+
+<Aside type="danger">
+Eliminar el directorio de caché obliga a que cada segmento se vuelva a traducir desde cero. Esto puede ser costoso si sus documentos son grandes. Use `sync --no-cache-write` para hacer una ejecución simulada sin guardar los resultados.
+</Aside>
+
+---
+
+<a id="images-and-locale-aware-path-rewriting"></a>
+
+## Imágenes y reescritura de rutas con reconocimiento de configuración regional
+El texto alternativo de las imágenes se traduce a cada configuración regional. Además, `ai-i18n-tools` también puede **reescribir las rutas de las imágenes** en la salida traducida mediante `postProcessing.regexAdjustments` — de modo que cada configuración regional pueda apuntar a su propia captura de pantalla en lugar de mostrar siempre la versión en inglés.
+
+El documento fuente (inglés) hace referencia a:
+
+```markdown
+![The example Next.js app running in English](/img/screenshots/es/screenshot.png)
+```
+
+La entrada de configuración para este sitio incluye:
+
+```json
+"regexAdjustments": [
+  {
+    "description": "Per-locale screenshot folders in public assets",
+    "search": "screenshots/es/",
+    "replace": "screenshots/${translatedLocale}/"
+  }
+]
+```
+
+Después de la traducción, la salida en alemán se convierte en:
+
+```markdown
+![Die Beispiel-Next.js-App auf Deutsch](/img/screenshots/de/screenshot.png)
+```
+
+Aquí tiene la captura real de la aplicación Next.js — por defecto está en inglés, pero si está leyendo esto en una configuración regional traducida, la imagen inferior debería mostrar la aplicación en su idioma:
+
+![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/es/screenshot.png)
+
+---
+
+<a id="horizontal-rules-and-line-breaks"></a>
+
+## Reglas horizontales y saltos de línea
+Una regla horizontal (`---`) es un elemento estructural y no se traduce.
+
+El contenido anterior y posterior se trata como segmentos separados, lo que proporciona al modelo de lenguaje grandes ventanas de contexto más limpias.
