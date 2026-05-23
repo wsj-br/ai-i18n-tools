@@ -170,7 +170,7 @@ function resolveLocationDisplayPath(projectRoot: string, file: string): string {
   }
 }
 
-/** Absolute path for `lint-source-results_*.log` so editor file links work when the log is outside cwd. */
+/** Absolute path for `lint-source-results_*.log` so dashboard file links work when the log is outside cwd. */
 function resolveLocationAbsolutePathForLog(projectRoot: string, file: string): string {
   const abs = path.isAbsolute(file) ? file : path.join(projectRoot, file);
   return path.normalize(abs);

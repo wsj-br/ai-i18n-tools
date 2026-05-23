@@ -45,6 +45,7 @@ import {
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
 import {
   computeFlatLinkRewritePrefixes,
+  computePerFileDepthPrefix,
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
@@ -824,7 +825,7 @@ async function translateSegmentsBatched(
   /** Absolute `cacheDir` path; writes `*-FAILED-TRANSLATION-*.log` on markdown quality failures. */
   failureLogDirAbs?: string | null,
   failureTracker?: FailureTracker,
-  /** Cwd-relative source path stored on failure rows for editor UI when cache has no segment yet. */
+  /** Cwd-relative source path stored on failure rows for dashboard UI when cache has no segment yet. */
   failureDocMeta?: { filepath: string }
 ): Promise<{
   map: Map<string, DocSegmentTranslation>;
@@ -1750,11 +1751,12 @@ export async function translateMarkdownFile(
   if (shouldRewriteFlatMarkdownLinks(config)) {
     const mo = config.documentation.markdownOutput;
     const docsRoot = mo.linkRewriteDocsRoot?.trim() || ".";
-    const { i18nPrefix, depthPrefix } = computeFlatLinkRewritePrefixes(
+    const { i18nPrefix } = computeFlatLinkRewritePrefixes(
       opts.cwd,
       docsRoot,
       config.documentation.outputDir
     );
+    const depthPrefix = computePerFileDepthPrefix(opts.cwd, config, locale, relPath);
     const parsed = matter(output);
     const newBody = rewriteDocLinksForFlatOutput(parsed.content, locale, i18nPrefix, depthPrefix, {
       cwd: opts.cwd,

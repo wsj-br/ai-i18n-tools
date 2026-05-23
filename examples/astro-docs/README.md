@@ -75,3 +75,37 @@ examples/astro-docs/
     ├── fr/
     └── pt-br/
 ```
+
+## Screenshot files — expected layout
+
+The `feature-showcase.mdx` page references locale-specific screenshots, but no actual PNG files are committed and no `take-screenshots` script is included. This example is a configuration demonstration.
+
+The `ai-i18n-tools.config.json` uses this `regexAdjustments` rule:
+
+```json
+{ "search": "screenshots/[^/]+/", "replace": "screenshots/${translatedLocale}/" }
+```
+
+For the page to display locale-specific screenshots you would need PNG files at:
+
+```
+public/img/screenshots/
+├── en-GB/
+│   └── screenshot.png
+├── de/
+│   └── screenshot.png
+├── es/
+│   └── screenshot.png
+├── fr/
+│   └── screenshot.png
+├── pt-BR/
+│   └── screenshot.png
+└── ar/
+    └── screenshot.png
+```
+
+A `take-screenshots` script must capture the app at each locale and write to `public/img/screenshots/<locale>/screenshot.png`. The tool rewrites URLs only — it does not create PNG files.
+
+Use the generic `screenshots/[^/]+/` form (not `screenshots/en-GB/`) in `search` so the rule works regardless of `sourceLocale`.
+
+See the [Locale assets guide](../../docs/LOCALE-ASSETS-GUIDE.md) for full pattern documentation.

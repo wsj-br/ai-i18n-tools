@@ -19,7 +19,7 @@
     "i18n:translate": "cd .. && ai-i18n-tools translate-docs",
     "i18n:sync": "cd .. && ai-i18n-tools sync",
     "i18n:cleanup": "cd .. && ai-i18n-tools cleanup",
-    "i18n:editor": "cd .. && ai-i18n-tools editor"
+    "i18n:dashboard": "cd .. && ai-i18n-tools dashboard"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.1",

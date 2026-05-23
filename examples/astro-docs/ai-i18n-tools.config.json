@@ -56,7 +56,7 @@
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders in public assets",
-              "search": "screenshots/en-GB/",
+              "search": "screenshots/[^/]+/",
               "replace": "screenshots/${translatedLocale}/"
             }
           ]

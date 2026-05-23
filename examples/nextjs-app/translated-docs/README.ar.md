@@ -171,17 +171,17 @@ pnpm run i18n:sync --force --locale pt-BR
 ai-i18n-tools translate-ui --force --locale pt-BR
 ```
 
-### 4. التعديلات اليدوية (محرر الذاكرة المؤقتة)
+### 4. التعديلات اليدوية (لوحة تحكم الترجمة)
 
 يمكنك تشغيل واجهة ويب محلية لمراجعة الترجمات وتحريرها يدويًا في الذاكرة المؤقتة، وسلاسل واجهة المستخدم، والمعجم (من ``examples/nextjs-app``):
 
 ```bash
-pnpm run i18n:editor
+pnpm run i18n:dashboard
 ```
 
-من ``docs-site/``، يقوم ``pnpm run i18n:editor`` بنفس الشيء (إذ يُحوّل `cd` إلى هذا المجلد ويشغّل واجهة سطر الأوامر CLI).
+من ``docs-site/``، يقوم ``pnpm run i18n:dashboard`` بالشيء نفسه (يُشير `cd` إلى هذا المجلد وينفذ واجهة سطر الأوامر CLI).
 
-> **مهم:** إذا قمت بتعديل إدخال يدويًا في محرر الذاكرة المؤقتة، فعليك تشغيل `sync --force-update` (مثلاً `pnpm run i18n:sync --force-update`) لإعادة كتابة الملفات المسطحة أو ملفات markdown التي تم إنشاؤها باستخدام الترجمة المحدثة. لاحظ أيضًا أنه إذا تغير النص الأصلي في المستقبل، فستفقد تعديلاتك اليدوية لأن الأداة ستُنشئ تجزئة جديدة للنص الأصلي الجديد.
+> **مهم:** إذا قمت بتعديل إدخال يدويًا في لوحة تحكم الترجمة، فعليك تشغيل `sync --force-update` (مثلًا `pnpm run i18n:sync --force-update`) لإعادة كتابة الملفات المسطحة أو ملفات markdown التي تم إنشاؤها مع الترجمة المحدثة. لاحظ أيضًا أنه إذا تغير النص الأصلي في المستقبل، فستفقد تعديلاتك اليدوية لأن الأداة تُولّد تجزئة جديدة للنص الأصلي الجديد.
 
 ## هيكل المشروع
 
@@ -220,4 +220,63 @@ nextjs-app/
 
 يوجد الملف markdown باللغة الإنجليزية لموقع المثال ضمن `docs-site/docs/`. لا يوجد مزامنة تلقائية من الجذر `docs/` للمستودع؛ قم بتحديث تلك الملفات مباشرة عند تجديد المحتوى. لروابط العناوين المستقرة، استخدم ``write-heading-ids`` من Docusaurus من ``docs-site/`` (انظر ``pnpm run write-heading-ids`` في `[docs-site/package.json](../docs-site/package.json)`).
 
-تُرجمت سلاسل واجهة المستخدم، وملفات SVG التوضيحية، وترجمات الجذر `README`، ومخرجات Docusaurus وتُخزن ضمن `public/locales/`، `public/assets/`، `locales/strings.json`، `translated-docs/`، و`docs-site/i18n/`. بعد تعديل المصادر وتشغيل ``pnpm run i18n:translate`` أو ``pnpm run i18n:sync``، أعد تشغيل خوادم التطوير لـ Next.js وDocusaurus عند الحاجة. ويتم تعريف التوجيه حسب اللغة و``localeConfigs`` في `**docs-site/docusaurus.config.mjs**`.
+تُرسل سلاسل واجهة المستخدم المترجمة، وملفات demo SVG، وترجمات `README` الجذرية، ومخرجات Docusaurus ضمن `public/locales/`، `public/assets/`، `locales/strings.json`، `translated-docs/`، و`docs-site/i18n/`. بعد تغيير المصادر وتشغيل ``pnpm run i18n:translate`` أو ``pnpm run i18n:sync``، أعد تشغيل خوادم التطوير الخاصة بـ Next.js وDocusaurus حسب الحاجة. ويتم تعريف التوجيه حسب اللغة و``localeConfigs`` في `docs-site/docusaurus.config.mjs`.
+
+## ملفات لقطات الشاشة — الهيكل المتوقع
+
+تشير الوثائق وملف README في هذا المثال إلى لقطات شاشة خاصة بكل لغة محلية، ولكن لا تُرسل ملفات PNG فعلية، ولا يتم تضمين نص برمجي `take-screenshots`. هذا المثال يُعد توضيحًا للتكوين.
+
+### وثائق Docusaurus (`docs-site/docs/`)
+
+يستخدم كتلة `documentations[]` في Docusaurus القاعدة التالية: `regexAdjustments`
+
+```json
+{ "search": "screenshots/[^/]+/", "replace": "screenshots/${translatedLocale}/" }
+```
+
+لكي تُعرض لقطات الشاشة الخاصة بكل لغة محلية في الصفحات المثال، ستحتاج إلى ملفات PNG في:
+
+```
+docs-site/static/img/screenshots/
+├── en-GB/
+│   └── screenshot.png
+├── de/
+│   └── screenshot.png
+├── es/
+│   └── screenshot.png
+├── fr/
+│   └── screenshot.png
+├── pt-BR/
+│   └── screenshot.png
+└── ar/
+    └── screenshot.png
+```
+
+يجب أن يلتقط نص برمجي `take-screenshots` التطبيق في كل لغة محلية ويكتب إلى `docs-site/static/img/screenshots/<locale>/screenshot.png`. الأداة تعيد كتابة عناوين URL فقط — ولا تنشئ ملفات PNG.
+
+### ملف README مسطح (`README.md` → `translated-docs/`)
+
+تستخدم الكتلة الثانية `documentations[]` القاعدة التالية:
+
+```json
+{ "search": "images/screenshots/ar/]+/", "replace": "images/screenshots/ar/" }
+```
+
+الهيكل المتوقع:
+
+```
+images/screenshots/ar/
+│   └── overview.png
+├── de/
+├── es/
+├── fr/
+├── pt-BR/
+└── ar/
+```
+
+### مراجع من العالم الحقيقي
+
+- [transrewrt](https://github.com/wsj-br/transrewrt) — ملف README مسطح مع 37 لغة محلية (النمط B المسطح)، يقوم `take-screenshots.js` بالتقاط جميع اللغات المحلية
+- [duplistatus](https://github.com/wsj-br/duplistatus) — لقطات شاشة مجمعة في Docusaurus (النمط C)، يستخدم `take-screenshots.ts` تقسيم `getScreenshotDir(locale)`
+
+راجع [دليل أصول اللغة المحلية](../../../docs/LOCALE-ASSETS-GUIDE.md) للحصول على توثيق كامل لأنماط التصميم.

@@ -65,9 +65,9 @@ import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
 import {
-  createTranslationEditorApp,
-  resolveEditCacheStaticDir,
-} from "../server/translation-editor.js";
+  createTranslationDashboardApp,
+  resolveDashboardAppStaticDir,
+} from "../server/translation-dashboard.js";
 import { pluralTranslatedLocaleHasContent } from "../core/plural-forms.js";
 import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
 import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
@@ -79,7 +79,7 @@ import { runCleanTemp } from "./clean-temp.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
-    if (err) console.warn(`[editor] Failed to open browser: ${err.message}`);
+    if (err) console.warn(`[dashboard] Failed to open browser: ${err.message}`);
   };
   if (process.platform === "darwin") {
     execFile("open", [url], onErr);
@@ -95,10 +95,10 @@ function openBrowser(url: string): void {
   }
 }
 
-/** Default for `editor --port`. Avoids common Windows TCP excluded ranges (e.g. Hyper-V 8705–8804). */
-const DEFAULT_EDITOR_PORT = 8675;
+/** Default for `dashboard --port`. Avoids common Windows TCP excluded ranges (e.g. Hyper-V 8705–8804). */
+const DEFAULT_DASHBOARD_PORT = 8675;
 
-function listenTranslationEditorServer(
+function listenTranslationDashboardServer(
   server: http.Server,
   requestedPort: number,
   onListening: (actualPort: number) => void
@@ -120,7 +120,7 @@ function listenTranslationEditorServer(
         current += 1;
         attempt();
       } else {
-        console.error(chalk.red(`[editor] Failed to bind (port ${current}): ${err.message}`));
+        console.error(chalk.red(`[dashboard] Failed to bind (port ${current}): ${err.message}`));
         process.exit(1);
       }
     });
@@ -1762,7 +1762,7 @@ program
 program
   .command("statistics")
   .description(
-    "Show documentation cache and strings.json statistics (same aggregates as Translation Cache Editor → Statistics)"
+    "Show documentation cache and strings.json statistics (same aggregates as Translation Dashboard → Statistics)"
   )
   .option(
     "--max-columns <n>",
@@ -2182,61 +2182,77 @@ program
     });
   });
 
-program
-  .command("editor")
-  .description("Launch local web UI for cache segments, strings.json, and glossary CSV")
-  .option("-p, --port <n>", "Port", String(DEFAULT_EDITOR_PORT))
-  .option("--no-open", "Do not open the default browser")
-  .action((_opts: { port?: string }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
-    const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
-    const port = parseInt(cmdOpts.port || String(DEFAULT_EDITOR_PORT), 10);
-    const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
-    const stringsPath = config.glossary?.uiGlossary
-      ? path.join(projectRoot, config.glossary.uiGlossary)
-      : resolveStringsJsonPath(config, projectRoot);
-    const glossaryPath = config.glossary?.userGlossary
-      ? path.join(projectRoot, config.glossary.userGlossary)
-      : null;
-    const jsonSourceBlock = config.documentations.find((b) => b.jsonSource?.trim());
+function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
+  const { configFlag, cwd } = withConfig(cmd);
+  const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+  const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
+  const port = parseInt(cmdOpts.port || String(DEFAULT_DASHBOARD_PORT), 10);
+  const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
+  const stringsPath = config.glossary?.uiGlossary
+    ? path.join(projectRoot, config.glossary.uiGlossary)
+    : resolveStringsJsonPath(config, projectRoot);
+  const glossaryPath = config.glossary?.userGlossary
+    ? path.join(projectRoot, config.glossary.userGlossary)
+    : null;
+  const jsonSourceBlock = config.documentations.find((b) => b.jsonSource?.trim());
 
-    const app = createTranslationEditorApp(cache, {
-      cwd: projectRoot,
-      stringsJsonPath: stringsPath,
-      glossaryUserPath: glossaryPath,
-      sourceLocale: config.sourceLocale,
-      targetLocales: config.targetLocales,
-      jsonSource: jsonSourceBlock?.jsonSource?.trim() || null,
-    });
+  const app = createTranslationDashboardApp(cache, {
+    cwd: projectRoot,
+    stringsJsonPath: stringsPath,
+    glossaryUserPath: glossaryPath,
+    sourceLocale: config.sourceLocale,
+    targetLocales: config.targetLocales,
+    jsonSource: jsonSourceBlock?.jsonSource?.trim() || null,
+  });
 
-    const staticDir = resolveEditCacheStaticDir();
-    if (fs.existsSync(staticDir)) {
-      app.use(express.static(staticDir));
-    } else {
-      console.warn(`[editor] Static dir missing: ${staticDir}`);
+  const staticDir = resolveDashboardAppStaticDir();
+  if (fs.existsSync(staticDir)) {
+    app.use(express.static(staticDir));
+  } else {
+    console.warn(`[dashboard] Static dir missing: ${staticDir}`);
+  }
+
+  const server = http.createServer(app);
+  listenTranslationDashboardServer(server, port, (actualPort) => {
+    console.log(chalk.green(`[dashboard] Listening on TCP port ${actualPort}`));
+    if (actualPort !== port) {
+      console.log(
+        chalk.yellow(
+          `[dashboard] Requested port ${port} was unavailable; using port ${actualPort} instead.`
+        )
+      );
     }
+    const url = `http://127.0.0.1:${actualPort}/`;
+    console.log(chalk.green("-------------------------------------------"));
+    console.log(chalk.green("  ai-i18n-tools Translation Dashboard"));
+    console.log(chalk.green("-------------------------------------------\n"));
+    console.log(`[dashboard] Running at ` + chalk.cyan(`${url}`));
+    if (!cmdOpts.noOpen) {
+      openBrowser(url);
+    }
+    console.log("\n");
+  });
+}
 
-    const server = http.createServer(app);
-    listenTranslationEditorServer(server, port, (actualPort) => {
-      console.log(chalk.green(`[editor] Listening on TCP port ${actualPort}`));
-      if (actualPort !== port) {
-        console.log(
-          chalk.yellow(
-            `[editor] Requested port ${port} was unavailable; using port ${actualPort} instead.`
-          )
-        );
-      }
-      const url = `http://127.0.0.1:${actualPort}/`;
-      console.log(chalk.green("-------------------------------------------"));
-      console.log(chalk.green("  ai-i18n-tools Translation Cache Editor"));
-      console.log(chalk.green("-------------------------------------------\n"));
-      console.log(`[editor] Running at ` + chalk.cyan(`${url}`));
-      if (!cmdOpts.noOpen) {
-        openBrowser(url);
-      }
-      console.log("\n");
-    });
+program
+  .command("dashboard")
+  .description(
+    "Launch the Translation Dashboard (local web UI: cache segments, UI strings, glossary, failures, statistics)"
+  )
+  .option("-p, --port <n>", "Port", String(DEFAULT_DASHBOARD_PORT))
+  .option("--no-open", "Do not open the default browser")
+  .action(runDashboardCommand);
+
+program
+  .command("editor", { hidden: true })
+  .description("Deprecated: use 'dashboard' instead")
+  .option("-p, --port <n>", "Port", String(DEFAULT_DASHBOARD_PORT))
+  .option("--no-open", "Do not open the default browser")
+  .action((_opts: { port?: string }, cmd: Command) => {
+    console.warn(
+      chalk.yellow("The 'editor' command is deprecated; use 'ai-i18n-tools dashboard' instead.")
+    );
+    runDashboardCommand(_opts, cmd);
   });
 
 program

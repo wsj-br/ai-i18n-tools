@@ -3,7 +3,7 @@
 
 This document describes the internal architecture of `ai-i18n-tools`, how each component fits together, and how the two core workflows are implemented.
 
-For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md).
+For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md). For screenshots and illustrated SVGs in translated docs, see [LOCALE-ASSETS-GUIDE.md](./LOCALE-ASSETS-GUIDE.md).
 
 <small>**Read in other languages:** </small>
 <small id="lang-list">[English (GB)](./PACKAGE_OVERVIEW.md) · [Deutsch](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [Español](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [Français](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [हिन्दी](../translated-docs/docs/PACKAGE_OVERVIEW.hi.md) · [日本語](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [한국어](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,7 +256,7 @@ All extractors extend `BaseExtractor` and implement `extract(content, filepath):
 - `JsonExtractor` - extracts string values from Docusaurus JSON label files (Docusaurus UI catalogs, not MDX body).
 - `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for files under `config.svg`, not by `translate-docs`).
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### Heading anchor insertion (`write-heading-ids` CLI)
 
 The `write-heading-ids` command is a **local, non-LLM** preprocessor for documentation markdown. Implementation: `src/cli/write-heading-ids.ts` orchestrates file discovery; `src/markdown/write-heading-ids-core.ts` parses lines and inserts anchors.
@@ -302,7 +307,7 @@ The `translate-docs` command also uses **file tracking** so unchanged sources wi
 <a id="flat-link-rewriting"></a>
 ### Flat link rewriting
 
-When `markdownOutput.style === "flat"`, translated markdown files are placed alongside the source with locale suffixes. Relative links between pages are rewritten so that `[Guide](./guide.md)` in `readme.de.md` points to `guide.de.md`. Controlled by `rewriteRelativeLinks` (auto-enabled for flat style without a custom `pathTemplate`).
+When `markdownOutput.style === "flat"`, translated markdown files are placed alongside the source with locale suffixes. Relative links between pages are rewritten so that `[Guide](./guide.md)` in `readme.de.md` points to `guide.de.md`. Controlled by `rewriteRelativeLinks` (auto-enabled for flat style without a custom `pathTemplate`). The same pass prepends a per-file depth prefix to non-markdown asset URLs before `postProcessing.regexAdjustments` runs — see [Locale assets guide](./LOCALE-ASSETS-GUIDE.md#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 

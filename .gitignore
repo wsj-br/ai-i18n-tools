@@ -53,3 +53,7 @@ examples/**/.translation-cache/*
 
 # Documentation source (keep only compiled docs)
 docs-src/
+
+# References to other repositories
+references/
+

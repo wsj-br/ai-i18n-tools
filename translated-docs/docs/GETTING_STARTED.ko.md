@@ -39,17 +39,19 @@
     - [배치 프롬프트 형식](#batch-prompt-format)
     - [SQLite의 세그먼트 중복 제거 및 경로](#segment-dedupe-and-paths-in-sqlite)
   - [출력 레이아웃](#output-layouts)
-    - [평면 레이아웃의 앵커 링크](#anchor-links-in-flat-layout)
-    - [번역된 문서의 이미지 및 래스터 자산](#images-and-raster-assets-in-translated-docs)
-    - [`pathTemplate` / `jsonPathTemplate` 자리표시자](#pathtemplate--jsonpathtemplate-placeholders)
+    - [`markdownOutput.style = "flat"`일 때 앵커 링크](#anchor-links-when-markdownoutputstyle--flat)
+    - [번역된 문서의 이미지 및 래스터 에셋](#images-and-raster-assets-in-translated-docs)
+    - [언어 전환기(`languageListBlock`)](#language-switcher-languagelistblock)
+    - [`pathTemplate` / `jsonPathTemplate` 자리 표시자](#pathtemplate--jsonpathtemplate-placeholders)
+  - [문제 해결](#troubleshooting)
 - [통합 워크플로(UI + 문서)](#combined-workflow-ui--docs)
-  - [혼합 문서 워크플로(Docusaurus + 평면)](#mixed-documentation-workflow-docusaurus--flat)
-- [번역 캐시 편집기](#translation-cache-editor)
-  - [실패 (문서 번역)](#failures-document-translation)
-    - [언제 사용해야 하는가](#when-to-use-it)
+  - [혼합 문서 워크플로(`markdownOutput.style = "docusaurus"` + `"flat"`)](#mixed-documentation-workflow-markdownoutputstyle--docusaurus--flat)
+- [번역 대시보드](#translation-dashboard)
+  - [실패(문서 번역)](#failures-document-translation)
+    - [사용 시기](#when-to-use-it)
     - [소스 편집이 중요한 이유](#why-source-edits-matter)
     - [탭 사용 방법](#how-to-use-the-tab)
-  - [마크다운 문제 (정적 검사)](#markdown-issues-static-checks)
+  - [Markdown 문제(정적 검사)](#markdown-issues-static-checks)
 - [구성 참조](#configuration-reference)
   - [`sourceLocale`](#sourcelocale)
   - [`targetLocales`](#targetlocales)
@@ -85,6 +87,31 @@ yarn add ai-i18n-tools
 ```
 
 ai-i18n-tools는 자체 문자열 추출기를 포함합니다. 기존에 `i18next-scanner`, `babel-plugin-i18next-extract` 또는 유사한 도구를 사용했다면, 마이그레이션 후 해당 개발 의존성을 제거할 수 있습니다.
+
+<a id="using-the-cli"></a>
+### CLI 사용하기
+
+**프로젝트별(권장)** — 종속성 또는 devDependency로 설치한 후 `npx`, `pnpm exec` 또는 `package.json` 스크립트를 통해 호출합니다. `package.json` 스크립트는 `node_modules/.bin`에서 `PATH`로 이미 실행 중이므로 `npx`을 입력하지 않고도 `pnpm run i18n:sync` 명령을 실행할 수 있습니다.
+
+**터미널에서 직접** `ai-i18n-tools` **실행:** 로컬 설치 후 프로젝트 루트에서 대화형 셸에서 CLI를 직접 실행하려면 로컬 bin 디렉터리를 `PATH`에 추가합니다.
+
+```bash
+# bash/zsh — project root
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell — project root
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+[**direnv**](https://direnv.net/)를 사용하여 프로젝트 루트의 `PATH_add node_modules/.bin`에 `.envrc`을(를) 추가하면, 저장소에 `cd`한 후에 베어 명령어를 사용할 수 있습니다. `PATH`을(를) 조정하지 않고도 `npx ai-i18n-tools …` 또는 `pnpm exec ai-i18n-tools …`을(를) 계속 사용할 수 있습니다.
+
+**설치 없이 일회성 실행** — `npx ai-i18n-tools <cmd>` 또는 `pnpm dlx ai-i18n-tools <cmd>` 사용 (해당 실행 시에만 패키지를 다운로드; `package.json`에 항목 추가 없음).
+
+Linux, macOS 및 WSL에서는 레지스트리 설치 시 CLI 스크립트의 실행 권한 비트가 자동으로 설정됩니다. Windows에서는 패키지 관리자가 Node.js를 명시적으로 호출하는 `.cmd` 및 `.ps1` 쉼(Shim)을 생성합니다.
 
 OpenRouter API 키를 설정하세요:
 
@@ -139,7 +166,7 @@ npx ai-i18n-tools status
   "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:status": "ai-i18n-tools status",
-  "i18n:editor": "ai-i18n-tools editor",
+  "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
 }
 ```
@@ -187,9 +214,9 @@ npx ai-i18n-tools translate-ui
 
 `strings.json`을 읽고, 각 대상 로케일별로 OpenRouter에 배치를 전송하여 평면 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. `ui.preferredModel`가 설정된 경우, `openrouter.translationModels`의 정렬된 목록보다 먼저 해당 모델을 시도합니다(문서 번역 및 기타 명령은 여전히 `openrouter`만 사용함).
 
-각 항목에 대해, `translate-ui`은 선택적 `models` 객체에 각 로케일을 성공적으로 번역한 **OpenRouter 모델 ID**를 저장합니다(`translated`와 동일한 로케일 키 사용). 로컬 `editor` 명령에서 편집된 문자열은 해당 로케일의 `models`에 `user-edited`라는 센티넬 값으로 표시됩니다. `ui.flatOutputDir` 하위의 로케일별 평면 파일은 **원문 → 번역문**만 포함하며, `models`을 포함하지 않습니다(따라서 런타임 번들은 변경되지 않음).
+각 항목에 대해 `translate-ui`는 선택적 `models` 객체에 각 로캘을 성공적으로 번역한 **OpenRouter 모델 ID**를 저장합니다(`translated`와 동일한 로캘 키 사용). 로컬 `dashboard` 명령에서 편집된 문자열은 해당 로캘의 `models`에서 `user-edited`라는 센티널 값으로 표시됩니다. `ui.flatOutputDir` 아래의 로캘별 평면 파일은 **소스 문자열 → 번역**만 포함하며 `models`을 포함하지 않습니다(따라서 런타임 번들은 변경되지 않음).
 
-> **캐시 편집기 사용 시 참고:** 캐시 편집기에서 항목을 편집한 경우, 업데이트된 캐시 항목으로 출력 파일을 다시 쓰기 위해 `sync --force-update`(또는 `--force-update`와 동등한 `translate` 명령)을 실행해야 합니다. 또한, 나중에 원문이 변경되면 수동 편집 내용이 손실된다는 점에 유의하세요. 새로운 원문 문자열에 대해 새로운 캐시 키(해시)가 생성되기 때문입니다.
+> **참고:** 번역 대시보드에서 항목을 편집한 경우 업데이트된 캐시 항목으로 출력 파일을 다시 작성하기 위해 `sync --force-update`(또는 `--force-update`가 포함된 동등한 `translate` 명령)을 실행해야 합니다. 또한 나중에 소스 텍스트가 변경되면 새 캐시 키(해시)가 새 소스 문자열에 대해 생성되므로 수동 편집 내용이 손실된다는 점에 유의하세요.
 
 <a id="exporting-to-xliff-20-optional"></a>
 ### XLIFF 2.0으로 내보내기(선택 사항)
@@ -206,6 +233,9 @@ npx ai-i18n-tools export-ui-xliff
 ### 단계 4: 런타임에 i18next 연결
 
 `'ai-i18n-tools/runtime'`이 내보내는 헬퍼를 사용하여 i18n 설정 파일을 만드세요:
+
+<details>
+<summary>i18n 부트스트랩 전체 예제(src/i18n.js)</summary>
 
 ```js
 // src/i18n.js or src/i18n.ts — use ../locales and ../public/locales instead of ./ when this file is under src/
@@ -248,10 +278,9 @@ export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCA
 export default i18n;
 ```
 
-<!--
-  Translate-docs note: paragraphs here stack many `bold` / `` `code` `` patterns (nested backticks, long sentences).
-  Some target locales fail AST-style validation; see "Complex Markdown and failed quality checks" under Workflow 2 — simplify source rather than forcing literal markup parity.
--->
+</details>
+
+#### `SOURCE_LOCALE` 동기화 유지
 
 **세 값을 일치시켜 유지하세요:** `ai-i18n-tools.config.json`의 `sourceLocale`, 이 파일의 `SOURCE_LOCALE`, 그리고 평면 출력 디렉터리 아래에 `translate-ui`이 `{sourceLocale}.json`로 작성하는 복수형 평면 JSON (보통 `public/locales/`). 정적 `import`에서 동일한 기본 이름을 사용하세요 (위의 예: `en-GB` → `en-GB.json`). `sourcePluralFlatBundle`의 `lng` 필드는 `SOURCE_LOCALE`과 같아야 합니다. 정적 ES `import` 경로는 변수를 사용할 수 없습니다. 소스 로케일을 변경하는 경우 `SOURCE_LOCALE`과 가져오기 경로를 함께 업데이트하세요. 또는 동적 `import(\`을 사용하여 해당 파일을 로드하세요. ./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, 또는 `readFileSync`처럼 경로가 `SOURCE_LOCALE`에서 생성되도록 합니다.
 
@@ -259,29 +288,31 @@ export default i18n;
 
 React가 렌더링하기 전에 `i18n.js`을 임포트하세요(예: 진입점 상단). 사용자가 언어를 변경하면 `await loadLocale(code)`을 호출한 후 `i18n.changeLanguage(code)`를 호출하세요.
 
-`localeLoaders`을 `ui-languages.json`에서 `makeLocaleLoadersFromManifest`를 사용하여 파생시켜 config와 **항상 일치되도록** 유지하세요 (이 과정에서 `makeLoadLocale`와 동일한 정규화 방식을 사용해 `SOURCE_LOCALE`를 필터링합니다). `targetLocales`에 로케일을 추가하고 `generate-ui-languages`을 실행하면 매니페스트가 업데이트되며 로더가 자동으로 변경 사항을 추적합니다. 별도의 하드코딩된 맵을 관리할 필요가 없습니다.
+`SOURCE_LOCALE`은 다른 파일(예: 언어 전환기)에서 직접 `'./i18n'`을 통해 가져올 수 있도록 내보내집니다. 기존의 i18next 설정을 마이그레이션하는 경우, 컴포넌트 전반에 흩어진 하드코딩된 소스 로케일 문자열(예: `'en-GB'` 확인 코드)을 i18n 부트스트랩 파일에서 `SOURCE_LOCALE`을 가져오는 방식으로 대체하세요.
 
-JSON 번들을 `public/` 아래에 두었다면(일반적인 Next.js 설정), 각 로더를 구현하여 공용 URL 경로에서 파일을 가져오도록 하세요. 예:
+기본 내보내기를 사용하지 않고 이름을 지정해 가져오기를 선호하는 경우에도 이름 지정된 가져오기(`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runtime'`)가 동일하게 작동합니다.
+
+#### 로캘 로더
+
+`ui-languages.json`에서 `makeLocaleLoadersFromManifest`를 사용하여 `localeLoaders`을 **구성과 동기화** 상태로 유지합니다(이 작업은 `makeLoadLocale`와 동일한 정규화를 사용하여 `SOURCE_LOCALE`를 필터링함). `targetLocales`에 로캘을 추가하고 `generate-ui-languages`을 실행하면 매니페스트가 업데이트되고 로더가 자동으로 변경 사항을 추적하므로 별도의 하드코딩된 맵을 관리할 필요가 없습니다.
+
+`public/` 아래의 JSON 번들(일반적인 Next.js 설정)의 경우 공용 URL 경로에서 가져옵니다:
 
 ```js
 (code) => () => fetch(`/locales/${code}.json`).then(res => res.json())
 ```
 
-이렇게 하면 브라우저가 정적 JSON을 로드할 수 있습니다.
+번들러가 없는 Node CLI의 경우 각 코드에 대해 JSON 파일을 읽고 구문 분석하는 작은 도우미 내에서 `readFileSync`을 사용합니다.
 
-번들러가 없는 Node CLI의 경우, 각 코드에 대해 JSON 파일을 읽고 파싱하는 작은 `makeFileLoader` 도우미 내에서 `readFileSync`을 사용하세요.
+#### 런타임 도우미 참조
 
-`SOURCE_LOCALE`은 다른 파일(예: 언어 전환기)에서 직접 `'./i18n'`을 통해 가져올 수 있도록 내보내집니다. 기존의 i18next 설정을 마이그레이션하는 경우, 컴포넌트 전반에 흩어진 하드코딩된 소스 로케일 문자열(예: `'en-GB'` 확인 코드)을 i18n 부트스트랩 파일에서 `SOURCE_LOCALE`을 가져오는 방식으로 대체하세요.
+`aiI18n.defaultI18nInitOptions(sourceLocale)`은 키를 기본값으로 설정하는 경우의 표준 옵션을 반환합니다:
 
-기본 내보내기를 사용하지 않고 이름을 지정해 가져오기를 선호하는 경우에도 이름 지정된 가져오기(`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runtime'`)가 동일하게 작동합니다.
-
-`aiI18n.defaultI18nInitOptions(sourceLocale)`(또는 이름으로 가져올 경우 `defaultI18nInitOptions(sourceLocale)`)은 키를 기본값으로 사용하는 설정에 대한 표준 옵션을 반환합니다:
-
-- `parseMissingKeyHandler`은 키 자체를 반환하므로 번역되지 않은 문자열은 소스 텍스트로 표시됩니다.
+- `parseMissingKeyHandler`은 키 자체를 반환하므로 번역되지 않은 문자열은 소스 텍스트를 표시합니다.
 - `nsSeparator: false`은 콜론을 포함하는 키를 허용합니다.
-- `interpolation.escapeValue: false` - 안전하게 비활성화 가능: React는 자체적으로 값을 이스케이프 처리하며, Node.js/CLI 출력에는 이스케이프할 HTML이 없습니다.
+- `interpolation.escapeValue: false` — 안전하게 비활성화 가능: React 자체가 값을 이스케이프하며, Node.js/CLI 출력에는 이스케이프할 HTML이 없습니다.
 
-`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`는 ai-i18n-tools 프로젝트에 대한 **추천** 배선입니다: 이는 키 트림 + 소스 로케일 <code>"{{var}}"</code> 보간 대체를 적용하며 (하위 수준의 `wrapI18nWithKeyTrim`와 동일한 동작), 선택적으로 `translate-ui` `{sourceLocale}.json` 복수 접미사가 있는 키를 `addResourceBundle`를 통해 병합한 다음, 귀하의 `strings.json`에서 복수 인식 `wrapT`를 설치합니다. 해당 번들 파일은 귀하의 **구성된** 소스 로케일에 대한 복수 평면이어야 하며 — 귀하의 i18n 부트스트랩에서 `sourceLocale`와 `ai-i18n-tools.config.json` 및 `SOURCE_LOCALE`와 동일합니다 (위의 4단계 참조). 부트스트랩하는 동안에만 `sourcePluralFlatBundle`을 생략하십시오 (`translate-ui`이 `{sourceLocale}.json`를 방출한 후에 병합하십시오). `wrapI18nWithKeyTrim`만으로는 **더 이상 사용되지 않습니다** — 대신 `setupKeyAsDefaultT`를 사용하십시오.
+`setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`은 ai-i18n-tools 프로젝트에 **권장되는** 배선 방식입니다. 키 축약 및 소스 로케일 <code>"{{var}}"</code> 보간 폴백을 적용하며(하위 수준의 `wrapI18nWithKeyTrim`과 동일한 동작), 선택적으로 `translate-ui` `{sourceLocale}.json` 복수형 접미사 키를 `addResourceBundle`를 통해 병합한 후, 사용자의 `strings.json`에서 복수형 인식 기능을 갖춘 `wrapT`를 설치합니다. 부트스트래핑 중일 때만 `sourcePluralFlatBundle`을 생략하고, `translate-ui`이 `{sourceLocale}.json`를 출력한 후에는 반드시 병합해야 합니다. 애플리케이션 코드에서는 `wrapI18nWithKeyTrim` 단독 사용이 **사용 중단됨** 상태이므로, 대신 `setupKeyAsDefaultT`을 사용하세요.
 
 `makeLoadLocale(i18n, loaders, sourceLocale)`은 로케일에 대한 JSON 번들을 동적으로 가져와 i18next에 등록하는 비동기 `loadLocale(lang)` 함수를 반환합니다.
 
@@ -342,6 +373,10 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **두 개의 독립적인 수치**(예: 섹션 및 페이지)는 하나의 복수형 메시지를 공유할 수 없습니다. UI에서 연결하여 사용하려면 각각 `plurals: true`과 자체 `count`를 가진 **두 개**의 `t()` 호출을 사용해야 합니다.
 
+**v1에는 없음:** 서수 복수형(`_ordinal_*`, `ordinal: true`), 구간 복수형, ICU 전용 파이프라인.
+
+#### 복수형이 저장되고 출력되는 방식
+
 **복수 그룹은** `strings.json`에서 **해시당 한 행**을 사용하며, `"plural": true`, 원본 리터럴은 `source`에, 그리고 `translated[locale]`은 기수 범주(`zero`, `one`, `two`, `few`, `many`, `other`)를 해당 로케일의 문자열에 매핑하는 객체로 표현됩니다.
 
 **평탄화된 로케일 JSON:** 단수형 행은 **원문 문장 → 번역문** 형태를 유지함. 복수형 행은 i18next가 복수형을 네이티브로 해석할 수 있도록, `<groupId>_original` (참조용으로 `source`과 동일함)과 각 접미사에 대한 `<groupId>_<form>`로 출력됨. `translate-ui`는 또한 **복수형 평탄화 키만** 포함하는 `{sourceLocale}.json`를 작성함 (소스 언어용 번들을 로드하여 접미사 키가 해석되도록 함; 일반 문자열은 여전히 키를 기본값으로 사용함). 각 대상 로케일에 대해 출력된 접미사 키는 해당 로케일의 `Intl.PluralRules` (`requiredCldrPluralForms`)와 일치함: `strings.json`이 압축 후 다른 범주와 동일하여 범주를 생략한 경우(예: 아랍어 `many`이 `other`과 동일한 경우), `translate-ui`는 여전히 대체 문자열에서 복사하여 필요한 모든 접미사를 평탄화 파일에 기록하므로 런타임 조회 시 키 누락이 발생하지 않음.
@@ -350,12 +385,13 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **이전 환경:** 도구 및 일관된 동작을 위해 `Intl.PluralRules`이 필요합니다. 매우 오래된 브라우저를 대상으로 할 경우 폴리필을 사용하세요.
 
-**v1에는 없음:** 서수 복수형(`_ordinal_*`, `ordinal: true`), 구간 복수형, ICU 전용 파이프라인.
-
 <a id="language-switcher-ui"></a>
 ### 언어 전환기 UI
 
 언어 선택기를 만들기 위해 `ui-languages.json` 매니페스트를 사용하세요. `ai-i18n-tools`는 두 개의 표시 헬퍼를 내보냅니다:
+
+<details>
+<summary>LanguageSelect 컴포넌트 예제(React)</summary>
 
 ```tsx
 import { useMemo } from 'react';
@@ -407,6 +443,10 @@ function LanguageSelect({
 }
 ```
 
+</details>
+
+<br />
+
 `getUILanguageLabel(lang, t)` - 번역되었을 때 `t(englishName)`을 표시하고, 두 값이 다를 경우 `englishName / t(englishName)`를 표시합니다. 설정 화면에 적합합니다.
 
 `getUILanguageLabelNative(lang)` - `englishName / label`을 표시합니다(`t()` 호출 없이 각 행에 대해). 헤더 메뉴에서 네이티브 이름을 표시하고자 할 때 적합합니다.
@@ -455,7 +495,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## 워크플로 2 - 문서 번역
 
-**마크다운 및 MDX 문서**를 주로 `contentPaths` 아래에서 다룹니다(사용자가 읽는 페이지). Docusaurus 사이트에서는 `docusaurus write-translations`이 생성하는 **JSON 레이블 파일**도 번역할 수 있습니다. 이 파일들은 테마, 네비게이션 바, 푸터, 플러그인 UI 문자열(셸 i18n)을 포함하며, `docs/`의 본문과는 별개입니다. 마크다운에 포함된 PNG 및 기타 래스터 이미지의 경우 [번역된 문서의 이미지 및 래스터 에셋](#images-and-raster-assets-in-translated-docs)을 참조하세요. SVG 파일은 `features.translateSVG`가 활성화되고 최상위 `svg` 블록이 설정된 경우 [`translate-svg`](#cli-reference)을 통해 번역되며, `documentations[].contentPaths`을 통해 번역되지 않습니다.
+`contentPaths` 하에서 주로 **마크다운 및 MDX 문서**를 위해 설계되었습니다(사용자가 읽는 페이지). Docusaurus 사이트에서는 `docusaurus write-translations`이 생성한 **JSON 레이블 파일**도 번역할 수 있습니다. 이러한 파일은 테마, 내비게이션 바, 푸터 및 플러그인 UI 문자열(셸 i18n)을 포함하며, `docs/`의 본문 텍스트와는 별개입니다. 마크다운에 포함된 PNG 및 기타 래스터 이미지의 경우 [번역 문서의 이미지 및 래스터 자산](#images-and-raster-assets-in-translated-docs)을 참조하세요. `markdownOutput.style = "flat"`을 사용하는 README 또는 문서에 선택적으로 포함할 수 있는 **언어 전환기** 블록은 [언어 전환기(`languageListBlock`)](#language-list-block)를 참조하세요. SVG 파일은 `features.translateSVG`이 활성화되고 최상위 `svg` 블록이 설정된 경우 [`translate-svg`](#cli-reference)를 통해 번역되며, `documentations[].contentPaths`을 통해 번역되는 것은 아닙니다.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### 단계 1: 문서용 초기화
@@ -511,7 +551,7 @@ npx ai-i18n-tools status
 
 **이러한 유형의 검증 오류가 발생하면 원문 텍스트를 단순화하는 것이 더 낫습니다** — 단락을 분할하거나, 예제를 코드 블록으로 옮기거나, 볼드/코드 쌍을 덜 사용하여 동일한 아이디어를 설명하세요 — 밀집된 인라인 마크업을 모든 모델과 로케일이 완벽하게 재현하도록 기대하기보다는 이렇게 하세요. 이 페이지의 다른 부분(특히 `SOURCE_LOCALE`, 로더, `public/` 경로에 대한 4단계의 설명 등)은 의도적으로 현실적인 형식을 사용하고 있지만, 자신의 문서에서 유사한 표현을 재사용할 때는 번역 범위가 넓어질 경우 더 단순하게 유지하세요.
 
-**어떤 세그먼트가 실패했는지**, 얼마나 자주 실패했는지, 저장된 **품질/오류 메시지**를 확인하려면 번역 캐시 편집기의 **실패** 탭을 사용하세요 ([번역 캐시 편집기 → 실패](#translation-cache-editor-failures)).
+**어느 구문이 실패했는지**, 얼마나 자주 실패했는지, 그리고 저장된 **품질/오류 메시지**를 확인하려면 번역 대시보드의 **실패** 탭([번역 대시보드 → 실패](#failures-document-translation))을 사용하세요.
 
 <a id="cache-behaviour-and-translate-docs-flags"></a>
 #### 캐시 동작 및 `translate-docs` 플래그
@@ -554,6 +594,8 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### 세그먼트 중복 제거 및 SQLite의 경로
 
+> **참고:** 이 섹션은 `cleanup` 동작이나 사용자 정의 도구 개발 시 디버깅에 유용한 내부 캐시 키 세부 정보를 다룹니다. 대부분의 사용자는 이 섹션을 건너뛰어도 됩니다.
+
 - 세그먼트 행은 `(source_hash, locale)`(해시 = 정규화된 콘텐츠)를 전역적으로 키로 사용합니다. 두 파일에 동일한 텍스트가 있으면 하나의 행을 공유하며, `translations.filepath`은 메타데이터(마지막 작성자)이며 파일당 두 번째 캐시 항목이 아닙니다.
 - `file_tracking.filepath`는 네임스페이스가 지정된 키를 사용합니다. `documentations` 블록당 `doc-block:{index}:{relPath}`(`relPath`는 프로젝트 루트 기준의 posix 경로임: 수집된 마크다운 경로; **JSON 레이블 파일은 소스 파일에 대한 현재 작업 디렉터리 기준 상대 경로를 사용함**, 예: `docs-site/i18n/en/code.json`이므로 정리 작업이 실제 파일을 확인할 수 있음), 및 `translate-svg` 아래의 SVG 파일에 대한 `svg-files:{relPath}`.
 - `translations.filepath`는 마크다운, JSON 및 SVG 세그먼트에 대해 현재 작업 디렉터리 기준의 posix 상대 경로를 저장합니다(SVG는 다른 자산과 동일한 경로 형식을 사용하며, `svg-files:…` 접두사는 **오직** `file_tracking`에만 존재함).
@@ -562,14 +604,16 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 <a id="output-layouts"></a>
 ### 출력 레이아웃
 
-`"nested"` (생략 시 기본값) — `{outputDir}/{locale}/` 아래에 소스 트리를 미러링합니다(예: `docs/guide.md` → `i18n/de/docs/guide.md`).
+`markdownOutput.style`은 번역된 마크다운 파일이 작성되는 위치를 제어합니다. 아래의 정확한 문자열 값을 `documentations[].markdownOutput.style`에서 사용하세요(별칭은 사전 설정된 레이아웃이며 별도의 엔진이 아님).
 
-`"doc-system"` — 정적 문서 사이트를 위한 로케일 접두사가 붙은 문서 트리. `docsRoot` 하위의 파일은 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`에 작성됨. `docsRoot` 외부의 경로는 중첩된 레이아웃으로 전환됨. 영어 소스 루트를 `"docs"` 또는 `"src/content/docs"`과 같이 `documentations[].markdownOutput.docsRoot`에 설정하세요. `style`이 `"doc-system"`인 경우 `localeSubpath`를 명시적으로 설정해야 하며(미리 설정된 별칭 중 하나 사용),
+`markdownOutput.style = "nested"` (생략 시 기본값) — `{outputDir}/{locale}/` 아래에 소스 트리를 미러링합니다(예: `docs/guide.md` → `i18n/de/docs/guide.md`).
+
+`markdownOutput.style = "doc-system"` — 정적 문서 사이트를 위한 로케일 접두사가 붙은 문서 트리입니다. `docsRoot` 아래의 파일은 `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`에 작성됩니다. `docsRoot` 외부의 경로는 중첩된 레이아웃으로 폴백됩니다. `documentations[].markdownOutput.docsRoot`를 영어 소스 루트로 설정하세요(예: `"docs"` 또는 `"src/content/docs"`). `markdownOutput.style = "doc-system"`인 경우, `localeSubpath`을 명시적으로 설정해야 합니다(사전 설정된 별칭 중 하나를 사용하세요).
 
 **별칭**(동일한 레이아웃 엔진, 사전 설정된 `localeSubpath`):
 
-- `"docusaurus"` — `localeSubpath`이 `docusaurus-plugin-content-docs/current`로 기본 설정됨(Docusaurus i18n 플러그인 레이아웃).
-- `"astro-starlight"` — `localeSubpath`이 `""`로 기본 설정됨(`outputDir`이 `docsRoot`과 같고 영어 콘텐츠가 콘텐츠 루트에 있을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치하는 방식으로, 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치함).
+- `markdownOutput.style = "docusaurus"` — `localeSubpath`의 기본값은 `docusaurus-plugin-content-docs/current`입니다(Docusaurus i18n 플러그인 레이아웃).
+- `markdownOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`입니다(번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치하며, 영어 콘텐츠가 콘텐츠 루트에 있고 `outputDir`이 `docsRoot`과 동일할 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치함).
 
 Docusaurus 사전 설정(기본 문서 페이지):
 
@@ -591,19 +635,19 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight는 여러 로케일의 UI 문자열을 기본 제공하며, 필요 시 별도의 `documentations[]` 블록에서 `jsonPathTemplate: "{outputDir}/{locale}.json"`과 함께 `src/content/i18n/en.json`를 사용하여 선택적으로 사용자 정의 UI를 재정의할 수 있음.
 
-`"flat"` — 번역된 파일을 소스 옆에 로케일 접미어를 붙이거나 하위 디렉터리에 배치합니다. 페이지 간의 상대 링크는 자동으로 재작성됩니다.
+`markdownOutput.style = "flat"` — 로케일 접미사가 붙거나 하위 디렉터리에 번역된 파일을 소스 옆에 배치합니다. `markdownOutput.style = "flat"`이 설정된 경우 페이지 간 상대 링크는 자동으로 다시 작성됩니다(`rewriteRelativeLinks: false` 또는 사용자 정의 `pathTemplate`이 설정된 경우 제외).
 
 ```text
 docs/guide.md → i18n/guide.de.md
 ```
 
-<a id="anchor-links-in-flat-layout"></a>
-#### 평면 레이아웃의 앵커 링크
+<a id="anchor-links-when-markdownoutputstyle--flat"></a>
+#### `markdownOutput.style = "flat"`일 때 앵커 링크
 
-평면 출력은 각 로캘에 대해 페이지 간의 **상대 경로**를 다시 작성합니다(`guide.md` → `guide.de.md`). **앵커 링크** — 경로 뒤에 `#`가 오는 일반적인 마크다운 인라인 형식 — 는 대상 파일 내 섹션으로 이동합니다:
+`markdownOutput.style = "flat"`일 경우, 출력은 각 로케일에 대해 페이지 간 **상대 경로**를 다시 작성합니다(`guide.md` → `guide.de.md`). **앵커 링크** — 경로 뒤에 `#`가 붙는 일반적인 마크다운 인라인 형식 — 는 대상 파일 내 섹션으로 이동합니다:
 
 ```markdown
-Read the [installation checklist](../setup.md#first-run) before you deploy.
+Read the [installation checklist](../../docs/setup.md#first-run) before you deploy.
 ```
 
 여기서 링크 대상은 `setup.md`이며, `#first-run`은 앵커입니다. 해당 파일 내 적절한 제목으로 스크롤되어야 합니다.
@@ -616,15 +660,15 @@ Read the [installation checklist](../setup.md#first-run) before you deploy.
 
 **해야 할 조치**
 
-1. `.md` / `.mdx` 소스에서 `translate-docs` 전에 `ai-i18n-tools write-heading-ids`을 실행하세요(평소와 동일한 `documentations[]` / `contentPaths` 사용). 이 도구는 각 제목 바로 앞 줄에 명시적인 HTML 앵커를 삽입하여 `id` 값이 모든 번역본에서 공유되도록 합니다.
-2. 마크다운 **앵커 링크**를 이러한 안정적인 ID를 가리키도록 설정하세요. 예: `[label](../other.md#section-id)`. 여기서 `section-id`은 도구가 생성한 앵커와 일치해야 하며, 영어 단어만으로 추측한 것이어서는 안 됩니다.
+1. `translate-docs` 전에 소스 `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을 실행하세요(일반적인 `documentations[]` / `contentPaths`와 동일). 이 도구는 각 제목 앞 줄에 명시적인 HTML 앵커를 삽입하여 `id` 값이 모든 번역본에서 공유되도록 합니다. 제목 이름을 변경한 후에는 이 도구를 다시 실행하여 오래된 앵커 ID가 현재 제목과 일치하도록 갱신하세요.
+2. 마크다운 **앵커 링크**를 이러한 안정적인 ID를 가리키도록 설정하세요. 예: `[label](../../docs/other.md#section-id)`, 여기서 `section-id`은 도구가 작성한 앵커와 일치해야 하며, 영어 단어만으로 추측한 값이 아니어야 합니다.
 
 **예시**
 
 `docs/overview.md`:
 
 ```markdown
-See [TLS setup](../security.md#tls-configuration) for certificate steps.
+See [TLS setup](../../docs/security.md#tls-configuration) for certificate steps.
 ```
 
 `write-heading-ids` 후의 `docs/security.md` (간소화됨):
@@ -639,7 +683,7 @@ Your CA and cert steps…
 `translate-docs` 후, 파일 경로와 `#…` 앵커는 모든 로캘 파일에서 일치하게 유지됩니다. 예를 들어:
 
 ```markdown
-Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikatsschritte.
+Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Zertifikatsschritte.
 ```
 
 `#tls-configuration` 앵커는 소스에서 `id`이 고정되어 있으므로 모든 로캘에서 동일합니다. 제목의 **텍스트**와 링크 **레이블**만 번역됩니다.
@@ -647,43 +691,33 @@ Siehe [TLS-Einrichtung](../security.de.md#tls-configuration) für die Zertifikat
 <a id="images-and-raster-assets-in-translated-docs"></a>
 #### 번역된 문서의 이미지 및 래스터 자산
 
-`translate-docs`은 마크다운 세그먼트(이미지 대체 텍스트 포함)를 번역합니다. 하지만 `outputDir`에 래스터 파일(PNG, JPEG, WebP, GIF)을 복사하지는 **않습니다**. 재작성된 URL이 가리키는 위치에 파일을 배치하거나, 번역 후 URL을 조정하세요(일반적으로 `markdownOutput.postProcessing.regexAdjustments`를 사용).
+`translate-docs`은 이미지 대체 텍스트를 포함한 마크다운 구문을 번역합니다. 하지만 래스터 파일(PNG, JPEG, WebP, GIF)을 문서 `outputDir`에 복사하지는 않습니다. 번역된 URL이 가리키는 위치에 스크린샷 파일을 직접 배치하거나, 번역 후 `postProcessing.regexAdjustments`를 사용하여 경로를 다시 작성해야 합니다.
 
-**SVG**를 일러스트 자산으로 사용할 경우 `svg` 블록과 `translate-svg`을 사용하세요 — [`svg`](#svg) 참조. `documentations[].contentPaths`에 나열된 경로는 SVG 파일 번역이 아닌 마크다운/MDX(및 선택적 JSON 레이블)용입니다.
+번역 가능한 텍스트가 포함된 SVG 파일의 경우 `svg` 블록과 `translate-svg`을 사용하세요 — [`svg`](#svg) 참조.
 
-**평면 레이아웃이 종종 수정이 필요한 이유**
+전체 결정 가이드, 구성 예제 및 디렉토리 레이아웃, 스크린샷 스크립트 계약, 디자인 권장 사항 및 일반적인 실수를 보려면 [로케일 자산 가이드](LOCALE-ASSETS-GUIDE.ko.md)를 참조하세요.
 
-`markdownOutput.style` `flat`과 기본 상대 링크 재작성을 사용하면 번역된 페이지 간 링크는 로케일별로 재작성됩니다. 마크다운이 아닌 파일에 대한 링크는 깊이 접두사가 추가되어 각 출력 파일에 대해 상대적으로 유지됩니다(예: 소스 옆의 `figure.png`는 번역된 파일에서 `../figure.png`이 됨). 해당 URL은 일반적으로 출력 디렉터리 **내부에서만** 해결됩니다. CLI는 해당 위치에 이진 파일을 출력하지 않으므로, 자산을 복사하거나 별도로 제공하거나 링크를 재작성하지 않으면 사용자가 누락된 파일을 만나게 됩니다. 번역 후에 규칙을 후크하세요: `postProcessing`는 세그먼트 재조합 및 평면 링크 재작성 후에 실행됩니다([구성 참조](#configuration-reference)의 `markdownOutput.postProcessing` 행 참조).
+**빠른 참조 — 다섯 가지 패턴**
 
-**패턴 1 — 영어 소스 옆에 동일 저장소 자산 배치(이 패키지)**
+| 패턴                         | 사용 용도                                              | 메커니즘                                         |
+|------------------------------|-------------------------------------------------------|---------------------------------------------------|
+| A — 공유 래스터            | 단일 이미지, 로케일별 변형 없음                       | `regexAdjustments` 전체 경로 수정                  |
+| B — 로케일별 폴더          | `"flat"`, `"docusaurus"`, `"astro-starlight"` README/docs | `regexAdjustments` 로케일 세그먼트 교환            |
+| C — Docusaurus 동시 배치     | `markdownOutput.style = "docusaurus"` 사이트 | 스크린샷 스크립트가 파일을 배치; 정규 표현식 없음          |
+| D — 번역된 SVG             | SVG 일러스트레이션을 포함하는 웹 앱                    | `translate-svg`와 `svg.style = "flat"`         |
+| E — 동시 배치된 번역 SVG   | `markdownOutput.style = "docusaurus"` 문서          | `translate-svg`와 `svg.style = "nested"` + `pathTemplate` |
 
-이 저장소는 `docs/GETTING_STARTED.md`을 `translated-docs/docs/GETTING_STARTED.<locale>.md`로 번역합니다. 소스는 형제 이미지 `translation-cache-editor.png`를 사용합니다. 평면 재작성은 `translated-docs/translation-cache-editor.png`을 대상으로 하지만, 이 파일은 실제로 작성되지 않습니다. 루트 `ai-i18n-tools.config.json`는 마크다운 이미지의 안정적인 끝부분(번역된 대체 텍스트가 아닌 `](…)` URL 세그먼트)과 일치하는 규칙을 추가하고 이를 `docs/`로 다시 연결합니다:
+**플랫 링크 리라이터 및 2단계 흐름**
 
-```json
-{
-  "description": "Editor screenshot: flat link rewrite points to translated-docs/; asset lives in docs/",
-  "search": "\\]\\(\\.\\./translation-cache-editor\\.png\\)",
-  "replace": "](../../docs/translation-cache-editor.png)"
-}
-```
+`markdownOutput.style = "flat"`일 때, 내장 리라이터가 `postProcessing` 전에 실행됩니다. 출력 파일당 깊이 접두사를 계산합니다 — 출력 파일의 디렉토리에서 소스 파일의 디렉토리까지의 상대 경로 — 그리고 이를 비마크다운 자산 URL에 추가합니다. `postProcessing`는 이미 접두사가 추가된 URL에서 실행됩니다 — 로케일 세그먼트와 일치하는 `search` 패턴을 작성하세요, 선행 `../` 접두사가 아닙니다.
 
-**패턴 2 — 로케일별 스크린샷 폴더** (`examples/nextjs-app`)
+`flatPreserveRelativeDir: true`와 함께, 하위 디렉토리에 있는 소스 파일은 자동으로 파일별 접두사를 받습니다. 예를 들어, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`는 `../../docs/`의 접두사를 생성하므로 `translation-cache-editor.png`(소스의 형제)는 `../../docs/translation-cache-editor.png`가 됩니다 — 어떤 `postProcessing` 규칙 없이도 올바르게 해결됩니다.
 
-Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 `documentations[]` 블록을 사용합니다.
+`markdownOutput.style`가 `"docusaurus"`, `"astro-starlight"`, `"nested"` 또는 `"flat"` 이외의 값일 때, 플랫 링크 리라이터는 실행되지 않습니다. `postProcessing`는 원래 마크다운 URL을 봅니다.
 
-- **Docusaurus 문서**(`markdownOutput.style` `docusaurus`): `docs-site/docs/` 아래의 영어 페이지는 URL에 고정된 로케일 세그먼트를 사용하여 스크린샷을 참조합니다. 예를 들어 `feature-showcase.md`의 `/img/screenshots/en-GB/screenshot.png`. 후처리 단계에서 해당 세그먼트를 교체하여 `docs-site/i18n/<locale>/…/current/` 아래의 각 번역된 페이지가 자체 폴더를 가리키도록 합니다:
+**패턴 A 예시** — `markdownOutput.style = "flat"`일 때 소스 파일과 함께 상대 경로 자산에 대한 구성 필요 없음. 패턴 A `postProcessing` 규칙은 절대 URL 자산(예: `/img/...`) 또는 CDN 대상 교체에만 필요합니다.
 
-```json
-{
-  "description": "Per-locale screenshot folders in docs-site static assets",
-  "search": "screenshots/en-GB/",
-  "replace": "screenshots/${translatedLocale}/"
-}
-```
-
-사이트 정적 트리 아래에 일치하는 PNG 파일을 제공하세요(예: `/img/screenshots/`으로 시작하는 URL의 경우 `docs-site/static/img/screenshots/<locale>/`에 배치).
-
-- **루트 README, 평면 출력** (동일한 파일 내 두 번째 `documentations[]` 블록): `README.md`만 번역되며, `markdownOutput.style` `flat` 및 `outputDir` `translated-docs`를 포함하므로 결과적으로 `translated-docs/README.<locale>.md`이(가) 생성됩니다. 영문 이미지의 경우 경로 중간에 안정적인 폴더 세그먼트를 사용하는 경우가 많습니다(예: `images/screenshots/en-GB/overview.png`). 후처리 과정에서 `images/screenshots/`과 URL 나머지 부분 사이에 위치한 단일 경로 세그먼트를 활성 `${translatedLocale}`로 대체하므로 각 번역된 README는 `images/screenshots/de/…`, `images/screenshots/fr/…` 등을 가리키게 됩니다. 이 패턴은 Docusaurus 규칙과 다릅니다. 여기서 `search`는 **어떤** 폴더 이름(`[^/]+/`)에도 일치하며, `en-GB/`만 일치하는 것이 아닙니다.
+**패턴 B 예시 — `markdownOutput.style = "flat"` README** (`examples/nextjs-app`, 두 번째 `documentations[]` 블록)
 
 ```json
 {
@@ -693,11 +727,23 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 }
 ```
 
-`images/screenshots/<locale>/` 아래 디스크에 PNG 파일을 그대로 유지합니다 (URL 재작성 후 사용하는 것과 동일한 구조).
+일반적인 `[^/]+` 형식을 사용하고 하드코딩된 소스 로케일을 사용하지 마세요, 그러면 규칙이 `sourceLocale`가 변경되더라도 계속 작동합니다.
 
-**패턴 3 — SVG 파일** (`examples/nextjs-app`)
+**패턴 B 예시 — `markdownOutput.style = "docusaurus"`** (`examples/nextjs-app`, 첫 번째 `documentations[]` 블록)
 
-동일한 예제에서 `features.translateSVG`을 활성화하고 소스 SVG를 웹 앱의 public 폴더로 매핑합니다:
+```json
+{
+  "description": "Per-locale screenshot folders in docs-site static assets",
+  "search": "screenshots/[^/]+/",
+  "replace": "screenshots/${translatedLocale}/"
+}
+```
+
+**패턴 C — Docusaurus 동시 배치** (`regexAdjustments` 필요 없음)
+
+en-GB 스크린샷을 `static/assets/`에 배치하고 심볼릭 링크 `docs/assets → ../static/assets`를 만듭니다. `take-screenshots` 스크립트는 다른 로케일을 `i18n/<locale>/…/current/assets/`에 직접 작성합니다. 모든 로케일의 모든 문서는 `../assets/name.png`를 참조합니다 — 경로는 안정적이며 URL 재작성은 필요하지 않습니다.
+
+**패턴 D 예시** (`examples/nextjs-app`, `svg.style = "flat"`)
 
 ```json
 "svg": {
@@ -707,20 +753,83 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 }
 ```
 
-`translate-svg`(또는 `sync`)을 실행하여 `images/*.svg`가 `public/assets/` 아래의 로케일별 출력으로 생성되도록 합니다. 마크다운은 `translate-docs`와 별도로 해당 URL을 참조합니다.
+`images/*.svg` → `public/assets/` 아래의 로케일별 파일. 앱은 로케일별로 참조합니다: `<img src={`/assets/icon.${locale}.svg`} />`.
 
 **최소 README 전용 예제** (`examples/console-app`)
 
-`examples/console-app/ai-i18n-tools.config.json`은 `README.md`을 `translated-docs/`로 `postProcessing.languageListBlock`만 사용하여 번역합니다. README에 형제 래스터 파일이 없거나 호스트가 이미 제공하는 절대 URL만 사용하는 경우에 적합하며, 이미지 규칙을 정의하지 않습니다.
+`examples/console-app/ai-i18n-tools.config.json`는 `README.md`을 `translated-docs/`로 변환합니다 [언어 전환 후처리](#language-list-block)만으로. 이미지 규칙은 정의되지 않았습니다 — README에 형제 래스터 파일이 없거나 호스트가 이미 제공하는 절대 URL만 사용하는 경우에 적합합니다.
 
 대체 템플릿은 `markdownOutput.postProcessing.regexAdjustments` 행의 [구성 참조](#configuration-reference)에 있는 전체 목록을 참조하여 `${translatedLocale}` 및 `${translatedBasedir}`과 같은 자리표시자를 지원합니다.
 
-<a id="markdown-output-path-template-placeholders"></a>
-#### `pathTemplate` / `jsonPathTemplate` 플레이스홀더
+<a id="language-switcher-languagelistblock"></a>
+#### 언어 전환기 (`languageListBlock`)
+
+번역된 마크다운 파일에 각 로케일별 링크가 포함된 **"다른 언어로 읽기"** 링크 행을 넣어야 할 때 `markdownOutput.postProcessing.languageListBlock`을 사용합니다. 각 출력 파일 기준으로 `href` 값이 계산되어 각 로케일마다 하나의 링크가 생성됩니다.
+
+이 저장소는 [README.md](../README.ko.md) 및 [docs/GETTING_STARTED.md](../../docs/GETTING_STARTED.md)에 이를 사용합니다. `translate-docs` 처리 후 각 번역본은 새로 고쳐진 블록을 가지게 됩니다. 예를 들어 [translated-docs/docs/GETTING_STARTED.de.md](../../docs/../translated-docs/docs/GETTING_STARTED.de.md)은 `translated-docs/docs/` 아래의 동일한 계층 구조에 있는 다른 로케일 파일들과 영어 원본인 `../../docs/GETTING_STARTED.md`로 돌아가는 링크를 포함합니다.
+
+**1. 소스 마크다운에서 블록 지정하기**
+
+전환기 블록을 `start`과 `end`이라는 하위 문자열 마커로 구분된 HTML(또는 기타 라인)로 감쌉니다. 이 저장소에서는 다음을 사용합니다.
+
+```markdown
+<small>**Read in other languages:** </small>
+<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](../../docs/../translated-docs/docs/GETTING_STARTED.de.md) · …</small>
+```
+
+초기 링크 텍스트는 단지 자리표시자일 뿐입니다. `translate-docs`은 `start`을 포함한 첫 번째 라인부터 이후에 등장하는 `end`를 포함한 첫 번째 라인까지의 전체 구간을 대체합니다 (코드 블록 안의 마커는 무시되므로 동일 파일 내 구성 예제는 대상에서 제외됨).
+
+**2. 블록 구성하기**
+
+`start`과 `end`은 임의의 하위 문자열 마커입니다. 반드시 `<small id="lang-list">` / `</small>`일 필요는 없습니다. 언어 전환기 블록에만 유일하게 나타나는 시작 및 종료 텍스트를 선택하면 됩니다. 예를 들어 다른 HTML 태그(`<div class="lang-switcher">` … `</div>`), HTML 주석(`<!-- lang-list -->` … `<!-- /lang-list -->`), 또는 마크다운 전용 경계(예: `**Languages:**`로 시작하는 라인부터 `---`로 끝나는 라인까지)를 사용할 수 있습니다. 소스 파일에 입력한 내용과 정확히 일치하도록 설정 파일의 `start`과 `end`을 지정하세요.
+
+루트 설정 ([ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)):
+
+```json
+"postProcessing": {
+  "languageListBlock": {
+    "start": "<small id=\"lang-list\">",
+    "end": "</small>",
+    "separator": " · "
+  }
+}
+```
+
+| 필드       | 역할                                                                                                     |
+|-------------|----------------------------------------------------------------------------------------------------------|
+| `start`     | 블록의 시작 라인을 식별하는 하위 문자열                                                  |
+| `end`       | 닫는 줄의 부분 문자열 (`start`와 함께 한 줄에 나타날 경우 동일한 줄일 수 있음)             |
+| `separator` | 생성된 `[label](../../docs/href)` 링크 사이에 삽입될 텍스트 (이 저장소는 `" · "` 사용)                                    |
+| `label`     | 선택 사항: `"local"`(기본값)은 매니페스트의 각 로케일 고유명을 사용하며, `"english"`는 `englishName`을 사용함 |
+
+**3. 런타임 시 발생하는 일**
+
+1. **추출** — 언어 목록 블록은 모델로 **전송되지 않음** (`translatable: false`).
+2. **각 번역 파일별 처리** — 세그먼트 번역 및 선택적 평면 링크 재작성 후, `postProcessing`이 블록을 재구성합니다. 각 로케일마다 하나의 마크다운 링크를 생성하며, 레이블은 `ui-languages.json`에 존재하면 그 값을 사용하고(없으면 기본 마스터 카탈로그, 그 외에는 `localeDisplayNames` 사용), 경로는 현재 작성 중인 파일 기준의 상대 경로로 설정됩니다.
+3. **소스 새로 고침** — `translate-docs` / `sync` 문서 처리가 끝난 후, 동일한 표준 블록이 `contentPaths`의 **영어 소스 파일**에 다시 쓰여지므로, 새로운 로케일 추가 시 모든 링크를 수동으로 편집하지 않고도 저장소 내 전환기가 자동으로 업데이트됩니다.
+
+파일에 일치하는 블록이 없으면 CLI는 경고를 기록하고(`--verbose` 시), 본문은 그대로 유지됩니다.
+
+**4. 레이블 매니페스트**
+
+고유명 레이블(`label: "local"`)의 경우, `generate-ui-languages`를 통해 `ui-languages.json`을 생성하거나 유지 관리하세요 ([`uiLanguagesPath`](#uilanguagespath-optional) 참조). 이 저장소의 문서 전용 설정은 UI 파이프라인이 없으므로 레이블은 `sourceLocale` + `targetLocales`용 번들된 마스터 카탈로그에서 가져옵니다.
+
+**5. 이 저장소의 예시**
+
+| 예시                            | 파일들                                                                                                                                                                                        |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 이 패키지 (평면 문서 + 하위 디렉터리) | [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) (`markdownOutput.style = "flat"`), [README.md](../README.ko.md), [docs/GETTING_STARTED.md](../../docs/GETTING_STARTED.md), 출력물은 [translated-docs/](../../docs/../translated-docs/) 아래에 위치 |
+| 최소한의 README만 | [examples/console-app/ai-i18n-tools.config.json](../../docs/../examples/console-app/ai-i18n-tools.config.json) (`markdownOutput.style = "flat"`), [examples/console-app/README.md](../../docs/../examples/console-app/README.md) |
+| 단순 README + Docusaurus 문서 | [examples/nextjs-app/ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json) (두 번째 블록: `markdownOutput.style = "flat"`; 첫 번째 블록: `markdownOutput.style = "docusaurus"`) |
+
+`<small id="lang-list">` 바로 이전 줄(예: `**Read in other languages:**`)은 일반적인 번역 가능한 구문이며 각 대상 로캘에서 로컬라이즈되며, 마커 내부의 링크 행은 `href` 및 매니페스트 기반 레이블을 제외하고는 원문 그대로 재생성됩니다.
+
+<a id="pathtemplate--jsonpathtemplate-placeholders"></a>
+#### `pathTemplate` / `jsonPathTemplate` 자리표시자
 
 `documentations[].markdownOutput.pathTemplate`(마크다운 및 MDX) 또는 `jsonPathTemplate`(JSON 레이블 파일)을 설정하여 번역된 파일이 작성되는 위치를 재정의할 수 있습니다. 두 옵션 모두 동일한 플레이스홀더를 사용합니다. 해결된 경로는 해당 블록의 `outputDir` 내에 있어야 합니다(CLI는 이를 벗어나는 경로를 거부합니다).
 
-사용자 정의 `pathTemplate`을 사용하는 경우, 명시적으로 설정하지 않으면 `rewriteRelativeLinks`은 기본적으로 `false`가 됩니다 — 평면 스타일 링크 재작성은 기본 `flat` 레이아웃을 위해 설계되었습니다.
+사용자 정의 `pathTemplate`을 사용하는 경우, 명시적으로 설정하지 않으면 `rewriteRelativeLinks`은 기본적으로 `false`가 됩니다. 상대 링크 재작성은 사용자 정의 템플릿 없이도 `markdownOutput.style = "flat"`용으로 구현되어 있습니다.
 
 | 자리 표시자            | 역할                                                                                                       | 예시                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
@@ -753,7 +862,28 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 /home/acme/repo/i18n/de/docs/guide.md
 ```
 
-`flat` 스타일 패턴 중 파일 이름만 유지하는 것은 `{stem}`과 `{extension}`를 사용할 수 있으며, 예를 들어 `{outputDir}/{stem}.{locale}{extension}`는 해결된 `outputDir` 하에서 `…/guide.de.md`를 생성합니다.
+`markdownOutput.style = "flat"`과 사용자 정의 `pathTemplate` 없이 사용할 때 일반적인 패턴은 `{stem}` 및 `{extension}`를 통해 파일 이름만 유지하는 것입니다. 예를 들어 `{outputDir}/{stem}.{locale}{extension}`는 해결된 `outputDir` 아래에서 `…/guide.de.md`를 생성합니다.
+
+<a id="troubleshooting"></a>
+### 문제 해결
+
+**번역된 문서에서 섹션 앵커 링크가 작동하지 않음**
+
+`[label](../../docs/other.md#section-id)`과 같은 링크는 올바른 번역된 파일을 열 수 있지만, 의도한 제목으로 스크롤하지 못하거나 잘못된 섹션으로 이동할 수 있습니다. 해당 로캘에서 `#…` 조각(fragment)이 더 이상 어떤 제목 `id`와도 일치하지 않습니다.
+
+일반적인 원인:
+
+- 원본 제목에 명시적인 앵커 ID가 없었으며, 사이트는 보이는 제목 텍스트에서 슬러그를 유도하므로 번역 후 변경됩니다.
+- 원본에서 제목을 이름을 변경했지만 이전의 `<a id="…"></a>` 줄이 누락되었거나 여전히 이전 ID를 가지고 있습니다.
+- 앵커 링크가 `write-heading-ids`가 생성할 ID 대신 영어 단어에서 추측한 `#…` 조각을 사용합니다.
+
+**해결 방법**
+
+1. **소스** `.md` / `.mdx`(`translate-docs`와 동일한 `documentations[]` / `contentPaths`)에서 `ai-i18n-tools write-heading-ids`을 실행합니다. 이 작업은 각 ATX 제목 앞에 `<a id="slug"></a>`을 삽입하거나, 제목 텍스트가 현재 슬러그와 더 이상 일치하지 않을 때 기존 앵커를 새로 고칩니다.
+2. 앵커 링크를 해당 ID를 가리키도록 설정합니다. 예: `[setup](../../docs/guide.md#first-run)`에서 `#first-run`은 영문 제목에서 유추한 슬러그가 아닌, 대상 제목 위의 앵커 줄과 일치해야 합니다.
+3. 모든 로캘 복사본에 업데이트된 앵커 줄이 포함되도록 `translate-docs`(또는 `sync --force-update`)를 다시 실행합니다.
+
+변경 사항을 미리 보려면 먼저 `write-heading-ids`에서 `--dry-run`을 사용하세요. 전체 패턴은 [단순 레이아웃의 앵커 링크](#anchor-links-when-markdownoutputstyle--flat)를 참조하세요.
 
 ---
 
@@ -761,6 +891,9 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 ## 통합 워크플로우 (UI + 문서)
 
 단일 구성에서 모든 기능을 활성화하여 두 워크플로우를 함께 실행합니다:
+
+<details>
+<summary>UI 및 문서 설정 예제 통합</summary>
 
 ```json
 {
@@ -793,6 +926,10 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 }
 ```
 
+</details>
+
+<br />
+
 `glossary.uiGlossary`은 문서 번역을 UI와 동일한 `strings.json` 카탈로그를 가리키도록 하여 용어의 일관성을 유지합니다. `glossary.userGlossary`는 제품 용어에 대한 CSV 오버라이드를 추가합니다.
 
 `npx ai-i18n-tools sync`을 실행하여 하나의 파이프라인을 수행합니다: `features.extractUIStrings`이 설정된 경우 **UI 문자열 추출**, `features.translateUIStrings`이 설정된 경우 **UI 문자열 번역**, `features.translateSVG`이 설정되고 `svg` 블록이 구성된 경우 **SVG 파일 번역**, 그리고 각 `documentations` 블록에 대해 구성된 대로 **문서 번역**(마크다운/JSON). `--no-ui`, `--no-svg`, 또는 `--no-docs`을 사용하여 일부 단계를 건너뛸 수 있습니다. 문서 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update`를 허용합니다(마지막 두 옵션은 문서 번역 실행 시에만 적용되며, `--no-docs`를 전달하면 무시됨).
@@ -812,10 +949,13 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 }
 ```
 
-<a id="mixed-documentation-workflow-docusaurus--flat"></a>
-### 혼합 문서 워크플로우 (Docusaurus + 평면 구조)
+<a id="mixed-documentation-workflow-markdownoutputstyle--docusaurus--flat"></a>
+### 혼합 문서 워크플로우(`markdownOutput.style = "docusaurus"` + `"flat"`)
 
-`documentations`에 두 개 이상의 항목을 추가하여 동일한 구성에서 여러 문서 파이프라인을 결합할 수 있습니다. 이 설정은 프로젝트에 Docusaurus 사이트와 함께 루트 수준의 마크다운 파일(예: 저장소의 README)이 있으며, 이 파일들을 평면 출력으로 번역해야 할 때 일반적으로 사용됩니다.
+동일한 구성에서 `documentations`에 두 개 이상의 항목을 추가하여 여러 문서 파이프라인을 결합할 수 있습니다. 이 설정은 프로젝트에 Docusaurus 사이트(`markdownOutput.style = "docusaurus"`)와 함께 루트 수준의 마크다운 파일(예: `markdownOutput.style = "flat"`가 있는 저장소 README)이 있고, 로캘 접미사가 붙은 파일 이름으로 번역되어야 하는 경우에 일반적입니다.
+
+<details>
+<summary>Docusaurus와 단순 README 설정 혼합 예제</summary>
 
 ```json
 {
@@ -846,7 +986,7 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
       }
     },
     {
-      "description": "Root README in flat output",
+      "description": "Root README with markdownOutput.style flat",
       "contentPaths": ["README.md"],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
@@ -866,35 +1006,39 @@ Next.js 예제는 `examples/nextjs-app/ai-i18n-tools.config.json`에 두 개의 
 }
 ```
 
+</details>
+
+<br />
+
 `npx ai-i18n-tools sync`으로 실행할 경우:
 
-- UI 문자열은 `src/`에서 추출되어 `public/locales/`로 번역됩니다.
-- 첫 번째 docs 블록은 `docs-site/docs/`의 **마크다운**을 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`로 번역합니다(지역화된 문서 페이지).
-- `features.translateJSON` 및 `jsonSource`를 사용하면 동일한 블록에서 `docs-site/i18n/en/` 하위의 **Docusaurus 셸 JSON**도 각 대상 로케일 폴더로 번역됩니다. 여기에는 내비게이션 바, 푸터, 테마/플러그인 카탈로그가 포함되며, MDX 본문은 제외됩니다.
-- 두 번째 docs 블록은 `README.md`을 `translated-docs/` 아래의 로케일 접미사가 붙은 평면 파일로 번역합니다.
+- UI 문자열은 `src/`에서 `public/locales/`로 추출/번역됩니다.
+- 첫 번째 문서 블록은 **마크다운**을 `docs-site/docs/`에서 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`로 번역합니다(로컬라이즈된 문서 페이지).
+- `features.translateJSON` 및 `jsonSource`를 사용하면 동일한 블록이 `docs-site/i18n/en/` 아래의 **Docusaurus 셸 JSON**도 각 대상 로캘 폴더로 번역합니다. 여기에는 내비게이션 바, 푸터, 테마/플러그인 카탈로그가 포함되며, MDX 본문은 제외됩니다.
+- 두 번째 문서 블록은 `README.md`을 `translated-docs/` 아래의 로캘 접미사가 붙은 파일로 번역합니다(`markdownOutput.style = "flat"`).
 - 모든 docs 블록은 `cacheDir`을 공유하므로 변경되지 않은 세그먼트는 실행 간에 재사용되어 API 호출과 비용을 줄입니다.
 
 ---
 
-<a id="translation-cache-editor"></a>
-## 번역 캐시 편집기
+<a id="translation-dashboard"></a>
+## 번역 대시보드
 
 실행:
 
 ```bash
-ai-i18n-tools editor
+ai-i18n-tools dashboard
 # Optional: choose port, do not auto-open browser
-# ai-i18n-tools editor -p 8765 --no-open
+# ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
 이것은 구성된 `cacheDir` SQLite 데이터베이스를 지원하는 로컬 웹 UI를 시작합니다—CLI가 문서 세그먼트, 로그 및 관련 메타데이터를 위해 사용하는 동일한 폴더입니다. 여기에는 **문서**(캐시된 문서 세그먼트), **UI 문자열**, **UI 복수형**, **용어집**, **실패**, **Markdown 문제**, 및 **통계** 탭이 포함됩니다.
 
-![Translation Cache Editor](../../docs/translation-cache-editor.png)
+![Translation Dashboard](../../docs/translation-cache-editor.png)
 
 이 앱에서 캐시 행(**예: 문서 세그먼트**)을 편집하는 경우, 디스크에 저장된 출력 결과가 캐시와 일치하도록 `sync --force-update` 또는 `--force-update`과 동일한 번역 명령을 실행하세요. 이후 저장소의 **원본 텍스트**가 변경되면 세그먼트 해시도 변경되며, 이전 텍스트에 대한 수동 편집 내용은 더 이상 유효하지 않게 됩니다.
 
-<a id="translation-cache-editor-failures"></a>
-### 실패 (문서 번역)
+<a id="failures-document-translation"></a>
+### 실패(문서 번역)
 
 **실패** 탭은 **문서** 번역 전용입니다. 로케일별로 세그먼트 번역에 실패했을 때(예: 빈 출력 또는 잘못된 모델 출력, 번역 후 검증 오류(`AST mismatch`, 자리 표시자 누수 등 **품질** 검사), 또는 진행을 차단하는 **치명적** 오류) SQLite에 기록된 실패 기록을 읽어옵니다. 이를 통해 다음 질문에 답할 수 있습니다: *어느 원본 세그먼트가 어떤 로케일과 모델에서 오류가 발생했으며, 어떤 오류 메시지가 기록되었는가?*
 
@@ -913,21 +1057,21 @@ ai-i18n-tools editor
 <a id="how-to-use-the-tab"></a>
 #### 탭 사용 방법
 
-1. **실패**를 편집기에서 엽니다 ( [번역 캐시 편집기](#translation-cache-editor)와 동일한 브라우저 세션).
-2. **요약** 스트립을 읽습니다 (실패가 있는 세그먼트와 **1**, **2**, 또는 **3+** 실패 기록이 있는 세그먼트의 수).
-3. 부분 **파일 이름**, **로케일**, **모델**, **품질 오류** (값은 캐시에서 가져옴), **치명적만**, 선택적 **소스 해시**, **소스 텍스트**, 또는 **오류 메시지** 부분 문자열로 필터링한 후 **적용**를 클릭합니다.
-4. **정렬: # 실패** (기본값) 또는 **정렬: 파일 경로 + 줄 번호**를 선택합니다.
-5. 테이블 상단 또는 하단의 페이지네이션을 사용하세요. **행 클릭**으로 전체 원본 텍스트를 토글할 수 있습니다. 활성화된 경우 행의 링크 컨트롤은 `ai-i18n-tools editor`가 실행 중인 **터미널**로 파일/라인 힌트를 기록하도록 서버 프로세스에 요청합니다 — 브라우저에서 편집기로 이동할 때 유용합니다.
-6. 프로젝트의 **원본 파일**을 수정한 후 `translate-docs` 또는 `sync`를 다시 실행하세요. 성공적인 실행 후에도 목록이 **오래된 것처럼** 보이면 `ai-i18n-tools sync --force-update`을 실행하고 에디터를 새로고침하세요(실패 패널에 동일한 힌트가 표시됨).
+1. 대시보드에서 **실패**를 엽니다([번역 대시보드](#translation-dashboard)와 동일한 브라우저 세션).
+2. **요약** 막대를 읽습니다(실패가 있는 세그먼트 및 **1**, **2**, **3+** 실패 기록이 있는 세그먼트 수 포함).
+3. 부분 **파일 이름**, **로캘**, **모델**, **품질 오류**(캐시에서 가져온 값), **치명적 오류만**, 그리고 선택적 **소스 해시**, **소스 텍스트**, 또는 **오류 메시지** 부분 문자열로 필터링한 후 **적용**을 클릭합니다.
+4. **정렬: 실패 수**(기본값) 또는 **정렬: 파일 경로 + 줄 번호**를 선택합니다.
+5. 테이블 상단 또는 하단에 페이지네이션을 사용합니다. **행 클릭**하여 전체 소스 텍스트를 전환합니다. 활성화된 경우 행의 링크 컨트롤은 `ai-i18n-tools dashboard`가 실행 중인 **터미널**로 파일/라인 힌트를 기록하도록 서버 프로세스에 요청합니다. 이를 통해 브라우저에서 편집기로 바로 이동할 수 있습니다.
+6. 프로젝트의 **소스 파일**을 수정한 후, 다시 `translate-docs` 또는 `sync`를 실행합니다. 성공적으로 실행한 후에도 목록이 **오래된 것처럼 보인다면**, `ai-i18n-tools sync --force-update`을 실행하고 대시보드를 새로고침하세요(실패 패널도 동일한 힌트를 표시합니다).
 
 UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시도 중 `translate-docs --debug-failed`를 사용해 `cacheDir` 아래에 `FAILED-TRANSLATION` 세부 정보를 기록할 수 있습니다 — [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 참조.
 
 <a id="markdown-issues-static-checks"></a>
 ### 마크다운 문제 (정적 검사)
 
-**Markdown 문제** 탭은 `markdown_source_issues` SQLite 테이블의 행을 나열합니다. 각 행은 **사전 번역** 발견입니다: 예를 들어, 같은 CommonMark 스타일 규칙 `translate-docs`이 마스킹에 사용하는 강조/취소선으로 쌍을 이루지 않는 구분 기호 실행, 백틱으로 열렸지만 닫히지 않은 인라인 코드 범위, `STRONG_OUTSIDE_INLINE_CODE`가 `**` / `__`가 `` `...` `` 범위를 감쌀 때(백틱 안에 강조를 넣거나 일반 코드를 사용), 또는 `STRONG_OUTSIDE_LINK`가 `**` / `__`가 `[text](../url)` 링크를 감쌀 때(링크 텍스트 안에만 굵게 표시)를 포함합니다. 이는 **실패**와는 **다릅니다**, 이는 로케일별 모델 출력 및 번역 후 검증 문제( `AST mismatch`, 플레이스홀더 누수 및 유사한 문제)를 기록합니다.
+**Markdown 문제** 탭은 `markdown_source_issues` SQLite 테이블의 행을 나열합니다. 각 행은 **사전 번역** 발견입니다: 예를 들어, 같은 CommonMark 스타일 규칙 `translate-docs`이 마스킹에 사용하는 강조/취소선으로 쌍을 이루지 않는 구분 기호 실행, 백틱으로 열렸지만 닫히지 않은 인라인 코드 범위, `STRONG_OUTSIDE_INLINE_CODE`가 `**` / `__`가 `` `...` `` 범위를 감쌀 때(백틱 안에 강조를 넣거나 일반 코드를 사용), 또는 `STRONG_OUTSIDE_LINK`가 `**` / `__`가 `[text](../../docs/url)` 링크를 감쌀 때(링크 텍스트 안에만 굵게 표시)를 포함합니다. 이는 **실패**와는 **다릅니다**, 이는 로케일별 모델 출력 및 번역 후 검증 문제( `AST mismatch`, 플레이스홀더 누수 및 유사한 문제)를 기록합니다.
 
-이 탭을 사용할 때는 토큰을 사용하기 전에 **소스 마크다운**를 수정하려고 할 때입니다—특히 품질 검사가 구조에서 계속 실패할 때. 파일 경로(캐시 키에 대한 부분 일치, `doc-block:{index}:` 접두사 포함), **문제 코드**, 또는 **소스 해시**로 필터링합니다; 파일 경로 + 줄 또는 최신 스캔 시간으로 정렬합니다. 링크 버튼은 `ai-i18n-tools editor`이 실행 중인 터미널에 파일/줄 힌트를 기록합니다 (문서 탭과 같은 아이디어입니다).
+토큰을 소비하기 전에 **소스 마크다운**을 수정하고자 할 때 이 탭을 사용하세요—특히 구조 관련 품질 검사가 반복적으로 실패할 경우 유용합니다. 파일 경로(캐시 키에 대한 부분 일치, `doc-block:{index}:` 접두사 포함), **이슈 코드**, 또는 **소스 해시**로 필터링할 수 있으며, 파일 경로 + 라인 또는 최신 스캔 시간 기준으로 정렬할 수 있습니다. 링크 버튼은 `ai-i18n-tools dashboard`가 실행 중인 터미널로 파일/라인 힌트를 기록합니다(문서 탭과 동일한 개념).
 
 **행 새로 고침:** `ai-i18n-tools check-markdown`를 실행합니다 (선택 사항 `-p` / `--path` 범위, `--no-cache`는 SQLite를 건너뛰기 위해, `--json`는 stdout에서 기계 판독 가능한 출력과 stderr에서 인간 줄을 위해). 기본적으로 각 `translate-docs` 마크다운 파일 실행은 `documentations[].warnMarkdownSourceIssues`가 `false`로 설정되지 않은 경우 해당 파일의 행을 다시 스캔하고 교체합니다. 캐시 파일 경로에 대한 모든 번역을 지우면 해당 파일 경로에 대한 마크다운 문제 행이 실패와 같은 정리 경로의 일부로 제거됩니다.
 
@@ -957,9 +1101,9 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 다음과 같은 경우에 사용하세요:
 
-- 매니페스트가 `ui.flatOutputDir` 외부에 있으며 CLI가 명시적으로 참조할 수 있도록 경로를 지정해야 할 때.
-- `markdownOutput.postProcessing.languageListBlock`이 매니페스트에서 로캘 레이블을 생성하도록 하려는 경우.
-- `extract`가 매니페스트의 `englishName` 항목을 `strings.json`에 병합하도록 하려는 경우 (`ui.reactExtractor.includeUiLanguageEnglishNames: true` 필요).
+- 매니페스트가 `ui.flatOutputDir` 외부에 위치하므로 CLI에 명시적으로 경로를 지정해야 합니다.
+- [언어 전환기 후처리](#language-list-block)(`languageListBlock`)를 사용하여 매니페스트에서 로케일 레이블을 생성하려는 경우입니다.
+- `extract`가 매니페스트의 `englishName` 항목을 `strings.json`에 병합해야 할 경우입니다(`ui.reactExtractor.includeUiLanguageEnglishNames: true` 필요).
 
 <a id="concurrency-optional"></a>
 ### `concurrency` (선택 사항)
@@ -1013,9 +1157,12 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 아래 목록은 확장 가능한 **기준**으로 간주하세요. 특정 로캘의 번역 품질이 낮거나 실패하는 경우, 해당 언어 또는 문자 체계를 효과적으로 지원하는 모델을 조사하고 (온라인 자료 또는 제공업체 문서 참조), 해당 OpenRouter ID를 추가 대안으로 등록하세요.
 
-이 목록은 **광범위한 로케일 적용 범위에 대해 테스트되었습니다** (예: 대규모 문서 프로젝트에서 **36개**의 대상 로케일을 번역하던 **2026년 4월**에 수행됨). 실용적인 기본값으로 사용되지만, 모든 로케일에서 항상 우수한 성능을 보장하지는 않습니다.
+이 목록은 36개의 대상 로케일을 포함하는 대규모 문서 프로젝트에서 **광범위한 로케일 커버리지 테스트**를 거쳤습니다. 실용적인 기본값으로 사용되지만, 모든 로케일에서 항상 우수한 성능을 보장하지는 않습니다.
 
 예시 `translationModels` (`npx ai-i18n-tools init`과 동일한 기본값):
+
+<details>
+<summary>기본 translationModels 대체 목록</summary>
 
 ```json
 "translationModels": [
@@ -1028,10 +1175,14 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
   "google/gemini-3-flash-preview",
   "~anthropic/claude-haiku-latest",
   "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
+  // … add more fallback models as needed
 ]
 ```
+
+</details>
+
+<br />
 
 환경 또는 `.env` 파일에서 `OPENROUTER_API_KEY`을 설정하세요.
 
@@ -1073,11 +1224,6 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 `true`일 때(기본값 `false`), `extract`는 소스 스캔에서 이미 존재하지 않는 경우(같은 해시 키 기준), 매니페스트의 `englishName`을 `uiLanguagesPath` 위치에서 `strings.json`에 추가합니다. 유효한 `ui-languages.json`을 가리키는 `uiLanguagesPath`이 필요합니다.
 
-| 필드         | 설명                                               |
-|---------------|-----------------------------------------------------------|
-| `sourceRoots` | `t("…")` 호출을 위해 스캔된 디렉토리 또는 glob 패턴 (cwd에 상대적). |
-| `stringsJson` | 마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됨.    |
-
 <a id="cachedir"></a>
 ### `cacheDir`
 
@@ -1112,52 +1258,66 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 
 문서 파이프라인 블록의 배열입니다. `translate-docs`과 `sync`의 docs 단계는 각 블록을 순서대로 **처리합니다**.
 
+**콘텐츠 소스**
+
 - `description`
-이 블록에 대한 선택적 인간 가독성 노트 (번역에 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목에 접두사가 붙으며; `status` 섹션 헤더에도 표시됩니다.
+이 블록에 대한 선택적 인간이 읽을 수 있는 메모(번역에는 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목에 접두사로 추가되며, `status` 섹션 헤더에도 표시됩니다.
 - `contentPaths`
-번역할 Markdown/MDX 페이지 본문 (`translate-docs`가 `.md` / `.mdx`를 스캔합니다). **디렉토리 경로 또는 glob 패턴**를 지원합니다 (예: `"docs/**/*.md"`, `"guides/*.mdx"`). 로컬라이즈된 문서 본문이 여기에서 나옵니다.
-- `outputDir`
-이 블록에 대한 번역된 출력의 루트 디렉토리.
+번역할 마크다운/MDX 페이지 본문(`translate-docs`가 `.md` / `.mdx`를 검색함). **디렉터리 경로 또는 glob 패턴** 지원(e.g. `"docs/**/*.md"`, `"guides/*.mdx"`). 이곳이 현지화된 문서 본문의 출처입니다.
 - `sourceFiles`
-로드 시 `contentPaths`에 병합된 선택적 별칭.
+로드 시 `contentPaths`에 병합되는 선택적 별칭입니다.
 - `targetLocales`
-이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록에서의 합집합임.
+이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 효과적인 문서 로케일은 블록 간의 합집합입니다.
 - `jsonSource`
-선택 사항. 이 블록의 Docusaurus JSON 레이블 카탈로그를 위한 소스 디렉터리(예: `docusaurus write-translations`의 `"i18n/en"`). 페이지 본문은 항상 `contentPaths`에서 가져옴. `jsonSource`은 쉘/UI용 JSON만 제공하며 MDX는 제공하지 않음.
+선택 사항. 이 블록에 대한 Docusaurus JSON 레이블 카탈로그의 소스 디렉터리(e.g. `"i18n/en"` from `docusaurus write-translations`). 페이지 본문은 항상 `contentPaths`에서 가져오며, `jsonSource`는 MDX가 아닌 셸/UI JSON만 제공합니다.
+
+**출력 레이아웃**
+
+- `outputDir`
+이 블록의 번역된 출력을 위한 루트 디렉터리입니다.
 - `markdownOutput.style`
 `"nested"`(기본값), `"flat"`, `"doc-system"`, 또는 별칭 `"docusaurus"` / `"astro-starlight"`.
 - `markdownOutput.localeSubpath`
-`doc-system`을 위한 `{locale}/`와 `{relativeToDocsRoot}` 사이의 경로 세그먼트(`style: "doc-system"`을 직접 사용할 때 필요; 별칭 사용 시 사전 설정됨). Starlight 스타일의 로케일 폴더에는 `""` 사용.
+`{locale}/`과 `{relativeToDocsRoot}` 사이의 `doc-system` 경로 세그먼트(`style: "doc-system"` 직접 사용 시 필수; 별칭 사용 시 사전 설정됨). Starlight 스타일 로케일 폴더에는 `""`를 사용하세요.
 - `markdownOutput.docsRoot`
-Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`).
+Docusaurus 레이아웃을 위한 소스 문서 루트(e.g. `"docs"`).
 - `markdownOutput.pathTemplate`
-사용자 정의 마크다운 출력 경로. 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+사용자 정의 마크다운 출력 경로. 자리표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-레이블 파일을 위한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리 표시자를 지원함.
+레이블 파일을 위한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리표시자를 지원합니다.
 - `markdownOutput.flatPreserveRelativeDir`
-`flat` 스타일의 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지하세요.
+`markdownOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다.
 - `markdownOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 다시 작성합니다(`flat` 스타일에서는 자동으로 활성화됨).
+번역 후 상대 링크를 다시 작성합니다(`markdownOutput.style = "flat"`이고 사용자 정의 `pathTemplate`가 없을 때 자동 활성화됨).
 - `markdownOutput.linkRewriteDocsRoot`
-평면 링크 재작성 접두사를 계산할 때 사용하는 리포지터리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`으로 그대로 두는 것이 좋습니다.
+플랫 링크 재작성 접두사를 계산할 때 사용되는 리포지터리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두는 것이 좋습니다.
+
+**후처리**
+
 - `markdownOutput.postProcessing`
-번역된 **마크다운 본문**에 대한 선택적 변환(YAML 키와 비서사적 front matter 값은 보존됨). 세그먼트 재조합 및 평면 링크 재작성 후, `addFrontmatter` 이전에 실행됩니다.
-- `translateFrontmatterFields`
-`markdownOutput`과 동일한 수준임(`documentations[]` 블록 기준). 기본값 `true`: Starlight/Docusaurus용 사용자 인터페이스 YAML 서사문 번역(`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` 레이블). 전체 front matter 블록을 변경 없이 유지하려면 `false`로 설정하고, 특정 점 표기 경로로 제한하려면 문자열 배열을 전달하세요.
-- `segmentSplitting`
-`markdownOutput`과 동일한 수준입니다(`documentations[]` 블록 기준). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. `enabled`가 `true`일 때(`segmentSplitting` 생략 시 기본값) 밀집된 단락, GFM 파이프 테이블(첫 번째 청크는 헤더, 구분자, 첫 번째 데이터 행 포함), 긴 목록이 분할되며, 하위 부분은 단일 줄바꿈으로 다시 결합됩니다(`tightJoinPrevious`). 각 빈 줄로 구분된 본문 블록마다 하나의 세그먼트만 사용하려면 `"enabled": false`를 설정하세요.
-- `warnMarkdownSourceIssues`
-`true`일 경우(생략 시 기본값) 각 `translate-docs` 실행 시 마크다운 세그먼트에서 위험한 구분자/닫히지 않은 인라인 코드를 다시 검사하고 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 대체합니다. 이 블록에 대해 경고 및 SQLite 업데이트를 건너뛰려면 `false`를 설정하세요.
+번역된 **마크다운 본문**에 선택적으로 적용할 수 있는 변환입니다 (YAML 키와 비서사형 프론트 매터 값은 그대로 유지됨). 세그먼트 재조합 및 평면 링크 재작성 후, `addFrontmatter` 이전에 실행됩니다.
 - `markdownOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }`의 순서 있는 목록입니다. `search`은 정규식 패턴이며(일반 문자열은 `g` 플래그 또는 `/pattern/flags` 사용). `replace`은 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`과 같은 자리표시자를 지원합니다.
+`{ "description"?, "search", "replace" }`의 순서가 지정된 목록입니다. `search`는 정규 표현식 패턴이며 (일반 문자열은 `g` 플래그 또는 `/pattern/flags` 사용), `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` 등의 자리표시자(placeholder)를 지원합니다.
 - `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label" }` — 번역기는 `start`을 포함하는 첫 번째 줄과 일치하는 `end` 줄을 찾아 해당 범위를 표준 언어 전환기로 대체합니다. `label`은 매니페스트 레이블 소스를 제어합니다: `"local"`(기본값, `ui-languages.json` `label` 사용) 또는 `"english"`(`englishName` 사용). 링크는 번역된 파일을 기준으로 상대 경로로 생성되며, 매니페스트가 구성되지 않은 경우 레이블은 `localeDisplayNames` 및 로케일 코드에서 가져옵니다.
+`{ "start", "end", "separator", "label"? }` — 원본 및 번역된 마크다운에서 제한된 "다른 언어로 읽기" 링크 행을 다시 생성합니다. 설정, 동작 및 저장소 예시는 [언어 전환기(`languageListBlock`)](#language-list-block)를 참조하세요.
+
+**동작 및 메타데이터**
+
+- `translateFrontmatterFields`
+`markdownOutput`과 동일한 수준 (`documentations[]` 블록 단위). 기본값 `true`: Starlight/Docusaurus의 사용자 인터페이스용 YAML 서사문 번역 (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` 레이블 포함). 전체 프론트 매터 블록을 변경 없이 유지하려면 `false`을 설정하고, 특정 도트 경로(dot-path)로 제한하려면 문자열 배열을 전달하세요.
+- `segmentSplitting`
+`markdownOutput`과 동일한 수준 (`documentations[]` 블록 단위). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. `enabled`가 `true`인 경우 (`segmentSplitting` 생략 시 기본값), 밀집된 단락, GFM 파이프 테이블 (첫 번째 청크는 헤더, 구분자, 첫 번째 데이터 행 포함), 긴 목록이 분할되며, 하위 부분은 단일 줄바꿈으로 다시 결합됩니다 (`tightJoinPrevious`). `"enabled": false`을 설정하면 빈 줄로 구분된 본문 블록당 하나의 세그먼트만 사용합니다.
+- `warnMarkdownSourceIssues`
+`true`인 경우 (생략 시 기본값), 각 `translate-docs` 실행 시 마크다운 세그먼트에서 위험한 구분자/닫히지 않은 인라인 코드를 다시 검사하고 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 대체합니다. 이 블록에 대해 경고 및 SQLite 업데이트를 건너뛰려면 `false`을 설정하세요.
 - `addFrontmatter`
-`true`일 경우(생략 시 기본값), 번역된 마크다운 파일에는 YAML 키가 포함됩니다: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, 그리고 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models`(사용된 OpenRouter 모델 ID의 정렬된 목록). 건너뛰려면 `false`로 설정하세요.
+`true`인 경우 (생략 시 기본값), 번역된 마크다운 파일에는 `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path` 등의 YAML 키가 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models` (사용된 OpenRouter 모델 ID의 정렬된 목록)도 포함됩니다. 건너뛰려면 `false`로 설정하세요.
 
 <br/>
 
-**예시(플랫 README 파이프라인 — 스크린샷 경로 + 선택적 언어 목록 래퍼):**
+**예시 (`markdownOutput.style = "flat"` — 스크린샷 경로 + 선택적 언어 목록 래퍼):**
+
+<details>
+<summary>평면 레이아웃 postProcessing 예제(스크린샷 + languageListBlock)</summary>
 
 ```json
 "markdownOutput": {
@@ -1180,14 +1340,16 @@ Docusaurus 레이아웃을 위한 소스 문서 루트(예: `"docs"`).
 }
 ```
 
+</details>
+
 <a id="svg"></a>
 ### `svg`
 
 SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG`이 true일 때만 번역이 실행됩니다(`translate-svg` 또는 `sync`의 SVG 단계를 통해).
 
-| Field                         | Description                                                                                                                                                                                                                                                                        |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sourcePath`                  | 하나 이상의 디렉터리 **또는 glob 패턴** (예: `"images/*.svg"`, `"**/icons/*.svg"`). 패턴은 프로젝트 루트를 기준으로 상대적으로 확인되며, `.svg` 파일을 찾기 위해 재귀적으로 검색됩니다.                                                                                       |
+| 필드            | 설명                                                                                                                                                                                                                                                        |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sourcePath`     | 하나 이상의 디렉터리 **또는 glob 패턴** (예: `"images/*.svg"`, `"**/icons/*.svg"`). 패턴은 프로젝트 루트를 기준으로 상대적으로 해석되며, `.svg` 파일을 재귀적으로 검색합니다.                                                                         |
 | `outputDir`                   | 번역된 SVG 출력의 루트 디렉터리입니다.                                                                                                                                                                                                                                          |
 | `style`                       | `pathTemplate`이 설정되지 않은 경우 `"flat"` 또는 `"nested"`입니다.                                                                                                                                                                                                                               |
 | `pathTemplate`                | 사용자 정의 SVG 출력 경로. 자리표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
@@ -1231,13 +1393,13 @@ CLI 버전 및 빌드 타임스탬프 출력(루트 프로그램의 `-V` / `--ve
 각 `documentations` 블록(`contentPaths`, 선택적 `jsonSource`)에 대해 마크다운/MDX 및 JSON 번역. `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식(`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format) 참조.
 
 - `write-heading-ids …`
-**API 없음.** 최소한 하나의 `documentations[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에 있는 `.md` / `.mdx`를 수집합니다(`.translate-ignore` 준수). 평면 ATX `#` 제목 바로 **앞에** HTML 앵커 줄 `<a id="slug"></a>`을 삽입합니다(_fence 코드 블록 내부의 제목은 건너뜀). `-p` / `--path` 또는 `-f` / `--file`: 프로젝트 기준 파일 또는 디렉터리로 범위 제한. `--slug-style`: `github`(기본값; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. `pymdown` 사용 시, 선택적 `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: 변경 사항만 나열.
+적어도 하나의 `documentations[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에 있는 `.md` / `.mdx`를 수집합니다 (`.translate-ignore` 적용). 평면 ATX `#` 제목 바로 **앞**에 HTML 앵커 라인 `<a id="slug"></a>`을 삽입합니다 ( fenced 코드 블록 내부의 제목은 건너뜀). 이미 앵커 라인이 있는 경우, 현재 제목 텍스트에서 유도된 슬러그와 일치하지 않으면 `id`을 업데이트합니다. `-p` / `--path` 또는 `-f` / `--file`: 프로젝트 기준 파일 또는 디렉터리로 제한. `--slug-style`: `github` (기본값; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. `pymdown` 사용 시, 선택적 `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: 변경 사항만 나열합니다.
 
 - `strip-md-bold-inline …`
-**API가 없습니다.** 최소한 하나의 `documentations[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에서 `.md` / `.mdx` 내의 인라인 코드 주위에서 `**`를 제거합니다 (`.translate-ignore`를 존중합니다). `-p` / `--path` 또는 `-f` / `--file`, `--dry-run`, `--no-backup` (덮어쓰기 전에 타임스탬프가 있는 `.backup.*`는 건너뜁니다).
+적어도 하나의 `documentations[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에 있는 `.md` / `.mdx`에서 인라인 코드 주위의 `**`를 제거합니다 (`.translate-ignore` 적용). `-p` / `--path` 또는 `-f` / `--file`, `--dry-run`, `--no-backup` (덮어쓰기 전 타임스탬프가 있는 `.backup.*` 건너뜀).
 
 - `check-markdown …`
-**API 없음.** 각 `documentations[]` 블록의 `contentPaths` 아래에서 마크다운/MDX를 스캔합니다(`translate-docs`과 동일한 탐지 방식, `.translate-ignore` 준수): 구분 기호 쌍, 닫히지 않은 인라인 코드, `**`/`__`가 `` `...` `` 범위 또는 `[text](../url)` 링크를 감쌀 때의 `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK`. `-p` / `--path` 또는 `-f` / `--file`: 선택적 범위. 문제 발생 시 **stderr**에 `relativePath:line: [ISSUE_CODE] message` 줄을 출력; 문제 발생 시 종료 코드 **1**. `--json`: **stdout**에 JSON 보고서 출력. `--no-cache`가 없으면 `cacheDir`에 `markdown_source_issues` 작성. `-v`은 stderr 줄에 소스 해시를 추가합니다.
+각 `documentations[]` 블록의 `contentPaths` 아래에 있는 마크다운/MDX를 검사합니다(`translate-docs`와 동일한 검색 방식, `.translate-ignore` 적용): 구분 기호 쌍, 닫히지 않은 인라인 코드, `**`/`__`가 `` `...` `` 범위 또는 `[text](../../docs/url)` 링크를 감쌀 때의 `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK`. `-p` / `--path` 또는 `-f` / `--file`: 선택적 범위. 문제가 있으면 **stderr**에 `relativePath:line: [ISSUE_CODE] message` 줄을 출력하고, 종료 코드는 **1**입니다. `--json`: **stdout**에 JSON 보고서 출력. `--no-cache`가 없으면 `cacheDir`에 `markdown_source_issues`을(를) 작성합니다. `-v`는 stderr 줄에 소스 해시를 추가합니다.
 
 - `translate-svg …`
 `config.svg`에서 구성된 SVG 파일만 번역(문서와 별도). `features.translateSVG` 필요. 문서와 동일한 캐시 아이디어 사용; 해당 실행에서 SQLite 읽기/쓰기를 건너뛰기 위해 `--no-cache` 지원. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.
@@ -1246,7 +1408,7 @@ CLI 버전 및 빌드 타임스탬프 출력(루트 프로그램의 `-V` / `--ve
 UI 문자열만 번역. `--force`: 기존 번역 무시하고 로케일별 모든 항목 재번역. `--dry-run`: 쓰기 없음, API 호출 없음. `-j`: 최대 병렬 로케일 수. `features.translateUIStrings` 필요.
 
 - `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
-`extract`을 **먼저** 실행(`features.extractUIStrings` 필요)하여 `strings.json`가 소스와 일치하게 한 후, **소스-로케일** UI 문자열에 대한 LLM 검토(철자, 문법). **용어 힌트**는 `glossary.userGlossary` CSV에서만 제공됨(`translate-ui`과 동일한 범위 — `strings.json` / `uiGlossary` 아님, 따라서 잘못된 복사는 용어집으로 강화되지 않음). OpenRouter 사용(`OPENROUTER_API_KEY`). 참고용(실행 완료 시 종료 코드 **0**). `cacheDir` 아래에 **사람이 읽기 쉬운** 보고서(요약, 문제, 문자열별 **OK** 행)로 `lint-source-results_<timestamp>.log` 작성; 터미널은 요약 수치와 문제만 출력(문자열별 `[ok]` 줄 없음). 마지막 줄에 로그 파일 이름 출력. `--json`: 전체 기계 판독 가능 JSON 보고서를 stdout에만 출력(로그 파일은 사람용으로 유지). `--dry-run`: 여전히 `extract` 실행 후 배치 계획만 출력(API 호출 없음). `--chunk`: API 배치당 문자열 수(기본값 **50**). `-j`: 최대 병렬 배치 수(기본값 `concurrency`). `--json` 사용 시, 인간 친화적 출력이 stderr로 전달됨. 링크는 `editor` UI 문자열의 "링크" 버튼과 동일한 `path:line` 사용.
+`extract`을(를) **최초로** 실행합니다(`features.extractUIStrings` 필요)하여 `strings.json`가 소스와 일치하게 한 후, **source-locale** UI 문자열에 대한 LLM 검토(철자, 문법)를 수행합니다. **용어 힌트**는 `glossary.userGlossary` CSV에서만 가져옵니다(`translate-ui`와 동일한 범위 — `strings.json` / `uiGlossary` 아님. 따라서 잘못된 복사본이 용어집으로 강화되지 않음). OpenRouter(`OPENROUTER_API_KEY`)를 사용합니다. 참고용(실행 완료 시 종료 코드 **0**). `cacheDir` 아래에 **사람이 읽기 쉬운** 보고서(요약, 문제점, 문자열별 **OK** 행)로 `lint-source-results_<timestamp>.log`을(를) 작성합니다. 터미널에는 요약 수와 문제점만 출력(문자열당 `[ok]` 줄 없음). 마지막 줄에 로그 파일 이름을 출력합니다. `--json`: 전체 기계 판독 가능한 JSON 보고서를 stdout에만 출력(로그 파일은 사람이 읽기 쉬운 형식 유지). `--dry-run`: 여전히 `extract`을(를) 실행한 후 배치 계획만 출력(API 호출 없음). `--chunk`: API 배치당 문자열 수(기본값 **50**). `-j`: 최대 병렬 배치 수(기본값 `concurrency`). `--json` 사용 시, 인간 친화적 출력이 stderr로 전달됩니다. 링크는 `dashboard` UI 문자열의 '링크' 버튼과 동일한 `path:line`를 사용합니다.
 
 - `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`
 `strings.json`을 XLIFF 2.0으로 내보내기(대상 로케일당 하나의 `.xliff`). `-o` / `--output-dir`: 출력 디렉터리(기본값: 카탈로그와 동일한 폴더). `--untranslated-only`: 해당 로케일에 번역이 없는 단위만. 읽기 전용; API 없음.
@@ -1258,7 +1420,7 @@ UI 문자열만 번역. `--force`: 기존 번역 무시하고 로케일별 모�
 `features.translateUIStrings`이 켜져 있을 때, 각 로케일별 UI 커버리지를 출력합니다 (`Translated` / `Missing` / `Total`). 그런 다음 파일 × 로케일별 마크다운 번역 상태를 출력합니다 (`--locale` 필터 없음; 로케일은 설정 파일에서 가져옴). 많은 수의 로케일 목록은 터미널에서 줄이 너무 길어지지 않도록 최대 `n`개의 로케일 열을 가진 반복 테이블로 분할됩니다 (기본값 **9**).
 
 - `statistics [--max-columns <n>]`
-문서 캐시 및 `strings.json` 통계를 출력합니다 (번역 캐시 편집기 → **통계**와 동일한 집계값). `--max-columns`: 모델 × 로케일 테이블당 최대 로케일 열 수 (기본값은 편집기와 동일).
+문서화 캐시 및 `strings.json` 통계를 출력합니다(번역 대시보드 → **통계**와 동일한 집계). `--max-columns`: 모델 × 로케일 표당 최대 로케일 열 수(기본값은 대시보드와 동일).
 
 - `cleanup [--dry-run] [--no-backup] [--backup <path>]`
 먼저 `sync --force-update`을 실행하고 (추출, UI, SVG, 문서), 이후 고립된 세그먼트 행(null `last_hit_at` / 파일 경로 없음)을 제거합니다. 디스크상에 존재하지 않는 해석된 소스 경로를 가진 `file_tracking` 행을 삭제하며, 존재하지 않는 파일을 가리키는 `filepath` 메타데이터를 가진 번역 행도 제거합니다. 세 가지 카운트를 기록합니다 (고립된, 고아 세그먼트 `file_tracking`, 고아 번역). `--no-backup`이 지정되지 않으면 캐시 디렉터리 아래에 타임스탬프가 붙은 SQLite 백업을 생성합니다.
@@ -1266,9 +1428,8 @@ UI 문자열만 번역. `--force`: 기존 번역 무시하고 로케일별 모�
 - `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`
 **구성 없음.** 디렉터리 트리(기본값: 현재 작업 디렉터리)를 탐색하여 `*.log` 및 `cache.db.backup*.sqlite`를 찾고, `./…` 경로를 `find -print`처럼 출력합니다. 일치 항목이 있는 경우: `-f` / `--force`이(가) 아닐 경우 `Delete these files? (y/n)`를 묻는 메시지를 표시합니다(확인 없이 삭제). 일치 항목이 없을 경우: 메시지 없이 종료합니다. `--dry-run`: 목록만 출력하며, 메시지나 삭제 동작 없음(`--force`를 무시함).
 
-- `editor [-p <port>] [--no-open]`
-캐시, `strings.json`, 용어집 CSV를 위한 로컬 웹 편집기를 실행합니다. `--no-open`가 있으면 기본 브라우저가 자동으로 열리지 않습니다.  
-**참고:** 캐시 편집기에서 항목을 수정하더라도 업데이트된 캐시 항목을 반영하려면 반드시 `sync --force-update`을 실행해야 합니다. 또한 이후 소스 텍스트가 변경되면 새로운 캐시 키가 생성되기 때문에 수동 편집 내용은 사라집니다.
+- `dashboard [-p <port>] [--no-open]`
+번역 대시보드를 실행합니다(캐시 세그먼트, `strings.json`, 용어집, 오류, 통계를 위한 로컬 웹 UI). `--no-open` 사용 시 기본 브라우저가 자동으로 열리지 않습니다. 사용 중단된 별칭 `editor`은 여전히 작동하지만 경고를 출력합니다.
 
 - `glossary-generate [-o <path>]`
 빈 `glossary-user.csv` 템플릿을 작성합니다. `-o`: 출력 경로를 재정의합니다 (기본값: 설정의 `glossary.userGlossary` 또는 `glossary-user.csv`).

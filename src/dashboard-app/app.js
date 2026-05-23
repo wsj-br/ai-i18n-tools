@@ -6,49 +6,49 @@
   const HEALTH_PATH = "/api/health";
   const HEALTH_POLL_MS = 10_000; // 10 seconds
 
-  function editorFetchFailureMeansServerGone(err) {
+  function dashboardFetchFailureMeansServerGone(err) {
     if (!err || err.name === "AbortError") return false;
     return err instanceof TypeError;
   }
 
-  function showEditorServerDown() {
-    const el = document.getElementById("editor-server-down-overlay");
+  function showDashboardServerDown() {
+    const el = document.getElementById("dashboard-server-down-overlay");
     if (el) el.classList.remove("hidden");
   }
 
-  function hideEditorServerDown() {
-    const el = document.getElementById("editor-server-down-overlay");
+  function hideDashboardServerDown() {
+    const el = document.getElementById("dashboard-server-down-overlay");
     if (el) el.classList.add("hidden");
   }
 
   window.fetch = function (input, init) {
     return nativeFetch(input, init).catch(function (err) {
-      if (editorFetchFailureMeansServerGone(err)) {
-        showEditorServerDown();
+      if (dashboardFetchFailureMeansServerGone(err)) {
+        showDashboardServerDown();
       }
       return Promise.reject(err);
     });
   };
 
-  function editorHealthPollTick() {
+  function dashboardHealthPollTick() {
     if (document.visibilityState !== "visible") return;
     nativeFetch(HEALTH_PATH, { cache: "no-store", method: "GET" })
       .then(function (res) {
-        if (res.ok) hideEditorServerDown();
+        if (res.ok) hideDashboardServerDown();
       })
       .catch(function () {
-        showEditorServerDown();
+        showDashboardServerDown();
       });
   }
 
-  setInterval(editorHealthPollTick, HEALTH_POLL_MS);
+  setInterval(dashboardHealthPollTick, HEALTH_POLL_MS);
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") editorHealthPollTick();
+    if (document.visibilityState === "visible") dashboardHealthPollTick();
   });
-  setTimeout(editorHealthPollTick, 0);
+  setTimeout(dashboardHealthPollTick, 0);
 
-  (function attachEditorServerDownClose() {
-    const closeBtn = document.getElementById("editor-server-down-close");
+  (function attachDashboardServerDownClose() {
+    const closeBtn = document.getElementById("dashboard-server-down-close");
     if (closeBtn) {
       closeBtn.addEventListener("click", function () {
         window.close();

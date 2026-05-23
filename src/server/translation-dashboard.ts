@@ -164,7 +164,7 @@ function serializeStringsJsonRow(
   return row;
 }
 
-export interface TranslationEditorOptions {
+export interface TranslationDashboardOptions {
   cwd: string;
   /** Resolved absolute or cwd-relative path to strings.json (workspace B). */
   stringsJsonPath?: string | null;
@@ -196,9 +196,9 @@ export function resolveSegmentLogFilepath(
 /**
  * Express app: workspace A (cache) + B (strings.json) + C (glossary CSV).
  */
-export function createTranslationEditorApp(
+export function createTranslationDashboardApp(
   cache: TranslationCache,
-  opts: TranslationEditorOptions
+  opts: TranslationDashboardOptions
 ): express.Application {
   const app = express();
   app.use(express.json({ limit: "10mb" }));
@@ -439,7 +439,7 @@ export function createTranslationEditorApp(
       const resolved = resolveSegmentLogFilepath(String(filepath), opts.jsonSource);
       const displayPath = docBlockFileTrackingKeyToRelPath(resolved);
       const lineSuffix = start_line != null ? `:${start_line}` : ":1";
-      console.log(`[editor] link: ` + chalk.cyan(`${displayPath}${lineSuffix}`));
+      console.log(`[dashboard] link: ` + chalk.cyan(`${displayPath}${lineSuffix}`));
       res.json({ ok: true });
     } catch (err) {
       console.error(err);
@@ -458,7 +458,7 @@ export function createTranslationEditorApp(
         const filepath = loc.filepath ?? loc.file;
         if (!filepath) continue;
         const line = loc.line != null ? loc.line : 1;
-        console.log(`[editor] link:  ` + chalk.cyan(`${String(filepath)}:${line}`));
+        console.log(`[dashboard] link:  ` + chalk.cyan(`${String(filepath)}:${line}`));
       }
       res.json({ ok: true });
     } catch (err) {
@@ -868,6 +868,6 @@ export function createTranslationEditorApp(
   return app;
 }
 
-export function resolveEditCacheStaticDir(): string {
-  return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "edit-cache-app");
+export function resolveDashboardAppStaticDir(): string {
+  return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dashboard-app");
 }

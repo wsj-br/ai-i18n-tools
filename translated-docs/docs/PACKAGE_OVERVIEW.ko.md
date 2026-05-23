@@ -3,7 +3,7 @@
 
 `ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 상호 연결 방식, 두 가지 핵심 워크플로우의 구현 방법을 설명합니다.
 
-실제 사용법은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)를 참조하세요.
+실제 사용 지침은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)를 참조하세요. 번역된 문서의 스크린샷 및 삽화 SVG에 대해서는 [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ko.md)를 참조하세요.
 
 <small>**다른 언어로 읽기:** </small>
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,7 +256,7 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다(Docusaurus UI 카탈로그, MDX 본문 아님).
 - `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`config.svg` 하위 파일에 대해 `translate-svg`에서 사용하며, `translate-docs`에서는 사용하지 않음).
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 제목 앵커 삽입 (`write-heading-ids` CLI)
 
 `write-heading-ids` 명령은 문서 마크다운을 위한 **로컬, 비-LLM** 전처리기입니다. 구현 방식: `src/cli/write-heading-ids.ts`이 파일 탐색을 조정하고, `src/markdown/write-heading-ids-core.ts`가 줄을 구문 분석하여 앵커를 삽입합니다.
@@ -272,7 +277,7 @@ output file  ─────────────────── Docusauru
    - **MDX 주석** (`{/* … */}`, Docusaurus 제목 ID 형식 `{/* #my-id */}` 포함) `{{MDX_N}}`로 교체됩니다.
    - **대문자 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}`로 보존되며, 번역 가능한 문자열 속성 (`label`, `tooltip`, `aria-label`)은 태그 내에서 `{{JXA_N}}`로 다시 작성됩니다; `label:`는 `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 및 `<TabItem value="…">` 내에서 (`label` 속성이 없을 때, 소문자 슬러그와 같은 값을 건너뜁니다) 추출됩니다. 세그먼트에 `||JXA_N: …||` 행으로 추가되며, `restoreMdx`에 의해 다시 병합됩니다.
    - **MDX 중괄호 표현식** (`{frontMatter.title}`, `style={{…}}`) - 깊이 인식 일치, `{{MDX_N}}`로 교체됩니다.
-5. **마크다운 URL** (`](url)`, `src="../…"`) - 번역 후 맵에서 복원됩니다.
+5. **마크다운 URL** (`](url)`, `src="../../docs/…"`) - 번역 후 맵에서 복원됩니다.
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
@@ -302,7 +307,7 @@ SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 �
 <a id="flat-link-rewriting"></a>
 ### 단일 링크 재작성
 
-`markdownOutput.style === "flat"`일 경우, 번역된 마크다운 파일은 로케일 접미사와 함께 소스와 동일한 위치에 배치됩니다. 페이지 간 상대 링크는 `readme.de.md`의 `[Guide](../guide.md)`이 `guide.de.md`을 가리키도록 재작성됩니다. `rewriteRelativeLinks`에 의해 제어되며, 사용자 정의 `pathTemplate` 없이 평면 스타일일 경우 자동으로 활성화됩니다.
+`markdownOutput.style === "flat"`일 때, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간 상대 링크는 `[Guide](../../docs/guide.md)`의 `readme.de.md`가 `guide.de.md`를 가리키도록 다시 작성됩니다. `rewriteRelativeLinks`에 의해 제어되며 (사용자 정의 `pathTemplate` 없이 평면 스타일일 경우 자동 활성화됨). 동일한 처리 과정에서 `postProcessing.regexAdjustments` 실행 전에 마크다운이 아닌 에셋 URL에 파일별 깊이 접두사가 추가됩니다. [로케일 에셋 가이드](LOCALE-ASSETS-GUIDE.ko.md#the-flat-link-rewriter-and-two-step-flow)를 참조하세요.
 
 ---
 

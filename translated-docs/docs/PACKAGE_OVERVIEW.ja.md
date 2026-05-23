@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` の内部アーキテクチャ、各コンポーネントの統合方法、および2つのコアワークフローの実装方法について説明します。
 
-実際の使用手順については、[GETTING_STARTED.md](GETTING_STARTED.ja.md) を参照してください。
+実際の使用方法については、[GETTING_STARTED.md](GETTING_STARTED.ja.md) を参照してください。翻訳されたドキュメント内のスクリーンショットや図入りSVGについては、[LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ja.md) を参照してください。
 
 <small>**他の言語で読む：** </small>
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,8 +256,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - Docusaurus JSONラベルファイルから文字列値を抽出します（MDX本文ではなく、Docusaurus UIカタログ用）。
 - `SvgExtractor` - SVGから`<text>`、`<title>`、`<desc>`の内容を抽出します（`config.svg`以下のファイルに対して`translate-svg`で使用され、`translate-docs`では使用されません）。
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
-### 見出しアンカー挿入 (`write-heading-ids` CLI)
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
+### 見出しアンカーの挿入（`write-heading-ids` CLI）
 
 `write-heading-ids` コマンドは、ドキュメントの Markdown 用の**ローカルかつ非LLM**な前処理ツールです。実装：`src/cli/write-heading-ids.ts` がファイルの検出を調整し、`src/markdown/write-heading-ids-core.ts` が行を解析してアンカーを挿入します。
 
@@ -272,7 +277,7 @@ output file  ─────────────────── Docusauru
 - **MDXコメント** (`{/* … */}`、DocusaurusのヘッダーIDフォーム`{/* #my-id */}`を含む) は`{{MDX_N}}`に置き換えられました。
 - **大文字のJSXタグ** (`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`) は、翻訳可能な文字列属性 (`label`、`tooltip`、`aria-label`) を`{{JXA_N}}`内に書き換えた上で、`{{MDX_N}}`として保持されています。`label:`は`<Tabs values={[ { label: '翻訳後の説明' } ]}>`オブジェクトリテラル内に、`<TabItem value="…">`は(`label`属性がない場合、小文字のスラグ値をスキップして)抽出されています。これらは`||JXA_N: …||`行として追加され、`restoreMdx`によってマージバックされています。
 - **MDXブレース式** (`{frontMatter.title}`、`style={{…}}`) は深さ認識の一致により、`{{MDX_N}}`に置き換えられています。
-5. **Markdownのリンク** (`](url)`、`src="../…"`) は翻訳後に地図から復元されています。JXA1: 翻訳後の詳細||
+5. **Markdownのリンク** (`](url)`、`src="../../docs/…"`) は翻訳後に地図から復元されています。JXA1: 翻訳後の詳細||
 6. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`） - そのまま保持されます。
 7. **Markdownの強調**（オプション。CJK/RTLロケールでは自動有効） - 強調区切り記号をマスクします。
 
@@ -302,7 +307,7 @@ SQLiteデータベース（`node:sqlite`経由）は、`(source_hash, locale)`�
 <a id="flat-link-rewriting"></a>
 ### フラットリンクの書き換え
 
-`markdownOutput.style === "flat"`の場合、翻訳されたMarkdownファイルはロケールのサフィックスを付けてソースと同じ場所に配置されます。ページ間の相対リンクは、`readme.de.md`の`[Guide](../guide.md)`が`guide.de.md`を指すように書き換えられます。`rewriteRelativeLinks`で制御され、カスタム`pathTemplate`なしのフラットスタイルでは自動的に有効になります。
+`markdownOutput.style === "flat"` 時、翻訳されたMarkdownファイルはロケールの接尾辞を付けてソースファイルと同じ場所に配置されます。ページ間の相対リンクは、`readme.de.md` 内の `[Guide](../../docs/guide.md)` が `guide.de.md` を指すように書き換えられます。これは `rewriteRelativeLinks` によって制御され、カスタム `pathTemplate` を使用しないフラットスタイルでは自動的に有効になります。同じ処理パスでは、`postProcessing.regexAdjustments` 実行前に、非MarkdownアセットのURLにファイルごとの階層深度プレフィックスが付加されます。詳細は[ロケールアセットガイド](LOCALE-ASSETS-GUIDE.ja.md#the-flat-link-rewriter-and-two-step-flow)を参照してください。
 
 ---
 

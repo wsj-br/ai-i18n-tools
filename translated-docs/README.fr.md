@@ -7,7 +7,7 @@
 [![Licence : MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI et outil pour l'internalisation des applications JavaScript/TypeScript et des sites de documentation. Extrait les chaînes d'interface utilisateur, les traduit à l'aide de grands modèles linguistiques via OpenRouter, puis génère des fichiers JSON prêts pour les locales utilisées par i18next. Pour la documentation, il traduit les fichiers markdown et MDX situés dans `contentPaths` (les pages localisées que les lecteurs ouvrent). Le JSON optionnel des libellés Docusaurus provenant de `jsonSource` couvre les chaînes du conteneur du site (catalogues `write-translations` tels que thème/navigation/pied de page), distinctes du contenu des pages. La traduction des fichiers SVG utilise `features.translateSVG` et le bloc de niveau supérieur `svg`.
+CLI et toolkit pour l'internalisation d'applications JavaScript/TypeScript et de sites de documentation utilisant des modèles linguistiques de grande taille via [OpenRouter](https://openrouter.ai/). Deux flux de travail indépendants : **Traduction d'interface utilisateur** extrait les appels `t("…")` et génère des fichiers JSON prêts pour i18next ; **Traduction de documents** traduit les fichiers markdown, MDX et SVG avec un cache intelligent SQLite afin que seuls les segments modifiés soient renvoyés au LLM.
 
 <small>**Lire dans d'autres langues :** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
@@ -23,8 +23,8 @@ CLI et outil pour l'internalisation des applications JavaScript/TypeScript et de
   - [Utilisation de l'interface en ligne de commande (CLI)](#using-the-cli)
 - [OpenRouter](#openrouter)
 - [Démarrage rapide](#quick-start)
-  - [Flux de travail 1 - Chaînes d'interface utilisateur](#workflow-1---ui-strings)
-  - [Flux de travail 2 - Documentation](#workflow-2---documentation)
+  - [Flux de travail 1 - Traduction d'interface utilisateur](#workflow-1---ui-translation)
+  - [Flux de travail 2 - Traduction de documents](#workflow-2---document-translation)
   - [Les deux flux de travail](#both-workflows)
 - [Aides au runtime](#runtime-helpers)
 - [Commandes CLI](#cli-commands)
@@ -36,22 +36,22 @@ CLI et outil pour l'internalisation des applications JavaScript/TypeScript et de
 <a id="two-core-workflows"></a>
 ## Deux flux de travail principaux
 
-**Flux de travail 1 - Traduction de l'interface utilisateur** (React, Next.js, Node.js, tout projet utilisant i18next)
+**Flux de travail 1 - Traduction d'interface utilisateur** — pour tout projet JS/TS utilisant i18next (React, Next.js, Node.js, CLIs)
 
-Construit un catalogue principal (`strings.json` avec des métadonnées optionnelles par langue `models`) à partir des **littéraux** `t("…")` / `i18n.t("…")`, éventuellement `package.json` `description`, et éventuellement chaque `englishName` provenant de `ui-languages.json` lorsque cette fonction est activée dans la configuration. Traduit les entrées manquantes par langue via OpenRouter et génère des fichiers JSON plats (`de.json`, `pt-BR.json`, …) prêts à être utilisés avec i18next.
+Analyse les fichiers sources à la recherche de littéraux `t("…")` / `i18n.t("…")`, construit un catalogue maître (`strings.json`), traduit les entrées manquantes par langue via OpenRouter, puis génère des fichiers JSON plats (`de.json`, `pt-BR.json`, etc.) prêts à être utilisés avec i18next.
 
-**Workflow 2 - Traduction de documents** (Markdown / MDX, JSON optionnel du conteneur Docusaurus)
+**Flux de travail 2 - Traduction de documents** — pour la documentation en markdown/MDX (Docusaurus, Astro Starlight, fichiers README simples)
 
-Traduit `.md` et `.mdx` à partir du `contentPaths` de chaque bloc `documentations` — autrement dit, la documentation localisée. Lorsque `features.translateJSON` et `jsonSource` sont définis, il traduit également le **JSON des étiquettes** Docusaurus (barre de navigation, pied de page, interface des thèmes/plugins provenant de `write-translations`), mais pas le texte du corps MDX. Prend en charge les structures de dossiers localisés au style Docusaurus ou plates, par bloc (`documentations[].markdownOutput`). Le `cacheDir` racine partagé contient le cache SQLite afin que seuls les segments nouveaux ou modifiés soient envoyés au LLM. **SVG :** activez `features.translateSVG`, ajoutez le bloc `svg` au niveau supérieur, puis utilisez `translate-svg` (également exécuté depuis `sync` lorsque les deux sont définis).
+Traduit les fichiers sources `.md` et `.mdx` dans chaque langue cible en utilisant un cache SQLite partagé — seuls les segments nouveaux ou modifiés sont envoyés au LLM. Un fichier JSON optionnel pour Docusaurus (`jsonSource`, issu de `write-translations`) couvre les chaînes d'interface comme la barre de navigation, le pied de page et les éléments du thème. La traduction des fichiers SVG est activée via `features.translateSVG` et le bloc `svg` au niveau racine.
 
-Les deux flux de travail partagent un seul fichier `ai-i18n-tools.config.json` et peuvent être utilisés indépendamment ou ensemble. La traduction des fichiers SVG utilise `features.translateSVG` ainsi que le bloc de niveau supérieur `svg` et s'exécute via `translate-svg` (ou l'étape SVG incluse dans `sync`).
+Les deux flux de travail partagent un seul fichier `ai-i18n-tools.config.json` et peuvent être utilisés indépendamment ou ensemble.
 
 ---
 
 <a id="installation"></a>
 ## Installation
 
-Le package publié est uniquement en format **ESM** (`"type": "module"`). Utilisez `import` depuis Node.js, des outils de regroupement ou `import()` — `require('ai-i18n-tools')` **n'est pas pris en charge.** Le package déclare `engines.node`  `>=22.16.0` ; les anciennes versions de Node.js ne sont pas prises en charge.
+Le package publié est uniquement en format **ESM** (`"type": "module"`). Node.js `>=22.16.0` requis.
 
 ```bash
 npm install ai-i18n-tools
@@ -62,7 +62,7 @@ pnpm add ai-i18n-tools
 <a id="using-the-cli"></a>
 ### Utilisation de l'interface en ligne de commande (CLI)
 
-**Par projet (recommandé)** — installez en tant que dépendance ou dépendance de développement, puis appelez via `npx`, `pnpm exec` ou un script `package.json` :
+**Par projet (recommandé)** — installer comme dépendance de développement, puis exécuter via `npx`, `pnpm exec`, ou un script `package.json` :
 
 ```bash
 pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
@@ -76,27 +76,9 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 }
 ```
 
-Le gestionnaire de paquets écrit `node_modules/.bin/ai-i18n-tools` avec les autorisations correctes sous Linux et macOS, et crée des shim `.cmd` / `.ps1` sous Windows ; les exécuteurs de scripts les détectent automatiquement.
+**Exécution unique sans installation** — utiliser `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (téléchargement uniquement pour cette exécution).
 
-**En mode brut** `ai-i18n-tools` **dans le terminal :** `package.json` les scripts s'exécutent déjà avec `node_modules/.bin` sur `PATH`, donc des commandes comme `pnpm run i18n:sync` appellent l'interface en ligne de commande sans avoir à taper `npx`. Pour exécuter `ai-i18n-tools` directement dans un interpréteur de commandes interactif (depuis la racine du projet, après une installation locale), ajoutez le répertoire binaire local à `PATH` :
-
-```bash
-# bash/zsh — project root
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell — project root
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-Avec [**direnv**](https://direnv.net/), ajoutez `PATH_add node_modules/.bin` à un `.envrc` situé à la racine du projet afin que la commande simple soit disponible après être entré `cd` dans le dépôt. Sans modifier `PATH`, continuez à utiliser `npx ai-i18n-tools …` ou `pnpm exec ai-i18n-tools …`.
-
-**Exécution unique sans installation** — `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (télécharge le package pour cet appel ; aucune entrée dans `package.json`).
-
-Sous Linux, macOS et WSL, les installations depuis le registre définissent automatiquement le bit d'exécution sur le script CLI. Sous Windows, les gestionnaires de paquets génèrent des shim `.cmd` et `.ps1` qui invoquent explicitement Node.
+> **Astuce :** Pour exécuter `ai-i18n-tools` directement dans un shell interactif sans `npx`, ajouter `node_modules/.bin` à votre `PATH` (bash/zsh : `export PATH="$PWD/node_modules/.bin:$PATH"`). Voir [Bien démarrer](docs/GETTING_STARTED.fr.md#installation) pour les instructions concernant direnv et Windows.
 
 Définissez votre clé API OpenRouter :
 
@@ -120,57 +102,29 @@ Exécutez `ai-i18n-tools check-models` pour vérifier chaque identifiant de mod�
 <a id="quick-start"></a>
 ## Démarrage rapide
 
-<a id="workflow-1---ui-strings"></a>
-### Flux de travail 1 - Chaînes d'interface
+<a id="workflow-1---ui-translation"></a>
+### Flux de travail 1 - Traduction d'interface utilisateur
 
 ```bash
 # 1. Create config
 npx ai-i18n-tools init
 
-# 2. Extract UI strings to strings.json (t(…) literals + optional package.json / manifest strings)
+# 2. Extract UI strings to strings.json
 npx ai-i18n-tools extract
 
 # 3. Translate to all target locales
 npx ai-i18n-tools translate-ui
 ```
 
-Intégrez i18next dans votre application en utilisant les utilitaires fournis par `'ai-i18n-tools/runtime'` :
+Ensuite, configurez i18next dans votre application en utilisant les utilitaires fournis par `'ai-i18n-tools/runtime'`. Consultez [Étape 4 : Configurer i18next au moment de l'exécution](docs/GETTING_STARTED.fr.md#step-4-wire-i18next-at-runtime) dans le guide de démarrage pour la configuration complète.
 
-```js
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import uiLanguages from './locales/ui-languages.json';
-import stringsJson from './locales/strings.json';
-// Plural flat: ./public/locales/{SOURCE_LOCALE}.json — must match config sourceLocale
-import sourcePluralFlat from './public/locales/en-GB.json';
-import aiI18n from 'ai-i18n-tools/runtime';
-
-// Must match sourceLocale in ai-i18n-tools.config.json
-export const SOURCE_LOCALE = 'en-GB';
-
-void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
-aiI18n.setupKeyAsDefaultT(i18n, {
-  stringsJson,
-  sourcePluralFlatBundle: { lng: SOURCE_LOCALE, bundle: sourcePluralFlat },
-});
-i18n.on('languageChanged', aiI18n.applyDirection);
-aiI18n.applyDirection(i18n.language);
-
-const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
-  uiLanguages,
-  SOURCE_LOCALE,
-  (code) => () => import(`./locales/${code}.json`),
-);
-export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
-export default i18n;
-```
-
-<a id="workflow-2---documentation"></a>
-### Flux de travail 2 - Documentation
+<a id="workflow-2---document-translation"></a>
+### Flux de travail 2 - Traduction de documents
 
 ```bash
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs
@@ -212,36 +166,31 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 <a id="cli-commands"></a>
 ## Commandes CLI
 
-```text
-ai-i18n-tools version                               Print version and build timestamp
-ai-i18n-tools help [command]                        Show global or per-command help (same as -h)
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]   Create config file
-ai-i18n-tools check-models                          Validate configured OpenRouter model ids against GET /models (pricing, expiration); requires OPENROUTER_API_KEY
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]   Build ui-languages.json from locales + master catalog (needs uiLanguagesPath)
-ai-i18n-tools extract                               Merge scanner output, optional package.json description, optional manifest englishName into strings.json
-ai-i18n-tools translate-docs …                      Translate documentation: markdown/MDX from contentPaths; optional Docusaurus label JSON from jsonSource. Flags include -l/--locale <codes>, -p/-f path, --dry-run,
-                                                    --force, --force-update, --stats, --clear-cache, --type, --json-only, --no-json, -j, -b,
-                                                    --prompt-format, --emphasis-placeholders, --no-emphasis-placeholders, --debug-failed
-ai-i18n-tools write-heading-ids …                   Insert HTML anchor lines before ATX headings in .md/.mdx (documentations[])
-ai-i18n-tools strip-md-bold-inline …              Remove bold (**) around inline code in markdown/MDX (documentations[])
-ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]   Scan documentation markdown for delimiter / inline-code issues and strong-outside-code or strong-outside-link patterns; refresh SQLite markdown_source_issues; exit 1 if any issue
-ai-i18n-tools translate-svg …                        SVG files (features.translateSVG + config.svg); flags include -l/--locale <codes>,
-                                                    -p/-f path, --dry-run, --force, --force-update, --no-cache, -j, -b
-ai-i18n-tools translate-ui …                        Translate UI strings only; flags include -l/--locale <codes>, --dry-run, --force, -j
-ai-i18n-tools lint-source …                         Run extract, then LLM review of source-locale UI strings (OpenRouter)
-ai-i18n-tools export-ui-xliff …                   Export UI strings to XLIFF 2.0 (one file per locale); -l, -o, --untranslated-only, --dry-run
-ai-i18n-tools sync …                                Extract, then UI / SVG / docs; flags include -l/--locale <codes>, -p/-f path, --dry-run, --force,
-                                                    --force-update, --no-ui, --no-svg, --no-docs, -j, -b, --emphasis-placeholders,
-                                                    --no-emphasis-placeholders, --debug-failed
-ai-i18n-tools status [--max-columns <n>]   UI strings per locale; markdown per file × locale in tables of up to n locales (default 9)
-ai-i18n-tools statistics [--max-columns <n>]        Documentation cache + strings.json aggregates (same as editor Statistics)
-ai-i18n-tools editor                                Open cache/glossary web editor
-ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]   Runs sync --force-update, then cleans stale + orphaned cache rows; backs up SQLite by default
-ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]   List *.log and cache.db.backup*.sqlite; delete after `y`, with `-f`, or skip if none match
-ai-i18n-tools glossary-generate                     Create empty glossary CSV template
+```bash
+ai-i18n-tools version
+ai-i18n-tools help [command]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]
+ai-i18n-tools check-models
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
+ai-i18n-tools extract
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools strip-md-bold-inline …
+ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]
+ai-i18n-tools translate-svg …
+ai-i18n-tools translate-ui …
+ai-i18n-tools lint-source …
+ai-i18n-tools export-ui-xliff …
+ai-i18n-tools sync …
+ai-i18n-tools status [--max-columns <n>]
+ai-i18n-tools statistics [--max-columns <n>]
+ai-i18n-tools dashboard
+ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
+ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]
+ai-i18n-tools glossary-generate
 ```
 
-Les listes complètes d'options par commande sont conservées à côté de `src/cli/index.ts` dans [Options CLI par commande](docs/GETTING_STARTED.fr.md#cli-flags-by-command). Exécutez `ai-i18n-tools <command> --help` pour afficher le texte d'utilisation intégré.
+Les listes complètes des options par commande sont disponibles dans [Bien démarrer — Référence CLI](docs/GETTING_STARTED.fr.md#cli-reference). Exécutez `ai-i18n-tools <command> --help` pour afficher l'aide intégrée.
 
 Options globales disponibles pour chaque commande : `-c <config>` (par défaut : `ai-i18n-tools.config.json`), `-v` (mode verbeux), `-w` / `--write-logs [path]` (facultatif) pour rediriger la sortie console vers un fichier journal (par défaut : dans le répertoire du cache de traduction), `-V` / `--version`, ainsi que `-h` / `--help`. Consultez [Bien démarrer](docs/GETTING_STARTED.fr.md#cli-reference) pour le tableau de présentation des commandes.
 
@@ -251,9 +200,10 @@ Options globales disponibles pour chaque commande : `-c <config>` (par défaut :
 ## Documentation
 
 - [Bien démarrer](docs/GETTING_STARTED.fr.md) - guide complet de configuration pour les deux flux de travail, référence CLI et référence des champs de configuration.
+- [Guide des ressources par langue](docs/LOCALE-ASSETS-GUIDE.fr.md) - captures d'écran et SVG illustrés dans les documents traduits (schémas A–E, réécriture automatique des liens, scripts de captures).
 - [Aperçu du package](docs/PACKAGE_OVERVIEW.fr.md) - architecture, composants internes, API programmatique et points d'extension.
-- [Contexte Agent IA](../docs/ai-i18n-tools-context.md) - **pour les applications utilisant le package :** invites d'intégration pour projets en aval (à copier dans les règles d'agent de votre dépôt).
-- Composants internes pour les mainteneurs de **ce** dépôt : `dev/package-context.md` (clone uniquement ; non publié sur npm).
+- [Contexte pour agents IA](../docs/ai-i18n-tools-context.md) - **pour les applications utilisant ce package :** invites d'intégration destinées aux projets consommateurs (à copier dans les règles d'agent de votre dépôt).
+- Composants internes pour la maintenance de **ce** dépôt : `dev/package-context.md` (réservé au clonage ; non publié sur npm).
 
 ---
 

@@ -204,9 +204,27 @@ function escapeAttrValue(v: string): string {
   return v.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
+function nextHeadingRepetition(line: string, ctx: SlugContext): number {
+  const key = headingTitleKey(line);
+  const prevCount = ctx.counts.get(key) ?? 0;
+  ctx.counts.set(key, prevCount + 1);
+  return prevCount;
+}
+
+function computeAnchorIdForHeading(fullTitle: string, line: string, ctx: SlugContext): string {
+  const repetition = nextHeadingRepetition(line, ctx);
+  const raw = computeRawSlug(fullTitle, repetition, ctx);
+  return finalizeFragmentForId(raw, ctx.style);
+}
+
+function formatHtmlAnchorLine(id: string): string {
+  return `<a id="${escapeAttrValue(id)}"></a>`;
+}
+
 /**
- * Inserts `<a id="slug"></a>` on the line directly above each ATX heading (outside fenced code).
- * Skips headings that already have `{#…}` on the line or an `<a id=…>` on the immediately preceding line.
+ * Inserts or refreshes `<a id="slug"></a>` on the line directly above each ATX heading (outside fenced code).
+ * Skips headings that already have `{#…}` on the line. When an `<a id=…>` is on the immediately preceding line,
+ * updates the id when it no longer matches the slug derived from the current heading text.
  */
 export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
   const lines = markdownBody.split("\n");
@@ -240,22 +258,20 @@ export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext)
       }
       if (i > 0) {
         const prev = lines[i - 1]!;
-        if (HTML_ANCHOR_LINE_RE.test(prev)) {
+        const anchorMatch = prev.match(HTML_ANCHOR_LINE_RE);
+        if (anchorMatch) {
+          const existingId = anchorMatch[2]!;
+          const expectedId = computeAnchorIdForHeading(fullTitle, line, ctx);
+          if (existingId !== expectedId) {
+            lines[i - 1] = formatHtmlAnchorLine(expectedId);
+          }
           i += 1;
           continue;
         }
       }
 
-      const key = headingTitleKey(line);
-      const prevCount = ctx.counts.get(key) ?? 0;
-      ctx.counts.set(key, prevCount + 1);
-      const repetition = prevCount;
-
-      const raw = computeRawSlug(fullTitle, repetition, ctx);
-      const fragment = finalizeFragmentForId(raw, ctx.style);
-      const idAttr = escapeAttrValue(fragment);
-      const anchorLine = `<a id="${idAttr}"></a>`;
-      lines.splice(i, 0, anchorLine);
+      const expectedId = computeAnchorIdForHeading(fullTitle, line, ctx);
+      lines.splice(i, 0, formatHtmlAnchorLine(expectedId));
       i += 2;
       continue;
     }

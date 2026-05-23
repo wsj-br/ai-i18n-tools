@@ -37,7 +37,8 @@
       "contentPaths": [
         "README.md", 
         "docs/GETTING_STARTED.md", 
-        "docs/PACKAGE_OVERVIEW.md"
+        "docs/PACKAGE_OVERVIEW.md",
+        "docs/LOCALE-ASSETS-GUIDE.md"
       ],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
@@ -46,13 +47,6 @@
         "flatPreserveRelativeDir": true,
         "linkRewriteDocsRoot": ".",
         "postProcessing": {
-          "regexAdjustments": [
-            {
-              "description": "Editor screenshot: flat link rewrite points to translated-docs/; asset lives in docs/",
-              "search": "\\]\\(\\.\\./translation-cache-editor\\.png\\)",
-              "replace": "](../../docs/translation-cache-editor.png)"
-            }
-          ],
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",

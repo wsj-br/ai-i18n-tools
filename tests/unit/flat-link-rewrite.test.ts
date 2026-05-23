@@ -3,6 +3,7 @@ import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../
 import type { I18nDocTranslateConfig } from "../../src/core/types.js";
 import {
   computeFlatLinkRewritePrefixes,
+  computePerFileDepthPrefix,
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
   rewriteOneRelativePathForFlatOutput,
@@ -265,5 +266,61 @@ describe("computeFlatLinkRewritePrefixes", () => {
     const { i18nPrefix, depthPrefix } = computeFlatLinkRewritePrefixes("/proj", "docs", "docs");
     expect(i18nPrefix).toBe("");
     expect(depthPrefix).toBe("");
+  });
+});
+
+describe("computePerFileDepthPrefix", () => {
+  function flatCfg(over: Partial<Parameters<typeof cfg>[0]> = {}) {
+    return cfg({
+      documentations: [
+        {
+          contentPaths: ["README.md", "docs/GETTING_STARTED.md"],
+          outputDir: "translated-docs",
+          markdownOutput: {
+            style: "flat",
+            flatPreserveRelativeDir: true,
+            linkRewriteDocsRoot: ".",
+          },
+        },
+      ],
+      ...over,
+    });
+  }
+
+  it("source at repo root: same as global depthPrefix (one level)", () => {
+    const c = flatCfg();
+    const prefix = computePerFileDepthPrefix(cwd, c, "de", "README.md");
+    expect(prefix).toBe("../");
+  });
+
+  it("source in subdirectory: prefix includes the subdirectory path back to source", () => {
+    const c = flatCfg();
+    // docs/GETTING_STARTED.md → translated-docs/docs/GETTING_STARTED.de.md
+    // from translated-docs/docs/ back to /proj/docs/ = ../../docs/
+    const prefix = computePerFileDepthPrefix(cwd, c, "de", "docs/GETTING_STARTED.md");
+    expect(prefix).toBe("../../docs/");
+  });
+
+  it("ensures asset next to source resolves correctly after prepend", () => {
+    const c = flatCfg();
+    const prefix = computePerFileDepthPrefix(cwd, c, "de", "docs/GETTING_STARTED.md");
+    // asset URL "figure.png" in source docs/GETTING_STARTED.md should become "../../docs/figure.png"
+    // which resolves from translated-docs/docs/ → docs/figure.png ✓
+    expect(`${prefix}figure.png`).toBe("../../docs/figure.png");
+  });
+
+  it("source at repo root, two-level outputDir: two levels deep prefix", () => {
+    const c = cfg({
+      documentations: [
+        {
+          contentPaths: ["README.md"],
+          outputDir: "out/translated",
+          markdownOutput: { style: "flat", linkRewriteDocsRoot: "." },
+        },
+      ],
+    });
+    // README.md → out/translated/README.de.md; from out/translated/ back to /proj/ = ../../
+    const prefix = computePerFileDepthPrefix(cwd, c, "de", "README.md");
+    expect(prefix).toBe("../../");
   });
 });

@@ -12,7 +12,7 @@
     "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate-svg && ai-i18n-tools translate-docs",
     "i18n:cleanup": "ai-i18n-tools cleanup",
     "i18n:clean": "rm -rf .translation-cache",
-    "i18n:editor": "ai-i18n-tools editor"
+    "i18n:dashboard": "ai-i18n-tools dashboard"
   },
   "dependencies": {
     "ai-i18n-tools": "workspace:^",

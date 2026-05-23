@@ -462,7 +462,7 @@ td.last-hit-at.stale {
   color: var(--danger);
 }
 
-.editor-server-down-overlay {
+.dashboard-server-down-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.88);
@@ -472,10 +472,10 @@ td.last-hit-at.stale {
   z-index: 10000;
   padding: 1rem;
 }
-.editor-server-down-overlay.hidden {
+.dashboard-server-down-overlay.hidden {
   display: none;
 }
-.editor-server-down-card {
+.dashboard-server-down-card {
   max-width: 28rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -483,44 +483,44 @@ td.last-hit-at.stale {
   padding: 1.35rem 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
-.editor-server-down-card h2 {
+.dashboard-server-down-card h2 {
   margin: 0 0 0.75rem;
   font-size: 1.15rem;
   font-weight: 600;
 }
-.editor-server-down-card p {
+.dashboard-server-down-card p {
   margin: 0 0 0.65rem;
   font-size: 0.95rem;
   color: var(--text-primary);
   line-height: 1.45;
 }
-.editor-server-down-card p:last-of-type {
+.dashboard-server-down-card p:last-of-type {
   margin-bottom: 0;
 }
-.editor-server-down-hint {
+.dashboard-server-down-hint {
   color: var(--text-secondary) !important;
   font-size: 0.88rem !important;
 }
-.editor-server-down-actions {
+.dashboard-server-down-actions {
   margin-top: 1.1rem;
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
   align-items: center;
 }
-.editor-server-down-actions button {
+.dashboard-server-down-actions button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
   font-family: inherit;
 }
-.editor-server-down-actions .btn-save {
+.dashboard-server-down-actions .btn-save {
   background: var(--accent);
   border: none;
   color: #fff;
 }
-.editor-server-down-actions .btn-save:hover {
+.dashboard-server-down-actions .btn-save:hover {
   background: var(--accent-hover);
 }
 

@@ -38,10 +38,16 @@ describe("injectHtmlHeadingAnchors", () => {
     expect(out).toContain('<a id="real"></a>');
   });
 
-  it("skips when the previous line is already an HTML id anchor", () => {
-    const input = '<a id="manual"></a>\n## Already\n';
+  it("leaves unchanged when the preceding HTML anchor id matches the heading", () => {
+    const input = '<a id="already"></a>\n## Already\n';
     const out = injectHtmlHeadingAnchors(input, ctx("github"));
     expect(out).toBe(input);
+  });
+
+  it("updates the preceding HTML anchor when the heading text changed", () => {
+    const input = '<a id="design-for-i18n-from-the-start"></a>\n## Plan for i18n early\n';
+    const out = injectHtmlHeadingAnchors(input, ctx("github"));
+    expect(out).toBe('<a id="plan-for-i18n-early"></a>\n## Plan for i18n early\n');
   });
 
   it("skips headings that already contain {#custom-id}", () => {

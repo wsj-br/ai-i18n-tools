@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ai-i18n-tools - Translation Cache Editor</title>
+    <title>ai-i18n-tools - Translation Dashboard</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="page">
       <header class="top">
         <div class="top-bar">
-          <h1>ai-i18n-tools - Translation Cache Editor</h1>
+          <h1>ai-i18n-tools - Translation Dashboard</h1>
           <a
             href="https://github.com/wsj-br/ai-i18n-tools"
             class="top-github-brand"
@@ -137,7 +137,7 @@
 
       <section id="panel-failures" class="panel">
         <p class="hint">Translation failures - prioritize by retry order, inspect source segment, and log source links. 
-          — If you see old entries, run <code class="code-inline">ai-i18n-tools sync --force-update</code> and reopen the editor.</p>
+          — If you see old entries, run <code class="code-inline">ai-i18n-tools sync --force-update</code> and reopen the dashboard.</p>
         <div id="fail-summary" class="status"></div>
         <div class="filters">
           <div class="filter-row filter-row-ui-primary">
@@ -456,23 +456,23 @@
     </div>
 
     <div
-      id="editor-server-down-overlay"
-      class="editor-server-down-overlay hidden"
+      id="dashboard-server-down-overlay"
+      class="dashboard-server-down-overlay hidden"
       role="alertdialog"
       aria-live="assertive"
       aria-modal="true"
-      aria-labelledby="editor-server-down-title"
+      aria-labelledby="dashboard-server-down-title"
     >
-      <div class="editor-server-down-card">
-        <h2 id="editor-server-down-title">Editor server unavailable</h2>
-        <p>The local translation editor HTTP server is not responding. It may have stopped (for example after Ctrl+C in the terminal).</p>
-        <p class="editor-server-down-hint">
-          Start it again from your project with <code class="code-inline">ai-i18n-tools editor</code>. This message disappears automatically when the server is reachable again.
+      <div class="dashboard-server-down-card">
+        <h2 id="dashboard-server-down-title">Dashboard server unavailable</h2>
+        <p>The local Translation Dashboard HTTP server is not responding. It may have stopped (for example after Ctrl+C in the terminal).</p>
+        <p class="dashboard-server-down-hint">
+          Start it again from your project with <code class="code-inline">ai-i18n-tools dashboard</code>. This message disappears automatically when the server is reachable again.
         </p>
-        <div class="editor-server-down-actions">
+        <div class="dashboard-server-down-actions">
           <button
             type="button"
-            id="editor-server-down-close"
+            id="dashboard-server-down-close"
             class="btn-save"
             title="Browsers may block closing tabs not opened by script; close the tab manually if nothing happens."
           >

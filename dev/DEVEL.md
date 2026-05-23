@@ -299,7 +299,7 @@ Controlled by the `files` field in `package.json`:
 | `dist/`            | Compiled JavaScript, type declarations, source maps                |
 | `data/`            | Bundled data (for example `ui-languages-complete.json` for `generate-ui-languages`) |
 | `README.md`        | Main English README                                                |
-| `docs/`            | English docs (GETTING_STARTED, PACKAGE_OVERVIEW, AI agent context) |
+| `docs/`            | English docs (GETTING_STARTED, LOCALE-ASSETS-GUIDE, PACKAGE_OVERVIEW, AI agent context) |
 | `LICENSE`          | MIT licence                                                        |
 
 Translated READMEs and docs live under `translated-docs/` in the Git repository only (see links in `README.md` / `docs/*.md` on GitHub).

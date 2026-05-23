@@ -171,17 +171,17 @@ Pour retraduire uniquement les chaînes d'interface utilisateur pour une locale 
 ai-i18n-tools translate-ui --force --locale pt-BR
 ```
 
-### 4. Modifications manuelles (éditeur de cache)
+### 4. Modifications manuelles (Tableau de bord des traductions)
 
 Vous pouvez lancer une interface web locale pour examiner et modifier manuellement les traductions dans le cache, les chaînes d'interface et le glossaire (depuis ``examples/nextjs-app``) :
 
 ```bash
-pnpm run i18n:editor
+pnpm run i18n:dashboard
 ```
 
-Depuis ``docs-site/``, ``pnpm run i18n:editor`` fait la même chose (il `cd` vers ce dossier et exécute l'interface en ligne de commande).
+À partir de ``docs-site/``, ``pnpm run i18n:dashboard`` fait la même chose (il `cd` vers ce dossier et exécute l'interface en ligne de commande).
 
-> **Important :** Si vous modifiez manuellement une entrée dans l'éditeur de cache, vous devez exécuter un `sync --force-update` (par exemple `pnpm run i18n:sync --force-update`) pour réécrire les fichiers plats générés ou les fichiers Markdown avec la traduction mise à jour. Notez également que si le texte source original change à l'avenir, votre modification manuelle sera perdue, car l'outil génère un nouveau hachage pour le nouveau texte source.
+> **Important :** Si vous modifiez manuellement une entrée dans le tableau de bord des traductions, vous devez exécuter un `sync --force-update` (par exemple `pnpm run i18n:sync --force-update`) pour réécrire les fichiers plats ou les fichiers Markdown générés avec la traduction mise à jour. Notez également que si le texte source original change à l'avenir, votre modification manuelle sera perdue, car l'outil génère un nouveau hachage pour le nouveau texte source.
 
 ## Structure du projet
 
@@ -220,4 +220,63 @@ nextjs-app/
 
 Les fichiers Markdown anglais pour le site d'exemple se trouvent dans `docs-site/docs/`. Aucune synchronisation automatisée n'existe depuis le répertoire racine `docs/` ; mettez à jour ces fichiers directement lors de la mise à jour du contenu. Pour des ancres de titres stables, utilisez les ``write-heading-ids`` de Docusaurus depuis ``docs-site/`` (voir ``pnpm run write-heading-ids`` dans `[docs-site/package.json](../docs-site/package.json)`).
 
-Les chaînes d'interface traduites, les SVG de démonstration, les traductions racine `README`, ainsi que les sorties Docusaurus sont validées dans `public/locales/`, `public/assets/`, `locales/strings.json`, `translated-docs/` et `docs-site/i18n/`. Après avoir modifié les sources et exécuté ``pnpm run i18n:translate`` ou ``pnpm run i18n:sync``, redémarrez les serveurs de développement Next.js et Docusaurus selon les besoins. Le routage par langue et ``localeConfigs`` sont définis dans `**docs-site/docusaurus.config.mjs**`.
+Les chaînes d'interface traduites, les SVG de démonstration, les traductions du `README` racine et les sorties Docusaurus sont validées dans `public/locales/`, `public/assets/`, `locales/strings.json`, `translated-docs/` et `docs-site/i18n/`. Après avoir modifié les sources et exécuté ``pnpm run i18n:translate`` ou ``pnpm run i18n:sync``, redémarrez les serveurs de développement Next.js et Docusaurus selon les besoins. Le routage par langue et ``localeConfigs`` sont définis dans `docs-site/docusaurus.config.mjs`.
+
+## Fichiers de captures d'écran — disposition attendue
+
+La documentation et le README de cet exemple font référence à des captures d'écran spécifiques à chaque langue, mais aucun fichier PNG réel n'est validé et aucun script `take-screenshots` n'est inclus. Cet exemple sert à démontrer une configuration.
+
+### Documentation Docusaurus (`docs-site/docs/`)
+
+Le bloc Docusaurus `documentations[]` utilise cette règle `regexAdjustments` :
+
+```json
+{ "search": "screenshots/[^/]+/", "replace": "screenshots/${translatedLocale}/" }
+```
+
+Pour que les pages d'exemple affichent des captures d'écran spécifiques à chaque langue, vous auriez besoin de fichiers PNG situés à :
+
+```
+docs-site/static/img/screenshots/
+├── en-GB/
+│   └── screenshot.png
+├── de/
+│   └── screenshot.png
+├── es/
+│   └── screenshot.png
+├── fr/
+│   └── screenshot.png
+├── pt-BR/
+│   └── screenshot.png
+└── ar/
+    └── screenshot.png
+```
+
+Un script `take-screenshots` doit capturer l'application pour chaque langue et écrire dans `docs-site/static/img/screenshots/<locale>/screenshot.png`. L'outil réécrit uniquement les URL — il ne crée pas de fichiers PNG.
+
+### README plat (`README.md` → `translated-docs/`)
+
+Le deuxième bloc `documentations[]` utilise :
+
+```json
+{ "search": "images/screenshots/fr/]+/", "replace": "images/screenshots/fr/" }
+```
+
+Disposition attendue :
+
+```
+images/screenshots/fr/
+│   └── overview.png
+├── de/
+├── es/
+├── fr/
+├── pt-BR/
+└── ar/
+```
+
+### Références du monde réel
+
+- [transrewrt](https://github.com/wsj-br/transrewrt) — README plat avec 37 langues (modèle B plat), `take-screenshots.js` capture toutes les langues
+- [duplistatus](https://github.com/wsj-br/duplistatus) — captures d'écran colocalisées Docusaurus (modèle C), `take-screenshots.ts` utilise une séparation `getScreenshotDir(locale)`
+
+Consultez le [guide des ressources par langue](../../../docs/LOCALE-ASSETS-GUIDE.md) pour la documentation complète des modèles.

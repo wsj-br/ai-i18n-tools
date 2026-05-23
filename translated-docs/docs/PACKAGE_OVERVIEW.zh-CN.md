@@ -3,7 +3,7 @@
 
 本文档描述了 `ai-i18n-tools` 的内部架构、各个组件如何协同工作，以及两个核心工作流程的实现方式。
 
-有关实际使用说明，请参阅 [GETTING_STARTED.md](GETTING_STARTED.zh-CN.md)。
+有关实际使用说明，请参阅 [GETTING_STARTED.md](GETTING_STARTED.zh-CN.md)。有关翻译文档中的截图和示例 SVG，请参阅 [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.zh-CN.md)。
 
 <small>**阅读其他语言版本：** </small>
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,8 +256,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus UI 语言包，而非 MDX 正文）。
 - `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，`translate-docs` 不使用）。
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
-### 标题锚点插入 (`write-heading-ids` CLI)
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
+### 标题锚点插入（`write-heading-ids` CLI）
 
 `write-heading-ids` 命令是一个 **本地、非 LLM** 的文档 Markdown 预处理器。实现方式：`src/cli/write-heading-ids.ts` 协调文件发现；`src/markdown/write-heading-ids-core.ts` 解析行并插入锚点。
 
@@ -272,7 +277,7 @@ output file  ─────────────────── Docusauru
    - **MDX 注释**（`{/* … */}`，包括 Docusaurus heading-id 形式 `{/* #my-id */}`）替换为 `{{MDX_N}}`。
    - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`） - 保留为 `{{MDX_N}}`，其可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 `{{JXA_N}}`；在 `<Tabs values={[ { label: '…' } ]}>` 对象字面量和 `<TabItem value="…">` 内的 `label:`（当不存在 `label` 属性时，跳过类似小写 slug 的值）也会被提取。作为 `||JXA_N: …||` 行附加到段落末尾，由 `restoreMdx` 合并还原。
    - **MDX 大括号表达式**（`{frontMatter.title}`、`style={{…}}`） - 按深度匹配，替换为 `{{MDX_N}}`。
-5. **Markdown 链接**（`](url)`、`src="../…"`） - 翻译后从映射表中还原。
+5. **Markdown 链接**（`](url)`、`src="../../docs/…"`） - 翻译后从映射表中还原。
 6. **行内代码段**（`` `code` ``）和 **加粗包裹的行内代码**（`**`code`**`） - 保留不变。
 7. **Markdown 强调语法**（可选，针对 CJK/RTL 语言区域自动启用） - 强调符号被屏蔽。
 
@@ -302,7 +307,7 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 <a id="flat-link-rewriting"></a>
 ### 扁平化链接重写
 
-当 `markdownOutput.style === "flat"` 时，翻译后的 Markdown 文件与源文件并列存放，并带有区域设置后缀。页面之间的相对链接会被重写，使得 `[Guide](../guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（对于未设置自定义 `pathTemplate` 的扁平风格自动启用）。
+当使用 `markdownOutput.style === "flat"` 时，翻译后的 Markdown 文件会与源文件并列存放，并带有区域设置后缀。页面之间的相对链接会被重写，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。此行为由 `rewriteRelativeLinks` 控制（在无自定义 `pathTemplate` 的扁平样式中自动启用）。同一处理过程会在运行 `postProcessing.regexAdjustments` 之前，为非 Markdown 资源 URL 添加每个文件的深度前缀——详见 [区域资源指南](LOCALE-ASSETS-GUIDE.zh-CN.md#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 

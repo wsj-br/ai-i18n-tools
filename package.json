@@ -29,9 +29,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node scripts/write-build-info.mjs && tsc && node scripts/chmod-cli-bin.mjs && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs",
+    "build": "node scripts/write-build-info.mjs && tsc && node scripts/chmod-cli-bin.mjs && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-dashboard-app.mjs",
     "build:ui-languages-master": "node --env-file-if-exists=.env scripts/build-ui-languages-complete.mjs",
-    "dev": "node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-edit-cache-app.mjs && tsc --watch",
+    "dev": "node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-dashboard-app.mjs && tsc --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json",

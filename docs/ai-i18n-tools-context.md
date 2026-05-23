@@ -149,19 +149,20 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Lint source-locale copy (advisory):** `npx ai-i18n-tools lint-source` (runs extract first)
 - **Markdown static checks:** `npx ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for the patterns in **Documentation (Markdown)** below.
 - **Status tables:** `npx ai-i18n-tools status` (UI strings per locale; markdown per file × locale)
-- **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the editor Statistics view)
-- **Web editor:** `npx ai-i18n-tools editor`
+- **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
+- **Web dashboard:** `npx ai-i18n-tools dashboard`
 - **Cleanup:** `npx ai-i18n-tools cleanup` (runs `sync --force-update`, then prunes stale cache rows; backs up SQLite by default)
 - **Extract + translate per config:** `npx ai-i18n-tools sync`
 
 Exhaustive CLI list and global flags: [README.md](../README.md#cli-commands). Use `-c <path>` when the config file is not the default. Flags and env vars: `npx ai-i18n-tools --help` and per-command `--help`.
 
-The `ai-i18n-tools editor` UI includes a **Markdown issues** tab (same `markdown_source_issues` data as `check-markdown`), separate from translation failures.
+The `ai-i18n-tools dashboard` UI includes a **Markdown issues** tab (same `markdown_source_issues` data as `check-markdown`), separate from translation failures.
 
 ---
 
 ## Documentation (Markdown)
 
+- Locale-specific screenshots and illustrated SVGs: [Locale assets guide](LOCALE-ASSETS-GUIDE.md) (Patterns A–E, `postProcessing.regexAdjustments`, flat link rewriter).
 - Do **not** use bold formatting around inline code—avoid putting asterisks outside a backtick span. Use plain `` `code` `` spans, or apply emphasis and code styling separately; never nest both on the same element.
 - Do **not** use bold formatting around links—avoid putting asterisks outside a link. Use plain `` [link text](url) `` spans, or apply emphasis and link styling separately; never nest both on the same element. If needed a bold use it inside the link text.
 
@@ -173,10 +174,12 @@ The `ai-i18n-tools editor` UI includes a **Markdown issues** tab (same `markdown
 - **String not extracted** — only string-literal keys; add manual catalog entries or merge if you use dynamic keys.
 - **Language picker names not translated** — ensure `englishName` (or equivalent) is covered by extract flags or manual rows, then `translate-ui`.
 - `generate-ui-languages` fails — set `uiLanguagesPath` (manifest output) in config.
+- **Section anchor links broken in translated docs** — run `write-heading-ids` on source markdown to insert or refresh `<a id="…"></a>` lines, then re-run `translate-docs`; see [Document translation troubleshooting](GETTING_STARTED.md#document-translation-troubleshooting).
 
 ---
 
 ## More detail in-repo
 
 - `README.md` — install, quick start, runtime helper overview.
+- `docs/LOCALE-ASSETS-GUIDE.md` — screenshots and SVG assets in translated documentation.
 - `docs/PACKAGE_OVERVIEW.md` — how extract and translation pipelines fit together.

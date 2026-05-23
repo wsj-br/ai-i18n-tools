@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` की आंतरिक वास्तुकला, इसके विभिन्न घटकों के एकीकरण तथा दो मुख्य कार्यप्रवाहों के कार्यान्वयन का वर्णन इस दस्तावेज़ में किया गया है।
 
-व्यावहारिक उपयोग निर्देशों के लिए, [GETTING_STARTED.md](GETTING_STARTED.hi.md) देखें।
+व्यावहारिक उपयोग निर्देशों के लिए, [GETTING_STARTED.md](GETTING_STARTED.hi.md) देखें। अनुवादित दस्तावेज़ों में स्क्रीनशॉट्स और चित्रित SVG के लिए, [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.hi.md) देखें।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,8 +256,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - डॉक्यूसॉरस JSON लेबल फ़ाइलों से स्ट्रिंग मान निकालता है (डॉक्यूसॉरस UI कैटलॉग, MDX बॉडी नहीं)।
 - `SvgExtractor` - SVG से `<text>`, `<title>`, और `<desc>` सामग्री निकालता है (`config.svg` के तहत फ़ाइलों के लिए `translate-svg` द्वारा उपयोग किया जाता है, `translate-docs` द्वारा नहीं)।
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
-### शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
+### हेडिंग एंकर सम्मिलन (`write-heading-ids` CLI)
 
 `write-heading-ids` कमांड दस्तावेज़ीकरण मार्कडाउन के लिए एक **स्थानीय, गैर-LLM** प्रीप्रोसेसर है। कार्यान्वयन: `src/cli/write-heading-ids.ts` फ़ाइल खोज को समन्वित करता है; `src/markdown/write-heading-ids-core.ts` पंक्तियों को पार्स करता है और एंकर सम्मिलित करता है।
 
@@ -272,7 +277,7 @@ output file  ─────────────────── Docusauru
    - **MDX टिप्पणियाँ** (`{/* … */}`, Docusaurus heading-id फॉर्म `{/* #my-id */}` सहित) को `{{MDX_N}}` के साथ प्रतिस्थापित किया जाता है।
    - **बड़े अक्षर JSX टैग** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}` के रूप में संरक्षित किए जाते हैं, अनुवर्तनीय स्ट्रिंग विशेषताओं (`label`, `tooltip`, `aria-label`) को टैग के अंदर `{{JXA_N}}` में पुनर्लेखित किया जाता है; `label:` अंदर `<Tabs values={[ { label: '…' } ]}>` ऑब्जेक्ट लिटरल और `<TabItem value="…">` (जब कोई `label` विशेषता मौजूद नहीं होती है, लोअरकेस स्लग-जैसे मानों को छोड़कर) को भी निकाला जाता है। खंड में `||JXA_N: …||` पंक्तियों के रूप में जोड़ा जाता है, `restoreMdx` द्वारा वापस मर्ज किया जाता है।
    - **MDX ब्रेस एक्सप्रेशन** (`{frontMatter.title}`, `style={{…}}`) - गहराई-जागरूक मिलान, `{{MDX_N}}` के साथ प्रतिस्थापित किया जाता है।
-5. **मार्कडाउन URL** (`](url)`, `src="../…"`) - अनुवाद के बाद एक मैप से पुनर्स्थापित किया जाता है।
+5. **मार्कडाउन URL** (`](url)`, `src="../../docs/…"`) - अनुवाद के बाद एक मैप से पुनर्स्थापित किया जाता है।
 6. **इनलाइन कोड स्पैन** (`` `code` ``) और **बोल्ड-लपेटे इनलाइन कोड** (`**`code`**`) - संरक्षित रहते हैं।
 7. **मार्कडाउन पर जोर** (वैकल्पिक, CJK/RTL स्थानीयकरण के लिए स्वचालित रूप से सक्षम) - जोर डिलीमिटर मास्क किए जाते हैं।
 
@@ -302,7 +307,7 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 <a id="flat-link-rewriting"></a>
 ### सपाट लिंक पुन:लेखन
 
-जब `markdownOutput.style === "flat"`, अनुवादित मार्कडाउन फ़ाइलों को स्रोत के साथ स्थानीयकरण उपसर्ग के साथ रखा जाता है। पृष्ठों के बीच सापेक्ष लिंक पुनर्लिखित किए जाते हैं ताकि `readme.de.md` में `[Guide](../guide.md)` `guide.de.md` की ओर इशारा करे। `rewriteRelativeLinks` द्वारा नियंत्रित (बिना कस्टम `pathTemplate` के फ्लैट शैली के लिए स्वचालित सक्षम)।
+जब `markdownOutput.style === "flat"`, अनुवादित मार्कडाउन फ़ाइलों को स्रोत के साथ स्थानीय उपसर्गों के साथ रखा जाता है। पृष्ठों के बीच सापेक्ष लिंक पुनः लिखे जाते हैं ताकि `[Guide](../../docs/guide.md)` में `readme.de.md`, `guide.de.md` की ओर इशारा करे। इसे `rewriteRelativeLinks` द्वारा नियंत्रित किया जाता है (बिना कस्टम `pathTemplate` के फ्लैट शैली के लिए स्वचालित रूप से सक्षम)। उसी पास में `postProcessing.regexAdjustments` चलने से पहले गैर-मार्कडाउन एसेट URL के लिए प्रति-फ़ाइल गहराई उपसर्ग को अग्रणी बनाया जाता है — [स्थानीय एसेट गाइड](LOCALE-ASSETS-GUIDE.hi.md#the-flat-link-rewriter-and-two-step-flow) देखें।
 
 ---
 

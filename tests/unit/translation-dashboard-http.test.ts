@@ -6,13 +6,13 @@ import type { AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
 import { TranslationCache } from "../../src/core/cache.js";
 import {
-  createTranslationEditorApp,
-  resolveEditCacheStaticDir,
-} from "../../src/server/translation-editor.js";
+  createTranslationDashboardApp,
+  resolveDashboardAppStaticDir,
+} from "../../src/server/translation-dashboard.js";
 import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 
 async function withHttpServer(
-  app: ReturnType<typeof createTranslationEditorApp>,
+  app: ReturnType<typeof createTranslationDashboardApp>,
   fn: (baseUrl: string) => Promise<void>
 ): Promise<void> {
   const server = createServer(app);
@@ -31,7 +31,7 @@ async function withHttpServer(
   }
 }
 
-describe("createTranslationEditorApp", () => {
+describe("createTranslationDashboardApp", () => {
   let cache: TranslationCache;
 
   afterEach(() => {
@@ -40,7 +40,7 @@ describe("createTranslationEditorApp", () => {
 
   it("GET /api/health returns ok", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -58,7 +58,7 @@ describe("createTranslationEditorApp", () => {
     const sj = path.join(dir, "strings.json");
     fs.writeFileSync(sj, "{ not json", "utf8");
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -93,7 +93,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de", "fr"],
@@ -164,7 +164,7 @@ describe("createTranslationEditorApp", () => {
 
   it("PATCH /api/translations returns 400 when fields missing", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -182,7 +182,7 @@ describe("createTranslationEditorApp", () => {
   it("PATCH /api/translations sets model to user-edited", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("sh1", "de", "src line", "dst line", "openrouter/x", "f.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -211,7 +211,7 @@ describe("createTranslationEditorApp", () => {
   it("GET /api/translations lists rows", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("abc", "de", "src", "dst", "m", "f.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -226,7 +226,7 @@ describe("createTranslationEditorApp", () => {
 
   it("GET /api/ui-strings returns 404 when strings.json missing", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -250,7 +250,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -292,7 +292,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -351,7 +351,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["es", "ar"],
@@ -406,7 +406,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -454,7 +454,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -485,7 +485,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -520,7 +520,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -556,7 +556,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -591,7 +591,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -650,7 +650,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de", "fr"],
@@ -694,7 +694,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -726,7 +726,7 @@ describe("createTranslationEditorApp", () => {
 
   it("POST /api/glossary-user returns 400 when glossary path not configured", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -747,7 +747,7 @@ describe("createTranslationEditorApp", () => {
     const gpath = path.join(dir, "bad.csv");
     fs.writeFileSync(gpath, '"unclosed', "utf8");
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -764,7 +764,7 @@ describe("createTranslationEditorApp", () => {
 
   it("GET /api/glossary-user returns empty rows when file missing", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -781,7 +781,7 @@ describe("createTranslationEditorApp", () => {
   it("GET /api/locales, /api/models, /api/filepaths", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("h1", "de", "s", "t", "model-x", "doc.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de", "fr"],
@@ -799,7 +799,7 @@ describe("createTranslationEditorApp", () => {
   it("PATCH /api/translations updates row", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("sh", "de", "src", "old", "m", "f.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -822,7 +822,7 @@ describe("createTranslationEditorApp", () => {
   it("DELETE /api/translations/:hash/:locale", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("delh", "fr", "a", "b", "m", "x.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["fr"],
@@ -840,7 +840,7 @@ describe("createTranslationEditorApp", () => {
   it("DELETE /api/translations/by-filters removes rows", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("fh", "de", "a", "b", "m", "z.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -857,7 +857,7 @@ describe("createTranslationEditorApp", () => {
   it("DELETE /api/translations/by-filepath", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("ph", "de", "a", "b", "m", "only.md", 1);
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -873,7 +873,7 @@ describe("createTranslationEditorApp", () => {
 
   it("DELETE /api/translations/by-filepath returns 400 without filepath", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -886,7 +886,7 @@ describe("createTranslationEditorApp", () => {
 
   it("POST /api/log-links returns 400 when fields missing", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -903,7 +903,7 @@ describe("createTranslationEditorApp", () => {
 
   it("POST /api/log-links succeeds with filepath and locale", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -921,7 +921,7 @@ describe("createTranslationEditorApp", () => {
 
   it("POST /api/ui-log-links iterates locations", async () => {
     cache = new TranslationCache(":memory:");
-    const app = createTranslationEditorApp(cache, {
+    const app = createTranslationDashboardApp(cache, {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
@@ -944,7 +944,7 @@ describe("createTranslationEditorApp", () => {
     const sj = path.join(dir, "strings.json");
     fs.writeFileSync(sj, "{}\n", "utf8");
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -985,7 +985,7 @@ describe("createTranslationEditorApp", () => {
       "utf8"
     );
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de", "fr"],
@@ -1050,7 +1050,7 @@ describe("createTranslationEditorApp", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-"));
     const gpath = path.join(dir, "glossary-user.csv");
     try {
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: dir,
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1141,10 +1141,10 @@ describe("createTranslationEditorApp", () => {
     }
   });
 
-  it("resolveEditCacheStaticDir returns a path under src/server", () => {
+  it("resolveDashboardAppStaticDir returns a path under src/server", () => {
     cache = new TranslationCache(":memory:");
-    const d = resolveEditCacheStaticDir();
-    expect(d).toContain("edit-cache-app");
+    const d = resolveDashboardAppStaticDir();
+    expect(d).toContain("dashboard-app");
     expect(fs.existsSync(d)).toBe(true);
   });
 
@@ -1177,7 +1177,7 @@ describe("createTranslationEditorApp", () => {
 
     it("GET /api/failure-quality-errors returns [] when no failure rows exist", async () => {
       cache = new TranslationCache(":memory:");
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1202,7 +1202,7 @@ describe("createTranslationEditorApp", () => {
         }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1222,7 +1222,7 @@ describe("createTranslationEditorApp", () => {
         failureRow("segA", "de", { qualityError: "X", errorMessage: "first pass" }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1258,7 +1258,7 @@ describe("createTranslationEditorApp", () => {
         }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1285,7 +1285,7 @@ describe("createTranslationEditorApp", () => {
         failureRow("s2", "fr", { qualityError: "Q2", errorMessage: "other" }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de", "fr"],
@@ -1316,7 +1316,7 @@ describe("createTranslationEditorApp", () => {
         failureRow("ok1", "de", { fatal: false }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1341,7 +1341,7 @@ describe("createTranslationEditorApp", () => {
         failureRow("first", "de", { modelOrder: 5 }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1381,7 +1381,7 @@ describe("createTranslationEditorApp", () => {
         failureRow("threeFail", "de", { errorMessage: "t3", modelOrder: 3 }),
       ]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1408,7 +1408,7 @@ describe("createTranslationEditorApp", () => {
       cache.setSegment("x2", "fr", "", "", "m", "only-fr.md", 1);
       cache.addSegmentFailures([failureRow("x1", "de"), failureRow("x2", "fr")]);
 
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de", "fr"],
@@ -1437,7 +1437,7 @@ describe("createTranslationEditorApp", () => {
           detail: "d1",
         },
       ]);
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1464,7 +1464,7 @@ describe("createTranslationEditorApp", () => {
     });
   });
 
-  describe("translation-editor branch coverage", () => {
+  describe("translation-dashboard branch coverage", () => {
     it("GET /api/translation-failures?fatal=true only returns fatal rows", async () => {
       cache = new TranslationCache(":memory:");
       cache.setSegment("f1", "de", "a", "b", "m", "a.md", 1);
@@ -1492,7 +1492,7 @@ describe("createTranslationEditorApp", () => {
           sourceText: null,
         },
       ]);
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1520,7 +1520,7 @@ describe("createTranslationEditorApp", () => {
           sourceText: null,
         },
       ]);
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1535,7 +1535,7 @@ describe("createTranslationEditorApp", () => {
 
     it("POST /api/log-links defaults line suffix to :1 when start_line omitted", async () => {
       cache = new TranslationCache(":memory:");
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1553,7 +1553,7 @@ describe("createTranslationEditorApp", () => {
 
     it("POST /api/ui-log-links uses empty locations when omitted", async () => {
       cache = new TranslationCache(":memory:");
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1570,7 +1570,7 @@ describe("createTranslationEditorApp", () => {
 
     it("POST /api/ui-log-links skips entries without filepath", async () => {
       cache = new TranslationCache(":memory:");
-      const app = createTranslationEditorApp(cache, {
+      const app = createTranslationDashboardApp(cache, {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
@@ -1598,7 +1598,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1624,7 +1624,7 @@ describe("createTranslationEditorApp", () => {
       const sj = path.join(dir, "strings.json");
       fs.writeFileSync(sj, JSON.stringify({ a: { source: "s", translated: {} } }), "utf8");
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1653,7 +1653,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1693,7 +1693,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1720,7 +1720,7 @@ describe("createTranslationEditorApp", () => {
       const sj = path.join(dir, "strings.json");
       fs.writeFileSync(sj, JSON.stringify({ x: { source: "a", translated: { de: "b" } } }), "utf8");
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de", "fr"],
@@ -1749,7 +1749,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de", "fr"],
@@ -1792,7 +1792,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1822,7 +1822,7 @@ describe("createTranslationEditorApp", () => {
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-csv-esc-"));
       const gp = path.join(dir, "g.csv");
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1857,7 +1857,7 @@ describe("createTranslationEditorApp", () => {
         "utf8"
       );
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1890,7 +1890,7 @@ describe("createTranslationEditorApp", () => {
       fs.writeFileSync(sj, JSON.stringify({}), "utf8");
       fs.writeFileSync(gv, "Original language string,locale,Translation,Force\n", "utf8");
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: "/tmp",
           sourceLocale: "en",
           targetLocales: ["de"],
@@ -1918,7 +1918,7 @@ describe("createTranslationEditorApp", () => {
       const gp = path.join(dir, "g.csv");
       fs.writeFileSync(gp, "Original language string,locale,Translation,Force\na,de,b,\n", "utf8");
       try {
-        const app = createTranslationEditorApp(cache, {
+        const app = createTranslationDashboardApp(cache, {
           cwd: dir,
           sourceLocale: "en",
           targetLocales: ["de"],

@@ -9,7 +9,7 @@ export default tseslint.config(
       "node_modules/**",
       "coverage/**",
       "**/*.cjs",
-      "src/edit-cache-app/**",
+      "src/dashboard-app/**",
       "vitest.config.ts",
       // Example apps ship their own TS setup; repo lint covers `src/` + `tests/` only.
       "examples/**/*.ts",

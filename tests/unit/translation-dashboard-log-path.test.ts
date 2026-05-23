@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveSegmentLogFilepath } from "../../src/server/translation-editor.js";
+import { resolveSegmentLogFilepath } from "../../src/server/translation-dashboard.js";
 
 describe("resolveSegmentLogFilepath", () => {
   const js = "docs-site/i18n/en";

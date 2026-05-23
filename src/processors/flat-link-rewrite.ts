@@ -147,3 +147,38 @@ export function computeFlatLinkRewritePrefixes(
   const depthPrefix = "../".repeat(depth);
   return { i18nPrefix, depthPrefix };
 }
+
+/**
+ * Compute the per-file depth prefix for a specific source file.
+ *
+ * Unlike the global `depthPrefix` from {@link computeFlatLinkRewritePrefixes} — which is uniform
+ * for the whole batch — this prefix is relative to the *actual output file's directory*, so it
+ * correctly handles `flatPreserveRelativeDir: true` where different source files land at different
+ * depths inside `outputDir`.
+ *
+ * The prefix is the POSIX relative path from the output file's directory back to the source file's
+ * directory, with a trailing `/`. For a source at the repo root and output one level deep (`"../"`),
+ * the result equals the global depth prefix. For a source in a subdirectory (e.g. `docs/`) whose
+ * output ends up two levels deep (`translated-docs/docs/`), the result is `"../../docs/"` —
+ * ensuring that an asset URL like `figure.png` resolves to `../../docs/figure.png`, i.e. the same
+ * directory as the source.
+ */
+export function computePerFileDepthPrefix(
+  cwd: string,
+  config: I18nDocTranslateConfig,
+  locale: string,
+  sourceRelPath: string
+): string {
+  const normSource = normalizeMarkdownRelPath(sourceRelPath);
+  const outputFilePath = resolveDocumentationOutputPath(
+    config,
+    cwd,
+    locale,
+    normSource,
+    "markdown"
+  );
+  const outputDirAbs = path.dirname(path.resolve(outputFilePath));
+  const sourceDirAbs = path.resolve(cwd, path.posix.dirname(normSource));
+  const rel = toPosix(path.relative(outputDirAbs, sourceDirAbs));
+  return rel ? `${rel}/` : "";
+}

@@ -175,17 +175,17 @@ To re-translate only the UI strings for a specific locale:
 ai-i18n-tools translate-ui --force --locale pt-BR
 ```
 
-### 4. Manual Edits (Cache Editor)
+### 4. Manual Edits (Translation Dashboard)
 
 You can launch a local web UI to manually review and edit translations in the cache, UI strings, and glossary (from ``examples/nextjs-app``):
 
 ```bash
-pnpm run i18n:editor
+pnpm run i18n:dashboard
 ```
 
-From ``docs-site/``, ``pnpm run i18n:editor`` does the same (it `cd`s to this folder and runs the CLI).
+From ``docs-site/``, ``pnpm run i18n:dashboard`` does the same (it `cd`s to this folder and runs the CLI).
 
-> **Important:** If you manually edit an entry in the cache editor, you need to run a `sync --force-update` (e.g. `pnpm run i18n:sync --force-update`) to rewrite the generated flat files or markdown files with the updated translation. Also note that if the original source text changes in the future, your manual edit will be lost since the tool generates a new hash for the new source text.
+> **Important:** If you manually edit an entry in the Translation Dashboard, you need to run a `sync --force-update` (e.g. `pnpm run i18n:sync --force-update`) to rewrite the generated flat files or markdown files with the updated translation. Also note that if the original source text changes in the future, your manual edit will be lost since the tool generates a new hash for the new source text.
 
 ## Project Structure
 
@@ -224,4 +224,64 @@ nextjs-app/
 
 English markdown for the example site lives under `docs-site/docs/`. There is no automated sync from the repository root `docs/`; update those files directly when refreshing content. For stable heading anchors, use Docusaurus ``write-heading-ids`` from ``docs-site/`` (see ``pnpm run write-heading-ids`` in `[docs-site/package.json](./docs-site/package.json)`).
 
-Translated UI strings, demo SVGs, root `README` translations, and Docusaurus outputs are committed under `public/locales/`, `public/assets/`, `locales/strings.json`, `translated-docs/`, and `docs-site/i18n/`. After changing sources and running ``pnpm run i18n:translate`` or ``pnpm run i18n:sync``, restart the Next.js and Docusaurus dev servers as needed. Locale routing and ``localeConfigs`` are defined in `**docs-site/docusaurus.config.mjs**`.
+Translated UI strings, demo SVGs, root `README` translations, and Docusaurus outputs are committed under `public/locales/`, `public/assets/`, `locales/strings.json`, `translated-docs/`, and `docs-site/i18n/`. After changing sources and running ``pnpm run i18n:translate`` or ``pnpm run i18n:sync``, restart the Next.js and Docusaurus dev servers as needed. Locale routing and ``localeConfigs`` are defined in `docs-site/docusaurus.config.mjs`.
+
+## Screenshot files — expected layout
+
+The docs and README in this example reference locale-specific screenshots, but no actual PNG files are committed and no `take-screenshots` script is included. This example is a configuration demonstration.
+
+### Docusaurus docs (`docs-site/docs/`)
+
+The Docusaurus `documentations[]` block uses this `regexAdjustments` rule:
+
+```json
+{ "search": "screenshots/[^/]+/", "replace": "screenshots/${translatedLocale}/" }
+```
+
+For the example pages to display locale-specific screenshots you would need PNG files at:
+
+```
+docs-site/static/img/screenshots/
+├── en-GB/
+│   └── screenshot.png
+├── de/
+│   └── screenshot.png
+├── es/
+│   └── screenshot.png
+├── fr/
+│   └── screenshot.png
+├── pt-BR/
+│   └── screenshot.png
+└── ar/
+    └── screenshot.png
+```
+
+A `take-screenshots` script must capture the app at each locale and write to `docs-site/static/img/screenshots/<locale>/screenshot.png`. The tool rewrites URLs only — it does not create PNG files.
+
+### Flat README (`README.md` → `translated-docs/`)
+
+The second `documentations[]` block uses:
+
+```json
+{ "search": "images/screenshots/[^/]+/", "replace": "images/screenshots/${translatedLocale}/" }
+```
+
+Expected layout:
+
+```
+images/screenshots/
+├── en-GB/
+│   └── overview.png
+├── de/
+├── es/
+├── fr/
+├── pt-BR/
+└── ar/
+```
+
+### Real-world references
+
+- [transrewrt](https://github.com/wsj-br/transrewrt) — flat README with 37 locales (Pattern B flat), `take-screenshots.js` captures all locales
+- [duplistatus](https://github.com/wsj-br/duplistatus) — Docusaurus colocated screenshots (Pattern C), `take-screenshots.ts` uses `getScreenshotDir(locale)` split
+
+See the [Locale assets guide](../../docs/LOCALE-ASSETS-GUIDE.md) for full pattern documentation.

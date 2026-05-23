@@ -2,7 +2,7 @@
 
 **Audience:** Contributors and AI agents working inside the `ai-i18n-tools` **repository**. This file lives in `dev/` and is **not** the primary integration guide for downstream apps.
 
-**Consumers:** If you are adding the **published npm package** to another project, use [`docs/ai-i18n-tools-context.md`](../docs/ai-i18n-tools-context.md) (shipped on npm under `docs/`) and [`docs/GETTING_STARTED.md`](../docs/GETTING_STARTED.md).
+**Consumers:** If you are adding the **published npm package** to another project, use [`docs/ai-i18n-tools-context.md`](../docs/ai-i18n-tools-context.md) (shipped on npm under `docs/`), [`docs/GETTING_STARTED.md`](../docs/GETTING_STARTED.md), and [`docs/LOCALE-ASSETS-GUIDE.md`](../docs/LOCALE-ASSETS-GUIDE.md) for locale-specific screenshots and SVG assets.
 
 This document gives the mental model, key decisions, and patterns needed to work effectively on this codebase. Read it before making code or config changes.
 
@@ -190,8 +190,8 @@ npx ai-i18n-tools sync [--locale <code>] [--force | --force-update] [--no-ui] [-
 npx ai-i18n-tools status
     Show markdown translation coverage per file × locale.
 
-npx ai-i18n-tools editor
-    Launch a local web editor for the SQLite cache, strings.json, and glossary.
+npx ai-i18n-tools dashboard
+    Launch the Translation Dashboard (local web UI for cache segments, strings.json, glossary, failures, and statistics).
 
 npx ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
     Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, svg-files:, …);
@@ -259,7 +259,7 @@ PlaceholderHandler.restore  - tokens replaced back with original syntax
 resolveDocumentationOutputPath  → write to output file
 ```
 
-**Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (a `cache.db` SQLite file), shared by all `documentations` blocks. Each row stores the `model` that last translated the segment; saving an edit in the `editor` sets `model` to `user-edited` (same sentinel as UI `strings.json` `models`).
+**Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (a `cache.db` SQLite file), shared by all `documentations` blocks. Each row stores the `model` that last translated the segment; saving an edit in the `dashboard` sets `model` to `user-edited` (same sentinel as UI `strings.json` `models`).
 
 **`markdown_source_issues` (schema ≥ 4):** pre-translation static findings per documentation cache filepath (`doc-block:{i}:{relPath}` keys, same as `translations.filepath` for markdown). `check-markdown` and `translate-docs` (when `warnMarkdownSourceIssues` is not `false`) call `TranslationCache.replaceMarkdownIssuesForFilepath` to delete-then-insert all rows for that filepath. `deleteTranslationsByFilepath` and filtered bulk deletes remove markdown issue rows when the last translation row for that filepath is gone. Editor tab **Markdown issues** reads `GET /api/markdown-source-issues` (+ summary / issue-code list). Processor: `src/processors/markdown-source-diagnostics.ts` (includes `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for `**`/`__` wrapping `` `code` `` or `[text](url)`); pairing primitives exported from `emphasis-placeholders.ts` (`collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, …).
 
@@ -447,7 +447,7 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 | Add a new locale | Add it to `ui-languages.json` (or `targetLocales` array), then run `translate-docs` / `translate-ui` / `sync` |
 | Translate only one locale | `npx ai-i18n-tools translate-docs --locale de` (or `translate-ui`, `sync`) |
 | Add a new UI string | Write `t('My new string')` in source, then run `extract` then `translate-ui` |
-| Update a translation manually | Edit `strings.json` directly (`translated`), or use `editor` (sets `models[locale]` to `user-edited`). `translate-ui` skips locales that already have text unless you use `--force` |
+| Update a translation manually | Edit `strings.json` directly (`translated`), or use `dashboard` (sets `models[locale]` to `user-edited`). `translate-ui` skips locales that already have text unless you use `--force` |
 | Translate new/updated docs only | Run `translate-docs` - file + segment cache skips unchanged work automatically |
 | Rebuild doc outputs without re-calling the API for unchanged segments | `npx ai-i18n-tools sync  --force-update` |
 | Full doc re-translation (ignore segment cache) | `npx ai-i18n-tools translate-docs --force` |
@@ -480,9 +480,9 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 |---|---|---|
 | `ai-i18n-tools.config.json` | You | Main config. Edit manually. |
 | `ui-languages.json` (wherever configured) | You | Locale manifest. Edit manually to add/remove locales. |
-| `strings.json` (wherever configured) | Tool (`extract` / `translate-ui` / `editor`) | Master UI catalog: `source`, `translated`, optional `models` (per locale: OpenRouter model id or `user-edited`), optional `locations`. Safe to edit `translated`; do not rename keys. |
+| `strings.json` (wherever configured) | Tool (`extract` / `translate-ui` / `dashboard`) | Master UI catalog: `source`, `translated`, optional `models` (per locale: OpenRouter model id or `user-edited`), optional `locations`. Safe to edit `translated`; do not rename keys. |
 | `{flatOutputDir}/de.json`, etc. | Tool (`translate-ui`) | Per-locale flat maps (source → translation only, no `models`). Do not edit — regenerated on each `translate-ui`. |
-| `{cacheDir}/*.db` | Tool | SQLite translation cache (per-segment `model` metadata; `user-edited` after manual saves in `editor`). Do not edit directly; use `editor` or `cleanup`. |
+| `{cacheDir}/*.db` | Tool | SQLite translation cache (per-segment `model` metadata; `user-edited` after manual saves in `dashboard`). Do not edit directly; use `dashboard` or `cleanup`. |
 | `glossary-user.csv` | You | Term overrides. Generate template with `glossary-generate`. |
 
 ---
@@ -499,7 +499,7 @@ src/
 ├── api/openrouter.ts      HTTP client for OpenRouter with model fallback and rate-limit handling
 ├── glossary/              Glossary loading (CSV + auto from strings.json) and term matching
 ├── runtime/               i18next helpers, RTL helpers, display helpers (no i18next import)
-├── server/                Local Express web editor for cache/glossary
+├── server/                Local Express Translation Dashboard for cache/glossary
 └── utils/                 Logger, SHA-256 hash, .translate-ignore parser
 ```
 

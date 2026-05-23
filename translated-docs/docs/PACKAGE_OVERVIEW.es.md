@@ -3,7 +3,7 @@
 
 Este documento describe la arquitectura interna de `ai-i18n-tools`, cómo se integra cada componente y cómo se implementan los dos flujos de trabajo principales.
 
-Para instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTED.es.md).
+Para obtener instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTED.es.md). Para capturas de pantalla e ilustraciones SVG en documentos traducidos, consulte [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.es.md).
 
 <small>**Leer en otros idiomas:** </small>
 <small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
@@ -129,8 +129,13 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
+├── dashboard-app/
+│   ├── index.html                  Translation Dashboard static UI (HTML/CSS/JS)
+│   ├── app.js
+│   └── styles.css
+│
 ├── server/
-│   └── translation-editor.ts       Express app for cache / strings.json / glossary editor
+│   └── translation-dashboard.ts    Express app for Translation Dashboard (cache / strings.json / glossary)
 │
 └── utils/
     ├── logger.ts                   Leveled logger with ANSI support
@@ -251,8 +256,8 @@ Todos los extractores extienden `BaseExtractor` e implementan `extract(content, 
 - `JsonExtractor` - extrae valores de cadena de archivos JSON de etiquetas de Docusaurus (catálogos de interfaz de usuario de Docusaurus, no del cuerpo MDX).
 - `SvgExtractor` - extrae contenido `<text>`, `<title>` y `<desc>` de SVG (utilizado por `translate-svg` para archivos en `config.svg`, no por `translate-docs`).
 
-<a id="heading-anchor-insertion-write-heading-ids"></a>
-### Inserción de anclajes de encabezado (CLI `write-heading-ids`)
+<a id="heading-anchor-insertion-write-heading-ids-cli"></a>
+### Inserción de anclas de encabezado (`write-heading-ids` CLI)
 
 El comando `write-heading-ids` es un preprocesador **local y sin uso de LLM** para archivos markdown de documentación. Implementación: `src/cli/write-heading-ids.ts` coordina el descubrimiento de archivos; `src/markdown/write-heading-ids-core.ts` analiza las líneas e inserta anclajes.
 
@@ -272,7 +277,7 @@ Antes de la traducción, la sintaxis sensible se sustituye por tokens opacos par
    - **Comentarios MDX** (`{/* … */}`, incluyendo la forma de identificador de encabezado de Docusaurus `{/* #my-id */}`) sustituidos por `{{MDX_N}}`.
    - **Etiquetas JSX en mayúsculas** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - se conservan como `{{MDX_N}}` con atributos de cadena traducibles (`label`, `tooltip`, `aria-label`) reescritos como `{{JXA_N}}` dentro de la etiqueta; también se extraen `label:` dentro de literales de objetos `<Tabs values={[ { label: '…' } ]}>` y `<TabItem value="…">` (cuando no existe un atributo `label`, omitiendo valores en minúsculas tipo slug). Se añaden al segmento como líneas `||JXA_N: …||`, que luego se reintegran mediante `restoreMdx`.
    - **Expresiones entre llaves en MDX** (`{frontMatter.title}`, `style={{…}}`) - coincidencia sensible a la profundidad, sustituidas por `{{MDX_N}}`.
-5. **URLs en markdown** (`](url)`, `src="../…"`) - se restauran desde un mapa tras la traducción.
+5. **URLs en markdown** (`](url)`, `src="../../docs/…"`) - se restauran desde un mapa tras la traducción.
 6. **Fragmentos de código en línea** (`` `code` ``) y **código en línea con negrita** (`**`code`**`) - se conservan.
 7. **Énfasis en markdown** (opcional, habilitado automáticamente para configuraciones regionales CJK/RTL) - los delimitadores de énfasis se enmascaran.
 
@@ -302,7 +307,7 @@ El comando `translate-docs` también utiliza **seguimiento de archivos**, de mod
 <a id="flat-link-rewriting"></a>
 ### Reescritura plana de enlaces
 
-Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se colocan junto a la fuente con sufijos de configuración regional. Los enlaces relativos entre páginas se reescriben para que `[Guide](../guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (activado automáticamente para estilo plano sin `pathTemplate` personalizado).
+Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se colocan junto con los originales con sufijos de configuración regional. Los enlaces relativos entre páginas se reescriben para que `[Guide](../../docs/guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (activado automáticamente para el estilo plano sin un `pathTemplate` personalizado). El mismo proceso antepone un prefijo de profundidad por archivo a las URL de recursos no markdown antes de que se ejecute `postProcessing.regexAdjustments` — consulte la [Guía de recursos por configuración regional](LOCALE-ASSETS-GUIDE.es.md#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
