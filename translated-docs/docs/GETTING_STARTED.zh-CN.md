@@ -927,11 +927,14 @@ Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Ze
 
 如果使用了自定义的 `pathTemplate`，除非显式设置，否则 `rewriteRelativeLinks` 默认为 `false` —— 相对链接重写功能是为没有自定义模板的 `markdownOutput.style = "flat"` 构建的。
 
+对于内置布局（`nested`、`flat`、`doc-system` 且无自定义模板），将 `markdownOutput.localePathLowercase` 设置为 `true` 可以使区域设置文件夹或文件名路径段为小写（例如 `pt-br` 而非 `pt-BR`）。`astro-starlight` 别名默认将其设为 `true`。自定义的 `pathTemplate` / `jsonPathTemplate` 值保持不变——当需要小写路径段但仍保留 `{locale}` 为 BCP-47 格式时，请在自定义路径中使用 `{llocale}`。
+
 | 占位符            | 角色                                                                                                       | 示例                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | 当前文档块的 `outputDir` 的绝对解析路径                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | 目标语言环境代码（与配置/CLI 中的形式相同） | `de`, `pt-BR` |
 | `{LOCALE}`             | 相同语言代码的大写形式                                                                                     | `DE`, `PT-BR`                                                    |
+| `{llocale}`            | 相同区域设置的小写形式（匹配 Astro 路由文件夹，如 `pt-br`、`zh-cn`）                               | `de`、`pt-br`                                                    |
 | `{relPath}` | 相对于项目根目录的源文件路径，使用 POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | 文件名 **无**扩展名 | `guide` 用于 `docs/guide.md` |
 | `{basename}` | 文件名 **与** 扩展名 | `guide.md` |
@@ -1375,15 +1378,17 @@ SQLite 缓存目录（所有 `documentations` 块共享）。可在多次运行�
 - `markdownOutput.docsRoot`
 Docusaurus 布局的源文档根目录（例如 `"docs"`）。
 - `markdownOutput.pathTemplate`
-自定义 Markdown 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
+自定义 Markdown 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
 标签文件的自定义 JSON 输出路径。支持与 `pathTemplate` 相同的占位符。
+- `markdownOutput.localePathLowercase`
+当设置为 `true` 时，内置输出布局（`nested`、`flat`、`doc-system` 且无 `pathTemplate`）在路径中使用小写的区域设置路径段。默认为 `false`；在配置加载时，`astro-starlight` 和 `doc-system` 若 `localeSubpath` 为空，则默认为 `true`。
 - `markdownOutput.flatPreserveRelativeDir`
-当启用 `markdownOutput.style = "flat"` 时，保留源子目录以避免同名文件冲突。
+当设置为 `markdownOutput.style = "flat"` 时，保留源子目录，以避免同名文件发生冲突。
 - `markdownOutput.rewriteRelativeLinks`
-翻译后重写相对链接（当启用 `markdownOutput.style = "flat"` 且未设置自定义 `pathTemplate` 时自动启用）。
+翻译后重写相对链接（当启用 `markdownOutput.style = "flat"` 且无自定义 `pathTemplate` 时自动启用）。
 - `markdownOutput.linkRewriteDocsRoot`
-计算扁平链接重写前缀时使用的仓库根目录。通常保留为 `"."`，除非您的翻译文档位于不同的项目根目录下。
+计算扁平化链接重写前缀时使用的仓库根目录。通常保留为 `"."`，除非你的翻译文档位于不同的项目根目录下。
 
 **后处理**
 
@@ -1461,7 +1466,8 @@ SVG 文件的顶层路径和布局。仅当 `features.translateSVG` 为 true 时
 | `sourcePath`     | 一个或多个目录 **或 glob 模式**（例如 `"images/*.svg"`、`"**/icons/*.svg"`）。这些模式相对于项目根目录解析，并递归扫描 `.svg` 文件。                                                                         |
 | `outputDir`                   | 翻译后 SVG 输出的根目录。                                                                                                                                                                                                                                          |
 | `style`                       | 当未设置 `pathTemplate` 时，默认为 `"flat"` 或 `"nested"`。                                                                                                                                                                                                                               |
-| `pathTemplate`                | 自定义 SVG 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `pathTemplate`   | 自定义 SVG 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `localePathLowercase` | 当设置为 `true` 时，内置的 `flat` / `nested` SVG 布局在路径中使用小写的区域设置路径段。自定义的 `pathTemplate` 值保持不变；如需小写路径段，请使用 `{llocale}`。 |
 | `forceLowercase` | SVG 重组时的文本小写转换。适用于依赖全小写标签的设计。                                                                                                                                                                                |
 
 <a id="glossary"></a>

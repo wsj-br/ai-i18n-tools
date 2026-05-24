@@ -437,6 +437,12 @@ const docsOutputSchema = z
     pathTemplate: z.string().optional(),
     /** Optional overrides for JSON outputs (default: nested `outputDir/locale/relPath`). */
     jsonPathTemplate: z.string().optional(),
+    /**
+     * When true, built-in layout styles use a lowercased locale segment in output paths
+     * (e.g. `pt-BR` → `pt-br`). Custom `pathTemplate` / `jsonPathTemplate` values are unchanged;
+     * use `{llocale}` there for lowercase segments.
+     */
+    localePathLowercase: z.boolean().optional(),
     /** For `flat` style: keep dirname segments so `docs/a.md` → `out/docs/a.de.md` instead of colliding with root `a.md`. */
     flatPreserveRelativeDir: z.boolean().default(false),
     /**
@@ -499,12 +505,17 @@ const svgFilesConfigInnerSchema = z
     outputDir: z.string().min(1),
     /**
      * When set, overrides `style` for output paths. Expand `{outputDir}` (absolute resolved `svg.outputDir`),
-     * `{locale}`, `{LOCALE}`, `{relPath}` (file relative to cwd), `{stem}`, `{basename}`, `{extension}`,
+     * `{locale}`, `{LOCALE}`, `{llocale}`, `{relPath}` (file relative to cwd), `{stem}`, `{basename}`, `{extension}`,
      * `{relativeToSourceRoot}` (path under `sourcePath`).
      */
     pathTemplate: z.string().optional(),
     /** `flat`: `{stem}.{locale}.svg`; `nested`: `{locale}/{relPathUnderSourceRoot}`. Ignored when `pathTemplate` is set. */
     style: z.enum(["flat", "nested"]),
+    /**
+     * When true, built-in `flat` / `nested` SVG layouts use a lowercased locale segment.
+     * Custom `pathTemplate` values are unchanged; use `{llocale}` for lowercase segments.
+     */
+    localePathLowercase: z.boolean().default(false),
     /** When true, translated text is lowercased on SVG reassembly (optional layout tweak). */
     forceLowercase: z.boolean().default(false),
   })
@@ -622,7 +633,12 @@ const jsonBlockSchema = z
       (v) => coerceContentPathsField(v),
       z.array(z.string().min(1)).default([])
     ),
-    outputPathTemplate: z.string().min(1),
+    outputPathTemplate: z
+      .string()
+      .min(1)
+      .describe(
+        "Output path template; placeholders: {locale}, {LOCALE}, {llocale}, {stem}, {basename}, {extension}, {relativeToSourceRoot}"
+      ),
     targetLocales: z
       .preprocess(
         (v) => {

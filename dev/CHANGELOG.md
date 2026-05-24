@@ -9,6 +9,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Added**: tests — unit coverage for `astro-template-extractor`, `nested-json-extractor`, `parse-glossary-csv`, `markdown-source-diagnostics`, `ui-languages-master-direction`, and `translation-dashboard` (new `parse-glossary-csv` and `ui-languages-master-direction` test files; expanded existing dashboard and extractor tests).
+- **Changed**: examples — `examples/astro-website` bumps `astro` to `^6.3.1` and `@astrojs/tailwind` to `^6.0.2` (aligned with `astro-docs`) so `pnpm audit` is clean without workspace overrides.
+- **Added**: Dev tooling — `markdown-link-check` with `pnpm run lint:md` (same non-recursive markdown paths as before); root `.markdown-link-check.json` ignores `npmjs.com` (403 from bot blocking) and enables 429 retries.
+- **Removed**: Dev tooling — `markdownlint-cli`, root `.markdownlint.json`, and `pnpm run lint:md:fix`.
+- **Added**: output paths - `{llocale}` placeholder (lowercased locale) for docs `pathTemplate` / `jsonPathTemplate`, SVG `pathTemplate`, and `json[]` `outputPathTemplate`; `localePathLowercase` on `docsOutput` and `svg` for built-in layouts; `astro-starlight` and empty `localeSubpath` `doc-system` default `localePathLowercase` to `true`; `init -t ui-json-bundles` uses `{llocale}` in the default template.
+- **Fixed**: translate-json - `{LOCALE}` in `outputPathTemplate` is now uppercased (was previously left unchanged).
 - **Changed**: config - removed `features.extractUIStrings`; extraction runs automatically before `translate-ui`, `sync-ui`, and `sync` when `features.translateUIStrings` is enabled; standalone `extract` only requires non-empty `ui.sourceRoots`. Legacy `extractUIStrings` is stripped on load and config rewrite.
 - **Changed**: config - CLI-aligned naming: `documentations` → `docs`, `features.translateMarkdown` → `translateDocs`, `docs[].markdownOutput` → `docsOutput`, `docs[].jsonSource` → `docusaurusCatalogDir`; legacy keys preprocess at load and auto-rewrite `ai-i18n-tools.config.json` when writable; `features.translateJSON` removed (Docusaurus catalog JSON runs during `translate-docs` when `docusaurusCatalogDir` is set and `translateDocs` is true).
 - **Added**: config - top-level `json[]` and `features.translateJson` for arbitrary nested JSON bundles; `translate-json` CLI and `sync --no-json`; `init -t ui-json-bundles`; `NestedJsonExtractor` with `keyPolicy` allowlist/denylist/both (minimatch); shared `resolveContentPathEntries` for file, directory, and glob `contentPaths`.

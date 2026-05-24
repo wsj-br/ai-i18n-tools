@@ -1,5 +1,6 @@
 import path from "path";
 import type { I18nConfig } from "./types.js";
+import { localePathPlaceholders } from "./locale-utils.js";
 import { toPosix } from "./output-paths.js";
 
 /** Maximum length for a glob pattern to prevent ReDoS attacks. */
@@ -117,8 +118,8 @@ export interface SvgPathTemplateContext {
 }
 
 /**
- * Expand `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`,
- * `{relativeToSourceRoot}` (same as path under `svg.sourcePath`).
+ * Expand `{outputDir}`, `{locale}`, `{LOCALE}`, `{llocale}`, `{relPath}`, `{stem}`, `{basename}`,
+ * `{extension}`, `{relativeToSourceRoot}` (same as path under `svg.sourcePath`).
  */
 export function expandSvgPathTemplate(template: string, ctx: SvgPathTemplateContext): string {
   const posixRel = toPosix(ctx.relPath);
@@ -128,11 +129,13 @@ export function expandSvgPathTemplate(template: string, ctx: SvgPathTemplateCont
   const basename = parsed.base;
   const relSrc = toPosix(ctx.relativeToSourceRoot);
 
+  const localeVars = localePathPlaceholders(ctx.locale);
   let out = template;
   const pairs: [string, string][] = [
     ["{outputDir}", ctx.outputDir],
-    ["{locale}", ctx.locale],
-    ["{LOCALE}", ctx.locale.toUpperCase()],
+    ["{locale}", localeVars.locale],
+    ["{LOCALE}", localeVars.LOCALE],
+    ["{llocale}", localeVars.llocale],
     ["{relPath}", posixRel],
     ["{stem}", stem],
     ["{basename}", basename],
@@ -169,6 +172,7 @@ export function resolveSvgAssetOutputPath(
   const posixRel = toPosix(relPathFromCwd);
   const parsed = path.posix.parse(posixRel);
   const stem = parsed.name;
+  const localeSeg = svg.localePathLowercase ? locale.toLowerCase() : locale;
 
   const tmpl = svg.pathTemplate?.trim();
   let abs: string;
@@ -181,9 +185,9 @@ export function resolveSvgAssetOutputPath(
     });
     abs = path.isAbsolute(expanded) ? path.normalize(expanded) : path.resolve(cwd, expanded);
   } else if (svg.style === "flat") {
-    abs = path.join(outRoot, `${stem}.${locale}.svg`);
+    abs = path.join(outRoot, `${stem}.${localeSeg}.svg`);
   } else {
-    abs = path.join(outRoot, locale, relPathFromSourceRoot);
+    abs = path.join(outRoot, localeSeg, relPathFromSourceRoot);
   }
 
   assertSvgOutputWithinRoot(abs, outRoot);

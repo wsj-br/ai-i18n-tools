@@ -35,7 +35,7 @@ Everything is driven by a single config file: `ai-i18n-tools.config.json`.
 
 **Decision tree (agents):** `t()` in source → Workflow 1. Localized pages or Docusaurus `write-translations` catalog → Workflow 2. Standalone nested locale JSON only (e.g. ZenBrowser `src/i18n/en/translation.json`) → Workflow 3 — not `docs[]`.
 
-**`sync` order** (unless skipped): when `translateUIStrings` → `extract` then `translate-ui` (`--no-ui`); when `translateSVG` + `svg` → `translate-svg` (`--no-svg`); when `translateJson` + `json[]` → `translate-json` (`--no-json`); when `translateDocs` or any `docs[].docusaurusCatalogDir` → `translate-docs` (`--no-docs`). There is no separate `extractUIStrings` or `translateJSON` feature flag anymore.
+**`sync` order** (unless skipped): when `translateUIStrings` → `extract` then `translate-ui` (`--no-ui`); when `translateSVG` + `svg` → `translate-svg` (`--no-svg`); when `translateDocs` or any `docs[].docusaurusCatalogDir` → `translate-docs` (`--no-docs`); when `translateJson` + `json[]` → `translate-json` (`--no-json`). There is no separate `extractUIStrings` or `translateJSON` feature flag anymore.
 
 **Legacy config** (load + one-time rewrite when writable): `documentations` → `docs`, `translateMarkdown` → `translateDocs`, `jsonSource` → `docusaurusCatalogDir`, `markdownOutput` → `docsOutput`; `extractUIStrings` and `translateJSON` are stripped. See `src/core/config-migrate.ts`.
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  collectMarkdownIssuesForSegment,
   collectMarkdownSourceIssues,
   MARKDOWN_SOURCE_ISSUE_CODES,
   shouldDiagnoseMarkdownSegment,
@@ -133,6 +134,24 @@ describe("collectMarkdownSourceIssues", () => {
       issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
     ).toBe(true);
   });
+
+  it("skips closed {{placeholder}} spans before scanning for strong-outside-link", () => {
+    const issues = collectMarkdownSourceIssues("{{TOKEN}} **[link](https://x.test)**", {
+      segmentStartLine: 1,
+    });
+    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toBe(
+      true
+    );
+  });
+
+  it("does not treat escaped link openers as links", () => {
+    const issues = collectMarkdownSourceIssues(String.raw`\**[not a link](https://x.test)**`, {
+      segmentStartLine: 1,
+    });
+    expect(
+      issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)
+    ).toEqual([]);
+  });
 });
 
 describe("shouldDiagnoseMarkdownSegment", () => {
@@ -148,5 +167,54 @@ describe("shouldDiagnoseMarkdownSegment", () => {
         S({ type: "code", content: "```\nx\n```", hash: "c", translatable: false })
       )
     ).toBe(false);
+  });
+
+  it("returns true for heading and admonition segments", () => {
+    expect(shouldDiagnoseMarkdownSegment(S({ type: "heading", content: "# T", hash: "h" }))).toBe(
+      true
+    );
+    expect(
+      shouldDiagnoseMarkdownSegment(
+        S({ type: "admonition", content: ":::note\nx\n:::", hash: "a" })
+      )
+    ).toBe(true);
+  });
+
+  it("returns false when translatable is false", () => {
+    expect(
+      shouldDiagnoseMarkdownSegment(
+        S({ type: "paragraph", content: "x", hash: "p", translatable: false })
+      )
+    ).toBe(false);
+  });
+});
+
+describe("collectMarkdownIssuesForSegment", () => {
+  it("maps issues to cache rows for translatable markdown segments", () => {
+    const seg = S({
+      type: "paragraph",
+      content: "broken `code",
+      hash: "hash-1",
+      startLine: 20,
+    });
+    const rows = collectMarkdownIssuesForSegment(seg, "doc-block:0:guide.md");
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows[0]).toMatchObject({
+      filepath: "doc-block:0:guide.md",
+      sourceHash: "hash-1",
+      issueCode: MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE,
+      startLine: 20,
+    });
+    expect(rows[0]?.detail).toMatch(/Unclosed inline code/);
+  });
+
+  it("returns no rows for non-markdown segment types", () => {
+    const seg = S({
+      type: "code",
+      content: "broken `code",
+      hash: "hash-2",
+      translatable: false,
+    });
+    expect(collectMarkdownIssuesForSegment(seg, "x.md")).toEqual([]);
   });
 });

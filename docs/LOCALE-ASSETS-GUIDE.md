@@ -7,14 +7,14 @@ For SVG configuration reference, see the [`svg`](#svg) section in [GETTING_START
 
 | Config path | Value | Use case | Notes |
 |-------------|-------|----------|-------|
-| `documentations[].markdownOutput.style` | `"flat"` | Locale-suffixed README / USER-GUIDE files | Enables flat link rewriter; pair with `flatPreserveRelativeDir` when sources live in subdirectories |
-| `documentations[].markdownOutput.style` | `"nested"` (default) | Simple locale subfolders under `outputDir` | No flat link rewriter |
-| `documentations[].markdownOutput.style` | `"doc-system"` | Locale-prefixed doc trees (custom generators) | Set `docsRoot` and `localeSubpath`; flat link rewriter does not run |
-| `documentations[].markdownOutput.style` | `"docusaurus"` / `"astro-starlight"` | Preset `doc-system` layouts | Aliases with generator-specific defaults for `localeSubpath` |
+| `docs[].docsOutput.style` | `"flat"` | Locale-suffixed README / USER-GUIDE files | Enables flat link rewriter; pair with `flatPreserveRelativeDir` when sources live in subdirectories |
+| `docs[].docsOutput.style` | `"nested"` (default) | Simple locale subfolders under `outputDir` | No flat link rewriter |
+| `docs[].docsOutput.style` | `"doc-system"` | Locale-prefixed doc trees (custom generators) | Set `docsRoot` and `localeSubpath`; flat link rewriter does not run |
+| `docs[].docsOutput.style` | `"docusaurus"` / `"astro-starlight"` | Preset `doc-system` layouts | Aliases with generator-specific defaults for `localeSubpath` |
 | `svg.style` | `"flat"` | Web apps (`name.<locale>.svg` in `public/assets/`) | Separate from markdown `style`; used by `translate-svg` |
 | `svg.style` | `"nested"` | Doc-system colocated SVG output | Often paired with `pathTemplate` (Pattern E) |
 
-This guide uses the exact JSON strings from config — not English words alone — so translated copies stay unambiguous.
+This guide uses the exact JSON strings from config — not English words alone — so translated copies stay unambiguous. Legacy keys (`documentations`, `markdownOutput`) are accepted at load time; prefer `docs` and `docsOutput` in new configs.
 
 
 <small>**Read in other languages:** </small>
@@ -28,40 +28,40 @@ This guide uses the exact JSON strings from config — not English words alone �
 
 - [What ai-i18n-tools does (and does not do) with assets](#what-ai-i18n-tools-does-and-does-not-do-with-assets)
 - [Design for i18n from the start](#design-for-i18n-from-the-start)
-  - [Markdown with `markdownOutput.style = "flat"` (README, USER-GUIDE)](#markdown-with-markdownoutputstyle--flat-readme-user-guide)
-  - [Doc-system sites (`markdownOutput.style = "doc-system"`)](#doc-system-sites-markdownoutputstyle--doc-system)
+  - [Markdown with `docsOutput.style = "flat"` (README, USER-GUIDE)](#markdown-with-docsoutputstyle--flat-readme-user-guide)
+  - [Doc-system sites (`docsOutput.style = "doc-system"`)](#doc-system-sites-docsoutputstyle--doc-system)
     - [Docusaurus preset](#docusaurus-preset)
     - [Astro/Starlight preset](#astrostarlight-preset)
   - [Web apps (Next.js, Vite, etc.) with SVG assets](#web-apps-nextjs-vite-etc-with-svg-assets)
 - [Decision guide](#decision-guide)
-- [Pattern A - Shared raster](#pattern-a--shared-raster)
+- [Pattern A - Shared raster](#pattern-a---shared-raster)
   - [Implementation example](#implementation-example)
-- [Pattern B - Per-locale folder (URL rewriting)](#pattern-b--per-locale-folder-url-rewriting)
+- [Pattern B - Per-locale folder (URL rewriting)](#pattern-b---per-locale-folder-url-rewriting)
   - [Directory layout](#directory-layout)
   - [Screenshot script contract](#screenshot-script-contract)
-  - [Config - `markdownOutput.style = "flat"`](#config--markdownoutputstyle--flat)
-  - [Config - `markdownOutput.style = "doc-system"`](#config--markdownoutputstyle--doc-system)
-  - [Preset - `markdownOutput.style = "docusaurus"`](#preset--markdownoutputstyle--docusaurus)
-  - [Preset - `markdownOutput.style = "astro-starlight"`](#preset--markdownoutputstyle--astro-starlight)
-- [Pattern C - Colocated raster (`doc-system`)](#pattern-c--colocated-raster-doc-system)
+  - [Config - `docsOutput.style = "flat"`](#config---docsoutputstyle--flat)
+  - [Config - `docsOutput.style = "doc-system"`](#config---docsoutputstyle--doc-system)
+  - [Preset - `docsOutput.style = "docusaurus"`](#preset---docsoutputstyle--docusaurus)
+  - [Preset - `docsOutput.style = "astro-starlight"`](#preset---docsoutputstyle--astro-starlight)
+- [Pattern C - Colocated raster (`doc-system`)](#pattern-c---colocated-raster-doc-system)
   - [Directory layout](#directory-layout-1)
   - [Screenshot script contract](#screenshot-script-contract-1)
   - [Config](#config)
   - [Prerequisites](#prerequisites)
   - [Implementation example](#implementation-example-1)
-- [Pattern D - Translated SVG with `svg.style = "flat"`](#pattern-d--translated-svg-with-svgstyle--flat)
+- [Pattern D - Translated SVG with `svg.style = "flat"`](#pattern-d---translated-svg-with-svgstyle--flat)
   - [Config](#config-1)
   - [App reference](#app-reference)
   - [Source layout recommendation](#source-layout-recommendation)
   - [Implementation example](#implementation-example-2)
-- [Pattern E - Colocated translated SVG (doc-system)](#pattern-e--colocated-translated-svg-doc-system)
+- [Pattern E - Colocated translated SVG (doc-system)](#pattern-e---colocated-translated-svg-doc-system)
   - [Config](#config-2)
   - [Source markdown](#source-markdown)
   - [SVG source location](#svg-source-location)
   - [`pathTemplate` placeholders](#pathtemplate-placeholders)
   - [Implementation example](#implementation-example-3)
 - [The flat link rewriter and two-step flow](#the-flat-link-rewriter-and-two-step-flow)
-  - [Two-step flow when `markdownOutput.style = "flat"`](#two-step-flow-when-markdownoutputstyle--flat)
+  - [Two-step flow when `docsOutput.style = "flat"`](#two-step-flow-when-docsoutputstyle--flat)
   - [Per-file depth prefix with `flatPreserveRelativeDir`](#per-file-depth-prefix-with-flatpreserverelativedir)
   - [`rewriteRelativeLinks` and `linkRewriteDocsRoot`](#rewriterelativelinks-and-linkrewritedocsroot)
 - [Common mistakes and troubleshooting](#common-mistakes-and-troubleshooting)
@@ -84,8 +84,8 @@ This guide uses the exact JSON strings from config — not English words alone �
 
 Choosing the right directory layout before any screenshots exist is the single biggest factor in how painless locale-specific assets are later. Retrofitting the layout after dozens of screenshots are committed means restructuring paths and updating every markdown reference.
 
-<a id="markdown-with-markdownoutputstyle--flat-readme-user-guide"></a>
-### Markdown with `markdownOutput.style = "flat"` (README, USER-GUIDE)
+<a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
+### Markdown with `docsOutput.style = "flat"` (README, USER-GUIDE)
 
 Store screenshots under a locale-coded subdirectory from day one:
 
@@ -105,10 +105,10 @@ When you add i18n later, your `take-screenshots` script writes to `images/screen
 
 The generic `[^/]+` pattern matches any locale folder name — do not hardcode your source locale (e.g. `screenshots/en-GB/`) because that breaks if `sourceLocale` ever changes.
 
-If you start with paths that omit the locale subdirectory (`images/screenshots/translate.png`) you will need to restructure the whole tree before Pattern B can work.
+If you start with paths that omit the locale subdirectory (`images/screenshots/translate.png`), you will need to restructure the whole tree before Pattern B can work.
 
-<a id="doc-system-sites-markdownoutputstyle--doc-system"></a>
-### Doc-system sites (`markdownOutput.style = "doc-system"`)
+<a id="doc-system-sites-docsoutputstyle--doc-system"></a>
+### Doc-system sites (`docsOutput.style = "doc-system"`)
 
 Use for static documentation sites that store translated pages under a locale-prefixed tree — Docusaurus i18n, Astro Starlight, and custom generators that follow the same shape. Files under `docsRoot` are written to:
 
@@ -116,7 +116,7 @@ Use for static documentation sites that store translated pages under a locale-pr
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Set `documentations[].markdownOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When you set `style: "doc-system"` directly, you must also set `localeSubpath` to the path segment your site uses between `{locale}/` and the translated file. The aliases `"docusaurus"` and `"astro-starlight"` are preset `doc-system` layouts with default `localeSubpath` values (see [Output layouts](GETTING_STARTED.md#output-layouts)).
+Set `docs[].docsOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When you set `style: "doc-system"` directly, you must also set `localeSubpath` to the path segment your site uses between `{locale}/` and the translated file. The aliases `"docusaurus"` and `"astro-starlight"` are preset `doc-system` layouts with default `localeSubpath` values (see [Output layouts](GETTING_STARTED.md#output-layouts)).
 
 | Preset alias | Default `localeSubpath` | Example output |
 |--------------|-------------------------|----------------|
@@ -125,7 +125,7 @@ Set `documentations[].markdownOutput.docsRoot` to your English source root (e.g.
 
 The flat link rewriter does **not** run for `doc-system` (unlike `"flat"`). `postProcessing.regexAdjustments` sees the original URL from source markdown — typically an absolute or site-root path such as `/img/screenshots/en-GB/foo.png`.
 
-**Pattern B** applies when screenshots live in a shared static URL tree: use a locale-coded folder from day one and one generic `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule (see [Config — doc-system](#config--markdownoutputstyle--doc-system)).
+**Pattern B** applies when screenshots live in a shared static URL tree: use a locale-coded folder from day one and one generic `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule (see [Config — doc-system](#config---docsoutputstyle--doc-system)).
 
 **Pattern C** applies when each locale's translated docs colocate assets beside the markdown (no URL rewriting). Your screenshot script must write PNGs into paths derived from `{outputDir}`, `{locale}`, and `{localeSubpath}` — the Docusaurus preset below is the reference layout.
 
@@ -140,14 +140,14 @@ Two habits at project setup eliminate all regex bridging later:
 
 Reference every asset with the stable relative path `../assets/name.ext` in source markdown. Never use absolute `/img/` or `/assets/` URLs for documentation assets — those URLs differ between the English source (served from `static/`) and translated locales (colocated with the translated docs), which forces a `regexAdjustments` rule to bridge them.
 
-When you add i18n later, the screenshot script adopts the `getScreenshotDir` split (see [Pattern C](#pattern-c--docusaurus-colocated)) and `translate-svg` uses a `pathTemplate`. No regex adjustments are needed.
+When you add i18n later, the screenshot script adopts the `getScreenshotDir` split (see [Pattern C](#pattern-c---colocated-raster-doc-system)) and `translate-svg` uses a `pathTemplate`. No regex adjustments are needed.
 
 > **Note:** `resolve.symlinks = false` in a `next.config.ts` disables symlink resolution for the Next.js application webpack build only. It does not affect the Docusaurus documentation site build, which uses a separate webpack instance.
 
 <a id="astrostarlight-preset"></a>
 #### Astro/Starlight preset
 
-Equivalent to `markdownOutput.style = "doc-system"` with `localeSubpath: ""` — translated pages sit directly under `{outputDir}/{locale}/`.
+Equivalent to `docsOutput.style = "doc-system"` with `localeSubpath: ""` — translated pages sit directly under `{outputDir}/{locale}/`.
 
 Store screenshots under a locale-coded path from day one:
 
@@ -191,7 +191,7 @@ Is the asset an SVG with translatable text or labels?
 
 | Pattern | Asset type                  | Site type                                                                 | Tool mechanism                                               |
 |---------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| A       | Raster (shared)             | `markdownOutput.style = "flat"` docs                                      | Per-file link rewriter; usually no regex                     |
+| A       | Raster (shared)             | `docsOutput.style = "flat"` docs                                      | Per-file link rewriter; usually no regex                     |
 | B       | Raster (per-locale)         | `"flat"` or `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`)    | `regexAdjustments` locale segment swap                       |
 | C       | Raster (colocated)          | `"doc-system"` with colocated assets (Docusaurus preset)                  | Screenshot script places files; no regex                     |
 | D       | SVG (translated)            | Web app                                                                   | `translate-svg` with `svg.style = "flat"`                    |
@@ -199,10 +199,10 @@ Is the asset an SVG with translatable text or labels?
 
 ---
 
-<a id="pattern-a--shared-raster"></a>
+<a id="pattern-a---shared-raster"></a>
 ## Pattern A - Shared raster
 
-Use when a single image is shared across all locales (no per-locale variant). When `markdownOutput.style = "flat"`, the flat link rewriter computes the depth prefix per output file, so an asset next to the source file (e.g. `docs/figure.png` referenced as `figure.png` from `docs/page.md`) resolves correctly in every translated output — no `postProcessing.regexAdjustments` rule is needed.
+Use when a single image is shared across all locales (no per-locale variant). When `docsOutput.style = "flat"`, the flat link rewriter computes the depth prefix per output file, so an asset next to the source file (e.g. `docs/figure.png` referenced as `figure.png` from `docs/page.md`) resolves correctly in every translated output — no `postProcessing.regexAdjustments` rule is needed.
 
 Example: this package translates `docs/GETTING_STARTED.md` to `translated-docs/docs/GETTING_STARTED.<locale>.md`. The sibling image `docs/translation-dashboard.png` is referenced as `translation-dashboard.png`. The rewriter computes the per-file prefix from the output file's directory back to the source directory (`../../docs/`), producing `../../docs/translation-dashboard.png`. From `translated-docs/docs/`, that resolves correctly to `docs/translation-dashboard.png`.
 
@@ -215,14 +215,14 @@ A `postProcessing` rule is still needed when:
 <a id="implementation-example"></a>
 ### Implementation example
 
-This repository uses Pattern A for the Translation Dashboard screenshot: [GETTING_STARTED.md](../docs/GETTING_STARTED.md#translation-dashboard) references the image [translation-dashboard.png](../docs/translation-dashboard.png) in the same folder. [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) sets `markdownOutput.style = "flat"` and `flatPreserveRelativeDir: true`; the per-file depth prefix resolves the image path with no screenshot `regexAdjustments`.
+This repository uses Pattern A for the Translation Dashboard screenshot: [GETTING_STARTED.md](../docs/GETTING_STARTED.md#translation-dashboard) references the image [translation-dashboard.png](../docs/translation-dashboard.png) in the same folder. [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) sets `docsOutput.style = "flat"` and `flatPreserveRelativeDir: true`; the per-file depth prefix resolves the image path with no screenshot `regexAdjustments`.
 
 ---
 
-<a id="pattern-b--per-locale-folder-url-rewriting"></a>
+<a id="pattern-b---per-locale-folder-url-rewriting"></a>
 ## Pattern B - Per-locale folder (URL rewriting)
 
-Use for README/USER-GUIDE with `markdownOutput.style = "flat"`, and for doc-system sites (`markdownOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) that serve screenshots from a shared static URL tree.
+Use for README/USER-GUIDE with `docsOutput.style = "flat"`, and for doc-system sites (`docsOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) that serve screenshots from a shared static URL tree.
 
 <a id="directory-layout"></a>
 ### Directory layout
@@ -262,15 +262,15 @@ function getScreenshotDir(locale) {
 }
 ```
 
-See a simple `bash` example in the [screenshot script in examples/nextjs-app](../examples/nextjs-app/scripts/screenshot-locales.sh), or a more complex example in [take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js) from the [Transrewrt project](https://github.com/wsj-br/transrewrt) repository.
+See a simple `bash` example in the [screenshot script in examples/nextjs-app](../examples/nextjs-app/scripts/screenshot-locales.sh), or a more complex example in [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) from the [Transrewrt project](https://github.com/wsj-br/transrewrt) repository.
 
 
-> **Note:** The four sub-sections below share the same `regexAdjustments` locale-segment swap (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`). Only the output layout and whether the flat link rewriter runs first differ — jump to the sub-section that matches your `markdownOutput.style`.
+> **Note:** The four sub-sections below share the same `regexAdjustments` locale-segment swap (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`). Only the output layout and whether the flat link rewriter runs first differ — jump to the sub-section that matches your `docsOutput.style`.
 
-<a id="config--markdownoutputstyle--flat"></a>
-### Config - `markdownOutput.style = "flat"`
+<a id="config---docsoutputstyle--flat"></a>
+### Config - `docsOutput.style = "flat"`
 
-The flat link rewriter runs first when `markdownOutput.style = "flat"` and prepends a depth prefix to non-markdown URLs. For a `README.md` at the repo root with `outputDir: "translated-docs/"`, it adds `../`:
+The flat link rewriter runs first when `docsOutput.style = "flat"` and prepends a depth prefix to non-markdown URLs. For a `README.md` at the repo root with `outputDir: "translated-docs/"`, it adds `../`:
 
 ```
 images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/translate.png
@@ -282,7 +282,7 @@ The `regexAdjustments` rule then replaces the locale segment within that already
 <summary>Example regexAdjustments for flat layout</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "flat",
   "postProcessing": {
     "regexAdjustments": [
@@ -302,12 +302,12 @@ Result: `../images/screenshots/de/translate.png` — correct relative path from 
 
 The `postProcessing` step runs after the flat link rewriter. Write `search` patterns that match the locale segment anywhere within the already-prefixed URL — no need to include the `../` prefix in the pattern.
 
-Implementation example (production): [Transrewrt](https://github.com/wsj-br/transrewrt) — screenshot URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), locale rewrite in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), capture script [take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js) (see the [screenshot script contract](#screenshot-script-contract) above).
+Implementation example (production): [Transrewrt](https://github.com/wsj-br/transrewrt) — screenshot URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), locale rewrite in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), capture script [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) (see the [screenshot script contract](#screenshot-script-contract) above).
 
-Implementation example (demo config): [examples/nextjs-app](../examples/nextjs-app/) — second `documentations[]` block in [ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json) (`images/screenshots/[^/]+/` → `${translatedLocale}`); helper script [screenshot-locales.sh](../examples/nextjs-app/scripts/screenshot-locales.sh).
+Implementation example (demo config): [examples/nextjs-app](../examples/nextjs-app/) — second `docs[]` block in [ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json) (`images/screenshots/[^/]+/` → `${translatedLocale}`); helper script [screenshot-locales.sh](../examples/nextjs-app/scripts/screenshot-locales.sh).
 
-<a id="config--markdownoutputstyle--doc-system"></a>
-### Config - `markdownOutput.style = "doc-system"`
+<a id="config---docsoutputstyle--doc-system"></a>
+### Config - `docsOutput.style = "doc-system"`
 
 Generic Pattern B for any doc-system site that references screenshots via a shared static URL prefix. The flat link rewriter does not run; `postProcessing` rewrites the locale segment in the original markdown URL.
 
@@ -315,7 +315,7 @@ Generic Pattern B for any doc-system site that references screenshots via a shar
 <summary>Example regexAdjustments for doc-system layout</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "doc-system",
   "docsRoot": "docs",
   "localeSubpath": "your-generator/locale/content/path",
@@ -341,8 +341,8 @@ Set `localeSubpath` to match your generator's layout between `{locale}/` and the
 
 Ship matching PNG files at the same path for every target locale (e.g. `static/img/screenshots/de/screenshot.png`). Prefer `screenshots/[^/]+/` over hardcoding `screenshots/en-GB/` so the rule survives a `sourceLocale` change.
 
-<a id="preset--markdownoutputstyle--docusaurus"></a>
-### Preset - `markdownOutput.style = "docusaurus"`
+<a id="preset---docsoutputstyle--docusaurus"></a>
+### Preset - `docsOutput.style = "docusaurus"`
 
 Same as `"doc-system"` with default `localeSubpath = "docusaurus-plugin-content-docs/current"`. The flat link rewriter does not run. `postProcessing` sees the original markdown URL. English pages typically use an absolute path with the source locale:
 
@@ -354,7 +354,7 @@ Same as `"doc-system"` with default `localeSubpath = "docusaurus-plugin-content-
 <summary>Example regexAdjustments for Docusaurus preset</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "docusaurus",
   "postProcessing": {
     "regexAdjustments": [
@@ -372,10 +372,10 @@ Same as `"doc-system"` with default `localeSubpath = "docusaurus-plugin-content-
 
 Ship matching PNG files at `docs-site/static/img/screenshots/<locale>/screenshot.png`. For source-locale-agnostic configs, prefer `screenshots/[^/]+/` over `screenshots/en-GB/`.
 
-Implementation example: [examples/nextjs-app/docs-site/docs/feature-showcase.md](../examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) with the first `documentations[]` block in [ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json).
+Implementation example: [examples/nextjs-app/docs-site/docs/feature-showcase.md](../examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) with the first `docs[]` block in [ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json).
 
-<a id="preset--markdownoutputstyle--astro-starlight"></a>
-### Preset - `markdownOutput.style = "astro-starlight"`
+<a id="preset---docsoutputstyle--astro-starlight"></a>
+### Preset - `docsOutput.style = "astro-starlight"`
 
 Same as `"doc-system"` with `localeSubpath: ""` — translated pages sit directly under `{outputDir}/{locale}/`. Same Pattern B principle as the generic doc-system config above. Source markdown uses `/img/screenshots/en-GB/screenshot.png`:
 
@@ -383,7 +383,7 @@ Same as `"doc-system"` with `localeSubpath: ""` — translated pages sit directl
 <summary>Example regexAdjustments for Astro Starlight preset</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "astro-starlight",
   "postProcessing": {
     "regexAdjustments": [
@@ -405,10 +405,10 @@ Implementation example: [examples/astro-docs](../examples/astro-docs/) — [feat
 
 ---
 
-<a id="pattern-c--colocated-raster-doc-system"></a>
+<a id="pattern-c---colocated-raster-doc-system"></a>
 ## Pattern C - Colocated raster (`doc-system`)
 
-Use when a `doc-system` site colocates locale-specific assets beside translated markdown — no URL rewriting is needed. The Docusaurus preset (`markdownOutput.style = "docusaurus"`) is the reference implementation; other generators using `"doc-system"` with a custom `localeSubpath` follow the same idea: English assets live at a source-locale path, translated assets live under `{outputDir}/{locale}/[localeSubpath/]assets/`.
+Use when a `doc-system` site colocates locale-specific assets beside translated markdown — no URL rewriting is needed. The Docusaurus preset (`docsOutput.style = "docusaurus"`) is the reference implementation; other generators using `"doc-system"` with a custom `localeSubpath` follow the same idea: English assets live at a source-locale path, translated assets live under `{outputDir}/{locale}/[localeSubpath/]assets/`.
 
 <a id="directory-layout-1"></a>
 ### Directory layout
@@ -457,7 +457,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-See the production implementation in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts) from the [duplistatus](https://github.com/wsj-br/duplistatus) repository (local reference copy: [references/duplistatus/scripts/take-screenshots.ts](../references/duplistatus/scripts/take-screenshots.ts)).
+See the production implementation in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) from the [duplistatus](https://github.com/wsj-br/duplistatus) repository (local reference copy: [references/duplistatus/scripts/take-screenshots.ts](../references/duplistatus/scripts/take-screenshots.ts)).
 
 <a id="config"></a>
 ### Config
@@ -466,7 +466,7 @@ No `regexAdjustments` rule needed for raster files. `translate-docs` translates 
 
 ```json
 {
-  "markdownOutput": {
+  "docsOutput": {
     "style": "docusaurus",
     "docsRoot": "documentation/docs"
   }
@@ -485,11 +485,11 @@ If the project also uses translated SVGs, Pattern E handles them and they land a
 <a id="implementation-example-1"></a>
 ### Implementation example
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts); English docs reference colocated PNGs (e.g. [dashboard.md](../references/duplistatus/documentation/docs/user-guide/dashboard.md) with `../assets/screen-dashboard-summary.png`); no PNG `regexAdjustments` in [ai-i18n-tools.config.json](../references/duplistatus/ai-i18n-tools.config.json). Pattern E SVGs from the same project land in the same `current/assets/` directories (see below).
+[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); English docs reference colocated PNGs (e.g. [dashboard.md](../references/duplistatus/documentation/docs/user-guide/dashboard.md) with `../assets/screen-dashboard-summary.png`); no PNG `regexAdjustments` in [ai-i18n-tools.config.json](../references/duplistatus/ai-i18n-tools.config.json). Pattern E SVGs from the same project land in the same `current/assets/` directories (see below).
 
 ---
 
-<a id="pattern-d--translated-svg-with-svgstyle--flat"></a>
+<a id="pattern-d---translated-svg-with-svgstyle--flat"></a>
 ## Pattern D - Translated SVG with `svg.style = "flat"`
 
 Use when a web app embeds locale-specific SVG illustrations or diagrams and references them by locale code at runtime.
@@ -537,7 +537,7 @@ Keep source SVGs separate from the output directory. With `sourcePath: "images"`
 
 ---
 
-<a id="pattern-e--colocated-translated-svg-doc-system"></a>
+<a id="pattern-e---colocated-translated-svg-doc-system"></a>
 ## Pattern E - Colocated translated SVG (doc-system)
 
 Use for doc-system sites where translated SVG illustrations must appear alongside translated docs in each locale's content directory — the same location as Pattern C raster screenshots. The Docusaurus preset is the primary example.
@@ -611,10 +611,10 @@ Full reference in the [svg configuration table](GETTING_STARTED.md#svg).
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 ## The flat link rewriter and two-step flow
 
-For `markdownOutput.style = "flat"` (and unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set), a built-in rewriter runs before `postProcessing`. It handles cross-doc links (adding locale suffixes) and prepends a depth prefix to non-markdown asset URLs.
+For `docsOutput.style = "flat"` (and unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set), a built-in rewriter runs before `postProcessing`. It handles cross-doc links (adding locale suffixes) and prepends a depth prefix to non-markdown asset URLs.
 
-<a id="two-step-flow-when-markdownoutputstyle--flat"></a>
-### Two-step flow when `markdownOutput.style = "flat"`
+<a id="two-step-flow-when-docsoutputstyle--flat"></a>
+### Two-step flow when `docsOutput.style = "flat"`
 
 ```
 source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
@@ -625,7 +625,7 @@ Example with `outputDir: "translated-docs/"` and source `README.md` at repo root
 1. Flat link rewriter: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (one `../` for `translated-docs/`)
 2. `postProcessing` regex `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-For `markdownOutput.style = "doc-system"` (including `"docusaurus"`, `"astro-starlight"`, and `"nested"`), the flat link rewriter does not run. `postProcessing` sees the original URL from the translated markdown (typically an absolute path like `/img/screenshots/en-GB/foo.png`).
+For `docsOutput.style = "doc-system"` (including `"docusaurus"`, `"astro-starlight"`, and `"nested"`), the flat link rewriter does not run. `postProcessing` sees the original URL from the translated markdown (typically an absolute path like `/img/screenshots/en-GB/foo.png`).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Per-file depth prefix with `flatPreserveRelativeDir`
@@ -641,15 +641,14 @@ No `postProcessing` regex correction is needed for relative-path assets alongsid
 
 | Option                                   | Effect                                                                                                           |
 |------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| `markdownOutput.rewriteRelativeLinks`    | Explicitly enable or disable the flat link rewriter (overrides the default when `markdownOutput.style = "flat"`) |
-| `markdownOutput.linkRewriteDocsRoot`     | Root from which `depthPrefix` is computed (default `"."`)                                                        |
-| `markdownOutput.flatPreserveRelativeDir` | Affects output path layout, which the rewriter uses when computing target paths for known translated files       |
+| `docsOutput.rewriteRelativeLinks`    | Explicitly enable or disable the flat link rewriter (overrides the default when `docsOutput.style = "flat"`) |
+| `docsOutput.linkRewriteDocsRoot`     | Root from which `depthPrefix` is computed (default `"."`)                                                        |
+| `docsOutput.flatPreserveRelativeDir` | Affects output path layout, which the rewriter uses when computing target paths for known translated files       |
 
 ---
 
 <a id="troubleshooting"></a>
 <a id="common-mistakes-and-troubleshooting"></a>
-<a id="common-mistakes"></a>
 ## Common mistakes and troubleshooting
 
 **No locale directory in screenshot paths**

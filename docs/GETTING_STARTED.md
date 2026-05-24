@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-getting-started"></a>
 # ai-i18n-tools: Getting Started
 
-`ai-i18n-tools` provides three independent, composable workflows:
+The `ai-i18n-tools` package offers three distinct, modular workflows:
 
 - **Workflow 1 - UI Translation**: extract `t("…")` calls from any JS/TS source, translate them via OpenRouter, and write flat per-locale JSON files ready for i18next.
 - **Workflow 2 - Document Translation**: translate **markdown, MDX, and `.astro` pages** listed in `docs[].contentPaths` via `translate-docs`, with smart caching. Optional **Docusaurus catalog JSON** (`docs[].docusaurusCatalogDir`, from `docusaurus write-translations`) is translated in the same command when `features.translateDocs` is enabled — site chrome (navbar, footer, theme strings), not prose in `docs/`.
@@ -9,9 +9,13 @@
 
 **SVG** assets use `features.translateSVG`, the top-level `svg` block, and `translate-svg` (see [CLI reference](#cli-reference)).
 
-**Which workflow?** User-facing strings in source via `t()` → Workflow 1 (`extract` / `translate-ui`). Localized pages or Docusaurus shell JSON → Workflow 2 (`translate-docs`). Standalone nested JSON locale files only → Workflow 3 (`translate-json`).
+**Which workflow?**
 
-Both workflows use OpenRouter (any compatible LLM) and share a single config file.
+- User-facing strings in source via `t()` → Workflow 1 (`extract` / `translate-ui`).
+- Localised pages or Docusaurus shell JSON → Workflow 2 (`translate-docs`).
+- Standalone nested JSON locale files only → Workflow 3 (`translate-json`).
+
+All three workflows use OpenRouter (any compatible LLM) and share a single config file.
 
 
 <small>**Read in other languages:** </small>
@@ -24,17 +28,25 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
 **Table of Contents**
 
 - [Installation](#installation)
+  - [Using the CLI](#using-the-cli)
 - [Quick Start](#quick-start)
   - [Recommended `package.json` scripts](#recommended-packagejson-scripts)
 - [Workflow 1 - UI Translation](#workflow-1---ui-translation)
   - [Step 1: Initialise](#step-1-initialise)
   - [Step 2: Extract strings](#step-2-extract-strings)
+  - [Astro website (plain Astro, not Starlight)](#astro-website-plain-astro-not-starlight)
+  - [Astro website UI strings (SSG)](#astro-website-ui-strings-ssg)
+  - [Astro website pages (parse-and-replace)](#astro-website-pages-parse-and-replace)
   - [Step 3: Translate UI strings](#step-3-translate-ui-strings)
   - [Exporting to XLIFF 2.0 (optional)](#exporting-to-xliff-20-optional)
   - [Step 4: Wire i18next at runtime](#step-4-wire-i18next-at-runtime)
+    - [Keeping `SOURCE_LOCALE` aligned](#keeping-source_locale-aligned)
+    - [Locale loaders](#locale-loaders)
+    - [Runtime helpers reference](#runtime-helpers-reference)
   - [Using `t()` in source code](#using-t-in-source-code)
   - [Interpolation](#interpolation)
   - [Cardinal plurals (`plurals: true`)](#cardinal-plurals-plurals-true)
+    - [How plurals are stored and emitted](#how-plurals-are-stored-and-emitted)
   - [Language switcher UI](#language-switcher-ui)
   - [RTL languages](#rtl-languages)
 - [Workflow 2 - Document Translation](#workflow-2---document-translation)
@@ -45,13 +57,18 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
     - [Batch prompt format](#batch-prompt-format)
     - [Segment dedupe and paths in SQLite](#segment-dedupe-and-paths-in-sqlite)
   - [Output layouts](#output-layouts)
-    - [Anchor links when `markdownOutput.style = "flat"`](#anchor-links-when-markdownoutputstyle--flat)
+    - [Anchor links when `docsOutput.style = "flat"`](#anchor-links-when-docsoutputstyle--flat)
     - [Images and raster assets in translated docs](#images-and-raster-assets-in-translated-docs)
     - [Language switcher (`languageListBlock`)](#language-switcher-languagelistblock)
     - [`pathTemplate` / `jsonPathTemplate` placeholders](#pathtemplate--jsonpathtemplate-placeholders)
   - [Troubleshooting](#troubleshooting)
+- [Workflow 3 - JSON file translation](#workflow-3---json-file-translation)
+  - [Step 1: Initialise for nested JSON](#step-1-initialise-for-nested-json)
+  - [Step 2: Configure `json[]`](#step-2-configure-json)
+  - [Step 3: Translate JSON bundles](#step-3-translate-json-bundles)
+  - [Workflow 3 vs other pipelines](#workflow-3-vs-other-pipelines)
 - [Combined workflow (UI + Docs)](#combined-workflow-ui--docs)
-  - [Mixed documentation workflow (`markdownOutput.style = "docusaurus"` + `"flat"`)](#mixed-documentation-workflow-markdownoutputstyle--docusaurus--flat)
+  - [Mixed documentation workflow (`docsOutput.style = "docusaurus"` + `"flat"`)](#mixed-documentation-workflow-docsoutputstyle--docusaurus--flat)
 - [Translation Dashboard](#translation-dashboard)
   - [Failures (document translation)](#failures-document-translation)
     - [When to use it](#when-to-use-it)
@@ -71,10 +88,14 @@ Both workflows use OpenRouter (any compatible LLM) and share a single config fil
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
     - [Best practice for git exclusions:](#best-practice-for-git-exclusions)
-  - [`documentations`](#documentations)
+  - [`docs`](#docs)
+  - [`json`](#json)
   - [`svg`](#svg)
   - [`glossary`](#glossary)
 - [CLI reference](#cli-reference)
+  - [Root and global options](#root-and-global-options)
+  - [Per-command help](#per-command-help)
+  - [Target locales (`-l` / `--locale`)](#target-locales--l----locale)
 - [Environment variables](#environment-variables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -137,7 +158,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Quick Start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` and `ui-starlight` templates enable **document** translation (`translate-docs`). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `documentations[]` block (see [Astro website pages (parse-and-replace)](#astro-website-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](../examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` and `ui-starlight` templates enable **document** translation (`translate-docs`). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `docs[]` block (see [Astro website pages (parse-and-replace)](#astro-website-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](../examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -151,7 +172,11 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
-# Combined: extract UI strings, then translate UI + SVG + docs (per config features)
+# Workflow 3 - nested JSON bundles (no t() in source)
+npx ai-i18n-tools init -t ui-json-bundles
+npx ai-i18n-tools translate-json
+
+# Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
 npx ai-i18n-tools sync
 
 # Translation status (UI strings per locale; markdown per file × locale in chunked tables)
@@ -164,7 +189,7 @@ npx ai-i18n-tools status
 
 With the package installed locally, you can use the CLI commands directly in scripts (no `npx` needed).
 
-**Prefer** `sync` for anything that used to be “run `translate-ui`, then `translate-svg`, then `translate-docs`”: `ai-i18n-tools sync` runs **extract** (when enabled), **translate-ui**, optional **translate-svg**, then **translate-docs**—in the right order and with shared flags—according to your config. Chaining those three translate commands by hand is easy to get wrong (order, extract, locale flags). Use `i18n:translate:ui`, `i18n:translate:svg`, and `i18n:translate:docs` only when you need a **single** step in isolation.
+**Prefer** `sync` for anything that used to be “run `translate-ui`, then `translate-svg`, then `translate-docs`, then `translate-json`”: `ai-i18n-tools sync` runs **extract** (when enabled), **translate-ui**, optional **translate-svg**, **translate-docs**, then optional **translate-json**—in the right order and with shared flags—according to your config. Chaining those steps by hand is easy to get wrong (order, extract, locale flags). Use `i18n:translate:ui`, `i18n:translate:svg`, `i18n:translate:docs`, and `i18n:translate:json` only when you need a **single** step in isolation.
 
 ```json
 {
@@ -173,6 +198,7 @@ With the package installed locally, you can use the CLI commands directly in scr
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
   "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
+  "i18n:translate:json": "ai-i18n-tools translate-json",
   "i18n:status": "ai-i18n-tools status",
   "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
@@ -213,7 +239,7 @@ Scans all JS/TS files under `ui.sourceRoots` for `t("literal")` and `i18n.t("lit
 
 The scanner is configurable: add custom function names via `ui.uiExtractor.funcNames` (or legacy `ui.reactExtractor.funcNames`). For Astro pages and components, add `.astro` to `ui.uiExtractor.extensions`.
 
-<a id="astro-website"></a>
+<a id="astro-website-plain-astro-not-starlight"></a>
 ### Astro website (plain Astro, not Starlight)
 
 For static Astro marketing or app sites, combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. The reference implementation is [`examples/astro-website`](../examples/astro-website/) (see also its [README](../examples/astro-website/README.md)): English at `/`, nine target locales at `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
@@ -239,10 +265,10 @@ Example `package.json` scripts (from the reference project):
 }
 ```
 
-<a id="astro-website-ui-strings"></a>
+<a id="astro-website-ui-strings-ssg"></a>
 ### Astro website UI strings (SSG)
 
-Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `documentations[]` block when you also translate page HTML (see below). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
+Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `docs[]` block when you also translate page HTML (see below). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
 
 ```bash
 npx ai-i18n-tools init -t ui-astro-website
@@ -265,22 +291,22 @@ const t = useTranslations(locale, makeT(flat));
 
 Supporting helpers in the example: `src/i18n/utils.ts`, `src/i18n/locale.ts`, and `ui-languages.json` for labels, direction, and BCP-47 codes. Run `generate-ui-languages` after changing `targetLocales` (optionally set `ui.uiLanguagesPath` so the manifest lives next to your helpers, e.g. `src/i18n/ui-languages.json`). `MainLayout.astro` sets `<html lang>` and `<html dir>` from `resolveUiLanguage(Astro.currentLocale)`; `LanguagePicker.astro` uses `getRelativeLocaleUrl` from `astro:i18n`.
 
-<a id="astro-website-parse-and-replace"></a>
+<a id="astro-website-pages-parse-and-replace"></a>
 ### Astro website pages (parse-and-replace)
 
 For marketing pages with hardcoded HTML in `.astro` files, let `translate-docs` extract text nodes and attributes (`alt`, `title`, `aria-label`, `placeholder`), translate them with the document cache, and write locale-specific copies under your pages tree. You do **not** need `t()` for most visible copy.
 
-Structural attribute and key values are **not** translated by default: built-in protection covers JSX/HTML attributes such as `class`, `id`, `style`, `src`, `href`, `data-*`, and most `aria-*`, plus object keys like `class`, `key`, and `id` inside template `{expression}` blocks. Use `documentations[].protectAttributes` and `documentations[].protectKeys` to extend those lists when you use custom attributes (for example Tailwind `variant` or CMS `slug` fields). The same options apply to MDX JSX during markdown translation (see [protectAttributes / protectKeys](#protectattributes-protectkeys)).
+Structural attribute and key values are **not** translated by default: built-in protection covers JSX/HTML attributes such as `class`, `id`, `style`, `src`, `href`, `data-*`, and most `aria-*`, plus object keys like `class`, `key`, and `id` inside template `{expression}` blocks. Use `docs[].protectAttributes` and `docs[].protectKeys` to extend those lists when you use custom attributes (for example Tailwind `variant` or CMS `slug` fields). The same options apply to MDX JSX during markdown translation (see [protectAttributes / protectKeys](#protectattributes-protectkeys)).
 
-Enable `features.translateMarkdown` and add a `documentations[]` block, for example:
+Enable `features.translateDocs` and add a `docs[]` block, for example:
 
 ```json
 {
-  "features": { "translateMarkdown": true },
-  "documentations": [{
+  "features": { "translateDocs": true },
+  "docs": [{
     "contentPaths": ["src/pages/index.astro"],
     "outputDir": "src/pages",
-    "markdownOutput": {
+    "docsOutput": {
       "style": "astro-starlight",
       "docsRoot": "src/pages"
     },
@@ -370,6 +396,7 @@ export default i18n;
 
 </details>
 
+<a id="keeping-source_locale-aligned"></a>
 #### Keeping `SOURCE_LOCALE` aligned
 
 **Keep three values aligned:** `sourceLocale` in `ai-i18n-tools.config.json`, `SOURCE_LOCALE` in this file, and the plural flat JSON `translate-ui` writes as `{sourceLocale}.json` under your flat output dir (often `public/locales/`). Use that same basename in the static `import` (example above: `en-GB` → `en-GB.json`). The `lng` field in `sourcePluralFlatBundle` must equal `SOURCE_LOCALE`. Static ES `import` paths cannot use variables; if you change the source locale, update `SOURCE_LOCALE` and the import path together. Alternatively, load that file with a dynamic `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, or `readFileSync` so the path is built from `SOURCE_LOCALE`.
@@ -382,6 +409,7 @@ Import `i18n.js` before React renders (e.g. at the top of your entry point). Whe
 
 Named imports (`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runtime'`) work the same if you prefer not to use the default export.
 
+<a id="locale-loaders"></a>
 #### Locale loaders
 
 Keep `localeLoaders` **aligned with config** by deriving them from `ui-languages.json` using `makeLocaleLoadersFromManifest` (this filters out `SOURCE_LOCALE` using the same normalisation as `makeLoadLocale`). When you add a locale to `targetLocales` and run `generate-ui-languages`, the manifest is updated and your loaders automatically track the change — there is no need to maintain a separate hardcoded map.
@@ -394,6 +422,7 @@ For JSON bundles under `public/` (the typical Next.js setup), fetch from your pu
 
 For Node CLIs without a bundler, use `readFileSync` inside a small helper that reads and parses the JSON file for each code.
 
+<a id="runtime-helpers-reference"></a>
 #### Runtime helpers reference
 
 `aiI18n.defaultI18nInitOptions(sourceLocale)` returns the standard options for key-as-default setups:
@@ -465,6 +494,7 @@ Use the **same literal** you want as the developer-default copy, and pass `plura
 
 **Not in v1:** ordinal plurals (`_ordinal_*`, `ordinal: true`), interval plurals, ICU-only pipelines.
 
+<a id="how-plurals-are-stored-and-emitted"></a>
 #### How plurals are stored and emitted
 
 **In** `strings.json` plural groups use **one row per hash** with `"plural": true`, the original literal in `source`, and `translated[locale]` as an object mapping cardinal categories (`zero`, `one`, `two`, `few`, `many`, `other`) to strings for that locale.
@@ -585,7 +615,7 @@ const label = flipUiArrowsForRtl(t('Next → Step'), isRtl);
 <a id="workflow-2---document-translation"></a>
 ## Workflow 2 - Document Translation
 
-Designed primarily for **markdown, MDX, and `.astro` documentation** under `docs[].contentPaths`. On Docusaurus sites, set `docs[].docusaurusCatalogDir` to the `write-translations` catalog folder (e.g. `docs-site/i18n/en`) so `translate-docs` also translates shell JSON (navbar, footer, theme strings). For PNG and other raster images embedded in markdown, see [Images and raster assets in translated docs](#images-and-raster-assets-in-translated-docs). For an optional **language switcher** block in README or docs with `docsOutput.style = "flat"`, see [Language switcher (`languageListBlock`)](#language-list-block). SVG files are translated via [`translate-svg`](#cli-reference) when `features.translateSVG` is enabled — not via `docs[].contentPaths`. Arbitrary nested UI JSON files use Workflow 3 (`json[]` / `translate-json`), not `docs[]`.
+Designed primarily for **markdown, MDX, and `.astro` documentation** under `docs[].contentPaths`. On Docusaurus sites, set `docs[].docusaurusCatalogDir` to the `write-translations` catalog folder (e.g. `docs-site/i18n/en`) so `translate-docs` also translates shell JSON (navbar, footer, theme strings). For PNG and other raster images embedded in markdown, see [Images and raster assets in translated docs](#images-and-raster-assets-in-translated-docs). For an optional **language switcher** block in README or docs with `docsOutput.style = "flat"`, see [Language switcher (`languageListBlock`)](#language-switcher-languagelistblock). SVG files are translated via [`translate-svg`](#cli-reference) when `features.translateSVG` is enabled — not via `docs[].contentPaths`. Arbitrary nested UI JSON bundles (not Docusaurus catalogs) belong in [Workflow 3](#workflow-3---json-file-translation) (`json[]` / `translate-json`), not `docs[]`.
 
 <a id="step-1-initialise-for-documentation"></a>
 ### Step 1: Initialise for documentation
@@ -619,7 +649,7 @@ Edit the generated `ai-i18n-tools.config.json`:
 - `docs[].outputDir` - translated output root for that block.
 - `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` (see [Output layouts](#output-layouts)).
 
-**Primary vs supplementary:** Focus on `contentPaths` for localized pages. Set `docusaurusCatalogDir` when you also need Docusaurus shell JSON from `write-translations`. Omit `docusaurusCatalogDir` if you only translate pages.
+**Primary vs supplementary:** Focus on `contentPaths` for localised pages. Set `docusaurusCatalogDir` when you also need Docusaurus shell JSON from `write-translations`. Omit `docusaurusCatalogDir` if you only translate pages.
 
 <a id="step-2-translate-documents"></a>
 ### Step 2: Translate documents
@@ -647,7 +677,7 @@ npx ai-i18n-tools status
 
 `translate-docs` checks that each translated segment preserves markdown structure (including emphasis parsed from the document). Paragraphs that stack many `bold` spans around `` `inline code` ``, nest backticks inside bold (for example template literals such as `` `fetch(\`/locales/${code}.json\`)` ``), or weave bold and code through one long sentence are fragile: some locales need different word order, which can change how `**` and `` ` `` line up after translation and trigger CLI errors such as `AST mismatch`.
 
-**If you hit that kind of validation failure, prefer simplifying the source language text**—split the paragraph, move an example into a fenced code block, or describe the same idea with fewer layered bold/code pairs—rather than expecting every model and locale to reproduce dense inline markup perfectly. Elsewhere on this page (notably Step 4’s notes on `SOURCE_LOCALE`, loaders, and `public/` paths), the formatting is intentionally realistic; when you reuse similar wording in your own docs, keep it simpler when you translate broadly.
+**If you hit that kind of validation failure, prefer simplifying the source-language text** — split the paragraph, move an example into a fenced code block, or describe the same idea with fewer layered bold/code pairs — rather than expecting every model and locale to reproduce dense inline markup perfectly. Elsewhere on this page (notably Step 4’s notes on `SOURCE_LOCALE`, loaders, and `public/` paths), the formatting is intentionally realistic; when you reuse similar wording in your own docs, keep it simpler when you translate broadly.
 
 To see **which segments failed**, how often, and the stored **quality / error messages**, use the Translation Dashboard’s **Failures** tab ([Translation Dashboard → Failures](#failures-document-translation)).
 
@@ -660,7 +690,7 @@ The CLI keeps **file tracking** in SQLite (source hash per file × locale) and *
 | Flag                          | Effect                                                                                                                                                                                                                                                              |
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | *(default)*                   | Skip unchanged files when tracking + on-disk output match; use segment cache for the rest.                                                                                                                                                                          |
-| `-l, --locale <codes>`        | Comma-separated target locales (when omitted, defaults match the union of root `targetLocales` and each `documentations[]` block’s optional `targetLocales`).                                                                                                       |
+| `-l, --locale <codes>`        | Comma-separated target locales (when omitted, defaults match the union of root `targetLocales` and each `docs[]` block’s optional `targetLocales`).                                                                                                       |
 | `-p, --path` / `-f, --file`   | Only translate markdown/JSON under this path (project-relative, absolute, or glob pattern); `--file` is an alias for `--path`.                                                                                                                                      |
 | `--dry-run`                   | No file writes and no API calls.                                                                                                                                                                                                                                    |
 | `--type <kind>`               | Restrict to `markdown` or `json` (otherwise both when enabled in config).                                                                                                                                                                                           |
@@ -689,7 +719,7 @@ You cannot combine `--force` with `--force-update` (they are mutually exclusive)
 | `json-array` (default) | A JSON array of strings, one entry per segment in order.               | A JSON array of the **same length** (same order).           |
 | `json-object`          | A JSON object `{"0":"…","1":"…",…}` keyed by segment index.            | A JSON object with the **same keys** and translated values. |
 
-The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`jsonSource`) and SVG file batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to `json-array`).
+The run header also prints `Batch prompt format: …` so you can confirm the active mode. JSON label files (`docusaurusCatalogDir`) and SVG file batches use the same setting when those steps run as part of `translate-docs` (or `sync`’s docs phase — `sync` does not expose this flag; it defaults to `json-array`).
 
 <a id="segment-dedupe-and-paths-in-sqlite"></a>
 #### Segment dedupe and paths in SQLite
@@ -697,23 +727,23 @@ The run header also prints `Batch prompt format: …` so you can confirm the act
 > **Note:** This section covers internal cache key details useful for debugging `cleanup` behaviour or custom tooling. Most users can skip it.
 
 - Segment rows are keyed globally by `(source_hash, locale)` (hash = normalised content). Identical text in two files shares one row; `translations.filepath` is metadata (last writer), not a second cache entry per file.
-- `file_tracking.filepath` uses namespaced keys: `doc-block:{index}:{relPath}` per `documentations` block (`relPath` is project-root-relative posix: markdown paths as collected; **JSON label files use the cwd-relative path to the source file**, e.g. `docs-site/i18n/en/code.json`, so cleanup can resolve the real file), and `svg-files:{relPath}` for SVG files under `translate-svg`.
+- `file_tracking.filepath` uses namespaced keys: `doc-block:{index}:{relPath}` per `docs` block (`relPath` is project-root-relative posix: markdown paths as collected; **JSON label files use the cwd-relative path to the source file**, e.g. `docs-site/i18n/en/code.json`, so cleanup can resolve the real file), `json-block:{index}:{relPath}` for `json[]` sources under `translate-json`, and `svg-files:{relPath}` for SVG files under `translate-svg`.
 - `translations.filepath` stores cwd-relative posix paths for markdown, JSON, and SVG segments (SVG uses the same path shape as other assets; the `svg-files:…` prefix is **only** on `file_tracking`).
 - After a run, `last_hit_at` is cleared only for segment rows **in the same translate scope** (respecting `--path` and enabled kinds) that were not hit, so a filtered or docs-only run does not mark unrelated files stale.
 
 <a id="output-layouts"></a>
 ### Output layouts
 
-`markdownOutput.style` controls where translated markdown files are written. Use the exact string values below in `documentations[].markdownOutput.style` (aliases are preset layouts, not separate engines).
+`docsOutput.style` controls where translated markdown files are written. Use the exact string values below in `docs[].docsOutput.style` (aliases are preset layouts, not separate engines).
 
-`markdownOutput.style = "nested"` (default when omitted) — mirrors the source tree under `{outputDir}/{locale}/` (e.g. `docs/guide.md` → `i18n/de/docs/guide.md`).
+`docsOutput.style = "nested"` (default when omitted) — mirrors the source tree under `{outputDir}/{locale}/` (e.g. `docs/guide.md` → `i18n/de/docs/guide.md`).
 
-`markdownOutput.style = "doc-system"` — locale-prefixed documentation tree for static docs sites. Files under `docsRoot` are written to `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`. Paths outside `docsRoot` fall back to the nested layout. Set `documentations[].markdownOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When `markdownOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets).
+`docsOutput.style = "doc-system"` — locale-prefixed documentation tree for static docs sites. Files under `docsRoot` are written to `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`. Paths outside `docsRoot` fall back to the nested layout. Set `docs[].docsOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When `docsOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets).
 
 **Aliases** (same layout engine, preset `localeSubpath`):
 
-- `markdownOutput.style = "docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
-- `markdownOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""` (translated pages directly under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""` (translated pages directly under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`).
 
 Docusaurus preset (primary documentation pages):
 
@@ -727,24 +757,24 @@ Starlight preset (same block shape, different paths):
 src/content/docs/guide.md  →  src/content/docs/de/guide.md
 ```
 
-Optional JSON labels — Docusaurus shell strings from `jsonSource` (not MDX body copy):
+Optional JSON labels — Docusaurus shell strings from `docusaurusCatalogDir` (not MDX body copy):
 
 ```text
 i18n/en/sidebar.json  →  i18n/de/sidebar.json
 ```
 
-Starlight ships UI strings for many locales; optional custom UI overrides use `src/content/i18n/en.json` with `jsonPathTemplate: "{outputDir}/{locale}.json"` in a separate `documentations[]` block when needed.
+Starlight ships UI strings for many locales; optional custom UI overrides use `src/content/i18n/en.json` with `jsonPathTemplate: "{outputDir}/{locale}.json"` in a separate `docs[]` block when needed.
 
-`markdownOutput.style = "flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically when `markdownOutput.style = "flat"` (unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set).
+`docsOutput.style = "flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically when `docsOutput.style = "flat"` (unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set).
 
 ```text
 docs/guide.md → i18n/guide.de.md
 ```
 
-<a id="anchor-links-when-markdownoutputstyle--flat"></a>
-#### Anchor links when `markdownOutput.style = "flat"`
+<a id="anchor-links-when-docsoutputstyle--flat"></a>
+#### Anchor links when `docsOutput.style = "flat"`
 
-When `markdownOutput.style = "flat"`, output rewrites **relative paths** between pages for each locale (`guide.md` → `guide.de.md`). **Anchor links** — the usual markdown inline form with a `#` after the path — jump to a section inside the target file:
+When `docsOutput.style = "flat"`, output rewrites **relative paths** between pages for each locale (`guide.md` → `guide.de.md`). **Anchor links** — the usual markdown inline form with a `#` after the path — jump to a section inside the target file:
 
 ```markdown
 Read the [installation checklist](setup.md#first-run) before you deploy.
@@ -760,7 +790,7 @@ Here the link target is `setup.md`, and `#first-run` is the anchor: it should sc
 
 **What to do**
 
-1. Run `ai-i18n-tools write-heading-ids` on your source `.md` / `.mdx` before `translate-docs` (same `documentations[]` / `contentPaths` as usual). It inserts explicit HTML anchors on the line before each heading so `id` values are shared by every translated copy. Re-run it after renaming headings so stale anchor ids are refreshed to match the current title.
+1. Run `ai-i18n-tools write-heading-ids` on your source `.md` / `.mdx` before `translate-docs` (same `docs[]` / `contentPaths` as usual). It inserts explicit HTML anchors on the line before each heading so `id` values are shared by every translated copy. Re-run it after renaming headings so stale anchor ids are refreshed to match the current title.
 2. Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md#section-id)`, where `section-id` matches the anchor the tool wrote — not a guess from English words alone.
 
 **Example**
@@ -801,23 +831,23 @@ See the [Locale assets guide](LOCALE-ASSETS-GUIDE.md) for the full decision guid
 
 | Pattern                      | Use for                                               | Mechanism                                         |
 |------------------------------|-------------------------------------------------------|---------------------------------------------------|
-| A — Shared raster            | Single image, no per-locale variants                  | `regexAdjustments` full-path fix                  |
+| A — Shared raster            | Single image, no per-locale variants                  | Per-file link rewriter; usually no regex          |
 | B — Per-locale folder        | `"flat"`, `"docusaurus"`, `"astro-starlight"` README/docs | `regexAdjustments` locale-segment swap            |
-| C — Docusaurus colocated     | `markdownOutput.style = "docusaurus"` sites | Screenshot script places files; no regex          |
+| C — Docusaurus colocated     | `docsOutput.style = "docusaurus"` sites | Screenshot script places files; no regex          |
 | D — Translated SVG           | Web apps embedding SVG illustrations                  | `translate-svg` with `svg.style = "flat"`         |
-| E — Colocated translated SVG | `markdownOutput.style = "docusaurus"` docs          | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
+| E — Colocated translated SVG | `docsOutput.style = "docusaurus"` docs          | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
 
 **The flat link rewriter and two-step flow**
 
-When `markdownOutput.style = "flat"`, a built-in rewriter runs before `postProcessing`. It computes the depth prefix per output file — the relative path from the output file's directory back to the source file's directory — and prepends it to non-markdown asset URLs. `postProcessing` then runs on the already-prefixed URL — write `search` patterns that match the locale segment within it, not the leading `../` prefix.
+When `docsOutput.style = "flat"`, a built-in rewriter runs before `postProcessing`. It computes the depth prefix per output file — the relative path from the output file's directory back to the source file's directory — and prepends it to non-markdown asset URLs. `postProcessing` then runs on the already-prefixed URL — write `search` patterns that match the locale segment within it, not the leading `../` prefix.
 
 With `flatPreserveRelativeDir: true`, source files in subdirectories get a file-specific prefix automatically. For example, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` produces a prefix of `../../docs/`, so `translation-dashboard.png` (a sibling of the source) becomes `../../docs/translation-dashboard.png` — resolved correctly without any `postProcessing` rule.
 
-When `markdownOutput.style` is `"docusaurus"`, `"astro-starlight"`, `"nested"`, or any value other than `"flat"`, the flat link rewriter does not run. `postProcessing` sees the original markdown URL.
+When `docsOutput.style` is `"docusaurus"`, `"astro-starlight"`, `"nested"`, or any value other than `"flat"`, the flat link rewriter does not run. `postProcessing` sees the original markdown URL.
 
-**Pattern A example** — no config required for relative-path assets alongside source files when `markdownOutput.style = "flat"`. Pattern A `postProcessing` rules are only needed for absolute-URL assets (e.g. `/img/...`) or CDN-targeted replacements.
+**Pattern A example** — no config required for relative-path assets alongside source files when `docsOutput.style = "flat"`. Pattern A `postProcessing` rules are only needed for absolute-URL assets (e.g. `/img/...`) or CDN-targeted replacements.
 
-**Pattern B example — `markdownOutput.style = "flat"` README** (`examples/nextjs-app`, second `documentations[]` block)
+**Pattern B example — `docsOutput.style = "flat"` README** (`examples/nextjs-app`, second `docs[]` block)
 
 ```json
 {
@@ -829,7 +859,7 @@ When `markdownOutput.style` is `"docusaurus"`, `"astro-starlight"`, `"nested"`, 
 
 Use the generic `[^/]+` form, not a hardcoded source locale, so the rule keeps working if `sourceLocale` ever changes.
 
-**Pattern B example — `markdownOutput.style = "docusaurus"`** (`examples/nextjs-app`, first `documentations[]` block)
+**Pattern B example — `docsOutput.style = "docusaurus"`** (`examples/nextjs-app`, first `docs[]` block)
 
 ```json
 {
@@ -857,14 +887,14 @@ Place en-GB screenshots in `static/assets/` and create a symlink `docs/assets �
 
 **Minimal README-only example** (`examples/console-app`)
 
-`examples/console-app/ai-i18n-tools.config.json` translates `README.md` to `translated-docs/` with [language switcher post-processing](#language-list-block) only. No image rules are defined — appropriate when the README has no sibling raster files or only uses absolute URLs your host already serves.
+`examples/console-app/ai-i18n-tools.config.json` translates `README.md` to `translated-docs/` with [language switcher post-processing](#language-switcher-languagelistblock) only. No image rules are defined — appropriate when the README has no sibling raster files or only uses absolute URLs your host already serves.
 
-Replacement templates support placeholders such as `${translatedLocale}` and `${translatedBasedir}` (full list in the `markdownOutput.postProcessing.regexAdjustments` row in [Configuration reference](#configuration-reference)).
+Replacement templates support placeholders such as `${translatedLocale}` and `${translatedBasedir}` (full list in the `docsOutput.postProcessing.regexAdjustments` row in [Configuration reference](#configuration-reference)).
 
 <a id="language-switcher-languagelistblock"></a>
 #### Language switcher (`languageListBlock`)
 
-Use `markdownOutput.postProcessing.languageListBlock` when translated markdown files should include a **“Read in other languages”** row of links — one link per locale, with `href` values computed relative to each output file.
+Use `docsOutput.postProcessing.languageListBlock` when translated markdown files should include a **“Read in other languages”** row of links — one link per locale, with `href` values computed relative to each output file.
 
 This repository uses it for [README.md](../README.md) and [docs/GETTING_STARTED.md](./GETTING_STARTED.md). After `translate-docs`, each translated copy gets a refreshed block; for example [translated-docs/docs/GETTING_STARTED.de.md](../translated-docs/docs/GETTING_STARTED.de.md) links to sibling locale files under `translated-docs/docs/` and back to the English source at `../../docs/GETTING_STARTED.md`.
 
@@ -918,29 +948,32 @@ For endonym labels (`label: "local"`), generate or maintain `ui-languages.json` 
 
 | Example                            | Files                                                                                                                                                                                        |
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| This package (flat docs + subdirs) | [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) (`markdownOutput.style = "flat"`), [README.md](../README.md), [docs/GETTING_STARTED.md](./GETTING_STARTED.md), outputs under [translated-docs/](../translated-docs/) |
-| Minimal README-only                | [examples/console-app/ai-i18n-tools.config.json](../examples/console-app/ai-i18n-tools.config.json) (`markdownOutput.style = "flat"`), [examples/console-app/README.md](../examples/console-app/README.md)                     |
-| Flat README + Docusaurus docs      | [examples/nextjs-app/ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json) (second block: `markdownOutput.style = "flat"`; first block: `markdownOutput.style = "docusaurus"`)                                                     |
+| This package (flat docs + subdirs) | [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) (`docsOutput.style = "flat"`), [README.md](../README.md), [docs/GETTING_STARTED.md](./GETTING_STARTED.md), outputs under [translated-docs/](../translated-docs/) |
+| Minimal README-only                | [examples/console-app/ai-i18n-tools.config.json](../examples/console-app/ai-i18n-tools.config.json) (`docsOutput.style = "flat"`), [examples/console-app/README.md](../examples/console-app/README.md)                     |
+| Flat README + Docusaurus docs      | [examples/nextjs-app/ai-i18n-tools.config.json](../examples/nextjs-app/ai-i18n-tools.config.json) (second block: `docsOutput.style = "flat"`; first block: `docsOutput.style = "docusaurus"`)                                                     |
 
-The line immediately before `<small id="lang-list">` (for example `**Read in other languages:**`) is a normal translatable segment and is localized in each target locale; only the link row inside the markers is regenerated verbatim apart from `href` and manifest-driven labels.
+The line immediately before `<small id="lang-list">` (for example `**Read in other languages:**`) is a normal translatable segment and is localised in each target locale; only the link row inside the markers is regenerated verbatim apart from `href` and manifest-driven labels.
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>
 #### `pathTemplate` / `jsonPathTemplate` placeholders
 
-Override where translated files are written by setting `documentations[].markdownOutput.pathTemplate` (markdown and MDX) or `jsonPathTemplate` (JSON label files). Both accept the same placeholders. Resolved paths must stay inside that block’s `outputDir` (the CLI rejects paths that escape it).
+Override where translated files are written by setting `docs[].docsOutput.pathTemplate` (markdown and MDX) or `jsonPathTemplate` (JSON label files). Both accept the same placeholders. Resolved paths must stay inside that block’s `outputDir` (the CLI rejects paths that escape it).
 
-If you use a custom `pathTemplate`, `rewriteRelativeLinks` defaults to `false` unless you set it explicitly — relative link rewriting is built for `markdownOutput.style = "flat"` without a custom template.
+If you use a custom `pathTemplate`, `rewriteRelativeLinks` defaults to `false` unless you set it explicitly — relative link rewriting is built for `docsOutput.style = "flat"` without a custom template.
+
+For built-in layouts (`nested`, `flat`, `doc-system` without a custom template), set `docsOutput.localePathLowercase` to `true` to write lowercased locale folder or filename segments (e.g. `pt-br` instead of `pt-BR`). The `astro-starlight` alias defaults this to `true`. Custom `pathTemplate` / `jsonPathTemplate` values are unchanged — use `{llocale}` there when you need lowercase segments while keeping `{locale}` as BCP-47.
 
 | Placeholder            | Role                                                                                                       | Example                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | Absolute resolved path of this documentation block’s `outputDir`                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}`             | Target locale code (same form as in config / CLI)                                                          | `de`, `pt-BR`                                                    |
 | `{LOCALE}`             | Same locale uppercased                                                                                     | `DE`, `PT-BR`                                                    |
+| `{llocale}`            | Same locale lowercased (matches Astro route folders such as `pt-br`, `zh-cn`)                               | `de`, `pt-br`                                                    |
 | `{relPath}`            | Source file path relative to the project root, POSIX `/`                                                   | `docs/guide.md`, `README.md`                                     |
 | `{stem}`               | File name **without** extension                                                                            | `guide` for `docs/guide.md`                                      |
 | `{basename}`           | File name **with** extension                                                                               | `guide.md`                                                       |
 | `{extension}`          | Extension **including** the dot                                                                            | `.md`, `.mdx`                                                    |
-| `{docsRoot}`           | Absolute resolved path of `markdownOutput.docsRoot` (default `docs` if omitted)                            | `/home/acme/repo/docs`                                           |
+| `{docsRoot}`           | Absolute resolved path of `docsOutput.docsRoot` (default `docs` if omitted)                            | `/home/acme/repo/docs`                                           |
 | `{relativeToDocsRoot}` | `{relPath}` with a matching `docsRoot` prefix removed when path strings align (POSIX); otherwise unchanged | `docs/guide.md` (common); `guide.md` only when stripping applies |
 
 **Example**
@@ -950,7 +983,7 @@ Config snippet:
 ```json
 {
   "outputDir": "i18n",
-  "markdownOutput": {
+  "docsOutput": {
     "pathTemplate": "{outputDir}/{locale}/{relPath}"
   }
 }
@@ -962,7 +995,7 @@ For locale `de` and source `docs/guide.md`, with project root `/home/acme/repo` 
 /home/acme/repo/i18n/de/docs/guide.md
 ```
 
-With `markdownOutput.style = "flat"` and no custom `pathTemplate`, a common pattern keeps only the file name via `{stem}` and `{extension}`, for example `{outputDir}/{stem}.{locale}{extension}`, which yields `…/guide.de.md` under the resolved `outputDir`.
+With `docsOutput.style = "flat"` and no custom `pathTemplate`, a common pattern keeps only the file name via `{stem}` and `{extension}`, for example `{outputDir}/{stem}.{locale}{extension}`, which yields `…/guide.de.md` under the resolved `outputDir`.
 
 <a id="troubleshooting"></a>
 ### Troubleshooting
@@ -979,11 +1012,116 @@ Common causes:
 
 **Fix**
 
-1. Run `ai-i18n-tools write-heading-ids` on your **source** `.md` / `.mdx` (same `documentations[]` / `contentPaths` as `translate-docs`). It inserts `<a id="slug"></a>` before each ATX heading, or refreshes an existing anchor when the heading text no longer matches the current slug.
+1. Run `ai-i18n-tools write-heading-ids` on your **source** `.md` / `.mdx` (same `docs[]` / `contentPaths` as `translate-docs`). It inserts `<a id="slug"></a>` before each ATX heading, or refreshes an existing anchor when the heading text no longer matches the current slug.
 2. Point anchor links at those ids — e.g. `[setup](guide.md#first-run)` where `#first-run` matches the anchor line above the target heading, not a slug inferred from the English title alone.
 3. Re-run `translate-docs` (or `sync --force-update`) so every locale copy includes the updated anchor lines.
 
-Use `--dry-run` on `write-heading-ids` first to preview changes. See [Anchor links in flat layout](#anchor-links-when-markdownoutputstyle--flat) for the full pattern.
+Use `--dry-run` on `write-heading-ids` first to preview changes. See [Anchor links in flat layout](#anchor-links-when-docsoutputstyle--flat) for the full pattern.
+
+---
+
+<a id="workflow-3---json-file-translation"></a>
+## Workflow 3 - JSON file translation
+
+Designed for projects that keep UI copy in **nested JSON files per locale** (for example `src/i18n/en/translation.json`) instead of `t("…")` in source. The CLI walks string values in those files, translates them via OpenRouter, and writes per-locale outputs using `json[].outputPathTemplate`. It uses the same SQLite cache as `translate-docs` and `translate-svg` (`cacheDir`).
+
+This workflow does **not** run `extract` — there is no `strings.json` catalog. Enable it with `features.translateJson` and one or more entries in top-level `json[]`.
+
+<a id="step-1-initialise-for-nested-json"></a>
+### Step 1: Initialise for nested JSON
+
+```bash
+npx ai-i18n-tools init -t ui-json-bundles
+```
+
+That template sets `features.translateJson: true`, disables UI extraction and document translation, and scaffolds a single `json[]` block pointing at `src/i18n/en/translation.json` with output `src/i18n/{llocale}/translation.json`. Edit `sourceLocale`, `targetLocales`, `contentPaths`, and `outputPathTemplate` for your repo layout.
+
+<a id="step-2-configure-json"></a>
+### Step 2: Configure `json[]`
+
+Each `json[]` block describes one pipeline:
+
+- `contentPaths` — one or more `.json` files, directories, or globs (for example `"src/i18n/en/translation.json"` or `"src/i18n/en/overrides/*.json"`). Paths are resolved from the project root.
+- `outputPathTemplate` — required. Where to write each target locale file. Placeholders: `{locale}`, `{LOCALE}`, `{llocale}` (lowercased locale, useful for Astro route folders), `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`.
+- `targetLocales` (optional) — subset for this block only; otherwise root `targetLocales` applies.
+- `keyPolicy` — which JSON keys hold translatable prose vs stable identifiers (see below).
+- `description` (optional) — shown in CLI headers and `status` output.
+
+Example (multiple source files, lowercase locale folders):
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": {
+    "translateJson": true
+  },
+  "cacheDir": ".translation-cache",
+  "json": [
+    {
+      "description": "App UI bundle",
+      "contentPaths": [
+        "src/i18n/en/translation.json",
+        "src/i18n/en/overrides/*.json"
+      ],
+      "outputPathTemplate": "src/i18n/{llocale}/{basename}",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": ["id", "slug", "href", "url", "key", "code"],
+        "translateKeys": []
+      }
+    }
+  ]
+}
+```
+
+**`keyPolicy`**
+
+| `mode`      | Behaviour |
+|-------------|-----------|
+| `allowlist` | Only keys matching `translateKeys` (dot paths; minimatch globs) are translated. |
+| `denylist`  | Translate all string values except keys matching `skipKeys`. |
+| `both`      | Apply `translateKeys` first, then remove matches from `skipKeys`. |
+
+Paths use dot notation (`nav.home.label`). A bare name like `slug` matches the final key segment at any depth.
+
+<a id="step-3-translate-json-bundles"></a>
+### Step 3: Translate JSON bundles
+
+```bash
+npx ai-i18n-tools translate-json
+```
+
+Optional flags (same ideas as `translate-docs`): `-l` / `--locale` for a subset of targets, `-p` / `--path` to limit files, `--dry-run`, `--force` (clear file tracking and segment cache for matched files), `--force-update` (re-process when file hash matches; segment cache still applies), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+
+JSON-only projects can run:
+
+```bash
+npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+```
+
+When UI or docs are also enabled, `sync` runs **translate-json after translate-docs** (unless `--no-json`). Skip JSON with `--no-json`.
+
+Check coverage per file and locale:
+
+```bash
+npx ai-i18n-tools status
+```
+
+When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, ● stale or missing).
+
+<a id="workflow-3-vs-other-pipelines"></a>
+### Workflow 3 vs other pipelines
+
+| Situation | Use |
+|-----------|-----|
+| UI strings in `t("…")` / `i18n.t("…")` in JS/TS/Astro | [Workflow 1](#workflow-1---ui-translation) — `extract` + `translate-ui` |
+| Markdown/MDX/`.astro` pages or README translation | [Workflow 2](#workflow-2---document-translation) — `translate-docs` |
+| Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Workflow 2 — `docs[].docusaurusCatalogDir` + `translate-docs`, **not** `json[]` |
+| Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | Workflow 3 — `json[]` + `translate-json` |
+| Illustrated `.svg` files with `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](#svg) + `translate-svg` (optional; not a numbered workflow) |
+
+Field reference: [`json`](#json) in [Configuration reference](#configuration-reference). Cache keys for cleanup use `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.
 
 ---
 
@@ -1001,8 +1139,7 @@ Enable all features in a single config to run both workflows together:
   "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
   "features": {
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
     "translateSVG": false
   },
   "glossary": {
@@ -1015,11 +1152,11 @@ Enable all features in a single config to run both workflows together:
     "flatOutputDir": "src/locales/"
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "contentPaths": ["docs/"],
       "outputDir": "i18n/",
-      "markdownOutput": { "style": "flat" }
+      "docsOutput": { "style": "flat" }
     }
   ]
 }
@@ -1031,14 +1168,14 @@ Enable all features in a single config to run both workflows together:
 
 `glossary.uiGlossary` points document translation at the same `strings.json` catalog as the UI so terminology stays consistent; `glossary.userGlossary` adds CSV overrides for product terms.
 
-Run `npx ai-i18n-tools sync` to run one pipeline: when `features.translateUIStrings` is enabled, **extract** then **translate UI** strings; optional **translate SVG** (`features.translateSVG` + `svg` block); optional **translate-json** (`features.translateJson` + `json[]`); then **translate documentation** (`docs[]` as configured). Skip parts with `--no-ui`, `--no-svg`, `--no-json`, or `--no-docs`. The docs step accepts `--dry-run`, `-p` / `--path`, `--force`, and `--force-update` (the last two only apply when documentation translation runs; they are ignored if you pass `--no-docs`).
+Run `npx ai-i18n-tools sync` to run one pipeline: when `features.translateUIStrings` is enabled, **extract** then **translate UI** strings; optional **translate SVG** (`features.translateSVG` + `svg` block); **translate documentation** (`docs[]` as configured); then optional **translate-json** (`features.translateJson` + `json[]`). Skip parts with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. The docs and `json[]` steps accept `--dry-run`, `-p` / `--path`, `--force`, and `--force-update` (docs-only flags are ignored when `--no-docs`; JSON uses the same cache flags when `--no-json` is not set).
 
-Use `documentations[].targetLocales` on a block to translate that block’s files to a **smaller subset** than the UI (effective documentation locales are the **union** across blocks):
+Use `docs[].targetLocales` on a block to translate that block’s files to a **smaller subset** than the UI (effective documentation locales are the **union** across blocks):
 
 ```json
 {
   "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
-  "documentations": [
+  "docs": [
     {
       "contentPaths": ["docs/"],
       "outputDir": "i18n/",
@@ -1048,10 +1185,10 @@ Use `documentations[].targetLocales` on a block to translate that block’s file
 }
 ```
 
-<a id="mixed-documentation-workflow-markdownoutputstyle--docusaurus--flat"></a>
-### Mixed documentation workflow (`markdownOutput.style = "docusaurus"` + `"flat"`)
+<a id="mixed-documentation-workflow-docsoutputstyle--docusaurus--flat"></a>
+### Mixed documentation workflow (`docsOutput.style = "docusaurus"` + `"flat"`)
 
-You can combine multiple documentation pipelines in the same config by adding more than one entry in `documentations`. This is a common setup when a project has a Docusaurus site (`markdownOutput.style = "docusaurus"`) plus root-level markdown files (for example, a repository readme with `markdownOutput.style = "flat"`) that should be translated with locale-suffixed filenames.
+You can combine multiple documentation pipelines in the same config by adding more than one entry in `docs`. This is a common setup when a project has a Docusaurus site (`docsOutput.style = "docusaurus"`) plus root-level markdown files (for example, a repository README with `docsOutput.style = "flat"`) that should be translated with locale-suffixed filenames.
 
 <details>
 <summary>Example mixed Docusaurus + flat README config</summary>
@@ -1062,8 +1199,7 @@ You can combine multiple documentation pipelines in the same config by adding mo
   "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
   "features": {
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": true
+    "translateDocs": true
   },
   "ui": {
     "sourceRoots": ["src/"],
@@ -1071,24 +1207,24 @@ You can combine multiple documentation pipelines in the same config by adding mo
     "flatOutputDir": "public/locales/"
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "description": "Docusaurus site content (markdown)",
       "contentPaths": ["docs-site/docs/"],
       "outputDir": "docs-site/i18n",
-      "jsonSource": "docs-site/i18n/en",
+      "docusaurusCatalogDir": "docs-site/i18n/en",
       "addFrontmatter": true,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "docusaurus",
         "docsRoot": "docs-site/docs"
       }
     },
     {
-      "description": "Root README with markdownOutput.style flat",
+      "description": "Root README with docsOutput.style flat",
       "contentPaths": ["README.md"],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "flat",
         "postProcessing": {
           "languageListBlock": {
@@ -1111,9 +1247,9 @@ You can combine multiple documentation pipelines in the same config by adding mo
 How this runs with `npx ai-i18n-tools sync`:
 
 - UI strings are extracted/translated from `src/` into `public/locales/`.
-- The first docs block translates **markdown** from `docs-site/docs/` into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (localized documentation pages).
-- With `features.translateJSON` and `jsonSource`, that same block also translates **Docusaurus shell JSON** under `docs-site/i18n/en/` into each target locale folder — navbar, footer, and theme/plugin catalogs, not MDX body copy.
-- The second docs block translates `README.md` into locale-suffixed files under `translated-docs/` (`markdownOutput.style = "flat"`).
+- The first docs block translates **markdown** from `docs-site/docs/` into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (localised documentation pages).
+- With `docs[].docusaurusCatalogDir` set and `features.translateDocs` enabled, that same block also translates **Docusaurus shell JSON** under `docs-site/i18n/en/` into each target locale folder — navbar, footer, and theme/plugin catalogues, not MDX body copy.
+- The second docs block translates `README.md` into locale-suffixed files under `translated-docs/` (`docsOutput.style = "flat"`).
 - All docs blocks share `cacheDir`, so unchanged segments are reused across runs to reduce API calls and cost.
 
 ---
@@ -1129,7 +1265,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-This starts a local web UI backed by your configured `cacheDir` SQLite database—the same folder the CLI uses for documentation segments, logs, and related metadata. It includes the tabs **Documentation** (cached doc segments), **UI strings**, **UI plurals**, **Glossary**, **Failures**, **Markdown issues**, and **Statistics**.
+This starts a local web UI backed by your configured `cacheDir` SQLite database — the same folder the CLI uses for documentation segments, logs, and related metadata. It includes the tabs **Documentation** (cached doc segments), **UI strings**, **UI plurals**, **Glossary**, **Failures**, **Markdown issues**, and **Statistics**.
 
 ![Translation Dashboard](translation-dashboard.png)
 
@@ -1138,7 +1274,7 @@ If you **edit cache rows** in this app (for example documentation segments), run
 <a id="failures-document-translation"></a>
 ### Failures (document translation)
 
-The **Failures** tab is for **documentation** translation only. It reads failure records written to SQLite when a segment could not be translated successfully for a locale—for example empty or invalid model output, post-translation validation errors (`AST mismatch`, placeholder leaks, and similar **quality** checks), or a **fatal** condition that blocked progress. It helps you answer: *which source segment broke, for which locale and model, and what error text was recorded?*
+The **Failures** tab is for **documentation** translation only. It reads failure records written to SQLite when a segment could not be translated successfully for a locale — for example empty or invalid model output, post-translation validation errors (`AST mismatch`, placeholder leaks, and similar **quality** checks), or a **fatal** condition that blocked progress. It helps you answer: *which source segment broke, for which locale and model, and what error text was recorded?*
 
 <a id="when-to-use-it"></a>
 #### When to use it
@@ -1171,7 +1307,7 @@ The **Markdown issues** tab lists rows from the `markdown_source_issues` SQLite 
 
 Use this tab when you want to fix **source markdown** before spending tokens—especially when quality checks keep failing on structure. Filter by filepath (partial match against the cache key, including `doc-block:{index}:` prefixes), **issue code**, or **source hash**; sort by filepath + line or by newest scan time. The link button logs file/line hints to the terminal where `ai-i18n-tools dashboard` is running (same idea as the Documentation tab).
 
-**Refreshing rows:** run `ai-i18n-tools check-markdown` (optional `-p` / `--path` scope, `--no-cache` to skip SQLite, `--json` for machine-readable output on stdout with human lines on stderr). By default each `translate-docs` markdown file run also rescans and replaces rows for that file when `documentations[].warnMarkdownSourceIssues` is not set to `false`. Clearing all translations for a cache filepath removes markdown issue rows for that filepath as part of the same cleanup path as failures.
+**Refreshing rows:** run `ai-i18n-tools check-markdown` (optional `-p` / `--path` scope, `--no-cache` to skip SQLite, `--json` for machine-readable output on stdout with human lines on stderr). By default each `translate-docs` markdown file run also rescans and replaces rows for that file when `docs[].warnMarkdownSourceIssues` is not set to `false`. Clearing all translations for a cache filepath removes markdown issue rows for that filepath as part of the same cleanup path as failures.
 
 ---
 
@@ -1200,7 +1336,7 @@ Path to the `ui-languages.json` manifest used for display names, locale filterin
 Use this when:
 
 - The manifest lives outside `ui.flatOutputDir` and you need to point the CLI at it explicitly.
-- You want [language switcher post-processing](#language-list-block) (`languageListBlock`) to build locale labels from the manifest.
+- You want [language switcher post-processing](#language-switcher-languagelistblock) (`languageListBlock`) to build locale labels from the manifest.
 - `extract` should merge `englishName` entries from the manifest into `strings.json` (requires `ui.reactExtractor.includeUiLanguageEnglishNames: true`).
 
 <a id="concurrency-optional"></a>
@@ -1219,6 +1355,7 @@ Maximum **target locales** translated at the same time (`translate-ui`, `transla
 Maximum number of files processed concurrently **within a single locale** during `translate-docs` and `sync`. When set to a value greater than **1**, files within the same locale are processed in parallel using a semaphore to control memory usage. Default **1** (sequential processing) when omitted. Higher values can significantly improve throughput for I/O-bound operations, especially when all segments are already cached (no API calls needed).
 
 **Example:**
+
 ```json
 {
   "fileConcurrency": 4
@@ -1326,7 +1463,7 @@ Before changing `translationModels`, run `npx ai-i18n-tools check-models` to ver
 ### `cacheDir`
 
 - `cacheDir`
-SQLite cache directory (shared by all `documentations` blocks). Reuse across runs. If you are migrating from a custom doc translation cache, archive or delete it — `cacheDir` creates its own SQLite database and is not compatible with other schemas.
+SQLite cache directory (shared by all `docs` blocks). Reuse across runs. If you are migrating from a custom doc translation cache, archive or delete it — `cacheDir` creates its own SQLite database and is not compatible with other schemas.
 
 
 <a id="best-practice-for-git-exclusions"></a>
@@ -1353,60 +1490,62 @@ SQLite cache directory (shared by all `documentations` blocks). Reuse across run
 *.log
 ```
 
-<a id="documentations"></a>
-### `documentations`
+<a id="docs"></a>
+### `docs`
 
-Array of documentation pipeline blocks. `translate-docs` and the docs phase of `sync` **process each** block in order.
+Array of documentation pipeline blocks. `translate-docs` and the docs phase of `sync` **process each** block in order. Legacy keys (`documentations`, `markdownOutput`, `jsonSource`) are still accepted at load time and rewritten when the config file is writable; prefer `docs`, `docsOutput`, and `docusaurusCatalogDir` in new configs.
 
 **Content sources**
 
 - `description`
 Optional human-readable note for this block (not used for translation). Prefixed in the `translate-docs` `🌐` headline when set; also shown in `status` section headers.
 - `contentPaths`
-Markdown/MDX page bodies and `.astro` templates to translate (`translate-docs` scans these for `.md`, `.mdx`, and `.astro`). Supports **directory paths or glob patterns** (e.g. `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`). That is where localized documentation prose comes from.
+Markdown/MDX page bodies and `.astro` templates to translate (`translate-docs` scans these for `.md`, `.mdx`, and `.astro`). Supports **directory paths or glob patterns** (e.g. `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`). That is where localised documentation prose comes from.
 - `sourceFiles`
 Optional alias merged into `contentPaths` at load.
 - `targetLocales`
 Optional subset of locales for this block only (otherwise root `targetLocales`). Effective documentation locales are the union across blocks.
-- `jsonSource`
-Optional. Source directory for Docusaurus JSON label catalogs for this block (e.g. `"i18n/en"` from `docusaurus write-translations`). Page bodies always come from `contentPaths`; `jsonSource` only supplies shell/UI JSON, not MDX.
+- `docusaurusCatalogDir`
+Optional. Source directory for Docusaurus JSON label catalogs for this block (e.g. `"i18n/en"` from `docusaurus write-translations`). Page bodies always come from `contentPaths`; `docusaurusCatalogDir` only supplies shell/UI JSON, not MDX.
 
 **Output layout**
 
 - `outputDir`
 Root directory for translated output for this block.
-- `markdownOutput.style`
+- `docsOutput.style`
 `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"`.
-- `markdownOutput.localeSubpath`
+- `docsOutput.localeSubpath`
 Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` (required when using `style: "doc-system"` directly; preset when using an alias). Use `""` for Starlight-style locale folders.
-- `markdownOutput.docsRoot`
+- `docsOutput.docsRoot`
 Source docs root for Docusaurus layout (e.g. `"docs"`).
-- `markdownOutput.pathTemplate`
-Custom markdown output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
-- `markdownOutput.jsonPathTemplate`
+- `docsOutput.pathTemplate`
+Custom markdown output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+- `docsOutput.jsonPathTemplate`
 Custom JSON output path for label files. Supports the same placeholders as `pathTemplate`.
-- `markdownOutput.flatPreserveRelativeDir`
-When `markdownOutput.style = "flat"`, keep source subdirectories so files with the same basename do not collide.
-- `markdownOutput.rewriteRelativeLinks`
-Rewrite relative links after translation (auto-enabled when `markdownOutput.style = "flat"` and no custom `pathTemplate`).
-- `markdownOutput.linkRewriteDocsRoot`
+- `docsOutput.localePathLowercase`
+When `true`, built-in output layouts (`nested`, `flat`, `doc-system` without `pathTemplate`) use lowercased locale segments in paths. Default `false`; `astro-starlight` and `doc-system` with empty `localeSubpath` default to `true` at config load.
+- `docsOutput.flatPreserveRelativeDir`
+When `docsOutput.style = "flat"`, keep source subdirectories so files with the same basename do not collide.
+- `docsOutput.rewriteRelativeLinks`
+Rewrite relative links after translation (auto-enabled when `docsOutput.style = "flat"` and no custom `pathTemplate`).
+- `docsOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 
 **Post-processing**
 
-- `markdownOutput.postProcessing`
+- `docsOutput.postProcessing`
 Optional transforms on the translated **markdown body** (YAML keys and non-prose front matter values are preserved). Runs after segment reassembly and flat link rewriting, and before `addFrontmatter`.
-- `markdownOutput.postProcessing.regexAdjustments`
+- `docsOutput.postProcessing.regexAdjustments`
 Ordered list of `{ "description"?, "search", "replace" }`. `search` is a regex pattern (plain string uses flag `g`, or `/pattern/flags`). `replace` supports placeholders such as `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.
-- `markdownOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — regenerates a bounded "read in other languages" link row in source and translated markdown. See [Language switcher (`languageListBlock`)](#language-list-block) for setup, behaviour, and repository examples.
+- `docsOutput.postProcessing.languageListBlock`
+`{ "start", "end", "separator", "label"? }` — regenerates a bounded "read in other languages" link row in source and translated markdown. See [Language switcher (`languageListBlock`)](#language-switcher-languagelistblock) for setup, behaviour, and repository examples.
 
 **Behaviour and metadata**
 
 - `translateFrontmatterFields`
-Same level as `markdownOutput` (per `documentations[]` block). Default `true`: translate user-facing YAML prose for Starlight/Docusaurus (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` labels). Set `false` to keep the entire front matter block unchanged; pass a string array to restrict to specific dot-paths.
+Same level as `docsOutput` (per `docs[]` block). Default `true`: translate user-facing YAML prose for Starlight/Docusaurus (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` labels). Set `false` to keep the entire front matter block unchanged; pass a string array to restrict to specific dot-paths.
 - `segmentSplitting`
-Same level as `markdownOutput` (per `documentations[]` block). Optional finer-grained segments for `translate-docs` extraction: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. When `enabled` is `true` (default when `segmentSplitting` is omitted), dense paragraphs, GFM pipe tables (first chunk includes header, separator, and first data row), and long lists are split; sub-parts rejoin with single newlines (`tightJoinPrevious`). Set `"enabled": false` to use one segment per blank-line-delimited body block only.
+Same level as `docsOutput` (per `docs[]` block). Optional finer-grained segments for `translate-docs` extraction: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"? }`. When `enabled` is `true` (default when `segmentSplitting` is omitted), dense paragraphs, GFM pipe tables (first chunk includes header, separator, and first data row), and long lists are split; sub-parts rejoin with single newlines (`tightJoinPrevious`). Set `"enabled": false` to use one segment per blank-line-delimited body block only.
 - `warnMarkdownSourceIssues`
 When `true` (default when omitted), each `translate-docs` run rescans markdown segments for risky delimiters / unclosed inline code, prints terminal warnings, and replaces `markdown_source_issues` rows for that file's cache filepath. Set `false` to skip warnings and SQLite updates for this block.
 - `addFrontmatter`
@@ -1430,13 +1569,13 @@ Optional. Extra **object property names** whose quoted string values must not be
 
 <br/>
 
-**Example (`markdownOutput.style = "flat"` — screenshot paths + optional language list wrapper):**
+**Example (`docsOutput.style = "flat"` — screenshot paths + optional language list wrapper):**
 
 <details>
 <summary>Flat layout postProcessing example (screenshots + languageListBlock)</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "flat",
   "postProcessing": {
     "regexAdjustments": [
@@ -1458,6 +1597,21 @@ Optional. Extra **object property names** whose quoted string values must not be
 
 </details>
 
+<a id="json"></a>
+### `json`
+
+Top-level array of nested JSON translation pipelines. Used only when `features.translateJson` is true (`translate-json` or the JSON stage of `sync`). See [Workflow 3 - JSON file translation](#workflow-3---json-file-translation).
+
+| Field | Description |
+|-------|-------------|
+| `description` | Optional note for CLI / `status` (not translated). |
+| `contentPaths` | Source `.json` files, directories, or globs under the project root. |
+| `outputPathTemplate` | Required output path per target locale. Placeholders: `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
+| `targetLocales` | Optional subset for this block; otherwise root `targetLocales`. |
+| `keyPolicy.mode` | `allowlist`, `denylist`, or `both`. |
+| `keyPolicy.translateKeys` | Dot paths / globs to include when mode is `allowlist` or `both`. |
+| `keyPolicy.skipKeys` | Dot paths / globs to exclude (default denylist includes `id`, `slug`, `href`, `url`, `key`, `code`). |
+
 <a id="svg"></a>
 ### `svg`
 
@@ -1468,7 +1622,8 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 | `sourcePath`     | One or more directories **or glob patterns** (e.g. `"images/*.svg"`, `"**/icons/*.svg"`). The patterns are resolved relative to the project root and scanned recursively for `.svg` files.                                                                         |
 | `outputDir`      | Root directory for translated SVG output.                                                                                                                                                                                                                          |
 | `style`          | `"flat"` or `"nested"` when `pathTemplate` is unset.                                                                                                                                                                                                               |
-| `pathTemplate`   | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `pathTemplate`   | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `localePathLowercase` | When `true`, built-in `flat` / `nested` SVG layouts use lowercased locale segments. Custom `pathTemplate` values are unchanged; use `{llocale}` for lowercase segments. |
 | `forceLowercase` | Lower-case translated text on SVG reassembly. Useful for designs that rely on all-lowercase labels.                                                                                                                                                                |
 
 <a id="glossary"></a>
@@ -1494,20 +1649,21 @@ npx ai-i18n-tools glossary-generate
 | Command                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 |------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version`                                                                                                  | Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website\|ui-json-bundles] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `docs[].addFrontmatter`). `ui-json-bundles` scaffolds Workflow 3 (`json[]` only). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `check-models`                                                                                             | Validate each configured OpenRouter model id against `GET /models` (catalog membership, `expiration_date`, USD per 1M tokens for prompt/completion). Requires `OPENROUTER_API_KEY`. Exits non-zero when any configured id is missing or expired. Respects `openrouter.requestTimeoutMs` for the catalog request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `extract`                                                                                                  | Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional manifest `englishName` entries (see `ui.reactExtractor`). Requires non-empty `ui.sourceRoots`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                                      | Write `ui-languages.json` to `ui.flatOutputDir` (or `uiLanguagesPath` when set) using `sourceLocale` + `targetLocales` and the bundled `data/ui-languages-complete.json` (or `--master`). Warns and emits `TODO` placeholders for locales missing from the master file. If you have an existing manifest with customised `label` or `englishName` values, they will be replaced by master catalog defaults — review and adjust the generated file afterwards.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `translate-docs …`                                                                                         | Translate markdown/MDX and JSON for each `documentations` block (`contentPaths`, optional `jsonSource`). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). See [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) and [Batch prompt format](#batch-prompt-format).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `write-heading-ids …`                                                                                      | Requires at least one `documentations[]` block. Collects `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). Inserts an HTML anchor line `<a id="slug"></a>` immediately **before** each flat ATX `#` heading (skips headings inside fenced code blocks); when an anchor line is already present, updates the `id` if it no longer matches the slug derived from the current heading text. `-p` / `--path` or `-f` / `--file`: limit to a project-relative file or directory. `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. With `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: list changes only.                                                                                                                                                                                                                                                                                                                                    |
-| `strip-md-bold-inline …`                                                                                   | Requires at least one `documentations[]` block. Strips `**` around inline code in `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). `-p` / `--path` or `-f` / `--file`, `--dry-run`, `--no-backup` (skip timestamped `.backup.*` before overwrite).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `check-markdown …`                                                                                         | Scans markdown/MDX under each `documentations[]` block’s `contentPaths` (same discovery as `translate-docs`, honours `.translate-ignore`): delimiter pairing, unclosed inline code, and `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `` `...` `` span or a `[text](url)` link. `-p` / `--path` or `-f` / `--file`: optional scope. Prints `relativePath:line: [ISSUE_CODE] message` lines to **stderr**; exit code **1** if any issue. `--json`: JSON report on **stdout**. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `translate-docs …`                                                                                         | Translate markdown/MDX and JSON for each `docs` block (`contentPaths`, optional `docusaurusCatalogDir`). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). See [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) and [Batch prompt format](#batch-prompt-format).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `write-heading-ids …`                                                                                      | Requires at least one `docs[]` block. Collects `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). Inserts an HTML anchor line `<a id="slug"></a>` immediately **before** each flat ATX `#` heading (skips headings inside fenced code blocks); when an anchor line is already present, updates the `id` if it no longer matches the slug derived from the current heading text. `-p` / `--path` or `-f` / `--file`: limit to a project-relative file or directory. `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. With `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: list changes only.                                                                                                                                                                                                                                                                                                                                    |
+| `strip-md-bold-inline …`                                                                                   | Requires at least one `docs[]` block. Strips `**` around inline code in `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). `-p` / `--path` or `-f` / `--file`, `--dry-run`, `--no-backup` (skip timestamped `.backup.*` before overwrite).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `check-markdown …`                                                                                         | Scans markdown/MDX under each `docs[]` block’s `contentPaths` (same discovery as `translate-docs`, honours `.translate-ignore`): delimiter pairing, unclosed inline code, and `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `` `...` `` span or a `[text](url)` link. `-p` / `--path` or `-f` / `--file`: optional scope. Prints `relativePath:line: [ISSUE_CODE] message` lines to **stderr**; exit code **1** if any issue. `--json`: JSON report on **stdout**. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `translate-svg …`                                                                                          | Translate SVG files configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `translate-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                                 | Translate UI strings only (`strings.json` → locale JSON). `-l` / `--locale`: comma-separated target locales (default from config / `ui-languages.json`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j`: max parallel locales. Requires `features.translateUIStrings`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                                      | Extract, then translate UI strings (requires `features.translateUIStrings`). UI-only — no documentation or SVG. Same `-l`, `--force`, `--dry-run`, and `-j` options as `translate-ui`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `translate-json …`                                                                                         | Translate nested JSON per `json[]` (requires `features.translateJson`). Shared SQLite cache; `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`. See [Workflow 3](#workflow-3---json-file-translation).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                                      | Extract, then translate UI strings (requires `features.translateUIStrings`). UI-only — no documentation, SVG, or `json[]`. Same `-l`, `--force`, `--dry-run`, and `-j` options as `translate-ui`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                      | Runs `extract` **first** (requires `features.translateUIStrings`) so `strings.json` matches source, then LLM review of **source-locale** UI strings (spelling, grammar). **Terminology hints** come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — not `strings.json` / `uiGlossary`, so bad copy is not reinforced as glossary). Uses OpenRouter (`OPENROUTER_API_KEY`). Advisory only (exit **0** when the run completes). Writes `lint-source-results_<timestamp>.log` under `cacheDir` as a **human-readable** report (summary, issues, and per-string **OK** rows); the terminal prints summary counts and issues only (no `[ok]` lines per string). Prints the log filename on the last line. `--json`: full machine-readable JSON report on stdout only (log file stays human-readable). `--dry-run`: still runs `extract`, then prints batch plan only (no API calls). `--chunk`: strings per API batch (default **50**). `-j`: max parallel batches (default `concurrency`). With `--json`, human-style output goes to stderr. Links use `path:line` like the `dashboard` UI strings “link” button. |
 | `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`                                | Export `strings.json` to XLIFF 2.0 (one `.xliff` per target locale). `-o` / `--output-dir`: output directory (default: same folder as the catalog). `--untranslated-only`: only units missing a translation for that locale. Read-only; no API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `sync …`                                                                                                   | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation — unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; the docs step uses the built-in default (`json-array`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `sync …`                                                                                                   | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation, then `translate-json` when `features.translateJson` and `json[]` are set — unless skipped with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs and JSON batching), `--force` / `--force-update` (docs and JSON). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; docs and JSON steps use the built-in default (`json-array`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `status [--max-columns <n>]`                                                                               | When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `statistics [--max-columns <n>]`                                                                           | Print documentation cache and `strings.json` statistics (same aggregates as Translation Dashboard → **Statistics**). `--max-columns`: max locale columns per model × locale table (default matches the dashboard).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `cleanup [--dry-run] [--no-backup] [--backup <path>]`                                                      | Runs `sync --force-update` first (extract, UI, SVG, docs), then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file. Logs three counts (stale, orphaned `file_tracking`, orphaned translations). Creates a timestamped SQLite backup under the cache dir unless `--no-backup`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -1516,6 +1672,7 @@ npx ai-i18n-tools glossary-generate
 | `glossary-generate [-o <path>]`                                                                            | Write an empty `glossary-user.csv` template. `-o`: override the output path (default: `glossary.userGlossary` from config, or `glossary-user.csv`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `help [command]`                                                                                           | Display help for a subcommand (same output as `ai-i18n-tools <command> --help`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
+<a id="root-and-global-options"></a>
 ### Root and global options
 
 | Option                       | Scope         | Description                                                                               |
@@ -1526,6 +1683,7 @@ npx ai-i18n-tools glossary-generate
 | `-v` / `--verbose`           | Every command | Verbose logging.                                                                          |
 | `-w` / `--write-logs [path]` | Every command | Tee console output to a `.log` file (default path: under root `cacheDir`).                |
 
+<a id="per-command-help"></a>
 ### Per-command help
 
 | Usage                            | Description                        |
@@ -1533,11 +1691,12 @@ npx ai-i18n-tools glossary-generate
 | `ai-i18n-tools <command> --help` | All options for that command.      |
 | `ai-i18n-tools help <command>`   | Same output as `<command> --help`. |
 
+<a id="target-locales--l----locale"></a>
 ### Target locales (`-l` / `--locale`)
 
 | Commands                                                                                | Behaviour                                                                                                                                              |
 |-----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `translate-docs`, `translate-svg`, `translate-ui`, `sync`, `sync-ui`, `export-ui-xliff` | `-l` / `--locale <codes>` — comma-separated target BCP-47 codes (e.g. `de,fr,pt-BR`). When omitted, defaults come from config and `ui-languages.json`. |
+| `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync`, `sync-ui`, `export-ui-xliff` | `-l` / `--locale <codes>` — comma-separated target BCP-47 codes (e.g. `de,fr,pt-BR`). When omitted, defaults come from config (`json[]` blocks may also set per-block `targetLocales`). UI steps also use `ui-languages.json`. |
 | `lint-source`                                                                           | `-l` / `--locale <code>` — single source locale to review (default: config `sourceLocale`).                                                            |
 
 ---

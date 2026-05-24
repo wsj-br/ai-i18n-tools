@@ -81,6 +81,14 @@ describe("isTranslatableExpressionString", () => {
     );
     expect(isTranslatableExpressionString("providers", "id=")).toBe(false);
   });
+
+  it("rejects shell snippets, API keys, and container image references", () => {
+    expect(isTranslatableExpressionString("docker run -it foo", "[")).toBe(false);
+    expect(isTranslatableExpressionString("npm install pkg", "[")).toBe(false);
+    expect(isTranslatableExpressionString("sk-or-v1-abc123", "[")).toBe(false);
+    expect(isTranslatableExpressionString("pull ghcr.io/org/img:latest", "[")).toBe(false);
+    expect(isTranslatableExpressionString("OPENROUTER_API_KEY=secret", "[")).toBe(false);
+  });
 });
 
 describe("findMatchingBrace", () => {
@@ -88,6 +96,21 @@ describe("findMatchingBrace", () => {
     const src = "{ foo({ bar: 1 }) } rest";
     const end = findMatchingBrace(src, 0);
     expect(src.slice(0, end)).toBe("{ foo({ bar: 1 }) }");
+  });
+
+  it("returns start+1 when text does not begin with {", () => {
+    expect(findMatchingBrace("not a brace", 0)).toBe(1);
+  });
+
+  it("skips strings, line comments, block comments, and template literals", () => {
+    const src = '{ a: "}" /* } */ // }\n`x${ { inner: 1 } }` }';
+    const end = findMatchingBrace(src, 0);
+    expect(src.slice(0, end)).toBe('{ a: "}" /* } */ // }\n`x${ { inner: 1 } }` }');
+  });
+
+  it("returns text.length when closing brace is missing", () => {
+    const src = "{ unclosed";
+    expect(findMatchingBrace(src, 0)).toBe(src.length);
   });
 });
 
@@ -105,10 +128,31 @@ import Layout from '../layouts/Main.astro';
 `;
     expect(adjustRelativeImportsInFrontmatter(fm, 1)).toContain("from '../../layouts/Main.astro'");
   });
+
+  it("leaves frontmatter unchanged when depthDelta is zero", () => {
+    const fm = `---
+import Layout from '../layouts/Main.astro';
+---
+`;
+    expect(adjustRelativeImportsInFrontmatter(fm, 0)).toBe(fm);
+  });
+});
+
+describe("computeImportDepthDelta edge cases", () => {
+  it("returns zero when output is not deeper than source", () => {
+    expect(computeImportDepthDelta("src/pages/de/index.astro", "src/pages/index.astro")).toBe(0);
+    expect(computeImportDepthDelta("index.astro", "index.astro")).toBe(0);
+  });
 });
 
 describe("AstroTemplateExtractor", () => {
   const extractor = new AstroTemplateExtractor();
+
+  it("canHandle only .astro files", () => {
+    expect(extractor.canHandle("page.astro")).toBe(true);
+    expect(extractor.canHandle("Page.ASTRO")).toBe(true);
+    expect(extractor.canHandle("page.tsx")).toBe(false);
+  });
 
   it("extracts text nodes split by inline tags", () => {
     const content = [
@@ -229,6 +273,54 @@ describe("AstroTemplateExtractor", () => {
 <img src="/logo.svg" alt="Transrewrt Logo" />`;
     const segments = extractor.extract(content, "page.astro");
     expect(segments.some((s) => s.translatable && s.content === "Transrewrt Logo")).toBe(true);
+  });
+
+  it("skips HTML comments and protected attribute values", () => {
+    const content = [
+      "---",
+      "---",
+      "<!-- keep * and ` out of diagnostics -->",
+      '<p aria-hidden="true">Visible</p>',
+    ].join("\n");
+    const segments = extractor.extract(content, "page.astro");
+    expect(segments.some((s) => s.content.includes("<!-- keep"))).toBe(true);
+    expect(segments.some((s) => s.translatable && s.content === "true")).toBe(false);
+    expect(segments.some((s) => s.translatable && s.content === "Visible")).toBe(true);
+  });
+
+  it("handles unclosed style blocks and quoted attributes with escapes", () => {
+    const content = [
+      "---",
+      "---",
+      '<div data-x="say \\"hi\\""></div>',
+      "<style>.x { color: red }</style>",
+      "<p>After style</p>",
+    ].join("\n");
+    const segments = extractor.extract(content, "page.astro");
+    expect(segments.some((s) => s.type === "code" && s.content.includes("<style"))).toBe(true);
+    expect(segments.some((s) => s.translatable && s.content === "After style")).toBe(true);
+  });
+
+  it("parses expression literals with line and block comments", () => {
+    const content = [
+      "---",
+      "---",
+      "<p>{",
+      "  // comment only",
+      "  /* block */",
+      "  'Translatable line'",
+      "}</p>",
+    ].join("\n");
+    const segments = extractor.extract(content, "page.astro");
+    expect(segments.some((s) => s.translatable && s.content === "Translatable line")).toBe(true);
+  });
+
+  it("reassembles with double-quote escaping when adjacent quotes are double", () => {
+    const content = ["---", "---", '{["Say \\"hi\\""].map(x => x)}'].join("\n");
+    const segments = extractor.extract(content, "page.astro");
+    const seg = segments.find((s) => s.translatable && s.content.includes("hi"))!;
+    const out = extractor.reassemble(segments, new Map([[seg.hash, { text: 'She said "ok"' }]]));
+    expect(out).toContain('\\"ok\\"');
   });
 
   it("reassembles with translations and adjusts imports", () => {

@@ -19,6 +19,13 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
       ...mo,
       style: "doc-system",
       localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
+      localePathLowercase: mo.localePathLowercase ?? true,
+    };
+  }
+  if (mo.style === "doc-system" && (mo.localeSubpath?.trim() ?? "") === "") {
+    return {
+      ...mo,
+      localePathLowercase: mo.localePathLowercase ?? true,
     };
   }
   return mo;

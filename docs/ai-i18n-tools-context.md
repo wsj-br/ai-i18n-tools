@@ -20,7 +20,7 @@ Optional: set `openrouter.requestTimeoutMs` if the default **30000** ms per Open
 | **2 — Documents** | `docs[]`, `features.translateDocs` | `translate-docs` | `.md` / `.mdx` / `.astro` pages; optional Docusaurus shell JSON via `docs[].docusaurusCatalogDir` |
 | **3 — Nested JSON** | `json[]`, `features.translateJson` | `translate-json` | Per-locale JSON bundles only (e.g. `src/i18n/en/translation.json`) — not `t()` in source |
 
-`sync` runs enabled steps in order (skip with `--no-ui`, `--no-svg`, `--no-json`, `--no-docs`). Full guide: [GETTING_STARTED.md](./GETTING_STARTED.md).
+`sync` runs enabled steps in order (skip with `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`): UI → SVG → docs → `json[]`. Full guide: [GETTING_STARTED.md](./GETTING_STARTED.md) (Workflow 3: [JSON file translation](./GETTING_STARTED.md#workflow-3---json-file-translation)).
 
 **Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation) and no `features.translateJSON` (catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set).
 
@@ -202,7 +202,7 @@ For sites that store UI copy in nested JSON files per locale (no `t()` in compon
         "src/i18n/en/translation.json",
         "src/i18n/en/overrides/*.json"
       ],
-      "outputPathTemplate": "src/i18n/{locale}/{basename}",
+      "outputPathTemplate": "src/i18n/{llocale}/{basename}",
       "keyPolicy": {
         "mode": "denylist",
         "skipKeys": ["id", "slug", "href", "url", "key", "code"],
@@ -214,7 +214,7 @@ For sites that store UI copy in nested JSON files per locale (no `t()` in compon
 ```
 
 - `contentPaths`: string or array; each entry is a `.json` file, directory tree, or glob (minimatch).
-- `outputPathTemplate`: required; placeholders include `{locale}`, `{basename}`, `{stem}`, `{relativeToSourceRoot}`.
+- `outputPathTemplate`: required; placeholders include `{locale}`, `{LOCALE}`, `{llocale}`, `{basename}`, `{stem}`, `{relativeToSourceRoot}`. Use `{llocale}` when output folders must match Astro-style lowercase route codes (`pt-br`, `zh-cn`) while `targetLocales` stays BCP-47 (`pt-BR`, `zh-CN`).
 - `keyPolicy.mode`: `allowlist`, `denylist`, or `both` (allowlist first, then subtract denylist). Paths use dot notation (`nav.home.label`); globs use minimatch. Bare names like `slug` match the final key segment.
 - Cache file tracking: `json-block:{blockIndex}:{projectRelPath}`.
 
@@ -247,7 +247,7 @@ Paths depend on your config; common artifacts:
 - **Source locale JSON** — only if plurals exist (e.g., `en-GB.json` with plural suffix keys).
 - `ui-languages.json` — manifest rows (`code`, `label`, `englishName`, `direction`).
 - `cacheDir` — SQLite cache for `translate-docs`, `translate-json`, and `translate-svg` (shared segment store).
-- Outputs from `json[]` — paths from each block’s `outputPathTemplate` (e.g. `src/i18n/de/translation.json`).
+- Outputs from `json[]` — paths from each block’s `outputPathTemplate` (e.g. `src/i18n/pt-br/translation.json` when using `{llocale}`).
 - Optional CSV at `glossary.userGlossary` — influences `translate-ui` and `lint-source` when present.
 
 Full config field reference: [GETTING_STARTED.md](./GETTING_STARTED.md).

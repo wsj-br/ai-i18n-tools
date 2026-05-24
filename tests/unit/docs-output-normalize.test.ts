@@ -13,13 +13,32 @@ describe("normalizeDocsOutputStyle", () => {
     expect(out.localeSubpath).toBe("docusaurus-plugin-content-docs/current");
   });
 
-  it("maps astro-starlight alias to doc-system with empty localeSubpath", () => {
+  it("maps astro-starlight alias to doc-system with empty localeSubpath and localePathLowercase", () => {
     const out = normalizeDocsOutputStyle({
       style: "astro-starlight",
       flatPreserveRelativeDir: false,
     });
     expect(out.style).toBe("doc-system");
     expect(out.localeSubpath).toBe("");
+    expect(out.localePathLowercase).toBe(true);
+  });
+
+  it("doc-system with empty localeSubpath defaults localePathLowercase to true", () => {
+    const out = normalizeDocsOutputStyle({
+      style: "doc-system",
+      localeSubpath: "",
+      flatPreserveRelativeDir: false,
+    });
+    expect(out.localePathLowercase).toBe(true);
+  });
+
+  it("preserves explicit localePathLowercase false on astro-starlight", () => {
+    const out = normalizeDocsOutputStyle({
+      style: "astro-starlight",
+      localePathLowercase: false,
+      flatPreserveRelativeDir: false,
+    });
+    expect(out.localePathLowercase).toBe(false);
   });
 
   it("preserves explicit localeSubpath on docusaurus alias", () => {

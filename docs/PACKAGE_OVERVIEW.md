@@ -23,6 +23,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
   - [UI Translation prompts](#ui-translation-prompts)
 - [Workflow 2 - Document Translation internals](#workflow-2---document-translation-internals)
   - [Extractors](#extractors)
+  - [Astro hybrid sites (UI + page HTML)](#astro-hybrid-sites-ui--page-html)
   - [Heading anchor insertion (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Placeholder protection](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,7 +266,7 @@ All extractors extend `BaseExtractor` and implement `extract(content, filepath):
 - `JsonExtractor` - extracts string values from Docusaurus JSON label files (Docusaurus UI catalogs, not MDX body).
 - `SvgExtractor` - extracts `<text>`, `<title>`, and `<desc>` content from SVG (used by `translate-svg` for files under `config.svg`, not by `translate-docs`).
 
-<a id="astro-hybrid-sites"></a>
+<a id="astro-hybrid-sites-ui--page-html"></a>
 ### Astro hybrid sites (UI + page HTML)
 
 Plain Astro apps often enable **both** workflows in one config (reference: `examples/astro-website/`):
@@ -307,7 +308,7 @@ Shared attribute/key protection for Astro templates and MDX JSX is implemented i
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
 
-SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalized content (whitespace collapsed).
+SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalised content (whitespace collapsed).
 
 On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `svg-files:…`, etc.), and removes translation rows whose metadata filepath points at a missing file; it backs up `cache.db` first unless `--no-backup` is passed.
 
@@ -330,7 +331,7 @@ The `translate-docs` command also uses **file tracking** so unchanged sources wi
 <a id="flat-link-rewriting"></a>
 ### Flat link rewriting
 
-When `markdownOutput.style === "flat"`, translated markdown files are placed alongside the source with locale suffixes. Relative links between pages are rewritten so that `[Guide](./guide.md)` in `readme.de.md` points to `guide.de.md`. Controlled by `rewriteRelativeLinks` (auto-enabled for flat style without a custom `pathTemplate`). The same pass prepends a per-file depth prefix to non-markdown asset URLs before `postProcessing.regexAdjustments` runs — see [Locale assets guide](./LOCALE-ASSETS-GUIDE.md#the-flat-link-rewriter-and-two-step-flow).
+When `docsOutput.style === "flat"`, translated markdown files are placed alongside the source with locale suffixes. Relative links between pages are rewritten so that `[Guide](./guide.md)` in `readme.de.md` points to `guide.de.md`. Controlled by `rewriteRelativeLinks` (auto-enabled for flat style without a custom `pathTemplate`). The same pass prepends a per-file depth prefix to non-markdown asset URLs before `postProcessing.regexAdjustments` runs — see [Locale assets guide](./LOCALE-ASSETS-GUIDE.md#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -513,13 +514,13 @@ Pass it to the doc-translate pipeline by importing `doc-translate.ts` utilities 
 <a id="custom-output-paths"></a>
 ### Custom output paths
 
-Use `markdownOutput.pathTemplate` for any file layout:
+Use `docsOutput.pathTemplate` for any file layout:
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

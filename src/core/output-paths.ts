@@ -1,4 +1,5 @@
 import path from "path";
+import { localePathPlaceholders } from "./locale-utils.js";
 import type { I18nDocTranslateConfig } from "./types.js";
 import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
 
@@ -31,8 +32,8 @@ export interface PathTemplateContext {
 }
 
 /**
- * Expand `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`,
- * `{docsRoot}`, `{relativeToDocsRoot}`.
+ * Expand `{outputDir}`, `{locale}`, `{LOCALE}`, `{llocale}`, `{relPath}`, `{stem}`, `{basename}`,
+ * `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}`.
  */
 export function expandPathTemplate(template: string, ctx: PathTemplateContext): string {
   const posixRel = toPosix(ctx.relPath);
@@ -46,11 +47,13 @@ export function expandPathTemplate(template: string, ctx: PathTemplateContext): 
     relativeToDocsRoot = posixRel.slice(dr.length).replace(/^\//, "");
   }
 
+  const localeVars = localePathPlaceholders(ctx.locale);
   let out = template;
   const pairs: [string, string][] = [
     ["{outputDir}", ctx.outputDir],
-    ["{locale}", ctx.locale],
-    ["{LOCALE}", ctx.locale.toUpperCase()],
+    ["{locale}", localeVars.locale],
+    ["{LOCALE}", localeVars.LOCALE],
+    ["{llocale}", localeVars.llocale],
     ["{relPath}", posixRel],
     ["{stem}", stem],
     ["{basename}", basename],
@@ -75,12 +78,8 @@ function assertOutputWithinRoot(absFile: string, rootDir: string): void {
   }
 }
 
-/** Starlight locale folders use lowercase keys (e.g. `pt-BR` → `pt-br`). */
-function docSystemLocaleDir(locale: string, localeSubpath: string | undefined): string {
-  if ((localeSubpath?.trim() ?? "") === "") {
-    return locale.toLowerCase();
-  }
-  return locale;
+function effectiveLocaleForPath(locale: string, localePathLowercase: boolean): string {
+  return localePathLowercase ? locale.toLowerCase() : locale;
 }
 
 function resolveByStyle(
@@ -93,17 +92,18 @@ function resolveByStyle(
   const doc = config.doc;
   const outBase = path.resolve(cwd, doc.outputDir);
   const mo = doc.docsOutput;
+  const localeSeg = effectiveLocaleForPath(locale, mo.localePathLowercase ?? false);
   const posixRel = toPosix(relPath);
   const docsRootRaw = mo.docsRoot?.trim() || "docs";
   const docsRootPosix = toPosix(path.normalize(docsRootRaw)).replace(/\/$/, "");
 
   if (kind !== "markdown") {
-    return path.join(outBase, locale, relPath);
+    return path.join(outBase, localeSeg, relPath);
   }
 
   switch (mo.style) {
     case "nested":
-      return path.join(outBase, locale, relPath);
+      return path.join(outBase, localeSeg, relPath);
     case "doc-system":
     case "docusaurus":
     case "astro-starlight": {
@@ -112,7 +112,7 @@ function resolveByStyle(
         posixRel.startsWith(`${docsRootPosix}/`) ||
         posixRel.startsWith(`${docsRootPosix}\\`);
       if (!under) {
-        return path.join(outBase, locale, relPath);
+        return path.join(outBase, localeSeg, relPath);
       }
       const rest = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
       let subpath: string;
@@ -123,14 +123,10 @@ function resolveByStyle(
       } else {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
       }
-      const localeDir =
-        mo.style === "doc-system" || mo.style === "astro-starlight"
-          ? docSystemLocaleDir(locale, subpath)
-          : locale;
       if (!subpath || subpath === ".") {
-        return path.join(outBase, localeDir, rest);
+        return path.join(outBase, localeSeg, rest);
       }
-      return path.join(outBase, localeDir, subpath, rest);
+      return path.join(outBase, localeSeg, subpath, rest);
     }
     case "flat": {
       const parsed = path.posix.parse(posixRel);
@@ -139,13 +135,13 @@ function resolveByStyle(
       if (mo.flatPreserveRelativeDir) {
         const dir = parsed.dir;
         if (dir && dir !== ".") {
-          return path.join(outBase, dir, `${stem}.${locale}${ext}`);
+          return path.join(outBase, dir, `${stem}.${localeSeg}${ext}`);
         }
       }
-      return path.join(outBase, `${stem}.${locale}${ext}`);
+      return path.join(outBase, `${stem}.${localeSeg}${ext}`);
     }
     default:
-      return path.join(outBase, locale, relPath);
+      return path.join(outBase, localeSeg, relPath);
   }
 }
 

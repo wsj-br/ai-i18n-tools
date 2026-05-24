@@ -180,6 +180,68 @@ describe("output-paths", () => {
     expect(s).toBe("x.de.md");
   });
 
+  it("expandPathTemplate fills {llocale} as lowercased locale", () => {
+    const s = expandPathTemplate("{outputDir}/{llocale}/{relPath}", {
+      outputDir: "/out",
+      locale: "pt-BR",
+      relPath: "src/i18n/en/translation.json",
+      docsRoot: "/proj/docs",
+    });
+    expect(s).toBe("/out/pt-br/src/i18n/en/translation.json");
+  });
+
+  it("localePathLowercase on nested style lowercases folder segment", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "i18n",
+          docsOutput: { style: "nested", localePathLowercase: true },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "docs/intro.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/i18n/pt-br/docs/intro.md");
+  });
+
+  it("localePathLowercase on flat style lowercases filename segment", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["README.md"],
+          outputDir: "translated-docs",
+          docsOutput: { style: "flat", localePathLowercase: true },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "README.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/translated-docs/README.pt-br.md");
+  });
+
+  it("astro-starlight with localePathLowercase false preserves BCP-47 folder", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["src/content/docs/feature-showcase.mdx"],
+          outputDir: "src/content/docs",
+          docsOutput: {
+            style: "astro-starlight",
+            docsRoot: "src/content/docs",
+            localePathLowercase: false,
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt-BR",
+      "src/content/docs/feature-showcase.mdx",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/src/content/docs/pt-BR/feature-showcase.mdx");
+  });
+
   it("shouldRewriteFlatMarkdownLinks defaults for flat without template", () => {
     const c = cfg({
       docs: [

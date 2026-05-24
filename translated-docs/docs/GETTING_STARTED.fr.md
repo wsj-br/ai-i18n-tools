@@ -927,11 +927,14 @@ Remplacez l'emplacement où les fichiers traduits sont écrits en définissant `
 
 Si vous utilisez un `pathTemplate` personnalisé, `rewriteRelativeLinks` prend par défaut la valeur `false` sauf si vous la définissez explicitement — la réécriture des liens relatifs est conçue pour fonctionner avec `markdownOutput.style = "flat"` sans modèle personnalisé.
 
+Pour les modèles intégrés (`nested`, `flat`, `doc-system` sans modèle personnalisé), définissez `markdownOutput.localePathLowercase` sur `true` pour écrire les segments de dossiers ou de noms de fichiers en minuscules (par exemple, `pt-br` au lieu de `pt-BR`). L'alias `astro-starlight` définit cette valeur par défaut à `true`. Les valeurs personnalisées de `pathTemplate` / `jsonPathTemplate` restent inchangées — utilisez `{llocale}` lorsque vous avez besoin de segments en minuscules tout en conservant `{locale}` au format BCP-47.
+
 | Espace réservé            | Rôle                                                                                                       | Exemple                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | Chemin absolu résolu du `outputDir` de ce bloc de documentation                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | Code de langue cible (même forme que dans la configuration / CLI) | `de`, `pt-BR` |
 | `{LOCALE}` | Même code langue en majuscules | `DE`, `PT-BR` |
+| `{llocale}`            | Même paramètre régional en minuscules (correspond aux dossiers de routes Astro tels que `pt-br`, `zh-cn`)                               | `de`, `pt-br`                                                    |
 | `{relPath}` | Chemin du fichier source relatif à la racine du projet, en notation POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | Nom du fichier **sans** l'extension | `guide` pour `docs/guide.md` |
 | `{basename}` | Nom du fichier **avec** l'extension | `guide.md` |
@@ -1375,15 +1378,17 @@ Segment de chemin entre `{locale}/` et `{relativeToDocsRoot}` pour `doc-system` 
 - `markdownOutput.docsRoot`
 Répertoire racine des docs sources pour la disposition Docusaurus (par exemple `"docs"`).
 - `markdownOutput.pathTemplate`
-Chemin personnalisé de sortie markdown. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+Chemin de sortie personnalisé pour les fichiers Markdown. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-Chemin personnalisé de sortie JSON pour les fichiers d'étiquettes. Prend en charge les mêmes espaces réservés que `pathTemplate`.
+Chemin de sortie personnalisé pour les fichiers d'étiquettes au format JSON. Prend en charge les mêmes espaces réservés que `pathTemplate`.
+- `markdownOutput.localePathLowercase`
+Lorsque `true`, les modèles de sortie intégrés (`nested`, `flat`, `doc-system` sans `pathTemplate`) utilisent des segments de paramètres régionaux en minuscules dans les chemins. Valeur par défaut `false` ; `astro-starlight` et `doc-system` avec `localeSubpath` vide passent par défaut à `true` lors du chargement de la configuration.
 - `markdownOutput.flatPreserveRelativeDir`
-Lorsque `markdownOutput.style = "flat"`, conserve les sous-répertoires sources afin d'éviter les conflits entre fichiers ayant le même nom de base.
+Lorsque `markdownOutput.style = "flat"`, conserve les sous-répertoires sources afin que les fichiers ayant le même nom de base ne provoquent pas de conflits.
 - `markdownOutput.rewriteRelativeLinks`
-Réécrit les liens relatifs après traduction (activé automatiquement quand `markdownOutput.style = "flat"` est utilisé et qu'aucun `pathTemplate` personnalisé n'est défini).
+Réécrit les liens relatifs après traduction (activé automatiquement lorsque `markdownOutput.style = "flat"` et aucun `pathTemplate` personnalisé).
 - `markdownOutput.linkRewriteDocsRoot`
-Répertoire racine du dépôt utilisé lors du calcul des préfixes de réécriture des liens plats. Laissez généralement à `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
+Répertoire racine du dépôt utilisé lors du calcul des préfixes de réécriture des liens plats. Laissez généralement cette valeur à `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
 
 **Post-traitement**
 
@@ -1461,7 +1466,8 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 | `sourcePath`     | Un ou plusieurs répertoires **ou motifs glob** (par exemple `"images/*.svg"`, `"**/icons/*.svg"`). Les motifs sont résolus par rapport à la racine du projet et analysés récursivement pour les fichiers `.svg`.                                                                         |
 | `outputDir`                   | Répertoire racine pour la sortie SVG traduite.                                                                                                                                                                                                                                          |
 | `style`                       | `"flat"` ou `"nested"` lorsque `pathTemplate` n'est pas défini.                                                                                                                                                                                                                               |
-| `pathTemplate`                | Chemin de sortie personnalisé pour le SVG. Paramètres dynamiques : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `pathTemplate`   | Chemin de sortie personnalisé pour les fichiers SVG. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `localePathLowercase` | Lorsque `true`, les modèles SVG intégrés `flat` / `nested` utilisent des segments de paramètres régionaux en minuscules. Les valeurs personnalisées de `pathTemplate` restent inchangées ; utilisez `{llocale}` pour des segments en minuscules. |
 | `forceLowercase` | Texte traduit en minuscules lors du réassemblage du SVG. Utile pour les designs qui reposent sur des libellés entièrement en minuscules.                                                                                                                                                                                |
 
 <a id="glossary"></a>

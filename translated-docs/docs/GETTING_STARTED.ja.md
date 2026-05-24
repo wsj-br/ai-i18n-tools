@@ -927,11 +927,14 @@ Use `markdownOutput.postProcessing.languageListBlock` when translated markdown f
 
 カスタムの`pathTemplate`を使用する場合、明示的に設定しない限り`rewriteRelativeLinks`はデフォルトで`false`になる。相対リンクの書き換えは、カスタムテンプレートなしの`markdownOutput.style = "flat"`向けに構築されている。
 
+組み込みレイアウト（`nested`, `flat`, `doc-system` カスタムテンプレートなし）の場合、`markdownOutput.localePathLowercase` を `true` に設定して、小文字のロケールフォルダーまたはファイル名セグメント（例: `pt-br` の代わりに `pt-BR`）を書き込みます。`astro-starlight` エイリアスは、これを `true` にデフォルト設定します。カスタム `pathTemplate` / `jsonPathTemplate` 値は変更されません — 小文字のセグメントが必要な場合は `{llocale}` を使用し、`{locale}` は BCP-47 のままにします。
+
 | プレースホルダー            | 役割                                                                                                       | 例                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | このドキュメントブロックの `outputDir` の絶対パス（解決済み）                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | ターゲットロケールコード（設定/CLIと同じ形式） | `de`, `pt-BR` |
 | `{LOCALE}` | 同じロケールを大文字にしたもの | `DE`, `PT-BR` |
+| `{llocale}`            | 同じロケールを小文字にしたもの（`pt-br`、`zh-cn` などの Astro ルートフォルダと一致）                               | `de`、`pt-br`                                                    |
 | `{relPath}` | プロジェクトルートからの相対ソースファイルパス（POSIX `/`） | `docs/guide.md`, `README.md` |
 | `{stem}` | 拡張子 **なし**のファイル名 | `guide` for `docs/guide.md` |
 | `{basename}` | 拡張子付きのファイル名 **with** | `guide.md` |
@@ -1375,15 +1378,17 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 - `markdownOutput.docsRoot`
 Docusaurus レイアウトのためのソースドキュメントのルート（例：`"docs"`）。
 - `markdownOutput.pathTemplate`
-カスタムマークダウン出力パス。プレースホルダー：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
+カスタムマークダウン出力パス。使用可能なプレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `markdownOutput.jsonPathTemplate`
-ラベルファイル用のカスタムJSON出力パス。`pathTemplate` と同じプレースホルダーをサポートします。
+ラベルファイル用のカスタムJSON出力パス。`pathTemplate` と同じプレースホルダーが使用できます。
+- `markdownOutput.localePathLowercase`
+`true` の場合、組み込み出力レイアウト（`nested`、`flat`、`doc-system` で `pathTemplate` を使用しない場合）はパス内のロケールセグメントを小文字で出力します。デフォルトは `false`。設定読み込み時に `localeSubpath` が空の場合、`astro-starlight` および `doc-system` はデフォルトで `true` になります。
 - `markdownOutput.flatPreserveRelativeDir`
-`markdownOutput.style = "flat"` の場合、同じファイル名を持つファイルが衝突しないようにソースのサブディレクトリを保持します。
+`markdownOutput.style = "flat"` の場合、ソースのサブディレクトリ構造を保持し、同じベース名を持つファイルが衝突しないようにします。
 - `markdownOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`markdownOutput.style = "flat"` が有効でカスタム `pathTemplate` がない場合、自動有効になります）。
+翻訳後に相対リンクを書き換えます（`markdownOutput.style = "flat"` が有効でカスタムの `pathTemplate` がない場合、自動的に有効になります）。
 - `markdownOutput.linkRewriteDocsRoot`
-フラットリンクの書き換えプレフィックス計算時に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルート下にある場合を除き、通常は `"."` のままにしてください。
+フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルート以下にある場合を除き、通常は `"."` のままにしてください。
 
 **ポストプロセス**
 
@@ -1461,7 +1466,8 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | `sourcePath`     | 1つ以上のディレクトリ**またはグロブパターン**（例：`"images/*.svg"`、`"**/icons/*.svg"`）。これらのパターンはプロジェクトルートに対して相対的に解決され、`.svg`ファイルを再帰的にスキャンします。                                                                         |
 | `outputDir`                   | 翻訳されたSVG出力のルートディレクトリ。                                                                                                                                                                                                                                          |
 | `style`                       | `pathTemplate` が設定されていない場合のデフォルト値。`"flat"` または `"nested"`。                                                                                                                                                                                                                               |
-| `pathTemplate`                | カスタムSVG出力パス。プレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `pathTemplate`   | カスタムSVG出力パス。使用可能なプレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
+| `localePathLowercase` | `true` の場合、組み込みの `flat` / `nested` SVG レイアウトはロケールセグメントを小文字で使用します。カスタムの `pathTemplate` 値は変更されません。小文字のセグメントが必要な場合は `{llocale}` を使用してください。 |
 | `forceLowercase` | SVGを再構成する際にテキストを小文字に変換します。すべて小文字のラベルに依存するデザインで有用です。                                                                                                                                                                                |
 
 <a id="glossary"></a>

@@ -9,6 +9,7 @@ import { ConfigValidationError } from "./errors.js";
 import {
   coerceTargetLocalesField,
   englishLanguageNameForLocale,
+  localePathPlaceholders,
   normalizeLocale,
   parseLocaleList,
 } from "./locale-utils.js";
@@ -36,7 +37,13 @@ import {
   i18nConfigSchema,
 } from "./types.js";
 
-export { coerceTargetLocalesField, englishLanguageNameForLocale, normalizeLocale, parseLocaleList };
+export {
+  coerceTargetLocalesField,
+  englishLanguageNameForLocale,
+  localePathPlaceholders,
+  normalizeLocale,
+  parseLocaleList,
+};
 
 const DEFAULT_OPENROUTER_MODELS: string[] = [
   "qwen/qwen3-235b-a22b-2507",
@@ -659,7 +666,7 @@ export const initConfigTemplates = {
       {
         description: "Per-locale UI JSON bundle",
         contentPaths: "src/i18n/en/translation.json",
-        outputPathTemplate: "src/i18n/{locale}/translation.json",
+        outputPathTemplate: "src/i18n/{llocale}/translation.json",
         keyPolicy: {
           mode: "denylist",
           skipKeys: ["id", "slug", "href", "url", "key", "code"],

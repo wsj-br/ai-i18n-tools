@@ -3,7 +3,7 @@ import os from "os";
 import path from "path";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { TranslationCache } from "../../src/core/cache.js";
 import {
   createTranslationDashboardApp,
@@ -1906,6 +1906,82 @@ describe("createTranslationDashboardApp", () => {
           expect(u.available).toBe(true);
           expect(g.path).toBe(gv);
           expect(g.available).toBe(true);
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it("PATCH and DELETE /api/glossary-user return 400 when glossary path is not configured", async () => {
+      cache = new TranslationCache(":memory:");
+      const app = createTranslationDashboardApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const patch = await fetch(`${base}/api/glossary-user/0`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ original: "a", locale: "de", translation: "b" }),
+        });
+        expect(patch.status).toBe(400);
+
+        const del = await fetch(`${base}/api/glossary-user/0`, { method: "DELETE" });
+        expect(del.status).toBe(400);
+      });
+    });
+
+    it("GET /api/translations returns 500 when cache.listTranslations throws", async () => {
+      cache = new TranslationCache(":memory:");
+      vi.spyOn(cache, "listTranslations").mockImplementation(() => {
+        throw new Error("db down");
+      });
+      const app = createTranslationDashboardApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const res = await fetch(`${base}/api/translations`);
+        expect(res.status).toBe(500);
+        const body = (await res.json()) as { error: string };
+        expect(body.error).toMatch(/db down/);
+      });
+      vi.restoreAllMocks();
+    });
+
+    it("GET /api/ui-strings keeps non-object translated locale values in plural rows", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-nonobj-locale-"));
+      const sj = path.join(dir, "strings.json");
+      fs.writeFileSync(
+        sj,
+        JSON.stringify({
+          pg: {
+            plural: true,
+            source: "n",
+            translated: { de: { one: "1", other: "2" }, note: "plain string slot" },
+          },
+        }),
+        "utf8"
+      );
+      try {
+        const app = createTranslationDashboardApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          stringsJsonPath: "strings.json",
+        });
+        await withHttpServer(app, async (base) => {
+          const res = await fetch(`${base}/api/ui-strings`);
+          expect(res.ok).toBe(true);
+          const data = (await res.json()) as {
+            entries: Array<{ id: string; translated?: Record<string, unknown> }>;
+          };
+          expect(data.entries.find((e) => e.id === "pg")?.translated?.note).toBe(
+            "plain string slot"
+          );
         });
       } finally {
         fs.rmSync(dir, { recursive: true, force: true });

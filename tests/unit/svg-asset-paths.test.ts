@@ -75,7 +75,7 @@ describe("svg-asset-paths", () => {
     })
   );
 
-  it("expandSvgPathTemplate substitutes svg placeholders", () => {
+  it("expandSvgPathTemplate substitutes svg placeholders including llocale", () => {
     const s = expandSvgPathTemplate("{outputDir}/x/{stem}.{locale}{extension}", {
       outputDir: "/out",
       locale: "pt-BR",
@@ -83,6 +83,14 @@ describe("svg-asset-paths", () => {
       relativeToSourceRoot: "foo.svg",
     });
     expect(s).toBe("/out/x/foo.pt-BR.svg");
+
+    const lower = expandSvgPathTemplate("{outputDir}/{llocale}/{basename}", {
+      outputDir: "/out",
+      locale: "pt-BR",
+      relPath: "images/foo.svg",
+      relativeToSourceRoot: "foo.svg",
+    });
+    expect(lower).toBe("/out/pt-br/foo.svg");
   });
 
   it("resolveSvgAssetOutputPath uses pathTemplate when set (overrides style)", () => {
@@ -116,6 +124,37 @@ describe("svg-asset-paths", () => {
       "icons/a.svg"
     );
     expect(abs).toBe(path.join(cwd, "public/assets/pt-BR/icons/a.svg"));
+  });
+
+  it("resolveSvgAssetOutputPath flat with localePathLowercase uses lowercased locale", () => {
+    const lowerConfig = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en-GB",
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        cacheDir: ".cache",
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
+        svg: {
+          sourcePath: ["images"],
+          outputDir: "public/assets",
+          style: "flat" as const,
+          localePathLowercase: true,
+        },
+      })
+    );
+    const abs = resolveSvgAssetOutputPath(
+      lowerConfig,
+      cwd,
+      "pt-BR",
+      "images/translation_demo_svg.svg",
+      "translation_demo_svg.svg"
+    );
+    expect(abs).toBe(path.join(cwd, "public/assets/translation_demo_svg.pt-br.svg"));
   });
 
   it("svgAssetCacheFilepath prefixes svg-files:", () => {

@@ -927,11 +927,14 @@ en-GB 스크린샷을 `static/assets/`에 배치하고 심볼릭 링크 `docs/as
 
 사용자 정의 `pathTemplate`을 사용하는 경우, 명시적으로 설정하지 않으면 `rewriteRelativeLinks`은 기본적으로 `false`가 됩니다. 상대 링크 재작성은 사용자 정의 템플릿 없이도 `markdownOutput.style = "flat"`용으로 구현되어 있습니다.
 
+내장 레이아웃의 경우 (`nested`, `flat`, `doc-system` 사용자 정의 템플릿 없이), `markdownOutput.localePathLowercase`를 `true`로 설정하여 소문자 로케일 폴더 또는 파일 이름 세그먼트(예: `pt-br` 대신 `pt-BR`)를 작성합니다. `astro-starlight` 별칭은 기본적으로 이를 `true`로 설정합니다. 사용자 정의 `pathTemplate` / `jsonPathTemplate` 값은 변경되지 않으며, `{llocale}`을 사용하여 소문자 세그먼트가 필요할 때 `{locale}`는 BCP-47로 유지합니다.
+
 | 자리 표시자            | 역할                                                                                                       | 예시                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | 이 문서 블록의 `outputDir`에 대한 절대 해결 경로                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | 대상 로캘 코드(설정/CLI에서와 동일한 형식) | `de`, `pt-BR` |
 | `{LOCALE}` | 동일한 로캘을 대문자로 표기 | `DE`, `PT-BR` |
+| `{llocale}`            | 동일한 로케일을 소문자로 표기(예: `pt-br`, `zh-cn`와 같은 Astro 라우트 폴더와 일치)                               | `de`, `pt-br`                                                    |
 | `{relPath}` | 프로젝트 루트를 기준으로 한 소스 파일 경로, POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | 파일 이름 **확장자 없이** | `guide`에 대한 `docs/guide.md` |
 | `{basename}` | 파일 이름 **와** 확장자 | `guide.md` |
@@ -1375,15 +1378,17 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 - `markdownOutput.docsRoot`
 Docusaurus 레이아웃을 위한 소스 문서 루트(e.g. `"docs"`).
 - `markdownOutput.pathTemplate`
-사용자 정의 마크다운 출력 경로. 자리표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+사용자 지정 마크다운 출력 경로. 사용 가능한 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-레이블 파일을 위한 사용자 정의 JSON 출력 경로. `pathTemplate`와 동일한 자리표시자를 지원합니다.
+레이블 파일의 사용자 지정 JSON 출력 경로. `pathTemplate`과(와) 동일한 자리 표시자를 지원합니다.
+- `markdownOutput.localePathLowercase`
+`true`인 경우, 기본 제공 출력 레이아웃(`nested`, `flat`, `doc-system`; `pathTemplate` 없음)은 경로 내 로케일 세그먼트를 소문자로 사용합니다. 기본값은 `false`이며, `astro-starlight` 및 `doc-system`은 `localeSubpath`이(가) 비어 있을 때 구성 로드 시 기본적으로 `true`이(가) 됩니다.
 - `markdownOutput.flatPreserveRelativeDir`
-`markdownOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다.
+`markdownOutput.style = "flat"`인 경우, 소스 하위 디렉터리를 유지하여 동일한 기본 이름을 가진 파일이 충돌하지 않도록 합니다.
 - `markdownOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 다시 작성합니다(`markdownOutput.style = "flat"`이고 사용자 정의 `pathTemplate`가 없을 때 자동 활성화됨).
+번역 후 상대 링크를 다시 작성합니다(`markdownOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동 활성화됨).
 - `markdownOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용되는 리포지터리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두는 것이 좋습니다.
+플랫 링크 재작성 접두사를 계산할 때 사용하는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두는 것이 좋습니다.
 
 **후처리**
 
@@ -1461,7 +1466,8 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | `sourcePath`     | 하나 이상의 디렉터리 **또는 glob 패턴** (예: `"images/*.svg"`, `"**/icons/*.svg"`). 패턴은 프로젝트 루트를 기준으로 상대적으로 해석되며, `.svg` 파일을 재귀적으로 검색합니다.                                                                         |
 | `outputDir`                   | 번역된 SVG 출력의 루트 디렉터리입니다.                                                                                                                                                                                                                                          |
 | `style`                       | `pathTemplate`이 설정되지 않은 경우 `"flat"` 또는 `"nested"`입니다.                                                                                                                                                                                                                               |
-| `pathTemplate`                | 사용자 정의 SVG 출력 경로. 자리표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `pathTemplate`   | 사용자 지정 SVG 출력 경로. 사용 가능한 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `localePathLowercase` | `true`인 경우, 기본 제공 `flat` / `nested` SVG 레이아웃은 소문자 로케일 세그먼트를 사용합니다. 사용자 지정 `pathTemplate` 값은 변경되지 않으며, 소문자 세그먼트가 필요한 경우 `{llocale}`을(를) 사용하십시오. |
 | `forceLowercase` | SVG 재조합 시 소문자로 변환된 텍스트입니다. 모두 소문자 레이블에 의존하는 디자인에 유용합니다.                                                                                                                                                                                |
 
 <a id="glossary"></a>

@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites using large language models via [OpenRouter](https://openrouter.ai/). Two independent workflows: **UI Translation** extracts `t("…")` calls and writes locale-ready JSON for i18next; **Document Translation** translates markdown, MDX, and SVG files with a smart SQLite cache so only changed segments are re-sent to the LLM.
+CLI and toolkit for internationalising JavaScript/TypeScript applications and documentation sites using large language models via [OpenRouter](https://openrouter.ai/). Two independent workflows: **UI Translation** extracts `t("…")` calls and writes locale-ready JSON for i18next; **Document Translation** translates markdown, MDX, and SVG files with a smart SQLite cache so only changed segments are re-sent to the LLM.
 
 
 <small>**Read in other languages:** </small>

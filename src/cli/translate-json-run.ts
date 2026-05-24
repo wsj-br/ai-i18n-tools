@@ -4,7 +4,7 @@ import chalk from "chalk";
 import type { I18nConfig, JsonBlock } from "../core/types.js";
 import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
-import { normalizeLocale } from "../core/locale-utils.js";
+import { localePathPlaceholders, normalizeLocale } from "../core/locale-utils.js";
 import { resolveLocalesForJson } from "../core/ui-languages.js";
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
@@ -31,9 +31,9 @@ export function expandJsonBlockOutputPath(
   const stem = basename.replace(/\.[^.]+$/, "") || basename;
   const extension = path.posix.extname(basename);
   const relativeToSourceRoot = posixRel;
+  const localeVars = localePathPlaceholders(locale);
   const vars: Record<string, string> = {
-    locale,
-    LOCALE: locale,
+    ...localeVars,
     stem,
     basename,
     extension,

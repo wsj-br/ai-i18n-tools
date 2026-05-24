@@ -927,11 +927,14 @@ en-GB स्क्रीनशॉट्स को `static/assets/` में र
 
 यदि आप एक कस्टम `pathTemplate` का उपयोग करते हैं, तो जब तक आप इसे स्पष्ट रूप से सेट नहीं करते, `rewriteRelativeLinks` डिफ़ॉल्ट रूप से `false` होता है — एक कस्टम टेम्पलेट के बिना `markdownOutput.style = "flat"` के लिए सापेक्ष लिंक पुनः लेखन बनाया गया है।
 
+अंतर्निहित लेआउट के लिए (`nested`, `flat`, `doc-system` कस्टम टेम्पलेट के बिना), लोअरकेस लोकेल फ़ोल्डर या फ़ाइलनाम सेगमेंट लिखने के लिए `markdownOutput.localePathLowercase` को `true` पर सेट करें (उदाहरण के लिए `pt-br` के बजाय `pt-BR`)। `astro-starlight` अपर्याय इसे डिफ़ॉल्ट रूप से `true` पर सेट करता है। कस्टम `pathTemplate` / `jsonPathTemplate` मान अपरिवर्तित रहते हैं — जब आपको लोअरकेस सेगमेंट की आवश्यकता हो जबकि `{locale}` को BCP-47 के रूप में रखा जा रहा हो, तो वहाँ `{llocale}` का उपयोग करें।
+
 | प्लेसहोल्डर            | भूमिका                                                                                                       | उदाहरण                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | इस दस्तावेज़ीकरण ब्लॉक के `outputDir` का पूर्ण हल किया गया पथ                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | लक्ष्य स्थानीयकरण कोड (कॉन्फ़िग / CLI में उसी रूप में) | `de`, `pt-BR` |
 | `{LOCALE}` | समान स्थानीयकरण ऊपरी केस में | `DE`, `PT-BR` |
+| `{llocale}`            | समान लोकेल लोअरकेस (Astro मार्ग फ़ोल्डर जैसे `pt-br`, `zh-cn` से मेल खाता है)                               | `de`, `pt-br`                                                    |
 | `{relPath}` | प्रोजेक्ट रूट के सापेक्ष स्रोत फ़ाइल पथ, POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | फ़ाइल नाम **बिना** एक्सटेंशन के | `guide` के लिए `docs/guide.md` |
 | `{basename}` | फ़ाइल का नाम **सहित** एक्सटेंशन | `guide.md` |
@@ -1375,15 +1378,17 @@ Markdown/MDX पृष्ठ शरीर और `.astro` टेम्पले�
 - `markdownOutput.docsRoot`
 Docusaurus लेआउट के लिए स्रोत दस्तावेज़ मूल (उदाहरण के लिए `"docs"`)।
 - `markdownOutput.pathTemplate`
-कस्टम मार्कडाउन आउटपुट पथ। स्थान धारक: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>।
+कस्टम मार्कडाउन आउटपुट पथ। प्लेसहोल्डर: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>।
 - `markdownOutput.jsonPathTemplate`
-लेबल फ़ाइलों के लिए कस्टम JSON आउटपुट पथ। `pathTemplate` के समान स्थान धारकों का समर्थन करता है।
+लेबल फ़ाइलों के लिए कस्टम JSON आउटपुट पथ। `pathTemplate` के समान प्लेसहोल्डर का समर्थन करता है।
+- `markdownOutput.localePathLowercase`
+जब `true`, तो अंतर्निहित आउटपुट लेआउट (`nested`, `flat`, `doc-system` `pathTemplate` के बिना) पथ में लोअरकेस लोकेल सेगमेंट का उपयोग करते हैं। डिफ़ॉल्ट `false`; `astro-starlight` और `doc-system` के साथ खाली `localeSubpath` कोन्फ़िग लोड पर `true` पर डिफ़ॉल्ट होता है।
 - `markdownOutput.flatPreserveRelativeDir`
-जब `markdownOutput.style = "flat"`, तो स्रोत उपडायरेक्टरी बनाए रखें ताकि समान बेसनाम वाली फ़ाइलें टकराएं नहीं।
+जब `markdownOutput.style = "flat"`, तो स्रोत उपडायरेक्टरी को बनाए रखें ताकि समान बेसनाम वाली फ़ाइलें टकराएँ नहीं।
 - `markdownOutput.rewriteRelativeLinks`
-अनुवाद के बाद सापेक्ष लिंक पुनः लिखें (जब `markdownOutput.style = "flat"` और कोई कस्टम `pathTemplate` नहीं हो तो स्वचालित रूप से सक्षम)।
+अनुवाद के बाद सापेक्ष लिंक को पुनः लिखें (जब `markdownOutput.style = "flat"` और कोई कस्टम `pathTemplate` नहीं होता है तो स्वचालित सक्षम)।
 - `markdownOutput.linkRewriteDocsRoot`
-समतल-लिंक पुनः लेखन उपसर्ग की गणना करते समय उपयोग किया जाने वाला रिपो मूल। आमतौर पर इसे `"."` के रूप में छोड़ दें, जब तक कि आपके अनुवादित दस्तावेज़ एक अलग प्रोजेक्ट मूल के तहत नहीं हैं।
+समतल-लिंक पुनः लेखन उपसर्ग की गणना करते समय उपयोग किया जाने वाला रिपो रूट। आमतौर पर इसे `"."` के रूप में छोड़ दें, जब तक कि आपके अनुवादित दस्तावेज़ अलग प्रोजेक्ट रूट के तहत न हों।
 
 **पोस्ट-प्रोसेसिंग**
 
@@ -1461,7 +1466,8 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 | `sourcePath`     | एक या अधिक निर्देशिकाएं **या ग्लोब पैटर्न** (उदाहरण के लिए `"images/*.svg"`, `"**/icons/*.svg"`)। पैटर्न प्रोजेक्ट रूट के सापेक्ष हल किए जाते हैं और `.svg` फ़ाइलों के लिए पुनरावर्ती रूप से स्कैन किए जाते हैं।                                                                         |
 | `outputDir`                   | अनुवादित SVG आउटपुट के लिए रूट निर्देशिका।                                                                                                                                                                                                                                          |
 | `style`                       | जब `pathTemplate` सेट नहीं है तो `"flat"` या `"nested"`।                                                                                                                                                                                                                               |
-| `pathTemplate`                | कस्टम SVG आउटपुट पथ। प्लेसहोल्डर: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>। |
+| `pathTemplate`   | कस्टम SVG आउटपुट पथ। प्लेसहोल्डर: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>। |
+| `localePathLowercase` | जब `true`, तो अंतर्निहित `flat` / `nested` SVG लेआउट लोअरकेस लोकेल सेगमेंट का उपयोग करते हैं। कस्टम `pathTemplate` मान अपरिवर्तित रहते हैं; लोअरकेस सेगमेंट के लिए `{llocale}` का उपयोग करें। |
 | `forceLowercase` | SVG पुनःसंयोजन पर लोअर-केस अनुवादित पाठ। ऐसे डिज़ाइनों के लिए उपयोगी है जो सभी लोअर-केस लेबल पर निर्भर करते हैं।                                                                                                                                                                                |
 
 <a id="glossary"></a>

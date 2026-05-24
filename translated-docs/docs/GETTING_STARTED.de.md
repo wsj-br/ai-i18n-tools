@@ -927,11 +927,14 @@ Legen Sie durch Festlegen von `documentations[].markdownOutput.pathTemplate` (f�
 
 Wenn Sie ein benutzerdefiniertes `pathTemplate` verwenden, wird `rewriteRelativeLinks` standardmäßig auf `false` gesetzt, es sei denn, Sie legen es explizit fest – das Umschreiben relativer Links ist für `markdownOutput.style = "flat"` ohne benutzerdefinierte Vorlage vorgesehen.
 
+Für integrierte Layouts (`nested`, `flat`, `doc-system` ohne benutzerdefinierte Vorlage) setzen Sie `markdownOutput.localePathLowercase` auf `true`, um kleingeschriebene Ordner- oder Dateinamenabschnitte für Gebietsschemata zu verwenden (z. B. `pt-br` statt `pt-BR`). Der Alias `astro-starlight` legt dies standardmäßig auf `true` fest. Benutzerdefinierte `pathTemplate` / `jsonPathTemplate`-Werte bleiben unverändert – verwenden Sie dort `{llocale}`, wenn Sie klein geschriebene Abschnitte benötigen, aber `{locale}` im BCP-47-Format beibehalten möchten.
+
 | Platzhalter            | Rolle                                                                                                       | Beispiel                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | `{outputDir}`          | Absoluter aufgelöster Pfad des `outputDir`-Blocks dieser Dokumentation                                           | `/home/acme/repo/i18n`                                           |
 | `{locale}` | Ziel-Sprachcode (gleiche Form wie in Konfiguration / CLI) | `de`, `pt-BR` |
 | `{LOCALE}` | Dieselbe Sprache in Großbuchstaben | `DE`, `PT-BR` |
+| `{llocale}`            | Gleicher kleingeschriebener Gebietsschemaname (entspricht Astro-Routenordnern wie `pt-br`, `zh-cn`)                               | `de`, `pt-br`                                                    |
 | `{relPath}` | Quelldateipfad relativ zur Projektwurzel, POSIX `/` | `docs/guide.md`, `README.md` |
 | `{stem}` | Dateiname **ohne** Erweiterung | `guide` für `docs/guide.md` |
 | `{basename}` | Dateiname **mit** Erweiterung | `guide.md` |
@@ -1375,15 +1378,17 @@ Pfadsegment zwischen `{locale}/` und `{relativeToDocsRoot}` für `doc-system` (e
 - `markdownOutput.docsRoot`
 Quell-Dokumentations-Stammverzeichnis für das Docusaurus-Layout (z. B. `"docs"`).
 - `markdownOutput.pathTemplate`
-Benutzerdefinierter Markdown-Ausgabepfad. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
+Benutzerdefinierter Ausgabepfad für Markdown. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `markdownOutput.jsonPathTemplate`
-Benutzerdefinierter JSON-Ausgabepfad für Bezeichnungsdateien. Unterstützt dieselben Platzhalter wie `pathTemplate`.
+Benutzerdefinierter JSON-Ausgabepfad für Beschriftungsdateien. Unterstützt dieselben Platzhalter wie `pathTemplate`.
+- `markdownOutput.localePathLowercase`
+Wenn `true`, verwenden integrierte Ausgabelayouts (`nested`, `flat`, `doc-system` ohne `pathTemplate`) kleingeschriebene Gebietsschema-Abschnitte in Pfaden. Standardwert ist `false`; `astro-starlight` und `doc-system` mit leerem `localeSubpath` werden beim Laden der Konfiguration standardmäßig auf `true` gesetzt.
 - `markdownOutput.flatPreserveRelativeDir`
-Wenn `markdownOutput.style = "flat"`, behalten Sie die Quellunterverzeichnisse bei, damit Dateien mit gleichem Basisnamen nicht kollidieren.
+Wenn `markdownOutput.style = "flat"`, werden Quell-Unterverzeichnisse beibehalten, sodass Dateien mit demselben Basisnamen nicht kollidieren.
 - `markdownOutput.rewriteRelativeLinks`
-Relativen Links nach der Übersetzung neu schreiben (automatisch aktiviert, wenn `markdownOutput.style = "flat"` und kein benutzerdefinierter `pathTemplate`).
+Relative Links nach der Übersetzung neu schreiben (automatisch aktiviert, wenn `markdownOutput.style = "flat"` und keine benutzerdefinierte `pathTemplate` vorhanden ist).
 - `markdownOutput.linkRewriteDocsRoot`
-Repository-Stamm, der bei der Berechnung der Präfixe für flache Links verwendet wird. Lassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einer anderen Projektwurzel.
+Repository-Stamm, der bei der Berechnung der Präfixe für flache Links verwendet wird. Lassen Sie dies in der Regel auf `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einer anderen Projektwurzel.
 
 **Nachbearbeitung**
 
@@ -1461,7 +1466,8 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 | `sourcePath`     | Ein oder mehrere Verzeichnisse **oder Glob-Muster** (z. B. `"images/*.svg"`, `"**/icons/*.svg"`). Die Muster werden relativ zum Projektstamm aufgelöst und rekursiv nach `.svg`-Dateien durchsucht.                                                                         |
 | `outputDir`                   | Stammverzeichnis für die übersetzte SVG-Ausgabe.                                                                                                                                                                                                                                          |
 | `style`                       | `"flat"` oder `"nested"`, wenn `pathTemplate` nicht gesetzt ist.                                                                                                                                                                                                                               |
-| `pathTemplate`                | Benutzerdefinierter SVG-Ausgabepfad. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `pathTemplate`   | Benutzerdefinierter SVG-Ausgabepfad. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
+| `localePathLowercase` | Wenn `true`, verwenden integrierte `flat` / `nested` SVG-Layouts kleingeschriebene Gebietsschema-Abschnitte. Benutzerdefinierte `pathTemplate`-Werte bleiben unverändert; verwenden Sie `{llocale}` für klein geschriebene Abschnitte. |
 | `forceLowercase` | Kleinschreibung bei der Übersetzung beim erneuten Zusammensetzen des SVG. Nützlich für Designs, die auf vollständig kleingeschriebenen Beschriftungen basieren.                                                                                                                                                                                |
 
 <a id="glossary"></a>

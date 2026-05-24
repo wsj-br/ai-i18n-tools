@@ -64,7 +64,8 @@
       "outputDir": "src/pages",
       "docsOutput": {
         "style": "astro-starlight",
-        "docsRoot": "src/pages"
+        "docsRoot": "src/pages",
+        "localePathLowercase": true
       },
       "addFrontmatter": false
     }

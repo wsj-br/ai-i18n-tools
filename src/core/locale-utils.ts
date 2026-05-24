@@ -2,6 +2,19 @@
  * Shared locale normalization and list parsing (used by config, ui-languages, CLI).
  */
 
+/** Placeholder values for `{locale}`, `{LOCALE}`, and `{llocale}` in output path templates. */
+export function localePathPlaceholders(locale: string): {
+  locale: string;
+  LOCALE: string;
+  llocale: string;
+} {
+  return {
+    locale,
+    LOCALE: locale.toUpperCase(),
+    llocale: locale.toLowerCase(),
+  };
+}
+
 export function normalizeLocale(locale: string): string {
   const normalized = locale.trim();
   if (normalized.includes("-")) {

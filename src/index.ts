@@ -75,6 +75,7 @@ export {
   coerceTargetLocalesField,
   englishLanguageNameForLocale,
   normalizeLocale,
+  localePathPlaceholders,
   parseLocaleList,
   mergeWithDefaults,
   parseI18nConfig,
