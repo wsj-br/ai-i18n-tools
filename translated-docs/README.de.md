@@ -7,7 +7,7 @@
 [![Lizenz: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten mithilfe großer Sprachmodelle über [OpenRouter](https://openrouter.ai/). Zwei unabhängige Workflows: **UI-Übersetzung** extrahiert `t("…")`-Aufrufe und erzeugt lokalisierte JSON-Dateien für i18next; **Dokumentenübersetzung** übersetzt Markdown-, MDX- und SVG-Dateien mit einem intelligenten SQLite-Cache, sodass nur geänderte Segmente erneut an das LLM gesendet werden.
+CLI und Toolkit zur Internationalisierung von JavaScript-/TypeScript-Anwendungen und Dokumentationsseiten mithilfe großer Sprachmodelle über [OpenRouter](https://openrouter.ai/). Zwei unabhängige Workflows: **UI-Übersetzung** extrahiert `t("…")`-Aufrufe und erzeugt sprachenspezifische JSON-Dateien für i18next; **Dokumentenübersetzung** übersetzt Markdown-, MDX- und SVG-Dateien mit einem intelligenten SQLite-Cache, sodass nur geänderte Segmente erneut an das LLM gesendet werden.
 
 <small>**In anderen Sprachen lesen:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>

@@ -23,12 +23,13 @@
   - [UI 翻譯提示](#ui-translation-prompts)
 - [工作流程 2 - 文件翻譯內部機制](#workflow-2---document-translation-internals)
   - [提取器](#extractors)
+  - [Astro 混合網站 (UI + 頁面 HTML)](#astro-hybrid-sites-ui--page-html)
   - [標題錨點插入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [佔位符保護](#placeholder-protection)
   - [快取 (`TranslationCache`)](#cache-translationcache)
   - [輸出路徑解析](#output-path-resolution)
-  - [平面式連結重寫](#flat-link-rewriting)
-- [共用基礎設施](#shared-infrastructure)
+  - [扁平連結重寫](#flat-link-rewriting)
+- [共享基礎設施](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [設定載入](#config-loading)
   - [記錄器](#logger)
@@ -39,7 +40,7 @@
   - [字串輔助工具](#string-helpers)
 - [程式化 API](#programmatic-api)
 - [擴充點](#extension-points)
-  - [自訂函式名稱 (UI 提取)](#custom-function-names-ui-extraction)
+  - [自訂函數名稱 (UI 提取)](#custom-function-names-ui-extraction)
   - [自訂提取器](#custom-extractors)
   - [自訂輸出路徑](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,8 +266,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - 從 Docusaurus JSON 標籤檔案中提取字串值（Docusaurus UI 目錄，非 MDX 內容）。
 - `SvgExtractor` - 從 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 內容（由 `translate-svg` 用於 `config.svg` 下的檔案，`translate-docs` 不使用）。
 
-<a id="astro-hybrid-sites"></a>
-### Astro 混合式網站（UI + 頁面 HTML）
+<a id="astro-hybrid-sites-ui--page-html"></a>
+### Astro 混合網站 (UI + 頁面 HTML)
 
 純 Astro 應用程式通常在單一設定中啟用 **兩種**工作流程（參考：`examples/astro-website/`）：
 
@@ -307,7 +308,7 @@ Astro 範本與 MDX JSX 的共用屬性/鍵保護機制在 `src/processors/expre
 <a id="cache-translationcache"></a>
 ### 快取 (`TranslationCache`)
 
-SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲存資料列，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相關欄位。雜湊值為標準化內容（空白字元合併）的 SHA-256 前 16 個十六進位字元。
+SQLite 資料庫 (透過 `node:sqlite`) 以 `(source_hash, locale)` 為鍵儲存資料列，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相關欄位。雜湊值是正規化內容 (空白字元已合併) 的 SHA-256 前 16 個十六進位字元。
 
 每次執行時，會根據雜湊值 × 區域設定來查找片段。只有快取未命中時才會呼叫 LLM。翻譯完成後，會重設目前翻譯範圍內未被命中之片段資料列的 `last_hit_at`。`cleanup` 會先執行 `sync --force-update`，然後移除過時的片段資料列（`last_hit_at` 為 null／檔案路徑為空），當磁碟上找不到解析後的原始路徑時，清除 `file_tracking` 的鍵（如 `doc-block:…`、`svg-files:…` 等），並刪除其元資料檔案路徑指向遺失檔案的翻譯資料列；除非傳入 `--no-backup`，否則會先備份 `cache.db`。
 
@@ -330,7 +331,7 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 <a id="flat-link-rewriting"></a>
 ### 平坦式連結重寫
 
-當使用 `markdownOutput.style === "flat"` 時，翻譯後的 Markdown 檔案會與原始檔案並列存放，並加上語系後綴。頁面之間的相對連結會被重寫，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 會指向 `guide.de.md`。此行為由 `rewriteRelativeLinks` 控制（在未使用自訂 `pathTemplate` 的扁平風格中會自動啟用）。同一處理階段還會在 `postProcessing.regexAdjustments` 執行前，為非 Markdown 檔案的資源 URL 加上每檔案的深度前綴——詳見 [語系資源指南](LOCALE-ASSETS-GUIDE.zh-TW.md#the-flat-link-rewriter-and-two-step-flow)。
+當 `docsOutput.style === "flat"` 時，翻譯後的 Markdown 檔案會與原始檔案並列存放，並加上語系後綴。頁面之間的相對連結會被重寫，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。此行為由 `rewriteRelativeLinks` 控制 (在無自訂 `pathTemplate` 時，扁平風格會自動啟用)。同一處理流程會在 `postProcessing.regexAdjustments` 執行前，為非 Markdown 資源 URL 加上每檔案的深度前綴 — 請參閱 [語系資源指南](LOCALE-ASSETS-GUIDE.zh-TW.md#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### 自訂輸出路徑
 
-使用 `markdownOutput.pathTemplate` 來定義任何檔案佈局：
+使用 `docsOutput.pathTemplate` 適用於任何檔案佈局：
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

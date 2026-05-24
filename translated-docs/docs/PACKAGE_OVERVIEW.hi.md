@@ -22,24 +22,25 @@
   - [फ्लैट स्थानीय फ़ाइलें](#flat-locale-files)
   - [यूआई अनुवाद संकेत](#ui-translation-prompts)
 - [वर्कफ़्लो 2 - दस्तावेज़ अनुवाद आंतरिक](#workflow-2---document-translation-internals)
-  - [एक्सट्रैक्टर](#extractors)
+  - [एक्सट्रैक्टर्स](#extractors)
+  - [एस्ट्रो हाइब्रिड साइट्स (UI + पेज HTML)](#astro-hybrid-sites-ui--page-html)
   - [शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
-  - [प्लेसहोल्डर संरक्षण](#placeholder-protection)
+  - [प्लेसहोल्डर सुरक्षा](#placeholder-protection)
   - [कैश (`TranslationCache`)](#cache-translationcache)
-  - [आउटपुट पथ संकल्प](#output-path-resolution)
-  - [फ्लैट लिंक पुनःलेखन](#flat-link-rewriting)
+  - [आउटपुट पथ सं solution](#output-path-resolution)
+  - [फ्लैट लिंक पुन:लेखन](#flat-link-rewriting)
 - [साझा बुनियादी ढांचा](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [कॉन्फ़िग लोडिंग](#config-loading)
   - [लॉगर](#logger)
-- [रनटाइम हेल्पर्स एपीआई](#runtime-helpers-api)
-  - [आरटीएल हेल्पर्स](#rtl-helpers)
+- [रनटाइम हेल्पर्स API](#runtime-helpers-api)
+  - [RTL हेल्पर्स](#rtl-helpers)
   - [i18next सेटअप फैक्ट्रियाँ](#i18next-setup-factories)
   - [डिस्प्ले हेल्पर्स](#display-helpers)
   - [स्ट्रिंग हेल्पर्स](#string-helpers)
-- [प्रोग्रामेटिक एपीआई](#programmatic-api)
+- [प्रोग्रामेटिक API](#programmatic-api)
 - [एक्सटेंशन पॉइंट्स](#extension-points)
-  - [कस्टम फ़ंक्शन नाम (यूआई एक्सट्रैक्शन)](#custom-function-names-ui-extraction)
+  - [कस्टम फ़ंक्शन नाम (UI एक्सट्रैक्शन)](#custom-function-names-ui-extraction)
   - [कस्टम एक्सट्रैक्टर्स](#custom-extractors)
   - [कस्टम आउटपुट पथ](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,8 +266,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - डॉक्यूसॉरस JSON लेबल फ़ाइलों से स्ट्रिंग मान निकालता है (डॉक्यूसॉरस UI कैटलॉग, MDX बॉडी नहीं)।
 - `SvgExtractor` - SVG से `<text>`, `<title>`, और `<desc>` सामग्री निकालता है (`config.svg` के तहत फ़ाइलों के लिए `translate-svg` द्वारा उपयोग किया जाता है, `translate-docs` द्वारा नहीं)।
 
-<a id="astro-hybrid-sites"></a>
-### एस्ट्रो हाइब्रिड साइट्स (UI + पृष्ठ HTML)
+<a id="astro-hybrid-sites-ui--page-html"></a>
+### एस्ट्रो हाइब्रिड साइट्स (UI + पेज HTML)
 
 सामान्यतः सादे एस्ट्रो ऐप्स एक कॉन्फ़िग में **दोनों** कार्यप्रवाह सक्षम करते हैं (संदर्भ: `examples/astro-website/`):
 
@@ -307,7 +308,7 @@ output file  ─────────────────── Docusauru
 <a id="cache-translationcache"></a>
 ### कैश (`TranslationCache`)
 
-SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(source_hash, locale)` द्वारा कुंजीबद्ध पंक्तियों को `translated_text`, `model`, `filepath`, `last_hit_at`, और संबंधित क्षेत्रों के साथ संग्रहीत करता है। हैश सामान्यीकृत सामग्री के SHA-256 के पहले 16 हेक्स अक्षर हैं (स्थान संकुचित)।
+SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(source_hash, locale)` द्वारा कुंजीबद्ध पंक्तियों को `translated_text`, `model`, `filepath`, `last_hit_at`, और संबंधित क्षेत्रों के साथ संग्रहीत करता है। हैश सामान्यीकृत सामग्री (सफेद स्थान संकुचित) के SHA-256 के पहले 16 हेक्स अक्षर हैं।
 
 प्रत्येक रन पर, सेगमेंट्स को हैश × लोकेल द्वारा खोजा जाता है। केवल कैश मिस LLM पर जाते हैं। अनुवाद के बाद, वर्तमान अनुवाद स्कोप में उन सेगमेंट पंक्तियों के लिए `last_hit_at` को रीसेट कर दिया जाता है जिन्हें हिट नहीं किया गया था। `cleanup` पहले `sync --force-update` चलाता है, फिर स्टेल सेगमेंट पंक्तियों को हटा देता है (null `last_hit_at` / खाली फ़ाइलपाथ), जब डिस्क पर स्रोत पथ गायब होता है तो `file_tracking` कुंजियों को हटा देता है (`doc-block:…`, `svg-files:…`, आदि), और उन अनुवाद पंक्तियों को हटा देता है जिनकी मेटाडेटा फ़ाइलपाथ गायब फ़ाइल की ओर इशारा करती है; यह `--no-backup` पारित न होने पर पहले `cache.db` का बैकअप लेता है।
 
@@ -330,7 +331,7 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 <a id="flat-link-rewriting"></a>
 ### सपाट लिंक पुन:लेखन
 
-जब `markdownOutput.style === "flat"`, अनुवादित मार्कडाउन फ़ाइलों को स्रोत के साथ स्थानीय उपसर्गों के साथ रखा जाता है। पृष्ठों के बीच सापेक्ष लिंक पुनः लिखे जाते हैं ताकि `[Guide](../../docs/guide.md)` में `readme.de.md`, `guide.de.md` की ओर इशारा करे। इसे `rewriteRelativeLinks` द्वारा नियंत्रित किया जाता है (बिना कस्टम `pathTemplate` के फ्लैट शैली के लिए स्वचालित रूप से सक्षम)। उसी पास में `postProcessing.regexAdjustments` चलने से पहले गैर-मार्कडाउन एसेट URL के लिए प्रति-फ़ाइल गहराई उपसर्ग को अग्रणी बनाया जाता है — [स्थानीय एसेट गाइड](LOCALE-ASSETS-GUIDE.hi.md#the-flat-link-rewriter-and-two-step-flow) देखें।
+जब `docsOutput.style === "flat"`, तो अनुवादित मार्कडाउन फ़ाइलों को स्रोत के साथ-साथ स्थानीय उपसर्गों के साथ रखा जाता है। पृष्ठों के बीच सापेक्ष लिंक पुनः लिखे जाते हैं ताकि `[Guide](../../docs/guide.md)` में `readme.de.md`, `guide.de.md` की ओर इशारा करे। इसे `rewriteRelativeLinks` द्वारा नियंत्रित किया जाता है (बिना कस्टम `pathTemplate` के फ्लैट शैली के लिए स्वचालित रूप से सक्षम)। उसी पास में `postProcessing.regexAdjustments` चलने से पहले गैर-मार्कडाउन एसेट URL के लिए प्रति-फ़ाइल गहराई उपसर्ग को लगाया जाता है — [स्थानीय एसेट गाइड](LOCALE-ASSETS-GUIDE.hi.md#the-flat-link-rewriter-and-two-step-flow) देखें।
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### कस्टम आउटपुट पथ
 
-किसी भी फ़ाइल लेआउट के लिए `markdownOutput.pathTemplate` का उपयोग करें:
+किसी भी फ़ाइल लेआउट के लिए `docsOutput.pathTemplate` का उपयोग करें:
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

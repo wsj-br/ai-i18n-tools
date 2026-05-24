@@ -23,23 +23,24 @@
   - [UI 翻訳プロンプト](#ui-translation-prompts)
 - [ワークフロー 2 - ドキュメント翻訳の内部構造](#workflow-2---document-translation-internals)
   - [エクストラクター](#extractors)
+  - [Astro ハイブリッドサイト (UI + ページHTML)](#astro-hybrid-sites-ui--page-html)
   - [見出しアンカー挿入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [プレースホルダー保護](#placeholder-protection)
   - [キャッシュ (`TranslationCache`)](#cache-translationcache)
   - [出力パスの解決](#output-path-resolution)
   - [フラットリンクの書き換え](#flat-link-rewriting)
-- [共有インフラ](#shared-infrastructure)
+- [共有インフラストラクチャー](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [設定の読み込み](#config-loading)
   - [ロガー](#logger)
 - [ランタイムヘルパーAPI](#runtime-helpers-api)
-  - [RTL ヘルパー](#rtl-helpers)
-  - [i18next 設定ファクトリ](#i18next-setup-factories)
+  - [RTLヘルパー](#rtl-helpers)
+  - [i18nextセットアップファクトリー](#i18next-setup-factories)
   - [表示ヘルパー](#display-helpers)
   - [文字列ヘルパー](#string-helpers)
 - [プログラムによるAPI](#programmatic-api)
 - [拡張ポイント](#extension-points)
-  - [カスタム関数名 (UI 抽出)](#custom-function-names-ui-extraction)
+  - [カスタム関数名 (UI抽出)](#custom-function-names-ui-extraction)
   - [カスタムエクストラクター](#custom-extractors)
   - [カスタム出力パス](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,8 +266,8 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - DocusaurusのJSONラベルファイルから文字列値を抽出（Docusaurus UIカタログ、MDX本文ではない）。
 - `SvgExtractor` - SVGから`<text>`、`<title>`、`<desc>`の内容を抽出（`config.svg`以下のファイルに対して`translate-svg`で使用、`translate-docs`では使用しない）。
 
-<a id="astro-hybrid-sites"></a>
-### Astroハイブリッドサイト（UI＋ページHTML）
+<a id="astro-hybrid-sites-ui--page-html"></a>
+### Astro ハイブリッドサイト (UI + ページHTML)
 
 シンプルなAstroアプリでは、1つの設定で**両方**のワークフローを有効にすることがよくあります（参照：`examples/astro-website/`）：
 
@@ -307,7 +308,7 @@ AstroテンプレートおよびMDX JSXの共通属性／キー保護は `src/pr
 <a id="cache-translationcache"></a>
 ### キャッシュ (`TranslationCache`)
 
-SQLiteデータベース（`node:sqlite`経由）は、`(source_hash, locale)`をキーとして、`translated_text`、`model`、`filepath`、`last_hit_at`および関連フィールドを持つ行を保存します。ハッシュは、正規化されたコンテンツ（空白を圧縮）のSHA-256の最初の16文字の16進数です。
+SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` をキーとして `translated_text`、`model`、`filepath`、`last_hit_at` および関連フィールドを持つ行を格納します。ハッシュは、正規化されたコンテンツ（空白文字を圧縮）のSHA-256の最初の16文字の16進数です。
 
 各実行時、セグメントはハッシュ × ロケールで検索されます。キャッシュミスの場合のみLLMが呼び出されます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の `last_hit_at` がリセットされます。`cleanup` はまず `sync --force-update` を実行し、その後、古くなったセグメント行（`last_hit_at` が null またはファイルパスが空）を削除し、解決されたソースパスがディスク上に存在しない場合に `file_tracking` キーを整理（`doc-block:…`、`svg-files:…` など）し、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除します。ただし、`--no-backup` が指定されていない限り、最初に `cache.db` のバックアップを取得します。
 
@@ -330,7 +331,7 @@ SQLiteデータベース（`node:sqlite`経由）は、`(source_hash, locale)`�
 <a id="flat-link-rewriting"></a>
 ### フラットリンクの書き換え
 
-`markdownOutput.style === "flat"` 時、翻訳されたMarkdownファイルはロケールの接尾辞を付けてソースファイルと同じ場所に配置されます。ページ間の相対リンクは、`readme.de.md` 内の `[Guide](../../docs/guide.md)` が `guide.de.md` を指すように書き換えられます。これは `rewriteRelativeLinks` によって制御され、カスタム `pathTemplate` を使用しないフラットスタイルでは自動的に有効になります。同じ処理パスでは、`postProcessing.regexAdjustments` 実行前に、非MarkdownアセットのURLにファイルごとの階層深度プレフィックスが付加されます。詳細は[ロケールアセットガイド](LOCALE-ASSETS-GUIDE.ja.md#the-flat-link-rewriter-and-two-step-flow)を参照してください。
+`docsOutput.style === "flat"` 時、翻訳されたMarkdownファイルはロケールサフィックスを付けてソースファイルと同じ場所に配置されます。ページ間の相対リンクは書き換えられ、`readme.de.md` 内の `[Guide](../../docs/guide.md)` が `guide.de.md` を指すようになります。これは `rewriteRelativeLinks` で制御され、カスタム `pathTemplate` を使用しないフラットスタイルでは自動的に有効になります。同じ処理では、`postProcessing.regexAdjustments` 実行前に、非MarkdownアセットのURLにファイルごとの階層深度プレフィックスが付加されます — [ロケールアセットガイド](LOCALE-ASSETS-GUIDE.ja.md#the-flat-link-rewriter-and-two-step-flow) を参照してください。
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### カスタム出力パス
 
-任意のファイル構成に `markdownOutput.pathTemplate` を使用します。
+任意のファイルレイアウトには `docsOutput.pathTemplate` を使用します
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

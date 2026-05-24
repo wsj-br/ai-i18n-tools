@@ -7,7 +7,7 @@
 [![लाइसेंस: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-JavaScript/TypeScript अनुप्रयोगों और दस्तावेज़ीकरण साइटों को [OpenRouter](https://openrouter.ai/) के माध्यम से बड़े भाषा मॉडल का उपयोग करके अंतरराष्ट्रीयकृत करने के लिए CLI और टूलकिट। दो स्वतंत्र कार्यप्रवाह: **UI अनुवाद** `t("…")` कॉल निकालता है और i18next के लिए भाषानुसार तैयार JSON लिखता है; **दस्तावेज़ अनुवाद** मार्कडाउन, MDX और SVG फ़ाइलों का अनुवाद एक स्मार्ट SQLite कैश के साथ करता है ताकि केवल बदले गए खंडों को LLM को फिर से भेजा जाए।
+JavaScript/TypeScript अनुप्रयोगों और दस्तावेज़ीकरण साइटों को [OpenRouter](https://openrouter.ai/) के माध्यम से बड़े भाषा मॉडल का उपयोग करके अंतरराष्ट्रीयकरण के लिए CLI और टूलकिट। दो स्वतंत्र कार्यप्रवाह: **UI अनुवाद** `t("…")` कॉल निकालता है और i18next के लिए स्थान-तैयार JSON लिखता है; **दस्तावेज़ अनुवाद** मार्कडाउन, MDX और SVG फ़ाइलों का अनुवाद करता है एक स्मार्ट SQLite कैश के साथ ताकि केवल बदले गए खंडों को LLM को फिर से भेजा जाए।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>

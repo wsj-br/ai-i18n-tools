@@ -7,7 +7,7 @@
 [![라이선스: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-[OpenRouter](https://openrouter.ai/)를 통해 대규모 언어 모델(LLM)을 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. 두 가지 독립적인 워크플로우를 제공합니다: **UI 번역**은 `t("…")` 호출을 추출하고 i18next용 로케일 준비된 JSON을 생성하며, **문서 번역**은 스마트한 SQLite 캐시를 사용하여 변경된 세그먼트만 LLM에 재전송하면서 마크다운, MDX, SVG 파일을 번역합니다.
+대규모 언어 모델을 [OpenRouter](https://openrouter.ai/)를 통해 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. 두 가지 독립적인 워크플로우: **UI 번역**은 `t("…")` 호출을 추출하고 i18next를 위한 로케일 대응 JSON을 생성하며, **문서 번역**은 마크다운, MDX, SVG 파일을 번역하고 변경된 세그먼트만 LLM에 재전송하도록 하는 스마트한 SQLite 캐시를 사용합니다.
 
 <small>**다른 언어로 읽기:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>

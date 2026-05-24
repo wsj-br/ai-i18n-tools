@@ -7,7 +7,7 @@
 [![授權許可：MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-透過 [OpenRouter](https://openrouter.ai/) 使用大型語言模型來國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 與工具包。提供兩種獨立的工作流程：**UI 翻譯** 提取 `t("…")` 呼叫並為 i18next 生成符合語系格式的 JSON；**文件翻譯** 則可翻譯 Markdown、MDX 和 SVG 檔案，並搭配智慧型 SQLite 快取，僅將變更的段落重新傳送給 LLM。
+透過 [OpenRouter](https://openrouter.ai/) 使用大型語言模型來國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 與工具包。提供兩種獨立工作流程：**UI 翻譯** 提取 `t("…")` 呼叫並生成符合 i18next 格式的多語系 JSON 檔案；**文件翻譯** 則可翻譯 Markdown、MDX 與 SVG 檔案，並搭配智慧型 SQLite 快取，僅將變更過的段落重新傳送給 LLM。
 
 <small>**以其他語言閱讀：** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>

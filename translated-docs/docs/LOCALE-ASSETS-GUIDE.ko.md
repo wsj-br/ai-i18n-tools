@@ -5,16 +5,16 @@
 
 SVG 설정 참조는 [GETTING_STARTED.md](GETTING_STARTED.ko.md)의 [`svg`](#svg) 섹션을 참조하세요. `postProcessing.regexAdjustments` 옵션은 [설정 참조](GETTING_STARTED.ko.md#configuration-reference)를 참조하세요.
 
-| 설정 경로 | 값 | 사용 사례 | 비고 |
+| 구성 경로 | 값 | 사용 사례 | 참고 사항 |
 |-------------|-------|----------|-------|
-| `documentations[].markdownOutput.style` | `"flat"` | 로케일 접미사가 붙은 README / USER-GUIDE 파일 | 평면 링크 재작성기 활성화; 소스가 하위 디렉터리에 있는 경우 `flatPreserveRelativeDir`와 함께 사용 |
-| `documentations[].markdownOutput.style` | `"nested"` (기본값) | `outputDir` 아래의 간단한 로케일 하위 폴더 | 평면 링크 재작성기 미사용 |
-| `documentations[].markdownOutput.style` | `"doc-system"` | 로케일 접두사가 붙은 문서 트리(사용자 생성기) | `docsRoot` 및 `localeSubpath` 설정; 평면 링크 재작성기 미실행 |
-| `documentations[].markdownOutput.style` | `"docusaurus"` / `"astro-starlight"` | 사전 설정된 `doc-system` 레이아웃 | `localeSubpath`에 대한 생성기별 기본값이 있는 별칭 |
+| `docs[].docsOutput.style` | `"flat"` | 로케일 접미사가 붙은 README / USER-GUIDE 파일 | 평면 링크 재작성기 활성화; 소스가 하위 디렉터리에 있는 경우 `flatPreserveRelativeDir`와 함께 사용 |
+| `docs[].docsOutput.style` | `"nested"` (기본값) | `outputDir` 아래의 간단한 로케일 하위 폴더 | 평면 링크 재작성기 미사용 |
+| `docs[].docsOutput.style` | `"doc-system"` | 로케일 접두사가 붙은 문서 트리 (사용자 생성기) | `docsRoot` 및 `localeSubpath` 설정; 평면 링크 재작성기 미실행 |
+| `docs[].docsOutput.style` | `"docusaurus"` / `"astro-starlight"` | 미리 정의된 `doc-system` 레이아웃 | 생성기별 기본값이 지정된 `localeSubpath`에 대한 별칭 |
 | `svg.style` | `"flat"` | 웹 앱(`name.<locale>.svg`이 `public/assets/`에 있음) | 마크다운 `style`와 별도; `translate-svg`에서 사용 |
 | `svg.style` | `"nested"` | 문서 시스템과 함께 위치한 SVG 출력 | 종종 `pathTemplate`와 함께 사용(패턴 E) |
 
-이 가이드는 영어 단어만 사용하는 대신 설정에서 사용하는 정확한 JSON 문자열을 사용하여 번역본에서도 모호함이 없도록 합니다.
+이 가이드는 영어 단어 대신 구성 파일의 정확한 JSON 문자열을 사용하여 번역본에서도 의미가 명확하게 유지되도록 합니다. 로드 시 이전 키(`documentations`, `markdownOutput`)는 허용되지만, 새 구성에서는 `docs` 및 `docsOutput` 사용을 권장합니다.
 
 <small>**다른 언어로 읽기:** </small>
 <small id="lang-list">[English (GB)](../../docs/LOCALE-ASSETS-GUIDE.md) · [Deutsch](./LOCALE-ASSETS-GUIDE.de.md) · [Español](./LOCALE-ASSETS-GUIDE.es.md) · [Français](./LOCALE-ASSETS-GUIDE.fr.md) · [हिन्दी](./LOCALE-ASSETS-GUIDE.hi.md) · [日本語](./LOCALE-ASSETS-GUIDE.ja.md) · [한국어](./LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](./LOCALE-ASSETS-GUIDE.pt-BR.md) · [中文 (中国大陆)](./LOCALE-ASSETS-GUIDE.zh-CN.md) · [中文 (台灣)](./LOCALE-ASSETS-GUIDE.zh-TW.md)</small>
@@ -24,43 +24,43 @@ SVG 설정 참조는 [GETTING_STARTED.md](GETTING_STARTED.ko.md)의 [`svg`](#svg
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [ai-i18n-tools가 자산(asset)과 함께 수행하는 작업(그리고 수행하지 않는 작업)](#what-ai-i18n-tools-does-and-does-not-do-with-assets)
+- [ai-i18n-tools가 자산(asset)과 함께 수행하는 작업 및 미수행 작업](#what-ai-i18n-tools-does-and-does-not-do-with-assets)
 - [초기부터 i18n을 고려한 설계](#design-for-i18n-from-the-start)
-  - [`markdownOutput.style = "flat"`을 사용한 마크다운(README, USER-GUIDE)](#markdown-with-markdownoutputstyle--flat-readme-user-guide)
-  - [문서 시스템 사이트(`markdownOutput.style = "doc-system"`)](#doc-system-sites-markdownoutputstyle--doc-system)
-    - [Docusaurus 사전 설정](#docusaurus-preset)
-    - [Astro/Starlight 사전 설정](#astrostarlight-preset)
+  - [`docsOutput.style = "flat"`를 사용한 Markdown (README, USER-GUIDE)](#markdown-with-docsoutputstyle--flat-readme-user-guide)
+  - [문서 시스템 사이트(`docsOutput.style = "doc-system"`)](#doc-system-sites-docsoutputstyle--doc-system)
+    - [Docusaurus 프리셋](#docusaurus-preset)
+    - [Astro/Starlight 프리셋](#astrostarlight-preset)
   - [SVG 자산을 사용하는 웹 앱(Next.js, Vite 등)](#web-apps-nextjs-vite-etc-with-svg-assets)
 - [결정 가이드](#decision-guide)
-- [패턴 A - 공유 래스터](#pattern-a--shared-raster)
+- [패턴 A - 공유 래스터](#pattern-a---shared-raster)
   - [구현 예시](#implementation-example)
-- [패턴 B - 로케일별 폴더(URL 재작성)](#pattern-b--per-locale-folder-url-rewriting)
+- [패턴 B - 로케일별 폴더(URL 재작성)](#pattern-b---per-locale-folder-url-rewriting)
   - [디렉터리 구조](#directory-layout)
   - [스크린샷 스크립트 계약](#screenshot-script-contract)
-  - [설정 - `markdownOutput.style = "flat"`](#config--markdownoutputstyle--flat)
-  - [설정 - `markdownOutput.style = "doc-system"`](#config--markdownoutputstyle--doc-system)
-  - [사전 설정 - `markdownOutput.style = "docusaurus"`](#preset--markdownoutputstyle--docusaurus)
-  - [사전 설정 - `markdownOutput.style = "astro-starlight"`](#preset--markdownoutputstyle--astro-starlight)
-- [패턴 C - 함께 위치한 래스터(`doc-system`)](#pattern-c--colocated-raster-doc-system)
+  - [구성 - `docsOutput.style = "flat"`](#config---docsoutputstyle--flat)
+  - [구성 - `docsOutput.style = "doc-system"`](#config---docsoutputstyle--doc-system)
+  - [프리셋 - `docsOutput.style = "docusaurus"`](#preset---docsoutputstyle--docusaurus)
+  - [프리셋 - `docsOutput.style = "astro-starlight"`](#preset---docsoutputstyle--astro-starlight)
+- [패턴 C - 함께 위치한 래스터(`doc-system`)](#pattern-c---colocated-raster-doc-system)
   - [디렉터리 구조](#directory-layout-1)
   - [스크린샷 스크립트 계약](#screenshot-script-contract-1)
   - [설정](#config)
   - [전제 조건](#prerequisites)
   - [구현 예시](#implementation-example-1)
-- [패턴 D - `svg.style = "flat"`을 사용한 번역된 SVG](#pattern-d--translated-svg-with-svgstyle--flat)
-  - [설정](#config-1)
+- [패턴 D - `svg.style = "flat"`를 사용한 번역된 SVG](#pattern-d---translated-svg-with-svgstyle--flat)
+  - [구성](#config-1)
   - [앱 참조](#app-reference)
   - [소스 구조 권장 사항](#source-layout-recommendation)
   - [구현 예시](#implementation-example-2)
-- [패턴 E - 함께 위치한 번역된 SVG(문서 시스템)](#pattern-e--colocated-translated-svg-doc-system)
-  - [설정](#config-2)
+- [패턴 E - 함께 위치한 번역된 SVG (문서 시스템)](#pattern-e---colocated-translated-svg-doc-system)
+  - [구성](#config-2)
   - [소스 마크다운](#source-markdown)
   - [SVG 소스 위치](#svg-source-location)
   - [`pathTemplate` 자리 표시자](#pathtemplate-placeholders)
   - [구현 예시](#implementation-example-3)
 - [평면 링크 재작성기 및 2단계 흐름](#the-flat-link-rewriter-and-two-step-flow)
-  - [`markdownOutput.style = "flat"`일 때 2단계 흐름](#two-step-flow-when-markdownoutputstyle--flat)
-  - [`flatPreserveRelativeDir`을 사용한 파일별 깊이 접두사](#per-file-depth-prefix-with-flatpreserverelativedir)
+  - [`docsOutput.style = "flat"`일 때의 2단계 흐름](#two-step-flow-when-docsoutputstyle--flat)
+  - [`flatPreserveRelativeDir`를 사용한 파일별 깊이 접두사](#per-file-depth-prefix-with-flatpreserverelativedir)
   - [`rewriteRelativeLinks` 및 `linkRewriteDocsRoot`](#rewriterelativelinks-and-linkrewritedocsroot)
 - [일반적인 실수 및 문제 해결](#common-mistakes-and-troubleshooting)
 
@@ -82,8 +82,8 @@ SVG 설정 참조는 [GETTING_STARTED.md](GETTING_STARTED.ko.md)의 [`svg`](#svg
 
 스크린샷이 존재하기 전에 올바른 디렉토리 레이아웃을 선택하는 것은 나중에 로케일별 자산이 얼마나 수월한지를 결정짓는 가장 큰 요소입니다. 수십 개의 스크린샷이 커밋된 후 레이아웃을 수정하는 것은 경로를 재구성하고 모든 마크다운 참조를 업데이트해야 함을 의미합니다.
 
-<a id="markdown-with-markdownoutputstyle--flat-readme-user-guide"></a>
-### `markdownOutput.style = "flat"`와 함께하는 마크다운 (README, 사용자 가이드)
+<a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
+### `docsOutput.style = "flat"`를 사용한 Markdown (README, USER-GUIDE)
 
 첫날부터 로케일 코드가 포함된 하위 디렉토리에 스크린샷을 저장하세요:
 
@@ -103,10 +103,10 @@ images/screenshots/en-GB/settings.png
 
 일반적인 `[^/]+` 패턴은 모든 로케일 폴더 이름과 일치합니다 — 소스 로케일(예: `screenshots/en-GB/`)을 하드코딩하지 마세요. `sourceLocale`가 변경되면 그게 깨집니다.
 
-로케일 하위 디렉토리(`images/screenshots/translate.png`)를 생략한 경로로 시작하면, 패턴 B가 작동하기 전에 전체 트리를 재구성해야 합니다.
+로케일 하위 디렉터리를 생략한 경로(`images/screenshots/translate.png`)로 시작하는 경우, 패턴 B를 사용하기 전에 전체 트리를 재구성해야 합니다.
 
-<a id="doc-system-sites-markdownoutputstyle--doc-system"></a>
-### 문서 시스템 사이트 (`markdownOutput.style = "doc-system"`)
+<a id="doc-system-sites-docsoutputstyle--doc-system"></a>
+### 문서 시스템 사이트(`docsOutput.style = "doc-system"`)
 
 로케일 접두사가 있는 트리 아래에 번역된 페이지를 저장하는 정적 문서 사이트에 사용하세요 — Docusaurus i18n, Astro Starlight 및 동일한 형태를 따르는 사용자 정의 생성기. `docsRoot` 아래의 파일은 다음과 같이 작성됩니다:
 
@@ -114,7 +114,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`documentations[].markdownOutput.docsRoot`를 영어 소스 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정하세요. `style: "doc-system"`를 직접 설정할 때, `{locale}/`와 번역된 파일 사이에서 사이트가 사용하는 경로 세그먼트에 `localeSubpath`도 설정해야 합니다. 별칭 `"docusaurus"` 및 `"astro-starlight"`는 기본 `localeSubpath` 값이 있는 사전 설정된 `doc-system` 레이아웃입니다 (자세한 내용은 [출력 레이아웃](GETTING_STARTED.ko.md#output-layouts) 참조).
+`docs[].docsOutput.docsRoot`을 영문 소스 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정합니다. `style: "doc-system"`을 직접 설정할 경우, 사이트가 `{locale}/`와 번역된 파일 사이에 사용하는 경로 세그먼트를 `localeSubpath`에 반드시 설정해야 합니다. `"docusaurus"` 및 `"astro-starlight"` 별칭은 기본 `localeSubpath` 값을 가진 미리 정의된 `doc-system` 레이아웃입니다([출력 레이아웃](GETTING_STARTED.ko.md#output-layouts) 참조).
 
 | 사전 설정된 별칭 | 기본 `localeSubpath` | 예제 출력 |
 |--------------|-------------------------|----------------|
@@ -123,7 +123,7 @@ images/screenshots/en-GB/settings.png
 
 플랫 링크 리라이터는 `doc-system`에 대해 **작동하지 않습니다** (`"flat"`와는 다르게). `postProcessing.regexAdjustments`는 소스 마크다운에서 원래 URL을 봅니다 — 일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로 또는 사이트 루트 경로입니다.
 
-**패턴 B**는 스크린샷이 공유된 정적 URL 트리에 있을 때 적용됩니다: 첫날부터 로케일 코드가 포함된 폴더를 사용하고 하나의 일반적인 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용하세요 (자세한 내용은 [구성 — 문서 시스템](#config--markdownoutputstyle--doc-system) 참조).
+**패턴 B**는 스크린샷이 공유 정적 URL 트리에 존재할 때 적용됩니다: 처음부터 로케일 코드가 포함된 폴더를 사용하고 하나의 일반적인 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용하세요([구성 — 문서 시스템](#config---docsoutputstyle--doc-system) 참조).
 
 **패턴 C**는 각 로케일의 번역된 문서가 자산을 마크다운 옆에 배치할 때 적용됩니다 (URL 재작성 없음). 당신의 스크린샷 스크립트는 `{outputDir}`, `{locale}`, `{localeSubpath}`에서 파생된 경로에 PNG를 작성해야 합니다 — 아래의 Docusaurus 사전 설정은 참조 레이아웃입니다.
 
@@ -138,14 +138,14 @@ images/screenshots/en-GB/settings.png
 
 소스 마크다운에서는 항상 안정적인 상대 경로 `../assets/name.ext`을(를) 사용하여 자산을 참조하세요. 절대 경로 `/img/` 또는 `/assets/` URL을 문서 자산에 사용하지 마세요. 이러한 URL은 영어 원본(`static/`에서 제공됨)과 번역된 로케일(번역된 문서와 함께 제공됨) 간에 달라지며, 이로 인해 `regexAdjustments` 규칙을 사용하여 연결해야 합니다.
 
-나중에 i18n을 추가할 때 스크린샷 스크립트는 `getScreenshotDir` 분할 방식(예: [패턴 C](#pattern-c--docusaurus-colocated) 참조)을 따르며 `translate-svg`은(는) `pathTemplate`을(를) 사용합니다. 정규식 조정이 필요하지 않습니다.
+나중에 i18n을 추가할 때 스크린샷 스크립트는 `getScreenshotDir` 분할을 채택하고(자세한 내용은 [패턴 C](#pattern-c---colocated-raster-doc-system) 참조) `translate-svg`은 `pathTemplate`를 사용합니다. 정규식 조정은 필요하지 않습니다.
 
 > **참고:** `resolve.symlinks = false`을(를) `next.config.ts`에 설정하면 Next.js 애플리케이션의 webpack 빌드에서만 심볼릭 링크 해결이 비활성화됩니다. Docusaurus 문서 사이트 빌드에는 영향을 주지 않으며, 이는 별도의 webpack 인스턴스를 사용합니다.
 
 <a id="astrostarlight-preset"></a>
 #### Astro/Starlight 프리셋
 
-`markdownOutput.style = "doc-system"`과(와) `localeSubpath: ""`과(와) 동일합니다 — 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치합니다.
+`docsOutput.style = "doc-system"`에 `localeSubpath: ""`을 설정한 것과 동일하며, 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치합니다.
 
 처음부터 로케일 코드가 포함된 경로 아래에 스크린샷을 저장하세요:
 
@@ -189,7 +189,7 @@ Is the asset an SVG with translatable text or labels?
 
 | 패턴 | 자산 유형                  | 사이트 유형                                                                 | 도구 메커니즘                                               |
 |---------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| A       | 래스터(공유)             | `markdownOutput.style = "flat"` 문서                                      | 파일별 링크 재작성기; 일반적으로 정규식 없음                     |
+| A       | 래스터 (공유)             | `docsOutput.style = "flat"` 문서                                      | 파일별 링크 재작성기; 일반적으로 정규식 미사용                     |
 | B       | 래스터(로케일별)         | `"flat"` 또는 `"doc-system"` (`"docusaurus"`, `"astro-starlight"` 포함)    | `regexAdjustments` 로케일 세그먼트 교체                       |
 | C       | 래스터(공동 위치)          | 자산이 함께 위치한 `"doc-system"` (Docusaurus 프리셋)                  | 스크린샷 스크립트가 파일 배치; 정규식 없음                     |
 | D       | SVG(번역됨)            | 웹 앱                                                                   | `translate-svg`과(와) `svg.style = "flat"`                    |
@@ -197,10 +197,10 @@ Is the asset an SVG with translatable text or labels?
 
 ---
 
-<a id="pattern-a--shared-raster"></a>
+<a id="pattern-a---shared-raster"></a>
 ## 패턴 A - 공유 래스터
 
-`markdownOutput.style = "flat"`일 때, 단일 이미지를 모든 로케일에서 공유하는 경우(로케일별 변형 없음) 사용합니다. 평면 링크 재작성기가 출력 파일별로 깊이 접두사를 계산하므로, 소스 파일 옆에 있는 에셋(예: `docs/figure.png`을 `docs/page.md`에서 `figure.png`로 참조)이 모든 번역된 출력에서 올바르게 해결됩니다. 따라서 `postProcessing.regexAdjustments` 규칙이 필요하지 않습니다.
+`docsOutput.style = "flat"`일 때 단일 이미지가 모든 로케일에서 공유되는 경우(로케일별 변형 없음) 사용합니다. 평면 링크 리라이터가 출력 파일별로 깊이 접두사를 계산하므로, 소스 파일 옆에 있는 에셋(예: `docs/figure.png`을 `docs/page.md`에서 `figure.png`로 참조)이 모든 번역된 출력에서 올바르게 해결됩니다. 따라서 `postProcessing.regexAdjustments` 규칙이 필요하지 않습니다.
 
 예: 이 패키지는 `docs/GETTING_STARTED.md`을(를) `translated-docs/docs/GETTING_STARTED.<locale>.md`로 변환합니다. 형제 이미지 `docs/translation-dashboard.png`는 `translation-dashboard.png`로 참조됩니다. 리라이터는 출력 파일의 디렉터리에서 소스 디렉터리로 돌아가는 각 파일별 접두사를 계산하여(`../../docs/`), `../../docs/translation-dashboard.png`를 생성합니다. `translated-docs/docs/`에서 이는 올바르게 `docs/translation-dashboard.png`로 해결됩니다.
 
@@ -213,14 +213,14 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 구현 예시
 
-이 저장소는 번역 대시보드 스크린샷에 패턴 A를 사용합니다. [GETTING_STARTED.md](GETTING_STARTED.ko.md#translation-dashboard)는 동일한 폴더 내의 이미지 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png)를 참조합니다. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)는 `markdownOutput.style = "flat"` 및 `flatPreserveRelativeDir: true`을 설정합니다. 각 파일별 깊이 접두사는 스크린샷 `regexAdjustments` 없이 이미지 경로를 해결합니다.
+이 저장소는 번역 대시보드 스크린샷에 대해 패턴 A를 사용합니다: [GETTING_STARTED.md](GETTING_STARTED.ko.md#translation-dashboard)는 동일한 폴더 내 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) 이미지를 참조합니다. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)는 `docsOutput.style = "flat"` 및 `flatPreserveRelativeDir: true`을 설정합니다. 파일별 깊이 접두사가 스크린샷 `regexAdjustments` 없이 이미지 경로를 해결합니다.
 
 ---
 
-<a id="pattern-b--per-locale-folder-url-rewriting"></a>
+<a id="pattern-b---per-locale-folder-url-rewriting"></a>
 ## 패턴 B - 로케일별 폴더(URL 재작성)
 
-`markdownOutput.style = "flat"`이 있는 README/USER-GUIDE 및 공유 정적 URL 트리에서 스크린샷을 제공하는 문서 시스템 사이트(`markdownOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`)에 사용합니다.
+`docsOutput.style = "flat"`이 있는 README/USER-GUIDE 및 공유 정적 URL 트리에서 스크린샷을 제공하는 문서 시스템 사이트(`docsOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`)에 사용합니다.
 
 <a id="directory-layout"></a>
 ### 디렉터리 구조
@@ -260,14 +260,14 @@ function getScreenshotDir(locale) {
 }
 ```
 
-[examples/nextjs-app의 스크린샷 스크립트](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh)에서 간단한 `bash` 예시를 확인하거나, [Transrewrt 프로젝트](https://github.com/wsj-br/transrewrt) 저장소의 [take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js)에서 더 복잡한 예시를 확인할 수 있습니다.
+[examples/nextjs-app]의 [스크린샷 스크립트](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh)에서 간단한 `bash` 예제를 확인하거나, [Transrewrt 프로젝트](https://github.com/wsj-br/transrewrt) 저장소의 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)에서 더 복잡한 예제를 확인할 수 있습니다.
 
-> **참고:** 아래 네 개의 하위 섹션은 모두 동일한 `regexAdjustments` 로케일 세그먼트 교체(`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`)를 공유합니다. 출력 레이아웃과 평면 링크 재작성기 실행 순서만 다릅니다. 자신의 `markdownOutput.style`와 일치하는 하위 섹션으로 이동하세요.
+> **참고:** 아래 네 개의 하위 섹션은 동일한 `regexAdjustments` 로케일 세그먼트 교환(`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`)을 공유합니다. 출력 레이아웃과 평면 링크 리라이터가 먼저 실행되는지 여부만 다릅니다. 사용자의 `docsOutput.style`에 맞는 하위 섹션으로 이동하세요.
 
-<a id="config--markdownoutputstyle--flat"></a>
-### 구성 - `markdownOutput.style = "flat"`
+<a id="config---docsoutputstyle--flat"></a>
+### 설정 - `docsOutput.style = "flat"`
 
-`markdownOutput.style = "flat"`일 때 평면 링크 재작성기가 먼저 실행되며 마크다운이 아닌 URL에 깊이 접두사를 추가합니다. 저장소 루트에 있는 `README.md` 및 `outputDir: "translated-docs/"`의 경우, `../`가 추가됩니다:
+`docsOutput.style = "flat"`일 때 평면 링크 리라이터가 먼저 실행되며, 마크다운이 아닌 URL에 깊이 접두사를 추가합니다. `outputDir: "translated-docs/"`가 있는 저장소 루트의 `README.md`의 경우, `../`을 추가합니다:
 
 ```
 images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/translate.png
@@ -279,7 +279,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>플랫 레이아웃을 위한 예제 regexAdjustments</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "flat",
   "postProcessing": {
     "regexAdjustments": [
@@ -299,12 +299,12 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `postProcessing` 단계는 평면 링크 재작성기 후에 실행됩니다. 패턴에 `../` 접두사를 포함할 필요 없이, 이미 접두사가 붙은 URL 내 어디에나 있는 로케일 세그먼트와 일치하도록 `search` 패턴을 작성하세요.
 
-구현 예제(프로덕션): [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)의 스크린샷 URL (`images/screenshots/en-GB/…`), [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)의 로케일 재작성, 캡처 스크립트 [take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js) ([screenshot script contract](#screenshot-script-contract) 참조).
+구현 예제(프로덕션): [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)의 스크린샷 URL(`images/screenshots/en-GB/…`), [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)의 로케일 재작성, 캡처 스크립트 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)(위의 [스크린샷 스크립트 계약](#screenshot-script-contract) 참조).
 
-구현 예제(데모 설정): [examples/nextjs-app](../../docs/../examples/nextjs-app/) — [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)의 두 번째 `documentations[]` 블록 (`images/screenshots/[^/]+/` → `${translatedLocale}`); 헬퍼 스크립트 [screenshot-locales.sh](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh).
+구현 예제(데모 설정): [examples/nextjs-app](../../docs/../examples/nextjs-app/) — [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)의 두 번째 `docs[]` 블록(`images/screenshots/[^/]+/` → `${translatedLocale}`); 도우미 스크립트 [screenshot-locales.sh](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh).
 
-<a id="config--markdownoutputstyle--doc-system"></a>
-### 설정 - `markdownOutput.style = "doc-system"`
+<a id="config---docsoutputstyle--doc-system"></a>
+### 설정 - `docsOutput.style = "doc-system"`
 
 공유 정적 URL 접두사를 통해 스크린샷을 참조하는 모든 문서 시스템 사이트에 대한 일반 패턴 B. 평면 링크 재작성기는 실행되지 않으며, `postProcessing`가 원본 마크다운 URL의 로케일 세그먼트를 재작성합니다.
 
@@ -312,7 +312,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>문서 시스템 레이아웃을 위한 예제 regexAdjustments</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "doc-system",
   "docsRoot": "docs",
   "localeSubpath": "your-generator/locale/content/path",
@@ -338,8 +338,8 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 모든 대상 로케일에 대해 동일한 경로에 일치하는 PNG 파일을 제공합니다(예: `static/img/screenshots/de/screenshot.png`). `sourceLocale` 변경 시에도 규칙이 유지되도록 하기 위해 `screenshots/en-GB/`를 하드코딩하는 것보다 `screenshots/[^/]+/` 사용을 권장합니다.
 
-<a id="preset--markdownoutputstyle--docusaurus"></a>
-### 사전 설정 - `markdownOutput.style = "docusaurus"`
+<a id="preset---docsoutputstyle--docusaurus"></a>
+### 사전 설정 - `docsOutput.style = "docusaurus"`
 
 `"doc-system"`과 동일하나 기본값 `localeSubpath = "docusaurus-plugin-content-docs/current"` 사용. 평면 링크 재작성기는 실행되지 않으며, `postProcessing`는 원본 마크다운 URL을 그대로 인식합니다. 영문 페이지는 일반적으로 소스 로케일이 포함된 절대 경로를 사용합니다:
 
@@ -351,7 +351,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>Docusaurus 프리셋을 위한 예제 regexAdjustments</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "docusaurus",
   "postProcessing": {
     "regexAdjustments": [
@@ -369,10 +369,10 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `docs-site/static/img/screenshots/<locale>/screenshot.png`에 일치하는 PNG 파일을 제공합니다. 소스 로케일에 무관한 설정의 경우 `screenshots/en-GB/`보다 `screenshots/[^/]+/` 사용을 권장합니다.
 
-구현 예제: [examples/nextjs-app/docs-site/docs/feature-showcase.md](../../docs/../examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 및 [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)의 첫 번째 `documentations[]` 블록.
+구현 예제: [examples/nextjs-app/docs-site/docs/feature-showcase.md](../../docs/../examples/nextjs-app/docs-site/docs/feature-showcase.md)(`/img/screenshots/en-GB/screenshot.png`) 및 [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)의 첫 번째 `docs[]` 블록.
 
-<a id="preset--markdownoutputstyle--astro-starlight"></a>
-### 사전 설정 - `markdownOutput.style = "astro-starlight"`
+<a id="preset---docsoutputstyle--astro-starlight"></a>
+### 사전 설정 - `docsOutput.style = "astro-starlight"`
 
 `localeSubpath: ""`이 적용된 `"doc-system"`과 동일함 — 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치함. 위의 일반 문서 시스템 설정과 동일한 패턴 B 원칙. 소스 마크다운은 `/img/screenshots/en-GB/screenshot.png` 사용:
 
@@ -380,7 +380,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>Astro Starlight 프리셋을 위한 예제 regexAdjustments</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "astro-starlight",
   "postProcessing": {
     "regexAdjustments": [
@@ -402,10 +402,10 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 ---
 
-<a id="pattern-c--colocated-raster-doc-system"></a>
+<a id="pattern-c---colocated-raster-doc-system"></a>
 ## 패턴 C - 함께 위치한 래스터(`doc-system`)
 
-`doc-system` 사이트가 로케일별 자산을 번역된 마크다운 옆에 함께 배치할 때 사용 — URL 재작성이 필요 없음. Docusaurus 사전 설정(`markdownOutput.style = "docusaurus"`)이 참조 구현이며, `"doc-system"`를 사용하고 사용자 정의 `localeSubpath`를 가진 다른 생성기들도 동일한 개념을 따름: 영문 자산은 소스 로케일 경로에 위치하고, 번역된 자산은 `{outputDir}/{locale}/[localeSubpath/]assets/` 아래에 위치함.
+`doc-system` 사이트가 로케일별 에셋을 번역된 마크다운 옆에 함께 배치할 때 사용합니다 — URL 재작성이 필요하지 않습니다. Docusaurus 사전 설정(`docsOutput.style = "docusaurus"`)이 참조 구현이며, `"doc-system"`와 사용자 정의 `localeSubpath`를 사용하는 다른 생성기들도 동일한 개념을 따릅니다: 영문 에셋은 소스 로케일 경로에 위치하고, 번역된 에셋은 `{outputDir}/{locale}/[localeSubpath/]assets/` 아래에 위치합니다.
 
 <a id="directory-layout-1"></a>
 ### 디렉터리 구조
@@ -454,7 +454,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-[duplistatus](https://github.com/wsj-br/duplistatus) 저장소의 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts)에서 프로덕션 구현을 확인하세요 (로컬 참조 사본: [references/duplistatus/scripts/take-screenshots.ts](../../docs/../references/duplistatus/scripts/take-screenshots.ts)).
+[duplistatus](https://github.com/wsj-br/duplistatus) 저장소의 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)에서 프로덕션 구현을 확인하세요(로컬 참조 사본: [references/duplistatus/scripts/take-screenshots.ts](../../docs/../references/duplistatus/scripts/take-screenshots.ts)).
 
 <a id="config"></a>
 ### 구성
@@ -463,7 +463,7 @@ function getScreenshotDir(locale) {
 
 ```json
 {
-  "markdownOutput": {
+  "docsOutput": {
     "style": "docusaurus",
     "docsRoot": "documentation/docs"
   }
@@ -482,12 +482,12 @@ function getScreenshotDir(locale) {
 <a id="implementation-example-1"></a>
 ### 구현 예시
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts)의 `getScreenshotDir(locale)`; 영문 문서는 인접한 PNG를 참조함 (예: [dashboard.md](../../docs/../references/duplistatus/documentation/docs/user-guide/dashboard.md)의 `../assets/screen-dashboard-summary.png`); [ai-i18n-tools.config.json](../../docs/../references/duplistatus/ai-i18n-tools.config.json)에 PNG `regexAdjustments` 없음. 동일 프로젝트의 패턴 E SVG도 동일한 `current/assets/` 디렉터리에 배치됨 (아래 참조).
+[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)의 `getScreenshotDir(locale)`; 영문 문서는 함께 위치한 PNG를 참조함(예: `../assets/screen-dashboard-summary.png`가 있는 [dashboard.md](../../docs/../references/duplistatus/documentation/docs/user-guide/dashboard.md)); [ai-i18n-tools.config.json](../../docs/../references/duplistatus/ai-i18n-tools.config.json)에 PNG `regexAdjustments` 없음. 동일한 프로젝트의 패턴 E SVG는 동일한 `current/assets/` 디렉터리에 위치함(아래 참조).
 
 ---
 
-<a id="pattern-d--translated-svg-with-svgstyle--flat"></a>
-## 패턴 D - `svg.style = "flat"`을 사용하는 번역된 SVG
+<a id="pattern-d---translated-svg-with-svgstyle--flat"></a>
+## 패턴 D - `svg.style = "flat"`이 포함된 번역된 SVG
 
 웹 앱이 로케일별 SVG 일러스트나 다이어그램을 포함하고 런타임에 로케일 코드로 참조할 때 사용합니다.
 
@@ -534,8 +534,8 @@ public/assets/
 
 ---
 
-<a id="pattern-e--colocated-translated-svg-doc-system"></a>
-## 패턴 E - 함께 배치된 번역된 SVG (문서 시스템)
+<a id="pattern-e---colocated-translated-svg-doc-system"></a>
+## 패턴 E - 함께 배치된 번역된 SVG (doc-system)
 
 번역된 SVG 일러스트가 각 로케일의 콘텐츠 디렉터리에 번역된 문서와 함께 나타나야 하는 문서 시스템 사이트에 사용합니다 — 패턴 C의 래스터 스크린샷과 동일한 위치입니다. Docusaurus 프리셋이 대표적인 예입니다.
 
@@ -608,10 +608,10 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 ## 평면 링크 재작성기 및 두 단계 흐름
 
-`markdownOutput.style = "flat"`인 경우(또는 `rewriteRelativeLinks: false` 또는 사용자 지정 `pathTemplate`가 설정되지 않은 경우), `postProcessing` 이전에 내장된 재작성기가 실행됩니다. 이 재작성기는 문서 간 링크(로케일 접미어 추가)를 처리하고 마크다운이 아닌 자산 URL에 깊이 접두사를 추가합니다.
+`docsOutput.style = "flat"`의 경우(또는 `rewriteRelativeLinks: false`이 설정되지 않았거나 사용자 정의 `pathTemplate`가 지정되지 않은 경우), `postProcessing` 이전에 기본 제공되는 리라이터가 실행됩니다. 이 리라이터는 문서 간 링크(로케일 접미사 추가)를 처리하고 마크다운이 아닌 자산 URL에 깊이 접두사를 추가합니다.
 
-<a id="two-step-flow-when-markdownoutputstyle--flat"></a>
-### `markdownOutput.style = "flat"`일 때의 두 단계 흐름
+<a id="two-step-flow-when-docsoutputstyle--flat"></a>
+### `docsOutput.style = "flat"`일 때의 두 단계 흐름
 
 ```
 source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
@@ -622,7 +622,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 1. 평면 링크 재작성기: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (`translated-docs/`에 대한 `../` 하나)
 2. `postProcessing` 정규식 `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-`markdownOutput.style = "doc-system"`인 경우(`"docusaurus"`, `"astro-starlight"`, `"nested"` 포함), 평면 링크 재작성기는 실행되지 않습니다. `postProcessing`는 번역된 마크다운에서 원본 URL을 그대로 인식합니다(일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로).
+`docsOutput.style = "doc-system"`의 경우(`"docusaurus"`, `"astro-starlight"`, `"nested"` 포함), 평면 링크 리라이터는 실행되지 않습니다. `postProcessing`는 번역된 마크다운에서 원본 URL(일반적으로 `/img/screenshots/en-GB/foo.png` 같은 절대 경로)을 그대로 인식합니다.
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir`과 함께 사용하는 파일별 깊이 접두사
@@ -638,16 +638,15 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 | 옵션                                   | 효과                                                                                                           |
 |------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| `markdownOutput.rewriteRelativeLinks`    | 평면 링크 재작성기를 명시적으로 활성화하거나 비활성화합니다(`markdownOutput.style = "flat"`일 때 기본값을 재정의함) |
-| `markdownOutput.linkRewriteDocsRoot`     | `depthPrefix` 계산의 기준 루트(기본값 `"."`)                                                        |
-| `markdownOutput.flatPreserveRelativeDir` | 출력 경로 구조에 영향을 주며, 재작성기는 알려진 번역된 파일의 대상 경로를 계산할 때 이를 사용합니다       |
+| `docsOutput.rewriteRelativeLinks`    | 평면 링크 리라이터를 명시적으로 활성화하거나 비활성화함(`docsOutput.style = "flat"`일 때 기본값을 재정의함) |
+| `docsOutput.linkRewriteDocsRoot`     | `depthPrefix`가 계산되는 기준 루트(기본값 `"."`)                                                        |
+| `docsOutput.flatPreserveRelativeDir` | 출력 경로 레이아웃에 영향을 주며, 리라이터는 알려진 번역 파일의 대상 경로를 계산할 때 이를 사용함       |
 
 ---
 
 <a id="troubleshooting"></a>
 <a id="common-mistakes-and-troubleshooting"></a>
-<a id="common-mistakes"></a>
-## 흔한 실수 및 문제 해결
+## 일반적인 실수 및 문제 해결
 
 **스크린샷 경로에 로케일 디렉터리가 없음**
 `images/screenshots/screenshot.png` — 로케일 변형을 구분할 수 없으며 재작성이 불가능합니다. 패턴 B를 적용하기 전에 `images/screenshots/<locale>/screenshot.png`로 구조를 재조정하세요.

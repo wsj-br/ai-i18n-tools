@@ -23,11 +23,12 @@
   - [UI 翻译提示](#ui-translation-prompts)
 - [工作流 2 - 文档翻译内部机制](#workflow-2---document-translation-internals)
   - [提取器](#extractors)
+  - [Astro 混合站点（UI + 页面 HTML）](#astro-hybrid-sites-ui--page-html)
   - [标题锚点插入（`write-heading-ids` CLI）](#heading-anchor-insertion-write-heading-ids-cli)
   - [占位符保护](#placeholder-protection)
   - [缓存（`TranslationCache`）](#cache-translationcache)
   - [输出路径解析](#output-path-resolution)
-  - [扁平化链接重写](#flat-link-rewriting)
+  - [扁平链接重写](#flat-link-rewriting)
 - [共享基础设施](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [配置加载](#config-loading)
@@ -39,7 +40,7 @@
   - [字符串辅助函数](#string-helpers)
 - [编程式 API](#programmatic-api)
 - [扩展点](#extension-points)
-  - [自定义函数名 (UI 提取)](#custom-function-names-ui-extraction)
+  - [自定义函数名（UI 提取）](#custom-function-names-ui-extraction)
   - [自定义提取器](#custom-extractors)
   - [自定义输出路径](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,7 +266,7 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` —— 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus UI 目录，不包括 MDX 正文）。
 - `SvgExtractor` —— 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，`translate-docs` 不使用）。
 
-<a id="astro-hybrid-sites"></a>
+<a id="astro-hybrid-sites-ui--page-html"></a>
 ### Astro 混合站点（UI + 页面 HTML）
 
 纯 Astro 应用通常在一个配置中启用 **两种**工作流（参考：`examples/astro-website/`）：
@@ -307,7 +308,7 @@ Astro 模板和 MDX JSX 的共享属性/键保护机制在 `src/processors/expre
 <a id="cache-translationcache"></a>
 ### 缓存 (`TranslationCache`)
 
-SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存储行，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相关字段。哈希值是规范化内容（空白字符已压缩）的 SHA-256 前 16 位十六进制字符。
+SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存储记录，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相关字段。该哈希值是规范化内容（空白字符已合并）的 SHA-256 哈希值的前 16 个十六进制字符。
 
 每次运行时，会通过哈希值 × 区域设置来查找片段。只有未命中缓存的片段才会发送到大语言模型（LLM）。翻译完成后，`last_hit_at` 会重置当前翻译范围内未命中的片段行。`cleanup` 首先运行 `sync --force-update`，然后移除过时的片段行（`last_hit_at` 为 null 或文件路径为空），当解析出的源路径在磁盘上不存在时，清理 `file_tracking` 键（如 `doc-block:…`、`svg-files:…` 等），并删除元数据文件路径指向缺失文件的翻译行；除非传入 `--no-backup`，否则会先备份 `cache.db`。
 
@@ -330,7 +331,7 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 <a id="flat-link-rewriting"></a>
 ### 扁平化链接重写
 
-当使用 `markdownOutput.style === "flat"` 时，翻译后的 Markdown 文件会与源文件并列存放，并带有区域设置后缀。页面之间的相对链接会被重写，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。此行为由 `rewriteRelativeLinks` 控制（在无自定义 `pathTemplate` 的扁平样式中自动启用）。同一处理过程会在运行 `postProcessing.regexAdjustments` 之前，为非 Markdown 资源 URL 添加每个文件的深度前缀——详见 [区域资源指南](LOCALE-ASSETS-GUIDE.zh-CN.md#the-flat-link-rewriter-and-two-step-flow)。
+当 `docsOutput.style === "flat"` 时，翻译后的 Markdown 文件会与源文件并列存放，并添加语言区域后缀。页面之间的相对链接会被重写，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。此行为由 `rewriteRelativeLinks` 控制（在使用扁平结构且未自定义 `pathTemplate` 时自动启用）。同一处理过程会在 `postProcessing.regexAdjustments` 运行前，为非 Markdown 资源 URL 添加每个文件的深度前缀——详见 [本地化资源指南](LOCALE-ASSETS-GUIDE.zh-CN.md#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### 自定义输出路径
 
-使用 `markdownOutput.pathTemplate` 实现任意文件布局：
+可使用 `docsOutput.pathTemplate` 处理任意文件布局：
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

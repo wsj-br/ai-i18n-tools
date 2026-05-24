@@ -23,14 +23,15 @@
   - [UI 번역 프롬프트](#ui-translation-prompts)
 - [워크플로 2 - 문서 번역 내부 구조](#workflow-2---document-translation-internals)
   - [추출기](#extractors)
-  - [제목 앵커 삽입 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
+  - [Astro 하이브리드 사이트(UI + 페이지 HTML)](#astro-hybrid-sites-ui--page-html)
+  - [제목 앵커 삽입(`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [플레이스홀더 보호](#placeholder-protection)
-  - [캐시 (`TranslationCache`)](#cache-translationcache)
-  - [출력 경로 결정](#output-path-resolution)
-  - [평면화된 링크 재작성](#flat-link-rewriting)
+  - [캐시(`TranslationCache`)](#cache-translationcache)
+  - [출력 경로 확인](#output-path-resolution)
+  - [평면 링크 재작성](#flat-link-rewriting)
 - [공유 인프라](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [설정 로딩](#config-loading)
+  - [구성 로드](#config-loading)
   - [로거](#logger)
 - [런타임 헬퍼 API](#runtime-helpers-api)
   - [RTL 헬퍼](#rtl-helpers)
@@ -38,8 +39,8 @@
   - [표시 헬퍼](#display-helpers)
   - [문자열 헬퍼](#string-helpers)
 - [프로그래밍 방식 API](#programmatic-api)
-- [확장 포인트](#extension-points)
-  - [사용자 정의 함수 이름 (UI 추출)](#custom-function-names-ui-extraction)
+- [확장 지점](#extension-points)
+  - [사용자 정의 함수 이름(UI 추출)](#custom-function-names-ui-extraction)
   - [사용자 정의 추출기](#custom-extractors)
   - [사용자 정의 출력 경로](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,7 +266,7 @@ output file  ─────────────────── Docusauru
 - `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다(Docusaurus UI 카탈로그, MDX 본문 제외).
 - `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`config.svg` 하위 파일에 대해 `translate-svg`에서 사용하며, `translate-docs`에서는 사용하지 않음).
 
-<a id="astro-hybrid-sites"></a>
+<a id="astro-hybrid-sites-ui--page-html"></a>
 ### Astro 하이브리드 사이트(UI + 페이지 HTML)
 
 일반 Astro 앱은 종종 하나의 설정 파일에서 **두 가지** 워크플로를 모두 활성화합니다(참조: `examples/astro-website/`):
@@ -307,7 +308,7 @@ Astro 템플릿과 MDX JSX에 대한 공유 속성/키 보호 기능은 `src/pro
 <a id="cache-translationcache"></a>
 ### 캐시(`TranslationCache`)
 
-SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 키로 하여 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드를 포함한 행을 저장합니다. 해시는 정규화된 콘텐츠(공백이 축소됨)의 SHA-256 해시값 중 앞 16자리 16진수 문자로 생성됩니다.
+SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 SHA-256 해시 값 중 앞 16자리 16진수 문자를 사용하여 `(source_hash, locale)`를 키로 하고 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드를 포함하는 행을 저장합니다. 공백은 압축됩니다.
 
 각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스 항목만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위 내에서 적중하지 않은 세그먼트 행에 대해 `last_hit_at`이(가) 재설정됩니다. `cleanup`은(는) 먼저 `sync --force-update`를 실행한 다음, 오래된 세그먼트 행(null `last_hit_at` / 파일 경로 없음)을 제거하고, 디스크상에서 확인된 소스 경로가 누락된 경우 `file_tracking` 키를 정리하며(`doc-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 누락된 파일을 가리키는 번역 행을 제거합니다. 단, `--no-backup`이 전달되지 않은 경우 `cache.db`을(를) 먼저 백업합니다.
 
@@ -330,7 +331,7 @@ SQLite 데이터베이스(`node:sqlite` 사용)는 `(source_hash, locale)`을 �
 <a id="flat-link-rewriting"></a>
 ### 단일 링크 재작성
 
-`markdownOutput.style === "flat"`일 때, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간 상대 링크는 `[Guide](../../docs/guide.md)`의 `readme.de.md`가 `guide.de.md`를 가리키도록 다시 작성됩니다. `rewriteRelativeLinks`에 의해 제어되며 (사용자 정의 `pathTemplate` 없이 평면 스타일일 경우 자동 활성화됨). 동일한 처리 과정에서 `postProcessing.regexAdjustments` 실행 전에 마크다운이 아닌 에셋 URL에 파일별 깊이 접두사가 추가됩니다. [로케일 에셋 가이드](LOCALE-ASSETS-GUIDE.ko.md#the-flat-link-rewriter-and-two-step-flow)를 참조하세요.
+`docsOutput.style === "flat"`일 때, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간 상대 링크는 `readme.de.md`의 `[Guide](../../docs/guide.md)`가 `guide.de.md`를 가리키도록 재작성됩니다. `pathTemplate`가 지정되지 않은 경우 평면 스타일에서 자동으로 활성화되는 `rewriteRelativeLinks`에 의해 제어됩니다. 동일한 처리 과정에서 `postProcessing.regexAdjustments` 실행 전에 마크다운이 아닌 에셋 URL에 파일별 깊이 접두사가 추가됩니다. 자세한 내용은 [로케일 에셋 가이드](LOCALE-ASSETS-GUIDE.ko.md#the-flat-link-rewriter-and-two-step-flow)를 참조하세요.
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### 사용자 정의 출력 경로
 
-모든 파일 구조에 `markdownOutput.pathTemplate` 사용:
+모든 파일 레이아웃에 `docsOutput.pathTemplate`를 사용하세요.
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

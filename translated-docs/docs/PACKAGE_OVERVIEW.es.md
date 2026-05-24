@@ -23,23 +23,24 @@ Para obtener instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETT
   - [Solicitudes de traducción de interfaz](#ui-translation-prompts)
 - [Flujo de trabajo 2 - Internals de traducción de documentos](#workflow-2---document-translation-internals)
   - [Extractores](#extractors)
+  - [Sitios híbridos de Astro (interfaz de usuario + HTML de página)](#astro-hybrid-sites-ui--page-html)
   - [Inserción de anclas de encabezado (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Protección de marcadores de posición](#placeholder-protection)
   - [Caché (`TranslationCache`)](#cache-translationcache)
   - [Resolución de rutas de salida](#output-path-resolution)
-  - [Reescritura de enlaces planos](#flat-link-rewriting)
+  - [Reescritura plana de enlaces](#flat-link-rewriting)
 - [Infraestructura compartida](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Carga de configuración](#config-loading)
   - [Registrador (Logger)](#logger)
 - [API de ayudantes en tiempo de ejecución](#runtime-helpers-api)
-  - [Ayudantes RTL](#rtl-helpers)
+  - [Ayudantes para RTL](#rtl-helpers)
   - [Fábricas de configuración de i18next](#i18next-setup-factories)
   - [Ayudantes de visualización](#display-helpers)
   - [Ayudantes de cadenas de texto](#string-helpers)
 - [API programática](#programmatic-api)
 - [Puntos de extensión](#extension-points)
-  - [Nombres personalizados de funciones (extracción de interfaz)](#custom-function-names-ui-extraction)
+  - [Nombres personalizados de funciones (extracción de interfaz de usuario)](#custom-function-names-ui-extraction)
   - [Extractores personalizados](#custom-extractors)
   - [Rutas de salida personalizadas](#custom-output-paths)
 
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,8 +266,8 @@ Todos los extractores extienden `BaseExtractor` e implementan `extract(content, 
 - `JsonExtractor`: extrae valores de cadena de archivos JSON de etiquetas de Docusaurus (catálogos de interfaz de usuario de Docusaurus, no cuerpo MDX).
 - `SvgExtractor`: extrae contenido de `<text>`, `<title>` y `<desc>` de SVG (usado por `translate-svg` para archivos bajo `config.svg`, no por `translate-docs`).
 
-<a id="astro-hybrid-sites"></a>
-### Sitios híbridos Astro (UI + HTML de página)
+<a id="astro-hybrid-sites-ui--page-html"></a>
+### Sitios híbridos de Astro (interfaz de usuario + HTML de página)
 
 Las aplicaciones Astro simples suelen habilitar **ambos** flujos de trabajo en una sola configuración (referencia: `examples/astro-website/`):
 
@@ -307,7 +308,7 @@ La protección compartida de atributos/claves para plantillas Astro y JSX MDX se
 <a id="cache-translationcache"></a>
 ### Caché (`TranslationCache`)
 
-Base de datos SQLite (mediante `node:sqlite`) que almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash es el primer carácter hexadecimal de 16 caracteres SHA-256 del contenido normalizado (espacios en blanco colapsados).
+La base de datos SQLite (mediante `node:sqlite`) almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash corresponde a los primeros 16 caracteres hexadecimales SHA-256 del contenido normalizado (espacios en blanco reducidos).
 
 En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo las ausencias de caché pasan al LLM. Después de la traducción, se restablece `last_hit_at` para las filas de segmento en el ámbito actual de traducción que no fueron alcanzadas. `cleanup` ejecuta primero `sync --force-update`, luego elimina las filas de segmento obsoletas (`last_hit_at` nulo / ruta de archivo vacía), poda las claves `file_tracking` cuando la ruta de origen resuelta no existe en el disco (`doc-block:…`, `svg-files:…`, etc.) y elimina las filas de traducción cuya ruta de archivo en los metadatos apunta a un archivo inexistente; primero realiza una copia de seguridad de `cache.db` a menos que se pase `--no-backup`.
 
@@ -330,7 +331,7 @@ El comando `translate-docs` también utiliza **seguimiento de archivos**, de mod
 <a id="flat-link-rewriting"></a>
 ### Reescritura plana de enlaces
 
-Cuando `markdownOutput.style === "flat"`, los archivos markdown traducidos se colocan junto con los originales con sufijos de configuración regional. Los enlaces relativos entre páginas se reescriben para que `[Guide](../../docs/guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (activado automáticamente para el estilo plano sin un `pathTemplate` personalizado). El mismo proceso antepone un prefijo de profundidad por archivo a las URL de recursos no markdown antes de que se ejecute `postProcessing.regexAdjustments` — consulte la [Guía de recursos por configuración regional](LOCALE-ASSETS-GUIDE.es.md#the-flat-link-rewriter-and-two-step-flow).
+Cuando `docsOutput.style === "flat"`, los archivos markdown traducidos se colocan junto al origen con sufijos de configuración regional. Los enlaces relativos entre páginas se reescriben para que `[Guide](../../docs/guide.md)` en `readme.de.md` apunte a `guide.de.md`. Controlado por `rewriteRelativeLinks` (activado automáticamente para el estilo plano sin un `pathTemplate` personalizado). El mismo proceso antepone un prefijo de profundidad por archivo a las URLs de recursos no markdown antes de que se ejecute `postProcessing.regexAdjustments` — véase la [Guía de recursos por configuración regional](LOCALE-ASSETS-GUIDE.es.md#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -513,13 +514,13 @@ Pásalo a la canalización doc-translate importando las utilidades `doc-translat
 <a id="custom-output-paths"></a>
 ### Rutas de salida personalizadas
 
-Usa `markdownOutput.pathTemplate` para cualquier estructura de archivos:
+Use `docsOutput.pathTemplate` para cualquier disposición de archivos:
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

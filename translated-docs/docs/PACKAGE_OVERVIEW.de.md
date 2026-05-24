@@ -22,25 +22,26 @@ Anweisungen zur praktischen Nutzung finden Sie in [GETTING_STARTED.md](GETTING_S
   - [Flache Sprachdateien](#flat-locale-files)
   - [UI-Übersetzungsanweisungen](#ui-translation-prompts)
 - [Workflow 2 – Interna der Dokumentübersetzung](#workflow-2---document-translation-internals)
-  - [Extraktoren](#extractors)
+  - [Extractor](#extractors)
+  - [Astro-Hybrid-Websites (UI + Seiten-HTML)](#astro-hybrid-sites-ui--page-html)
   - [Einfügen von Überschriftenankern (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
   - [Schutz von Platzhaltern](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
-  - [Auflösung des Ausgabepfads](#output-path-resolution)
-  - [Umschreibung flacher Links](#flat-link-rewriting)
+  - [Auflösung von Ausgabepfaden](#output-path-resolution)
+  - [Umschreiben flacher Links](#flat-link-rewriting)
 - [Gemeinsame Infrastruktur](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [Konfiguration laden](#config-loading)
+  - [Konfigurationsladen](#config-loading)
   - [Protokollierungstool (Logger)](#logger)
 - [Laufzeit-Hilfs-API](#runtime-helpers-api)
   - [RTL-Hilfsfunktionen](#rtl-helpers)
-  - [i18next-Setup-Factorys](#i18next-setup-factories)
+  - [i18next-Setup-Fabriken](#i18next-setup-factories)
   - [Anzeige-Hilfsfunktionen](#display-helpers)
   - [Zeichenketten-Hilfsfunktionen](#string-helpers)
 - [Programmatische API](#programmatic-api)
 - [Erweiterungspunkte](#extension-points)
   - [Benutzerdefinierte Funktionsnamen (UI-Extraktion)](#custom-function-names-ui-extraction)
-  - [Benutzerdefinierte Extraktoren](#custom-extractors)
+  - [Benutzerdefinierte Extractoren](#custom-extractors)
   - [Benutzerdefinierte Ausgabepfade](#custom-output-paths)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -94,7 +95,7 @@ src/
 │   ├── prompt-builder.ts           LLM prompt construction for docs and UI strings
 │   ├── output-paths.ts             Docusaurus / flat output path resolution
 │   ├── ui-languages.ts             ui-languages.json loading and locale resolution
-│   ├── locale-utils.ts             BCP-47 normalization and locale list parsing
+│   ├── locale-utils.ts             BCP-47 normalisation and locale list parsing
 │   └── errors.ts                   Typed error classes
 │
 ├── extractors/
@@ -265,8 +266,8 @@ Alle Extraktoren erweitern `BaseExtractor` und implementieren `extract(content, 
 - `JsonExtractor` – extrahiert String-Werte aus Docusaurus-JSON-Label-Dateien (Docusaurus-UI-Kataloge, nicht MDX-Inhalt).
 - `SvgExtractor` – extrahiert `<text>`, `<title>` und `<desc>` aus SVG (verwendet von `translate-svg` für Dateien unter `config.svg`, nicht von `translate-docs`).
 
-<a id="astro-hybrid-sites"></a>
-### Astro-Hybrid-Sites (UI + Seiten-HTML)
+<a id="astro-hybrid-sites-ui--page-html"></a>
+### Astro-Hybrid-Websites (UI + Seiten-HTML)
 
 Einfache Astro-Anwendungen aktivieren oft **beide** Workflows in einer Konfiguration (Referenz: `examples/astro-website/`):
 
@@ -307,7 +308,7 @@ Der gemeinsame Schutz von Attributen/Schlüsseln für Astro-Vorlagen und MDX-JSX
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
 
-SQLite-Datenbank (über `node:sqlite`) speichert Zeilen, die nach `(source_hash, locale)` indiziert sind, mit `translated_text`, `model`, `filepath`, `last_hit_at` und verwandten Feldern. Der Hash ist die ersten 16 Hex-Zeichen des SHA-256-Hashs des normalisierten Inhalts (Leerzeichen zusammengefasst).
+SQLite-Datenbank (über `node:sqlite`) speichert Datensätze, die über `(source_hash, locale)` mit `translated_text`, `model`, `filepath`, `last_hit_at` und verwandten Feldern verknüpft sind. Der Hash ist die ersten 16 Hex-Zeichen des SHA-256-Hashs des normalisierten Inhalts (Leerzeichen zusammengefasst).
 
 Bei jedem Durchlauf werden Segmente anhand von Hash × Gebietsschema nachgeschlagen. Nur Cache-Misses werden an das LLM weitergeleitet. Nach der Übersetzung wird `last_hit_at` für Segmentzeilen im aktuellen Übersetzungsbereich zurückgesetzt, die nicht getroffen wurden. `cleanup` führt zuerst `sync --force-update` aus, entfernt anschließend veraltete Segmentzeilen (null `last_hit_at` / leere Dateipfade), bereinigt `file_tracking`-Schlüssel, wenn der aufgelöste Quellpfad auf dem Datenträger fehlt (`doc-block:…`, `svg-files:…` usw.) und löscht Übersetzungszeilen, deren Metadaten-Dateipfad auf eine fehlende Datei verweist; dabei wird zuerst eine Sicherungskopie von `cache.db` angelegt, es sei denn, `--no-backup` wird übergeben.
 
@@ -330,7 +331,7 @@ Der Befehl `translate-docs` nutzt außerdem **Datei-Tracking**, sodass unveränd
 <a id="flat-link-rewriting"></a>
 ### Umsetzung flacher Links
 
-Wenn `markdownOutput.style === "flat"` verwendet wird, werden übersetzte Markdown-Dateien zusammen mit den Quelldateien mit sprachspezifischen Suffixen abgelegt. Relative Links zwischen Seiten werden umgeschrieben, sodass `[Guide](../../docs/guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Gesteuert durch `rewriteRelativeLinks` (automatisch aktiviert für den flachen Stil, wenn kein benutzerdefiniertes `pathTemplate` verwendet wird). Derselbe Durchgang fügt vor dem Ausführen von `postProcessing.regexAdjustments` jedem Datei einen tiefenbasierten Präfix zu den URLs von Nicht-Markdown-Ressourcen hinzu – siehe [Anleitung zu sprachspezifischen Ressourcen](LOCALE-ASSETS-GUIDE.de.md#the-flat-link-rewriter-and-two-step-flow).
+Wenn `docsOutput.style === "flat"`, werden übersetzte Markdown-Dateien neben den Quelldateien mit Länderspezifischen Suffixen abgelegt. Relative Links zwischen Seiten werden umgeschrieben, sodass `[Guide](../../docs/guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Gesteuert durch `rewriteRelativeLinks` (automatisch aktiviert für flachen Stil ohne benutzerdefiniertes `pathTemplate`). Derselbe Durchlauf fügt vor dem Ausführen von `postProcessing.regexAdjustments` jedem Dateipfad einen tiefebasierten Präfix zu den Nicht-Markdown-Asset-URLs hinzu – siehe [Anleitung zu lokalisierten Assets](LOCALE-ASSETS-GUIDE.de.md#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -513,13 +514,13 @@ class MyExtractor extends BaseExtractor {
 <a id="custom-output-paths"></a>
 ### Benutzerdefinierte Ausgabepfade
 
-Verwenden Sie `markdownOutput.pathTemplate` für beliebige Datei-Layouts:
+Verwenden Sie `docsOutput.pathTemplate` für jedes Datei-Layout:
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }

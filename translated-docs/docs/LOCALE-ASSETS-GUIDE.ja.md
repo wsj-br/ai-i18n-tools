@@ -5,16 +5,16 @@
 
 SVG設定のリファレンスについては、[GETTING_STARTED.md](GETTING_STARTED.ja.md) 内の [`svg`](#svg) セクションを参照してください。`postProcessing.regexAdjustments`オプションについては、[設定リファレンス](GETTING_STARTED.ja.md#configuration-reference) をご覧ください。
 
-| 設定パス | 値 | 使用ケース | 備考 |
+| 設定パス | 値 | 使用例 | 備考 |
 |-------------|-------|----------|-------|
-| `documentations[].markdownOutput.style` | `"flat"` | ロケールサフィックス付きのREADME / USER-GUIDEファイル | フラットリンクリライターを有効化。ソースがサブディレクトリにある場合は`flatPreserveRelativeDir`と組み合わせる |
-| `documentations[].markdownOutput.style` | `"nested"` (デフォルト) | `outputDir`直下のシンプルなロケールサブフォルダー | フラットリンクリライターは使用しない |
-| `documentations[].markdownOutput.style` | `"doc-system"` | ロケールプレフィックス付きのドキュメントツリー（カスタムジェネレーター） | `docsRoot`および`localeSubpath`を設定。フラットリンクリライターは動作しない |
-| `documentations[].markdownOutput.style` | `"docusaurus"` / `"astro-starlight"` | 事前定義済み`doc-system`レイアウト | `localeSubpath`向けにジェネレーター固有のデフォルトを持つエイリアス |
+| `docs[].docsOutput.style` | `"flat"` | ロケール接尾辞付きの README / USER-GUIDE ファイル | フラットリンクリライターを有効化します。ソースがサブディレクトリにある場合は `flatPreserveRelativeDir` と組み合わせて使用します |
+| `docs[].docsOutput.style` | `"nested"` (デフォルト) | `outputDir` 配下のシンプルなロケールサブフォルダー | フラットリンクリライターは使用しません |
+| `docs[].docsOutput.style` | `"doc-system"` | ロケール接頭辞付きドキュメントツリー（カスタムジェネレーター） | `docsRoot` と `localeSubpath` を設定します。フラットリンクリライターは動作しません |
+| `docs[].docsOutput.style` | `"docusaurus"` / `"astro-starlight"` | 事前定義済み `doc-system` レイアウト | ジェネレーター固有の `localeSubpath` デフォルト値を持つエイリアスです |
 | `svg.style` | `"flat"` | Webアプリ（`name.<locale>.svg`を`public/assets/`に配置） | Markdownの`style`とは別。`translate-svg`によって使用される |
 | `svg.style` | `"nested"` | ドキュメントシステムと同居するSVG出力 | よく`pathTemplate`と組み合わせて使用（パターンE） |
 
-このガイドでは、英語の単語だけでなく、設定から正確に引用したJSON文字列を使用しているため、翻訳版でも曖昧さが生じません。
+このガイドでは、英語の単語だけではなく、設定から正確なJSON文字列を使用しているため、翻訳されたコピーでも曖昧さが生じません。読み込み時には旧形式のキー（`documentations`、`markdownOutput`）も受け付けますが、新しい設定では `docs` と `docsOutput` を使用してください。
 
 <small>**他の言語で読む：** </small>
 <small id="lang-list">[English (GB)](../../docs/LOCALE-ASSETS-GUIDE.md) · [Deutsch](./LOCALE-ASSETS-GUIDE.de.md) · [Español](./LOCALE-ASSETS-GUIDE.es.md) · [Français](./LOCALE-ASSETS-GUIDE.fr.md) · [हिन्दी](./LOCALE-ASSETS-GUIDE.hi.md) · [日本語](./LOCALE-ASSETS-GUIDE.ja.md) · [한국어](./LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](./LOCALE-ASSETS-GUIDE.pt-BR.md) · [中文 (中国大陆)](./LOCALE-ASSETS-GUIDE.zh-CN.md) · [中文 (台灣)](./LOCALE-ASSETS-GUIDE.zh-TW.md)</small>
@@ -24,44 +24,44 @@ SVG設定のリファレンスについては、[GETTING_STARTED.md](GETTING_STA
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [ai-i18n-toolsがアセットに対して行うこと・行わないこと](#what-ai-i18n-tools-does-and-does-not-do-with-assets)
+- [ai-i18n-tools がアセットに対して行うこと（および行わないこと）](#what-ai-i18n-tools-does-and-does-not-do-with-assets)
 - [最初から国際化を意識した設計](#design-for-i18n-from-the-start)
-  - [`markdownOutput.style = "flat"`を使用したMarkdown（README、USER-GUIDE）](#markdown-with-markdownoutputstyle--flat-readme-user-guide)
-  - [ドキュメントシステムサイト（`markdownOutput.style = "doc-system"`）](#doc-system-sites-markdownoutputstyle--doc-system)
-    - [Docusaurusプリセット](#docusaurus-preset)
-    - [Astro/Starlightプリセット](#astrostarlight-preset)
+  - [`docsOutput.style = "flat"` を使った Markdown（README、USER-GUIDE）](#markdown-with-docsoutputstyle--flat-readme-user-guide)
+  - [ドキュメントシステムサイト（`docsOutput.style = "doc-system"`）](#doc-system-sites-docsoutputstyle--doc-system)
+    - [Docusaurus プリセット](#docusaurus-preset)
+    - [Astro/Starlight プリセット](#astrostarlight-preset)
   - [SVGアセットを使用するWebアプリ（Next.js、Viteなど）](#web-apps-nextjs-vite-etc-with-svg-assets)
-- [選定ガイド](#decision-guide)
-- [パターンA - 共有ラスター](#pattern-a--shared-raster)
+- [選択ガイド](#decision-guide)
+- [パターンA - 共有ラスター](#pattern-a---shared-raster)
   - [実装例](#implementation-example)
-- [パターンB - ロケールごとのフォルダー（URL書き換え）](#pattern-b--per-locale-folder-url-rewriting)
+- [パターンB - ロケールごとのフォルダー（URL書き換え）](#pattern-b---per-locale-folder-url-rewriting)
   - [ディレクトリ構成](#directory-layout)
   - [スクリーンショットスクリプトの契約](#screenshot-script-contract)
-  - [設定 - `markdownOutput.style = "flat"`](#config--markdownoutputstyle--flat)
-  - [設定 - `markdownOutput.style = "doc-system"`](#config--markdownoutputstyle--doc-system)
-  - [プリセット - `markdownOutput.style = "docusaurus"`](#preset--markdownoutputstyle--docusaurus)
-  - [プリセット - `markdownOutput.style = "astro-starlight"`](#preset--markdownoutputstyle--astro-starlight)
-- [パターンC - 同居するラスター（`doc-system`）](#pattern-c--colocated-raster-doc-system)
+  - [設定 - `docsOutput.style = "flat"`](#config---docsoutputstyle--flat)
+  - [設定 - `docsOutput.style = "doc-system"`](#config---docsoutputstyle--doc-system)
+  - [プリセット - `docsOutput.style = "docusaurus"`](#preset---docsoutputstyle--docusaurus)
+  - [プリセット - `docsOutput.style = "astro-starlight"`](#preset---docsoutputstyle--astro-starlight)
+- [パターンC - 共置ラスター（`doc-system`）](#pattern-c---colocated-raster-doc-system)
   - [ディレクトリ構成](#directory-layout-1)
   - [スクリーンショットスクリプトの契約](#screenshot-script-contract-1)
   - [設定](#config)
   - [前提条件](#prerequisites)
   - [実装例](#implementation-example-1)
-- [パターンD - `svg.style = "flat"`による翻訳済みSVG](#pattern-d--translated-svg-with-svgstyle--flat)
+- [パターンD - `svg.style = "flat"` を使った翻訳済みSVG](#pattern-d---translated-svg-with-svgstyle--flat)
   - [設定](#config-1)
-  - [アプリリファレンス](#app-reference)
-  - [ソース配置の推奨](#source-layout-recommendation)
+  - [アプリケーションリファレンス](#app-reference)
+  - [ソースレイアウトの推奨事項](#source-layout-recommendation)
   - [実装例](#implementation-example-2)
-- [パターンE - 同居する翻訳済みSVG（ドキュメントシステム）](#pattern-e--colocated-translated-svg-doc-system)
+- [パターンE - 共置翻訳済みSVG（ドキュメントシステム）](#pattern-e---colocated-translated-svg-doc-system)
   - [設定](#config-2)
   - [ソースのMarkdown](#source-markdown)
   - [SVGソースの配置場所](#svg-source-location)
   - [`pathTemplate`のプレースホルダー](#pathtemplate-placeholders)
   - [実装例](#implementation-example-3)
 - [フラットリンクリライターと2段階フロー](#the-flat-link-rewriter-and-two-step-flow)
-  - [`markdownOutput.style = "flat"`の場合の2段階フロー](#two-step-flow-when-markdownoutputstyle--flat)
-  - [`flatPreserveRelativeDir`によるファイルごとの深さプレフィックス](#per-file-depth-prefix-with-flatpreserverelativedir)
-  - [`rewriteRelativeLinks`および`linkRewriteDocsRoot`](#rewriterelativelinks-and-linkrewritedocsroot)
+  - [`docsOutput.style = "flat"` の場合の2段階フロー](#two-step-flow-when-docsoutputstyle--flat)
+  - [`flatPreserveRelativeDir` を使ったファイルごとの深さプレフィックス](#per-file-depth-prefix-with-flatpreserverelativedir)
+  - [`rewriteRelativeLinks` と `linkRewriteDocsRoot`](#rewriterelativelinks-and-linkrewritedocsroot)
 - [一般的な間違いとトラブルシューティング](#common-mistakes-and-troubleshooting)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -82,8 +82,8 @@ SVG設定のリファレンスについては、[GETTING_STARTED.md](GETTING_STA
 
 スクリーンショットが存在する前に適切なディレクトリレイアウトを選択することが、後でロケール固有のアセットがどれだけ簡単になるかの最大の要因です。数十のスクリーンショットがコミットされた後にレイアウトを改修することは、パスの再構築とすべてのマークダウン参照の更新を意味します。
 
-<a id="markdown-with-markdownoutputstyle--flat-readme-user-guide"></a>
-### `markdownOutput.style = "flat"`を使用したマークダウン（README、ユーザーガイド）
+<a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
+### `docsOutput.style = "flat"` を使った Markdown（README、USER-GUIDE）
 
 初日からロケールコード付きのサブディレクトリにスクリーンショットを保存してください:
 
@@ -103,10 +103,10 @@ images/screenshots/en-GB/settings.png
 
 一般的な`[^/]+`パターンは任意のロケールフォルダ名にマッチします — ソースロケール（例: `screenshots/en-GB/`）をハードコーディングしないでください。`sourceLocale`が変更されると壊れます。
 
-ロケールサブディレクトリ（`images/screenshots/translate.png`）を省略したパスで始めると、Pattern Bが機能する前に全体のツリーを再構築する必要があります。
+ロケールサブディレクトリを省いたパス（`images/screenshots/translate.png`）から始めている場合、パターンBを機能させるには、ツリー全体を再構成する必要があります。
 
-<a id="doc-system-sites-markdownoutputstyle--doc-system"></a>
-### ドキュメントシステムサイト（`markdownOutput.style = "doc-system"`）
+<a id="doc-system-sites-docsoutputstyle--doc-system"></a>
+### ドキュメントシステムサイト（`docsOutput.style = "doc-system"`）
 
 翻訳されたページをロケールプレフィックス付きのツリーの下に保存する静的ドキュメントサイトに使用します — Docusaurus i18n、Astro Starlight、および同じ形状に従うカスタムジェネレーター。`docsRoot`の下のファイルは次のように書き込まれます:
 
@@ -114,7 +114,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`documentations[].markdownOutput.docsRoot`をあなたの英語のソースルートに設定してください（例: `"docs"`または`"src/content/docs"`）。`style: "doc-system"`を直接設定する場合は、`{locale}/`と翻訳されたファイルの間でサイトが使用するパスセグメントに`localeSubpath`も設定する必要があります。エイリアス`"docusaurus"`と`"astro-starlight"`は、デフォルトの`localeSubpath`値を持つプリセット`doc-system`レイアウトです（[出力レイアウト](GETTING_STARTED.ja.md#output-layouts)を参照）。
+`docs[].docsOutput.docsRoot` を英語ソースのルート（例：`"docs"` または `"src/content/docs"`）に設定します。`style: "doc-system"` を直接設定する場合、サイトが `{locale}/` と翻訳済みファイルの間に使用するパスセグメントとして `localeSubpath` も設定する必要があります。エイリアス `"docusaurus"` および `"astro-starlight"` は、デフォルトの `localeSubpath` 値を持つ事前定義済み `doc-system` レイアウトです（[出力レイアウト](GETTING_STARTED.ja.md#output-layouts)を参照）。
 
 | プリセットエイリアス | デフォルト `localeSubpath` | 例の出力 |
 |--------------|-------------------------|----------------|
@@ -123,7 +123,7 @@ images/screenshots/en-GB/settings.png
 
 フラットリンクリライターは`doc-system`に対しては**実行されません**（`"flat"`とは異なります）。`postProcessing.regexAdjustments`はソースマークダウンからの元のURLを参照します — 通常は`/img/screenshots/en-GB/foo.png`のような絶対パスまたはサイトルートパスです。
 
-**Pattern B**は、スクリーンショットが共有の静的URLツリーに存在する場合に適用されます: 初日からロケールコード付きのフォルダを使用し、1つの一般的な`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`ルールを使用します（[設定 — ドキュメントシステム](#config--markdownoutputstyle--doc-system)を参照）。
+**パターンB** は、スクリーンショットが共有された静的URLツリーにある場合に適用されます。初日からロケールコード付きフォルダーを使用し、1つの汎用的な `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` ルールを使用します（[設定 — ドキュメントシステム](#config---docsoutputstyle--doc-system)を参照）。
 
 **Pattern C**は、各ロケールの翻訳されたドキュメントがアセットをマークダウンの横に配置する場合に適用されます（URLのリライティングなし）。あなたのスクリーンショットスクリプトは、`{outputDir}`、`{locale}`、および`{localeSubpath}`から派生したパスにPNGを出力する必要があります — 以下のDocusaurusプリセットが参照レイアウトです。
 
@@ -138,14 +138,14 @@ images/screenshots/en-GB/settings.png
 
 ソースのMarkdownでは、すべてのアセットを安定した相対パス `../assets/name.ext` で参照してください。ドキュメントアセットには絶対パスの `/img/` や `/assets/` URL を決して使用しないでください。これらのURLは英語版ソース（`static/` から配信）と翻訳ロケール（翻訳ドキュメントと同じ場所に配置）で異なるため、それらを橋渡しするために `regexAdjustments` ルールを強制的に使用しなければならなくなります。
 
-後でi18nを追加する際、スクリーンショットスクリプトは `getScreenshotDir` 分割（[パターンC](#pattern-c--docusaurus-colocated)を参照）を採用し、`translate-svg` は `pathTemplate` を使用します。正規表現の調整は必要ありません。
+i18n を後から追加する場合、スクリーンショットスクリプトは `getScreenshotDir` split を採用し（[パターン C](#pattern-c---colocated-raster-doc-system)を参照）、`translate-svg` は `pathTemplate` を使用します。正規表現の調整は必要ありません。
 
 > **注記:** `resolve.symlinks = false` 内の `next.config.ts` は、Next.jsアプリケーションのwebpackビルドにおけるシンボリックリンク解決を無効にするだけです。Docusaurusドキュメントサイトのビルド（別個のwebpackインスタンスを使用）には影響しません。
 
 <a id="astrostarlight-preset"></a>
 #### Astro/Starlightプリセット
 
-`markdownOutput.style = "doc-system"` と `localeSubpath: ""` と同等 — 翻訳ページは `{outputDir}/{locale}/` の直下に配置されます。
+`{outputDir}/{locale}/` の直下に翻訳済みページが配置される点で、`docsOutput.style = "doc-system"` と `localeSubpath: ""` と同等です。
 
 初日からロケールコード付きのパスの下にスクリーンショットを保存します。
 
@@ -187,9 +187,9 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Pattern B
 ```
 
-| パターン | アセットタイプ              | サイトタイプ                                                            | ツールの仕組み                                               |
+| パターン | アセットタイプ | サイトタイプ | ツールの仕組み |
 |---------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| A       | ラスタ（共有）               | `markdownOutput.style = "flat"` ドキュメント                             | ファイルごとのリンク書き換え；通常は正規表現不要             |
+| A | ラスター（共有） | `docsOutput.style = "flat"` ドキュメント | ファイルごとのリンクリライター。通常は正規表現不要 |
 | B       | ラスタ（ロケールごと）       | `"flat"` または `"doc-system"`（`"docusaurus"`、`"astro-starlight"` を含む） | `regexAdjustments` ロケールセグメントの置換               |
 | C       | ラスタ（共置）               | アセットが共置された `"doc-system"`（Docusaurusプリセット）           | スクリーンショットスクリプトがファイルを配置；正規表現不要   |
 | D       | SVG（翻訳対象）              | Webアプリ                                                                 | `translate-svg` と `svg.style = "flat"`                    |
@@ -197,10 +197,10 @@ Is the asset an SVG with translatable text or labels?
 
 ---
 
-<a id="pattern-a--shared-raster"></a>
+<a id="pattern-a---shared-raster"></a>
 ## パターンA - 共有ラスター
 
-`markdownOutput.style = "flat"`の場合、フラットリンクリライターは出力ファイルごとにディーププレフィックスを計算するため、ソースファイルと同じディレクトリにあるアセット（例: `docs/figure.png`を`docs/page.md`から`figure.png`として参照）は、すべての翻訳済み出力で正しく解決されます。この場合、`postProcessing.regexAdjustments`ルールは必要ありません。
+`docsOutput.style = "flat"`の場合、フラットリンクリライターは出力ファイルごとにディプスプレフィックスを計算するため、ソースファイルと同じ場所にあるアセット（たとえば、`docs/page.md`から`figure.png`として参照される`docs/figure.png`）は、すべての翻訳済み出力で正しく解決されます。したがって、`postProcessing.regexAdjustments`ルールは必要ありません。
 
 例：このパッケージは `docs/GETTING_STARTED.md` を `translated-docs/docs/GETTING_STARTED.<locale>.md` に変換します。兄弟画像である `docs/translation-dashboard.png` は `translation-dashboard.png` として参照されます。リライターは、出力ファイルのディレクトリからソースディレクトリまでの相対パス（`../../docs/`）を計算し、`../../docs/translation-dashboard.png` を生成します。`translated-docs/docs/` から、これは正しく `docs/translation-dashboard.png` に解決されます。
 
@@ -213,14 +213,14 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 実装例
 
-このリポジトリでは、翻訳ダッシュボードのスクリーンショットにパターンAを使用しています：[GETTING_STARTED.md](GETTING_STARTED.ja.md#translation-dashboard) は同じフォルダ内の画像 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) を参照しています。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) は `markdownOutput.style = "flat"` と `flatPreserveRelativeDir: true` を設定しています。ファイルごとの深さプレフィックスにより、スクリーンショットの `regexAdjustments` なしで画像パスが解決されます。
+このリポジトリでは、翻訳ダッシュボードのスクリーンショットにパターンAを使用しています：[GETTING_STARTED.md](GETTING_STARTED.ja.md#translation-dashboard)は同じフォルダ内の画像[translation-dashboard.png](../../docs/../docs/translation-dashboard.png)を参照しています。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)で`docsOutput.style = "flat"`および`flatPreserveRelativeDir: true`が設定されており、ファイルごとのディプスプレフィックスによってスクリーンショットの`regexAdjustments`が不要になります。
 
 ---
 
-<a id="pattern-b--per-locale-folder-url-rewriting"></a>
+<a id="pattern-b---per-locale-folder-url-rewriting"></a>
 ## パターンB - ロケールごとのフォルダー（URL書き換え）
 
-`markdownOutput.style = "flat"`を含むREADME/USER-GUIDEや、共有の静的URLツリーからスクリーンショットを提供するドキュメントシステムサイト（`markdownOutput.style = "doc-system"`またはエイリアス`"docusaurus"` / `"astro-starlight"`）に使用します。
+`docsOutput.style = "flat"`を持つREADME/USER-GUIDE、および共有された静的URLツリーからスクリーンショットを提供するドキュメントシステムサイト（`docsOutput.style = "doc-system"`またはエイリアス`"docusaurus"` / `"astro-starlight"`）に使用します。
 
 <a id="directory-layout"></a>
 ### ディレクトリ構成
@@ -260,14 +260,14 @@ function getScreenshotDir(locale) {
 }
 ```
 
-シンプルな`bash`の例は[examples/nextjs-appのスクリーンショットスクリプト](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh)を参照するか、より複雑な例は[Transrewrtプロジェクト](https://github.com/wsj-br/transrewrt)リポジトリの[take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js)を参照してください。
+簡単な `bash` の例は [examples/nextjs-app のスクリーンショットスクリプト](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh) で、より複雑な例は [Transrewrt プロジェクト](https://github.com/wsj-br/transrewrt) リポジトリの [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) にあります。
 
-> **注:** 以下の4つのサブセクションはすべて同じ`regexAdjustments`ロケールセグメントの置換（`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`）を共有しています。出力レイアウトとフラットリンクリライターの実行タイミングの違いのみです。ご自身の`markdownOutput.style`に合ったサブセクションにジャンプしてください。
+> **注:** 以下の4つのサブセクションでは、同じ `regexAdjustments` ロケールセグメントの入れ替え (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`) を共有しています。出力レイアウトとフラットリンクリライターを最初に実行するかどうかが異なるだけです。ご使用の `docsOutput.style` に一致するサブセクションにジャンプしてください。
 
-<a id="config--markdownoutputstyle--flat"></a>
-### 設定 - `markdownOutput.style = "flat"`
+<a id="config---docsoutputstyle--flat"></a>
+### 設定 - `docsOutput.style = "flat"`
 
-`markdownOutput.style = "flat"`の場合、フラットリンクリライターが最初に実行され、Markdown以外のURLにディーププレフィックスが付加されます。リポジトリルートにある`README.md`で`outputDir: "translated-docs/"`の場合、`../`が追加されます。
+`docsOutput.style = "flat"`の場合、フラットリンクリライターが最初に実行され、Markdown以外のURLにディプスプレフィックスが付加されます。リポジトリルートにある`README.md`で`outputDir: "translated-docs/"`の場合、`../`が追加されます。
 
 ```
 images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/translate.png
@@ -279,7 +279,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>フラットレイアウト用のregexAdjustmentsの例</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "flat",
   "postProcessing": {
     "regexAdjustments": [
@@ -299,12 +299,12 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `postProcessing`ステップはフラットリンクリライターの後に実行されます。`../`プレフィックスをパターンに含める必要はなく、すでにプレフィックスが付加されたURL内のどこにでも存在するロケールセグメントにマッチするよう`search`パターンを記述してください。
 
-実装例（本番環境）: [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) 内のスクリーンショットURL（`images/screenshots/en-GB/…`）、[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json) 内のロケール書き換え、キャプチャスクリプト [take-screenshots.js](https://github.com/wsj-br/transrewrt/blob/main/scripts/take-screenshots.js)（上記の[スクリーンショットスクリプト契約](#screenshot-script-contract)を参照）。
+実装例（本番）：[Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)内のスクリーンショットURL（`images/screenshots/en-GB/…`）、[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)内のロケール書き換え、キャプチャスクリプト[take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)（上記の[スクリーンショットスクリプト契約](#screenshot-script-contract)を参照）。
 
-実装例（デモ設定）: [examples/nextjs-app](../../docs/../examples/nextjs-app/) — [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json) 内の2番目の `documentations[]` ブロック（`images/screenshots/[^/]+/` → `${translatedLocale}`）；ヘルパースクリプト [screenshot-locales.sh](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh)。
+実装例（デモ設定）：[examples/nextjs-app](../../docs/../examples/nextjs-app/) — [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)内の2番目の`docs[]`ブロック（`images/screenshots/[^/]+/` → `${translatedLocale}`）；ヘルパースクリプト[screenshot-locales.sh](../../docs/../examples/nextjs-app/scripts/screenshot-locales.sh)。
 
-<a id="config--markdownoutputstyle--doc-system"></a>
-### 設定 - `markdownOutput.style = "doc-system"`
+<a id="config---docsoutputstyle--doc-system"></a>
+### 設定 - `docsOutput.style = "doc-system"`
 
 スクリーンショットを共通の静的URLプレフィックスで参照するすべてのドキュメントシステムサイト向けの汎用パターンB。フラットリンクリライターは実行されず、`postProcessing` が元のMarkdown URL内のロケールセグメントを書き換える。
 
@@ -312,7 +312,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>ドキュメントシステムレイアウト用のregexAdjustmentsの例</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "doc-system",
   "docsRoot": "docs",
   "localeSubpath": "your-generator/locale/content/path",
@@ -338,8 +338,8 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 すべてのターゲットロケールに対して同じパスに一致するPNGファイルを配置する（例: `static/img/screenshots/de/screenshot.png`）。デフォルトの`sourceLocale`が変更された場合でもルールが有効であるように、`screenshots/en-GB/` をハードコードするより `screenshots/[^/]+/` を使用することを推奨する。
 
-<a id="preset--markdownoutputstyle--docusaurus"></a>
-### プリセット - `markdownOutput.style = "docusaurus"`
+<a id="preset---docsoutputstyle--docusaurus"></a>
+### プリセット - `docsOutput.style = "docusaurus"`
 
 `"doc-system"` と同じで、デフォルトの `localeSubpath = "docusaurus-plugin-content-docs/current"` を使用。フラットリンクリライターは実行されず、`postProcessing` は元のMarkdown URLを認識する。英語ページでは通常、ソースロケール付きの絶対パスを使用する:
 
@@ -351,7 +351,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>Docusaurusプリセット用のregexAdjustmentsの例</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "docusaurus",
   "postProcessing": {
     "regexAdjustments": [
@@ -369,10 +369,10 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `docs-site/static/img/screenshots/<locale>/screenshot.png` に一致するPNGファイルを配置する。ソースロケールに依存しない設定の場合は、`screenshots/en-GB/` よりも `screenshots/[^/]+/` を使用することを推奨する。
 
-実装例: [examples/nextjs-app/docs-site/docs/feature-showcase.md](../../docs/../examples/nextjs-app/docs-site/docs/feature-showcase.md)（`/img/screenshots/en-GB/screenshot.png`）と [ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json) 内の最初の `documentations[]` ブロック。
+実装例：[examples/nextjs-app/docs-site/docs/feature-showcase.md](../../docs/../examples/nextjs-app/docs-site/docs/feature-showcase.md)（`/img/screenshots/en-GB/screenshot.png`）および[ai-i18n-tools.config.json](../../docs/../examples/nextjs-app/ai-i18n-tools.config.json)内の最初の`docs[]`ブロック。
 
-<a id="preset--markdownoutputstyle--astro-starlight"></a>
-### プリセット - `markdownOutput.style = "astro-starlight"`
+<a id="preset---docsoutputstyle--astro-starlight"></a>
+### プリセット - `docsOutput.style = "astro-starlight"`
 
 `"doc-system"` と同じで `localeSubpath: ""` を使用 — 翻訳済みページは直接 `{outputDir}/{locale}/` の下に配置される。上記の汎用ドキュメントシステム設定と同じパターンBの原則。ソースMarkdownでは `/img/screenshots/en-GB/screenshot.png` を使用:
 
@@ -380,7 +380,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 <summary>Astro Starlightプリセット用のregexAdjustmentsの例</summary>
 
 ```json
-"markdownOutput": {
+"docsOutput": {
   "style": "astro-starlight",
   "postProcessing": {
     "regexAdjustments": [
@@ -402,10 +402,10 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 ---
 
-<a id="pattern-c--colocated-raster-doc-system"></a>
+<a id="pattern-c---colocated-raster-doc-system"></a>
 ## パターンC - 共置ラスター（`doc-system`）
 
-`doc-system` サイトがロケール固有のアセットを翻訳済みMarkdownの横に共置する場合に使用 — URLの書き換えは不要。Docusaurusプリセット（`markdownOutput.style = "docusaurus"`）がリファレンス実装であるが、`"doc-system"` を使用しカスタム `localeSubpath` を持つ他のジェネレーターも同様の考え方を採用している：英語アセットはソースロケールのパスにあり、翻訳済みアセットは `{outputDir}/{locale}/[localeSubpath/]assets/` の下に配置される。
+翻訳済みMarkdownファイルの横にロケール固有のアセットを配置する`doc-system`サイトで使用します。URLの書き換えは不要です。Docusaurusプリセット（`docsOutput.style = "docusaurus"`）がリファレンス実装です。`"doc-system"`とカスタム`localeSubpath`を使用する他のジェネレーターも同様の考え方を採用しています：英語のアセットはソースロケールのパスに配置され、翻訳済みアセットは`{outputDir}/{locale}/[localeSubpath/]assets/`の下に配置されます。
 
 <a id="directory-layout-1"></a>
 ### ディレクトリ構成
@@ -454,7 +454,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-[duplistatus](https://github.com/wsj-br/duplistatus) リポジトリの [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts) にある本番環境の実装を参照してください（ローカル参照コピー: [references/duplistatus/scripts/take-screenshots.ts](../../docs/../references/duplistatus/scripts/take-screenshots.ts)）。
+[duplistatus](https://github.com/wsj-br/duplistatus)リポジトリの[take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)での本番実装を参照してください（ローカル参照コピー：[references/duplistatus/scripts/take-screenshots.ts](../../docs/../references/duplistatus/scripts/take-screenshots.ts)）。
 
 <a id="config"></a>
 ### 設定
@@ -463,7 +463,7 @@ function getScreenshotDir(locale) {
 
 ```json
 {
-  "markdownOutput": {
+  "docsOutput": {
     "style": "docusaurus",
     "docsRoot": "documentation/docs"
   }
@@ -482,12 +482,12 @@ function getScreenshotDir(locale) {
 <a id="implementation-example-1"></a>
 ### 実装例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/main/scripts/take-screenshots.ts) 内の `getScreenshotDir(locale)`; 英語ドキュメントは同じディレクトリにあるPNGを参照（例: [dashboard.md](../../docs/../references/duplistatus/documentation/docs/user-guide/dashboard.md) と `../assets/screen-dashboard-summary.png`）; [ai-i18n-tools.config.json](../../docs/../references/duplistatus/ai-i18n-tools.config.json) にPNGの `regexAdjustments` はなし。同じプロジェクトのパターンEのSVGも同じ `current/assets/` ディレクトリに配置されます（以下参照）。
+[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)内の`getScreenshotDir(locale)`；英語ドキュメントは共置されたPNGを参照（例：`../assets/screen-dashboard-summary.png`を持つ[dashboard.md](../../docs/../references/duplistatus/documentation/docs/user-guide/dashboard.md)）；[ai-i18n-tools.config.json](../../docs/../references/duplistatus/ai-i18n-tools.config.json)にPNGの`regexAdjustments`なし。同じプロジェクトのパターンEのSVGも同じ`current/assets/`ディレクトリに配置されます（以下を参照）。
 
 ---
 
-<a id="pattern-d--translated-svg-with-svgstyle--flat"></a>
-## パターンD - `svg.style = "flat"` を使った翻訳済みSVG
+<a id="pattern-d---translated-svg-with-svgstyle--flat"></a>
+## パターンD - `svg.style = "flat"`による翻訳済みSVG
 
 Webアプリがロケール固有のSVGイラストや図を埋め込み、実行時にロケールコードで参照する場合に使用します。
 
@@ -534,8 +534,8 @@ public/assets/
 
 ---
 
-<a id="pattern-e--colocated-translated-svg-doc-system"></a>
-## パターンE - 共存する翻訳済みSVG（ドキュメントシステム向け）
+<a id="pattern-e---colocated-translated-svg-doc-system"></a>
+## パターン E - 同梱型の翻訳済み SVG（doc-system）
 
 ドキュメントシステムのサイト向けに、翻訳済みのSVGイラストを各ロケールのコンテンツディレクトリ内の翻訳済みドキュメントと併せて配置する場合に使用します。これはパターンCのラスタースクリーンショットと同じ場所です。Docusaurusプリセットが代表的な例です。
 
@@ -608,10 +608,10 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 ## フラットリンクリライターと2段階のフロー
 
-`markdownOutput.style = "flat"`の場合（または`rewriteRelativeLinks: false`またはカスタム`pathTemplate`が設定されていない場合）、`postProcessing`の前に組み込みのリライターが実行されます。このリライターはドキュメント間のリンク（ロケール接尾辞の追加）を処理し、Markdown以外のアセットURLには深さ接頭辞を付加します。
+`docsOutput.style = "flat"`の場合（および`rewriteRelativeLinks: false`またはカスタムの`pathTemplate`が設定されていない場合）、`postProcessing`の前に組み込みのリライターが実行されます。このリライターはドキュメント間リンク（ロケール接尾辞の追加）を処理し、Markdown以外のアセットURLにはディレクトリ階層に基づくプレフィックスを付加します。
 
-<a id="two-step-flow-when-markdownoutputstyle--flat"></a>
-### `markdownOutput.style = "flat"`時の2段階のフロー
+<a id="two-step-flow-when-docsoutputstyle--flat"></a>
+### `docsOutput.style = "flat"`時の2段階の処理フロー
 
 ```
 source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
@@ -622,7 +622,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 1. フラットリンクリライター：`images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png`（`translated-docs/`用の`../`が1つ）
 2. `postProcessing`の正規表現`images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`：`../images/screenshots/de/foo.png`
 
-`markdownOutput.style = "doc-system"`の場合（`"docusaurus"`、`"astro-starlight"`、`"nested"`を含む）は、フラットリンクリライターは実行されません。`postProcessing`は翻訳されたMarkdownから元のURL（通常は`/img/screenshots/en-GB/foo.png`のような絶対パス）をそのまま受け取ります。
+`docsOutput.style = "doc-system"`の場合（`"docusaurus"`、`"astro-starlight"`、`"nested"`を含む）には、フラットリンクリライターは実行されません。`postProcessing`は翻訳されたMarkdownから元のURL（通常は`/img/screenshots/en-GB/foo.png`のような絶対パス）をそのまま参照します。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### ファイルごとの深さ接頭辞と`flatPreserveRelativeDir`
@@ -638,15 +638,14 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 | オプション                                   | 効果                                                                                                           |
 |------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| `markdownOutput.rewriteRelativeLinks`    | フラットリンクリライターを明示的に有効または無効にします（`markdownOutput.style = "flat"`時のデフォルトを上書き） |
-| `markdownOutput.linkRewriteDocsRoot`     | `depthPrefix`の計算基準となるルート（デフォルトは`"."`）                                                        |
-| `markdownOutput.flatPreserveRelativeDir` | 出力パスのレイアウトに影響し、リライターは既知の翻訳済みファイルのターゲットパスを計算する際にこれを使用します       |
+| `docsOutput.rewriteRelativeLinks`    | フラットリンクリライターを明示的に有効または無効にします（`docsOutput.style = "flat"`時の既定値を上書き） |
+| `docsOutput.linkRewriteDocsRoot`     | `depthPrefix`の計算元となるルート（既定値は`"."`）                                                        |
+| `docsOutput.flatPreserveRelativeDir` | 出力パスのレイアウトに影響し、リライターは既知の翻訳済みファイルのターゲットパスを計算する際にこのレイアウトを使用します       |
 
 ---
 
 <a id="troubleshooting"></a>
 <a id="common-mistakes-and-troubleshooting"></a>
-<a id="common-mistakes"></a>
 ## よくあるミスとトラブルシューティング
 
 **スクリーンショットのパスにロケールディレクトリが含まれない**
