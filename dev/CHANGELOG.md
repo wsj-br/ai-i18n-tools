@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-05-24
+
 - **Changed**: package — `engines.pnpm` is now `>=11.0.0` (was `>=10.33.0`); `dev/DEVEL.md` and `.cursor/rules/project.mdc` updated to match.
 
 - **Changed**: CI — bump `pnpm/action-setup` to v6 (pnpm 11.x; version still read from `packageManager` in `package.json`).
