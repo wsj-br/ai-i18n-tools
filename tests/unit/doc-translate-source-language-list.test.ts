@@ -16,11 +16,11 @@ describe("rewriteSourceMarkdownLanguageListBlocks", () => {
         mergeWithDefaults({
           sourceLocale: "en-GB",
           cacheDir: ".translation-cache",
-          documentations: [
+          docs: [
             {
               contentPaths: ["README.md"],
               outputDir: "translated-docs",
-              markdownOutput: {
+              docsOutput: {
                 style: "flat" as const,
                 postProcessing: {
                   languageListBlock: {
@@ -40,14 +40,13 @@ describe("rewriteSourceMarkdownLanguageListBlocks", () => {
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
 
       const rewritten = rewriteSourceMarkdownLanguageListBlocks(
         docCfg,

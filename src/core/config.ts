@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
+import { maybeRewriteConfigFile, preprocessLegacyConfigInput } from "./config-migrate.js";
 import {
   assertDocSystemLocaleSubpath,
-  normalizeI18nConfigMarkdownOutput,
-} from "./markdown-output-normalize.js";
+  normalizeI18nConfigDocsOutput,
+} from "./docs-output-normalize.js";
 import { ConfigValidationError } from "./errors.js";
 import {
   coerceTargetLocalesField,
@@ -18,7 +19,8 @@ import {
 } from "./ui-languages-catalog.js";
 import {
   assertTargetLocalesAreLocaleCodes,
-  expandDocumentationTargetLocalesInRawInput,
+  expandDocTargetLocalesInRawInput,
+  expandJsonTargetLocalesInRawInput,
   expandTargetLocalesFileReferenceInRawInput,
   getDocumentationTargetLocaleCodes,
   mergeUiLanguageDisplayNames,
@@ -26,7 +28,7 @@ import {
   type UiLanguageEntry,
 } from "./ui-languages.js";
 import {
-  type DocumentationBlock,
+  type DocBlock,
   type I18nConfig,
   type I18nDocTranslateConfig,
   type OpenRouterConfig,
@@ -124,8 +126,8 @@ function deepMergeDefaults<T extends Record<string, unknown>>(base: T, override:
 }
 
 /** Merge each block's `sourceFiles` into `contentPaths` (unique). */
-function mergeDocumentationSourceFiles(raw: Record<string, unknown>): void {
-  const docs = raw.documentations;
+function mergeDocSourceFiles(raw: Record<string, unknown>): void {
+  const docs = raw.docs;
   if (!Array.isArray(docs)) {
     return;
   }
@@ -151,12 +153,9 @@ function mergeDocumentationSourceFiles(raw: Record<string, unknown>): void {
 /**
  * Single-documentation view for translate-docs: one block plus root `cacheDir` and shared settings.
  */
-export function toDocTranslateConfig(
-  root: I18nConfig,
-  block: DocumentationBlock
-): I18nDocTranslateConfig {
-  const { documentations: _, ...rest } = root;
-  return { ...rest, documentation: block };
+export function toDocTranslateConfig(root: I18nConfig, block: DocBlock): I18nDocTranslateConfig {
+  const { docs: _, ...rest } = root;
+  return { ...rest, doc: block };
 }
 
 export const defaultI18nConfigPartial: RawI18nConfigInput = {
@@ -170,10 +169,9 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     requestTimeoutMs: 30_000,
   },
   features: {
-    extractUIStrings: false,
     translateUIStrings: false,
-    translateMarkdown: false,
-    translateJSON: false,
+    translateDocs: false,
+    translateJson: false,
     translateSVG: false,
   },
   glossary: {},
@@ -183,13 +181,14 @@ export const defaultI18nConfigPartial: RawI18nConfigInput = {
     flatOutputDir: "./locales",
   },
   cacheDir: ".translation-cache",
-  documentations: [
+  docs: [
     {
       contentPaths: [],
       outputDir: "./i18n",
-      markdownOutput: {},
+      docsOutput: {},
     },
   ],
+  json: [],
 };
 
 /**
@@ -200,10 +199,11 @@ export function mergeWithDefaults(raw: unknown): RawI18nConfigInput {
     raw !== null && typeof raw === "object" && !Array.isArray(raw)
       ? (raw as Record<string, unknown>)
       : {};
-  mergeDocumentationSourceFiles(asObj);
+  const preprocessed = preprocessLegacyConfigInput(asObj) as Record<string, unknown>;
+  mergeDocSourceFiles(preprocessed);
   const merged = deepMergeDefaults(
     defaultI18nConfigPartial as unknown as Record<string, unknown>,
-    asObj
+    preprocessed
   ) as RawI18nConfigInput;
   applyDefaultUiLanguagesPathToRawInput(merged);
   return merged;
@@ -252,8 +252,9 @@ export function augmentConfigWithUiLanguagesMaster(config: I18nConfig): I18nConf
 
 export function validateI18nBusinessRules(config: I18nConfig): void {
   const models = resolveTranslationModels(config.openrouter);
-  const needsDocTranslation = config.features.translateMarkdown || config.features.translateJSON;
-  const needsExtract = config.features.extractUIStrings;
+  const needsDocTranslation =
+    config.features.translateDocs ||
+    config.docs.some((d) => Boolean(d.docusaurusCatalogDir?.trim()));
   const needsUITranslation = config.features.translateUIStrings;
   const src = normalizeLocale(config.sourceLocale);
   const needsSvgTranslation = config.features.translateSVG && Boolean(config.svg);
@@ -274,17 +275,26 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
   }
 
   assertTargetLocalesAreLocaleCodes(config.targetLocales, "targetLocales");
-  for (const d of config.documentations) {
+  for (const d of config.docs) {
     if (d.targetLocales?.length) {
-      assertTargetLocalesAreLocaleCodes(d.targetLocales, "documentations[].targetLocales");
+      assertTargetLocalesAreLocaleCodes(d.targetLocales, "docs[].targetLocales");
     }
   }
 
   if (needsDocTranslation && getDocumentationTargetLocaleCodes(config).length === 0) {
     throw new ConfigValidationError(
-      "When translateMarkdown / translateJSON is enabled, set non-empty targetLocales " +
-        "and/or documentations[].targetLocales (documentation-only locale list)."
+      "When translateDocs is enabled or docs[].docusaurusCatalogDir is set, set non-empty targetLocales " +
+        "and/or docs[].targetLocales (documentation-only locale list)."
     );
+  }
+
+  if (config.features.translateJson) {
+    const hasJsonSources = config.json.some((b) => b.contentPaths.length > 0);
+    if (!hasJsonSources) {
+      throw new ConfigValidationError(
+        "translateJson is enabled but json[] has no contentPaths entries"
+      );
+    }
   }
 
   if (needsUITranslation && config.targetLocales.length === 0) {
@@ -293,19 +303,20 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
     );
   }
 
-  if (needsExtract && config.ui.sourceRoots.length === 0) {
+  if (needsUITranslation && config.ui.sourceRoots.length === 0) {
     throw new ConfigValidationError(
-      "ui.sourceRoots must be non-empty when extractUIStrings is enabled"
+      "ui.sourceRoots must be non-empty when translateUIStrings is enabled"
     );
   }
 
-  if (needsDocTranslation) {
-    const hasPaths = config.documentations.some(
-      (d: DocumentationBlock) => d.contentPaths.length > 0
+  if (config.features.translateDocs) {
+    const hasPaths = config.docs.some((d: DocBlock) => d.contentPaths.length > 0);
+    const hasCatalogOnly = config.docs.some(
+      (d) => d.contentPaths.length === 0 && Boolean(d.docusaurusCatalogDir?.trim())
     );
-    if (!hasPaths) {
+    if (!hasPaths && !hasCatalogOnly) {
       throw new ConfigValidationError(
-        "documentations[].contentPaths must be non-empty in at least one block when translateMarkdown / translateJSON is enabled"
+        "docs[].contentPaths must be non-empty in at least one block when translateDocs is enabled, unless a block only sets docusaurusCatalogDir for catalog JSON"
       );
     }
   }
@@ -350,7 +361,7 @@ export function parseI18nConfig(input: RawI18nConfigInput): I18nConfig {
       issues
     );
   }
-  const normalized = normalizeI18nConfigMarkdownOutput(parsed.data);
+  const normalized = normalizeI18nConfigDocsOutput(parsed.data);
   assertDocSystemLocaleSubpath(normalized);
   validateI18nBusinessRules(normalized);
   return normalized;
@@ -400,9 +411,15 @@ export function loadI18nConfigFromFile(configPath: string, cwd = process.cwd()):
       `Invalid JSON in config file: ${resolved}: ${e instanceof Error ? e.message : String(e)}`
     );
   }
+  const rewrite = maybeRewriteConfigFile(resolved, json);
+  if (rewrite.rewritten) {
+    console.log(`[config] Updated ${path.basename(resolved)}: ${rewrite.messages.join(", ")}`);
+    json = JSON.parse(fs.readFileSync(resolved, "utf8")) as unknown;
+  }
   const merged = mergeWithDefaults(json);
   expandTargetLocalesFileReferenceInRawInput(merged, cwd);
-  expandDocumentationTargetLocalesInRawInput(merged, cwd);
+  expandDocTargetLocalesInRawInput(merged, cwd);
+  expandJsonTargetLocalesInRawInput(merged, cwd);
   const parsed = parseI18nConfig(merged);
   const withEnv = applyEnvOverrides(parsed);
   validateI18nBusinessRules(withEnv);
@@ -441,12 +458,11 @@ export const initConfigTemplates = {
       requestTimeoutMs: 30_000,
     },
     features: {
-      // Workflow 1: UI string extraction and translation
-      extractUIStrings: true,
+      // Workflow 1: UI strings (extract runs automatically before translate)
       translateUIStrings: true,
       // Workflow 2: document translation (enable when you have markdown to translate)
-      translateMarkdown: false,
-      translateJSON: false,
+      translateDocs: false,
+
       translateSVG: false,
     },
     glossary: {
@@ -465,11 +481,11 @@ export const initConfigTemplates = {
     batchSize: 20,
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
-    documentations: [
+    docs: [
       {
         contentPaths: [],
         outputDir: "./i18n",
-        markdownOutput: {
+        docsOutput: {
           style: "flat",
         },
         // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
@@ -490,10 +506,9 @@ export const initConfigTemplates = {
       requestTimeoutMs: 30_000,
     },
     features: {
-      extractUIStrings: false,
       translateUIStrings: false,
-      translateMarkdown: true,
-      translateJSON: true,
+      translateDocs: true,
+
       translateSVG: false,
     },
     glossary: {
@@ -510,12 +525,12 @@ export const initConfigTemplates = {
     batchSize: 20,
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
-    documentations: [
+    docs: [
       {
         contentPaths: ["docs/"],
         outputDir: "i18n/",
-        jsonSource: "i18n/en",
-        markdownOutput: {
+        docusaurusCatalogDir: "i18n/en",
+        docsOutput: {
           style: "docusaurus",
           docsRoot: "docs",
         },
@@ -536,10 +551,9 @@ export const initConfigTemplates = {
       requestTimeoutMs: 30_000,
     },
     features: {
-      extractUIStrings: false,
       translateUIStrings: false,
-      translateMarkdown: true,
-      translateJSON: false,
+      translateDocs: true,
+
       translateSVG: false,
     },
     glossary: {
@@ -555,11 +569,11 @@ export const initConfigTemplates = {
     batchSize: 20,
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
-    documentations: [
+    docs: [
       {
         contentPaths: ["src/content/docs/quick-start.md", "src/content/docs/feature-showcase.mdx"],
         outputDir: "src/content/docs",
-        markdownOutput: {
+        docsOutput: {
           style: "astro-starlight",
           docsRoot: "src/content/docs",
           postProcessing: {
@@ -589,10 +603,9 @@ export const initConfigTemplates = {
       requestTimeoutMs: 30_000,
     },
     features: {
-      extractUIStrings: true,
       translateUIStrings: true,
-      translateMarkdown: false,
-      translateJSON: false,
+      translateDocs: false,
+
       translateSVG: false,
     },
     glossary: {
@@ -613,7 +626,47 @@ export const initConfigTemplates = {
     batchSize: 20,
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
-    documentations: [],
+    docs: [],
+  }),
+
+  uiJsonBundles: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en",
+    targetLocales: ["de", "fr"],
+    openrouter: {
+      baseUrl: "https://openrouter.ai/api/v1",
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      maxTokens: 8192,
+      temperature: 0.2,
+      requestTimeoutMs: 30_000,
+    },
+    features: {
+      translateUIStrings: false,
+      translateDocs: false,
+      translateJson: true,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "./locales",
+    },
+    cacheDir: ".translation-cache",
+    json: [
+      {
+        description: "Per-locale UI JSON bundle",
+        contentPaths: "src/i18n/en/translation.json",
+        outputPathTemplate: "src/i18n/{locale}/translation.json",
+        keyPolicy: {
+          mode: "denylist",
+          skipKeys: ["id", "slug", "href", "url", "key", "code"],
+          translateKeys: [],
+        },
+      },
+    ],
   }),
 } as const;
 

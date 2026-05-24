@@ -49,15 +49,15 @@ export async function runCheckMarkdown(opts: CheckMarkdownOptions): Promise<{ ex
       : null;
 
   try {
-    for (let bi = 0; bi < opts.config.documentations.length; bi++) {
-      const block = opts.config.documentations[bi]!;
+    for (let bi = 0; bi < opts.config.docs.length; bi++) {
+      const block = opts.config.docs[bi]!;
       const view = toDocTranslateConfig(opts.config, block);
       const md = filterIgnoredFiles(
         collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
         projectRoot
       ).filter((r) => matchesPathFilter(r, opts.pathFilter));
 
-      const mdExtractOpts = buildMarkdownExtractOpts(view.documentation);
+      const mdExtractOpts = buildMarkdownExtractOpts(view.doc);
       const extractor = new MarkdownExtractor();
 
       for (const relPath of md) {

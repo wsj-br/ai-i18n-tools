@@ -2,7 +2,7 @@ import path from "path";
 
 /**
  * Namespaces documentation file-tracking keys in the shared SQLite cache when multiple
- * `documentations` blocks exist, so the same relative path in different blocks does not collide.
+ * `docs` blocks exist, so the same relative path in different blocks does not collide.
  */
 const PREFIX = "doc-block:";
 
@@ -17,12 +17,14 @@ export function documentationFileTrackingKey(blockIndex: number, relPath: string
 
 /** Resolve a stored filepath key to an absolute path under project root for existence checks. */
 export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string): string {
-  if (filepath.startsWith(PREFIX)) {
-    const rest = filepath.slice(PREFIX.length);
-    const idx = rest.indexOf(":");
-    if (idx >= 0) {
-      const rel = rest.slice(idx + 1);
-      return path.resolve(projectRoot, rel);
+  for (const prefix of [PREFIX, JSON_PREFIX]) {
+    if (filepath.startsWith(prefix)) {
+      const rest = filepath.slice(prefix.length);
+      const idx = rest.indexOf(":");
+      if (idx >= 0) {
+        const rel = rest.slice(idx + 1);
+        return path.resolve(projectRoot, rel);
+      }
     }
   }
   return path.resolve(projectRoot, filepath);
@@ -32,6 +34,13 @@ export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string
  * For editor / server console links: `doc-block:{n}:rel/path` → `rel/path`; returns `filepath` unchanged
  * when it is not a documentation file-tracking key (e.g. plain paths, `svg-files:…`).
  */
+const JSON_PREFIX = "json-block:";
+
+export function jsonBlockFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${JSON_PREFIX}${blockIndex}:${p}`;
+}
+
 export function docBlockFileTrackingKeyToRelPath(filepath: string): string {
   if (!filepath.startsWith(PREFIX)) return filepath;
   const rest = filepath.slice(PREFIX.length);

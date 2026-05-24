@@ -174,20 +174,20 @@ export interface TranslationDashboardOptions {
   sourceLocale: string;
   targetLocales: string[];
   /**
-   * `documentation.jsonSource` (cwd-relative). Used to print full paths for JSON segments
+   * `documentation.docusaurusCatalogDir` (cwd-relative). Used to print full paths for JSON segments
    * that were stored relative to this root (e.g. `code.json` → `docs-site/i18n/en/code.json`).
    */
-  jsonSource?: string | null;
+  docusaurusCatalogDir?: string | null;
 }
 
-/** Normalize cache filepath for console log-links (JSON rows may omit jsonSource prefix). */
+/** Normalize cache filepath for console log-links (JSON rows may omit docusaurusCatalogDir prefix). */
 export function resolveSegmentLogFilepath(
   filepath: string,
-  jsonSource: string | null | undefined
+  docusaurusCatalogDir: string | null | undefined
 ): string {
-  if (!filepath || !jsonSource?.trim()) return String(filepath);
+  if (!filepath || !docusaurusCatalogDir?.trim()) return String(filepath);
   const fp = String(filepath).replace(/\\/g, "/").replace(/^\/+/, "");
-  const js = jsonSource.trim().replace(/\\/g, "/").replace(/\/$/, "");
+  const js = docusaurusCatalogDir.trim().replace(/\\/g, "/").replace(/\/$/, "");
   if (fp === js || fp.startsWith(`${js}/`)) return fp;
   if (!fp.toLowerCase().endsWith(".json")) return fp;
   return `${js}/${fp}`;
@@ -436,7 +436,7 @@ export function createTranslationDashboardApp(
         res.status(400).json({ error: "Missing filepath or locale" });
         return;
       }
-      const resolved = resolveSegmentLogFilepath(String(filepath), opts.jsonSource);
+      const resolved = resolveSegmentLogFilepath(String(filepath), opts.docusaurusCatalogDir);
       const displayPath = docBlockFileTrackingKeyToRelPath(resolved);
       const lineSuffix = start_line != null ? `:${start_line}` : ":1";
       console.log(`[dashboard] link: ` + chalk.cyan(`${displayPath}${lineSuffix}`));

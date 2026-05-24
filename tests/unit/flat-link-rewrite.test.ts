@@ -22,20 +22,20 @@ function cfg(over: Record<string, unknown> = {}): I18nDocTranslateConfig {
         maxTokens: 100,
         temperature: 0.1,
       },
-      features: { translateMarkdown: true },
+      features: { translateDocs: true },
       ui: { sourceRoots: [], stringsJson: "s.json", flatOutputDir: "locales" },
       cacheDir: ".cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "i18n",
-          markdownOutput: { style: "nested", docsRoot: "docs" },
+          docsOutput: { style: "nested", docsRoot: "docs" },
         },
       ],
       ...over,
     })
   );
-  return toDocTranslateConfig(full, full.documentations[0]!);
+  return toDocTranslateConfig(full, full.docs[0]!);
 }
 
 describe("normalizeMarkdownRelPath", () => {
@@ -80,11 +80,11 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
 
   it("locale suffix for sibling in same flat output folder (no preserve dir)", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["a.md", "b.md"],
           outputDir: "out",
-          markdownOutput: { style: "flat", linkRewriteDocsRoot: "." },
+          docsOutput: { style: "flat", linkRewriteDocsRoot: "." },
         },
       ],
     });
@@ -100,11 +100,11 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
 
   it("preserves subdirectory for flat + flatPreserveRelativeDir (README → docs sibling)", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md", "docs/GETTING_STARTED.md"],
           outputDir: "translated-docs",
-          markdownOutput: {
+          docsOutput: {
             style: "flat",
             flatPreserveRelativeDir: true,
             linkRewriteDocsRoot: ".",
@@ -132,11 +132,11 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
 
   it("resolves duplicate basenames by directory (same-folder vs cross-folder)", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/a.md", "other/a.md", "docs/x.md", "other/x.md"],
           outputDir: "out",
-          markdownOutput: {
+          docsOutput: {
             style: "flat",
             flatPreserveRelativeDir: true,
             linkRewriteDocsRoot: ".",
@@ -173,11 +173,11 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
 
   it("resolves nested relative link from docs to repo root README", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md", "docs/page.md"],
           outputDir: "translated-docs",
-          markdownOutput: {
+          docsOutput: {
             style: "flat",
             flatPreserveRelativeDir: true,
             linkRewriteDocsRoot: ".",
@@ -212,11 +212,11 @@ describe("rewriteDocLinksForFlatOutput", () => {
   const i18nPrefix = "";
   const depthPrefix = "../";
   const flatCfg = cfg({
-    documentations: [
+    docs: [
       {
         contentPaths: ["a.md", "b.md"],
         outputDir: "out",
-        markdownOutput: { style: "flat", linkRewriteDocsRoot: "." },
+        docsOutput: { style: "flat", linkRewriteDocsRoot: "." },
       },
     ],
   });
@@ -272,11 +272,11 @@ describe("computeFlatLinkRewritePrefixes", () => {
 describe("computePerFileDepthPrefix", () => {
   function flatCfg(over: Partial<Parameters<typeof cfg>[0]> = {}) {
     return cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md", "docs/GETTING_STARTED.md"],
           outputDir: "translated-docs",
-          markdownOutput: {
+          docsOutput: {
             style: "flat",
             flatPreserveRelativeDir: true,
             linkRewriteDocsRoot: ".",
@@ -311,11 +311,11 @@ describe("computePerFileDepthPrefix", () => {
 
   it("source at repo root, two-level outputDir: two levels deep prefix", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md"],
           outputDir: "out/translated",
-          markdownOutput: { style: "flat", linkRewriteDocsRoot: "." },
+          docsOutput: { style: "flat", linkRewriteDocsRoot: "." },
         },
       ],
     });

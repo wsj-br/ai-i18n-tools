@@ -46,8 +46,8 @@ type ScannedRow = {
  * Scan `ui.sourceRoots` for UI strings and write merged `strings.json`.
  */
 export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
-  if (!config.features.extractUIStrings) {
-    throw new Error("features.extractUIStrings is disabled in config");
+  if (config.ui.sourceRoots.length === 0) {
+    throw new Error("ui.sourceRoots must be non-empty to extract UI strings");
   }
 
   console.log(chalk.cyan(`🔍 ${timestamp()} - Extracting UI strings…`));

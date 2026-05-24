@@ -1,6 +1,6 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["de", "es", "fr", "hi", "ja", "ko", "pt-BR", "zh-CN", "zh-TW" ],
+  "targetLocales": ["de", "es", "fr", "hi", "ja", "ko", "pt-BR", "zh-CN", "zh-TW"],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -24,25 +24,24 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": false,
     "translateUIStrings": false,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
+    "translateJson": false,
     "translateSVG": false
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "description": "README and docs/ markdown only (no UI strings pipeline)",
       "contentPaths": [
-        "README.md", 
-        "docs/GETTING_STARTED.md", 
+        "README.md",
+        "docs/GETTING_STARTED.md",
         "docs/PACKAGE_OVERVIEW.md",
         "docs/LOCALE-ASSETS-GUIDE.md"
       ],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "flat",
         "flatPreserveRelativeDir": true,
         "linkRewriteDocsRoot": ".",

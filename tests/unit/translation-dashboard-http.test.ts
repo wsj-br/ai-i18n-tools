@@ -907,7 +907,7 @@ describe("createTranslationDashboardApp", () => {
       cwd: "/tmp",
       sourceLocale: "en",
       targetLocales: ["de"],
-      jsonSource: "docs-site/i18n/en",
+      docusaurusCatalogDir: "docs-site/i18n/en",
     });
     await withHttpServer(app, async (base) => {
       const res = await fetch(`${base}/api/log-links`, {
@@ -1539,7 +1539,7 @@ describe("createTranslationDashboardApp", () => {
         cwd: "/tmp",
         sourceLocale: "en",
         targetLocales: ["de"],
-        jsonSource: "docs/i18n/en",
+        docusaurusCatalogDir: "docs/i18n/en",
       });
       await withHttpServer(app, async (base) => {
         const res = await fetch(`${base}/api/log-links`, {

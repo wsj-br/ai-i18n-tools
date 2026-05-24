@@ -1,6 +1,12 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
+  "targetLocales": [
+    "ar",
+    "es",
+    "fr",
+    "de",
+    "pt-BR"
+  ],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -24,10 +30,8 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": true,
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": true,
+    "translateDocs": true,
     "translateSVG": true
   },
   "glossary": {
@@ -36,19 +40,23 @@
     "autoAddUserEditedToGlossary": true
   },
   "ui": {
-    "sourceRoots": ["src/"],
+    "sourceRoots": [
+      "src/"
+    ],
     "stringsJson": "locales/strings.json",
     "flatOutputDir": "public/locales/"
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "description": "Docusaurus docs and JSON UI strings under docs-site",
-      "contentPaths": ["docs-site/docs/"],
+      "contentPaths": [
+        "docs-site/docs/"
+      ],
       "outputDir": "docs-site/i18n",
-      "jsonSource": "docs-site/i18n/en",
+      "docusaurusCatalogDir": "docs-site/i18n/en",
       "addFrontmatter": true,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "docusaurus",
         "docsRoot": "docs-site/docs",
         "postProcessing": {
@@ -64,10 +72,12 @@
     },
     {
       "description": "Root README only (flat markdown output)",
-      "contentPaths": ["README.md"],
+      "contentPaths": [
+        "README.md"
+      ],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "flat",
         "postProcessing": {
           "regexAdjustments": [

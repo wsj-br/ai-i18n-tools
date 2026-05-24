@@ -274,13 +274,13 @@ export async function runLintSource(
 ): Promise<{ report: LintSourceReport; logFilePath: string; exitWithError?: string }> {
   const cwd = opts.cwd;
 
-  if (!config.features.extractUIStrings) {
+  if (!config.features.translateUIStrings) {
     const stringsPathEarly = resolveStringsJsonPath(config, cwd);
     return {
       report: emptyReport(config, cwd, stringsPathEarly),
       logFilePath: "",
       exitWithError:
-        "[lint-source] Enable features.extractUIStrings in config (lint-source runs extract first so strings.json matches source).",
+        "[lint-source] Enable features.translateUIStrings in config (lint-source runs extract first so strings.json matches source).",
     };
   }
 

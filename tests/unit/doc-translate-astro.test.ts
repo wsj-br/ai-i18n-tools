@@ -7,16 +7,15 @@ function baseConfig(): I18nDocTranslateConfig {
     sourceLocale: "en",
     targetLocales: ["de"],
     features: {
-      extractUIStrings: false,
       translateUIStrings: false,
-      translateMarkdown: true,
-      translateJSON: false,
+      translateDocs: true,
+      translateJson: false,
       translateSVG: false,
     },
-    documentation: {
+    doc: {
       contentPaths: ["src/pages"],
       outputDir: "src/pages",
-      markdownOutput: { style: "astro-starlight", docsRoot: "src/pages" },
+      docsOutput: { style: "astro-starlight", docsRoot: "src/pages" },
     },
     cacheDir: ".cache",
     openrouter: { baseUrl: "https://openrouter.ai/api/v1" },
@@ -24,7 +23,7 @@ function baseConfig(): I18nDocTranslateConfig {
 }
 
 describe("shouldRunAstro / shouldRunMarkdown", () => {
-  it("runs astro when translateMarkdown is on and typeFilter is unset", () => {
+  it("runs astro when translateDocs is on and typeFilter is unset", () => {
     const config = baseConfig();
     const opts = {
       cwd: ".",

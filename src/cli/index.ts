@@ -27,10 +27,14 @@ import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
   getDocumentationTargetLocaleCodes,
+  getJsonTargetLocaleCodes,
   resolveLocalesForDocumentation,
   resolveLocalesForSvg,
   resolveLocalesForUI,
 } from "../core/ui-languages.js";
+import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
+import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
+import { expandJsonBlockOutputPath } from "./translate-json-run.js";
 import {
   loadConfigOrExit,
   resolveStringsJsonPath,
@@ -206,7 +210,7 @@ function warnAndAugmentMarkdownForExplicitPath(
     projectRoot,
     pathFilter,
     blockIndex,
-    config.documentations,
+    config.docs,
     markdownDiscovered
   );
   for (const w of warnings) {
@@ -226,7 +230,7 @@ function warnAndAugmentAstroForExplicitPath(
     projectRoot,
     pathFilter,
     blockIndex,
-    config.documentations,
+    config.docs,
     astroDiscovered
   );
   for (const w of warnings) {
@@ -419,7 +423,7 @@ program
   .option("-o, --output <path>", "config file path", DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown (UI + app markdown) | ui-docusaurus (Docusaurus docs) | ui-starlight (Astro Starlight docs) | ui-astro-website (Astro app UI)",
+    "ui-markdown | ui-docusaurus | ui-starlight | ui-astro-website | ui-json-bundles",
     "ui-markdown"
   )
   .option("--with-translate-ignore", "Create a starter .translate-ignore", false)
@@ -430,11 +434,12 @@ program
       "ui-docusaurus": "uiDocusaurus",
       "ui-starlight": "uiStarlight",
       "ui-astro-website": "uiAstroWebsite",
+      "ui-json-bundles": "uiJsonBundles",
     };
     const key = templateMap[t];
     if (!key) {
       console.error(
-        'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", or "ui-astro-website".'
+        'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-astro-website", or "ui-json-bundles".'
       );
       process.exitCode = 1;
       return;
@@ -530,8 +535,8 @@ program
       process.exit(1);
     }
 
-    if (!config.documentations?.length) {
-      console.error(chalk.red("❌ [write-heading-ids] config has no documentations[] blocks."));
+    if (!config.docs?.length) {
+      console.error(chalk.red("❌ [write-heading-ids] config has no docs[] blocks."));
       process.exit(1);
     }
 
@@ -561,7 +566,7 @@ program
 program
   .command("strip-md-bold-inline")
   .description(
-    "Remove bold (**) around inline code in markdown/MDX under documentations[].contentPaths (.translate-ignore; optional --path)"
+    "Remove bold (**) around inline code in markdown/MDX under docs[].contentPaths (.translate-ignore; optional --path)"
   )
   .option(
     "-p, --path <path>",
@@ -587,8 +592,8 @@ program
     const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
     warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
 
-    if (!config.documentations?.length) {
-      console.error(chalk.red("❌ [strip-md-bold-inline] config has no documentations[] blocks."));
+    if (!config.docs?.length) {
+      console.error(chalk.red("❌ [strip-md-bold-inline] config has no docs[] blocks."));
       process.exit(1);
     }
 
@@ -627,10 +632,6 @@ program
   .action(async (_opts, cmd) => {
     const { configFlag, cwd } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
-    if (!config.features.extractUIStrings) {
-      console.error("[extract] Enable features.extractUIStrings in config.");
-      process.exit(1);
-    }
     try {
       const s = runExtract(config, projectRoot);
       console.log(
@@ -770,9 +771,11 @@ async function runSyncPipeline(args: {
   noUi: boolean;
   noSvg: boolean;
   noDocs: boolean;
+  noJson: boolean;
 }): Promise<void> {
-  const { config, projectRoot, uiLocales, svgLocales, translateOpts, noUi, noSvg, noDocs } = args;
-  if (config.features.extractUIStrings) {
+  const { config, projectRoot, uiLocales, svgLocales, translateOpts, noUi, noSvg, noDocs, noJson } =
+    args;
+  if (config.features.translateUIStrings && !noUi) {
     try {
       const s = runExtract(config, projectRoot);
       console.log(
@@ -784,8 +787,6 @@ async function runSyncPipeline(args: {
       console.error(chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`));
       throw e;
     }
-  }
-  if (config.features.translateUIStrings && !noUi) {
     try {
       await runTranslateUI(config, {
         cwd: projectRoot,
@@ -815,8 +816,8 @@ async function runSyncPipeline(args: {
   }
   if (!noDocs) {
     try {
-      for (let bi = 0; bi < config.documentations.length; bi++) {
-        const block = config.documentations[bi]!;
+      for (let bi = 0; bi < config.docs.length; bi++) {
+        const block = config.docs[bi]!;
         const view = toDocTranslateConfig(config, block);
         const mdBase = filterIgnored(
           collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
@@ -840,11 +841,11 @@ async function runSyncPipeline(args: {
           config,
           astroBase
         );
-        const jsonRoot = block.jsonSource
-          ? path.resolve(projectRoot, block.jsonSource)
+        const jsonRoot = block.docusaurusCatalogDir
+          ? path.resolve(projectRoot, block.docusaurusCatalogDir)
           : path.resolve(projectRoot, ".");
         const jsonFiles =
-          block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
+          block.docusaurusCatalogDir?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
         const {
@@ -874,6 +875,15 @@ async function runSyncPipeline(args: {
       throw e;
     }
   }
+  if (!noJson && config.features.translateJson) {
+    try {
+      const { runTranslateJson } = await import("./translate-json-run.js");
+      await runTranslateJson(config, projectRoot, translateOpts);
+    } catch (e) {
+      console.error(chalk.red(`❌ [sync][json] ${e instanceof Error ? e.message : String(e)}`));
+      throw e;
+    }
+  }
 }
 
 program
@@ -883,7 +893,7 @@ program
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: documentation targets from config (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
+    "Target locales (comma-separated); default: documentation targets from config (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
   )
   .option(
     "-p, --path <path>",
@@ -999,21 +1009,11 @@ program
       process.exit(1);
     }
 
-    if (config.features.translateJSON && !config.documentations.some((b) => b.jsonSource?.trim())) {
-      console.warn(
-        chalk.yellow(
-          "\n⚠️  translateJSON is enabled but no documentations[].jsonSource is set. " +
-            "JSON translation (e.g. Docusaurus UI strings from write-translations) is skipped. " +
-            'Set jsonSource on at least one block to your default-locale catalog (e.g. "docs-site/i18n/en").\n'
-        )
-      );
-    }
-
     let totalSkipped = 0;
     let totalWritten = 0;
     try {
-      for (let bi = 0; bi < config.documentations.length; bi++) {
-        const block = config.documentations[bi]!;
+      for (let bi = 0; bi < config.docs.length; bi++) {
+        const block = config.docs[bi]!;
         const view = toDocTranslateConfig(config, block);
         const mdBase = filterIgnored(
           collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
@@ -1037,11 +1037,11 @@ program
           config,
           astroBase
         );
-        const jsonRoot = block.jsonSource
-          ? path.resolve(projectRoot, block.jsonSource)
+        const jsonRoot = block.docusaurusCatalogDir
+          ? path.resolve(projectRoot, block.docusaurusCatalogDir)
           : path.resolve(projectRoot, ".");
         const jsonFiles =
-          block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
+          block.docusaurusCatalogDir?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
         const {
@@ -1065,7 +1065,7 @@ program
             : "";
         console.log(
           chalk.gray(
-            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${astroScoped.length} astro, ${jsonScoped.length} json) ---\n`
+            `\n--- docs[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${astroScoped.length} astro, ${jsonScoped.length} json) ---\n`
           )
         );
         const sum = await runTranslate(
@@ -1106,13 +1106,66 @@ Examples:
   );
 
 program
+  .command("translate-json")
+  .description(
+    "Translate arbitrary nested JSON per config.json[] (requires features.translateJson); -l/--locale limits targets"
+  )
+  .option(
+    "-l, --locale <codes>",
+    "Target locales (comma-separated); default: union of json[].targetLocales or root targetLocales"
+  )
+  .option(
+    "-p, --path <path>",
+    "Only translate files under this path (file, directory, or glob); project-relative or absolute"
+  )
+  .option("-f, --file <path>", "Same as --path")
+  .option("--dry-run", "No writes, no API calls", false)
+  .option("--force", "Re-translate: clear file tracking and ignore segment cache", false)
+  .option(
+    "--force-update",
+    "Re-process when file tracking matches; segment cache still applies",
+    false
+  )
+  .option("-j, --concurrency <n>", "Reserved for future parallel locales")
+  .option(
+    "-b, --batch-concurrency <n>",
+    "Max parallel batch API calls per file (default: config or 4)"
+  )
+  .option(
+    "--prompt-format <mode>",
+    "Batch segment prompt/response: xml, json-array, or json-object",
+    "json-array"
+  )
+  .action(async (_a, cmd) => {
+    const { configFlag, cwd } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
+    const cacheDir = path.join(projectRoot, config.cacheDir);
+    const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-json");
+    let translateOpts: TranslateRunOptions;
+    try {
+      ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
+    } catch (e) {
+      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+    try {
+      const { runTranslateJson } = await import("./translate-json-run.js");
+      await runTranslateJson(config, projectRoot, translateOpts);
+    } catch (e) {
+      console.error(chalk.red(`❌ [translate-json] ${e instanceof Error ? e.message : String(e)}`));
+      process.exit(1);
+    }
+  });
+
+program
   .command("translate-svg")
   .description(
     "Translate  SVG files per config.svg (requires features.translateSVG); -l/--locale <codes> limits targets (comma-separated; optional)"
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across documentations[]: each block uses its targetLocales if set, otherwise root targetLocales)"
+    "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales)"
   )
   .option(
     "-p, --path <path>",
@@ -1242,7 +1295,7 @@ Examples:
 program
   .command("sync-ui")
   .description(
-    "Extract UI strings (if features.extractUIStrings is enabled), then translate UI strings (if features.translateUIStrings is enabled); -l/--locale <codes> limits targets (comma-separated; optional)"
+    "Extract UI strings, then translate UI strings (requires features.translateUIStrings); -l/--locale <codes> limits targets (comma-separated; optional)"
   )
   .option(
     "-l, --locale <codes>",
@@ -1264,24 +1317,22 @@ program
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync-ui");
 
-    if (config.features.extractUIStrings) {
-      try {
-        const s = runExtract(config, projectRoot);
-        console.log(
-          chalk.green(
-            `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
-          )
-        );
-      } catch (e) {
-        console.error(
-          chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`)
-        );
-        process.exit(1);
-      }
-    }
-
     if (!config.features.translateUIStrings) {
       console.error(chalk.red("❌ [sync-ui] Enable features.translateUIStrings in config."));
+      process.exit(1);
+    }
+
+    try {
+      const s = runExtract(config, projectRoot);
+      console.log(
+        chalk.green(
+          `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+        )
+      );
+    } catch (e) {
+      console.error(
+        chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`)
+      );
       process.exit(1);
     }
 
@@ -1478,7 +1529,8 @@ program
     "Skip SVG file translation (when features.translateSVG and config.svg)",
     false
   )
-  .option("--no-docs", "Skip markdown/JSON documentation translation", false)
+  .option("--no-docs", "Skip translate-docs (markdown, MDX, Astro, Docusaurus catalog JSON)", false)
+  .option("--no-json", "Skip generic json[] translation (translate-json)", false)
   .option(
     "-j, --concurrency <n>",
     "Max parallel target locales for translate steps (default: config)"
@@ -1489,12 +1541,12 @@ program
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (unless documentations[].emphasisPlaceholders overrides); CJK/RTL use this by default when flag is omitted",
+    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (unless docs[].emphasisPlaceholders overrides); CJK/RTL use this by default when flag is omitted",
     false
   )
   .option(
     "--no-emphasis-placeholders",
-    "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by documentations[].emphasisPlaceholders)",
+    "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by docs[].emphasisPlaceholders)",
     false
   )
   .option(
@@ -1509,10 +1561,12 @@ program
       noUi?: boolean;
       noSvg?: boolean;
       noDocs?: boolean;
+      noJson?: boolean;
       force?: boolean;
       forceUpdate?: boolean;
     };
     const noDocs = Boolean(syncOpts.noDocs);
+    const noJson = Boolean(syncOpts.noJson);
     if (!noDocs && syncOpts.force && syncOpts.forceUpdate) {
       console.error(
         chalk.red(
@@ -1549,6 +1603,7 @@ program
         noUi,
         noSvg,
         noDocs,
+        noJson,
       });
     } catch {
       process.exit(1);
@@ -1561,6 +1616,7 @@ Examples:
   ai-i18n-tools sync -l de,fr
   ai-i18n-tools sync --locale ja --no-svg --dry-run
   ai-i18n-tools sync --no-docs --path docs/tutorial
+  ai-i18n-tools sync --no-json
 `
   );
 
@@ -1764,8 +1820,8 @@ program
         chalk.red("?") +
         chalk.gray(" source read error")
     );
-    for (let bi = 0; bi < config.documentations.length; bi++) {
-      const block = config.documentations[bi]!;
+    for (let bi = 0; bi < config.docs.length; bi++) {
+      const block = config.docs[bi]!;
       const view = toDocTranslateConfig(config, block);
       const md = filterIgnored(
         collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
@@ -1778,10 +1834,10 @@ program
         typeof block.description === "string" && block.description.trim()
           ? ` — ${block.description.trim()}`
           : "";
-      if (config.documentations.length > 1 || desc) {
+      if (config.docs.length > 1 || desc) {
         console.log(
           "\n" +
-            chalk.bold(`documentations[${bi}]`) +
+            chalk.bold(`docs[${bi}]`) +
             chalk.cyan(`${desc} `) +
             chalk.magenta(`(${block.outputDir})`) +
             "\n"
@@ -1812,6 +1868,87 @@ program
         rows.push([rel, ...cells]);
       }
       printMarkdownTablesChunked(rows);
+    }
+
+    if (config.features.translateJson && config.json.length > 0) {
+      const jsonLocales = getJsonTargetLocaleCodes(config);
+      console.log(chalk.bold.cyan("\n📊 Translation status (json[])"));
+      console.log(
+        chalk.gray("Legend: ") +
+          chalk.green("✓") +
+          chalk.gray(" up to date  ") +
+          chalk.yellow("●") +
+          chalk.gray(" stale or missing  ") +
+          chalk.gray("-") +
+          chalk.gray(" not generated  ") +
+          chalk.red("?") +
+          chalk.gray(" source read error")
+      );
+      for (let bi = 0; bi < config.json.length; bi++) {
+        const block = config.json[bi]!;
+        const files = resolveContentPathEntries(block.contentPaths, {
+          projectRoot,
+          extensions: [".json"],
+        });
+        if (files.length === 0) {
+          continue;
+        }
+        const desc =
+          typeof block.description === "string" && block.description.trim()
+            ? ` — ${block.description.trim()}`
+            : "";
+        console.log(
+          "\n" +
+            chalk.bold(`json[${bi}]`) +
+            chalk.cyan(`${desc} `) +
+            chalk.magenta(`(${block.outputPathTemplate})`) +
+            "\n"
+        );
+        const rows: string[][] = [];
+        for (const rel of files) {
+          const abs = path.join(projectRoot, rel);
+          const trackKey = jsonBlockFileTrackingKey(bi, rel);
+          let srcHash = "";
+          try {
+            srcHash = hashFileContent(fs.readFileSync(abs, "utf8"));
+          } catch {
+            rows.push([rel, ...jsonLocales.map(() => chalk.red("?"))]);
+            continue;
+          }
+          const cells = jsonLocales.map((loc) => {
+            const out = expandJsonBlockOutputPath(block.outputPathTemplate, projectRoot, loc, rel);
+            const tracked = cache.getFileHash(trackKey, loc);
+            if (!fs.existsSync(out)) {
+              return chalk.gray("-");
+            }
+            if (tracked === srcHash) {
+              return chalk.green("✓");
+            }
+            return chalk.yellow("●");
+          });
+          rows.push([rel, ...cells]);
+        }
+        const nLocales = jsonLocales.length;
+        const chunkSize = maxColumns;
+        if (nLocales === 0) {
+          printMarkdownTableChunk(
+            [],
+            rows.map((r) => [r[0]!])
+          );
+        } else {
+          const numChunks = Math.ceil(nLocales / chunkSize);
+          const showChunkLabels = numChunks > 1;
+          for (let start = 0; start < nLocales; start += chunkSize) {
+            const end = Math.min(start + chunkSize, nLocales);
+            const chunkLocales = jsonLocales.slice(start, end);
+            const slicedRows = rows.map((r) => [r[0]!, ...r.slice(1 + start, 1 + end)]);
+            if (showChunkLabels) {
+              console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+            }
+            printMarkdownTableChunk(chunkLocales, slicedRows);
+          }
+        }
+      }
     }
 
     cache.close();
@@ -2170,6 +2307,7 @@ program
         noUi: false,
         noSvg: false,
         noDocs: false,
+        noJson: false,
       });
     } catch {
       process.exit(1);
@@ -2252,7 +2390,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   const glossaryPath = config.glossary?.userGlossary
     ? path.join(projectRoot, config.glossary.userGlossary)
     : null;
-  const jsonSourceBlock = config.documentations.find((b) => b.jsonSource?.trim());
+  const jsonSourceBlock = config.docs.find((b) => b.docusaurusCatalogDir?.trim());
 
   const app = createTranslationDashboardApp(cache, {
     cwd: projectRoot,
@@ -2260,7 +2398,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     glossaryUserPath: glossaryPath,
     sourceLocale: config.sourceLocale,
     targetLocales: config.targetLocales,
-    jsonSource: jsonSourceBlock?.jsonSource?.trim() || null,
+    docusaurusCatalogDir: jsonSourceBlock?.docusaurusCatalogDir?.trim() || null,
   });
 
   const staticDir = resolveDashboardAppStaticDir();

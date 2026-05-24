@@ -272,17 +272,17 @@ output file  ─────────────────── Docusauru
 
 | 層級 | 機制 | 輸出 |
 |-------|-----------|--------|
-| 範本 HTML | `AstroTemplateExtractor` + `translate-docs` | 在 `documentations[].outputDir` 下的每語系 `.astro` |
+| 範本 HTML | `AstroTemplateExtractor` + `translate-docs` | 在 `docs[].outputDir` 下的每區域設定 `.astro` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 扁平的 `public/locales/{locale}.json`（以英文原文作為鍵值） |
 
-`sync` 命令依序執行已啟用的步驟：**提取**（當 `features.extractUIStrings` 時）→ **translate-ui** → 選用的 **translate-svg** → **translate-docs**（除非 `--no-docs`、`--no-ui` 或 `--no-svg`）。初始範本 `ui-astro-website` 僅建立工作流程 1；加入 `documentations[]` 和 `features.translateMarkdown` 以支援頁面 HTML。
+`sync` 命令會依序執行已啟用的步驟：**extract**，然後是 **translate-ui**（當 `features.translateUIStrings` 時）→ 選擇性執行 **translate-svg** → **translate-docs**（除非指定 `--no-docs`、`--no-ui` 或 `--no-svg`）。初始化範本 `ui-astro-website` 僅建立工作流程 1；需額外加入 `docs[]` 與 `features.translateDocs` 以支援頁面 HTML。
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 標題錨點插入（`write-heading-ids` CLI）
 
 `write-heading-ids` 命令是一個 **本地、非 LLM** 的文件 Markdown 預處理器。實作方式：`src/cli/write-heading-ids.ts` 協調檔案發現；`src/markdown/write-heading-ids-core.ts` 解析行並插入錨點。
 
-它需要一個有效的設定，且 **至少包含一個 `documentations[]` 區塊**。針對每個區塊，它會收集 `contentPaths` 下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（概念與文件翻譯相同），並可選擇性地使用 `--path` / `--file` 限制於子樹。每個檔案會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於 fenced code blocks 之外的每個 **平面 ATX 標題**（`# …` 至 `###### …`），若上方缺少或過時，則會在上一行插入一個空的 HTML 行 `<a id="slug"></a>`。slug 演算法與常見生態系一致 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops` — 因此錨點 ID 能與現有工具（如 doctoc、PyMdown 等）保持一致。`--dry-run` 報告將會進行的修改但不實際寫入。
+它需要一個有效的設定檔，其中 **至少包含一個 `docs[]` 區塊**。針對每個區塊，會收集 `contentPaths` 目錄下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（概念與文件翻譯相同），並可選擇性地透過 `--path` / `--file` 限制子目錄範圍。每個檔案會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於所有在程式碼區塊之外的 **平面 ATX 標題**（`# …` 至 `###### …`），若上方缺少或過時的 HTML 空行，則插入 `<a id="slug"></a>`。slug 演算法與常見生態系一致——`github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops`——以確保錨點 ID 與現有工具（如 doctoc、PyMdown 等）保持一致。`--dry-run` 報告預期的修改內容但不實際寫入。
 
 此命令 **不會** 在 `translate-docs` 或 `sync` 內執行；當您在翻譯或發布前需要在原始碼檔案中取得穩定的片段 ID 時，請明確執行它。
 
@@ -295,14 +295,14 @@ output file  ─────────────────── Docusauru
 2. **提示標記**（`:::note`、`:::`） - 僅開頭行的指令前綴被替換為 `{{ADM_OPEN_N}}`；同一行的標題則保留，由模型進行翻譯。還原時使用原始文字。
 3. **文件錨點**（HTML `<a id="…">`、Docusaurus 標題 `{#…}`） - 原樣保留。
 4. **僅限 MDX 的結構**（`src/processors/mdx-placeholders.ts`）：
-   - **MDX 註解**（`{/* … */}`，包含 Docusaurus 的標題 ID 格式 `{/* #my-id */}`）已替換為 `{{MDX_N}}`。
-   - **大寫的 JSX 標籤**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）— 保留為 `{{MDX_N}}`，其中可翻譯的字串屬性（`label`、`tooltip`、`aria-label`）會重寫為標籤內的 `{{JXA_N}}`，除非該屬性名稱出現在 `documentations[].protectAttributes` 中；`label:` 在 `<Tabs values={[ { label: '…' } ]}>` 物件字面量中（可透過 `documentations[].protectKeys` 跳過）以及 `<TabItem value="…">`（當不存在 `label` 屬性時，小寫類似 slug 的值會被跳過）也會被提取。附加為段落中的 `||JXA_N: …||` 行，並由 `restoreMdx` 合併回原文。
-   - **MDX 大括號運算式**（`{frontMatter.title}`、`style={{…}}`）— 支援深度匹配，並替換為 `{{MDX_N}}`。
-5. **Markdown 網址**（`](url)`、`src="../../docs/…"`）— 翻譯後從對應表中還原。
+   - **MDX 註解**（`{/* … */}`，包含 Docusaurus 的 heading-id 格式 `{/* #my-id */}`）將被替換為 `{{MDX_N}}`。
+   - **大寫 JSX 標籤**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）— 保留為 `{{MDX_N}}`，其中可翻譯的字串屬性（`label`、`tooltip`、`aria-label`）會在標籤內重寫為 `{{JXA_N}}`，除非該屬性名稱出現在 `docs[].protectAttributes` 中；`label:` 在 `<Tabs values={[ { label: '…' } ]}>` 物件字面量中（可透過 `docs[].protectKeys` 跳過）以及 `<TabItem value="…">`（當不存在 `label` 屬性時，且跳過小寫類似 slug 的值）也會被提取。這些內容會作為 `||JXA_N: …||` 行附加到段落中，並由 `restoreMdx` 合併回原檔。
+   - **MDX 大括號表達式**（`{frontMatter.title}`、`style={{…}}`）— 支援深度匹配，並替換為 `{{MDX_N}}`。
+5. **Markdown 網址**（`](url)`、`src="../../docs/…"`）— 翻譯後從映射表中還原。
 6. **行內程式碼區塊**（`` `code` ``）和 **粗體包裹的行內程式碼**（`**`code`**`） - 保留不變。
 7. **Markdown 強調**（可選，針對 CJK/RTL 區域自動啟用） - 強調符號被遮蔽。
 
-Astro 樣板與 MDX JSX 的共用屬性／鍵保護機制實作為 `src/processors/expression-attribute-protection.ts`，並由每個區塊的 `documentations[].protectAttributes` 與 `documentations[].protectKeys` 驅動（參見 [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.zh-TW.md#protectattributes-protectkeys)）。
+Astro 範本與 MDX JSX 的共用屬性/鍵保護機制在 `src/processors/expression-attribute-protection.ts` 中實現，並由每個區塊的 `docs[].protectAttributes` 與 `docs[].protectKeys` 驅動（參見 [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.zh-TW.md#protectattributes-protectkeys)）。
 
 <a id="cache-translationcache"></a>
 ### 快取 (`TranslationCache`)
@@ -352,15 +352,15 @@ SQLite 資料庫（透過 `node:sqlite`）以 `(source_hash, locale)` 為鍵儲�
 
 `loadI18nConfigFromFile(configPath, cwd)` 流程：
 
-1. 讀取並解析 `ai-i18n-tools.config.json` (JSON)。
-2. `mergeWithDefaults` - 與 `defaultI18nConfigPartial` 深層合併，並將任何 `documentations[].sourceFiles` 項目合併至 `contentPaths`。
-3. `expandTargetLocalesFileReferenceInRawInput` - 若 `targetLocales` 為檔案路徑，載入 manifest 並展開為語系代碼；設定 `uiLanguagesPath`。
-4. `expandDocumentationTargetLocalesInRawInput` - 對每個 `documentations[].targetLocales` 項目執行相同操作。
+1. 讀取並解析 `ai-i18n-tools.config.json`（JSON）。
+2. `mergeWithDefaults` - 與 `defaultI18nConfigPartial` 深層合併，並將任何 `docs[].sourceFiles` 項目合併至 `contentPaths`。
+3. `expandTargetLocalesFileReferenceInRawInput` - 若 `targetLocales` 為檔案路徑，則載入 manifest 並展開為區域設定代碼；設定 `uiLanguagesPath`。
+4. `expandDocumentationTargetLocalesInRawInput` - 對每個 `docs[].targetLocales` 項目執行相同操作。
 5. `parseI18nConfig` - Zod 驗證 + `validateI18nBusinessRules`。
 6. `applyEnvOverrides` - 套用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等。
 7. `augmentConfigWithUiLanguagesFile` - 附加 manifest 顯示名稱。
 
-`init` 根據 `initConfigTemplates` 寫入起始設定：`ui-markdown`（UI + 選用的應用程式 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（純 Astro UI；加入 `documentations[]` 以支援 `.astro` 頁面翻譯）。參見 [GETTING_STARTED — 初始化](GETTING_STARTED.zh-TW.md#step-1-initialise)。
+`init` 從 `initConfigTemplates` 生成起始設定：`ui-markdown`（UI + 選擇性應用程式 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（純 Astro UI；加入 `docs[]` 以支援 `.astro` 頁面翻譯）。詳見 [GETTING_STARTED — 初始化](GETTING_STARTED.zh-TW.md#step-1-initialise)。
 
 <a id="logger"></a>
 ### 記錄器

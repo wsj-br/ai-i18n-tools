@@ -14,10 +14,9 @@ function minimalConfig(translationModels: string[]): I18nConfig {
       maxBatchChars: 100,
       cacheDir: ".cache",
       features: {
-        extractUIStrings: false,
         translateUIStrings: false,
-        translateMarkdown: false,
-        translateJSON: false,
+        translateDocs: false,
+        translateJson: false,
         translateSVG: false,
       },
       openrouter: {

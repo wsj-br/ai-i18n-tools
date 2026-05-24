@@ -1,6 +1,16 @@
 {
   "sourceLocale": "en",
-  "targetLocales": ["de", "fr", "es", "ar", "ja", "ko", "zh-CN", "zh-TW", "pt-BR"],
+  "targetLocales": [
+    "de",
+    "fr",
+    "es",
+    "ar",
+    "ja",
+    "ko",
+    "zh-CN",
+    "zh-TW",
+    "pt-BR"
+  ],
   "concurrency": 3,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -16,10 +26,8 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": true,
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
     "translateSVG": false
   },
   "glossary": {
@@ -27,21 +35,34 @@
   },
   "cacheDir": ".translation-cache",
   "ui": {
-    "sourceRoots": ["src/"],
+    "sourceRoots": [
+      "src/"
+    ],
     "stringsJson": "src/i18n/strings.json",
     "flatOutputDir": "public/locales",
     "uiLanguagesPath": "src/i18n/ui-languages.json",
     "uiExtractor": {
-      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"],
-      "funcNames": ["t", "i18n.t"]
+      "extensions": [
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".astro"
+      ],
+      "funcNames": [
+        "t",
+        "i18n.t"
+      ]
     }
   },
-  "documentations": [
+  "docs": [
     {
       "description": "Astro marketing pages (parse-and-replace)",
-      "contentPaths": ["src/pages/index.astro"],
+      "contentPaths": [
+        "src/pages/index.astro"
+      ],
       "outputDir": "src/pages",
-      "markdownOutput": {
+      "docsOutput": {
         "style": "astro-starlight",
         "docsRoot": "src/pages"
       },

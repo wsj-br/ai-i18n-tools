@@ -1,6 +1,12 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
+  "targetLocales": [
+    "ar",
+    "es",
+    "fr",
+    "de",
+    "pt-BR"
+  ],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -24,10 +30,8 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": false,
     "translateUIStrings": false,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
     "translateSVG": false
   },
   "glossary": {
@@ -40,7 +44,7 @@
     "flatOutputDir": "./locales"
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "description": "Starlight docs under src/content/docs",
       "contentPaths": [
@@ -49,7 +53,7 @@
       ],
       "outputDir": "src/content/docs",
       "addFrontmatter": true,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "astro-starlight",
         "docsRoot": "src/content/docs",
         "postProcessing": {

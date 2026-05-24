@@ -270,19 +270,19 @@ output file  ─────────────────── Docusauru
 
 सामान्यतः सादे एस्ट्रो ऐप्स एक कॉन्फ़िग में **दोनों** कार्यप्रवाह सक्षम करते हैं (संदर्भ: `examples/astro-website/`):
 
-| परत | तंत्र | आउटपुट |
+| स्तर | तंत्र | आउटपुट |
 |-------|-----------|--------|
-| टेम्पलेट HTML | `AstroTemplateExtractor` + `translate-docs` | `documentations[].outputDir` के तहत प्रति-स्थानीयकरण `.astro` |
+| टेम्पलेट HTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` के तहत प्रति-स्थानिक `.astro` |
 | फ्रंटमैटर / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | सपाट `public/locales/{locale}.json` (अंग्रेजी स्रोत के रूप में कुंजी) |
 
-`sync` कमांड सक्षम चरणों को क्रम में चलाता है: **extract** (जब `features.extractUIStrings`) → **translate-ui** → वैकल्पिक **translate-svg** → **translate-docs** (जब तक `--no-docs`, `--no-ui`, या `--no-svg` न हो)। इनिशियल टेम्पलेट `ui-astro-website` केवल वर्कफ़्लो 1 के लिए स्कैफ़ोल्डिंग करता है; पृष्ठ HTML के लिए `documentations[]` और `features.translateMarkdown` जोड़ें।
+`sync` कमांड सक्षम चरणों को क्रम में चलाता है: **extract** फिर **translate-ui** (जब `features.translateUIStrings`) → वैकल्पिक **translate-svg** → **translate-docs** (जब तक `--no-docs`, `--no-ui`, या `--no-svg` न हो)। प्रारंभिक टेम्पलेट `ui-astro-website` केवल वर्कफ़्लो 1 को समर्थन देता है; पेज HTML के लिए `docs[]` और `features.translateDocs` जोड़ें।
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### हेडिंग एंकर सम्मिलन (`write-heading-ids` CLI)
 
 `write-heading-ids` कमांड दस्तावेज़ीकरण मार्कडाउन के लिए एक **स्थानीय, गैर-LLM** प्रीप्रोसेसर है। कार्यान्वयन: `src/cli/write-heading-ids.ts` फ़ाइल खोज को समन्वित करता है; `src/markdown/write-heading-ids-core.ts` पंक्तियों को पार्स करता है और एंकर सम्मिलित करता है।
 
-इसके लिए एक वैध विन्यास की आवश्यकता होती है जिसमें **कम से कम एक `documentations[]` ब्लॉक** हो। प्रत्येक ब्लॉक के लिए यह `contentPaths` के तहत `.md` / `.mdx` फ़ाइलों को एकत्र करता है, प्रोजेक्ट के `.translate-ignore` नियमों को लागू करता है (दस्तावेज़ अनुवाद के समान अवधारणा), और वैकल्पिक रूप से `--path` / `--file` के साथ एक उप-वृक्ष तक सीमित कर सकता है। प्रत्येक फ़ाइल को `applyHeadingAnchorsToMarkdown` के साथ परिवर्तित किया जाता है: प्रत्येक **सपाट ATX शीर्षक** (`# …` से `###### …` तक) के लिए, जो फेंस किए गए कोड ब्लॉक के बाहर हो, ऊपरी पंक्ति पर एक खाली HTML पंक्ति `<a id="slug"></a>` डाली जाती है यदि वह अनुपस्थित या पुरानी हो। स्लग एल्गोरिदम सामान्य पारिस्थितिकी तंत्रों से मेल खाते हैं — `github` (डिफ़ॉल्ट), `bitbucket`, `gitlab`, `pymdown` (वैकल्पिक यूनिकोड सामान्यीकरण / प्रतिशत-एन्कोडिंग झंडे), `azure-devops` — ताकि एंकर आईडी मौजूदा उपकरणों (doctoc, PyMdown, आदि) के साथ सुसंगत बने रहें। `--dry-run` लिखे बिना संपादन की सूचना देता है।
+इसके लिए एक वैध विन्यास की आवश्यकता होती है जिसमें **कम से कम एक `docs[]` ब्लॉक** हो। प्रत्येक ब्लॉक के लिए यह `contentPaths` के तहत `.md` / `.mdx` फ़ाइलों को एकत्र करता है, प्रोजेक्ट के `.translate-ignore` नियम लागू करता है (दस्तावेज़ अनुवाद के समान अवधारणा), और वैकल्पिक रूप से `--path` / `--file` के साथ एक उप-वृक्ष तक सीमित करता है। प्रत्येक फ़ाइल को `applyHeadingAnchorsToMarkdown` के साथ परिवर्तित किया जाता है: फेंस किए गए कोड ब्लॉक्स के बाहर हर **सपाट ATX शीर्षक** (`# …` से `###### …` तक) के ऊपर तब एक खाली HTML पंक्ति `<a id="slug"></a>` डाली जाती है जब वह अनुपस्थित या पुरानी हो। स्लग एल्गोरिदम सामान्य पारिस्थितिकी तंत्र से मेल खाते हैं — `github` (डिफ़ॉल्ट), `bitbucket`, `gitlab`, `pymdown` (वैकल्पिक यूनिकोड सामान्यीकरण / प्रतिशत-एन्कोडिंग झंडे), `azure-devops` — ताकि एंकर आईडी मौजूदा उपकरणों के साथ सुसंगत बने रहें (doctoc, PyMdown, आदि)। `--dry-run` बिना लिखे संभावित संपादन की रिपोर्ट करता है।
 
 यह कमांड `translate-docs` या `sync` के अंदर **नहीं** चलता है; अनुवाद या प्रकाशन से पहले स्रोत फ़ाइलों में स्थिर फ्रैगमेंट आईडी चाहने पर इसे स्पष्ट रूप से चलाएं।
 
@@ -295,14 +295,14 @@ output file  ─────────────────── Docusauru
 2. **उपदेशक सूचक** (`:::note`, `:::`) - खोलने वाली पंक्ति पर केवल निर्देश उपसर्ग को `{{ADM_OPEN_N}}` के साथ प्रतिस्थापित किया जाता है; कोई भी समान-पंक्ति शीर्षक मॉडल द्वारा अनुवाद के लिए छोड़ दिया जाता है। मूल पाठ के सटीक रूप में पुनर्स्थापित किया जाता है।
 3. **दस्तावेज़ एंकर** (HTML `<a id="…">`, डॉक्यूसॉरस शीर्षक `{#…}`) - शाब्दिक रूप से संरक्षित किए जाते हैं।
 4. **केवल MDX निर्माण** (`src/processors/mdx-placeholders.ts`):
-   - **MDX टिप्पणियाँ** (`{/* … */}`, Docusaurus heading-id रूप `{/* #my-id */}` सहित) को `{{MDX_N}}` से प्रतिस्थापित किया गया।
-   - **बड़े अक्षरों में JSX टैग** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}` के रूप में संरक्षित, अनुवाद योग्य स्ट्रिंग विशेषताओं (`label`, `tooltip`, `aria-label`) को टैग के अंदर `{{JXA_N}}` में पुनर्लेखित किया गया, जब तक कि विशेषता का नाम `documentations[].protectAttributes` में नहीं दिखाई देता हो; `label:` को `<Tabs values={[ { label: '…' } ]}>` ऑब्जेक्ट लिटरल्स के अंदर भी निकाला गया है (`documentations[].protectKeys` के माध्यम से छोड़ा जा सकता है) और `<TabItem value="…">` (जब `label` विशेषता मौजूद नहीं होती है, लोअरकेस स्लग-जैसे मानों को छोड़कर) को भी निकाला गया है। खंड में `||JXA_N: …||` पंक्तियों के रूप में जोड़ा गया, `restoreMdx` द्वारा वापस मर्ज किया गया।
+   - **MDX टिप्पणियां** (`{/* … */}`, Docusaurus heading-id रूप `{/* #my-id */}` सहित) को `{{MDX_N}}` से प्रतिस्थापित किया गया।
+   - **बड़े अक्षरों में JSX टैग** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}` के रूप में संरक्षित, अनुवाद योग्य स्ट्रिंग विशेषताओं (`label`, `tooltip`, `aria-label`) को टैग के अंदर `{{JXA_N}}` में पुनर्लेखित किया गया, जब तक विशेषता नाम `docs[].protectAttributes` में न हो; `label:` `<Tabs values={[ { label: '…' } ]}>` ऑब्जेक्ट लिटरल्स के अंदर (`docs[].protectKeys` के माध्यम से छोड़ा जा सकता है) और `<TabItem value="…">` (जब कोई `label` विशेषता मौजूद न हो, छोटे अक्षर वाले स्लग-जैसे मानों को छोड़कर) भी निकाले जाते हैं। खंड में `||JXA_N: …||` पंक्तियों के रूप में जोड़ा गया, `restoreMdx` द्वारा वापस मर्ज किया गया।
    - **MDX ब्रेस एक्सप्रेशन** (`{frontMatter.title}`, `style={{…}}`) - गहराई-जागरूक मिलान, `{{MDX_N}}` से प्रतिस्थापित।
 5. **मार्कडाउन URL** (`](url)`, `src="../../docs/…"`) - अनुवाद के बाद एक मैप से पुनर्स्थापित।
 6. **इनलाइन कोड स्पैन** (`` `code` ``) और **बोल्ड-लपेटे इनलाइन कोड** (`**`code`**`) - संरक्षित रहते हैं।
 7. **मार्कडाउन पर जोर** (वैकल्पिक, CJK/RTL स्थानीयकरण के लिए स्वचालित रूप से सक्षम) - जोर डिलीमिटर मास्क किए जाते हैं।
 
-Astro टेम्पलेट्स और MDX JSX के लिए साझा विशेषता/कुंजी संरक्षण `src/processors/expression-attribute-protection.ts` में लागू किया गया है और प्रत्येक ब्लॉक के लिए `documentations[].protectAttributes` और `documentations[].protectKeys` द्वारा नियंत्रित किया गया है (देखें [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.hi.md#protectattributes-protectkeys))।
+एस्ट्रो टेम्पलेट्स और MDX JSX के लिए साझा विशेषता/कुंजी संरक्षण `src/processors/expression-attribute-protection.ts` में लागू किया गया है और प्रति ब्लॉक `docs[].protectAttributes` और `docs[].protectKeys` द्वारा नियंत्रित किया जाता है (देखें [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.hi.md#protectattributes-protectkeys))।
 
 <a id="cache-translationcache"></a>
 ### कैश (`TranslationCache`)
@@ -353,14 +353,14 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 `loadI18nConfigFromFile(configPath, cwd)` पाइपलाइन:
 
 1. `ai-i18n-tools.config.json` पढ़ें और पार्स करें (JSON)।
-2. `mergeWithDefaults` - `defaultI18nConfigPartial` के साथ गहराई से मर्ज करें, और किसी भी `documentations[].sourceFiles` प्रविष्टियों को `contentPaths` में मर्ज करें।
-3. `expandTargetLocalesFileReferenceInRawInput` - यदि `targetLocales` एक फ़ाइल पथ है, तो मैनिफेस्ट लोड करें और स्थानीय कोड में विस्तार करें; `uiLanguagesPath` सेट करें।
-4. `expandDocumentationTargetLocalesInRawInput` - प्रत्येक `documentations[].targetLocales` प्रविष्टि के लिए समान।
+2. `mergeWithDefaults` - `defaultI18nConfigPartial` के साथ गहराई से मर्ज करें, और किसी भी `docs[].sourceFiles` प्रविष्टियों को `contentPaths` में मर्ज करें।
+3. `expandTargetLocalesFileReferenceInRawInput` - यदि `targetLocales` एक फ़ाइल पथ है, तो मैनिफेस्ट लोड करें और स्थानिक कोड में विस्तार करें; `uiLanguagesPath` सेट करें।
+4. `expandDocumentationTargetLocalesInRawInput` - प्रत्येक `docs[].targetLocales` प्रविष्टि के लिए समान।
 5. `parseI18nConfig` - Zod वैधीकरण + `validateI18nBusinessRules`।
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, आदि लागू करें।
 7. `augmentConfigWithUiLanguagesFile` - मैनिफेस्ट डिस्प्ले नाम संलग्न करें।
 
-`init` `initConfigTemplates` से स्टार्टर कॉन्फ़िग लिखता है: `ui-markdown` (UI + वैकल्पिक ऐप मार्कडाउन), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (सादा एस्ट्रो UI; `.astro` पृष्ठ अनुवाद के लिए `documentations[]` जोड़ें)। देखें [GETTING_STARTED — Initialise](GETTING_STARTED.hi.md#step-1-initialise)।
+`init` `initConfigTemplates` से स्टार्टर विन्यास लिखता है: `ui-markdown` (UI + वैकल्पिक ऐप मार्कडाउन), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (सादा एस्ट्रो UI; `.astro` पेज अनुवाद के लिए `docs[]` जोड़ें)। देखें [GETTING_STARTED — Initialise](GETTING_STARTED.hi.md#step-1-initialise)।
 
 <a id="logger"></a>
 ### लॉगर

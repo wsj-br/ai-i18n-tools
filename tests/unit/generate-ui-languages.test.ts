@@ -16,10 +16,9 @@ describe("generate-ui-languages", () => {
         sourceLocale: "en-GB",
         targetLocales: ["de", "en-gb", "fr"],
         features: {
-          extractUIStrings: false,
           translateUIStrings: false,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
+
           translateSVG: false,
         },
       })
@@ -46,10 +45,9 @@ describe("generate-ui-languages", () => {
           targetLocales: ["de", "xx-YY"],
           uiLanguagesPath: outRel,
           features: {
-            extractUIStrings: false,
             translateUIStrings: false,
-            translateMarkdown: false,
-            translateJSON: false,
+            translateDocs: false,
+
             translateSVG: false,
           },
         })

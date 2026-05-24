@@ -39,7 +39,7 @@ describe("augmentMarkdownFilesFromPathFilter", () => {
     );
     expect(markdown).toEqual([rel]);
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toContain("outside every documentations");
+    expect(warnings[0]).toContain("outside every docs");
   });
 
   it("does not attach out-of-config paths to block 1 (only block 0)", () => {
@@ -75,10 +75,10 @@ describe("augmentMarkdownFilesFromPathFilter", () => {
       [] // discovery returned nothing
     );
     expect(markdown).toEqual([rel]);
-    expect(warnings.some((w) => w.includes("documentations[0]"))).toBe(true);
+    expect(warnings.some((w) => w.includes("docs[0]"))).toBe(true);
   });
 
-  it("leaves a path for the owning block when two documentations[] blocks exist", () => {
+  it("leaves a path for the owning block when two docs[] blocks exist", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-path-"));
     tmpDirs.push(root);
     const f = path.join(root, "b2", "n.md");

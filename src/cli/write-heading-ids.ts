@@ -31,7 +31,7 @@ export interface WriteHeadingIdsOptions {
   pymdown?: PymdownSlugOptions;
 }
 
-/** Union of markdown/MDX paths from all `documentations[].contentPaths`, `.translate-ignore`, optional path filter. */
+/** Union of markdown/MDX paths from all `docs[].contentPaths`, `.translate-ignore`, optional path filter. */
 export function collectDocumentationMarkdownRelPaths(args: {
   config: I18nConfig;
   projectRoot: string;
@@ -39,7 +39,7 @@ export function collectDocumentationMarkdownRelPaths(args: {
 }): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", args.projectRoot);
   const out: string[] = [];
-  for (const block of args.config.documentations) {
+  for (const block of args.config.docs) {
     const md = collectFilesByExtension(
       block.contentPaths,
       [".md", ".mdx"],

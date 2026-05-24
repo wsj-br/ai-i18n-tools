@@ -9,6 +9,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: config - removed `features.extractUIStrings`; extraction runs automatically before `translate-ui`, `sync-ui`, and `sync` when `features.translateUIStrings` is enabled; standalone `extract` only requires non-empty `ui.sourceRoots`. Legacy `extractUIStrings` is stripped on load and config rewrite.
+- **Changed**: config - CLI-aligned naming: `documentations` → `docs`, `features.translateMarkdown` → `translateDocs`, `docs[].markdownOutput` → `docsOutput`, `docs[].jsonSource` → `docusaurusCatalogDir`; legacy keys preprocess at load and auto-rewrite `ai-i18n-tools.config.json` when writable; `features.translateJSON` removed (Docusaurus catalog JSON runs during `translate-docs` when `docusaurusCatalogDir` is set and `translateDocs` is true).
+- **Added**: config - top-level `json[]` and `features.translateJson` for arbitrary nested JSON bundles; `translate-json` CLI and `sync --no-json`; `init -t ui-json-bundles`; `NestedJsonExtractor` with `keyPolicy` allowlist/denylist/both (minimatch); shared `resolveContentPathEntries` for file, directory, and glob `contentPaths`.
+- **Changed**: core - `markdown-output-normalize` renamed to `docs-output-normalize` (`DocsOutputConfig`, `normalizeDocsOutputStyle`); deprecated aliases retained on public exports.
 - **Changed**: docs - `PACKAGE_OVERVIEW.md` documents `AstroTemplateExtractor`, `.astro` UI extraction via `ui-string-babel.ts`, Astro hybrid sites, `sync` pipeline order, init templates (`ui-astro-website`), and `ui.uiExtractor` naming.
 - **Changed**: scripts - `pnpm pre-release` also builds `examples/astro-website`; example builds use `pnpm --dir` for `docs-site`, `astro-docs`, and `astro-website`.
 - **Changed**: docs - `GETTING_STARTED.md`, `ai-i18n-tools-context.md`, and `examples/astro-website/README.md` document the hybrid Astro workflow (`translate-docs` for page HTML, `extract`/`translate-ui` for `t()`), correct example script names (`i18n:translate`), frontmatter wiring, locale list alignment, and `uiLanguagesPath` for the manifest.

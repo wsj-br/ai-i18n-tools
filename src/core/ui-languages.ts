@@ -80,11 +80,8 @@ export function expandTargetLocalesFileReferenceInRawInput(
 /**
  * Coerce each documentation block's `targetLocales` and ensure entries are locale codes only.
  */
-export function expandDocumentationTargetLocalesInRawInput(
-  raw: RawI18nConfigInput,
-  _cwd: string
-): void {
-  const docs = raw.documentations;
+export function expandDocTargetLocalesInRawInput(raw: RawI18nConfigInput, _cwd: string): void {
+  const docs = raw.docs;
   if (!Array.isArray(docs)) {
     return;
   }
@@ -99,19 +96,84 @@ export function expandDocumentationTargetLocalesInRawInput(
     }
     const arr = coerceTargetLocalesField(tl);
     d.targetLocales = arr;
-    assertTargetLocalesAreLocaleCodes(arr, "documentations[].targetLocales");
+    assertTargetLocalesAreLocaleCodes(arr, "docs[].targetLocales");
   }
 }
+
+/** @deprecated Use {@link expandDocTargetLocalesInRawInput} */
+export const expandDocumentationTargetLocalesInRawInput = expandDocTargetLocalesInRawInput;
 
 /**
  * Locale codes used for **documentation** translation (markdown / JSON): union of each block's
  * `targetLocales` when non-empty, otherwise root `targetLocales`, per block. Excludes `sourceLocale`, deduped.
  */
+export function expandJsonTargetLocalesInRawInput(raw: RawI18nConfigInput, _cwd: string): void {
+  const blocks = raw.json;
+  if (!Array.isArray(blocks)) {
+    return;
+  }
+  for (const item of blocks) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      continue;
+    }
+    const d = item as Record<string, unknown>;
+    const tl = d.targetLocales;
+    if (tl === undefined || tl === null) {
+      continue;
+    }
+    const arr = coerceTargetLocalesField(tl);
+    d.targetLocales = arr;
+    assertTargetLocalesAreLocaleCodes(arr, "json[].targetLocales");
+  }
+}
+
+export function getJsonTargetLocaleCodes(config: I18nConfig): string[] {
+  const src = normalizeLocale(config.sourceLocale);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const block of config.json) {
+    const list =
+      Array.isArray(block.targetLocales) && block.targetLocales.length > 0
+        ? block.targetLocales
+        : config.targetLocales;
+    for (const l of list) {
+      const c = normalizeLocale(l);
+      if (c === src || seen.has(c)) {
+        continue;
+      }
+      seen.add(c);
+      out.push(c);
+    }
+  }
+  return out;
+}
+
+export function resolveLocalesForJson(
+  config: I18nConfig,
+  _cwd: string,
+  cliLocalesRaw?: string | null
+): string[] {
+  const base = getJsonTargetLocaleCodes(config);
+  const src = normalizeLocale(config.sourceLocale);
+  if (cliLocalesRaw?.trim()) {
+    const requested = parseLocaleList(cliLocalesRaw).map((c) => normalizeLocale(c));
+    const allowed = new Set(base);
+    const list = requested.filter((c) => c !== src && allowed.has(c));
+    if (list.length === 0 && requested.filter((c) => c !== src).length > 0) {
+      throw new Error(
+        `[translate-json] None of the requested --locale codes are json[] target locales. Allowed: ${[...allowed].join(", ") || "(none)"}`
+      );
+    }
+    return list;
+  }
+  return base;
+}
+
 export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] {
   const src = normalizeLocale(config.sourceLocale);
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const block of config.documentations) {
+  for (const block of config.docs) {
     const doc = block.targetLocales;
     const useDoc = Array.isArray(doc) && doc.length > 0;
     const list = useDoc ? doc! : config.targetLocales;

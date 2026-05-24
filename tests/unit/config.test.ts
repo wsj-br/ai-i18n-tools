@@ -23,7 +23,7 @@ const docBlockDefaults = {
 };
 
 const uiDefaults = {
-  sourceRoots: [] as string[],
+  sourceRoots: ["src/"] as string[],
   stringsJson: "strings.json",
   flatOutputDir: "./locales",
 };
@@ -81,10 +81,8 @@ describe("resolveUITranslationModels", () => {
           temperature: 0.2,
         },
         features: {
-          extractUIStrings: false,
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
         glossary: {},
         ui: {
@@ -92,7 +90,7 @@ describe("resolveUITranslationModels", () => {
           stringsJson: "strings.json",
           flatOutputDir: "./locales",
         },
-        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
         ...overrides,
       })
     );
@@ -147,16 +145,14 @@ describe("parseI18nConfig", () => {
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
         features: {
-          extractUIStrings: false,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
       })
     );
     expect(c.sourceLocale).toBe("en");
-    expect(c.documentations[0].outputDir).toBe("./out");
+    expect(c.docs[0].outputDir).toBe("./out");
   });
 
   it("merges sourceFiles into contentPaths and dedupes", () => {
@@ -164,7 +160,7 @@ describe("parseI18nConfig", () => {
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["docs/"],
             sourceFiles: ["docs/", "extra.md"],
@@ -172,13 +168,11 @@ describe("parseI18nConfig", () => {
           },
         ],
         features: {
-          extractUIStrings: false,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
       })
     );
-    expect(c.documentations[0].contentPaths).toEqual(["docs/", "extra.md"]);
+    expect(c.docs[0].contentPaths).toEqual(["docs/", "extra.md"]);
   });
 
   it("uses sourceFiles when contentPaths is omitted", () => {
@@ -186,32 +180,30 @@ describe("parseI18nConfig", () => {
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             sourceFiles: ["only-from-source-files.md"],
             outputDir: "./out",
           },
         ],
         features: {
-          extractUIStrings: false,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
       })
     );
-    expect(c.documentations[0].contentPaths).toEqual(["only-from-source-files.md"]);
+    expect(c.docs[0].contentPaths).toEqual(["only-from-source-files.md"]);
   });
 
-  it("accepts documentations[].markdownOutput.postProcessing", () => {
+  it("accepts docs[].docsOutput.postProcessing", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["docs/"],
             outputDir: "./out",
-            markdownOutput: {
+            docsOutput: {
               style: "flat",
               postProcessing: {
                 regexAdjustments: [
@@ -239,30 +231,29 @@ describe("parseI18nConfig", () => {
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
           translateSVG: false,
         },
       })
     );
-    const pp = c.documentations[0]!.markdownOutput.postProcessing;
+    const pp = c.docs[0]!.docsOutput.postProcessing;
     expect(pp?.regexAdjustments).toHaveLength(1);
     expect(pp?.languageListBlock?.start).toBe("<s>");
     expect(pp?.languageListBlock?.label).toBe("english");
   });
 
-  it("accepts documentations[].segmentSplitting alongside markdownOutput", () => {
+  it("accepts docs[].segmentSplitting alongside markdownOutput", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["docs/"],
             outputDir: "./out",
-            markdownOutput: { style: "nested" },
+            docsOutput: { style: "nested" },
             segmentSplitting: { enabled: true, maxCharsPerSegment: 3000 },
           },
         ],
@@ -274,24 +265,23 @@ describe("parseI18nConfig", () => {
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
           translateSVG: false,
         },
       })
     );
-    expect(c.documentations[0]!.segmentSplitting?.enabled).toBe(true);
-    expect(c.documentations[0]!.segmentSplitting?.maxCharsPerSegment).toBe(3000);
+    expect(c.docs[0]!.segmentSplitting?.enabled).toBe(true);
+    expect(c.docs[0]!.segmentSplitting?.maxCharsPerSegment).toBe(3000);
   });
 
-  it("preserves optional documentations[].description", () => {
+  it("preserves optional docs[].description", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             description: "Docusaurus docs tree",
             ...docBlockDefaults,
@@ -300,13 +290,11 @@ describe("parseI18nConfig", () => {
           },
         ],
         features: {
-          extractUIStrings: false,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
       })
     );
-    expect(c.documentations[0].description).toBe("Docusaurus docs tree");
+    expect(c.docs[0].description).toBe("Docusaurus docs tree");
   });
 
   it("rejects translate feature without models", () => {
@@ -315,7 +303,7 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [docBlockDefaults],
+          docs: [docBlockDefaults],
           targetLocales: ["de"],
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
@@ -323,7 +311,7 @@ describe("parseI18nConfig", () => {
             maxTokens: 100,
             temperature: 0.1,
           },
-          features: { translateMarkdown: true },
+          features: { translateDocs: true },
         })
       )
     ).toThrow(ConfigValidationError);
@@ -335,20 +323,20 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [docBlockDefaults],
+          docs: [docBlockDefaults],
           targetLocales: [],
-          features: { translateMarkdown: true },
+          features: { translateDocs: true },
         })
       )
     ).toThrow(ConfigValidationError);
   });
 
-  it("allows translateMarkdown with empty root targetLocales when documentations[].targetLocales is set", () => {
+  it("allows translateMarkdown with empty root targetLocales when docs[].targetLocales is set", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             ...docBlockDefaults,
             targetLocales: ["de", "fr"],
@@ -362,14 +350,12 @@ describe("parseI18nConfig", () => {
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
+          translateDocs: true,
           translateUIStrings: false,
-          translateJSON: false,
-          extractUIStrings: false,
         },
       })
     );
-    expect(c.documentations[0].targetLocales).toEqual(["de", "fr"]);
+    expect(c.docs[0].targetLocales).toEqual(["de", "fr"]);
   });
 
   it("rejects translateUIStrings with empty targetLocales when uiLanguagesPath is unset", () => {
@@ -378,7 +364,7 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: [],
           openrouter: {
@@ -399,7 +385,7 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en-GB",
           cacheDir: ".translation-cache",
-          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: [],
           uiLanguagesPath: "src/renderer/locales/ui-languages.json",
@@ -411,9 +397,7 @@ describe("parseI18nConfig", () => {
           },
           features: {
             translateUIStrings: true,
-            translateMarkdown: false,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: false,
           },
         })
       )
@@ -426,7 +410,7 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: ["de"],
           openrouter: {
@@ -441,19 +425,17 @@ describe("parseI18nConfig", () => {
     ).toThrow(ConfigValidationError);
   });
 
-  it("allows translateUIStrings without documentations[].contentPaths when doc translate is off", () => {
+  it("allows translateUIStrings without docs[].contentPaths when doc translate is off", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./out" }],
+        docs: [{ contentPaths: [], outputDir: "./out" }],
         ui: uiDefaults,
         targetLocales: ["de"],
         features: {
-          extractUIStrings: false,
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
+          translateDocs: false,
         },
       })
     );
@@ -466,7 +448,7 @@ describe("parseI18nConfig", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          docs: [{ contentPaths: [], outputDir: "./out" }],
           targetLocales: ["de"],
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
@@ -475,10 +457,9 @@ describe("parseI18nConfig", () => {
             temperature: 0.1,
           },
           features: {
-            extractUIStrings: false,
             translateUIStrings: false,
-            translateMarkdown: false,
-            translateJSON: false,
+            translateDocs: false,
+
             translateSVG: true,
           },
         })
@@ -492,10 +473,10 @@ describe("applyEnvOverrides", () => {
     mergeWithDefaults({
       sourceLocale: "en",
       cacheDir: ".translation-cache",
-      documentations: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
+      docs: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
       ui: { ...uiDefaults, sourceRoots: ["src/"] },
       targetLocales: ["de"],
-      features: { extractUIStrings: true },
+      features: { translateUIStrings: true },
     })
   );
 
@@ -551,10 +532,10 @@ describe("validateI18nBusinessRules after env", () => {
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
+        docs: [{ ...docBlockDefaults, contentPaths: ["src/"] }],
         ui: { ...uiDefaults, sourceRoots: ["src/"] },
         targetLocales: ["de"],
-        features: { extractUIStrings: true, translateMarkdown: true },
+        features: { translateUIStrings: true, translateDocs: true },
       })
     );
     const prev = process.env.I18N_TARGET_LOCALES;
@@ -632,7 +613,7 @@ describe("parseI18nConfig ui.uiExtractor alias", () => {
         sourceLocale: "en",
         targetLocales: ["de"],
         cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./out" }],
+        docs: [{ contentPaths: [], outputDir: "./out" }],
         ui: {
           sourceRoots: ["src/"],
           stringsJson: "strings.json",
@@ -647,9 +628,7 @@ describe("parseI18nConfig ui.uiExtractor alias", () => {
         },
         features: {
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: true,
+          translateDocs: false,
         },
       })
     );
@@ -665,7 +644,7 @@ describe("parseI18nConfig glossary legacy field", () => {
         sourceLocale: "en",
         targetLocales: ["de"],
         cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./out" }],
+        docs: [{ contentPaths: [], outputDir: "./out" }],
         ui: uiDefaults,
         glossary: { uiGlossaryFromStringsJson: "strings.json" },
         openrouter: {
@@ -676,9 +655,7 @@ describe("parseI18nConfig glossary legacy field", () => {
         },
         features: {
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: false,
         },
       })
     );
@@ -693,7 +670,7 @@ describe("parseI18nConfig targetLocales", () => {
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          documentations: [{ contentPaths: [], outputDir: "./out" }],
+          docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: "src/locales/ui-languages.json",
           openrouter: {
@@ -704,9 +681,7 @@ describe("parseI18nConfig targetLocales", () => {
           },
           features: {
             translateUIStrings: true,
-            translateMarkdown: false,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: false,
           },
         })
       )
@@ -714,14 +689,108 @@ describe("parseI18nConfig targetLocales", () => {
   });
 });
 
+describe("legacy config migration", () => {
+  it("preprocess maps documentations, translateMarkdown, jsonSource, markdownOutput", () => {
+    const raw = {
+      features: {
+        translateMarkdown: true,
+        translateJSON: false,
+        extractUIStrings: true,
+        translateUIStrings: false,
+        translateSVG: false,
+      },
+      documentations: [
+        {
+          contentPaths: "docs/",
+          outputDir: "./i18n",
+          jsonSource: "i18n/en",
+          markdownOutput: { style: "nested" },
+        },
+      ],
+    };
+    const merged = mergeWithDefaults(raw);
+    expect(merged.features?.translateDocs).toBe(true);
+    expect(merged.features).not.toHaveProperty("translateMarkdown");
+    expect(merged.features).not.toHaveProperty("translateJSON");
+    expect(merged.features).not.toHaveProperty("extractUIStrings");
+    expect(merged.features?.translateUIStrings).toBe(false);
+    const block = (merged.docs as Record<string, unknown>[])[0];
+    expect(block?.docusaurusCatalogDir).toBe("i18n/en");
+    expect(block).not.toHaveProperty("jsonSource");
+    expect(block?.docsOutput).toEqual({ style: "nested" });
+    expect(block).not.toHaveProperty("markdownOutput");
+    expect(block?.contentPaths).toEqual(["docs/"]);
+  });
+
+  it("rejects conflicting documentations and docs", () => {
+    expect(() =>
+      mergeWithDefaults({
+        documentations: [{ contentPaths: [], outputDir: "./a" }],
+        docs: [{ contentPaths: [], outputDir: "./b" }],
+      })
+    ).toThrow(/documentations.*docs/i);
+  });
+
+  it("loadI18nConfigFromFile rewrites legacy keys on disk", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-legacy-"));
+    const cfgPath = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      cfgPath,
+      JSON.stringify(
+        {
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          ui: uiDefaults,
+          cacheDir: ".translation-cache",
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: ["m"],
+            maxTokens: 100,
+            temperature: 0.1,
+          },
+          features: {
+            translateMarkdown: true,
+            translateJSON: true,
+            translateUIStrings: false,
+            translateSVG: false,
+          },
+          documentations: [
+            {
+              contentPaths: ["docs/"],
+              outputDir: "./out",
+              jsonSource: "i18n/en",
+            },
+          ],
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+    loadI18nConfigFromFile(cfgPath, dir);
+    const onDisk = JSON.parse(fs.readFileSync(cfgPath, "utf8")) as Record<string, unknown>;
+    expect(onDisk.documentations).toBeUndefined();
+    expect(Array.isArray(onDisk.docs)).toBe(true);
+    const f = onDisk.features as Record<string, unknown>;
+    expect(f.translateDocs).toBe(true);
+    expect(f.translateMarkdown).toBeUndefined();
+    expect(f.translateJSON).toBeUndefined();
+    const block = (onDisk.docs as Record<string, unknown>[])[0];
+    expect(block.docusaurusCatalogDir).toBe("i18n/en");
+    expect(block.jsonSource).toBeUndefined();
+    loadI18nConfigFromFile(cfgPath, dir);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
 describe("parseI18nConfig astro protectAttributes / protectKeys", () => {
-  it("accepts optional protectAttributes and protectKeys on documentations blocks", () => {
+  it("accepts optional protectAttributes and protectKeys on docs blocks", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
         sourceLocale: "en",
         targetLocales: ["de"],
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["src/pages/index.astro"],
             outputDir: "src/pages",
@@ -738,13 +807,11 @@ describe("parseI18nConfig astro protectAttributes / protectKeys", () => {
         },
         features: {
           translateUIStrings: false,
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
         },
       })
     );
-    expect(c.documentations[0]?.protectAttributes).toEqual(["variant", "size"]);
-    expect(c.documentations[0]?.protectKeys).toEqual(["slug", "code"]);
+    expect(c.docs[0]?.protectAttributes).toEqual(["variant", "size"]);
+    expect(c.docs[0]?.protectKeys).toEqual(["slug", "code"]);
   });
 });

@@ -16,7 +16,7 @@ function templateForKind(
   config: I18nDocTranslateConfig,
   kind: DocArtifactKind
 ): string | undefined {
-  const mo = config.documentation.markdownOutput;
+  const mo = config.doc.docsOutput;
   if (kind === "markdown") {
     return mo.pathTemplate?.trim();
   }
@@ -90,9 +90,9 @@ function resolveByStyle(
   relPath: string,
   kind: DocArtifactKind
 ): string {
-  const doc = config.documentation;
+  const doc = config.doc;
   const outBase = path.resolve(cwd, doc.outputDir);
-  const mo = doc.markdownOutput;
+  const mo = doc.docsOutput;
   const posixRel = toPosix(relPath);
   const docsRootRaw = mo.docsRoot?.trim() || "docs";
   const docsRootPosix = toPosix(path.normalize(docsRootRaw)).replace(/\/$/, "");
@@ -159,9 +159,9 @@ export function resolveDocumentationOutputPath(
   relPath: string,
   kind: DocArtifactKind
 ): string {
-  const doc = config.documentation;
+  const doc = config.doc;
   const outBaseResolved = path.resolve(cwd, doc.outputDir);
-  const mo = doc.markdownOutput;
+  const mo = doc.docsOutput;
   const docsRootRaw = mo.docsRoot?.trim() || "docs";
   const docsRootResolved = path.resolve(cwd, docsRootRaw);
 
@@ -185,7 +185,7 @@ export function resolveDocumentationOutputPath(
 
 /** Whether to run relative link rewriting for flat markdown outputs. */
 export function shouldRewriteFlatMarkdownLinks(config: I18nDocTranslateConfig): boolean {
-  const mo = config.documentation.markdownOutput;
+  const mo = config.doc.docsOutput;
   if (mo.rewriteRelativeLinks !== undefined) {
     return mo.rewriteRelativeLinks;
   }

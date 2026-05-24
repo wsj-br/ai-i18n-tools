@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { coerceContentPathsField, preprocessLegacyConfigInput } from "./config-migrate.js";
 import { coerceTargetLocalesField } from "./locale-utils.js";
 
 /** Markdown / JSON / UI / SVG segment classification. */
@@ -301,11 +302,12 @@ const openRouterConfigSchema = z.object({
 });
 
 const featuresSchema = z.object({
-  extractUIStrings: z.boolean().default(false),
-  /** OpenRouter: translate `strings.json` entries + write per-locale flat JSON. */
+  /** Scan `t()` / `i18n.t()` into `strings.json`, then translate flat locale bundles (extract runs automatically before translate). */
   translateUIStrings: z.boolean().default(false),
-  translateMarkdown: z.boolean().default(false),
-  translateJSON: z.boolean().default(false),
+  /** MD / MDX / `.astro` page translation via `translate-docs`. */
+  translateDocs: z.boolean().default(false),
+  /** Arbitrary nested JSON under top-level `json[]` via `translate-json`. */
+  translateJson: z.boolean().default(false),
   /**  SVG files via `translate-svg` / `sync` when `svg` is configured. */
   translateSVG: z.boolean().default(false),
 });
@@ -408,7 +410,7 @@ export function mergeSegmentSplittingOpts(
 /** Default locale folder segment for the `docusaurus` style alias (doc-system preset). */
 export const DOCUSAURUS_LOCALE_SUBPATH = "docusaurus-plugin-content-docs/current";
 
-const markdownOutputStyleSchema = z.enum([
+const docsOutputStyleSchema = z.enum([
   "nested",
   "flat",
   "doc-system",
@@ -416,10 +418,10 @@ const markdownOutputStyleSchema = z.enum([
   "astro-starlight",
 ]);
 
-const markdownOutputSchema = z
+const docsOutputSchema = z
   .object({
     /** Built-in layout when `pathTemplate` is unset. */
-    style: markdownOutputStyleSchema.default("nested"),
+    style: docsOutputStyleSchema.default("nested"),
     /**
      * Directory prefix (posix, relative to cwd) for doc sources under `doc-system` layout.
      * Only paths under this prefix use `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`.
@@ -525,13 +527,16 @@ const SvgFilesConfigSchema = z.preprocess((raw) => {
   return raw;
 }, svgFilesConfigInnerSchema);
 
-/** One documentation pipeline (markdown/JSON layout under `outputDir`, optional Docusaurus `jsonSource`). */
-const documentationBlockSchema = z
+/** One docs pipeline (markdown/MDX/Astro layout under `outputDir`, optional Docusaurus catalog). */
+const docBlockSchema = z
   .object({
     /** Optional human-readable note for this block (shown in CLI headers; not used for translation). */
     description: z.string().optional(),
-    /** Markdown / MDX roots under cwd (files and directories). */
-    contentPaths: z.array(z.string().min(1)).default([]),
+    /** Markdown / MDX / Astro roots under cwd (file, directory, or glob per entry). */
+    contentPaths: z.preprocess(
+      (v) => coerceContentPathsField(v),
+      z.array(z.string().min(1)).default([])
+    ),
     /** Optional alias for `contentPaths`; merged into `contentPaths` at load. */
     sourceFiles: z.array(z.string().min(1)).optional(),
     /**
@@ -552,15 +557,15 @@ const documentationBlockSchema = z
       .optional(),
     /** Base directory for translated docs (markdown / default JSON layout). */
     outputDir: z.string().min(1).default("./i18n"),
-    /** Docusaurus / JSON UI strings source dir (e.g. i18n/en/). */
-    jsonSource: z.string().optional(),
-    markdownOutput: markdownOutputSchema.default({
+    /** Docusaurus `write-translations` catalog directory (e.g. docs-site/i18n/en). When set, catalog JSON is translated during `translate-docs` if `features.translateDocs` is enabled. */
+    docusaurusCatalogDir: z.string().optional(),
+    docsOutput: docsOutputSchema.default({
       style: "nested",
       flatPreserveRelativeDir: false,
     }),
     /**
      * Optional finer-grained markdown segments for **translate-docs** (pipe tables, dense paragraphs, long lists).
-     * Sibling of **`markdownOutput`** — applies to the whole documentation pipeline for this block, not layout/post-processing only.
+     * Sibling of **`docsOutput`** — applies to the whole docs pipeline for this block, not layout/post-processing only.
      */
     segmentSplitting: segmentSplittingSchema.optional(),
     /**
@@ -601,8 +606,43 @@ const documentationBlockSchema = z
   })
   .strict();
 
-/** Unified package config: shared root + `ui` + `documentations` pipelines. */
-export const i18nConfigSchema = z
+const jsonKeyPolicySchema = z
+  .object({
+    mode: z.enum(["allowlist", "denylist", "both"]),
+    translateKeys: z.array(z.string().min(1)).default([]),
+    skipKeys: z.array(z.string().min(1)).default([]),
+  })
+  .strict();
+
+/** One generic JSON translation pipeline (`translate-json`). */
+const jsonBlockSchema = z
+  .object({
+    description: z.string().optional(),
+    contentPaths: z.preprocess(
+      (v) => coerceContentPathsField(v),
+      z.array(z.string().min(1)).default([])
+    ),
+    outputPathTemplate: z.string().min(1),
+    targetLocales: z
+      .preprocess(
+        (v) => {
+          if (v === undefined || v === null) {
+            return undefined;
+          }
+          return coerceTargetLocalesField(v);
+        },
+        z.array(z.string().min(1)).optional()
+      )
+      .optional(),
+    keyPolicy: jsonKeyPolicySchema.default({
+      mode: "denylist",
+      translateKeys: [],
+      skipKeys: ["id", "slug", "href", "url", "key", "code"],
+    }),
+  })
+  .strict();
+
+const i18nConfigSchemaInner = z
   .object({
     sourceLocale: z.string().min(1),
     /** Shared SQLite cache directory for all documentation blocks (and CLI log defaults). */
@@ -617,10 +657,9 @@ export const i18nConfigSchema = z
     ),
     openrouter: openRouterConfigSchema,
     features: featuresSchema.default({
-      extractUIStrings: false,
       translateUIStrings: false,
-      translateMarkdown: false,
-      translateJSON: false,
+      translateDocs: false,
+      translateJson: false,
       translateSVG: false,
     }),
     glossary: glossarySchema.default({ autoAddUserEditedToGlossary: true }),
@@ -629,17 +668,18 @@ export const i18nConfigSchema = z
       stringsJson: "strings.json",
       flatOutputDir: "./locales",
     }),
-    documentations: z.array(documentationBlockSchema).default([
+    docs: z.array(docBlockSchema).default([
       {
         contentPaths: [],
         outputDir: "./i18n",
-        markdownOutput: {
+        docsOutput: {
           style: "nested",
           flatPreserveRelativeDir: false,
         },
         translateFrontmatterFields: true,
       },
     ]),
+    json: z.array(jsonBlockSchema).default([]),
     /** BCP-47-ish codes that use RTL typography; layout `dir` stays the app’s i18next concern. */
     rtlLocales: z.array(z.string().min(1)).optional(),
     localeDisplayNames: z.record(z.string(), z.string()).optional(),
@@ -669,7 +709,10 @@ export const i18nConfigSchema = z
   })
   .strict();
 
-export type I18nConfig = z.infer<typeof i18nConfigSchema>;
+/** Unified package config: shared root + `ui` + `docs` + optional `json` pipelines. */
+export const i18nConfigSchema = z.preprocess(preprocessLegacyConfigInput, i18nConfigSchemaInner);
+
+export type I18nConfig = z.infer<typeof i18nConfigSchemaInner>;
 export type OpenRouterConfig = z.infer<typeof openRouterConfigSchema>;
 export type FeaturesConfig = z.infer<typeof featuresSchema>;
 export type GlossaryConfig = z.infer<typeof glossarySchema>;
@@ -679,9 +722,15 @@ export type ReactExtractorConfig = UIStringExtractorConfig;
 export type LanguageListBlockConfig = z.infer<typeof languageListBlockSchema>;
 export type RegexAdjustmentConfig = z.infer<typeof regexAdjustmentSchema>;
 export type MarkdownPostProcessingConfig = z.infer<typeof markdownPostProcessingSchema>;
-export type MarkdownOutputConfig = z.infer<typeof markdownOutputSchema>;
+export type DocsOutputConfig = z.infer<typeof docsOutputSchema>;
+/** @deprecated Use {@link DocsOutputConfig} */
+export type MarkdownOutputConfig = DocsOutputConfig;
 export type UiConfig = z.infer<typeof uiConfigSchema>;
-export type DocumentationBlock = z.infer<typeof documentationBlockSchema>;
+export type DocBlock = z.infer<typeof docBlockSchema>;
+/** @deprecated Use {@link DocBlock} */
+export type DocumentationBlock = DocBlock;
+export type JsonKeyPolicyConfig = z.infer<typeof jsonKeyPolicySchema>;
+export type JsonBlock = z.infer<typeof jsonBlockSchema>;
 export type SvgFilesConfig = z.infer<typeof SvgFilesConfigSchema>;
 /**
  * @deprecated Nested `svg.svgExtractor` was removed; use top-level `svg.forceLowercase` in config.
@@ -693,8 +742,8 @@ export type SvgExtractorConfig = Pick<SvgFilesConfig, "forceLowercase">;
  * View passed to translate-docs internals: one active `documentation` block plus root fields.
  * Built from root config via {@link toDocTranslateConfig}.
  */
-export type I18nDocTranslateConfig = Omit<I18nConfig, "documentations"> & {
-  documentation: DocumentationBlock;
+export type I18nDocTranslateConfig = Omit<I18nConfig, "docs"> & {
+  doc: DocBlock;
 };
 
-export type RawI18nConfigInput = z.input<typeof i18nConfigSchema>;
+export type RawI18nConfigInput = z.input<typeof i18nConfigSchemaInner>;

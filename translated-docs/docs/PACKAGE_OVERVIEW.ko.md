@@ -270,19 +270,19 @@ output file  ─────────────────── Docusauru
 
 일반 Astro 앱은 종종 하나의 설정 파일에서 **두 가지** 워크플로를 모두 활성화합니다(참조: `examples/astro-website/`):
 
-| 계층 | 메커니즘 | 출력 |
+| 레이어 | 메커니즘 | 출력 |
 |-------|-----------|--------|
-| 템플릿 HTML | `AstroTemplateExtractor` + `translate-docs` | `documentations[].outputDir` 하위의 로케일별 `.astro` |
+| 템플릿 HTML | `AstroTemplateExtractor` + `translate-docs` | 로케일별 `.astro` 위치: `docs[].outputDir` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 평면형 `public/locales/{locale}.json` (영문 소스를 키로 사용) |
 
-`sync` 명령어는 설정된 단계를 순서대로 실행합니다: **추출** (`features.extractUIStrings`인 경우) → **translate-ui** → 선택적 **translate-svg** → `--no-docs`, `--no-ui` 또는 `--no-svg`가 아닌 경우 **translate-docs**. 초기 템플릿 `ui-astro-website`은 Workflow 1만 생성합니다. 페이지 HTML을 위해 `documentations[]` 및 `features.translateMarkdown`을 추가하세요.
+`sync` 명령어는 활성화된 단계들을 순서대로 실행합니다: **extract** 다음 **translate-ui** (`features.translateUIStrings`일 때) → 선택적 **translate-svg** → **translate-docs** (`--no-docs`, `--no-ui`, 또는 `--no-svg`인 경우 제외). init template `ui-astro-website`은 Workflow 1만 기본 설정하며, 페이지 HTML을 위해 `docs[]`과 `features.translateDocs`을 추가해야 합니다.
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 제목 앵커 삽입 (`write-heading-ids` CLI)
 
 `write-heading-ids` 명령은 문서 마크다운을 위한 **로컬, 비-LLM** 전처리기입니다. 구현 방식: `src/cli/write-heading-ids.ts`이 파일 탐색을 조정하고, `src/markdown/write-heading-ids-core.ts`가 줄을 구문 분석하여 앵커를 삽입합니다.
 
-유효한 설정 파일에 **최소한 하나의 `documentations[]` 블록**이 포함되어야 합니다. 각 블록에 대해 `contentPaths` 아래의 `.md` / `.mdx` 파일을 수집하고, 프로젝트의 `.translate-ignore` 규칙을 적용합니다(문서 번역과 동일한 개념), 필요 시 `--path` / `--file`를 사용해 하위 트리로 제한할 수 있습니다. 각 파일은 `applyHeadingAnchorsToMarkdown`로 변환됩니다. 코드 블록 외부의 **플랫 ATX 제목**(`# …`에서 `###### …`까지)마다, 누락되거나 오래된 경우 위쪽 줄에 빈 HTML 줄 `<a id="slug"></a>`이 삽입됩니다. 슬러그 알고리즘은 일반적인 에코시스템과 일치합니다 — `github`(기본값), `bitbucket`, `gitlab`, `pymdown`(선택적 유니코드 정규화/퍼센트 인코딩 플래그), `azure-devops` — 기존 도구(doctoc, PyMdown 등)와 앵커 ID가 일관되도록 합니다. `--dry-run`은 파일을 쓰지 않고도 예상 편집 내용을 보고합니다.
+유효한 설정 파일이 필요하며, **적어도 하나의 `docs[]` 블록**을 포함해야 합니다. 각 블록마다 `contentPaths` 하위의 `.md` / `.mdx` 파일들을 수집하고, 프로젝트의 `.translate-ignore` 규칙을 적용합니다(문서 번역과 동일한 개념). 선택적으로 `--path` / `--file`를 사용해 하위 트리로 범위를 제한할 수 있습니다. 각 파일은 `applyHeadingAnchorsToMarkdown`로 변환되며, 코드 블록 외부의 **일반 ATX 제목** (`# …`부터 `###### …`까지) 위에 누락되었거나 오래된 경우 빈 HTML 줄 `<a id="slug"></a>`을 삽입합니다. 슬러그 알고리즘은 일반적인 에코시스템과 일치합니다 — `github` (기본값), `bitbucket`, `gitlab`, `pymdown` (선택적 유니코드 정규화 / 퍼센트 인코딩 플래그), `azure-devops` — 따라서 앵커 ID가 기존 도구들(doctoc, PyMdown 등)과 일관되게 유지됩니다. `--dry-run`은 실제 쓰기 없이 예상 편집 내용을 보고합니다.
 
 이 명령은 `translate-docs` 또는 `sync` 내부에서 **실행되지 않습니다**. 번역 또는 게시 전에 소스 파일 내 조각 ID를 안정적으로 유지하고자 할 때 명시적으로 실행해야 합니다.
 
@@ -295,14 +295,14 @@ output file  ─────────────────── Docusauru
 2. **주석 마커** (`:::note`, `:::`) - 여는 줄의 지시어 접두사만 `{{ADM_OPEN_N}}`로 교체되며, 같은 줄의 제목은 모델이 번역하도록 남겨둡니다. 원본 텍스트로 정확하게 복원됩니다.
 3. **문서 앵커** (HTML `<a id="…">`, Docusaurus 제목 `{#…}`) - 원문 그대로 보존됩니다.
 4. **MDX 전용 구성요소** (`src/processors/mdx-placeholders.ts`):
-   - **MDX 주석** (`{/* … */}`, Docusaurus 제목 ID 형식인 `{/* #my-id */}` 포함)이 `{{MDX_N}}`로 대체되었습니다.
-   - **대문자로 시작하는 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}` 형식으로 유지되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 속성 이름이 `documentations[].protectAttributes`에 나타나지 않는 한 태그 내부에서 `{{JXA_N}}`로 재작성됩니다. `label:`는 `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내부에서도 추출되며 (`documentations[].protectKeys`을 통해 건너뛸 수 있음), `<TabItem value="…">`도 추출됩니다 (`label` 속성이 없고 소문자 슬러그 형태의 값은 건너뜀). 세그먼트 끝에 `||JXA_N: …||` 줄로 추가되며, `restoreMdx`에 의해 다시 병합됩니다.
-   - **MDX 중괄호 표현식** (`{frontMatter.title}`, `style={{…}}`) - 중첩 깊이를 인식하여 매칭되며, `{{MDX_N}}`로 대체됩니다.
-5. **Markdown URL** (`](url)`, `src="../../docs/…"`) - 번역 후 맵에서 복원됩니다.
+   - **MDX 주석** (`{/* … */}`, Docusaurus 제목 ID 형식 `{/* #my-id */}` 포함)은 `{{MDX_N}}`로 대체됩니다.
+   - **대문자로 시작하는 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - `{{MDX_N}}`로 보존되며, 번역 가능한 문자열 속성 (`label`, `tooltip`, `aria-label`)은 속성 이름이 `docs[].protectAttributes`에 없는 한 태그 내에서 `{{JXA_N}}`로 다시 작성됩니다. `label:`는 `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내에서도 추출되며 (`docs[].protectKeys`으로 건너뛸 수 있음), `<TabItem value="…">`도 추출됩니다 (`label` 속성이 없고 소문자 슬러그 형태의 값은 건너뜀). 이들은 세그먼트에 `||JXA_N: …||` 줄로 추가되며, `restoreMdx`에 의해 다시 병합됩니다.
+   - **MDX 중괄호 표현식** (`{frontMatter.title}`, `style={{…}}`) - 깊이 인식 매칭, `{{MDX_N}}`으로 대체.
+5. **마크다운 URL** (`](url)`, `src="../../docs/…"`) - 번역 후 맵에서 복원됨.
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-Astro 템플릿과 MDX JSX 간 공유 속성/키 보호 기능은 `src/processors/expression-attribute-protection.ts`에서 구현되며, 블록별로 `documentations[].protectAttributes`과 `documentations[].protectKeys`에 의해 제어됩니다([GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.ko.md#protectattributes-protectkeys) 참조).
+Astro 템플릿과 MDX JSX에 대한 공유 속성/키 보호 기능은 `src/processors/expression-attribute-protection.ts`에서 구현되며, 각 블록별로 `docs[].protectAttributes`과 `docs[].protectKeys`에 의해 제어됩니다([GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.ko.md#protectattributes-protectkeys) 참조).
 
 <a id="cache-translationcache"></a>
 ### 캐시(`TranslationCache`)
@@ -352,15 +352,15 @@ OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 
 `loadI18nConfigFromFile(configPath, cwd)` 파이프라인:
 
-1. `ai-i18n-tools.config.json` 읽고 파싱(JSON).
-2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합 수행, 그리고 `documentations[].sourceFiles` 항목들을 `contentPaths`에 병합.
+1. `ai-i18n-tools.config.json` 읽고 파싱 (JSON).
+2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합, `docs[].sourceFiles` 항목들을 `contentPaths`에 병합.
 3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`이 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장; `uiLanguagesPath` 설정.
-4. `expandDocumentationTargetLocalesInRawInput` - 각 `documentations[].targetLocales` 항목에 대해 동일하게 수행.
+4. `expandDocumentationTargetLocalesInRawInput` - 각 `docs[].targetLocales` 항목에 대해 동일하게 수행.
 5. `parseI18nConfig` - Zod 유효성 검사 + `validateI18nBusinessRules`.
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등을 적용.
 7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름 연결.
 
-`init`은 `initConfigTemplates`에서 시작 설정 파일을 생성합니다: `ui-markdown` (UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (일반 Astro UI; `.astro` 페이지 번역을 위해 `documentations[]` 추가). [GETTING_STARTED — 초기화](GETTING_STARTED.ko.md#step-1-initialise) 참조.
+`init`은 `initConfigTemplates`에서 시작 설정을 생성합니다: `ui-markdown` (UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (순수 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가). [GETTING_STARTED — Initialise](GETTING_STARTED.ko.md#step-1-initialise) 참조.
 
 <a id="logger"></a>
 ### 로거

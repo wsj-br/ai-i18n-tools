@@ -272,17 +272,17 @@ Einfache Astro-Anwendungen aktivieren oft **beide** Workflows in einer Konfigura
 
 | Ebene | Mechanismus | Ausgabe |
 |-------|-----------|--------|
-| Template-HTML | `AstroTemplateExtractor` + `translate-docs` | Pro Sprache `.astro` unter `documentations[].outputDir` |
+| Vorlage-HTML | `AstroTemplateExtractor` + `translate-docs` | Pro-Lokalisierung `.astro` unter `docs[].outputDir` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | Flaches `public/locales/{locale}.json` (Englischer Quelltext als Schlüssel) |
 
-Der Befehl `sync` führt die aktivierten Schritte in der Reihenfolge aus: **extract** (bei `features.extractUIStrings`) → **translate-ui** → optional **translate-svg** → **translate-docs** (außer bei `--no-docs`, `--no-ui` oder `--no-svg`). Die Init-Vorlage `ui-astro-website` richtet nur Workflow 1 ein; fügen Sie `documentations[]` und `features.translateMarkdown` hinzu, um Seiten-HTML zu übersetzen.
+Der Befehl `sync` führt aktivierte Schritte in der Reihenfolge aus: **extract** dann **translate-ui** (wenn `features.translateUIStrings`) → optional **translate-svg** → **translate-docs** (außer bei `--no-docs`, `--no-ui` oder `--no-svg`). Die initiale Vorlage `ui-astro-website` richtet nur Workflow 1 ein; fügen Sie `docs[]` und `features.translateDocs` hinzu, um Seiten-HTML zu erhalten.
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### Einfügen von Überschrift-Ankern (`write-heading-ids` CLI)
 
 Der Befehl `write-heading-ids` ist ein **lokaler, nicht-LLM** Vorbereitungsprozessor für Markdown-Dokumentation. Implementierung: `src/cli/write-heading-ids.ts` steuert die Dateierkennung; `src/markdown/write-heading-ids-core.ts` analysiert die Zeilen und fügt Anker ein.
 
-Er erfordert eine gültige Konfiguration mit **mindestens einem `documentations[]`-Block**. Für jeden Block sammelt er `.md`-/`.mdx`-Dateien unter `contentPaths`, wendet die `.translate-ignore`-Regeln des Projekts an (gleiche Idee wie bei der Dokumentenübersetzung) und kann optional auf einen Teilbaum mit `--path`/`--file` beschränkt werden. Jede Datei wird mit `applyHeadingAnchorsToMarkdown` transformiert: Für jede **flache ATX-Überschrift** (`# …` bis `###### …`) außerhalb von Codeblöcken wird eine leere HTML-Zeile `<a id="slug"></a>` in die Zeile darüber eingefügt, falls diese fehlt oder veraltet ist. Die Slug-Algorithmen entsprechen gängigen Umgebungen – `github` (Standard), `bitbucket`, `gitlab`, `pymdown` (optionale Unicode-Normalisierung/Prozentkodierung), `azure-devops` –, sodass die Anker-IDs mit bestehenden Tools kompatibel bleiben (doctoc, PyMdown usw.). `--dry-run` meldet potenzielle Änderungen, ohne sie zu schreiben.
+Es erfordert eine gültige Konfiguration mit **mindestens einem `docs[]`-Block**. Für jeden Block sammelt es `.md`-/`.mdx`-Dateien unter `contentPaths`, wendet die `.translate-ignore`-Regeln des Projekts an (gleiche Idee wie bei der Dokumentenübersetzung) und kann optional auf einen Teilbaum mit `--path`/`--file` beschränken. Jede Datei wird mit `applyHeadingAnchorsToMarkdown` transformiert: Für jede **flache ATX-Überschrift** (`# …` bis `###### …`) außerhalb von Codeblöcken wird eine leere HTML-Zeile `<a id="slug"></a>` in die Zeile darüber eingefügt, falls diese fehlt oder veraltet ist. Slug-Algorithmen entsprechen gängigen Ökosystemen — `github` (Standard), `bitbucket`, `gitlab`, `pymdown` (optionale Unicode-Normalisierung / Prozent-Codierung), `azure-devops` —, sodass Anker-IDs mit bestehenden Tools kompatibel bleiben (doctoc, PyMdown usw.). `--dry-run` meldet potenzielle Änderungen, ohne sie zu schreiben.
 
 Dieser Befehl wird **nicht** innerhalb von `translate-docs` oder `sync` ausgeführt; führen Sie ihn explizit aus, wenn Sie stabile Fragment-IDs in den Quelldateien vor der Übersetzung oder Veröffentlichung benötigen.
 
@@ -295,14 +295,14 @@ Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetz
 2. **Hinweis-Marker** (`:::note`, `:::`) – nur das Direktiv-Präfix in der öffnenden Zeile wird durch `{{ADM_OPEN_N}}` ersetzt; etwaige Titel in derselben Zeile verbleiben zur Übersetzung durch das Modell. Die Wiederherstellung erfolgt mit exaktem Originaltext.
 3. **Dok-Anker** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) – bleiben unverändert erhalten.
 4. **Nur-MDX-Konstrukte** (`src/processors/mdx-placeholders.ts`):
-   - **MDX-Kommentare** (`{/* … */}`, einschließlich der Docusaurus-Überschrift-ID-Form `{/* #my-id */}`) wurden durch `{{MDX_N}}` ersetzt.
-   - **Großgeschriebene JSX-Tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) – bleiben als `{{MDX_N}}` erhalten, wobei übersetzbare String-Attribute (`label`, `tooltip`, `aria-label`) innerhalb des Tags in `{{JXA_N}}` umgeschrieben werden, sofern der Attributname nicht in `documentations[].protectAttributes` enthalten ist; `label:` innerhalb von `<Tabs values={[ { label: '…' } ]}>` Objektliteralen (optional überspringbar über `documentations[].protectKeys`) und `<TabItem value="…">` (wenn kein `label`-Attribut vorhanden ist, wobei klein geschriebene, slug-ähnliche Werte übersprungen werden) werden ebenfalls extrahiert. An das Segment als `||JXA_N: …||`-Zeilen angehängt und später von `restoreMdx` wieder zusammengeführt.
-   - **MDX-Geschweifte-Ausdrücke** (`{frontMatter.title}`, `style={{…}}`) – tiefenbewusste Abgleichung, ersetzt durch `{{MDX_N}}`.
+   - **MDX-Kommentare** (`{/* … */}`, einschließlich der Docusaurus heading-id-Form `{/* #my-id */}`) werden durch `{{MDX_N}}` ersetzt.
+   - **Großgeschriebene JSX-Tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) – bleiben als `{{MDX_N}}` erhalten, wobei übersetzbare String-Attribute (`label`, `tooltip`, `aria-label`) innerhalb des Tags in `{{JXA_N}}` umgeschrieben werden, es sei denn, der Attributname steht in `docs[].protectAttributes`; `label:` innerhalb von `<Tabs values={[ { label: '…' } ]}>` Objektliteralen (optional überspringbar via `docs[].protectKeys`) und `<TabItem value="…">` (wenn kein `label`-Attribut existiert, wobei kleingeschriebene, slug-ähnliche Werte übersprungen werden) werden ebenfalls extrahiert. An das Segment als `||JXA_N: …||`-Zeilen angehängt und später von `restoreMdx` wieder zusammengeführt.
+   - **MDX-Geschweifte Ausdrücke** (`{frontMatter.title}`, `style={{…}}`) – tiefenbewusste Abgleichung, ersetzt durch `{{MDX_N}}`.
 5. **Markdown-URLs** (`](url)`, `src="../../docs/…"`) – werden nach der Übersetzung aus einer Zuordnung wiederhergestellt.
 6. **Inline-Code-Abschnitte** (`` `code` ``) und **fett formatierte Inline-Codes** (`**`code`**`) – bleiben erhalten.
 7. **Markdown-Hervorhebungen** (optional, automatisch aktiviert für CJK-/RTL-Lokalisierungen) – Hervorhebungs-Trennzeichen werden maskiert.
 
-Der gemeinsame Schutz von Attributen/Schlüsseln für Astro-Vorlagen und MDX-JSX wird in `src/processors/expression-attribute-protection.ts` implementiert und pro Block durch `documentations[].protectAttributes` und `documentations[].protectKeys` gesteuert (siehe [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.de.md#protectattributes-protectkeys)).
+Der gemeinsame Schutz von Attributen/Schlüsseln für Astro-Vorlagen und MDX-JSX wird in `src/processors/expression-attribute-protection.ts` implementiert und pro Block durch `docs[].protectAttributes` und `docs[].protectKeys` gesteuert (siehe [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.de.md#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
@@ -352,15 +352,15 @@ Umhüllt die OpenRouter Chat Completions API. Wichtige Verhaltensweisen:
 
 `loadI18nConfigFromFile(configPath, cwd)`-Pipeline:
 
-1. `ai-i18n-tools.config.json` lesen und parsen (JSON).
-2. `mergeWithDefaults` – Tiefen-Zusammenführung mit `defaultI18nConfigPartial` und Zusammenführung aller `documentations[].sourceFiles`-Einträge in `contentPaths`.
-3. `expandTargetLocalesFileReferenceInRawInput` – Wenn `targetLocales` ein Dateipfad ist, Manifest laden und auf Sprachcodes erweitern; `uiLanguagesPath` setzen.
-4. `expandDocumentationTargetLocalesInRawInput` – dasselbe für jeden `documentations[].targetLocales`-Eintrag.
+1. Lese und analysiere `ai-i18n-tools.config.json` (JSON).
+2. `mergeWithDefaults` – tiefes Zusammenführen mit `defaultI18nConfigPartial` und Zusammenführen aller `docs[].sourceFiles`-Einträge in `contentPaths`.
+3. `expandTargetLocalesFileReferenceInRawInput` – falls `targetLocales` ein Dateipfad ist, lade das Manifest und erweitere es zu Lokalisierungscodes; setze `uiLanguagesPath`.
+4. `expandDocumentationTargetLocalesInRawInput` – ebenso für jeden `docs[].targetLocales`-Eintrag.
 5. `parseI18nConfig` – Zod-Validierung + `validateI18nBusinessRules`.
 6. `applyEnvOverrides` – Anwendung von `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` – Anzeigenamen aus Manifest anhängen.
 
-`init` schreibt Startkonfigurationen aus `initConfigTemplates`: `ui-markdown` (UI + optionales App-Markdown), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (reine Astro-UI; fügen Sie `documentations[]` für `.astro`-Seitenübersetzung hinzu). Siehe [GETTING_STARTED – Initialisieren](GETTING_STARTED.de.md#step-1-initialise).
+`init` schreibt Startkonfigurationen aus `initConfigTemplates`: `ui-markdown` (UI + optionales App-Markdown), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (reine Astro-UI; füge `docs[]` hinzu für `.astro`-Seitenübersetzung). Siehe [GETTING_STARTED — Initialise](GETTING_STARTED.de.md#step-1-initialise).
 
 <a id="logger"></a>
 ### Protokollierung (Logger)

@@ -26,12 +26,12 @@ function buildConfig() {
         userGlossary: "glossary-user.csv",
       },
       ui: {
-        sourceRoots: [],
+        sourceRoots: ["src/"],
         stringsJson: "strings.json",
         flatOutputDir: "locales",
       },
       cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       openrouter: {
         baseUrl: "https://openrouter.ai/api/v1",
         translationModels: ["model-a"],
@@ -39,10 +39,8 @@ function buildConfig() {
         temperature: 0,
       },
       features: {
-        extractUIStrings: false,
         translateUIStrings: true,
-        translateMarkdown: false,
-        translateJSON: false,
+        translateDocs: false,
       },
     })
   );

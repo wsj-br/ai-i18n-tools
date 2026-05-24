@@ -12,10 +12,9 @@ function minimalExtractConfig(overrides: Record<string, unknown> = {}) {
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
       features: {
-        extractUIStrings: true,
         translateUIStrings: false,
-        translateMarkdown: false,
-        translateJSON: false,
+        translateDocs: false,
+        translateJson: false,
         translateSVG: false,
       },
       ui: {

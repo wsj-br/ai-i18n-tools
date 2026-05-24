@@ -12,6 +12,18 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 
 Optional: set `openrouter.requestTimeoutMs` if the default **30000** ms per OpenRouter request is wrong for your network.
 
+### Three workflows (pick one per kind of content)
+
+| Workflow | Config | CLI | Use when |
+|----------|--------|-----|----------|
+| **1 — UI strings** | `ui.*`, `features.translateUIStrings` | `extract`, `translate-ui`, `sync-ui` | `t("…")` / `i18n.t("…")` in source → `strings.json` + flat `de.json`, … |
+| **2 — Documents** | `docs[]`, `features.translateDocs` | `translate-docs` | `.md` / `.mdx` / `.astro` pages; optional Docusaurus shell JSON via `docs[].docusaurusCatalogDir` |
+| **3 — Nested JSON** | `json[]`, `features.translateJson` | `translate-json` | Per-locale JSON bundles only (e.g. `src/i18n/en/translation.json`) — not `t()` in source |
+
+`sync` runs enabled steps in order (skip with `--no-ui`, `--no-svg`, `--no-json`, `--no-docs`). Full guide: [GETTING_STARTED.md](./GETTING_STARTED.md).
+
+**Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation) and no `features.translateJSON` (catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set).
+
 ---
 
 ## Invariant: `sourceLocale` === `SOURCE_LOCALE`
@@ -128,6 +140,7 @@ t("Translate")  →  flat[md5("Translate").slice(0, 8)]   // flat files are not 
 
 - **Catalog row ids:** MD5 of trimmed **source string**, first **8** hex chars (`deccbe4e`, …). These ids appear **only** in `strings.json`, not in `de.json` / `pt-BR.json`.
 - **Sources:** string literals to `t` / `i18n.t` (and names in `ui.uiExtractor.funcNames` / `ui.reactExtractor.funcNames`) under `ui.sourceRoots`; optionally `package.json` `description` and manifest `englishName` rows when the matching extractor flags are on. **Literal keys only** — variables are not extracted.
+- **Extract timing:** `extract` updates `strings.json` from source. It runs automatically before `translate-ui`, `sync-ui`, and the UI phase of `sync` when `features.translateUIStrings` is true. You can still run `extract` alone to refresh the catalog (requires non-empty `ui.sourceRoots`).
 - **Re-runs:** existing `translated` / `models` for surviving catalog ids are kept.
 - **Plurals:** `t('…', { plurals: true, … })` → catalog row with `"plural": true` and per-locale CLDR-shaped objects; `translate-ui` expands flat bundles with suffix keys (`groupId_one`, …) as needed. Use `setupKeyAsDefaultT` from `ai-i18n-tools/runtime` with `strings.json` and optional `sourcePluralFlatBundle` so the source locale resolves plural suffixes.
 
@@ -141,7 +154,7 @@ Reference: [`examples/astro-website`](../examples/astro-website/) and [GETTING_S
 | Frontmatter / `t('…')` data (tab labels, shared arrays) | `extract` → `translate-ui` | Flat JSON under `ui.flatOutputDir`; lookup by English source key |
 | Locale labels / RTL | `generate-ui-languages` | Manifest (`ui-languages.json`); optional `ui.uiLanguagesPath` (e.g. `src/i18n/ui-languages.json`) |
 
-- **Page HTML:** static text nodes and translatable attributes (`alt`, `title`, `aria-label`, `placeholder`). User-facing string literals inside template `{expression}` blocks (inline arrays, object fields) are translated. Protected: attribute/key values (`class`, `id`, `style`, `data-*`, …), configurable `documentations[].protectAttributes` / `protectKeys`, `<script>`, `<style>`, and **literals inside `t('…')`** (frontmatter or template).
+- **Page HTML:** static text nodes and translatable attributes (`alt`, `title`, `aria-label`, `placeholder`). User-facing string literals inside template `{expression}` blocks (inline arrays, object fields) are translated. Protected: attribute/key values (`class`, `id`, `style`, `data-*`, …), configurable `docs[].protectAttributes` / `protectKeys`, `<script>`, `<style>`, and **literals inside `t('…')`** (frontmatter or template).
 - **Frontmatter:** not translated by `translate-docs`; copy the same `t()` wiring block to every locale page, or re-run `translate-docs` after editing English frontmatter.
 - **Build-time wiring** (every page that uses `t()`):
 
@@ -155,7 +168,7 @@ const t = useTranslations(locale, makeT(flat));
 ```
 
 - **Routing:** `Astro.currentLocale` + `ui-languages.json`; `LanguagePicker` via `getRelativeLocaleUrl` from `astro:i18n`. Map Astro route codes (`pt-br`) to bundle filenames (`pt-BR.json`) via manifest `code` in `locale.ts`.
-- **Init:** `init -t ui-astro-website` scaffolds UI-only config; add `documentations[]` + `features.translateMarkdown` for the HTML pipeline.
+- **Init:** `init -t ui-astro-website` scaffolds UI-only config; add `docs[]` + `features.translateDocs` for the HTML pipeline; use `json[]` + `translate-json` for nested locale JSON bundles only.
 - **Scripts (example):** `i18n:translate` → `translate-docs`, `i18n:locales` → `generate-ui-languages`, `i18n:sync` → full sync per config.
 
 ### Common mistakes (agents)
@@ -166,8 +179,48 @@ const t = useTranslations(locale, makeT(flat));
 | Importing `strings.json` in Astro `makeT` | Catalog is for CLI; flat bundles are the SSG/runtime map. |
 | Empty `en.json` required | For `sourceLocale`, missing keys should fall back to the source literal; `{}` is fine. |
 | Expecting `translate-docs` to translate `t('…')` args | Those literals are protected; use `translate-ui` for them. |
+| Putting Docusaurus catalog JSON under `json[]` | Use `docs[].docusaurusCatalogDir` + `translate-docs` instead. |
+| Using `json[]` for UI from `t()` in TS/Astro | Workflow 1 (`translate-ui`), not Workflow 3. |
 | Using `i18n:translate:pages` script name | Example uses `i18n:translate` for `translate-docs`; either name is fine in your own `package.json`. |
 | Forgetting to align three locale lists | Keep `targetLocales`, `astro.config.mjs` `i18n.locales`, and `ui-languages.json` in sync. |
+
+---
+
+## Workflow 3 — nested JSON bundles
+
+For sites that store UI copy in nested JSON files per locale (no `t()` in components), not Docusaurus `write-translations` catalogs.
+
+**Example config:**
+
+```json
+{
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "App UI bundle",
+      "contentPaths": [
+        "src/i18n/en/translation.json",
+        "src/i18n/en/overrides/*.json"
+      ],
+      "outputPathTemplate": "src/i18n/{locale}/{basename}",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": ["id", "slug", "href", "url", "key", "code"],
+        "translateKeys": []
+      }
+    }
+  ]
+}
+```
+
+- `contentPaths`: string or array; each entry is a `.json` file, directory tree, or glob (minimatch).
+- `outputPathTemplate`: required; placeholders include `{locale}`, `{basename}`, `{stem}`, `{relativeToSourceRoot}`.
+- `keyPolicy.mode`: `allowlist`, `denylist`, or `both` (allowlist first, then subtract denylist). Paths use dot notation (`nav.home.label`); globs use minimatch. Bare names like `slug` match the final key segment.
+- Cache file tracking: `json-block:{blockIndex}:{projectRelPath}`.
+
+**Commands:** `npx ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
+
+**vs Workflow 2:** Docusaurus shell files (`{ "key": { "message": "…", "description": "…" } }`) belong under `docs[].docusaurusCatalogDir` and are translated by `translate-docs`, not `translate-json`.
 
 ---
 
@@ -193,7 +246,8 @@ Paths depend on your config; common artifacts:
 - Per-locale flat JSON — for example `de.json`, `pt-BR.json` under `ui.flatOutputDir` (**source sentence → translation**, English text as key).
 - **Source locale JSON** — only if plurals exist (e.g., `en-GB.json` with plural suffix keys).
 - `ui-languages.json` — manifest rows (`code`, `label`, `englishName`, `direction`).
-- `cacheDir` — SQLite cache for documentation translation (`translate-docs`).
+- `cacheDir` — SQLite cache for `translate-docs`, `translate-json`, and `translate-svg` (shared segment store).
+- Outputs from `json[]` — paths from each block’s `outputPathTemplate` (e.g. `src/i18n/de/translation.json`).
 - Optional CSV at `glossary.userGlossary` — influences `translate-ui` and `lint-source` when present.
 
 Full config field reference: [GETTING_STARTED.md](./GETTING_STARTED.md).
@@ -207,16 +261,18 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Scaffold config:** `npx ai-i18n-tools init`
 - **Validate OpenRouter model ids:** `npx ai-i18n-tools check-models` (`OPENROUTER_API_KEY`)
 - **Build `ui-languages.json`:** `npx ai-i18n-tools generate-ui-languages`
-- **Refresh UI catalog:** `npx ai-i18n-tools extract`
-- **Translate UI:** `npx ai-i18n-tools translate-ui` (`OPENROUTER_API_KEY`)
-- **Translate documentation:** `npx ai-i18n-tools translate-docs` (`OPENROUTER_API_KEY` when calling the API)
-- **Lint source-locale copy (advisory):** `npx ai-i18n-tools lint-source` (runs extract first)
+- **Refresh UI catalog:** `npx ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
+- **Translate UI:** `npx ai-i18n-tools translate-ui` (`OPENROUTER_API_KEY`; runs extract first)
+- **Translate documentation:** `npx ai-i18n-tools translate-docs` — `docs[]`; Docusaurus catalog when `docusaurusCatalogDir` is set
+- **Translate nested JSON:** `npx ai-i18n-tools translate-json` — `json[]` when `translateJson` is on
+- **UI only (extract + translate):** `npx ai-i18n-tools sync-ui`
+- **Lint source-locale copy (advisory):** `npx ai-i18n-tools lint-source` (requires `translateUIStrings`; runs extract first)
 - **Markdown static checks:** `npx ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for the patterns in **Documentation (Markdown)** below.
-- **Status tables:** `npx ai-i18n-tools status` (UI strings per locale; markdown per file × locale)
+- **Status tables:** `npx ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
 - **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
 - **Web dashboard:** `npx ai-i18n-tools dashboard`
 - **Cleanup:** `npx ai-i18n-tools cleanup` (runs `sync --force-update`, then prunes stale cache rows; backs up SQLite by default)
-- **Extract + translate per config:** `npx ai-i18n-tools sync`
+- **All enabled pipelines:** `npx ai-i18n-tools sync` (`--no-ui`, `--no-svg`, `--no-json`, `--no-docs` to skip)
 
 Exhaustive CLI list and global flags: [README.md](../README.md#cli-commands). Use `-c <path>` when the config file is not the default. Flags and env vars: `npx ai-i18n-tools --help` and per-command `--help`.
 
@@ -224,9 +280,11 @@ The `ai-i18n-tools dashboard` UI includes a **Markdown issues** tab (same `markd
 
 ---
 
-## Documentation (Markdown)
+## Documentation (Workflow 2)
 
-- Locale-specific screenshots and illustrated SVGs: [Locale assets guide](LOCALE-ASSETS-GUIDE.md) (Patterns A–E, `postProcessing.regexAdjustments`, flat link rewriter).
+- Config block: `docs[]` with `contentPaths`, `outputDir`, `docsOutput` (style `nested`, `flat`, `docusaurus`, `astro-starlight`, …).
+- Docusaurus site chrome: set `docs[].docusaurusCatalogDir` to the `write-translations` folder (e.g. `docs-site/i18n/en`); translated with `translate-docs` when `translateDocs` is true — no separate JSON feature flag.
+- Locale-specific screenshots and illustrated SVGs: [Locale assets guide](LOCALE-ASSETS-GUIDE.md) (Patterns A–E, `docsOutput.postProcessing.regexAdjustments`, flat link rewriter).
 - Do **not** use bold formatting around inline code—avoid putting asterisks outside a backtick span. Use plain `` `code` `` spans, or apply emphasis and code styling separately; never nest both on the same element.
 - Do **not** use bold formatting around links—avoid putting asterisks outside a link. Use plain `` [link text](url) `` spans, or apply emphasis and link styling separately; never nest both on the same element. If needed a bold use it inside the link text.
 

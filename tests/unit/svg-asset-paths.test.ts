@@ -23,7 +23,7 @@ describe("svg-asset-paths", () => {
         temperature: 0.1,
       },
       cacheDir: ".cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -43,7 +43,7 @@ describe("svg-asset-paths", () => {
         temperature: 0.1,
       },
       cacheDir: ".cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -65,7 +65,7 @@ describe("svg-asset-paths", () => {
         temperature: 0.1,
       },
       cacheDir: ".cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       svg: {
         sourcePath: ["images"],
         outputDir: "public/assets",
@@ -157,7 +157,7 @@ describe("svg-asset-paths", () => {
           temperature: 0.1,
         },
         cacheDir: ".cache",
-        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
         svg: {
           sourcePath: ["images"],
           outputDir: "public/assets",
@@ -181,7 +181,7 @@ describe("svg-asset-paths", () => {
           temperature: 0.1,
         },
         cacheDir: ".cache",
-        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
         svg: {
           sourcePath: ["images"],
           outputDir: "public/assets",

@@ -147,11 +147,11 @@ describe("doc-postprocess", () => {
       mergeWithDefaults({
         sourceLocale: "en-GB",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["README.md"],
             outputDir: "translated-docs",
-            markdownOutput: {
+            docsOutput: {
               style: "flat",
               postProcessing: {
                 regexAdjustments: [
@@ -179,14 +179,13 @@ describe("doc-postprocess", () => {
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
         },
       })
     );
-    const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+    const docCfg = toDocTranslateConfig(full, full.docs[0]!);
     const md = `---
 title: T
 ---
@@ -230,11 +229,11 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["a.md"],
             outputDir: "out",
-            markdownOutput: { style: "flat" as const },
+            docsOutput: { style: "flat" as const },
           },
         ],
         targetLocales: ["de"],
@@ -245,14 +244,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
         },
       })
     );
-    const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+    const docCfg = toDocTranslateConfig(full, full.docs[0]!);
     const md = "---\n---\nHi";
     const out = applyMarkdownPostProcessing(md, {
       config: docCfg,
@@ -272,11 +270,11 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
       mergeWithDefaults({
         sourceLocale: "en",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["a.md"],
             outputDir: "out",
-            markdownOutput: {
+            docsOutput: {
               style: "flat" as const,
               postProcessing: {},
             },
@@ -290,14 +288,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
         },
       })
     );
-    const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+    const docCfg = toDocTranslateConfig(full, full.docs[0]!);
     const md = "---\n---\nOnly";
     const out = applyMarkdownPostProcessing(md, {
       config: docCfg,
@@ -318,11 +315,11 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
       mergeWithDefaults({
         sourceLocale: "en-GB",
         cacheDir: ".translation-cache",
-        documentations: [
+        docs: [
           {
             contentPaths: ["README.md"],
             outputDir: "translated-docs",
-            markdownOutput: {
+            docsOutput: {
               style: "flat",
               postProcessing: {
                 languageListBlock: {
@@ -343,14 +340,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           temperature: 0.1,
         },
         features: {
-          translateMarkdown: true,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: true,
+
           translateUIStrings: false,
         },
       })
     );
-    const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+    const docCfg = toDocTranslateConfig(full, full.docs[0]!);
     applyMarkdownPostProcessing("---\n---\nNo lang markers here\n", {
       config: docCfg,
       cwd: "/proj",
@@ -389,12 +385,12 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           sourceLocale: "en",
           cacheDir: ".translation-cache",
           uiLanguagesPath: "ui-languages.json",
-          documentations: [
+          docs: [
             {
               contentPaths: ["a.md"],
               outputDir: "out",
               targetLocales: ["de"],
-              markdownOutput: { style: "flat" },
+              docsOutput: { style: "flat" },
             },
           ],
           targetLocales: ["de"],
@@ -405,14 +401,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.length).toBeGreaterThanOrEqual(2);
       expect(rows.some((r) => r.code === "de")).toBe(true);
@@ -439,12 +434,12 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           sourceLocale: "en",
           cacheDir: ".translation-cache",
           uiLanguagesPath: "ui-languages.json",
-          documentations: [
+          docs: [
             {
               contentPaths: ["a.md"],
               outputDir: "out",
               targetLocales: ["de"],
-              markdownOutput: {
+              docsOutput: {
                 style: "flat",
                 postProcessing: {
                   languageListBlock: {
@@ -465,14 +460,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.find((r) => r.code === "de")?.label).toBe("German");
     } finally {
@@ -487,12 +481,12 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
         mergeWithDefaults({
           sourceLocale: "en-GB",
           cacheDir: ".translation-cache",
-          documentations: [
+          docs: [
             {
               contentPaths: ["a.md"],
               outputDir: "out",
               targetLocales: ["de", "zh-TW"],
-              markdownOutput: {
+              docsOutput: {
                 style: "flat",
                 postProcessing: {
                   languageListBlock: {
@@ -513,14 +507,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.find((r) => r.code === "de")?.label).toBe("Deutsch");
       expect(rows.find((r) => r.code === "zh-TW")?.label).toContain("中文");
@@ -536,12 +529,12 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
         mergeWithDefaults({
           sourceLocale: "en-GB",
           cacheDir: ".translation-cache",
-          documentations: [
+          docs: [
             {
               contentPaths: ["a.md"],
               outputDir: "out",
               targetLocales: ["de", "zh-TW"],
-              markdownOutput: {
+              docsOutput: {
                 style: "flat",
                 postProcessing: {
                   languageListBlock: {
@@ -562,14 +555,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.find((r) => r.code === "de")?.label).toBe("German");
       expect(rows.find((r) => r.code === "zh-TW")?.label).toBe("Chinese (TW)");
@@ -587,12 +579,12 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
           sourceLocale: "en-GB",
           localeDisplayNames: { "en-GB": "English UK" },
           cacheDir: ".translation-cache",
-          documentations: [
+          docs: [
             {
               contentPaths: ["a.md"],
               outputDir: "out",
               targetLocales: ["de"],
-              markdownOutput: {
+              docsOutput: {
                 style: "flat",
                 postProcessing: {
                   languageListBlock: {
@@ -613,14 +605,13 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             temperature: 0.1,
           },
           features: {
-            translateMarkdown: true,
-            translateJSON: false,
-            extractUIStrings: false,
+            translateDocs: true,
+
             translateUIStrings: false,
           },
         })
       );
-      const docCfg = toDocTranslateConfig(full, full.documentations[0]!);
+      const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows).toEqual([
         { code: "en-GB", label: "English UK" },

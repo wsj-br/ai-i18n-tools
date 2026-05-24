@@ -25,7 +25,7 @@ import {
 
 const defaultMarkdownOutput = { style: "nested" as const, flatPreserveRelativeDir: false };
 const defaultDocumentationFields = {
-  markdownOutput: defaultMarkdownOutput,
+  docsOutput: defaultMarkdownOutput,
   translateFrontmatterFields: true,
 };
 
@@ -41,7 +41,7 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
         flatOutputDir: "./locales",
       },
       cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       openrouter: {
         baseUrl: "https://openrouter.ai/api/v1",
         translationModels: ["m"],
@@ -49,10 +49,10 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
         temperature: 0.1,
       },
       features: {
-        extractUIStrings: false,
-        translateUIStrings: true,
-        translateMarkdown: false,
-        translateJSON: false,
+        translateUIStrings: false,
+        translateDocs: false,
+        translateJson: false,
+        translateSVG: false,
       },
       ...over,
     })
@@ -83,7 +83,7 @@ describe("ui-languages", () => {
       sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
       cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       targetLocales: ["locales/ui-languages.json"],
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
@@ -98,7 +98,7 @@ describe("ui-languages", () => {
       sourceLocale: "en-GB",
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
       cacheDir: ".translation-cache",
-      documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
       targetLocales: ["de", "fr"],
       openrouter: { translationModels: ["m"] },
       features: { translateUIStrings: true },
@@ -170,10 +170,9 @@ describe("ui-languages", () => {
       sourceLocale: "en-GB",
       targetLocales: [],
       features: {
-        extractUIStrings: false,
         translateUIStrings: false,
-        translateMarkdown: false,
-        translateJSON: false,
+        translateDocs: false,
+        translateJson: false,
         translateSVG: false,
       },
     });
@@ -213,20 +212,18 @@ describe("ui-languages", () => {
         sourceLocale: "en-GB",
         targetLocales: ["de"],
         ui: {
-          sourceRoots: [],
+          sourceRoots: ["src/"],
           stringsJson: "strings.json",
           flatOutputDir: "locales",
         },
         cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
         openrouter: {
           translationModels: ["m"],
         },
         features: {
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: false,
         },
       }),
       "utf8"
@@ -248,15 +245,13 @@ describe("ui-languages", () => {
           flatOutputDir: "locales",
         },
         cacheDir: ".translation-cache",
-        documentations: [{ contentPaths: [], outputDir: "./i18n" }],
+        docs: [{ contentPaths: [], outputDir: "./i18n" }],
         openrouter: {
           translationModels: ["m"],
         },
         features: {
           translateUIStrings: true,
-          translateMarkdown: false,
-          translateJSON: false,
-          extractUIStrings: false,
+          translateDocs: false,
         },
       }),
       "utf8"
@@ -264,12 +259,12 @@ describe("ui-languages", () => {
     expect(() => loadI18nConfigFromFile(cfgPath, tmp)).toThrow(ConfigValidationError);
   });
 
-  it("getDocumentationTargetLocaleCodes prefers documentations[].targetLocales", () => {
+  it("getDocumentationTargetLocaleCodes prefers docs[].targetLocales", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es", "pt-BR"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -286,7 +281,7 @@ describe("ui-languages", () => {
       sourceLocale: "en",
       targetLocales: ["de", "fr"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -302,7 +297,7 @@ describe("ui-languages", () => {
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -318,7 +313,7 @@ describe("ui-languages", () => {
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -334,7 +329,7 @@ describe("ui-languages", () => {
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -344,9 +339,8 @@ describe("ui-languages", () => {
       ],
       features: {
         translateUIStrings: false,
-        translateMarkdown: true,
-        translateJSON: false,
-        extractUIStrings: false,
+        translateDocs: true,
+        translateJson: false,
         translateSVG: false,
       },
     });
@@ -358,7 +352,7 @@ describe("ui-languages", () => {
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es"],
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -368,9 +362,8 @@ describe("ui-languages", () => {
       ],
       features: {
         translateUIStrings: false,
-        translateMarkdown: true,
-        translateJSON: false,
-        extractUIStrings: false,
+        translateDocs: true,
+        translateJson: false,
         translateSVG: false,
       },
     });
@@ -383,7 +376,7 @@ describe("ui-languages", () => {
       targetLocales: ["de", "fr", "es", "it"],
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
       cacheDir: ".translation-cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "./i18n",
@@ -391,7 +384,7 @@ describe("ui-languages", () => {
         },
       ],
       openrouter: { translationModels: ["m"] },
-      features: { translateMarkdown: true },
+      features: { translateDocs: true },
     });
     expect(() => expandDocumentationTargetLocalesInRawInput(raw, tmp)).toThrow(
       ConfigValidationError

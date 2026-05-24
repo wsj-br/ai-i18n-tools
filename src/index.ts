@@ -9,7 +9,7 @@ export {
   type ReactExtractorConfig,
   type SvgExtractorConfig,
   type UiConfig,
-  type DocumentationBlock,
+  type DocBlock,
   type I18nDocTranslateConfig,
   type MarkdownOutputConfig,
   type SegmentSplittingConfig,

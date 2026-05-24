@@ -16,25 +16,28 @@ This document gives the mental model, key decisions, and patterns needed to work
 
 1. **Extracts** UI strings into a master catalog: `t("…")` / `i18n.t("…")` literals (configurable), optionally `package.json` `description`, and optionally each `englishName` from `ui-languages.json` when `ui.reactExtractor.includeUiLanguageEnglishNames` is true.
 2. **Translates** that catalog and documentation files via LLMs (through OpenRouter).
-3. **Writes** locale-ready JSON files for i18next, plus translated markdown, Docusaurus JSON labels, and  SVG files.
+3. **Writes** locale-ready JSON files for i18next, translated markdown/MDX/`.astro` pages, Docusaurus catalog JSON, arbitrary nested locale JSON bundles, and SVG files.
 4. **Exports runtime helpers** for wiring i18next, RTL support, and language selection in any JS environment.
 
 Everything is driven by a single config file: `ai-i18n-tools.config.json`.
 
 ---
 
-## Two independent workflows
+## Three composable workflows
 
-| | Workflow 1 - UI Strings | Workflow 2 - Documents |
-|---|---|---|
-| **Input** | JS/TS sources (`t("…")`), optional `package.json` description, optional manifest `englishName` (see `extract`) | `.md`, `.mdx`, Docusaurus JSON label files |
-| **Output** | `strings.json` (catalog) + per-locale flat JSON files (`de.json`, etc.) | Translated copies of those files at configured output paths |
-| **Cache** | `strings.json` itself (existing translations are preserved) | SQLite database (`cacheDir`) - only new/changed segments go to LLM |
-| **Key command** | `translate-ui` | `translate-docs` |
-| **Sync command** | `sync` | `sync` |
-| **Feature flags** | `extractUIStrings`, `translateUIStrings` | `translateMarkdown`, `translateJSON`, `translateSVG` |
+| | Workflow 1 — UI strings | Workflow 2 — Documents | Workflow 3 — Nested JSON |
+|---|---|---|---|
+| **Input** | JS/TS (and optionally `.astro`) sources: `t("…")` / `i18n.t("…")` | `.md`, `.mdx`, `.astro` under `docs[].contentPaths`; optional Docusaurus catalog dir | Nested `.json` under `json[].contentPaths` (file, directory, or glob) |
+| **Output** | `strings.json` (catalog) + flat per-locale JSON (`de.json`, …) | Translated pages + optional Docusaurus shell JSON at `docs[].outputDir` / `jsonPathTemplate` | Per-block `outputPathTemplate` (e.g. `src/i18n/{locale}/translation.json`) |
+| **Cache** | `strings.json` (`translated` preserved on re-extract) | SQLite (`cacheDir`) — segment + file tracking | Same SQLite cache; keys `json-block:{index}:{relPath}` |
+| **Key command** | `translate-ui` (runs `extract` first) | `translate-docs` | `translate-json` |
+| **Feature flag** | `translateUIStrings` | `translateDocs` (+ `docs[].docusaurusCatalogDir` for shell JSON) | `translateJson` |
 
-They can be used independently or together in the same config. `sync` runs, in order: `extract` (if enabled), `translate-ui` (if enabled, unless `--no-ui`), `translate-svg` when `features.translateSVG` is true and `config.svg` is set (unless `--no-svg`), then `translate-docs` (unless `--no-docs`). SVG file translation requires the **`translateSVG`** feature plus the top-level **`svg`** block (paths and layout). See the [CLI cheat sheet](#cli-commands-cheat-sheet) for flags.
+**Decision tree (agents):** `t()` in source → Workflow 1. Localized pages or Docusaurus `write-translations` catalog → Workflow 2. Standalone nested locale JSON only (e.g. ZenBrowser `src/i18n/en/translation.json`) → Workflow 3 — not `docs[]`.
+
+**`sync` order** (unless skipped): when `translateUIStrings` → `extract` then `translate-ui` (`--no-ui`); when `translateSVG` + `svg` → `translate-svg` (`--no-svg`); when `translateJson` + `json[]` → `translate-json` (`--no-json`); when `translateDocs` or any `docs[].docusaurusCatalogDir` → `translate-docs` (`--no-docs`). There is no separate `extractUIStrings` or `translateJSON` feature flag anymore.
+
+**Legacy config** (load + one-time rewrite when writable): `documentations` → `docs`, `translateMarkdown` → `translateDocs`, `jsonSource` → `docusaurusCatalogDir`, `markdownOutput` → `docsOutput`; `extractUIStrings` and `translateJSON` are stripped. See `src/core/config-migrate.ts`.
 
 ---
 
@@ -66,10 +69,9 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
   },
 
   "features": {
-    "extractUIStrings": true,
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
+    "translateJson": false,
     "translateSVG": true
   },
 
@@ -87,15 +89,28 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
   },
 
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "contentPaths": ["docs/"],
       "outputDir": "i18n/",
       "targetLocales": ["de", "fr"],
-      "jsonSource": "i18n/en",
-      "markdownOutput": {
+      "docusaurusCatalogDir": "i18n/en",
+      "docsOutput": {
         "style": "docusaurus",
         "docsRoot": "docs"
+      }
+    }
+  ],
+
+  "json": [
+    {
+      "description": "Optional nested UI JSON (Workflow 3)",
+      "contentPaths": "src/i18n/en/translation.json",
+      "outputPathTemplate": "src/i18n/{locale}/translation.json",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": ["id", "slug", "href", "url"],
+        "translateKeys": []
       }
     }
   ],
@@ -118,10 +133,13 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
 - `sourceLocale` **must exactly match** the `SOURCE_LOCALE` constant exported from the runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` can be a string path to a `ui-languages.json` manifest OR an array of BCP-47 codes.
 - `uiLanguagesPath` is optional, but useful when `targetLocales` is an explicit array and you still want manifest-driven labels and locale filtering.
-- `documentations[].description` is optional text for maintainers (what the block is for); it does not affect translation. When set, it is included in the `translate-docs` headline and `status` headers.
-- `documentations[].targetLocales` limits that block to a subset; effective documentation locales are the **union** across blocks (useful when different trees need different locale sets).
-- `documentations[].markdownOutput.postProcessing` can adjust translated markdown after reassembly, for example by rewriting screenshot paths or rebuilding a language list block.
-- `documentations[].protectAttributes` / `protectKeys` extend built-in skip lists for JSX/HTML attribute values and object keys during `.astro` parse-and-replace and MDX placeholder extraction (see `docs/GETTING_STARTED.md#protectattributes-protectkeys`).
+- `docs[].description` is optional text for maintainers; it appears in `translate-docs` / `status` headers.
+- `docs[].contentPaths` is a string or array; each entry is a file, directory, or glob (minimatch). Same resolution pattern as `json[].contentPaths`.
+- `docs[].docusaurusCatalogDir` — directory from `docusaurus write-translations` (e.g. `docs-site/i18n/en`). When set and `translateDocs` is true, catalog JSON is translated during `translate-docs` (no separate JSON feature flag).
+- `docs[].targetLocales` limits that block; effective doc locales are the **union** across blocks.
+- `docs[].docsOutput` — output layout for translated pages (was `markdownOutput`): `style`, `pathTemplate`, `postProcessing`, etc.
+- `docs[].protectAttributes` / `protectKeys` extend skip lists for `.astro` and MDX (see `docs/GETTING_STARTED.md`).
+- `json[]` — Workflow 3 only. Each block needs `contentPaths` and `outputPathTemplate`; optional `keyPolicy` (`allowlist` | `denylist` | `both`, minimatch on dot paths). Do not put Docusaurus catalog JSON here — use `docs[].docusaurusCatalogDir`.
 - All paths are relative to cwd (where the CLI is invoked).
 - `OPENROUTER_API_KEY` must be set in the environment or a `.env` file.
 
@@ -153,12 +171,12 @@ This file drives translation targets, prompts, and the runtime language-switcher
 ## CLI commands cheat sheet
 
 ```text
-npx ai-i18n-tools init [-t ui-markdown|ui-docusaurus]
-    Write a starter config file. ui-markdown = React/UI-only template.
-    ui-docusaurus = combined UI + docs template.
+npx ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles]
+    Starter config. ui-json-bundles = Workflow 3 (nested JSON only).
 
 npx ai-i18n-tools extract
-    Scan source for t("…") / i18n.t("…"), merge optional package.json description and (if enabled) ui-languages englishName into strings.json.
+    Scan source for t("…") / i18n.t("…") into strings.json (requires non-empty ui.sourceRoots).
+    Also runs automatically before translate-ui / sync-ui / sync when translateUIStrings is enabled.
     Safe to re-run - preserves existing translations.
 
 npx ai-i18n-tools generate-ui-languages [--master <path>] [--dry-run]
@@ -169,8 +187,11 @@ npx ai-i18n-tools translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]
     Translate UI strings only. Reads strings.json, writes flatOutputDir/de.json etc.
     --force: re-translate all entries per locale. --dry-run: no writes, no API calls. -j: max parallel locales.
 
+npx ai-i18n-tools translate-json [--locale <code>] …
+    Translate arbitrary nested JSON per json[] (requires features.translateJson). NestedJsonExtractor + keyPolicy.
+
 npx ai-i18n-tools translate-docs [--locale <code>] [--force | --force-update] …
-    Translate markdown and JSON under documentation paths. Default: skip unchanged files + use segment SQLite cache.
+    Translate md/mdx/astro under docs[]; Docusaurus catalog JSON when docs[].docusaurusCatalogDir is set.
     --force-update: re-run every file output; segment cache still used (no API for unchanged text).
     --force: clear file tracking and ignore segment cache reads (full re-translation); new results still write to cache.
     --stats: print cache stats and exit. --clear-cache [locale]: wipe cache (all or one locale) and exit.
@@ -184,12 +205,15 @@ npx ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]
 npx ai-i18n-tools translate-svg [--locale <code>] [--force | --force-update] [--no-cache] …
      SVG files from config.svg. Requires features.translateSVG. --no-cache: skip SQLite reads/writes for this run only.
 
-npx ai-i18n-tools sync [--locale <code>] [--force | --force-update] [--no-ui] [--no-svg] [--no-docs] …
-    extract (if enabled), translate-ui (unless --no-ui), translate-svg when features.translateSVG and config.svg (unless --no-svg),
-    translate-docs (unless --no-docs). --force / --force-update apply to the docs step only; if --no-docs, both can be passed without conflict.
+npx ai-i18n-tools sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]
+    extract then translate-ui (requires translateUIStrings). UI-only.
+
+npx ai-i18n-tools sync [--locale <code>] [--force | --force-update] [--no-ui] [--no-svg] [--no-json] [--no-docs] …
+    UI (extract+translate-ui), optional translate-svg, optional translate-json, optional translate-docs.
+    --force / --force-update apply to the docs step only.
 
 npx ai-i18n-tools status
-    Show markdown translation coverage per file × locale.
+    UI strings (if translateUIStrings), markdown per docs[] block, json[] per block when translateJson is enabled.
 
 npx ai-i18n-tools dashboard
     Launch the Translation Dashboard (local web UI for cache segments, strings.json, glossary, failures, and statistics).
@@ -260,15 +284,17 @@ PlaceholderHandler.restore  - tokens replaced back with original syntax
 resolveDocumentationOutputPath  → write to output file
 ```
 
-**Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (a `cache.db` SQLite file), shared by all `documentations` blocks. Each row stores the `model` that last translated the segment; saving an edit in the `dashboard` sets `model` to `user-edited` (same sentinel as UI `strings.json` `models`).
+**Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (`cache.db`), shared across `docs[]` blocks. File tracking: `doc-block:{index}:{relPath}` for pages; Docusaurus JSON rows use cwd-relative paths under `docusaurusCatalogDir`. Each row stores the `model` that last translated the segment; `dashboard` edits set `model` to `user-edited`.
 
 **`markdown_source_issues` (schema ≥ 4):** pre-translation static findings per documentation cache filepath (`doc-block:{i}:{relPath}` keys, same as `translations.filepath` for markdown). `check-markdown` and `translate-docs` (when `warnMarkdownSourceIssues` is not `false`) call `TranslationCache.replaceMarkdownIssuesForFilepath` to delete-then-insert all rows for that filepath. `deleteTranslationsByFilepath` and filtered bulk deletes remove markdown issue rows when the last translation row for that filepath is gone. Editor tab **Markdown issues** reads `GET /api/markdown-source-issues` (+ summary / issue-code list). Processor: `src/processors/markdown-source-diagnostics.ts` (includes `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for `**`/`__` wrapping `` `code` `` or `[text](url)`); pairing primitives exported from `emphasis-placeholders.ts` (`collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, …).
 
 **CLI**: `--force-update` bypasses only the *file-level* skip (rebuild outputs) while still using segment cache. `--force` clears per-file tracking and skips segment cache reads for API calls. See the getting started guide for the full flag table.
 
-**SVG files**: handled by `translate-svg` when `features.translateSVG` is true and the top-level `svg` config block is set. They use the same OpenRouter/cache ideas, but not the `documentations` pipeline.
+**SVG files**: `translate-svg` when `features.translateSVG` and top-level `svg` are set.
 
-**Output styles** (`markdownOutput.style`):
+**Docusaurus shell JSON**: `JsonExtractor` during `translate-docs` when `docs[].docusaurusCatalogDir` is set (`{ message, description }` shape). Not Workflow 3.
+
+**Output styles** (`docsOutput.style`):
 
 | Style | Example |
 |---|---|
@@ -278,6 +304,24 @@ resolveDocumentationOutputPath  → write to output file
 | custom `pathTemplate` | any layout using `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{stem}`, `{basename}`, `{extension}`, `{docsRoot}`, `{relativeToDocsRoot}` |
 
 Flat-style output auto-rewrites relative links between pages (e.g. `[Guide](./guide.md)` → `guide.de.md`).
+
+---
+
+## Workflow 3 - Nested JSON: how data flows
+
+```text
+json[].contentPaths  →  resolveContentPathEntries (file | dir | glob)
+    ▼
+NestedJsonExtractor  - walk tree; string leaves matching keyPolicy (minimatch on dot paths)
+    ▼
+Same batch/cache/glossary pipeline as docs (segment hash includes path + value)
+    ▼
+expandJsonBlockOutputPath(outputPathTemplate)  →  write per locale
+```
+
+- **Not** for Docusaurus catalog files — those stay on Workflow 2 (`docusaurusCatalogDir`).
+- **Not** for `t()` UI strings — Workflow 1 (`strings.json` + flat bundles).
+- Reference design notes: `dev/future-i18n-json-arbitrary.md`.
 
 ---
 
@@ -380,7 +424,8 @@ Other useful exports for custom pipelines:
 | `TranslationCache`                   | Direct SQLite cache access                             |
 | `UIStringExtractor`                  | Extract `t("…")` calls from JS/TS files                |
 | `MarkdownExtractor`                  | Parse markdown into translatable segments              |
-| `JsonExtractor`                      | Parse Docusaurus JSON label files                      |
+| `JsonExtractor`                      | Docusaurus catalog JSON (`{ message, description }`)   |
+| `NestedJsonExtractor`                | Arbitrary nested JSON (`json[]` / `translate-json`)    |
 | `SvgExtractor`                       | Parse SVG text elements                                |
 | `OpenRouterClient`                   | Make translation requests directly                     |
 | `PlaceholderHandler`                 | Protect/restore markdown syntax around translation     |
@@ -427,9 +472,9 @@ class MyExtractor extends BaseExtractor {
 
 ```json
 {
-  "documentations": [
+  "docs": [
     {
-      "markdownOutput": {
+      "docsOutput": {
         "pathTemplate": "{outputDir}/{locale}/{relativeToDocsRoot}"
       }
     }
@@ -447,7 +492,8 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 |---|---|
 | Add a new locale | Add it to `ui-languages.json` (or `targetLocales` array), then run `translate-docs` / `translate-ui` / `sync` |
 | Translate only one locale | `npx ai-i18n-tools translate-docs --locale de` (or `translate-ui`, `sync`) |
-| Add a new UI string | Write `t('My new string')` in source, then run `extract` then `translate-ui` |
+| Add a new UI string | Write `t('My new string')` in source, then `translate-ui` or `sync-ui` (extract runs first) |
+| Translate nested locale JSON | Configure `json[]` + `translateJson`, run `translate-json` or `sync` |
 | Update a translation manually | Edit `strings.json` directly (`translated`), or use `dashboard` (sets `models[locale]` to `user-edited`). `translate-ui` skips locales that already have text unless you use `--force` |
 | Translate new/updated docs only | Run `translate-docs` - file + segment cache skips unchanged work automatically |
 | Rebuild doc outputs without re-calling the API for unchanged segments | `npx ai-i18n-tools sync  --force-update` |
@@ -456,8 +502,8 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 | Inspect what is untranslated | `npx ai-i18n-tools status` |
 | Change the translation model | Edit `openrouter.translationModels` (first is primary, rest are fallbacks). For **UI only**, optional `ui.preferredModel` is tried before that list. |
 | Wire i18next in a new project | See [Runtime integration](#runtime-integration---wiring-i18next) above |
-| Translate docs to fewer locales than UI | Set `documentations[].targetLocales` on the relevant block(s), or use a smaller union |
-| Run extract + UI + SVG + docs in one command | `npx ai-i18n-tools sync` (SVG runs when `features.translateSVG` and `svg` are set) - use `--no-ui`, `--no-svg`, or `--no-docs` to skip a stage (e.g. UI + SVG only: `--no-docs`) |
+| Translate docs to fewer locales than UI | Set `docs[].targetLocales` on the relevant block(s), or use a smaller union |
+| Run UI + SVG + JSON + docs in one command | `npx ai-i18n-tools sync` — skip stages with `--no-ui`, `--no-svg`, `--no-json`, `--no-docs` |
 
 ---
 
@@ -494,8 +540,8 @@ Available placeholders: `{outputDir}`, `{locale}`, `{LOCALE}`, `{relPath}`, `{st
 src/
 ├── index.ts               Public API (all programmatic exports)
 ├── cli/                   CLI command implementations
-├── core/                  Config loading, types (Zod), SQLite cache, prompt builder, output paths
-├── extractors/            Segment extractors: JS/TS, Markdown, JSON, SVG
+├── core/                  Config, Zod types, cache, output paths, resolve-content-paths, config-migrate
+├── extractors/            UI, Markdown, Astro, Docusaurus JSON, nested JSON, SVG
 ├── processors/            Placeholder protection, batch splitting, post-translation validation, link rewriting
 ├── api/openrouter.ts      HTTP client for OpenRouter with model fallback and rate-limit handling
 ├── glossary/              Glossary loading (CSV + auto from strings.json) and term matching

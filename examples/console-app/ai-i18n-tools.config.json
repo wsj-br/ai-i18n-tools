@@ -1,6 +1,11 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["es", "fr", "de", "pt-BR"],
+  "targetLocales": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR"
+  ],
   "concurrency": 4,
   "batchConcurrency": 4,
   "batchSize": 20,
@@ -24,10 +29,8 @@
     "temperature": 0.2
   },
   "features": {
-    "extractUIStrings": true,
     "translateUIStrings": true,
-    "translateMarkdown": true,
-    "translateJSON": false,
+    "translateDocs": true,
     "translateSVG": false
   },
   "glossary": {
@@ -35,19 +38,23 @@
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
-    "sourceRoots": ["src/"],
+    "sourceRoots": [
+      "src/"
+    ],
     "stringsJson": "locales/strings.json",
     "flatOutputDir": "locales/",
     "preferredModel": "openai/gpt-5.4-mini"
   },
   "cacheDir": ".translation-cache",
-  "documentations": [
+  "docs": [
     {
       "description": "Project README translated to locale-suffixed files",
-      "contentPaths": ["README.md"],
+      "contentPaths": [
+        "README.md"
+      ],
       "outputDir": "translated-docs",
       "addFrontmatter": true,
-      "markdownOutput": {
+      "docsOutput": {
         "style": "flat",
         "postProcessing": {
           "languageListBlock": {

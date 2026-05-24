@@ -160,8 +160,7 @@ export function buildLanguageSwitcherRows(
   config: I18nDocTranslateConfig,
   cwd: string
 ): Array<{ code: string; label: string }> {
-  const labelStyle =
-    config.documentation.markdownOutput.postProcessing?.languageListBlock?.label ?? "local";
+  const labelStyle = config.doc.docsOutput.postProcessing?.languageListBlock?.label ?? "local";
   const abs = resolveUiLanguagesAbsPath(config as unknown as I18nConfig, cwd);
   if (abs && fs.existsSync(abs)) {
     const entries = loadUiLanguageEntries(abs);
@@ -179,7 +178,7 @@ export function buildLanguageSwitcherRows(
   if (fs.existsSync(masterPath)) {
     const master = loadUiLanguagesMaster(masterPath);
     const src = normalizeLocale(config.sourceLocale);
-    const doc = config.documentation.targetLocales;
+    const doc = config.doc.targetLocales;
     const useDoc = Array.isArray(doc) && doc.length > 0;
     const rawList = useDoc ? doc : config.targetLocales;
     const targets = [...new Set(rawList.map((l) => normalizeLocale(l)))].filter((c) => c !== src);
@@ -202,7 +201,7 @@ export function buildLanguageSwitcherRows(
 
   const src = normalizeLocale(config.sourceLocale);
   const names = config.localeDisplayNames ?? {};
-  const doc = config.documentation.targetLocales;
+  const doc = config.doc.targetLocales;
   const useDoc = Array.isArray(doc) && doc.length > 0;
   const rawList = useDoc ? doc! : config.targetLocales;
   const targets = [...new Set(rawList.map((l) => normalizeLocale(l)))].filter((c) => c !== src);
@@ -249,7 +248,7 @@ function applyLanguageListBlockToBody(
     missingBlockTarget?: string;
   }
 ): string {
-  const langCfg = args.config.documentation.markdownOutput.postProcessing?.languageListBlock;
+  const langCfg = args.config.doc.docsOutput.postProcessing?.languageListBlock;
   if (!langCfg) return body;
 
   const rows = buildLanguageSwitcherRows(args.config, args.cwd);
@@ -322,7 +321,7 @@ export function applyMarkdownPostProcessing(
     docStem: string;
   }
 ): string {
-  const post = args.config.documentation.markdownOutput.postProcessing;
+  const post = args.config.doc.docsOutput.postProcessing;
   if (!post) return markdown;
 
   const rules = post.regexAdjustments ?? [];
@@ -370,7 +369,7 @@ export function applyMarkdownLanguageListPostProcessing(
     missingBlockTarget?: string;
   }
 ): string {
-  const langCfg = args.config.documentation.markdownOutput.postProcessing?.languageListBlock;
+  const langCfg = args.config.doc.docsOutput.postProcessing?.languageListBlock;
   if (!langCfg) return markdown;
 
   const parsed = matter(markdown);

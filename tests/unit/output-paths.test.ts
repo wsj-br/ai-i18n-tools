@@ -18,20 +18,20 @@ function cfg(over: Record<string, unknown> = {}) {
         maxTokens: 100,
         temperature: 0.1,
       },
-      features: { translateMarkdown: true },
+      features: { translateDocs: true },
       ui: { sourceRoots: [], stringsJson: "s.json", flatOutputDir: "locales" },
       cacheDir: ".cache",
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "i18n",
-          markdownOutput: { style: "nested", docsRoot: "docs" },
+          docsOutput: { style: "nested", docsRoot: "docs" },
         },
       ],
       ...over,
     })
   );
-  return toDocTranslateConfig(full, full.documentations[0]!);
+  return toDocTranslateConfig(full, full.docs[0]!);
 }
 
 describe("output-paths", () => {
@@ -45,11 +45,11 @@ describe("output-paths", () => {
 
   it("docusaurus style uses plugin path under docsRoot", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "i18n",
-          markdownOutput: { style: "docusaurus", docsRoot: "docs" },
+          docsOutput: { style: "docusaurus", docsRoot: "docs" },
         },
       ],
     });
@@ -59,11 +59,11 @@ describe("output-paths", () => {
 
   it("doc-system style uses localeSubpath under docsRoot", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "i18n",
-          markdownOutput: {
+          docsOutput: {
             style: "doc-system",
             docsRoot: "docs",
             localeSubpath: "custom/prefix",
@@ -77,11 +77,11 @@ describe("output-paths", () => {
 
   it("astro-starlight alias writes directly under locale folder", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["src/content/docs/quick-start.md"],
           outputDir: "src/content/docs",
-          markdownOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
+          docsOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
         },
       ],
     });
@@ -97,11 +97,11 @@ describe("output-paths", () => {
 
   it("astro-starlight lowercases regional locale folders for Starlight", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["src/content/docs/feature-showcase.mdx"],
           outputDir: "src/content/docs",
-          markdownOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
+          docsOutput: { style: "astro-starlight", docsRoot: "src/content/docs" },
         },
       ],
     });
@@ -117,11 +117,11 @@ describe("output-paths", () => {
 
   it("doc-system with empty localeSubpath writes directly under locale folder", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["src/content/docs/quick-start.md"],
           outputDir: "src/content/docs",
-          markdownOutput: {
+          docsOutput: {
             style: "doc-system",
             docsRoot: "src/content/docs",
             localeSubpath: "",
@@ -141,11 +141,11 @@ describe("output-paths", () => {
 
   it("flat style writes stem.locale.ext in outputDir", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md"],
           outputDir: "translated-docs",
-          markdownOutput: { style: "flat" },
+          docsOutput: { style: "flat" },
         },
       ],
     });
@@ -155,11 +155,11 @@ describe("output-paths", () => {
 
   it("pathTemplate overrides style", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/a.md"],
           outputDir: "out",
-          markdownOutput: {
+          docsOutput: {
             style: "nested",
             pathTemplate: "{outputDir}/custom/{locale}/{relPath}",
           },
@@ -182,11 +182,11 @@ describe("output-paths", () => {
 
   it("shouldRewriteFlatMarkdownLinks defaults for flat without template", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["README.md"],
           outputDir: "translated-docs",
-          markdownOutput: { style: "flat" },
+          docsOutput: { style: "flat" },
         },
       ],
     });
@@ -201,11 +201,11 @@ describe("output-paths", () => {
 
   it("docusaurus style uses nested path when source is outside docsRoot", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["other/"],
           outputDir: "i18n",
-          markdownOutput: { style: "docusaurus", docsRoot: "docs" },
+          docsOutput: { style: "docusaurus", docsRoot: "docs" },
         },
       ],
     });
@@ -215,11 +215,11 @@ describe("output-paths", () => {
 
   it("doc-system style uses nested path when source is outside docsRoot", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["other/"],
           outputDir: "i18n",
-          markdownOutput: {
+          docsOutput: {
             style: "doc-system",
             docsRoot: "docs",
             localeSubpath: "plugin/current",
@@ -233,11 +233,11 @@ describe("output-paths", () => {
 
   it("flat with flatPreserveRelativeDir nests under subdirectories", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "out",
-          markdownOutput: { style: "flat", flatPreserveRelativeDir: true },
+          docsOutput: { style: "flat", flatPreserveRelativeDir: true },
         },
       ],
     });
@@ -247,11 +247,11 @@ describe("output-paths", () => {
 
   it("jsonPathTemplate applies to json artifacts", () => {
     const c = cfg({
-      documentations: [
+      docs: [
         {
           contentPaths: ["docs/"],
           outputDir: "i18n",
-          markdownOutput: {
+          docsOutput: {
             style: "nested",
             jsonPathTemplate: "{outputDir}/j/{locale}/{relPath}",
           },

@@ -5,7 +5,7 @@ const matterStringify = matter.stringify;
 import chalk from "chalk";
 import type {
   DocSegmentTranslation,
-  DocumentationBlock,
+  DocBlock,
   I18nConfig,
   I18nDocTranslateConfig,
   Segment,
@@ -87,15 +87,13 @@ import { collectMarkdownIssuesForSegment } from "../processors/markdown-source-d
 import type { MarkdownSourceIssueInsert } from "../core/types.js";
 
 /** Same segment-extraction options as `translate-docs` for one documentation block. */
-export function buildMarkdownExtractOpts(
-  documentation: DocumentationBlock
-): MarkdownExtractOptions {
-  const langListCfg = documentation.markdownOutput.postProcessing?.languageListBlock;
-  const splitCfg = segmentSplittingSchema.parse(documentation.segmentSplitting ?? {});
+export function buildMarkdownExtractOpts(doc: DocBlock): MarkdownExtractOptions {
+  const langListCfg = doc.docsOutput.postProcessing?.languageListBlock;
+  const splitCfg = segmentSplittingSchema.parse(doc.segmentSplitting ?? {});
   return {
     ...(langListCfg ? { languageListBlock: langListCfg } : {}),
     ...(splitCfg.enabled ? { segmentSplitting: splitCfg } : {}),
-    translateFrontmatterFields: documentation.translateFrontmatterFields,
+    translateFrontmatterFields: doc.translateFrontmatterFields,
   };
 }
 
@@ -153,7 +151,7 @@ export interface TranslateRunOptions {
   promptFormat?: TranslatePromptFormat;
   /**
    * Set when `translate-docs` / `sync` passes `--emphasis-placeholders` (mask emphasis for all locales unless
-   * `documentations[].emphasisPlaceholders` overrides).
+   * `docs[].emphasisPlaceholders` overrides).
    */
   emphasisPlaceholdersCli?: boolean;
   /**
@@ -272,7 +270,7 @@ function restoreSegmentTranslation(
 }
 
 function documentationExpressionProtection(
-  documentation: Pick<DocumentationBlock, "protectAttributes" | "protectKeys">
+  documentation: Pick<DocBlock, "protectAttributes" | "protectKeys">
 ): ExpressionProtectionOptions {
   return {
     protectAttributes: documentation.protectAttributes,
@@ -445,7 +443,7 @@ export function shouldRunMarkdown(
   opts: TranslateRunOptions,
   config: I18nDocTranslateConfig
 ): boolean {
-  if (!config.features.translateMarkdown) {
+  if (!config.features.translateDocs) {
     return false;
   }
   if (opts.typeFilter === "json" || opts.typeFilter === "astro") {
@@ -458,7 +456,7 @@ export function shouldRunMarkdown(
 }
 
 export function shouldRunAstro(opts: TranslateRunOptions, config: I18nDocTranslateConfig): boolean {
-  if (!config.features.translateMarkdown) {
+  if (!config.features.translateDocs) {
     return false;
   }
   if (opts.typeFilter === "json" || opts.typeFilter === "markdown") {
@@ -471,7 +469,7 @@ export function shouldRunAstro(opts: TranslateRunOptions, config: I18nDocTransla
 }
 
 export function shouldRunJson(opts: TranslateRunOptions, config: I18nDocTranslateConfig): boolean {
-  if (!config.features.translateJSON || !config.documentation.jsonSource?.trim()) {
+  if (!config.features.translateDocs || !config.doc.docusaurusCatalogDir?.trim()) {
     return false;
   }
   if (opts.noJson) {
@@ -564,9 +562,9 @@ export function isProjectRelUnderBlockContentPath(
 export function isProjectRelUnderAnyDocumentationContentPath(
   projectRoot: string,
   relPosix: string,
-  documentations: Array<{ contentPaths: string[] }>
+  docs: Array<{ contentPaths: string[] }>
 ): boolean {
-  for (const block of documentations) {
+  for (const block of docs) {
     if (isProjectRelUnderBlockContentPath(projectRoot, relPosix, block)) {
       return true;
     }
@@ -649,15 +647,15 @@ export function augmentMarkdownFilesFromPathFilter(
   projectRoot: string,
   pathFilter: string | undefined,
   documentationBlockIndex: number,
-  documentations: Array<{ contentPaths: string[] }>,
+  docs: Array<{ contentPaths: string[] }>,
   markdownDiscovered: string[]
 ): AugmentMarkdownFromPathFilterResult {
   const warnings: string[] = [];
-  if (!pathFilter?.trim() || documentations.length === 0) {
+  if (!pathFilter?.trim() || docs.length === 0) {
     return { markdown: markdownDiscovered, warnings };
   }
 
-  const block = documentations[documentationBlockIndex];
+  const block = docs[documentationBlockIndex];
   if (!block) {
     return { markdown: markdownDiscovered, warnings };
   }
@@ -680,21 +678,21 @@ export function augmentMarkdownFilesFromPathFilter(
     }
 
     const underThis = isProjectRelUnderBlockContentPath(projectRoot, rel, block);
-    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, documentations);
+    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, docs);
 
     if (underThis) {
       if (!md.includes(rel)) {
         md = [...md, rel];
         seen.add(rel);
         warnings.push(
-          `${rel}: explicit --path/--file was not in the discovered file set (e.g. outside contentPaths or excluded by .translate-ignore); translating with documentations[${documentationBlockIndex}].`
+          `${rel}: explicit --path/--file was not in the discovered file set (e.g. outside contentPaths or excluded by .translate-ignore); translating with docs[${documentationBlockIndex}].`
         );
       }
       continue;
     }
 
     if (underAny) {
-      /* Owned by another documentations[] block; that iteration handles it (or augments there). */
+      /* Owned by another docs[] block; that iteration handles it (or augments there). */
       continue;
     }
 
@@ -702,7 +700,7 @@ export function augmentMarkdownFilesFromPathFilter(
       md = [...md, rel];
       seen.add(rel);
       warnings.push(
-        `${rel} is outside every documentations[].contentPaths — translating with documentations[0] output settings.`
+        `${rel} is outside every docs[].contentPaths — translating with docs[0] output settings.`
       );
     }
   }
@@ -715,15 +713,15 @@ export function augmentAstroFilesFromPathFilter(
   projectRoot: string,
   pathFilter: string | undefined,
   documentationBlockIndex: number,
-  documentations: Array<{ contentPaths: string[] }>,
+  docs: Array<{ contentPaths: string[] }>,
   astroDiscovered: string[]
 ): AugmentAstroFromPathFilterResult {
   const warnings: string[] = [];
-  if (!pathFilter?.trim() || documentations.length === 0) {
+  if (!pathFilter?.trim() || docs.length === 0) {
     return { astro: astroDiscovered, warnings };
   }
 
-  const block = documentations[documentationBlockIndex];
+  const block = docs[documentationBlockIndex];
   if (!block) {
     return { astro: astroDiscovered, warnings };
   }
@@ -746,14 +744,14 @@ export function augmentAstroFilesFromPathFilter(
     }
 
     const underThis = isProjectRelUnderBlockContentPath(projectRoot, rel, block);
-    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, documentations);
+    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, docs);
 
     if (underThis) {
       if (!astro.includes(rel)) {
         astro = [...astro, rel];
         seen.add(rel);
         warnings.push(
-          `${rel}: explicit --path/--file was not in the discovered Astro set; translating with documentations[${documentationBlockIndex}].`
+          `${rel}: explicit --path/--file was not in the discovered Astro set; translating with docs[${documentationBlockIndex}].`
         );
       }
       continue;
@@ -767,7 +765,7 @@ export function augmentAstroFilesFromPathFilter(
       astro = [...astro, rel];
       seen.add(rel);
       warnings.push(
-        `${rel} is outside every documentations[].contentPaths — translating Astro with documentations[0] output settings.`
+        `${rel} is outside every docs[].contentPaths — translating Astro with docs[0] output settings.`
       );
     }
   }
@@ -929,7 +927,7 @@ function buildRuntimeFailureRow(
   };
 }
 
-async function translateSegmentsBatched(
+export async function translateSegmentsBatched(
   batchable: Segment[],
   placeholderById: Map<string, ProtectState>,
   /** Pre-placeholder markdown source per segment hash; empty for json/svg (original is on the segment). */
@@ -1620,14 +1618,14 @@ export async function scanAndRecordMarkdownSourceIssuesForTranslate(
   cache: TranslationCache,
   opts: TranslateRunOptions
 ): Promise<void> {
-  if (config.documentation.warnMarkdownSourceIssues === false || opts.noCache || opts.dryRun) {
+  if (config.doc.warnMarkdownSourceIssues === false || opts.noCache || opts.dryRun) {
     return;
   }
   const content = fs.readFileSync(absSource, "utf8");
   const blockIdx = opts.documentationBlockIndex ?? 0;
   const fileTrackingKey = documentationFileTrackingKey(blockIdx, relPath);
   const md = new MarkdownExtractor();
-  const mdExtractOpts = buildMarkdownExtractOpts(config.documentation);
+  const mdExtractOpts = buildMarkdownExtractOpts(config.doc);
   const segments = md.extract(content, relPath, mdExtractOpts);
   const markdownIssueRows: MarkdownSourceIssueInsert[] = [];
   for (const s of segments) {
@@ -1716,7 +1714,7 @@ export async function translateMarkdownFile(
 
   const fileStartTime = Date.now();
   const md = new MarkdownExtractor();
-  const mdExtractOpts = buildMarkdownExtractOpts(config.documentation);
+  const mdExtractOpts = buildMarkdownExtractOpts(config.doc);
   const segments = md.extract(content, relPath, mdExtractOpts);
 
   const translatableCount = segments.filter((s) => s.translatable).length;
@@ -1744,12 +1742,7 @@ export async function translateMarkdownFile(
           },
         }
       : undefined;
-  const emphasisOn = resolveMarkdownEmphasisPlaceholders(
-    locale,
-    config.documentation,
-    config,
-    opts
-  );
+  const emphasisOn = resolveMarkdownEmphasisPlaceholders(locale, config.doc, config, opts);
 
   let segmentsCached = 0;
 
@@ -1806,7 +1799,7 @@ export async function translateMarkdownFile(
       locale,
       true,
       emphasisOn,
-      documentationExpressionProtection(config.documentation)
+      documentationExpressionProtection(config.doc)
     );
     placeholderById.set(s.id, st);
     toBatch.push({ ...s, content: protectedText });
@@ -1879,13 +1872,9 @@ export async function translateMarkdownFile(
   let output = md.reassemble(segments, translations);
 
   if (shouldRewriteFlatMarkdownLinks(config)) {
-    const mo = config.documentation.markdownOutput;
+    const mo = config.doc.docsOutput;
     const docsRoot = mo.linkRewriteDocsRoot?.trim() || ".";
-    const { i18nPrefix } = computeFlatLinkRewritePrefixes(
-      opts.cwd,
-      docsRoot,
-      config.documentation.outputDir
-    );
+    const { i18nPrefix } = computeFlatLinkRewritePrefixes(opts.cwd, docsRoot, config.doc.outputDir);
     const depthPrefix = computePerFileDepthPrefix(opts.cwd, config, locale, relPath);
     const parsed = matter(output);
     const newBody = rewriteDocLinksForFlatOutput(parsed.content, locale, i18nPrefix, depthPrefix, {
@@ -1897,7 +1886,7 @@ export async function translateMarkdownFile(
     output = matterStringify(newBody, parsed.data);
   }
 
-  const moPost = config.documentation.markdownOutput.postProcessing;
+  const moPost = config.doc.docsOutput.postProcessing;
   if (moPost && (moPost.languageListBlock || (moPost.regexAdjustments?.length ?? 0) > 0)) {
     const absSource = path.join(opts.cwd, relPath);
     const docStem = path.parse(relPath).name;
@@ -1913,7 +1902,7 @@ export async function translateMarkdownFile(
     });
   }
 
-  if (config.documentation.addFrontmatter !== false && !opts.dryRun) {
+  if (config.doc.addFrontmatter !== false && !opts.dryRun) {
     const translationModels = collectTranslationModelsFromSegments(segments, translations);
     output = addTranslationMetadata(
       output,
@@ -2038,7 +2027,7 @@ export async function translateAstroFile(
   }
 
   const fileStartTime = Date.now();
-  const expressionProtection = documentationExpressionProtection(config.documentation);
+  const expressionProtection = documentationExpressionProtection(config.doc);
   const astro = new AstroTemplateExtractor();
   astro.setExtractOptions(expressionProtection);
   const segments = astro.extract(content, relPath);
@@ -2195,7 +2184,7 @@ export async function translateAstroFile(
 
   let output = astro.reassemble(segments, translations);
 
-  const moPost = config.documentation.markdownOutput.postProcessing;
+  const moPost = config.doc.docsOutput.postProcessing;
   if (moPost && (moPost.regexAdjustments?.length ?? 0) > 0) {
     const docStem = path.parse(relPath).name;
     output = applyMarkdownPostProcessing(output, {
@@ -2210,7 +2199,7 @@ export async function translateAstroFile(
     });
   }
 
-  if (config.documentation.addFrontmatter !== false && !opts.dryRun) {
+  if (config.doc.addFrontmatter !== false && !opts.dryRun) {
     const translationModels = collectTranslationModelsFromSegments(segments, translations);
     output = addTranslationMetadata(
       output,
@@ -2737,7 +2726,7 @@ export function rewriteSourceMarkdownLanguageListBlocks(
   opts: TranslateRunOptions,
   markdownFiles: string[]
 ): number {
-  const langCfg = config.documentation.markdownOutput.postProcessing?.languageListBlock;
+  const langCfg = config.doc.docsOutput.postProcessing?.languageListBlock;
   if (!langCfg || opts.dryRun || !shouldRunMarkdown(opts, config)) {
     return 0;
   }
@@ -2856,8 +2845,7 @@ export async function runTranslate(
     ? null
     : new TranslationCache(path.join(opts.cwd, config.cacheDir));
 
-  const needsApi =
-    !opts.dryRun && (config.features.translateMarkdown || config.features.translateJSON);
+  const needsApi = !opts.dryRun && config.features.translateDocs;
 
   let translationModelsForClient: string[] | undefined = undefined;
   if (needsApi) {
@@ -2897,7 +2885,7 @@ export async function runTranslate(
   const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
   const models = client?.getConfiguredModels() ?? [];
 
-  const docDescription = config.documentation.description?.trim();
+  const docDescription = config.doc.description?.trim();
   const translatingHeadline = docDescription
     ? `🌐 ${docDescription}: translating ${totalFileCount} file(s) to ${locales.length} locale(s)\n`
     : `🌐 Translating ${totalFileCount} file(s) to ${locales.length} locale(s)\n`;
@@ -2911,8 +2899,7 @@ export async function runTranslate(
   printModelsTryInOrder(models);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
-    chalk.cyan(`Output: `) +
-      chalk.magenta(`${path.resolve(opts.cwd, config.documentation.outputDir)}`)
+    chalk.cyan(`Output: `) + chalk.magenta(`${path.resolve(opts.cwd, config.doc.outputDir)}`)
   );
   if (opts.logPath) {
     console.log(chalk.cyan(`Output log: `) + chalk.magenta(opts.logPath));
@@ -2944,7 +2931,7 @@ export async function runTranslate(
   );
   console.log(
     chalk.cyan(`Markdown emphasis placeholders: `) +
-      chalk.magenta(describeEmphasisPlaceholdersPolicy(config.documentation, opts))
+      chalk.magenta(describeEmphasisPlaceholdersPolicy(config.doc, opts))
   );
   console.log("");
 
@@ -2989,12 +2976,10 @@ export async function runTranslate(
 
     try {
       if (shouldRunMarkdown(opts, config)) {
-        if (
-          usesAutomaticEmphasisPlaceholdersForLocale(locale, config.documentation, config, runOpts)
-        ) {
+        if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.doc, config, runOpts)) {
           console.log(
             chalk.gray(
-              `   ${locale}: Markdown emphasis placeholders is "on". Override with documentations[].emphasisPlaceholders or CLI flags)`
+              `   ${locale}: Markdown emphasis placeholders is "on". Override with docs[].emphasisPlaceholders or CLI flags)`
             )
           );
         }

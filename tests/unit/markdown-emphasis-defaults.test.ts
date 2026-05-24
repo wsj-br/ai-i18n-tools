@@ -5,7 +5,7 @@ import {
   resolveMarkdownEmphasisPlaceholders,
   usesAutomaticEmphasisPlaceholdersForLocale,
 } from "../../src/core/markdown-emphasis-defaults.js";
-import type { DocumentationBlock } from "../../src/core/types.js";
+import type { DocBlock } from "../../src/core/types.js";
 import { primaryLanguageSubtag } from "../../src/core/locale-utils.js";
 
 describe("primaryLanguageSubtag", () => {
@@ -43,13 +43,13 @@ describe("localeUsesDefaultEmphasisPlaceholders", () => {
 });
 
 describe("resolveMarkdownEmphasisPlaceholders", () => {
-  const doc = (p?: boolean): DocumentationBlock =>
+  const doc = (p?: boolean): DocBlock =>
     ({
       contentPaths: [],
       outputDir: "./out",
-      markdownOutput: { style: "nested", flatPreserveRelativeDir: false },
+      docsOutput: { style: "nested", flatPreserveRelativeDir: false },
       ...(p !== undefined ? { emphasisPlaceholders: p } : {}),
-    }) as DocumentationBlock;
+    }) as DocBlock;
 
   it("respects explicit documentation.emphasisPlaceholders over locale and CLI", () => {
     expect(
@@ -76,13 +76,13 @@ describe("resolveMarkdownEmphasisPlaceholders", () => {
 });
 
 describe("usesAutomaticEmphasisPlaceholdersForLocale", () => {
-  const doc = (p?: boolean): DocumentationBlock =>
+  const doc = (p?: boolean): DocBlock =>
     ({
       contentPaths: [],
       outputDir: "./out",
-      markdownOutput: { style: "nested", flatPreserveRelativeDir: false },
+      docsOutput: { style: "nested", flatPreserveRelativeDir: false },
       ...(p !== undefined ? { emphasisPlaceholders: p } : {}),
-    }) as DocumentationBlock;
+    }) as DocBlock;
 
   it("is true only for heuristic-on locales without config or CLI", () => {
     expect(usesAutomaticEmphasisPlaceholdersForLocale("ja", doc(), {}, {})).toBe(true);
@@ -104,14 +104,14 @@ describe("usesAutomaticEmphasisPlaceholdersForLocale", () => {
 
 describe("describeEmphasisPlaceholdersPolicy", () => {
   it("summarizes policy source", () => {
-    const base: DocumentationBlock = {
+    const base: DocBlock = {
       contentPaths: [],
       outputDir: "./out",
-      markdownOutput: { style: "nested", flatPreserveRelativeDir: false },
-    } as DocumentationBlock;
+      docsOutput: { style: "nested", flatPreserveRelativeDir: false },
+    } as DocBlock;
     expect(
       describeEmphasisPlaceholdersPolicy({ ...base, emphasisPlaceholders: true }, {})
-    ).toContain("documentations");
+    ).toContain("docs");
     expect(describeEmphasisPlaceholdersPolicy(base, { emphasisPlaceholdersCli: true })).toContain(
       "--emphasis-placeholders"
     );

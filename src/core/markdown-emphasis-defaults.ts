@@ -3,7 +3,7 @@
  * on for CJK and RTL target locales unless overridden by config or CLI.
  */
 
-import type { DocumentationBlock, I18nConfig } from "./types.js";
+import type { DocBlock, I18nConfig } from "./types.js";
 import { normalizeLocale, primaryLanguageSubtag } from "./locale-utils.js";
 
 /** CLI flags mirrored on translate-docs `TranslateRunOptions`. */
@@ -55,7 +55,7 @@ function localeMatchesRtlList(locale: string, rtlLocales: readonly string[] | un
 
 /**
  * Whether the locale should use markdown emphasis placeholder masking by default
- * (when no `documentations[].emphasisPlaceholders` or CLI override applies).
+ * (when no `docs[].emphasisPlaceholders` or CLI override applies).
  */
 export function localeUsesDefaultEmphasisPlaceholders(
   locale: string,
@@ -73,14 +73,14 @@ export function localeUsesDefaultEmphasisPlaceholders(
 
 export function resolveMarkdownEmphasisPlaceholders(
   locale: string,
-  documentation: DocumentationBlock,
+  doc: DocBlock,
   config: Pick<I18nConfig, "rtlLocales">,
   opts: MarkdownEmphasisCliFlags
 ): boolean {
-  if (documentation.emphasisPlaceholders === true) {
+  if (doc.emphasisPlaceholders === true) {
     return true;
   }
-  if (documentation.emphasisPlaceholders === false) {
+  if (doc.emphasisPlaceholders === false) {
     return false;
   }
   if (opts.noEmphasisPlaceholdersCli) {
@@ -94,15 +94,15 @@ export function resolveMarkdownEmphasisPlaceholders(
 
 /**
  * True when emphasis masking is on solely because of the CJK/RTL locale default
- * (no `documentations[].emphasisPlaceholders`, no `--emphasis-placeholders` / `--no-emphasis-placeholders`).
+ * (no `docs[].emphasisPlaceholders`, no `--emphasis-placeholders` / `--no-emphasis-placeholders`).
  */
 export function usesAutomaticEmphasisPlaceholdersForLocale(
   locale: string,
-  documentation: DocumentationBlock,
+  doc: DocBlock,
   config: Pick<I18nConfig, "rtlLocales">,
   opts: MarkdownEmphasisCliFlags
 ): boolean {
-  if (documentation.emphasisPlaceholders !== undefined) {
+  if (doc.emphasisPlaceholders !== undefined) {
     return false;
   }
   if (opts.emphasisPlaceholdersCli || opts.noEmphasisPlaceholdersCli) {
@@ -113,14 +113,14 @@ export function usesAutomaticEmphasisPlaceholdersForLocale(
 
 /** Single-line summary for `translate-docs` / `sync` header output. */
 export function describeEmphasisPlaceholdersPolicy(
-  documentation: DocumentationBlock,
+  doc: DocBlock,
   opts: MarkdownEmphasisCliFlags
 ): string {
-  if (documentation.emphasisPlaceholders === true) {
-    return "on (documentations[].emphasisPlaceholders)";
+  if (doc.emphasisPlaceholders === true) {
+    return "on (docs[].emphasisPlaceholders)";
   }
-  if (documentation.emphasisPlaceholders === false) {
-    return "off (documentations[].emphasisPlaceholders)";
+  if (doc.emphasisPlaceholders === false) {
+    return "off (docs[].emphasisPlaceholders)";
   }
   if (opts.noEmphasisPlaceholdersCli) {
     return "off (--no-emphasis-placeholders)";
