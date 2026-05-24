@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Creates a GitHub release from local CLI using:
 # - tag/title: v<package.json version>
-# - notes file: dev/RELEASE_NOTES_<version>.md
+# - notes file: release-notes/RELEASE_NOTES_<version>.md
 #
 # If the tag (or a GitHub release for it) already exists, it is removed and
 # the tag is recreated at the current HEAD, then pushed — so you can fix a
@@ -67,7 +67,7 @@ VERSION="$(node -p "require('./package.json').version" 2>/dev/null || true)"
 [[ -n "${VERSION:-}" ]] || fail "Could not read package.json version."
 
 TAG="v${VERSION}"
-NOTES_FILE="dev/RELEASE_NOTES_${VERSION}.md"
+NOTES_FILE="release-notes/RELEASE_NOTES_${VERSION}.md"
 
 [[ -f "$NOTES_FILE" ]] || fail "Release notes file not found: $NOTES_FILE"
 

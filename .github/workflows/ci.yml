@@ -21,8 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # Pnpm version: single source of truth is `packageManager` in package.json (omit `version` here).
-      - uses: pnpm/action-setup@v5
+      # Pnpm 11.x: version comes from `packageManager` in package.json (omit `version` here).
+      - uses: pnpm/action-setup@v6
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
@@ -66,8 +66,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # Pnpm version: single source of truth is `packageManager` in package.json (omit `version` here).
-      - uses: pnpm/action-setup@v5
+      # Pnpm 11.x: version comes from `packageManager` in package.json (omit `version` here).
+      - uses: pnpm/action-setup@v6
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@v6

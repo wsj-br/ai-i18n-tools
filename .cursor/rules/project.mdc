@@ -5,7 +5,7 @@ alwaysApply: true
 
 ## Stack and purpose
 
-TypeScript (strict), ESM, Node ≥ 22.16, pnpm ≥ 10.33; build `tsc`, test Vitest, lint ESLint + Prettier. CLI + library: **UI strings** (`t("…")` → catalog → locales) and **document translation** (markdown/mdx/JSON → SQLite cache → outputs). Config: `ai-i18n-tools.config.json`; runtime: `ai-i18n-tools/runtime`.
+TypeScript (strict), ESM, Node ≥ 22.16, pnpm ≥ 11.0; build `tsc`, test Vitest, lint ESLint + Prettier. CLI + library: **UI strings** (`t("…")` → catalog → locales) and **document translation** (markdown/mdx/JSON → SQLite cache → outputs). Config: `ai-i18n-tools.config.json`; runtime: `ai-i18n-tools/runtime`.
 
 ## Layout
 

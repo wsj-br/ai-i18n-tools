@@ -9,6 +9,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: package — `engines.pnpm` is now `>=11.0.0` (was `>=10.33.0`); `dev/DEVEL.md` and `.cursor/rules/project.mdc` updated to match.
+
+- **Changed**: CI — bump `pnpm/action-setup` to v6 (pnpm 11.x; version still read from `packageManager` in `package.json`).
+
+- **Changed**: scripts — `scripts/release.sh` reads release notes from `release-notes/RELEASE_NOTES_<version>.md` (was `dev/RELEASE_NOTES_<version>.md`).
+
 ## [1.5.0] - 2026-05-24
 
 - **Added**: tests — unit coverage for `astro-template-extractor`, `nested-json-extractor`, `parse-glossary-csv`, `markdown-source-diagnostics`, `ui-languages-master-direction`, and `translation-dashboard` (new `parse-glossary-csv` and `ui-languages-master-direction` test files; expanded existing dashboard and extractor tests).

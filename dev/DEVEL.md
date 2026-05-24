@@ -33,7 +33,7 @@
 | Tool        | Minimum version | Install                                                      |
 |-------------|-----------------|--------------------------------------------------------------|
 | **Node.js** | >= 22.16.0      | [nodejs.org](https://nodejs.org/) or via `nvm install 22`    |
-| **pnpm**    | >= 10.33.0      | `corepack enable && corepack prepare pnpm@latest --activate` |
+| **pnpm**    | >= 11.0.0       | `corepack enable` (uses `packageManager` in root `package.json`, currently pnpm@11.1.1) |
 | **Git**     | any recent      | [git-scm.com](https://git-scm.com/)                          |
 
 > **Tip:** [Corepack](https://nodejs.org/api/corepack.html) ships with Node.js and is the recommended way to manage pnpm.
@@ -121,7 +121,7 @@ Undo with `pnpm uninstall -g ai-i18n-tools`.
 | `pnpm clean`              | Remove the `dist/` directory                                                                |
 | `pnpm update-all`         | Build, then run `cleanup` on the root and both example projects                             |
 | `pnpm clean-temp`         | List temp `*.log` / `cache.db.backup*.sqlite` files; delete after confirm, or pass `-f` for no prompt |
-| `pnpm release:github`     | Create the GitHub release from `dev/RELEASE_NOTES_<version>.md` (runs `scripts/release.sh`) |
+| `pnpm release:github`     | Create the GitHub release from `release-notes/RELEASE_NOTES_<version>.md` (runs `scripts/release.sh`) |
 | `pnpm release:github:dry` | Dry-run the release script (validate inputs; no tag push or GitHub release)                 |
 
 ## Project Structure
@@ -246,11 +246,11 @@ pnpm version major   # 1.0.0 → 2.0.0  (breaking changes)
 
 ### Release notes and changelog
 
-Before you run the release script, the repo must contain **`dev/RELEASE_NOTES_<version>.md`** for the exact version in `package.json` (for example `dev/RELEASE_NOTES_1.2.8.md` when the package version is `1.2.8`).
+Before you run the release script, the repo must contain **`release-notes/RELEASE_NOTES_<version>.md`** for the exact version in `package.json` (for example `release-notes/RELEASE_NOTES_1.2.8.md` when the package version is `1.2.8`).
 
 Copy and paste **[`dev/release-new-version-prompt.md`](release-new-version-prompt.md)** into a Cursor chat to:
 
-1. Draft **`dev/RELEASE_NOTES_<version>.md`** in the same style as prior `dev/RELEASE_NOTES_*.md` files.
+1. Draft **`release-notes/RELEASE_NOTES_<version>.md`** in the same style as prior `release-notes/RELEASE_NOTES_*.md` files.
 2. Update **`dev/CHANGELOG.md`**: move the `## [Unreleased]` bullets into a new `## [x.y.z] - YYYY-MM-DD` section and leave an empty `[Unreleased]` section for the next cycle.
 
 Commit the new or updated release-notes file and changelog together with any other release prep so **`git status` is clean** before you publish the GitHub release.
@@ -263,7 +263,7 @@ Publishing the GitHub release is done with the release script (wrapper: **`pnpm 
 
 - [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated (`gh auth login`).
 - Working tree clean unless you intentionally pass `--verify-clean=false` to the script.
-- **`dev/RELEASE_NOTES_<version>.md`** present for the current `package.json` version.
+- **`release-notes/RELEASE_NOTES_<version>.md`** present for the current `package.json` version.
 
 **Steps**
 
@@ -287,11 +287,11 @@ Publishing the GitHub release is done with the release script (wrapper: **`pnpm 
 
    Equivalent: `./scripts/release.sh` from the repo root. Use `./scripts/release.sh --help` for flags (`--dry-run`, `--verify-clean=false`).
 
-The script creates an annotated tag **`v<version>`** at **HEAD**, pushes it to **`origin`**, and creates a GitHub release whose body is **`dev/RELEASE_NOTES_<version>.md`**. If that tag or a GitHub release for it already exists, the script removes them and recreates the tag at the current HEAD so you can fix a mistaken tag or add follow-up commits before releasing.
+The script creates an annotated tag **`v<version>`** at **HEAD**, pushes it to **`origin`**, and creates a GitHub release whose body is **`release-notes/RELEASE_NOTES_<version>.md`**. If that tag or a GitHub release for it already exists, the script removes them and recreates the tag at the current HEAD so you can fix a mistaken tag or add follow-up commits before releasing.
 
 That GitHub release triggers CI, which runs lint, format check, build, and tests; if all checks pass, it publishes the package to npm. Check the **Actions** tab to verify.
 
-**Manual alternative:** you can still create a release from the GitHub **Releases** UI if needed; prefer the script so the tag, title, and notes stay aligned with `package.json` and `dev/RELEASE_NOTES_<version>.md`.
+**Manual alternative:** you can still create a release from the GitHub **Releases** UI if needed; prefer the script so the tag, title, and notes stay aligned with `package.json` and `release-notes/RELEASE_NOTES_<version>.md`.
 
 ### npm package dry run (optional)
 
