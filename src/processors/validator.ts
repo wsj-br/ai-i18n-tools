@@ -156,6 +156,51 @@ function shouldCompareMarkdownStructure(source: Segment): boolean {
   );
 }
 
+const LENGTH_RATIO_MAX = 3;
+
+/**
+ * Minimum acceptable translated/source length ratio for a given source length.
+ * Returns `null` when the check should be skipped (very short labels).
+ * Short English copy compresses heavily in CJK (e.g. "Installation" → "安装").
+ */
+export function lengthRatioMin(sourceLength: number): number | null {
+  const len = Math.max(1, sourceLength);
+  if (len <= 5) {
+    return null;
+  }
+  if (len < 25) {
+    return 0.08;
+  }
+  if (len < 50) {
+    return 0.12;
+  }
+  return 0.2;
+}
+
+/** True when translated length is within expected bounds relative to source length. */
+export function isAcceptableLengthRatio(sourceLength: number, translatedLength: number): boolean {
+  const min = lengthRatioMin(sourceLength);
+  if (min === null || translatedLength <= 0) {
+    return true;
+  }
+  const ratio = translatedLength / Math.max(1, sourceLength);
+  return ratio >= min && ratio <= LENGTH_RATIO_MAX;
+}
+
+function lengthRatioError(
+  sourceLength: number,
+  translatedLength: number,
+  hash: string,
+  segmentIndex?: number
+): string | null {
+  if (!isAcceptableLengthRatio(sourceLength, translatedLength)) {
+    const ratio = translatedLength / Math.max(1, sourceLength);
+    const loc = segmentIndex !== undefined ? ` at segment ${segmentIndex}` : "";
+    return `Unusual length ratio (${ratio.toFixed(2)})${loc} (hash ${hash})`;
+  }
+  return null;
+}
+
 /**
  * Compare translated segments to source: count, code-block integrity, mdast structure, length ratio.
  */
@@ -190,11 +235,14 @@ export async function validateTranslation(
     }
 
     if (source.translatable && translated.content.length > 0) {
-      const ratio = translated.content.length / Math.max(1, source.content.length);
-      if (ratio > 3 || ratio < 0.2) {
-        warnings.push(
-          `Unusual length ratio (${ratio.toFixed(2)}) at segment ${i} (hash ${source.hash})`
-        );
+      const ratioErr = lengthRatioError(
+        source.content.length,
+        translated.content.length,
+        source.hash,
+        i
+      );
+      if (ratioErr) {
+        warnings.push(ratioErr);
       }
     }
 
@@ -246,9 +294,9 @@ export async function validateDocTranslatePair(
   }
 
   if (source.translatable && translatedText.length > 0) {
-    const ratio = translatedText.length / Math.max(1, source.content.length);
-    if (ratio > 3 || ratio < 0.2) {
-      errors.push(`Unusual length ratio (${ratio.toFixed(2)}) (hash ${source.hash})`);
+    const ratioErr = lengthRatioError(source.content.length, translatedText.length, source.hash);
+    if (ratioErr) {
+      errors.push(ratioErr);
     }
   }
 

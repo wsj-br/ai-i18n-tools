@@ -10,6 +10,15 @@
  * before protectMarkdownUrls, the bold/inline-code scanners, and emphasis pairing.
  */
 
+import {
+  type ExpressionProtectionContext,
+  type ExpressionProtectionOptions,
+  isProtectedAttributeName,
+  isProtectedObjectKeyName,
+  mergeExpressionProtectionContext,
+  MDX_TRANSLATABLE_JSX_ATTRS,
+} from "./expression-attribute-protection.js";
+
 const PLACEHOLDER_PREFIX = "{{MDX_";
 const PLACEHOLDER_SUFFIX = "}}";
 
@@ -132,7 +141,14 @@ function shouldTranslateTabItemValue(value: string): boolean {
 /**
  * `label: '…'` / `label: "…"` inside `values={[ … ]}` on `<Tabs>` (object literals, not JSX attrs).
  */
-function substituteObjectLiteralLabels(tag: string, jsxAttributeMap: string[]): string {
+function substituteObjectLiteralLabels(
+  tag: string,
+  jsxAttributeMap: string[],
+  protection: ExpressionProtectionContext
+): string {
+  if (isProtectedObjectKeyName("label", protection)) {
+    return tag;
+  }
   const re = /\blabel\s*:\s*(["'])((?:\\.|(?!\1).)*)\1/g;
   return tag.replace(re, (full, q: string, inner: string) => {
     const decoded = inner.replace(/\\(.)/g, "$1");
@@ -151,10 +167,16 @@ const TAB_ITEM_OPENER_RE = /^<[Tt]ab[Ii]tem\b/;
  * Replace translatable string attributes on a JSX opener with `{{JXA_N}}` placeholders and
  * record originals in order (parallel indices).
  */
-function substituteTranslatableJsxAttributes(jsxTag: string, jsxAttributeMap: string[]): string {
+function substituteTranslatableJsxAttributes(
+  jsxTag: string,
+  jsxAttributeMap: string[],
+  protection: ExpressionProtectionContext
+): string {
   let tag = jsxTag;
-  const attrNames = ["label", "tooltip", "aria-label"] as const;
-  for (const attr of attrNames) {
+  for (const attr of MDX_TRANSLATABLE_JSX_ATTRS) {
+    if (isProtectedAttributeName(attr, protection)) {
+      continue;
+    }
     const escaped = attr.replace(/-/g, "\\-");
     const re = new RegExp(`(\\s${escaped}\\s*=\\s*)(["'])([^"']*)\\2`, "gi");
     tag = tag.replace(re, (full, pre: string, q: string, val: string) => {
@@ -167,12 +189,12 @@ function substituteTranslatableJsxAttributes(jsxTag: string, jsxAttributeMap: st
     });
   }
 
-  tag = substituteObjectLiteralLabels(tag, jsxAttributeMap);
+  tag = substituteObjectLiteralLabels(tag, jsxAttributeMap, protection);
 
   if (TAB_ITEM_OPENER_RE.test(jsxTag) && !/\slabel\s*=/i.test(tag)) {
     const re = /(\svalue\s*=\s*)(["'])([^"']*)\2/gi;
     tag = tag.replace(re, (full, pre: string, q: string, val: string) => {
-      if (!shouldTranslateTabItemValue(val)) {
+      if (isProtectedAttributeName("value", protection) || !shouldTranslateTabItemValue(val)) {
         return full;
       }
       const idx = jsxAttributeMap.length;
@@ -184,13 +206,11 @@ function substituteTranslatableJsxAttributes(jsxTag: string, jsxAttributeMap: st
   return tag;
 }
 
-/**
- * Protect MDX comments, capitalized JSX tags, and top-level brace expressions in text.
- * Also extracts translatable JSX bits: `label` / `tooltip` / `aria-label` attrs; `label:` inside
- * `values={[…]}` objects; and `TabItem` `value` when that opener has no `label` attr (skips lowercase slug keys).
- * so they can be appended to the segment text for translation.
- */
-export function protectMdx(text: string): ProtectedMdxResult {
+export function protectMdx(
+  text: string,
+  options?: ExpressionProtectionOptions
+): ProtectedMdxResult {
+  const protection = mergeExpressionProtectionContext(options);
   const mdxMap: string[] = [];
   const jsxAttributeMap: string[] = [];
 
@@ -203,7 +223,7 @@ export function protectMdx(text: string): ProtectedMdxResult {
 
   // Step 2: Protect JSX opening/self-closing tags (rewrite translatable attrs to {{JXA_N}})
   s = s.replace(JSX_OPEN_OR_SELF_CLOSING_RE, (m) => {
-    const rewritten = substituteTranslatableJsxAttributes(m, jsxAttributeMap);
+    const rewritten = substituteTranslatableJsxAttributes(m, jsxAttributeMap, protection);
     const ph = makePlaceholder(mdxMap.length);
     mdxMap.push(rewritten);
     return ph;

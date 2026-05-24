@@ -202,7 +202,7 @@ Is the asset an SVG with translatable text or labels?
 
 当单个图像在所有区域设置中共享（无区域特定变体）时使用。当启用 `markdownOutput.style = "flat"` 时，扁平链接重写器会为每个输出文件计算深度前缀，因此与源文件位于同一目录的资源（例如 `docs/figure.png`，在 `docs/page.md` 中通过 `figure.png` 引用）在每个翻译输出中都能正确解析——无需配置 `postProcessing.regexAdjustments` 规则。
 
-示例：此包将 `docs/GETTING_STARTED.md` 转换为 `translated-docs/docs/GETTING_STARTED.<locale>.md`。同级图像 `docs/translation-cache-editor.png` 以 `translation-cache-editor.png` 的形式被引用。重写器会根据输出文件目录到源目录的路径计算每个文件的前缀（`../../docs/`），生成 `../../docs/translation-cache-editor.png`。从 `translated-docs/docs/` 出发，该路径能正确解析为 `docs/translation-cache-editor.png`。
+示例：此包将 `docs/GETTING_STARTED.md` 转换为 `translated-docs/docs/GETTING_STARTED.<locale>.md`。同级图像 `docs/translation-dashboard.png` 以 `translation-dashboard.png` 的形式被引用。重写器会根据输出文件目录到源目录的路径计算每个文件的前缀（`../../docs/`），生成 `../../docs/translation-dashboard.png`。从 `translated-docs/docs/` 出发，该路径能正确解析为 `docs/translation-dashboard.png`。
 
 无需截图脚本——该文件只需放置一次，且不会因区域设置而改变。
 
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 实现示例
 
-本仓库对翻译仪表板截图使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-CN.md#translation-dashboard) 引用了同目录下的图像 [translation-cache-editor.png](../../docs/../docs/translation-cache-editor.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 中设置了 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；通过每文件深度前缀，图像路径被正确解析，无需截图 `regexAdjustments`。
+本仓库对翻译仪表板截图使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-CN.md#translation-dashboard) 引用了同目录下的图像 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 中设置了 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；通过每文件深度前缀，图像路径被正确解析，无需截图 `regexAdjustments`。
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 深度前缀是按输出文件单独计算的——而不是对整个批次统一计算。对于每个源文件，重写器会计算从输出文件目录回到源文件目录的相对路径，并将其用作前缀。
 
-这意味着使用 `flatPreserveRelativeDir: true` 时，子目录中的源文件会自动获得正确的前缀。例如，`docs/GETTING_STARTED.md` 输出到 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每个文件的前缀为 `../../docs/`，因此相对于源文件的资源 `translation-cache-editor.png` 将变为 `../../docs/translation-cache-editor.png`——这可以从 `translated-docs/docs/` 正确解析回 `docs/translation-cache-editor.png`。
+这意味着使用 `flatPreserveRelativeDir: true` 时，子目录中的源文件会自动获得正确的前缀。例如，`docs/GETTING_STARTED.md` 输出到 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每个文件的前缀为 `../../docs/`，因此相对于源文件的资源 `translation-dashboard.png` 将变为 `../../docs/translation-dashboard.png`——这可以从 `translated-docs/docs/` 正确解析回 `docs/translation-dashboard.png`。
 
 与源文件同目录的相对路径资源不需要进行 `postProcessing` 正则表达式修正。
 

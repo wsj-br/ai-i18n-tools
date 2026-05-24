@@ -132,7 +132,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Quick Start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` and `ui-starlight` templates enable **document** translation (`translate-docs`). Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus` and `ui-starlight` templates enable **document** translation (`translate-docs`). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `documentations[]` block (see [Astro website pages (parse-and-replace)](#astro-website-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](../examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -142,7 +142,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -205,7 +206,89 @@ npx ai-i18n-tools extract
 
 Scans all JS/TS files under `ui.sourceRoots` for `t("literal")` and `i18n.t("literal")` calls. Writes (or merges into) `ui.stringsJson`.
 
-The scanner is configurable: add custom function names via `ui.reactExtractor.funcNames`.
+The scanner is configurable: add custom function names via `ui.uiExtractor.funcNames` (or legacy `ui.reactExtractor.funcNames`). For Astro pages and components, add `.astro` to `ui.uiExtractor.extensions`.
+
+<a id="astro-website"></a>
+### Astro website (plain Astro, not Starlight)
+
+For static Astro marketing or app sites, combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. The reference implementation is [`examples/astro-website`](../examples/astro-website/) (see also its [README](../examples/astro-website/README.md)): English at `/`, nine target locales at `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
+
+Most teams use a **hybrid** of two pipelines (they do not clash):
+
+| Pipeline | Use for | Commands | Output |
+|----------|---------|----------|--------|
+| **Page HTML** | Headings, paragraphs, nav labels, inline arrays in the template body | `translate-docs` | `src/pages/{locale}/index.astro` per locale |
+| **UI strings (`t()`)** | Frontmatter data, screenshot tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (English source as key) |
+
+Keep three lists aligned when you add or remove a language: `targetLocales` in `ai-i18n-tools.config.json`, `i18n.locales` in `astro.config.mjs` (Astro uses **lowercase** route codes such as `pt-br`), and `ui-languages.json` (via `generate-ui-languages`). Flat bundle **filenames** use config casing (`pt-BR.json`); map Astro’s `pt-br` route to that file via your manifest `code` field (see `examples/astro-website/src/i18n/locale.ts`).
+
+Example `package.json` scripts (from the reference project):
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Astro website UI strings (SSG)
+
+Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `documentations[]` block when you also translate page HTML (see below). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+Set `sourceLocale` to match `i18n.defaultLocale` in `astro.config.mjs`. Write flat bundles to a directory Astro can import at build time (the template uses `public/locales/`). Resolve `t('…')` at **build time** by looking up the English source literal as the key (see `examples/astro-website/src/i18n/t.ts`; `strings.json` is the extraction cache, not the runtime bundle). You do **not** need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
+
+Wire every page that calls `t()` (English root page and each `src/pages/{locale}/` copy):
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+Supporting helpers in the example: `src/i18n/utils.ts`, `src/i18n/locale.ts`, and `ui-languages.json` for labels, direction, and BCP-47 codes. Run `generate-ui-languages` after changing `targetLocales` (optionally set `ui.uiLanguagesPath` so the manifest lives next to your helpers, e.g. `src/i18n/ui-languages.json`). `MainLayout.astro` sets `<html lang>` and `<html dir>` from `resolveUiLanguage(Astro.currentLocale)`; `LanguagePicker.astro` uses `getRelativeLocaleUrl` from `astro:i18n`.
+
+<a id="astro-website-parse-and-replace"></a>
+### Astro website pages (parse-and-replace)
+
+For marketing pages with hardcoded HTML in `.astro` files, let `translate-docs` extract text nodes and attributes (`alt`, `title`, `aria-label`, `placeholder`), translate them with the document cache, and write locale-specific copies under your pages tree. You do **not** need `t()` for most visible copy.
+
+Structural attribute and key values are **not** translated by default: built-in protection covers JSX/HTML attributes such as `class`, `id`, `style`, `src`, `href`, `data-*`, and most `aria-*`, plus object keys like `class`, `key`, and `id` inside template `{expression}` blocks. Use `documentations[].protectAttributes` and `documentations[].protectKeys` to extend those lists when you use custom attributes (for example Tailwind `variant` or CMS `slug` fields). The same options apply to MDX JSX during markdown translation (see [protectAttributes / protectKeys](#protectattributes-protectkeys)).
+
+Enable `features.translateMarkdown` and add a `documentations[]` block, for example:
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+Run `npx ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](../examples/astro-website/)). English source stays at `src/pages/index.astro`; each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
+
+Inside the **template body**, string literals in `{expression}` blocks (inline arrays, object `title`/`desc` fields) are translated when they are user-facing; quoted values on protected attributes/keys, literals inside `t('…')`, `<script>`, and `<style>` are left unchanged. **Frontmatter TypeScript is not translated** by this path—keep shared frontmatter (including `t()` imports and data arrays) identical on English and locale pages, or re-run `translate-docs` after editing the English page so locale copies pick up frontmatter changes. For frontmatter-only copy, use the [UI-string pipeline](#astro-website-ui-strings) instead.
+
+See [`examples/astro-website`](../examples/astro-website/) for the full hybrid landing page (HTML via `translate-docs`, screenshot tab labels via `t()` + `translate-ui`).
 
 <a id="step-3-translate-ui-strings"></a>
 ### Step 3: Translate UI strings
@@ -512,12 +595,20 @@ For Astro Starlight documentation sites:
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+For plain Astro website UI (no Starlight):
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+That template enables UI extraction only. For page HTML translation, also set `features.translateMarkdown` and add a `documentations[]` block (see [Astro website pages (parse-and-replace)](#astro-website-parse-and-replace)). The [`examples/astro-website`](../examples/astro-website/) config shows both pipelines together.
+
 Edit the generated `ai-i18n-tools.config.json`:
 
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all documentation pipelines (and default log directory for `--write-logs`).
-- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations` - array of documentation blocks. Each block has optional `description`, `contentPaths`, `outputDir`, optional `jsonSource`, `markdownOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `documentations[].description` - optional short note for maintainers (what this block covers). When set, it appears in the `translate-docs` headline (`🌐 …: translating …`) and in `status` section headers.
 - `documentations[].contentPaths` - markdown/MDX source directories or files (see also `documentations[].jsonSource` for JSON labels).
 - `documentations[].outputDir` - translated output root for that block.
@@ -715,7 +806,7 @@ See the [Locale assets guide](LOCALE-ASSETS-GUIDE.md) for the full decision guid
 
 When `markdownOutput.style = "flat"`, a built-in rewriter runs before `postProcessing`. It computes the depth prefix per output file — the relative path from the output file's directory back to the source file's directory — and prepends it to non-markdown asset URLs. `postProcessing` then runs on the already-prefixed URL — write `search` patterns that match the locale segment within it, not the leading `../` prefix.
 
-With `flatPreserveRelativeDir: true`, source files in subdirectories get a file-specific prefix automatically. For example, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` produces a prefix of `../../docs/`, so `translation-cache-editor.png` (a sibling of the source) becomes `../../docs/translation-cache-editor.png` — resolved correctly without any `postProcessing` rule.
+With `flatPreserveRelativeDir: true`, source files in subdirectories get a file-specific prefix automatically. For example, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` produces a prefix of `../../docs/`, so `translation-dashboard.png` (a sibling of the source) becomes `../../docs/translation-dashboard.png` — resolved correctly without any `postProcessing` rule.
 
 When `markdownOutput.style` is `"docusaurus"`, `"astro-starlight"`, `"nested"`, or any value other than `"flat"`, the flat link rewriter does not run. `postProcessing` sees the original markdown URL.
 
@@ -1037,7 +1128,7 @@ ai-i18n-tools dashboard
 
 This starts a local web UI backed by your configured `cacheDir` SQLite database—the same folder the CLI uses for documentation segments, logs, and related metadata. It includes the tabs **Documentation** (cached doc segments), **UI strings**, **UI plurals**, **Glossary**, **Failures**, **Markdown issues**, and **Statistics**.
 
-![Translation Dashboard](translation-cache-editor.png)
+![Translation Dashboard](translation-dashboard.png)
 
 If you **edit cache rows** in this app (for example documentation segments), run `sync --force-update` or the equivalent translate command with `--force-update` so on-disk outputs match the cache; if **source text** in the repo changes later, segment hashes change and manual edits for the old text are superseded.
 
@@ -1217,15 +1308,15 @@ Before changing `translationModels`, run `npx ai-i18n-tools check-models` to ver
   Directory where per-locale JSON files are written (`de.json`, etc.).
 - `preferredModel`  
   Optional. OpenRouter model id tried first for `translate-ui` only; then `openrouter.translationModels` (or legacy models) in order, without duplicating this id.
-- `reactExtractor.funcNames`  
+- `uiExtractor.funcNames` (or legacy `reactExtractor.funcNames`)  
   Additional function names to scan (default: `["t", "i18n.t"]`).
-- `reactExtractor.extensions`  
-  File extensions to include (default: `[".js", ".jsx", ".ts", ".tsx"]`).
-- `reactExtractor.includePackageDescription`  
+- `uiExtractor.extensions` (or legacy `reactExtractor.extensions`)  
+  File extensions to include (default: `[".js", ".jsx", ".ts", ".tsx"]`). Add `.astro` for Astro frontmatter and template expressions.
+- `uiExtractor.includePackageDescription` (or legacy `reactExtractor.includePackageDescription`)  
   When `true` (default), `extract` also includes `package.json` `description` as a UI string when present.
-- `reactExtractor.packageJsonPath`  
+- `uiExtractor.packageJsonPath` (or legacy `reactExtractor.packageJsonPath`)  
   Custom path to the `package.json` file used for that optional description extraction.
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.includeUiLanguageEnglishNames` (or legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
   When `true` (default `false`), `extract` also adds each `englishName` from the manifest at `uiLanguagesPath` to `strings.json` when not already present from the source scan (same hash keys). Requires `uiLanguagesPath` pointing at a valid `ui-languages.json`.
 
@@ -1270,7 +1361,7 @@ Array of documentation pipeline blocks. `translate-docs` and the docs phase of `
 - `description`
 Optional human-readable note for this block (not used for translation). Prefixed in the `translate-docs` `🌐` headline when set; also shown in `status` section headers.
 - `contentPaths`
-Markdown/MDX page bodies to translate (`translate-docs` scans these for `.md` / `.mdx`). Supports **directory paths or glob patterns** (e.g. `"docs/**/*.md"`, `"guides/*.mdx"`). That is where localized documentation prose comes from.
+Markdown/MDX page bodies and `.astro` templates to translate (`translate-docs` scans these for `.md`, `.mdx`, and `.astro`). Supports **directory paths or glob patterns** (e.g. `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`). That is where localized documentation prose comes from.
 - `sourceFiles`
 Optional alias merged into `contentPaths` at load.
 - `targetLocales`
@@ -1318,6 +1409,22 @@ Same level as `markdownOutput` (per `documentations[]` block). Optional finer-gr
 When `true` (default when omitted), each `translate-docs` run rescans markdown segments for risky delimiters / unclosed inline code, prints terminal warnings, and replaces `markdown_source_issues` rows for that file's cache filepath. Set `false` to skip warnings and SQLite updates for this block.
 - `addFrontmatter`
 When `true` (default when omitted), translated markdown files include YAML keys: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, and when at least one segment has model metadata, `translation_models` (sorted list of OpenRouter model ids used). Set to `false` to skip.
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+Optional. Extra JSX/HTML attribute names whose **quoted string values** must not be sent to the translator. Merged with built-in defaults (`class`, `id`, `style`, `src`, `href`, `type`, `data-*`, most `aria-*`, etc.). Case-insensitive. Applies to:
+
+  - `.astro` parse-and-replace extraction (static HTML tags and string literals after `attr=` inside `{expression}` blocks).
+  - MDX placeholder extraction during markdown/Astro segment translation (`label`, `tooltip`, and `aria-label` on capitalised JSX tags, plus `TabItem` `value` when applicable).
+
+  Example: `"protectAttributes": ["variant", "size"]` keeps `variant="primary"` inside `{items.map(...)}` unchanged across locales.
+
+  You can also list normally translatable attributes (for example `"title"` or `"aria-label"`) when you want those values copied verbatim from English.
+
+- `protectKeys`
+Optional. Extra **object property names** whose quoted string values must not be translated inside template `{expression}` blocks and MDX object literals (for example `label:` inside `<Tabs values={[ … ]}>`). Merged with built-in defaults (`class`, `key`, `id`, `href`, `src`, etc.). Case-insensitive.
+
+  Example: `"protectKeys": ["slug", "code"]` skips `{ slug: 'getting-started', title: 'Getting started' }` → only `title` is translated when `slug` is protected.
 
 <br/>
 
@@ -1382,76 +1489,59 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLI reference
 
-- `version`
-Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).
+| Command                                                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                | Print CLI version and build timestamp (same information as `-V` / `--version` on the root program).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `check-models`                                                                           | Validate each configured OpenRouter model id against `GET /models` (catalog membership, `expiration_date`, USD per 1M tokens for prompt/completion). Requires `OPENROUTER_API_KEY`. Exits non-zero when any configured id is missing or expired. Respects `openrouter.requestTimeoutMs` for the catalog request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `extract`                                                                                | Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional manifest `englishName` entries (see `ui.reactExtractor`). Requires `features.extractUIStrings`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `generate-ui-languages [--master <path>] [--dry-run]`                                    | Write `ui-languages.json` to `ui.flatOutputDir` (or `uiLanguagesPath` when set) using `sourceLocale` + `targetLocales` and the bundled `data/ui-languages-complete.json` (or `--master`). Warns and emits `TODO` placeholders for locales missing from the master file. If you have an existing manifest with customised `label` or `englishName` values, they will be replaced by master catalog defaults — review and adjust the generated file afterwards.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `translate-docs …`                                                                       | Translate markdown/MDX and JSON for each `documentations` block (`contentPaths`, optional `jsonSource`). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). See [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) and [Batch prompt format](#batch-prompt-format).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `write-heading-ids …`                                                                    | Requires at least one `documentations[]` block. Collects `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). Inserts an HTML anchor line `<a id="slug"></a>` immediately **before** each flat ATX `#` heading (skips headings inside fenced code blocks); when an anchor line is already present, updates the `id` if it no longer matches the slug derived from the current heading text. `-p` / `--path` or `-f` / `--file`: limit to a project-relative file or directory. `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. With `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: list changes only.                                                                                                                                                                                                                                                                                                                                    |
+| `strip-md-bold-inline …`                                                                 | Requires at least one `documentations[]` block. Strips `**` around inline code in `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). `-p` / `--path` or `-f` / `--file`, `--dry-run`, `--no-backup` (skip timestamped `.backup.*` before overwrite).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `check-markdown …`                                                                       | Scans markdown/MDX under each `documentations[]` block’s `contentPaths` (same discovery as `translate-docs`, honours `.translate-ignore`): delimiter pairing, unclosed inline code, and `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `` `...` `` span or a `[text](url)` link. `-p` / `--path` or `-f` / `--file`: optional scope. Prints `relativePath:line: [ISSUE_CODE] message` lines to **stderr**; exit code **1** if any issue. `--json`: JSON report on **stdout**. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `translate-svg …`                                                                        | Translate SVG files configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `translate-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                               | Translate UI strings only (`strings.json` → locale JSON). `-l` / `--locale`: comma-separated target locales (default from config / `ui-languages.json`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j`: max parallel locales. Requires `features.translateUIStrings`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                    | Extract (if `features.extractUIStrings` is enabled), then translate UI strings (if `features.translateUIStrings` is enabled). UI-only — no documentation or SVG. Same `-l`, `--force`, `--dry-run`, and `-j` options as `translate-ui`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                    | Runs `extract` **first** (requires `features.extractUIStrings`) so `strings.json` matches source, then LLM review of **source-locale** UI strings (spelling, grammar). **Terminology hints** come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — not `strings.json` / `uiGlossary`, so bad copy is not reinforced as glossary). Uses OpenRouter (`OPENROUTER_API_KEY`). Advisory only (exit **0** when the run completes). Writes `lint-source-results_<timestamp>.log` under `cacheDir` as a **human-readable** report (summary, issues, and per-string **OK** rows); the terminal prints summary counts and issues only (no `[ok]` lines per string). Prints the log filename on the last line. `--json`: full machine-readable JSON report on stdout only (log file stays human-readable). `--dry-run`: still runs `extract`, then prints batch plan only (no API calls). `--chunk`: strings per API batch (default **50**). `-j`: max parallel batches (default `concurrency`). With `--json`, human-style output goes to stderr. Links use `path:line` like the `dashboard` UI strings “link” button. |
+| `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`              | Export `strings.json` to XLIFF 2.0 (one `.xliff` per target locale). `-o` / `--output-dir`: output directory (default: same folder as the catalog). `--untranslated-only`: only units missing a translation for that locale. Read-only; no API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `sync …`                                                                                 | Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation — unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; the docs step uses the built-in default (`json-array`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `status [--max-columns <n>]`                                                             | When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `statistics [--max-columns <n>]`                                                         | Print documentation cache and `strings.json` statistics (same aggregates as Translation Dashboard → **Statistics**). `--max-columns`: max locale columns per model × locale table (default matches the dashboard).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                                    | Runs `sync --force-update` first (extract, UI, SVG, docs), then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file. Logs three counts (stale, orphaned `file_tracking`, orphaned translations). Creates a timestamped SQLite backup under the cache dir unless `--no-backup`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `clean-temp [-r\|--root <path>] [-f\|--force] [--dry-run]`                               | **No config.** Walks a directory tree (default: cwd) for `*.log` and `cache.db.backup*.sqlite`, prints `./…` paths like `find -print`. With matches: prompts `Delete these files? (y/n)` unless `-f` / `--force` (delete without prompt). With no matches: exits without prompting. `--dry-run`: list only, no prompt or deletes (overrides `--force`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `dashboard [-p <port>] [--no-open]`                                                      | Launch the Translation Dashboard (local web UI for cache segments, `strings.json`, glossary, failures, and statistics). With `--no-open`, the default browser is not opened automatically. The deprecated alias `editor` still works but prints a warning.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `glossary-generate [-o <path>]`                                                          | Write an empty `glossary-user.csv` template. `-o`: override the output path (default: `glossary.userGlossary` from config, or `glossary-user.csv`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `help [command]`                                                                         | Display help for a subcommand (same output as `ai-i18n-tools <command> --help`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-- `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]`
-Write a starter config file (includes `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `documentations[].addFrontmatter`). `--with-translate-ignore` creates a starter `.translate-ignore`.
+### Root and global options
 
-- `check-models`
-Validate each configured OpenRouter model id against `GET /models` (catalog membership, `expiration_date`, USD per 1M tokens for prompt/completion). Requires `OPENROUTER_API_KEY`. Exits non-zero when any configured id is missing or expired. Respects `openrouter.requestTimeoutMs` for the catalog request.
+| Option                       | Scope         | Description                                                                               |
+|------------------------------|---------------|-------------------------------------------------------------------------------------------|
+| `-V` / `--version`           | Root program  | Output version number and build timestamp (same information as the `version` subcommand). |
+| `-h` / `--help`              | Root program  | Display help for the root program or for a subcommand when used with a command name.      |
+| `-c` / `--config <path>`     | Every command | Config file path (default: `ai-i18n-tools.config.json`).                                  |
+| `-v` / `--verbose`           | Every command | Verbose logging.                                                                          |
+| `-w` / `--write-logs [path]` | Every command | Tee console output to a `.log` file (default path: under root `cacheDir`).                |
 
-- `extract`
-Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional manifest `englishName` entries (see `ui.reactExtractor`). Requires `features.extractUIStrings`.
+### Per-command help
 
-- `generate-ui-languages [--master <path>] [--dry-run]`
-Write `ui-languages.json` to `ui.flatOutputDir` (or `uiLanguagesPath` when set) using `sourceLocale` + `targetLocales` and the bundled `data/ui-languages-complete.json` (or `--master`). Warns and emits `TODO` placeholders for locales missing from the master file. If you have an existing manifest with customised `label` or `englishName` values, they will be replaced by master catalog defaults — review and adjust the generated file afterwards.
+| Usage                            | Description                        |
+|----------------------------------|------------------------------------|
+| `ai-i18n-tools <command> --help` | All options for that command.      |
+| `ai-i18n-tools help <command>`   | Same output as `<command> --help`. |
 
-- `translate-docs …`
-Translate markdown/MDX and JSON for each `documentations` block (`contentPaths`, optional `jsonSource`). `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). See [Cache behaviour and `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) and [Batch prompt format](#batch-prompt-format).
+### Target locales (`-l` / `--locale`)
 
-- `write-heading-ids …`
-Requires at least one `documentations[]` block. Collects `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). Inserts an HTML anchor line `<a id="slug"></a>` immediately **before** each flat ATX `#` heading (skips headings inside fenced code blocks); when an anchor line is already present, updates the `id` if it no longer matches the slug derived from the current heading text. `-p` / `--path` or `-f` / `--file`: limit to a project-relative file or directory. `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. With `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: list changes only.
-
-- `strip-md-bold-inline …`
-Requires at least one `documentations[]` block. Strips `**` around inline code in `.md` / `.mdx` under each block’s `contentPaths` (honours `.translate-ignore`). `-p` / `--path` or `-f` / `--file`, `--dry-run`, `--no-backup` (skip timestamped `.backup.*` before overwrite).
-
-- `check-markdown …`
-Scans markdown/MDX under each `documentations[]` block’s `contentPaths` (same discovery as `translate-docs`, honours `.translate-ignore`): delimiter pairing, unclosed inline code, and `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `` `...` `` span or a `[text](url)` link. `-p` / `--path` or `-f` / `--file`: optional scope. Prints `relativePath:line: [ISSUE_CODE] message` lines to **stderr**; exit code **1** if any issue. `--json`: JSON report on **stdout**. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.
-
-- `translate-svg …`
-Translate SVG files configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run. `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`.
-
-- `translate-ui [--locale <code>] [--force] [--dry-run] [-j <n>]`
-Translate UI strings only. `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j`: max parallel locales. Requires `features.translateUIStrings`.
-
-- `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
-Runs `extract` **first** (requires `features.extractUIStrings`) so `strings.json` matches source, then LLM review of **source-locale** UI strings (spelling, grammar). **Terminology hints** come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — not `strings.json` / `uiGlossary`, so bad copy is not reinforced as glossary). Uses OpenRouter (`OPENROUTER_API_KEY`). Advisory only (exit **0** when the run completes). Writes `lint-source-results_<timestamp>.log` under `cacheDir` as a **human-readable** report (summary, issues, and per-string **OK** rows); the terminal prints summary counts and issues only (no `[ok]` lines per string). Prints the log filename on the last line. `--json`: full machine-readable JSON report on stdout only (log file stays human-readable). `--dry-run`: still runs `extract`, then prints batch plan only (no API calls). `--chunk`: strings per API batch (default **50**). `-j`: max parallel batches (default `concurrency`). With `--json`, human-style output goes to stderr. Links use `path:line` like the `dashboard` UI strings “link” button.
-
-- `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`
-Export `strings.json` to XLIFF 2.0 (one `.xliff` per target locale). `-o` / `--output-dir`: output directory (default: same folder as the catalog). `--untranslated-only`: only units missing a translation for that locale. Read-only; no API.
-
-- `sync …`
-Extract (if enabled), then UI translation, then `translate-svg` when `features.translateSVG` and `config.svg` are set, then documentation translation — unless skipped with `--no-ui`, `--no-svg`, or `--no-docs`. Shared flags: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (docs batching only), `--force` / `--force-update` (docs only; mutually exclusive when docs run). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; the docs step uses the built-in default (`json-array`).
-
-- `status [--max-columns <n>]`
-When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.
-
-- `statistics [--max-columns <n>]`
-Print documentation cache and `strings.json` statistics (same aggregates as Translation Dashboard → **Statistics**). `--max-columns`: max locale columns per model × locale table (default matches the dashboard).
-
-- `cleanup [--dry-run] [--no-backup] [--backup <path>]`
-Runs `sync --force-update` first (extract, UI, SVG, docs), then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file. Logs three counts (stale, orphaned `file_tracking`, orphaned translations). Creates a timestamped SQLite backup under the cache dir unless `--no-backup`.
-
-- `clean-temp [-r|--root <path>] [-f|--force] [--dry-run]`
-**No config.** Walks a directory tree (default: cwd) for `*.log` and `cache.db.backup*.sqlite`, prints `./…` paths like `find -print`. With matches: prompts `Delete these files? (y/n)` unless `-f` / `--force` (delete without prompt). With no matches: exits without prompting. `--dry-run`: list only, no prompt or deletes (overrides `--force`).
-
-- `dashboard [-p <port>] [--no-open]`
-Launch the Translation Dashboard (local web UI for cache segments, `strings.json`, glossary, failures, and statistics). With `--no-open`, the default browser is not opened automatically. The deprecated alias `editor` still works but prints a warning.
-
-- `glossary-generate [-o <path>]`
-Write an empty `glossary-user.csv` template. `-o`: override the output path (default: `glossary.userGlossary` from config, or `glossary-user.csv`).
-
-
-All commands accept `-c <path>` to specify a non-default config file, `-v` for verbose output, and `-w` / `--write-logs [path]` to tee console output to a log file (default path: under root `cacheDir`). 
-
-The root program also supports `-V` / `--version` and `-h` / `--help`; `ai-i18n-tools help [command]` shows the same per-command usage as `ai-i18n-tools <command> --help`.
+| Commands                                                                                | Behaviour                                                                                                                                              |
+|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `translate-docs`, `translate-svg`, `translate-ui`, `sync`, `sync-ui`, `export-ui-xliff` | `-l` / `--locale <codes>` — comma-separated target BCP-47 codes (e.g. `de,fr,pt-BR`). When omitted, defaults come from config and `ui-languages.json`. |
+| `lint-source`                                                                           | `-l` / `--locale <code>` — single source locale to review (default: config `sourceLocale`).                                                            |
 
 ---
 
 <a id="environment-variables"></a>
 ## Environment variables
-
 
 | Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|

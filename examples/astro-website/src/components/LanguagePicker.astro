@@ -1,0 +1,59 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import uiLanguages from "../i18n/ui-languages.json";
+import { normalizeAstroLocale, resolveUiLanguage } from "../i18n/locale";
+
+const current = normalizeAstroLocale(Astro.currentLocale ?? "en");
+const currentRow = resolveUiLanguage(Astro.currentLocale);
+---
+<div class="relative">
+  <details class="language-picker group">
+    <summary
+      class="flex items-center gap-2 py-2 px-3 text-sm rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-violet-500/30 hover:bg-violet-500/10 transition-all duration-200 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+      aria-label="Language"
+    >
+      <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+      <span class="max-w-[9rem] truncate">{currentRow.label}</span>
+      <svg class="w-3.5 h-3.5 opacity-60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <ul class="absolute end-0 z-50 mt-2 min-w-[12rem] max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/95 backdrop-blur-xl shadow-xl shadow-black/40 py-1">
+      {
+        uiLanguages.map((row) => {
+          const code = normalizeAstroLocale(row.code);
+          const active = code === current;
+          return (
+            <li>
+              <a
+                href={getRelativeLocaleUrl(code)}
+                hreflang={code}
+                dir={row.direction}
+                class:list={[
+                  "block px-3 py-2 text-sm transition-colors",
+                  active
+                    ? "text-violet-300 bg-violet-500/15 font-medium"
+                    : "text-slate-300 hover:text-white hover:bg-white/[0.06]",
+                ]}
+                aria-current={active ? "page" : undefined}
+              >
+                {row.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </details>
+</div>
+
+<style>
+  .language-picker[open] > summary {
+    color: rgb(196 181 253);
+    border-color: rgb(139 92 246 / 0.3);
+    background-color: rgb(139 92 246 / 0.1);
+  }
+</style>

@@ -2,8 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   calleeMatchesTranslatedFunc,
   extractInterpolationNames,
+  extractUiCallsFromAstroSource,
+  extractUiCallsFromFileContent,
   extractUiCallsFromSource,
+  isAstroUiSourceFile,
   pluralMultiPlaceholderMissingCount,
+  sliceAstroSource,
 } from "../../src/extractors/ui-string-babel.js";
 import type { Expression } from "@babel/types";
 
@@ -71,6 +75,58 @@ describe("calleeMatchesTranslatedFunc", () => {
       computed: false,
     } as Expression;
     expect(calleeMatchesTranslatedFunc(callee, ["app.i18n.t"])).toBe(false);
+  });
+});
+
+describe("sliceAstroSource / extractUiCallsFromAstroSource", () => {
+  it("extracts t() from frontmatter", () => {
+    const astro = `---
+import { t } from '../i18n/t';
+const label = t('Hello from frontmatter');
+---
+<h1>Static</h1>`;
+    const calls = extractUiCallsFromAstroSource(astro, "page.astro", ["t"]);
+    expect(calls.some((c) => c.literal === "Hello from frontmatter")).toBe(true);
+    expect(calls[0]?.line).toBe(3);
+  });
+
+  it("extracts t() from template expressions", () => {
+    const astro = `---
+const x = 1;
+---
+<nav><a href="#">{t('Features')}</a></nav>`;
+    const calls = extractUiCallsFromAstroSource(astro, "nav.astro", ["t"]);
+    expect(calls.some((c) => c.literal === "Features")).toBe(true);
+    expect(calls.find((c) => c.literal === "Features")?.line).toBe(4);
+  });
+
+  it("skips style blocks and inline scripts", () => {
+    const astro = `---
+t('Keep me');
+---
+<style>.x { color: t('drop'); }</style>
+<script is:inline>t('drop');</script>
+<p>{t('Visible')}</p>`;
+    const calls = extractUiCallsFromAstroSource(astro, "x.astro", ["t"]);
+    expect(calls.map((c) => c.literal).sort()).toEqual(["Keep me", "Visible"]);
+  });
+
+  it("routes extractUiCallsFromFileContent by extension", () => {
+    const src = `t('In TS');`;
+    expect(extractUiCallsFromFileContent(src, "a.ts", ["t"])[0]?.literal).toBe("In TS");
+    const astro = `---\nt('In Astro');\n---\n`;
+    expect(extractUiCallsFromFileContent(astro, "a.astro", ["t"])[0]?.literal).toBe("In Astro");
+  });
+
+  it("isAstroUiSourceFile matches .astro only", () => {
+    expect(isAstroUiSourceFile("x.astro")).toBe(true);
+    expect(isAstroUiSourceFile("x.ASTRO")).toBe(true);
+    expect(isAstroUiSourceFile("x.ts")).toBe(false);
+  });
+
+  it("sliceAstroSource preserves line count", () => {
+    const astro = "---\nt('a');\n---\n<p>{t('b')}</p>";
+    expect(sliceAstroSource(astro).split("\n")).toHaveLength(4);
   });
 });
 

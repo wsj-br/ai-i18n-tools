@@ -202,7 +202,7 @@ Is the asset an SVG with translatable text or labels?
 
 `markdownOutput.style = "flat"`일 때, 단일 이미지를 모든 로케일에서 공유하는 경우(로케일별 변형 없음) 사용합니다. 평면 링크 재작성기가 출력 파일별로 깊이 접두사를 계산하므로, 소스 파일 옆에 있는 에셋(예: `docs/figure.png`을 `docs/page.md`에서 `figure.png`로 참조)이 모든 번역된 출력에서 올바르게 해결됩니다. 따라서 `postProcessing.regexAdjustments` 규칙이 필요하지 않습니다.
 
-예: 이 패키지는 `docs/GETTING_STARTED.md`을(를) `translated-docs/docs/GETTING_STARTED.<locale>.md`로 변환합니다. 형제 이미지 `docs/translation-cache-editor.png`는 `translation-cache-editor.png`로 참조됩니다. 리라이터는 출력 파일의 디렉터리에서 소스 디렉터리까지의 경로를 기준으로 파일별 접두사를 계산하여(`../../docs/`), `../../docs/translation-cache-editor.png`를 생성합니다. `translated-docs/docs/`에서 이는 올바르게 `docs/translation-cache-editor.png`로 해결됩니다.
+예: 이 패키지는 `docs/GETTING_STARTED.md`을(를) `translated-docs/docs/GETTING_STARTED.<locale>.md`로 변환합니다. 형제 이미지 `docs/translation-dashboard.png`는 `translation-dashboard.png`로 참조됩니다. 리라이터는 출력 파일의 디렉터리에서 소스 디렉터리까지의 경로를 기준으로 파일별 접두사를 계산하여(`../../docs/`), `../../docs/translation-dashboard.png`를 생성합니다. `translated-docs/docs/`에서 이는 올바르게 `docs/translation-dashboard.png`로 해결됩니다.
 
 스크린샷 스크립트가 필요하지 않습니다. 파일은 한 번만 배치되며 로케일별로 변경되지 않습니다.
 
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 구현 예시
 
-이 저장소는 번역 대시보드 스크린샷에 패턴 A를 사용합니다: [GETTING_STARTED.md](GETTING_STARTED.ko.md#translation-dashboard)는 동일한 폴더 내 [translation-cache-editor.png](../../docs/../docs/translation-cache-editor.png) 이미지를 참조합니다. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)는 `markdownOutput.style = "flat"` 및 `flatPreserveRelativeDir: true`을 설정합니다. 파일별 깊이 접두사가 이미지 경로를 해결하므로 스크린샷 `regexAdjustments`가 필요 없습니다.
+이 저장소는 번역 대시보드 스크린샷에 패턴 A를 사용합니다: [GETTING_STARTED.md](GETTING_STARTED.ko.md#translation-dashboard)는 동일한 폴더 내 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) 이미지를 참조합니다. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)는 `markdownOutput.style = "flat"` 및 `flatPreserveRelativeDir: true`을 설정합니다. 파일별 깊이 접두사가 이미지 경로를 해결하므로 스크린샷 `regexAdjustments`가 필요 없습니다.
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 깊이 접두사는 전체 일괄 처리에 대해 전역으로 계산되는 것이 아니라 출력 파일별로 개별적으로 계산됩니다. 각 소스 파일에 대해 재작성기는 출력 파일 디렉터리에서 소스 파일 디렉터리까지의 상대 경로를 계산하고 이를 접두사로 사용합니다.
 
-즉, `flatPreserveRelativeDir: true`를 사용하면 하위 디렉터리에 있는 소스 파일도 자동으로 올바른 접두사를 얻게 됩니다. 예를 들어, `docs/GETTING_STARTED.md`이 `translated-docs/docs/GETTING_STARTED.<locale>.md`에 출력됩니다. 파일별 접두사는 `../../docs/`이므로, 소스 기준 상대 경로인 자산 `translation-cache-editor.png`는 `../../docs/translation-cache-editor.png`가 됩니다. 이 경로는 `translated-docs/docs/`에서 `docs/translation-cache-editor.png`로 올바르게 해석됩니다.
+즉, `flatPreserveRelativeDir: true`를 사용하면 하위 디렉터리에 있는 소스 파일도 자동으로 올바른 접두사를 얻게 됩니다. 예를 들어, `docs/GETTING_STARTED.md`이 `translated-docs/docs/GETTING_STARTED.<locale>.md`에 출력됩니다. 파일별 접두사는 `../../docs/`이므로, 소스 기준 상대 경로인 자산 `translation-dashboard.png`는 `../../docs/translation-dashboard.png`가 됩니다. 이 경로는 `translated-docs/docs/`에서 `docs/translation-dashboard.png`로 올바르게 해석됩니다.
 
 소스 파일과 함께 있는 상대 경로 자산의 경우 `postProcessing` 정규식 수정이 필요 없습니다.
 

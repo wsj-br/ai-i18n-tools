@@ -50,6 +50,7 @@ import {
   normalizePathFilterForProjectRoot,
   jsonFileProjectRelativePath,
   augmentMarkdownFilesFromPathFilter,
+  augmentAstroFilesFromPathFilter,
 } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
@@ -179,16 +180,18 @@ function filterDocumentationFilesByPathFilter(
   jsonAbsRoot: string,
   md: string[],
   jsonFiles: string[],
+  astro: string[],
   pathFilter: string | undefined
-): { markdown: string[]; json: string[] } {
+): { markdown: string[]; json: string[]; astro: string[] } {
   if (!pathFilter?.trim()) {
-    return { markdown: md, json: jsonFiles };
+    return { markdown: md, json: jsonFiles, astro };
   }
   return {
     markdown: md.filter((r) => matchesPathFilter(r, pathFilter)),
     json: jsonFiles.filter((r) =>
       matchesPathFilter(jsonFileProjectRelativePath(projectRoot, jsonAbsRoot, r), pathFilter)
     ),
+    astro: astro.filter((r) => matchesPathFilter(r, pathFilter)),
   };
 }
 
@@ -210,6 +213,26 @@ function warnAndAugmentMarkdownForExplicitPath(
     console.warn(chalk.yellow(`⚠️  ${w}`));
   }
   return markdown;
+}
+
+function warnAndAugmentAstroForExplicitPath(
+  projectRoot: string,
+  pathFilter: string | undefined,
+  blockIndex: number,
+  config: I18nConfig,
+  astroDiscovered: string[]
+): string[] {
+  const { astro, warnings } = augmentAstroFilesFromPathFilter(
+    projectRoot,
+    pathFilter,
+    blockIndex,
+    config.documentations,
+    astroDiscovered
+  );
+  for (const w of warnings) {
+    console.warn(chalk.yellow(`⚠️  ${w}`));
+  }
+  return astro;
 }
 
 function resolveCliPathOrFile(opts: { path?: string; file?: string }): string | undefined {
@@ -396,7 +419,7 @@ program
   .option("-o, --output <path>", "config file path", DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown (UI + app markdown) | ui-docusaurus (Docusaurus docs) | ui-starlight (Astro Starlight docs)",
+    "ui-markdown (UI + app markdown) | ui-docusaurus (Docusaurus docs) | ui-starlight (Astro Starlight docs) | ui-astro-website (Astro app UI)",
     "ui-markdown"
   )
   .option("--with-translate-ignore", "Create a starter .translate-ignore", false)
@@ -406,10 +429,13 @@ program
       "ui-markdown": "uiMarkdown",
       "ui-docusaurus": "uiDocusaurus",
       "ui-starlight": "uiStarlight",
+      "ui-astro-website": "uiAstroWebsite",
     };
     const key = templateMap[t];
     if (!key) {
-      console.error('Template must be "ui-markdown", "ui-docusaurus", or "ui-starlight".');
+      console.error(
+        'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", or "ui-astro-website".'
+      );
       process.exitCode = 1;
       return;
     }
@@ -803,6 +829,17 @@ async function runSyncPipeline(args: {
           config,
           mdBase
         );
+        const astroBase = filterIgnored(
+          collectFilesByExtension(block.contentPaths, [".astro"], projectRoot),
+          projectRoot
+        );
+        const astro = warnAndAugmentAstroForExplicitPath(
+          projectRoot,
+          translateOpts.pathFilter,
+          bi,
+          config,
+          astroBase
+        );
         const jsonRoot = block.jsonSource
           ? path.resolve(projectRoot, block.jsonSource)
           : path.resolve(projectRoot, ".");
@@ -810,20 +847,25 @@ async function runSyncPipeline(args: {
           block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
-        const { markdown: mdScoped, json: jsonScoped } = filterDocumentationFilesByPathFilter(
+        const {
+          markdown: mdScoped,
+          json: jsonScoped,
+          astro: astroScoped,
+        } = filterDocumentationFilesByPathFilter(
           projectRoot,
           jsonRoot,
           md,
           jsonFiles,
+          astro,
           translateOpts.pathFilter
         );
-        if (mdScoped.length === 0 && jsonScoped.length === 0) {
+        if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
           continue;
         }
         await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: mdScoped, json: jsonScoped },
+          { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
           jsonRoot
         );
       }
@@ -984,6 +1026,17 @@ program
           config,
           mdBase
         );
+        const astroBase = filterIgnored(
+          collectFilesByExtension(block.contentPaths, [".astro"], projectRoot),
+          projectRoot
+        );
+        const astro = warnAndAugmentAstroForExplicitPath(
+          projectRoot,
+          translateOpts.pathFilter,
+          bi,
+          config,
+          astroBase
+        );
         const jsonRoot = block.jsonSource
           ? path.resolve(projectRoot, block.jsonSource)
           : path.resolve(projectRoot, ".");
@@ -991,14 +1044,19 @@ program
           block.jsonSource?.trim() && shouldRunJson(translateOpts, view)
             ? collectFilesRelativeToRoot(jsonRoot, [".json"])
             : [];
-        const { markdown: mdScoped, json: jsonScoped } = filterDocumentationFilesByPathFilter(
+        const {
+          markdown: mdScoped,
+          json: jsonScoped,
+          astro: astroScoped,
+        } = filterDocumentationFilesByPathFilter(
           projectRoot,
           jsonRoot,
           md,
           jsonFiles,
+          astro,
           translateOpts.pathFilter
         );
-        if (mdScoped.length === 0 && jsonScoped.length === 0) {
+        if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
           continue;
         }
         const desc =
@@ -1007,13 +1065,13 @@ program
             : "";
         console.log(
           chalk.gray(
-            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${jsonScoped.length} json) ---\n`
+            `\n--- documentations[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${astroScoped.length} astro, ${jsonScoped.length} json) ---\n`
           )
         );
         const sum = await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: mdScoped, json: jsonScoped },
+          { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
           jsonRoot
         );
         totalSkipped += sum.filesSkipped;

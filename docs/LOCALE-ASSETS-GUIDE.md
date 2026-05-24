@@ -204,9 +204,9 @@ Is the asset an SVG with translatable text or labels?
 
 Use when a single image is shared across all locales (no per-locale variant). When `markdownOutput.style = "flat"`, the flat link rewriter computes the depth prefix per output file, so an asset next to the source file (e.g. `docs/figure.png` referenced as `figure.png` from `docs/page.md`) resolves correctly in every translated output — no `postProcessing.regexAdjustments` rule is needed.
 
-Example: this package translates `docs/GETTING_STARTED.md` to `translated-docs/docs/GETTING_STARTED.<locale>.md`. The sibling image `docs/translation-cache-editor.png` is referenced as `translation-cache-editor.png`. The rewriter computes the per-file prefix from the output file's directory back to the source directory (`../../docs/`), producing `../../docs/translation-cache-editor.png`. From `translated-docs/docs/`, that resolves correctly to `docs/translation-cache-editor.png`.
+Example: this package translates `docs/GETTING_STARTED.md` to `translated-docs/docs/GETTING_STARTED.<locale>.md`. The sibling image `docs/translation-dashboard.png` is referenced as `translation-dashboard.png`. The rewriter computes the per-file prefix from the output file's directory back to the source directory (`../../docs/`), producing `../../docs/translation-dashboard.png`. From `translated-docs/docs/`, that resolves correctly to `docs/translation-dashboard.png`.
 
-No screenshot script needed — the file is placed once and never changes per locale.
+Refresh the PNG with [`scripts/screenshot-translation-dashboard.sh`](../scripts/screenshot-translation-dashboard.sh) when the dashboard UI changes; the image is not per-locale.
 
 A `postProcessing` rule is still needed when:
 - The asset is referenced via an absolute URL (e.g. `/img/figure.png`) — the rewriter only handles relative paths
@@ -215,7 +215,7 @@ A `postProcessing` rule is still needed when:
 <a id="implementation-example"></a>
 ### Implementation example
 
-This repository uses Pattern A for the Translation Dashboard screenshot: [GETTING_STARTED.md](../docs/GETTING_STARTED.md#translation-dashboard) references the image [translation-cache-editor.png](../docs/translation-cache-editor.png) in the same folder. [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) sets `markdownOutput.style = "flat"` and `flatPreserveRelativeDir: true`; the per-file depth prefix resolves the image path with no screenshot `regexAdjustments`.
+This repository uses Pattern A for the Translation Dashboard screenshot: [GETTING_STARTED.md](../docs/GETTING_STARTED.md#translation-dashboard) references the image [translation-dashboard.png](../docs/translation-dashboard.png) in the same folder. [ai-i18n-tools.config.json](../ai-i18n-tools.config.json) sets `markdownOutput.style = "flat"` and `flatPreserveRelativeDir: true`; the per-file depth prefix resolves the image path with no screenshot `regexAdjustments`.
 
 ---
 
@@ -632,7 +632,7 @@ For `markdownOutput.style = "doc-system"` (including `"docusaurus"`, `"astro-sta
 
 The depth prefix is computed per output file — not globally for the whole batch. For each source file, the rewriter computes the relative path from the output file's directory back to the source file's directory and uses that as the prefix.
 
-This means that with `flatPreserveRelativeDir: true`, source files in subdirectories get the correct prefix automatically. For example, `docs/GETTING_STARTED.md` outputs to `translated-docs/docs/GETTING_STARTED.<locale>.md`. The per-file prefix is `../../docs/`, so an asset `translation-cache-editor.png` (relative to the source) becomes `../../docs/translation-cache-editor.png` — which resolves correctly from `translated-docs/docs/` back to `docs/translation-cache-editor.png`.
+This means that with `flatPreserveRelativeDir: true`, source files in subdirectories get the correct prefix automatically. For example, `docs/GETTING_STARTED.md` outputs to `translated-docs/docs/GETTING_STARTED.<locale>.md`. The per-file prefix is `../../docs/`, so an asset `translation-dashboard.png` (relative to the source) becomes `../../docs/translation-dashboard.png` — which resolves correctly from `translated-docs/docs/` back to `docs/translation-dashboard.png`.
 
 No `postProcessing` regex correction is needed for relative-path assets alongside source files.
 

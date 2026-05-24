@@ -275,11 +275,13 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 3. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - preserved verbatim.
 4. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
    - **MDX comments** (`{/* … */}`, including Docusaurus heading-id form `{/* #my-id */}`) replaced with `{{MDX_N}}`.
-   - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as `{{MDX_N}}` with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to `{{JXA_N}}` inside the tag; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
+   - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as `{{MDX_N}}` with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to `{{JXA_N}}` inside the tag unless the attribute name appears in `documentations[].protectAttributes`; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals (skippable via `documentations[].protectKeys`) and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
    - **MDX brace expressions** (`{frontMatter.title}`, `style={{…}}`) - depth-aware matching, replaced with `{{MDX_N}}`.
 5. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
 6. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
 7. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
+
+Shared attribute/key protection for Astro templates and MDX JSX is implemented in `src/processors/expression-attribute-protection.ts` and driven per block by `documentations[].protectAttributes` and `documentations[].protectKeys` (see [GETTING_STARTED — protectAttributes / protectKeys](./GETTING_STARTED.md#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)

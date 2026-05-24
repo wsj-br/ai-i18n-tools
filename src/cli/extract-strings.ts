@@ -14,9 +14,10 @@ import {
   uiStringHash,
 } from "../extractors/ui-string-locations.js";
 import {
-  extractUiCallsFromSource,
+  extractUiCallsFromFileContent,
   pluralMultiPlaceholderMissingCount,
 } from "../extractors/ui-string-babel.js";
+import { getUiExtractorConfig } from "../core/ui-extractor-config.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
@@ -51,20 +52,18 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
 
   console.log(chalk.cyan(`🔍 ${timestamp()} - Extracting UI strings…`));
 
-  const rx = new UIStringExtractor(config.ui.reactExtractor, { cwd });
-  const list = config.ui.reactExtractor?.extensions ?? [".js", ".jsx", ".ts", ".tsx"];
+  const uiExtractor = getUiExtractorConfig(config.ui);
+  const rx = new UIStringExtractor(uiExtractor, { cwd });
+  const list = uiExtractor?.extensions ?? [".js", ".jsx", ".ts", ".tsx"];
   const files = collectFilesByExtension(config.ui.sourceRoots, list, cwd);
-  const packageJsonPath = path.resolve(
-    cwd,
-    config.ui.reactExtractor?.packageJsonPath ?? "package.json"
-  );
-  const funcNames = defaultFuncNamesFromConfig(config.ui.reactExtractor);
+  const packageJsonPath = path.resolve(cwd, uiExtractor?.packageJsonPath ?? "package.json");
+  const funcNames = defaultFuncNamesFromConfig(uiExtractor);
 
   const validationErrors: string[] = [];
   for (const rel of files) {
     const abs = path.join(cwd, rel);
     const content = fs.readFileSync(abs, "utf8");
-    const calls = extractUiCallsFromSource(content, rel, funcNames);
+    const calls = extractUiCallsFromFileContent(content, rel, funcNames);
     for (const call of calls) {
       if (call.plurals && pluralMultiPlaceholderMissingCount(call.literal)) {
         validationErrors.push(
@@ -87,7 +86,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     {
       cwd,
       packageJsonPath,
-      includePackageDescription: config.ui.reactExtractor?.includePackageDescription ?? true,
+      includePackageDescription: uiExtractor?.includePackageDescription ?? true,
     }
   );
 
@@ -117,7 +116,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     }
   }
 
-  if (config.ui.reactExtractor?.includeUiLanguageEnglishNames) {
+  if (uiExtractor?.includeUiLanguageEnglishNames) {
     const masterPath = resolveDefaultUiLanguagesMasterPath();
     if (!fs.existsSync(masterPath)) {
       console.warn(

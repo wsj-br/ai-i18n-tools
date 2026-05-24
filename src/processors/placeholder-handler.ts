@@ -12,6 +12,7 @@ import {
 } from "./emphasis-placeholders.js";
 import { protectHtmlTags, restoreHtmlTags } from "./html-tag-placeholders.js";
 import { protectMdx, restoreMdx } from "./mdx-placeholders.js";
+import type { ExpressionProtectionOptions } from "./expression-attribute-protection.js";
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
@@ -23,7 +24,7 @@ import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js"
 export class PlaceholderHandler {
   protectForTranslation(
     text: string,
-    options?: { emphasis?: boolean }
+    options?: { emphasis?: boolean; expressionProtection?: ExpressionProtectionOptions }
   ): {
     text: string;
     htmlTagMap: string[];
@@ -45,7 +46,7 @@ export class PlaceholderHandler {
     const htmlTags = protectHtmlTags(text);
     const ad = protectAdmonitionSyntax(htmlTags.protected);
     const doc = protectDocAnchors(ad.protected);
-    const mdx = protectMdx(doc.protected);
+    const mdx = protectMdx(doc.protected, options?.expressionProtection);
     const urls = protectMarkdownUrls(mdx.protected);
     const boldCode = protectBoldWrappedInlineCode(urls.protected);
     const ilc = protectInlineCodeSpans(boldCode.protected);

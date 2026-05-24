@@ -1,0 +1,26 @@
+{
+  "name": "transrewrt-site",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "i18n:extract": "ai-i18n-tools extract",
+    "i18n:translate-ui": "ai-i18n-tools translate-ui",
+    "i18n:translate": "ai-i18n-tools translate-docs",
+    "i18n:locales": "ai-i18n-tools generate-ui-languages",
+    "i18n:sync": "ai-i18n-tools sync"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.5.0",
+    "tailwindcss": "^3.4.1"
+  },
+  "devDependencies": {
+    "ai-i18n-tools": "workspace:^"
+  }
+}

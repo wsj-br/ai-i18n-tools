@@ -1,0 +1,628 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import LanguagePicker from '../components/LanguagePicker.astro';
+import { loadFlatBundle, makeT } from '../i18n/t';
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+
+const ghBase = 'https://raw.githubusercontent.com/wsj-br/transrewrt/main/images';
+const screenshots = [
+  { src: `${ghBase}/screenshots/en-GB/translate.png`,             label: t('Translate'),      icon: '🌐' },
+  { src: `${ghBase}/screenshots/en-GB/transform-prompt-edit.png`, label: t('Transform'),      icon: '✨' },
+  { src: `${ghBase}/screenshots/en-GB/dashboard-summary.png`,     label: t('Dashboard'),      icon: '📊' },
+  { src: `${ghBase}/screenshots/en-GB/history.png`,               label: t('History'),        icon: '📋' },
+  { src: `${ghBase}/screenshots/en-GB/settings-models.png`,       label: t('Models'),         icon: '⚙️' },
+  { src: `${ghBase}/screenshots/en-GB/language-selector.png`,     label: t('Languages'),      icon: '🗺️' },
+];
+const providers = [
+  { name: 'OpenRouter', color: '#a78bfa', free: true },
+  { name: 'OpenAI',     color: '#10b981', free: false },
+  { name: 'Anthropic',  color: '#f59e0b', free: false },
+  { name: 'Gemini',     color: '#3b82f6', free: false },
+  { name: 'DeepSeek',   color: '#06b6d4', free: false },
+  { name: 'Groq',       color: '#f97316', free: false },
+  { name: 'Mistral',    color: '#ec4899', free: false },
+  { name: 'xAI',        color: '#6366f1', free: false },
+  { name: 'Ollama',     color: '#14b8a6', free: true },
+];
+---
+<MainLayout title="AI Text Tool – Translate, Rewrite & Transform">
+  <!-- ═══════════════════════════════════════════════ NAV ══ -->
+  <nav id="nav" class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <img src="/logo.svg" alt="Transrewrt Logo" class="w-9 h-7 object-contain transition-all duration-300 group-hover:scale-105" />
+        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-lime-500 via-lime-400 via-orange-400 to-orange-500 bg-clip-text text-transparent">Transrewrt</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#providers" class="nav-link">Providers</a>
+        <a href="#screenshots" class="nav-link">Screenshots</a>
+        <a href="#install" class="nav-link">Install</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <LanguagePicker />
+        <a href="https://github.com/wsj-br/transrewrt" target="_blank" rel="noopener" class="btn-secondary py-2 px-4 text-sm flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="opacity-80">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+        <a href="https://github.com/wsj-br/transrewrt/releases" target="_blank" rel="noopener" class="btn-primary py-2 px-4 text-sm">
+          <span>Download</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <!-- ═══════════════════════════════════════════════ HERO ══ -->
+  <section class="hero-gradient min-h-screen flex flex-col items-center justify-center pt-24 pb-20 px-6 relative overflow-hidden">
+    <!-- Grid pattern background -->
+    <div class="absolute inset-0 grid-pattern opacity-40 pointer-events-none"></div>
+    <!-- Glow orbs -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" style="animation-delay: 1.5s;"></div>
+    <div class="relative z-10 text-center max-w-5xl mx-auto">
+      <!-- Version badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-8">
+        <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+        Version 1.3.2 · Open Source · Apache 2.0
+      </div>
+      <!-- Headline -->
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
+        <span class="text-gradient-hero">Translate. Rewrite.<br/>Transform.</span>
+      </h1>
+      <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-4 leading-relaxed">
+        The AI-powered text tool that speaks every language and thinks in any style.
+        One app. Nine AI providers. Infinite possibilities.
+      </p>
+      <p class="text-base text-slate-500 max-w-2xl mx-auto mb-12">
+        Runs as a native desktop app on Windows &amp; Linux, or as a self-hosted Docker web app.
+        Your data stays yours — always.
+      </p>
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+        <a href="#install" id="cta-getstarted" class="btn-primary text-base px-8 py-4">
+          <span>🚀 Get Started Free</span>
+        </a>
+        <a href="#screenshots" id="cta-seeit" class="btn-secondary text-base px-8 py-4 flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          See it in action
+        </a>
+        <a href="https://github.com/wsj-br/transrewrt" target="_blank" rel="noopener" id="cta-github" class="btn-secondary text-base px-8 py-4 flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+      <!-- Banner image -->
+      <div class="relative animate-float max-w-4xl mx-auto">
+        <div class="absolute -inset-4 bg-gradient-to-r from-violet-600/20 to-blue-600/20 rounded-2xl blur-xl"></div>
+        <img
+          src="/transrewrt_banner.svg"
+          alt="Transrewrt – AI text translation and rewriting tool"
+          class="relative w-full rounded-2xl shadow-2xl border border-white/10"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </section>
+  <!-- ═══════════════════════════════════════════ STATS STRIP ══ -->
+  <section class="border-y border-white/[0.06] bg-black/30">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="stat-block">
+        <div class="text-3xl font-black text-gradient-accent mb-1">9+</div>
+        <div class="text-slate-400 text-sm">AI Providers</div>
+      </div>
+      <div class="stat-block">
+        <div class="text-3xl font-black text-gradient-accent mb-1">30+</div>
+        <div class="text-slate-400 text-sm">UI Languages</div>
+      </div>
+      <div class="stat-block">
+        <div class="text-3xl font-black text-gradient-accent mb-1">100+</div>
+        <div class="text-slate-400 text-sm">Target Languages</div>
+      </div>
+      <div class="stat-block">
+        <div class="text-3xl font-black text-gradient-accent mb-1">Free</div>
+        <div class="text-slate-400 text-sm">Open Source</div>
+      </div>
+    </div>
+  </section>
+  <!-- ═══════════════════════════════════════ FEATURES SECTION ══ -->
+  <section id="features" class="py-28 px-6 relative">
+    <div class="absolute inset-0 section-gradient pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center mb-16">
+        <div class="section-divider mb-6"></div>
+        <h2 class="text-4xl md:text-5xl font-black mb-4 text-gradient">Everything you need<br/>to master text with AI</h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">Four powerful modes, one seamless interface. Whether you need a quick translation or a deep text transformation, Transrewrt has you covered.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Translate -->
+        <div class="feature-card group">
+          <div class="flex items-start gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-500/5 border border-violet-500/20 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">🌐</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-1">Translate</h3>
+              <p class="text-slate-400 text-sm">Between dozens of languages with automatic source detection</p>
+            </div>
+          </div>
+          <ul class="space-y-2.5 relative z-10">
+            {['Auto-detect source language', 'Dozens of target languages including RTL', 'Free tier via OpenRouter models', 'Preserves formatting and tone'].map(item => (
+              <li class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-violet-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <!-- Rewrite -->
+        <div class="feature-card group">
+          <div class="flex items-start gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/20 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">✍️</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-1">Rewrite</h3>
+              <p class="text-slate-400 text-sm">Improve clarity, fix grammar, and change style with AI precision</p>
+            </div>
+          </div>
+          <ul class="space-y-2.5 relative z-10">
+            {['Fix grammar & spelling', 'Formal / informal / neutral tones', 'Shorten or expand text', 'Make it clearer or more technical'].map(item => (
+              <li class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <!-- Transform -->
+        <div class="feature-card group">
+          <div class="flex items-start gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-teal-500/5 border border-teal-500/20 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">✨</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-1">Transform</h3>
+              <p class="text-slate-400 text-sm">Custom AI prompts for unlimited text transformations</p>
+            </div>
+          </div>
+          <ul class="space-y-2.5 relative z-10">
+            {['Create & manage your own prompts', 'Optional target language per prompt', 'Summarise, extract, classify, format', 'Shareable prompt library'].map(item => (
+              <li class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-teal-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <!-- Dashboard & History -->
+        <div class="feature-card group">
+          <div class="flex items-start gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/20 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">📊</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-1">History & Dashboard</h3>
+              <p class="text-slate-400 text-sm">Full audit trail, cost tracking and usage analytics</p>
+            </div>
+          </div>
+          <ul class="space-y-2.5 relative z-10">
+            {['Complete execution history with filters', 'Export history to CSV', 'Cost dashboard by model & provider', 'Actual spend tracking for OpenRouter'].map(item => (
+              <li class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <!-- Additional features strip -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        {[
+          { icon: '🌍', title: '30+ UI Languages', desc: 'Full RTL support included' },
+          { icon: '👥', title: 'Multi-user', desc: 'Admin roles for web mode' },
+          { icon: '🔒', title: 'Self-hosted', desc: 'Your keys, your data' },
+          { icon: '🖥️', title: 'Easy + Advanced', desc: 'Simple or full model control' },
+        ].map(f => (
+          <div class="glass-light rounded-xl p-4 text-center hover:border-violet-500/20 transition-all duration-300 border border-transparent">
+            <div class="text-2xl mb-2">{f.icon}</div>
+            <div class="text-sm font-semibold text-white mb-1">{f.title}</div>
+            <div class="text-xs text-slate-500">{f.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <!-- ════════════════════════════════════ AI PROVIDERS SECTION ══ -->
+  <section id="providers" class="py-24 px-6 bg-black/20 border-y border-white/[0.04]">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-14">
+        <div class="section-divider mb-6"></div>
+        <h2 class="text-4xl md:text-5xl font-black mb-4 text-gradient">Works with every<br/>major AI provider</h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+          Plug in your existing API keys and start immediately. Switch providers per task.
+          Use <strong class="text-violet-300">OpenRouter or Ollama for free</strong> — no credit card required.
+        </p>
+      </div>
+      <div class="flex flex-wrap justify-center gap-3 mb-12">
+        {providers.map(p => (
+          <div class="provider-badge" style={`color: ${p.color};`}>
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style={`background: ${p.color};`}></span>
+            <span class="text-slate-200">{p.name}</span>
+            {p.free && <span class="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-medium">Free</span>}
+          </div>
+        ))}
+      </div>
+      <!-- Easy vs Advanced mode -->
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="glass rounded-2xl p-6 border border-violet-500/10">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center text-xl">🎯</div>
+            <div>
+              <h3 class="font-bold text-white">Easy Mode</h3>
+              <p class="text-xs text-slate-500">Perfect for getting started</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Curated skill tiers: <strong class="text-violet-300">Free</strong>, <strong class="text-violet-300">Lite</strong>, <strong class="text-violet-300">Advanced</strong>, and <strong class="text-violet-300">Technical</strong>. Pick your quality level — no model IDs to manage. Only options available for your configured providers are shown.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-blue-500/10">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-xl">🔬</div>
+            <div>
+              <h3 class="font-bold text-white">Advanced Mode</h3>
+              <p class="text-xs text-slate-500">For power users</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Access the <strong class="text-blue-300">full model catalogue</strong> from every configured provider. Choose exactly which model to use for each task. Perfect for experimenting with new models or optimising cost vs quality.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ══════════════════════════════════════ SCREENSHOTS SECTION ══ -->
+  <section id="screenshots" class="py-28 px-6 relative overflow-hidden">
+    <div class="absolute inset-0 section-gradient pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center mb-14">
+        <div class="section-divider mb-6"></div>
+        <h2 class="text-4xl md:text-5xl font-black mb-4 text-gradient">See it in action</h2>
+        <p class="text-slate-400 text-lg">A clean, intuitive interface for both newcomers and power users.</p>
+      </div>
+      <!-- Tab switcher -->
+      <div class="flex flex-wrap justify-center gap-2 mb-10" id="screenshot-tabs">
+        {screenshots.map((s, i) => (
+          <button
+            id={`tab-${i}`}
+            class={`tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-white/10 text-slate-300 transition-all duration-300 ${i === 0 ? 'active' : ''}`}
+            data-index={i}
+            onclick={`switchTab(${i})`}
+          >
+            <span>{s.icon}</span>
+            <span>{s.label}</span>
+          </button>
+        ))}
+      </div>
+      <!-- Screenshot display -->
+      <div class="relative max-w-5xl mx-auto">
+        {screenshots.map((s, i) => (
+          <div id={`screen-${i}`} class={`screenshot-panel ${i === 0 ? '' : 'hidden'}`}>
+            <div class="screenshot-frame mx-auto max-w-max">
+              <!-- Window chrome bar -->
+              <div class="bg-[#1a1a1f] px-4 py-3 flex items-center gap-2 border-b border-white/[0.06]">
+                <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500/70"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
+                <div class="ml-4 text-xs text-slate-500 font-mono">Transrewrt · {s.label}</div>
+              </div>
+              <img
+                src={s.src}
+                alt={`Transrewrt ${s.label} screenshot`}
+                class="max-w-full h-auto block cursor-zoom-in hover:brightness-110 transition-all duration-200"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                onclick="openLightbox(this.src)"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <!-- ═══════════════════════════════════ DEPLOYMENT OPTIONS ══ -->
+  <section id="install" class="py-28 px-6 bg-black/20 border-y border-white/[0.04] relative">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="section-divider mb-6"></div>
+        <h2 class="text-4xl md:text-5xl font-black mb-4 text-gradient">Choose your deployment</h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">Run Transrewrt exactly how you want — native desktop app or self-hosted web service. Both options support all AI providers.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <!-- Docker -->
+        <div class="glass rounded-2xl p-8 border border-blue-500/10 hover:border-blue-500/25 transition-all duration-400 group">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-600/5 border border-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <svg width="28" height="28" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M47 20.5c-.4-.3-4.1-2.5-9.5-1.5-.9-5.2-4.7-7.7-4.9-7.9l-1-.6-.7 1c-.8 1.3-2 3.5-2.3 5.9-.5 3.3.3 6.3 2 8.5C28.5 27 26 28 25.3 28H2c-.5 0-1 .5-1 1 0 5.4 1.5 10 4.7 13.5 3.2 3.4 8.1 5.3 14.5 5.3 13 0 22.7-6.1 27.2-17.1 3.1.1 6.3-.7 7.7-3.8l.4-.9-.5-.3z" fill="#2496ED"/>
+                <path d="M4 27h5v5H4zm7 0h5v5h-5zm7 0h5v5h-5zm7 0h5v5h-5zm-14-7h5v5H11zm7 0h5v5h-5zm7 0h5v5h-5zm7 0h5v5h-5zm-14-7h5v5H18zm7 0h5v5h-5zm0-7h5v5h-5z" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white">Docker</h3>
+              <p class="text-slate-400 text-sm">Recommended · Self-hosted</p>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            {['Multi-user with admin roles', 'amd64 & arm64 (Raspberry Pi!)', 'Persistent data volume', 'Single command setup'].map(f => (
+              <div class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {f}
+              </div>
+            ))}
+          </div>
+          <div class="code-block p-5">
+            <div class="text-slate-500 text-xs mb-3 font-mono">Quick start</div>
+            <pre class="text-sm leading-relaxed overflow-x-auto"><code><span class="text-slate-500"># Pull the image</span>
+<span class="text-violet-300">docker</span> <span class="text-blue-300">pull</span> ghcr.io/wsj-br/transrewrt:latest
+<span class="text-slate-500"># Run with your API key</span>
+<span class="text-violet-300">OPENROUTER_API_KEY</span>=sk-or-your-key \
+<span class="text-violet-300">docker</span> run -d \
+  -p 5000:5000 \
+  -v transrewrt-data:/app/data \
+  -e OPENROUTER_API_KEY \
+  --name transrewrt-web \
+  ghcr.io/wsj-br/transrewrt:latest</code></pre>
+          </div>
+          <p class="text-slate-500 text-xs mt-3 leading-relaxed">Then open <a href="http://localhost:5000" class="text-blue-400 hover:underline">http://localhost:5000</a> and update the default admin password.</p>
+        </div>
+        <!-- Desktop -->
+        <div class="glass rounded-2xl p-8 border border-violet-500/10 hover:border-violet-500/25 transition-all duration-400 group">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500/20 to-violet-600/5 border border-violet-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white">Desktop App</h3>
+              <p class="text-slate-400 text-sm">Windows & Linux · Electron</p>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            {['Native Windows & Linux builds', 'API keys configured in Settings UI', 'Works offline with local Ollama', 'No server setup required'].map(f => (
+              <div class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg class="w-4 h-4 text-violet-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                {f}
+              </div>
+            ))}
+          </div>
+          <div class="space-y-3">
+            <a href="https://github.com/wsj-br/transrewrt/releases" target="_blank" rel="noopener" id="dl-windows" class="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-violet-500/30 hover:bg-violet-500/5 transition-all duration-300 group/btn">
+              <span class="text-2xl">🪟</span>
+              <div class="flex-1">
+                <div class="text-sm font-semibold text-white">Windows Installer</div>
+                <div class="text-xs text-slate-500">Download .exe from GitHub Releases</div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover/btn:text-violet-400 transition-colors" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </a>
+            <a href="https://github.com/wsj-br/transrewrt/releases" target="_blank" rel="noopener" id="dl-linux" class="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-violet-500/30 hover:bg-violet-500/5 transition-all duration-300 group/btn">
+              <span class="text-2xl">🐧</span>
+              <div class="flex-1">
+                <div class="text-sm font-semibold text-white">Linux Package</div>
+                <div class="text-xs text-slate-500">Download .AppImage / .deb from GitHub Releases</div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover/btn:text-violet-400 transition-colors" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- OpenRouter tip -->
+      <div class="max-w-5xl mx-auto mt-8">
+        <div class="glass rounded-2xl p-6 border border-green-500/10 flex flex-col md:flex-row items-center gap-6">
+          <div class="text-4xl">🆓</div>
+          <div class="flex-1 text-center md:text-left">
+            <h4 class="text-lg font-bold text-white mb-1">Start for free with OpenRouter</h4>
+            <p class="text-slate-400 text-sm">OpenRouter provides access to free AI models — no credit card needed. Get your free API key and start translating and rewriting immediately after installation.</p>
+          </div>
+          <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" id="openrouter-key-link" class="btn-primary flex-shrink-0">
+            <span>Get Free API Key →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ═══════════════════════════════════════ HOW IT WORKS ══ -->
+  <section class="py-28 px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="section-divider mb-6"></div>
+        <h2 class="text-4xl md:text-5xl font-black mb-4 text-gradient">Up and running<br/>in minutes</h2>
+      </div>
+      <div class="space-y-6">
+        {[
+          {
+            n: '1',
+            title: 'Install or Deploy',
+            desc: 'Download the desktop app for Windows or Linux, or pull the Docker image for a self-hosted web service that supports multiple users.',
+            code: 'docker pull ghcr.io/wsj-br/transrewrt:latest',
+          },
+          {
+            n: '2',
+            title: 'Add your API key',
+            desc: 'In the Docker version, pass your API key as an environment variable. In the desktop app, configure it in Settings → API. OpenRouter offers free models to get started instantly.',
+            code: 'OPENROUTER_API_KEY=sk-or-v1-... docker run ...',
+          },
+          {
+            n: '3',
+            title: 'Start transforming text',
+            desc: 'Select Translate, Rewrite, or Transform mode. Paste your text, choose your AI skill level or specific model, and get results in seconds.',
+            code: null,
+          },
+        ].map(step => (
+          <div class="flex gap-6 items-start group">
+            <div class="step-number group-hover:shadow-lg group-hover:shadow-violet-500/30 transition-all duration-300 flex-shrink-0">{step.n}</div>
+            <div class="glass rounded-2xl p-6 flex-1 border border-white/[0.04] hover:border-violet-500/15 transition-all duration-300">
+              <h3 class="text-lg font-bold text-white mb-2">{step.title}</h3>
+              <p class="text-slate-400 text-sm leading-relaxed mb-3">{step.desc}</p>
+              {step.code && (
+                <div class="code-block p-3 mt-3">
+                  <code class="text-sm text-violet-300 font-mono">{step.code}</code>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <!-- ══════════════════════════════════════════════ CTA SECTION ══ -->
+  <section class="py-28 px-6 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center">
+      <h2 class="text-4xl md:text-6xl font-black mb-6 text-gradient-hero">
+        Ready to transform<br/>your text with AI?
+      </h2>
+      <p class="text-slate-400 text-lg mb-10 max-w-2xl mx-auto">
+        Join the community of developers, writers, and teams using Transrewrt to work smarter across languages and styles. Free, open source, and self-hosted.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="https://github.com/wsj-br/transrewrt/releases" target="_blank" rel="noopener" id="final-cta-download" class="btn-primary text-lg px-10 py-4">
+          <span>⬇️ Download Now — It's Free</span>
+        </a>
+        <a href="https://github.com/wsj-br/transrewrt" target="_blank" rel="noopener" id="final-cta-github" class="btn-secondary text-lg px-10 py-4">
+          ⭐ Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- ══════════════════════════════════════════════════ FOOTER ══ -->
+  <footer class="border-t border-white/[0.06] py-16 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-10 mb-12">
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-3 mb-4">
+            <img src="/logo.svg" alt="Transrewrt Logo" class="w-9 h-7 object-contain" />
+            <span class="font-extrabold text-xl bg-gradient-to-r from-lime-500 via-lime-400 via-orange-400 to-orange-500 bg-clip-text text-transparent">Transrewrt</span>
+          </div>
+          <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+            AI-powered text tool: translate between languages, rewrite in different styles, and transform with custom prompts using the world's best AI models.
+          </p>
+          <div class="flex items-center gap-3 mt-5">
+            <a href="https://github.com/wsj-br/transrewrt" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg glass-light flex items-center justify-center text-slate-400 hover:text-white hover:border-violet-500/30 transition-all duration-300 border border-transparent">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+          </div>
+        </div>
+        <!-- Product -->
+        <div>
+          <h4 class="font-semibold text-white text-sm mb-4 uppercase tracking-wider">Product</h4>
+          <ul class="space-y-2.5">
+            {[
+              ['#features', 'Features'],
+              ['#providers', 'AI Providers'],
+              ['#screenshots', 'Screenshots'],
+              ['#install', 'Installation'],
+              ['https://github.com/wsj-br/transrewrt/releases', 'Releases'],
+            ].map(([href, label]) => (
+              <li><a href={href} class="text-slate-400 text-sm hover:text-white transition-colors">{label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <!-- Resources -->
+        <div>
+          <h4 class="font-semibold text-white text-sm mb-4 uppercase tracking-wider">Resources</h4>
+          <ul class="space-y-2.5">
+            {[
+              ['https://github.com/wsj-br/transrewrt/blob/main/README.md', 'README'],
+              ['https://github.com/wsj-br/transrewrt/blob/main/USER-GUIDE.md', 'User Guide'],
+              ['https://github.com/wsj-br/transrewrt/issues', 'Report an Issue'],
+              ['https://github.com/wsj-br/transrewrt/blob/main/LICENSE', 'Apache 2.0 License'],
+            ].map(([href, label]) => (
+              <li><a href={href} target="_blank" rel="noopener" class="text-slate-400 text-sm hover:text-white transition-colors">{label}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/[0.06] pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-slate-500 text-sm">
+          © 2025 Transrewrt. Released under the <a href="https://github.com/wsj-br/transrewrt/blob/main/LICENSE" class="text-slate-400 hover:text-white transition-colors">Apache 2.0 License</a>.
+        </p>
+        <div class="flex items-center gap-4 text-slate-500 text-sm">
+          <span>Built with Astro</span>
+          <span>·</span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            v1.3.2 Latest
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center cursor-zoom-out opacity-0 pointer-events-none transition-all duration-300" onclick="closeLightbox()">
+    <div class="absolute top-6 right-6 text-white/70 hover:text-white text-4xl font-light cursor-pointer select-none transition-colors">&times;</div>
+    <img id="lightbox-img" src="" alt="Zoomed Screenshot" class="max-w-[95vw] max-h-[90vh] rounded-xl shadow-2xl border border-white/10 transform scale-95 transition-all duration-300 object-contain" />
+  </div>
+  <!-- Screenshot tab switcher JS -->
+  <script is:inline>
+    function switchTab(index) {
+      // Hide all panels
+      document.querySelectorAll('.screenshot-panel').forEach(el => el.classList.add('hidden'));
+      // Deactivate all tabs
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      // Show selected
+      const panel = document.getElementById('screen-' + index);
+      if (panel) panel.classList.remove('hidden');
+      const tab = document.getElementById('tab-' + index);
+      if (tab) tab.classList.add('active');
+    }
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      if (lightbox && img) {
+        img.src = src;
+        img.style.transform = 'scale(0.95)';
+        lightbox.classList.remove('pointer-events-none', 'opacity-0');
+        lightbox.classList.add('opacity-100');
+        img.classList.remove('scale-95');
+        img.classList.add('scale-100');
+        const applyScale = () => {
+          if (img.naturalWidth > 0 && img.naturalWidth < 600) {
+            img.style.transform = 'scale(1.5)';
+          } else {
+            img.style.transform = 'scale(1.0)';
+          }
+        };
+        if (img.complete) {
+          applyScale();
+        } else {
+          img.onload = applyScale;
+        }
+      }
+    }
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      if (lightbox && img) {
+        lightbox.classList.remove('opacity-100');
+        lightbox.classList.add('opacity-0', 'pointer-events-none');
+        img.classList.remove('scale-100');
+        img.classList.add('scale-95');
+        img.style.transform = 'scale(0.95)';
+      }
+    }
+    // Sticky nav shadow on scroll
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('nav');
+      if (nav) {
+        if (window.scrollY > 10) {
+          nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.5)';
+        } else {
+          nav.style.boxShadow = '';
+        }
+      }
+    });
+  </script>
+</MainLayout>
+

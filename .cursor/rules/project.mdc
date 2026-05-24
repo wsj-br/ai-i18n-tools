@@ -11,9 +11,13 @@ TypeScript (strict), ESM, Node ≥ 22.16, pnpm ≥ 10.33; build `tsc`, test Vite
 
 Source `src/` (API from `src/index.ts`), tests `tests/`. Main areas: `cli/`, `core/`, `extractors/`, `processors/`, `api/`, `glossary/`, `runtime/`, `server/`, `utils/`. CLI entry: `dist/cli/index.js` (`package.json` `"bin"`).
 
+## Required context before code changes
+
+Before modifying **any** source, tests, examples, or config in this repo, read and apply [`docs/ai-i18n-tools-context.md`](docs/ai-i18n-tools-context.md) — especially **UI strings: catalog vs flat bundles** (English source text is the key in `public/locales/*.json`; `strings.json` is the extraction cache with MD5-8 ids, not the runtime bundle). Do not implement runtime `t()` lookup by hash unless you are working inside `ai-i18n-tools/runtime` itself.
+
 ## Docs
 
-- Canonical package docs: `README.md`, `docs/`. Maintainer internals: `dev/package-context.md`. Consumer-facing shipped doc: `docs/ai-i18n-tools-context.md`.
+- Canonical package docs: `README.md`, `docs/`. Maintainer internals: `dev/package-context.md`. Consumer-facing shipped doc: `docs/ai-i18n-tools-context.md` (required reading for agents; see above).
 - Treat `translated-docs/` as pipeline output from `translate-docs` (do not hand-edit unless you intend to refresh generated artifacts). Avoid bold around inline code in prose (translation tooling).
 - Do **not** use bold formatting around inline code—avoid putting asterisks outside a backtick span. Use plain `` `code` `` spans, or apply emphasis and code styling separately; never nest both on the same element.
 - Do **not** use bold formatting around links—avoid putting asterisks outside a link. Use plain `` [link text](url) `` spans, or apply emphasis and link styling separately; never nest both on the same element. If needed a bold use it inside the link text.

@@ -4,6 +4,7 @@ packages:
   - "examples/nextjs-app"
   - "examples/nextjs-app/docs-site"
   - "examples/astro-docs"
+  - "examples/astro-website"
 allowBuilds:
   sharp: true
   core-js: true

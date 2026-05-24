@@ -43,7 +43,7 @@
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "clean": "rm -rf dist/",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm test",
-    "pre-release": "pnpm run format && pnpm run lint && pnpm run clean && pnpm run build && pnpm test && cd examples/nextjs-app/docs-site && pnpm build && cd ../../astro-docs && pnpm build",
+    "pre-release": "pnpm run format && pnpm run lint && pnpm run clean && pnpm run build && pnpm test && pnpm --dir examples/nextjs-app/docs-site build && pnpm --dir examples/astro-docs build && pnpm --dir examples/astro-website build",
     "i18n:extract": "ai-i18n-tools extract",
     "i18n:sync": "ai-i18n-tools sync",
     "i18n:translate:ui": "ai-i18n-tools translate-ui",

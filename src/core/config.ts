@@ -576,6 +576,45 @@ export const initConfigTemplates = {
       },
     ],
   }),
+
+  uiAstroWebsite: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en",
+    targetLocales: ["de", "fr"],
+    openrouter: {
+      baseUrl: "https://openrouter.ai/api/v1",
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      maxTokens: 8192,
+      temperature: 0.2,
+      requestTimeoutMs: 30_000,
+    },
+    features: {
+      extractUIStrings: true,
+      translateUIStrings: true,
+      translateMarkdown: false,
+      translateJSON: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: ["src/"],
+      stringsJson: "src/i18n/strings.json",
+      flatOutputDir: "public/locales",
+      uiExtractor: {
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".astro"],
+        funcNames: ["t", "i18n.t"],
+        includePackageDescription: false,
+      },
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    documentations: [],
+  }),
 } as const;
 
 /**

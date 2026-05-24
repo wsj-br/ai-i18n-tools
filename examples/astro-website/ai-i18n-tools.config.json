@@ -1,0 +1,51 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "es", "ar", "ja", "ko", "zh-CN", "zh-TW", "pt-BR"],
+  "concurrency": 3,
+  "batchConcurrency": 4,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "openrouter": {
+    "baseUrl": "https://openrouter.ai/api/v1",
+    "translationModels": [
+      "openai/gpt-4o-mini",
+      "anthropic/claude-3-haiku",
+      "google/gemini-3-flash-preview"
+    ],
+    "maxTokens": 8192,
+    "temperature": 0.2
+  },
+  "features": {
+    "extractUIStrings": true,
+    "translateUIStrings": true,
+    "translateMarkdown": true,
+    "translateJSON": false,
+    "translateSVG": false
+  },
+  "glossary": {
+    "userGlossary": "glossary-user.csv"
+  },
+  "cacheDir": ".translation-cache",
+  "ui": {
+    "sourceRoots": ["src/"],
+    "stringsJson": "src/i18n/strings.json",
+    "flatOutputDir": "public/locales",
+    "uiLanguagesPath": "src/i18n/ui-languages.json",
+    "uiExtractor": {
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"],
+      "funcNames": ["t", "i18n.t"]
+    }
+  },
+  "documentations": [
+    {
+      "description": "Astro marketing pages (parse-and-replace)",
+      "contentPaths": ["src/pages/index.astro"],
+      "outputDir": "src/pages",
+      "markdownOutput": {
+        "style": "astro-starlight",
+        "docsRoot": "src/pages"
+      },
+      "addFrontmatter": false
+    }
+  ]
+}

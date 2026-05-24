@@ -98,12 +98,76 @@ Example with source locale marked:
 
 ---
 
-## Extract and `strings.json`
+## UI strings: catalog vs flat bundles (read this before wiring `t()`)
 
-- **Keys:** MD5 of trimmed **source string**, first **8** hex chars (same id in per-locale flat JSON).
-- **Sources:** string literals to `t` / `i18n.t` (and names in `ui.reactExtractor.funcNames`) under `ui.sourceRoots`; optionally `package.json` `description` and manifest `englishName` rows when the matching extractor flags are on. **Literal keys only** — variables are not extracted.
-- **Re-runs:** existing `translated` / `models` for surviving keys are kept.
-- **Plurals:** `t('…', { plurals: true, … })` → catalog row with `"plural": true` and per-locale CLDR-shaped objects; `translate-ui` expands flat bundles with suffix keys as needed. Use `setupKeyAsDefaultT` from `ai-i18n-tools/runtime` with `strings.json` and optional `sourcePluralFlatBundle` so the source locale resolves plural suffixes.
+ai-i18n-tools uses **two different on-disk shapes**. Do not use `strings.json` keys at runtime and do not use MD5 hashes in per-locale flat JSON.
+
+| Artifact | Path (typical) | Key shape | Role |
+|----------|----------------|-----------|------|
+| **Catalog** | `ui.stringsJson` (e.g. `src/i18n/strings.json`) | **MD5-8** of trimmed source (`deccbe4e`, …) | **Tooling cache:** `source`, `translated`, `models`, `locations`. Updated by `extract` / `translate-ui`. **Not** imported by most apps at runtime. |
+| **Flat locale bundle** | `ui.flatOutputDir` (e.g. `public/locales/de.json`) | **English source text** | **Runtime / SSG lookup:** `"Save": "Speichern"`. Written by `translate-ui` (`buildFlatJsonForLocale` uses `flat[entry.source] = translation`). |
+| **Plural flat (source only)** | `{flatOutputDir}/{sourceLocale}.json` | `groupId_original`, `groupId_one`, … | Only when plurals exist; loaded with `sourcePluralFlatBundle` for i18next. |
+
+### Lookup rule for custom `t()` (Astro, scripts, non-i18next)
+
+When you implement a small `makeT(flat)` helper (see `examples/astro-website/src/i18n/t.ts`):
+
+```ts
+// Correct: key is the same literal passed to t()
+t("Translate")  →  flat["Translate"]  →  "Traduzir" | fallback "Translate"
+
+// Wrong: do not hash at runtime
+t("Translate")  →  flat[md5("Translate").slice(0, 8)]   // flat files are not keyed this way
+```
+
+- Pass the **exact** English source string to `t()` that `extract` recorded (same spelling, spacing, and punctuation).
+- If a locale file is missing, fall back to the source string (identity for `sourceLocale`).
+- `strings.json` is for the CLI pipeline only unless you use `ai-i18n-tools/runtime` (`setupKeyAsDefaultT`), which reads the catalog internally.
+
+### Extract and `strings.json` (catalog)
+
+- **Catalog row ids:** MD5 of trimmed **source string**, first **8** hex chars (`deccbe4e`, …). These ids appear **only** in `strings.json`, not in `de.json` / `pt-BR.json`.
+- **Sources:** string literals to `t` / `i18n.t` (and names in `ui.uiExtractor.funcNames` / `ui.reactExtractor.funcNames`) under `ui.sourceRoots`; optionally `package.json` `description` and manifest `englishName` rows when the matching extractor flags are on. **Literal keys only** — variables are not extracted.
+- **Re-runs:** existing `translated` / `models` for surviving catalog ids are kept.
+- **Plurals:** `t('…', { plurals: true, … })` → catalog row with `"plural": true` and per-locale CLDR-shaped objects; `translate-ui` expands flat bundles with suffix keys (`groupId_one`, …) as needed. Use `setupKeyAsDefaultT` from `ai-i18n-tools/runtime` with `strings.json` and optional `sourcePluralFlatBundle` so the source locale resolves plural suffixes.
+
+### Astro / static sites (hybrid with `translate-docs`) {#astro-hybrid}
+
+Reference: [`examples/astro-website`](../examples/astro-website/) and [GETTING_STARTED — Astro website](./GETTING_STARTED.md#astro-website).
+
+| What | Pipeline | Notes |
+|------|----------|-------|
+| Template HTML (headings, nav, feature lists in the body) | `translate-docs` | Writes `src/pages/{locale}/index.astro`; adjusts relative imports |
+| Frontmatter / `t('…')` data (tab labels, shared arrays) | `extract` → `translate-ui` | Flat JSON under `ui.flatOutputDir`; lookup by English source key |
+| Locale labels / RTL | `generate-ui-languages` | Manifest (`ui-languages.json`); optional `ui.uiLanguagesPath` (e.g. `src/i18n/ui-languages.json`) |
+
+- **Page HTML:** static text nodes and translatable attributes (`alt`, `title`, `aria-label`, `placeholder`). User-facing string literals inside template `{expression}` blocks (inline arrays, object fields) are translated. Protected: attribute/key values (`class`, `id`, `style`, `data-*`, …), configurable `documentations[].protectAttributes` / `protectKeys`, `<script>`, `<style>`, and **literals inside `t('…')`** (frontmatter or template).
+- **Frontmatter:** not translated by `translate-docs`; copy the same `t()` wiring block to every locale page, or re-run `translate-docs` after editing English frontmatter.
+- **Build-time wiring** (every page that uses `t()`):
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+- **Routing:** `Astro.currentLocale` + `ui-languages.json`; `LanguagePicker` via `getRelativeLocaleUrl` from `astro:i18n`. Map Astro route codes (`pt-br`) to bundle filenames (`pt-BR.json`) via manifest `code` in `locale.ts`.
+- **Init:** `init -t ui-astro-website` scaffolds UI-only config; add `documentations[]` + `features.translateMarkdown` for the HTML pipeline.
+- **Scripts (example):** `i18n:translate` → `translate-docs`, `i18n:locales` → `generate-ui-languages`, `i18n:sync` → full sync per config.
+
+### Common mistakes (agents)
+
+| Mistake | Why it fails |
+|---------|----------------|
+| Runtime lookup by MD5-8 in flat JSON | `translate-ui` writes `flat[source] = translation`, not hash keys. |
+| Importing `strings.json` in Astro `makeT` | Catalog is for CLI; flat bundles are the SSG/runtime map. |
+| Empty `en.json` required | For `sourceLocale`, missing keys should fall back to the source literal; `{}` is fine. |
+| Expecting `translate-docs` to translate `t('…')` args | Those literals are protected; use `translate-ui` for them. |
+| Using `i18n:translate:pages` script name | Example uses `i18n:translate` for `translate-docs`; either name is fine in your own `package.json`. |
+| Forgetting to align three locale lists | Keep `targetLocales`, `astro.config.mjs` `i18n.locales`, and `ui-languages.json` in sync. |
 
 ---
 
@@ -125,8 +189,8 @@ The source locale JSON file is purely for plural handling — it is never requir
 
 Paths depend on your config; common artifacts:
 
-- `strings.json` — master catalog (hash key → `source`, `translated`, optional `models`).
-- Per-locale flat JSON — for example `de.json`, `pt-BR.json` under your configured UI output (often next to `strings.json`).
+- `strings.json` — **catalog / cache** (MD5-8 id → `source`, `translated`, optional `models`). Used by CLI and `ai-i18n-tools/runtime`, not by typical flat-json `makeT` helpers.
+- Per-locale flat JSON — for example `de.json`, `pt-BR.json` under `ui.flatOutputDir` (**source sentence → translation**, English text as key).
 - **Source locale JSON** — only if plurals exist (e.g., `en-GB.json` with plural suffix keys).
 - `ui-languages.json` — manifest rows (`code`, `label`, `englishName`, `direction`).
 - `cacheDir` — SQLite cache for documentation translation (`translate-docs`).

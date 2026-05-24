@@ -1,3 +1,4 @@
+import path from "path";
 import { parse } from "@babel/parser";
 import type { CallExpression, Expression, Node, ObjectExpression } from "@babel/types";
 
@@ -138,6 +139,166 @@ function firstArgStringLiteral(call: CallExpression): string | undefined {
     return undefined;
   }
   return arg0.value;
+}
+
+type StringQuote = '"' | "'" | "`";
+
+function readBalancedBraceExpression(
+  line: string,
+  openBraceIdx: number
+): { expr: string; end: number } | null {
+  if (line[openBraceIdx] !== "{") {
+    return null;
+  }
+  let depth = 0;
+  let inString: StringQuote | null = null;
+  let escape = false;
+  for (let i = openBraceIdx; i < line.length; i++) {
+    const ch = line[i]!;
+    if (inString) {
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (ch === "\\") {
+        escape = true;
+        continue;
+      }
+      if (ch === inString) {
+        inString = null;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      inString = ch;
+      continue;
+    }
+    if (ch === "{") {
+      depth++;
+      continue;
+    }
+    if (ch === "}") {
+      depth--;
+      if (depth === 0) {
+        return { expr: line.slice(openBraceIdx + 1, i), end: i + 1 };
+      }
+    }
+  }
+  return null;
+}
+
+/** Collect `{expression}` segments from one template line (Astro/HTML). */
+function voidWrapTemplateExpressions(line: string): string {
+  const parts: string[] = [];
+  let i = 0;
+  while (i < line.length) {
+    const ch = line[i]!;
+    if (ch === "{") {
+      const parsed = readBalancedBraceExpression(line, i);
+      if (parsed && parsed.expr.trim()) {
+        parts.push(`void (${parsed.expr});`);
+        i = parsed.end;
+        continue;
+      }
+    }
+    i++;
+  }
+  return parts.join(" ");
+}
+
+const STYLE_OPEN_RE = /<style\b/i;
+const STYLE_CLOSE_RE = /<\/style\s*>/i;
+const INLINE_SCRIPT_OPEN_RE = /<script\b[^>]*\bis:inline\b/i;
+const SCRIPT_CLOSE_RE = /<\/script\s*>/i;
+
+/**
+ * Build a line-aligned JS-ish view of an `.astro` file for {@link extractUiCallsFromSource}.
+ * Frontmatter and template `{expr}` blocks are preserved on their source lines so `loc` matches the file.
+ */
+export function sliceAstroSource(content: string): string {
+  const lines = content.split(/\r?\n/);
+  const out: string[] = [];
+  let frontmatterStarted = false;
+  let inFrontmatter = false;
+  let inStyle = false;
+  let inInlineScript = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (!frontmatterStarted && trimmed === "---") {
+      frontmatterStarted = true;
+      inFrontmatter = true;
+      out.push("");
+      continue;
+    }
+    if (inFrontmatter && trimmed === "---") {
+      inFrontmatter = false;
+      out.push("");
+      continue;
+    }
+    if (inFrontmatter) {
+      out.push(line);
+      continue;
+    }
+
+    if (!inStyle && STYLE_OPEN_RE.test(line)) {
+      inStyle = true;
+    }
+    if (inStyle) {
+      out.push("");
+      if (STYLE_CLOSE_RE.test(line)) {
+        inStyle = false;
+      }
+      continue;
+    }
+
+    if (!inInlineScript && INLINE_SCRIPT_OPEN_RE.test(line)) {
+      inInlineScript = true;
+    }
+    if (inInlineScript) {
+      out.push("");
+      if (SCRIPT_CLOSE_RE.test(line)) {
+        inInlineScript = false;
+      }
+      continue;
+    }
+
+    const wrapped = voidWrapTemplateExpressions(line);
+    out.push(wrapped || "");
+  }
+
+  return out.join("\n");
+}
+
+/** Whether `relPath` is an Astro component/page (`.astro`). */
+export function isAstroUiSourceFile(relPath: string): boolean {
+  return path.extname(relPath).toLowerCase() === ".astro";
+}
+
+/**
+ * Collect `t('literal')` from `.astro` frontmatter and template `{…}` expressions.
+ */
+export function extractUiCallsFromAstroSource(
+  content: string,
+  relPath: string,
+  funcNames: string[]
+): UiExtractedCall[] {
+  return extractUiCallsFromSource(sliceAstroSource(content), relPath, funcNames);
+}
+
+/**
+ * Route UI extraction to the Astro slicer or plain Babel scan by file extension.
+ */
+export function extractUiCallsFromFileContent(
+  content: string,
+  relPath: string,
+  funcNames: string[]
+): UiExtractedCall[] {
+  if (isAstroUiSourceFile(relPath)) {
+    return extractUiCallsFromAstroSource(content, relPath, funcNames);
+  }
+  return extractUiCallsFromSource(content, relPath, funcNames);
 }
 
 /**

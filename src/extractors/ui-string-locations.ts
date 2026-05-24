@@ -2,7 +2,7 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import type { UIStringExtractorConfig } from "../core/types.js";
-import { extractUiCallsFromSource } from "./ui-string-babel.js";
+import { extractUiCallsFromFileContent } from "./ui-string-babel.js";
 
 export type UiStringLocation = { file: string; line: number };
 
@@ -19,7 +19,7 @@ export function collectUiStringLocationsFromSource(
   relPath: string,
   funcNames: string[]
 ): Map<string, UiStringLocation[]> {
-  const calls = extractUiCallsFromSource(content, relPath, funcNames);
+  const calls = extractUiCallsFromFileContent(content, relPath, funcNames);
   const out = new Map<string, UiStringLocation[]>();
   const seen = new Set<string>();
   const relNorm = relPath.replace(/\\/g, "/");

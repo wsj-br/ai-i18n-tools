@@ -202,7 +202,7 @@ Is the asset an SVG with translatable text or labels?
 
 `markdownOutput.style = "flat"`の場合、フラットリンクリライターは出力ファイルごとにディーププレフィックスを計算するため、ソースファイルと同じディレクトリにあるアセット（例: `docs/figure.png`を`docs/page.md`から`figure.png`として参照）は、すべての翻訳済み出力で正しく解決されます。この場合、`postProcessing.regexAdjustments`ルールは必要ありません。
 
-例: このパッケージは`docs/GETTING_STARTED.md`を`translated-docs/docs/GETTING_STARTED.<locale>.md`に変換します。兄弟ファイルの画像`docs/translation-cache-editor.png`は`translation-cache-editor.png`として参照されます。リライターは出力ファイルのディレクトリからソースディレクトリまでの深さに応じたプレフィックス（`../../docs/`）を計算し、`../../docs/translation-cache-editor.png`を生成します。`translated-docs/docs/`からは、正しく`docs/translation-cache-editor.png`に解決されます。
+例: このパッケージは`docs/GETTING_STARTED.md`を`translated-docs/docs/GETTING_STARTED.<locale>.md`に変換します。兄弟ファイルの画像`docs/translation-dashboard.png`は`translation-dashboard.png`として参照されます。リライターは出力ファイルのディレクトリからソースディレクトリまでの深さに応じたプレフィックス（`../../docs/`）を計算し、`../../docs/translation-dashboard.png`を生成します。`translated-docs/docs/`からは、正しく`docs/translation-dashboard.png`に解決されます。
 
 スクリーンショットスクリプトは不要です。ファイルは1回配置すればよく、ロケールごとに変更されることはありません。
 
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 実装例
 
-このリポジトリは翻訳ダッシュボードのスクリーンショットにパターンAを使用しています。[GETTING_STARTED.md](GETTING_STARTED.ja.md#translation-dashboard)は同じフォルダ内の画像[translation-cache-editor.png](../../docs/../docs/translation-cache-editor.png)を参照しています。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)で`markdownOutput.style = "flat"`と`flatPreserveRelativeDir: true`が設定されており、ファイルごとのディーププレフィックスにより、スクリーンショット`regexAdjustments`なしで画像パスが解決されます。
+このリポジトリは翻訳ダッシュボードのスクリーンショットにパターンAを使用しています。[GETTING_STARTED.md](GETTING_STARTED.ja.md#translation-dashboard)は同じフォルダ内の画像[translation-dashboard.png](../../docs/../docs/translation-dashboard.png)を参照しています。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json)で`markdownOutput.style = "flat"`と`flatPreserveRelativeDir: true`が設定されており、ファイルごとのディーププレフィックスにより、スクリーンショット`regexAdjustments`なしで画像パスが解決されます。
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 深さ接頭辞はバッチ全体に対してグローバルにではなく、出力ファイルごとに個別に計算されます。各ソースファイルについて、リライターは出力ファイルのディレクトリからソースファイルのディレクトリへの相対パスを計算し、それを接頭辞として使用します。
 
-つまり、`flatPreserveRelativeDir: true`を使用すると、サブディレクトリ内のソースファイルは自動的に正しい接頭辞が付与されます。たとえば、`docs/GETTING_STARTED.md`が`translated-docs/docs/GETTING_STARTED.<locale>.md`に出力される場合、ファイルごとの接頭辞は`../../docs/`となり、ソースからの相対パスであるアセット`translation-cache-editor.png`は`../../docs/translation-cache-editor.png`になります。これは`translated-docs/docs/`から`docs/translation-cache-editor.png`への解決を正しく行います。
+つまり、`flatPreserveRelativeDir: true`を使用すると、サブディレクトリ内のソースファイルは自動的に正しい接頭辞が付与されます。たとえば、`docs/GETTING_STARTED.md`が`translated-docs/docs/GETTING_STARTED.<locale>.md`に出力される場合、ファイルごとの接頭辞は`../../docs/`となり、ソースからの相対パスであるアセット`translation-dashboard.png`は`../../docs/translation-dashboard.png`になります。これは`translated-docs/docs/`から`docs/translation-dashboard.png`への解決を正しく行います。
 
 ソースファイルと同じディレクトリにある相対パスのアセットについては、`postProcessing`の正規表現による修正は不要です。
 

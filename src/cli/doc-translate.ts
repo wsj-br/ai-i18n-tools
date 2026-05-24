@@ -25,10 +25,15 @@ import {
 } from "./format.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
+import {
+  AstroTemplateExtractor,
+  computeImportDepthDelta,
+} from "../extractors/astro-template-extractor.js";
 import type { MarkdownExtractOptions } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
 import { SvgExtractor } from "../extractors/svg-extractor.js";
 import { PlaceholderHandler } from "../processors/placeholder-handler.js";
+import type { ExpressionProtectionOptions } from "../processors/expression-attribute-protection.js";
 import {
   protectGlossaryForcedTerms,
   restoreGlossaryForcedTerms,
@@ -124,7 +129,7 @@ export interface TranslateRunOptions {
   noCache: boolean;
   verbose: boolean;
   pathFilter?: string;
-  typeFilter?: "markdown" | "json";
+  typeFilter?: "markdown" | "json" | "astro";
   jsonOnly?: boolean;
   noJson?: boolean;
   /** Path to the active log file (printed in the header block). */
@@ -216,14 +221,18 @@ export function protectSegmentForTranslation(
   glossary: Glossary,
   locale: string,
   useMarkdownPlaceholders: boolean,
-  emphasisPlaceholders = false
+  emphasisPlaceholders = false,
+  expressionProtection?: ExpressionProtectionOptions
 ): { text: string; state: ProtectState } {
   const g = protectGlossaryForcedTerms(raw, glossary, locale);
   const glossaryForceReplacements = g.replacements;
 
   if (useMarkdownPlaceholders) {
     const ph = new PlaceholderHandler();
-    const st = ph.protectForTranslation(g.text, { emphasis: emphasisPlaceholders });
+    const st = ph.protectForTranslation(g.text, {
+      emphasis: emphasisPlaceholders,
+      expressionProtection,
+    });
     let segmentText = st.text;
     if (st.jsxAttributeText) {
       segmentText = `${segmentText}\n${st.jsxAttributeText}`;
@@ -260,6 +269,15 @@ function restoreSegmentTranslation(
   let out = ph.restoreAfterTranslation(raw, st);
   out = restoreGlossaryForcedTerms(out, st.glossaryForceReplacements ?? []);
   return out;
+}
+
+function documentationExpressionProtection(
+  documentation: Pick<DocumentationBlock, "protectAttributes" | "protectKeys">
+): ExpressionProtectionOptions {
+  return {
+    protectAttributes: documentation.protectAttributes,
+    protectKeys: documentation.protectKeys,
+  };
 }
 
 function segmentOriginalContent(s: Segment, originalContentByHash: Map<string, string>): Segment {
@@ -430,7 +448,20 @@ export function shouldRunMarkdown(
   if (!config.features.translateMarkdown) {
     return false;
   }
-  if (opts.typeFilter === "json") {
+  if (opts.typeFilter === "json" || opts.typeFilter === "astro") {
+    return false;
+  }
+  if (opts.jsonOnly) {
+    return false;
+  }
+  return true;
+}
+
+export function shouldRunAstro(opts: TranslateRunOptions, config: I18nDocTranslateConfig): boolean {
+  if (!config.features.translateMarkdown) {
+    return false;
+  }
+  if (opts.typeFilter === "json" || opts.typeFilter === "markdown") {
     return false;
   }
   if (opts.jsonOnly) {
@@ -503,6 +534,7 @@ export function normalizePathFilterForProjectRoot(
 }
 
 const DOC_MARKDOWN_EXTENSIONS = [".md", ".mdx"] as const;
+const DOC_ASTRO_EXTENSIONS = [".astro"] as const;
 
 /**
  * True if `relPosix` (project-relative, forward slashes) is under one of the block's
@@ -571,8 +603,40 @@ export function expandPathFilterToMarkdownPaths(
   return [];
 }
 
+/**
+ * Expand a normalized project-root `--path` / `--file` to concrete `.astro` paths.
+ */
+export function expandPathFilterToAstroPaths(
+  projectRoot: string,
+  pathFilter: string | undefined
+): string[] {
+  if (!pathFilter?.trim()) {
+    return [];
+  }
+  const abs = path.resolve(projectRoot, pathFilter);
+  if (!fs.existsSync(abs)) {
+    return [];
+  }
+  const st = fs.statSync(abs);
+  if (st.isFile()) {
+    if (path.extname(abs).toLowerCase() === ".astro") {
+      return [path.relative(projectRoot, abs).split(path.sep).join("/")];
+    }
+    return [];
+  }
+  if (st.isDirectory()) {
+    return collectFilesByExtension([abs], [...DOC_ASTRO_EXTENSIONS], projectRoot);
+  }
+  return [];
+}
+
 export interface AugmentMarkdownFromPathFilterResult {
   markdown: string[];
+  warnings: string[];
+}
+
+export interface AugmentAstroFromPathFilterResult {
+  astro: string[];
   warnings: string[];
 }
 
@@ -644,6 +708,71 @@ export function augmentMarkdownFilesFromPathFilter(
   }
 
   return { markdown: [...new Set(md)].sort(), warnings };
+}
+
+/** Same as {@link augmentMarkdownFilesFromPathFilter} for `.astro` pages. */
+export function augmentAstroFilesFromPathFilter(
+  projectRoot: string,
+  pathFilter: string | undefined,
+  documentationBlockIndex: number,
+  documentations: Array<{ contentPaths: string[] }>,
+  astroDiscovered: string[]
+): AugmentAstroFromPathFilterResult {
+  const warnings: string[] = [];
+  if (!pathFilter?.trim() || documentations.length === 0) {
+    return { astro: astroDiscovered, warnings };
+  }
+
+  const block = documentations[documentationBlockIndex];
+  if (!block) {
+    return { astro: astroDiscovered, warnings };
+  }
+
+  const candidates = expandPathFilterToAstroPaths(projectRoot, pathFilter);
+  if (candidates.length === 0) {
+    return { astro: astroDiscovered, warnings };
+  }
+
+  const seen = new Set(astroDiscovered);
+  let astro = astroDiscovered;
+
+  for (const rel of candidates) {
+    if (seen.has(rel)) {
+      continue;
+    }
+    const abs = path.join(projectRoot, rel);
+    if (!fs.existsSync(abs)) {
+      continue;
+    }
+
+    const underThis = isProjectRelUnderBlockContentPath(projectRoot, rel, block);
+    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, documentations);
+
+    if (underThis) {
+      if (!astro.includes(rel)) {
+        astro = [...astro, rel];
+        seen.add(rel);
+        warnings.push(
+          `${rel}: explicit --path/--file was not in the discovered Astro set; translating with documentations[${documentationBlockIndex}].`
+        );
+      }
+      continue;
+    }
+
+    if (underAny) {
+      continue;
+    }
+
+    if (documentationBlockIndex === 0) {
+      astro = [...astro, rel];
+      seen.add(rel);
+      warnings.push(
+        `${rel} is outside every documentations[].contentPaths — translating Astro with documentations[0] output settings.`
+      );
+    }
+  }
+
+  return { astro: [...new Set(astro)].sort(), warnings };
 }
 
 async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Promise<T> {
@@ -1676,7 +1805,8 @@ export async function translateMarkdownFile(
       glossary,
       locale,
       true,
-      emphasisOn
+      emphasisOn,
+      documentationExpressionProtection(config.documentation)
     );
     placeholderById.set(s.id, st);
     toBatch.push({ ...s, content: protectedText });
@@ -1770,6 +1900,303 @@ export async function translateMarkdownFile(
   const moPost = config.documentation.markdownOutput.postProcessing;
   if (moPost && (moPost.languageListBlock || (moPost.regexAdjustments?.length ?? 0) > 0)) {
     const absSource = path.join(opts.cwd, relPath);
+    const docStem = path.parse(relPath).name;
+    output = applyMarkdownPostProcessing(output, {
+      config,
+      cwd: opts.cwd,
+      relPath,
+      locale,
+      absSource,
+      absTranslated: outPath,
+      verbose: opts.verbose,
+      docStem,
+    });
+  }
+
+  if (config.documentation.addFrontmatter !== false && !opts.dryRun) {
+    const translationModels = collectTranslationModelsFromSegments(segments, translations);
+    output = addTranslationMetadata(
+      output,
+      sourceFileMtime,
+      fileHash,
+      locale,
+      relPath,
+      translationModels
+    );
+  }
+
+  if (!opts.dryRun) {
+    writeAtomicUtf8(outPath, output);
+    if (cache && !opts.noCache) {
+      await withCacheMutex(opts.cacheMutex, () => {
+        cache.setFileStatus(fileTrackingKey, locale, fileHash);
+        for (const s of segments) {
+          if (!s.translatable) {
+            continue;
+          }
+          const entry = translations.get(s.hash);
+          if (entry === undefined || entry.modelUsed === undefined) {
+            continue;
+          }
+          cache.setSegment(
+            s.hash,
+            locale,
+            s.content,
+            entry.text,
+            entry.modelUsed,
+            translationFilepathMeta,
+            s.startLine ?? null
+          );
+        }
+      });
+    }
+    totals.filesWritten = 1;
+  } else {
+    totals.filesWritten = 0;
+  }
+
+  const segmentsNew = translatableCount - segmentsCached;
+  totals.segmentsCached = segmentsCached;
+  totals.segmentsTranslated = segmentsNew;
+  totals.filesProcessed = 1;
+  logTranslateFileComplete(
+    relPath,
+    outPath,
+    segmentsCached,
+    segmentsNew,
+    Date.now() - fileStartTime,
+    totals.costUsd ?? 0
+  );
+
+  return { skipped: false, totals };
+}
+
+export async function translateAstroFile(
+  absSource: string,
+  relPath: string,
+  locale: string,
+  config: I18nDocTranslateConfig,
+  cache: TranslationCache | null,
+  client: OpenRouterClient | null,
+  glossary: Glossary,
+  opts: TranslateRunOptions,
+  hitKeys: Set<string>,
+  fileContentCache?: FileContentCache
+): Promise<{ skipped: boolean; totals: TranslateTotals }> {
+  const totals: TranslateTotals = {
+    filesWritten: 0,
+    filesSkipped: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+  };
+
+  const fileData = fileContentCache
+    ? fileContentCache.readFile(absSource)
+    : {
+        content: fs.readFileSync(absSource, "utf8"),
+        hash: hashFileContent(fs.readFileSync(absSource, "utf8")),
+        mtime: fs.statSync(absSource).mtime.toISOString(),
+      };
+  const content = fileData.content;
+  const fileHash = fileData.hash;
+  const sourceFileMtime = fileData.mtime;
+  const translationFilepathMeta = relPath.split(path.sep).join("/");
+  const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "markdown");
+  const outRelPosix = path.relative(opts.cwd, outPath).split(path.sep).join("/");
+  const blockIdx = opts.documentationBlockIndex ?? 0;
+  const fileTrackingKey = documentationFileTrackingKey(blockIdx, relPath);
+
+  if (opts.force && cache && !opts.noCache) {
+    await withCacheMutex(opts.cacheMutex, () => cache.clearFile(fileTrackingKey, locale));
+    if (opts.verbose) {
+      console.log(
+        chalk.yellow(`  🔄 Force mode: cleared file tracking for ${relPath} (${locale})`)
+      );
+    }
+  }
+
+  const cachedFileHash =
+    cache && !opts.noCache
+      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
+      : null;
+
+  if (
+    !opts.force &&
+    !opts.forceUpdate &&
+    cache &&
+    !opts.noCache &&
+    cachedFileHash === fileHash &&
+    fs.existsSync(outPath)
+  ) {
+    if (opts.verbose) {
+      console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relPath} (unchanged)`));
+    }
+    totals.filesSkipped = 1;
+    totals.filesProcessed = 0;
+    return { skipped: true, totals };
+  }
+
+  const fileStartTime = Date.now();
+  const expressionProtection = documentationExpressionProtection(config.documentation);
+  const astro = new AstroTemplateExtractor();
+  astro.setExtractOptions(expressionProtection);
+  const segments = astro.extract(content, relPath);
+  astro.setReassembleContext({
+    importDepthDelta: computeImportDepthDelta(relPath, outRelPosix),
+  });
+
+  const translatableCount = segments.filter((s) => s.translatable).length;
+  console.log(
+    chalk.yellow(
+      `📄 ${locale} ${relPath}: ${segments.length} segment(s) (${translatableCount} translatable) [astro]`
+    )
+  );
+
+  const translations = new Map<string, DocSegmentTranslation>();
+  const placeholderById = new Map<string, ProtectState>();
+  const originalContentByHash = new Map<string, string>();
+  const toBatch: Segment[] = [];
+  const segmentIndicesInDoc: number[] = [];
+  const clearedFailureHashes = new Set<string>();
+  const failureTracker: FailureTracker | undefined =
+    !opts.dryRun && cache && !opts.noCache
+      ? {
+          clearSegmentFailures: async (sourceHash: string, targetLocale: string) => {
+            await withCacheMutex(opts.cacheMutex, () =>
+              cache.clearSegmentFailures(sourceHash, targetLocale)
+            );
+          },
+          addSegmentFailures: async (rows: TranslationFailureInsert[]) => {
+            await withCacheMutex(opts.cacheMutex, () => cache.addSegmentFailures(rows));
+          },
+        }
+      : undefined;
+
+  let segmentsCached = 0;
+  const translatableSegments: { s: Segment; docIdx: number }[] = [];
+  for (let docIdx = 0; docIdx < segments.length; docIdx++) {
+    const s = segments[docIdx]!;
+    if (s.translatable) {
+      translatableSegments.push({ s, docIdx });
+    }
+  }
+
+  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
+    const hashes = translatableSegments.map(({ s }) => s.hash);
+    batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
+      cache.getSegmentsBatch(hashes, locale)
+    );
+  }
+
+  for (const { s, docIdx } of translatableSegments) {
+    const cached = batchCacheHits?.get(s.hash);
+    if (cached) {
+      const quality = await validateDocTranslatePair(s, cached.text);
+      if (quality.ok) {
+        const modelUsed = cached.model?.trim();
+        translations.set(s.hash, {
+          text: cached.text,
+          ...(modelUsed ? { modelUsed } : {}),
+        });
+        hitKeys.add(`${s.hash}|${locale}`);
+        segmentsCached++;
+        continue;
+      } else if (opts.verbose) {
+        console.warn(
+          chalk.yellow(
+            `  ⚠️  ${relPath} (${locale}): cache rejected for segment (hash ${s.hash}): ${quality.errors.join("; ")}`
+          )
+        );
+      }
+    }
+
+    if (failureTracker && !clearedFailureHashes.has(s.hash)) {
+      await failureTracker.clearSegmentFailures(s.hash, locale);
+      clearedFailureHashes.add(s.hash);
+    }
+    originalContentByHash.set(s.hash, s.content);
+    const { text: protectedText, state: st } = protectSegmentForTranslation(
+      s.content,
+      glossary,
+      locale,
+      true,
+      false,
+      expressionProtection
+    );
+    placeholderById.set(s.id, st);
+    toBatch.push({ ...s, content: protectedText });
+    segmentIndicesInDoc.push(docIdx);
+  }
+
+  const batchSize = config.batchSize ?? 20;
+  const maxBatchChars = config.maxBatchChars ?? 4096;
+  const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
+
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures: segValFail,
+    individualSegmentTranslations: indivSeg,
+  } = await translateSegmentsBatched(
+    toBatch,
+    placeholderById,
+    originalContentByHash,
+    locale,
+    glossary,
+    client,
+    opts.dryRun,
+    opts.verbose,
+    batchSize,
+    maxBatchChars,
+    "markdown",
+    batchConcurrency,
+    translatePromptFormatToResponseFormat(opts.promptFormat),
+    {
+      relativePath: relPath,
+      totalSegments: segments.length,
+      segmentIndicesInDoc,
+    },
+    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
+    failureTracker,
+    { filepath: translationFilepathMeta }
+  );
+
+  for (const [h, t] of map) {
+    translations.set(h, t);
+  }
+  totals.inputTokens += inTok;
+  totals.outputTokens += outTok;
+  totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
+  totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
+
+  for (const s of segments) {
+    if (s.translatable && translations.has(s.hash)) {
+      hitKeys.add(`${s.hash}|${locale}`);
+    }
+  }
+
+  const merged: Segment[] = segments.map((s) => ({
+    ...s,
+    content: s.translatable
+      ? (segmentTranslationText(translations.get(s.hash)) ?? s.content)
+      : s.content,
+  }));
+
+  const v = await validateTranslation(segments, merged);
+  if (!opts.dryRun && (!v.valid || v.warnings.length > 0)) {
+    const parts = [...v.errors, ...v.warnings];
+    console.warn(chalk.yellow(`  ⚠️  ${relPath} (${locale}): ${parts.join("; ")}`));
+  }
+
+  let output = astro.reassemble(segments, translations);
+
+  const moPost = config.documentation.markdownOutput.postProcessing;
+  if (moPost && (moPost.regexAdjustments?.length ?? 0) > 0) {
     const docStem = path.parse(relPath).name;
     output = applyMarkdownPostProcessing(output, {
       config,
@@ -2408,6 +2835,7 @@ export async function runTranslate(
   files: {
     markdown: string[];
     json: string[];
+    astro: string[];
   },
   jsonAbsRoot: string
 ): Promise<TranslateTotals> {
@@ -2466,7 +2894,7 @@ export async function runTranslate(
   const locales = opts.locales.map((l) => normalizeLocale(l));
   const glossary = new Glossary(glossaryUi, glossaryUser, locales);
 
-  const totalFileCount = files.markdown.length + files.json.length;
+  const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
   const models = client?.getConfiguredModels() ?? [];
 
   const docDescription = config.documentation.description?.trim();
@@ -2695,6 +3123,79 @@ export async function runTranslate(
         } else {
           for (const rel of jsonFilesToProcess) {
             const { skipped, totals } = await processJsonFile(rel);
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
+          }
+        }
+      }
+
+      if (shouldRunAstro(opts, config)) {
+        const astroFilesToProcess = files.astro.filter((rel) =>
+          matchesPathFilter(rel, opts.pathFilter)
+        );
+
+        const processAstroFile = async (rel: string) => {
+          const abs = path.join(opts.cwd, rel);
+          const { skipped, totals } = await translateAstroFile(
+            abs,
+            rel,
+            locale,
+            config,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys,
+            fileContentCache
+          );
+          return { skipped, totals };
+        };
+
+        if (fileConcurrencyEffective > 1) {
+          const results = await runMapWithConcurrency(
+            astroFilesToProcess,
+            fileConcurrencyEffective,
+            processAstroFile
+          );
+          for (const { skipped, totals } of results) {
+            if (skipped) {
+              partial.filesSkipped += totals.filesSkipped;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+            } else {
+              partial.filesWritten += totals.filesWritten;
+              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+              partial.inputTokens += totals.inputTokens;
+              partial.outputTokens += totals.outputTokens;
+              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
+              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+              partial.segmentsTranslated =
+                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+              partial.segmentValidationFailures =
+                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+              partial.individualSegmentTranslations =
+                (partial.individualSegmentTranslations ?? 0) +
+                (totals.individualSegmentTranslations ?? 0);
+            }
+          }
+        } else {
+          for (const rel of astroFilesToProcess) {
+            const { skipped, totals } = await processAstroFile(rel);
             if (skipped) {
               partial.filesSkipped += totals.filesSkipped;
               partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);

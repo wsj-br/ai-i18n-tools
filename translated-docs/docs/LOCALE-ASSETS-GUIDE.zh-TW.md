@@ -202,7 +202,7 @@ Is the asset an SVG with translatable text or labels?
 
 當單一圖像在所有語系中共享時使用（無需每語系變體）。當啟用 `markdownOutput.style = "flat"` 時，平面連結重寫器會根據每個輸出檔案計算深度前綴，因此與原始檔位於同一資料夾的資源（例如 `docs/figure.png`，從 `docs/page.md` 參考為 `figure.png`）可在每份翻譯輸出中正確解析——無需設定 `postProcessing.regexAdjustments` 規則。
 
-範例：此套件將 `docs/GETTING_STARTED.md` 轉譯為 `translated-docs/docs/GETTING_STARTED.<locale>.md`。兄弟影像 `docs/translation-cache-editor.png` 被參考為 `translation-cache-editor.png`。重寫器會從輸出檔案的目錄計算至原始目錄的每檔案前綴（`../../docs/`），產生 `../../docs/translation-cache-editor.png`。從 `translated-docs/docs/` 開始，正確解析為 `docs/translation-cache-editor.png`。
+範例：此套件將 `docs/GETTING_STARTED.md` 轉譯為 `translated-docs/docs/GETTING_STARTED.<locale>.md`。兄弟影像 `docs/translation-dashboard.png` 被參考為 `translation-dashboard.png`。重寫器會從輸出檔案的目錄計算至原始目錄的每檔案前綴（`../../docs/`），產生 `../../docs/translation-dashboard.png`。從 `translated-docs/docs/` 開始，正確解析為 `docs/translation-dashboard.png`。
 
 不需要截圖腳本——檔案僅放置一次，且每語系皆不變。
 
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 實作範例
 
-此儲存庫對「翻譯儀表板」截圖使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-TW.md#translation-dashboard) 引用同一資料夾中的圖片 [translation-cache-editor.png](../../docs/../docs/translation-cache-editor.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 設定了 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；每檔案深度前綴自動解析圖片路徑，無需截圖 `regexAdjustments`。
+此儲存庫對「翻譯儀表板」截圖使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-TW.md#translation-dashboard) 引用同一資料夾中的圖片 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 設定了 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；每檔案深度前綴自動解析圖片路徑，無需截圖 `regexAdjustments`。
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 深度前綴是針對每個輸出檔案個別計算的，而非針對整個批次作業全局計算。對於每個來源檔案，重寫器會計算從輸出檔案目錄回到來源檔案目錄的相對路徑，並將其用作前綴。
 
-這表示使用 `flatPreserveRelativeDir: true` 時，位於子目錄中的來源檔案會自動獲得正確的前綴。例如，`docs/GETTING_STARTED.md` 輸出至 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每檔案前綴為 `../../docs/`，因此相對於來源的資源 `translation-cache-editor.png` 會變成 `../../docs/translation-cache-editor.png` — 從 `translated-docs/docs/` 正確解析回 `docs/translation-cache-editor.png`。
+這表示使用 `flatPreserveRelativeDir: true` 時，位於子目錄中的來源檔案會自動獲得正確的前綴。例如，`docs/GETTING_STARTED.md` 輸出至 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每檔案前綴為 `../../docs/`，因此相對於來源的資源 `translation-dashboard.png` 會變成 `../../docs/translation-dashboard.png` — 從 `translated-docs/docs/` 正確解析回 `docs/translation-dashboard.png`。
 
 對於與來源檔案同目錄的相對路徑資源，不需要進行 `postProcessing` 正則表達式修正。
 

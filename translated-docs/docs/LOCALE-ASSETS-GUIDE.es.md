@@ -202,7 +202,7 @@ Is the asset an SVG with translatable text or labels?
 
 Utilice cuando una única imagen se comparta en todos los idiomas (sin variantes por idioma). Cuando `markdownOutput.style = "flat"`, el reescritor de enlaces planos calcula el prefijo de profundidad por archivo de salida, por lo que un recurso junto al archivo fuente (por ejemplo, `docs/figure.png` referenciado como `figure.png` desde `docs/page.md`) se resuelve correctamente en cada salida traducida; no se necesita ninguna regla `postProcessing.regexAdjustments`.
 
-Ejemplo: este paquete traduce `docs/GETTING_STARTED.md` a `translated-docs/docs/GETTING_STARTED.<locale>.md`. La imagen hermana `docs/translation-cache-editor.png` se referencia como `translation-cache-editor.png`. El reescritor calcula el prefijo por archivo desde el directorio del archivo de salida hacia el directorio fuente (`../../docs/`), produciendo `../../docs/translation-cache-editor.png`. Desde `translated-docs/docs/`, esto se resuelve correctamente a `docs/translation-cache-editor.png`.
+Ejemplo: este paquete traduce `docs/GETTING_STARTED.md` a `translated-docs/docs/GETTING_STARTED.<locale>.md`. La imagen hermana `docs/translation-dashboard.png` se referencia como `translation-dashboard.png`. El reescritor calcula el prefijo por archivo desde el directorio del archivo de salida hacia el directorio fuente (`../../docs/`), produciendo `../../docs/translation-dashboard.png`. Desde `translated-docs/docs/`, esto se resuelve correctamente a `docs/translation-dashboard.png`.
 
 No se necesita un script de captura de pantalla; el archivo se coloca una vez y nunca cambia por idioma.
 
@@ -213,7 +213,7 @@ Todavía se necesita una regla `postProcessing` cuando:
 <a id="implementation-example"></a>
 ### Ejemplo de implementación
 
-Este repositorio utiliza el Patrón A para la captura de pantalla del Panel de Traducción: [GETTING_STARTED.md](GETTING_STARTED.es.md#translation-dashboard) hace referencia a la imagen [translation-cache-editor.png](../../docs/../docs/translation-cache-editor.png) en la misma carpeta. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) establece `markdownOutput.style = "flat"` y `flatPreserveRelativeDir: true`; el prefijo de profundidad por archivo resuelve la ruta de la imagen sin necesidad de un `regexAdjustments` de captura de pantalla.
+Este repositorio utiliza el Patrón A para la captura de pantalla del Panel de Traducción: [GETTING_STARTED.md](GETTING_STARTED.es.md#translation-dashboard) hace referencia a la imagen [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) en la misma carpeta. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) establece `markdownOutput.style = "flat"` y `flatPreserveRelativeDir: true`; el prefijo de profundidad por archivo resuelve la ruta de la imagen sin necesidad de un `regexAdjustments` de captura de pantalla.
 
 ---
 
@@ -629,7 +629,7 @@ Para `markdownOutput.style = "doc-system"` (incluyendo `"docusaurus"`, `"astro-s
 
 El prefijo de profundidad se calcula por archivo de salida, no globalmente para todo el lote. Para cada archivo fuente, el reescritor calcula la ruta relativa desde el directorio del archivo de salida hacia el directorio del archivo fuente y utiliza esa como prefijo.
 
-Esto significa que con `flatPreserveRelativeDir: true`, los archivos fuente en subdirectorios obtienen automáticamente el prefijo correcto. Por ejemplo, `docs/GETTING_STARTED.md` se genera en `translated-docs/docs/GETTING_STARTED.<locale>.md`. El prefijo por archivo es `../../docs/`, por lo que un recurso `translation-cache-editor.png` (relativo al origen) se convierte en `../../docs/translation-cache-editor.png` — lo cual se resuelve correctamente desde `translated-docs/docs/` hacia `docs/translation-cache-editor.png`.
+Esto significa que con `flatPreserveRelativeDir: true`, los archivos fuente en subdirectorios obtienen automáticamente el prefijo correcto. Por ejemplo, `docs/GETTING_STARTED.md` se genera en `translated-docs/docs/GETTING_STARTED.<locale>.md`. El prefijo por archivo es `../../docs/`, por lo que un recurso `translation-dashboard.png` (relativo al origen) se convierte en `../../docs/translation-dashboard.png` — lo cual se resuelve correctamente desde `translated-docs/docs/` hacia `docs/translation-dashboard.png`.
 
 No se necesita ninguna corrección mediante expresión regular `postProcessing` para recursos con rutas relativas junto a los archivos fuente.
 

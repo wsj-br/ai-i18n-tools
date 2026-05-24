@@ -121,6 +121,7 @@ File: `ai-i18n-tools.config.json` (default location - override with `-c <path>`)
 - `documentations[].description` is optional text for maintainers (what the block is for); it does not affect translation. When set, it is included in the `translate-docs` headline and `status` headers.
 - `documentations[].targetLocales` limits that block to a subset; effective documentation locales are the **union** across blocks (useful when different trees need different locale sets).
 - `documentations[].markdownOutput.postProcessing` can adjust translated markdown after reassembly, for example by rewriting screenshot paths or rebuilding a language list block.
+- `documentations[].protectAttributes` / `protectKeys` extend built-in skip lists for JSX/HTML attribute values and object keys during `.astro` parse-and-replace and MDX placeholder extraction (see `docs/GETTING_STARTED.md#protectattributes-protectkeys`).
 - All paths are relative to cwd (where the CLI is invoked).
 - `OPENROUTER_API_KEY` must be set in the environment or a `.env` file.
 

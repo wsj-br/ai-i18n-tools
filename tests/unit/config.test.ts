@@ -625,6 +625,39 @@ describe("writeInitConfigFile", () => {
   });
 });
 
+describe("parseI18nConfig ui.uiExtractor alias", () => {
+  it("maps ui.reactExtractor to ui.uiExtractor when uiExtractor is unset", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        cacheDir: ".translation-cache",
+        documentations: [{ contentPaths: [], outputDir: "./out" }],
+        ui: {
+          sourceRoots: ["src/"],
+          stringsJson: "strings.json",
+          flatOutputDir: "./locales",
+          reactExtractor: { extensions: [".astro"], funcNames: ["t"] },
+        },
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: {
+          translateUIStrings: true,
+          translateMarkdown: false,
+          translateJSON: false,
+          extractUIStrings: true,
+        },
+      })
+    );
+    expect(c.ui.uiExtractor?.extensions).toEqual([".astro"]);
+    expect(c.ui.reactExtractor?.extensions).toEqual([".astro"]);
+  });
+});
+
 describe("parseI18nConfig glossary legacy field", () => {
   it("maps glossary.uiGlossaryFromStringsJson to uiGlossary when uiGlossary is unset", () => {
     const c = parseI18nConfig(
@@ -678,5 +711,40 @@ describe("parseI18nConfig targetLocales", () => {
         })
       )
     ).toThrow(ConfigValidationError);
+  });
+});
+
+describe("parseI18nConfig astro protectAttributes / protectKeys", () => {
+  it("accepts optional protectAttributes and protectKeys on documentations blocks", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        cacheDir: ".translation-cache",
+        documentations: [
+          {
+            contentPaths: ["src/pages/index.astro"],
+            outputDir: "src/pages",
+            protectAttributes: ["variant", "size"],
+            protectKeys: ["slug", "code"],
+          },
+        ],
+        ui: uiDefaults,
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: {
+          translateUIStrings: false,
+          translateMarkdown: true,
+          translateJSON: false,
+          extractUIStrings: false,
+        },
+      })
+    );
+    expect(c.documentations[0]?.protectAttributes).toEqual(["variant", "size"]);
+    expect(c.documentations[0]?.protectKeys).toEqual(["slug", "code"]);
   });
 });

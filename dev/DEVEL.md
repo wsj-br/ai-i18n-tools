@@ -5,6 +5,7 @@
 - [Development Guide](#development-guide)
   - [Prerequisites](#prerequisites)
     - [Optional: locale screenshots (`examples/nextjs-app`)](#optional-locale-screenshots-examplesnextjs-app)
+    - [Optional: Translation Dashboard screenshot](#optional-translation-dashboard-screenshot)
   - [Setting Up the Workspace](#setting-up-the-workspace)
     - [Exposing the CLI globally during development](#exposing-the-cli-globally-during-development)
   - [Common Scripts](#common-scripts)
@@ -48,6 +49,18 @@
 | **Next.js dev server** | Must be reachable while the script runs — from **`examples/nextjs-app`**, run **`pnpm dev`** (default **<http://localhost:3030>**). Override with **`BASE_URL`** if the app listens elsewhere. |
 
 Optional tuning: **`VIRTUAL_TIME_MS`** (default **8000**) delays capture so locale JSON and fonts can load before the screenshot.
+
+### Optional: Translation Dashboard screenshot
+
+[`scripts/screenshot-translation-dashboard.sh`](../scripts/screenshot-translation-dashboard.sh) refreshes **`docs/translation-dashboard.png`** for [GETTING_STARTED.md](../docs/GETTING_STARTED.md). The dashboard UI is English-only (one PNG). Extra prerequisites:
+
+| Dependency | Role |
+|------------|------|
+| **`chromium-headless-shell`** | **`--screenshot`** (default **1300×900**); set **`CHROME_BIN`** if needed. |
+| **`curl`** | Waits until the dashboard URL responds before capture. |
+| **Built CLI** | Run **`pnpm build`** so **`dist/cli/index.js`** exists. |
+
+By default the script starts **`ai-i18n-tools dashboard --no-open`** on port **8675**, captures, then stops the server. If the dashboard is already running, set **`BASE_URL`** (for example **`http://127.0.0.1:8675/`**) and **`SKIP_DASHBOARD_START=1`**. Optional tuning: **`VIRTUAL_TIME_MS`**, **`WINDOW_SIZE`**, **`PORT`**.
 
 ## Setting Up the Workspace
 
@@ -213,7 +226,7 @@ pnpm update-all
 pnpm pre-release
 ```
 
-That script runs format, lint, clean, build, and tests (see the `pre-release` script in `package.json`). Resolve any failures locally; CI applies the same checks before npm publish.
+That script runs format, lint, clean, build, tests, and example site builds (`examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`; see the `pre-release` script in `package.json`). Resolve any failures locally; CI applies the same checks before npm publish.
 
 ### Pre-release checklist
 

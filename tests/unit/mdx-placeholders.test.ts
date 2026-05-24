@@ -201,4 +201,18 @@ describe("mdx-placeholders", () => {
     expect(tabsOpener).toContain("label: '{{JXA_1}}'");
     expect(tabsOpener).toContain("value: 'apple'");
   });
+
+  it("skips MDX JSX attrs listed in protectAttributes", () => {
+    const src = '<Tabs label="Do not translate" tooltip="Also skip" />';
+    const { jsxAttributeMap } = protectMdx(src, { protectAttributes: ["label", "tooltip"] });
+    expect(jsxAttributeMap).toBeUndefined();
+  });
+
+  it("skips Tabs object label keys when label is in protectKeys", () => {
+    const src = `<Tabs values={[
+  { value: 'apple', label: 'Apple' },
+]} />`;
+    const { jsxAttributeMap } = protectMdx(src, { protectKeys: ["label"] });
+    expect(jsxAttributeMap).toBeUndefined();
+  });
 });

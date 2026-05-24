@@ -8,7 +8,7 @@ import type {
 } from "../core/types.js";
 import { isPluralStringsEntry, segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
-import { extractUiCallsFromSource } from "./ui-string-babel.js";
+import { extractUiCallsFromFileContent } from "./ui-string-babel.js";
 
 const DEFAULT_EXT = [".js", ".jsx", ".ts", ".tsx"];
 const DEFAULT_FUNCS = ["t", "i18n.t"];
@@ -53,7 +53,7 @@ export class UIStringExtractor extends BaseExtractor {
   }
 
   extract(content: string, filepath: string): Segment[] {
-    const calls = extractUiCallsFromSource(content, filepath, this.funcNames);
+    const calls = extractUiCallsFromFileContent(content, filepath, this.funcNames);
     const found = new Map<string, Segment>();
     let i = 0;
     for (const call of calls) {

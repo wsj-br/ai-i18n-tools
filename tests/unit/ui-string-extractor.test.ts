@@ -24,6 +24,13 @@ describe("UIStringExtractor", () => {
     expect(segs.some((s) => s.content === "Hello world" && s.type === "ui-string")).toBe(true);
   });
 
+  it("extract finds t() in .astro frontmatter when extension enabled", () => {
+    const ex = new UIStringExtractor({ extensions: [".astro"] });
+    const astro = `---\nconst x = t('Astro UI');\n---\n<p>{t('Template')}</p>`;
+    const segs = ex.extract(astro, "page.astro");
+    expect(segs.map((s) => s.content).sort()).toEqual(["Astro UI", "Template"]);
+  });
+
   it("extract uses configured funcNames", () => {
     const ex = new UIStringExtractor({ funcNames: ["translate"] });
     const src = `translate('Bye')`;

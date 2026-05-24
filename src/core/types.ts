@@ -333,7 +333,7 @@ const glossarySchema = z.preprocess(
     .strict()
 );
 
-const reactExtractorSchema = z
+const uiExtractorSchema = z
   .object({
     extensions: z.array(z.string().min(1)).default([".js", ".jsx", ".ts", ".tsx"]),
     funcNames: z.array(z.string().min(1)).default(["t", "i18n.t"]),
@@ -454,22 +454,37 @@ const markdownOutputSchema = z
   })
   .strict();
 
-const uiConfigSchema = z
-  .object({
-    /** Roots scanned for `t()` / `i18n.t()` (e.g. `src/renderer/`). */
-    sourceRoots: z.array(z.string().min(1)).default([]),
-    /** Merged extract output (`strings.json`). */
-    stringsJson: z.string().min(1).default("strings.json"),
-    /** Directory for flat per-locale JSON (`de.json`, …). */
-    flatOutputDir: z.string().min(1).default("./locales"),
-    /**
-     * When set, UI translation (`translate-ui`) tries this OpenRouter model first, then the rest of
-     * `openrouter.translationModels` (or legacy default/fallback) in order, skipping duplicates.
-     */
-    preferredModel: z.string().min(1).optional(),
-    reactExtractor: reactExtractorSchema.optional(),
-  })
-  .strict();
+const uiConfigSchema = z.preprocess(
+  (raw) => {
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      const o = { ...(raw as Record<string, unknown>) };
+      if (o.uiExtractor === undefined && o.reactExtractor !== undefined) {
+        o.uiExtractor = o.reactExtractor;
+      }
+      return o;
+    }
+    return raw;
+  },
+  z
+    .object({
+      /** Roots scanned for `t()` / `i18n.t()` (e.g. `src/renderer/`). */
+      sourceRoots: z.array(z.string().min(1)).default([]),
+      /** Merged extract output (`strings.json`). */
+      stringsJson: z.string().min(1).default("strings.json"),
+      /** Directory for flat per-locale JSON (`de.json`, …). */
+      flatOutputDir: z.string().min(1).default("./locales"),
+      /**
+       * When set, UI translation (`translate-ui`) tries this OpenRouter model first, then the rest of
+       * `openrouter.translationModels` (or legacy default/fallback) in order, skipping duplicates.
+       */
+      preferredModel: z.string().min(1).optional(),
+      /** Scanner options (extensions, `funcNames`, …). Preferred over `reactExtractor`. */
+      uiExtractor: uiExtractorSchema.optional(),
+      /** @deprecated Use `uiExtractor` (still accepted). */
+      reactExtractor: uiExtractorSchema.optional(),
+    })
+    .strict()
+);
 
 const svgFilesConfigInnerSchema = z
   .object({
@@ -571,6 +586,18 @@ const documentationBlockSchema = z
      * `false` keeps the entire front matter block unchanged. A string array restricts translation to those dot-paths.
      */
     translateFrontmatterFields: z.union([z.boolean(), z.array(z.string().min(1))]).default(true),
+    /**
+     * Extra JSX/HTML attribute names whose quoted string values must not be translated in Astro
+     * `{expression}` blocks and MDX JSX tags during `translate-docs`. Merged with built-in defaults
+     * (`class`, `id`, `style`, `data-*`, most `aria-*`, etc.). Case-insensitive.
+     */
+    protectAttributes: z.array(z.string().min(1)).optional(),
+    /**
+     * Extra object property names whose quoted string values must not be translated in Astro
+     * `{expression}` blocks and MDX object literals (e.g. `label:` in `<Tabs values={[…]}>`).
+     * Merged with built-in defaults (`class`, `key`, `id`, etc.). Case-insensitive.
+     */
+    protectKeys: z.array(z.string().min(1)).optional(),
   })
   .strict();
 
@@ -646,7 +673,7 @@ export type I18nConfig = z.infer<typeof i18nConfigSchema>;
 export type OpenRouterConfig = z.infer<typeof openRouterConfigSchema>;
 export type FeaturesConfig = z.infer<typeof featuresSchema>;
 export type GlossaryConfig = z.infer<typeof glossarySchema>;
-export type UIStringExtractorConfig = z.infer<typeof reactExtractorSchema>;
+export type UIStringExtractorConfig = z.infer<typeof uiExtractorSchema>;
 /** @deprecated Use {@link UIStringExtractorConfig} */
 export type ReactExtractorConfig = UIStringExtractorConfig;
 export type LanguageListBlockConfig = z.infer<typeof languageListBlockSchema>;

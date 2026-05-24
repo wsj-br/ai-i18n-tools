@@ -45,9 +45,9 @@ CLI and toolkit for internationalizing JavaScript/TypeScript applications and do
 
 Scans source files for `t("…")` / `i18n.t("…")` literals, builds a master catalog (`strings.json`), translates missing entries per locale via OpenRouter, and writes flat JSON files (`de.json`, `pt-BR.json`, …) ready for i18next.
 
-**Workflow 2 - Document Translation** — for markdown/MDX docs (Docusaurus, Astro Starlight, plain README files)
+**Workflow 2 - Document Translation** — for markdown/MDX docs (Docusaurus, Astro Starlight, plain README files) and `.astro` page HTML (plain Astro marketing sites)
 
-Translates `.md` and `.mdx` source files to every target locale with a shared SQLite cache — only new or changed segments are sent to the LLM. Optional Docusaurus shell JSON (`jsonSource`, from `write-translations`) covers navbar, footer, and theme UI strings. SVG file translation is enabled via `features.translateSVG` and the top-level `svg` block.
+Translates `.md`, `.mdx`, and `.astro` source files to every target locale with a shared SQLite cache — only new or changed segments are sent to the LLM. Optional Docusaurus shell JSON (`jsonSource`, from `write-translations`) covers navbar, footer, and theme UI strings. SVG file translation is enabled via `features.translateSVG` and the top-level `svg` block. For plain Astro sites, see [`examples/astro-website`](examples/astro-website/) (hybrid: `translate-docs` for page HTML plus `t()` for frontmatter strings).
 
 Both workflows share a single `ai-i18n-tools.config.json` file and can be used independently or together.
 
@@ -130,6 +130,7 @@ Then wire i18next in your app using the helpers from `'ai-i18n-tools/runtime'`. 
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs

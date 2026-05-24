@@ -3,6 +3,8 @@ import {
   validateTranslation,
   validateDocTranslatePair,
   compareMarkdownAST,
+  isAcceptableLengthRatio,
+  lengthRatioMin,
 } from "../../src/processors/validator.js";
 import type { Segment } from "../../src/core/types.js";
 
@@ -31,6 +33,18 @@ describe("compareMarkdownAST", () => {
   it("detects list count change", async () => {
     const e = await compareMarkdownAST("- a\n- b", "- a");
     expect(e.some((x) => x.includes("AST mismatch: listItem") || x.includes("list"))).toBe(true);
+  });
+});
+
+describe("lengthRatioMin", () => {
+  it("uses a lower floor for short labels that compress in CJK", () => {
+    expect(lengthRatioMin(12)).toBe(0.08);
+    expect(isAcceptableLengthRatio(12, 2)).toBe(true);
+    expect(isAcceptableLengthRatio(11, 2)).toBe(true);
+  });
+
+  it("still flags extreme expansion on longer source text", () => {
+    expect(isAcceptableLengthRatio(60, 300)).toBe(false);
   });
 });
 
@@ -69,8 +83,22 @@ describe("validateTranslation", () => {
   });
 
   it("warns on unusual length ratio", async () => {
-    const src = [S({ type: "paragraph", content: "hi", hash: "h", translatable: true })];
-    const tr = [S({ type: "paragraph", content: "x".repeat(100), hash: "h", translatable: true })];
+    const src = [
+      S({
+        type: "paragraph",
+        content: "This is a longer source sentence for ratio validation.",
+        hash: "h",
+        translatable: true,
+      }),
+    ];
+    const tr = [
+      S({
+        type: "paragraph",
+        content: "x".repeat(300),
+        hash: "h",
+        translatable: true,
+      }),
+    ];
     const v = await validateTranslation(src, tr);
     expect(v.warnings.some((w) => w.includes("length ratio"))).toBe(true);
   });
@@ -92,10 +120,24 @@ describe("validateDocTranslatePair", () => {
   });
 
   it("treats unusual length ratio as failure", async () => {
-    const src = S({ type: "paragraph", content: "short", hash: "h" });
+    const src = S({
+      type: "paragraph",
+      content: "This is a longer source sentence used to validate length ratio bounds.",
+      hash: "h",
+    });
     const r = await validateDocTranslatePair(src, "x".repeat(500));
     expect(r.ok).toBe(false);
     expect(r.errors.some((e) => e.includes("length ratio"))).toBe(true);
+  });
+
+  it("accepts compact CJK translations of short English labels", async () => {
+    const src = S({ type: "paragraph", content: "Installation", hash: "h" });
+    const r = await validateDocTranslatePair(src, "安装");
+    expect(r.ok).toBe(true);
+
+    const src2 = S({ type: "paragraph", content: "Open Source", hash: "h2" });
+    const r2 = await validateDocTranslatePair(src2, "开源");
+    expect(r2.ok).toBe(true);
   });
 
   it("fails on leaked internal placeholders", async () => {
