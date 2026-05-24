@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-24
+
 - **Added**: tests — unit coverage for `astro-template-extractor`, `nested-json-extractor`, `parse-glossary-csv`, `markdown-source-diagnostics`, `ui-languages-master-direction`, and `translation-dashboard` (new `parse-glossary-csv` and `ui-languages-master-direction` test files; expanded existing dashboard and extractor tests).
 - **Changed**: examples — `examples/astro-website` bumps `astro` to `^6.3.1` and `@astrojs/tailwind` to `^6.0.2` (aligned with `astro-docs`) so `pnpm audit` is clean without workspace overrides.
 - **Added**: Dev tooling — `markdown-link-check` with `pnpm run lint:md` (same non-recursive markdown paths as before); root `.markdown-link-check.json` ignores `npmjs.com` (403 from bot blocking) and enables 429 retries.
