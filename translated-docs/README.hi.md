@@ -7,44 +7,60 @@
 [![लाइसेंस: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-JavaScript/TypeScript अनुप्रयोगों और दस्तावेज़ीकरण साइटों को [OpenRouter](https://openrouter.ai/) के माध्यम से बड़े भाषा मॉडल का उपयोग करके अंतरराष्ट्रीयकरण के लिए CLI और टूलकिट। दो स्वतंत्र कार्यप्रवाह: **UI अनुवाद** `t("…")` कॉल निकालता है और i18next के लिए स्थान-तैयार JSON लिखता है; **दस्तावेज़ अनुवाद** मार्कडाउन, MDX और SVG फ़ाइलों का अनुवाद करता है एक स्मार्ट SQLite कैश के साथ ताकि केवल बदले गए खंडों को LLM को फिर से भेजा जाए।
+जावास्क्रिप्ट/टाइपस्क्रिप्ट एप्लिकेशन और डॉक्यूमेंटेशन साइट्स को [OpenRouter](https://openrouter.ai/) के माध्यम से लार्ज लैंग्वेज मॉडल्स का उपयोग करके अंतरराष्ट्रीयकरण के लिए एक CLI और टूलकिट। तीन मॉड्यूलर वर्कफ़्लो, जो सभी एकल कॉन्फ़िग फ़ाइल साझा करते हैं, विभिन्न अनुवाद आवश्यकताओं का समर्थन करते हैं:
+
+- **वर्कफ़्लो 1 — UI अनुवाद:** JS/TS से `t("…")` कॉल निकालता है (और वैकल्पिक रूप से `.astro` फ़ाइलों से) और i18next या स्टैटिक SSG लुकअप के लिए प्रति-स्थानीय स्तर पर फ्लैट JSON उत्पन्न करता है।
+- **वर्कफ़्लो 2 — दस्तावेज़ अनुवाद:** `docs[].contentPaths` में सूचीबद्ध मार्कडाउन, MDX और `.astro` पृष्ठों (वेबसाइट्स और Starlight के लिए) का `translate-docs` का उपयोग करके अनुवाद करता है।
+- **वर्कफ़्लो 3 — JSON फ़ाइल अनुवाद:** `json[]` में परिभाषित किसी भी अनुवाद योग्य नेस्टेड JSON बंडल का अनुवाद करता है। जब UI कॉपी स्रोत में `t()` के बजाय प्रति-स्थानीय स्तर पर JSON फ़ाइलों में संग्रहीत होती है, तो `translate-json` का उपयोग करें।
+
+**SVG** संपत्तियों का अनुवाद `features.translateSVG`, शीर्ष-स्तरीय `svg` ब्लॉक और `translate-svg` का उपयोग करके किया जाता है — `docs[].contentPaths` का नहीं।
+
+**मुझे कौन सा वर्कफ़्लो उपयोग करना चाहिए?**
+- स्रोत `t()` का उपयोग करता है → **वर्कफ़्लो 1** (`extract` / `translate-ui`)
+- स्थानीयकृत पृष्ठ या Docusaurus कैटलॉग JSON → **वर्कफ़्लो 2** (`translate-docs`)
+- केवल स्वतंत्र, नेस्टेड JSON स्थानीय फ़ाइलें → **वर्कफ़्लो 3** (`translate-json`)
+
+सभी वर्कफ़्लो एक फ़ाइल/SQLite कैश बनाए रखते हैं ताकि केवल नए या बदले गए खंडों (स्ट्रिंग्स या टेक्स्ट चंक्स) को LLM को भेजा जाए।
 
 <small>**अन्य भाषाओं में पढ़ें:** </small>
 <small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
-
-<small>अनुवादित README और दस्तावेज़ GitHub पर [`translated-docs/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) के अंतर्गत प्रतिबद्ध हैं; npm पैकेज केवल अंग्रेज़ी `docs/` शिप करता है।</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **विषय सूची**
 
-- [दो मुख्य कार्यप्रवाह](#two-core-workflows)
+- [मुख्य वर्कफ़्लो](#core-workflows)
 - [स्थापना](#installation)
-  - [CLI का उपयोग करके](#using-the-cli)
+  - [CLI का उपयोग करना](#using-the-cli)
 - [OpenRouter](#openrouter)
 - [त्वरित शुरुआत](#quick-start)
-  - [कार्यप्रवाह 1 - UI अनुवाद](#workflow-1---ui-translation)
-  - [कार्यप्रवाह 2 - दस्तावेज़ अनुवाद](#workflow-2---document-translation)
-  - [दोनों कार्यप्रवाह](#both-workflows)
-- [रनटाइम हेल्पर](#runtime-helpers)
-- [CLI कमांड](#cli-commands)
-- [दस्तावेज़ीकरण](#documentation)
+  - [वर्कफ़्लो 1 - UI अनुवाद](#workflow-1---ui-translation)
+  - [वर्कफ़्लो 2 - दस्तावेज़ अनुवाद](#workflow-2---document-translation)
+  - [Astro (सादा Astro & Starlight)](#astro-plain-astro--starlight)
+  - [संयुक्त वर्कफ़्लो](#combined-workflow)
+- [रनटाइम हेल्पर्स](#runtime-helpers)
+- [CLI कमांड्स](#cli-commands)
+- [डॉक्यूमेंटेशन](#documentation)
 - [लाइसेंस](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<a id="two-core-workflows"></a>
-## दो मुख्य कार्यप्रवाह
+<a id="core-workflows"></a>
+## मुख्य वर्कफ़्लो
 
-**कार्यप्रवाह 1 - UI अनुवाद** — i18next का उपयोग करने वाले किसी भी JS/TS प्रोजेक्ट के लिए (React, Next.js, Node.js, CLIs)
+**वर्कफ़्लो 1 - UI अनुवाद** — i18next (React, Next.js, Node.js, CLIs) या स्टैटिक Astro SSG का उपयोग करने वाले किसी भी JS/TS प्रोजेक्ट के लिए
 
-स्रोत फ़ाइलों में `t("…")` / `i18n.t("…")` शाब्दिकों को स्कैन करता है, एक मास्टर कैटलॉग (`strings.json`) बनाता है, OpenRouter के माध्यम से भाषानुसार लुप्त प्रविष्टियों का अनुवाद करता है, और i18next के लिए तैयार फ्लैट JSON फ़ाइलें (`de.json`, `pt-BR.json`, …) लिखता है।
+स्रोत फ़ाइलों में `t("…")` / `i18n.t("…")` लिटरल्स के लिए स्कैन करता है (`ui.uiExtractor.extensions` में Astro फ्रंटमैटर और टेम्पलेट एक्सप्रेशन के लिए `.astro` जोड़ें), एक मास्टर कैटलॉग (`strings.json`) बनाता है, OpenRouter के माध्यम से प्रति-स्थानीय स्तर पर अनुपलब्ध प्रविष्टियों का अनुवाद करता है, और फ्लैट JSON फ़ाइलें (`de.json`, `pt-BR.json`, …) लिखता है। उन बंडल में अंग्रेजी स्रोत पाठ रनटाइम लुकअप कुंजी है — `strings.json` निकासी कैश है, रनटाइम बंडल नहीं।
 
-**वर्कफ़्लो 2 - दस्तावेज़ अनुवाद** — मार्कडाउन/एमडीएक्स दस्तावेज़ों (डॉक्यूसॉरस, एस्ट्रो स्टारलाइट, सादे रीडमी फ़ाइल) और `.astro` पृष्ठ HTML (सादे एस्ट्रो मार्केटिंग साइट) के लिए
+**वर्कफ़्लो 2 - दस्तावेज़ अनुवाद** — `docs[].contentPaths` के तहत मार्कडाउन, MDX और `.astro` के लिए
 
-`.md`, `.mdx`, और `.astro` स्रोत फ़ाइलों का साझा स्क्वाइलाइट कैश के साथ प्रत्येक लक्ष्य स्थानीयकरण में अनुवाद करता है — केवल नए या बदले गए खंड एलएलएम को भेजे जाते हैं। वैकल्पिक डॉक्यूसॉरस शेल JSON (`jsonSource`, `write-translations` से) नेवबार, फ़ुटर और थीम यूआई स्ट्रिंग्स को कवर करता है। `features.translateSVG` और शीर्ष-स्तरीय `svg` ब्लॉक के माध्यम से एसवीजी फ़ाइल अनुवाद सक्षम है। सादे एस्ट्रो साइट्स के लिए, [`examples/astro-website`](../examples/astro-website/) देखें (हाइब्रिड: पृष्ठ HTML के लिए `translate-docs` और फ्रंटमैटर स्ट्रिंग्स के लिए `t()`)।
+मुख्य रूप से **मार्कडाउन, MDX और `.astro` डॉक्यूमेंटेशन** (Docusaurus, [Astro Starlight](https://starlight.astro.build/), सादा README फ़ाइलें और सादा Astro मार्केटिंग पृष्ठ) के लिए डिज़ाइन किया गया है। `translate-docs` साझा SQLite कैश के साथ स्थानीयकृत प्रतियां लिखता है। Docusaurus साइट्स पर, शेल JSON (नेविगेशन पट्टी, फ़ुटर, थीम स्ट्रिंग्स) को एक ही कमांड में अनुवादित करने के लिए `docs[].docusaurusCatalogDir` को `write-translations` कैटलॉग फ़ोल्डर पर सेट करें। `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"` और उपनाम `"docusaurus"` / `"astro-starlight"` का समर्थन करता है (शुरुआत में [आउटपुट लेआउट](docs/GETTING_STARTED.hi.md#output-layouts) देखें)। वह मनमाना नेस्टेड UI JSON जो Docusaurus कैटलॉग नहीं है, वर्कफ़्लो 3 (`json[]` / `translate-json`) में होना चाहिए, `docs[]` में नहीं।
 
-दोनों कार्यप्रवाह एकल `ai-i18n-tools.config.json` फ़ाइल साझा करते हैं और स्वतंत्र रूप से या एक साथ उपयोग किए जा सकते हैं।
+**वर्कफ़्लो 3 - JSON फ़ाइल अनुवाद** — स्रोत में `t()` के बिना नेस्टेड स्थानीय JSON
+
+`src/i18n/en/translation.json` जैसी फ़ाइलों का शीर्ष-स्तरीय `json[]`, `features.translateJson` और `translate-json` के माध्यम से अनुवाद करें। `init -t ui-json-bundles` के साथ स्कैफ़ोल्ड करें।
+
+सभी वर्कफ़्लो `ai-i18n-tools.config.json` को साझा करते हैं और उन्हें संयोजित किया जा सकता है; `sync` आपके `features` फ़्लैग के अनुसार क्रम में निकासी, UI अनुवाद, SVG अनुवाद, `translate-docs` और `translate-json` चलाता है।
 
 ---
 
@@ -71,10 +87,17 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 
 ```json
 "scripts": {
+  "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:translate": "ai-i18n-tools translate-docs"
 }
 ```
+
+आप सीधे ai-i18n-tools CLI कमांड्स का भी उपयोग कर सकते हैं, उदाहरण के लिए `ai-i18n-tools sync`।
+
+मैन्युअल रूप से चलाते समय क्रम और फीचर फ़्लैग्स गलत होने की संभावना होती है, इसलिए `extract`, `translate-ui`, `translate-svg`, `translate-docs` और `translate-json` को हाथ से जोड़ने की तुलना में `sync` को प्राथमिकता दें। शुरुआत में [अनुशंसित `package.json` स्क्रिप्ट्स](docs/GETTING_STARTED.hi.md#recommended-packagejson-scripts) देखें।
 
 **शून्य-स्थापना एकल उपयोग** — `npx ai-i18n-tools <cmd>` या `pnpm dlx ai-i18n-tools <cmd>` (केवल उस निष्पादन के लिए डाउनलोड करता है)।
 
@@ -91,7 +114,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## OpenRouter
 
-OpenRouter को कॉल करने वाले कमांड (`translate-ui`, `translate-docs`, `sync`, `check-models`, और संबंधित स्क्रिप्ट्स) को वातावरण में `OPENROUTER_API_KEY` की आवश्यकता होती है। `check-markdown` OpenRouter का उपयोग नहीं करता है।
+OpenRouter को कॉल करने वाली कमांड्स (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` और संबंधित स्क्रिप्ट्स) को पर्यावरण में `OPENROUTER_API_KEY` की आवश्यकता होती है। `check-markdown` OpenRouter का उपयोग नहीं करता है।
 
 `ai-i18n-tools.config.json` में, `openrouter` ऑब्जेक्ट में मॉडल सूचियाँ, `baseUrl`, `maxTokens`, `temperature`, और `requestTimeoutMs` शामिल हैं: OpenRouter के लिए प्रत्येक HTTP अनुरोध (चैट पूर्ति और आंतरिक `GET /models` कॉल) के लिए प्रतीक्षा करने का अधिकतम समय मिलीसेकंड में। डिफ़ॉल्ट `30000` (30 सेकंड) है।
 
@@ -106,7 +129,7 @@ OpenRouter को कॉल करने वाले कमांड (`translat
 ### कार्यप्रवाह 1 - UI अनुवाद
 
 ```bash
-# 1. Create config
+# 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
 npx ai-i18n-tools init
 
 # 2. Extract UI strings to strings.json
@@ -121,24 +144,48 @@ npx ai-i18n-tools translate-ui
 <a id="workflow-2---document-translation"></a>
 ### कार्यप्रवाह 2 - दस्तावेज़ अनुवाद
 
+डिफ़ॉल्ट `init` टेम्पलेट (`ui-markdown`) केवल UI निकासी को सक्षम करता है। `translate-docs` से पहले डॉक्स-उन्मुख टेम्पलेट का उपयोग करें (या `features.translateDocs` सक्षम करें और `docs[]` जोड़ें):
+
 ```bash
-# 1. Create config for Docusaurus
+# Docusaurus docs + optional write-translations catalog
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
-# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
-# 2. Translate all docs
+# Astro Starlight documentation
+# npx ai-i18n-tools init -t ui-starlight
+
+# Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
+# npx ai-i18n-tools init -t ui-astro-website
+
 npx ai-i18n-tools translate-docs
-
-# 3. Check status
 npx ai-i18n-tools status
+# npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-<a id="both-workflows"></a>
-### दोनों कार्यप्रवाह
+`ai-i18n-tools.config.json` संपादित करें: `docs[].contentPaths` को मार्कडाउन, MDX, और/या `.astro` स्रोतों पर सेट करें; `docs[].outputDir` और `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"flat"`, आदि)। पूर्ण फ़ील्ड संदर्भ: [वर्कफ़्लो 2 - डॉक्यूमेंट ट्रांसलेशन](docs/GETTING_STARTED.hi.md#workflow-2---document-translation)।
+
+<a id="astro-plain-astro--starlight"></a>
+### एस्ट्रो (सादा एस्ट्रो और स्टारलाइट)
+
+**एस्ट्रो स्टारलाइट** — `init -t ui-starlight`, फिर `translate-docs`। स्टारलाइट UI ओवरराइड आवश्यकता पड़ने पर एक अलग `docs[]` ब्लॉक में `jsonPathTemplate` के साथ `src/content/i18n/en.json` का उपयोग कर सकते हैं ([सुरुआत करें → वर्कफ़्लो 2](docs/GETTING_STARTED.hi.md#step-1-initialise-for-documentation))।
+
+**सादा एस्ट्रो** (मार्केटिंग या ऐप साइट्स, स्टारलाइट नहीं) — [एस्ट्रो बिल्ट-इन i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-tools के साथ जोड़ें। संदर्भ प्रोजेक्ट: [`examples/astro-website`](../examples/astro-website/) (अंग्रेज़ी `/` पर, स्थानीयकरण `/{locale}/` पर)।
+
+अधिकांश टीमें दो पाइपलाइनों के **संकर** का उपयोग करती हैं:
+
+| पाइपलाइन | उपयोग के लिए | कमांड | आउटपुट |
+|----------|---------|----------|--------|
+| **पृष्ठ HTML** | शीर्षक, पैराग्राफ, नेविगेशन लेबल, टेम्पलेट बॉडी में इनलाइन सरणियाँ | `translate-docs` | प्रति स्थानीयकरण `src/pages/{locale}/index.astro` |
+| **UI स्ट्रिंग्स (`t()`)** | फ्रंटमैटर डेटा, टैब लेबल, साझा सरणियाँ | `extract` → `translate-ui` | `public/locales/{locale}.json` (अंग्रेज़ी स्रोत के रूप में कुंजी) |
+
+`init -t ui-astro-website` के साथ UI स्कैफ़ोल्ड करें। `.astro` पृष्ठों में हार्डकोडेड HTML के लिए, `features.translateDocs` सक्षम करें और `docsOutput.style: "astro-starlight"` के साथ एक `docs[]` ब्लॉक जोड़ें (देखें [एस्ट्रो वेबसाइट पृष्ठ (पार्स-एंड-रिप्लेस)](docs/GETTING_STARTED.hi.md#astro-website-pages-parse-and-replace))। `targetLocales`, `i18n.locales` को `astro.config.mjs` में रखें, और `ui-languages.json` संरेखित रखें (एस्ट्रो रूट्स लोअरकेस कोड जैसे `pt-br` का उपयोग करते हैं; फ्लैट बंडल फ़ाइलनेम कॉन्फ़िग केसिंग का अनुसरण करते हैं, उदाहरण के लिए `pt-BR.json`)।
+
+जब तक आप क्लाइंट आइलैंड्स न जोड़ें, तब तक बिल्ड समय पर i18next के बिना `t()` को जोड़ दें — देखें [एस्ट्रो वेबसाइट UI स्ट्रिंग्स (SSG)](docs/GETTING_STARTED.hi.md#astro-website-ui-strings-ssg) और उदाहरण का `src/i18n/t.ts`।
+
+<a id="combined-workflow"></a>
+### संयुक्त कार्यप्रवाह
 
 ```bash
-npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, and docs
+npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
 ```
 
 ---
@@ -169,41 +216,43 @@ npx ai-i18n-tools sync   # Extract UI strings, then translate UI strings, SVG, a
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools help [command]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus] [-o path] [--with-translate-ignore]
 ai-i18n-tools check-models
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
-ai-i18n-tools extract
-ai-i18n-tools translate-docs …
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools strip-md-bold-inline …
-ai-i18n-tools check-markdown [-p|--path <path>] [--json] [--no-cache]
+ai-i18n-tools extract
+ai-i18n-tools translate-docs …
+ai-i18n-tools translate-json …
 ai-i18n-tools translate-svg …
 ai-i18n-tools translate-ui …
+ai-i18n-tools sync-ui …
 ai-i18n-tools lint-source …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
 ai-i18n-tools sync …
-ai-i18n-tools status [--max-columns <n>]
-ai-i18n-tools statistics [--max-columns <n>]
-ai-i18n-tools dashboard
-ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
-ai-i18n-tools clean-temp [-r|--root <path>] [-f|--force] [--dry-run]
+ai-i18n-tools status …
+ai-i18n-tools statistics …
+ai-i18n-tools cleanup …
+ai-i18n-tools clean-temp …
+ai-i18n-tools dashboard …
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
+ai-i18n-tools help [command]
 ```
 
 प्रति-कमांड फ्लैग सूचियाँ [शुरुआत करें — CLI संदर्भ](docs/GETTING_STARTED.hi.md#cli-reference) में उपलब्ध हैं। अंतर्निहित उपयोग पाठ के लिए `ai-i18n-tools <command> --help` चलाएं।
 
-हर कमांड पर वैश्विक विकल्प: `-c <config>` (डिफ़ॉल्ट: `ai-i18n-tools.config.json`), `-v` (विस्तृत), वैकल्पिक `-w` / `--write-logs [path]` कंसोल आउटपुट को लॉग फ़ाइल में टी करने के लिए (डिफ़ॉल्ट: अनुवाद कैश निर्देशिका के अंतर्गत), `-V` / `--version`, और `-h` / `--help`। कमांड अवलोकन तालिका के लिए [Getting Started](docs/GETTING_STARTED.hi.md#cli-reference) देखें।
+प्रत्येक कमांड पर वैश्विक विकल्प: `-c <config>` (डिफ़ॉल्ट: `ai-i18n-tools.config.json`), `-v` (विस्तृत), वैकल्पिक `-w` / `--write-logs [path]` कंसोल आउटपुट को लॉग फ़ाइल में टी करने के लिए (डिफ़ॉल्ट: अनुवाद कैश निर्देशिका के अंतर्गत), `-V` / `--version`, और `-h` / `--help`। कई कमांड `-l` / `--locale <codes>` (अल्पविराम से अलग BCP-47) स्वीकार करते हैं लक्ष्य स्थानीयकरण को सीमित करने के लिए; `lint-source` एकल स्रोत स्थानीयकरण का उपयोग करता है। कमांड अवलोकन तालिका के लिए [सुरुआत करें](docs/GETTING_STARTED.hi.md#cli-reference) देखें।
 
 ---
 
 <a id="documentation"></a>
 ## डॉक्यूमेंटेशन
 
-- [शुरुआत करें](docs/GETTING_STARTED.hi.md) - दोनों कार्यप्रवाहों के लिए पूर्ण सेटअप गाइड, CLI संदर्भ, और कॉन्फ़िग फ़ील्ड संदर्भ।
-- [भाषा संपत्ति गाइड](docs/LOCALE-ASSETS-GUIDE.hi.md) - अनुवादित दस्तावेज़ों में स्क्रीनशॉट और चित्रित SVG (पैटर्न A–E, फ्लैट लिंक पुन:लेखक, स्क्रीनशॉट स्क्रिप्ट)।
-- [पैकेज अवलोकन](docs/PACKAGE_OVERVIEW.hi.md) - वास्तुकला, आंतरिक, प्रोग्रामेटिक API, और विस्तार बिंदु।
-- [AI एजेंट संदर्भ](../docs/ai-i18n-tools-context.md) - **पैकेज का उपयोग करने वाले अनुप्रयोगों के लिए:** डाउनस्ट्रीम प्रोजेक्ट्स के लिए एकीकरण प्रॉम्प्ट (अपने रिपो में एजेंट नियमों में कॉपी करें)।
+- [सुरुआत करें](docs/GETTING_STARTED.hi.md) - सभी कार्यप्रवाहों (UI, दस्तावेज़/`.astro`, JSON बंडल, एस्ट्रो स्टारलाइट और सादा एस्ट्रो) के लिए पूर्ण सेटअप, CLI संदर्भ, और कॉन्फ़िग फ़ील्ड संदर्भ।
+- [स्थानीय संपत्ति गाइड](docs/LOCALE-ASSETS-GUIDE.hi.md) - अनुवादित दस्तावेज़ों में स्क्रीनशॉट और चित्रित SVG (पैटर्न A–E, फ्लैट लिंक रीराइटर, स्क्रीनशॉट स्क्रिप्ट)।
+- [पैकेज अवलोकन](docs/PACKAGE_OVERVIEW.hi.md) - वास्तुकला, आंतरिक, प्रोग्रामेटिक API, और एक्सटेंशन बिंदु।
+- [AI एजेंट संदर्भ](../docs/ai-i18n-tools-context.md) - **पैकेज का उपयोग करने वाले ऐप्स के लिए:** डाउनस्ट्रीम प्रोजेक्ट्स के लिए एकीकरण प्रॉम्प्ट (अपने रिपो में एजेंट नियमों में कॉपी करें)।
 - **इस** रिपॉजिटरी के लिए मेंटेनर आंतरिक: `dev/package-context.md` (केवल क्लोन; npm पर नहीं)।
 
 ---
