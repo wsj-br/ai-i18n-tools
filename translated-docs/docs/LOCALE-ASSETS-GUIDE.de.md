@@ -202,9 +202,9 @@ Is the asset an SVG with translatable text or labels?
 
 Verwenden Sie dieses Muster, wenn ein einzelnes Bild in allen Sprachen verwendet wird (keine länderspezifischen Varianten). Wenn `markdownOutput.style = "flat"` verwendet wird, berechnet der flache Link-Umschreiber das Tiefenpräfix pro Ausgabedatei. Ein Asset neben der Quelldatei (z. B. `docs/figure.png`, referenziert als `figure.png` aus `docs/page.md`) wird in jeder übersetzten Ausgabe korrekt aufgelöst – keine `postProcessing.regexAdjustments`-Regel ist erforderlich.
 
-Beispiel: Dieses Paket übersetzt `docs/GETTING_STARTED.md` in `translated-docs/docs/GETTING_STARTED.<locale>.md`. Das benachbarte Bild `docs/translation-dashboard.png` wird als `translation-dashboard.png` referenziert. Der Umschreiber berechnet das pro Datei gültige Präfix vom Ausgabeverzeichnis zurück ins Quellverzeichnis (`../../docs/`) und erzeugt so `../../docs/translation-dashboard.png`. Von `translated-docs/docs/` aus wird dies korrekt auf `docs/translation-dashboard.png` aufgelöst.
+Beispiel: Dieses Paket übersetzt `docs/GETTING_STARTED.md` in `translated-docs/docs/GETTING_STARTED.<locale>.md`. Das zugehörige Bild `docs/translation-dashboard.png` wird als `translation-dashboard.png` referenziert. Der Umschreiber berechnet das pro-Datei-Präfix ausgehend vom Ausgabedateiverzeichnis zurück zum Quellverzeichnis (`../../docs/`) und erzeugt so `../../docs/translation-dashboard.png`. Von `translated-docs/docs/` aus wird dies korrekt zu `docs/translation-dashboard.png` aufgelöst.
 
-Kein Screenshot-Skript erforderlich – die Datei wird einmal platziert und ändert sich pro Sprache nicht.
+Aktualisieren Sie die PNG-Datei mit [`scripts/screenshot-translation-dashboard.sh`](../../docs/../scripts/screenshot-translation-dashboard.sh), wenn sich die Dashboard-Benutzeroberfläche ändert; das Bild ist nicht je Sprachversion unterschiedlich.
 
 Eine `postProcessing`-Regel ist weiterhin erforderlich, wenn:
 - Auf das Asset über eine absolute URL verwiesen wird (z. B. `/img/figure.png`) – der Umschreiber verarbeitet nur relative Pfade
@@ -213,7 +213,7 @@ Eine `postProcessing`-Regel ist weiterhin erforderlich, wenn:
 <a id="implementation-example"></a>
 ### Implementierungsbeispiel
 
-Dieses Repository verwendet Muster A für den Screenshot des Übersetzungs-Dashboards: [GETTING_STARTED.md](GETTING_STARTED.de.md#translation-dashboard) verweist auf das Bild [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) im selben Ordner. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) legt `markdownOutput.style = "flat"` und `flatPreserveRelativeDir: true` fest; das pro-Datei-Tiefenpräfix löst den Bildpfad ohne Screenshot-`regexAdjustments` korrekt auf.
+Dieses Repository verwendet Muster A für den Screenshot des Übersetzungs-Dashboards: [GETTING_STARTED.md](GETTING_STARTED.de.md#translation-dashboard) verweist auf das Bild [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) im selben Ordner. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) legt `markdownOutput.style = "flat"` und `flatPreserveRelativeDir: true` fest; das pro-Datei-Tiefenpräfix löst den Bildpfad ohne Screenshot-`regexAdjustments` auf.
 
 ---
 
@@ -629,7 +629,7 @@ Bei `markdownOutput.style = "doc-system"` (einschließlich `"docusaurus"`, `"ast
 
 Der Tiefenpräfix wird pro Ausgabedatei berechnet – nicht global für den gesamten Stapel. Für jede Quelldatei ermittelt der Rewriter den relativen Pfad vom Verzeichnis der Ausgabedatei zurück zum Verzeichnis der Quelldatei und verwendet diesen als Präfix.
 
-Das bedeutet, dass bei `flatPreserveRelativeDir: true` Quelldateien in Unterverzeichnissen automatisch den korrekten Präfix erhalten. Zum Beispiel wird `docs/GETTING_STARTED.md` nach `translated-docs/docs/GETTING_STARTED.<locale>.md` ausgegeben. Der pro Datei berechnete Präfix ist `../../docs/`, sodass eine Ressource `translation-dashboard.png` (relativ zur Quelle) zu `../../docs/translation-dashboard.png` wird – was korrekt von `translated-docs/docs/` zurück zu `docs/translation-dashboard.png` aufgelöst wird.
+Das bedeutet, dass bei Verwendung von `flatPreserveRelativeDir: true` Quelldateien in Unterverzeichnissen automatisch das korrekte Präfix erhalten. Zum Beispiel erzeugt `docs/GETTING_STARTED.md` die Ausgabe in `translated-docs/docs/GETTING_STARTED.<locale>.md`. Das pro-Datei-Präfix ist `../../docs/`, sodass ein Asset `translation-dashboard.png` (relativ zur Quelle) zu `../../docs/translation-dashboard.png` wird – was korrekt von `translated-docs/docs/` zurück zu `docs/translation-dashboard.png` aufgelöst wird.
 
 Für relative Pfade zu Ressourcen neben Quelldateien ist keine `postProcessing`-Regex-Korrektur erforderlich.
 

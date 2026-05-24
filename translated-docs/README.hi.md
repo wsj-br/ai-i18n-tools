@@ -40,9 +40,9 @@ JavaScript/TypeScript अनुप्रयोगों और दस्ता�
 
 स्रोत फ़ाइलों में `t("…")` / `i18n.t("…")` शाब्दिकों को स्कैन करता है, एक मास्टर कैटलॉग (`strings.json`) बनाता है, OpenRouter के माध्यम से भाषानुसार लुप्त प्रविष्टियों का अनुवाद करता है, और i18next के लिए तैयार फ्लैट JSON फ़ाइलें (`de.json`, `pt-BR.json`, …) लिखता है।
 
-**कार्यप्रवाह 2 - दस्तावेज़ अनुवाद** — मार्कडाउन/MDX दस्तावेज़ों के लिए (Docusaurus, Astro Starlight, साधारण README फ़ाइलें)
+**वर्कफ़्लो 2 - दस्तावेज़ अनुवाद** — मार्कडाउन/एमडीएक्स दस्तावेज़ों (डॉक्यूसॉरस, एस्ट्रो स्टारलाइट, सादे रीडमी फ़ाइल) और `.astro` पृष्ठ HTML (सादे एस्ट्रो मार्केटिंग साइट) के लिए
 
-`.md` और `.mdx` स्रोत फ़ाइलों का प्रत्येक लक्ष्य भाषा में अनुवाद एक साझा SQLite कैश के साथ करता है — केवल नए या बदले गए खंडों को LLM को भेजा जाता है। वैकल्पिक Docusaurus शेल JSON (`jsonSource`, से `write-translations`) नेवबार, फ़ुटर और थीम UI स्ट्रिंग्स को कवर करता है। SVG फ़ाइल अनुवाद `features.translateSVG` और शीर्ष-स्तरीय `svg` ब्लॉक के माध्यम से सक्षम है।
+`.md`, `.mdx`, और `.astro` स्रोत फ़ाइलों का साझा स्क्वाइलाइट कैश के साथ प्रत्येक लक्ष्य स्थानीयकरण में अनुवाद करता है — केवल नए या बदले गए खंड एलएलएम को भेजे जाते हैं। वैकल्पिक डॉक्यूसॉरस शेल JSON (`jsonSource`, `write-translations` से) नेवबार, फ़ुटर और थीम यूआई स्ट्रिंग्स को कवर करता है। `features.translateSVG` और शीर्ष-स्तरीय `svg` ब्लॉक के माध्यम से एसवीजी फ़ाइल अनुवाद सक्षम है। सादे एस्ट्रो साइट्स के लिए, [`examples/astro-website`](../examples/astro-website/) देखें (हाइब्रिड: पृष्ठ HTML के लिए `translate-docs` और फ्रंटमैटर स्ट्रिंग्स के लिए `t()`)।
 
 दोनों कार्यप्रवाह एकल `ai-i18n-tools.config.json` फ़ाइल साझा करते हैं और स्वतंत्र रूप से या एक साथ उपयोग किए जा सकते हैं।
 
@@ -125,6 +125,7 @@ npx ai-i18n-tools translate-ui
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs

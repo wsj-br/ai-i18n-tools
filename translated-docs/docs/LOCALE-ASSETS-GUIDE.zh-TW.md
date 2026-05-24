@@ -202,9 +202,9 @@ Is the asset an SVG with translatable text or labels?
 
 當單一圖像在所有語系中共享時使用（無需每語系變體）。當啟用 `markdownOutput.style = "flat"` 時，平面連結重寫器會根據每個輸出檔案計算深度前綴，因此與原始檔位於同一資料夾的資源（例如 `docs/figure.png`，從 `docs/page.md` 參考為 `figure.png`）可在每份翻譯輸出中正確解析——無需設定 `postProcessing.regexAdjustments` 規則。
 
-範例：此套件將 `docs/GETTING_STARTED.md` 轉譯為 `translated-docs/docs/GETTING_STARTED.<locale>.md`。兄弟影像 `docs/translation-dashboard.png` 被參考為 `translation-dashboard.png`。重寫器會從輸出檔案的目錄計算至原始目錄的每檔案前綴（`../../docs/`），產生 `../../docs/translation-dashboard.png`。從 `translated-docs/docs/` 開始，正確解析為 `docs/translation-dashboard.png`。
+範例：此套件會將 `docs/GETTING_STARTED.md` 轉譯為 `translated-docs/docs/GETTING_STARTED.<locale>.md`。兄弟圖像 `docs/translation-dashboard.png` 被引用為 `translation-dashboard.png`。重寫器會根據輸出檔案的目錄回溯至原始目錄（`../../docs/`）來計算每個檔案的前綴，產生 `../../docs/translation-dashboard.png`。從 `translated-docs/docs/` 來看，這會正確解析為 `docs/translation-dashboard.png`。
 
-不需要截圖腳本——檔案僅放置一次，且每語系皆不變。
+當儀表板 UI 變更時，請使用 [`scripts/screenshot-translation-dashboard.sh`](../../docs/../scripts/screenshot-translation-dashboard.sh) 重新整理 PNG；此圖像不依語系而異。
 
 在以下情況仍需要 `postProcessing` 規則：
 - 資源透過絕對 URL 引用（例如 `/img/figure.png`）——重寫器僅處理相對路徑
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### 實作範例
 
-此儲存庫對「翻譯儀表板」截圖使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-TW.md#translation-dashboard) 引用同一資料夾中的圖片 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 設定了 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；每檔案深度前綴自動解析圖片路徑，無需截圖 `regexAdjustments`。
+此儲存庫在翻譯儀表板截圖中使用模式 A：[GETTING_STARTED.md](GETTING_STARTED.zh-TW.md#translation-dashboard) 參考了同一資料夾中的圖像 [translation-dashboard.png](../../docs/../docs/translation-dashboard.png)。[ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) 設定 `markdownOutput.style = "flat"` 和 `flatPreserveRelativeDir: true`；每個檔案的深度前綴會解析圖像路徑，且不需要截圖 `regexAdjustments`。
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 深度前綴是針對每個輸出檔案個別計算的，而非針對整個批次作業全局計算。對於每個來源檔案，重寫器會計算從輸出檔案目錄回到來源檔案目錄的相對路徑，並將其用作前綴。
 
-這表示使用 `flatPreserveRelativeDir: true` 時，位於子目錄中的來源檔案會自動獲得正確的前綴。例如，`docs/GETTING_STARTED.md` 輸出至 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每檔案前綴為 `../../docs/`，因此相對於來源的資源 `translation-dashboard.png` 會變成 `../../docs/translation-dashboard.png` — 從 `translated-docs/docs/` 正確解析回 `docs/translation-dashboard.png`。
+這表示使用 `flatPreserveRelativeDir: true` 時，子目錄中的原始檔案會自動取得正確的前綴。例如，`docs/GETTING_STARTED.md` 輸出至 `translated-docs/docs/GETTING_STARTED.<locale>.md`。每個檔案的前綴為 `../../docs/`，因此資源 `translation-dashboard.png`（相對於原始檔案）會變成 `../../docs/translation-dashboard.png` — 從 `translated-docs/docs/` 回溯至 `docs/translation-dashboard.png` 時可正確解析。
 
 對於與來源檔案同目錄的相對路徑資源，不需要進行 `postProcessing` 正則表達式修正。
 

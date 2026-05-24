@@ -130,7 +130,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 快速开始
 
-默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus` 和 `ui-starlight` 模板启用 **文档** 翻译（`translate-docs`）。当您希望使用一条命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译和文档翻译时，请使用 `sync`。
+默认的 `init` 模板 (`ui-markdown`) 仅启用 **UI** 提取和翻译。`ui-docusaurus` 和 `ui-starlight` 模板启用 **文档** 翻译 (`translate-docs`)。`ui-astro-website` 模板为普通 Astro 应用程序（包括 `.astro` 文件）搭建 **UI** 提取；当您还想要 `translate-docs` 用于 `.astro` 页面 HTML 时，请添加 `documentations[]` 块（请参见 [Astro 网站页面 (解析和替换)](#astro-website-parse-and-replace)）。参考 [`examples/astro-website`](../../docs/../examples/astro-website/) 使用 **两个** 管道。当您希望有一个命令运行提取、UI 翻译、可选的 SVG 文件翻译和根据您的配置进行文档翻译时，请使用 `sync`。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -140,7 +140,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -203,7 +204,89 @@ npx ai-i18n-tools extract
 
 扫描 `ui.sourceRoots` 下所有 JS/TS 文件中的 `t("literal")` 和 `i18n.t("literal")` 调用。写入（或合并到）`ui.stringsJson`。
 
-扫描器是可配置的：可通过 `ui.reactExtractor.funcNames` 添加自定义函数名。
+扫描器是可配置的：通过 `ui.uiExtractor.funcNames`（或遗留的 `ui.reactExtractor.funcNames`）添加自定义函数名称。对于 Astro 页面和组件，将 `.astro` 添加到 `ui.uiExtractor.extensions`。
+
+<a id="astro-website"></a>
+### Astro 网站（普通 Astro，而非 Starlight）
+
+对于静态 Astro 营销或应用程序网站，将 [Astro 内置 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 与 ai-i18n-tools 结合使用。参考实现是 [`examples/astro-website`](../../docs/../examples/astro-website/)（另请参见其 [README](../../docs/../examples/astro-website/README.md)）：英语在 `/`，九个目标语言在 `/{locale}/`（`de`，`fr`，`es`，`ar`，`ja`，`ko`，`zh-cn`，`zh-tw`，`pt-br`）。
+
+大多数团队使用两个管道的 **混合**（它们不会冲突）：
+
+| 管道 | 用于 | 命令 | 输出 |
+|----------|---------|----------|--------|
+| **页面 HTML** | 标题、段落、导航标签、模板主体中的内联数组 | `translate-docs` | 每个语言的 `src/pages/{locale}/index.astro` |
+| **UI 字符串 (`t()`)** | 前置数据、截图标签、共享数组 | `extract` → `translate-ui` | `public/locales/{locale}.json`（英语源作为键） |
+
+当您添加或删除语言时，请保持三个列表对齐：`targetLocales` 在 `ai-i18n-tools.config.json`，`i18n.locales` 在 `astro.config.mjs`（Astro 使用 **小写** 路由代码，例如 `pt-br`），以及 `ui-languages.json`（通过 `generate-ui-languages`）。平面包 **文件名** 使用配置大小写（`pt-BR.json`）；通过您的清单 `code` 字段将 Astro 的 `pt-br` 路由映射到该文件（请参见 `examples/astro-website/src/i18n/locale.ts`）。
+
+示例 `package.json` 脚本（来自参考项目）：
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Astro 网站 UI 字符串 (SSG)
+
+使用 `init -t ui-astro-website` 搭建 UI 提取，然后在您还翻译页面 HTML 时合并 `documentations[]` 块（见下文）。在 TypeScript 模块和 `.astro` 前置数据中将文本包裹在 `t('…')` 中（以及当您更喜欢 UI 字符串而不是重复的语言页面时的模板 `{expression}` 块）：
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+将 `sourceLocale` 设置为与 `i18n.defaultLocale` 在 `astro.config.mjs` 中匹配。将平面包写入 Astro 可以在构建时导入的目录（模板使用 `public/locales/`）。通过查找英语源文字作为键在 **构建时** 解析 `t('…')`（请参见 `examples/astro-website/src/i18n/t.ts`；`strings.json` 是提取缓存，而不是运行时包）。您 **不** 需要 `ai-i18n-tools/runtime` 或 i18next 用于静态站点，除非您添加在加载后切换语言的客户端岛屿。
+
+连接每个调用 `t()` 的页面（英语根页面和每个 `src/pages/{locale}/` 副本）：
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+示例中的支持助手：`src/i18n/utils.ts`、`src/i18n/locale.ts` 和 `ui-languages.json` 用于标签、方向和 BCP-47 代码。在更改 `targetLocales` 后运行 `generate-ui-languages`（可选设置 `ui.uiLanguagesPath` 以便清单与您的助手并排存在，例如 `src/i18n/ui-languages.json`）。`MainLayout.astro` 从 `resolveUiLanguage(Astro.currentLocale)` 设置 `<html lang>` 和 `<html dir>`；`LanguagePicker.astro` 使用 `getRelativeLocaleUrl` 从 `astro:i18n`。
+
+<a id="astro-website-parse-and-replace"></a>
+### Astro 网站页面（解析和替换）
+
+对于在 `.astro` 文件中硬编码 HTML 的营销页面，让 `translate-docs` 提取文本节点和属性（`alt`、`title`、`aria-label`、`placeholder`），使用文档缓存翻译它们，并在您的页面树下写入特定语言的副本。对于大多数可见文本，您 **不** 需要 `t()`。
+
+结构属性和键值默认情况下**不**会被翻译：内置保护涵盖了JSX/HTML属性，如`class`、`id`、`style`、`src`、`href`、`data-*`和大多数`aria-*`，以及模板`{expression}`块内的对象键，如`class`、`key`和`id`。使用`documentations[].protectAttributes`和`documentations[].protectKeys`在使用自定义属性时扩展这些列表（例如Tailwind `variant`或CMS `slug`字段）。相同的选项适用于Markdown翻译中的MDX JSX（请参见[protectAttributes / protectKeys](#protectattributes-protectkeys)）。
+
+启用`features.translateMarkdown`并添加一个`documentations[]`块，例如：
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+运行`npx ai-i18n-tools translate-docs`（或在[`pnpm i18n:translate`](../../docs/../examples/astro-website/)中`pnpm i18n:translate`）。英语源保持在`src/pages/index.astro`；每个目标语言环境获得`src/pages/{locale}/index.astro`，并根据额外的目录级别调整导入（例如`../layouts/` → `../../layouts/`）。
+
+在**模板主体**内，`{expression}`块中的字符串字面量（内联数组、对象`title`/`desc`字段）在用户可见时会被翻译；受保护属性/键上的引号值、`t('…')`、`<script>`和`<style>`内的字面量保持不变。**前置类型脚本不会通过此路径翻译**——保持共享前置（包括`t()`导入和数据数组）在英语和语言环境页面上相同，或在编辑英语页面后重新运行`translate-docs`，以便语言环境副本获取前置更改。对于仅前置复制，请使用[UI字符串管道](#astro-website-ui-strings)。
+
+请参见[`examples/astro-website`](../../docs/../examples/astro-website/)以获取完整的混合着陆页（通过`translate-docs`的HTML，截图标签通过`t()` + `translate-ui`）。
 
 <a id="step-3-translate-ui-strings"></a>
 ### 步骤 3：翻译 UI 字符串
@@ -510,12 +593,20 @@ npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+对于普通Astro网站UI（无Starlight）：
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+该模板仅启用UI提取。要进行页面HTML翻译，还需设置`features.translateMarkdown`并添加一个`documentations[]`块（请参见[Astro网站页面（解析和替换）](#astro-website-parse-and-replace)）。[`examples/astro-website`](../../docs/../examples/astro-website/)配置同时显示两个管道。
+
 编辑生成的 `ai-i18n-tools.config.json`：
 
-- `sourceLocale` - 源语言（必须与 `defaultLocale` 中的 `docusaurus.config.js` 一致）。
-- `targetLocales` - BCP-47 语言区域代码数组（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有文档流水线共享的 SQLite 缓存目录（也是 `--write-logs` 的默认日志目录）。
-- `documentations` - 文档块数组。每个块包含可选的 `description`、`contentPaths`、`outputDir`、可选的 `jsonSource`、`markdownOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`targetLocales`、`addFrontmatter` 等。
+- `sourceLocale` - 源语言（必须与`defaultLocale`在`docusaurus.config.js`中匹配）。
+- `targetLocales` - BCP-47语言代码数组（例如`["de", "fr", "es"]`）。
+- `cacheDir` - 所有文档管道的共享SQLite缓存目录（以及`--write-logs`的默认日志目录）。
+- `documentations` - 文档块数组。每个块都有可选的`description`、`contentPaths`、`outputDir`、可选的`jsonSource`、`markdownOutput`、可选的`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`等。
 - `documentations[].description` - 维护者的可选简短说明（说明此块涵盖的内容）。设置后，它会显示在 `translate-docs` 标题（`🌐 …: translating …`）和 `status` 的章节标题中。
 - `documentations[].contentPaths` - Markdown/MDX 源目录或文件（JSON 标签请参见 `documentations[].jsonSource`）。
 - `documentations[].outputDir` - 该块的翻译输出根目录。
@@ -711,7 +802,7 @@ Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Ze
 
 当启用 `markdownOutput.style = "flat"` 时，内置重写器会在 `postProcessing` 之前运行。它会为每个输出文件计算深度前缀——即从输出文件目录返回源文件目录的相对路径——并将该前缀添加到非 Markdown 资源的 URL 前面。随后 `postProcessing` 会对已添加前缀的 URL 进行处理——编写 `search` 模式时应匹配 URL 中的区域设置段，而不是开头的 `../` 前缀。
 
-启用 `flatPreserveRelativeDir: true` 后，子目录中的源文件会自动获得文件特定的前缀。例如，`docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` 会产生 `../../docs/` 的前缀，因此 `translation-dashboard.png`（源文件的同级文件）变为 `../../docs/translation-dashboard.png`——无需任何 `postProcessing` 规则即可正确解析。
+使用`flatPreserveRelativeDir: true`时，子目录中的源文件会自动获得特定文件前缀。例如，`docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`生成前缀`../../docs/`，因此`translation-dashboard.png`（源的兄弟）变为`../../docs/translation-dashboard.png`——在没有任何`postProcessing`规则的情况下正确解析。
 
 当 `markdownOutput.style` 设置为 `"docusaurus"`、`"astro-starlight"`、`"nested"` 或除 `"flat"` 以外的任何值时，扁平链接重写器不会运行。`postProcessing` 将看到原始的 Markdown URL。
 
@@ -1212,15 +1303,15 @@ The **Markdown issues** tab lists rows from the `markdown_source_issues` SQLite 
   每个语言 JSON 文件写入的目录（`de.json` 等）。
 - `preferredModel`  
   可选。仅对 `translate-ui` 尝试的 OpenRouter 模型 ID；然后按顺序尝试 `openrouter.translationModels`（或遗留模型），而不重复此 ID。
-- `reactExtractor.funcNames`  
-  要扫描的附加函数名称（默认值：`["t", "i18n.t"]`）。
-- `reactExtractor.extensions`  
-  要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。
-- `reactExtractor.includePackageDescription`  
-  当启用 `true`（默认）时，`extract` 在存在的情况下也会将 `package.json` `description` 视为 UI 字符串。
-- `reactExtractor.packageJsonPath`  
-  用于可选描述提取的 `package.json` 文件的自定义路径。
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.funcNames`（或遗留`reactExtractor.funcNames`）  
+  要扫描的附加函数名称（默认：`["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（或遗留`reactExtractor.extensions`）  
+  要包含的文件扩展名（默认：`[".js", ".jsx", ".ts", ".tsx"]`）。添加`.astro`以用于Astro前置和模板表达式。
+- `uiExtractor.includePackageDescription`（或遗留`reactExtractor.includePackageDescription`）  
+  当`true`（默认）时，`extract`还会在存在时包含`package.json` `description`作为UI字符串。
+- `uiExtractor.packageJsonPath`（或遗留`reactExtractor.packageJsonPath`）  
+  用于该可选描述提取的`package.json`文件的自定义路径。
+- `uiExtractor.includeUiLanguageEnglishNames`（或遗留`reactExtractor.includeUiLanguageEnglishNames`）
 
 当启用 `true`（默认 `false`）时，如果清单中 `uiLanguagesPath` 的 `englishName` 尚未通过源扫描获取（相同的哈希键），`extract` 也会将其添加到 `strings.json` 中。需要 `uiLanguagesPath` 指向一个有效的 `ui-languages.json`。
 
@@ -1261,13 +1352,13 @@ SQLite 缓存目录（所有 `documentations` 块共享）。可在多次运行�
 **内容源**
 
 - `description`
-此区块的可选人工可读备注（不用于翻译）。设置后，会作为前缀出现在 `translate-docs` `🌐` 标题中；也会显示在 `status` 的章节标题中。
+此块的可选人类可读注释（不用于翻译）。在设置时在`translate-docs` `🌐`标题中带前缀；也显示在`status`部分标题中。
 - `contentPaths`
-需要翻译的 Markdown/MDX 页面正文（`translate-docs` 会扫描其中的 `.md` / `.mdx`）。支持 **目录路径或通配符模式**（例如 `"docs/**/*.md"`、`"guides/*.mdx"`）。本地化文档正文即来源于此。
+要翻译的Markdown/MDX页面主体和`.astro`模板（`translate-docs`扫描这些以查找`.md`、`.mdx`和`.astro`）。支持**目录路径或通配符模式**（例如`"docs/**/*.md"`、`"guides/*.mdx"`、`"src/pages/index.astro"`）。这就是本地化文档文本的来源。
 - `sourceFiles`
-可选别名，在加载时合并到 `contentPaths` 中。
+可选别名在加载时合并到`contentPaths`中。
 - `targetLocales`
-仅针对此区块的可选区域设置子集（否则使用根级 `targetLocales`）。有效文档区域设置是所有区块的并集。
+仅适用于此块的可选语言环境子集（否则为根`targetLocales`）。有效的文档语言环境是跨块的并集。
 - `jsonSource`
 可选。此区块的 Docusaurus JSON 标签目录的源目录（例如来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`jsonSource` 仅提供外壳/UI 的 JSON，不包含 MDX。
 
@@ -1311,6 +1402,22 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。
 当 `true` 时（省略时的默认值），每次 `translate-docs` 运行都会重新扫描 markdown 段落中是否存在危险分隔符或未闭合的行内代码，打印终端警告，并为该文件的缓存文件路径替换 `markdown_source_issues` 行。设置 `false` 以跳过此块的警告和 SQLite 更新。
 - `addFrontmatter`
 当 `true` 时（省略时的默认值），翻译后的 markdown 文件将包含以下 YAML 键：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，以及当至少有一个段落具有模型元数据时，包含 `translation_models`（使用的 OpenRouter 模型 ID 的排序列表）。设置为 `false` 以跳过。
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+可选。额外的 JSX/HTML 属性名称，其 **带引号的字符串值** 不得发送给翻译器。将与内置默认值（`class`、`id`、`style`、`src`、`href`、`type`、`data-*`、大多数 `aria-*` 等）合并。不区分大小写。适用于：
+
+- `.astro` 解析并替换提取（静态 HTML 标签和 `attr=` 内部 `{expression}` 块中的字符串字面量）。
+  - 在 Markdown/Astro 片段翻译期间进行 MDX 占位符提取（在大写的 JSX 标签上使用 `label`、`tooltip` 和 `aria-label`，以及在适用时使用 `TabItem` `value`）。
+
+示例：`"protectAttributes": ["variant", "size"]` 保持 `variant="primary"` 在 `{items.map(...)}` 中跨语言环境不变。
+
+您也可以列出通常可翻译的属性（例如 `"title"` 或 `"aria-label"`），当您希望这些值从英文中逐字复制时。
+
+- `protectKeys`
+可选。额外的 **对象属性名称**，其带引号的字符串值在模板 `{expression}` 块和 MDX 对象字面量中不得翻译（例如 `label:` 在 `<Tabs values={[ … ]}>` 内部）。将与内置默认值（`class`、`key`、`id`、`href`、`src` 等）合并。不区分大小写。
+
+示例：`"protectKeys": ["slug", "code"]` 跳过 `{ slug: 'getting-started', title: 'Getting started' }` → 当 `slug` 受保护时，仅 `title` 被翻译。
 
 <br/>
 
@@ -1374,10 +1481,10 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLI 参考
 
-| 命令                                                                                  | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                                | 打印 CLI 版本和构建时间戳（与根程序上的 `-V` / `--version` 显示相同的信息）。
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]` | 编写一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 会创建一个初始的 `.translate-ignore`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 命令                                                                                                    | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                                  | 打印 CLI 版本和构建时间戳（与根程序上的 `-V` / `--version` 相同的信息）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | 编写一个初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `documentations[].addFrontmatter`）。`--with-translate-ignore` 会创建一个初始的 `.translate-ignore`。
 | `check-models`                                                                           | 根据 `GET /models` 验证每个配置的 OpenRouter 模型 ID（目录成员资格、`expiration_date`、每百万 token 的提示/补全费用（USD））。需要 `OPENROUTER_API_KEY`。当任何配置的 ID 缺失或已过期时，以非零值退出。对目录请求遵循 `openrouter.requestTimeoutMs` 设置。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `extract`                                                                                | 从 `t("…")` / `i18n.t("…")` 字面量更新 `strings.json`，可选的 `package.json` 描述，以及可选的清单 `englishName` 条目（参见 `ui.reactExtractor`）。需要 `features.extractUIStrings`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | 使用 `sourceLocale` + `targetLocales` 和捆绑的 `data/ui-languages-complete.json`（或指定时使用 `--master`），将 `ui-languages.json` 写入 `ui.flatOutputDir`（或设置时写入 `uiLanguagesPath`）。对于主文件中缺失的语言区域，会发出警告并生成 `TODO` 占位符。如果您现有的清单文件中包含自定义的 `label` 或 `englishName` 值，它们将被主目录中的默认值替换——请在生成文件后仔细检查并进行调整。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |

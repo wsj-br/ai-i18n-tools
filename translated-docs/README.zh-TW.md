@@ -40,9 +40,9 @@
 
 掃描原始碼檔案中的 `t("…")` / `i18n.t("…")` 字面值，建立主目錄（`strings.json`），透過 OpenRouter 按語系翻譯缺失的條目，並輸出扁平化的 JSON 檔案（`de.json`、`pt-BR.json` 等），可直接供 i18next 使用。
 
-**工作流程 2 - 文件翻譯** — 適用於 Markdown/MDX 文件（Docusaurus、Astro Starlight、純 README 檔案）
+**工作流程 2 - 文件翻譯** — 適用於 markdown/MDX 文件（Docusaurus、Astro Starlight、純 README 檔案）以及 `.astro` 頁面 HTML（純 Astro 行銷網站）
 
-將 `.md` 和 `.mdx` 原始碼檔案翻譯成所有目標語系，並共用一個 SQLite 快取 — 僅有新增或變更的段落會被傳送至 LLM。可選的 Docusaurus 外層 JSON（`jsonSource`，來自 `write-translations`）涵蓋導覽列、頁尾與主題 UI 字串。SVG 檔案翻譯透過 `features.translateSVG` 和頂層的 `svg` 區塊啟用。
+將 `.md`、`.mdx` 和 `.astro` 原始檔翻譯成所有目標語系，並共用 SQLite 快取 — 僅有新增或變更的段落會傳送至 LLM。可選的 Docusaurus 外殼 JSON（`jsonSource`，來自 `write-translations`）涵蓋導覽列、頁尾與主題 UI 字串。SVG 檔案翻譯可透過 `features.translateSVG` 和頂層的 `svg` 區塊啟用。針對純 Astro 網站，請參閱 [`examples/astro-website`](../examples/astro-website/)（混合模式：`translate-docs` 用於頁面 HTML，`t()` 用於前置資料字串）。
 
 兩個工作流程共用單一的 `ai-i18n-tools.config.json` 檔案，可獨立或同時使用。
 
@@ -125,6 +125,7 @@ npx ai-i18n-tools translate-ui
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs

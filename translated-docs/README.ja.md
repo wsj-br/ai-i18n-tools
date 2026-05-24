@@ -40,9 +40,9 @@
 
 ソースファイル内の`t("…")` / `i18n.t("…")`リテラルをスキャンし、マスターカタログ（`strings.json`）を作成。OpenRouter経由で各ロケールの不足しているエントリを翻訳し、i18nextで使用可能なフラットなJSONファイル（`de.json`、`pt-BR.json`など）を出力します。
 
-**ワークフロー2 - ドキュメント翻訳** — markdown/MDX形式のドキュメント向け（Docusaurus、Astro Starlight、通常のREADMEファイルなど）
+**ワークフロー 2 - ドキュメント翻訳** — markdown/MDX ドキュメント（Docusaurus、Astro Starlight、通常の README ファイル）および `.astro` ページ HTML（通常の Astro マーケティングサイト）向け
 
-共有SQLiteキャッシュを使用して、`.md`および`.mdx`ソースファイルをすべてのターゲットロケールに翻訳します。新規または変更されたセグメントのみがLLMに送信されます。オプションでDocusaurus用シェルJSON（`jsonSource`、`write-translations`から生成）により、ナビゲーションバー、フッター、テーマUI文字列をカバーできます。SVGファイルの翻訳は`features.translateSVG`および最上位の`svg`ブロックで有効化されます。
+`.md`、`.mdx`、および `.astro` ソースファイルをすべてのターゲットロケールに翻訳し、共有の SQLite キャッシュを使用します。LLM に送信されるのは、新規または変更されたセグメントのみです。オプションの Docusaurus シェル JSON（`jsonSource`、`write-translations` から取得）により、ナビゲーションバー、フッター、テーマ UI 文字列をカバーできます。SVG ファイルの翻訳は、`features.translateSVG` および最上位の `svg` ブロックで有効化されます。通常の Astro サイトの場合は、[`examples/astro-website`](../examples/astro-website/) を参照してください（ハイブリッド：ページ HTML 用の `translate-docs` と frontmatter 文字列用の `t()`）。
 
 両方のワークフローは単一の`ai-i18n-tools.config.json`ファイルを共有でき、独立してまたは同時に使用できます。
 
@@ -125,6 +125,7 @@ npx ai-i18n-tools translate-ui
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs

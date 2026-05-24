@@ -202,9 +202,9 @@ Is the asset an SVG with translatable text or labels?
 
 उपयोग तब करें जब सभी स्थानीयकरणों के लिए एकल छवि साझा की जाती हो (प्रत्येक स्थानीयकरण के लिए कोई भिन्न नहीं)। जब `markdownOutput.style = "flat"`, तो फ्लैट लिंक रीराइटर प्रत्येक आउटपुट फ़ाइल के लिए गहराई उपसर्ग की गणना करता है, इसलिए स्रोत फ़ाइल के बगल में संपत्ति (जैसे `docs/figure.png`, `figure.png` के रूप में `docs/page.md` से संदर्भित) प्रत्येक अनुवादित आउटपुट में सही ढंग से हल हो जाती है — कोई `postProcessing.regexAdjustments` नियम आवश्यक नहीं है।
 
-उदाहरण: यह पैकेज `docs/GETTING_STARTED.md` को `translated-docs/docs/GETTING_STARTED.<locale>.md` में अनुवादित करता है। बगल की छवि `docs/translation-dashboard.png` को `translation-dashboard.png` के रूप में संदर्भित किया गया है। रीराइटर आउटपुट फ़ाइल की निर्देशिका से स्रोत निर्देशिका तक वापस जाने वाले प्रति-फ़ाइल उपसर्ग की गणना करता है (`../../docs/`), जिसका परिणाम `../../docs/translation-dashboard.png` होता है। `translated-docs/docs/` से, यह सही ढंग से `docs/translation-dashboard.png` को हल करता है।
+उदाहरण: यह पैकेज `docs/GETTING_STARTED.md` का `translated-docs/docs/GETTING_STARTED.<locale>.md` में अनुवाद करता है। सहोदर छवि `docs/translation-dashboard.png` को `translation-dashboard.png` के रूप में संदर्भित किया जाता है। पुनर्लेखक आउटपुट फ़ाइल की निर्देशिका से स्रोत निर्देशिका तक (`../../docs/`) वापस जाने वाले प्रति-फ़ाइल उपसर्ग की गणना करता है, जिससे `../../docs/translation-dashboard.png` प्राप्त होता है। `translated-docs/docs/` से, यह सही ढंग से `docs/translation-dashboard.png` पर हल हो जाता है।
 
-कोई स्क्रीनशॉट स्क्रिप्ट की आवश्यकता नहीं है — फ़ाइल एक बार रखी जाती है और स्थानीयकरण के अनुसार कभी नहीं बदलती।
+डैशबोर्ड UI में बदलाव आने पर PNG को [`scripts/screenshot-translation-dashboard.sh`](../../docs/../scripts/screenshot-translation-dashboard.sh) के साथ ताज़ा करें; छवि प्रति-स्थानीय नहीं है।
 
 एक `postProcessing` नियम तब भी आवश्यक है जब:
 - संपत्ति को एक पूर्ण URL के माध्यम से संदर्भित किया जाता है (जैसे `/img/figure.png`) — रीराइटर केवल सापेक्ष पथों को संभालता है
@@ -213,7 +213,7 @@ Is the asset an SVG with translatable text or labels?
 <a id="implementation-example"></a>
 ### कार्यान्वयन उदाहरण
 
-इस रिपॉजिटरी में अनुवाद डैशबोर्ड के स्क्रीनशॉट के लिए पैटर्न A का उपयोग किया जाता है: [GETTING_STARTED.md](GETTING_STARTED.hi.md#translation-dashboard) उसी फ़ोल्डर में छवि [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) को संदर्भित करता है। [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) में `markdownOutput.style = "flat"` और `flatPreserveRelativeDir: true` सेट किए गए हैं; प्रति-फ़ाइल गहराई उपसर्ग छवि पथ को किसी स्क्रीनशॉट `regexAdjustments` के बिना हल करता है।
+इस रिपॉजिटरी में अनुवाद डैशबोर्ड स्क्रीनशॉट के लिए पैटर्न A का उपयोग किया जाता है: [GETTING_STARTED.md](GETTING_STARTED.hi.md#translation-dashboard) उसी फ़ोल्डर में [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) छवि को संदर्भित करता है। [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) `markdownOutput.style = "flat"` और `flatPreserveRelativeDir: true` सेट करता है; प्रति-फ़ाइल गहराई उपसर्ग बिना किसी स्क्रीनशॉट `regexAdjustments` के छवि पथ को हल करता है।
 
 ---
 
@@ -629,7 +629,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 
 गहराई उपसर्ग प्रत्येक आउटपुट फ़ाइल के लिए गणना की जाती है — पूरे बैच के लिए वैश्विक रूप से नहीं। प्रत्येक स्रोत फ़ाइल के लिए, पुन:लेखक आउटपुट फ़ाइल की निर्देशिका से स्रोत फ़ाइल की निर्देशिका तक का सापेक्ष पथ गणना करता है और उसे उपसर्ग के रूप में उपयोग करता है।
 
-इसका अर्थ है कि `flatPreserveRelativeDir: true` के साथ, उपनिर्देशिकाओं में स्रोत फ़ाइलों को स्वचालित रूप से सही उपसर्ग मिल जाता है। उदाहरण के लिए, `docs/GETTING_STARTED.md` का आउटपुट `translated-docs/docs/GETTING_STARTED.<locale>.md` में होता है। प्रति-फ़ाइल उपसर्ग `../../docs/` है, इसलिए एक संपत्ति `translation-dashboard.png` (स्रोत के सापेक्ष) `../../docs/translation-dashboard.png` बन जाती है — जो `translated-docs/docs/` से `docs/translation-dashboard.png` तक सही ढंग से संकल्पित होती है।
+इसका अर्थ है कि `flatPreserveRelativeDir: true` के साथ, उपनिर्देशिकाओं में स्रोत फ़ाइलों को स्वचालित रूप से सही उपसर्ग मिल जाता है। उदाहरण के लिए, `docs/GETTING_STARTED.md` `translated-docs/docs/GETTING_STARTED.<locale>.md` पर आउटपुट करता है। प्रति-फ़ाइल उपसर्ग `../../docs/` है, इसलिए एक एसेट `translation-dashboard.png` (स्रोत के सापेक्ष) `../../docs/translation-dashboard.png` बन जाता है — जो `translated-docs/docs/` से `docs/translation-dashboard.png` तक सही ढंग से हल हो जाता है।
 
 स्रोत फ़ाइलों के साथ स्थित सापेक्ष-पथ संपत्तियों के लिए कोई `postProcessing` रेगेक्स सुधार की आवश्यकता नहीं होती है।
 

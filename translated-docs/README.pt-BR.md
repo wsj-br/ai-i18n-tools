@@ -40,9 +40,9 @@ CLI e toolkit para internacionalização de aplicações JavaScript/TypeScript e
 
 Analisa arquivos-fonte em busca de literais `t("…")` / `i18n.t("…")`, cria um catálogo mestre (`strings.json`), traduz entradas ausentes por localidade via OpenRouter e gera arquivos JSON planos (`de.json`, `pt-BR.json`, …) prontos para uso com i18next.
 
-**Fluxo de trabalho 2 - Tradução de Documentos** — para documentos em markdown/MDX (Docusaurus, Astro Starlight, arquivos README simples)
+**Workflow 2 - Tradução de Documentos** — para documentos markdown/MDX (Docusaurus, Astro Starlight, arquivos README simples) e HTML de páginas `.astro` (sites de marketing Astro simples)
 
-Traduz arquivos-fonte `.md` e `.mdx` para todas as localidades de destino com um cache compartilhado em SQLite — apenas segmentos novos ou alterados são enviados ao LLM. JSON opcional de estrutura do Docusaurus (`jsonSource`, proveniente de `write-translations`) cobre strings da interface como navbar, rodapé e temas. A tradução de arquivos SVG é habilitada por meio de `features.translateSVG` e do bloco `svg` no nível superior.
+Traduz arquivos-fonte `.md`, `.mdx` e `.astro` para todos os idiomas de destino com um cache compartilhado do SQLite — apenas segmentos novos ou alterados são enviados ao LLM. O JSON opcional do shell do Docusaurus (`jsonSource`, proveniente de `write-translations`) cobre strings da barra de navegação, rodapé e da interface do tema. A tradução de arquivos SVG é habilitada por meio do `features.translateSVG` e do bloco `svg` no nível superior. Para sites Astro simples, consulte [`examples/astro-website`](../examples/astro-website/) (hibrido: `translate-docs` para HTML da página mais `t()` para strings do frontmatter).
 
 Ambos os fluxos de trabalho compartilham um único arquivo `ai-i18n-tools.config.json` e podem ser usados de forma independente ou conjunta.
 
@@ -125,6 +125,7 @@ Em seguida, configure o i18next em seu aplicativo usando os auxiliares de `'ai-i
 # 1. Create config for Docusaurus
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website (UI + optional page HTML): npx ai-i18n-tools init -t ui-astro-website
 
 # 2. Translate all docs
 npx ai-i18n-tools translate-docs

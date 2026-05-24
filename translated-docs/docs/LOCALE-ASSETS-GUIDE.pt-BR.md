@@ -202,9 +202,9 @@ Is the asset an SVG with translatable text or labels?
 
 Use quando uma única imagem é compartilhada entre todas as localidades (sem variante por localidade). Quando `markdownOutput.style = "flat"`, o reescritor de links simples calcula o prefixo de profundidade por arquivo de saída, então um ativo ao lado do arquivo de origem (por exemplo, `docs/figure.png` referenciado como `figure.png` de `docs/page.md`) é resolvido corretamente em cada saída traduzida — nenhuma regra `postProcessing.regexAdjustments` é necessária.
 
-Exemplo: este pacote traduz `docs/GETTING_STARTED.md` para `translated-docs/docs/GETTING_STARTED.<locale>.md`. A imagem irmã `docs/translation-dashboard.png` é referenciada como `translation-dashboard.png`. O reescritor calcula o prefixo por arquivo a partir do diretório do arquivo de saída até o diretório de origem (`../../docs/`), produzindo `../../docs/translation-dashboard.png`. De `translated-docs/docs/`, isso resolve corretamente para `docs/translation-dashboard.png`.
+Exemplo: este pacote traduz `docs/GETTING_STARTED.md` para `translated-docs/docs/GETTING_STARTED.<locale>.md`. A imagem irmã `docs/translation-dashboard.png` é referenciada como `translation-dashboard.png`. O reescritor calcula o prefixo por arquivo a partir do diretório do arquivo de saída até o diretório de origem (`../../docs/`), produzindo `../../docs/translation-dashboard.png`. A partir de `translated-docs/docs/`, isso é resolvido corretamente para `docs/translation-dashboard.png`.
 
-Nenhum script de captura de tela é necessário — o arquivo é colocado uma vez e nunca muda por localidade.
+Atualize o PNG com [`scripts/screenshot-translation-dashboard.sh`](../../docs/../scripts/screenshot-translation-dashboard.sh) quando a interface do painel mudar; a imagem não é por localidade.
 
 Uma regra `postProcessing` ainda é necessária quando:
 - O ativo é referenciado por meio de uma URL absoluta (por exemplo, `/img/figure.png`) — o reescritor trata apenas caminhos relativos
@@ -213,7 +213,7 @@ Uma regra `postProcessing` ainda é necessária quando:
 <a id="implementation-example"></a>
 ### Exemplo de implementação
 
-Este repositório usa o Padrão A para a captura de tela do Painel de Tradução: [GETTING_STARTED.md](GETTING_STARTED.pt-BR.md#translation-dashboard) faz referência à imagem [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) na mesma pasta. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) define `markdownOutput.style = "flat"` e `flatPreserveRelativeDir: true`; o prefixo de profundidade por arquivo resolve o caminho da imagem sem necessidade de `regexAdjustments` para capturas de tela.
+Este repositório usa o Padrão A para a captura de tela do Painel de Tradução: [GETTING_STARTED.md](GETTING_STARTED.pt-BR.md#translation-dashboard) faz referência à imagem [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) na mesma pasta. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) define `markdownOutput.style = "flat"` e `flatPreserveRelativeDir: true`; o prefixo de profundidade por arquivo resolve o caminho da imagem sem nenhuma captura de tela `regexAdjustments`.
 
 ---
 
@@ -629,7 +629,7 @@ Para `markdownOutput.style = "doc-system"` (incluindo `"docusaurus"`, `"astro-st
 
 O prefixo de profundidade é calculado por arquivo de saída — não globalmente para todo o lote. Para cada arquivo de origem, o reescritor calcula o caminho relativo do diretório do arquivo de saída de volta ao diretório do arquivo de origem e usa esse caminho como prefixo.
 
-Isso significa que, com `flatPreserveRelativeDir: true`, arquivos de origem em subdiretórios recebem o prefixo correto automaticamente. Por exemplo, `docs/GETTING_STARTED.md` gera saída em `translated-docs/docs/GETTING_STARTED.<locale>.md`. O prefixo por arquivo é `../../docs/`, então um ativo `translation-dashboard.png` (relativo à origem) torna-se `../../docs/translation-dashboard.png` — o que é resolvido corretamente de `translated-docs/docs/` de volta para `docs/translation-dashboard.png`.
+Isso significa que com `flatPreserveRelativeDir: true`, arquivos de origem em subdiretórios recebem o prefixo correto automaticamente. Por exemplo, `docs/GETTING_STARTED.md` gera saída para `translated-docs/docs/GETTING_STARTED.<locale>.md`. O prefixo por arquivo é `../../docs/`, então um recurso `translation-dashboard.png` (relativo à origem) torna-se `../../docs/translation-dashboard.png` — o que é resolvido corretamente de `translated-docs/docs/` de volta para `docs/translation-dashboard.png`.
 
 Nenhuma correção por expressão regular `postProcessing` é necessária para ativos com caminhos relativos localizados ao lado dos arquivos de origem.
 

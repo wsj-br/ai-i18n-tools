@@ -59,7 +59,7 @@ ai-i18n-tools
 ├── API (src/api/)             - OpenRouter HTTP client
 ├── Glossary (src/glossary/)   - glossary loading and term matching
 ├── Runtime (src/runtime/)     - i18next helpers, display helpers (no i18next import)
-├── Server (src/server/)       - local Express web editor for cache / glossary
+├── Server (src/server/)       - local Express app for the Translation Dashboard (cache / glossary)
 └── Utils (src/utils/)         - logger, hash, ignore parser
 ```
 
@@ -99,14 +99,20 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner)
+│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
+│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── classify-segment.ts         Heuristic segment type classification
 │   ├── markdown-extractor.ts       Markdown / MDX segment extraction
+│   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
+│   ├── frontmatter-fields.ts       Selective YAML front matter field translation
+│   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
 │   ├── json-extractor.ts           JSON label file extraction
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
 │   ├── placeholder-handler.ts      Chain: HTML → admonitions → anchors → MDX → URLs → emphasis
+│   ├── expression-attribute-protection.ts  Shared protected attribute/key lists (Astro + MDX JSX)
 │   ├── url-placeholders.ts         Markdown URL protection/restore
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
@@ -149,9 +155,9 @@ src/
 ## Fluxo de trabalho 1 - Internals da tradução de interface
 
 ```text
-source files (JS/TS)
+source files (JS/TS, optional `.astro`)
       │
-      ▼  UIStringExtractor (i18next-scanner Parser)
+      ▼  UIStringExtractor (i18next-scanner Parser; `.astro` via ui-string-babel.ts)
 strings.json  ─────────────────── master catalog
       │             { hash: { source, translated, models?, locations? } }
       ▼
@@ -164,7 +170,9 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Utiliza o `i18next-scanner` do `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em qualquer arquivo JS/TS. Os nomes das funções e as extensões dos arquivos são configuráveis. O `extract` **também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` `description` do projeto quando `reactExtractor.includePackageDescription` está habilitado (padrão), e cada `englishName` do `ui-languages.json` quando `reactExtractor.includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (as strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string de origem recortada — esses tornam-se as chaves no `strings.json`.
+Utiliza o `i18next-scanner` do `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em arquivos JS/TS. Para fontes `.astro` (quando listadas em `ui.uiExtractor.extensions`), o `ui-string-babel.ts` analisa o frontmatter e blocos de modelo `{expression}` com `@babel/parser` e aplica as mesmas regras de `funcNames`. Nomes de funções e extensões de arquivos são configuráveis por meio de `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` do projeto `description` quando `includePackageDescription` está habilitado (padrão), e cada `englishName` de `ui-languages.json` quando `includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string-fonte recortada — esses tornam-se as chaves em `strings.json`.
+
+Sites Astro SSG simples podem pular o i18next: carregue o `{locale}.json` plano em tempo de compilação e resolva `t('English')` pela chave de texto-fonte (veja `examples/astro-website/src/i18n/t.ts` e [GETTING_STARTED — site Astro](GETTING_STARTED.pt-BR.md#astro-website)).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -188,7 +196,7 @@ O catálogo mestre tem a seguinte estrutura:
 }
 ```
 
-`models` (opcional) — por localidade, qual modelo produziu aquela tradução após a última execução bem-sucedida do `translate-ui` para aquela localidade (ou `user-edited` se o texto foi salvo a partir da interface web do `editor`). `locations` (opcional) — onde o `extract` encontrou a string (scanner + linha de descrição do pacote; strings somente de manifesto `englishName` podem omitir o `locations`).
+`models` (opcional) — por localidade, qual modelo produziu essa tradução após a última execução bem-sucedida do `translate-ui` para essa localidade (ou `user-edited` se o texto foi salvo no Painel de Tradução). `locations` (opcional) — onde o `extract` encontrou a string (scanner + linha de descrição do pacote; strings somente de manifesto `englishName` podem omitir `locations`).
 
 `extract` adiciona novas chaves e preserva os dados existentes de `translated` / `models` para chaves ainda presentes na varredura (literais do scanner, descrição opcional, `englishName` opcional do manifesto). `translate-ui` preenche entradas `translated` ausentes, atualiza `models` para localidades que traduz e grava arquivos de localidade planos.
 
@@ -225,9 +233,9 @@ O i18next carrega esses arquivos como pacotes de recursos e procura traduções 
 ## Fluxo de trabalho 2 - Internals da tradução de documentos
 
 ```text
-markdown/MDX/JSON files (`translate-docs`)
+markdown / MDX / JSON / `.astro` files (`translate-docs`)
       │
-      ▼  MarkdownExtractor / JsonExtractor
+      ▼  MarkdownExtractor / JsonExtractor / AstroTemplateExtractor
 segments[]  ─────────────────── typed segments with hash + content
       │
       ▼  PlaceholderHandler
@@ -252,9 +260,22 @@ output file  ─────────────────── Docusauru
 
 Todos os extratores estendem `BaseExtractor` e implementam `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` - divide o markdown em segmentos tipados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. O YAML frontmatter é classificado como **não traduzível** (`slug`, `id` e outras chaves de roteamento permanecem inalteradas). Blocos `export ...` de nível superior (por exemplo, definições de componentes React) são classificados como segmentos `other` não traduzíveis, juntamente com o tratamento existente de `import ...`. Blocos multilinha que começam com uma tag JSX em letra maiúscula (por exemplo, um bloco `<Tabs>`) são classificados como parágrafos traduzíveis. Segmentos não traduzíveis (blocos de código, HTML bruto) são preservados textualmente.
-- `JsonExtractor` - extrai valores de string dos arquivos de rótulo JSON do Docusaurus (catálogos de interface do Docusaurus, não o corpo MDX).
+- `MarkdownExtractor` - divide o markdown em segmentos tipados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. O frontmatter YAML é classificado como **não traduzível** (`slug`, `id` e outras chaves de roteamento permanecem estáveis). Blocos `export ...` de nível superior (por exemplo, definições de componentes React) são classificados como segmentos `other` não traduzíveis, juntamente com o tratamento existente de `import ...`. Blocos multilinha que começam com uma tag JSX maiúscula (por exemplo, um bloco `<Tabs>`) são classificados como parágrafos traduzíveis. Segmentos não traduzíveis (blocos de código, HTML bruto) são preservados textualmente.
+- `AstroTemplateExtractor` - análise e substituição para páginas de marketing `.astro` (`translate-docs` via `translateAstroFile` em `doc-translate.ts`). Extrai nós de texto HTML voltados ao usuário e atributos traduzíveis (`alt`, `title`, `aria-label`, `placeholder`), além de literais de string dentro de blocos de modelo `{expression}` quando voltados ao usuário. Ignora TypeScript no frontmatter, `<script>`, `<style>`, valores de atributos/chaves protegidos e literais dentro de `t('…')`. A remontagem ajusta as importações relativas quando os caminhos de saída são mais profundos (por exemplo, `src/pages/de/index.astro`). Veja [GETTING_STARTED — páginas do site Astro](GETTING_STARTED.pt-BR.md#astro-website-parse-and-replace).
+- `JsonExtractor` - extrai valores de string de arquivos JSON de rótulos do Docusaurus (catálogos da interface do Docusaurus, não o corpo MDX).
 - `SvgExtractor` - extrai conteúdo `<text>`, `<title>` e `<desc>` de SVG (usado por `translate-svg` para arquivos em `config.svg`, não por `translate-docs`).
+
+<a id="astro-hybrid-sites"></a>
+### Sites Astro híbridos (UI + HTML de página)
+
+Aplicativos Astro simples geralmente habilitam **ambos** os fluxos de trabalho em uma única configuração (referência: `examples/astro-website/`):
+
+| Camada | Mecanismo | Saída |
+|-------|-----------|--------|
+| HTML de modelo | `AstroTemplateExtractor` + `translate-docs` | `.astro` por localidade em `documentations[].outputDir` |
+| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | `public/locales/{locale}.json` plano (fonte em inglês como chave) |
+
+O comando `sync` executa as etapas habilitadas em ordem: **extract** (quando `features.extractUIStrings`) → **translate-ui** → opcional **translate-svg** → **translate-docs** (a menos que `--no-docs`, `--no-ui` ou `--no-svg`). O modelo de inicialização `ui-astro-website` configura apenas o Fluxo 1; adicione `documentations[]` e `features.translateMarkdown` para tradução de HTML de página.
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### Inserção de âncoras de título (`write-heading-ids` CLI)
@@ -274,12 +295,14 @@ Antes da tradução, a sintaxe sensível é substituída por tokens opacos para 
 2. **Marcadores de advertência** (`:::note`, `:::`) - apenas o prefixo da diretiva na linha de abertura é substituído por `{{ADM_OPEN_N}}`; qualquer título na mesma linha é deixado para o modelo traduzir. Restaurado com o texto original exato.
 3. **Âncoras de documento** (HTML `<a id="…">`, título do Docusaurus `{#…}`) - preservadas textualmente.
 4. **Construções exclusivas MDX** (`src/processors/mdx-placeholders.ts`):
-   - **Comentários MDX** (`{/* … */}`, incluindo a forma de id de título do Docusaurus `{/* #my-id */}`) substituídos por `{{MDX_N}}`.
-   - **Tags JSX em maiúsculas** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preservadas como `{{MDX_N}}` com atributos de string traduzíveis (`label`, `tooltip`, `aria-label`) reescritos para `{{JXA_N}}` dentro da tag; `label:` dentro de literais de objeto `<Tabs values={[ { label: '…' } ]}>` e `<TabItem value="…">` (quando não existe atributo `label`) também são extraídos. Anexados ao segmento como linhas `||JXA_N: …||`, mesclados novamente por `restoreMdx`.
+   - **Comentários MDX** (`{/* … */}`, incluindo a forma de id de cabeçalho do Docusaurus `{/* #my-id */}`) substituídos por `{{MDX_N}}`.
+   - **Tags JSX com letra maiúscula** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - mantidas como `{{MDX_N}}` com atributos de string traduzíveis (`label`, `tooltip`, `aria-label`) reescritos para `{{JXA_N}}` dentro da tag, exceto se o nome do atributo aparecer em `documentations[].protectAttributes`; `label:` dentro de literais de objeto `<Tabs values={[ { label: '…' } ]}>` (pulável via `documentations[].protectKeys`) e `<TabItem value="…">` (quando nenhum atributo `label` existir, ignorando valores minúsculos semelhantes a slug) também são extraídos. Anexados ao segmento como linhas `||JXA_N: …||`, mesclados novamente por `restoreMdx`.
    - **Expressões entre chaves MDX** (`{frontMatter.title}`, `style={{…}}`) - correspondência com reconhecimento de profundidade, substituídas por `{{MDX_N}}`.
-5. **URLs em markdown** (`](url)`, `src="../../docs/…"`) - restauradas a partir de um mapa após a tradução.
+5. **URLs em Markdown** (`](url)`, `src="../../docs/…"`) - restauradas a partir de um mapa após a tradução.
 6. **Trechos de código embutidos** (`` `code` ``) e **código embutido em negrito** (`**`code`**`) - preservados.
 7. **Ênfase em markdown** (opcional, ativado automaticamente para localidades CJK/RTL) - delimitadores de ênfase mascarados.
+
+A proteção compartilhada de atributos/chaves para modelos Astro e JSX MDX é implementada em `src/processors/expression-attribute-protection.ts` e controlada por bloco por `documentations[].protectAttributes` e `documentations[].protectKeys` (veja [GETTING_STARTED — protectAttributes / protectKeys](GETTING_STARTED.pt-BR.md#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
@@ -337,6 +360,8 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 6. `applyEnvOverrides` - aplicar `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` - anexar nomes de exibição do manifesto.
 
+`init` escreve configurações iniciais a partir de `initConfigTemplates`: `ui-markdown` (UI + markdown opcional do aplicativo), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (UI Astro simples; adicione `documentations[]` para tradução de página `.astro`). Veja [GETTING_STARTED — Inicializar](GETTING_STARTED.pt-BR.md#step-1-initialise).
+
 <a id="logger"></a>
 ### Registrador de eventos (Logger)
 
@@ -381,7 +406,7 @@ makeLoadLocale(
 
 Use `setupKeyAsDefaultT` como ponto de entrada habitual do aplicativo (chave recortada + plural `wrapT` + opcional `translate-ui` `{sourceLocale}.json`). Chamar apenas `wrapI18nWithKeyTrim` é **obsoleto** para configuração de aplicativos.
 
-Construa o `localeLoaders` com `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` para manter as chaves alinhadas com o `targetLocales` após o `generate-ui-languages`. Consulte `docs/GETTING_STARTED.md` (configuração em tempo de execução) e `examples/nextjs-app/` / `examples/console-app/`.
+Compile `localeLoaders` com `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` para que as chaves permaneçam alinhadas com `targetLocales` após `generate-ui-languages`. Veja `docs/GETTING_STARTED.md` (conexão em tempo de execução), `examples/nextjs-app/`, `examples/console-app/` e `examples/astro-website/` (`makeT` personalizado sem i18next).
 
 <a id="display-helpers"></a>
 ### Auxiliares de exibição
@@ -457,12 +482,15 @@ Adicione nomes não padrão de funções de tradução via configuração:
 ```json
 {
   "ui": {
-    "reactExtractor": {
-      "funcNames": ["t", "i18n.t", "translate", "i18n.translate"]
+    "uiExtractor": {
+      "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"]
     }
   }
 }
 ```
+
+(`ui.reactExtractor` é um alias totalmente suportado para `ui.uiExtractor`.)
 
 <a id="custom-extractors"></a>
 ### Extratores personalizados

@@ -130,7 +130,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 빠른 시작
 
-기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 및 `ui-starlight` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 하나의 명령으로 실행하려는 경우 `sync`를 사용하세요.
+기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만을 활성화합니다. `ui-docusaurus` 및 `ui-starlight` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. `ui-astro-website` 템플릿은 일반 Astro 앱(`.astro` 파일 포함)용 **UI** 추출 구조를 생성합니다. `.astro` 페이지 HTML에 대한 `translate-docs`도 원할 경우 `documentations[]` 블록을 추가하세요([Astro 웹사이트 페이지(parse-and-replace)](#astro-website-parse-and-replace) 참조). 참조 문서 [`examples/astro-website`](../../docs/../examples/astro-website/)은 **두 가지** 파이프라인을 모두 사용합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 하나의 명령으로 실행하려는 경우 `sync`을 사용하세요.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -140,7 +140,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -203,7 +204,89 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` 하위의 모든 JS/TS 파일을 스캔하여 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `ui.stringsJson`에 쓰거나 병합합니다.
 
-스캐너는 구성이 가능합니다: `ui.reactExtractor.funcNames`을 통해 사용자 정의 함수 이름을 추가할 수 있습니다.
+스캐너는 구성 가능합니다: `ui.uiExtractor.funcNames`(또는 레거시 `ui.reactExtractor.funcNames`)을 통해 사용자 정의 함수 이름을 추가할 수 있습니다. Astro 페이지 및 컴포넌트의 경우 `.astro`를 `ui.uiExtractor.extensions`에 추가하세요.
+
+<a id="astro-website"></a>
+### Astro 웹사이트(Starlight이 아닌 일반 Astro)
+
+정적 Astro 마케팅 사이트 또는 앱 사이트의 경우 [Astro 내장 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 함께 사용하세요. 참조 구현은 [`examples/astro-website`](../../docs/../examples/astro-website/)입니다([README](../../docs/../examples/astro-website/README.md)도 참조). 영문은 `/`에, 9개의 대상 로케일은 `/{locale}/`에 있습니다(`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
+
+대부분의 팀은 두 파이프라인의 **하이브리드**를 사용합니다(서로 충돌하지 않음):
+
+| 파이프라인 | 용도 | 명령어 | 출력 |
+|----------|---------|----------|--------|
+| **페이지 HTML** | 템플릿 본문의 제목, 단락, 내비게이션 레이블, 인라인 배열 | `translate-docs` | 로케일별 `src/pages/{locale}/index.astro` |
+| **UI 문자열(`t()`)** | 프론트매터 데이터, 스크린샷 탭 레이블, 공유 배열 | `extract` → `translate-ui` | `public/locales/{locale}.json`(영문 원문을 키로 사용) |
+
+언어를 추가하거나 제거할 때 세 목록을 일치시켜야 합니다: `ai-i18n-tools.config.json`의 `targetLocales`, `astro.config.mjs`의 `i18n.locales`(Astro는 `pt-br`와 같은 **소문자** 라우트 코드 사용), 그리고 `ui-languages.json`(`generate-ui-languages`를 통해). 평면 번들 **파일 이름**은 구성 대소문자 규칙을 따릅니다(`pt-BR.json`); 매니페스트의 `code` 필드를 사용하여 Astro의 `pt-br` 라우트를 해당 파일에 매핑하세요(`examples/astro-website/src/i18n/locale.ts` 참조).
+
+참조 프로젝트에서 가져온 예제 `package.json` 스크립트:
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Astro 웹사이트 UI 문자열(SSG)
+
+`init -t ui-astro-website`으로 UI 추출 구조를 생성한 후, 페이지 HTML 번역도 수행할 경우 아래에 설명된 대로 `documentations[]` 블록을 병합하세요. TypeScript 모듈과 `.astro` 프론트매터(로케일별 복제 페이지보다 UI 문자열을 선호할 경우 템플릿의 `{expression}` 블록)에서 `t('…')`로 텍스트를 감싸세요:
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+`astro.config.mjs`의 `i18n.defaultLocale`과 일치하도록 `sourceLocale`을 설정하세요. Astro가 빌드 시 가져올 수 있는 디렉터리에 평면 번들을 작성하세요(템플릿은 `public/locales/` 사용). 영문 원문 리터럴을 키로 조회하여 **빌드 시** `t('…')`를 해결하세요(`examples/astro-website/src/i18n/t.ts` 참조; `strings.json`은 런타임 번들이 아닌 추출 캐시임). 로드 후 언어 전환 기능을 클라이언트 아일랜드에 추가하지 않는 한 정적 사이트에서는 `ai-i18n-tools/runtime`이나 i18next가 **필요하지 않습니다**.
+
+`t()`을 호출하는 모든 페이지(영문 루트 페이지 및 각 `src/pages/{locale}/` 복사본)에 연결하세요:
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+예제의 지원 헬퍼: 레이블, 방향, BCP-47 코드용 `src/i18n/utils.ts`, `src/i18n/locale.ts`, `ui-languages.json`. `targetLocales`를 변경한 후 `generate-ui-languages`을 실행하세요(`ui.uiLanguagesPath`를 설정하여 매니페스트가 헬퍼 옆에 위치하도록 할 수 있음, 예: `src/i18n/ui-languages.json`). `resolveUiLanguage(Astro.currentLocale)`에서 `<html lang>`과 `<html dir>`를 설정하는 `MainLayout.astro`; `astro:i18n`에서 `getRelativeLocaleUrl`를 사용하는 `LanguagePicker.astro`.
+
+<a id="astro-website-parse-and-replace"></a>
+### Astro 웹사이트 페이지(parse-and-replace)
+
+`.astro` 파일에 하드코딩된 HTML이 포함된 마케팅 페이지의 경우, `translate-docs`이 텍스트 노드 및 속성(`alt`, `title`, `aria-label`, `placeholder`)을 추출하고 문서 캐시로 번역한 후 페이지 트리 아래에 로케일별 사본을 작성하도록 하세요. 대부분의 가시적 텍스트에는 `t()`이 **필요하지 않습니다**.
+
+구조적 속성과 키 값은 **기본적으로** 번역되지 않습니다: 내장 보호는 `class`, `id`, `style`, `src`, `href`, `data-*`, 및 대부분의 `aria-*`와 같은 JSX/HTML 속성을 포함하며, 템플릿 `{expression}` 블록 내의 `class`, `key`, 및 `id`와 같은 객체 키도 포함됩니다. 사용자 정의 속성을 사용할 때 `documentations[].protectAttributes` 및 `documentations[].protectKeys`를 사용하여 이러한 목록을 확장하십시오(예: Tailwind `variant` 또는 CMS `slug` 필드). 동일한 옵션은 마크다운 번역 중 MDX JSX에도 적용됩니다(자세한 내용은 [protectAttributes / protectKeys](#protectattributes-protectkeys)를 참조하십시오).
+
+`features.translateMarkdown`를 활성화하고 `documentations[]` 블록을 추가하십시오. 예:
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+`npx ai-i18n-tools translate-docs`(또는 [`pnpm i18n:translate`](../../docs/../examples/astro-website/)에서 `pnpm i18n:translate`)를 실행하십시오. 영어 소스는 `src/pages/index.astro`에 유지되며; 각 대상 로케일은 추가 디렉토리 수준에 맞게 조정된 `src/pages/{locale}/index.astro`를 받습니다(예: `../layouts/` → `../../layouts/`).
+
+**템플릿 본문** 내에서, `{expression}` 블록의 문자열 리터럴(인라인 배열, 객체 `title`/`desc` 필드)은 사용자에게 표시될 때 번역됩니다; 보호된 속성/키의 인용된 값, `t('…')`, `<script>`, 및 `<style>` 내의 리터럴은 변경되지 않습니다. **프론트매터 TypeScript는 이 경로에 의해 번역되지 않습니다**—공유 프론트매터(포함 `t()` 가져오기 및 데이터 배열)를 영어 및 로케일 페이지에서 동일하게 유지하거나, 영어 페이지를 편집한 후 `translate-docs`을 다시 실행하여 로케일 복사본이 프론트매터 변경 사항을 반영하도록 하십시오. 프론트매터 전용 복사를 원할 경우, 대신 [UI-string 파이프라인](#astro-website-ui-strings)을 사용하십시오.
+
+[`examples/astro-website`](../../docs/../examples/astro-website/)에서 전체 하이브리드 랜딩 페이지를 확인하십시오(HTML은 `translate-docs`을 통해, 스크린샷 탭 레이블은 `t()` + `translate-ui`를 통해).
 
 <a id="step-3-translate-ui-strings"></a>
 ### 단계 3: UI 문자열 번역
@@ -510,12 +593,20 @@ Astro Starlight 문서 사이트의 경우:
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+일반 Astro 웹사이트 UI(스타라이트 없음)의 경우:
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+해당 템플릿은 UI 추출만 가능하게 합니다. 페이지 HTML 번역을 위해 `features.translateMarkdown`를 설정하고 `documentations[]` 블록을 추가하십시오(자세한 내용은 [Astro 웹사이트 페이지 (구문 분석 및 교체)](#astro-website-parse-and-replace)를 참조하십시오). [`examples/astro-website`](../../docs/../examples/astro-website/) 구성은 두 파이프라인을 함께 보여줍니다.
+
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`과 일치해야 함).
+- `sourceLocale` - 소스 언어(반드시 `defaultLocale`과 `docusaurus.config.js`에서 일치해야 함).
 - `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 문서 파이프라인에 대한 공유 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리이기도 함).
-- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter` 등을 포함할 수 있음.
+- `cacheDir` - 모든 문서 파이프라인을 위한 공유 SQLite 캐시 디렉토리(및 `--write-logs`의 기본 로그 디렉토리).
+- `documentations` - 문서 블록 배열. 각 블록은 선택적 `description`, `contentPaths`, `outputDir`, 선택적 `jsonSource`, `markdownOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등을 가질 수 있습니다.
 - `documentations[].description` - 유지 관리자를 위한 선택적 간단한 메모(이 블록의 범위). 설정된 경우 `translate-docs` 제목(`🌐 …: translating …`) 및 `status` 섹션 헤더에 표시됨.
 - `documentations[].contentPaths` - 마크다운/MDX 소스 디렉터리 또는 파일(JSON 레이블은 `documentations[].jsonSource` 참조).
 - `documentations[].outputDir` - 해당 블록의 번역 출력 루트.
@@ -711,7 +802,7 @@ Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Ze
 
 `markdownOutput.style = "flat"`일 때, 내장 리라이터가 `postProcessing` 전에 실행됩니다. 출력 파일당 깊이 접두사를 계산합니다 — 출력 파일의 디렉토리에서 소스 파일의 디렉토리까지의 상대 경로 — 그리고 이를 비마크다운 자산 URL에 추가합니다. `postProcessing`는 이미 접두사가 추가된 URL에서 실행됩니다 — 로케일 세그먼트와 일치하는 `search` 패턴을 작성하세요, 선행 `../` 접두사가 아닙니다.
 
-`flatPreserveRelativeDir: true`와 함께, 하위 디렉토리에 있는 소스 파일은 자동으로 파일별 접두사를 받습니다. 예를 들어, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`는 `../../docs/`의 접두사를 생성하므로 `translation-dashboard.png`(소스의 형제)는 `../../docs/translation-dashboard.png`가 됩니다 — 어떤 `postProcessing` 규칙 없이도 올바르게 해결됩니다.
+`flatPreserveRelativeDir: true`를 사용하면, 하위 디렉토리에 있는 소스 파일은 자동으로 파일 특정 접두사를 갖습니다. 예를 들어, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`는 `../../docs/`의 접두사를 생성하므로, `translation-dashboard.png`(소스의 형제)는 `../../docs/translation-dashboard.png`가 되어 `postProcessing` 규칙 없이 올바르게 해결됩니다.
 
 `markdownOutput.style`가 `"docusaurus"`, `"astro-starlight"`, `"nested"` 또는 `"flat"` 이외의 값일 때, 플랫 링크 리라이터는 실행되지 않습니다. `postProcessing`는 원래 마크다운 URL을 봅니다.
 
@@ -1212,15 +1303,15 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
   로케일별 JSON 파일이 작성되는 디렉토리 (`de.json`, 등).
 - `preferredModel`  
   선택 사항. `translate-ui`에 대해서만 먼저 시도되는 OpenRouter 모델 ID; 그런 다음 `openrouter.translationModels` (또는 레거시 모델) 순서대로, 이 ID를 중복하지 않고.
-- `reactExtractor.funcNames`  
+- `uiExtractor.funcNames`(또는 레거시 `reactExtractor.funcNames`)  
   스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
-- `reactExtractor.extensions`  
-  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`).
-- `reactExtractor.includePackageDescription`  
-  `true`일 때(기본값), `extract`은 존재할 경우 `package.json` `description`도 UI 문자열로 포함합니다.
-- `reactExtractor.packageJsonPath`  
-  선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 정의 경로.
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.extensions`(또는 레거시 `reactExtractor.extensions`)  
+  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프론트매터 및 템플릿 표현을 위해 `.astro`를 추가하십시오.
+- `uiExtractor.includePackageDescription`(또는 레거시 `reactExtractor.includePackageDescription`)  
+  `true`(기본값)일 때, `extract`은 또한 UI 문자열로 `package.json` `description`를 포함합니다.
+- `uiExtractor.packageJsonPath`(또는 레거시 `reactExtractor.packageJsonPath`)  
+  해당 선택적 설명 추출에 사용되는 `package.json` 파일에 대한 사용자 정의 경로.
+- `uiExtractor.includeUiLanguageEnglishNames`(또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
 `true`일 때(기본값 `false`), `extract`는 소스 스캔에서 이미 존재하지 않는 경우(같은 해시 키 기준), 매니페스트의 `englishName`을 `uiLanguagesPath` 위치에서 `strings.json`에 추가합니다. 유효한 `ui-languages.json`을 가리키는 `uiLanguagesPath`이 필요합니다.
 
@@ -1261,13 +1352,13 @@ SQLite 캐시 디렉터리(`documentations` 블록 전체에서 공유). 실행 
 **콘텐츠 소스**
 
 - `description`
-이 블록에 대한 선택적 인간이 읽을 수 있는 메모(번역에는 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목에 접두사로 추가되며, `status` 섹션 헤더에도 표시됩니다.
+이 블록에 대한 선택적 인간 가독성 노트(번역에 사용되지 않음). 설정 시 `translate-docs` `🌐` 제목에 접두사가 붙으며; `status` 섹션 헤더에도 표시됩니다.
 - `contentPaths`
-번역할 마크다운/MDX 페이지 본문(`translate-docs`가 `.md` / `.mdx`를 검색함). **디렉터리 경로 또는 glob 패턴** 지원(e.g. `"docs/**/*.md"`, `"guides/*.mdx"`). 이곳이 현지화된 문서 본문의 출처입니다.
+번역할 Markdown/MDX 페이지 본문 및 `.astro` 템플릿(`translate-docs`는 `.md`, `.mdx`, 및 `.astro`를 위해 이를 스캔합니다). **디렉토리 경로 또는 글로브 패턴**를 지원합니다(예: `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`). 이것이 지역화된 문서 본문이 나오는 곳입니다.
 - `sourceFiles`
-로드 시 `contentPaths`에 병합되는 선택적 별칭입니다.
+로드 시 `contentPaths`에 병합되는 선택적 별칭.
 - `targetLocales`
-이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 효과적인 문서 로케일은 블록 간의 합집합입니다.
+이 블록에 대해서만 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales`). 유효한 문서 로케일은 블록 간의 합집합입니다.
 - `jsonSource`
 선택 사항. 이 블록에 대한 Docusaurus JSON 레이블 카탈로그의 소스 디렉터리(e.g. `"i18n/en"` from `docusaurus write-translations`). 페이지 본문은 항상 `contentPaths`에서 가져오며, `jsonSource`는 MDX가 아닌 셸/UI JSON만 제공합니다.
 
@@ -1311,6 +1402,22 @@ Docusaurus 레이아웃을 위한 소스 문서 루트(e.g. `"docs"`).
 `true`인 경우 (생략 시 기본값), 각 `translate-docs` 실행 시 마크다운 세그먼트에서 위험한 구분자/닫히지 않은 인라인 코드를 다시 검사하고 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 대체합니다. 이 블록에 대해 경고 및 SQLite 업데이트를 건너뛰려면 `false`을 설정하세요.
 - `addFrontmatter`
 `true`인 경우 (생략 시 기본값), 번역된 마크다운 파일에는 `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path` 등의 YAML 키가 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있을 경우 `translation_models` (사용된 OpenRouter 모델 ID의 정렬된 목록)도 포함됩니다. 건너뛰려면 `false`로 설정하세요.
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+선택 사항입니다. **따옴표로 묶인 문자열 값**이 번역기로 전송되지 않아야 하는 추가 JSX/HTML 속성 이름입니다. 기본 제공되는 기본값(`class`, `id`, `style`, `src`, `href`, `type`, `data-*`, 대부분의 `aria-*` 등)과 병합됩니다. 대소문자 구분 없음. 다음에 적용됩니다.
+
+- `.astro` 정적 HTML 태그 및 `attr=` 내부의 `{expression}` 블록에서 문자열 리터럴을 추출하여 치환하는 경우.
+  - 마크다운/Astro 세그먼트 번역 중 MDX 플레이스홀더 추출 (대문자 JSX 태그의 `label`, `tooltip`, `aria-label` 및 해당되는 경우 `TabItem` `value`).
+
+예: `"protectAttributes": ["variant", "size"]`은(는) `variant="primary"` 내부의 `{items.map(...)}`이(가) 여러 로케일에서 변경되지 않도록 유지합니다.
+
+번역 가능한 속성(예: `"title"` 또는 `"aria-label"`)을 영어에서 그대로 복사하고자 할 때 이 목록에 포함시킬 수 있습니다.
+
+- `protectKeys`
+선택 사항입니다. 템플릿 `{expression}` 블록 및 MDX 객체 리터럴 내부(예: `label:` 내부의 `<Tabs values={[ … ]}>`)에서 따옴표로 묶인 문자열 값이 번역되어서는 안 되는 추가 **객체 속성 이름**입니다. 기본 제공되는 기본값(`class`, `key`, `id`, `href`, `src` 등)과 병합됩니다. 대소문자 구분 없음.
+
+예: `"protectKeys": ["slug", "code"]`은(는) `{ slug: 'getting-started', title: 'Getting started' }`을(를) 건너뜁니다 → `slug`이(가) 보호된 상태에서 `title`만 번역됩니다.
 
 <br/>
 
@@ -1374,10 +1481,10 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLI 참조
 
-| 명령어                                                                                  | 설명                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                                | CLI 버전 및 빌드 타임스탬프 출력 (루트 프로그램의 `-V` / `--version`와 동일한 정보).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]` | 시작 구성 파일 작성 (`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`이(가) 시작용 `.translate-ignore`을 생성합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 명령                                                                                                    | 설명                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                                  | CLI 버전 및 빌드 타임스탬프 출력 (루트 프로그램의 `-V` / `--version`와 동일한 정보).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | 시작 구성 파일을 작성합니다 (`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `documentations[].addFrontmatter` 포함). `--with-translate-ignore`는 시작용 `.translate-ignore`을 생성합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `check-models`                                                                           | 구성된 각 OpenRouter 모델 ID를 `GET /models`(카탈로그 멤버십, `expiration_date`, 프롬프트/완성 시 100만 토큰당 USD)과 대조하여 유효성을 검사합니다. `OPENROUTER_API_KEY`이 필요합니다. 구성된 ID 중 누락되거나 만료된 것이 있을 경우 비제로 종료합니다. 카탈로그 요청 시 `openrouter.requestTimeoutMs`을(를) 따릅니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `extract`                                                                                | `t("…")` / `i18n.t("…")` 리터럴, 선택적 `package.json` 설명 및 선택적 매니페스트 `englishName` 항목(`ui.reactExtractor` 참조)에서 `strings.json`을(를) 업데이트합니다. `features.extractUIStrings`이 필요합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` 및 번들된 `data/ui-languages-complete.json`(또는 설정 시 `--master`)을 사용하여 `ui.flatOutputDir`(또는 설정된 경우 `uiLanguagesPath`)에 `ui-languages.json`을(를) 씁니다. 마스터 파일에 없는 로케일에 대해서는 경고를 표시하고 `TODO` 자리 표시자를 출력합니다. 사용자 정의된 `label` 또는 `englishName` 값을 가진 기존 매니페스트가 있는 경우, 마스터 카탈로그의 기본값으로 대체됩니다. 생성된 파일을 나중에 검토하고 조정하십시오.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |

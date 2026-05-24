@@ -202,9 +202,9 @@ Is the asset an SVG with translatable text or labels?
 
 À utiliser lorsqu'une seule image est partagée entre toutes les locales (aucune variante par locale). Lorsque `markdownOutput.style = "flat"`, le réécritureur de liens plats calcule le préfixe de profondeur pour chaque fichier de sortie, de sorte qu'une ressource située à côté du fichier source (par exemple `docs/figure.png` référencée comme `figure.png` depuis `docs/page.md`) est correctement résolue dans chaque sortie traduite — aucune règle `postProcessing.regexAdjustments` n'est nécessaire.
 
-Exemple : ce package traduit `docs/GETTING_STARTED.md` en `translated-docs/docs/GETTING_STARTED.<locale>.md`. L'image sœur `docs/translation-dashboard.png` est référencée comme `translation-dashboard.png`. Le réécritureur calcule le préfixe par fichier depuis le répertoire du fichier de sortie jusqu'au répertoire source (`../../docs/`), produisant `../../docs/translation-dashboard.png`. Depuis `translated-docs/docs/`, cela se résout correctement en `docs/translation-dashboard.png`.
+Exemple : ce package traduit `docs/GETTING_STARTED.md` en `translated-docs/docs/GETTING_STARTED.<locale>.md`. L'image associée `docs/translation-dashboard.png` est référencée comme `translation-dashboard.png`. Le réécriture calcule le préfixe par fichier à partir du répertoire du fichier de sortie vers le répertoire source (`../../docs/`), produisant `../../docs/translation-dashboard.png`. À partir de `translated-docs/docs/`, cela se résout correctement en `docs/translation-dashboard.png`.
 
-Aucun script de capture d'écran n'est nécessaire — le fichier est placé une fois et ne change jamais selon la locale.
+Actualisez le PNG avec [`scripts/screenshot-translation-dashboard.sh`](../../docs/../scripts/screenshot-translation-dashboard.sh) lorsque l'interface du tableau de bord change ; l'image n'est pas spécifique à une langue.
 
 Une règle `postProcessing` est tout de même nécessaire lorsque :
 - La ressource est référencée via une URL absolue (par exemple `/img/figure.png`) — le réécritureur ne gère que les chemins relatifs
@@ -213,7 +213,7 @@ Une règle `postProcessing` est tout de même nécessaire lorsque :
 <a id="implementation-example"></a>
 ### Exemple de mise en œuvre
 
-Ce dépôt utilise le motif A pour la capture d'écran du tableau de bord de traduction : [GETTING_STARTED.md](GETTING_STARTED.fr.md#translation-dashboard) fait référence à l'image [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) située dans le même dossier. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) définit `markdownOutput.style = "flat"` et `flatPreserveRelativeDir: true` ; le préfixe de profondeur par fichier résout le chemin de l'image sans nécessiter de règle `regexAdjustments` pour les captures d'écran.
+Ce dépôt utilise le modèle A pour la capture d'écran du tableau de bord de traduction : [GETTING_STARTED.md](GETTING_STARTED.fr.md#translation-dashboard) fait référence à l'image [translation-dashboard.png](../../docs/../docs/translation-dashboard.png) dans le même dossier. [ai-i18n-tools.config.json](../../docs/../ai-i18n-tools.config.json) définit `markdownOutput.style = "flat"` et `flatPreserveRelativeDir: true` ; le préfixe de profondeur par fichier résout le chemin de l'image sans `regexAdjustments` pour la capture d'écran.
 
 ---
 
@@ -629,7 +629,7 @@ Pour `markdownOutput.style = "doc-system"` (y compris `"docusaurus"`, `"astro-st
 
 Le préfixe de profondeur est calculé pour chaque fichier de sortie — pas globalement pour l'ensemble du traitement. Pour chaque fichier source, le réécritureur calcule le chemin relatif depuis le répertoire du fichier de sortie vers le répertoire du fichier source, et utilise ce chemin comme préfixe.
 
-Cela signifie qu'avec `flatPreserveRelativeDir: true`, les fichiers sources situés dans des sous-répertoires obtiennent automatiquement le bon préfixe. Par exemple, `docs/GETTING_STARTED.md` est exporté vers `translated-docs/docs/GETTING_STARTED.<locale>.md`. Le préfixe par fichier est `../../docs/`, donc une ressource `translation-dashboard.png` (relative au fichier source) devient `../../docs/translation-dashboard.png` — ce qui permet une résolution correcte depuis `translated-docs/docs/` vers `docs/translation-dashboard.png`.
+Cela signifie qu'avec `flatPreserveRelativeDir: true`, les fichiers sources situés dans des sous-répertoires obtiennent automatiquement le préfixe correct. Par exemple, `docs/GETTING_STARTED.md` génère en sortie `translated-docs/docs/GETTING_STARTED.<locale>.md`. Le préfixe par fichier est `../../docs/`, donc une ressource `translation-dashboard.png` (relative au fichier source) devient `../../docs/translation-dashboard.png` — ce qui se résout correctement depuis `translated-docs/docs/` vers `docs/translation-dashboard.png`.
 
 Aucune correction par expression régulière `postProcessing` n'est nécessaire pour les ressources en chemin relatif placées aux côtés des fichiers sources.
 

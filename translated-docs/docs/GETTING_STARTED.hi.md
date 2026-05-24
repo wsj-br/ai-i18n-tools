@@ -130,7 +130,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
 
-डिफ़ॉल्ट `init` टेम्पलेट (`ui-markdown`) केवल **UI** निष्कर्षण और अनुवाद को सक्षम करता है। `ui-docusaurus` और `ui-starlight` टेम्पलेट **दस्तावेज़** अनुवाद (`translate-docs`) को सक्षम करते हैं। जब आपको एक कमांड की आवश्यकता हो जो आपके कॉन्फ़िग के अनुसार निष्कर्षण, UI अनुवाद, वैकल्पिक SVG फ़ाइल अनुवाद और दस्तावेज़ीकरण अनुवाद चलाए, तो `sync` का उपयोग करें।
+डिफ़ॉल्ट `init` टेम्पलेट (`ui-markdown`) केवल **UI** निष्कर्षण और अनुवाद को सक्षम करता है। `ui-docusaurus` और `ui-starlight` टेम्पलेट **दस्तावेज़** अनुवाद (`translate-docs`) को सक्षम करते हैं। `ui-astro-website` टेम्पलेट सादे Astro ऐप्स (`.astro` फ़ाइलों सहित) के लिए **UI** निष्कर्षण का स्कैफ़ोल्डिंग करता है; जब आप `.astro` पृष्ठ HTML के लिए `translate-docs` भी चाहते हैं, तो [Astro वेबसाइट पृष्ठों (पार्स-एंड-रिप्लेस)](#astro-website-parse-and-replace) देखें) `documentations[]` ब्लॉक जोड़ें। संदर्भ [`examples/astro-website`](../../docs/../examples/astro-website/) **दोनों** पाइपलाइनों का उपयोग करता है। जब आपको एक कमांड चाहिए जो आपके कॉन्फ़िग के अनुसार निष्कर्षण, UI अनुवाद, वैकल्पिक SVG फ़ाइल अनुवाद और दस्तावेज़ीकरण अनुवाद चलाता है, तो `sync` का उपयोग करें।
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -140,7 +140,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -203,7 +204,89 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` के तहत सभी JS/TS फ़ाइलों में `t("literal")` और `i18n.t("literal")` कॉल की स्कैन करता है। `ui.stringsJson` में लिखता है (या मर्ज करता है)।
 
-स्कैनर कॉन्फ़िगर करने योग्य है: `ui.reactExtractor.funcNames` के माध्यम से कस्टम फ़ंक्शन नाम जोड़ें।
+स्कैनर कॉन्फ़िगर करने योग्य है: `ui.uiExtractor.funcNames` (या पुराने `ui.reactExtractor.funcNames`) के माध्यम से कस्टम फ़ंक्शन नाम जोड़ें। Astro पृष्ठों और घटकों के लिए, `ui.uiExtractor.extensions` में `.astro` जोड़ें।
+
+<a id="astro-website"></a>
+### Astro वेबसाइट (सादा Astro, Starlight नहीं)
+
+स्थिर Astro मार्केटिंग या ऐप साइटों के लिए, [Astro बिल्ट-इन i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) के साथ ai-i18n-tools को जोड़ें। संदर्भ कार्यान्वयन [`examples/astro-website`](../../docs/../examples/astro-website/) है (इसके [README](../../docs/../examples/astro-website/README.md) को भी देखें): अंग्रेजी `/` पर, नौ लक्ष्य स्थानीयकरण `/{locale}/` पर (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`)।
+
+अधिकांश टीमें दो पाइपलाइनों के **संकर** का उपयोग करती हैं (वे टकराती नहीं हैं):
+
+| पाइपलाइन | उपयोग के लिए | कमांड | आउटपुट |
+|----------|---------|----------|--------|
+| **पृष्ठ HTML** | शीर्षक, पैराग्राफ, नेविगेशन लेबल, टेम्पलेट बॉडी में इनलाइन सरणियाँ | `translate-docs` | प्रति स्थानीयकरण `src/pages/{locale}/index.astro` |
+| **UI स्ट्रिंग्स (`t()`)** | फ्रंटमैटर डेटा, स्क्रीनशॉट टैब लेबल, साझा सरणियाँ | `extract` → `translate-ui` | `public/locales/{locale}.json` (अंग्रेजी स्रोत कुंजी के रूप में) |
+
+जब आप कोई भाषा जोड़ते या हटाते हैं, तो तीन सूचियों को संरेखित रखें: `ai-i18n-tools.config.json` में `targetLocales`, `astro.config.mjs` में `i18n.locales` (Astro **लोअरकेस** मार्ग कोड जैसे `pt-br` का उपयोग करता है), और `ui-languages.json` (`generate-ui-languages` के माध्यम से)। फ्लैट बंडल के **फ़ाइलनाम** कॉन्फ़िग केसिंग का उपयोग करते हैं (`pt-BR.json`); Astro के `pt-br` मार्ग को अपने मैनिफेस्ट `code` फ़ील्ड के माध्यम से उस फ़ाइल से मैप करें (`examples/astro-website/src/i18n/locale.ts` देखें)।
+
+संदर्भ प्रोजेक्ट से उदाहरण `package.json` स्क्रिप्ट्स:
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Astro वेबसाइट UI स्ट्रिंग्स (SSG)
+
+UI निष्कर्षण के लिए `init -t ui-astro-website` के साथ स्कैफ़ोल्डिंग करें, फिर जब आप पृष्ठ HTML का भी अनुवाद करते हैं तो `documentations[]` ब्लॉक मर्ज करें (नीचे देखें)। TypeScript मॉड्यूल में `t('…')` और `.astro` फ्रंटमैटर में (और टेम्पलेट `{expression}` ब्लॉक में जब आप डुप्लिकेट स्थानीयकृत पृष्ठों की तुलना में UI स्ट्रिंग्स को प्राथमिकता देते हैं) कॉपी को लपेटें:
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+`sourceLocale` को `astro.config.mjs` में `i18n.defaultLocale` के मेल के अनुसार सेट करें। समतल बंडल को एक निर्देशिका में लिखें जिसे Astro बिल्ड समय पर आयात कर सकता है (टेम्पलेट `public/locales/` का उपयोग करता है)। **बिल्ड समय** पर `t('…')` को हल करें अंग्रेजी स्रोत लिटरल को कुंजी के रूप में खोजकर (देखें `examples/astro-website/src/i18n/t.ts`; `strings.json` निर्माण समय बंडल नहीं, बल्कि निष्कर्षण कैश है)। जब तक आप लोड होने के बाद भाषा बदलने वाले क्लाइंट आइलैंड नहीं जोड़ते, तब तक आपको स्थिर साइट के लिए `ai-i18n-tools/runtime` या i18next की **आवश्यकता नहीं** होती।
+
+हर पृष्ठ को वायर करें जो `t()` को कॉल करता है (अंग्रेजी मूल पृष्ठ और प्रत्येक `src/pages/{locale}/` कॉपी):
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+उदाहरण में सहायक फ़ंक्शन: लेबल, दिशा और BCP-47 कोड के लिए `src/i18n/utils.ts`, `src/i18n/locale.ts`, और `ui-languages.json`। `targetLocales` में बदलाव के बाद `generate-ui-languages` चलाएँ (वैकल्पिक रूप से `ui.uiLanguagesPath` सेट करें ताकि मैनिफेस्ट आपके हेल्पर्स के बगल में रहे, उदाहरण के लिए `src/i18n/ui-languages.json`)। `MainLayout.astro` `resolveUiLanguage(Astro.currentLocale)` से `<html lang>` और `<html dir>` सेट करता है; `LanguagePicker.astro` `astro:i18n` से `getRelativeLocaleUrl` का उपयोग करता है।
+
+<a id="astro-website-parse-and-replace"></a>
+### Astro वेबसाइट पृष्ठ (पार्स-एंड-रिप्लेस)
+
+मार्केटिंग पृष्ठों के लिए जिनमें `.astro` फ़ाइलों में हार्डकोडेड HTML है, `translate-docs` पाठ नोड्स और विशेषताओं (`alt`, `title`, `aria-label`, `placeholder`) को निकालें, उन्हें दस्तावेज़ कैश के साथ अनुवादित करें, और अपने पृष्ठों के पेड़ के तहत स्थानीय-विशिष्ट प्रतियां लिखें। आपको अधिकांश दृश्य प्रतिलिपि के लिए `t()` की आवश्यकता **नहीं** है।
+
+संरचनात्मक विशेषता और कुंजी मान डिफ़ॉल्ट रूप से **अनुवादित** नहीं होते: अंतर्निहित सुरक्षा JSX/HTML विशेषताओं जैसे `class`, `id`, `style`, `src`, `href`, `data-*`, और अधिकांश `aria-*`, साथ ही वस्तु कुंजी जैसे `class`, `key`, और `id` को टेम्पलेट `{expression}` ब्लॉकों के अंदर कवर करती है। जब आप कस्टम विशेषताओं का उपयोग करते हैं (उदाहरण के लिए Tailwind `variant` या CMS `slug` फ़ील्ड), तो उन सूचियों को बढ़ाने के लिए `documentations[].protectAttributes` और `documentations[].protectKeys` का उपयोग करें। Markdown अनुवाद के दौरान MDX JSX पर समान विकल्प लागू होते हैं (देखें [protectAttributes / protectKeys](#protectattributes-protectkeys)).
+
+`features.translateMarkdown` सक्षम करें और एक `documentations[]` ब्लॉक जोड़ें, उदाहरण के लिए:
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+`npx ai-i18n-tools translate-docs` चलाएँ (या [`pnpm i18n:translate`](../../docs/../examples/astro-website/) में `pnpm i18n:translate`)। अंग्रेजी स्रोत `src/pages/index.astro` पर रहता है; प्रत्येक लक्षित स्थानीयता को `src/pages/{locale}/index.astro` प्राप्त होता है जिसमें अतिरिक्त निर्देशिका स्तर के लिए आयात समायोजित होते हैं (उदाहरण के लिए `../layouts/` → `../../layouts/`)।
+
+**टेम्पलेट बॉडी** के अंदर, `{expression}` ब्लॉकों में स्ट्रिंग लिटेरल (इनलाइन ऐरे, वस्तु `title`/`desc` फ़ील्ड) तब अनुवादित होते हैं जब वे उपयोगकर्ता के सामने होते हैं; संरक्षित विशेषताओं/कुंजी पर उद्धृत मान, `t('…')`, `<script>`, और `<style>` के अंदर लिटेरल को अपरिवर्तित छोड़ दिया जाता है। **फ्रंटमैटर TypeScript इस पथ द्वारा अनुवादित नहीं होता**—साझा फ्रंटमैटर (जिसमें `t()` आयात और डेटा ऐरे शामिल हैं) को अंग्रेजी और स्थानीय पृष्ठों पर समान रखना चाहिए, या अंग्रेजी पृष्ठ को संपादित करने के बाद `translate-docs` को फिर से चलाएँ ताकि स्थानीय प्रतियां फ्रंटमैटर परिवर्तनों को प्राप्त कर सकें। केवल फ्रंटमैटर कॉपी के लिए, इसके बजाय [UI-string pipeline](#astro-website-ui-strings) का उपयोग करें।
+
+[`examples/astro-website`](../../docs/../examples/astro-website/) पर पूर्ण हाइब्रिड लैंडिंग पृष्ठ (HTML के माध्यम से `translate-docs`, स्क्रीनशॉट टैब लेबल के माध्यम से `t()` + `translate-ui`) देखें।
 
 <a id="step-3-translate-ui-strings"></a>
 ### चरण 3: UI स्ट्रिंग्स का अनुवाद करें
@@ -510,12 +593,20 @@ npx ai-i18n-tools init -t ui-docusaurus
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+साधारण Astro वेबसाइट UI (कोई Starlight नहीं):
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+वह टेम्पलेट केवल UI निष्कर्षण को सक्षम करता है। पृष्ठ HTML अनुवाद के लिए, `features.translateMarkdown` भी सेट करें और एक `documentations[]` ब्लॉक जोड़ें (देखें [Astro वेबसाइट पृष्ठ (parse-and-replace)](#astro-website-parse-and-replace)). [`examples/astro-website`](../../docs/../examples/astro-website/) कॉन्फ़िगरेशन दोनों पाइपलाइनों को एक साथ दिखाता है।
+
 उत्पन्न `ai-i18n-tools.config.json` को संपादित करें:
 
-- `sourceLocale` - स्रोत भाषा (`docusaurus.config.js` में `defaultLocale` से मेल खाना चाहिए)।
-- `targetLocales` - BCP-47 स्थानीयता कोड्स की सरणी (उदाहरण के लिए `["de", "fr", "es"]`)।
-- `cacheDir` - सभी दस्तावेज़ीकरण पाइपलाइन्स के लिए साझा SQLite कैश निर्देशिका (और `--write-logs` के लिए डिफ़ॉल्ट लॉग निर्देशिका)।
-- `documentations` - दस्तावेज़ीकरण ब्लॉक्स की सरणी। प्रत्येक ब्लॉक में वैकल्पिक `description`, `contentPaths`, `outputDir`, वैकल्पिक `jsonSource`, `markdownOutput`, वैकल्पिक `segmentSplitting`, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter`, आदि होते हैं।
+- `sourceLocale` - स्रोत भाषा (को `defaultLocale` में `docusaurus.config.js` से मेल खाना चाहिए)।
+- `targetLocales` - BCP-47 स्थानीयता कोड का ऐरे (जैसे `["de", "fr", "es"]`)।
+- `cacheDir` - सभी दस्तावेज़ पाइपलाइनों के लिए साझा SQLite कैश निर्देशिका (और `--write-logs` के लिए डिफ़ॉल्ट लॉग निर्देशिका)।
+- `documentations` - दस्तावेज़ ब्लॉकों का ऐरे। प्रत्येक ब्लॉक में वैकल्पिक `description`, `contentPaths`, `outputDir`, वैकल्पिक `jsonSource`, `markdownOutput`, वैकल्पिक `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, आदि होते हैं।
 - `documentations[].description` - रखरखाव कर्ताओं के लिए वैकल्पिक संक्षिप्त टिप्पणी (इस ब्लॉक के दायरे के बारे में)। जब सेट किया जाता है, तो यह `translate-docs` शीर्षक (`🌐 …: translating …`) और `status` अनुभाग शीर्षकों में दिखाई देता है।
 - `documentations[].contentPaths` - मार्कडाउन/MDX स्रोत निर्देशिकाएँ या फ़ाइलें (JSON लेबल के लिए `documentations[].jsonSource` भी देखें)।
 - `documentations[].outputDir` - उस ब्लॉक के लिए अनुवादित आउटपुट मूल।
@@ -711,7 +802,7 @@ Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Ze
 
 जब `markdownOutput.style = "flat"`, तो `postProcessing` से पहले एक अंतर्निहित पुन:लेखक चलता है। यह प्रत्येक आउटपुट फ़ाइल के लिए गहराई उपसर्ग की गणना करता है — आउटपुट फ़ाइल की निर्देशिका से स्रोत फ़ाइल की निर्देशिका तक का सापेक्ष पथ — और गैर-मार्कडाउन संपत्ति URL के आगे इसे जोड़ देता है। फिर `postProcessing` पहले से उपसर्गित URL पर चलता है — उसमें स्थानीयकरण खंड को मिलान करने वाले `search` पैटर्न लिखें, अग्रणी `../` उपसर्ग के बजाय।
 
-`flatPreserveRelativeDir: true` के साथ, उपनिर्देशिकाओं में स्रोत फ़ाइलों को स्वचालित रूप से फ़ाइल-विशिष्ट उपसर्ग मिलता है। उदाहरण के लिए, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` के परिणामस्वरूप उपसर्ग `../../docs/` होता है, इसलिए `translation-dashboard.png` (स्रोत का सहभाई) `../../docs/translation-dashboard.png` बन जाता है — किसी `postProcessing` नियम के बिना सही ढंग से संकल्पित।
+`flatPreserveRelativeDir: true` के साथ, उपनिर्देशिकाओं में स्रोत फ़ाइलों को स्वचालित रूप से फ़ाइल-विशिष्ट उपसर्ग मिलता है। उदाहरण के लिए, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` एक उपसर्ग `../../docs/` उत्पन्न करता है, इसलिए `translation-dashboard.png` (स्रोत का एक भाई) `../../docs/translation-dashboard.png` बन जाता है — बिना किसी `postProcessing` नियम के सही ढंग से हल किया गया।
 
 जब `markdownOutput.style` `"docusaurus"`, `"astro-starlight"`, `"nested"`, या `"flat"` के अलावा कोई भी मान होता है, तो समतल लिंक पुन:लेखक चलता नहीं है। `postProcessing` मूल मार्कडाउन URL देखता है।
 
@@ -1212,15 +1303,15 @@ ai-i18n-tools dashboard
   वह डायरेक्टरी जहाँ प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
 - `preferredModel`  
   वैकल्पिक। केवल `translate-ui` के लिए पहले आज़माया गया OpenRouter मॉडल आईडी; फिर बिना इस आईडी को दोहराए क्रम में `openrouter.translationModels` (या लीगेसी मॉडल)।
-- `reactExtractor.funcNames`  
+- `uiExtractor.funcNames` (या विरासती `reactExtractor.funcNames`)  
   स्कैन करने के लिए अतिरिक्त फ़ंक्शन नाम (डिफ़ॉल्ट: `["t", "i18n.t"]`)।
-- `reactExtractor.extensions`  
-  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)।
-- `reactExtractor.includePackageDescription`  
-  जब `true` (डिफ़ॉल्ट), `extract` मौजूद होने पर `package.json` `description` को UI स्ट्रिंग के रूप में भी शामिल करता है।
-- `reactExtractor.packageJsonPath`  
-  वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल के लिए कस्टम पथ।
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.extensions` (या विरासती `reactExtractor.extensions`)  
+  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्पलेट अभिव्यक्तियों के लिए `.astro` जोड़ें।
+- `uiExtractor.includePackageDescription` (या विरासती `reactExtractor.includePackageDescription`)  
+  जब `true` (डिफ़ॉल्ट), `extract` भी UI स्ट्रिंग के रूप में `package.json` `description` को शामिल करता है जब यह मौजूद होता है।
+- `uiExtractor.packageJsonPath` (या विरासती `reactExtractor.packageJsonPath`)  
+  उस वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल के लिए कस्टम पथ।
+- `uiExtractor.includeUiLanguageEnglishNames` (या विरासती `reactExtractor.includeUiLanguageEnglishNames`)
 
 जब `true` (डिफ़ॉल्ट `false`), `extract` मैनिफेस्ट में `uiLanguagesPath` पर से प्रत्येक `englishName` को तब स्रोत स्कैन से पहले से मौजूद न होने पर `strings.json` में जोड़ता है (समान हैश कुंजियाँ)। आवश्यकता है `uiLanguagesPath` एक वैध `ui-languages.json` की ओर इशारा करे।
 
@@ -1261,13 +1352,13 @@ SQLite कैश निर्देशिका (सभी `documentations` ब�
 **सामग्री स्रोत**
 
 - `description`
-इस ब्लॉक के लिए वैकल्पिक मानव-पठनीय टिप्पणी (अनुवाद के लिए उपयोग नहीं की जाती)। जब सेट की जाती है, तो `translate-docs` `🌐` शीर्षक में उपसर्ग के रूप में जोड़ी जाती है; `status` अनुभाग शीर्षकों में भी दिखाई जाती है।
+इस ब्लॉक के लिए वैकल्पिक मानव-पठनीय नोट (अनुवाद के लिए उपयोग नहीं किया जाता)। सेट होने पर `translate-docs` `🌐` शीर्षक में पूर्ववर्ती; `status` अनुभाग शीर्षकों में भी दिखाया गया।
 - `contentPaths`
-अनुवाद के लिए मार्कडाउन/MDX पृष्ठ निकाय (`translate-docs` इन्हें `.md` / `.mdx` के लिए स्कैन करता है)। **डायरेक्टरी पथ या ग्लोब पैटर्न** का समर्थन करता है (उदाहरण के लिए `"docs/**/*.md"`, `"guides/*.mdx"`)। यहीं से स्थानीयकृत दस्तावेज़ीकरण लेखन आता है।
+Markdown/MDX पृष्ठ शरीर और `.astro` टेम्पलेट्स का अनुवाद करने के लिए (`translate-docs` इनमें `.md`, `.mdx`, और `.astro` के लिए स्कैन करता है)। **निर्देशिका पथ या ग्लोब पैटर्न** का समर्थन करता है (जैसे `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`)। यहीं से स्थानीयकृत दस्तावेज़ प्रोज़ा आती है।
 - `sourceFiles`
-लोड समय पर `contentPaths` में मर्ज किया जाने वाला वैकल्पिक उपनाम।
+लोड पर `contentPaths` में विलय करने के लिए वैकल्पिक उपनाम।
 - `targetLocales`
-केवल इस ब्लॉक के लिए वैकल्पिक स्थानीयकरणों का उपसमुच्चय (अन्यथा मूल `targetLocales`)। प्रभावी दस्तावेज़ीकरण स्थानीयकरण ब्लॉकों में संयुक्त रूप से होते हैं।
+इस ब्लॉक के लिए केवल स्थानीयताओं का वैकल्पिक उपसमुच्चय (अन्यथा मूल `targetLocales`)। प्रभावी दस्तावेज़ स्थानीयताएँ ब्लॉकों के बीच का संघ हैं।
 - `jsonSource`
 वैकल्पिक। इस ब्लॉक के लिए Docusaurus JSON लेबल कैटलॉग के लिए स्रोत डायरेक्टरी (उदाहरण के लिए `"i18n/en"` से `docusaurus write-translations`)। पृष्ठ निकाय हमेशा `contentPaths` से आते हैं; `jsonSource` केवल शेल/UI JSON आपूर्ति करता है, MDX नहीं।
 
@@ -1311,6 +1402,22 @@ Docusaurus लेआउट के लिए स्रोत दस्ताव�
 जब `true` (उपलब्ध न होने पर डिफ़ॉल्ट), प्रत्येक `translate-docs` रन मार्कडाउन सेगमेंट में जोखिम भरे डिलीमीटर / अपूर्ण इनलाइन कोड के लिए पुनः स्कैन करता है, टर्मिनल चेतावनियां प्रिंट करता है, और उस फ़ाइल के कैश फ़ाइलपाथ के लिए `markdown_source_issues` पंक्तियों को प्रतिस्थापित करता है। इस ब्लॉक के लिए चेतावनियों और SQLite अपडेट को छोड़ने के लिए `false` सेट करें।
 - `addFrontmatter`
 जब `true` (उपलब्ध न होने पर डिफ़ॉल्ट), अनुवादित मार्कडाउन फ़ाइलों में YAML कुंजियां शामिल होती हैं: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, और जब कम से कम एक सेगमेंट में मॉडल मेटाडेटा होता है, तो `translation_models` (उपयोग किए गए OpenRouter मॉडल आईडी की क्रमबद्ध सूची)। छोड़ने के लिए `false` पर सेट करें।
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+वैकल्पिक। अतिरिक्त JSX/HTML विशेषता नाम जिनके **उद्धृत स्ट्रिंग मान** अनुवादक को नहीं भेजे जाने चाहिए। अंतर्निहित डिफ़ॉल्ट के साथ विलय (`class`, `id`, `style`, `src`, `href`, `type`, `data-*`, अधिकांश `aria-*`, आदि)। केस-संवेदनशील नहीं। लागू होता है:
+
+- `.astro` पार्स-एंड-रिप्लेस निष्कर्षण (`attr=` के बाद स्थिर HTML टैग और स्ट्रिंग लिटरल्स `{expression}` ब्लॉक्स के अंदर)।
+  - मार्कडाउन/एस्ट्रो सेगमेंट अनुवाद के दौरान MDX प्लेसहोल्डर निष्कर्षण (`label`, `tooltip`, और `aria-label` कैपिटलाइज्ड JSX टैग्स पर, और जहां लागू हो `TabItem` `value`)।
+
+उदाहरण: `"protectAttributes": ["variant", "size"]` `variant="primary"` को `{items.map(...)}` के अंदर सभी स्थानीयकरण में अपरिवर्तित रखता है।
+
+आप सामान्य रूप से अनुवाद योग्य विशेषताओं (उदाहरण के लिए `"title"` या `"aria-label"`) को भी सूचीबद्ध कर सकते हैं जब आप उन मानों को अंग्रेजी से शाब्दिक रूप से कॉपी करना चाहते हैं।
+
+- `protectKeys`
+वैकल्पिक। अतिरिक्त **ऑब्जेक्ट प्रॉपर्टी नाम** जिनके उद्धृत स्ट्रिंग मानों को टेम्पलेट `{expression}` ब्लॉक्स और MDX ऑब्जेक्ट लिटरल्स के अंदर अनुवादित नहीं किया जाना चाहिए (उदाहरण के लिए `label:` के अंदर `<Tabs values={[ … ]}>`)। बिल्ट-इन डिफ़ॉल्ट के साथ मर्ज किया जाता है (`class`, `key`, `id`, `href`, `src`, आदि)। केस-असंवेदनशील।
+
+उदाहरण: `"protectKeys": ["slug", "code"]` `{ slug: 'getting-started', title: 'Getting started' }` को छोड़ देता है → केवल `title` का अनुवाद किया जाता है जब `slug` संरक्षित है।
 
 <br/>
 
@@ -1374,10 +1481,10 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLI संदर्भ
 
-| कमांड                                                                                   | विवरण                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                                | CLI संस्करण और बिल्ड टाइमस्टैम्प प्रिंट करें (मूल प्रोग्राम पर `-V` / `--version` के समान जानकारी)।
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]` | एक प्रारंभिक विन्यास फ़ाइल लिखें (इसमें `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `documentations[].addFrontmatter` शामिल हैं)। `--with-translate-ignore` एक प्रारंभिक `.translate-ignore` बनाता है।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| कमांड                                                                                                    | विवरण                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                                  | CLI संस्करण और बिल्ड टाइमस्टैम्प प्रिंट करें (मूल प्रोग्राम पर `-V` / `--version` के समान जानकारी)।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | एक स्टार्टर कॉन्फ़िगरेशन फ़ाइल लिखें (जिसमें `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `documentations[].addFrontmatter` शामिल हैं)। `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है।
 | `check-models`                                                                           | प्रत्येक विन्यस्त OpenRouter मॉडल आईडी को `GET /models` के विरुद्ध मान्य करें (कैटलॉग सदस्यता, `expiration_date`, प्रॉम्प्ट/पूर्ति के लिए 1M टोकन प्रति USD)। `OPENROUTER_API_KEY` की आवश्यकता होती है। यदि कोई भी विन्यस्त आईडी लापता या समाप्त हो गई है, तो गैर-शून्य कोड पर बाहर निकलता है। कैटलॉग अनुरोध के लिए `openrouter.requestTimeoutMs` का पालन करता है।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `extract`                                                                                | `t("…")` / `i18n.t("…")` लिटरल्स से `strings.json` को अद्यतन करें, वैकल्पिक `package.json` विवरण, और वैकल्पिक मैनिफेस्ट `englishName` प्रविष्टियाँ (देखें `ui.reactExtractor`)। `features.extractUIStrings` की आवश्यकता होती है।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` और bundled `data/ui-languages-complete.json` (या `--master`) का उपयोग करके `ui.flatOutputDir` (या सेट होने पर `uiLanguagesPath`) में `ui-languages.json` लिखें। मास्टर फ़ाइल में गायब स्थानीयकरण के लिए चेतावनी देता है और `TODO` प्लेसहोल्डर उत्सर्जित करता है। यदि आपके पास अनुकूलित `label` या `englishName` मानों के साथ एक मौजूदा मैनिफेस्ट है, तो उन्हें मास्टर कैटलॉग डिफ़ॉल्ट द्वारा प्रतिस्थापित कर दिया जाएगा — बाद में उत्पन्न फ़ाइल की समीक्षा करें और समायोजित करें।                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |

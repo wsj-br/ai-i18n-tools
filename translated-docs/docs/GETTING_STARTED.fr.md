@@ -130,7 +130,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## Démarrage rapide
 
-Le modèle par défaut `init` (`ui-markdown`) active uniquement l'extraction et la traduction de l'**interface utilisateur**. Les modèles `ui-docusaurus` et `ui-starlight` activent la traduction de **documents** (`translate-docs`). Utilisez `sync` lorsque vous souhaitez une commande unique qui exécute l'extraction, la traduction de l'interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation selon votre configuration.
+Le modèle par défaut `init` (`ui-markdown`) active uniquement l'extraction et la traduction de l'**interface utilisateur**. Les modèles `ui-docusaurus` et `ui-starlight` activent la traduction de **documents** (`translate-docs`). Le modèle `ui-astro-website` met en place l'extraction de l'**interface utilisateur** pour les applications Astro simples (y compris les fichiers `.astro`) ; ajoutez un bloc `documentations[]` (voir [Pages du site Astro (analyse et remplacement)](#astro-website-parse-and-replace)) lorsque vous souhaitez également activer `translate-docs` pour le HTML des pages `.astro`. La référence [`examples/astro-website`](../../docs/../examples/astro-website/) utilise les **deux** pipelines. Utilisez `sync` lorsque vous souhaitez une seule commande qui exécute l'extraction, la traduction de l'interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation selon votre configuration.
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -140,7 +140,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -203,7 +204,89 @@ npx ai-i18n-tools extract
 
 Analyse tous les fichiers JS/TS situés dans `ui.sourceRoots` à la recherche des appels `t("literal")` et `i18n.t("literal")`. Écrit (ou fusionne dans) `ui.stringsJson`.
 
-L'analyseur est configurable : ajoutez des noms de fonctions personnalisés via `ui.reactExtractor.funcNames`.
+Le scanner est configurable : ajoutez des noms de fonctions personnalisés via `ui.uiExtractor.funcNames` (ou l'ancien `ui.reactExtractor.funcNames`). Pour les pages et composants Astro, ajoutez `.astro` à `ui.uiExtractor.extensions`.
+
+<a id="astro-website"></a>
+### Site web Astro (Astro classique, pas Starlight)
+
+Pour les sites marketing ou applicatifs Astro statiques, combinez le routage i18n intégré à Astro [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) avec ai-i18n-tools. L'implémentation de référence est [`examples/astro-website`](../../docs/../examples/astro-website/) (voir aussi son [README](../../docs/../examples/astro-website/README.md)) : anglais à l'adresse `/`, neuf localisations cibles à `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
+
+La plupart des équipes utilisent un pipeline **hybride** combinant les deux (ils ne sont pas en conflit) :
+
+| Pipeline | À utiliser pour | Commandes | Sortie |
+|----------|---------|----------|--------|
+| **HTML des pages** | Titres, paragraphes, libellés de navigation, tableaux intégrés dans le corps du modèle | `translate-docs` | Un `src/pages/{locale}/index.astro` par localisation |
+| **Chaînes d'interface utilisateur (`t()`)** | Données du frontmatter, libellés d'onglets de captures d'écran, tableaux partagés | `extract` → `translate-ui` | `public/locales/{locale}.json` (source anglaise utilisée comme clé) |
+
+Gardez trois listes synchronisées lorsque vous ajoutez ou supprimez une langue : `targetLocales` dans `ai-i18n-tools.config.json`, `i18n.locales` dans `astro.config.mjs` (Astro utilise des codes de routage en **minuscules** comme `pt-br`), et `ui-languages.json` (via `generate-ui-languages`). Les **noms de fichiers** des bundles plats utilisent la casse définie dans la configuration (`pt-BR.json`) ; associez le chemin `pt-br` d'Astro à ce fichier via le champ `code` de votre manifeste (voir `examples/astro-website/src/i18n/locale.ts`).
+
+Exemples de scripts `package.json` (issus du projet de référence) :
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Chaînes d'interface utilisateur pour site web Astro (SSG)
+
+Générez la structure d'extraction de l'interface utilisateur avec `init -t ui-astro-website`, puis ajoutez un bloc `documentations[]` lorsque vous traduisez également le HTML des pages (voir ci-dessous). Encapsulez le texte à traduire dans `t('…')` dans les modules TypeScript et dans le frontmatter `.astro` (ainsi que dans les blocs `{expression}` du modèle si vous préférez les chaînes d'interface utilisateur plutôt que des pages dupliquées par localisation) :
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+Définissez `sourceLocale` pour qu'il corresponde à `i18n.defaultLocale` dans `astro.config.mjs`. Écrivez les bundles plats dans un répertoire que Astro peut importer au moment de la construction (le modèle utilise `public/locales/`). Résolvez `t('…')` au **moment de la construction** en recherchant le texte source en anglais comme clé (voir `examples/astro-website/src/i18n/t.ts` ; `strings.json` est le cache d'extraction, pas le bundle au moment de l'exécution). Vous n'avez **pas besoin** de `ai-i18n-tools/runtime` ou d'i18next pour un site statique, sauf si vous ajoutez des îlots clients qui changent de langue après le chargement.
+
+Connectez chaque page qui appelle `t()` (page racine en anglais et chaque copie `src/pages/{locale}/`) :
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+Les utilitaires d'assistance dans l'exemple : `src/i18n/utils.ts`, `src/i18n/locale.ts` et `ui-languages.json` pour les libellés, la direction et les codes BCP-47. Exécutez `generate-ui-languages` après avoir modifié `targetLocales` (vous pouvez éventuellement définir `ui.uiLanguagesPath` pour que le manifeste soit placé à côté de vos utilitaires, par exemple `src/i18n/ui-languages.json`). `MainLayout.astro` définit `<html lang>` et `<html dir>` à partir de `resolveUiLanguage(Astro.currentLocale)` ; `LanguagePicker.astro` utilise `getRelativeLocaleUrl` provenant de `astro:i18n`.
+
+<a id="astro-website-parse-and-replace"></a>
+### Pages de site web Astro (analyse-et-remplacement)
+
+Pour les pages marketing contenant du HTML en dur dans les fichiers `.astro`, laissez `translate-docs` extraire les nœuds de texte et les attributs (`alt`, `title`, `aria-label`, `placeholder`), les traduire à l'aide du cache de document, puis écrire des copies spécifiques à chaque localisation dans votre arborescence de pages. Vous n'avez **pas besoin** de `t()` pour la plupart des textes visibles.
+
+Les attributs structurels et les valeurs de clés ne sont **pas** traduits par défaut : la protection intégrée couvre les attributs JSX/HTML tels que `class`, `id`, `style`, `src`, `href`, `data-*`, et la plupart des `aria-*`, ainsi que les clés d'objets comme `class`, `key` et `id` à l'intérieur des blocs de modèle `{expression}`. Utilisez `documentations[].protectAttributes` et `documentations[].protectKeys` pour étendre ces listes lorsque vous utilisez des attributs personnalisés (par exemple les attributs Tailwind `variant` ou les champs CMS `slug`). Les mêmes options s'appliquent au JSX MDX lors de la traduction du markdown (voir [protectAttributes / protectKeys](#protectattributes-protectkeys)).
+
+Activez `features.translateMarkdown` et ajoutez un bloc `documentations[]`, par exemple :
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+Exécutez `npx ai-i18n-tools translate-docs` (ou `pnpm i18n:translate` dans [`examples/astro-website`](../../docs/../examples/astro-website/)). La source en anglais reste dans `src/pages/index.astro` ; chaque langue cible obtient un `src/pages/{locale}/index.astro` avec les imports ajustés pour le niveau de répertoire supplémentaire (par exemple `../layouts/` → `../../layouts/`).
+
+Dans le **corps du modèle**, les littéraux de chaînes dans les blocs `{expression}` (tableaux en ligne, champs `title`/`desc` d'objet) sont traduits lorsqu'ils sont destinés à l'utilisateur ; les valeurs entre guillemets sur les attributs/clés protégés, les littéraux à l'intérieur de `t('…')`, `<script>` et `<style>` restent inchangés. Le TypeScript du frontmatter n'est **pas traduit** par ce processus — conservez le frontmatter partagé (y compris les imports `t()` et les tableaux de données) identique sur les pages anglaises et localisées, ou relancez `translate-docs` après avoir modifié la page anglaise afin que les copies localisées intègrent les modifications du frontmatter. Pour les contenus uniquement dans le frontmatter, utilisez plutôt le [pipeline de chaînes d'interface](#astro-website-ui-strings).
+
+Voir [`examples/astro-website`](../../docs/../examples/astro-website/) pour la page d'accueil hybride complète (HTML via `translate-docs`, libellés des onglets de capture d'écran via `t()` + `translate-ui`).
 
 <a id="step-3-translate-ui-strings"></a>
 ### Étape 3 : Traduire les chaînes d'interface
@@ -510,12 +593,20 @@ Pour les sites de documentation Astro Starlight :
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+Pour une interface utilisateur Astro simple (sans Starlight) :
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+Ce modèle active uniquement l'extraction de l'interface utilisateur. Pour la traduction du HTML des pages, définissez également `features.translateMarkdown` et ajoutez un bloc `documentations[]` (voir [Pages de site Astro (analyse-et-remplacement)](#astro-website-parse-and-replace)). La configuration [`examples/astro-website`](../../docs/../examples/astro-website/) montre les deux pipelines utilisés ensemble.
+
 Modifiez le fichier `ai-i18n-tools.config.json` généré :
 
 - `sourceLocale` - langue source (doit correspondre à `defaultLocale` dans `docusaurus.config.js`).
 - `targetLocales` - tableau de codes de langue BCP-47 (par exemple `["de", "fr", "es"]`).
 - `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines de documentation (et répertoire de journal par défaut pour `--write-logs`).
-- `documentations` - tableau de blocs de documentation. Chaque bloc possède des champs facultatifs `description`, `contentPaths`, `outputDir`, `jsonSource` facultatif, `markdownOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `targetLocales`, `addFrontmatter`, etc.
+- `documentations` - tableau de blocs de documentation. Chaque bloc possède des éléments facultatifs `description`, `contentPaths`, `outputDir`, `jsonSource` facultatif, `markdownOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `documentations[].description` - note courte facultative destinée aux mainteneurs (indiquant la portée de ce bloc). Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` (`🌐 …: translating …`) et dans les en-têtes de section `status`.
 - `documentations[].contentPaths` - répertoires ou fichiers sources en markdown/MDX (voir aussi `documentations[].jsonSource` pour les libellés JSON).
 - `documentations[].outputDir` - répertoire racine de sortie traduit pour ce bloc.
@@ -711,7 +802,7 @@ Consultez le [guide des ressources par locale](LOCALE-ASSETS-GUIDE.fr.md) pour o
 
 Lorsque `markdownOutput.style = "flat"`, un réécritureur intégré s'exécute avant `postProcessing`. Il calcule le préfixe de profondeur pour chaque fichier de sortie — le chemin relatif depuis le répertoire du fichier de sortie vers le répertoire du fichier source — et le préfixe aux URL d'actifs non markdown. `postProcessing` s'applique ensuite sur l'URL déjà préfixée — écrivez des motifs `search` qui correspondent au segment de localité à l'intérieur, et non au préfixe initial `../`.
 
-Avec `flatPreserveRelativeDir: true`, les fichiers sources dans des sous-répertoires obtiennent automatiquement un préfixe spécifique au fichier. Par exemple, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` produit un préfixe de `../../docs/`, donc `translation-dashboard.png` (un fichier frère du fichier source) devient `../../docs/translation-dashboard.png` — résolu correctement sans aucune règle `postProcessing`.
+Avec `flatPreserveRelativeDir: true`, les fichiers sources dans les sous-répertoires obtiennent automatiquement un préfixe spécifique au fichier. Par exemple, `docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md` produit un préfixe `../../docs/`, donc `translation-dashboard.png` (un fichier frère du fichier source) devient `../../docs/translation-dashboard.png` — résolu correctement sans règle `postProcessing`.
 
 Lorsque `markdownOutput.style` est `"docusaurus"`, `"astro-starlight"`, `"nested"`, ou toute autre valeur différente de `"flat"`, le réécritureur de liens plat ne s'exécute pas. `postProcessing` voit l'URL markdown d'origine.
 
@@ -1212,15 +1303,15 @@ Traduire les fichiers **SVG** avec `translate-svg` lorsque `features.translateSV
   Répertoire où sont écrits les fichiers JSON par langue (`de.json`, etc.).
 - `preferredModel`  
   Facultatif. Identifiant de modèle OpenRouter essayé en premier pour `translate-ui` uniquement ; puis `openrouter.translationModels` (ou modèles anciens) dans l'ordre, sans dupliquer cet identifiant.
-- `reactExtractor.funcNames`  
+- `uiExtractor.funcNames` (ou l'ancien `reactExtractor.funcNames`)  
   Noms de fonctions supplémentaires à analyser (par défaut : `["t", "i18n.t"]`).
-- `reactExtractor.extensions`  
-  Extensions de fichiers à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`).
-- `reactExtractor.includePackageDescription`  
-  Lorsque `true` (par défaut), `extract` inclut également `package.json` `description` comme chaîne d'interface utilisateur si elle est présente.
-- `reactExtractor.packageJsonPath`  
-  Chemin personnalisé vers le fichier `package.json` utilisé pour l'extraction facultative de descriptions.
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.extensions` (ou l'ancien `reactExtractor.extensions`)  
+  Extensions de fichiers à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`). Ajoutez `.astro` pour le frontmatter Astro et les expressions de modèle.
+- `uiExtractor.includePackageDescription` (ou l'ancien `reactExtractor.includePackageDescription`)  
+  Lorsque `true` (par défaut), `extract` inclut également `package.json` `description` comme chaîne d'interface quand elle est présente.
+- `uiExtractor.packageJsonPath` (ou l'ancien `reactExtractor.packageJsonPath`)  
+  Chemin personnalisé vers le fichier `package.json` utilisé pour cette extraction facultative de description.
+- `uiExtractor.includeUiLanguageEnglishNames` (ou l'ancien `reactExtractor.includeUiLanguageEnglishNames`)
 
 Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englishName` du manifeste situé à `uiLanguagesPath` à `strings.json` s'il n'est pas déjà présent dans l'analyse source (mêmes clés de hachage). Nécessite `uiLanguagesPath` pointant vers un fichier `ui-languages.json` valide.
 
@@ -1261,13 +1352,13 @@ Tableau de blocs de pipeline de documentation. `translate-docs` et la phase docs
 **Sources de contenu**
 
 - `description`
-Note facultative lisible par un humain pour ce bloc (non utilisée pour la traduction). Préfixe dans le titre `translate-docs` `🌐` lorsqu'elle est définie ; également affichée dans les en-têtes de section `status`.
+Note facultative lisible par l'humain pour ce bloc (non utilisée pour la traduction). Préfixe dans le titre `translate-docs` `🌐` lorsqu'elle est définie ; également affichée dans les en-têtes de section `status`.
 - `contentPaths`
-Corps de pages Markdown/MDX à traduire (`translate-docs` analyse ceux-ci pour `.md` / `.mdx`). Prend en charge les **chemins de répertoire ou les motifs glob** (par exemple `"docs/**/*.md"`, `"guides/*.mdx"`). C'est là que provient le texte documentaire localisé.
+Corps des pages Markdown/MDX et modèles `.astro` à traduire (`translate-docs` analyse ceux-ci pour `.md`, `.mdx` et `.astro`). Prend en charge les **chemins de répertoire ou les motifs glob** (par exemple `"docs/**/*.md"`, `"guides/*.mdx"`, `"src/pages/index.astro"`). C'est là que provient le texte de documentation localisé.
 - `sourceFiles`
 Alias facultatif fusionné dans `contentPaths` au chargement.
 - `targetLocales`
-Sous-ensemble facultatif de paramètres régionaux pour ce bloc uniquement (sinon, utilise celui défini à la racine dans `targetLocales`). Les paramètres régionaux effectifs sont l'union des paramètres régionaux de tous les blocs.
+Sous-ensemble facultatif de langues pour ce bloc uniquement (sinon utilise `targetLocales` au niveau racine). Les langues de documentation effectives sont l'union des blocs.
 - `jsonSource`
 Facultatif. Répertoire source des catalogues d'étiquettes JSON Docusaurus pour ce bloc (par exemple `"i18n/en"` depuis `docusaurus write-translations`). Les corps de page proviennent toujours de `contentPaths` ; `jsonSource` fournit uniquement les fichiers JSON pour l'interface utilisateur/coquille, pas les fichiers MDX.
 
@@ -1311,6 +1402,22 @@ Au même niveau que `markdownOutput` (par bloc `documentations[]`). Segments fac
 Lorsque `true` (par défaut si omis), chaque exécution de `translate-docs` analyse à nouveau les segments Markdown à la recherche de délimiteurs risqués ou de code en ligne non fermé, affiche des avertissements dans le terminal, et remplace les lignes `markdown_source_issues` pour le chemin du fichier cache de ce fichier. Définir `false` pour ignorer les avertissements et les mises à jour SQLite pour ce bloc.
 - `addFrontmatter`
 Lorsque `true` (par défaut si omis), les fichiers Markdown traduits incluent les clés YAML : `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`, et, lorsqu’au moins un segment contient des métadonnées de modèle, `translation_models` (liste triée des identifiants de modèles OpenRouter utilisés). Définir à `false` pour ignorer.
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+Facultatif. Noms d'attributs JSX/HTML supplémentaires dont les **valeurs chaînes entre guillemets** ne doivent pas être envoyées au traducteur. Fusionnés avec les valeurs par défaut intégrées (`class`, `id`, `style`, `src`, `href`, `type`, `data-*`, la plupart des `aria-*`, etc.). Insensible à la casse. S'applique à :
+
+- `.astro` extraction de parse-and-replace (balises HTML statiques et littéraux de chaîne après `attr=` à l'intérieur des blocs `{expression}`).
+  - Extraction de placeholder MDX lors de la traduction de segments markdown/Astro (`label`, `tooltip`, et `aria-label` sur les balises JSX en majuscules, plus `TabItem` `value` lorsque cela est applicable).
+
+Exemple : `"protectAttributes": ["variant", "size"]` conserve `variant="primary"` à l'intérieur de `{items.map(...)}` inchangé quel que soit le paramètre régional.
+
+Vous pouvez également lister des attributs normalement traduisibles (par exemple `"title"` ou `"aria-label"`) lorsque vous souhaitez que ces valeurs soient copiées telles quelles depuis l'anglais.
+
+- `protectKeys`
+Facultatif. Autres **noms de propriétés d'objet** dont les valeurs entre guillemets ne doivent pas être traduites à l'intérieur des blocs modèles `{expression}` et des littéraux objets MDX (par exemple `label:` à l'intérieur de `<Tabs values={[ … ]}>`). Fusionnés avec les valeurs par défaut intégrées (`class`, `key`, `id`, `href`, `src`, etc.). Insensible à la casse.
+
+Exemple : `"protectKeys": ["slug", "code"]` ignore `{ slug: 'getting-started', title: 'Getting started' }` → seul `title` est traduit lorsque `slug` est protégé.
 
 <br/>
 
@@ -1374,10 +1481,10 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## Référence CLI
 
-| Command                                                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                                | Affiche la version de l'interface de ligne de commande (CLI) ainsi que l'horodatage de compilation (les mêmes informations que `-V` / `--version` du programme racine).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]` | Écrire un fichier de configuration de démarrage (inclut `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `documentations[].addFrontmatter`). `--with-translate-ignore` crée un `.translate-ignore` de démarrage.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Command                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                                  | Affiche la version de l'interface en ligne de commande et l'horodatage de compilation (les mêmes informations que `-V` / `--version` du programme racine).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | Écrire un fichier de configuration de démarrage (inclut `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `documentations[].addFrontmatter`). `--with-translate-ignore` crée un `.translate-ignore` de démarrage. |
 | `check-models`                                                                           | Valider chaque identifiant de modèle OpenRouter configuré par rapport à `GET /models` (appartenance au catalogue, `expiration_date`, USD par million de jetons pour l'invite/réponse). Nécessite `OPENROUTER_API_KEY`. Quitte avec un code d'erreur si un identifiant configuré est manquant ou expiré. Respecte `openrouter.requestTimeoutMs` pour la requête de catalogue.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `extract`                                                                                | Mettre à jour `strings.json` à partir de littéraux `t("…")` / `i18n.t("…")`, une description facultative `package.json` et des entrées facultatives du manifeste `englishName` (voir `ui.reactExtractor`). Nécessite `features.extractUIStrings`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | Écrire `ui-languages.json` dans `ui.flatOutputDir` (ou `uiLanguagesPath` si défini) à l’aide de `sourceLocale` + `targetLocales` et du `data/ui-languages-complete.json` intégré (ou `--master`). Affiche un avertissement et émet des espaces réservés `TODO` pour les paramètres régionaux manquants dans le fichier maître. Si vous disposez d’un manifeste existant avec des valeurs personnalisées pour `label` ou `englishName`, elles seront remplacées par les valeurs par défaut du catalogue maître — examinez et ajustez le fichier généré par la suite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |

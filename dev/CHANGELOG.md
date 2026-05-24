@@ -9,6 +9,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs - `PACKAGE_OVERVIEW.md` documents `AstroTemplateExtractor`, `.astro` UI extraction via `ui-string-babel.ts`, Astro hybrid sites, `sync` pipeline order, init templates (`ui-astro-website`), and `ui.uiExtractor` naming.
 - **Changed**: scripts - `pnpm pre-release` also builds `examples/astro-website`; example builds use `pnpm --dir` for `docs-site`, `astro-docs`, and `astro-website`.
 - **Changed**: docs - `GETTING_STARTED.md`, `ai-i18n-tools-context.md`, and `examples/astro-website/README.md` document the hybrid Astro workflow (`translate-docs` for page HTML, `extract`/`translate-ui` for `t()`), correct example script names (`i18n:translate`), frontmatter wiring, locale list alignment, and `uiLanguagesPath` for the manifest.
 - **Changed**: examples - `examples/astro-website/ai-i18n-tools.config.json` sets `ui.uiLanguagesPath` to `src/i18n/ui-languages.json` so `generate-ui-languages` writes the manifest next to other i18n helpers.

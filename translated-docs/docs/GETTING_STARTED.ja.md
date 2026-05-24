@@ -130,7 +130,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## クイックスタート
 
-デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` および `ui-starlight` テンプレートは **ドキュメント** 翻訳（`translate-docs`）を有効にします。設定に従って抽出、UI 翻訳、オプションの SVG ファイル翻訳、およびドキュメント翻訳を1つのコマンドで実行する場合、`sync` を使用します。
+デフォルトの `init` テンプレート（`ui-markdown`）は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus` および `ui-starlight` テンプレートは **ドキュメント** 翻訳（`translate-docs`）を有効にします。`ui-astro-website` テンプレートは、プレーンな Astro アプリ（`.astro` ファイルを含む）向けに **UI** 抽出のスキャフォールディングを行います。`.astro` ページの HTML についても `translate-docs` を行う場合は、`documentations[]` ブロックを追加してください（[Astro website pages (parse-and-replace)](#astro-website-parse-and-replace) を参照）。リファレンス実装の [`examples/astro-website`](../../docs/../examples/astro-website/) では、**両方**のパイプラインを使用しています。設定に基づき、抽出、UI 翻訳、オプションの SVG ファイル翻訳、ドキュメント翻訳を1つのコマンドで実行したい場合は、`sync` を使用してください。
 
 ```bash
 # Workflow 1 - UI strings (default template enables extract + translate-ui)
@@ -140,7 +140,8 @@ npx ai-i18n-tools translate-ui
 
 # Workflow 2 - docs (Docusaurus-oriented template)
 npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight: npx ai-i18n-tools init -t ui-starlight
+# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
+# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
 # Combined: extract UI strings, then translate UI + SVG + docs (per config features)
@@ -203,7 +204,89 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` 配下のすべての JS/TS ファイルをスキャンし、`t("literal")` および `i18n.t("literal")` 呼び出しを検出して `ui.stringsJson` に書き込み（またはマージ）します。
 
-スキャナーはカスタマイズ可能で、`ui.reactExtractor.funcNames` を通じてカスタム関数名を追加できます。
+スキャナーはカスタマイズ可能で、`ui.uiExtractor.funcNames`（またはレガシーの `ui.reactExtractor.funcNames`）を通じてカスタム関数名を追加できます。Astro のページおよびコンポーネントの場合は、`.astro` を `ui.uiExtractor.extensions` に追加してください。
+
+<a id="astro-website"></a>
+### Astro ウェブサイト（Starlight ではない、プレーンな Astro）
+
+静的 Astro マーケティングサイトまたはアプリサイトでは、[Astro 組み込みの i18n ルーティング](https://docs.astro.build/en/guides/internationalization/) と ai-i18n-tools を組み合わせて使用します。リファレンス実装は [`examples/astro-website`](../../docs/../examples/astro-website/) です（その [README](../../docs/../examples/astro-website/README.md) も参照）。英語版は `/`、9つのターゲットロケールは `/{locale}/`（`de`、`fr`、`es`、`ar`、`ja`、`ko`、`zh-cn`、`zh-tw`、`pt-br`）にあります。
+
+ほとんどのチームは2つのパイプラインの**ハイブリッド**を使用しています（これらは競合しません）：
+
+| パイプライン | 使用対象 | コマンド | 出力 |
+|----------|---------|----------|--------|
+| **ページ HTML** | テンプレート本体の見出し、段落、ナビゲーションラベル、インライン配列 | `translate-docs` | ロケールごとに `src/pages/{locale}/index.astro` |
+| **UI 文字列（`t()`）** | フロントマターのデータ、スクリーンショットのタブラベル、共有配列 | `extract` → `translate-ui` | `public/locales/{locale}.json`（英語原文をキーとする） |
+
+言語を追加または削除する際は、以下の3つのリストを同期させてください：`ai-i18n-tools.config.json` 内の `targetLocales`、`astro.config.mjs` 内の `i18n.locales`（Astro は **小文字**のルートコード、たとえば `pt-br` を使用）、および `ui-languages.json`（`generate-ui-languages` 経由）。フラットバンドルの**ファイル名**は設定された大文字小文字表記を使用（`pt-BR.json`）し、マニフェストの `code` フィールドを使って Astro の `pt-br` ルートをそのファイルにマッピングしてください（`examples/astro-website/src/i18n/locale.ts` を参照）。
+
+リファレンスプロジェクトからの `package.json` スクリプトの例：
+
+```json
+{
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:translate-ui": "ai-i18n-tools translate-ui",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:locales": "ai-i18n-tools generate-ui-languages",
+  "i18n:sync": "ai-i18n-tools sync"
+}
+```
+
+<a id="astro-website-ui-strings"></a>
+### Astro ウェブサイトの UI 文字列（SSG）
+
+`init -t ui-astro-website` で UI 抽出のスキャフォールディングを行い、ページ HTML の翻訳も行う場合は、後で `documentations[]` ブロックをマージします（以下参照）。TypeScript モジュールおよび `.astro` フロントマター内の `t('…')` でコピーをラップし、UI 文字列を優先してロケールごとの重複ページを避ける場合は、テンプレート内の `{expression}` ブロックを使用します：
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+npx ai-i18n-tools extract
+npx ai-i18n-tools translate-ui
+```
+
+`astro.config.mjs` 内の `i18n.defaultLocale` と一致するように `sourceLocale` を設定してください。ビルド時に Astro がインポートできるディレクトリにフラットバンドルを書き出します（テンプレートでは `public/locales/` を使用）。英語の原文リテラルをキーとして検索することで、**ビルド時**に `t('…')` を解決します（`examples/astro-website/src/i18n/t.ts` を参照。`strings.json` は実行時バンドルではなく、抽出キャッシュです）。読み込み後に言語切り替えを行うクライアントアイランドを追加しない限り、静的サイトでは `ai-i18n-tools/runtime` や i18next は**不要**です。
+
+`t()` を呼び出すすべてのページ（英語ルートページおよび各 `src/pages/{locale}/` コピー）を接続してください：
+
+```astro
+import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
+import { resolvePageLocale, useTranslations } from '../i18n/utils';
+
+const locale = resolvePageLocale(Astro.currentLocale);
+const flat = await loadFlatBundle(Astro.currentLocale);
+const t = useTranslations(locale, makeT(flat));
+```
+
+例に含まれるサポート用ヘルパー：ラベル、方向、BCP-47 コード用の `src/i18n/utils.ts`、`src/i18n/locale.ts`、`ui-languages.json`。`targetLocales` を変更した後に `generate-ui-languages` を実行してください（オプションで `ui.uiLanguagesPath` を設定し、マニフェストがヘルパーの隣に配置されるようにします。例：`src/i18n/ui-languages.json`）。`MainLayout.astro` は `resolveUiLanguage(Astro.currentLocale)` から `<html lang>` および `<html dir>` を設定します。`LanguagePicker.astro` は `astro:i18n` からの `getRelativeLocaleUrl` を使用します。
+
+<a id="astro-website-parse-and-replace"></a>
+### Astro ウェブサイトのページ（parse-and-replace）
+
+`.astro` ファイル内のハードコードされた HTML を含むマーケティングページでは、`translate-docs` にテキストノードおよび属性（`alt`、`title`、`aria-label`、`placeholder`）の抽出をさせ、ドキュメントキャッシュで翻訳し、ページツリー内にロケール固有のコピーを書き出します。ほとんどの表示用コピーでは、`t()` は**不要**です。
+
+構造属性とキー値は**デフォルトでは**翻訳されません：組み込みの保護は、`class`、`id`、`style`、`src`、`href`、`data-*`、およびほとんどの`aria-*`のようなJSX/HTML属性をカバーし、テンプレート`{expression}`ブロック内の`class`、`key`、および`id`のようなオブジェクトキーも含まれます。カスタム属性を使用する場合は、`documentations[].protectAttributes`および`documentations[].protectKeys`を使用してそれらのリストを拡張します（例えば、Tailwind `variant`やCMS `slug`フィールド）。同じオプションは、マークダウン翻訳中のMDX JSXにも適用されます（[protectAttributes / protectKeys](#protectattributes-protectkeys)を参照）。
+
+`features.translateMarkdown`を有効にし、`documentations[]`ブロックを追加します。例えば：
+
+```json
+{
+  "features": { "translateMarkdown": true },
+  "documentations": [{
+    "contentPaths": ["src/pages/index.astro"],
+    "outputDir": "src/pages",
+    "markdownOutput": {
+      "style": "astro-starlight",
+      "docsRoot": "src/pages"
+    },
+    "addFrontmatter": false
+  }]
+}
+```
+
+`npx ai-i18n-tools translate-docs`を実行します（または[`pnpm i18n:translate`](../../docs/../examples/astro-website/)で`pnpm i18n:translate`を実行します）。英語のソースは`src/pages/index.astro`に留まり、各ターゲットロケールは`src/pages/{locale}/index.astro`を取得し、インポートは追加のディレクトリレベルに合わせて調整されます（例えば、`../layouts/` → `../../layouts/`）。
+
+**テンプレートボディ**内では、`{expression}`ブロック内の文字列リテラル（インライン配列、オブジェクト`title`/`desc`フィールド）は、ユーザー向けである場合に翻訳されます。保護された属性/キーの引用値、`t('…')`、`<script>`、および`<style>`内のリテラルは変更されません。**フロントマターTypeScriptはこのパスでは翻訳されません**—共有フロントマター（`t()`インポートやデータ配列を含む）を英語とロケールページで同一に保つか、英語ページを編集した後に`translate-docs`を再実行してロケールコピーがフロントマターの変更を取得できるようにします。フロントマターのみのコピーには、[UI-stringパイプライン](#astro-website-ui-strings)を使用します。
+
+[`examples/astro-website`](../../docs/../examples/astro-website/)を参照して、完全なハイブリッドランディングページ（`translate-docs`経由のHTML、`t()` + `translate-ui`経由のスクリーンショットタブラベル）を確認してください。
 
 <a id="step-3-translate-ui-strings"></a>
 ### ステップ 3：UI 文字列の翻訳
@@ -510,12 +593,20 @@ Astro Starlight ドキュメントサイトの場合：
 npx ai-i18n-tools init -t ui-starlight
 ```
 
+プレーンなAstroウェブサイトUI（Starlightなし）の場合：
+
+```bash
+npx ai-i18n-tools init -t ui-astro-website
+```
+
+そのテンプレートはUI抽出のみを有効にします。ページHTMLの翻訳には、`features.translateMarkdown`を設定し、`documentations[]`ブロックを追加する必要があります（[Astroウェブサイトページ（パース＆リプレース）](#astro-website-parse-and-replace)を参照）。[`examples/astro-website`](../../docs/../examples/astro-website/)の設定は、両方のパイプラインを一緒に示します。
+
 生成された`ai-i18n-tools.config.json`を編集します。
 
-- `sourceLocale` - ソース言語（`docusaurus.config.js` 内の `defaultLocale` と一致している必要があります）。
-- `targetLocales` - BCP-47 ロケールコードの配列（例：`["de", "fr", "es"]`）。
-- `cacheDir` - すべてのドキュメントパイプライン用の共有 SQLite キャッシュディレクトリ（および `--write-logs` のデフォルトログディレクトリ）。
-- `documentations` - ドキュメントブロックの配列。各ブロックには、オプションの `description`、`contentPaths`、`outputDir`、オプションの `jsonSource`、`markdownOutput`、オプションの `segmentSplitting`、`translateFrontmatterFields`、`targetLocales`、`addFrontmatter` などがあります。
+- `sourceLocale` - ソース言語（`defaultLocale`は`docusaurus.config.js`で一致する必要があります）。
+- `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
+- `cacheDir` - すべてのドキュメントパイプライン用の共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
+- `documentations` - ドキュメントブロックの配列。各ブロックにはオプションの`description`、`contentPaths`、`outputDir`、オプションの`jsonSource`、`markdownOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などがあります。
 - `documentations[].description` - メンテナ向けのオプションの短いメモ（このブロックの対象範囲）。設定されている場合、`🌐 …: translating …` の `translate-docs` 見出しや `status` のセクション見出しに表示されます。
 - `documentations[].contentPaths` - markdown/MDX ソースディレクトリまたはファイル（JSON ラベルについては `documentations[].jsonSource` も参照）。
 - `documentations[].outputDir` - そのブロックの翻訳出力ルート。
@@ -711,7 +802,7 @@ Siehe [TLS-Einrichtung](../../docs/security.de.md#tls-configuration) für die Ze
 
 `markdownOutput.style = "flat"`の場合、組み込みのリライターが`postProcessing`の前に実行されます。出力ファイルのディレクトリから元のファイルのディレクトリへの相対パスを計算し、それをMarkdown以外のアセットのURLに前置します。その後、`postProcessing`が前置されたURLで実行されます - `search`パターンは、`../`プレフィックスではなく、URLに含まれるロケールセグメントに一致するように記述します。
 
-`flatPreserveRelativeDir: true`の場合、サブディレクトリにあるソースファイルには自動的にファイル固有のプレフィックスが付けられます。例えば、`docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`では`../../docs/`というプレフィックスが付きます。そのため、`translation-dashboard.png`(ソースの兄弟)は`../../docs/translation-dashboard.png`となり、任意の`postProcessing`ルールなしで正しく解決されます。
+`flatPreserveRelativeDir: true`を使用すると、サブディレクトリ内のソースファイルには自動的にファイル固有のプレフィックスが付与されます。例えば、`docs/GETTING_STARTED.md` → `translated-docs/docs/GETTING_STARTED.<locale>.md`は`../../docs/`のプレフィックスを生成するため、`translation-dashboard.png`（ソースの兄弟）は`../../docs/translation-dashboard.png`となり、`postProcessing`ルールなしで正しく解決されます。
 
 `markdownOutput.style`が`"docusaurus"`、`"astro-starlight"`、`"nested"`、または`"flat"`以外の値の場合、フラットリンクリライターは実行されません。`postProcessing`は元のMarkdownのURLを参照します。
 
@@ -1212,15 +1303,15 @@ UI と並行してファイル単位のデバッグを行う場合、リトラ�
   ロケールごとのJSONファイルが書き込まれるディレクトリ（`de.json`など）。
 - `preferredModel`  
   オプション。 `translate-ui`のために最初に試みられるOpenRouterモデルID；その後、重複しないようにこのIDなしで`openrouter.translationModels`（またはレガシーモデル）を順番に使用します。
-- `reactExtractor.funcNames`  
-  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
-- `reactExtractor.extensions`  
-  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。
-- `reactExtractor.includePackageDescription`  
-  `true` の場合（デフォルト）、`extract` は、存在する場合に `package.json` `description` を UI 文字列としても含めます。
-- `reactExtractor.packageJsonPath`  
-  オプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。
-- `reactExtractor.includeUiLanguageEnglishNames`
+- `uiExtractor.funcNames`（またはレガシー`reactExtractor.funcNames`）  
+  スキャンする追加の関数名（デフォルト：`["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（またはレガシー`reactExtractor.extensions`）  
+  含めるファイル拡張子（デフォルト：`[".js", ".jsx", ".ts", ".tsx"]`）。Astroフロントマターおよびテンプレート式用に`.astro`を追加します。
+- `uiExtractor.includePackageDescription`（またはレガシー`reactExtractor.includePackageDescription`）  
+  `true`（デフォルト）の場合、`extract`は、存在する場合、UI文字列として`package.json` `description`も含まれます。
+- `uiExtractor.packageJsonPath`（またはレガシー`reactExtractor.packageJsonPath`）  
+  オプションの説明抽出に使用される`package.json`ファイルへのカスタムパス。
+- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー`reactExtractor.includeUiLanguageEnglishNames`）
 
 `true` の場合（デフォルト `false`）、`extract` は、ソーススキャンから既に存在しない場合に、`uiLanguagesPath` のマニフェストから各 `englishName` を `strings.json` に追加します（同じハッシュキー）。有効な `ui-languages.json` を指す `uiLanguagesPath` が必要です。
 
@@ -1261,13 +1352,13 @@ SQLite キャッシュディレクトリ（すべての `documentations` ブロ�
 **コンテンツソース**
 
 - `description`
-このブロックのための任意の読みやすい注釈（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐` の見出しにプレフィックスとして付加され、また `status` セクションヘッダーにも表示されます。
+このブロックのためのオプションの人間可読なノート（翻訳には使用されません）。設定されている場合、`translate-docs` `🌐`見出しにプレフィックスが付けられ、`status`セクションヘッダーにも表示されます。
 - `contentPaths`
-翻訳対象のマークダウン/MDXページ本文（`translate-docs` は `.md` / `.mdx` を検出するためにこれらをスキャンします）。**ディレクトリパスまたはワイルドカードパターン**（例：`"docs/**/*.md"`、`"guides/*.mdx"`）をサポートします。ローカライズされたドキュメントの本文はここから取得されます。
+翻訳するMarkdown/MDXページ本文および`.astro`テンプレート（`translate-docs`はこれらを`.md`、`.mdx`、および`.astro`のためにスキャンします）。**ディレクトリパスまたはグロブパターン**をサポートします（例：`"docs/**/*.md"`、`"guides/*.mdx"`、`"src/pages/index.astro"`）。それがローカライズされたドキュメントの文章がどこから来るのかです。
 - `sourceFiles`
-読み込み時に `contentPaths` にマージされる任意のエイリアス。
+ロード時に`contentPaths`にマージされるオプションのエイリアス。
 - `targetLocales`
-このブロック専用の任意のロケールサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合となります。
+このブロックのためのオプションのロケールのサブセット（そうでなければルート`targetLocales`）。有効なドキュメントロケールは、ブロック全体の和集合です。
 - `jsonSource`
 任意。このブロックのDocusaurus用JSONラベルカタログのソースディレクトリ（例：`"i18n/en"` から `docusaurus write-translations`）。ページ本文は常に `contentPaths` から取得されます。`jsonSource` はシェル/UI用のJSONのみを提供し、MDXは提供しません。
 
@@ -1311,6 +1402,22 @@ Docusaurus レイアウトのためのソースドキュメントのルート（
 `true`の場合（省略された場合のデフォルト）、各`translate-docs`の実行時に、リスクのある区切り文字／閉じられていないインラインコードについてmarkdownセグメントを再スキャンし、端末に警告を表示し、そのファイルのキャッシュファイルパスに対する`markdown_source_issues`行を置き換えます。このブロックの警告およびSQLiteの更新をスキップするには`false`を設定します。
 - `addFrontmatter`
 `true`の場合（省略された場合のデフォルト）、翻訳されたmarkdownファイルにはYAMLキー：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`が含まれ、少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（使用されたOpenRouterモデルIDのソート済みリスト）も含まれます。スキップするには`false`に設定します。
+
+<a id="protectattributes-protectkeys"></a>
+- `protectAttributes`
+省略可能。値が**引用符で囲まれた文字列**となる追加のJSX/HTML属性名で、翻訳に送信しないもの。組み込みの既定値（`class`、`id`、`style`、`src`、`href`、`type`、`data-*`、ほとんどの`aria-*`など）とマージされる。大文字小文字を区別しない。対象は以下のとおり。
+
+- `.astro` パースして置換する抽出（静的HTMLタグおよび`attr=`内の`{expression}`ブロックの文字列リテラル）。
+  - markdown/Astroセグメントの翻訳中にMDXプレースホルダーを抽出（大文字で始まるJSXタグの`label`、`tooltip`、`aria-label`、および該当する場合は`TabItem` `value`）。
+
+例：`"protectAttributes": ["variant", "size"]`により、`variant="primary"`内の`{items.map(...)}`がすべてのロケールで変更されないまま保持される。
+
+翻訳対象となる属性（たとえば`"title"`や`"aria-label"`）を、英語からそのままコピーしたい場合にもリストに含めることができます。
+
+- `protectKeys`
+省略可能。テンプレートの `{expression}` ブロックおよびMDXオブジェクトリテラル内（たとえば `label:` 内の `<Tabs values={[ … ]}>`）で、引用符で囲まれた文字列値を翻訳しない必要がある追加の **オブジェクトプロパティ名**。組み込みの既定値（`class`、`key`、`id`、`href`、`src` など）とマージされる。大文字小文字は区別しない。
+
+例：`"protectKeys": ["slug", "code"]`により`{ slug: 'getting-started', title: 'Getting started' }`がスキップされる→`slug`が保護されている場合、`title`のみが翻訳される。
 
 <br/>
 
@@ -1374,10 +1481,10 @@ npx ai-i18n-tools glossary-generate
 <a id="cli-reference"></a>
 ## CLIリファレンス
 
-| コマンド                                                                                  | 説明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version`                                                                                | CLIのバージョンとビルドタイムスタンプを表示します（ルートプログラムの`-V` / `--version`と同一の情報）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き込みます（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および`documentations[].addFrontmatter`を含む）。`--with-translate-ignore`がスターターの`.translate-ignore`を作成します。|
+| コマンド                                                                                                    | 説明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version`                                                                                                  | CLIのバージョンとビルドタイムスタンプを表示します（ルートプログラムの`-V` / `--version`と同一の情報）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website] [-o path] [--with-translate-ignore]` | スターター設定ファイルを記述します（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および`documentations[].addFrontmatter`を含みます）。`--with-translate-ignore`はスターターの`.translate-ignore`を作成します。
 | `check-models` | 設定された各OpenRouterモデルIDを`GET /models`に対して検証します（カタログのメンバーシップ、`expiration_date`、プロンプト／コンプリートの100万トークンあたりのUSD）。`OPENROUTER_API_KEY`を必要とします。設定されたIDのいずれかが存在しないまたは有効期限切れの場合、異常終了します。カタログリクエストに対して`openrouter.requestTimeoutMs`を尊重します。|
 | `extract`                                                                                | `strings.json` を `t("…")` / `i18n.t("…")` リテラル、オプションの `package.json` 説明、およびオプションのマニフェスト `englishName` エントリ（`ui.reactExtractor` を参照）から更新します。`features.extractUIStrings` が必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` およびバンドルされた `data/ui-languages-complete.json`（設定されている場合は `--master`）を使用して、`ui-languages.json` を `ui.flatOutputDir`（または設定されている場合は `uiLanguagesPath`）に書き込みます。マスターファイルに存在しないロケールについては警告を出し、`TODO` プレースホルダーを出力します。カスタマイズされた `label` または `englishName` 値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値に置き換えられます。生成されたファイルは後で確認し、必要に応じて調整してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
