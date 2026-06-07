@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-06-08
+
 - **Changed**: examples — refreshed workspace dependencies (`i18next` ^26.3.1, `astro` ^6.4.4, `next` ^16.2.7, `react` ^19.2.7, `tailwindcss` ^3.4.19); aligned Node engine to `>=22.16.0` in console-app. Stock `@astrojs/starlight` on Astro 6.4 needs no pnpm patch — deprecated `markdown.remarkPlugins` still works until Astro 8.0 ([Astro 6.4 blog](https://astro.build/blog/astro-640/)).
 
 - **Changed**: scripts — `scripts/clean-workspace.sh` also removes temporary files matched by `ai-i18n-tools clean-temp` (`*.log`, `*.tmp`, `cache.db.backup*.sqlite`) across the workspace.
