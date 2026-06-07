@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ Die folgenden Hilfsfunktionen werden von `'ai-i18n-tools/runtime'` exportiert un
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | Standard-i18next-Init-Optionen für Key-as-Default-Konfigurationen.                                                                     |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Empfohlene Verkabelung: Schlüsselbereinigung + Plural-`wrapT` aus `strings.json`, optional fusioniert `translate-ui` `{sourceLocale}.json` Pluralschlüssel. |
+| `wrapT(i18n, options)`                                                 | Niedrigstufige, pluralbehaftete `t()`-Wrapper (normalerweise installiert von `setupKeyAsDefaultT`).                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | Erstellt den Pluralgruppenindex, den `wrapT` aus Katalogzeilen mit `"plural": true` verwendet.                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | Parst `{{var}}`-Namen aus einem Quellschlüssel für `wrapT` / Schlüsselkürzung-Rückfalloption.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | Nur Wrapper für niedrigstufige Schlüsselbereinigung (veraltet für App-Verkabelung; bevorzugen Sie `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Erstellt die `localeLoaders`-Zuordnung für `makeLoadLocale` aus `ui-languages.json` (jedes `code` außer `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory für asynchrones Laden von Lokalisierungsdateien. |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

@@ -147,6 +147,14 @@ export async function compareMarkdownAST(
   return errors;
 }
 
+/** True when validation errors include an mdast structure count mismatch. */
+export function errorsIncludeAstMismatch(errors: readonly string[]): boolean {
+  return errors.some((e) => {
+    const clean = e.replace(/\s*\(hash [^)]+\)\s*$/i, "").trim();
+    return /^AST mismatch:/.test(clean);
+  });
+}
+
 function shouldCompareMarkdownStructure(source: Segment): boolean {
   return (
     source.type === "paragraph" ||

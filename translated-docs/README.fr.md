@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | Options d'initialisation standard d'i18next pour les configurations clé-comme-valeur-par-défaut.                                       |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Connexion recommandée : suppression des clés + pluriel `wrapT` à partir de `strings.json`, fusionne éventuellement les clés plurielles `translate-ui` `{sourceLocale}.json`. |
+| `wrapT(i18n, options)`                                                 | Enveloppe `t()` de bas niveau prenant en compte le pluriel (généralement installée par `setupKeyAsDefaultT`).                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | Construit l'index du groupe pluriel utilisé par `wrapT` à partir des lignes du catalogue avec `"plural": true`.                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | Analyse les noms `{{var}}` à partir d'une clé source pour `wrapT` / repli par suppression de clé.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | Enrobage bas niveau uniquement pour la suppression des clés (obsolète pour la connexion applicative ; privilégier `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Construit la table `localeLoaders` pour `makeLoadLocale` à partir de `ui-languages.json` (chaque `code` sauf `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Fabrique pour le chargement asynchrone des fichiers de langue. |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

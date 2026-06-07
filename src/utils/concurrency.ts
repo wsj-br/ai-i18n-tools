@@ -2,28 +2,74 @@
  * Bounded concurrency helpers for translation and batch workloads.
  */
 
+import { RunInterruptedError, interruptErrorFromSignal } from "./run-interrupt.js";
+
+function abortError(signal: AbortSignal): RunInterruptedError {
+  return signal.reason instanceof RunInterruptedError
+    ? signal.reason
+    : interruptErrorFromSignal(signal);
+}
+
 /**
  * Run async `fn(item, index)` for each item with at most `limit` concurrent executions.
  * Results are in the same order as `items`.
+ * When `signal` aborts, rejects promptly (does not wait for in-flight `fn` calls to finish).
  */
 export async function runMapWithConcurrency<T, R>(
   items: T[],
   limit: number,
-  fn: (item: T, index: number) => Promise<R>
+  fn: (item: T, index: number) => Promise<R>,
+  signal?: AbortSignal
 ): Promise<R[]> {
-  if (items.length === 0) return [];
+  if (items.length === 0) {
+    return [];
+  }
+  if (signal?.aborted) {
+    throw abortError(signal);
+  }
+
   const cap = Math.max(1, Math.min(Math.floor(limit), items.length));
   const results: R[] = new Array(items.length);
   let nextIndex = 0;
+
+  const abortPromise = signal
+    ? new Promise<never>((_, reject) => {
+        const onAbort = (): void => reject(abortError(signal));
+        if (signal.aborted) {
+          onAbort();
+          return;
+        }
+        signal.addEventListener("abort", onAbort, { once: true });
+      })
+    : null;
+
   async function worker(): Promise<void> {
     for (;;) {
+      if (signal?.aborted) {
+        throw abortError(signal);
+      }
       const i = nextIndex++;
-      if (i >= items.length) return;
+      if (i >= items.length) {
+        return;
+      }
       results[i] = await fn(items[i]!, i);
+      if (signal?.aborted) {
+        throw abortError(signal);
+      }
     }
   }
-  await Promise.all(Array.from({ length: cap }, () => worker()));
-  return results;
+
+  const workPromise = Promise.all(Array.from({ length: cap }, () => worker())).then(() => {
+    if (signal?.aborted) {
+      throw abortError(signal);
+    }
+    return results;
+  });
+
+  if (abortPromise) {
+    return Promise.race([workPromise, abortPromise]);
+  }
+  return workPromise;
 }
 
 /**

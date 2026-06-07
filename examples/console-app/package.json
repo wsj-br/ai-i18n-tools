@@ -12,15 +12,15 @@
     "start:pt-BR": "node src/main.js --locale pt-BR",
     "i18n:extract": "ai-i18n-tools extract",
     "i18n:sync": "ai-i18n-tools sync",
-    "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate",
+    "i18n:translate": "ai-i18n-tools translate-ui && ai-i18n-tools translate-docs",
     "i18n:clean": "rm -rf .translation-cache"
   },
   "dependencies": {
     "ai-i18n-tools": "workspace:^",
-    "i18next": "^26.1.0"
+    "i18next": "^26.3.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.16.0"
   },
   "license": "MIT"
 }

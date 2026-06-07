@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools: Visão Geral do Pacote
 
-Este documento descreve a arquitetura interna do `ai-i18n-tools`, como cada componente se integra e como os dois fluxos de trabalho principais são implementados.
+Este documento descreve a arquitetura interna do `ai-i18n-tools`, como cada componente se integra e como são implementados os três fluxos de trabalho componíveis (strings de interface, documentos e JSON aninhado), além da tradução opcional de SVG.
 
 Para instruções práticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTED.pt-BR.md). Para capturas de tela e SVGs ilustrados nos documentos traduzidos, veja [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.pt-BR.md).
 
@@ -22,20 +22,21 @@ Para instruções práticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTE
   - [Arquivos de localidade planos](#flat-locale-files)
   - [Solicitações de tradução de interface](#ui-translation-prompts)
 - [Fluxo de trabalho 2 - Internals da tradução de documentos](#workflow-2---document-translation-internals)
+- [Fluxo de trabalho 3 - Internals de JSON aninhado](#workflow-3---nested-json-internals)
   - [Extractores](#extractors)
-  - [Sites híbridos Astro (UI + HTML de página)](#astro-hybrid-sites-ui--page-html)
-  - [Inserção de âncoras de títulos (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids-cli)
-  - [Proteção de espaços reservados](#placeholder-protection)
+  - [Sites híbridos Astro (UI + HTML da página)](#astro-hybrid-sites-ui--page-html)
+  - [Inserção de âncoras nos títulos (CLI `write-heading-ids`)](#heading-anchor-insertion-write-heading-ids-cli)
+  - [Proteção de marcadores](#placeholder-protection)
   - [Cache (`TranslationCache`)](#cache-translationcache)
-  - [Resolução de caminhos de saída](#output-path-resolution)
+  - [Resolução de caminho de saída](#output-path-resolution)
   - [Reescrita de links planos](#flat-link-rewriting)
 - [Infraestrutura compartilhada](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
   - [Carregamento de configuração](#config-loading)
-  - [Registrador (Logger)](#logger)
+  - [Logger](#logger)
 - [API de auxiliares de tempo de execução](#runtime-helpers-api)
-  - [Auxiliares para RTL](#rtl-helpers)
-  - [Fábricas de configuração do i18next](#i18next-setup-factories)
+  - [Auxiliares RTL](#rtl-helpers)
+  - [Fábricas de configuração i18next](#i18next-setup-factories)
   - [Auxiliares de exibição](#display-helpers)
   - [Auxiliares de string](#string-helpers)
 - [API programática](#programmatic-api)
@@ -53,7 +54,7 @@ Para instruções práticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTE
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -80,6 +81,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
+│   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
 │   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
@@ -108,7 +110,8 @@ src/
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
 │   ├── frontmatter-fields.ts       Selective YAML front matter field translation
 │   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
-│   ├── json-extractor.ts           JSON label file extraction
+│   ├── json-extractor.ts           Docusaurus catalog JSON extraction (`translate-docs`)
+│   ├── nested-json-extractor.ts    Arbitrary nested JSON leaves (`translate-json`, `json[]`)
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
@@ -276,7 +279,7 @@ Aplicativos Astro simples geralmente habilitam **ambos** os fluxos de trabalho e
 | Modelo HTML | `AstroTemplateExtractor` + `translate-docs` | `.astro` por localidade em `docs[].outputDir` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | `public/locales/{locale}.json` plano (fonte em inglês como chave) |
 
-O comando `sync` executa os passos habilitados em ordem: **extract** e depois **translate-ui** (quando `features.translateUIStrings`) → opcional **translate-svg** → **translate-docs** (a menos que `--no-docs`, `--no-ui` ou `--no-svg`). O modelo init `ui-astro-website` configura apenas o Fluxo de Trabalho 1; adicione `docs[]` e `features.translateDocs` para HTML de páginas.
+O comando `sync` executa as etapas habilitadas em ordem: **extract** e depois **translate-ui** (quando `features.translateUIStrings`) → opcional **translate-svg** → **translate-docs** → opcional **translate-json** (a menos que pulado com `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`). O modelo init `ui-astro-website` configura apenas o Fluxo de trabalho 1; adicione `docs[]` e `features.translateDocs` para HTML de páginas.
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### Inserção de âncoras de título (`write-heading-ids` CLI)
@@ -310,9 +313,9 @@ A proteção compartilhada de atributos/chaves para modelos Astro e JSX MDX é i
 
 O banco de dados SQLite (via `node:sqlite`) armazena linhas indexadas por `(source_hash, locale)` com `translated_text`, `model`, `filepath`, `last_hit_at` e campos relacionados. O hash corresponde aos primeiros 16 caracteres hexadecimais SHA-256 do conteúdo normalizado (espaços em branco reduzidos).
 
-Em cada execução, os segmentos são pesquisados por hash × localidade. Apenas falhas no cache vão para o LLM. Após a tradução, `last_hit_at` é redefinido para as linhas de segmento no escopo atual de tradução que não foram acessadas. `cleanup` executa `sync --force-update` primeiro, depois remove linhas de segmento obsoletas (`last_hit_at` nulo / caminho de arquivo vazio), elimina chaves `file_tracking` quando o caminho de origem resolvido está ausente no disco (`doc-block:…`, `svg-files:…`, etc.) e remove linhas de tradução cujo caminho de arquivo nos metadados aponta para um arquivo ausente; ele faz backup de `cache.db` primeiro, a menos que `--no-backup` seja passado.
+Em cada execução, os segmentos são pesquisados por hash × localidade. Apenas falhas no cache vão para o LLM. Após a tradução, `last_hit_at` é redefinido para linhas de segmento no escopo atual de tradução que não foram atingidas. Acertos bem-sucedidos no cache durante a tradução de documentos limpam linhas `translation_failures` obsoletas para aquele segmento. `cleanup` executa `sync --force-update` primeiro, depois remove linhas de segmento obsoletas (`last_hit_at` nulo / caminho de arquivo vazio), remove chaves `file_tracking` quando o caminho de origem resolvido está ausente no disco (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), remove linhas de tradução cujo caminho de arquivo nos metadados aponta para um arquivo ausente e remove linhas `translation_failures` órfãs; ele faz backup de `cache.db` primeiro, a menos que `--no-backup` seja passado.
 
-O comando `translate-docs` também usa **rastreamento de arquivos**, de modo que fontes inalteradas com saídas existentes podem pular trabalho completamente. `--force-update` reexecuta o processamento de arquivos mantendo o cache de segmentos; `--force` limpa o rastreamento de arquivos e ignora leituras do cache de segmentos para tradução de API. Veja [Introdução](GETTING_STARTED.pt-BR.md#cache-behaviour-and-translate-docs-flags) para a tabela completa de flags.
+O comando `translate-docs` também usa **rastreamento de arquivos**, para que fontes inalteradas com saídas existentes possam pular trabalho completamente. `--force-update` reexecuta o processamento de arquivos mantendo o cache de segmentos; `--force` limpa o rastreamento de arquivos e ignora leituras do cache de segmentos para tradução de API. Quando todos os modelos configurados falham na validação AST em um segmento markdown, `translate-docs` pode dividir progressivamente o segmento e tentar partes menores novamente (`docs[].segmentSplitting.qualityRetrySplit`, ativado por padrão). Veja [Introdução](GETTING_STARTED.pt-BR.md#cache-behaviour-and-translate-docs-flags) para a tabela completa de flags.
 
 **Formato de prompt em lote:** `translate-docs --prompt-format` seleciona XML (`<seg>` / `<t>`) ou formatos de array/objeto JSON apenas para `OpenRouterClient.translateDocumentBatch`; extração, marcadores e validação permanecem inalteradas. Veja [Formato de prompt em lote](GETTING_STARTED.pt-BR.md#batch-prompt-format).
 
@@ -332,6 +335,30 @@ O comando `translate-docs` também usa **rastreamento de arquivos**, de modo que
 ### Reescrita plana de links
 
 Quando `docsOutput.style === "flat"`, os arquivos markdown traduzidos são colocados ao lado dos originais com sufixos de localidade. Links relativos entre páginas são reescritos para que `[Guide](../../docs/guide.md)` em `readme.de.md` aponte para `guide.de.md`. Controlado por `rewriteRelativeLinks` (ativado automaticamente para estilo plano sem um `pathTemplate` personalizado). A mesma etapa adiciona um prefixo de profundidade por arquivo às URLs de ativos não markdown antes da execução do `postProcessing.regexAdjustments` — consulte o [Guia de ativos por localidade](LOCALE-ASSETS-GUIDE.pt-BR.md#the-flat-link-rewriter-and-two-step-flow).
+
+---
+
+<a id="workflow-3---nested-json-internals"></a>
+## Fluxo de trabalho 3 - Internals de JSON aninhado
+
+```text
+json[].contentPaths  →  resolve files (file | directory | glob)
+      │
+      ▼  NestedJsonExtractor
+string leaves selected by keyPolicy (dot paths + minimatch)
+      │
+      ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
+cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+      │
+      ▼  NestedJsonExtractor.reassemble
+output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
+```
+
+- `NestedJsonExtractor` (`src/extractors/nested-json-extractor.ts`) percorre JSON aninhado arbitrário e emite um segmento por folha de string traduzível. `keyPolicy.mode` (`allowlist`, `denylist` ou `both`) filtra caminhos com minimatch em notação de ponto (nomes simples como `slug` correspondem ao último segmento da chave).
+- O rastreamento de cache de arquivos usa `json-block:{blockIndex}:{projectRelPath}` em `file_tracking` (mesmo `cacheDir` usado em documentos e SVG).
+- **Não** para catálogos `write-translations` do Docusaurus (formato `{ message, description }`) — estes usam o Fluxo de trabalho 2 (`docs[].docusaurusCatalogDir` + `JsonExtractor` dentro de `translate-docs`).
+- **Não** para strings de UI `t()` — Fluxo de trabalho 1 (`strings.json` + pacotes planos).
+- CLI: `translate-json`; orquestração em `src/cli/translate-json-run.ts`. Modelo init: `ui-json-bundles`.
 
 ---
 
@@ -361,7 +388,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 6. `applyEnvOverrides` - aplicar `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, etc.
 7. `augmentConfigWithUiLanguagesFile` - anexar nomes de exibição do manifesto.
 
-`init` grava configurações iniciais a partir de `initConfigTemplates`: `ui-markdown` (UI + markdown opcional do aplicativo), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (UI Astro simples; adicione `docs[]` para tradução de páginas `.astro`). Veja [GETTING_STARTED — Inicializar](GETTING_STARTED.pt-BR.md#step-1-initialise).
+`init` escreve configurações iniciais a partir de `initConfigTemplates`: `ui-markdown` (UI + markdown opcional do app), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (UI Astro simples; adicione `docs[]` para tradução de páginas `.astro`), `ui-json-bundles` (apenas `json[]` do Fluxo de trabalho 3). Veja [GETTING_STARTED — Inicializar](GETTING_STARTED.pt-BR.md#step-1-initialise).
 
 <a id="logger"></a>
 ### Registrador de eventos (Logger)

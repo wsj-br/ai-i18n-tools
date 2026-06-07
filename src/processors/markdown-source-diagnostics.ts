@@ -9,8 +9,6 @@ import {
 export const MARKDOWN_SOURCE_ISSUE_CODES = {
   UNPAIRED_EMPHASIS: "UNPAIRED_EMPHASIS",
   UNCLOSED_INLINE_CODE: "UNCLOSED_INLINE_CODE",
-  /** `**` / `__` immediately outside a `` `...` `` span (emphasis belongs inside backticks or use plain code). */
-  STRONG_OUTSIDE_INLINE_CODE: "STRONG_OUTSIDE_INLINE_CODE",
   /** `**` / `__` wrapping a `[text](url)` link (put emphasis inside the link text only). */
   STRONG_OUTSIDE_LINK: "STRONG_OUTSIDE_LINK",
 } as const;
@@ -57,45 +55,6 @@ function findPlaceholderEnd(text: string, start: number): number {
     i++;
   }
   return -1;
-}
-
-/** Strong (`**` / `__`) run that touches the given index from the left (only whitespace between). */
-function strongEmphasisRunTouchingBefore(
-  text: string,
-  index: number
-): { start: number; marker: "*" | "_" } | null {
-  let j = index - 1;
-  while (j >= 0 && /\s/u.test(text[j]!)) {
-    j--;
-  }
-  if (j < 0) {
-    return null;
-  }
-  const marker = text[j]!;
-  if (marker !== "*" && marker !== "_") {
-    return null;
-  }
-  const runEnd = j;
-  while (j >= 0 && text[j] === marker) {
-    j--;
-  }
-  const len = runEnd - j;
-  if (len < 2) {
-    return null;
-  }
-  return { start: j + 1, marker: marker as "*" | "_" };
-}
-
-/**
- * `**Bare** `code`` — the `**` touching the code is the closer of `**Bare**`, not an opener wrapping
- * the span. Same for `__word__ `code``.
- */
-function strongRunLooksLikeCloserAfterWord(text: string, runStart: number): boolean {
-  if (runStart <= 0) {
-    return false;
-  }
-  const prev = text[runStart - 1]!;
-  return /[\p{L}\p{N}]/u.test(prev);
 }
 
 /** Strong run touching the given index from the right (only whitespace between). */
@@ -187,49 +146,6 @@ function findClosingParenOfInlineLinkDestination(text: string, openParenIdx: num
     j++;
   }
   return -1;
-}
-
-function collectStrongOutsideInlineCodeIssues(text: string): MarkdownSourceIssue[] {
-  const issues: MarkdownSourceIssue[] = [];
-  let i = 0;
-  while (i < text.length) {
-    if (text[i] === "{" && text[i + 1] === "{") {
-      const end = findPlaceholderEnd(text, i);
-      if (end !== -1) {
-        i = end;
-        continue;
-      }
-    }
-    if (text[i] === "`") {
-      const tickCount = readRun(text, i, "`");
-      const end = findCodeSpanEnd(text, i, tickCount);
-      if (end === -1) {
-        i += tickCount;
-        continue;
-      }
-      const left = strongEmphasisRunTouchingBefore(text, i);
-      const right = strongEmphasisRunTouchingAfter(text, end);
-      if (
-        left &&
-        right &&
-        left.marker === right.marker &&
-        left.start < i &&
-        right.endExclusive > end &&
-        !strongRunLooksLikeCloserAfterWord(text, left.start)
-      ) {
-        issues.push({
-          code: MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE,
-          message:
-            "Do not wrap an inline code span with ** or __. Use a plain `code` span or keep emphasis and code separate. Run `ai-i18n-tools strip-md-bold-inline` to automatically fix this issue.",
-          line1: line1FromOffset(text, left.start),
-        });
-      }
-      i = end;
-      continue;
-    }
-    i++;
-  }
-  return issues;
 }
 
 function collectStrongOutsideLinkIssues(text: string): MarkdownSourceIssue[] {
@@ -351,12 +267,6 @@ export function collectMarkdownSourceIssues(
     }
   }
 
-  for (const issue of collectStrongOutsideInlineCodeIssues(scanText)) {
-    issues.push({
-      ...issue,
-      line1: toFileLine(base, issue.line1),
-    });
-  }
   for (const issue of collectStrongOutsideLinkIssues(scanText)) {
     issues.push({
       ...issue,

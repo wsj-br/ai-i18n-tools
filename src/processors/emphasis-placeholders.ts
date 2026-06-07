@@ -226,7 +226,12 @@ function scanDelimitersForSpacing(
   const rightFlanking = !prevWhite && (!prevPunct || nextWhite || nextPunct);
   return {
     count,
-    canOpen: leftFlanking && (!rightFlanking || prevPunct),
+    canOpen:
+      base.canOpen ||
+      (leftFlanking &&
+        rightFlanking &&
+        UNICODE_LETTER_FOR_SCAN.test(prevChar) &&
+        UNICODE_LETTER_FOR_SCAN.test(nextChar)),
     canClose:
       base.canClose || (rightFlanking && leftFlanking && UNICODE_LETTER_FOR_SCAN.test(nextChar)),
   };
@@ -334,9 +339,11 @@ export function pairMarkdownEmphasisDelimitersFromRuns(
   runs: MarkdownDelimiterRun[]
 ): {
   replacements: Replacement[];
+  openerSpans: Array<{ start: number; end: number }>;
   closerSpans: Array<{ start: number; end: number }>;
 } {
   const replacements: Replacement[] = [];
+  const openerSpans: Array<{ start: number; end: number }> = [];
   const closerSpans: Array<{ start: number; end: number }> = [];
 
   for (let closerIndex = 0; closerIndex < runs.length; closerIndex++) {
@@ -375,6 +382,7 @@ export function pairMarkdownEmphasisDelimitersFromRuns(
           end: closerStart + useLen,
           placeholder: placeholderFor(closer.marker, useLen),
         });
+        openerSpans.push({ start: openerStart, end: openerStart + useLen });
         closerSpans.push({ start: closerStart, end: closerStart + useLen });
 
         opener.openerUsed += useLen;
@@ -387,11 +395,12 @@ export function pairMarkdownEmphasisDelimitersFromRuns(
     }
   }
 
-  return { replacements, closerSpans };
+  return { replacements, openerSpans, closerSpans };
 }
 
 function pairEmphasisDelimiters(text: string): {
   replacements: Replacement[];
+  openerSpans: Array<{ start: number; end: number }>;
   closerSpans: Array<{ start: number; end: number }>;
 } {
   return pairMarkdownEmphasisDelimitersFromRuns(text, collectMarkdownDelimiterRuns(text));
@@ -457,10 +466,48 @@ function closerNeedsTrailingSpace(marker: string, prevChar: string, nextChar: st
     // Asterisk closing rule: just right-flanking.
     // letter**letter is right-flanking → closes fine, no space needed.
     // )/**letter or ]/**letter or }/**letter: NOT right-flanking → needs space.
-    return /[})\]]/u.test(prevChar);
+    if (/[})\]]/u.test(prevChar)) {
+      return true;
+    }
+    // punctuation**letter (e.g. **Rephrase…**을(를)): prev punct blocks right-flanking when
+    // the next character is a Unicode letter — CommonMark leaves ** as literal stars.
+    if (prevChar !== "" && isPunctuation(prevChar)) {
+      return true;
+    }
+    return false;
   }
   // ~~ (GFM strikethrough): closes fine before Unicode letters.
   return false;
+}
+
+/**
+ * Returns true if an emphasis **opener** needs a leading space injected so CommonMark can parse it.
+ *
+ * Underscore (`_` / `__`) is strict: `letter_word` is both left- and right-flanking, so `_` cannot
+ * open (`データを_処理_` → literal underscores). Asterisk and strikethrough openers only require
+ * left-flanking, so `letter**word` is already valid — no leading space.
+ *
+ * Applies to restored `{{IU}}`/`{{SU}}` markers and to raw `_`/`__` in {@link applyEmphasisCloserSpacing}.
+ */
+function openerNeedsLeadingSpace(marker: string, prevChar: string, nextChar: string): boolean {
+  if (prevChar === "" || isWhiteSpace(prevChar)) {
+    return false;
+  }
+  const markerChar = marker[0];
+  if (markerChar !== "_") {
+    return false;
+  }
+  const prevWhite = isWhiteSpace(prevChar);
+  const nextWhite = isWhiteSpace(nextChar);
+  const prevPunct = isPunctuation(prevChar);
+  const nextPunct = isPunctuation(nextChar);
+  const leftFlanking = !nextWhite && (!nextPunct || prevWhite || prevPunct);
+  const rightFlanking = !prevWhite && (!prevPunct || nextWhite || nextPunct);
+  const canOpen = leftFlanking && (!rightFlanking || prevPunct);
+  if (canOpen) {
+    return false;
+  }
+  return UNICODE_LETTER.test(prevChar);
 }
 
 /**
@@ -478,23 +525,38 @@ function closerNeedsTrailingSpace(marker: string, prevChar: string, nextChar: st
  * included in `closerSpans` even though strict CommonMark marks it `canClose=false`.
  */
 export function applyEmphasisCloserSpacing(text: string): string {
-  const { closerSpans } = pairMarkdownEmphasisDelimitersFromRuns(
+  const { openerSpans, closerSpans } = pairMarkdownEmphasisDelimitersFromRuns(
     text,
     collectDelimiterRunsForSpacing(text)
   );
-  const sorted = [...closerSpans].sort((a, b) => b.end - a.end);
-  let out = text;
-  for (const { start, end } of sorted) {
-    // Determine the marker character from the original text (positions stay valid in reverse order).
+  const insertions: Array<{ index: number; after: boolean }> = [];
+
+  for (const { start, end } of openerSpans) {
     const markerChar = text[start]!;
-    const delimLen = end - start;
-    const marker = delimLen >= 2 ? markerChar + markerChar : markerChar;
-    const prevChar = start > 0 ? out[start - 1]! : "";
-    const nextChar = end < out.length ? out[end]! : "";
-    if (closerNeedsTrailingSpace(marker, prevChar, nextChar)) {
-      out = out.slice(0, end) + " " + out.slice(end);
+    const marker = end - start >= 2 ? markerChar + markerChar : markerChar;
+    const prevChar = start > 0 ? text[start - 1]! : "";
+    const nextChar = end < text.length ? text[end]! : "";
+    if (openerNeedsLeadingSpace(marker, prevChar, nextChar)) {
+      insertions.push({ index: start, after: false });
     }
   }
+
+  for (const { start, end } of closerSpans) {
+    const markerChar = text[start]!;
+    const marker = end - start >= 2 ? markerChar + markerChar : markerChar;
+    const prevChar = start > 0 ? text[start - 1]! : "";
+    const nextChar = end < text.length ? text[end]! : "";
+    if (closerNeedsTrailingSpace(marker, prevChar, nextChar)) {
+      insertions.push({ index: end, after: true });
+    }
+  }
+
+  insertions.sort((a, b) => b.index - a.index || Number(b.after) - Number(a.after));
+  let out = text;
+  for (const { index } of insertions) {
+    out = out.slice(0, index) + " " + out.slice(index);
+  }
+
   out = insertSpacesAfterClosingConstructDelimiters(out);
   return out;
 }
@@ -558,8 +620,8 @@ function insertSpacesAfterClosingConstructDelimiters(text: string): string {
  * placeholder type is an opener, the second a closer, the third an opener again, etc.
  * (This matches the left-to-right pairing produced by `protectMarkdownEmphasis`.)
  *
- * Openers are never modified. For closers, {@link closerNeedsTrailingSpace} decides whether
- * to inject a space before the next character to keep the delimiter right-flanking.
+ * Openers receive a leading space when {@link openerNeedsLeadingSpace} applies (underscore
+ * after a Unicode letter). Closers receive a trailing space when {@link closerNeedsTrailingSpace} applies.
  */
 export function restoreMarkdownEmphasis(text: string): string {
   const out: string[] = [];
@@ -574,13 +636,18 @@ export function restoreMarkdownEmphasis(text: string): string {
         const count = seen.get(rule.placeholder) ?? 0;
         seen.set(rule.placeholder, count + 1);
         const isOpener = count % 2 === 0;
+        const prevCharBefore = out.length > 0 ? out[out.length - 1]! : "";
+        const nextCharAfter = text[i + rule.placeholder.length] ?? "";
+
+        if (isOpener && openerNeedsLeadingSpace(rule.marker, prevCharBefore, nextCharAfter)) {
+          out.push(" ");
+        }
 
         out.push(rule.marker);
 
         if (!isOpener) {
           const prevChar = out.length > 1 ? out[out.length - 2]! : "";
-          const nextChar = text[i + rule.placeholder.length] ?? "";
-          if (closerNeedsTrailingSpace(rule.marker, prevChar, nextChar)) {
+          if (closerNeedsTrailingSpace(rule.marker, prevChar, nextCharAfter)) {
             out.push(" ");
           }
         }

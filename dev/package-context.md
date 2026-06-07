@@ -219,8 +219,8 @@ npx ai-i18n-tools dashboard
     Launch the Translation Dashboard (local web UI for cache segments, strings.json, glossary, failures, and statistics).
 
 npx ai-i18n-tools cleanup [--dry-run] [--no-backup] [--backup <path>]
-    Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, svg-files:, …);
-    orphaned translation rows whose filepath metadata points at a missing file.
+    Runs sync --force-update first, then maintains the SQLite cache: stale segment rows; orphaned file_tracking keys (doc-block:, json-block:, svg-files:, …);
+    orphaned translation rows whose filepath metadata points at a missing file; orphaned translation_failures rows.
     Backs up cache.db under the cache dir before modifications unless --no-backup.
 
 npx ai-i18n-tools glossary-generate
@@ -234,7 +234,7 @@ Global flags: `-c <config>` (config path), `-v` (verbose/debug output), `-w` / `
 ## Workflow 1 - UI strings: how data flows
 
 ```text
-source files (JS/TS) ──► i18next-scanner: t("literal"), i18n.t("literal")
+source files (JS/TS, optional .astro via ui-string-babel.ts) ──► i18next-scanner: t("literal"), i18n.t("literal")
 optional package.json "description" (includePackageDescription)
 optional ui-languages.json englishName per row (includeUiLanguageEnglishNames + uiLanguagesPath)
     ▼
@@ -286,7 +286,7 @@ resolveDocumentationOutputPath  → write to output file
 
 **Cache key**: SHA-256 first 16 hex chars of whitespace-normalized segment content × locale. The cache lives under root `cacheDir` (`cache.db`), shared across `docs[]` blocks. File tracking: `doc-block:{index}:{relPath}` for pages; Docusaurus JSON rows use cwd-relative paths under `docusaurusCatalogDir`. Each row stores the `model` that last translated the segment; `dashboard` edits set `model` to `user-edited`.
 
-**`markdown_source_issues` (schema ≥ 4):** pre-translation static findings per documentation cache filepath (`doc-block:{i}:{relPath}` keys, same as `translations.filepath` for markdown). `check-markdown` and `translate-docs` (when `warnMarkdownSourceIssues` is not `false`) call `TranslationCache.replaceMarkdownIssuesForFilepath` to delete-then-insert all rows for that filepath. `deleteTranslationsByFilepath` and filtered bulk deletes remove markdown issue rows when the last translation row for that filepath is gone. Editor tab **Markdown issues** reads `GET /api/markdown-source-issues` (+ summary / issue-code list). Processor: `src/processors/markdown-source-diagnostics.ts` (includes `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for `**`/`__` wrapping `` `code` `` or `[text](url)`); pairing primitives exported from `emphasis-placeholders.ts` (`collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, …).
+**`markdown_source_issues` (schema ≥ 4):** pre-translation static findings per documentation cache filepath (`doc-block:{i}:{relPath}` keys, same as `translations.filepath` for markdown). `check-markdown` and `translate-docs` (when `warnMarkdownSourceIssues` is not `false`) call `TranslationCache.replaceMarkdownIssuesForFilepath` to delete-then-insert all rows for that filepath. `deleteTranslationsByFilepath` and filtered bulk deletes remove markdown issue rows when the last translation row for that filepath is gone. Editor tab **Markdown issues** reads `GET /api/markdown-source-issues` (+ summary / issue-code list). Processor: `src/processors/markdown-source-diagnostics.ts` (includes `STRONG_OUTSIDE_LINK` for `**`/`__` wrapping `[text](url)`); pairing primitives exported from `emphasis-placeholders.ts` (`collectMarkdownDelimiterRuns`, `pairMarkdownEmphasisDelimitersFromRuns`, …).
 
 **CLI**: `--force-update` bypasses only the *file-level* skip (rebuild outputs) while still using segment cache. `--force` clears per-file tracking and skips segment cache reads for API calls. See the getting started guide for the full flag table.
 

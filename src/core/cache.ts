@@ -831,6 +831,73 @@ export class TranslationCache {
   }
 
   /**
+   * Remove orphaned rows from `translation_failures`:
+   * - no matching `translations` row for `(source_hash, locale)`, or
+   * - resolved filepath (`translations.filepath` or `translation_failures.filepath`) missing on disk.
+   */
+  pruneOrphanedTranslationFailures(projectRoot: string, dryRun: boolean): number {
+    const rows = this.db
+      .prepare(
+        `SELECT f.source_hash, f.locale,
+                MAX(t.source_hash) as translation_key,
+                MAX(COALESCE(t.filepath, f.filepath)) as filepath
+         FROM translation_failures f
+         LEFT JOIN translations t
+           ON t.source_hash = f.source_hash AND t.locale = f.locale
+         GROUP BY f.source_hash, f.locale`
+      )
+      .all() as {
+      source_hash: string;
+      locale: string;
+      translation_key: string | null;
+      filepath: string | null;
+    }[];
+
+    const keysToDelete: { source_hash: string; locale: string }[] = [];
+    for (const row of rows) {
+      if (row.translation_key === null) {
+        keysToDelete.push({ source_hash: row.source_hash, locale: row.locale });
+        continue;
+      }
+      const fp = row.filepath?.trim();
+      if (fp) {
+        const abs = resolveCacheTrackingKeyToAbs(projectRoot, fp);
+        if (!fs.existsSync(abs)) {
+          keysToDelete.push({ source_hash: row.source_hash, locale: row.locale });
+        }
+      }
+    }
+
+    if (keysToDelete.length === 0) {
+      return 0;
+    }
+
+    if (dryRun) {
+      const placeholders = keysToDelete.map(() => "(?, ?)").join(", ");
+      const params = keysToDelete.flatMap((k) => [k.source_hash, k.locale]);
+      const countRow = this.db
+        .prepare(
+          `SELECT COUNT(*) as c FROM translation_failures
+           WHERE (source_hash, locale) IN (${placeholders})`
+        )
+        .get(...params) as { c: number };
+      return Number(countRow.c);
+    }
+
+    let removed = 0;
+    for (const { source_hash, locale } of keysToDelete) {
+      const countRow = this.db
+        .prepare(
+          `SELECT COUNT(*) as c FROM translation_failures WHERE source_hash = ? AND locale = ?`
+        )
+        .get(source_hash, locale) as { c: number };
+      removed += Number(countRow.c);
+      this.clearSegmentFailures(source_hash, locale);
+    }
+    return removed;
+  }
+
+  /**
    * @deprecated Prefer {@link deleteTranslationsByFilepath} / {@link deleteFileTrackingByPath} explicitly.
    * Deletes `translations` rows only (no longer deletes `file_tracking`).
    */
@@ -1191,6 +1258,13 @@ export class TranslationCache {
   }
 
   close(): void {
+    if (this.dbFilePath !== null) {
+      try {
+        this.db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+      } catch {
+        // Best-effort flush before closing the on-disk connection.
+      }
+    }
     this.db.close();
   }
 

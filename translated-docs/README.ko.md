@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | 키를 기본값으로 사용하는 설정을 위한 표준 i18next 초기화 옵션입니다.                                                                    |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 권장 연결 방식: `strings.json`에서 키 정리(key-trim) 및 복수형 `wrapT` 처리를 수행하고, 필요 시 `translate-ui` `{sourceLocale}.json` 복수형 키를 병합합니다. |
+| `wrapT(i18n, options)`                                                 | 복수형 인식 기능을 갖춘 저수준 `t()` 래퍼 (일반적으로 `setupKeyAsDefaultT`에 의해 설치됨).                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | 카탈로그 행의 `"plural": true`를 사용하여 `wrapT`에서 사용하는 복수형 그룹 인덱스를 생성합니다.                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | 소스 키에서 `{{var}}` 이름을 구문 분석하여 `wrapT` / 키 자르기 폴백에 사용합니다.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | 낮은 수준의 키 정리(key-trim) 래퍼만 제공합니다. (애플리케이션 연결 시 사용되지 않으며, `setupKeyAsDefaultT` 사용을 권장합니다.) |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `ui-languages.json`에서 `makeLoadLocale`의 `localeLoaders` 맵을 생성합니다. (`sourceLocale` 제외한 모든 `code` 포함) |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 비동기 로케일 파일 로딩을 위한 팩토리입니다. |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

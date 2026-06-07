@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools: 패키지 개요
 
-`ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 상호 연결 방식, 두 가지 핵심 워크플로우의 구현 방법을 설명합니다.
+`ai-i18n-tools`의 내부 아키텍처, 각 구성 요소의 결합 방식, 그리고 세 가지 조합 가능한 워크플로(UI 문자열, 문서, 중첩된 JSON)와 선택적 SVG 번역이 구현되는 방식에 대해 설명합니다.
 
 실제 사용 지침은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)를 참조하세요. 번역된 문서의 스크린샷 및 삽화 SVG에 대해서는 [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ko.md)를 참조하세요.
 
@@ -22,6 +22,7 @@
   - [평면화된 로케일 파일](#flat-locale-files)
   - [UI 번역 프롬프트](#ui-translation-prompts)
 - [워크플로 2 - 문서 번역 내부 구조](#workflow-2---document-translation-internals)
+- [워크플로 3 - 중첩된 JSON 내부](#workflow-3---nested-json-internals)
   - [추출기](#extractors)
   - [Astro 하이브리드 사이트(UI + 페이지 HTML)](#astro-hybrid-sites-ui--page-html)
   - [제목 앵커 삽입(`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
@@ -31,7 +32,7 @@
   - [평면 링크 재작성](#flat-link-rewriting)
 - [공유 인프라](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
-  - [구성 로드](#config-loading)
+  - [설정 로드](#config-loading)
   - [로거](#logger)
 - [런타임 헬퍼 API](#runtime-helpers-api)
   - [RTL 헬퍼](#rtl-helpers)
@@ -39,7 +40,7 @@
   - [표시 헬퍼](#display-helpers)
   - [문자열 헬퍼](#string-helpers)
 - [프로그래밍 방식 API](#programmatic-api)
-- [확장 지점](#extension-points)
+- [확장 포인트](#extension-points)
   - [사용자 정의 함수 이름(UI 추출)](#custom-function-names-ui-extraction)
   - [사용자 정의 추출기](#custom-extractors)
   - [사용자 정의 출력 경로](#custom-output-paths)
@@ -53,7 +54,7 @@
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -80,6 +81,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
+│   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
 │   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
@@ -108,7 +110,8 @@ src/
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
 │   ├── frontmatter-fields.ts       Selective YAML front matter field translation
 │   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
-│   ├── json-extractor.ts           JSON label file extraction
+│   ├── json-extractor.ts           Docusaurus catalog JSON extraction (`translate-docs`)
+│   ├── nested-json-extractor.ts    Arbitrary nested JSON leaves (`translate-json`, `json[]`)
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
@@ -276,7 +279,7 @@ output file  ─────────────────── Docusauru
 | 템플릿 HTML | `AstroTemplateExtractor` + `translate-docs` | 로케일별 `.astro` 위치: `docs[].outputDir` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 평면형 `public/locales/{locale}.json` (영문 소스를 키로 사용) |
 
-`sync` 명령어는 활성화된 단계들을 순서대로 실행합니다: **extract** 다음 **translate-ui** (`features.translateUIStrings`일 때) → 선택적 **translate-svg** → **translate-docs** (`--no-docs`, `--no-ui`, 또는 `--no-svg`인 경우 제외). init template `ui-astro-website`은 Workflow 1만 기본 설정하며, 페이지 HTML을 위해 `docs[]`과 `features.translateDocs`을 추가해야 합니다.
+`sync` 명령어는 활성화된 단계를 순서대로 실행합니다: **추출** 후 `features.translateUIStrings`인 경우 **translate-ui** → 선택적 **translate-svg** → **translate-docs** → 선택적 **translate-json** (`--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`로 건너뛸 경우 제외). 초기화 템플릿 `ui-astro-website`은 워크플로 1만 생성합니다. 페이지 HTML을 위해 `docs[]`과 `features.translateDocs`을 추가하세요.
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 제목 앵커 삽입 (`write-heading-ids` CLI)
@@ -310,9 +313,9 @@ Astro 템플릿과 MDX JSX에 대한 공유 속성/키 보호 기능은 `src/pro
 
 SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 SHA-256 해시 값 중 앞 16자리 16진수 문자를 사용하여 `(source_hash, locale)`를 키로 하고 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드를 포함하는 행을 저장합니다. 공백은 압축됩니다.
 
-각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스 항목만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위 내에서 적중하지 않은 세그먼트 행에 대해 `last_hit_at`이(가) 재설정됩니다. `cleanup`은(는) 먼저 `sync --force-update`를 실행한 다음, 오래된 세그먼트 행(null `last_hit_at` / 파일 경로 없음)을 제거하고, 디스크상에서 확인된 소스 경로가 누락된 경우 `file_tracking` 키를 정리하며(`doc-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 누락된 파일을 가리키는 번역 행을 제거합니다. 단, `--no-backup`이 전달되지 않은 경우 `cache.db`을(를) 먼저 백업합니다.
+각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위 내에서 매치되지 않은 세그먼트 행의 `last_hit_at`이 재설정됩니다. 문서 번역 중 성공적인 캐시 히트는 해당 세그먼트의 오래된 `translation_failures` 행을 제거합니다. `cleanup`는 먼저 `sync --force-update`을 실행한 후, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 디스크에 존재하지 않는 해결된 소스 경로에 대해 `file_tracking` 키를 정리하며(`doc-block:…`, `json-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 존재하지 않는 파일을 가리키는 번역 행을 제거하고, 고아가 된 `translation_failures` 행을 정리합니다. `--no-backup`이 전달되지 않은 경우, `cache.db`을 먼저 백업합니다.
 
-`translate-docs` 명령어는 또한 **파일 추적**을 사용하여 기존 출력이 있는 변경되지 않은 소스가 작업을 완전히 건너뛸 수 있도록 합니다. `--force-update`은 세그먼트 캐시를 계속 사용하면서 파일 처리를 다시 실행하며, `--force`는 파일 추적을 초기화하고 API 번역 시 세그먼트 캐시 읽기를 우회합니다. 전체 플래그 표는 [시작하기](GETTING_STARTED.ko.md#cache-behaviour-and-translate-docs-flags)를 참조하세요.
+`translate-docs` 명령어는 **파일 추적**을 사용하여 기존 출력이 존재하는 변경되지 않은 소스가 작업을 완전히 건너뛸 수 있도록 합니다. `--force-update`은 세그먼트 캐시를 계속 사용하면서 파일 처리를 다시 실행하고, `--force`는 파일 추적을 지우고 API 번역 시 세그먼트 캐시 읽기를 우회합니다. 구성된 모든 모델이 마크다운 세그먼트에서 AST 검증에 실패할 경우, `translate-docs`은 세그먼트를 점진적으로 분할하고 더 작은 부분을 재시도할 수 있습니다(`docs[].segmentSplitting.qualityRetrySplit`, 기본값 활성화). 전체 플래그 표는 [시작하기](GETTING_STARTED.ko.md#cache-behaviour-and-translate-docs-flags)를 참조하세요.
 
 **배치 프롬프트 형식:** `translate-docs --prompt-format`은 `OpenRouterClient.translateDocumentBatch`에 대해서만 XML(`<seg>` / `<t>`) 또는 JSON 배열/객체 형식을 선택합니다. 추출, 자리 표시자, 검증은 변경되지 않습니다. [배치 프롬프트 형식](GETTING_STARTED.ko.md#batch-prompt-format)을 참조하세요.
 
@@ -332,6 +335,30 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 ### 단일 링크 재작성
 
 `docsOutput.style === "flat"`일 때, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간 상대 링크는 `readme.de.md`의 `[Guide](../../docs/guide.md)`가 `guide.de.md`를 가리키도록 재작성됩니다. `pathTemplate`가 지정되지 않은 경우 평면 스타일에서 자동으로 활성화되는 `rewriteRelativeLinks`에 의해 제어됩니다. 동일한 처리 과정에서 `postProcessing.regexAdjustments` 실행 전에 마크다운이 아닌 에셋 URL에 파일별 깊이 접두사가 추가됩니다. 자세한 내용은 [로케일 에셋 가이드](LOCALE-ASSETS-GUIDE.ko.md#the-flat-link-rewriter-and-two-step-flow)를 참조하세요.
+
+---
+
+<a id="workflow-3---nested-json-internals"></a>
+## 워크플로 3 - 중첩된 JSON 내부
+
+```text
+json[].contentPaths  →  resolve files (file | directory | glob)
+      │
+      ▼  NestedJsonExtractor
+string leaves selected by keyPolicy (dot paths + minimatch)
+      │
+      ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
+cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+      │
+      ▼  NestedJsonExtractor.reassemble
+output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
+```
+
+- `NestedJsonExtractor`(`src/extractors/nested-json-extractor.ts`)은 임의의 중첩된 JSON을 탐색하고 번역 가능한 문자열 리프마다 하나의 세그먼트를 생성합니다. `keyPolicy.mode`(`allowlist`, `denylist` 또는 `both`)은 점 표기법에 대해 minimatch를 사용하여 경로를 필터링합니다(예: `slug`과 같은 단순 이름은 최종 키 세그먼트와 일치합니다).
+- 캐시 파일 추적은 `file_tracking`의 `json-block:{blockIndex}:{projectRelPath}`을 사용합니다(문서 및 SVG와 동일한 `cacheDir`).
+- Docusaurus `write-translations` 카탈로그(`{ message, description }` 형태)에는 **사용되지 않음** — 이들은 워크플로 2(`docs[].docusaurusCatalogDir` + `JsonExtractor` inside `translate-docs`)를 사용합니다.
+- `t()` UI 문자열에는 **사용되지 않음** — 워크플로 1(`strings.json` + 평면 번들).
+- CLI: `translate-json`; 오케스트레이션은 `src/cli/translate-json-run.ts`에서 수행됩니다. 초기화 템플릿: `ui-json-bundles`.
 
 ---
 
@@ -361,7 +388,7 @@ OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE` 등을 적용.
 7. `augmentConfigWithUiLanguagesFile` - 매니페스트 표시 이름 연결.
 
-`init`은 `initConfigTemplates`에서 시작 설정을 생성합니다: `ui-markdown` (UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (순수 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가). [GETTING_STARTED — Initialise](GETTING_STARTED.ko.md#step-1-initialise) 참조.
+`init`은 `initConfigTemplates`에서 시작 구성 파일을 생성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-astro-website`(순수 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가), `ui-json-bundles`(워크플로 3 `json[]` 전용). [GETTING_STARTED — 초기화](GETTING_STARTED.ko.md#step-1-initialise)를 참조하세요.
 
 <a id="logger"></a>
 ### 로거

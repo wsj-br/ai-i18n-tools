@@ -61,6 +61,18 @@ describe("TranslationCache", () => {
     cache.close();
   });
 
+  it("close removes WAL sidecar files on disk", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-wal-"));
+    try {
+      const cache = new TranslationCache(dir);
+      cache.setSegment("h", "de", "source", "trans", "m", "a.md", 1);
+      cache.close();
+      expect(fs.readdirSync(dir).sort()).toEqual(["cache.db"]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("backup and restore on disk", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-"));
     const cache = new TranslationCache(dir);
@@ -278,6 +290,110 @@ describe("TranslationCache", () => {
     expect(d.byLocale.some((r) => r.locale === "de" && r.total === 2)).toBe(true);
     expect(d.byModel.some((r) => r.model === "m1")).toBe(true);
     expect(d.uniqueFilepaths).toBeGreaterThanOrEqual(1);
+    cache.close();
+  });
+
+  it("pruneOrphanedTranslationFailures removes failures without translations row", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-fail-prune-"));
+    try {
+      const cache = new TranslationCache(dir);
+      cache.addSegmentFailures([
+        {
+          sourceHash: "orphan",
+          locale: "de",
+          model: "mx",
+          modelOrder: 0,
+          qualityError: "api",
+          errorMessage: "failed",
+          fatal: true,
+          filepath: "gone.md",
+          sourceText: "text",
+        },
+      ]);
+      const n = cache.pruneOrphanedTranslationFailures(dir, false);
+      expect(n).toBe(1);
+      expect(cache.listTranslationFailures({ limit: 10, offset: 0 }).total).toBe(0);
+      cache.close();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("pruneOrphanedTranslationFailures removes failures when filepath is missing on disk", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-fail-disk-"));
+    try {
+      const cache = new TranslationCache(dir);
+      cache.setSegment("h", "de", "a", "b", "m", "missing.md", 1);
+      cache.addSegmentFailures([
+        {
+          sourceHash: "h",
+          locale: "de",
+          model: "mx",
+          modelOrder: 0,
+          qualityError: "placeholder",
+          errorMessage: "bad",
+          fatal: false,
+          filepath: "missing.md",
+          sourceText: "a",
+        },
+      ]);
+      const n = cache.pruneOrphanedTranslationFailures(dir, false);
+      expect(n).toBe(1);
+      expect(cache.listTranslationFailures({ limit: 10, offset: 0 }).total).toBe(0);
+      expect(cache.getSegment("h", "de")).not.toBeNull();
+      cache.close();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("pruneOrphanedTranslationFailures keeps failures when translation and file exist", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-fail-keep-"));
+    try {
+      const rel = "exists.md";
+      fs.writeFileSync(path.join(dir, rel), "# doc\n");
+      const cache = new TranslationCache(dir);
+      cache.setSegment("h", "de", "a", "b", "m", rel, 1);
+      cache.addSegmentFailures([
+        {
+          sourceHash: "h",
+          locale: "de",
+          model: "mx",
+          modelOrder: 0,
+          qualityError: "placeholder",
+          errorMessage: "bad",
+          fatal: false,
+          filepath: rel,
+          sourceText: "a",
+        },
+      ]);
+      const n = cache.pruneOrphanedTranslationFailures(dir, false);
+      expect(n).toBe(0);
+      expect(cache.listTranslationFailures({ limit: 10, offset: 0 }).total).toBeGreaterThanOrEqual(
+        1
+      );
+      cache.close();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("pruneOrphanedTranslationFailures dryRun reports without deleting", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.addSegmentFailures([
+      {
+        sourceHash: "orphan",
+        locale: "de",
+        model: "mx",
+        modelOrder: 0,
+        qualityError: "api",
+        errorMessage: "failed",
+        fatal: true,
+      },
+    ]);
+    const n = cache.pruneOrphanedTranslationFailures(process.cwd(), true);
+    expect(n).toBe(1);
+    expect(cache.listTranslationFailures({ limit: 10, offset: 0 }).total).toBeGreaterThanOrEqual(1);
     cache.close();
   });
 

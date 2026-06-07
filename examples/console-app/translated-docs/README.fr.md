@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-05-24T19:47:31.301Z'
-source_file_mtime: '2026-04-28T00:39:16.608Z'
-source_file_hash: 1b21705d678f79373b61dafb5fcfbd31653504487dec048503730b7228bd8c4b
+translation_last_updated: '2026-06-07T23:18:58.693Z'
+source_file_mtime: '2026-06-07T22:41:56.526Z'
+source_file_hash: a8512e3e594cc63992b92ec4f4e165ea4175afa2de6adc6fb640e8c87540eec6
 translation_language: fr
 source_file_path: README.md
 translation_models:
@@ -17,7 +17,7 @@ Cet exemple montre comment utiliser `ai-i18n-tools` pour internationaliser une a
 
 ## Prérequis
 
-- Node.js >= 18
+- Node.js >= 22.16.0
 - [pnpm](https://pnpm.io/)
 - Une clé API [OpenRouter](https://openrouter.ai) (pour générer les traductions)
 

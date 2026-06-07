@@ -16,6 +16,12 @@ describe("segmentSplittingSchema defaults", () => {
     expect(segmentSplittingSchema.parse({}).enabled).toBe(true);
     expect(mergeSegmentSplittingOpts(undefined).enabled).toBe(true);
   });
+
+  it("enables quality retry split by default", () => {
+    const cfg = segmentSplittingSchema.parse({});
+    expect(cfg.qualityRetrySplit).toBe(true);
+    expect(cfg.maxQualityRetrySplitDepth).toBe(3);
+  });
 });
 
 describe("splitMarkdownSegmentPiece", () => {

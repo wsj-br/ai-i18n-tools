@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools: पैकेज अवलोकन
 
-`ai-i18n-tools` की आंतरिक वास्तुकला, इसके विभिन्न घटकों के एकीकरण तथा दो मुख्य कार्यप्रवाहों के कार्यान्वयन का वर्णन इस दस्तावेज़ में किया गया है।
+`ai-i18n-tools` की आंतरिक वास्तुकला, प्रत्येक घटक के एक साथ कैसे जुड़ने और तीन संयोज्य कार्यप्रवाहों (UI स्ट्रिंग्स, दस्तावेज़, नेस्टेड JSON) के साथ वैकल्पिक SVG अनुवाद के कार्यान्वयन का वर्णन यह दस्तावेज़ करता है।
 
 व्यावहारिक उपयोग निर्देशों के लिए, [GETTING_STARTED.md](GETTING_STARTED.hi.md) देखें। अनुवादित दस्तावेज़ों में स्क्रीनशॉट्स और चित्रित SVG के लिए, [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.hi.md) देखें।
 
@@ -22,12 +22,13 @@
   - [फ्लैट स्थानीय फ़ाइलें](#flat-locale-files)
   - [यूआई अनुवाद संकेत](#ui-translation-prompts)
 - [वर्कफ़्लो 2 - दस्तावेज़ अनुवाद आंतरिक](#workflow-2---document-translation-internals)
+- [कार्यप्रवाह 3 - नेस्टेड JSON आंतरिक](#workflow-3---nested-json-internals)
   - [एक्सट्रैक्टर्स](#extractors)
   - [एस्ट्रो हाइब्रिड साइट्स (UI + पेज HTML)](#astro-hybrid-sites-ui--page-html)
   - [शीर्षक एंकर सम्मिलन (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
-  - [प्लेसहोल्डर सुरक्षा](#placeholder-protection)
+  - [प्लेसहोल्डर संरक्षण](#placeholder-protection)
   - [कैश (`TranslationCache`)](#cache-translationcache)
-  - [आउटपुट पथ सं solution](#output-path-resolution)
+  - [आउटपुट पथ संकल्प](#output-path-resolution)
   - [फ्लैट लिंक पुन:लेखन](#flat-link-rewriting)
 - [साझा बुनियादी ढांचा](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
@@ -35,7 +36,7 @@
   - [लॉगर](#logger)
 - [रनटाइम हेल्पर्स API](#runtime-helpers-api)
   - [RTL हेल्पर्स](#rtl-helpers)
-  - [i18next सेटअप फैक्ट्रियाँ](#i18next-setup-factories)
+  - [i18next सेटअप फैक्ट्रियां](#i18next-setup-factories)
   - [डिस्प्ले हेल्पर्स](#display-helpers)
   - [स्ट्रिंग हेल्पर्स](#string-helpers)
 - [प्रोग्रामेटिक API](#programmatic-api)
@@ -53,7 +54,7 @@
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -80,6 +81,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
+│   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
 │   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
@@ -108,7 +110,8 @@ src/
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
 │   ├── frontmatter-fields.ts       Selective YAML front matter field translation
 │   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
-│   ├── json-extractor.ts           JSON label file extraction
+│   ├── json-extractor.ts           Docusaurus catalog JSON extraction (`translate-docs`)
+│   ├── nested-json-extractor.ts    Arbitrary nested JSON leaves (`translate-json`, `json[]`)
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
@@ -276,7 +279,7 @@ output file  ─────────────────── Docusauru
 | टेम्पलेट HTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` के तहत प्रति-स्थानिक `.astro` |
 | फ्रंटमैटर / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | सपाट `public/locales/{locale}.json` (अंग्रेजी स्रोत के रूप में कुंजी) |
 
-`sync` कमांड सक्षम चरणों को क्रम में चलाता है: **extract** फिर **translate-ui** (जब `features.translateUIStrings`) → वैकल्पिक **translate-svg** → **translate-docs** (जब तक `--no-docs`, `--no-ui`, या `--no-svg` न हो)। प्रारंभिक टेम्पलेट `ui-astro-website` केवल वर्कफ़्लो 1 को समर्थन देता है; पेज HTML के लिए `docs[]` और `features.translateDocs` जोड़ें।
+`sync` कमांड सक्षम चरणों को क्रम में चलाता है: **extract** फिर **translate-ui** (जब `features.translateUIStrings`) → वैकल्पिक **translate-svg** → **translate-docs** → वैकल्पिक **translate-json** (जब तक `--no-ui`, `--no-svg`, `--no-docs`, या `--no-json` के साथ छोड़ा न गया हो)। इनिट टेम्पलेट `ui-astro-website` केवल कार्यप्रवाह 1 को स्कैफोल्ड करता है; पेज HTML के लिए `docs[]` और `features.translateDocs` जोड़ें।
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### हेडिंग एंकर सम्मिलन (`write-heading-ids` CLI)
@@ -310,9 +313,9 @@ output file  ─────────────────── Docusauru
 
 SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(source_hash, locale)` द्वारा कुंजीबद्ध पंक्तियों को `translated_text`, `model`, `filepath`, `last_hit_at`, और संबंधित क्षेत्रों के साथ संग्रहीत करता है। हैश सामान्यीकृत सामग्री (सफेद स्थान संकुचित) के SHA-256 के पहले 16 हेक्स अक्षर हैं।
 
-प्रत्येक रन पर, सेगमेंट्स को हैश × लोकेल द्वारा खोजा जाता है। केवल कैश मिस LLM पर जाते हैं। अनुवाद के बाद, वर्तमान अनुवाद स्कोप में उन सेगमेंट पंक्तियों के लिए `last_hit_at` को रीसेट कर दिया जाता है जिन्हें हिट नहीं किया गया था। `cleanup` पहले `sync --force-update` चलाता है, फिर स्टेल सेगमेंट पंक्तियों को हटा देता है (null `last_hit_at` / खाली फ़ाइलपाथ), जब डिस्क पर स्रोत पथ गायब होता है तो `file_tracking` कुंजियों को हटा देता है (`doc-block:…`, `svg-files:…`, आदि), और उन अनुवाद पंक्तियों को हटा देता है जिनकी मेटाडेटा फ़ाइलपाथ गायब फ़ाइल की ओर इशारा करती है; यह `--no-backup` पारित न होने पर पहले `cache.db` का बैकअप लेता है।
+प्रत्येक रन पर, सेगमेंट्स को हैश × स्थानीयकरण द्वारा खोजा जाता है। केवल कैश मिस LLM पर जाते हैं। अनुवाद के बाद, वर्तमान अनुवाद स्कोप में उन सेगमेंट पंक्तियों के लिए `last_hit_at` रीसेट किया जाता है जिन्हें हिट नहीं किया गया था। दस्तावेज़ अनुवाद के दौरान सफल कैश हिट उस सेगमेंट के लिए स्टेल `translation_failures` पंक्तियों को साफ़ करते हैं। `cleanup` पहले `sync --force-update` चलाता है, फिर स्टेल सेगमेंट पंक्तियों (null `last_hit_at` / खाली फ़ाइलपाथ) को हटा देता है, जब डिस्क पर संकल्पित स्रोत पथ गायब होता है तो `file_tracking` कुंजियों को हटा देता है (`doc-block:…`, `json-block:…`, `svg-files:…`, आदि), उन अनुवाद पंक्तियों को हटा देता है जिनका मेटाडेटा फ़ाइलपाथ लापता फ़ाइल की ओर इशारा करता है, और अनाथ `translation_failures` पंक्तियों को हटा देता है; यह `--no-backup` पारित किए जाने पर `cache.db` का पहले बैकअप लेता है।
 
-`translate-docs` कमांड **फ़ाइल ट्रैकिंग** का भी उपयोग करता है ताकि अपरिवर्तित स्रोतों के साथ मौजूद आउटपुट पूरी तरह से काम छोड़ सकें। `--force-update` खंड कैश का उपयोग करते हुए फ़ाइल प्रसंस्करण को फिर से चलाता है; `--force` फ़ाइल ट्रैकिंग को साफ़ कर देता है और API अनुवाद के लिए खंड कैश पढ़ने से बचता है। पूर्ण झंडा तालिका के लिए [शुरुआत](GETTING_STARTED.hi.md#cache-behaviour-and-translate-docs-flags) देखें।
+`translate-docs` कमांड **फ़ाइल ट्रैकिंग** का भी उपयोग करता है, ताकि मौजूदा आउटपुट के साथ अपरिवर्तित स्रोत पूरी तरह से कार्य छोड़ सकें। `--force-update` खंड कैश का उपयोग जारी रखते हुए फ़ाइल प्रसंस्करण को पुनः चलाता है; `--force` फ़ाइल ट्रैकिंग को साफ़ कर देता है और API अनुवाद के लिए खंड कैश पढ़ने से बचता है। जब किसी मार्कडाउन खंड पर प्रत्येक कॉन्फ़िगर किया गया मॉडल AST मान्यता में विफल रहता है, तो `translate-docs` खंड को क्रमिक रूप से विभाजित कर सकता है और छोटे भागों को पुनः प्रयास कर सकता है (`docs[].segmentSplitting.qualityRetrySplit`, डिफ़ॉल्ट चालू)। पूर्ण फ़्लैग तालिका के लिए [गेटिंग स्टार्टेड](GETTING_STARTED.hi.md#cache-behaviour-and-translate-docs-flags) देखें।
 
 **बैच प्रॉम्प्ट स्वरूप:** `translate-docs --prompt-format` केवल `OpenRouterClient.translateDocumentBatch` के लिए XML (`<seg>` / `<t>`) या JSON सरणी/वस्तु आकृतियों का चयन करता है; निष्कर्षण, प्लेसहोल्डर और मान्यता अपरिवर्तित है। [बैच प्रॉम्प्ट स्वरूप](GETTING_STARTED.hi.md#batch-prompt-format) देखें।
 
@@ -332,6 +335,30 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 ### सपाट लिंक पुन:लेखन
 
 जब `docsOutput.style === "flat"`, तो अनुवादित मार्कडाउन फ़ाइलों को स्रोत के साथ-साथ स्थानीय उपसर्गों के साथ रखा जाता है। पृष्ठों के बीच सापेक्ष लिंक पुनः लिखे जाते हैं ताकि `[Guide](../../docs/guide.md)` में `readme.de.md`, `guide.de.md` की ओर इशारा करे। इसे `rewriteRelativeLinks` द्वारा नियंत्रित किया जाता है (बिना कस्टम `pathTemplate` के फ्लैट शैली के लिए स्वचालित रूप से सक्षम)। उसी पास में `postProcessing.regexAdjustments` चलने से पहले गैर-मार्कडाउन एसेट URL के लिए प्रति-फ़ाइल गहराई उपसर्ग को लगाया जाता है — [स्थानीय एसेट गाइड](LOCALE-ASSETS-GUIDE.hi.md#the-flat-link-rewriter-and-two-step-flow) देखें।
+
+---
+
+<a id="workflow-3---nested-json-internals"></a>
+## कार्यप्रवाह 3 - नेस्टेड JSON आंतरिक
+
+```text
+json[].contentPaths  →  resolve files (file | directory | glob)
+      │
+      ▼  NestedJsonExtractor
+string leaves selected by keyPolicy (dot paths + minimatch)
+      │
+      ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
+cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+      │
+      ▼  NestedJsonExtractor.reassemble
+output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
+```
+
+- `NestedJsonExtractor` (`src/extractors/nested-json-extractor.ts`) मनमाने नेस्टेड JSON को चलाता है और प्रत्येक अनुवाद योग्य स्ट्रिंग लीफ़ के लिए एक सेगमेंट उत्सर्जित करता है। `keyPolicy.mode` (`allowlist`, `denylist`, या `both`) डॉट नोटेशन पर मिनिमैच के साथ पथों को फ़िल्टर करता है (`slug` जैसे बेस नाम अंतिम कुंजी खंड से मेल खाते हैं)।
+- कैश फ़ाइल ट्रैकिंग `json-block:{blockIndex}:{projectRelPath}` का उपयोग `file_tracking` में करती है (दस्तावेज़ और SVG के समान `cacheDir`)।
+- **नहीं** Docusaurus `write-translations` कैटलॉग के लिए (`{ message, description }` आकृति) — उनके लिए कार्यप्रवाह 2 (`docs[].docusaurusCatalogDir` + `JsonExtractor` के अंदर `translate-docs`) का उपयोग करते हैं।
+- **नहीं** `t()` UI स्ट्रिंग्स के लिए — कार्यप्रवाह 1 (`strings.json` + फ्लैट बंडल)।
+- CLI: `translate-json`; `src/cli/translate-json-run.ts` में संगठन। इनिट टेम्पलेट: `ui-json-bundles`।
 
 ---
 
@@ -361,7 +388,7 @@ SQLite डेटाबेस (`node:sqlite` के माध्यम से) `(
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`, `I18N_SOURCE_LOCALE`, आदि लागू करें।
 7. `augmentConfigWithUiLanguagesFile` - मैनिफेस्ट डिस्प्ले नाम संलग्न करें।
 
-`init` `initConfigTemplates` से स्टार्टर विन्यास लिखता है: `ui-markdown` (UI + वैकल्पिक ऐप मार्कडाउन), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (सादा एस्ट्रो UI; `.astro` पेज अनुवाद के लिए `docs[]` जोड़ें)। देखें [GETTING_STARTED — Initialise](GETTING_STARTED.hi.md#step-1-initialise)।
+`init` `initConfigTemplates` से स्टार्टर कॉन्फ़िग लिखता है: `ui-markdown` (UI + वैकल्पिक ऐप मार्कडाउन), `ui-docusaurus`, `ui-starlight`, `ui-astro-website` (सादा एस्ट्रो UI; `.astro` पेज अनुवाद के लिए `docs[]` जोड़ें), `ui-json-bundles` (केवल कार्यप्रवाह 3 `json[]`)। [GETTING_STARTED — Initialise](GETTING_STARTED.hi.md#step-1-initialise) देखें।
 
 <a id="logger"></a>
 ### लॉगर

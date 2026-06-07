@@ -7,7 +7,7 @@ This example demonstrates how to use `ai-i18n-tools` to internationalize a Node.
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 22.16.0
 - [pnpm](https://pnpm.io/)
 - An [OpenRouter](https://openrouter.ai) API key (for generating translations)
 

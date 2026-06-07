@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools: パッケージの概要
 
-`ai-i18n-tools` の内部アーキテクチャ、各コンポーネントの統合方法、および2つのコアワークフローの実装方法について説明します。
+`ai-i18n-tools`の内部アーキテクチャ、各コンポーネントの統合方法、および3つの合成可能なワークフロー（UI文字列、ドキュメント、ネストされたJSON）とオプションのSVG翻訳の実装方法について説明します。
 
 実際の使用方法については、[GETTING_STARTED.md](GETTING_STARTED.ja.md) を参照してください。翻訳されたドキュメント内のスクリーンショットや図入りSVGについては、[LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ja.md) を参照してください。
 
@@ -22,12 +22,13 @@
   - [フラットなロケールファイル](#flat-locale-files)
   - [UI 翻訳プロンプト](#ui-translation-prompts)
 - [ワークフロー 2 - ドキュメント翻訳の内部構造](#workflow-2---document-translation-internals)
+- [ワークフロー3 - ネストされたJSONの内部構造](#workflow-3---nested-json-internals)
   - [エクストラクター](#extractors)
-  - [Astro ハイブリッドサイト (UI + ページHTML)](#astro-hybrid-sites-ui--page-html)
-  - [見出しアンカー挿入 (`write-heading-ids` CLI)](#heading-anchor-insertion-write-heading-ids-cli)
+  - [Astroハイブリッドサイト（UI + ページHTML）](#astro-hybrid-sites-ui--page-html)
+  - [見出しアンカー挿入（`write-heading-ids` CLI）](#heading-anchor-insertion-write-heading-ids-cli)
   - [プレースホルダー保護](#placeholder-protection)
-  - [キャッシュ (`TranslationCache`)](#cache-translationcache)
-  - [出力パスの解決](#output-path-resolution)
+  - [キャッシュ（`TranslationCache`）](#cache-translationcache)
+  - [出力パス解決](#output-path-resolution)
   - [フラットリンクの書き換え](#flat-link-rewriting)
 - [共有インフラストラクチャー](#shared-infrastructure)
   - [`OpenRouterClient`](#openrouterclient)
@@ -40,7 +41,7 @@
   - [文字列ヘルパー](#string-helpers)
 - [プログラムによるAPI](#programmatic-api)
 - [拡張ポイント](#extension-points)
-  - [カスタム関数名 (UI抽出)](#custom-function-names-ui-extraction)
+  - [カスタム関数名（UI抽出）](#custom-function-names-ui-extraction)
   - [カスタムエクストラクター](#custom-extractors)
   - [カスタム出力パス](#custom-output-paths)
 
@@ -53,7 +54,7 @@
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -80,6 +81,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
+│   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
 │   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
@@ -108,7 +110,8 @@ src/
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
 │   ├── frontmatter-fields.ts       Selective YAML front matter field translation
 │   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
-│   ├── json-extractor.ts           JSON label file extraction
+│   ├── json-extractor.ts           Docusaurus catalog JSON extraction (`translate-docs`)
+│   ├── nested-json-extractor.ts    Arbitrary nested JSON leaves (`translate-json`, `json[]`)
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
@@ -276,7 +279,7 @@ output file  ─────────────────── Docusauru
 | テンプレートHTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` 配下のロケールごとの `.astro` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | フラットな`public/locales/{locale}.json`（英語ソースをキーとして使用） |
 
-`sync` コマンドは、有効化されたステップを順に実行します：**extract**、次に `features.translateUIStrings` の場合 **translate-ui** → 任意の **translate-svg** → `--no-docs`、`--no-ui`、`--no-svg` のいずれかが指定されていない限り **translate-docs**。init template `ui-astro-website` はWorkflow 1のみをスキャフォールドします。ページHTML用に `docs[]` および `features.translateDocs` を追加してください。
+`sync`コマンドは、有効化されたステップを順に実行します：**extract**、次に`features.translateUIStrings`の場合は**translate-ui** → オプションで**translate-svg** → **translate-docs** → オプションで**translate-json**（`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`でスキップしない限り）。initテンプレート`ui-astro-website`はワークフロー1のみをスキャフォールドします。ページHTML用に`docs[]`と`features.translateDocs`を追加してください。
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 見出しアンカーの挿入（`write-heading-ids` CLI）
@@ -310,9 +313,9 @@ AstroテンプレートおよびMDX JSXの共通属性／キー保護は `src/pr
 
 SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` をキーとして `translated_text`、`model`、`filepath`、`last_hit_at` および関連フィールドを持つ行を格納します。ハッシュは、正規化されたコンテンツ（空白文字を圧縮）のSHA-256の最初の16文字の16進数です。
 
-各実行時、セグメントはハッシュ × ロケールで検索されます。キャッシュミスの場合のみLLMが呼び出されます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の `last_hit_at` がリセットされます。`cleanup` はまず `sync --force-update` を実行し、その後、古くなったセグメント行（`last_hit_at` が null またはファイルパスが空）を削除し、解決されたソースパスがディスク上に存在しない場合に `file_tracking` キーを整理（`doc-block:…`、`svg-files:…` など）し、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除します。ただし、`--no-backup` が指定されていない限り、最初に `cache.db` のバックアップを取得します。
+各実行時、セグメントはハッシュ×ロケールで検索されます。キャッシュミスの場合のみLLMが呼び出されます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の`last_hit_at`がリセットされます。ドキュメント翻訳中のキャッシュヒット成功時に、そのセグメントの古くなった`translation_failures`行がクリアされます。`cleanup`はまず`sync --force-update`を実行し、その後、古くなったセグメント行（`last_hit_at`がnullまたはファイルパスが空）を削除し、解決されたソースパスがディスク上に存在しない場合に`file_tracking`キーを削除（`doc-block:…`、`json-block:…`、`svg-files:…`など）、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除し、孤立した`translation_failures`行を削除します。また、`--no-backup`が指定されていない限り、最初に`cache.db`をバックアップします。
 
-`translate-docs`コマンドはまた、変更のないソースに対して既存の出力があれば処理を完全にスキップできるように**ファイル追跡**を使用しています。`--force-update`はセグメントキャッシュを引き続き使用しつつファイル処理を再実行します。`--force`はファイル追跡をクリアし、API翻訳のためにセグメントキャッシュの読み取りをバイパスします。完全なフラグ表については[Getting Started](GETTING_STARTED.ja.md#cache-behaviour-and-translate-docs-flags)を参照してください。
+`translate-docs`コマンドはまた、既存の出力を持つ変更されていないソースが処理を完全にスキップできるように**ファイル追跡**を使用します。`--force-update`はセグメントキャッシュを引き続き使用しつつファイル処理を再実行します。`--force`はファイル追跡をクリアし、API翻訳用にセグメントキャッシュの読み取りをバイパスします。構成されたすべてのモデルがマークダウンセグメントでAST検証に失敗した場合、`translate-docs`はセグメントを段階的に分割し、より小さな部分を再試行できます（`docs[].segmentSplitting.qualityRetrySplit`、デフォルトで有効）。完全なフラグ表については、[Getting Started](GETTING_STARTED.ja.md#cache-behaviour-and-translate-docs-flags)を参照してください。
 
 **バッチプロンプト形式：** `translate-docs --prompt-format`は`OpenRouterClient.translateDocumentBatch`に対してのみXML（`<seg>` / `<t>`）またはJSON配列/オブジェクト形式を選択します。抽出、プレースホルダー、検証は変更されません。[Batch prompt format](GETTING_STARTED.ja.md#batch-prompt-format)を参照してください。
 
@@ -332,6 +335,30 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 ### フラットリンクの書き換え
 
 `docsOutput.style === "flat"` 時、翻訳されたMarkdownファイルはロケールサフィックスを付けてソースファイルと同じ場所に配置されます。ページ間の相対リンクは書き換えられ、`readme.de.md` 内の `[Guide](../../docs/guide.md)` が `guide.de.md` を指すようになります。これは `rewriteRelativeLinks` で制御され、カスタム `pathTemplate` を使用しないフラットスタイルでは自動的に有効になります。同じ処理では、`postProcessing.regexAdjustments` 実行前に、非MarkdownアセットのURLにファイルごとの階層深度プレフィックスが付加されます — [ロケールアセットガイド](LOCALE-ASSETS-GUIDE.ja.md#the-flat-link-rewriter-and-two-step-flow) を参照してください。
+
+---
+
+<a id="workflow-3---nested-json-internals"></a>
+## ワークフロー3 - ネストされたJSONの内部構造
+
+```text
+json[].contentPaths  →  resolve files (file | directory | glob)
+      │
+      ▼  NestedJsonExtractor
+string leaves selected by keyPolicy (dot paths + minimatch)
+      │
+      ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
+cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+      │
+      ▼  NestedJsonExtractor.reassemble
+output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
+```
+
+- `NestedJsonExtractor`（`src/extractors/nested-json-extractor.ts`）は任意のネストされたJSONを走査し、翻訳可能な文字列リーフごとに1つのセグメントを出力します。`keyPolicy.mode`（`allowlist`、`denylist`、または`both`）はドット表記でのminimatchを使用してパスをフィルタリングします（`slug`のような単純名は最終キーのセグメントに一致します）。
+- キャッシュファイル追跡は`file_tracking`内の`json-block:{blockIndex}:{projectRelPath}`を使用します（ドキュメントおよびSVGと同じ`cacheDir`）。
+- Docusaurus `write-translations`カタログ（`{ message, description }`の形状）には**使用しないでください** — これらはワークフロー2（`docs[].docusaurusCatalogDir` + `JsonExtractor`を`translate-docs`内に含む）を使用します。
+- `t()` UI文字列には**使用しないでください** — ワークフロー1（`strings.json` + フラットバンドル）を使用します。
+- CLI：`translate-json`；オーケストレーションは`src/cli/translate-json-run.ts`内。initテンプレート：`ui-json-bundles`。
 
 ---
 
@@ -361,7 +388,7 @@ OpenRouterのチャット補完APIをラップします。主な動作：
 6. `applyEnvOverrides` - `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` などを適用。
 7. `augmentConfigWithUiLanguagesFile` - マニフェストの表示名を関連付ける。
 
-`init` は `initConfigTemplates` からスターターコンフィグを生成します：`ui-markdown`（UI＋任意のアプリMarkdown）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（プレーンなAstro UI；`.astro` ページ翻訳用に `docs[]` を追加）。[GETTING_STARTED — Initialise](GETTING_STARTED.ja.md#step-1-initialise)を参照してください。
+`init`は`initConfigTemplates`からスターターコンフィグを書き出します：`ui-markdown`（UI + オプションのアプリマークダウン）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（プレーンAstro UI；`.astro`ページ翻訳用に`docs[]`を追加）、`ui-json-bundles`（ワークフロー3の`json[]`のみ）。[GETTING_STARTED — 初期化](GETTING_STARTED.ja.md#step-1-initialise)を参照してください。
 
 <a id="logger"></a>
 ### ロガー

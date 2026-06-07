@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | 用于键值作为默认值配置的标准 i18next 初始化选项。                                                                               |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推荐的集成方式：从 `strings.json` 获取 key-trim + plural `wrapT`，可选择性合并 `translate-ui` `{sourceLocale}.json` 的复数键。 |
+| `wrapT(i18n, options)`                                                 | 支持复数形式的低层级 `t()` 包装器（通常由 `setupKeyAsDefaultT` 安装）。                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | 根据包含 `"plural": true` 的目录行构建 `wrapT` 所使用的复数分组索引。                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | 从源键中解析 `{{var}}` 名称，用于 `wrapT` / 键裁剪回退。                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | 仅提供底层的 key-trim 封装（在应用集成中已弃用；推荐使用 `setupKeyAsDefaultT`）。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 从 `ui-languages.json` 构建 `localeLoaders` 映射（包含除 `sourceLocale` 外的每个 `code`）以用于 `makeLoadLocale`。 |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 用于异步加载区域设置文件的工厂函数。 |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

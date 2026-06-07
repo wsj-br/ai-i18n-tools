@@ -77,6 +77,12 @@ import type {
   DocumentPromptContentType,
 } from "../core/prompt-builder.js";
 import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../utils/concurrency.js";
+import {
+  bindRunInterruptScope,
+  isRunInterruptedError,
+  runInterruptedExitCode,
+  throwIfAbortSignal,
+} from "../utils/run-interrupt.js";
 import { FileContentCache } from "./file-content-cache.js";
 import {
   describeEmphasisPlaceholdersPolicy,
@@ -85,6 +91,10 @@ import {
 } from "../core/markdown-emphasis-defaults.js";
 import { collectMarkdownIssuesForSegment } from "../processors/markdown-source-diagnostics.js";
 import type { MarkdownSourceIssueInsert } from "../core/types.js";
+import {
+  translateOneSegmentWithQualityRetry,
+  type DocQualityLogWriter,
+} from "./doc-translate-quality-retry.js";
 
 /** Same segment-extraction options as `translate-docs` for one documentation block. */
 export function buildMarkdownExtractOpts(doc: DocBlock): MarkdownExtractOptions {
@@ -169,6 +179,8 @@ export interface TranslateRunOptions {
    * Default: 1 (sequential processing).
    */
   fileConcurrency?: number;
+  /** When aborted (Ctrl+C), cooperative workers stop claiming new work. */
+  abortSignal?: AbortSignal;
 }
 
 export interface TranslateTotals {
@@ -187,6 +199,8 @@ export interface TranslateTotals {
   segmentValidationFailures?: number;
   /** Count of single-segment API calls (`translateDocumentSegment`), including batch fallbacks and markdown quality retries. */
   individualSegmentTranslations?: number;
+  /** Markdown segments recovered via progressive split after AST validation failure. */
+  segmentQualitySplitRetries?: number;
 }
 
 type ProtectState = ReturnType<PlaceholderHandler["protectForTranslation"]> & {
@@ -428,8 +442,10 @@ function logTranslateFileComplete(
   segmentsCached: number,
   segmentsNew: number,
   elapsedMs: number,
-  costUsd: number
+  costUsd: number,
+  abortSignal?: AbortSignal
 ): void {
+  throwIfAbortSignal(abortSignal);
   const fileTimeFormatted = formatElapsedFileTime(elapsedMs);
   const fileCostStr = costUsd > 0 ? `$${costUsd.toFixed(4)}` : "$0.0000";
   console.log(
@@ -953,7 +969,15 @@ export async function translateSegmentsBatched(
   failureLogDirAbs?: string | null,
   failureTracker?: FailureTracker,
   /** Cwd-relative source path stored on failure rows for dashboard UI when cache has no segment yet. */
-  failureDocMeta?: { filepath: string }
+  failureDocMeta?: { filepath: string },
+  /** Progressive split-on-AST-failure (markdown only). */
+  qualityRetryOpts?: {
+    qualityRetrySplit: boolean;
+    maxQualityRetrySplitDepth: number;
+    emphasisPlaceholders: boolean;
+    expressionProtection?: ExpressionProtectionOptions;
+  },
+  abortSignal?: AbortSignal
 ): Promise<{
   map: Map<string, DocSegmentTranslation>;
   inTok: number;
@@ -961,6 +985,7 @@ export async function translateSegmentsBatched(
   cost: number;
   segmentValidationFailures: number;
   individualSegmentTranslations: number;
+  segmentQualitySplitRetries: number;
 }> {
   const out = new Map<string, DocSegmentTranslation>();
   let inTok = 0;
@@ -968,6 +993,7 @@ export async function translateSegmentsBatched(
   let cost = 0;
   let segmentValidationFailures = 0;
   let individualSegmentTranslations = 0;
+  let segmentQualitySplitRetries = 0;
 
   const batches = splitTranslatableIntoBatches(batchable, { batchSize, maxBatchChars });
   if (batches.length === 0) {
@@ -978,6 +1004,7 @@ export async function translateSegmentsBatched(
       cost,
       segmentValidationFailures: 0,
       individualSegmentTranslations: 0,
+      segmentQualitySplitRetries: 0,
     };
   }
 
@@ -1001,9 +1028,11 @@ export async function translateSegmentsBatched(
     cost: number;
     segmentValidationFailures: number;
     individualSegmentTranslations: number;
+    segmentQualitySplitRetries: number;
   };
 
   const processBatch = async (bi: number): Promise<BatchProcessResult> => {
+    throwIfAbortSignal(abortSignal);
     const partial = new Map<string, DocSegmentTranslation>();
     let localIn = 0;
     let localOut = 0;
@@ -1043,6 +1072,7 @@ export async function translateSegmentsBatched(
         cost: localCost,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
+        segmentQualitySplitRetries: 0,
       };
     }
 
@@ -1066,6 +1096,7 @@ export async function translateSegmentsBatched(
           responseFormat: batchResponseFormat,
           docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
         });
+        throwIfAbortSignal(abortSignal);
         localIn += res.usage.inputTokens;
         localOut += res.usage.outputTokens;
         localCost += res.cost ?? 0;
@@ -1082,6 +1113,9 @@ export async function translateSegmentsBatched(
         }
         logBatchSuccess(res);
       } catch (e) {
+        if (isRunInterruptedError(e)) {
+          throw e;
+        }
         if (e instanceof BatchTranslationError && client) {
           if (verbose) {
             console.warn(
@@ -1092,6 +1126,7 @@ export async function translateSegmentsBatched(
           }
           const ph = new PlaceholderHandler();
           for (const s of batch) {
+            throwIfAbortSignal(abortSignal);
             const st = placeholderById.get(s.id);
             localIndividualSegmentTranslations++;
             let single;
@@ -1135,8 +1170,138 @@ export async function translateSegmentsBatched(
         cost: localCost,
         segmentValidationFailures: localSegmentValidationFailures,
         individualSegmentTranslations: localIndividualSegmentTranslations,
+        segmentQualitySplitRetries: 0,
       };
     }
+
+    const writeQualityFailureLog: DocQualityLogWriter | undefined =
+      failureLogDirAbs && docLog
+        ? (opts) =>
+            writeDocTranslationFailureLog({
+              cacheDirAbs: failureLogDirAbs,
+              relativePath: docLog.relativePath,
+              locale,
+              segmentsLabel: opts.segmentsLabel,
+              outcome: opts.outcome === "individual_success" ? "fatal" : opts.outcome,
+              failedModel: opts.failedModel,
+              nextModel: opts.nextModel,
+              qualityErrors: opts.qualityErrors,
+              perSegmentLines: opts.perSegmentLines,
+              systemPrompt: opts.systemPrompt,
+              userContent: opts.userContent,
+              rawAssistantContent: opts.rawAssistantContent,
+            })
+        : undefined;
+
+    const writeQualityDebugLog: DocQualityLogWriter | undefined =
+      failureLogDirAbs && docLog
+        ? (opts) =>
+            writeDocTranslationDebugLog({
+              cacheDirAbs: failureLogDirAbs,
+              relativePath: docLog.relativePath,
+              locale,
+              segmentsLabel: opts.segmentsLabel,
+              outcome: opts.outcome,
+              failedModel: opts.failedModel,
+              nextModel: opts.nextModel,
+              qualityErrors: opts.qualityErrors,
+              perSegmentLines: opts.perSegmentLines,
+              systemPrompt: opts.systemPrompt,
+              userContent: opts.userContent,
+              rawAssistantContent: opts.rawAssistantContent,
+            })
+        : undefined;
+
+    let localSegmentQualitySplitRetries = 0;
+
+    const retrySegmentWithQuality = async (args: {
+      segment: Segment;
+      protectState: ProtectState | undefined;
+      original: Segment;
+      startModelIndex: number;
+      batchSegIndex: number;
+      docIdx0: number | undefined;
+    }): Promise<DocSegmentTranslation> => {
+      const segLabelSingle =
+        docLog && args.docIdx0 !== undefined
+          ? segRangeLabel([args.docIdx0], docLog.totalSegments)
+          : "";
+      const protectForPart = (raw: string) =>
+        protectSegmentForTranslation(
+          raw,
+          glossary,
+          locale,
+          true,
+          qualityRetryOpts?.emphasisPlaceholders ?? false,
+          qualityRetryOpts?.expressionProtection
+        );
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale,
+        glossary,
+        contentType,
+        models,
+        original: args.original,
+        protectedContent: args.segment.content,
+        protectState: args.protectState,
+        startModelIndex: args.startModelIndex,
+        splitDepth: 0,
+        qualityRetrySplit: qualityRetryOpts?.qualityRetrySplit ?? true,
+        maxQualityRetrySplitDepth: qualityRetryOpts?.maxQualityRetrySplitDepth ?? 3,
+        protectForTranslation: protectForPart,
+        abortSignal,
+        segmentHash: args.segment.hash,
+        failureFp,
+        recordFailures,
+        buildQualityFailureRows: (model, modelOrder, errors, fatal) =>
+          buildQualityFailureRows(
+            args.segment.hash,
+            locale,
+            model,
+            modelOrder,
+            errors,
+            fatal,
+            failureFp,
+            args.original.content
+          ),
+        buildRuntimeFailureRow: (model, modelOrder, message, fatal) =>
+          buildRuntimeFailureRow(
+            args.segment.hash,
+            locale,
+            model,
+            modelOrder,
+            message,
+            fatal,
+            failureFp,
+            args.original.content
+          ),
+        modelOrder1Based: (model) => modelOrder1Based(models, model),
+        segLabelSingle,
+        batchSegIndex: args.batchSegIndex,
+        docIdx0: args.docIdx0,
+        docLog,
+        failureLogDirAbs,
+        writeFailureLog: writeQualityFailureLog,
+        writeDebugLog: writeQualityDebugLog,
+        warnModelSwitch: (failedModel, nextModel, detail, ord) =>
+          warnDocQualityModelSwitch(
+            locale,
+            docLog?.relativePath,
+            failedModel,
+            nextModel,
+            detail,
+            segLabelSingle || undefined,
+            ord
+          ),
+      });
+      localIn += result.inTok;
+      localOut += result.outTok;
+      localCost += result.cost;
+      localSegmentValidationFailures += result.validationFailures;
+      localIndividualSegmentTranslations += result.individualCalls;
+      localSegmentQualitySplitRetries += result.qualitySplitRetries;
+      return { text: result.text, modelUsed: result.modelUsed };
+    };
 
     const ph = new PlaceholderHandler();
 
@@ -1146,6 +1311,7 @@ export async function translateSegmentsBatched(
         responseFormat: batchResponseFormat,
         docLogContext: docLog ? { relativePath: docLog.relativePath } : undefined,
       });
+      throwIfAbortSignal(abortSignal);
       localIn += res.usage.inputTokens;
       localOut += res.usage.outputTokens;
       localCost += res.cost ?? 0;
@@ -1208,6 +1374,7 @@ export async function translateSegmentsBatched(
       if (failedSegments.length === 0) {
         logBatchSuccess(res);
       } else {
+        throwIfAbortSignal(abortSignal);
         const segLabel =
           docLog && batchDocIndices[bi] && batchDocIndices[bi]!.length > 0
             ? segRangeLabel(batchDocIndices[bi]!, docLog.totalSegments)
@@ -1236,25 +1403,23 @@ export async function translateSegmentsBatched(
           if (failureLogPath) {
             console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
           }
-          throw new Error(
-            `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabel ? `${segLabel}: ` : ""}${qualityErrors.join("; ")}`
+        } else {
+          warnDocQualityModelSwitch(
+            locale,
+            docLog?.relativePath,
+            res.model,
+            models[nextStart]!,
+            qualityErrors.join("; "),
+            segLabel || undefined,
+            { index1Based: nextStart + 1, total: models.length }
           );
+          if (failureLogPath) {
+            console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
+          }
         }
 
-        warnDocQualityModelSwitch(
-          locale,
-          docLog?.relativePath,
-          res.model,
-          models[nextStart]!,
-          qualityErrors.join("; "),
-          segLabel || undefined,
-          { index1Based: nextStart + 1, total: models.length }
-        );
-        if (failureLogPath) {
-          console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
-        }
-
-        const initialModelIndex = models.indexOf(res.model);
+        const initialModelIndex =
+          nextStart >= models.length ? 0 : Math.max(0, models.indexOf(res.model));
         const okCount = batch.length - failedSegments.length;
         const failedCount = failedSegments.length;
         const baseLoc = docLog?.relativePath ? `${locale} ${docLog.relativePath}` : locale;
@@ -1265,6 +1430,7 @@ export async function translateSegmentsBatched(
         );
         const initialTryOrdinal =
           initialModelIndex >= 0 ? ` (${initialModelIndex + 1}/${models.length})` : "";
+        const retryModelLabel = nextStart >= models.length ? (models[0] ?? "?") : res.model;
         const failedSegDetail = failedSegments
           .map((f) =>
             docLog && f.docIdx0 !== undefined
@@ -1274,151 +1440,26 @@ export async function translateSegmentsBatched(
           .join("; ");
         console.warn(
           chalk.magenta(
-            `  🔄 ${baseLoc}: retrying ${failedCount} failed segment(s) individually — ${failedSegDetail}. Trying ${res.model}${initialTryOrdinal}…`
+            `  🔄 ${baseLoc}: retrying ${failedCount} failed segment(s) individually — ${failedSegDetail}. Trying ${retryModelLabel}${initialTryOrdinal}…`
           )
         );
         for (const failed of failedSegments) {
-          const segLabelSingle =
-            docLog && failed.docIdx0 !== undefined
-              ? segRangeLabel([failed.docIdx0], docLog.totalSegments)
-              : "";
-          let startIdx = initialModelIndex >= 0 ? initialModelIndex : 0;
-          let remainingErrors = failed.errors;
-          while (startIdx < models.length) {
-            localIndividualSegmentTranslations++;
-            let single;
-            const startModel = models[startIdx] ?? null;
-            try {
-              single = await client.translateDocumentSegment(
-                failed.segment.content,
-                locale,
-                hints,
-                {
-                  contentType,
-                  startModelIndex: startIdx,
-                  docLogContext:
-                    docLog && docLog.relativePath
-                      ? { locale, relativePath: docLog.relativePath }
-                      : undefined,
-                }
-              );
-            } catch (err) {
-              await recordFailures([
-                buildRuntimeFailureRow(
-                  failed.segment.hash,
-                  locale,
-                  startModel,
-                  modelOrder1Based(models, startModel),
-                  String(err),
-                  true,
-                  failureFp,
-                  failed.original.content
-                ),
-              ]);
-              throw err;
-            }
-            localIn += single.usage.inputTokens;
-            localOut += single.usage.outputTokens;
-            localCost += single.cost ?? 0;
-            const restored = restoreSegmentTranslation(ph, single.content, failed.state);
-            const v = await validateDocTranslatePair(failed.original, restored);
-            const nextIdx = models.indexOf(single.model) + 1;
-            const perSegLine =
-              docLog && failed.docIdx0 !== undefined
-                ? `doc #${failed.docIdx0 + 1}/${docLog.totalSegments} seg id=${failed.index} (hash ${failed.segment.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`
-                : `batch seg id=${failed.index} (hash ${failed.segment.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`;
-            if (failureLogDirAbs && docLog) {
-              const debugLogPathSingle = writeDocTranslationDebugLog({
-                cacheDirAbs: failureLogDirAbs,
-                relativePath: docLog.relativePath,
-                locale,
-                segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: v.ok
-                  ? "individual_success"
-                  : nextIdx >= models.length
-                    ? "fatal"
-                    : "retrying_next_model",
-                failedModel: single.model,
-                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-                qualityErrors: v.errors,
-                perSegmentLines: [perSegLine],
-                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
-                userContent: single.debugPrompt?.userContent ?? "",
-                rawAssistantContent:
-                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
-              });
-              if (debugLogPathSingle) {
-                console.warn(chalk.gray(`  🧪 Debug log: ${debugLogPathSingle}`));
-              }
-            }
-            if (v.ok) {
-              partial.set(failed.segment.hash, { text: restored, modelUsed: single.model });
-              break;
-            }
-
-            localSegmentValidationFailures++;
-            remainingErrors = v.errors;
-            await recordFailures(
-              buildQualityFailureRows(
-                failed.segment.hash,
-                locale,
-                single.model,
-                modelOrder1Based(models, single.model),
-                v.errors,
-                nextIdx >= models.length,
-                failureFp,
-                failed.original.content
-              )
-            );
-            const perSegDetail = [perSegLine];
-            let failureLogPathSingle: string | undefined;
-            if (failureLogDirAbs && docLog) {
-              failureLogPathSingle = writeDocTranslationFailureLog({
-                cacheDirAbs: failureLogDirAbs,
-                relativePath: docLog.relativePath,
-                locale,
-                segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: nextIdx >= models.length ? "fatal" : "retrying_next_model",
-                failedModel: single.model,
-                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-                qualityErrors: v.errors,
-                perSegmentLines: perSegDetail,
-                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
-                userContent: single.debugPrompt?.userContent ?? "",
-                rawAssistantContent:
-                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
-              });
-            }
-            if (nextIdx >= models.length) {
-              if (failureLogPathSingle) {
-                console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
-              }
-              throw new Error(
-                `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${v.errors.join("; ")}`
-              );
-            }
-            warnDocQualityModelSwitch(
-              locale,
-              docLog?.relativePath,
-              single.model,
-              models[nextIdx]!,
-              v.errors.join("; "),
-              segLabelSingle || undefined,
-              { index1Based: nextIdx + 1, total: models.length }
-            );
-            if (failureLogPathSingle) {
-              console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
-            }
-            startIdx = nextIdx;
-          }
-          if (!partial.has(failed.segment.hash)) {
-            throw new Error(
-              `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${remainingErrors.join("; ")}`
-            );
-          }
+          throwIfAbortSignal(abortSignal);
+          const translated = await retrySegmentWithQuality({
+            segment: failed.segment,
+            protectState: failed.state,
+            original: failed.original,
+            startModelIndex: initialModelIndex,
+            batchSegIndex: failed.index,
+            docIdx0: failed.docIdx0,
+          });
+          partial.set(failed.segment.hash, translated);
         }
       }
     } catch (e) {
+      if (isRunInterruptedError(e)) {
+        throw e;
+      }
       if (e instanceof BatchTranslationError && client) {
         if (verbose) {
           console.warn(
@@ -1428,133 +1469,20 @@ export async function translateSegmentsBatched(
           );
         }
         for (let si = 0; si < batch.length; si++) {
+          throwIfAbortSignal(abortSignal);
           const s = batch[si]!;
           const st = placeholderById.get(s.id);
           const origSeg = segmentOriginalContent(s, originalContentByHash);
           const docIdx0 = batchDocIndices[bi]?.[si];
-          const segLabelSingle =
-            docLog && docIdx0 !== undefined ? segRangeLabel([docIdx0], docLog.totalSegments) : "";
-          let startIdx = 0;
-          while (startIdx < models.length) {
-            localIndividualSegmentTranslations++;
-            let single;
-            const startModel = models[startIdx] ?? null;
-            try {
-              single = await client.translateDocumentSegment(s.content, locale, hints, {
-                contentType,
-                startModelIndex: startIdx,
-                docLogContext:
-                  docLog && docLog.relativePath
-                    ? { locale, relativePath: docLog.relativePath }
-                    : undefined,
-              });
-            } catch (err) {
-              await recordFailures([
-                buildRuntimeFailureRow(
-                  s.hash,
-                  locale,
-                  startModel,
-                  modelOrder1Based(models, startModel),
-                  String(err),
-                  true,
-                  failureFp,
-                  origSeg.content
-                ),
-              ]);
-              throw err;
-            }
-            localIn += single.usage.inputTokens;
-            localOut += single.usage.outputTokens;
-            localCost += single.cost ?? 0;
-            const restored = restoreSegmentTranslation(ph, single.content, st);
-            const v = await validateDocTranslatePair(origSeg, restored);
-            const nextIdx = models.indexOf(single.model) + 1;
-            const perSegLine =
-              docLog && docIdx0 !== undefined
-                ? `doc #${docIdx0 + 1}/${docLog.totalSegments} seg id=${si} (hash ${s.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`
-                : `batch seg id=${si} (hash ${s.hash}): ${v.ok ? "OK" : v.errors.join("; ")}`;
-            if (failureLogDirAbs && docLog) {
-              const debugLogPathSingle = writeDocTranslationDebugLog({
-                cacheDirAbs: failureLogDirAbs,
-                relativePath: docLog.relativePath,
-                locale,
-                segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: v.ok
-                  ? "individual_success"
-                  : nextIdx >= models.length
-                    ? "fatal"
-                    : "retrying_next_model",
-                failedModel: single.model,
-                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-                qualityErrors: v.errors,
-                perSegmentLines: [perSegLine],
-                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
-                userContent: single.debugPrompt?.userContent ?? "",
-                rawAssistantContent:
-                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
-              });
-              if (debugLogPathSingle) {
-                console.warn(chalk.gray(`  🧪 Debug log: ${debugLogPathSingle}`));
-              }
-            }
-            if (v.ok) {
-              partial.set(s.hash, { text: restored, modelUsed: single.model });
-              break;
-            }
-            localSegmentValidationFailures++;
-            await recordFailures(
-              buildQualityFailureRows(
-                s.hash,
-                locale,
-                single.model,
-                modelOrder1Based(models, single.model),
-                v.errors,
-                nextIdx >= models.length,
-                failureFp,
-                origSeg.content
-              )
-            );
-            const perSegDetail = [perSegLine];
-            let failureLogPathSingle: string | undefined;
-            if (failureLogDirAbs && docLog) {
-              failureLogPathSingle = writeDocTranslationFailureLog({
-                cacheDirAbs: failureLogDirAbs,
-                relativePath: docLog.relativePath,
-                locale,
-                segmentsLabel: segLabelSingle || "(segment range unknown)",
-                outcome: nextIdx >= models.length ? "fatal" : "retrying_next_model",
-                failedModel: single.model,
-                nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-                qualityErrors: v.errors,
-                perSegmentLines: perSegDetail,
-                systemPrompt: single.debugPrompt?.systemPrompt ?? "",
-                userContent: single.debugPrompt?.userContent ?? "",
-                rawAssistantContent:
-                  single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
-              });
-            }
-            if (nextIdx >= models.length) {
-              if (failureLogPathSingle) {
-                console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
-              }
-              throw new Error(
-                `Doc translation quality failed (${locale}, ${docLog?.relativePath ?? "?"}): ${segLabelSingle ? `${segLabelSingle}: ` : ""}${v.errors.join("; ")}`
-              );
-            }
-            warnDocQualityModelSwitch(
-              locale,
-              docLog?.relativePath,
-              single.model,
-              models[nextIdx]!,
-              v.errors.join("; "),
-              segLabelSingle || undefined,
-              { index1Based: nextIdx + 1, total: models.length }
-            );
-            if (failureLogPathSingle) {
-              console.warn(chalk.gray(`  📝 Failure log: ${failureLogPathSingle}`));
-            }
-            startIdx = nextIdx;
-          }
+          const translated = await retrySegmentWithQuality({
+            segment: s,
+            protectState: st,
+            original: origSeg,
+            startModelIndex: 0,
+            batchSegIndex: si,
+            docIdx0,
+          });
+          partial.set(s.hash, translated);
         }
       } else {
         throw e;
@@ -1567,29 +1495,39 @@ export async function translateSegmentsBatched(
       cost: localCost,
       segmentValidationFailures: localSegmentValidationFailures,
       individualSegmentTranslations: localIndividualSegmentTranslations,
+      segmentQualitySplitRetries: localSegmentQualitySplitRetries,
     };
   };
 
   if (sem) {
-    const results = await Promise.all(batches.map((_, bi) => sem.use(() => processBatch(bi))));
+    const batchIndices = batches.map((_, bi) => bi);
+    const results = await runMapWithConcurrency(
+      batchIndices,
+      batchConcurrency,
+      (bi) => processBatch(bi),
+      abortSignal
+    );
     for (const r of results) {
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
+      segmentQualitySplitRetries += r.segmentQualitySplitRetries;
       for (const [h, t] of r.partial) {
         out.set(h, t);
       }
     }
   } else {
     for (let bi = 0; bi < batches.length; bi++) {
+      throwIfAbortSignal(abortSignal);
       const r = await processBatch(bi);
       inTok += r.inTok;
       outTok += r.outTok;
       cost += r.cost;
       segmentValidationFailures += r.segmentValidationFailures;
       individualSegmentTranslations += r.individualSegmentTranslations;
+      segmentQualitySplitRetries += r.segmentQualitySplitRetries;
       for (const [h, t] of r.partial) {
         out.set(h, t);
       }
@@ -1603,6 +1541,7 @@ export async function translateSegmentsBatched(
     cost,
     segmentValidationFailures,
     individualSegmentTranslations,
+    segmentQualitySplitRetries,
   };
 }
 
@@ -1777,6 +1716,9 @@ export async function translateMarkdownFile(
         });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
+        if (failureTracker) {
+          await failureTracker.clearSegmentFailures(s.hash, locale);
+        }
         continue;
       } else if (opts.verbose) {
         console.warn(
@@ -1809,6 +1751,7 @@ export async function translateMarkdownFile(
   const batchSize = config.batchSize ?? 20;
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
+  const splitCfg = segmentSplittingSchema.parse(config.doc.segmentSplitting ?? {});
 
   const {
     map,
@@ -1817,6 +1760,7 @@ export async function translateMarkdownFile(
     cost,
     segmentValidationFailures: segValFail,
     individualSegmentTranslations: indivSeg,
+    segmentQualitySplitRetries: qualitySplitRetries,
   } = await translateSegmentsBatched(
     toBatch,
     placeholderById,
@@ -1838,7 +1782,14 @@ export async function translateMarkdownFile(
     },
     opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
     failureTracker,
-    { filepath: translationFilepathMeta }
+    { filepath: translationFilepathMeta },
+    {
+      qualityRetrySplit: splitCfg.qualityRetrySplit,
+      maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
+      emphasisPlaceholders: emphasisOn,
+      expressionProtection: documentationExpressionProtection(config.doc),
+    },
+    opts.abortSignal
   );
 
   for (const [h, t] of map) {
@@ -1849,6 +1800,8 @@ export async function translateMarkdownFile(
   totals.costUsd = (totals.costUsd ?? 0) + cost;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
+  totals.segmentQualitySplitRetries =
+    (totals.segmentQualitySplitRetries ?? 0) + qualitySplitRetries;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -1915,6 +1868,7 @@ export async function translateMarkdownFile(
   }
 
   if (!opts.dryRun) {
+    throwIfAbortSignal(opts.abortSignal);
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
@@ -1954,7 +1908,8 @@ export async function translateMarkdownFile(
     segmentsCached,
     segmentsNew,
     Date.now() - fileStartTime,
-    totals.costUsd ?? 0
+    totals.costUsd ?? 0,
+    opts.abortSignal
   );
 
   return { skipped: false, totals };
@@ -2091,6 +2046,9 @@ export async function translateAstroFile(
         });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
+        if (failureTracker) {
+          await failureTracker.clearSegmentFailures(s.hash, locale);
+        }
         continue;
       } else if (opts.verbose) {
         console.warn(
@@ -2122,6 +2080,7 @@ export async function translateAstroFile(
   const batchSize = config.batchSize ?? 20;
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
+  const splitCfg = segmentSplittingSchema.parse(config.doc.segmentSplitting ?? {});
 
   const {
     map,
@@ -2130,6 +2089,7 @@ export async function translateAstroFile(
     cost,
     segmentValidationFailures: segValFail,
     individualSegmentTranslations: indivSeg,
+    segmentQualitySplitRetries: qualitySplitRetries,
   } = await translateSegmentsBatched(
     toBatch,
     placeholderById,
@@ -2151,7 +2111,14 @@ export async function translateAstroFile(
     },
     opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
     failureTracker,
-    { filepath: translationFilepathMeta }
+    { filepath: translationFilepathMeta },
+    {
+      qualityRetrySplit: splitCfg.qualityRetrySplit,
+      maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
+      emphasisPlaceholders: false,
+      expressionProtection,
+    },
+    opts.abortSignal
   );
 
   for (const [h, t] of map) {
@@ -2162,6 +2129,8 @@ export async function translateAstroFile(
   totals.costUsd = (totals.costUsd ?? 0) + cost;
   totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
   totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
+  totals.segmentQualitySplitRetries =
+    (totals.segmentQualitySplitRetries ?? 0) + qualitySplitRetries;
 
   for (const s of segments) {
     if (s.translatable && translations.has(s.hash)) {
@@ -2212,6 +2181,7 @@ export async function translateAstroFile(
   }
 
   if (!opts.dryRun) {
+    throwIfAbortSignal(opts.abortSignal);
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
@@ -2251,7 +2221,8 @@ export async function translateAstroFile(
     segmentsCached,
     segmentsNew,
     Date.now() - fileStartTime,
-    totals.costUsd ?? 0
+    totals.costUsd ?? 0,
+    opts.abortSignal
   );
 
   return { skipped: false, totals };
@@ -2366,6 +2337,9 @@ export async function translateJsonFile(
         translations.set(s.hash, { text: hit });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
+        if (failureTracker) {
+          await failureTracker.clearSegmentFailures(s.hash, locale);
+        }
         continue;
       }
     }
@@ -2416,7 +2390,9 @@ export async function translateJsonFile(
     },
     undefined,
     failureTracker,
-    { filepath: relPathFromCwd }
+    { filepath: relPathFromCwd },
+    undefined,
+    opts.abortSignal
   );
 
   for (const [h, t] of map) {
@@ -2437,6 +2413,7 @@ export async function translateJsonFile(
   const output = jx.reassemble(segments, translations);
 
   if (!opts.dryRun) {
+    throwIfAbortSignal(opts.abortSignal);
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
@@ -2474,7 +2451,8 @@ export async function translateJsonFile(
     segmentsCached,
     segmentsNew,
     Date.now() - fileStartTime,
-    totals.costUsd ?? 0
+    totals.costUsd ?? 0,
+    opts.abortSignal
   );
 
   return { skipped: false, totals };
@@ -2558,7 +2536,15 @@ export async function translateSvgAssetFile(
       totals.filesWritten = 1;
     }
     totals.filesProcessed = 1;
-    logTranslateFileComplete(relPathFromCwd, outPath, 0, 0, Date.now() - fileStartTime, 0);
+    logTranslateFileComplete(
+      relPathFromCwd,
+      outPath,
+      0,
+      0,
+      Date.now() - fileStartTime,
+      0,
+      opts.abortSignal
+    );
     return { skipped: false, totals };
   }
 
@@ -2607,6 +2593,9 @@ export async function translateSvgAssetFile(
         translations.set(s.hash, { text: t });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
+        if (failureTracker) {
+          await failureTracker.clearSegmentFailures(s.hash, locale);
+        }
         continue;
       }
     }
@@ -2657,7 +2646,9 @@ export async function translateSvgAssetFile(
     },
     undefined,
     failureTracker,
-    { filepath: translationSvgFilepathMeta }
+    { filepath: translationSvgFilepathMeta },
+    undefined,
+    opts.abortSignal
   );
 
   for (const [h, t] of map) {
@@ -2678,6 +2669,7 @@ export async function translateSvgAssetFile(
   const output = sx.reassemble(segments, translations);
 
   if (!opts.dryRun) {
+    throwIfAbortSignal(opts.abortSignal);
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
@@ -2715,7 +2707,8 @@ export async function translateSvgAssetFile(
     segmentsCached,
     segmentsNew,
     Date.now() - fileStartTime,
-    totals.costUsd ?? 0
+    totals.costUsd ?? 0,
+    opts.abortSignal
   );
 
   return { skipped: false, totals };
@@ -2762,15 +2755,51 @@ export function rewriteSourceMarkdownLanguageListBlocks(
   return rewritten;
 }
 
+function accumulateFileTotals(
+  target: TranslateTotals,
+  skipped: boolean,
+  totals: TranslateTotals
+): void {
+  if (skipped) {
+    target.filesSkipped += totals.filesSkipped;
+    target.filesProcessed = (target.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+    return;
+  }
+  target.filesWritten += totals.filesWritten;
+  target.filesProcessed = (target.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+  target.inputTokens += totals.inputTokens;
+  target.outputTokens += totals.outputTokens;
+  target.costUsd = (target.costUsd ?? 0) + (totals.costUsd ?? 0);
+  target.segmentsCached = (target.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+  target.segmentsTranslated = (target.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+  target.segmentValidationFailures =
+    (target.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+  target.individualSegmentTranslations =
+    (target.individualSegmentTranslations ?? 0) + (totals.individualSegmentTranslations ?? 0);
+  target.segmentQualitySplitRetries =
+    (target.segmentQualitySplitRetries ?? 0) + (totals.segmentQualitySplitRetries ?? 0);
+}
+
 function printTranslateDocsRunSummary(
   opts: TranslateRunOptions,
   sum: TranslateTotals,
   wallElapsedMs: number,
   models: readonly string[],
-  outcome: "success" | "failure"
+  outcome: "success" | "failure" | "interrupted"
 ): void {
   if (outcome === "success") {
     console.log(chalk.bold.green("\n✅ Translation complete!\n"));
+  } else if (outcome === "interrupted") {
+    console.log(
+      chalk.bold.yellow(
+        "\n⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
+      )
+    );
+    printModelsTryInOrder(models);
+    console.log(
+      chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`)
+    );
+    console.log("");
   } else {
     console.log(
       chalk.bold.yellow(
@@ -2797,6 +2826,7 @@ function printTranslateDocsRunSummary(
   console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
   console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
   console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
+  console.log(`   Quality split retries: ${sum.segmentQualitySplitRetries ?? 0}`);
   console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
     console.log(`   Files written:         0 (dry-run)`);
@@ -2828,6 +2858,9 @@ export async function runTranslate(
   },
   jsonAbsRoot: string
 ): Promise<TranslateTotals> {
+  const { opts: boundOpts, scope: interruptScope } = bindRunInterruptScope(opts);
+  opts = boundOpts;
+
   const sum: TranslateTotals = {
     filesWritten: 0,
     filesSkipped: 0,
@@ -2839,7 +2872,22 @@ export async function runTranslate(
     segmentsTranslated: 0,
     segmentValidationFailures: 0,
     individualSegmentTranslations: 0,
+    segmentQualitySplitRetries: 0,
   };
+  const liveSum: TranslateTotals = {
+    filesWritten: 0,
+    filesSkipped: 0,
+    filesProcessed: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+    segmentsCached: 0,
+    segmentsTranslated: 0,
+    segmentValidationFailures: 0,
+    individualSegmentTranslations: 0,
+    segmentQualitySplitRetries: 0,
+  };
+  const liveSumMutex = new AsyncMutex();
 
   const cache: TranslationCache | null = opts.noCache
     ? null
@@ -2947,6 +2995,17 @@ export async function runTranslate(
     cacheMutex,
   };
 
+  const recordFileTotals = async (
+    partial: TranslateTotals,
+    skipped: boolean,
+    totals: TranslateTotals
+  ): Promise<void> => {
+    accumulateFileTotals(partial, skipped, totals);
+    await liveSumMutex.runExclusive(async () => {
+      accumulateFileTotals(liveSum, skipped, totals);
+    });
+  };
+
   if (shouldRunMarkdown(opts, config) && cache && !opts.noCache && !opts.dryRun) {
     for (const rel of files.markdown) {
       if (!matchesPathFilter(rel, opts.pathFilter)) {
@@ -2970,11 +3029,14 @@ export async function runTranslate(
       segmentsTranslated: 0,
       segmentValidationFailures: 0,
       individualSegmentTranslations: 0,
+      segmentQualitySplitRetries: 0,
     };
     const localeStart = Date.now();
     let error: unknown;
 
     try {
+      throwIfAbortSignal(runOpts.abortSignal);
+
       if (shouldRunMarkdown(opts, config)) {
         if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.doc, config, runOpts)) {
           console.log(
@@ -3009,49 +3071,17 @@ export async function runTranslate(
           const results = await runMapWithConcurrency(
             markdownFilesToProcess,
             fileConcurrencyEffective,
-            processMarkdownFile
+            processMarkdownFile,
+            runOpts.abortSignal
           );
           for (const { skipped, totals } of results) {
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         } else {
           for (const rel of markdownFilesToProcess) {
+            throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processMarkdownFile(rel);
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         }
       }
@@ -3083,49 +3113,17 @@ export async function runTranslate(
           const results = await runMapWithConcurrency(
             jsonFilesToProcess,
             fileConcurrencyEffective,
-            processJsonFile
+            processJsonFile,
+            runOpts.abortSignal
           );
           for (const { skipped, totals } of results) {
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         } else {
           for (const rel of jsonFilesToProcess) {
+            throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processJsonFile(rel);
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         }
       }
@@ -3156,49 +3154,17 @@ export async function runTranslate(
           const results = await runMapWithConcurrency(
             astroFilesToProcess,
             fileConcurrencyEffective,
-            processAstroFile
+            processAstroFile,
+            runOpts.abortSignal
           );
           for (const { skipped, totals } of results) {
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         } else {
           for (const rel of astroFilesToProcess) {
+            throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processAstroFile(rel);
-            if (skipped) {
-              partial.filesSkipped += totals.filesSkipped;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-            } else {
-              partial.filesWritten += totals.filesWritten;
-              partial.filesProcessed = (partial.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-              partial.inputTokens += totals.inputTokens;
-              partial.outputTokens += totals.outputTokens;
-              partial.costUsd = (partial.costUsd ?? 0) + (totals.costUsd ?? 0);
-              partial.segmentsCached = (partial.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-              partial.segmentsTranslated =
-                (partial.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-              partial.segmentValidationFailures =
-                (partial.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-              partial.individualSegmentTranslations =
-                (partial.individualSegmentTranslations ?? 0) +
-                (totals.individualSegmentTranslations ?? 0);
-            }
+            await recordFileTotals(partial, skipped, totals);
           }
         }
       }
@@ -3210,6 +3176,9 @@ export async function runTranslate(
         );
       }
     } catch (e) {
+      if (isRunInterruptedError(e)) {
+        throw e;
+      }
       error = e;
     }
 
@@ -3222,8 +3191,11 @@ export async function runTranslate(
   };
 
   try {
-    const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
-      processLocale(locale)
+    const localeResults = await runMapWithConcurrency(
+      locales,
+      localeConcurrency,
+      async (locale) => processLocale(locale),
+      runOpts.abortSignal
     );
 
     const localeFailures = localeResults.filter((r) => r.error !== undefined);
@@ -3241,6 +3213,8 @@ export async function runTranslate(
         (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
       sum.individualSegmentTranslations =
         (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
+      sum.segmentQualitySplitRetries =
+        (sum.segmentQualitySplitRetries ?? 0) + (r.partial.segmentQualitySplitRetries ?? 0);
       localeTimes.push({
         locale: r.locale,
         elapsedMs: r.localeElapsed,
@@ -3289,12 +3263,21 @@ export async function runTranslate(
 
     rewriteSourceMarkdownLanguageListBlocks(config, runOpts, files.markdown);
 
+    throwIfAbortSignal(runOpts.abortSignal);
+
     const wallElapsed = Date.now() - wallStart;
 
     printTranslateDocsRunSummary(opts, sum, wallElapsed, models, "success");
 
     return sum;
+  } catch (e) {
+    if (isRunInterruptedError(e) || runOpts.abortSignal?.aborted) {
+      printTranslateDocsRunSummary(opts, liveSum, Date.now() - wallStart, models, "interrupted");
+      process.exit(runInterruptedExitCode(e, runOpts.abortSignal));
+    }
+    throw e;
   } finally {
+    interruptScope.dispose();
     cache?.close();
   }
 }

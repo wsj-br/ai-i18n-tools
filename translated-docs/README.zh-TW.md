@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | 用於鍵值作為預設值設定的標準 i18next 初始化選項。                                                                               |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 建議的串接方式：從 `strings.json` 取得 key-trim + 複數 `wrapT`，可選擇性合併 `translate-ui` `{sourceLocale}.json` 的複數鍵。 |
+| `wrapT(i18n, options)`                                                 | 具備複數感知功能的低階 `t()` 包裝函式 (通常由 `setupKeyAsDefaultT` 安裝)。                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | 從包含 `"plural": true` 的目錄列建構 `wrapT` 所使用的複數群組索引。                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | 從原始金鑰解析 `{{var}}` 名稱，供 `wrapT` / 金鑰截斷備援使用。                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | 僅為較低階的 key-trim 包裝器 (應用程式串接已不建議使用；請改用 `setupKeyAsDefaultT`)。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 從 `ui-languages.json` 建立 `localeLoaders` 對應表以供 `makeLoadLocale` 使用 (包含所有 `code`，除了 `sourceLocale`)。 |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 用於非同步載入語系檔案的工廠函式。 |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

@@ -107,11 +107,13 @@ export function protectBoldWrappedInlineCode(text: string): ProtectedBoldCodeRes
 }
 
 /**
- * CommonMark requires a closing `**` to be a right-flanking delimiter run:
- * the character after it must be Unicode whitespace or punctuation.
- * In CJK/agglutinative languages, particles (Korean 이/가/을, etc.) glue
- * directly to the preceding token, so `**`code`**이` won't parse as bold.
- * We insert a regular space when the next character is a Unicode letter.
+ * CommonMark flanking rules for `**` around inline code:
+ *
+ * - **Closing**: must be right-flanking. CJK particles glue after the span, so
+ *   `**`code`**이` needs a trailing space before the particle.
+ * - **Opening**: when preceded by a Unicode letter and immediately followed by `` ` ``,
+ *   `letter**`code`**` cannot open (backtick is punctuation that blocks left-flanking).
+ *   Insert a leading space: `letter **`code`**`.
  */
 function escapeForRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -124,10 +126,15 @@ export function restoreBoldWrappedInlineCode(text: string, boldCodeMap: string[]
   let restored = text;
   for (let j = 0; j < boldCodeMap.length; j++) {
     const placeholder = `${PLACEHOLDER_PREFIX}${j}${PLACEHOLDER_SUFFIX}`;
+    const original = boldCodeMap[j]!;
     const escaped = escapeForRegex(placeholder);
-    const re = new RegExp(`${escaped}(?=\\p{L})`, "gu");
-    restored = restored.replace(re, boldCodeMap[j]! + " ");
-    restored = restored.split(placeholder).join(boldCodeMap[j]!);
+    restored = restored.replace(
+      new RegExp(`(?<=\\p{L})${escaped}(?=\\p{L})`, "gu"),
+      ` ${original} `
+    );
+    restored = restored.replace(new RegExp(`(?<=\\p{L})${escaped}`, "gu"), ` ${original}`);
+    restored = restored.replace(new RegExp(`${escaped}(?=\\p{L})`, "gu"), `${original} `);
+    restored = restored.split(placeholder).join(original);
   }
   return restored;
 }

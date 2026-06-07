@@ -49,6 +49,16 @@ describe("emphasis placeholders", () => {
       expect(restoreMarkdownEmphasis("{{SE}}bold{{SE}}이 뒤에")).toBe("**bold**이 뒤에");
     });
 
+    it("inserts space when ** closer follows ellipsis/punctuation and is followed by CJK", () => {
+      // **Rephrase…**을(를): `…` before closer + `을` after → not right-flanking in CommonMark.
+      expect(restoreMarkdownEmphasis("{{SE}}Rephrase…{{SE}}을(를) click")).toBe(
+        "**Rephrase…** 을(를) click"
+      );
+      expect(restoreMarkdownEmphasis("{{SE}}다시 작성…{{SE}}은(는) disabled")).toBe(
+        "**다시 작성…** 은(는) disabled"
+      );
+    });
+
     it("** opener preceded by Korean particle is NOT treated as closer (parity tracking)", () => {
       // から{{SE}} is opener #1, not a closer — must not receive a trailing space.
       expect(restoreMarkdownEmphasis("から{{SE}}インターフェース言語{{SE}}を")).toBe(
@@ -72,6 +82,25 @@ describe("emphasis placeholders", () => {
 
     it("_ closer before CJK: space required", () => {
       expect(restoreMarkdownEmphasis("{{IU}}italic{{IU}}を設定")).toBe("_italic_ を設定");
+    });
+
+    it("inserts leading space before {{IU}} opener glued after CJK letter", () => {
+      expect(restoreMarkdownEmphasis("データを{{IU}}処理{{IU}}することで")).toBe(
+        "データを _処理_ することで"
+      );
+    });
+
+    it("inserts leading space before {{SU}} opener glued after CJK letter", () => {
+      expect(restoreMarkdownEmphasis("テキストを{{SU}}強調{{SU}}する")).toBe(
+        "テキストを __強調__ する"
+      );
+    });
+
+    it("does not insert leading space before {{SE}}/{{IT}} openers after CJK (asterisk left-flanking)", () => {
+      expect(restoreMarkdownEmphasis("を{{SE}}同期{{SE}}呼び出し")).toBe("を**同期**呼び出し");
+      expect(restoreMarkdownEmphasis("混在{{IT}}インライン{{IT}}書式")).toBe(
+        "混在*インライン*書式"
+      );
     });
 
     // ── Strikethrough: closes correctly before Unicode letters → no space ─────────────────────
@@ -153,6 +182,16 @@ describe("emphasis placeholders", () => {
 
     it("_ closer before Japanese: space required", () => {
       expect(applyEmphasisCloserSpacing("_italic_を設定")).toBe("_italic_ を設定");
+    });
+
+    it("inserts leading space before _ opener glued after CJK letter", () => {
+      expect(applyEmphasisCloserSpacing("データを_処理_することで")).toBe(
+        "データを _処理_ することで"
+      );
+    });
+
+    it("does not insert leading space before ** opener after CJK letter", () => {
+      expect(applyEmphasisCloserSpacing("を**同期**呼び出し")).toBe("を**同期**呼び出し");
     });
 
     it("~~ closer before Korean: no space needed (GFM strikethrough closes fine)", () => {

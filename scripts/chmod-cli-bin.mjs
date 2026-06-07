@@ -14,4 +14,5 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+chmodSync(join(root, "bin", "ai-i18n-tools.mjs"), 0o755);
 chmodSync(join(root, "dist", "cli", "index.js"), 0o755);

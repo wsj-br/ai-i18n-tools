@@ -19,6 +19,12 @@ import {
   type DocSegmentTranslation,
   type TranslateRunOptions,
 } from "./doc-translate.js";
+import { formatElapsedMmSs } from "./format.js";
+import {
+  bindRunInterruptScope,
+  interruptErrorFromSignal,
+  isRunInterruptedError,
+} from "../utils/run-interrupt.js";
 
 export function expandJsonBlockOutputPath(
   template: string,
@@ -49,6 +55,28 @@ export function expandJsonBlockOutputPath(
 function timestamp(): string {
   const d = new Date();
   return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+}
+
+function printTranslateJsonSummary(
+  wallElapsedMs: number,
+  filesCompleted: number,
+  filesSkipped: number,
+  outcome: "success" | "interrupted"
+): void {
+  if (outcome === "success") {
+    console.log(chalk.bold.green("\n✅ JSON translation complete!\n"));
+  } else {
+    console.log(
+      chalk.bold.yellow(
+        "\n⚠️  JSON translation interrupted — partial summary (reflects files completed before interrupt).\n"
+      )
+    );
+  }
+  console.log(chalk.bold("📊 Summary:"));
+  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
+  console.log(`   Files completed:       ${filesCompleted}`);
+  console.log(`   Files skipped:         ${filesSkipped}`);
+  console.log("");
 }
 
 export async function translateNestedJsonFile(
@@ -160,7 +188,9 @@ export async function translateNestedJsonFile(
     },
     undefined,
     undefined,
-    { filepath: relSourcePath }
+    { filepath: relSourcePath },
+    undefined,
+    opts.abortSignal
   );
 
   for (const [h, t] of map) {
@@ -215,11 +245,20 @@ export async function runTranslateJson(
     return;
   }
 
+  const { opts: boundOpts, scope: interruptScope } = bindRunInterruptScope(opts);
+  opts = boundOpts;
+
   const cacheDir = path.join(projectRoot, config.cacheDir);
   const cache = opts.noCache ? undefined : new TranslationCache(cacheDir);
+  const wallStart = Date.now();
+  let filesCompleted = 0;
+  let filesSkipped = 0;
 
   try {
     for (let bi = 0; bi < config.json.length; bi++) {
+      if (opts.abortSignal?.aborted) {
+        throw interruptErrorFromSignal(opts.abortSignal);
+      }
       const block = config.json[bi]!;
       const files = resolveContentPathEntries(block.contentPaths, {
         projectRoot,
@@ -235,14 +274,43 @@ export async function runTranslateJson(
       console.log(chalk.gray(`\n--- json[${bi}]${desc} (${files.length} file(s)) ---\n`));
       for (const locale of targets) {
         for (const rel of files) {
-          await translateNestedJsonFile(config, block, bi, projectRoot, locale, rel, {
-            ...opts,
-            cache,
-          });
+          if (opts.abortSignal?.aborted) {
+            throw interruptErrorFromSignal(opts.abortSignal);
+          }
+          const { skipped } = await translateNestedJsonFile(
+            config,
+            block,
+            bi,
+            projectRoot,
+            locale,
+            rel,
+            {
+              ...opts,
+              cache,
+            }
+          );
+          if (skipped) {
+            filesSkipped++;
+          } else {
+            filesCompleted++;
+          }
         }
       }
     }
+    printTranslateJsonSummary(Date.now() - wallStart, filesCompleted, filesSkipped, "success");
+  } catch (e) {
+    if (isRunInterruptedError(e) || opts.abortSignal?.aborted) {
+      printTranslateJsonSummary(
+        Date.now() - wallStart,
+        filesCompleted,
+        filesSkipped,
+        "interrupted"
+      );
+      throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);
+    }
+    throw e;
   } finally {
+    interruptScope.dispose();
     cache?.close();
   }
 }

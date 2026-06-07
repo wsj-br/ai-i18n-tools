@@ -22,7 +22,7 @@ Optional: set `openrouter.requestTimeoutMs` if the default **30000** ms per Open
 
 `sync` runs enabled steps in order (skip with `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`): UI → SVG → docs → `json[]`. Full guide: [GETTING_STARTED.md](./GETTING_STARTED.md) (Workflow 3: [JSON file translation](./GETTING_STARTED.md#workflow-3---json-file-translation)).
 
-**Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation) and no `features.translateJSON` (catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set).
+**Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation). The legacy `features.translateJSON` flag is gone — Docusaurus catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set; standalone nested locale JSON uses `features.translateJson` with top-level `json[]` (Workflow 3).
 
 ---
 
@@ -34,7 +34,7 @@ Optional: set `openrouter.requestTimeoutMs` if the default **30000** ms per Open
 
 ## Code patterns
 
-Extract only sees string literals in `t` / `i18n.t` (and names in `ui.reactExtractor.funcNames`). Variables as keys are not extracted.
+Extract only sees string literals in `t` / `i18n.t` (and names in `ui.uiExtractor.funcNames`, or legacy `ui.reactExtractor.funcNames`). Variables as keys are not extracted.
 
 ```js
 t("Save");
@@ -267,7 +267,7 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Translate nested JSON:** `npx ai-i18n-tools translate-json` — `json[]` when `translateJson` is on
 - **UI only (extract + translate):** `npx ai-i18n-tools sync-ui`
 - **Lint source-locale copy (advisory):** `npx ai-i18n-tools lint-source` (requires `translateUIStrings`; runs extract first)
-- **Markdown static checks:** `npx ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_INLINE_CODE` / `STRONG_OUTSIDE_LINK` for the patterns in **Documentation (Markdown)** below.
+- **Markdown static checks:** `npx ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `[text](url)` link (put bold inside the link text only). Bold around inline code is handled at translation time via emphasis placeholders — not flagged as a source issue.
 - **Status tables:** `npx ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
 - **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
 - **Web dashboard:** `npx ai-i18n-tools dashboard`

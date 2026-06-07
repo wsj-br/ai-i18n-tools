@@ -90,8 +90,11 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
   "i18n:extract": "ai-i18n-tools extract",
   "i18n:sync": "ai-i18n-tools sync",
   "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate": "ai-i18n-tools translate-docs"
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:translate": "ai-i18n-tools translate-docs",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
@@ -199,6 +202,9 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 |------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
 | `defaultI18nInitOptions(sourceLocale)`                                 | कुंजी-के-रूप-में-डिफ़ॉल्ट सेटअप के लिए मानक i18next प्रारंभिकीकरण विकल्प।                                                                               |
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | अनुशंसित वायरिंग: `strings.json` से कुंजी-ट्रिम + बहुवचन `wrapT`, वैकल्पिक रूप से `translate-ui` `{sourceLocale}.json` बहुवचन कुंजी मर्ज करता है। |
+| `wrapT(i18n, options)`                                                 | निम्न-स्तरीय बहुवचन-जागरूक `t()` रैपर (आमतौर पर `setupKeyAsDefaultT` द्वारा स्थापित)।                                                    |
+| `buildPluralIndexFromStringsJson(entries)`                               | `"plural": true` के साथ कैटलॉग पंक्तियों से बहुवचन समूह सूचकांक बनाता है जिसका उपयोग `wrapT` करता है।                                                    |
+| `extractInterpolationNamesForWrap(key)`                                  | स्रोत कुंजी से `{{var}}` नामों को `wrapT` / कुंजी-छंटनी फॉलबैक के लिए पार्स करता है।                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | केवल निम्न-स्तरीय कुंजी-ट्रिम रैपर (ऐप वायरिंग के लिए अप्रचलित; `setupKeyAsDefaultT` को प्राथमिकता दें)। |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `ui-languages.json` से `makeLoadLocale` के लिए `localeLoaders` मैप बनाता है (`sourceLocale` को छोड़कर प्रत्येक `code`)। |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | असमकालिक स्थानीयकरण फ़ाइल लोडिंग के लिए फ़ैक्टरी। |
@@ -219,7 +225,6 @@ ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
-ai-i18n-tools strip-md-bold-inline …
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …

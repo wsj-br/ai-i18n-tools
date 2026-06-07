@@ -51,7 +51,7 @@ function splitPipeTableSegment(
 }
 
 /** Top-level markdown list items (CommonMark-ish): bullet or ordered at indent ≤3. */
-function splitIntoTopLevelListItems(lines: string[]): string[][] {
+export function splitIntoTopLevelListItems(lines: string[]): string[][] {
   const items: string[][] = [];
   let current: string[] = [];
   for (const line of lines) {
@@ -69,7 +69,7 @@ function splitIntoTopLevelListItems(lines: string[]): string[][] {
   return items;
 }
 
-function isMarkdownListBlock(lines: string[]): boolean {
+export function isMarkdownListBlock(lines: string[]): boolean {
   const nonEmpty = lines.filter((l) => l.trim());
   if (nonEmpty.length < 2) {
     return false;

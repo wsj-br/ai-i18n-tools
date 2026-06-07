@@ -41,33 +41,12 @@ describe("collectMarkdownSourceIssues", () => {
     expect(u[0]?.line1).toBe(5);
   });
 
-  it("does not flag **Bare** `code` **more** (closer/opener around code, not a wrap)", () => {
+  it("does not flag **Bare** `code` **more** as a structural issue", () => {
     const issues = collectMarkdownSourceIssues(
       "**Bare** `ai-i18n-tools` **in the terminal** — more text.",
       { segmentStartLine: 83 }
     );
-    expect(
-      issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
-    ).toEqual([]);
-  });
-
-  it("flags ** outside inline code, not ** inside a code span", () => {
-    const bad = collectMarkdownSourceIssues("Use **`rm`** sparingly.", { segmentStartLine: 1 });
-    expect(bad.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)).toBe(
-      true
-    );
-
-    const ok = collectMarkdownSourceIssues("Use `**rm**` sparingly.", { segmentStartLine: 1 });
-    expect(
-      ok.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
-    ).toEqual([]);
-  });
-
-  it("flags __ wrapping inline code", () => {
-    const issues = collectMarkdownSourceIssues("__`x`__", { segmentStartLine: 2 });
-    expect(
-      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
-    ).toBe(true);
+    expect(issues).toEqual([]);
   });
 
   it("flags ** around a markdown link, not bold only inside link text", () => {
@@ -82,15 +61,6 @@ describe("collectMarkdownSourceIssues", () => {
     expect(ok.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toEqual(
       []
     );
-  });
-
-  it("maps STRONG_OUTSIDE_INLINE_CODE line with segment startLine", () => {
-    const issues = collectMarkdownSourceIssues("\n\n**`rm`** tail", { segmentStartLine: 10 });
-    const strong = issues.filter(
-      (i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE
-    );
-    expect(strong).toHaveLength(1);
-    expect(strong[0]?.line1).toBe(12);
   });
 
   it("parses link destination with nested parentheses", () => {
@@ -126,13 +96,6 @@ describe("collectMarkdownSourceIssues", () => {
     expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS)).toEqual(
       []
     );
-  });
-
-  it("still reports STRONG_OUTSIDE_INLINE_CODE when **`code`** appears outside comments", () => {
-    const issues = collectMarkdownSourceIssues("Use **`rm`** sparingly.", { segmentStartLine: 1 });
-    expect(
-      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_INLINE_CODE)
-    ).toBe(true);
   });
 
   it("skips closed {{placeholder}} spans before scanning for strong-outside-link", () => {

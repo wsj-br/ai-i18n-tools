@@ -124,6 +124,14 @@ export default tseslint.config(
     },
   },
   {
+    files: ["bin/**/*.{mjs,js}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: globals.node,
+    },
+  },
+  {
     files: ["scripts/**/*.{mjs,js}", "dev/scripts/**/*.{mjs,js}"],
     languageOptions: {
       ecmaVersion: 2020,

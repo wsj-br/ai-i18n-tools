@@ -89,15 +89,9 @@ export function setupLogOutput(options?: {
     process.stderr.write = originalStderrWrite;
   };
 
+  // Restore stdout/stderr on any process exit. Do not call process.exit() from signal
+  // handlers — that prevents async finally blocks (e.g. TranslationCache.close()) from running.
   process.once("exit", () => cleanup());
-  process.once("SIGINT", () => {
-    cleanup();
-    process.exit(130);
-  });
-  process.once("SIGTERM", () => {
-    cleanup();
-    process.exit(143);
-  });
 
   return { logPath, cleanup };
 }

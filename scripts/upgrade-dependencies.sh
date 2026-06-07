@@ -4,7 +4,7 @@
 # Upgrades dependencies and runs pnpm audit for:
 #   - Repository root (ai-i18n-tools package + pnpm workspace lockfile)
 #   - examples/console-app, examples/nextjs-app, and examples/astro-docs (workspace members; share root lockfile)
-#   - examples/nextjs-app/docs-site (standalone lockfile; Docusaurus — use --ignore-workspace)
+#   - examples/nextjs-app/docs-site (workspace member; shares root lockfile and overrides)
 #
 # Shells cannot export environment changes to a parent process; nvm must run in your
 # interactive shell (see https://github.com/nvm-sh/nvm/issues/2124). Run:
@@ -109,33 +109,18 @@ _transrewrt_upgrade_dependencies() {
   echo -e "${BLUE}🔍  [repo root] Checking for vulnerabilities again...${RESET}"
   pnpm audit 2>&1 | pr -o 4 -T
 
-  # Nested Docusaurus app: its own lockfile; not a workspace package — do not hoist to monorepo root.
-  # pnpm 10 blocks dependency install scripts unless allowlisted (see docs-site package.json
-  # `pnpm.onlyBuiltDependencies`). If install prints "Ignored build scripts: …", that list is for *this*
-  # project only. `pnpm approve-builds` run from this directory still attaches to the parent
-  # monorepo workspace (empty approval queue), so "nothing to approve" is expected — use
-  # onlyBuiltDependencies / overrides in docs-site rather than approve-builds here.
+  # Docusaurus docs-site: workspace member (root pnpm-workspace.yaml overrides apply).
   _docs_site="${REPO_ROOT}/examples/nextjs-app/docs-site"
   if [ -f "${_docs_site}/package.json" ]; then
     echo ""
     echo -e "${BLUE}📦  [docs-site] npm-check-updates (examples/nextjs-app/docs-site)...${RESET}"
     (cd "${_docs_site}" && ncu --upgrade) 2>&1 | pr -o 4 -T
-
-    echo -e "${BLUE}⬆️  [docs-site] pnpm install --ignore-workspace...${RESET}"
-    (cd "${_docs_site}" && pnpm install --ignore-workspace) 2>&1 | pr -o 4 -T
-    (cd "${_docs_site}" && pnpm approve-builds --all) 2>&1 | pr -o 4 -T
-
-    echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities...${RESET}"
-    (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T
-
-    echo -e "${BLUE}🔧  [docs-site] Fixing vulnerabilities (audit --fix)...${RESET}"
-    (cd "${_docs_site}" && pnpm audit --ignore-workspace --fix override) 2>&1 | pr -o 4 -T
-
-    echo -e "${BLUE}🔍  [docs-site] Checking for vulnerabilities again...${RESET}"
-    (cd "${_docs_site}" && pnpm audit --ignore-workspace) 2>&1 | pr -o 4 -T
   else
     echo -e "${YELLOW}Skipping docs-site: ${_docs_site}/package.json not found.${RESET}"
   fi
+
+  echo -e "${BLUE}⬆️  [repo root] Re-running pnpm install after docs-site ncu...${RESET}"
+  pnpm install 2>&1 | pr -o 4 -T
 }
 
 # When sourced from bash, run in the caller's shell so nvm PATH changes persist.

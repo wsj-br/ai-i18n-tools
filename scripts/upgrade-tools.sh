@@ -87,9 +87,40 @@ _transrewrt_upgrade_tools() {
     echo -e "${YELLOW}nvm not found. Install nvm (https://github.com/nvm-sh/nvm) to upgrade Node.js, or skip this step.${RESET}"
   fi
 
-  # ensure pnpm is installed
-  echo -e "${BLUE}🔄  Ensure pnpm, npm-check-updates and doctoc are installed and in the latest version...${RESET}"
+  # Upgrade npm to the latest version
+  echo -e "${BLUE}📦  Upgrading npm to the latest version...${RESET}"
+  npm install -g npm@latest
+
+  # Ensure pnpm, npm-check-updates and doctoc are installed and in the latest version
+  echo -e "${BLUE}📦  Upgrading pnpm, npm-check-updates and doctoc...${RESET}"
   npm install -g pnpm npm-check-updates doctoc
+
+  # Get the installed pnpm version and update the packageManager field so corepack
+  # picks up the new version instead of the old pinned one.
+  pnpm_new_ver=$(npm ls -g pnpm --depth=0 --json 2>/dev/null | node -e "
+    try {
+      const d = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+      const v = d.dependencies?.pnpm?.version;
+      if (v) process.stdout.write(v);
+    } catch(e) {}" 2>/dev/null || true)
+
+  if [ -n "$pnpm_new_ver" ]; then
+    echo -e "${BLUE}✏️  Updating packageManager field to pnpm@${pnpm_new_ver}...${RESET}"
+    node -e "
+      const fs = require('fs');
+      const pkg = JSON.parse(fs.readFileSync('${SCRIPT_DIR}/../package.json', 'utf8'));
+      pkg.packageManager = 'pnpm@${pnpm_new_ver}';
+      fs.writeFileSync('${SCRIPT_DIR}/../package.json', JSON.stringify(pkg, null, 2) + '\n');
+    "
+    echo -e "${GREEN}✔  packageManager updated to pnpm@${pnpm_new_ver}${RESET}"
+
+    if command -v corepack >/dev/null 2>&1; then
+      echo -e "${BLUE}📦  Activating pnpm@${pnpm_new_ver} via corepack...${RESET}"
+      corepack prepare pnpm@"${pnpm_new_ver}" --activate
+    fi
+  else
+    echo -e "${YELLOW}⚠  Could not determine installed pnpm version; skipping packageManager update${RESET}"
+  fi
 
   if [ -z "${TRANSREWRT_UPGRADE_TOOLS_SUPPRESS_DONE:-}" ]; then
     echo ""

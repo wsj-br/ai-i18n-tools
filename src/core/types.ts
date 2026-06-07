@@ -396,6 +396,13 @@ export const segmentSplittingSchema = z
     maxLinesPerParagraphChunk: z.number().int().positive().optional(),
     splitLongLists: z.boolean().default(true),
     maxListItemsPerChunk: z.number().int().positive().default(4),
+    /**
+     * When true (default), markdown segments that fail AST validation after all models are
+     * exhausted are split progressively and retried from the first model.
+     */
+    qualityRetrySplit: z.boolean().default(true),
+    /** Max recursive split depth for {@link segmentSplittingSchema.shape.qualityRetrySplit}. */
+    maxQualityRetrySplitDepth: z.number().int().positive().max(8).default(3),
   })
   .strict();
 

@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "astro": "^6.1.10",
-    "tailwindcss": "^3.4.1"
+    "astro": "^6.4.4",
+    "tailwindcss": "^3.4.19"
   },
   "engines": {
     "node": ">=22.16.0"

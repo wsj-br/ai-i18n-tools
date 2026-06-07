@@ -24,6 +24,11 @@ import {
   matchesPathFilter,
 } from "./doc-translate.js";
 import { runMapWithConcurrency, AsyncMutex } from "../utils/concurrency.js";
+import {
+  bindRunInterruptScope,
+  isRunInterruptedError,
+  interruptErrorFromSignal,
+} from "../utils/run-interrupt.js";
 import { formatElapsedMmSs, formatSegmentCacheHitSuffix, printModelsTryInOrder } from "./format.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
@@ -46,23 +51,81 @@ export async function runTranslateSvg(
   const roots = svg.sourcePath;
   const files = filterIgnored(collectFilesByExtension(roots, [".svg"], opts.cwd), opts.cwd);
 
-  const sum: TranslateTotals = {
-    filesWritten: 0,
-    filesSkipped: 0,
-    filesProcessed: 0,
-    inputTokens: 0,
-    outputTokens: 0,
-    costUsd: 0,
-    segmentsCached: 0,
-    segmentsTranslated: 0,
-    segmentValidationFailures: 0,
-    individualSegmentTranslations: 0,
-  };
-
   const cache: TranslationCache | null = opts.noCache
     ? null
     : new TranslationCache(path.join(opts.cwd, config.cacheDir));
 
+  const { opts: boundOpts, scope: interruptScope } = bindRunInterruptScope(opts);
+  opts = boundOpts;
+
+  try {
+    return await runTranslateSvgBody(config, opts, svg, roots, files, cache);
+  } finally {
+    interruptScope.dispose();
+    cache?.close();
+  }
+}
+
+function printTranslateSvgSummary(
+  opts: TranslateRunOptions,
+  sum: TranslateTotals,
+  wallElapsedMs: number,
+  models: readonly string[],
+  outcome: "success" | "interrupted"
+): void {
+  if (outcome === "success") {
+    console.log(chalk.bold.green("\n✅ SVG translation complete!\n"));
+  } else {
+    console.log(
+      chalk.bold.yellow(
+        "\n⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
+      )
+    );
+    printModelsTryInOrder(models);
+    console.log("");
+  }
+
+  console.log(chalk.bold("📊 Summary:"));
+  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
+  console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
+  console.log(`   Total files skipped:   ${sum.filesSkipped}`);
+  console.log(
+    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
+      sum.segmentsCached,
+      sum.segmentsTranslated
+    )}`
+  );
+  console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
+  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
+  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
+  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
+  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
+    console.log(`   Files written:         0 (dry-run)`);
+  } else if ((sum.filesWritten ?? 0) > 0) {
+    console.log(`   Files written:         ${sum.filesWritten}`);
+  }
+  const cost = sum.costUsd ?? 0;
+  const segNew = sum.segmentsTranslated ?? 0;
+  if (segNew > 0) {
+    if (cost > 0) {
+      console.log(`   Total cost:            $${cost.toFixed(6)}`);
+    } else {
+      console.log(`   Total cost:            $0.0000 (cost data not available from API)`);
+    }
+  } else {
+    console.log(`   Total cost:            $0.0000 (all segments from cache)`);
+  }
+  console.log("");
+}
+
+async function runTranslateSvgBody(
+  config: I18nConfig,
+  opts: TranslateRunOptions,
+  svg: NonNullable<I18nConfig["svg"]>,
+  roots: string[],
+  files: string[],
+  cache: TranslationCache | null
+): Promise<TranslateTotals> {
   const locales = opts.locales.map((l) => normalizeLocale(l));
   const hasNonSourceTarget = locales.some(
     (l) => normalizeLocale(l) !== normalizeLocale(config.sourceLocale)
@@ -132,10 +195,45 @@ export async function runTranslateSvg(
 
   const wallStart = Date.now();
   const cacheMutex = cache && locales.length > 1 ? new AsyncMutex() : undefined;
+  const liveSumMutex = new AsyncMutex();
+  const liveSum: TranslateTotals = {
+    filesWritten: 0,
+    filesSkipped: 0,
+    filesProcessed: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+    segmentsCached: 0,
+    segmentsTranslated: 0,
+    segmentValidationFailures: 0,
+    individualSegmentTranslations: 0,
+  };
   const runOpts: TranslateRunOptions = {
     ...opts,
     batchConcurrency: batchConcurrencyEffective,
     cacheMutex,
+  };
+
+  const recordFileTotals = async (skipped: boolean, totals: TranslateTotals): Promise<void> => {
+    await liveSumMutex.runExclusive(async () => {
+      if (skipped) {
+        liveSum.filesSkipped += totals.filesSkipped;
+        liveSum.filesProcessed = (liveSum.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+        return;
+      }
+      liveSum.filesWritten += totals.filesWritten;
+      liveSum.filesProcessed = (liveSum.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
+      liveSum.inputTokens += totals.inputTokens;
+      liveSum.outputTokens += totals.outputTokens;
+      liveSum.costUsd = (liveSum.costUsd ?? 0) + (totals.costUsd ?? 0);
+      liveSum.segmentsCached = (liveSum.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
+      liveSum.segmentsTranslated =
+        (liveSum.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
+      liveSum.segmentValidationFailures =
+        (liveSum.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
+      liveSum.individualSegmentTranslations =
+        (liveSum.individualSegmentTranslations ?? 0) + (totals.individualSegmentTranslations ?? 0);
+    });
   };
 
   const processLocale = async (locale: string) => {
@@ -154,6 +252,9 @@ export async function runTranslateSvg(
     const localeStart = Date.now();
 
     for (const rel of files) {
+      if (runOpts.abortSignal?.aborted) {
+        throw interruptErrorFromSignal(runOpts.abortSignal);
+      }
       if (!matchesPathFilter(rel, opts.pathFilter)) {
         continue;
       }
@@ -193,6 +294,7 @@ export async function runTranslateSvg(
           (partial.individualSegmentTranslations ?? 0) +
           (totals.individualSegmentTranslations ?? 0);
       }
+      await recordFileTotals(skipped, totals);
     }
 
     const localeElapsed = Date.now() - localeStart;
@@ -203,61 +305,21 @@ export async function runTranslateSvg(
     return { locale, partial, localeElapsed };
   };
 
-  const localeResults = await runMapWithConcurrency(locales, localeConcurrency, async (locale) =>
-    processLocale(locale)
-  );
+  try {
+    await runMapWithConcurrency(
+      locales,
+      localeConcurrency,
+      async (locale) => processLocale(locale),
+      runOpts.abortSignal
+    );
 
-  for (const r of localeResults) {
-    sum.filesWritten += r.partial.filesWritten;
-    sum.filesSkipped += r.partial.filesSkipped;
-    sum.filesProcessed = (sum.filesProcessed ?? 0) + (r.partial.filesProcessed ?? 0);
-    sum.inputTokens += r.partial.inputTokens;
-    sum.outputTokens += r.partial.outputTokens;
-    sum.costUsd = (sum.costUsd ?? 0) + (r.partial.costUsd ?? 0);
-    sum.segmentsCached = (sum.segmentsCached ?? 0) + (r.partial.segmentsCached ?? 0);
-    sum.segmentsTranslated = (sum.segmentsTranslated ?? 0) + (r.partial.segmentsTranslated ?? 0);
-    sum.segmentValidationFailures =
-      (sum.segmentValidationFailures ?? 0) + (r.partial.segmentValidationFailures ?? 0);
-    sum.individualSegmentTranslations =
-      (sum.individualSegmentTranslations ?? 0) + (r.partial.individualSegmentTranslations ?? 0);
-  }
-
-  cache?.close();
-
-  const wallElapsed = Date.now() - wallStart;
-
-  console.log(chalk.bold.green("\n✅ SVG translation complete!\n"));
-  console.log(chalk.bold("📊 Summary:"));
-  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsed)}`);
-  console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
-  console.log(`   Total files skipped:   ${sum.filesSkipped}`);
-  console.log(
-    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
-      sum.segmentsCached,
-      sum.segmentsTranslated
-    )}`
-  );
-  console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
-  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
-  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
-  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
-  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
-    console.log(`   Files written:         0 (dry-run)`);
-  } else if ((sum.filesWritten ?? 0) > 0) {
-    console.log(`   Files written:         ${sum.filesWritten}`);
-  }
-  const cost = sum.costUsd ?? 0;
-  const segNew = sum.segmentsTranslated ?? 0;
-  if (segNew > 0) {
-    if (cost > 0) {
-      console.log(`   Total cost:            $${cost.toFixed(6)}`);
-    } else {
-      console.log(`   Total cost:            $0.0000 (cost data not available from API)`);
+    printTranslateSvgSummary(opts, liveSum, Date.now() - wallStart, displayModels, "success");
+    return liveSum;
+  } catch (e) {
+    if (isRunInterruptedError(e) || runOpts.abortSignal?.aborted) {
+      printTranslateSvgSummary(opts, liveSum, Date.now() - wallStart, displayModels, "interrupted");
+      throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(runOpts.abortSignal!);
     }
-  } else {
-    console.log(`   Total cost:            $0.0000 (all segments from cache)`);
+    throw e;
   }
-  console.log("");
-
-  return sum;
 }

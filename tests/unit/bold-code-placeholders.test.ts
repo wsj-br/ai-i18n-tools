@@ -4,6 +4,7 @@ import {
   restoreBoldWrappedInlineCode,
 } from "../../src/processors/bold-code-placeholders.js";
 import { PlaceholderHandler } from "../../src/processors/placeholder-handler.js";
+import { validateDocTranslatePair } from "../../src/processors/validator.js";
 
 describe("bold-code-placeholders", () => {
   it("replaces each **`inner`** with one placeholder and round-trips", () => {
@@ -67,7 +68,7 @@ describe("bold-code-placeholders", () => {
       const boldCodeMap = ["**`sync`**"];
       const translated = "运行{{BLD_0}}命令";
       const result = restoreBoldWrappedInlineCode(translated, boldCodeMap);
-      expect(result).toBe("运行**`sync`** 命令");
+      expect(result).toBe("运行 **`sync`** 命令");
     });
 
     it("does not insert a space when space already follows", () => {
@@ -96,6 +97,28 @@ describe("bold-code-placeholders", () => {
       const translated = "{{BLD_0}}이고 {{BLD_1}} end.";
       const result = restoreBoldWrappedInlineCode(translated, boldCodeMap);
       expect(result).toBe("**`a`** 이고 **`b`** end.");
+    });
+
+    it("inserts a leading space when CJK letter precedes the placeholder", () => {
+      const boldCodeMap = ["**`Promise.all()`**"];
+      const translated = "可能な限り{{BLD_0}}を使用して";
+      const result = restoreBoldWrappedInlineCode(translated, boldCodeMap);
+      expect(result).toBe("可能な限り **`Promise.all()`** を使用して");
+    });
+
+    it("passes AST validation when ja translation glues {{BLD_0}} after CJK and reorders {{SE}}", async () => {
+      const src =
+        "código, por exemplo, substituindo chamadas **síncronas** por **`Promise.all()`** sempre que possível para processamento concorrente.";
+      const raw =
+        "コードの例として、可能な限り{{BLD_0}}を使用して{{SE}}同期{{SE}}呼び出しを置き換えることで、並行処理を行います。";
+      const h = new PlaceholderHandler();
+      const st = h.protectForTranslation(src, { emphasis: true });
+      const restored = h.restoreAfterTranslation(raw, st);
+      const v = await validateDocTranslatePair(
+        { type: "paragraph", content: src, hash: "h", translatable: true, id: "0" },
+        restored
+      );
+      expect(v.ok).toBe(true);
     });
   });
 });

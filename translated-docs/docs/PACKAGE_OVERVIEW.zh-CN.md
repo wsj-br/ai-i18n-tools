@@ -1,7 +1,7 @@
 <a id="ai-i18n-tools-package-overview"></a>
 # ai-i18n-tools：包概述
 
-本文档描述了 `ai-i18n-tools` 的内部架构、各个组件如何协同工作，以及两个核心工作流程的实现方式。
+本文档描述了 `ai-i18n-tools` 的内部架构、各个组件如何协同工作，以及三种可组合的工作流（UI 字符串、文档、嵌套 JSON）和可选的 SVG 翻译的实现方式。
 
 有关实际使用说明，请参阅 [GETTING_STARTED.md](GETTING_STARTED.zh-CN.md)。有关翻译文档中的截图和示例 SVG，请参阅 [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.zh-CN.md)。
 
@@ -22,6 +22,7 @@
   - [扁平化语言文件](#flat-locale-files)
   - [UI 翻译提示](#ui-translation-prompts)
 - [工作流 2 - 文档翻译内部机制](#workflow-2---document-translation-internals)
+- [工作流 3 - 嵌套 JSON 内部机制](#workflow-3---nested-json-internals)
   - [提取器](#extractors)
   - [Astro 混合站点（UI + 页面 HTML）](#astro-hybrid-sites-ui--page-html)
   - [标题锚点插入（`write-heading-ids` CLI）](#heading-anchor-insertion-write-heading-ids-cli)
@@ -53,7 +54,7 @@
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-docs, write-heading-ids, translate-svg, translate-ui, sync, status, …
+├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -80,6 +81,7 @@ src/
 │   ├── extract-strings.ts          `extract` command implementation
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
+│   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
 │   ├── translate-svg.ts            `translate-svg` command (SVG files from `config.svg`)
 │   ├── write-heading-ids.ts        `write-heading-ids` command (markdown heading anchors)
 │   ├── helpers.ts                  Shared CLI utilities
@@ -108,7 +110,8 @@ src/
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
 │   ├── frontmatter-fields.ts       Selective YAML front matter field translation
 │   ├── astro-template-extractor.ts `.astro` parse-and-replace (HTML + template expressions; used by `translate-docs`)
-│   ├── json-extractor.ts           JSON label file extraction
+│   ├── json-extractor.ts           Docusaurus catalog JSON extraction (`translate-docs`)
+│   ├── nested-json-extractor.ts    Arbitrary nested JSON leaves (`translate-json`, `json[]`)
 │   └── svg-extractor.ts            SVG text extraction
 │
 ├── processors/
@@ -276,7 +279,7 @@ output file  ─────────────────── Docusauru
 | 模板 HTML | `AstroTemplateExtractor` + `translate-docs` | 在 `docs[].outputDir` 下的每个区域设置对应的 `.astro` |
 | Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 扁平的 `public/locales/{locale}.json`（英文原文作为键） |
 
-`sync` 命令按顺序运行已启用的步骤：**extract** 然后 **translate-ui**（当启用 `features.translateUIStrings` 时）→ 可选的 **translate-svg** → **translate-docs**（除非设置了 `--no-docs`、`--no-ui` 或 `--no-svg`）。init template `ui-astro-website` 仅搭建 Workflow 1；添加 `docs[]` 和 `features.translateDocs` 以支持页面 HTML。
+`sync` 命令按顺序运行已启用的步骤：**提取**，然后是 **translate-ui**（当启用 `features.translateUIStrings` 时）→ 可选的 **translate-svg** → **translate-docs** → 可选的 **translate-json**（除非通过 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过）。初始化模板 `ui-astro-website` 仅搭建工作流 1；添加 `docs[]` 和 `features.translateDocs` 以支持页面 HTML。
 
 <a id="heading-anchor-insertion-write-heading-ids-cli"></a>
 ### 标题锚点插入（`write-heading-ids` CLI）
@@ -310,9 +313,9 @@ Astro 模板和 MDX JSX 的共享属性/键保护机制在 `src/processors/expre
 
 SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存储记录，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 及相关字段。该哈希值是规范化内容（空白字符已合并）的 SHA-256 哈希值的前 16 个十六进制字符。
 
-每次运行时，会通过哈希值 × 区域设置来查找片段。只有未命中缓存的片段才会发送到大语言模型（LLM）。翻译完成后，`last_hit_at` 会重置当前翻译范围内未命中的片段行。`cleanup` 首先运行 `sync --force-update`，然后移除过时的片段行（`last_hit_at` 为 null 或文件路径为空），当解析出的源路径在磁盘上不存在时，清理 `file_tracking` 键（如 `doc-block:…`、`svg-files:…` 等），并删除元数据文件路径指向缺失文件的翻译行；除非传入 `--no-backup`，否则会先备份 `cache.db`。
+每次运行时，会根据哈希值 × 区域设置查找片段。只有缓存未命中才会调用大语言模型（LLM）。翻译完成后，`last_hit_at` 会重置当前翻译范围内未命中的片段行。文档翻译期间成功的缓存命中会清除该片段的过时 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后移除过时的片段行（`last_hit_at` 为 null / 文件路径为空），当解析的源路径在磁盘上不存在时修剪 `file_tracking` 键（如 `doc-block:…`、`json-block:…`、`svg-files:…` 等），删除其元数据文件路径指向缺失文件的翻译行，并清理孤立的 `translation_failures` 行；除非传入 `--no-backup`，否则会先备份 `cache.db`。
 
-`translate-docs` 命令还使用 **文件跟踪**，因此源文件未更改且已有输出时可以完全跳过处理。`--force-update` 重新运行文件处理但仍使用片段缓存；`--force` 清除文件跟踪并绕过片段缓存读取以进行 API 翻译。有关完整标志表，请参阅 [入门指南](GETTING_STARTED.zh-CN.md#cache-behaviour-and-translate-docs-flags)。
+`translate-docs` 命令还使用 **文件跟踪**，以便源文件未更改且已有输出时完全跳过处理。`--force-update` 会重新运行文件处理，但仍使用片段缓存；`--force` 清除文件跟踪并绕过片段缓存读取以进行 API 翻译。当所有配置的模型在某个 Markdown 片段上都失败 AST 验证时，`translate-docs` 可以逐步拆分该片段并重试更小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认启用）。完整标志表请参见 [入门指南](GETTING_STARTED.zh-CN.md#cache-behaviour-and-translate-docs-flags)。
 
 **批处理提示格式：** `translate-docs --prompt-format` 仅为 `OpenRouterClient.translateDocumentBatch` 选择 XML（`<seg>` / `<t>`）或 JSON 数组/对象格式；提取、占位符和验证保持不变。详见 [批处理提示格式](GETTING_STARTED.zh-CN.md#batch-prompt-format)。
 
@@ -332,6 +335,30 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 ### 扁平化链接重写
 
 当 `docsOutput.style === "flat"` 时，翻译后的 Markdown 文件会与源文件并列存放，并添加语言区域后缀。页面之间的相对链接会被重写，使得 `[Guide](../../docs/guide.md)` 中的 `readme.de.md` 指向 `guide.de.md`。此行为由 `rewriteRelativeLinks` 控制（在使用扁平结构且未自定义 `pathTemplate` 时自动启用）。同一处理过程会在 `postProcessing.regexAdjustments` 运行前，为非 Markdown 资源 URL 添加每个文件的深度前缀——详见 [本地化资源指南](LOCALE-ASSETS-GUIDE.zh-CN.md#the-flat-link-rewriter-and-two-step-flow)。
+
+---
+
+<a id="workflow-3---nested-json-internals"></a>
+## 工作流 3 - 嵌套 JSON 内部机制
+
+```text
+json[].contentPaths  →  resolve files (file | directory | glob)
+      │
+      ▼  NestedJsonExtractor
+string leaves selected by keyPolicy (dot paths + minimatch)
+      │
+      ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
+cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+      │
+      ▼  NestedJsonExtractor.reassemble
+output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
+```
+
+- `NestedJsonExtractor`（`src/extractors/nested-json-extractor.ts`）遍历任意嵌套的 JSON 并为每个可翻译的字符串叶节点生成一个片段。`keyPolicy.mode`（`allowlist`、`denylist` 或 `both`）使用 minimatch 对点表示法路径进行过滤（如 `slug` 这样的裸名称匹配最终的键段）。
+- 缓存文件跟踪使用 `json-block:{blockIndex}:{projectRelPath}` 中的 `file_tracking`（与文档和 SVG 使用的 `cacheDir` 相同）。
+- **不适用于** Docusaurus `write-translations` 目录（`{ message, description }` 结构）—— 它们使用工作流 2（`docs[].docusaurusCatalogDir` + `JsonExtractor` 在 `translate-docs` 内部）。
+- **不适用于** `t()` UI 字符串 —— 使用工作流 1（`strings.json` + 扁平化资源包）。
+- CLI：`translate-json`；编排逻辑位于 `src/cli/translate-json-run.ts`。初始化模板：`ui-json-bundles`。
 
 ---
 
@@ -361,7 +388,7 @@ SQLite 数据库（通过 `node:sqlite`）以 `(source_hash, locale)` 为键存�
 6. `applyEnvOverrides` - 应用 `OPENROUTER_API_KEY`、`I18N_SOURCE_LOCALE` 等。
 7. `augmentConfigWithUiLanguagesFile` - 附加清单显示名称。
 
-`init` 从 `initConfigTemplates` 生成初始配置：`ui-markdown`（UI + 可选的应用 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（纯 Astro UI；添加 `docs[]` 以支持 `.astro` 页面翻译）。参见 [GETTING_STARTED — Initialise](GETTING_STARTED.zh-CN.md#step-1-initialise)。
+`init` 从 `initConfigTemplates` 生成初始配置：`ui-markdown`（UI + 可选的应用 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-astro-website`（纯 Astro UI；添加 `docs[]` 以支持 `.astro` 页面翻译）、`ui-json-bundles`（仅工作流 3 的 `json[]`）。详情请参见 [GETTING_STARTED — 初始化](GETTING_STARTED.zh-CN.md#step-1-initialise)。
 
 <a id="logger"></a>
 ### 日志记录器

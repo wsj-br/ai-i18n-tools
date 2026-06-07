@@ -70,6 +70,11 @@ import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
 import {
+  createRunInterruptScope,
+  exitIfRunInterrupted,
+  isRunInterruptedError,
+} from "../utils/run-interrupt.js";
+import {
   createTranslationDashboardApp,
   resolveDashboardAppStaticDir,
 } from "../server/translation-dashboard.js";
@@ -78,7 +83,6 @@ import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
 import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
-import { runStripMdBoldInline } from "./strip-md-bold-inline.js";
 import { runCheckModels } from "./check-models.js";
 import { runCleanTemp } from "./clean-temp.js";
 
@@ -564,67 +568,6 @@ program
   });
 
 program
-  .command("strip-md-bold-inline")
-  .description(
-    "Remove bold (**) around inline code in markdown/MDX under docs[].contentPaths (.translate-ignore; optional --path)"
-  )
-  .option(
-    "-p, --path <path>",
-    "Only process files under this path (file or directory); project-relative or absolute"
-  )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--dry-run", "Print files that would change; do not write", false)
-  .option(
-    "--no-backup",
-    "Overwrite in place without writing a timestamped .backup.* copy first",
-    false
-  )
-  .action((opts, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
-    const g = cmd.optsWithGlobals() as { verbose?: boolean };
-    const o = opts as {
-      path?: string;
-      file?: string;
-      dryRun?: boolean;
-      noBackup?: boolean;
-    };
-    const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
-    warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
-
-    if (!config.docs?.length) {
-      console.error(chalk.red("❌ [strip-md-bold-inline] config has no docs[] blocks."));
-      process.exit(1);
-    }
-
-    try {
-      const sum = runStripMdBoldInline({
-        cwd: projectRoot,
-        config,
-        pathRaw,
-        dryRun: Boolean(o.dryRun),
-        noBackup: Boolean(o.noBackup),
-        verbose: Boolean(g.verbose),
-      });
-      const failNote = sum.filesFailed > 0 ? `, ${sum.filesFailed} failed` : "";
-      const changedVerb = o.dryRun ? "would update" : "updated";
-      console.log(
-        chalk.green(
-          `\n✅ strip-md-bold-inline: ${sum.filesWritten} file(s) ${changedVerb}, ${sum.filesUnchanged} unchanged${failNote}`
-        )
-      );
-      if (sum.filesFailed > 0) {
-        process.exit(1);
-      }
-    } catch (e) {
-      console.error(
-        chalk.red(`❌ [strip-md-bold-inline] ${e instanceof Error ? e.message : String(e)}`)
-      );
-      process.exit(1);
-    }
-  });
-
-program
   .command("extract")
   .description(
     "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
@@ -775,114 +718,138 @@ async function runSyncPipeline(args: {
 }): Promise<void> {
   const { config, projectRoot, uiLocales, svgLocales, translateOpts, noUi, noSvg, noDocs, noJson } =
     args;
-  if (config.features.translateUIStrings && !noUi) {
-    try {
-      const s = runExtract(config, projectRoot);
-      console.log(
-        chalk.green(
-          `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
-        )
-      );
-    } catch (e) {
-      console.error(chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`));
-      throw e;
-    }
-    try {
-      await runTranslateUI(config, {
-        cwd: projectRoot,
-        locales: uiLocales,
-        force: translateOpts.force,
-        dryRun: translateOpts.dryRun,
-        verbose: translateOpts.verbose,
-        logPath: translateOpts.logPath,
-        concurrency: translateOpts.concurrency,
-      });
-    } catch (e) {
-      console.error(chalk.red(`❌ [sync][ui] ${e instanceof Error ? e.message : String(e)}`));
-      throw e;
-    }
-  }
-  if (config.features.translateSVG && config.svg && !noSvg) {
-    try {
-      const svgOpts: TranslateRunOptions = {
-        ...translateOpts,
-        locales: svgLocales,
-      };
-      await runTranslateSvg(config, svgOpts);
-    } catch (e) {
-      console.error(chalk.red(`❌ [sync][svg] ${e instanceof Error ? e.message : String(e)}`));
-      throw e;
-    }
-  }
-  if (!noDocs) {
-    try {
-      for (let bi = 0; bi < config.docs.length; bi++) {
-        const block = config.docs[bi]!;
-        const view = toDocTranslateConfig(config, block);
-        const mdBase = filterIgnored(
-          collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
-          projectRoot
+  const interrupt = createRunInterruptScope();
+  const sharedOpts: TranslateRunOptions = {
+    ...translateOpts,
+    abortSignal: interrupt.signal,
+  };
+  try {
+    if (config.features.translateUIStrings && !noUi) {
+      try {
+        const s = runExtract(config, projectRoot);
+        console.log(
+          chalk.green(
+            `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+          )
         );
-        const md = warnAndAugmentMarkdownForExplicitPath(
-          projectRoot,
-          translateOpts.pathFilter,
-          bi,
-          config,
-          mdBase
+      } catch (e) {
+        console.error(
+          chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`)
         );
-        const astroBase = filterIgnored(
-          collectFilesByExtension(block.contentPaths, [".astro"], projectRoot),
-          projectRoot
-        );
-        const astro = warnAndAugmentAstroForExplicitPath(
-          projectRoot,
-          translateOpts.pathFilter,
-          bi,
-          config,
-          astroBase
-        );
-        const jsonRoot = block.docusaurusCatalogDir
-          ? path.resolve(projectRoot, block.docusaurusCatalogDir)
-          : path.resolve(projectRoot, ".");
-        const jsonFiles =
-          block.docusaurusCatalogDir?.trim() && shouldRunJson(translateOpts, view)
-            ? collectFilesRelativeToRoot(jsonRoot, [".json"])
-            : [];
-        const {
-          markdown: mdScoped,
-          json: jsonScoped,
-          astro: astroScoped,
-        } = filterDocumentationFilesByPathFilter(
-          projectRoot,
-          jsonRoot,
-          md,
-          jsonFiles,
-          astro,
-          translateOpts.pathFilter
-        );
-        if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
-          continue;
-        }
-        await runTranslate(
-          view,
-          { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
-          jsonRoot
-        );
+        throw e;
       }
-    } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
-      throw e;
+      try {
+        await runTranslateUI(config, {
+          cwd: projectRoot,
+          locales: uiLocales,
+          force: sharedOpts.force,
+          dryRun: sharedOpts.dryRun,
+          verbose: sharedOpts.verbose,
+          logPath: sharedOpts.logPath,
+          concurrency: sharedOpts.concurrency,
+          abortSignal: interrupt.signal,
+        });
+      } catch (e) {
+        if (isRunInterruptedError(e)) {
+          throw e;
+        }
+        console.error(chalk.red(`❌ [sync][ui] ${e instanceof Error ? e.message : String(e)}`));
+        throw e;
+      }
     }
-  }
-  if (!noJson && config.features.translateJson) {
-    try {
-      const { runTranslateJson } = await import("./translate-json-run.js");
-      await runTranslateJson(config, projectRoot, translateOpts);
-    } catch (e) {
-      console.error(chalk.red(`❌ [sync][json] ${e instanceof Error ? e.message : String(e)}`));
-      throw e;
+    if (config.features.translateSVG && config.svg && !noSvg) {
+      try {
+        const svgOpts: TranslateRunOptions = {
+          ...sharedOpts,
+          locales: svgLocales,
+        };
+        await runTranslateSvg(config, svgOpts);
+      } catch (e) {
+        if (isRunInterruptedError(e)) {
+          throw e;
+        }
+        console.error(chalk.red(`❌ [sync][svg] ${e instanceof Error ? e.message : String(e)}`));
+        throw e;
+      }
     }
+    if (!noDocs) {
+      try {
+        for (let bi = 0; bi < config.docs.length; bi++) {
+          const block = config.docs[bi]!;
+          const view = toDocTranslateConfig(config, block);
+          const mdBase = filterIgnored(
+            collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+            projectRoot
+          );
+          const md = warnAndAugmentMarkdownForExplicitPath(
+            projectRoot,
+            sharedOpts.pathFilter,
+            bi,
+            config,
+            mdBase
+          );
+          const astroBase = filterIgnored(
+            collectFilesByExtension(block.contentPaths, [".astro"], projectRoot),
+            projectRoot
+          );
+          const astro = warnAndAugmentAstroForExplicitPath(
+            projectRoot,
+            sharedOpts.pathFilter,
+            bi,
+            config,
+            astroBase
+          );
+          const jsonRoot = block.docusaurusCatalogDir
+            ? path.resolve(projectRoot, block.docusaurusCatalogDir)
+            : path.resolve(projectRoot, ".");
+          const jsonFiles =
+            block.docusaurusCatalogDir?.trim() && shouldRunJson(sharedOpts, view)
+              ? collectFilesRelativeToRoot(jsonRoot, [".json"])
+              : [];
+          const {
+            markdown: mdScoped,
+            json: jsonScoped,
+            astro: astroScoped,
+          } = filterDocumentationFilesByPathFilter(
+            projectRoot,
+            jsonRoot,
+            md,
+            jsonFiles,
+            astro,
+            sharedOpts.pathFilter
+          );
+          if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
+            continue;
+          }
+          await runTranslate(
+            view,
+            { ...sharedOpts, documentationBlockIndex: bi },
+            { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
+            jsonRoot
+          );
+        }
+      } catch (e) {
+        if (isRunInterruptedError(e)) {
+          throw e;
+        }
+        console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+        throw e;
+      }
+    }
+    if (!noJson && config.features.translateJson) {
+      try {
+        const { runTranslateJson } = await import("./translate-json-run.js");
+        await runTranslateJson(config, projectRoot, sharedOpts);
+      } catch (e) {
+        if (isRunInterruptedError(e)) {
+          throw e;
+        }
+        console.error(chalk.red(`❌ [sync][json] ${e instanceof Error ? e.message : String(e)}`));
+        throw e;
+      }
+    }
+  } finally {
+    interrupt.dispose();
   }
 }
 
@@ -1091,6 +1058,9 @@ program
         );
       }
     } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       console.error(chalk.red(`❌ [translate-docs] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
@@ -1153,6 +1123,9 @@ program
       const { runTranslateJson } = await import("./translate-json-run.js");
       await runTranslateJson(config, projectRoot, translateOpts);
     } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       console.error(chalk.red(`❌ [translate-json] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
@@ -1223,6 +1196,9 @@ program
     try {
       await runTranslateSvg(config, translateOpts);
     } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       console.error(chalk.red(`❌ [translate-svg] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
@@ -1279,6 +1255,9 @@ program
             : undefined,
       });
     } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       console.error(chalk.red(`❌ [translate-ui] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
@@ -1351,6 +1330,9 @@ program
             : undefined,
       });
     } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       console.error(chalk.red(`❌ [sync-ui][ui] ${e instanceof Error ? e.message : String(e)}`));
       process.exit(1);
     }
@@ -1605,7 +1587,10 @@ program
         noDocs,
         noJson,
       });
-    } catch {
+    } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       process.exit(1);
     }
   })
@@ -2272,7 +2257,7 @@ program
 program
   .command("cleanup")
   .description(
-    "Run sync --force-update (extract, UI, SVG, docs), then clean stale segment rows (null last_hit_at / empty filepath); remove orphaned file_tracking keys and translation rows when resolved paths are missing on disk (SQLite)"
+    "Run sync --force-update (extract, UI, SVG, docs), then clean stale segment rows (null last_hit_at / empty filepath); remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
   )
   .option("--dry-run", "Show only", false)
   .option("--no-backup", "Skip SQLite backup before modifications", false)
@@ -2309,56 +2294,71 @@ program
         noDocs: false,
         noJson: false,
       });
-    } catch {
+    } catch (e) {
+      if (exitIfRunInterrupted(e)) {
+        return;
+      }
       process.exit(1);
     }
 
     const cache = new TranslationCache(cacheDir);
+    try {
+      const shouldBackup = !opts.dryRun && !opts.noBackup;
+      if (shouldBackup) {
+        const backupPath = opts.backup
+          ? path.resolve(cwd, opts.backup)
+          : path.join(
+              cacheDir,
+              `cache.db.backup.${new Date().toISOString().replace(/[:.]/g, "-")}.sqlite`
+            );
+        await cache.backupTo(backupPath);
+        console.log(`[cleanup] Backup → ${backupPath}`);
+      }
 
-    const shouldBackup = !opts.dryRun && !opts.noBackup;
-    if (shouldBackup) {
-      const backupPath = opts.backup
-        ? path.resolve(cwd, opts.backup)
-        : path.join(
-            cacheDir,
-            `cache.db.backup.${new Date().toISOString().replace(/[:.]/g, "-")}.sqlite`
-          );
-      await cache.backupTo(backupPath);
-      console.log(`[cleanup] Backup → ${backupPath}`);
-    }
+      const { count, deletedRows } = cache.cleanupStaleTranslations(Boolean(opts.dryRun));
+      console.log(`[cleanup] stale: ${count} row(s)${opts.dryRun ? " (dry-run)" : ""}`);
+      if (opts.dryRun && deletedRows.length) {
+        console.log(
+          deletedRows
+            .slice(0, 20)
+            .map((r) => `  ${r.source_hash} ${r.locale}`)
+            .join("\n")
+        );
+      }
 
-    const { count, deletedRows } = cache.cleanupStaleTranslations(Boolean(opts.dryRun));
-    console.log(`[cleanup] stale: ${count} row(s)${opts.dryRun ? " (dry-run)" : ""}`);
-    if (opts.dryRun && deletedRows.length) {
-      console.log(
-        deletedRows
-          .slice(0, 20)
-          .map((r) => `  ${r.source_hash} ${r.locale}`)
-          .join("\n")
+      const prunedTracking = cache.pruneOrphanedFileTrackingByDisk(
+        projectRoot,
+        Boolean(opts.dryRun)
       );
-    }
+      console.log(
+        `[cleanup] orphaned file_tracking (missing on disk): ${prunedTracking}${opts.dryRun ? " (dry-run)" : ""}`
+      );
 
-    const prunedTracking = cache.pruneOrphanedFileTrackingByDisk(projectRoot, Boolean(opts.dryRun));
-    console.log(
-      `[cleanup] orphaned file_tracking (missing on disk): ${prunedTracking}${opts.dryRun ? " (dry-run)" : ""}`
-    );
-
-    let orphanTranslations = 0;
-    for (const fp of cache.getUniqueFilepaths()) {
-      const abs = resolveCacheTrackingKeyToAbs(projectRoot, fp);
-      if (!fs.existsSync(abs)) {
-        if (!opts.dryRun) {
-          orphanTranslations += cache.deleteTranslationsByFilepath(fp);
-        } else {
-          orphanTranslations += 1;
+      let orphanTranslations = 0;
+      for (const fp of cache.getUniqueFilepaths()) {
+        const abs = resolveCacheTrackingKeyToAbs(projectRoot, fp);
+        if (!fs.existsSync(abs)) {
+          if (!opts.dryRun) {
+            orphanTranslations += cache.deleteTranslationsByFilepath(fp);
+          } else {
+            orphanTranslations += 1;
+          }
         }
       }
-    }
-    console.log(
-      `[cleanup] orphaned translations (missing on disk): ${orphanTranslations}${opts.dryRun ? " (dry-run)" : ""}`
-    );
+      console.log(
+        `[cleanup] orphaned translations (missing on disk): ${orphanTranslations}${opts.dryRun ? " (dry-run)" : ""}`
+      );
 
-    cache.close();
+      const prunedFailures = cache.pruneOrphanedTranslationFailures(
+        projectRoot,
+        Boolean(opts.dryRun)
+      );
+      console.log(
+        `[cleanup] orphaned translation_failures: ${prunedFailures}${opts.dryRun ? " (dry-run)" : ""}`
+      );
+    } finally {
+      cache.close();
+    }
   });
 
 program
@@ -2409,6 +2409,26 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   }
 
   const server = http.createServer(app);
+  let shuttingDown = false;
+  const shutdown = (signal?: "SIGINT" | "SIGTERM"): void => {
+    if (shuttingDown) {
+      return;
+    }
+    shuttingDown = true;
+    const exitCode = signal === "SIGINT" ? 130 : signal === "SIGTERM" ? 143 : 0;
+    console.log(chalk.yellow(`\n[dashboard] Shutting down…`));
+    server.close((err) => {
+      try {
+        cache.close();
+      } catch {
+        // Best-effort close before exit.
+      }
+      process.exit(err ? 1 : exitCode);
+    });
+  };
+  process.once("SIGINT", () => shutdown("SIGINT"));
+  process.once("SIGTERM", () => shutdown("SIGTERM"));
+
   listenTranslationDashboardServer(server, port, (actualPort) => {
     console.log(chalk.green(`[dashboard] Listening on TCP port ${actualPort}`));
     if (actualPort !== port) {
