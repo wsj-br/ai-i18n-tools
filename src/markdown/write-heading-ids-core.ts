@@ -3,7 +3,7 @@
  */
 
 import emojiRegex from "emoji-regex";
-import matter from "gray-matter";
+import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import removeMarkdown from "remove-markdown";
 

@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 /**
- * license-checker-rseidelsohn only applies clarifications.licenseText when --customPath
- * is set, and --plainVertical ignores moduleData.licenseText and always reads licenseFile
- * from disk. Some packages ship without LICENSE and match README.md as the "license file";
- * notices would otherwise embed the README.
+ * Generates the top-level NOTICES file: one block per third-party `name@version`
+ * in the production dependency trees of this package and the bundled examples.
  *
- * This script runs the checker with --json (so clarifications + customPath apply) for the
- * root package and each workspace example, merges results, then emits plain-vertical blocks
- * while preferring licenseText when present.
+ * Dependency resolution is delegated to `pnpm licenses list --prod --json`, which
+ * returns each package's resolved versions and on-disk install paths. We then pick
+ * the license body ourselves so we keep full control over which text is used, in
+ * priority order:
  *
- * `3p-lic-clarifications.json` reuses entries from the transrewrt project where the same
- * packages appear in this workspace (see wsj-br/transrewrt on GitHub). Add ai-i18n-tools-only
- * clarifications there when license-checker mis-detects a license file.
+ *   1. a per-package override from `3p-lic-clarifications.json` `packageOverrides`
+ *      (matched by name + semver range), else
+ *   2. a real license file in the package directory (LICENSE/LICENCE/COPYING/
+ *      UNLICENSE, including suffixed variants like `LICENSE.MIT`), never README.md, else
+ *   3. the standard license text for the package's SPDX id from
+ *      `3p-lic-clarifications.json` `spdxLicenseTexts` — with the copyright line
+ *      filled from the package's `author` (and omitted entirely when no author is
+ *      declared), else
+ *   4. nothing (just the SPDX identifier).
+ *
+ * `3p-lic-clarifications.json` reuses entries from the transrewrt project where the
+ * same packages appear in this workspace (see wsj-br/transrewrt on GitHub). Add an
+ * `spdxLicenseTexts` entry for a new SPDX id, or a `packageOverrides` entry, when a
+ * package ships no usable license file.
  */
 
 import { execFileSync } from "node:child_process";
@@ -19,26 +29,31 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import semver from "semver";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 
-/** Workspace package roots whose production dependency trees are included in NOTICES. */
-const SCAN_ROOTS = [
-  ".",
-  "examples/console-app",
-  "examples/nextjs-app",
-  "examples/nextjs-app/docs-site",
-  "examples/astro-docs",
-];
-
-/** First-party packages in this repository (not third-party). */
-const EXCLUDE_PACKAGES = [
+/**
+ * First-party workspace packages. Each name is used both to scope a
+ * `pnpm --filter <name> licenses list` scan (so only these roots' production
+ * dependency trees are included — notably excluding `astro-website`) and to drop
+ * the packages themselves from the output.
+ */
+const FIRST_PARTY_PACKAGES = [
   "ai-i18n-tools",
   "console-app-example",
   "nextjs-app-example",
   "nextjs-app-docs-site",
   "astro-docs",
 ];
+const FIRST_PARTY = new Set(FIRST_PARTY_PACKAGES);
+
+/** Real license files (incl. suffixed variants like `LICENSE.MIT`, `COPYING.LESSER`). */
+const LICENSE_FILE_RE = /^((un)?licen[cs]e|copying|mit-licen[cs]e)([._-][a-z0-9.+]+)*$/i;
+/** Source/data files that can collide with the license name (e.g. `license-key.js`). */
+const NON_LICENSE_EXT_RE = /\.(js|cjs|mjs|jsx|ts|tsx|json|map|sh|py)$/i;
+const COPYRIGHT_TOKEN = "{{COPYRIGHT_HOLDER}}";
 
 function getModuleNameForLicenseTextHeader(moduleName) {
   const i = moduleName.lastIndexOf("@");
@@ -63,117 +78,166 @@ function licenseTitleLine(moduleData) {
   return "";
 }
 
-function bodyText(moduleData) {
-  if (typeof moduleData.licenseText === "string" && moduleData.licenseText.length > 0) {
-    return moduleData.licenseText;
+/** Reads the first real license file in a package directory, or "" if none exists. */
+function readLicenseFile(pkgDir) {
+  let entries;
+  try {
+    entries = fs.readdirSync(pkgDir, { withFileTypes: true });
+  } catch {
+    return "";
   }
-  const lf = moduleData.licenseFile;
-  if (Array.isArray(lf) && lf.length > 0) {
-    return lf
-      .map((m) => {
-        if (typeof m === "object" && m) return m.type || m.name;
-        if (typeof m === "string") return m;
-        return "";
-      })
-      .join("");
+  const match = entries
+    .filter((e) => e.isFile() && LICENSE_FILE_RE.test(e.name) && !NON_LICENSE_EXT_RE.test(e.name))
+    .map((e) => e.name)
+    .sort((a, b) => a.localeCompare(b, "en"))[0];
+  if (!match) return "";
+  try {
+    return fs.readFileSync(path.join(pkgDir, match), "utf8").trimEnd();
+  } catch {
+    return "";
   }
-  if (typeof lf === "object" && lf && (lf.type || lf.name)) {
-    return lf.type || lf.name;
+}
+
+/** Normalizes a package `author` (string or object) to a bare display name, or "". */
+function normalizeAuthor(author) {
+  let name = "";
+  if (typeof author === "string") name = author;
+  else if (author && typeof author === "object" && typeof author.name === "string")
+    name = author.name;
+  return name
+    .replace(/\s*<[^>]*>/g, "")
+    .replace(/\s*\([^)]*\)/g, "")
+    .trim();
+}
+
+/**
+ * Parses overrides keys of the form `name@range` (e.g. `esrecurse@^4.3.0` or
+ * `@jsonjoy.com/json-pointer@>=1.0.0 <2.0.0`). The range never contains `@`, so the
+ * last `@` is always the separator.
+ */
+function parseOverrideKey(key) {
+  const at = key.lastIndexOf("@");
+  if (at <= 0) return null;
+  return { name: key.slice(0, at), range: key.slice(at + 1) };
+}
+
+function overrideTextFor(name, version, packageOverrides) {
+  for (const [key, value] of Object.entries(packageOverrides)) {
+    const parsed = parseOverrideKey(key);
+    if (!parsed || parsed.name !== name) continue;
+    if (typeof value.licenseText !== "string") continue;
+    if (semver.satisfies(version, parsed.range, { includePrerelease: true, loose: true })) {
+      return value.licenseText;
+    }
   }
-  if (typeof lf === "string" && fs.existsSync(lf)) {
-    return fs.readFileSync(lf, "utf8");
+  return undefined;
+}
+
+/**
+ * Resolves the standard text lines for an SPDX id. Falls back to the first operand
+ * of an `OR` expression that has a template (e.g. `(MIT OR CC0-1.0)` -> `MIT`).
+ */
+function spdxLinesFor(licenseId, spdxLicenseTexts) {
+  if (typeof licenseId !== "string" || licenseId.length === 0) return null;
+  if (spdxLicenseTexts[licenseId]) return spdxLicenseTexts[licenseId];
+  const operands = licenseId
+    .replace(/[()]/g, "")
+    .split(/\s+OR\s+/i)
+    .map((part) => part.split(/\s+AND\s+/i)[0].trim());
+  for (const id of operands) {
+    if (spdxLicenseTexts[id]) return spdxLicenseTexts[id];
   }
+  return null;
+}
+
+function renderSpdxText(lines, author) {
+  const joined = author
+    ? lines.map((l) => l.split(COPYRIGHT_TOKEN).join(author)).join("\n")
+    : lines.filter((l) => !l.includes(COPYRIGHT_TOKEN)).join("\n");
+  return joined.replace(/\n{3,}/g, "\n\n").trim();
+}
+
+function bodyFor(name, version, licenseId, author, pkgDir, clarifications) {
+  const override = overrideTextFor(name, version, clarifications.packageOverrides);
+  if (typeof override === "string" && override.length > 0) return override;
+
+  const fromFile = readLicenseFile(pkgDir);
+  if (fromFile.length > 0) return fromFile;
+
+  const lines = spdxLinesFor(licenseId, clarifications.spdxLicenseTexts);
+  if (lines) return renderSpdxText(lines, author);
+
   return "";
 }
 
-function asPlainVerticalPreferClarifications(sorted) {
+function parseJsonOutput(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+    if (start >= 0 && end > start) return JSON.parse(raw.slice(start, end + 1));
+    throw new Error("Unable to parse `pnpm licenses list --json` output");
+  }
+}
+
+function runLicensesListForRoot(packageName) {
+  const raw = execFileSync(
+    "pnpm",
+    ["--filter", packageName, "licenses", "list", "--prod", "--json"],
+    { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }
+  );
+  return parseJsonOutput(raw);
+}
+
+function asPlainVertical(sorted) {
   return Object.entries(sorted)
     .map(([moduleName, moduleData]) => {
       let out = getModuleNameForLicenseTextHeader(moduleName);
       out += licenseTitleLine(moduleData);
       out += "\n";
-      out += bodyText(moduleData);
+      out += moduleData.licenseText;
       return out;
     })
     .map((block) => `---\n\n${block}`)
     .join("\n\n");
 }
 
-function mergeModuleData(existing, incoming) {
-  if (!existing) return incoming;
-  const existingText =
-    typeof existing.licenseText === "string" ? existing.licenseText.length : 0;
-  const incomingText =
-    typeof incoming.licenseText === "string" ? incoming.licenseText.length : 0;
-  if (incomingText > existingText) return incoming;
-  if (existingText > incomingText) return existing;
-  return incoming;
-}
-
-function runCheckerForRoot(checkerJs, scanRoot, customFormat, clarifications) {
-  const cwd = path.join(root, scanRoot);
-  if (!fs.existsSync(path.join(cwd, "package.json"))) {
-    console.error(`Skipping ${scanRoot}: no package.json`);
-    return {};
-  }
-  const jsonRaw = execFileSync(
-    process.execPath,
-    [
-      checkerJs,
-      "--production",
-      "--json",
-      "--excludePackages",
-      EXCLUDE_PACKAGES.join(";"),
-      "--clarificationsFile",
-      clarifications,
-      "--customPath",
-      customFormat,
-    ],
-    { cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
-  );
-  return JSON.parse(jsonRaw);
-}
-
-function sortedMerged(modulesByName) {
-  const keys = Object.keys(modulesByName).sort((a, b) => a.localeCompare(b, "en"));
-  const sorted = {};
-  for (const key of keys) sorted[key] = modulesByName[key];
-  return sorted;
-}
-
 const outFile = path.join(root, "NOTICES");
-const customFormat = path.join(__dirname, "license-checker-custom-format.json");
-const clarifications = path.join(root, "3p-lic-clarifications.json");
+const clarificationsFile = path.join(root, "3p-lic-clarifications.json");
+const clarifications = JSON.parse(fs.readFileSync(clarificationsFile, "utf8"));
+clarifications.spdxLicenseTexts ??= {};
+clarifications.packageOverrides ??= {};
 
-const checkerJs = path.join(
-  root,
-  "node_modules",
-  "license-checker-rseidelsohn",
-  "bin",
-  "license-checker-rseidelsohn.js",
-);
-if (!fs.existsSync(checkerJs)) {
-  console.error("license-checker-rseidelsohn not found; run pnpm install");
-  process.exit(1);
-}
-
-const merged = {};
-for (const scanRoot of SCAN_ROOTS) {
-  console.error(`Scanning ${scanRoot === "." ? "ai-i18n-tools" : scanRoot}…`);
-  const partial = runCheckerForRoot(checkerJs, scanRoot, customFormat, clarifications);
-  for (const [moduleName, moduleData] of Object.entries(partial)) {
-    merged[moduleName] = mergeModuleData(merged[moduleName], moduleData);
+/** Map of `name@version` -> { licenses, licenseText }. */
+const modules = {};
+for (const packageName of FIRST_PARTY_PACKAGES) {
+  console.error(`Scanning ${packageName}…`);
+  const grouped = runLicensesListForRoot(packageName);
+  for (const group of Object.values(grouped)) {
+    for (const entry of group) {
+      const { name, license, versions = [], paths = [] } = entry;
+      if (!name || FIRST_PARTY.has(name)) continue;
+      const author = normalizeAuthor(entry.author);
+      versions.forEach((version, i) => {
+        const key = `${name}@${version}`;
+        if (modules[key]) return;
+        const pkgDir = paths[i] ?? paths[0];
+        modules[key] = {
+          licenses: license,
+          licenseText: bodyFor(name, version, license, author, pkgDir, clarifications),
+        };
+      });
+    }
   }
 }
 
-const preamble = [
-  "Third-party notices for ai-i18n-tools and its examples.",
-  "",
-  "Auto-generated by scripts/write-third-party-notices.js — do not edit by hand.",
-  "Regenerate: pnpm notices:write",
-  "",
-].join("\n");
+const sortedKeys = Object.keys(modules).sort((a, b) => a.localeCompare(b, "en"));
+const sorted = {};
+for (const key of sortedKeys) sorted[key] = modules[key];
 
-const body = asPlainVerticalPreferClarifications(sortedMerged(merged));
+const preamble = ["Third-party notices for ai-i18n-tools and its examples.", ""].join("\n");
+
+const body = asPlainVertical(sorted);
 fs.writeFileSync(outFile, `${preamble}\n${body}`, "utf8");
-console.log(`Wrote ${path.relative(root, outFile)} (${Object.keys(merged).length} packages)`);
+console.log(`Wrote ${path.relative(root, outFile)} (${sortedKeys.length} packages)`);

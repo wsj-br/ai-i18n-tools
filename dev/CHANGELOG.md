@@ -9,6 +9,24 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-06-17
+
+- **Changed**: scripts — rewrote `scripts/write-third-party-notices.js` to resolve the production dependency trees via `pnpm licenses list --prod --json` (per first-party root) and select the license body ourselves, in order: a `3p-lic-clarifications.json` `packageOverrides` entry (matched by name + semver range), else a real license file (`LICENSE`/`LICENCE`/`COPYING`/`UNLICENSE`, including suffixed variants such as `LICENSE.MIT` and `COPYING.LESSER`), never `README.md`, else the standard license text for the package's SPDX id. The README is never used as a license body.
+
+- **Changed**: tooling — generalized `3p-lic-clarifications.json` to carry `spdxLicenseTexts` (canonical license text per SPDX id, e.g. `MIT`, `ISC`, `BSD-2-Clause`, `Apache-2.0`, `LGPL-3.0-or-later`) plus an `spdxLicenseTexts`-driven fallback, replacing the previous per-package license-text entries. Packages that ship no license file now render the standard text for their license, with the copyright line filled from the package `author` (and omitted when no author is declared); `OR` expressions like `(MIT OR CC0-1.0)` resolve to the first known license.
+
+- **Removed**: dependencies — dropped the `license-checker-rseidelsohn` dev dependency (and `scripts/license-checker-custom-format.json`) now that `NOTICES` generation no longer relies on it; added `semver` as a dev dependency for `packageOverrides` range matching.
+
+- **Security**: dependencies — replaced `gray-matter@4.0.3` (which pins the vulnerable `js-yaml@3.x`) with the maintained fork `@11ty/gray-matter@^2.1.0` (uses `js-yaml@^4.2.0`); updated `matter` imports in `doc-translate.ts`, `doc-postprocess.ts`, `markdown-extractor.ts`, and `write-heading-ids-core.ts`. Added a workspace override `gray-matter: npm:@11ty/gray-matter@^2.1.0` so transitive (Docusaurus) usage also resolves to the fork, clearing the `js-yaml` merge-key DoS advisory (CVE-2026-53550 / GHSA-q7cg-457f-vx79), for which no `js-yaml@3.x` patch exists.
+
+- **Security**: examples — bumped `astro` to `^6.4.6` in `examples/astro-docs` and `examples/astro-website` to clear the Host header SSRF advisory (GHSA-2pvr-wf23-7pc7); resolves to `6.4.7`.
+
+- **Security**: dependencies — added `pnpm-workspace.yaml` overrides `vite@>=8.0.0 <8.0.16` → `^8.0.16`, `esbuild@>=0.27.3 <0.28.1` → `^0.28.1`, and `joi@>=17.0.0 <17.13.4` → `^17.13.4` to clear remaining `pnpm audit` advisories. `pnpm audit` is now clean.
+
+- **Changed**: dependencies — upgraded `@babel/parser` and `@babel/types` to `^8.0.0` and `csv-parse` to `^7.0.0` (no API surface we use changed); refreshed dev dependencies and set `packageManager` to `pnpm@11.7.0`.
+
+- **Removed**: tooling — pruned stale/redundant `pnpm-workspace.yaml` overrides whose advisories are fixed upstream (they now resolve to safe versions on their own): `fast-uri`, `@babel/plugin-transform-modules-systemjs`, `qs`, `ws`, plus the redundant subset pins `serialize-javascript@<=7.0.2` and `fast-uri@<=3.1.0`; trimmed the matching `minimumReleaseAgeExclude` entries. Load-bearing overrides (`postcss`, `serialize-javascript@<7.0.5`, `uuid`) are kept; `pnpm audit` remains clean.
+
 ## [1.6.0] - 2026-06-08
 
 - **Changed**: examples — refreshed workspace dependencies (`i18next` ^26.3.1, `astro` ^6.4.4, `next` ^16.2.7, `react` ^19.2.7, `tailwindcss` ^3.4.19); aligned Node engine to `>=22.16.0` in console-app. Stock `@astrojs/starlight` on Astro 6.4 needs no pnpm patch — deprecated `markdown.remarkPlugins` still works until Astro 8.0 ([Astro 6.4 blog](https://astro.build/blog/astro-640/)).

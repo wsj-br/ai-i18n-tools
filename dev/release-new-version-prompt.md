@@ -11,7 +11,7 @@ Create a new release notes file `release-notes/RELEASE_NOTES_<version>.md` for t
      - `## Highlights` — Summarize the most important user-facing changes from the changelog bullets (focus on features, fixes, major improvements; don't list every change verbatim—write clear, user-focused summaries).
      - `## Why this release matters` — One or two sentences explaining the main impact or reason for this release.
      - `---`
-     - `## Documentation` — Add links to major docs: Getting Started, Package Overview, Agent Context, as in previous release notes.
+     - `## Documentation` — Add links to major docs: Getting Started, Locale assets guide, Package Overview, Agent Context, as in previous release notes.
      - `---`
      - `## License` — Use the same license section as prior notes.
      - Don't include the `### Full Changelog` or the `[Unreleased]` section.

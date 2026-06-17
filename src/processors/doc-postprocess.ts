@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import matter from "gray-matter";
+import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import type {
   I18nConfig,
