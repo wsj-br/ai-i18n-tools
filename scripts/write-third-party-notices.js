@@ -8,18 +8,18 @@
  * the license body ourselves so we keep full control over which text is used, in
  * priority order:
  *
- *   1. a per-package override from `3p-lic-clarifications.json` `packageOverrides`
+ *   1. a per-package override from `write-third-party-notices.json` `packageOverrides`
  *      (matched by name + semver range), else
  *   2. a real license file in the package directory (LICENSE/LICENCE/COPYING/
  *      UNLICENSE, including suffixed variants like `LICENSE.MIT`), never README.md, else
  *   3. the standard license text for the package's SPDX id from
- *      `3p-lic-clarifications.json` `spdxLicenseTexts` — with the copyright line
+ *      `write-third-party-notices.json` `spdxLicenseTexts` — with the copyright line
  *      filled from the package's `author` (and omitted entirely when no author is
  *      declared), else
  *   4. nothing (just the SPDX identifier).
  *
- * `3p-lic-clarifications.json` reuses entries from the transrewrt project where the
- * same packages appear in this workspace (see wsj-br/transrewrt on GitHub). Add an
+ * `write-third-party-notices.json` reuses entries from the transrewrt project where
+ * the same packages appear in this workspace (see wsj-br/transrewrt on GitHub). Add an
  * `spdxLicenseTexts` entry for a new SPDX id, or a `packageOverrides` entry, when a
  * package ships no usable license file.
  */
@@ -204,7 +204,7 @@ function asPlainVertical(sorted) {
 }
 
 const outFile = path.join(root, "NOTICES");
-const clarificationsFile = path.join(root, "3p-lic-clarifications.json");
+const clarificationsFile = path.join(__dirname, "write-third-party-notices.json");
 const clarifications = JSON.parse(fs.readFileSync(clarificationsFile, "utf8"));
 clarifications.spdxLicenseTexts ??= {};
 clarifications.packageOverrides ??= {};
