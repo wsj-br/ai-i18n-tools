@@ -11,15 +11,21 @@ import {
 import type { I18nConfig } from "../../src/core/types.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 import {
+  assertTargetLocalesAreLocaleCodes,
+  expandDocTargetLocalesInRawInput,
   expandDocumentationTargetLocalesInRawInput,
+  expandJsonTargetLocalesInRawInput,
   expandTargetLocalesFileReferenceInRawInput,
   getDocumentationTargetLocaleCodes,
+  getJsonTargetLocaleCodes,
   loadUiLanguageEntries,
   looksLikeUiLanguagesFileRef,
   mergeUiLanguageDisplayNames,
   resolveLocalesForDocumentation,
+  resolveLocalesForJson,
   resolveLocalesForSvg,
   resolveLocalesForUI,
+  resolveUiLanguagesAbsPath,
   resolveUiTranslationTargetCodes,
 } from "../../src/core/ui-languages.js";
 
@@ -368,6 +374,145 @@ describe("ui-languages", () => {
       },
     });
     expect(resolveLocalesForDocumentation(c, tmp, "de, es")).toEqual(["de"]);
+  });
+
+  it("assertTargetLocalesAreLocaleCodes throws on path-like entries and passes plain codes", () => {
+    expect(() => assertTargetLocalesAreLocaleCodes(["de", "fr"], "targetLocales")).not.toThrow();
+    expect(() => assertTargetLocalesAreLocaleCodes(["de", "x/y.json"], "targetLocales")).toThrow(
+      ConfigValidationError
+    );
+  });
+
+  it("loadUiLanguageEntries defaults label to code and skips non-object entries", () => {
+    const p = path.join(tmp, "ui-languages.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify([
+        null,
+        "not-an-object",
+        { code: "   " },
+        { code: "de", englishName: "German", direction: "ltr" },
+      ]),
+      "utf8"
+    );
+    const rows = loadUiLanguageEntries(p);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].code).toBe("de");
+    expect(rows[0].label).toBe("de");
+    expect(rows[0].isSourceLocale).toBeUndefined();
+  });
+
+  it("loadUiLanguageEntries throws when the JSON is not an array", () => {
+    const p = path.join(tmp, "not-array.json");
+    fs.writeFileSync(p, JSON.stringify({ code: "de" }), "utf8");
+    expect(() => loadUiLanguageEntries(p)).toThrow(/must be a JSON array/);
+  });
+
+  it("loadUiLanguageEntries throws when no entries have a code", () => {
+    const p = path.join(tmp, "no-codes.json");
+    fs.writeFileSync(p, JSON.stringify([{ label: "Deutsch" }, {}]), "utf8");
+    expect(() => loadUiLanguageEntries(p)).toThrow(/no valid entries/);
+  });
+
+  it("resolveUiLanguagesAbsPath resolves relative, absolute, and missing paths", () => {
+    const rel = baseUiConfig({ uiLanguagesPath: "locales/ui-languages.json" });
+    expect(resolveUiLanguagesAbsPath(rel, tmp)).toBe(path.join(tmp, "locales/ui-languages.json"));
+    const abs = baseUiConfig({ uiLanguagesPath: "/abs/ui-languages.json" });
+    expect(resolveUiLanguagesAbsPath(abs, tmp)).toBe("/abs/ui-languages.json");
+    expect(resolveUiLanguagesAbsPath({ uiLanguagesPath: undefined } as I18nConfig, tmp)).toBeNull();
+    expect(resolveUiLanguagesAbsPath({ uiLanguagesPath: "   " } as I18nConfig, tmp)).toBeNull();
+  });
+
+  it("resolveLocalesForUI uses targetLocales when no --locale is given", () => {
+    const c = baseUiConfig({ sourceLocale: "en-GB", targetLocales: ["de", "fr"] });
+    expect(resolveLocalesForUI(c, tmp).sort()).toEqual(["de", "fr"]);
+  });
+
+  it("mergeUiLanguageDisplayNames seeds names when config has none", () => {
+    const c = baseUiConfig({ localeDisplayNames: undefined });
+    const next = mergeUiLanguageDisplayNames(c, [
+      { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
+    ]);
+    expect(next.localeDisplayNames?.de).toBe("German");
+  });
+
+  it("getJsonTargetLocaleCodes unions block locales and drops the source locale", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr", "es"],
+      json: [
+        { contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de"] },
+        {
+          contentPaths: ["b/"],
+          outputPathTemplate: "{locale}/b.json",
+          targetLocales: ["fr", "en"],
+        },
+      ],
+    });
+    expect(getJsonTargetLocaleCodes(c)).toEqual(["de", "fr"]);
+  });
+
+  it("getJsonTargetLocaleCodes falls back to root targetLocales when a block has none", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr"],
+      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json" }],
+    });
+    expect(getJsonTargetLocaleCodes(c)).toEqual(["de", "fr"]);
+  });
+
+  it("resolveLocalesForJson intersects --locale with json targets", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr", "es"],
+      json: [
+        { contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de", "fr"] },
+      ],
+    });
+    expect(resolveLocalesForJson(c, tmp, "de, es")).toEqual(["de"]);
+  });
+
+  it("resolveLocalesForJson throws when --locale codes are not json targets", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr", "es"],
+      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de"] }],
+    });
+    expect(() => resolveLocalesForJson(c, tmp, "es")).toThrow(/None of the requested/);
+  });
+
+  it("expandJsonTargetLocalesInRawInput rejects a path-like json targetLocales entry", () => {
+    const raw = mergeWithDefaults({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr"],
+      ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
+      cacheDir: ".translation-cache",
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
+      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["x/y.json"] }],
+      openrouter: { translationModels: ["m"] },
+      features: { translateJson: true },
+    });
+    expect(() => expandJsonTargetLocalesInRawInput(raw, tmp)).toThrow(ConfigValidationError);
+  });
+
+  it("expandJsonTargetLocalesInRawInput coerces a scalar block targetLocales to an array", () => {
+    const raw = mergeWithDefaults({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr"],
+      ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
+      cacheDir: ".translation-cache",
+      docs: [{ contentPaths: [], outputDir: "./i18n" }],
+      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: "de" }],
+      openrouter: { translationModels: ["m"] },
+      features: { translateJson: true },
+    });
+    expandJsonTargetLocalesInRawInput(raw, tmp);
+    const block = (raw.json as Array<Record<string, unknown>>)[0]!;
+    expect(block.targetLocales).toEqual(["de"]);
+  });
+
+  it("expandDocTargetLocalesInRawInput is the canonical alias of the deprecated export", () => {
+    expect(expandDocTargetLocalesInRawInput).toBe(expandDocumentationTargetLocalesInRawInput);
   });
 
   it("expandDocumentationTargetLocalesInRawInput rejects a path-like doc targetLocales entry", () => {

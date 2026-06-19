@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
   "version": "1.6.1",
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@11.8.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -114,7 +114,7 @@
     "globals": "^17.6.0",
     "markdown-link-check": "^3.14.2",
     "prettier": "^3.8.4",
-    "semver": "^7.7.2",
+    "semver": "^7.8.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.1",
     "vitest": "^4.1.9"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sourced by upgrade-tools.sh and upgrade-dependencies.sh after `nvm install --lts`.
+# Sourced by upgrade-tools.sh after `nvm install --lts`.
 # Resolves the Node semver (no leading v) into node_ver. Do not match npm versions
 # in install output (e.g. "(npm v11.11.0)").
 

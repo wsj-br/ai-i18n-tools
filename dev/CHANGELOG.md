@@ -9,6 +9,14 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: tooling — `vitest.config.ts` coverage now excludes auto-generated sources via the glob `src/**/*.generated.ts` (e.g. `src/build-info.generated.ts`), so generated files no longer count toward coverage totals or thresholds. New generated sources should follow the `.generated.ts` naming convention to be excluded automatically.
+
+- **Added**: tests — expanded unit coverage for `run-interrupt` (SIGTERM exit code 143, second-signal force-exit, `dispose` listener cleanup, `throwIfAbortSignal`, `runInterruptedExitCode`, and `bindRunInterruptScope` passthrough vs managed scopes), `markdown-quality-split` (`heading`/`admonition` types, depth ≥ 2 splitting, empty/whitespace input, line-midpoint fallback, and char-midpoint floor behavior), and `ui-languages` (`getJsonTargetLocaleCodes`/`resolveLocalesForJson`, `resolveUiLanguagesAbsPath`, `expandJsonTargetLocalesInRawInput`, and `loadUiLanguageEntries` edge cases).
+
+- **Fixed**: tooling — quoted the `@11ty/gray-matter@2.1.0` entry under `minimumReleaseAgeExclude` in `pnpm-workspace.yaml`; the leading `@` is a reserved YAML indicator, so the unquoted scalar broke `pnpm install` with a "bad indentation of a sequence entry" parse error.
+
+- **Fixed**: scripts — `_dedupe_min_release_age_exclude` in `scripts/upgrade-dependencies.sh` now emits YAML-safe quoting when rewriting `minimumReleaseAgeExclude`. Previously it stripped quotes and re-emitted scoped specs (e.g. `@11ty/gray-matter@…`) unquoted, producing invalid YAML, and its quoted-vs-unquoted idempotency check never matched, so every run re-broke `pnpm-workspace.yaml` (the root cause of the install parse error above).
+
 ## [1.6.1] - 2026-06-17
 
 - **Changed**: scripts — rewrote `scripts/write-third-party-notices.js` to resolve the production dependency trees via `pnpm licenses list --prod --json` (per first-party root) and select the license body ourselves, in order: a `scripts/write-third-party-notices.json` `packageOverrides` entry (matched by name + semver range), else a real license file (`LICENSE`/`LICENCE`/`COPYING`/`UNLICENSE`, including suffixed variants such as `LICENSE.MIT` and `COPYING.LESSER`), never `README.md`, else the standard license text for the package's SPDX id. The README is never used as a license body.
