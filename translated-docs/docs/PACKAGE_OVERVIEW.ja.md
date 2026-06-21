@@ -6,7 +6,7 @@
 実際の使用方法については、[GETTING_STARTED.md](GETTING_STARTED.ja.md) を参照してください。翻訳されたドキュメント内のスクリーンショットや図入りSVGについては、[LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ja.md) を参照してください。
 
 <small>**他の言語で読む：** </small>
-<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [Hindi (Roman)](./PACKAGE_OVERVIEW.hi-Latn.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [简体中文](./PACKAGE_OVERVIEW.zh-Hans.md) · [繁體中文](./PACKAGE_OVERVIEW.zh-Hant.md)</small>
 
 ---
 
@@ -30,8 +30,8 @@
   - [キャッシュ（`TranslationCache`）](#cache-translationcache)
   - [出力パス解決](#output-path-resolution)
   - [フラットリンクの書き換え](#flat-link-rewriting)
-- [共有インフラストラクチャー](#shared-infrastructure)
-  - [`OpenRouterClient`](#openrouterclient)
+- [共有インフラストラクチャ](#shared-infrastructure)
+  - [`LlmClient`](#openrouterclient)
   - [設定の読み込み](#config-loading)
   - [ロガー](#logger)
 - [ランタイムヘルパーAPI](#runtime-helpers-api)
@@ -127,7 +127,8 @@ src/
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
 │
 ├── api/
-│   └── openrouter.ts               OpenRouter HTTP client with model fallback chain
+│   ├── llm-client.ts               LlmClient: provider-agnostic chat client (AI SDK) with model fallback chain
+│   └── provider-models-catalog.ts  Fetch/parse any provider's OpenAI-compatible GET /models catalog
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
@@ -165,7 +166,7 @@ source files (JS/TS, optional `.astro`)
 strings.json  ─────────────────── master catalog
       │             { hash: { source, translated, models?, locations? } }
       ▼
-OpenRouterClient.translateUIBatch()
+LlmClient.translateUIBatch()
       │  sends JSON array of source strings, receives JSON array of translations (+ model id per batch)
       ▼
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
@@ -229,7 +230,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 - 文字列のJSON配列を送信し、翻訳された文字列のJSON配列を返信として要求します。
 - 利用可能な場合は用語集のヒントを含めてください。
 
-`OpenRouterClient.translateUIBatch` は、パースエラーやネットワークエラーの際にフォールバックしながら、順に各モデルを試行します。CLIは、`openrouter.translationModels`（またはレガシーなデフォルト/フォールバック）からそのリストを構築します。`translate-ui` では、オプションの `ui.preferredModel` が設定されている場合、先頭に追加されます（残りとの重複は除去されます）。
+`LlmClient.translateUIBatch` は、解析またはネットワークエラーが発生した場合に、順に各モデルを試します。CLI は、アクティブなプロバイダーの `translationModels` からそのリストを構築します。`translate-ui` の場合、オプションの `ui.preferredModel` が設定されている場合は先頭に追加されます（残りのリストとは重複排除されます）。
 
 ---
 
@@ -250,7 +251,7 @@ protected text  ──────────────── HTML tags, admo
 batches[]  ───────────────────── grouped by count + char limit
       │
       ▼  TranslationCache lookup
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  PlaceholderHandler.restoreAfterTranslation
 final text  ──────────────────── placeholders restored
@@ -313,11 +314,11 @@ AstroテンプレートおよびMDX JSXの共通属性／キー保護は `src/pr
 
 SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` をキーとして `translated_text`、`model`、`filepath`、`last_hit_at` および関連フィールドを持つ行を格納します。ハッシュは、正規化されたコンテンツ（空白文字を圧縮）のSHA-256の最初の16文字の16進数です。
 
-各実行時、セグメントはハッシュ×ロケールで検索されます。キャッシュミスの場合のみLLMが呼び出されます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の`last_hit_at`がリセットされます。ドキュメント翻訳中のキャッシュヒット成功時に、そのセグメントの古くなった`translation_failures`行がクリアされます。`cleanup`はまず`sync --force-update`を実行し、その後、古くなったセグメント行（`last_hit_at`がnullまたはファイルパスが空）を削除し、解決されたソースパスがディスク上に存在しない場合に`file_tracking`キーを削除（`doc-block:…`、`json-block:…`、`svg-files:…`など）、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除し、孤立した`translation_failures`行を削除します。また、`--no-backup`が指定されていない限り、最初に`cache.db`をバックアップします。
+実行ごとに、セグメントはハッシュ × ロケールで検索されます。キャッシュミスのみがLLMに送られます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の`last_hit_at`はリセットされます。ドキュメント翻訳中のキャッシュヒットが成功すると、そのセグメントの古い`translation_failures`行がクリアされます。`cleanup`は最初に`sync --force-update`を実行し、次に古いセグメント行（nullの`last_hit_at` / 空のファイルパス）を削除し、解決されたソースパスがディスク上にない場合に`file_tracking`キーを削除し（`doc-block:…`、`json-block:…`、`svg-files:…`など）、メタデータファイルパスが欠落しているファイルを指している翻訳行を削除し、孤立した`translation_failures`行を削除し、解決されたソースパスがディスク上にない孤立した`markdown_source_issues`行を削除します。`cache.db`は、`--backup <path>`が渡されない限りバックアップされません。渡された場合は、最初にそのパスにバックアップが書き込まれます。
 
 `translate-docs`コマンドはまた、既存の出力を持つ変更されていないソースが処理を完全にスキップできるように**ファイル追跡**を使用します。`--force-update`はセグメントキャッシュを引き続き使用しつつファイル処理を再実行します。`--force`はファイル追跡をクリアし、API翻訳用にセグメントキャッシュの読み取りをバイパスします。構成されたすべてのモデルがマークダウンセグメントでAST検証に失敗した場合、`translate-docs`はセグメントを段階的に分割し、より小さな部分を再試行できます（`docs[].segmentSplitting.qualityRetrySplit`、デフォルトで有効）。完全なフラグ表については、[Getting Started](GETTING_STARTED.ja.md#cache-behaviour-and-translate-docs-flags)を参照してください。
 
-**バッチプロンプト形式：** `translate-docs --prompt-format`は`OpenRouterClient.translateDocumentBatch`に対してのみXML（`<seg>` / `<t>`）またはJSON配列/オブジェクト形式を選択します。抽出、プレースホルダー、検証は変更されません。[Batch prompt format](GETTING_STARTED.ja.md#batch-prompt-format)を参照してください。
+**バッチプロンプト形式:** `translate-docs --prompt-format` は、XML (`<seg>` / `<t>`) または JSON 配列/オブジェクトの形式を `LlmClient.translateDocumentBatch` のみに選択します。抽出、プレースホルダー、および検証は変更されません。[バッチプロンプト形式](GETTING_STARTED.ja.md#batch-prompt-format) を参照してください。
 
 <a id="output-path-resolution"></a>
 ### 出力パスの解決
@@ -348,7 +349,7 @@ json[].contentPaths  →  resolve files (file | directory | glob)
 string leaves selected by keyPolicy (dot paths + minimatch)
       │
       ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  NestedJsonExtractor.reassemble
 output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
@@ -366,14 +367,14 @@ output file  ─────────── expandJsonBlockOutputPath(outputP
 ## 共有インフラストラクチャ
 
 <a id="openrouterclient"></a>
-### `OpenRouterClient`
+### `LlmClient`
 
-OpenRouterのチャット補完APIをラップします。主な動作：
+Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルフォールバック**: 解決されたリスト内の各モデルを順番に試行します。HTTPエラーや解析エラーの場合はフォールバックします。UIの翻訳では、存在する場合に `ui.preferredModel` を最初に解決し、次に `openrouter` モデルを解決します。
-- **リクエストタイムアウト**: `openrouter.requestTimeoutMs`（デフォルト30秒）により、`AbortSignal.timeout` 経由で各チャット補完リクエストが中止されます。この同じ値がCLIがカタログを読み込む際に `GET /models` にも適用されます（例：`check-models` および不明なモデルIDを除外するオプションの事前フィルタリング）。
-- **レート制限**: 429応答を検出し、`retry-after`（または2秒）待機して1回再試行します。
-- **デバッグ用トラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストおよび応答のJSONをファイルに追記します。
+- **モデルフォールバック**：解決されたリスト内の各モデルを順番に試行します。リクエストまたはパースの失敗時にフォールバックします。UI翻訳は、存在する場合はまず`ui.preferredModel`を解決し、次にプロバイダーの`translationModels`を解決します。
+- **リクエストタイムアウト**：アクティブなプロバイダーの`requestTimeoutMs`（デフォルト30秒）は、`AbortSignal.timeout`を介して各リクエストを中止します。CLIがプロバイダーのモデルリストを`check-models`（任意のプロバイダー）用にロードする場合や、不明なモデルIDをドロップするオプションの事前チェックフィルター（OpenRouterのみ）の場合にも、同じ値が`GET /models`に適用されます。
+- **OpenRouterの追加機能**（`openrouter`がアクティブな場合のみ）：`provider`リクエストフィールド、`HTTP-Referer` / `X-Title`ヘッダーを介したスループットルーティング、および`usage.cost`から読み取られた正確なUSDコスト。トークン使用量は各プロバイダーに対して報告されます。正確なコストは、プロバイダーがそれを返した場合にのみ報告されます。
+- **デバッグトラフィックログ**：`debugTrafficFilePath`が設定されている場合、リクエストとレスポンスのJSONをファイルに追加します。
 
 <a id="config-loading"></a>
 ### 設定の読み込み
@@ -488,7 +489,7 @@ console.log(
 | `MarkdownExtractor` | Markdown から翻訳対象のセグメントを抽出します。 |
 | `JsonExtractor` | DocusaurusのJSONラベルファイルから抽出（UIカタログ、MDX本文ではない）。 |
 | `SvgExtractor` | SVG ファイルから抽出します。 |
-| `OpenRouterClient` | OpenRouter に翻訳リクエストを送信します。 |
+| `LlmClient` | アクティブな LLM プロバイダーに翻訳リクエストを行います（`OpenRouterClient` は非推奨のエイリアスです）。 |
 | `PlaceholderHandler` | 翻訳前後にMarkdown構文（HTMLタグ、注記、アンカー、MDXコメント/JSX/波括弧、URL、インラインコード、強調）を保護・復元します。 |
 | `protectMdx` / `restoreMdx` | MDXコメント、JSXタグ、波括弧式、JSX文字列属性を保護・復元します（`PlaceholderHandler`から呼び出され、直接使用するためにエクスポートもされます）。 |
 | `splitTranslatableIntoBatches` | セグメントを LLM 向けのバッチサイズにグループ化します。 |

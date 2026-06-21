@@ -18,7 +18,7 @@
 세 가지 워크플로 모두 OpenRouter(호환 가능한 모든 LLM)를 사용하며 단일 설정 파일을 공유합니다.
 
 <small>**다른 언어로 읽기:** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [Hindi (Roman)](./GETTING_STARTED.hi-Latn.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [简体中文](./GETTING_STARTED.zh-Hans.md) · [繁體中文](./GETTING_STARTED.zh-Hant.md)</small>
 
 ---
 
@@ -82,7 +82,7 @@
   - [`batchConcurrency` (선택 사항)](#batchconcurrency-optional)
   - [`fileConcurrency` (선택 사항)](#fileconcurrency-optional)
   - [`batchSize` / `maxBatchChars` (선택 사항)](#batchsize--maxbatchchars-optional)
-  - [`openrouter`](#openrouter)
+  - [`provider` 및 `providers`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
@@ -139,7 +139,7 @@ ai-i18n-tools sync
 
 Linux, macOS 및 WSL에서는 레지스트리 설치 시 CLI 스크립트의 실행 권한 비트가 자동으로 설정됩니다. Windows에서는 패키지 관리자가 Node.js를 명시적으로 호출하는 `.cmd` 및 `.ps1` 쉼(Shim)을 생성합니다.
 
-OpenRouter API 키를 설정하세요:
+공급자 API 키 설정 (OpenRouter 표시됨; 활성 공급자에 해당하는 환경 변수 사용 — [사전 설정 테이블](#openrouter) 참조):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -223,8 +223,8 @@ npx ai-i18n-tools init
 - `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). `generate-ui-languages`를 실행하여 이 목록에서 `ui-languages.json` 매니페스트를 생성합니다.
 - `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 glob 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - 마스터 카탈로그를 작성할 위치 (예: `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - `de.json`, `pt-BR.json`, 등을 어디에 작성할지 (예: `"src/locales/"`).
-- `ui.preferredModel` (선택 사항) - `translate-ui`에 대해서만 **먼저** 시도할 OpenRouter 모델 ID; 실패 시 CLI는 중복을 건너뛰고 `openrouter.translationModels` (또는 레거시 `defaultModel` / `fallbackModel`)로 계속 진행합니다.
+- `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성하는 위치 (예: `"src/locales/"`).
+- `ui.preferredModel` (선택 사항) - `translate-ui`에 대해 **먼저** 시도할 모델 ID; 실패 시 CLI는 활성 공급자의 `translationModels`를 순서대로 계속 진행하며 중복은 건너<0xEB><0x9B><0x81>니다.
 
 <a id="step-2-extract-strings"></a>
 ### 단계 2: 문자열 추출
@@ -326,7 +326,7 @@ const t = useTranslations(locale, makeT(flat));
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json`을 읽고, 각 대상 로케일별로 OpenRouter에 배치를 전송하여 평면 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. `ui.preferredModel`가 설정된 경우, `openrouter.translationModels`의 정렬된 목록보다 먼저 해당 모델을 시도합니다(문서 번역 및 기타 명령은 여전히 `openrouter`만 사용함).
+`strings.json`를 읽고, 각 대상 로케일에 대해 활성 LLM 공급자로 일괄 전송하며, `de.json`, `fr.json` 등 플랫 JSON 파일을 `ui.flatOutputDir`에 씁니다. `ui.preferredModel`가 설정된 경우 해당 모델은 활성 공급자의 `translationModels` 목록보다 먼저 시도됩니다 (문서 번역 및 기타 명령은 공급자의 목록만 사용).
 
 각 항목에 대해 `translate-ui`는 선택적 `models` 객체에 각 로캘을 성공적으로 번역한 **OpenRouter 모델 ID**를 저장합니다(`translated`와 동일한 로캘 키 사용). 로컬 `dashboard` 명령에서 편집된 문자열은 해당 로캘의 `models`에서 `user-edited`라는 센티널 값으로 표시됩니다. `ui.flatOutputDir` 아래의 로캘별 평면 파일은 **소스 문자열 → 번역**만 포함하며 `models`을 포함하지 않습니다(따라서 런타임 번들은 변경되지 않음).
 
@@ -401,7 +401,7 @@ export default i18n;
 
 이 코드 조각은 `i18n`가 해당 폴더 옆에 위치하는 것처럼 `./locales/…`과 `./public/locales/…`을 사용합니다. 파일이 `src/` 아래에 있는 경우(일반적인 경우), `../locales/…`와 `../public/locales/…`를 사용하여 가져오기가 `ui.stringsJson`, `uiLanguagesPath`, `ui.flatOutputDir`와 동일한 경로를 참조하도록 하세요.
 
-React가 렌더링하기 전에 `i18n.js`을 임포트하세요(예: 진입점 상단). 사용자가 언어를 변경하면 `await loadLocale(code)`을 호출한 후 `i18n.changeLanguage(code)`를 호출하세요.
+React가 렌더링되기 전에 `i18n.js`을(를) 가져옵니다(예: 진입점 상단). 사용자가 언어를 변경하면 `await loadLocale(code)`을(를) 호출한 다음 `await i18n.changeLanguage(code)`을(를) 호출합니다.
 
 `SOURCE_LOCALE`은 다른 파일(예: 언어 전환기)에서 직접 `'./i18n'`을 통해 가져올 수 있도록 내보내집니다. 기존의 i18next 설정을 마이그레이션하는 경우, 컴포넌트 전반에 흩어진 하드코딩된 소스 로케일 문자열(예: `'en-GB'` 확인 코드)을 i18n 부트스트랩 파일에서 `SOURCE_LOCALE`을 가져오는 방식으로 대체하세요.
 
@@ -545,7 +545,7 @@ function LanguageSelect({
 
   const handleChange = async (code: string) => {
     await loadLocale(code);
-    i18n.changeLanguage(code);
+    await i18n.changeLanguage(code);
     onChange(code);
   };
 
@@ -709,7 +709,7 @@ CLI는 SQLite에 **파일 추적**(파일별 소스 해시 × 로캘) 및 **세�
 <a id="batch-prompt-format"></a>
 #### 일괄 프롬프트 형식
 
-`translate-docs`은 번역 가능한 세그먼트를 OpenRouter에 **배치** 단위로 전송함 (`batchSize` / `maxBatchChars` 기준으로 그룹화됨). `--prompt-format` 플래그는 해당 배치의 **전송 형식**만 변경함; `PlaceholderHandler` 토큰, 마크다운 AST 검사, SQLite 캐시 키, 배치 파싱 실패 시 세그먼트별 대체 동작은 변경되지 않음.
+`translate-docs`는 **일괄** (`batchSize` / `maxBatchChars`별로 그룹화)로 활성 LLM 공급자에 번역 가능한 세그먼트를 전송합니다. `--prompt-format` 플래그는 해당 일괄 처리의 **와이어 형식**만 변경하며, `PlaceholderHandler` 토큰, 마크다운 AST 검사, SQLite 캐시 키 및 일괄 처리 구문 분석 실패 시 세그먼트별 대체는 변경되지 않습니다.
 
 | 모드                   | 사용자 메시지                                                           | 모델 응답                                                 |
 |------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
@@ -1134,7 +1134,7 @@ npx ai-i18n-tools status
 ```json
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
+  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
   "features": {
     "translateUIStrings": true,
     "translateDocs": true,
@@ -1172,7 +1172,7 @@ npx ai-i18n-tools status
 
 ```json
 {
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
+  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
   "docs": [
     {
       "contentPaths": ["docs/"],
@@ -1307,7 +1307,7 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 토큰을 소비하기 전에 **소스 마크다운**을 수정하고자 할 때 이 탭을 사용하세요—특히 구조 관련 품질 검사가 반복적으로 실패할 경우 유용합니다. 파일 경로(캐시 키에 대한 부분 일치, `doc-block:{index}:` 접두사 포함), **이슈 코드**, 또는 **소스 해시**로 필터링할 수 있으며, 파일 경로 + 라인 또는 최신 스캔 시간 기준으로 정렬할 수 있습니다. 링크 버튼은 `ai-i18n-tools dashboard`가 실행 중인 터미널로 파일/라인 힌트를 기록합니다(문서 탭과 동일한 개념).
 
-**행 새로 고침:** `ai-i18n-tools check-markdown` 실행 (선택 사항 `-p` / `--path` 범위, `--no-cache`으로 SQLite 건너뛰기, `--json`로 표준 출력에 기계 판독 가능한 출력, 표준 오류에 사람이 읽을 수 있는 출력). 기본적으로 `docs[].warnMarkdownSourceIssues`이 `false`로 설정되지 않은 경우 각 `translate-docs` 마크다운 파일 실행 시 해당 파일의 행을 다시 스캔하고 대체합니다. 캐시 파일 경로에 대한 모든 번역을 지우면 실패와 동일한 정리 경로의 일환으로 해당 파일 경로에 대한 마크다운 문제 행도 제거됩니다.
+**행 새로 고침:** `ai-i18n-tools check-markdown`를 실행합니다 (선택 사항인 `-p` / `--path` 범위, SQLite를 건너뛰려면 `--no-cache`, stderr에 사람이 읽을 수 있는 줄과 함께 stdout에 컴퓨터가 읽을 수 있는 출력을 표시하려면 `--json`). 기본적으로 각 `translate-docs` 마크다운 파일 실행은 `docs[].warnMarkdownSourceIssues`이 `false`로 설정되지 않은 경우 해당 파일의 행을 다시 스캔하고 바꿉니다. 캐시 파일 경로에 대한 모든 번역을 지우면 실패와 동일한 정리 경로의 일부로 해당 파일 경로에 대한 마크다운 문제 행이 제거됩니다. `cleanup`는 해결된 소스 경로가 디스크에 없는 마크다운 문제 행을 추가로 정리하므로 삭제되거나 이름이 변경된 파일(`check-markdown`로만 스캔되었고 번역되지 않은 파일도 포함)에 대한 진단이 남아 있지 않습니다.
 
 ---
 
@@ -1370,24 +1370,52 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 문서 번역을 위한 세그먼트 배치: 요청당 세그먼트 수와 문자 수 상한. 기본값: **20** 세그먼트, **4096** 문자 (생략 시).
 
 <a id="openrouter"></a>
-### `openrouter`
+### `provider` 및 `providers`
 
-- `baseUrl`
-  OpenRouter API 기본 URL. 기본값: `https://openrouter.ai/api/v1`.
+`provider` (최상위, 선택 사항)은 `providers`에서 활성 공급자 키를 선택합니다. 구성된 공급자가 하나뿐인 경우 선택 사항이며, 둘 이상 구성된 경우 필수입니다.
+
+`providers` (최상위)는 공급자 키를 해당 블록에 매핑합니다. 내장 키 (아래 사전 설정 테이블 참조)는 `translationModels`만 필요합니다. 다른 키는 사용자 지정 OpenAI 호환 엔드포인트를 정의하며 `baseUrl` (및 `apiKeyEnv`, 엔드포인트에 키가 필요하지 않은 경우 제외)가 필요합니다.
+
+각 `providers.<name>` 블록은 다음을 허용합니다:
+
 - `translationModels`
-  선호하는 모델 ID의 우선순위 목록. 첫 번째 모델부터 시도되며, 오류 시 후속 항목이 대체로 사용됩니다. `translate-ui` 전용으로, `ui.preferredModel`를 설정하여 이 목록 이전에 한 모델을 먼저 시도할 수 있습니다(자세한 내용은 `ui` 참조).
-- `defaultModel`
-  레거시 단일 주요 모델. `translationModels`이 설정되지 않았거나 비어 있을 때만 사용됩니다.
-- `fallbackModel`
-  레거시 단일 대체 모델. `translationModels`이 설정되지 않았거나 비어 있을 때 `defaultModel` 이후에 사용됩니다.
+  선호하는 모델 ID 순서 목록 (일반 업스트림 ID, `provider/` 접두사 없음; OpenRouter ID는 기본 `vendor/model` 형식 유지). 첫 번째가 먼저 시도되며, 오류 시 나중 항목이 대체됩니다. `translate-ui`의 경우, 이 목록보다 먼저 하나의 모델을 시도하도록 `ui.preferredModel`를 설정할 수도 있습니다 (`ui` 참조).
+- `baseUrl`
+  OpenAI 호환 기본 URL. 사전 설정 기본 URL을 재정의하며, 사전 설정이 아닌 공급자의 경우 필수입니다.
+- `apiKeyEnv`
+  API 키를 포함하는 환경 변수. 사전 설정 환경 변수를 재정의합니다.
+- `headers`
+  이 공급자로의 모든 요청에 전송되는 추가 HTTP 헤더.
 - `maxTokens`
-  요청당 최대 완성 토큰 수. 기본값: `8192`.
+  요청당 최대 완료 토큰 수. 기본값: `8192`.
 - `temperature`
   샘플링 온도. 기본값: `0.2`.
 - `requestTimeoutMs`
-  OpenRouter(채팅 완성 및 내부 `GET /models` 호출)에 대한 각 HTTP 요청의 최대 대기 시간(밀리초). 기본값: `30000`(30초).
+  각 요청을 기다리는 최대 시간 (밀리초). 기본값: `30000` (30초).
 
-**여러 모델을 사용하는 이유:** 다양한 제공업체와 모델은 언어 및 로캘별로 비용과 품질 수준이 다릅니다. 단일 모델이 아닌 `openrouter.translationModels`을 **우선 순위 기반 대체 체인**으로 구성하면 요청이 실패할 경우 CLI가 다음 모델을 시도할 수 있습니다.
+내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
+
+| 제공자 | 기본 URL | API 키 환경 변수 |
+| --- | --- | --- |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
+| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
+| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `ollama` | `http://localhost:11434/v1` | (없음) |
+
+레거시 최상위 `openrouter` 블록 (`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs` 포함)은 여전히 허용되며 로드 시 `providers.openrouter` (`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`은 `translationModels`로 접힙니다.
+
+여러 공급자를 하나의 구성으로 설정하고 `-P`를 사용하여 전환하는 실행 가능한 예시는 [`examples/multi-provider`](../../docs/../examples/multi-provider/)를 참조하십시오 (동일한 문서의 `openai`, `anthropic`, `nvidia`, `deepseek`).
+
+**여러 모델을 사용하는 이유:** 공급자와 모델마다 비용이 다르고 언어 및 로케일에 따라 다른 수준의 품질을 제공합니다. `translationModels`를 **순서대로 대체되는 체인**으로 구성하십시오 (단일 모델이 아닌). 그러면 요청 실패 시 CLI가 다음 모델을 시도할 수 있습니다.
 
 아래 목록은 확장 가능한 **기준**으로 간주하세요. 특정 로캘의 번역 품질이 낮거나 실패하는 경우, 해당 언어 또는 문자 체계를 효과적으로 지원하는 모델을 조사하고 (온라인 자료 또는 제공업체 문서 참조), 해당 OpenRouter ID를 추가 대안으로 등록하세요.
 
@@ -1418,9 +1446,9 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 
 <br />
 
-환경 또는 `.env` 파일에서 `OPENROUTER_API_KEY`을 설정하세요.
+활성 공급자의 API 키 환경 변수 (예: `OPENROUTER_API_KEY`)를 환경 또는 `.env` 파일에 설정하십시오.
 
-`translationModels`을 변경하기 전에 `npx ai-i18n-tools check-models`을 실행하여 구성된 각 모델 ID를 OpenRouter의 실시간 카탈로그(`GET /models`)와 대조하세요. 이 명령은 누락되었거나 `expiration_date`을 초과한 ID를 보고하고, 유효한 모델과 예상 입력/출력 가격(100만 토큰당 USD)을 나열하며, 구성된 ID 중 하나라도 유효하지 않을 경우 0이 아닌 상태 코드로 종료됩니다. `OPENROUTER_API_KEY`이 필요합니다.
+`translationModels`을(를) 변경하기 전에 `npx ai-i18n-tools check-models`을(를) 실행하세요. 모든 제공업체에 대해 구성된 각 모델 ID를 해당 제공업체의 라이브 모델 목록(`GET /models`)과 대조하여 확인하고, 누락되었거나 `expiration_date`이(가) 지난 ID를 보고하며, 유효한 모델 목록을 표시하고, 구성된 ID 중 유효하지 않은 것이 있으면 0이 아닌 값으로 종료합니다. 제공업체가 가격 책정 정보(예: OpenRouter)를 반환하는 경우, 예상 입력/출력 가격(1백만 토큰당 USD)도 표시합니다.
 
 <a id="features"></a>
 ### `features`
@@ -1438,13 +1466,13 @@ UI와 병행하여 파일 기반 디버깅이 필요한 경우, 여전히 재시
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")` 호출을 위해 스캔된 디렉토리 또는 glob 패턴 (cwd에 상대적). `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
+  `t("…")` 호출을 검색하는 디렉터리 또는 glob 패턴 (cwd 기준). `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
 - `stringsJson`  
   마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됩니다.
 - `flatOutputDir`  
-  로케일별 JSON 파일이 작성되는 디렉토리 (`de.json`, 등).
+  로케일별 JSON 파일 (`de.json` 등)이 작성되는 디렉터리.
 - `preferredModel`  
-  선택 사항. `translate-ui`에 대해서만 먼저 시도되는 OpenRouter 모델 ID; 그런 다음 `openrouter.translationModels` (또는 레거시 모델) 순서대로, 이 ID를 중복하지 않고.
+  선택 사항. `translate-ui`에 대해 먼저 시도되는 모델 ID; 그 다음 활성 공급자의 `translationModels`를 순서대로 시도하며, 이 ID는 중복되지 않습니다.
 - `uiExtractor.funcNames`(또는 레거시 `reactExtractor.funcNames`)  
   스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
 - `uiExtractor.extensions`(또는 레거시 `reactExtractor.extensions`)  
@@ -1645,7 +1673,9 @@ npx ai-i18n-tools glossary-generate
 |------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version`                                                                                                  | CLI 버전 및 빌드 타임스탬프 출력 (루트 프로그램의 `-V` / `--version`와 동일한 정보).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website\|ui-json-bundles] [-o path] [--with-translate-ignore]` | 시작 구성 파일 생성(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `docs[].addFrontmatter` 포함). `ui-json-bundles`은 워크플로 3 구조 생성(`json[]` 전용). `--with-translate-ignore`은 시작용 `.translate-ignore` 생성.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `check-models`                                                                           | 구성된 각 OpenRouter 모델 ID를 `GET /models`(카탈로그 멤버십, `expiration_date`, 프롬프트/완성 시 100만 토큰당 USD)과 대조하여 유효성을 검사합니다. `OPENROUTER_API_KEY`이 필요합니다. 구성된 ID 중 누락되거나 만료된 것이 있을 경우 비제로 종료합니다. 카탈로그 요청 시 `openrouter.requestTimeoutMs`을(를) 따릅니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `check-models`                                                                                             | 구성된 각 모델 ID를 활성 공급자의 `GET /models` 목록(멤버십 및 `expiration_date`)과 대조하여 검증합니다. 해당 공급자의 API 키가 필요합니다(Ollama와 같은 키리스 공급자는 필요 없음). 구성된 ID가 누락되었거나 만료된 경우 0이 아닌 값으로 종료하며, 공급자의 `requestTimeoutMs`을 존중합니다. 공급자가 가격(예: OpenRouter)을 반환하는 경우 프롬프트/완료에 대한 100만 토큰당 USD도 표시합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `list-models`                                                                                              | 활성 공급자가 `GET /models` 목록을 통해 광고하는 모든 모델을 나열합니다(ID별로 정렬됨. 활성 공급자는 구성 `provider` 키를 따르며, `-P` / `--provider`로 재정의할 수 있음). 해당 공급자의 API 키가 필요합니다(Ollama와 같은 키리스 공급자는 필요 없음). 공급자가 가격(예: OpenRouter)을 반환하는 경우 프롬프트/완료에 대한 100만 토큰당 USD도 표시하고, `expiration_date` 이후의 항목을 태그합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `list-languages [search]`                                                                                  | 번들 UI 언어 카탈로그(`data/ui-languages-complete.json`)를 사람이 읽을 수 있는 테이블(코드, 텍스트 방향, 영어 이름, 네이티브 이름)로 나열합니다. 구성이나 API 키가 필요하지 않습니다. 선택적으로 `search` 용어를 전달하여 코드, 네이티브 이름, 영어 이름 또는 방향에 해당 용어를 포함하는 항목만 유지합니다(대소문자 구분 없음). 예: `list-languages portuguese`, `list-languages rtl`, `list-languages zh`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `extract`                                                                                                  | `t("…")` / `i18n.t("…")` 리터럴에서 `strings.json`을(를) 업데이트하고, 선택적으로 `package.json` 설명과 매니페스트 `englishName` 항목을 포함합니다(`ui.reactExtractor` 참조). 비어 있지 않은 `ui.sourceRoots`이(가) 필요합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` 및 번들된 `data/ui-languages-complete.json`(또는 설정 시 `--master`)을 사용하여 `ui.flatOutputDir`(또는 설정된 경우 `uiLanguagesPath`)에 `ui-languages.json`을(를) 씁니다. 마스터 파일에 없는 로케일에 대해서는 경고를 표시하고 `TODO` 자리 표시자를 출력합니다. 사용자 정의된 `label` 또는 `englishName` 값을 가진 기존 매니페스트가 있는 경우, 마스터 카탈로그의 기본값으로 대체됩니다. 생성된 파일을 나중에 검토하고 조정하십시오.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `translate-docs …`                                                                                         | 각 `docs` 블록(`contentPaths`, 선택적 `docusaurusCatalogDir`)에 대해 마크다운/MDX 및 JSON을 번역합니다. `-j`: 최대 병렬 로케일 수; `-b`: 파일당 최대 병렬 배치 API 호출 수. `--prompt-format`: 배치 전송 형식(`xml` \| `json-array` \| `json-object`). [캐시 동작 및 `translate-docs` 플래그](#cache-behaviour-and-translate-docs-flags) 및 [배치 프롬프트 형식](#batch-prompt-format)을 참조하세요.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1655,12 +1685,12 @@ npx ai-i18n-tools glossary-generate
 | `translate-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                               | UI 문자열만 번역합니다 (`strings.json` → 로케일 JSON). `--locale`, `ui-languages.json`: 쉼표로 구분된 대상 로케일 (기본값은 설정 또는 `ui-languages.json`에서 가져옴). `--force`: 기존 번역을 무시하고 로케일별로 모든 항목을 다시 번역합니다. `--dry-run`: 쓰기 작업 없음, API 호출 없음. `-j`: 최대 병렬 처리 가능한 로케일 수. `features.translateUIStrings` 필요.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `translate-json …`                                                                                         | `json[]`에 따라 중첩된 JSON을 번역합니다(`features.translateJson` 필요). 공유 SQLite 캐시; `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`. [Workflow 3](#workflow-3---json-file-translation) 참조.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                                      | UI 문자열을 추출한 후 번역합니다(`features.translateUIStrings` 필요). UI 전용 — 문서, SVG 또는 `json[]`는 포함되지 않음. `translate-ui`과 동일한 `-l`, `--force`, `--dry-run`, `-j` 옵션 사용.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                      | **최초**로 `extract`을(를) 실행하여 `features.translateUIStrings`가 필요함 → `strings.json`이(가) 원본과 일치한 후, **원본 로케일** UI 문자열에 대한 LLM 검토(철자, 문법)를 수행합니다. **용어 힌트**는 `glossary.userGlossary` CSV에서만 제공되며, `translate-ui`와 동일한 범위를 가집니다 (`strings.json` / `uiGlossary`는 제외하므로 잘못된 문구가 용어집으로 강화되지 않음). OpenRouter(`OPENROUTER_API_KEY`)를 사용합니다. 참고용이며, 실행 완료 시 **0**으로 종료됩니다. 요약, 문제점, 각 문자열별 **OK** 항목을 포함한 **사람이 읽기 쉬운** 보고서 형식으로 `cacheDir` 아래에 `lint-source-results_<timestamp>.log`을(를) 작성합니다. 터미널에는 요약 수치와 문제점만 출력되며 (문자열당 `[ok]` 줄은 출력되지 않음). 마지막 줄에 로그 파일 이름을 출력합니다. `--json`: 전체 기계 판독 가능한 JSON 보고서를 stdout에만 출력 (로그 파일은 사람이 읽기 쉬운 형식 유지). `--dry-run`: 여전히 `extract`을(를) 실행한 후, 배치 계획만 출력 (API 호출 없음). `--chunk`: API 배치당 문자열 수 (기본값 **50**). `-j`: 최대 병렬 배치 수 (기본값 `concurrency`). `--json` 사용 시, 인간 친화적인 출력은 stderr로 전달됩니다. 링크는 `dashboard` UI 문자열의 '링크' 버튼과 동일한 방식으로 `path:line`를 사용합니다. |
+| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                      | `extract` **먼저** 실행(`features.translateUIStrings` 필요)하여 `strings.json`가 소스와 일치하도록 하고, **소스 로케일** UI 문자열에 대한 LLM 검토(철자, 문법). **용어 힌트**는 `glossary.userGlossary` CSV에서만 가져옵니다(`translate-ui`와 동일한 범위 — `strings.json` / `uiGlossary` 아님, 따라서 잘못된 복사가 용어집으로 강화되지 않음). 활성 LLM 제공자(API 키 환경 변수)를 사용합니다. 권고 사항만 해당(실행 완료 시 **0**로 종료). `lint-source-results_<timestamp>.log`를 `cacheDir` 아래에 **사람이 읽을 수 있는** 보고서(요약, 문제 및 문자열별 **OK** 행)로 작성합니다. 터미널에는 요약 개수와 문제만 인쇄합니다(문자열당 `[ok]` 행 없음). 마지막 줄에 로그 파일 이름을 인쇄합니다. `--json`: 전체 기계 판독 가능한 JSON 보고서를 stdout으로만 보냅니다(로그 파일은 사람이 읽을 수 있도록 유지). `--dry-run`: `extract`을 계속 실행한 다음 배치 계획만 인쇄합니다(API 호출 없음). `--chunk`: API 배치당 문자열 수(기본값 **50**). `-j`: 최대 병렬 배치 수(기본값 `concurrency`). `--json` 사용 시 사람 스타일 출력이 stderr로 이동합니다. 링크는 `path:line`를 사용하여 `dashboard` UI 문자열의 “링크” 버튼과 같이 작동합니다. |
 | `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`              | XLIFF 2.0으로 `strings.json` 내보내기 (대상 로캘당 `.xliff` 하나씩). `-o` / `--output-dir`: 출력 디렉터리 (기본값: 카탈로그와 동일한 폴더). `--untranslated-only`: 해당 로캘에서 번역이 누락된 항목만. 읽기 전용; API 없음.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `sync …`                                                                                                   | 추출(활성화된 경우), 그 후 UI 번역, `features.translateSVG` 및 `config.svg`가 설정된 경우 `translate-svg`, 그 후 문서 번역, `features.translateJson` 및 `json[]`가 설정된 경우 `translate-json` — 단, `--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`로 건너뛴 경우 제외. 공유 플래그: `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b` (문서 및 JSON 배치), `--force` / `--force-update` (문서 및 JSON). 문서 단계에서는 `--emphasis-placeholders` 및 `--debug-failed`도 전달되며(`translate-docs`과 동일한 의미), `--prompt-format`는 `sync` 플래그가 아니며 문서 및 JSON 단계는 내장 기본값(`json-array`)을 사용합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `status [--max-columns <n>]`                                                             | `features.translateUIStrings`이 켜져 있으면 로캘별 UI 커버리지를 출력함 (`Translated` / `Missing` / `Total`). 그 후 파일 × 로캘별 마크다운 번역 상태를 출력함 (`--locale` 필터 없음; 로캘은 구성에서 가져옴). 많은 수의 로캘 목록은 터미널에서 줄이 너무 길어지지 않도록 최대 `n`개의 로캘 열을 가진 반복 테이블로 분할됨 (기본값 **9**).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `statistics [--max-columns <n>]`                                                         | 문서화 캐시 및 `strings.json` 통계 출력 (번역 대시보드 → **통계**와 동일한 집계값 사용). `--max-columns`: 모델당 최대 로케일 열 × 로케일 테이블 (기본값은 대시보드와 일치).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                                                      | 먼저 `sync --force-update`을 실행한 후(추출, UI, SVG, 문서), 고립된 세그먼트 행(null `last_hit_at` / 비어 있는 파일 경로)을 제거합니다. 디스크상에서 확인할 수 없는 해석된 소스 경로를 가진 `file_tracking` 행을 삭제하고, 존재하지 않는 파일을 가리키는 `filepath` 메타데이터를 포함한 번역 행을 제거하며, 고립된 `translation_failures` 행을 정리합니다. 네 가지 개수(고립된 세그먼트, 고립된 `file_tracking`, 고립된 번역, 고립된 실패)를 로그로 기록합니다. `--no-backup`이(가) 설정되지 않은 경우 캐시 디렉터리 하위에 타임스탬프가 포함된 SQLite 백업을 생성합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `cleanup [--dry-run] [--backup <path>]`                                                      | 먼저 `sync --force-update`를 실행(추출, UI, SVG, 문서)한 다음, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거합니다. 디스크에 없는 확인된 소스 경로를 가진 `file_tracking` 행을 삭제합니다. `filepath` 메타데이터가 없는 파일을 가리키는 번역 행을 제거합니다. 고아 `translation_failures` 행을 정리합니다. 디스크에 없는 확인된 소스 경로를 가진 고아 `markdown_source_issues` 행을 정리합니다. 다섯 가지 개수(오래된 세그먼트, 고아 `file_tracking`, 고아 번역, 고아 실패, 고아 마크다운 문제)를 기록합니다. `--backup <path>`가 전달되지 않는 한 SQLite 백업은 만들어지지 않으며, 이 경우 수정 전에 해당 경로에 백업을 작성합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `clean-temp [-r\|--root <path>] [-f\|--force] [--dry-run]`                               | **구성 없음.** 디렉터리 트리 탐색(기본값: 현재 작업 디렉터리)하여 `*.log` 및 `cache.db.backup*.sqlite` 검색하고, `find -print`처럼 `./…` 경로 출력. 일치 항목이 있는 경우: `-f` / `--force`가 없으면 `Delete these files? (y/n)` 확인 요청(확인 없이 삭제). 일치 항목이 없는 경우: 확인 요청 없이 종료. `--dry-run`: 목록만 출력, 확인 요청 또는 삭제 없음(`--force`를 무시함).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `dashboard [-p <port>] [--no-open]`                                                                        | 번역 대시보드를 실행합니다(캐시 세그먼트, `strings.json`, 용어집, 실패 내역 및 통계를 위한 로컬 웹 UI). 기본 포트는 **8675**이며, 사용 불가 시 다음 포트로 재시도합니다. `--no-open` 옵션을 사용하면 기본 브라우저가 자동으로 열리지 않습니다. 더 이상 사용되지 않는 별칭 `editor`은 여전히 작동하지만 경고 메시지를 출력합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `glossary-generate [-o <path>]`                                                          | 빈 `glossary-user.csv` 템플릿을 작성합니다. `-o`: 출력 경로를 재정의합니다(기본값: 구성 파일의 `glossary.userGlossary` 또는 `glossary-user.csv`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -1675,6 +1705,7 @@ npx ai-i18n-tools glossary-generate
 | `-h` / `--help`              | 루트 프로그램  | 루트 프로그램 또는 명령어 이름과 함께 사용 시 해당 하위 명령어에 대한 도움말을 표시합니다.      |
 | `-c` / `--config <path>`     | 모든 명령어 | 구성 파일 경로(기본값: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | 모든 명령어 | 자세한 로그 기록.                                                                          |
+| `-P` / `--provider <name>`   | 모든 명령 | 이 실행의 활성 LLM 제공자이며, 구성 `provider` 키를 재정의합니다. `providers` 아래에 구성해야 합니다. |
 | `-w` / `--write-logs [path]` | 모든 명령어 | 콘솔 출력을 `.log` 파일로 복사(기본 경로: 루트 `cacheDir` 아래).                |
 
 <a id="per-command-help"></a>
@@ -1698,10 +1729,12 @@ npx ai-i18n-tools glossary-generate
 <a id="environment-variables"></a>
 ## 환경 변수
 
-| 변수               | 설명                                                |
+| 변수               | 설명                                                       |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | **필수 항목.** OpenRouter API 키.                     |
-| `OPENROUTER_BASE_URL`   | API 기본 URL을 재정의합니다.                                 |
+| `OPENROUTER_API_KEY`   | `openrouter` 제공자의 API 키(해당 제공자가 활성일 때 필요). |
+| 다른 제공자 키    | 각 제공자는 자체 키 환경 변수를 읽습니다: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`(Ollama는 필요 없음). `providers.<name>.apiKeyEnv`로 제공자별로 재정의합니다. |
+| `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |
+| `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |
 | `I18N_SOURCE_LOCALE`    | 런타임에 `sourceLocale`을 재정의합니다.                        |
 | `I18N_TARGET_LOCALES`   | `targetLocales`을 재정의할 쉼표로 구분된 로케일 코드입니다.  |
 | `I18N_LOG_LEVEL`        | 로거 레벨(`debug`, `info`, `warn`, `error`, `silent`). |

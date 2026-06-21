@@ -6,7 +6,7 @@ import { PlaceholderHandler } from "../processors/placeholder-handler.js";
 import { restoreGlossaryForcedTerms } from "../processors/glossary-force-placeholders.js";
 import { errorsIncludeAstMismatch, validateDocTranslatePair } from "../processors/validator.js";
 import type { Glossary } from "../glossary/glossary.js";
-import type { OpenRouterClient } from "../api/openrouter.js";
+import type { LlmClient } from "../api/llm-client.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
 
 type ProtectState = {
@@ -44,7 +44,7 @@ export type DocQualityLogWriter = (opts: {
 export type ProtectSegmentFn = (raw: string) => { text: string; state: ProtectState };
 
 export type TranslateOneSegmentQualityRetryParams = {
-  client: OpenRouterClient;
+  client: LlmClient;
   locale: string;
   glossary: Glossary;
   contentType: DocumentPromptContentType;

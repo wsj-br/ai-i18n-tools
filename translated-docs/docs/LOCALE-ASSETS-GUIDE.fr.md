@@ -17,7 +17,7 @@ Pour la référence de configuration SVG, consultez la section [`svg`](#svg) dan
 Ce guide utilise les chaînes JSON exactes provenant de la configuration — pas uniquement des mots anglais — afin que les versions traduites restent sans ambiguïté. Les anciennes clés (`documentations`, `markdownOutput`) sont acceptées au chargement ; privilégiez `docs` et `docsOutput` dans les nouvelles configurations.
 
 <small>**Lire dans d'autres langues :** </small>
-<small id="lang-list">[English (GB)](../../docs/LOCALE-ASSETS-GUIDE.md) · [Deutsch](./LOCALE-ASSETS-GUIDE.de.md) · [Español](./LOCALE-ASSETS-GUIDE.es.md) · [Français](./LOCALE-ASSETS-GUIDE.fr.md) · [हिन्दी](./LOCALE-ASSETS-GUIDE.hi.md) · [日本語](./LOCALE-ASSETS-GUIDE.ja.md) · [한국어](./LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](./LOCALE-ASSETS-GUIDE.pt-BR.md) · [中文 (中国大陆)](./LOCALE-ASSETS-GUIDE.zh-CN.md) · [中文 (台灣)](./LOCALE-ASSETS-GUIDE.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/LOCALE-ASSETS-GUIDE.md) · [Deutsch](./LOCALE-ASSETS-GUIDE.de.md) · [Español](./LOCALE-ASSETS-GUIDE.es.md) · [Français](./LOCALE-ASSETS-GUIDE.fr.md) · [Hindi (Roman)](./LOCALE-ASSETS-GUIDE.hi-Latn.md) · [日本語](./LOCALE-ASSETS-GUIDE.ja.md) · [한국어](./LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](./LOCALE-ASSETS-GUIDE.pt-BR.md) · [简体中文](./LOCALE-ASSETS-GUIDE.zh-Hans.md) · [繁體中文](./LOCALE-ASSETS-GUIDE.zh-Hant.md)</small>
 
 ---
 

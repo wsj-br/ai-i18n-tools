@@ -56,6 +56,21 @@
     }
   })();
 
+  (function attachDashboardClose() {
+    const closeBtn = document.getElementById("dashboard-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        closeBtn.disabled = true;
+        window
+          .fetch("/api/shutdown", { method: "POST" })
+          .catch(function () {})
+          .finally(function () {
+            window.close();
+          });
+      });
+    }
+  })();
+
   const UI_PAGE_SIZE = 25;
   const UP_PAGE_SIZE = 25;
   const GL_PAGE_SIZE = 25;
@@ -2354,8 +2369,6 @@
           c.totalSegments === 0 ? "—" : "100.0%"
         }</td></tr></tfoot></table>`;
         
-        html += renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, "cache");
-        
         html += '</div>';
 
         html += '</div><div class="stats-column">';
@@ -2397,12 +2410,31 @@
           html += `<tfoot><tr class="stats-table-total"><th scope="row">Total</th><td>${totalUiModelUsage}</td><td>${
             totalUiModelUsage === 0 ? "—" : "100.0%"
           }</td></tr></tfoot></table>`;
-          
-          html += renderModelLocaleMatrix(ui.byModel, ui.plainByLocale, ui.byModelLocale, "ui");
         }
         html += "</div>";
 
         html += "</div></div>";
+
+        const cacheMatrix = renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, "cache");
+        const uiMatrix = ui.available
+          ? renderModelLocaleMatrix(ui.byModel, ui.plainByLocale, ui.byModelLocale, "ui")
+          : "";
+        if (cacheMatrix || uiMatrix) {
+          html += '<div class="stats-fullwidth">';
+          if (cacheMatrix) {
+            html +=
+              '<div class="stats-section"><h3 class="stats-section-title">Documentation cache — model × locale</h3>' +
+              cacheMatrix +
+              "</div>";
+          }
+          if (uiMatrix) {
+            html +=
+              '<div class="stats-section"><h3 class="stats-section-title">UI strings — model × locale</h3>' +
+              uiMatrix +
+              "</div>";
+          }
+          html += "</div>";
+        }
 
         contentEl.innerHTML = html;
       })

@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-A CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites using large language models via [OpenRouter](https://openrouter.ai/). Three modular workflows, all sharing a single config file, support different translation needs:
+A CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites using large language models. It works with [OpenRouter](https://openrouter.ai/) and any OpenAI-compatible provider (OpenAI, Anthropic, Gemini, DeepSeek, Groq, Mistral, xAI, Cerebras, NVIDIA, Alibaba, APIFUN, Ollama, and more). Three modular workflows, all sharing a single config file, support different translation needs:
 
 - **Workflow 1 — UI Translation:** Extracts `t("…")` calls from JS/TS (and optionally from `.astro` files) and generates flat, per-locale JSON for i18next or static SSG lookup.
 - **Workflow 2 — Document Translation:** Translates markdown, MDX, and `.astro` pages (for websites and Starlight) listed in `docs[].contentPaths` using `translate-docs`.
@@ -23,7 +23,7 @@ A CLI and toolkit for internationalizing JavaScript/TypeScript applications and 
 All workflows maintain a file/SQLite cache to ensure that only new or changed segments (strings or text chunks) are sent to the LLM.
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./README.md) · [Deutsch](./translated-docs/README.de.md) · [Español](./translated-docs/README.es.md) · [Français](./translated-docs/README.fr.md) · [हिन्दी](./translated-docs/README.hi.md) · [日本語](./translated-docs/README.ja.md) · [한국어](./translated-docs/README.ko.md) · [Português (Brasil)](./translated-docs/README.pt-BR.md) · [中文 (中国大陆)](./translated-docs/README.zh-CN.md) · [中文 (台灣)](./translated-docs/README.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](./README.md) · [Deutsch](./translated-docs/README.de.md) · [Español](./translated-docs/README.es.md) · [Français](./translated-docs/README.fr.md) · [Hindi (Roman)](./translated-docs/README.hi-Latn.md) · [日本語](./translated-docs/README.ja.md) · [한국어](./translated-docs/README.ko.md) · [Português (Brasil)](./translated-docs/README.pt-BR.md) · [简体中文](./translated-docs/README.zh-Hans.md) · [繁體中文](./translated-docs/README.zh-Hant.md)</small>
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -33,7 +33,7 @@ All workflows maintain a file/SQLite cache to ensure that only new or changed se
 - [Core workflows](#core-workflows)
 - [Installation](#installation)
   - [Using the CLI](#using-the-cli)
-- [OpenRouter](#openrouter)
+- [LLM providers](#openrouter)
 - [Quick start](#quick-start)
   - [Workflow 1 - UI Translation](#workflow-1---ui-translation)
   - [Workflow 2 - Document Translation](#workflow-2---document-translation)
@@ -112,7 +112,7 @@ Prefer `sync` over hand-chaining `extract`, `translate-ui`, `translate-svg`, `tr
 
 > **Tip:** To run `ai-i18n-tools` bare in an interactive shell without `npx`, add `node_modules/.bin` to your `PATH` (bash/zsh: `export PATH="$PWD/node_modules/.bin:$PATH"`). See [Getting Started](docs/GETTING_STARTED.md#installation) for direnv and Windows instructions.
 
-Set your OpenRouter API key:
+Set your provider API key (OpenRouter shown; use the matching variable for your provider):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -121,13 +121,50 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ---
 
 <a id="openrouter"></a>
-## OpenRouter
+## LLM providers
 
-Commands that call OpenRouter (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, and related scripts) need `OPENROUTER_API_KEY` in the environment. `check-markdown` does not use OpenRouter.
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, and related scripts) call an LLM provider; `check-markdown` does not.
 
-In `ai-i18n-tools.config.json`, the `openrouter` object includes model lists, `baseUrl`, `maxTokens`, `temperature`, and `requestTimeoutMs`: the maximum time in milliseconds to wait for each HTTP request to OpenRouter (chat completions and internal `GET /models` calls). The default is `30000` (30 seconds).
+Configure providers under a top-level `providers` map and pick the active one with a top-level `provider` selector (optional when exactly one provider is configured). Most providers need only a `translationModels` list — `baseUrl` and the API-key environment variable come from a built-in preset; you can override `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, and `requestTimeoutMs` per provider. `requestTimeoutMs` is the maximum time in milliseconds to wait for each request (default `30000`).
 
-Run `ai-i18n-tools check-models` to verify each configured model id against OpenRouter’s live catalog. It reports ids that are missing or past `expiration_date`, lists valid models with estimated input/output pricing (USD per 1M tokens), and exits with a non-zero status when any configured id is invalid. It requires `OPENROUTER_API_KEY`.
+To switch providers for a single run without editing the config, pass the global `-P` / `--provider <name>` option (e.g. `ai-i18n-tools -P groq translate-ui`); the name must be one of the configured `providers` keys.
+
+```jsonc
+{
+  "provider": "openrouter",
+  "providers": {
+    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
+    "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
+  }
+}
+```
+
+Built-in provider presets (key — base URL — API-key env var):
+
+| Provider | Base URL | API-key env var |
+| --- | --- | --- |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
+| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
+| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `ollama` | `http://localhost:11434/v1` | (none) |
+
+Define a custom OpenAI-compatible provider by adding a new key with `baseUrl` (and `apiKeyEnv` unless it needs no key). Model ids are plain upstream ids — the provider is chosen at the config level, so no `provider/` prefix is needed (OpenRouter ids keep their native `vendor/model` form).
+
+Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates configured model ids against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider).
+
+A legacy top-level `openrouter` config block is still accepted and is automatically migrated to `providers.openrouter` (with `provider: "openrouter"`) on load.
+
+For a hands-on demo of switching providers with `-P` on a single document, see [`examples/multi-provider`](examples/multi-provider/) (one config with `openai`, `anthropic`, `nvidia`, and `deepseek`).
 
 ---
 
@@ -229,6 +266,8 @@ The following helpers are exported from `'ai-i18n-tools/runtime'` and work in an
 ```bash
 ai-i18n-tools version
 ai-i18n-tools check-models
+ai-i18n-tools list-models
+ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools extract
@@ -254,7 +293,7 @@ ai-i18n-tools help [command]
 
 Complete per-command flag lists are in [Getting Started — CLI reference](docs/GETTING_STARTED.md#cli-reference). Run `ai-i18n-tools <command> --help` for built-in usage text.
 
-Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory), `-V` / `--version`, and `-h` / `--help`. Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `lint-source` uses a single source locale. See [Getting Started](docs/GETTING_STARTED.md#cli-reference) for the command overview table.
+Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (override the active LLM provider; must be configured under `providers`), optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory), `-V` / `--version`, and `-h` / `--help`. Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `lint-source` uses a single source locale. See [Getting Started](docs/GETTING_STARTED.md#cli-reference) for the command overview table.
 
 ---
 

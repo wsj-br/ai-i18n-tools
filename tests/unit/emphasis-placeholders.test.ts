@@ -220,6 +220,27 @@ describe("emphasis placeholders", () => {
       expect(applyEmphasisCloserSpacing("**[رابط](url)**يرجى")).toBe("**[رابط](url)** يرجى");
     });
 
+    it("leaves ASCII intraword underscores (identifiers) untouched", () => {
+      // Identifiers are never emphasis in CommonMark; relaxing the underscore rule here would
+      // inject spaces (my _config_ value) and fabricate an `_config_` emphasis span.
+      expect(applyEmphasisCloserSpacing("Set the my_config_value option and run_the_thing.")).toBe(
+        "Set the my_config_value option and run_the_thing."
+      );
+    });
+
+    it("does not corrupt underscored identifiers inside link text or destinations", () => {
+      expect(
+        applyEmphasisCloserSpacing(
+          "source [translation_demo_svg.svg](../images/translation_demo_svg.svg)"
+        )
+      ).toBe("source [translation_demo_svg.svg](../images/translation_demo_svg.svg)");
+    });
+
+    it("still spaces a genuine underscore emphasis glued before a CJK letter", () => {
+      // Regression guard: the ASCII fix must not disable the CJK gluing relaxation.
+      expect(applyEmphasisCloserSpacing("_italic_を")).toBe("_italic_ を");
+    });
+
     it("does not add spurious spaces in consecutive CJK bold/italic spans", () => {
       // ** closer before CJK letter: letter**letter is right-flanking → no space.
       // ** opener before CJK: must NOT get a space (would break opening).

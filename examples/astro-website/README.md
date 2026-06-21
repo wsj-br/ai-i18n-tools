@@ -74,7 +74,7 @@ Keep **three lists aligned** when you add or remove a language:
 2. `i18n.locales` in `astro.config.mjs` (Astro uses **lowercase** route codes: `zh-cn`, `pt-br`)
 3. Regenerated `src/i18n/ui-languages.json`
 
-Flat bundle **filenames** use config casing (`pt-BR.json`, `zh-CN.json`); `src/i18n/locale.ts` maps Astro’s `pt-br` route to manifest code `pt-BR` when loading JSON.
+Flat bundle **filenames** use config casing (`pt-BR.json`, `zh-Hans.json`); `src/i18n/locale.ts` maps Astro’s `pt-br` route to manifest code `pt-BR` when loading JSON.
 
 ---
 
@@ -127,7 +127,7 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
 ```json
 {
   "sourceLocale": "en",
-  "targetLocales": ["de", "fr", "es", "ar", "ja", "ko", "zh-CN", "zh-TW", "pt-BR"],
+  "targetLocales": ["de", "fr", "es", "ar", "ja", "ko", "zh-Hans", "zh-Hant", "pt-BR"],
   "features": {
     "extractUIStrings": true,
     "translateUIStrings": true,

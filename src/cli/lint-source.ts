@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import type { I18nConfig, StringsJsonEntry } from "../core/types.js";
-import { OpenRouterClient } from "../api/openrouter.js";
+import { LlmClient } from "../api/llm-client.js";
 import {
   englishLanguageNameForLocale,
   normalizeLocale,
@@ -422,9 +422,9 @@ export async function runLintSource(
     translationModelsForClient = filtered.models;
   }
 
-  let client: OpenRouterClient;
+  let client: LlmClient;
   try {
-    client = new OpenRouterClient({
+    client = new LlmClient({
       config,
       ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
     });
@@ -432,7 +432,7 @@ export async function runLintSource(
     return {
       report: emptyReport(config, cwd, stringsPath, units.length),
       logFilePath,
-      exitWithError: `OPENROUTER_API_KEY required for lint-source: ${e instanceof Error ? e.message : String(e)}`,
+      exitWithError: `LLM provider API key required for lint-source: ${e instanceof Error ? e.message : String(e)}`,
     };
   }
 

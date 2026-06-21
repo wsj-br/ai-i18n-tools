@@ -29,42 +29,35 @@ const uiDefaults = {
 };
 
 describe("resolveTranslationModels", () => {
-  it("prefers non-empty translationModels", () => {
+  it("returns the active provider's translationModels", () => {
     expect(
       resolveTranslationModels({
-        baseUrl: "https://openrouter.ai/api/v1",
-        translationModels: ["a", "b"],
-        maxTokens: 100,
-        temperature: 0.1,
-        requestTimeoutMs: 30_000,
+        provider: "openrouter",
+        providers: { openrouter: { translationModels: ["a", "b"] } },
       })
     ).toEqual(["a", "b"]);
   });
 
-  it("falls back to defaultModel and fallbackModel", () => {
+  it("uses the single configured provider when no selector is set", () => {
     expect(
       resolveTranslationModels({
-        baseUrl: "https://openrouter.ai/api/v1",
-        maxTokens: 100,
-        temperature: 0.1,
-        requestTimeoutMs: 30_000,
-        defaultModel: "x",
-        fallbackModel: "y",
+        providers: { groq: { translationModels: ["llama-3.3-70b-versatile"] } },
       })
-    ).toEqual(["x", "y"]);
+    ).toEqual(["llama-3.3-70b-versatile"]);
   });
 
-  it("dedupes duplicate fallback", () => {
+  it("returns [] when the active provider has no models", () => {
+    expect(
+      resolveTranslationModels({ provider: "openrouter", providers: { openrouter: {} } })
+    ).toEqual([]);
+  });
+
+  it("returns [] when the active provider cannot be resolved (ambiguous)", () => {
     expect(
       resolveTranslationModels({
-        baseUrl: "https://openrouter.ai/api/v1",
-        maxTokens: 100,
-        temperature: 0.1,
-        requestTimeoutMs: 30_000,
-        defaultModel: "same",
-        fallbackModel: "same",
+        providers: { openrouter: { translationModels: ["a"] }, groq: { translationModels: ["b"] } },
       })
-    ).toEqual(["same"]);
+    ).toEqual([]);
   });
 });
 
@@ -74,11 +67,13 @@ describe("resolveUITranslationModels", () => {
       mergeWithDefaults({
         sourceLocale: "en",
         targetLocales: ["de"],
-        openrouter: {
-          baseUrl: "https://openrouter.ai/api/v1",
-          translationModels: ["a", "b"],
-          maxTokens: 8192,
-          temperature: 0.2,
+        provider: "openrouter",
+        providers: {
+          openrouter: {
+            translationModels: ["a", "b"],
+            maxTokens: 8192,
+            temperature: 0.2,
+          },
         },
         features: {
           translateUIStrings: true,
@@ -115,17 +110,17 @@ describe("resolveUITranslationModels", () => {
     ).toEqual(["b", "a"]);
   });
 
-  it("prepends preferredModel before legacy default/fallback models", () => {
+  it("prepends preferredModel before the active provider's models", () => {
     expect(
       resolveUITranslationModels(
         uiConfig({
-          openrouter: {
-            baseUrl: "https://openrouter.ai/api/v1",
-            translationModels: [],
-            defaultModel: "x",
-            fallbackModel: "y",
-            maxTokens: 8192,
-            temperature: 0.2,
+          provider: "openrouter",
+          providers: {
+            openrouter: {
+              translationModels: ["x", "y"],
+              maxTokens: 8192,
+              temperature: 0.2,
+            },
           },
           ui: {
             sourceRoots: ["src/"],
@@ -305,11 +300,13 @@ describe("parseI18nConfig", () => {
           cacheDir: ".translation-cache",
           docs: [docBlockDefaults],
           targetLocales: ["de"],
-          openrouter: {
-            baseUrl: "https://openrouter.ai/api/v1",
-            translationModels: [],
-            maxTokens: 100,
-            temperature: 0.1,
+          provider: "openrouter",
+          providers: {
+            openrouter: {
+              translationModels: [],
+              maxTokens: 100,
+              temperature: 0.1,
+            },
           },
           features: { translateDocs: true },
         })
@@ -413,11 +410,13 @@ describe("parseI18nConfig", () => {
           docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: ["de"],
-          openrouter: {
-            baseUrl: "https://openrouter.ai/api/v1",
-            translationModels: [],
-            maxTokens: 100,
-            temperature: 0.1,
+          provider: "openrouter",
+          providers: {
+            openrouter: {
+              translationModels: [],
+              maxTokens: 100,
+              temperature: 0.1,
+            },
           },
           features: { translateUIStrings: true },
         })
@@ -485,7 +484,7 @@ describe("applyEnvOverrides", () => {
     process.env.OPENROUTER_BASE_URL = "https://example.com/v1";
     try {
       const next = applyEnvOverrides(base);
-      expect(next.openrouter.baseUrl).toBe("https://example.com/v1");
+      expect(next.providers.openrouter?.baseUrl).toBe("https://example.com/v1");
     } finally {
       if (prev === undefined) {
         delete process.env.OPENROUTER_BASE_URL;
@@ -586,6 +585,101 @@ describe("loadI18nConfigFromFile", () => {
     fs.writeFileSync(p, "{ not json", "utf8");
     try {
       expect(() => loadI18nConfigFromFile("bad.json", dir)).toThrow(/Invalid JSON/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("provider override selects a configured provider", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-prov-"));
+    const p = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        provider: "openrouter",
+        providers: {
+          openrouter: { translationModels: ["a"] },
+          groq: { translationModels: ["b"] },
+        },
+        features: { translateUIStrings: false, translateDocs: false },
+      }),
+      "utf8"
+    );
+    try {
+      expect(loadI18nConfigFromFile("ai-i18n-tools.config.json", dir).provider).toBe("openrouter");
+      expect(
+        loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "groq").provider
+      ).toBe("groq");
+      // Empty/whitespace override leaves the config provider untouched.
+      expect(loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "  ").provider).toBe(
+        "openrouter"
+      );
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("provider override throws when provider is not configured", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-prov-bad-"));
+    const p = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        providers: { openrouter: { translationModels: ["a"] } },
+        features: { translateUIStrings: false, translateDocs: false },
+      }),
+      "utf8"
+    );
+    try {
+      expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "nope")).toThrow(
+        /--provider "nope" is not defined in providers \(openrouter\)/
+      );
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws a fatal error when a locale is not in the bundled UI languages catalog", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-locale-"));
+    const p = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        sourceLocale: "pt-BR",
+        targetLocales: ["en-GB", "hi-Lan", "zh-Hans"],
+        providers: { openrouter: { translationModels: ["a"] } },
+        features: { translateUIStrings: false, translateDocs: false },
+      }),
+      "utf8"
+    );
+    try {
+      expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir)).toThrow(
+        /Invalid locale\(s\) in config:.*targetLocales\[1\].*hi-Lan/
+      );
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("accepts bare language subtags that only have regional variants in the catalog", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-locale-ok-"));
+    const p = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["zh", "pt-BR", "fr"],
+        providers: { openrouter: { translationModels: ["a"] } },
+        features: { translateUIStrings: false, translateDocs: false },
+      }),
+      "utf8"
+    );
+    try {
+      expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir)).not.toThrow();
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -729,6 +823,40 @@ describe("legacy config migration", () => {
         docs: [{ contentPaths: [], outputDir: "./b" }],
       })
     ).toThrow(/documentations.*docs/i);
+  });
+
+  it("migrates a legacy openrouter block to providers + provider selector", () => {
+    const merged = mergeWithDefaults({
+      sourceLocale: "en",
+      targetLocales: ["de"],
+      openrouter: {
+        baseUrl: "https://openrouter.ai/api/v1",
+        translationModels: ["a/b"],
+        defaultModel: "c/d",
+        fallbackModel: "a/b",
+        maxTokens: 1234,
+        temperature: 0.3,
+      },
+    }) as Record<string, unknown>;
+    expect(merged).not.toHaveProperty("openrouter");
+    expect(merged.provider).toBe("openrouter");
+    const providers = merged.providers as Record<string, Record<string, unknown>>;
+    // default openrouter base URL is dropped (inherited from preset); models fold in default/fallback
+    expect(providers.openrouter.baseUrl).toBeUndefined();
+    expect(providers.openrouter.translationModels).toEqual(["a/b", "c/d"]);
+    expect(providers.openrouter.maxTokens).toBe(1234);
+    expect(providers.openrouter.temperature).toBe(0.3);
+  });
+
+  it("keeps a non-default openrouter baseUrl when migrating", () => {
+    const merged = mergeWithDefaults({
+      openrouter: {
+        baseUrl: "https://proxy.example.com/v1",
+        translationModels: ["m"],
+      },
+    }) as Record<string, unknown>;
+    const providers = merged.providers as Record<string, Record<string, unknown>>;
+    expect(providers.openrouter.baseUrl).toBe("https://proxy.example.com/v1");
   });
 
   it("loadI18nConfigFromFile rewrites legacy keys on disk", () => {

@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "node:url";
-import { normalizeManifestLocaleKey } from "./locale-utils.js";
+import { ConfigValidationError } from "./errors.js";
+import { normalizeManifestLocaleKey, primaryLanguageSubtag } from "./locale-utils.js";
 import type { I18nConfig } from "./types.js";
 
 /** Bundled IANA-derived master (`data/ui-languages-complete.json`). */
@@ -64,6 +65,74 @@ export function loadUiLanguagesMaster(absPath: string): Map<string, UiLanguageRo
     map.set(normalizeManifestLocaleKey(code), row);
   }
   return map;
+}
+
+/**
+ * A locale is considered present in the master catalog when either:
+ * - its normalized key matches a master `code` exactly, or
+ * - it is a bare language subtag (no region/script, e.g. `en`, `zh`) whose primary subtag matches
+ *   the primary subtag of some master entry (e.g. `en` ↔ `en-GB`/`en-US`).
+ *
+ * The second rule keeps generic language codes valid even though the IANA-derived master only
+ * enumerates regional/script variants for some languages, while still rejecting malformed tags
+ * such as `hi-Lan`.
+ */
+function isLocaleInUiLanguagesMaster(locale: string, master: Map<string, UiLanguageRow>): boolean {
+  if (master.has(normalizeManifestLocaleKey(locale))) {
+    return true;
+  }
+  const trimmed = locale.trim();
+  const isBareLanguage = !/[-_]/.test(trimmed);
+  if (!isBareLanguage) {
+    return false;
+  }
+  const primary = primaryLanguageSubtag(trimmed);
+  if (!primary) {
+    return false;
+  }
+  for (const row of master.values()) {
+    if (primaryLanguageSubtag(row.code) === primary) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Fatal-validate that `sourceLocale` and every `targetLocales` entry exist in the bundled master
+ * catalog (`data/ui-languages-complete.json`). Throws {@link ConfigValidationError} listing any
+ * unknown locale codes. See {@link isLocaleInUiLanguagesMaster} for the matching rules.
+ */
+export function assertEffectiveLocalesInUiLanguagesMaster(config: I18nConfig): void {
+  const masterPath = resolveBundledUiLanguagesCompletePath();
+  if (!fs.existsSync(masterPath)) {
+    throw new ConfigValidationError(
+      `Cannot validate locales: bundled UI languages catalog not found at ${masterPath}`
+    );
+  }
+  const master = loadUiLanguagesMaster(masterPath);
+  const unknown: { path: string; message: string }[] = [];
+  if (!isLocaleInUiLanguagesMaster(config.sourceLocale, master)) {
+    unknown.push({
+      path: "sourceLocale",
+      message: `unknown locale "${config.sourceLocale.trim()}" (not in data/ui-languages-complete.json)`,
+    });
+  }
+  config.targetLocales.forEach((locale, index) => {
+    if (!isLocaleInUiLanguagesMaster(locale, master)) {
+      unknown.push({
+        path: `targetLocales[${index}]`,
+        message: `unknown locale "${locale.trim()}" (not in data/ui-languages-complete.json)`,
+      });
+    }
+  });
+  if (unknown.length > 0) {
+    throw new ConfigValidationError(
+      `Invalid locale(s) in config: ${unknown.map((u) => `${u.path}: ${u.message}`).join("; ")}. ` +
+        `\n\nRun \`ai-i18n-tools list-languages\` to see the available language codes (add a search term, e.g. \`ai-i18n-tools list-languages portuguese\`, to filter).\n`,
+      unknown
+    );
+  }
 }
 
 /**

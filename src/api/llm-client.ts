@@ -1,10 +1,16 @@
 import fs from "fs";
 import chalk from "chalk";
+import { generateText } from "ai";
+import {
+  createOpenAICompatible,
+  type MetadataExtractor,
+  type OpenAICompatibleProvider,
+} from "@ai-sdk/openai-compatible";
 import type { CldrPluralForm, I18nConfig } from "../core/types.js";
 import {
   type BatchTranslationResult,
   type ChatResponse,
-  type OpenRouterUsageStats,
+  type LlmUsageStats,
   type Segment,
   type TranslationResult,
   BatchTranslationError,
@@ -14,6 +20,14 @@ import {
   normalizeLocale,
   resolveTranslationModels,
 } from "../core/config.js";
+import { disallowedScriptLetters, englishScriptName, scriptSubtag } from "../core/locale-utils.js";
+import {
+  OPENROUTER_PROVIDER_KEY,
+  resolveActiveProvider,
+  resolveApiKey,
+  resolveProviderSettings,
+  type ResolvedProviderSettings,
+} from "../core/llm-providers.js";
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
@@ -25,47 +39,43 @@ import {
   parseLintSourceBatchResponse,
   parsePluralFormsJsonResponse,
   parseUIJsonArrayResponse,
+  ScriptValidationError,
   type DocumentBatchResponseFormat,
   type DocumentPromptContentType,
   type LintSourceSlotResult,
 } from "../core/prompt-builder.js";
 import type { Logger } from "../utils/logger.js";
 
-/** OpenRouter: prefer throughput; allow backup providers. */
+/** OpenRouter: prefer throughput; allow backup providers (top-level `provider` routing field). */
 const OPENROUTER_PROVIDER = {
   sort: "throughput" as const,
   allow_fallbacks: true,
 };
 
-interface OpenRouterMessage {
+interface LlmMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-interface OpenRouterResponse {
-  id: string;
-  choices: Array<{
-    message: { content: string };
-    finish_reason: string;
-  }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-    cost?: number;
-    cost_details?: { upstream_inference_cost?: number };
-  };
-}
+/**
+ * OpenRouter returns `usage.cost` (USD) on non-streaming responses; surface it through
+ * `providerMetadata.openrouter.cost` so the client can report exact spend.
+ */
+const openRouterMetadataExtractor: MetadataExtractor = {
+  extractMetadata: ({ parsedBody }: { parsedBody: unknown }) => {
+    const body = parsedBody as { usage?: { cost?: unknown }; cost?: unknown } | null;
+    const cost = body?.usage?.cost ?? body?.cost;
+    return Promise.resolve(
+      typeof cost === "number" ? { [OPENROUTER_PROVIDER_KEY]: { cost } } : undefined
+    );
+  },
+  createStreamExtractor: () => ({
+    processChunk: () => {},
+    buildMetadata: () => undefined,
+  }),
+};
 
-interface OpenRouterRequestPayload {
-  model: string;
-  max_tokens: number;
-  temperature: number;
-  messages: OpenRouterMessage[];
-  provider: typeof OPENROUTER_PROVIDER;
-}
-
-/** Thrown when every model in the chain fails for {@link OpenRouterClient.translateDocumentBatch}. */
+/** Thrown when every model in the chain fails for {@link LlmClient.translateDocumentBatch}. */
 export class DocumentBatchAllModelsFailedError extends Error {
   constructor(
     message: string,
@@ -83,12 +93,13 @@ export class DocumentBatchAllModelsFailedError extends Error {
   }
 }
 
-export interface OpenRouterClientOptions {
-  config: Pick<I18nConfig, "openrouter" | "sourceLocale" | "localeDisplayNames">;
+export interface LlmClientOptions {
+  config: Pick<I18nConfig, "provider" | "providers" | "sourceLocale" | "localeDisplayNames">;
+  /** Override the active provider's API key (otherwise read from its configured env var). */
   apiKey?: string;
   /**
-   * When set and non-empty, use this ordered model list instead of resolving from `config.openrouter`
-   * (e.g. UI translation with `ui.preferredModel` prepended to the global list).
+   * When set and non-empty, use this ordered model list instead of resolving from the active provider
+   * (e.g. UI translation with `ui.preferredModel` prepended to the provider's list).
    */
   translationModels?: string[];
   /** Append request/response JSON when set. */
@@ -98,12 +109,19 @@ export interface OpenRouterClientOptions {
   xTitle?: string;
 }
 
+/** @deprecated Use {@link LlmClientOptions}. */
+export type OpenRouterClientOptions = LlmClientOptions;
+
 /**
- * OpenRouter chat client with ordered `translationModels` fallback chain.
+ * Provider-agnostic chat client (Vercel AI SDK, OpenAI-compatible transport) with an ordered
+ * `translationModels` fallback chain. The active provider is chosen from config; OpenRouter-specific
+ * routing/headers/cost are applied only when the active provider is `openrouter`.
  */
-export class OpenRouterClient {
+export class LlmClient {
+  private readonly provider: string;
+  private readonly isOpenRouter: boolean;
   private readonly apiKey: string;
-  private readonly baseUrl: string;
+  private readonly providerInstance: OpenAICompatibleProvider;
   private readonly modelsToTry: string[];
   private readonly maxTokens: number;
   private readonly temperature: number;
@@ -115,12 +133,22 @@ export class OpenRouterClient {
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
 
-  constructor(opts: OpenRouterClientOptions) {
-    this.apiKey = opts.apiKey ?? process.env.OPENROUTER_API_KEY ?? "";
-    if (!this.apiKey) {
-      throw new Error("OPENROUTER_API_KEY is required");
+  constructor(opts: LlmClientOptions) {
+    this.provider = resolveActiveProvider(opts.config);
+    this.isOpenRouter = this.provider === OPENROUTER_PROVIDER_KEY;
+    const settings = resolveProviderSettings(this.provider, opts.config);
+
+    if (opts.apiKey !== undefined) {
+      if (!opts.apiKey && settings.requiresApiKey) {
+        throw new Error(
+          `${settings.apiKeyEnv ?? "API key"} is required for provider "${this.provider}"`
+        );
+      }
+      this.apiKey = opts.apiKey;
+    } else {
+      this.apiKey = resolveApiKey(settings);
     }
-    this.baseUrl = opts.config.openrouter.baseUrl.replace(/\/$/, "");
+
     const override = opts.translationModels;
     const fromOverride =
       Array.isArray(override) && override.length > 0
@@ -131,12 +159,15 @@ export class OpenRouterClient {
     this.modelsToTry =
       fromOverride !== null && fromOverride.length > 0
         ? fromOverride
-        : resolveTranslationModels(opts.config.openrouter);
+        : resolveTranslationModels(opts.config);
     if (this.modelsToTry.length === 0) {
-      throw new Error("No OpenRouter models configured (translationModels or defaultModel)");
+      throw new Error(
+        `No translation models configured for provider "${this.provider}" (set providers.${this.provider}.translationModels)`
+      );
     }
-    this.maxTokens = opts.config.openrouter.maxTokens;
-    this.temperature = opts.config.openrouter.temperature;
+    this.maxTokens = settings.maxTokens;
+    this.temperature = settings.temperature;
+    this.requestTimeoutMs = settings.requestTimeoutMs;
     this.debugTrafficFilePath = opts.debugTrafficFilePath ?? null;
     this.logger = opts.logger;
     this.localeDisplayNames = {};
@@ -148,11 +179,39 @@ export class OpenRouterClient {
     this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
-    this.requestTimeoutMs = opts.config.openrouter.requestTimeoutMs ?? 30_000;
+    this.providerInstance = this.buildProvider(settings);
+  }
+
+  private buildProvider(settings: ResolvedProviderSettings): OpenAICompatibleProvider {
+    const headers: Record<string, string> = { ...settings.headers };
+    if (this.isOpenRouter) {
+      headers["HTTP-Referer"] = this.httpReferer;
+      headers["X-Title"] = this.xTitle;
+    }
+    return createOpenAICompatible({
+      name: settings.provider,
+      baseURL: settings.baseUrl,
+      ...(this.apiKey ? { apiKey: this.apiKey } : {}),
+      headers,
+      ...(this.isOpenRouter
+        ? {
+            transformRequestBody: (args: Record<string, unknown>) => ({
+              ...args,
+              provider: OPENROUTER_PROVIDER,
+            }),
+            metadataExtractor: openRouterMetadataExtractor,
+          }
+        : {}),
+    });
   }
 
   getConfiguredModels(): readonly string[] {
     return this.modelsToTry;
+  }
+
+  /** The active LLM provider key (e.g. `openrouter`, `openai`) chosen from config. */
+  getProvider(): string {
+    return this.provider;
   }
 
   /**
@@ -174,6 +233,36 @@ export class OpenRouterClient {
     return localeCode;
   }
 
+  /**
+   * Enforce the target locale's ISO 15924 script subtag on a model response, throwing
+   * {@link ScriptValidationError} so the model-fallback loop retries with the next model.
+   *
+   * For romanized (`*-Latn`) targets any non-Latin letter is rejected (output must be pure Latin).
+   * For other supported scripts (`Cyrl`, `Arab`, `Deva`, `Mong`, `Han`, …) only letters from a
+   * *different* non-Latin script are rejected — Latin text (code, URLs, brand names, placeholders)
+   * is always allowed, so this is free of false positives. See {@link disallowedScriptLetters}.
+   * Locales without a script subtag, and composite scripts (e.g. `Jpan`, `Kore`), are not enforced.
+   */
+  private assertExpectedScript(text: string, targetLocale: string): void {
+    const script = scriptSubtag(targetLocale);
+    if (!script) {
+      return;
+    }
+    const offending = disallowedScriptLetters(text, script, 5);
+    if (offending.length === 0) {
+      return;
+    }
+    const expected =
+      script === "Latn"
+        ? "romanized Latin (Roman)"
+        : `${englishScriptName(script) ?? script} (${script})`;
+    throw new ScriptValidationError(
+      `Output for ${targetLocale} contains characters outside the expected ${expected} script (${offending.join(" ")})`,
+      text,
+      offending
+    );
+  }
+
   private appendDebugLog(direction: "request" | "response", payload: unknown): void {
     if (!this.debugTrafficFilePath) {
       return;
@@ -185,14 +274,6 @@ export class OpenRouterClient {
       fs.appendFileSync(this.debugTrafficFilePath, `${sep}\n${body}\n\n`, "utf8");
     } catch (e) {
       this.logger?.warn(`[debug-traffic] Failed to write: ${e}`);
-    }
-  }
-
-  private async handleRateLimit(response: Response): Promise<void> {
-    if (response.status === 429) {
-      const retryAfter = response.headers.get("retry-after");
-      const ms = retryAfter ? parseFloat(retryAfter) * 1000 : 2000;
-      await new Promise((r) => setTimeout(r, Number.isFinite(ms) ? ms : 2000));
     }
   }
 
@@ -211,110 +292,84 @@ export class OpenRouterClient {
     );
   }
 
-  private extractUsage(data: OpenRouterResponse): OpenRouterUsageStats {
-    return {
-      inputTokens: data.usage.prompt_tokens,
-      outputTokens: data.usage.completion_tokens,
-      totalTokens: data.usage.total_tokens,
-    };
-  }
-
   private toOpenRouterMessages(
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
-  ): OpenRouterMessage[] {
+  ): LlmMessage[] {
     return messages.map((m) => ({ role: m.role, content: m.content }));
   }
 
-  /**
-   * POST /chat/completions with one 429 follow-up (same body), then read body and optional debug log.
-   */
-  private async postChatWith429Retry(
-    requestPayload: OpenRouterRequestPayload
-  ): Promise<{ response: Response; rawBody: string }> {
-    if (this.debugTrafficFilePath) {
-      this.appendDebugLog("request", requestPayload);
-    }
-
-    const fetchOpts: RequestInit = {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": this.httpReferer,
-        "X-Title": this.xTitle,
-      },
-      body: JSON.stringify(requestPayload),
-      signal: AbortSignal.timeout(this.requestTimeoutMs),
-    };
-
-    let response = await fetch(`${this.baseUrl}/chat/completions`, fetchOpts);
-
-    if (response.status === 429) {
-      await this.handleRateLimit(response);
-      response = await fetch(`${this.baseUrl}/chat/completions`, {
-        ...fetchOpts,
-        signal: AbortSignal.timeout(this.requestTimeoutMs),
-      });
-    }
-
-    const rawBody = await response.text();
-
-    if (this.debugTrafficFilePath) {
-      let parsedBody: unknown = rawBody;
-      try {
-        parsedBody = response.ok ? (JSON.parse(rawBody) as unknown) : rawBody;
-      } catch {
-        /* keep text */
-      }
-      this.appendDebugLog("response", {
-        status: response.status,
-        ok: response.ok,
-        body: parsedBody,
-      });
-    }
-
-    return { response, rawBody };
+  /** Read OpenRouter's exact USD cost from `providerMetadata` (other providers: undefined). */
+  private extractCost(providerMetadata: Record<string, Record<string, unknown>> | undefined):
+    | number
+    | undefined {
+    const raw = providerMetadata?.[OPENROUTER_PROVIDER_KEY]?.cost;
+    return typeof raw === "number" ? raw : undefined;
   }
 
-  /** Single HTTP call for one model (one follow-up on HTTP 429 with the same body). */
-  private async fetchCompletion(
-    model: string,
-    openRouterMessages: OpenRouterMessage[]
-  ): Promise<ChatResponse> {
-    const requestPayload: OpenRouterRequestPayload = {
-      model,
-      max_tokens: this.maxTokens,
-      temperature: this.temperature,
-      messages: openRouterMessages,
-      provider: OPENROUTER_PROVIDER,
-    };
+  /** Single chat-completions call for one model via the active provider (AI SDK transport). */
+  private async fetchCompletion(model: string, messages: LlmMessage[]): Promise<ChatResponse> {
+    const systemText = messages
+      .filter((m) => m.role === "system")
+      .map((m) => m.content)
+      .join("\n\n");
+    const chatMessages = messages
+      .filter((m) => m.role !== "system")
+      .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
-    const { response, rawBody } = await this.postChatWith429Retry(requestPayload);
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status} - ${rawBody}`);
+    if (this.debugTrafficFilePath) {
+      this.appendDebugLog("request", {
+        provider: this.provider,
+        model,
+        maxTokens: this.maxTokens,
+        temperature: this.temperature,
+        system: systemText,
+        messages: chatMessages,
+      });
     }
 
-    let data: OpenRouterResponse;
+    let result: Awaited<ReturnType<typeof generateText>>;
     try {
-      data = JSON.parse(rawBody) as OpenRouterResponse;
+      result = await generateText({
+        model: this.providerInstance(model),
+        ...(systemText ? { system: systemText } : {}),
+        messages: chatMessages,
+        maxOutputTokens: this.maxTokens,
+        temperature: this.temperature,
+        maxRetries: 2,
+        abortSignal: AbortSignal.timeout(this.requestTimeoutMs),
+      });
     } catch (e) {
-      throw e instanceof Error ? e : new Error(String(e));
+      if (this.debugTrafficFilePath) {
+        this.appendDebugLog("response", { model, error: e instanceof Error ? e.message : String(e) });
+      }
+      throw new Error(
+        `${this.provider} API error for model ${model}: ${e instanceof Error ? e.message : String(e)}`
+      );
     }
 
-    const content = data.choices[0]?.message?.content;
-    if (content === undefined || content === null || String(content).trim() === "") {
-      throw new Error("Empty OpenRouter response content");
-    }
-
-    const usage = this.extractUsage(data);
-    const cost = data.usage.cost ?? (data as { cost?: number }).cost;
-    return {
-      content: String(content),
-      model,
-      usage,
-      cost,
+    const content = result.text;
+    const usage: LlmUsageStats = {
+      inputTokens: result.usage.inputTokens ?? 0,
+      outputTokens: result.usage.outputTokens ?? 0,
+      totalTokens: result.usage.totalTokens ?? 0,
     };
+    const cost = this.extractCost(result.providerMetadata);
+
+    if (this.debugTrafficFilePath) {
+      this.appendDebugLog("response", {
+        model,
+        finishReason: result.finishReason,
+        usage,
+        cost,
+        content,
+      });
+    }
+
+    if (!content || content.trim() === "") {
+      throw new Error(`Empty response content from ${this.provider} model ${model}`);
+    }
+
+    return { content, model, usage, cost };
   }
 
   async chat(
@@ -322,6 +377,8 @@ export class OpenRouterClient {
     options?: {
       startModelIndex?: number;
       docLogContext?: { locale: string; relativePath: string };
+      /** Throw to reject a completion and fall through to the next model (e.g. wrong-script output). */
+      validateResponse?: (content: string) => void;
     }
   ): Promise<ChatResponse> {
     const openRouterMessages = this.toOpenRouterMessages(messages);
@@ -331,7 +388,9 @@ export class OpenRouterClient {
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
       try {
-        return await this.fetchCompletion(model, openRouterMessages);
+        const completion = await this.fetchCompletion(model, openRouterMessages);
+        options?.validateResponse?.(completion.content);
+        return completion;
       } catch (e) {
         lastError = e;
         const nextModel = this.modelsToTry[mi + 1];
@@ -378,6 +437,7 @@ export class OpenRouterClient {
         sourceLanguageLabel: this.sourceLanguageLabel,
         targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
         glossaryHints,
+        targetLocale,
       },
       contentType
     );
@@ -390,6 +450,7 @@ export class OpenRouterClient {
       {
         startModelIndex: options?.startModelIndex,
         docLogContext: options?.docLogContext,
+        validateResponse: (c) => this.assertExpectedScript(this.stripTranslateTags(c), targetLocale),
       }
     );
 
@@ -431,6 +492,7 @@ export class OpenRouterClient {
         sourceLanguageLabel: this.sourceLanguageLabel,
         targetLanguageLabel: this.languageLabelForPrompt(locale),
         glossaryHints,
+        targetLocale: locale,
       },
       contentType,
       responseFormat
@@ -493,6 +555,9 @@ export class OpenRouterClient {
             completion.content
           );
         }
+        for (const value of translations.values()) {
+          this.assertExpectedScript(value, locale);
+        }
         return {
           translations,
           model: completion.model,
@@ -546,7 +611,7 @@ export class OpenRouterClient {
   ): Promise<{
     translations: string[];
     model: string;
-    usage: OpenRouterUsageStats;
+    usage: LlmUsageStats;
     cost?: number;
   }> {
     if (texts.length === 0) {
@@ -561,6 +626,7 @@ export class OpenRouterClient {
       sourceLanguageLabel: this.sourceLanguageLabel,
       targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
       glossaryHints: options?.glossaryHints,
+      targetLocale,
     });
 
     const openRouterMessages = this.toOpenRouterMessages([
@@ -576,6 +642,9 @@ export class OpenRouterClient {
       try {
         const result = await this.fetchCompletion(model, openRouterMessages);
         const translations = parseUIJsonArrayResponse(result.content, texts.length);
+        for (const value of translations) {
+          this.assertExpectedScript(value, targetLocale);
+        }
         return {
           translations,
           model: result.model,
@@ -603,7 +672,7 @@ export class OpenRouterClient {
   ): Promise<{
     slots: LintSourceSlotResult[];
     model: string;
-    usage: OpenRouterUsageStats;
+    usage: LlmUsageStats;
     cost?: number;
     lengthWarning: string | null;
   }> {
@@ -658,11 +727,11 @@ export class OpenRouterClient {
   async translatePluralCardinalBatch(
     expectedForms: CldrPluralForm[],
     messages: { systemPrompt: string; userContent: string },
-    options?: { startModelIndex?: number }
+    options?: { startModelIndex?: number; targetLocale?: string }
   ): Promise<{
     forms: Record<CldrPluralForm, string>;
     model: string;
-    usage: OpenRouterUsageStats;
+    usage: LlmUsageStats;
     cost?: number;
   }> {
     if (expectedForms.length === 0) {
@@ -686,6 +755,11 @@ export class OpenRouterClient {
       try {
         const result = await this.fetchCompletion(model, openRouterMessages);
         const forms = parsePluralFormsJsonResponse(result.content, expectedForms);
+        if (options?.targetLocale) {
+          for (const value of Object.values(forms)) {
+            this.assertExpectedScript(value, options.targetLocale);
+          }
+        }
         return {
           forms,
           model: result.model,
@@ -703,3 +777,8 @@ export class OpenRouterClient {
     );
   }
 }
+
+/** @deprecated Use {@link LlmClient}. Retained for backward-compatible imports. */
+export const OpenRouterClient = LlmClient;
+/** @deprecated Use {@link LlmClient}. */
+export type OpenRouterClient = LlmClient;

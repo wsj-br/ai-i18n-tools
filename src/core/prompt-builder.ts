@@ -1,6 +1,7 @@
 import type { CldrPluralForm, Segment } from "./types.js";
 import { BatchTranslationError } from "./types.js";
 import { pluralCategoryExamplesHint } from "./plural-forms.js";
+import { englishScriptName, scriptSubtag } from "./locale-utils.js";
 import {
   PROMPTS,
   type PromptStrings,
@@ -46,9 +47,47 @@ export interface PromptBuilderOptions {
   sourceLanguageLabel: string;
   targetLanguageLabel: string;
   glossaryHints: string[];
+  /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+  targetLocale?: string;
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────
+
+/** Nicer English names than `Intl` for common script codes used in directives. */
+const SCRIPT_DIRECTIVE_NAME_OVERRIDES: Record<string, string> = {
+  Hans: "Simplified Chinese (Han)",
+  Hant: "Traditional Chinese (Han)",
+  Hani: "Han (Chinese)",
+  Jpan: "Japanese",
+  Kore: "Korean",
+  // "Mongolian" alone is ambiguous (Mongolia mainly uses Cyrillic); be explicit about the vertical script.
+  Mong: "traditional Mongolian vertical script (Mongolian Bichig), NOT Cyrillic",
+};
+
+/**
+ * System-prompt script directive for a target locale, or `""` when the locale has no script subtag.
+ * Latin/Roman targets (`*-Latn`) get the strong romanization rule; other scripts get a generic rule.
+ */
+export function targetScriptDirective(targetLocale: string | undefined): string {
+  if (!targetLocale) {
+    return "";
+  }
+  const script = scriptSubtag(targetLocale);
+  if (!script) {
+    return "";
+  }
+  if (script === "Latn") {
+    return PROMPTS.script.latinDirective;
+  }
+  const name = SCRIPT_DIRECTIVE_NAME_OVERRIDES[script] ?? englishScriptName(script) ?? script;
+  return PROMPTS.script.genericDirectiveTemplate.replace(/\{\{SCRIPT_NAME\}\}/g, name);
+}
+
+/** Prefix `block` with the target-locale script directive (and a blank line) when one applies. */
+function withScriptDirective(block: string, targetLocale: string | undefined): string {
+  const directive = targetScriptDirective(targetLocale);
+  return directive ? `${directive}\n\n${block}` : block;
+}
 
 function buildGlossaryBlock(hints: string[], preamble?: string): string {
   const filtered = hints.filter((h) => h.trim().length > 0).sort((a, b) => a.localeCompare(b));
@@ -75,13 +114,14 @@ function unescapeXml(text: string): string {
 
 /** Shared rules block for document batch/single prompts (all document types). */
 function documentCoreRulesBlock(opts: PromptBuilderOptions): string {
-  return `Translate from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
+  const block = `Translate from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
 
 ${PROMPTS.document.terminology}
 
 ${PROMPTS.document.coreRules}
 
 ${PROMPTS.document.markdownPreservation}`;
+  return withScriptDirective(block, opts.targetLocale);
 }
 
 function contentTypeAddendum(contentType: DocumentPromptContentType): string {
@@ -180,6 +220,8 @@ export function buildUIPromptMessages(
     sourceLanguageLabel: string;
     targetLanguageLabel: string;
     glossaryHints?: string[];
+    /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+    targetLocale?: string;
   }
 ): { systemPrompt: string; userContent: string } {
   const systemBase = PROMPTS.ui.systemPrompt.join("\n");
@@ -189,7 +231,10 @@ export function buildUIPromptMessages(
     .replace(/\{\{TARGET_LANG\}\}/g, opts.targetLanguageLabel);
   const glossaryBlock = buildGlossaryBlock(opts.glossaryHints ?? [], PROMPTS.ui.glossaryPreamble);
 
-  const systemPrompt = `${systemBase}${jobBlock}${glossaryBlock}`;
+  const systemPrompt = withScriptDirective(
+    `${systemBase}${jobBlock}${glossaryBlock}`,
+    opts.targetLocale
+  );
   const userContent = JSON.stringify(texts, null, 2);
 
   return { systemPrompt, userContent };
@@ -244,6 +289,8 @@ export function buildPluralPassBPrompt(opts: {
   glossaryHints?: string[];
   /** When set, appends an `Intl.PluralRules` sample-count line for the target BCP-47 tag. */
   intlPluralLocaleTag?: string;
+  /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+  targetLocale?: string;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
@@ -267,7 +314,10 @@ ${intlHint}
 Reply with ONLY one JSON object whose keys are exactly those category names and whose values are the translated UI strings in ${opts.targetLanguageLabel}.`;
 
   return {
-    systemPrompt: PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+    systemPrompt: withScriptDirective(
+      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+      opts.targetLocale
+    ),
     userContent,
   };
 }
@@ -336,6 +386,22 @@ export class LintSourceJsonParseError extends PromptParseError {
   constructor(message: string, rawResponse: string) {
     super(message, rawResponse);
     this.name = "LintSourceJsonParseError";
+  }
+}
+
+/**
+ * A translation came back in the wrong writing system for the target locale's script subtag
+ * (e.g. Devanagari output for `hi-Latn`). Carried through the model-fallback loop like a parse
+ * failure so the next model gets a chance to honor the script requirement.
+ */
+export class ScriptValidationError extends PromptParseError {
+  constructor(
+    message: string,
+    rawResponse: string,
+    public readonly offendingChars: string[]
+  ) {
+    super(message, rawResponse);
+    this.name = "ScriptValidationError";
   }
 }
 

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../../src/utils/concurrency.js";
+import {
+  runMapWithConcurrency,
+  AsyncSemaphore,
+  AsyncMutex,
+  yieldToEventLoop,
+} from "../../src/utils/concurrency.js";
+import { RunInterruptedError } from "../../src/utils/run-interrupt.js";
 
 describe("runMapWithConcurrency", () => {
   it("returns empty array for empty items", async () => {
@@ -28,6 +34,43 @@ describe("runMapWithConcurrency", () => {
       return 0;
     });
     expect(maxActive).toBeLessThanOrEqual(3);
+  });
+
+  it("stops promptly when aborted via a macrotask, even with a synchronous fn", async () => {
+    // Fully-cached runs do no real async I/O, so `fn` resolves synchronously. The signal that
+    // aborts the run (e.g. SIGINT) is delivered on the event loop (a macrotask), so the worker
+    // loop must yield to the macrotask queue or the abort never becomes observable mid-run.
+    const ac = new AbortController();
+    const items = Array.from({ length: 1000 }, (_, i) => i);
+    const processed: number[] = [];
+
+    setImmediate(() => ac.abort(new RunInterruptedError(130)));
+
+    await expect(
+      runMapWithConcurrency(
+        items,
+        1,
+        async (n) => {
+          processed.push(n);
+          return n;
+        },
+        ac.signal
+      )
+    ).rejects.toBeInstanceOf(RunInterruptedError);
+
+    // The abort fired after the first macrotask yield, long before all 1000 items were claimed.
+    expect(processed.length).toBeLessThan(items.length);
+  });
+});
+
+describe("yieldToEventLoop", () => {
+  it("resolves after a macrotask so queued timers/signals can run", async () => {
+    let macrotaskRan = false;
+    setImmediate(() => {
+      macrotaskRan = true;
+    });
+    await yieldToEventLoop();
+    expect(macrotaskRan).toBe(true);
   });
 });
 

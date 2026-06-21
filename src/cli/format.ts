@@ -2,6 +2,9 @@
 
 import chalk from "chalk";
 
+/** Prefix for the translate-docs / translate-ui header line naming the active LLM provider. */
+export const PROVIDER_LOG_PREFIX = "Provider: ";
+
 /** Prefix for the translate-docs / translate-ui header line listing OpenRouter models. */
 export const MODELS_TRY_ORDER_LOG_PREFIX = "Models (try in order): ";
 
@@ -47,10 +50,18 @@ export function wrapCommaSeparatedListForWidth(
   return lines;
 }
 
-/** Prints the cyan/magenta “Models (try in order):” block with wrapping at {@link MODELS_TRY_ORDER_LOG_WIDTH}. */
-export function printModelsTryInOrder(models: readonly string[]): void {
+/**
+ * Prints the cyan/magenta “Models (try in order):” block with wrapping at
+ * {@link MODELS_TRY_ORDER_LOG_WIDTH}. When `provider` is given, a `Provider: <name>` line is printed
+ * first so the output makes clear which LLM provider the listed models belong to.
+ */
+export function printModelsTryInOrder(models: readonly string[], provider?: string): void {
   if (models.length === 0) {
     return;
+  }
+  const providerName = provider?.trim();
+  if (providerName) {
+    console.log(chalk.cyan(PROVIDER_LOG_PREFIX) + chalk.magenta(providerName));
   }
   const parts = wrapCommaSeparatedListForWidth(
     models.join(", "),

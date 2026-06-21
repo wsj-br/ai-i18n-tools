@@ -6,7 +6,7 @@
 실제 사용 지침은 [GETTING_STARTED.md](GETTING_STARTED.ko.md)를 참조하세요. 번역된 문서의 스크린샷 및 삽화 SVG에 대해서는 [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.ko.md)를 참조하세요.
 
 <small>**다른 언어로 읽기:** </small>
-<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [Hindi (Roman)](./PACKAGE_OVERVIEW.hi-Latn.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [简体中文](./PACKAGE_OVERVIEW.zh-Hans.md) · [繁體中文](./PACKAGE_OVERVIEW.zh-Hant.md)</small>
 
 ---
 
@@ -31,8 +31,8 @@
   - [출력 경로 확인](#output-path-resolution)
   - [평면 링크 재작성](#flat-link-rewriting)
 - [공유 인프라](#shared-infrastructure)
-  - [`OpenRouterClient`](#openrouterclient)
-  - [설정 로드](#config-loading)
+  - [`LlmClient`](#openrouterclient)
+  - [구성 로딩](#config-loading)
   - [로거](#logger)
 - [런타임 헬퍼 API](#runtime-helpers-api)
   - [RTL 헬퍼](#rtl-helpers)
@@ -127,7 +127,8 @@ src/
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
 │
 ├── api/
-│   └── openrouter.ts               OpenRouter HTTP client with model fallback chain
+│   ├── llm-client.ts               LlmClient: provider-agnostic chat client (AI SDK) with model fallback chain
+│   └── provider-models-catalog.ts  Fetch/parse any provider's OpenAI-compatible GET /models catalog
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
@@ -165,7 +166,7 @@ source files (JS/TS, optional `.astro`)
 strings.json  ─────────────────── master catalog
       │             { hash: { source, translated, models?, locations? } }
       ▼
-OpenRouterClient.translateUIBatch()
+LlmClient.translateUIBatch()
       │  sends JSON array of source strings, receives JSON array of translations (+ model id per batch)
       ▼
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
@@ -229,7 +230,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 - 문자열의 JSON 배열을 보내고 번역된 결과의 JSON 배열을 반환하도록 요청합니다.
 - 가능할 경우 용어집 힌트를 포함합니다.
 
-`OpenRouterClient.translateUIBatch`은 각 모델을 순서대로 시도하며, 파싱 또는 네트워크 오류 시 다음 모델로 전환합니다. CLI는 `openrouter.translationModels`(또는 레거시 기본값/대체값)에서 해당 목록을 생성하며, `translate-ui`의 경우 설정되어 있으면 선택적 `ui.preferredModel`가 앞에 추가됩니다(나머지 목록과 중복 제거됨).
+`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석 또는 네트워크 오류 시 대체합니다. CLI는 활성 공급자의 `translationModels`에서 해당 목록을 빌드합니다. `translate-ui`의 경우, 설정된 경우 선택적 `ui.preferredModel`가 앞에 추가됩니다(나머지와 중복 제거됨).
 
 ---
 
@@ -250,7 +251,7 @@ protected text  ──────────────── HTML tags, admo
 batches[]  ───────────────────── grouped by count + char limit
       │
       ▼  TranslationCache lookup
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  PlaceholderHandler.restoreAfterTranslation
 final text  ──────────────────── placeholders restored
@@ -313,11 +314,11 @@ Astro 템플릿과 MDX JSX에 대한 공유 속성/키 보호 기능은 `src/pro
 
 SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 SHA-256 해시 값 중 앞 16자리 16진수 문자를 사용하여 `(source_hash, locale)`를 키로 하고 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드를 포함하는 행을 저장합니다. 공백은 압축됩니다.
 
-각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위 내에서 매치되지 않은 세그먼트 행의 `last_hit_at`이 재설정됩니다. 문서 번역 중 성공적인 캐시 히트는 해당 세그먼트의 오래된 `translation_failures` 행을 제거합니다. `cleanup`는 먼저 `sync --force-update`을 실행한 후, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 디스크에 존재하지 않는 해결된 소스 경로에 대해 `file_tracking` 키를 정리하며(`doc-block:…`, `json-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 존재하지 않는 파일을 가리키는 번역 행을 제거하고, 고아가 된 `translation_failures` 행을 정리합니다. `--no-backup`이 전달되지 않은 경우, `cache.db`을 먼저 백업합니다.
+각 실행 시 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 이동합니다. 번역 후, 현재 번역 범위에서 적중되지 않은 세그먼트 행에 대해 `last_hit_at`이 재설정됩니다. 문서 번역 중 성공적인 캐시 적중은 해당 세그먼트에 대한 오래된 `translation_failures` 행을 지웁니다. `cleanup`는 먼저 `sync --force-update`을 실행한 다음, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 해결된 소스 경로가 디스크에 없는 경우(`doc-block:…`, `json-block:…`, `svg-files:…` 등) `file_tracking` 키를 정리하고, 메타데이터 파일 경로가 없는 파일을 가리키는 번역 행을 제거하고, 고아 `translation_failures` 행을 정리하고, 해결된 소스 경로가 디스크에 없는 고아 `markdown_source_issues` 행을 정리합니다. `--backup <path>`가 전달되지 않는 한 `cache.db`을 백업하지 않으며, 이 경우 먼저 해당 경로에 백업을 작성합니다.
 
 `translate-docs` 명령어는 **파일 추적**을 사용하여 기존 출력이 존재하는 변경되지 않은 소스가 작업을 완전히 건너뛸 수 있도록 합니다. `--force-update`은 세그먼트 캐시를 계속 사용하면서 파일 처리를 다시 실행하고, `--force`는 파일 추적을 지우고 API 번역 시 세그먼트 캐시 읽기를 우회합니다. 구성된 모든 모델이 마크다운 세그먼트에서 AST 검증에 실패할 경우, `translate-docs`은 세그먼트를 점진적으로 분할하고 더 작은 부분을 재시도할 수 있습니다(`docs[].segmentSplitting.qualityRetrySplit`, 기본값 활성화). 전체 플래그 표는 [시작하기](GETTING_STARTED.ko.md#cache-behaviour-and-translate-docs-flags)를 참조하세요.
 
-**배치 프롬프트 형식:** `translate-docs --prompt-format`은 `OpenRouterClient.translateDocumentBatch`에 대해서만 XML(`<seg>` / `<t>`) 또는 JSON 배열/객체 형식을 선택합니다. 추출, 자리 표시자, 검증은 변경되지 않습니다. [배치 프롬프트 형식](GETTING_STARTED.ko.md#batch-prompt-format)을 참조하세요.
+**배치 프롬프트 형식:** `translate-docs --prompt-format`는 `LlmClient.translateDocumentBatch`에 대해서만 XML(`<seg>` / `<t>`) 또는 JSON 배열/객체 모양을 선택합니다. 추출, 자리 표시자 및 유효성 검사는 변경되지 않습니다. [배치 프롬프트 형식](GETTING_STARTED.ko.md#batch-prompt-format)을 참조하세요.
 
 <a id="output-path-resolution"></a>
 ### 출력 경로 해석
@@ -348,7 +349,7 @@ json[].contentPaths  →  resolve files (file | directory | glob)
 string leaves selected by keyPolicy (dot paths + minimatch)
       │
       ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  NestedJsonExtractor.reassemble
 output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
@@ -366,13 +367,13 @@ output file  ─────────── expandJsonBlockOutputPath(outputP
 ## 공유 인프라
 
 <a id="openrouterclient"></a>
-### `OpenRouterClient`
+### `LlmClient`
 
-OpenRouter 채팅 완성 API를 래핑합니다. 주요 동작:
+Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 공급자 독립적인 채팅 클라이언트입니다. 활성 공급자를 `provider` / `providers`에서 확인하고, 해당 공급자의 `baseUrl` + API 키에 대한 OpenAI 호환 클라이언트( `createOpenAICompatible` )를 빌드한 다음, 모든 호출을 `generateText`를 통해 라우팅합니다. `OpenRouterClient`는 더 이상 사용되지 않는 별칭으로 유지됩니다. 주요 동작:
 
-- **모델 폴백**: 확인된 목록에 있는 각 모델을 순서대로 시도하며, HTTP 오류 또는 구문 분석 실패 시 폴백합니다. UI 번역은 존재할 경우 먼저 `ui.preferredModel`, 그다음 `openrouter` 모델을 확인합니다.
-- **요청 타임아웃**: `openrouter.requestTimeoutMs`(기본값 30초)이 `AbortSignal.timeout`를 통해 각 채팅 완성 요청을 중단합니다. 동일한 값이 CLI가 카탈로그를 로드할 때 `GET /models`에도 적용됩니다(예: `check-models` 및 알 수 없는 모델 ID를 제거하는 선택적 사전 필터).
-- **속도 제한**: 429 응답을 감지하면 `retry-after`(또는 2초) 동안 대기한 후 한 번 재시도합니다.
+- **모델 대체**: 해결된 목록의 각 모델을 순서대로 시도합니다. 요청 또는 구문 분석 실패 시 대체됩니다. UI 번역은 `ui.preferredModel`이 있으면 먼저 확인하고, 그 다음 공급자의 `translationModels`을 확인합니다.
+- **요청 시간 초과**: 활성 공급자의 `requestTimeoutMs`(기본값 30초)는 `AbortSignal.timeout`을 통해 각 요청을 중단합니다. CLI가 `check-models`(모든 공급자)에 대한 공급자 모델 목록을 로드하고 알 수 없는 모델 ID를 삭제하는 선택적 사전 필터(OpenRouter 전용)를 로드할 때도 동일한 값이 `GET /models`에 적용됩니다.
+- **OpenRouter 추가 기능** (`openrouter`이 활성화된 경우에만): `provider` 요청 필드, `HTTP-Referer` / `X-Title` 헤더를 통한 처리량 라우팅, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 공급자에 대해 보고되며, 정확한 비용은 공급자가 반환하는 경우에만 보고됩니다.
 - **디버그 트래픽 로그**: `debugTrafficFilePath`이 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다.
 
 <a id="config-loading"></a>
@@ -488,7 +489,7 @@ console.log(
 | `MarkdownExtractor` | 마크다운에서 번역 가능한 구문 추출. |
 | `JsonExtractor` | Docusaurus JSON 레이블 파일(UI 카탈로그, MDX 본문 아님)에서 추출합니다. |
 | `SvgExtractor` | SVG 파일에서 추출. |
-| `OpenRouterClient` | OpenRouter로 번역 요청 전송. |
+| `LlmClient` | 활성 LLM 공급자에게 번역 요청을 합니다( `OpenRouterClient`는 더 이상 사용되지 않는 별칭). |
 | `PlaceholderHandler` | 번역 주위의 마크다운 구문 보호/복원 (HTML 태그, 주석, 앵커, MDX 주석/JSX/중괄호, URL, 인라인 코드, 강조). |
 | `protectMdx` / `restoreMdx` | MDX 주석, JSX 태그, 중괄호 표현식 및 JSX 문자열 속성 보호/복원 (`PlaceholderHandler`에 의해 호출됨; 직접 사용을 위해 내보내기도 함). |
 | `splitTranslatableIntoBatches` | 구문을 LLM 크기의 배치로 그룹화. |

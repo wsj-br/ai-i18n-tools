@@ -10,17 +10,49 @@ allowBuilds:
   core-js: true
   esbuild: true
 minimumReleaseAgeExclude:
-  - postcss@8.5.10
   - serialize-javascript@7.0.5
   - "@11ty/gray-matter@2.1.0"
-  - vite@8.0.16
+  - "@types/node@26.0.0"
+  - semver@7.8.5
+  - "@img/sharp-darwin-arm64@0.35.2"
+  - "@img/sharp-darwin-x64@0.35.2"
+  - "@img/sharp-freebsd-wasm32@0.35.2"
+  - "@img/sharp-libvips-darwin-arm64@1.3.1"
+  - "@img/sharp-libvips-darwin-x64@1.3.1"
+  - "@img/sharp-libvips-linux-arm64@1.3.1"
+  - "@img/sharp-libvips-linux-arm@1.3.1"
+  - "@img/sharp-libvips-linux-ppc64@1.3.1"
+  - "@img/sharp-libvips-linux-riscv64@1.3.1"
+  - "@img/sharp-libvips-linux-s390x@1.3.1"
+  - "@img/sharp-libvips-linux-x64@1.3.1"
+  - "@img/sharp-libvips-linuxmusl-arm64@1.3.1"
+  - "@img/sharp-libvips-linuxmusl-x64@1.3.1"
+  - "@img/sharp-linux-arm64@0.35.2"
+  - "@img/sharp-linux-arm@0.35.2"
+  - "@img/sharp-linux-ppc64@0.35.2"
+  - "@img/sharp-linux-riscv64@0.35.2"
+  - "@img/sharp-linux-s390x@0.35.2"
+  - "@img/sharp-linux-x64@0.35.2"
+  - "@img/sharp-linuxmusl-arm64@0.35.2"
+  - "@img/sharp-linuxmusl-x64@0.35.2"
+  - "@img/sharp-wasm32@0.35.2"
+  - "@img/sharp-webcontainers-wasm32@0.35.2"
+  - "@img/sharp-win32-arm64@0.35.2"
+  - "@img/sharp-win32-ia32@0.35.2"
+  - "@img/sharp-win32-x64@0.35.2"
+  - sharp@0.35.2
 overrides:
   postcss@<8.5.10: ^8.5.10
   serialize-javascript@<7.0.5: ^7.0.5
   uuid@<14.0.0: ">=14.0.0"
-  i18next: ^26.1.0
   express: ^5.2.1
   gray-matter: npm:@11ty/gray-matter@^2.1.0
-  vite@>=8.0.0 <8.0.16: ^8.0.16
   esbuild@>=0.27.3 <0.28.1: ^0.28.1
-  joi@>=17.0.0 <17.13.4: ^17.13.4
+  http-proxy-middleware@>=0.16.0 <3.0.6: ^3.0.6
+peerDependencyRules:
+  allowedVersions:
+    # @astrojs/tailwind 6.0.2 is the final release and pins its astro peer to
+    # ^3 || ^4 || ^5, but it works with astro 6 (the astro-website example
+    # builds). Accept astro 6 for this integration instead of forcing a
+    # Tailwind v4 / @tailwindcss/vite migration of the example.
+    "@astrojs/tailwind>astro": "6"

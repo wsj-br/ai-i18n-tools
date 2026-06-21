@@ -40,8 +40,9 @@ import {
 } from "../processors/glossary-force-placeholders.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
-import { OpenRouterClient } from "../api/openrouter.js";
+import { LlmClient } from "../api/llm-client.js";
 import { resolveTranslationModels } from "../core/config.js";
+import { safeResolveActiveProvider } from "../core/llm-providers.js";
 import {
   filterTranslationModelsAgainstOpenRouterCatalog,
   MODELS_ALL_UNKNOWN_AFTER_FILTER,
@@ -76,7 +77,12 @@ import type {
   DocumentBatchResponseFormat,
   DocumentPromptContentType,
 } from "../core/prompt-builder.js";
-import { runMapWithConcurrency, AsyncSemaphore, AsyncMutex } from "../utils/concurrency.js";
+import {
+  runMapWithConcurrency,
+  AsyncSemaphore,
+  AsyncMutex,
+  yieldToEventLoop,
+} from "../utils/concurrency.js";
 import {
   bindRunInterruptScope,
   isRunInterruptedError,
@@ -296,7 +302,7 @@ function segmentOriginalContent(s: Segment, originalContentByHash: Map<string, s
   return { ...s, content: originalContentByHash.get(s.hash) ?? s.content };
 }
 
-/** Same style as {@link OpenRouterClient} model switch warnings; used when post-restore quality checks fail. */
+/** Same style as {@link LlmClient} model switch warnings; used when post-restore quality checks fail. */
 function warnDocQualityModelSwitch(
   locale: string,
   relativePath: string | undefined,
@@ -950,7 +956,7 @@ export async function translateSegmentsBatched(
   originalContentByHash: Map<string, string>,
   locale: string,
   glossary: Glossary,
-  client: OpenRouterClient | null,
+  client: LlmClient | null,
   dryRun: boolean,
   verbose: boolean,
   batchSize: number,
@@ -1589,7 +1595,7 @@ export async function translateMarkdownFile(
   locale: string,
   config: I18nDocTranslateConfig,
   cache: TranslationCache | null,
-  client: OpenRouterClient | null,
+  client: LlmClient | null,
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>,
@@ -1921,7 +1927,7 @@ export async function translateAstroFile(
   locale: string,
   config: I18nDocTranslateConfig,
   cache: TranslationCache | null,
-  client: OpenRouterClient | null,
+  client: LlmClient | null,
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>,
@@ -2234,7 +2240,7 @@ export async function translateJsonFile(
   locale: string,
   config: I18nDocTranslateConfig,
   cache: TranslationCache | null,
-  client: OpenRouterClient | null,
+  client: LlmClient | null,
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>,
@@ -2466,7 +2472,7 @@ export async function translateSvgAssetFile(
   locale: string,
   config: I18nConfig,
   cache: TranslationCache | null,
-  client: OpenRouterClient | null,
+  client: LlmClient | null,
   glossary: Glossary,
   opts: TranslateRunOptions,
   hitKeys: Set<string>
@@ -2784,7 +2790,6 @@ function printTranslateDocsRunSummary(
   opts: TranslateRunOptions,
   sum: TranslateTotals,
   wallElapsedMs: number,
-  models: readonly string[],
   outcome: "success" | "failure" | "interrupted"
 ): void {
   if (outcome === "success") {
@@ -2795,22 +2800,12 @@ function printTranslateDocsRunSummary(
         "\n⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
       )
     );
-    printModelsTryInOrder(models);
-    console.log(
-      chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`)
-    );
-    console.log("");
   } else {
     console.log(
       chalk.bold.yellow(
         "\n⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error).\n"
       )
     );
-    printModelsTryInOrder(models);
-    console.log(
-      chalk.cyan(`Batch prompt format: `) + chalk.magenta(`${opts.promptFormat ?? "json-array"}`)
-    );
-    console.log("");
   }
 
   console.log(chalk.bold("📊 Summary:"));
@@ -2897,7 +2892,7 @@ export async function runTranslate(
 
   let translationModelsForClient: string[] | undefined = undefined;
   if (needsApi) {
-    const resolved = resolveTranslationModels(config.openrouter);
+    const resolved = resolveTranslationModels(config);
     if (resolved.length > 0) {
       const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolved, config);
       warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
@@ -2909,7 +2904,7 @@ export async function runTranslate(
   }
 
   const client = needsApi
-    ? new OpenRouterClient({
+    ? new LlmClient({
         config,
         ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
       })
@@ -2932,6 +2927,7 @@ export async function runTranslate(
 
   const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
   const models = client?.getConfiguredModels() ?? [];
+  const provider = client?.getProvider() ?? safeResolveActiveProvider(config);
 
   const docDescription = config.doc.description?.trim();
   const translatingHeadline = docDescription
@@ -2944,7 +2940,7 @@ export async function runTranslate(
       "\n\n___DOCUMENTATION Translation_____________________________________________________________________________\n\n"
     ) + chalk.bold(`\n${translatingHeadline}`)
   );
-  printModelsTryInOrder(models);
+  printModelsTryInOrder(models, provider);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(`Output: `) + chalk.magenta(`${path.resolve(opts.cwd, config.doc.outputDir)}`)
@@ -3082,6 +3078,7 @@ export async function runTranslate(
             throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processMarkdownFile(rel);
             await recordFileTotals(partial, skipped, totals);
+            await yieldToEventLoop();
           }
         }
       }
@@ -3124,6 +3121,7 @@ export async function runTranslate(
             throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processJsonFile(rel);
             await recordFileTotals(partial, skipped, totals);
+            await yieldToEventLoop();
           }
         }
       }
@@ -3165,6 +3163,7 @@ export async function runTranslate(
             throwIfAbortSignal(runOpts.abortSignal);
             const { skipped, totals } = await processAstroFile(rel);
             await recordFileTotals(partial, skipped, totals);
+            await yieldToEventLoop();
           }
         }
       }
@@ -3190,6 +3189,7 @@ export async function runTranslate(
     return { locale, partial, markdownHitKeysLocal, localeElapsed, error };
   };
 
+  let interruptedExitCode: number | null = null;
   try {
     const localeResults = await runMapWithConcurrency(
       locales,
@@ -3233,7 +3233,7 @@ export async function runTranslate(
           )
         );
       }
-      printTranslateDocsRunSummary(opts, sum, wallElapsedFailure, models, "failure");
+      printTranslateDocsRunSummary(opts, sum, wallElapsedFailure, "failure");
       throw localeFailures[0]!.error;
     }
 
@@ -3267,17 +3267,24 @@ export async function runTranslate(
 
     const wallElapsed = Date.now() - wallStart;
 
-    printTranslateDocsRunSummary(opts, sum, wallElapsed, models, "success");
+    printTranslateDocsRunSummary(opts, sum, wallElapsed, "success");
 
     return sum;
   } catch (e) {
     if (isRunInterruptedError(e) || runOpts.abortSignal?.aborted) {
-      printTranslateDocsRunSummary(opts, liveSum, Date.now() - wallStart, models, "interrupted");
-      process.exit(runInterruptedExitCode(e, runOpts.abortSignal));
+      printTranslateDocsRunSummary(opts, liveSum, Date.now() - wallStart, "interrupted");
+      // Defer the exit until after `finally` has closed the cache. Calling `process.exit()` here
+      // would terminate the process before `finally` runs, skipping `cache.close()` (the WAL
+      // checkpoint + `db.close()` that unlinks the `-wal` / `-shm` sidecars) and leaving them behind.
+      interruptedExitCode = runInterruptedExitCode(e, runOpts.abortSignal);
+      return liveSum;
     }
     throw e;
   } finally {
     interruptScope.dispose();
     cache?.close();
+    if (interruptedExitCode !== null) {
+      process.exit(interruptedExitCode);
+    }
   }
 }

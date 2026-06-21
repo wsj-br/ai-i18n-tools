@@ -202,7 +202,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
     });
     expect(out).toContain("title: T");
     expect(out).toContain("Hello BAR");
-    expect(out).toMatch(/<!--LL-->\[English \(GB\)\]\(.*?README\.md.*?\)/);
+    expect(out).toMatch(/<!--LL-->\[English \(United Kingdom\)\]\(.*?README\.md.*?\)/);
     expect(out).toContain("<!--/LL-->");
   });
 
@@ -485,7 +485,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             {
               contentPaths: ["a.md"],
               outputDir: "out",
-              targetLocales: ["de", "zh-TW"],
+              targetLocales: ["de", "zh-Hant"],
               docsOutput: {
                 style: "flat",
                 postProcessing: {
@@ -499,7 +499,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
               },
             },
           ],
-          targetLocales: ["de", "zh-TW"],
+          targetLocales: ["de", "zh-Hant"],
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
             translationModels: ["m"],
@@ -516,7 +516,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
       const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.find((r) => r.code === "de")?.label).toBe("Deutsch");
-      expect(rows.find((r) => r.code === "zh-TW")?.label).toContain("中文");
+      expect(rows.find((r) => r.code === "zh-Hant")?.label).toContain("中文");
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -533,7 +533,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
             {
               contentPaths: ["a.md"],
               outputDir: "out",
-              targetLocales: ["de", "zh-TW"],
+              targetLocales: ["de", "zh-Hant"],
               docsOutput: {
                 style: "flat",
                 postProcessing: {
@@ -547,7 +547,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
               },
             },
           ],
-          targetLocales: ["de", "zh-TW"],
+          targetLocales: ["de", "zh-Hant"],
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
             translationModels: ["m"],
@@ -564,7 +564,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
       const docCfg = toDocTranslateConfig(full, full.docs[0]!);
       const rows = buildLanguageSwitcherRows(docCfg, dir);
       expect(rows.find((r) => r.code === "de")?.label).toBe("German");
-      expect(rows.find((r) => r.code === "zh-TW")?.label).toBe("Chinese (TW)");
+      expect(rows.find((r) => r.code === "zh-Hant")?.label).toBe("Chinese (Traditional)");
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

@@ -2,6 +2,8 @@ export { I18nToolsError, ConfigValidationError, CacheError } from "./core/errors
 
 export {
   type I18nConfig,
+  type LlmProviderConfig,
+  type ProvidersConfig,
   type OpenRouterConfig,
   type FeaturesConfig,
   type GlossaryConfig,
@@ -45,6 +47,7 @@ export {
   type BatchTranslationResult,
   type ChatMessage,
   type ChatResponse,
+  type LlmUsageStats,
   type OpenRouterUsageStats,
   BatchTranslationError,
   i18nConfigSchema,
@@ -73,7 +76,13 @@ export {
   resolveTranslationModels,
   resolveUITranslationModels,
   coerceTargetLocalesField,
+  disallowedScriptLetters,
   englishLanguageNameForLocale,
+  englishScriptName,
+  isLatinScriptLocale,
+  nonLatinLettersIn,
+  scriptSubtag,
+  unicodeScriptPropertyForSubtag,
   normalizeLocale,
   localePathPlaceholders,
   parseLocaleList,
@@ -108,6 +117,8 @@ export {
   PromptParseError,
   PluralFormsParseError,
   UIJsonArrayParseError,
+  ScriptValidationError,
+  targetScriptDirective,
   PROMPTS,
   MARKDOWN_PRESERVATION_RULES,
   JSON_SEGMENT_CONTEXT_ADDENDUM,
@@ -181,7 +192,27 @@ export {
   glossaryForcePlaceholderToken,
 } from "./processors/glossary-force-placeholders.js";
 
-export { OpenRouterClient, type OpenRouterClientOptions } from "./api/openrouter.js";
+export {
+  LlmClient,
+  OpenRouterClient,
+  type LlmClientOptions,
+  type OpenRouterClientOptions,
+} from "./api/llm-client.js";
+
+export {
+  PROVIDER_PRESETS,
+  OPENROUTER_PROVIDER_KEY,
+  DEFAULT_LLM_MAX_TOKENS,
+  DEFAULT_LLM_TEMPERATURE,
+  DEFAULT_LLM_REQUEST_TIMEOUT_MS,
+  isPresetProvider,
+  resolveActiveProvider,
+  resolveProviderSettings,
+  resolveApiKey,
+  translationModelsForProvider,
+  type LlmProviderPreset,
+  type ResolvedProviderSettings,
+} from "./core/llm-providers.js";
 
 export {
   runTranslateUI,

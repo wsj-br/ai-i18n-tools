@@ -7,7 +7,7 @@
 [![Licence : MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-Une CLI et une boîte à outils pour l'internationalisation d'applications et de sites de documentation JavaScript/TypeScript utilisant des modèles linguistiques de grande taille via [OpenRouter](https://openrouter.ai/). Trois flux de travail modulaires, partageant tous un seul fichier de configuration, prennent en charge différents besoins de traduction :
+Un CLI et une boîte à outils pour l'internationalisation des applications JavaScript/TypeScript et des sites de documentation à l'aide de grands modèles linguistiques. Il fonctionne avec [OpenRouter](https://openrouter.ai/) et tout fournisseur compatible OpenAI (OpenAI, Anthropic, Gemini, DeepSeek, Groq, Mistral, xAI, Cerebras, NVIDIA, Alibaba, APIFUN, Ollama, et plus encore). Trois flux de travail modulaires, partageant tous un seul fichier de configuration, prennent en charge différents besoins de traduction :
 
 - **Flux de travail 1 — Traduction de l'interface utilisateur :** extrait les appels `t("…")` depuis JS/TS (et éventuellement depuis les fichiers `.astro`) et génère un JSON plat par langue pour i18next ou une recherche SSG statique.
 - **Flux de travail 2 — Traduction de documents :** traduit les pages markdown, MDX et `.astro` (pour sites web et Starlight) listées dans `docs[].contentPaths` à l'aide de `translate-docs`.
@@ -23,7 +23,7 @@ Les ressources **SVG** sont traduites à l'aide de `features.translateSVG`, du b
 Tous les flux de travail conservent un cache fichier/SQLite afin de garantir que seuls les segments nouveaux ou modifiés (chaînes ou blocs de texte) sont envoyés au LLM.
 
 <small>**Lire dans d'autres langues :** </small>
-<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -32,7 +32,7 @@ Tous les flux de travail conservent un cache fichier/SQLite afin de garantir que
 - [Flux de travail principaux](#core-workflows)
 - [Installation](#installation)
   - [Utilisation du CLI](#using-the-cli)
-- [OpenRouter](#openrouter)
+- [Fournisseurs LLM](#openrouter)
 - [Démarrage rapide](#quick-start)
   - [Flux de travail 1 - Traduction de l'interface utilisateur](#workflow-1---ui-translation)
   - [Flux de travail 2 - Traduction de documents](#workflow-2---document-translation)
@@ -106,7 +106,7 @@ Préférez `sync` plutôt que d'enchaîner manuellement `extract`, `translate-ui
 
 > **Astuce :** Pour exécuter `ai-i18n-tools` directement dans un shell interactif sans `npx`, ajouter `node_modules/.bin` à votre `PATH` (bash/zsh : `export PATH="$PWD/node_modules/.bin:$PATH"`). Voir [Bien démarrer](docs/GETTING_STARTED.fr.md#installation) pour les instructions concernant direnv et Windows.
 
-Définissez votre clé API OpenRouter :
+Définissez votre clé API du fournisseur (OpenRouter montré ; utilisez la variable correspondante pour votre fournisseur) :
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -115,13 +115,50 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ---
 
 <a id="openrouter"></a>
-## OpenRouter
+## Fournisseurs LLM
 
-Les commandes qui appellent OpenRouter (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` et les scripts associés) nécessitent `OPENROUTER_API_KEY` dans l'environnement. `check-markdown` n'utilise pas OpenRouter.
+Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, et scripts associés) appellent un fournisseur LLM ; `check-markdown` ne le fait pas.
 
-Dans `ai-i18n-tools.config.json`, l'objet `openrouter` inclut les listes de modèles, `baseUrl`, `maxTokens`, `temperature` et `requestTimeoutMs` : le temps maximal, en millisecondes, d'attente pour chaque requête HTTP vers OpenRouter (génération de conversations et appels internes `GET /models`). La valeur par défaut est `30000` (30 secondes).
+Configurez les fournisseurs sous une carte de niveau supérieur `providers` et choisissez celui actif avec un sélecteur de niveau supérieur `provider` (facultatif lorsqu'un seul fournisseur est configuré). La plupart des fournisseurs n'ont besoin que d'une liste `translationModels` — `baseUrl` et la variable d'environnement de la clé API proviennent d'un préréglage intégré ; vous pouvez remplacer `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, et `requestTimeoutMs` par fournisseur. `requestTimeoutMs` est le temps maximum en millisecondes à attendre pour chaque requête (par défaut `30000`).
 
-Exécutez `ai-i18n-tools check-models` pour vérifier chaque identifiant de modèle configuré par rapport au catalogue en direct d'OpenRouter. Il signale les identifiants qui manquent ou qui sont dépassés `expiration_date`, liste les modèles valides avec une estimation des prix d'entrée/sortie (USD par 1M de tokens) et se termine avec un statut non nul lorsque tout identifiant configuré est invalide. Il nécessite `OPENROUTER_API_KEY`.
+Pour changer de fournisseur pour une seule exécution sans modifier la configuration, passez l'option globale `-P` / `--provider <name>` (par exemple `ai-i18n-tools -P groq translate-ui`) ; le nom doit être l'une des clés `providers` configurées.
+
+```jsonc
+{
+  "provider": "openrouter",
+  "providers": {
+    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
+    "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
+  }
+}
+```
+
+Préréglages de fournisseurs intégrés (clé — URL de base — variable d'environnement de la clé API) :
+
+| Fournisseur | URL de base | Variable d'environnement de la clé API |
+| --- | --- | --- |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
+| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
+| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `ollama` | `http://localhost:11434/v1` | (aucun) |
+
+Définissez un fournisseur personnalisé compatible avec OpenAI en ajoutant une nouvelle clé avec `baseUrl` (et `apiKeyEnv` sauf si aucune clé n'est nécessaire). Les identifiants de modèle sont des identifiants directs en amont — le fournisseur est choisi au niveau de la configuration, donc aucun préfixe `provider/` n'est nécessaire (les identifiants OpenRouter conservent leur forme native `vendor/model`).
+
+L'utilisation des jetons est signalée pour chaque fournisseur ; le coût exact en USD n'est affiché que lorsque le fournisseur le renvoie (OpenRouter). `ai-i18n-tools check-models` valide les identifiants de modèle configurés par rapport à la liste `GET /models` active du fournisseur (n'importe quel fournisseur), et affiche la tarification lorsque le fournisseur la renvoie (par ex. OpenRouter). `ai-i18n-tools list-models` liste tous les modèles annoncés par le fournisseur actif (utilisez `-P` / `--provider` pour inspecter un autre fournisseur configuré).
+
+Un bloc de configuration de niveau supérieur hérité `openrouter` est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement.
+
+Pour une démonstration pratique du changement de fournisseur avec `-P` sur un seul document, consultez [`examples/multi-provider`](../examples/multi-provider/) (une configuration avec `openai`, `anthropic`, `nvidia` et `deepseek`).
 
 ---
 
@@ -223,6 +260,8 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 ```bash
 ai-i18n-tools version
 ai-i18n-tools check-models
+ai-i18n-tools list-models
+ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools extract
@@ -247,7 +286,7 @@ ai-i18n-tools help [command]
 
 Les listes complètes des options par commande sont disponibles dans [Bien démarrer — Référence CLI](docs/GETTING_STARTED.fr.md#cli-reference). Exécutez `ai-i18n-tools <command> --help` pour afficher l'aide intégrée.
 
-Options globales pour chaque commande : `-c <config>` (par défaut : `ai-i18n-tools.config.json`), `-v` (mode verbeux), `-w` / `--write-logs [path]` facultatif pour rediriger la sortie console vers un fichier journal (par défaut : dans le répertoire du cache de traduction), `-V` / `--version`, et `-h` / `--help`. Plusieurs commandes acceptent `-l` / `--locale <codes>` (BCP-47 séparés par des virgules) pour limiter les langues cibles ; `lint-source` utilise une seule langue source. Consultez [Démarrage rapide](docs/GETTING_STARTED.fr.md#cli-reference) pour le tableau de présentation des commandes.
+Options globales sur chaque commande : `-c <config>` (par défaut : `ai-i18n-tools.config.json`), `-v` (verbeux), `-P` / `--provider <name>` (remplace le fournisseur LLM actif ; doit être configuré sous `providers`), optionnel `-w` / `--write-logs [path]` pour dupliquer la sortie de la console vers un fichier journal (par défaut : sous le répertoire de cache de traduction), `-V` / `--version`, et `-h` / `--help`. Plusieurs commandes acceptent `-l` / `--locale <codes>` (BCP-47 séparé par des virgules) pour limiter les locales cibles ; `lint-source` utilise une seule locale source. Voir [Démarrage rapide](docs/GETTING_STARTED.fr.md#cli-reference) pour le tableau récapitulatif des commandes.
 
 ---
 

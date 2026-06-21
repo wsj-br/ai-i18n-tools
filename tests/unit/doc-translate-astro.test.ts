@@ -18,8 +18,9 @@ function baseConfig(): I18nDocTranslateConfig {
       docsOutput: { style: "astro-starlight", docsRoot: "src/pages" },
     },
     cacheDir: ".cache",
-    openrouter: { baseUrl: "https://openrouter.ai/api/v1" },
-  } as I18nDocTranslateConfig;
+    provider: "openrouter",
+    providers: { openrouter: { translationModels: ["m"] } },
+  } as unknown as I18nDocTranslateConfig;
 }
 
 describe("shouldRunAstro / shouldRunMarkdown", () => {

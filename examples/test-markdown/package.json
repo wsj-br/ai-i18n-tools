@@ -1,0 +1,13 @@
+{
+  "name": "test-markdown",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf .translation-cache translated-docs/ && node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-pt-BR.json && node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-en-GB.json"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "license": "MIT"
+}

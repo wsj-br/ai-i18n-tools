@@ -87,6 +87,37 @@ describe("TranslationCache", () => {
     cache.close();
   });
 
+  it("backupTo leaves no -wal / -shm sidecar files next to the backup", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-backup-clean-"));
+    try {
+      const cache = new TranslationCache(dir);
+      cache.setSegment(TranslationCache.computeHash("x"), "de", "x", "y", "m");
+      const backupPath = path.join(dir, "snap.sqlite");
+      await cache.backupTo(backupPath);
+      expect(fs.existsSync(backupPath)).toBe(true);
+      expect(fs.existsSync(`${backupPath}-wal`)).toBe(false);
+      expect(fs.existsSync(`${backupPath}-shm`)).toBe(false);
+      cache.close();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("close removes the cache.db -wal / -shm sidecar files", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-close-clean-"));
+    try {
+      const cache = new TranslationCache(dir);
+      cache.setSegment(TranslationCache.computeHash("x"), "de", "x", "y", "m");
+      const dbPath = path.join(dir, "cache.db");
+      cache.close();
+      expect(fs.existsSync(dbPath)).toBe(true);
+      expect(fs.existsSync(`${dbPath}-wal`)).toBe(false);
+      expect(fs.existsSync(`${dbPath}-shm`)).toBe(false);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("listTranslations and getStats", () => {
     const cache = new TranslationCache(":memory:");
     cache.setSegment("h1", "de", "source", "trans", "m1", "a.md", 2);
@@ -485,6 +516,35 @@ describe("TranslationCache", () => {
     expect(cache.listMarkdownSourceIssues({ filename: "a.md", limit: 10, offset: 0 }).total).toBe(
       0
     );
+    cache.close();
+  });
+
+  it("clearAllMarkdownIssues removes every row regardless of file/config state", () => {
+    const cache = new TranslationCache(":memory:");
+    const configured = "doc-block:0:exists.md";
+    const stale = "doc-block:0:renamed-away.md";
+    cache.replaceMarkdownIssuesForFilepath(configured, [
+      { filepath: configured, sourceHash: "h1", startLine: 1, issueCode: "UNPAIRED_EMPHASIS", detail: "x" },
+    ]);
+    cache.replaceMarkdownIssuesForFilepath(stale, [
+      { filepath: stale, sourceHash: "h2", startLine: 4, issueCode: "UNCLOSED_INLINE_CODE", detail: "y" },
+      { filepath: stale, sourceHash: "h3", startLine: 9, issueCode: "STRONG_OUTSIDE_INLINE_CODE", detail: "z" },
+    ]);
+    const n = cache.clearAllMarkdownIssues(false);
+    expect(n).toBe(3);
+    expect(cache.listMarkdownSourceIssues({ limit: 20, offset: 0 }).total).toBe(0);
+    cache.close();
+  });
+
+  it("clearAllMarkdownIssues dryRun reports count without deleting", () => {
+    const cache = new TranslationCache(":memory:");
+    const fp = "doc-block:0:gone.md";
+    cache.replaceMarkdownIssuesForFilepath(fp, [
+      { filepath: fp, sourceHash: "h1", startLine: 1, issueCode: "UNPAIRED_EMPHASIS", detail: "x" },
+    ]);
+    const n = cache.clearAllMarkdownIssues(true);
+    expect(n).toBe(1);
+    expect(cache.listMarkdownSourceIssues({ limit: 20, offset: 0 }).total).toBe(1);
     cache.close();
   });
 

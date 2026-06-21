@@ -204,6 +204,21 @@ export function collectMarkdownDelimiterRuns(text: string): MarkdownDelimiterRun
 
 /** For post-translation spacing: underscore closers before CJK are often not `canClose` in strict CommonMark. */
 const UNICODE_LETTER_FOR_SCAN = /\p{L}/u;
+const ASCII_LETTER_FOR_SCAN = /[A-Za-z]/;
+
+/**
+ * A Unicode letter that is NOT a basic Latin (ASCII) letter — i.e. a character from a script that
+ * typically writes words without spaces (CJK, etc.).
+ *
+ * The underscore spacing relaxation below exists for those scripts: `_italic_を` / `データを_処理_`
+ * have emphasis delimiters glued to letters that strict CommonMark refuses to open/close. We must
+ * NOT relax for plain ASCII intraword underscores (`translation_demo_svg`, `my_config_value`),
+ * which are legitimate identifiers, never emphasis — relaxing there injects spaces and even
+ * fabricates an emphasis span (`_demo_`), corrupting output and tripping AST quality checks.
+ */
+function isTightScriptLetter(ch: string): boolean {
+  return UNICODE_LETTER_FOR_SCAN.test(ch) && !ASCII_LETTER_FOR_SCAN.test(ch);
+}
 
 function scanDelimitersForSpacing(
   text: string,
@@ -224,16 +239,24 @@ function scanDelimitersForSpacing(
   const nextPunct = isPunctuation(nextChar);
   const leftFlanking = !nextWhite && (!nextPunct || prevWhite || prevPunct);
   const rightFlanking = !prevWhite && (!prevPunct || nextWhite || nextPunct);
+  // Only relax for the no-space-script (CJK etc.) gluing case the relaxation was built for.
+  // Pure ASCII intraword underscores stay non-emphasis so identifiers are left untouched.
+  const gluedToTightScript = isTightScriptLetter(prevChar) || isTightScriptLetter(nextChar);
   return {
     count,
     canOpen:
       base.canOpen ||
       (leftFlanking &&
         rightFlanking &&
+        gluedToTightScript &&
         UNICODE_LETTER_FOR_SCAN.test(prevChar) &&
         UNICODE_LETTER_FOR_SCAN.test(nextChar)),
     canClose:
-      base.canClose || (rightFlanking && leftFlanking && UNICODE_LETTER_FOR_SCAN.test(nextChar)),
+      base.canClose ||
+      (rightFlanking &&
+        leftFlanking &&
+        gluedToTightScript &&
+        UNICODE_LETTER_FOR_SCAN.test(nextChar)),
   };
 }
 

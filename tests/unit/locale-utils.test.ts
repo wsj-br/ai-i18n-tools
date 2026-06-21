@@ -2,11 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   assignCoercedTargetLocales,
   coerceTargetLocalesField,
+  disallowedScriptLetters,
   englishLanguageNameForLocale,
+  englishScriptName,
+  isLatinScriptLocale,
+  nonLatinLettersIn,
   normalizeLocale,
   normalizeManifestLocaleKey,
   parseLocaleList,
   primaryLanguageSubtag,
+  scriptSubtag,
+  unicodeScriptPropertyForSubtag,
 } from "../../src/core/locale-utils.js";
 
 describe("coerceTargetLocalesField", () => {
@@ -81,5 +87,108 @@ describe("assignCoercedTargetLocales", () => {
     const raw: { targetLocales?: unknown } = { targetLocales: "a/b.json" };
     assignCoercedTargetLocales(raw);
     expect(raw.targetLocales).toEqual(["a/b.json"]);
+  });
+});
+
+describe("scriptSubtag", () => {
+  it("extracts and Title-cases a script subtag (hyphen or underscore)", () => {
+    expect(scriptSubtag("hi-Latn")).toBe("Latn");
+    expect(scriptSubtag("hi_latn")).toBe("Latn");
+    expect(scriptSubtag("zh-Hant-HK")).toBe("Hant");
+    expect(scriptSubtag("sr-CYRL")).toBe("Cyrl");
+  });
+
+  it("returns undefined when there is no script subtag", () => {
+    expect(scriptSubtag("hi")).toBeUndefined();
+    expect(scriptSubtag("en-GB")).toBeUndefined();
+    expect(scriptSubtag("pt-BR")).toBeUndefined();
+    expect(scriptSubtag("zh-419")).toBeUndefined();
+  });
+});
+
+describe("isLatinScriptLocale", () => {
+  it("is true only for *-Latn tags", () => {
+    expect(isLatinScriptLocale("hi-Latn")).toBe(true);
+    expect(isLatinScriptLocale("sr-Latn")).toBe(true);
+    expect(isLatinScriptLocale("hi")).toBe(false);
+    expect(isLatinScriptLocale("sr-Cyrl")).toBe(false);
+    expect(isLatinScriptLocale("en-GB")).toBe(false);
+  });
+});
+
+describe("englishScriptName", () => {
+  it("resolves common ISO 15924 codes", () => {
+    expect(englishScriptName("Latn")).toBe("Latin");
+    expect(englishScriptName("Cyrl")).toBe("Cyrillic");
+    expect(englishScriptName("latn")).toBe("Latin");
+  });
+
+  it("returns undefined for empty input", () => {
+    expect(englishScriptName("   ")).toBeUndefined();
+  });
+});
+
+describe("nonLatinLettersIn", () => {
+  it("returns [] for romanized / Latin text (incl. accents, digits, placeholders)", () => {
+    expect(nonLatinLettersIn("Namaste duniya — café 123 {{URL_0}}")).toEqual([]);
+  });
+
+  it("reports distinct native-script letters", () => {
+    expect(nonLatinLettersIn("नमस्ते hello")).toContain("न");
+    expect(nonLatinLettersIn("Привет world")).toContain("П");
+  });
+
+  it("respects the limit and de-duplicates", () => {
+    const out = nonLatinLettersIn("ααα ββ γ", 2);
+    expect(out).toEqual(["α", "β"]);
+  });
+});
+
+describe("unicodeScriptPropertyForSubtag", () => {
+  it("maps ISO 15924 subtags to ECMAScript script property values", () => {
+    expect(unicodeScriptPropertyForSubtag("Latn")).toBe("Latin");
+    expect(unicodeScriptPropertyForSubtag("Cyrl")).toBe("Cyrillic");
+    expect(unicodeScriptPropertyForSubtag("Arab")).toBe("Arabic");
+    expect(unicodeScriptPropertyForSubtag("Deva")).toBe("Devanagari");
+    expect(unicodeScriptPropertyForSubtag("Mong")).toBe("Mongolian");
+    expect(unicodeScriptPropertyForSubtag("hant")).toBe("Han");
+    expect(unicodeScriptPropertyForSubtag("Hans")).toBe("Han");
+  });
+
+  it("returns undefined for composite or unknown script codes", () => {
+    expect(unicodeScriptPropertyForSubtag("Jpan")).toBeUndefined();
+    expect(unicodeScriptPropertyForSubtag("Kore")).toBeUndefined();
+    expect(unicodeScriptPropertyForSubtag("Zxxx")).toBeUndefined();
+    expect(unicodeScriptPropertyForSubtag("")).toBeUndefined();
+  });
+});
+
+describe("disallowedScriptLetters", () => {
+  it("Latn target: rejects any non-Latin letter, allows Latin/accents/placeholders", () => {
+    expect(disallowedScriptLetters("Namaste café {{X}}", "Latn")).toEqual([]);
+    expect(disallowedScriptLetters("नमस्ते hi", "Latn")).toContain("न");
+  });
+
+  it("non-Latin target: allows Latin-only output (no false positives on code/URLs)", () => {
+    expect(disallowedScriptLetters("Salom dunyo GitHub {{URL_0}}", "Cyrl")).toEqual([]);
+    expect(disallowedScriptLetters("简体中文 GitHub", "Hans")).toEqual([]);
+  });
+
+  it("non-Latin target: allows the expected script (plus Latin)", () => {
+    expect(disallowedScriptLetters("Салом dunyo", "Cyrl")).toEqual([]);
+    expect(disallowedScriptLetters("सिन्धी text", "Deva")).toEqual([]);
+    expect(disallowedScriptLetters("هَوْسَ code", "Arab")).toEqual([]);
+  });
+
+  it("non-Latin target: flags letters from a different non-Latin script", () => {
+    expect(disallowedScriptLetters("नमस्ते Салом", "Cyrl")).toContain("न");
+    expect(disallowedScriptLetters("سنڌي test", "Deva")).toContain("س");
+    expect(disallowedScriptLetters("Привет code", "Arab")).toContain("П");
+    expect(disallowedScriptLetters("Монгол", "Mong")).toContain("М");
+    expect(disallowedScriptLetters("简体 Привет", "Hans")).toContain("П");
+  });
+
+  it("composite/unknown scripts are not enforced", () => {
+    expect(disallowedScriptLetters("anything ここ 한국", "Jpan")).toEqual([]);
   });
 });

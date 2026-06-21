@@ -84,6 +84,8 @@ import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
+import { runListModels } from "./list-models.js";
+import { runListLanguages } from "./list-languages.js";
 import { runCleanTemp } from "./clean-temp.js";
 
 function openBrowser(url: string): void {
@@ -281,9 +283,18 @@ function warnIfCliPathOrFileNotFound(
   }
 }
 
-function withConfig(cmd: Command): { configFlag: string | undefined; cwd: string } {
-  const o = cmd.optsWithGlobals() as { config?: string };
-  return { configFlag: o.config, cwd: process.cwd() };
+function withConfig(cmd: Command): {
+  configFlag: string | undefined;
+  cwd: string;
+  providerOverride: string | undefined;
+} {
+  const o = cmd.optsWithGlobals() as { config?: string; provider?: string };
+  const provider = o.provider?.trim();
+  return {
+    configFlag: o.config,
+    cwd: process.cwd(),
+    providerOverride: provider && provider.length > 0 ? provider : undefined,
+  };
 }
 
 /** Commander default order puts global options after command options; list globals first. */
@@ -375,7 +386,12 @@ Target locales (-l / --locale):
 
   lint-source uses -l, --locale <code> for a single source locale to review.
 
-Related globals (every command): -c/--config, -v/--verbose, -w/--write-logs.
+Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.
+
+Provider override (-P / --provider):
+  Selects the active LLM provider for this run, overriding the config "provider" key.
+  The name must be configured under "providers" (e.g. -P openai). Handy when several
+  providers are configured and you want to switch without editing the config file.
 `;
 
 const program = new Command();
@@ -388,6 +404,10 @@ program
   .version(formatVersionOutput())
   .option("-c, --config <path>", "Config file path", DEFAULT_CONFIG_FILENAME)
   .option("-v, --verbose", "Verbose logging", false)
+  .option(
+    "-P, --provider <name>",
+    "Active LLM provider (overrides the config `provider` key; must be configured under `providers`)"
+  )
   .option(
     "-w, --write-logs [path]",
     "Tee console output to a .log file (default path: under cacheDir)"
@@ -411,8 +431,8 @@ program
     "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)"
   )
   .action(async (_opts, cmd: Command) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config } = loadConfigOrExit(configFlag, cwd, providerOverride);
     try {
       const { exitCode } = await runCheckModels(config);
       process.exitCode = exitCode;
@@ -420,6 +440,51 @@ program
       process.exitCode = 1;
     }
   });
+
+program
+  .command("list-models")
+  .description(
+    "List the models advertised by the active provider's OpenAI-compatible `GET /models` endpoint (active provider follows the config `provider` key; override with -P/--provider). Shows input/output pricing (USD per 1M tokens) when the provider returns it"
+  )
+  .action(async (_opts, cmd: Command) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config } = loadConfigOrExit(configFlag, cwd, providerOverride);
+    try {
+      const { exitCode } = await runListModels(config);
+      process.exitCode = exitCode;
+    } catch {
+      process.exitCode = 1;
+    }
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools list-models
+  ai-i18n-tools -P openai list-models
+`
+  );
+
+program
+  .command("list-languages")
+  .description(
+    "List the bundled UI languages catalog (data/ui-languages-complete.json) formatted for humans; pass an optional SEARCH term to filter by code, native label, English name, or text direction (case-insensitive)"
+  )
+  .argument("[search]", "Optional case-insensitive term to filter the catalog entries")
+  .action((search?: string) => {
+    const { exitCode } = runListLanguages(search);
+    process.exitCode = exitCode;
+  })
+  .addHelpText(
+    "after",
+    `
+Examples:
+  ai-i18n-tools list-languages
+  ai-i18n-tools list-languages portuguese
+  ai-i18n-tools list-languages rtl
+  ai-i18n-tools list-languages zh
+`
+  );
 
 program
   .command("init")
@@ -480,8 +545,8 @@ program
   .option("--no-pymdown-percent-encode", "With pymdown: disable percent-encoding", false)
   .option("--dry-run", "Print files that would change; do not write", false)
   .action((opts, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { verbose?: boolean };
     const o = opts as {
       path?: string;
@@ -573,8 +638,8 @@ program
     "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
   )
   .action(async (_opts, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     try {
       const s = runExtract(config, projectRoot);
       console.log(
@@ -909,8 +974,8 @@ program
     false
   )
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const raw = cmd.opts() as {
@@ -1107,8 +1172,8 @@ program
     "json-array"
   )
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "translate-json");
@@ -1163,8 +1228,8 @@ program
     "Max parallel batch API calls per file (default: config or 4)"
   )
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const raw = cmd.opts() as { force?: boolean; forceUpdate?: boolean };
@@ -1225,8 +1290,8 @@ program
   .option("--force", "Re-translate all entries per locale", false)
   .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 4)")
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
     const o = cmd.opts() as {
       locale?: string;
@@ -1284,8 +1349,8 @@ program
   .option("--force", "Re-translate all UI entries per locale", false)
   .option("-j, --concurrency <n>", "Max parallel target locales (default: config)")
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
     const o = cmd.opts() as {
       locale?: string;
@@ -1357,8 +1422,8 @@ program
   .option("--dry-run", "Print batch plan only; no API calls", false)
   .option("--json", "Write full JSON report to stdout (human output uses stderr)", false)
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { verbose?: boolean };
     const o = cmd.opts() as {
       locale?: string;
@@ -1403,8 +1468,8 @@ program
   .option("--json", "Write JSON report to stdout (human lines go to stderr)", false)
   .option("--no-cache", "Do not read or write the translation cache database", false)
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const g = cmd.optsWithGlobals() as { verbose?: boolean };
     const o = cmd.opts() as { path?: string; file?: string; json?: boolean; noCache?: boolean };
     warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
@@ -1448,8 +1513,8 @@ program
   )
   .option("--dry-run", "Print paths that would be written without writing files", false)
   .action((_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const o = cmd.opts() as {
       locale?: string;
       outputDir?: string;
@@ -1537,8 +1602,8 @@ program
     false
   )
   .action(async (_a, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const syncOpts = cmd.opts() as {
       noUi?: boolean;
       noSvg?: boolean;
@@ -1625,8 +1690,8 @@ program
     DEFAULT_STATUS_MAX_COLUMNS
   )
   .action((opts: { maxColumns: number }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
     const locales = getDocumentationTargetLocaleCodes(config);
     const maxColumns = opts.maxColumns;
@@ -1957,8 +2022,8 @@ program
     DEFAULT_STATISTICS_MAX_COLUMNS
   )
   .action((opts: { maxColumns: number }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const chunkSize = opts.maxColumns;
 
     const cacheDir = path.join(projectRoot, config.cacheDir);
@@ -2257,17 +2322,16 @@ program
 program
   .command("cleanup")
   .description(
-    "Run sync --force-update (extract, UI, SVG, docs), then clean stale segment rows (null last_hit_at / empty filepath); remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
+    "Clear the markdown_source_issues table, then run sync --force-update (extract, UI, SVG, docs) so it repopulates with only currently-configured docs; then clean stale segment rows (null last_hit_at / empty filepath) and remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
   )
   .option("--dry-run", "Show only", false)
-  .option("--no-backup", "Skip SQLite backup before modifications", false)
   .option(
     "--backup <path>",
-    "SQLite backup path (default: timestamped file under documentation cacheDir)"
+    "Write a SQLite backup to <path> before modifications (no backup is made unless this is set)"
   )
-  .action(async (opts: { dryRun?: boolean; noBackup?: boolean; backup?: string }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd);
+  .action(async (opts: { dryRun?: boolean; backup?: string }, cmd) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
 
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, loaded.cacheDir);
@@ -2280,6 +2344,22 @@ program
       Boolean(opts.dryRun)
     );
     const svgLocales = resolveLocalesForSvg(loaded, projectRoot, null);
+
+    // Clear markdown_source_issues up front so the sync --force-update below repopulates only the
+    // currently-configured docs. This drops rows for files that were renamed, deleted, or removed
+    // from `docs[].contentPaths` (a scan never revisits them, so they could otherwise linger
+    // forever); anything not re-scanned can be rebuilt later with `check-markdown`.
+    {
+      const preCache = new TranslationCache(cacheDir);
+      try {
+        const clearedMarkdownIssues = preCache.clearAllMarkdownIssues(Boolean(opts.dryRun));
+        console.log(
+          `[cleanup] cleared markdown_source_issues before sync (repopulated by sync / check-markdown): ${clearedMarkdownIssues}${opts.dryRun ? " (dry-run)" : ""}`
+        );
+      } finally {
+        preCache.close();
+      }
+    }
 
     console.log(chalk.cyan("[cleanup] Running sync --force-update first…"));
     try {
@@ -2303,14 +2383,9 @@ program
 
     const cache = new TranslationCache(cacheDir);
     try {
-      const shouldBackup = !opts.dryRun && !opts.noBackup;
-      if (shouldBackup) {
-        const backupPath = opts.backup
-          ? path.resolve(cwd, opts.backup)
-          : path.join(
-              cacheDir,
-              `cache.db.backup.${new Date().toISOString().replace(/[:.]/g, "-")}.sqlite`
-            );
+      const shouldBackup = !opts.dryRun && Boolean(opts.backup);
+      if (shouldBackup && opts.backup) {
+        const backupPath = path.resolve(cwd, opts.backup);
         await cache.backupTo(backupPath);
         console.log(`[cleanup] Backup → ${backupPath}`);
       }
@@ -2379,8 +2454,8 @@ program
   });
 
 function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
-  const { configFlag, cwd } = withConfig(cmd);
-  const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+  const { configFlag, cwd, providerOverride } = withConfig(cmd);
+  const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
   const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
   const port = parseInt(cmdOpts.port || String(DEFAULT_DASHBOARD_PORT), 10);
   const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
@@ -2392,6 +2467,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     : null;
   const jsonSourceBlock = config.docs.find((b) => b.docusaurusCatalogDir?.trim());
 
+  let triggerShutdown: () => void = () => {};
   const app = createTranslationDashboardApp(cache, {
     cwd: projectRoot,
     stringsJsonPath: stringsPath,
@@ -2399,6 +2475,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     sourceLocale: config.sourceLocale,
     targetLocales: config.targetLocales,
     docusaurusCatalogDir: jsonSourceBlock?.docusaurusCatalogDir?.trim() || null,
+    onShutdown: () => triggerShutdown(),
   });
 
   const staticDir = resolveDashboardAppStaticDir();
@@ -2410,6 +2487,20 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
 
   const server = http.createServer(app);
   let shuttingDown = false;
+  let cacheClosed = false;
+  const closeCacheOnce = (): void => {
+    if (cacheClosed) {
+      return;
+    }
+    cacheClosed = true;
+    try {
+      // Checkpoints the WAL and closes the connection; SQLite then removes the `-wal` / `-shm`
+      // sidecars (unless another process, e.g. an IDE SQLite viewer, still holds the file open).
+      cache.close();
+    } catch {
+      // Best-effort close before exit.
+    }
+  };
   const shutdown = (signal?: "SIGINT" | "SIGTERM"): void => {
     if (shuttingDown) {
       return;
@@ -2418,14 +2509,18 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     const exitCode = signal === "SIGINT" ? 130 : signal === "SIGTERM" ? 143 : 0;
     console.log(chalk.yellow(`\n[dashboard] Shutting down…`));
     server.close((err) => {
-      try {
-        cache.close();
-      } catch {
-        // Best-effort close before exit.
-      }
+      closeCacheOnce();
       process.exit(err ? 1 : exitCode);
     });
+    // Force-drain lingering keep-alive connections so `server.close` can complete promptly.
+    server.closeAllConnections?.();
+    // Safety net: flush the cache and exit even if `server.close` never fires (stuck sockets).
+    setTimeout(() => {
+      closeCacheOnce();
+      process.exit(exitCode);
+    }, 2000).unref();
   };
+  triggerShutdown = () => shutdown();
   process.once("SIGINT", () => shutdown("SIGINT"));
   process.once("SIGTERM", () => shutdown("SIGTERM"));
 
@@ -2477,8 +2572,8 @@ program
   .option("--master <path>", "Path to ui-languages-complete.json (default: bundled data file)")
   .option("--dry-run", "Print JSON to stdout only; do not write the output file", false)
   .action((opts: { master?: string; dryRun?: boolean }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const masterPath = opts.master
       ? path.resolve(cwd, opts.master)
       : resolveDefaultUiLanguagesMasterPath();
@@ -2517,8 +2612,8 @@ program
     "Output path (default: config glossary.userGlossary or glossary-user.csv)"
   )
   .action((opts: { output?: string }, cmd) => {
-    const { configFlag, cwd } = withConfig(cmd);
-    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd);
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const out = opts.output
       ? path.resolve(cwd, opts.output)
       : path.join(projectRoot, config.glossary?.userGlossary || "glossary-user.csv");

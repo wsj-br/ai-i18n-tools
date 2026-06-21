@@ -2,39 +2,68 @@ import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import { resolveTranslationModels } from "../core/config.js";
 import {
-  fetchOpenRouterModelsCatalog,
+  OPENROUTER_PROVIDER_KEY,
+  resolveActiveProvider,
+  resolveModelsListRequestAuth,
+  resolveProviderSettings,
+} from "../core/llm-providers.js";
+import {
+  fetchProviderModelsCatalog,
   formatUsdPerMillionTokens,
   isExpirationDatePast,
-  type OpenRouterCatalogModelEntry,
-} from "../api/openrouter-models-catalog.js";
+  modelDisplayName,
+  type ProviderModelEntry,
+} from "../api/provider-models-catalog.js";
 
 export interface RunCheckModelsResult {
   exitCode: number;
 }
 
+/** True when any valid entry carries OpenAI-compatible pricing fields (`pricing.prompt`/`completion`). */
+function hasPricing(entry: ProviderModelEntry): boolean {
+  return (
+    (typeof entry.pricing?.prompt === "string" && entry.pricing.prompt !== "") ||
+    (typeof entry.pricing?.completion === "string" && entry.pricing.completion !== "")
+  );
+}
+
 export async function runCheckModels(config: I18nConfig): Promise<RunCheckModelsResult> {
-  const apiKey = process.env.OPENROUTER_API_KEY ?? "";
-  if (!apiKey) {
-    console.error(chalk.red("OPENROUTER_API_KEY is required"));
+  let activeProvider: string;
+  try {
+    activeProvider = resolveActiveProvider(config);
+  } catch (e) {
+    console.error(chalk.red(e instanceof Error ? e.message : String(e)));
     return { exitCode: 1 };
   }
 
-  const configured = resolveTranslationModels(config.openrouter);
+  const configured = resolveTranslationModels(config);
   if (configured.length === 0) {
     console.error(
-      chalk.red(
-        "No OpenRouter models configured (set openrouter.translationModels or defaultModel / fallbackModel)."
-      )
+      chalk.red(`No models configured (set providers.${activeProvider}.translationModels).`)
     );
     return { exitCode: 1 };
   }
 
-  let catalog: Map<string, OpenRouterCatalogModelEntry>;
+  const settings = resolveProviderSettings(activeProvider, config);
+  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  if (!apiKey && settings.requiresApiKey) {
+    console.error(chalk.red(`${settings.apiKeyEnv ?? "API key"} is required`));
+    return { exitCode: 1 };
+  }
+
+  const isOpenRouter = activeProvider === OPENROUTER_PROVIDER_KEY;
+  const auth = resolveModelsListRequestAuth(activeProvider, apiKey, {
+    xTitle: "ai-i18n-tools check-models",
+  });
+
+  let catalog: Map<string, ProviderModelEntry>;
   try {
-    catalog = await fetchOpenRouterModelsCatalog({
-      baseUrl: config.openrouter.baseUrl,
-      apiKey,
-      requestTimeoutMs: config.openrouter.requestTimeoutMs,
+    catalog = await fetchProviderModelsCatalog({
+      baseUrl: settings.baseUrl,
+      apiKey: auth.apiKey,
+      providerLabel: activeProvider,
+      requestTimeoutMs: settings.requestTimeoutMs,
+      extraHeaders: auth.extraHeaders,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -42,14 +71,14 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     return { exitCode: 1 };
   }
 
-  const missing: { id: string; reason: string }[] = [];
+  const missing: { id: string }[] = [];
   const expired: { id: string; expirationDate: string }[] = [];
-  const ok: { id: string; entry: OpenRouterCatalogModelEntry }[] = [];
+  const ok: { id: string; entry: ProviderModelEntry }[] = [];
 
   for (const id of configured) {
     const entry = catalog.get(id);
     if (!entry) {
-      missing.push({ id, reason: "not in OpenRouter catalog" });
+      missing.push({ id });
       continue;
     }
     const exp = entry.expiration_date;
@@ -65,17 +94,22 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
 
   console.log(
     chalk.bold(
-      `check-models: ${total} configured model(s); ${ok.length} ok; ${problemCount} problem(s).`
+      `check-models: provider "${activeProvider}" — ${total} configured model(s); ${ok.length} ok; ${problemCount} problem(s).`
     )
   );
   console.log();
 
   if (missing.length > 0) {
-    console.log(chalk.red.bold("Not in OpenRouter catalog"));
+    console.log(chalk.red.bold(`Not in ${activeProvider} models list`));
     for (const m of missing) {
       console.log(chalk.red(`  • ${m.id}`));
-      console.log(chalk.gray(`    ${m.reason}`));
     }
+    const listModelsCommand = `ai-i18n-tools list-models -P ${activeProvider}`;
+    console.log(
+      chalk.yellow(
+        `\n  Run ${chalk.cyan(listModelsCommand)} to see the available models.`
+      )
+    );
     console.log();
   }
 
@@ -89,26 +123,37 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   }
 
   if (ok.length > 0) {
-    console.log(chalk.green.bold("Valid (catalog) — pricing USD per 1M tokens"));
+    const showPricing = ok.some(({ entry }) => hasPricing(entry));
+    console.log(
+      chalk.green.bold(
+        showPricing ? "Valid (in models list) — pricing USD per 1M tokens" : "Valid (in models list)"
+      )
+    );
     const idW = Math.max(8, ...ok.map((o) => o.id.length));
     for (const { id, entry } of ok) {
-      const name =
-        typeof entry.name === "string" && entry.name.trim().length > 0
-          ? chalk.gray(` (${entry.name})`)
-          : "";
-      const input = formatUsdPerMillionTokens(entry.pricing?.prompt);
-      const output = formatUsdPerMillionTokens(entry.pricing?.completion);
-      console.log(
-        `  ${id.padEnd(idW)}   input: ${input.padStart(8)}   output: ${output.padStart(8)}  ${name}`
-      );
+      const label = modelDisplayName(entry);
+      const name = label.length > 0 ? chalk.gray(` (${label})`) : "";
+      if (showPricing) {
+        const input = formatUsdPerMillionTokens(entry.pricing?.prompt);
+        const output = formatUsdPerMillionTokens(entry.pricing?.completion);
+        console.log(
+          `  ${id.padEnd(idW)}   input: ${input.padStart(8)}   output: ${output.padStart(8)}  ${name}`
+        );
+      } else {
+        console.log(`  ${id.padEnd(idW)}${name}`);
+      }
     }
     console.log();
   }
 
-  console.log(
-    chalk.gray("Source: OpenRouter models directory @ ") +
-      chalk.cyan("https://openrouter.ai/models\n")
-  );
+  if (isOpenRouter) {
+    console.log(
+      chalk.gray("Source: OpenRouter models directory @ ") +
+        chalk.cyan("https://openrouter.ai/models\n")
+    );
+  } else {
+    console.log(chalk.gray(`Source: ${settings.baseUrl}/models\n`));
+  }
 
   const exitCode = problemCount > 0 ? 1 : 0;
   return { exitCode };

@@ -42,10 +42,19 @@ export interface LintSourcePromptStrings {
   outputContract: string;
 }
 
+/** Script-enforcement directives prepended to system prompts when the target locale carries a script subtag (e.g. `hi-Latn`, `sr-Latn`, `zh-Hans`). */
+export interface ScriptPromptStrings {
+  /** For Latin/Roman targets: force romanization and forbid native scripts (Devanagari, Cyrillic, …). */
+  latinDirective: string;
+  /** For any other script subtag; `{{SCRIPT_NAME}}` is the English script name (e.g. `Cyrillic`). */
+  genericDirectiveTemplate: string;
+}
+
 export interface PromptStrings {
   document: DocumentPromptStrings;
   ui: UIPromptStrings;
   lintSource: LintSourcePromptStrings;
+  script: ScriptPromptStrings;
 }
 
 // ── Prompt content ────────────────────────────────────────────────────────
@@ -185,5 +194,12 @@ Do not change keys, add keys, remove keys, or return XML tags/markdown/code fenc
 
 Input format: JSON array of strings (same length and order as you must return).
 `,
+  },
+
+  script: {
+    latinDirective:
+      "SCRIPT REQUIREMENT (critical — overrides every other instruction): The target locale uses the Latin (Roman) alphabet. Write EVERY output string using ONLY Latin/Roman letters (a–z, A–Z), standard punctuation, digits, and any placeholders or markup that must be preserved. You MUST romanize (transliterate) the target language into Latin letters — translate the meaning, then write the result in Roman script. NEVER output any text in a native or non-Latin writing system (for example Devanagari देवनागरी, Cyrillic, Han/Chinese 汉字, Arabic, Hebrew, Hangul, Kana, Thai). If a word would normally be written in a non-Latin script, write its romanized form instead.",
+    genericDirectiveTemplate:
+      "SCRIPT REQUIREMENT (critical — overrides every other instruction): Write EVERY output string using the {{SCRIPT_NAME}} script. Do not substitute another writing system for the target language's words (keep placeholders, code, URLs, and markup unchanged).",
   },
 };

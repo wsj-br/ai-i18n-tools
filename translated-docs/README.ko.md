@@ -7,7 +7,7 @@
 [![라이선스: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-[OpenRouter](https://openrouter.ai/)를 통해 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. 단일 구성 파일을 공유하는 세 가지 모듈식 워크플로우는 서로 다른 번역 요구 사항을 지원합니다:
+대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하는 CLI 및 툴킷입니다. [OpenRouter](https://openrouter.ai/) 및 OpenAI 호환 제공자(OpenAI, Anthropic, Gemini, DeepSeek, Groq, Mistral, xAI, Cerebras, NVIDIA, Alibaba, APIFUN, Ollama 등)와 함께 작동합니다. 단일 구성 파일을 공유하는 세 가지 모듈식 워크플로우는 다양한 번역 요구 사항을 지원합니다:
 
 - **워크플로우 1 — UI 번역:** JS/TS에서 `t("…")` 호출을 추출하고(선택적으로 `.astro` 파일에서도 추출 가능), i18next 또는 정적 SSG 조회를 위한 로케일별 단일 레벨 JSON을 생성합니다.
 - **워크플로우 2 — 문서 번역:** `docs[].contentPaths`에 나열된 마크다운, MDX, `.astro` 페이지([웹사이트 및 Starlight]용)를 `translate-docs`를 사용하여 번역합니다.
@@ -23,7 +23,7 @@
 모든 워크플로우는 파일/SQLite 캐시를 유지하여 새로운 또는 변경된 세그먼트(문자열 또는 텍스트 조각)만 LLM에 전송되도록 합니다.
 
 <small>**다른 언어로 읽기:** </small>
-<small id="lang-list">[English (GB)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [中文 (中国大陆)](./README.zh-CN.md) · [中文 (台灣)](./README.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -31,8 +31,8 @@
 
 - [핵심 워크플로우](#core-workflows)
 - [설치](#installation)
-  - [CLI 사용하기](#using-the-cli)
-- [OpenRouter](#openrouter)
+  - [CLI 사용](#using-the-cli)
+- [LLM 제공자](#openrouter)
 - [빠른 시작](#quick-start)
   - [워크플로우 1 - UI 번역](#workflow-1---ui-translation)
   - [워크플로우 2 - 문서 번역](#workflow-2---document-translation)
@@ -106,7 +106,7 @@ ai-i18n-tools CLI 명령어를 직접 사용할 수도 있습니다. 예: `ai-i1
 
 > **팁:** `npx` 없이 대화형 쉘에서 `ai-i18n-tools`을 직접 실행하려면 `PATH`에 `node_modules/.bin`를 추가하세요(bash/zsh: `export PATH="$PWD/node_modules/.bin:$PATH"`). direnv 및 Windows 지침은 [시작하기](docs/GETTING_STARTED.ko.md#installation)를 참조하세요.
 
-OpenRouter API 키를 설정하세요:
+제공자 API 키를 설정합니다(OpenRouter 표시; 제공자에 맞는 변수 사용):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -115,13 +115,50 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ---
 
 <a id="openrouter"></a>
-## OpenRouter
+## LLM 제공자
 
-OpenRouter를 호출하는 명령어(`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` 및 관련 스크립트)는 환경에 `OPENROUTER_API_KEY`가 필요합니다. `check-markdown`은 OpenRouter를 사용하지 않습니다.
+번역 명령(`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` 및 관련 스크립트)은 LLM 제공자를 호출합니다. `check-markdown`는 그렇지 않습니다.
 
-`ai-i18n-tools.config.json`에서, `openrouter` 객체는 모델 목록, `baseUrl`, `maxTokens`, `temperature`, 그리고 `requestTimeoutMs`: OpenRouter에 대한 각 HTTP 요청(채팅 완성 및 내부 `GET /models` 호출)을 기다리는 최대 시간(밀리초 단위)을 포함합니다. 기본값은 `30000`(30초)입니다.
+최상위 `providers` 맵 아래에서 제공자를 구성하고 최상위 `provider` 선택기로 활성 제공자를 선택합니다(제공자가 하나만 구성된 경우 선택 사항). 대부분의 제공자는 `translationModels` 목록만 필요합니다. `baseUrl` 및 API 키 환경 변수는 내장된 사전 설정에서 가져옵니다. 제공자별로 `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, `requestTimeoutMs`를 재정의할 수 있습니다. `requestTimeoutMs`은 각 요청에 대해 대기할 최대 시간(밀리초)입니다(기본값 `30000`).
 
-설정된 각 모델 ID를 OpenRouter의 실시간 카탈로그와 비교하려면 `ai-i18n-tools check-models`을 실행하세요. 이 명령어는 누락되었거나 `expiration_date`을 초과한 ID를 보고하고, 유효한 모델을 100만 토큰당 예상 입력/출력 가격(USD)과 함께 나열하며, 설정된 ID 중 하나라도 유효하지 않으면 0이 아닌 상태 코드로 종료됩니다. 이 명령어는 `OPENROUTER_API_KEY`를 필요로 합니다.
+구성을 편집하지 않고 단일 실행에 대해 공급자를 전환하려면 전역 `-P` / `--provider <name>` 옵션(예: `ai-i18n-tools -P groq translate-ui`)을 전달하십시오. 이름은 구성된 `providers` 키 중 하나여야 합니다.
+
+```jsonc
+{
+  "provider": "openrouter",
+  "providers": {
+    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
+    "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
+  }
+}
+```
+
+내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
+
+| 제공자 | 기본 URL | API 키 환경 변수 |
+| --- | --- | --- |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
+| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
+| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `ollama` | `http://localhost:11434/v1` | (없음) |
+
+사용자 지정 OpenAI 호환 제공자를 정의하려면 `baseUrl`(키가 필요하지 않은 경우 `apiKeyEnv` 제외)와 함께 새 키를 추가합니다. 모델 ID는 일반 업스트림 ID입니다. 제공자는 구성 수준에서 선택되므로 `provider/` 접두사가 필요하지 않습니다(OpenRouter ID는 네이티브 `vendor/model` 형식을 유지합니다).
+
+토큰 사용량은 모든 제공업체에 대해 보고되며, 정확한 USD 비용은 제공업체가 반환하는 경우에만 표시됩니다(OpenRouter). `ai-i18n-tools check-models`는 구성된 모델 ID를 활성 제공업체의 실시간 `GET /models` 목록(모든 제공업체)과 검증하고, 제공업체가 반환하는 경우 가격을 표시합니다(예: OpenRouter). `ai-i18n-tools list-models`는 활성 제공업체가 광고하는 모든 모델을 나열합니다(다른 구성된 제공업체를 검사하려면 `-P` / `--provider` 사용).
+
+레거시 최상위 `openrouter` 구성 블록은 여전히 허용되며 로드 시 `providers.openrouter` (`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다.
+
+단일 문서에서 `-P`를 사용하여 제공업체를 전환하는 실습 데모는 [`examples/multi-provider`](../examples/multi-provider/)를 참조하세요(`openai`, `anthropic`, `nvidia`, `deepseek`가 있는 단일 구성).
 
 ---
 
@@ -223,6 +260,8 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ```bash
 ai-i18n-tools version
 ai-i18n-tools check-models
+ai-i18n-tools list-models
+ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools extract
@@ -247,7 +286,7 @@ ai-i18n-tools help [command]
 
 각 명령어별 플래그 목록은 [시작하기 — CLI 참조](docs/GETTING_STARTED.ko.md#cli-reference)에 있습니다. 내장 사용법 텍스트를 보려면 `ai-i18n-tools <command> --help`을 실행하세요.
 
-모든 명령어의 전역 옵션: `-c <config>` (기본값: `ai-i18n-tools.config.json`), `-v` (자세히 표시), 선택적 `-w` / `--write-logs [path]` (콘솔 출력을 로그 파일에 저장, 기본값: 번역 캐시 디렉터리 하위), `-V` / `--version`, 및 `-h` / `--help`. 여러 명령어가 `-l` / `--locale <codes>` (쉼표로 구분된 BCP-47)를 받아 대상 로케일을 제한하며, `lint-source`은 단일 소스 로케일을 사용합니다. 명령어 개요 표는 [Getting Started](docs/GETTING_STARTED.ko.md#cli-reference) 참조.
+모든 명령에 대한 전역 옵션: `-c <config>`(기본값: `ai-i18n-tools.config.json`), `-v`(상세), `-P` / `--provider <name>`(`providers` 아래에 구성되어야 함; 활성 LLM 공급자 재정의), 로그 파일에 콘솔 출력을 복제하기 위한 선택적 `-w` / `--write-logs [path]`(기본값: 번역 캐시 디렉터리 아래), `-V` / `--version`, `-h` / `--help`. 여러 명령에서 대상 로캘을 제한하기 위해 `-l` / `--locale <codes>`(쉼표로 구분된 BCP-47)을 허용합니다. `lint-source`는 단일 소스 로캘을 사용합니다. 명령 개요 테이블은 [시작하기](docs/GETTING_STARTED.ko.md#cli-reference)를 참조하십시오.
 
 ---
 

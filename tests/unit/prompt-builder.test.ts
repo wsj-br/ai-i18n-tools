@@ -17,6 +17,8 @@ import {
   LintSourceJsonParseError,
   PluralFormsParseError,
   UIJsonArrayParseError,
+  ScriptValidationError,
+  targetScriptDirective,
   PROMPTS,
 } from "../../src/core/prompt-builder.js";
 import type { Segment } from "../../src/core/types.js";
@@ -228,6 +230,106 @@ describe("buildUIPromptMessages", () => {
     expect(systemPrompt).toContain("<glossary>");
     expect(systemPrompt).toContain(PROMPTS.ui.glossaryPreamble);
     expect(systemPrompt.indexOf('- "a"')).toBeLessThan(systemPrompt.indexOf('- "z"'));
+  });
+});
+
+describe("targetScriptDirective", () => {
+  it("returns the Latin romanization directive for *-Latn targets", () => {
+    const d = targetScriptDirective("hi-Latn");
+    expect(d).toBe(PROMPTS.script.latinDirective);
+    expect(d).toContain("Latin (Roman)");
+    expect(d).toContain("romanize");
+    expect(d).toContain("Devanagari");
+  });
+
+  it("returns a generic directive naming the script for non-Latin script subtags", () => {
+    const d = targetScriptDirective("sr-Cyrl");
+    expect(d).toContain("SCRIPT REQUIREMENT");
+    expect(d).toContain("Cyrillic");
+    expect(d).not.toContain("{{SCRIPT_NAME}}");
+  });
+
+  it("uses friendlier names for CJK script subtags", () => {
+    expect(targetScriptDirective("zh-Hans")).toContain("Simplified Chinese (Han)");
+    expect(targetScriptDirective("zh-Hant")).toContain("Traditional Chinese (Han)");
+  });
+
+  it("returns empty string when there is no script subtag", () => {
+    expect(targetScriptDirective("hi")).toBe("");
+    expect(targetScriptDirective("en-GB")).toBe("");
+    expect(targetScriptDirective(undefined)).toBe("");
+  });
+
+  it("names the script for the catalog's script variants", () => {
+    expect(targetScriptDirective("uz-Cyrl")).toContain("Cyrillic");
+    expect(targetScriptDirective("ha-Arab")).toContain("Arabic");
+    expect(targetScriptDirective("sd-Deva")).toContain("Devanagari");
+    expect(targetScriptDirective("zh-Hans")).toContain("Simplified Chinese (Han)");
+    expect(targetScriptDirective("zh-Hant")).toContain("Traditional Chinese (Han)");
+  });
+
+  it("disambiguates Mongolian from Cyrillic for mn-Mong", () => {
+    const d = targetScriptDirective("mn-Mong");
+    expect(d).toContain("Mongolian Bichig");
+    expect(d).toContain("NOT Cyrillic");
+  });
+
+  it("uses the Latin romanization directive for kk-Latn and sr-Latn", () => {
+    expect(targetScriptDirective("kk-Latn")).toBe(PROMPTS.script.latinDirective);
+    expect(targetScriptDirective("sr-Latn")).toBe(PROMPTS.script.latinDirective);
+  });
+});
+
+describe("script directive injection into prompts", () => {
+  it("buildDocumentSinglePrompt prepends the Latin directive for hi-Latn only", () => {
+    const withScript = buildDocumentSinglePrompt("Hello", {
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "hi-Latn: Hindi (Romanized)",
+      glossaryHints: [],
+      targetLocale: "hi-Latn",
+    });
+    expect(withScript.systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
+    expect(withScript.systemPrompt).toContain("romanize");
+
+    const noScript = buildDocumentSinglePrompt("Hello", {
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "Hindi",
+      glossaryHints: [],
+      targetLocale: "hi",
+    });
+    expect(noScript.systemPrompt).not.toContain("SCRIPT REQUIREMENT");
+  });
+
+  it("buildUIPromptMessages prepends the Latin directive for hi-Latn", () => {
+    const { systemPrompt } = buildUIPromptMessages(["Save"], {
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "hi-Latn: Hindi (Romanized)",
+      targetLocale: "hi-Latn",
+    });
+    expect(systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
+    expect(systemPrompt).toContain("professional UI/UX translator");
+  });
+
+  it("buildPluralPassBPrompt prepends the Latin directive for hi-Latn", () => {
+    const { systemPrompt } = buildPluralPassBPrompt({
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "hi-Latn: Hindi (Romanized)",
+      sourceForms: { one: "1 file", other: "{{count}} files" },
+      requiredTargetForms: ["one", "other"],
+      originalLiteral: "{{count}} files",
+      targetLocale: "hi-Latn",
+    });
+    expect(systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
+  });
+});
+
+describe("ScriptValidationError", () => {
+  it("carries the offending characters and raw response", () => {
+    const err = new ScriptValidationError("bad script", "नमस्ते", ["न", "म"]);
+    expect(err).toBeInstanceOf(PromptParseError);
+    expect(err.name).toBe("ScriptValidationError");
+    expect(err.offendingChars).toEqual(["न", "म"]);
+    expect(err.rawResponse).toBe("नमस्ते");
   });
 });
 

@@ -3,7 +3,7 @@ import type { Segment } from "../../src/core/types.js";
 import { translateOneSegmentWithQualityRetry } from "../../src/cli/doc-translate-quality-retry.js";
 import { protectSegmentForTranslation } from "../../src/cli/doc-translate.js";
 import { Glossary } from "../../src/glossary/glossary.js";
-import type { OpenRouterClient } from "../../src/api/openrouter.js";
+import type { LlmClient } from "../../src/api/llm-client.js";
 
 const WHOLE_SEGMENT = [
   "1. **Rephrase…** — click **Rephrase…** above the output.",
@@ -50,7 +50,7 @@ describe("translateOneSegmentWithQualityRetry split fallback", () => {
           rawAssistantContent: "",
         };
       }),
-    } as unknown as OpenRouterClient;
+    } as unknown as LlmClient;
 
     const glossary = new Glossary(undefined, undefined);
     const protectForPart = (raw: string) =>
@@ -106,7 +106,7 @@ describe("translateOneSegmentWithQualityRetry split fallback", () => {
         debugPrompt: { systemPrompt: "", userContent: "" },
         rawAssistantContent: "",
       })),
-    } as unknown as OpenRouterClient;
+    } as unknown as LlmClient;
 
     const glossary = new Glossary(undefined, undefined);
     const short = "Use **bold** and **more** here.";

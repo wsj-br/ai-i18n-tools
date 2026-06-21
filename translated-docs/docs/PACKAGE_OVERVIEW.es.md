@@ -6,7 +6,7 @@ Este documento describe la arquitectura interna de `ai-i18n-tools`, cómo se int
 Para obtener instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETTING_STARTED.es.md). Para capturas de pantalla e ilustraciones SVG en documentos traducidos, consulte [LOCALE-ASSETS-GUIDE.md](LOCALE-ASSETS-GUIDE.es.md).
 
 <small>**Leer en otros idiomas:** </small>
-<small id="lang-list">[English (GB)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [हिन्दी](./PACKAGE_OVERVIEW.hi.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](./PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](./PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/PACKAGE_OVERVIEW.md) · [Deutsch](./PACKAGE_OVERVIEW.de.md) · [Español](./PACKAGE_OVERVIEW.es.md) · [Français](./PACKAGE_OVERVIEW.fr.md) · [Hindi (Roman)](./PACKAGE_OVERVIEW.hi-Latn.md) · [日本語](./PACKAGE_OVERVIEW.ja.md) · [한국어](./PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](./PACKAGE_OVERVIEW.pt-BR.md) · [简体中文](./PACKAGE_OVERVIEW.zh-Hans.md) · [繁體中文](./PACKAGE_OVERVIEW.zh-Hant.md)</small>
 
 ---
 
@@ -31,9 +31,9 @@ Para obtener instrucciones prácticas de uso, consulte [GETTING_STARTED.md](GETT
   - [Resolución de rutas de salida](#output-path-resolution)
   - [Reescritura de enlaces planos](#flat-link-rewriting)
 - [Infraestructura compartida](#shared-infrastructure)
-  - [`OpenRouterClient`](#openrouterclient)
+  - [`LlmClient`](#openrouterclient)
   - [Carga de configuración](#config-loading)
-  - [Registrador (Logger)](#logger)
+  - [Registrador](#logger)
 - [API de ayudantes en tiempo de ejecución](#runtime-helpers-api)
   - [Ayudantes RTL](#rtl-helpers)
   - [Fábricas de configuración de i18next](#i18next-setup-factories)
@@ -127,7 +127,8 @@ src/
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
 │
 ├── api/
-│   └── openrouter.ts               OpenRouter HTTP client with model fallback chain
+│   ├── llm-client.ts               LlmClient: provider-agnostic chat client (AI SDK) with model fallback chain
+│   └── provider-models-catalog.ts  Fetch/parse any provider's OpenAI-compatible GET /models catalog
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
@@ -165,7 +166,7 @@ source files (JS/TS, optional `.astro`)
 strings.json  ─────────────────── master catalog
       │             { hash: { source, translated, models?, locations? } }
       ▼
-OpenRouterClient.translateUIBatch()
+LlmClient.translateUIBatch()
       │  sends JSON array of source strings, receives JSON array of translations (+ model id per batch)
       ▼
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
@@ -229,7 +230,7 @@ i18next carga estos archivos como paquetes de recursos y busca traducciones medi
 - Envíe un array JSON de cadenas y solicite un array JSON de traducciones a cambio.
 - Incluya sugerencias del glosario cuando estén disponibles.
 
-`OpenRouterClient.translateUIBatch` prueba cada modelo en orden, retrocediendo ante errores de análisis o de red. La CLI construye esa lista a partir de `openrouter.translationModels` (o predeterminado/heredado por defecto); para `translate-ui`, `ui.preferredModel` opcional se antepone cuando está configurado (eliminándose duplicados respecto al resto).
+`LlmClient.translateUIBatch` prueba cada modelo en orden, recurriendo a errores de análisis o de red. La CLI construye esa lista a partir de `translationModels` del proveedor activo; para `translate-ui`, se antepone `ui.preferredModel` opcional cuando está configurado (eliminando duplicados del resto).
 
 ---
 
@@ -250,7 +251,7 @@ protected text  ──────────────── HTML tags, admo
 batches[]  ───────────────────── grouped by count + char limit
       │
       ▼  TranslationCache lookup
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  PlaceholderHandler.restoreAfterTranslation
 final text  ──────────────────── placeholders restored
@@ -313,11 +314,11 @@ La protección compartida de atributos/claves para plantillas Astro y JSX MDX se
 
 La base de datos SQLite (mediante `node:sqlite`) almacena filas indexadas por `(source_hash, locale)` con `translated_text`, `model`, `filepath`, `last_hit_at` y campos relacionados. El hash corresponde a los primeros 16 caracteres hexadecimales SHA-256 del contenido normalizado (espacios en blanco reducidos).
 
-En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo los fallos de caché se envían al LLM. Tras la traducción, `last_hit_at` se restablece para las filas de segmentos en el ámbito actual de traducción que no fueron alcanzadas. Los aciertos exitosos en la caché durante la traducción de documentos eliminan filas `translation_failures` obsoletas para ese segmento. `cleanup` ejecuta primero `sync --force-update`, luego elimina filas de segmentos obsoletos (`last_hit_at` nulo / ruta de archivo vacía), poda claves `file_tracking` cuando la ruta fuente resuelta no existe en el disco (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), elimina filas de traducción cuya ruta de archivo en los metadatos apunta a un archivo inexistente, y elimina filas `translation_failures` huérfanas; primero realiza una copia de seguridad de `cache.db` a menos que se pase `--no-backup`.
+En cada ejecución, los segmentos se buscan por hash × configuración regional. Solo los fallos de caché van al LLM. Después de la traducción, `last_hit_at` se restablece para las filas de segmento en el ámbito de traducción actual que no fueron alcanzadas. Los aciertos de caché exitosos durante la traducción de documentos borran las filas `translation_failures` obsoletas para ese segmento. `cleanup` ejecuta `sync --force-update` primero, luego elimina las filas de segmento obsoletas (`last_hit_at` nulo / ruta de archivo vacía), poda las claves `file_tracking` cuando la ruta de origen resuelta falta en el disco (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), elimina las filas de traducción cuya ruta de archivo de metadatos apunta a un archivo que falta, poda las filas `translation_failures` huérfanas y poda las filas `markdown_source_issues` huérfanas cuya ruta de origen resuelta falta en el disco; no hace una copia de seguridad de `cache.db` a menos que se pase `--backup <path>`, lo que escribe una copia de seguridad en esa ruta primero.
 
 El comando `translate-docs` también utiliza **seguimiento de archivos**, de modo que las fuentes sin cambios con salidas existentes puedan omitir completamente el trabajo. `--force-update` vuelve a ejecutar el procesamiento de archivos manteniendo el caché de segmentos; `--force` borra el seguimiento de archivos y omite las lecturas del caché de segmentos para la traducción mediante API. Cuando todos los modelos configurados fallan en la validación AST en un segmento de markdown, `translate-docs` puede dividir progresivamente el segmento y reintentar partes más pequeñas (`docs[].segmentSplitting.qualityRetrySplit`, activado por defecto). Consulte [Introducción](GETTING_STARTED.es.md#cache-behaviour-and-translate-docs-flags) para ver la tabla completa de indicadores.
 
-**Formato de solicitud por lotes:** `translate-docs --prompt-format` selecciona XML (`<seg>` / `<t>`) o formas de array/objeto JSON solo para `OpenRouterClient.translateDocumentBatch`; la extracción, marcadores y validación no cambian. Consulte [Formato de solicitud por lotes](GETTING_STARTED.es.md#batch-prompt-format).
+**Formato de prompt por lotes:** `translate-docs --prompt-format` selecciona formas de matriz/objeto XML (`<seg>` / `<t>`) o JSON solo para `LlmClient.translateDocumentBatch`; la extracción, los marcadores de posición y la validación no cambian. Ver [Formato de prompt por lotes](GETTING_STARTED.es.md#batch-prompt-format).
 
 <a id="output-path-resolution"></a>
 ### Resolución de ruta de salida
@@ -348,7 +349,7 @@ json[].contentPaths  →  resolve files (file | directory | glob)
 string leaves selected by keyPolicy (dot paths + minimatch)
       │
       ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  NestedJsonExtractor.reassemble
 output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
@@ -366,14 +367,14 @@ output file  ─────────── expandJsonBlockOutputPath(outputP
 ## Infraestructura compartida
 
 <a id="openrouterclient"></a>
-### `OpenRouterClient`
+### `LlmClient`
 
-Envuelve la API de completado de chat de OpenRouter. Comportamientos clave:
+Cliente de chat independiente del proveedor construido sobre el SDK de IA de Vercel (`ai` + `@ai-sdk/openai-compatible`). Resuelve el proveedor activo desde `provider` / `providers`, construye un cliente compatible con OpenAI (`createOpenAICompatible`) para `baseUrl` y la clave API de ese proveedor, y enruta todas las llamadas a través de `generateText`. `OpenRouterClient` se mantiene como un alias obsoleto. Comportamientos clave:
 
-- **Alternativa de modelo**: intenta cada modelo en la lista resuelta por orden; recurre a errores HTTP o fallos de análisis. La traducción de la interfaz primero resuelve `ui.preferredModel` cuando está presente, luego los modelos `openrouter`.
-- **Tiempo de espera de solicitud**: `openrouter.requestTimeoutMs` (por defecto 30 segundos) aborta cada solicitud de finalización de chat mediante `AbortSignal.timeout`. El mismo valor se aplica a `GET /models` cuando la CLI carga el catálogo (por ejemplo `check-models` y el filtro previo opcional que descarta identificadores de modelo desconocidos).
-- **Limitación de tasa**: detecta respuestas 429, espera `retry-after` (o 2 segundos), reintenta una vez.
-- **Registro de depuración del tráfico**: si se establece `debugTrafficFilePath`, añade al final del archivo el JSON de solicitud y respuesta.
+- **Retroceso de modelos**: prueba cada modelo en la lista resuelta en orden; retrocede ante fallos de solicitud o análisis. La traducción de la interfaz de usuario resuelve primero `ui.preferredModel` cuando está presente, luego `translationModels` del proveedor.
+- **Tiempo de espera de solicitud**: los `requestTimeoutMs` del proveedor activo (30 segundos por defecto) abortan cada solicitud a través de `AbortSignal.timeout`. El mismo valor se aplica a `GET /models` cuando la CLI carga la lista de modelos de un proveedor para `check-models` (cualquier proveedor) y el filtro opcional previo que descarta los IDs de modelo desconocidos (solo OpenRouter).
+- **Extras de OpenRouter** (solo cuando `openrouter` está activo): enrutamiento de rendimiento a través del campo de solicitud `provider`, encabezados `HTTP-Referer` / `X-Title`, y costo exacto en USD leído de `usage.cost`. El uso de tokens se informa para cada proveedor; el costo exacto solo cuando el proveedor lo devuelve.
+- **Registro de tráfico de depuración**: si `debugTrafficFilePath` está configurado, agrega el JSON de solicitud y respuesta a un archivo.
 
 <a id="config-loading"></a>
 ### Carga de configuración
@@ -488,7 +489,7 @@ Exportaciones clave:
 | `MarkdownExtractor` | Extraer segmentos traducibles del markdown. |
 | `JsonExtractor` | Extraer de archivos JSON de etiquetas de Docusaurus (catálogos de interfaz de usuario, no del cuerpo MDX). |
 | `SvgExtractor` | Extraer de archivos SVG. |
-| `OpenRouterClient` | Realizar solicitudes de traducción a OpenRouter. |
+| `LlmClient` | Realiza solicitudes de traducción al proveedor LLM activo (`OpenRouterClient` es un alias obsoleto). |
 | `PlaceholderHandler` | Protege/restaura la sintaxis de markdown alrededor de la traducción (etiquetas HTML, advertencias, anclajes, comentarios/JSX/llaves MDX, URLs, código en línea, énfasis). |
 | `protectMdx` / `restoreMdx` | Protege/restaura comentarios MDX, etiquetas JSX, expresiones entre llaves y atributos de cadena JSX (llamado por `PlaceholderHandler`; también exportado para uso directo). |
 | `splitTranslatableIntoBatches` | Agrupar segmentos en lotes del tamaño adecuado para los LLM. |

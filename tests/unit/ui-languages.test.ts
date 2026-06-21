@@ -35,7 +35,7 @@ const defaultDocumentationFields = {
   translateFrontmatterFields: true,
 };
 
-function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
+function baseUiConfig(over: Record<string, unknown> = {}): I18nConfig {
   return parseI18nConfig(
     mergeWithDefaults({
       sourceLocale: "en-GB",
@@ -48,11 +48,13 @@ function baseUiConfig(over: Partial<I18nConfig> = {}): I18nConfig {
       },
       cacheDir: ".translation-cache",
       docs: [{ contentPaths: [], outputDir: "./i18n" }],
-      openrouter: {
-        baseUrl: "https://openrouter.ai/api/v1",
-        translationModels: ["m"],
-        maxTokens: 100,
-        temperature: 0.1,
+      provider: "openrouter",
+      providers: {
+        openrouter: {
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
       },
       features: {
         translateUIStrings: false,

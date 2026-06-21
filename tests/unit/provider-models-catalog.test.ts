@@ -4,7 +4,7 @@ import {
   formatUsdPerMillionTokens,
   isExpirationDatePast,
   parseModelsListResponse,
-} from "../../src/api/openrouter-models-catalog.js";
+} from "../../src/api/provider-models-catalog.js";
 
 describe("parseModelsListResponse", () => {
   it("builds a map keyed by model id", () => {

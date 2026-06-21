@@ -1,9 +1,14 @@
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
-import { fetchOpenRouterModelsCatalog } from "../api/openrouter-models-catalog.js";
+import { fetchOpenRouterModelsCatalog } from "../api/provider-models-catalog.js";
+import {
+  OPENROUTER_PROVIDER_KEY,
+  resolveActiveProvider,
+  resolveProviderSettings,
+} from "../core/llm-providers.js";
 
 export interface FilterTranslationModelsResult {
-  /** Ids to pass to `OpenRouterClient` (`translationModels`), order preserved. */
+  /** Ids to pass to `LlmClient` (`translationModels`), order preserved. */
   models: string[];
   /** Configured ids not returned by OpenRouter `GET /models`. */
   unknownIds: string[];
@@ -12,23 +17,37 @@ export interface FilterTranslationModelsResult {
 /**
  * Drops model ids that do not appear in OpenRouter’s catalog so the client never targets removed/unknown slugs.
  *
- * When `OPENROUTER_API_KEY` is unset or `models` is empty, returns inputs unchanged (no network).
- * On fetch failure, logs once and returns inputs unchanged.
+ * Only runs when the active provider is OpenRouter (the catalog is OpenRouter-specific). When the
+ * active provider is anything else, the API key is unset, or `models` is empty, returns inputs
+ * unchanged (no network). On fetch failure, logs once and returns inputs unchanged.
  */
 export async function filterTranslationModelsAgainstOpenRouterCatalog(
   models: string[],
-  config: Pick<I18nConfig, "openrouter">
+  config: Pick<I18nConfig, "provider" | "providers">
 ): Promise<FilterTranslationModelsResult> {
-  const apiKey = process.env.OPENROUTER_API_KEY?.trim() ?? "";
-  if (models.length === 0 || !apiKey) {
+  if (models.length === 0) {
+    return { models, unknownIds: [] };
+  }
+  let activeProvider: string;
+  try {
+    activeProvider = resolveActiveProvider(config);
+  } catch {
+    return { models, unknownIds: [] };
+  }
+  if (activeProvider !== OPENROUTER_PROVIDER_KEY) {
+    return { models, unknownIds: [] };
+  }
+  const settings = resolveProviderSettings(activeProvider, config);
+  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  if (!apiKey) {
     return { models, unknownIds: [] };
   }
 
   try {
     const catalog = await fetchOpenRouterModelsCatalog({
-      baseUrl: config.openrouter.baseUrl,
+      baseUrl: settings.baseUrl,
       apiKey,
-      requestTimeoutMs: config.openrouter.requestTimeoutMs,
+      requestTimeoutMs: settings.requestTimeoutMs,
     });
     const unknownIds = models.filter((id) => !catalog.has(id));
     const known = models.filter((id) => catalog.has(id));

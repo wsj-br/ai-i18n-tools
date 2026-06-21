@@ -36,6 +36,72 @@ function migrateDocBlock(block: Record<string, unknown>): void {
   }
 }
 
+const DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+
+/**
+ * Migrate the legacy single `openrouter` block to the multi-provider shape
+ * (`provider: "openrouter"` + `providers.openrouter`). The `translationModels` list absorbs any
+ * legacy `defaultModel` / `fallbackModel`; the default base URL is dropped (inherited from the preset).
+ */
+function migrateOpenrouterBlock(o: Record<string, unknown>): void {
+  const legacy = o.openrouter;
+  if (legacy === undefined) {
+    return;
+  }
+  delete o.openrouter;
+  if (!legacy || typeof legacy !== "object" || Array.isArray(legacy)) {
+    return;
+  }
+  const or = legacy as Record<string, unknown>;
+
+  const models: string[] = [];
+  const pushModel = (m: unknown): void => {
+    if (typeof m === "string" && m.trim() && !models.includes(m.trim())) {
+      models.push(m.trim());
+    }
+  };
+  if (Array.isArray(or.translationModels)) {
+    for (const m of or.translationModels) {
+      pushModel(m);
+    }
+  }
+  pushModel(or.defaultModel);
+  pushModel(or.fallbackModel);
+
+  const entry: Record<string, unknown> = {};
+  if (models.length > 0) {
+    entry.translationModels = models;
+  }
+  if (
+    typeof or.baseUrl === "string" &&
+    or.baseUrl.trim() &&
+    or.baseUrl.trim() !== DEFAULT_OPENROUTER_BASE_URL
+  ) {
+    entry.baseUrl = or.baseUrl.trim();
+  }
+  if (typeof or.maxTokens === "number") {
+    entry.maxTokens = or.maxTokens;
+  }
+  if (typeof or.temperature === "number") {
+    entry.temperature = or.temperature;
+  }
+  if (typeof or.requestTimeoutMs === "number") {
+    entry.requestTimeoutMs = or.requestTimeoutMs;
+  }
+
+  const providers =
+    o.providers && typeof o.providers === "object" && !Array.isArray(o.providers)
+      ? { ...(o.providers as Record<string, unknown>) }
+      : {};
+  if (providers.openrouter === undefined) {
+    providers.openrouter = entry;
+  }
+  o.providers = providers;
+  if (o.provider === undefined) {
+    o.provider = "openrouter";
+  }
+}
+
 /**
  * Map legacy config keys to canonical names in-memory (accepted indefinitely at load).
  * Throws if `documentations` and `docs` both exist with different content.
@@ -77,6 +143,8 @@ export function preprocessLegacyConfigInput(raw: unknown): unknown {
     o.features = f;
   }
 
+  migrateOpenrouterBlock(o);
+
   return o;
 }
 
@@ -90,6 +158,9 @@ export function rawConfigHasLegacyKeys(json: unknown): boolean {
   }
   const o = json as Record<string, unknown>;
   if (Object.prototype.hasOwnProperty.call(o, "documentations")) {
+    return true;
+  }
+  if (Object.prototype.hasOwnProperty.call(o, "openrouter")) {
     return true;
   }
   const f = o.features;
@@ -140,6 +211,9 @@ export function maybeRewriteConfigFile(configPath: string, rawJson: unknown): Co
   const o = rawJson as Record<string, unknown>;
   if (o.documentations !== undefined) {
     messages.push("documentations → docs");
+  }
+  if (o.openrouter !== undefined) {
+    messages.push('openrouter → providers.openrouter (+ provider: "openrouter")');
   }
   const f = o.features as Record<string, unknown> | undefined;
   if (f?.translateMarkdown !== undefined) {

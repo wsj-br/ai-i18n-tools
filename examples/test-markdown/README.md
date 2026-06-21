@@ -6,8 +6,8 @@ Two parallel workflows exercise the same document content from different source 
 
 | Workflow             | Source locale | Config                                                           | Source file                                          |
 |----------------------|---------------|------------------------------------------------------------------|------------------------------------------------------|
-| Portuguese → targets | `pt-BR`       | [`ai-i18n-tools.config.json`](./ai-i18n-tools.config.json)       | [`test-markdown.md`](./test-markdown.md)             |
-| English → targets    | `en-GB`       | [`ai-i18n-tools.config-en.json`](./ai-i18n-tools.config-en.json) | [`test-markdown-en-GB.md`](./test-markdown-en-GB.md) |
+| Portuguese → targets | `pt-BR`       | [`ai-i18n-tools.config-pt-BR.json`](./ai-i18n-tools.config-pt-BR.json) | [`test-markdown-pt-BR.md`](./test-markdown-pt-BR.md) |
+| English → targets    | `en-GB`       | [`ai-i18n-tools.config-en-GB.json`](./ai-i18n-tools.config-en-GB.json) | [`test-markdown-en-GB.md`](./test-markdown-en-GB.md) |
 
 Both files cover the same sections and formatting edge cases; only the prose language differs. Use the Portuguese workflow to test non–English source locales (for example translating into `en-GB`), and the English workflow for the more common `en-GB` → CJK / Devanagari direction.
 
@@ -28,38 +28,40 @@ Running `translate-docs` writes outputs under [`translated-docs/`](./translated-
 
 ## Target locales
 
-### Portuguese source (`ai-i18n-tools.config.json`)
+### Portuguese source (`ai-i18n-tools.config-pt-BR.json`)
 
-| Code    | Script / language        |
-|---------|--------------------------|
-| `en-GB` | English (UK)             |
-| `ja`    | Japanese (CJK)           |
-| `ko`    | Korean (CJK)             |
-| `zh-CN` | Simplified Chinese (CJK) |
-| `hi`    | Hindi (Devanagari)       |
+| Code      | Script / language          |
+|-----------|----------------------------|
+| `en-GB`   | English (UK)               |
+| `ja`      | Japanese (CJK)             |
+| `ko`      | Korean (CJK)               |
+| `zh-Hans` | Chinese (Simplified) (CJK) |
+| `hi`      | Hindi (Devanagari)         |
 
-Outputs: `translated-docs/test-markdown.{locale}.md`
+Outputs: `translated-docs/test-markdown-pt-BR.{locale}.md`
 
-### English source (`ai-i18n-tools.config-en.json`)
+### English source (`ai-i18n-tools.config-en-GB.json`)
 
-| Code    | Script / language        |
-|---------|--------------------------|
-| `pt-BR` | Portuguese (Brazil)      |
-| `ja`    | Japanese (CJK)           |
-| `ko`    | Korean (CJK)             |
-| `zh-CN` | Simplified Chinese (CJK) |
-| `hi`    | Hindi (Devanagari)       |
+| Code      | Script / language          |
+|-----------|----------------------------|
+| `pt-BR`   | Portuguese (Brazil)        |
+| `ja`      | Japanese (CJK)             |
+| `ko`      | Korean (CJK)               |
+| `zh-Hans` | Chinese (Simplified) (CJK) |
+| `hi`      | Hindi (Devanagari)         |
 
 Outputs: `translated-docs/test-markdown-en-GB.{locale}.md`
 
 ## Requirements
 
-Build the library once from the repository root (if you have not already):
+This example has no dependencies of its own and installs nothing — there is no `node_modules` here. Build the library once from the repository root so the CLI entry (`bin/ai-i18n-tools.mjs`) has a `dist/` to run:
 
 ```bash
-pnpm install
-pnpm run build
+pnpm install   # at the repository root
+pnpm run build # at the repository root
 ```
+
+The scripts in [`package.json`](./package.json) invoke the CLI directly through the repo's bin (`node ../../bin/ai-i18n-tools.mjs …`), so no per-example install is needed.
 
 ## Usage
 
@@ -69,13 +71,19 @@ Run commands from this directory so paths in the config resolve correctly:
 cd examples/test-markdown
 ```
 
-The examples below use `npx ai-i18n-tools …` after installing and building from the repository root. If `node_modules/.bin` is on your `PATH` (or you use direnv), you can run the same commands with bare `ai-i18n-tools` instead — see [Using the CLI](../../README.md#using-the-cli) in the package README and [Installation](../../docs/GETTING_STARTED.md#installation) in Getting Started.
+The simplest path is the `build` script, which clears the cache and translates both workflows (`pt-BR` and `en-GB` sources) using the local build of the library:
+
+```bash
+pnpm build
+```
+
+For finer control, call the CLI directly through the repo's bin with `node ../../bin/ai-i18n-tools.mjs …`. (If you have `ai-i18n-tools` installed globally or on your `PATH`, you can substitute the bare `ai-i18n-tools` command — see [Using the CLI](../../README.md#using-the-cli) in the package README and [Installation](../../docs/GETTING_STARTED.md#installation) in Getting Started.)
 
 Check markdown sources for issues (no API key). Pass `-c` to select which workflow to scan:
 
 ```bash
-npx ai-i18n-tools check-markdown -c ai-i18n-tools.config.json
-npx ai-i18n-tools check-markdown -c ai-i18n-tools.config-en.json
+node ../../bin/ai-i18n-tools.mjs check-markdown -c ai-i18n-tools.config-pt-BR.json
+node ../../bin/ai-i18n-tools.mjs check-markdown -c ai-i18n-tools.config-en-GB.json
 ```
 
 ### Portuguese source workflow
@@ -83,13 +91,13 @@ npx ai-i18n-tools check-markdown -c ai-i18n-tools.config-en.json
 Translate into all configured locales:
 
 ```bash
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config.json
+node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-pt-BR.json
 ```
 
 Single locale:
 
 ```bash
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config.json --locale ja
+node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-pt-BR.json --locale ja
 ```
 
 ### English source workflow
@@ -97,13 +105,13 @@ npx ai-i18n-tools translate-docs -c ai-i18n-tools.config.json --locale ja
 Translate into all configured locales:
 
 ```bash
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config-en.json
+node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-en-GB.json
 ```
 
 Single locale:
 
 ```bash
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config-en.json --locale ja
+node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-en-GB.json --locale ja
 ```
 
 ### Other options
@@ -111,15 +119,13 @@ npx ai-i18n-tools translate-docs -c ai-i18n-tools.config-en.json --locale ja
 Force a re-translation of all files (either config):
 
 ```bash
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config.json --force
+node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-pt-BR.json --force
 ```
 
-Clear the SQLite cache and re-translate. Both workflows share `.translation-cache/` and `translated-docs/` (both are gitignored):
+Clear the SQLite cache and re-translate both workflows. Both share `.translation-cache/` and `translated-docs/` (both are gitignored) — this is exactly what the `build` script runs:
 
 ```bash
-rm -rf .translation-cache translated-docs/
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config.json
-npx ai-i18n-tools translate-docs -c ai-i18n-tools.config-en.json
+pnpm build
 ```
 
 
@@ -128,16 +134,16 @@ npx ai-i18n-tools translate-docs -c ai-i18n-tools.config-en.json
 ```text
 examples/test-markdown/
 ├── README.md
-├── ai-i18n-tools.config.json       # pt-BR source → en-GB, hi, ja, ko, zh-CN
-├── ai-i18n-tools.config-en.json    # en-GB source → pt-BR, hi, ja, ko, zh-CN
-├── test-markdown.md                # Portuguese source
-├── test-markdown-en-GB.md          # English source
-├── .gitignore                      # ignores .translation-cache/ and translated-docs/
-├── .translation-cache/             # generated (gitignored)
-└── translated-docs/                # generated (gitignored)
-    ├── test-markdown.{locale}.md
+├── ai-i18n-tools.config-pt-BR.json   # pt-BR source → en-GB, hi, ja, ko, zh-Hans
+├── ai-i18n-tools.config-en-GB.json   # en-GB source → pt-BR, hi, ja, ko, zh-Hans
+├── test-markdown-pt-BR.md            # Portuguese source
+├── test-markdown-en-GB.md            # English source
+├── .gitignore                        # ignores .translation-cache/ and translated-docs/
+├── .translation-cache/               # generated (gitignored)
+└── translated-docs/                  # generated (gitignored)
+    ├── test-markdown-pt-BR.{locale}.md
     └── test-markdown-en-GB.{locale}.md
 ```
 
-This directory is not a pnpm workspace package; invoke the CLI via `npx ai-i18n-tools`, bare `ai-i18n-tools` when your shell `PATH` is set up as in the package docs, or `node ../../dist/cli/index.js` from this directory.
+This directory is not a pnpm workspace package and installs no dependencies — there is no `node_modules` here. Its scripts call the CLI directly through the repo's bin (`node ../../bin/ai-i18n-tools.mjs …`), which only needs the library built once from the repository root (`pnpm run build`). Run the full flow with `pnpm build`, or invoke the CLI directly with `node ../../bin/ai-i18n-tools.mjs …`.
 

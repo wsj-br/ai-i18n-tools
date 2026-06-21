@@ -9,7 +9,7 @@ import { resolveLocalesForJson } from "../core/ui-languages.js";
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
-import { OpenRouterClient } from "../api/openrouter.js";
+import { LlmClient } from "../api/llm-client.js";
 import { hashFileContent, writeAtomicUtf8 } from "./helpers.js";
 import type { Segment } from "../core/types.js";
 import {
@@ -142,7 +142,7 @@ export async function translateNestedJsonFile(
   >();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
-  const client = new OpenRouterClient({ config });
+  const client = new LlmClient({ config });
 
   for (let i = 0; i < segments.length; i++) {
     const s = segments[i]!;

@@ -8,7 +8,7 @@ import type {
   StringsJsonPluralEntry,
 } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
-import { OpenRouterClient } from "../api/openrouter.js";
+import { LlmClient } from "../api/llm-client.js";
 import {
   englishLanguageNameForLocale,
   normalizeLocale,
@@ -41,6 +41,7 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { safeResolveActiveProvider } from "../core/llm-providers.js";
 const UI_CHUNK = 50;
 
 const RULE = "-".repeat(100);
@@ -94,7 +95,7 @@ export interface TranslateUISummary {
 
 type StringsFile = Record<string, StringsJsonEntry>;
 
-/** Same shape as {@link OpenRouterClient} private `languageLabelForPrompt` for LLM instructions. */
+/** Same shape as {@link LlmClient} private `languageLabelForPrompt` for LLM instructions. */
 function localeLabelForPrompt(config: I18nConfig, localeCode: string): string {
   const n = normalizeLocale(localeCode);
   const configured = config.localeDisplayNames?.[n];
@@ -319,7 +320,7 @@ async function runTranslateUIBody(
 
   const glossary = new Glossary(undefined, glossaryUser, targets);
 
-  let client: OpenRouterClient | null = null;
+  let client: LlmClient | null = null;
   if (!opts.dryRun) {
     const resolvedUi = resolveUITranslationModels(config);
     let translationModelsForClient: string[] | undefined = undefined;
@@ -332,13 +333,13 @@ async function runTranslateUIBody(
       translationModelsForClient = filtered.models;
     }
     try {
-      client = new OpenRouterClient({
+      client = new LlmClient({
         config,
         ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
       });
     } catch (e) {
       throw new Error(
-        `OPENROUTER_API_KEY required for UI translation: ${e instanceof Error ? e.message : String(e)}`
+        `LLM provider API key required for UI translation: ${e instanceof Error ? e.message : String(e)}`
       );
     }
   }
@@ -353,7 +354,7 @@ async function runTranslateUIBody(
       "\n\n___UI Translation________________________________________________________________________________________\n\n"
     ) + chalk.bold(`🌐 Translating UI strings to ${targets.length} locale(s)\n`)
   );
-  printModelsTryInOrder(models);
+  printModelsTryInOrder(models, client?.getProvider() ?? safeResolveActiveProvider(config));
   console.log(chalk.cyan(`Strings: `) + chalk.magenta(`${entries.length} total entries`));
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(chalk.cyan(`Output dir: `) + chalk.magenta(outDir));
@@ -595,8 +596,11 @@ async function runTranslateUIBody(
             originalLiteral: entry.source,
             glossaryHints: hints,
             intlPluralLocaleTag: locale,
+            targetLocale: locale,
           });
-          const batch = await client.translatePluralCardinalBatch(reqTarget, msgs);
+          const batch = await client.translatePluralCardinalBatch(reqTarget, msgs, {
+            targetLocale: locale,
+          });
           console.log(
             chalk.green(
               `✔️  ${locale} ${stringsRel}: plural ${pi + 1}/${pluralTargets.length} (${h}) (1 plural group in batch, ${batch.usage.totalTokens} tokens)`

@@ -65,7 +65,7 @@ describe("rewriteSourceMarkdownLanguageListBlocks", () => {
       expect(rewritten).toBe(1);
 
       const output = fs.readFileSync(readmePath, "utf8");
-      expect(output).toContain("[English (GB)](./README.md)");
+      expect(output).toContain("[English (UK)](./README.md)");
       expect(output).toContain("[Deutsch](./translated-docs/README.de.md)");
       expect(output).toContain("[Français](./translated-docs/README.fr.md)");
     } finally {

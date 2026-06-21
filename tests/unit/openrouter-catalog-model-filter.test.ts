@@ -5,14 +5,16 @@ import {
 } from "../../src/cli/openrouter-catalog-model-filter.js";
 import type { I18nConfig } from "../../src/core/types.js";
 
-function tinyConfig(): Pick<I18nConfig, "openrouter"> {
+function tinyConfig(): Pick<I18nConfig, "provider" | "providers"> {
   return {
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: ["a"],
-      maxTokens: 1,
-      temperature: 0,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: ["a"],
+        maxTokens: 1,
+        temperature: 0,
+        requestTimeoutMs: 30_000,
+      },
     },
   };
 }

@@ -11,7 +11,7 @@ import { collectFilesByExtension } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
-import { OpenRouterClient } from "../api/openrouter.js";
+import { LlmClient } from "../api/llm-client.js";
 import {
   filterTranslationModelsAgainstOpenRouterCatalog,
   MODELS_ALL_UNKNOWN_AFTER_FILTER,
@@ -30,6 +30,7 @@ import {
   interruptErrorFromSignal,
 } from "../utils/run-interrupt.js";
 import { formatElapsedMmSs, formatSegmentCacheHitSuffix, printModelsTryInOrder } from "./format.js";
+import { safeResolveActiveProvider } from "../core/llm-providers.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
@@ -71,7 +72,8 @@ function printTranslateSvgSummary(
   sum: TranslateTotals,
   wallElapsedMs: number,
   models: readonly string[],
-  outcome: "success" | "interrupted"
+  outcome: "success" | "interrupted",
+  provider?: string
 ): void {
   if (outcome === "success") {
     console.log(chalk.bold.green("\n✅ SVG translation complete!\n"));
@@ -81,7 +83,7 @@ function printTranslateSvgSummary(
         "\n⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
       )
     );
-    printModelsTryInOrder(models);
+    printModelsTryInOrder(models, provider);
     console.log("");
   }
 
@@ -130,7 +132,7 @@ async function runTranslateSvgBody(
   const hasNonSourceTarget = locales.some(
     (l) => normalizeLocale(l) !== normalizeLocale(config.sourceLocale)
   );
-  const resolvedModels = resolveTranslationModels(config.openrouter);
+  const resolvedModels = resolveTranslationModels(config);
   const needsApi = !opts.dryRun && hasNonSourceTarget && resolvedModels.length > 0;
 
   let translationModelsForClient: string[] | undefined = undefined;
@@ -144,7 +146,7 @@ async function runTranslateSvgBody(
   }
 
   const client = needsApi
-    ? new OpenRouterClient({
+    ? new LlmClient({
         config,
         ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
       })
@@ -161,6 +163,7 @@ async function runTranslateSvgBody(
 
   const totalFileCount = files.length;
   const displayModels = client?.getConfiguredModels() ?? resolvedModels;
+  const displayProvider = client?.getProvider() ?? safeResolveActiveProvider(config);
 
   console.log(
     chalk.gray(
@@ -168,7 +171,7 @@ async function runTranslateSvgBody(
     ) +
       chalk.bold(`\n🌐 Translating ${totalFileCount} SVG file(s) to ${locales.length} locale(s)\n`)
   );
-  printModelsTryInOrder(displayModels);
+  printModelsTryInOrder(displayModels, displayProvider);
   console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(`SVG output: `) + chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
@@ -313,11 +316,25 @@ async function runTranslateSvgBody(
       runOpts.abortSignal
     );
 
-    printTranslateSvgSummary(opts, liveSum, Date.now() - wallStart, displayModels, "success");
+    printTranslateSvgSummary(
+      opts,
+      liveSum,
+      Date.now() - wallStart,
+      displayModels,
+      "success",
+      displayProvider
+    );
     return liveSum;
   } catch (e) {
     if (isRunInterruptedError(e) || runOpts.abortSignal?.aborted) {
-      printTranslateSvgSummary(opts, liveSum, Date.now() - wallStart, displayModels, "interrupted");
+      printTranslateSvgSummary(
+        opts,
+        liveSum,
+        Date.now() - wallStart,
+        displayModels,
+        "interrupted",
+        displayProvider
+      );
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(runOpts.abortSignal!);
     }
     throw e;

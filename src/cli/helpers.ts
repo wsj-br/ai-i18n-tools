@@ -10,6 +10,7 @@ import type { I18nConfig, I18nDocTranslateConfig } from "../core/types.js";
 export interface GlobalCliOptions {
   config: string;
   verbose?: boolean;
+  provider?: string;
 }
 
 /** True when the CLI arg is only the default filename (no directory), so we may look in the parent of `searchCwd`. */
@@ -65,12 +66,13 @@ export function resolveConfigFileLocation(
  */
 export function loadConfigOrExit(
   configFlag: string | undefined,
-  searchCwd: string
+  searchCwd: string,
+  providerOverride?: string
 ): { config: I18nConfig; projectRoot: string } {
   try {
     const resolvedAbs = resolveConfigFileLocation(configFlag, searchCwd);
     const projectRoot = path.dirname(resolvedAbs);
-    const config = loadI18nConfigFromFile(resolvedAbs, projectRoot);
+    const config = loadI18nConfigFromFile(resolvedAbs, projectRoot, providerOverride);
     return { config, projectRoot };
   } catch (e) {
     console.error(

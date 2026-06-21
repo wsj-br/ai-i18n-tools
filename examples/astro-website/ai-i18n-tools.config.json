@@ -7,8 +7,8 @@
     "ar",
     "ja",
     "ko",
-    "zh-CN",
-    "zh-TW",
+    "zh-Hans",
+    "zh-Hant",
     "pt-BR"
   ],
   "concurrency": 3,

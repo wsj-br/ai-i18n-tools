@@ -7,13 +7,10 @@ import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 import { runTranslateUI } from "../../src/cli/translate-ui-strings.js";
 
 function mockJsonResponse(data: object, status = 200) {
-  const raw = JSON.stringify(data);
-  return {
-    ok: status >= 200 && status < 300,
+  return new Response(JSON.stringify(data), {
     status,
-    headers: { get: (_name: string) => null as string | null },
-    text: async () => raw,
-  };
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function buildConfig() {
@@ -32,11 +29,13 @@ function buildConfig() {
       },
       cacheDir: ".translation-cache",
       docs: [{ contentPaths: [], outputDir: "./i18n" }],
-      openrouter: {
-        baseUrl: "https://openrouter.ai/api/v1",
-        translationModels: ["model-a"],
-        maxTokens: 100,
-        temperature: 0,
+      provider: "openrouter",
+      providers: {
+        openrouter: {
+          translationModels: ["model-a"],
+          maxTokens: 100,
+          temperature: 0,
+        },
       },
       features: {
         translateUIStrings: true,

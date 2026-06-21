@@ -92,6 +92,11 @@ body {
   font-size: 0.65rem;
   color: var(--text-secondary);
 }
+.tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
 .tabs button {
   background: transparent;
   border: 1px solid var(--border);
@@ -104,6 +109,16 @@ body {
 .tabs button.active {
   color: var(--accent);
   border-color: var(--accent);
+}
+.tabs .tab-close {
+  margin-left: auto;
+  margin-right: 0;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.tabs .tab-close:hover {
+  color: var(--danger-hover);
+  border-color: var(--danger-hover);
 }
 
 main {
@@ -743,6 +758,12 @@ td.last-hit-at.stale {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+#panel-stats .stats-fullwidth {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 #panel-stats .stats-section {
   padding-bottom: 1.5rem;

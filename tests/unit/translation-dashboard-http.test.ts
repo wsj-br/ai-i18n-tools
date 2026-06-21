@@ -52,6 +52,23 @@ describe("createTranslationDashboardApp", () => {
     });
   });
 
+  it("POST /api/shutdown returns ok and invokes the onShutdown hook", async () => {
+    cache = new TranslationCache(":memory:");
+    const onShutdown = vi.fn();
+    const app = createTranslationDashboardApp(cache, {
+      cwd: "/tmp",
+      sourceLocale: "en",
+      targetLocales: ["de"],
+      onShutdown,
+    });
+    await withHttpServer(app, async (base) => {
+      const res = await fetch(`${base}/api/shutdown`, { method: "POST" });
+      expect(res.ok).toBe(true);
+      expect(await res.json()).toEqual({ ok: true });
+      await vi.waitFor(() => expect(onShutdown).toHaveBeenCalledTimes(1));
+    });
+  });
+
   it("GET /api/stats returns 500 when strings.json is not valid JSON", async () => {
     cache = new TranslationCache(":memory:");
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-stats-bad-"));

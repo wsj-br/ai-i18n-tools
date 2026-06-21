@@ -1,15 +1,15 @@
 [
   {
     "code": "en-GB",
-    "label": "English (GB)",
-    "englishName": "English (GB)",
+    "label": "English (UK)",
+    "englishName": "English (United Kingdom)",
     "direction": "ltr",
     "isSourceLocale": true
   },
   {
     "code": "es",
-    "label": "Español",
-    "englishName": "Spanish",
+    "label": "Español (Latinoamérica)",
+    "englishName": "Spanish (Latin America)",
     "direction": "ltr"
   },
   {
@@ -27,7 +27,7 @@
   {
     "code": "pt-BR",
     "label": "Português (Brasil)",
-    "englishName": "Portuguese (BR)",
+    "englishName": "Portuguese (Brazil)",
     "direction": "ltr"
   }
 ]

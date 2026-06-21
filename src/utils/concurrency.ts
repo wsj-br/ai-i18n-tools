@@ -11,6 +11,21 @@ function abortError(signal: AbortSignal): RunInterruptedError {
 }
 
 /**
+ * Yield to the macrotask queue (one `setImmediate` turn).
+ *
+ * Fully-cached runs do no real async I/O (synchronous `fs.*` + synchronous `better-sqlite3`),
+ * so the pipeline executes as one unbroken microtask cascade. Node only dispatches signal
+ * handlers (e.g. SIGINT) at event-loop boundaries, so without an occasional macrotask yield the
+ * libuv loop is starved and Ctrl+C cannot interrupt the run until it finishes. Awaiting this in
+ * hot loops gives the event loop a chance to deliver the signal so the abort becomes observable.
+ */
+export function yieldToEventLoop(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setImmediate(resolve);
+  });
+}
+
+/**
  * Run async `fn(item, index)` for each item with at most `limit` concurrent executions.
  * Results are in the same order as `items`.
  * When `signal` aborts, rejects promptly (does not wait for in-flight `fn` calls to finish).
@@ -53,6 +68,9 @@ export async function runMapWithConcurrency<T, R>(
         return;
       }
       results[i] = await fn(items[i]!, i);
+      // Yield to the macrotask queue so the event loop can deliver signals (e.g. SIGINT) even
+      // when `fn` resolved synchronously (fully-cached runs); otherwise the abort never fires.
+      await yieldToEventLoop();
       if (signal?.aborted) {
         throw abortError(signal);
       }

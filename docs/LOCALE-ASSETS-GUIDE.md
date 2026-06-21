@@ -18,7 +18,7 @@ This guide uses the exact JSON strings from config — not English words alone �
 
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./LOCALE-ASSETS-GUIDE.md) · [Deutsch](../translated-docs/docs/LOCALE-ASSETS-GUIDE.de.md) · [Español](../translated-docs/docs/LOCALE-ASSETS-GUIDE.es.md) · [Français](../translated-docs/docs/LOCALE-ASSETS-GUIDE.fr.md) · [हिन्दी](../translated-docs/docs/LOCALE-ASSETS-GUIDE.hi.md) · [日本語](../translated-docs/docs/LOCALE-ASSETS-GUIDE.ja.md) · [한국어](../translated-docs/docs/LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](../translated-docs/docs/LOCALE-ASSETS-GUIDE.pt-BR.md) · [中文 (中国大陆)](../translated-docs/docs/LOCALE-ASSETS-GUIDE.zh-CN.md) · [中文 (台灣)](../translated-docs/docs/LOCALE-ASSETS-GUIDE.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](./LOCALE-ASSETS-GUIDE.md) · [Deutsch](../translated-docs/docs/LOCALE-ASSETS-GUIDE.de.md) · [Español](../translated-docs/docs/LOCALE-ASSETS-GUIDE.es.md) · [Français](../translated-docs/docs/LOCALE-ASSETS-GUIDE.fr.md) · [Hindi (Roman)](../translated-docs/docs/LOCALE-ASSETS-GUIDE.hi-Latn.md) · [日本語](../translated-docs/docs/LOCALE-ASSETS-GUIDE.ja.md) · [한국어](../translated-docs/docs/LOCALE-ASSETS-GUIDE.ko.md) · [Português (Brasil)](../translated-docs/docs/LOCALE-ASSETS-GUIDE.pt-BR.md) · [简体中文](../translated-docs/docs/LOCALE-ASSETS-GUIDE.zh-Hans.md) · [繁體中文](../translated-docs/docs/LOCALE-ASSETS-GUIDE.zh-Hant.md)</small>
 
 ---
 

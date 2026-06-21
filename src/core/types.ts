@@ -110,21 +110,24 @@ export function translationTextMap(
   );
 }
 
-/** Token counts returned by OpenRouter (`usage`). */
-export interface OpenRouterUsageStats {
+/** Token counts returned by an LLM provider (`usage`). */
+export interface LlmUsageStats {
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;
 }
 
+/** @deprecated Use {@link LlmUsageStats}. */
+export type OpenRouterUsageStats = LlmUsageStats;
+
 export interface TranslationResult {
   content: string;
   model: string;
-  usage: OpenRouterUsageStats;
+  usage: LlmUsageStats;
   cost?: number;
   /** When the API succeeded; used for translation failure debug logs. */
   debugPrompt?: { systemPrompt: string; userContent: string };
-  /** Raw assistant text before optional tag stripping (single-segment; see {@link OpenRouterClient.stripTranslateTags}). */
+  /** Raw assistant text before optional tag stripping (single-segment; see {@link LlmClient.stripTranslateTags}). */
   rawAssistantContent?: string;
 }
 
@@ -260,7 +263,7 @@ export interface GlossaryTerm {
 export interface BatchTranslationResult {
   translations: Map<number, string>;
   model: string;
-  usage: OpenRouterUsageStats;
+  usage: LlmUsageStats;
   cost?: number;
   /** When the API succeeded; used for translation failure debug logs. */
   debugPrompt?: { systemPrompt: string; userContent: string };
@@ -286,20 +289,34 @@ export interface ChatMessage {
 export interface ChatResponse {
   content: string;
   model: string;
-  usage: OpenRouterUsageStats;
+  usage: LlmUsageStats;
   cost?: number;
 }
 
-const openRouterConfigSchema = z.object({
-  baseUrl: z.string().min(1).default("https://openrouter.ai/api/v1"),
-  translationModels: z.array(z.string().min(1)).optional(),
-  defaultModel: z.string().optional(),
-  fallbackModel: z.string().optional(),
-  maxTokens: z.number().int().positive().default(8192),
-  temperature: z.number().min(0).max(2).default(0.2),
-  /** Max time to wait for each OpenRouter HTTP request (chat completions and `GET /models`). Default 30s. */
-  requestTimeoutMs: z.number().int().positive().default(30_000),
-});
+/**
+ * One LLM provider block. Most providers need only `translationModels`; everything else is
+ * inherited from a built-in preset (see `src/core/llm-providers.ts`) or the global LLM defaults.
+ * Define `baseUrl` (and usually `apiKeyEnv`) to use a custom OpenAI-compatible endpoint that has
+ * no built-in preset.
+ */
+const providerEntrySchema = z
+  .object({
+    /** OpenAI-compatible base URL (e.g. `https://api.example.com/v1`). Overrides the preset baseUrl. */
+    baseUrl: z.string().min(1).optional(),
+    /** Environment variable holding the API key. Overrides the preset env var. */
+    apiKeyEnv: z.string().min(1).optional(),
+    /** Extra HTTP headers sent with every request to this provider. */
+    headers: z.record(z.string(), z.string()).optional(),
+    /** Ordered model fallback chain (plain upstream model ids, no provider prefix). */
+    translationModels: z.array(z.string().min(1)).optional(),
+    maxTokens: z.number().int().positive().optional(),
+    temperature: z.number().min(0).max(2).optional(),
+    /** Max time to wait for each chat-completions request. Default 30s. */
+    requestTimeoutMs: z.number().int().positive().optional(),
+  })
+  .strict();
+
+const providersConfigSchema = z.record(z.string().min(1), providerEntrySchema);
 
 const featuresSchema = z.object({
   /** Scan `t()` / `i18n.t()` into `strings.json`, then translate flat locale bundles (extract runs automatically before translate). */
@@ -678,7 +695,13 @@ const i18nConfigSchemaInner = z
       (v) => coerceTargetLocalesField(v),
       z.array(z.string().min(1)).default([])
     ),
-    openrouter: openRouterConfigSchema,
+    /**
+     * Active provider key (must exist in `providers`). Optional when exactly one provider is
+     * configured. Determines which provider block is used during a run.
+     */
+    provider: z.string().min(1).optional(),
+    /** Map of provider key -> provider block. Built-in keys carry presets; any other key needs `baseUrl`. */
+    providers: providersConfigSchema.default({}),
     features: featuresSchema.default({
       translateUIStrings: false,
       translateDocs: false,
@@ -736,7 +759,10 @@ const i18nConfigSchemaInner = z
 export const i18nConfigSchema = z.preprocess(preprocessLegacyConfigInput, i18nConfigSchemaInner);
 
 export type I18nConfig = z.infer<typeof i18nConfigSchemaInner>;
-export type OpenRouterConfig = z.infer<typeof openRouterConfigSchema>;
+export type LlmProviderConfig = z.infer<typeof providerEntrySchema>;
+export type ProvidersConfig = z.infer<typeof providersConfigSchema>;
+/** @deprecated The single `openrouter` block was replaced by the `providers` map; use {@link LlmProviderConfig}. */
+export type OpenRouterConfig = LlmProviderConfig;
 export type FeaturesConfig = z.infer<typeof featuresSchema>;
 export type GlossaryConfig = z.infer<typeof glossarySchema>;
 export type UIStringExtractorConfig = z.infer<typeof uiExtractorSchema>;

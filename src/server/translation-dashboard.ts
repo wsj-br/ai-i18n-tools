@@ -178,6 +178,8 @@ export interface TranslationDashboardOptions {
    * that were stored relative to this root (e.g. `code.json` → `docs-site/i18n/en/code.json`).
    */
   docusaurusCatalogDir?: string | null;
+  /** Optional hook invoked by `POST /api/shutdown` to stop the dashboard server. */
+  onShutdown?: () => void;
 }
 
 /** Normalize cache filepath for console log-links (JSON rows may omit docusaurusCatalogDir prefix). */
@@ -863,6 +865,14 @@ export function createTranslationDashboardApp(
 
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true });
+  });
+
+  app.post("/api/shutdown", (_req, res) => {
+    res.json({ ok: true });
+    if (opts.onShutdown) {
+      // Defer so the 200 response flushes before the process exits.
+      setTimeout(opts.onShutdown, 50);
+    }
   });
 
   return app;

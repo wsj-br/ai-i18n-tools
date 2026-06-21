@@ -6,7 +6,7 @@ This document describes the internal architecture of `ai-i18n-tools`, how each c
 For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md). For screenshots and illustrated SVGs in translated docs, see [LOCALE-ASSETS-GUIDE.md](./LOCALE-ASSETS-GUIDE.md).
 
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](./PACKAGE_OVERVIEW.md) · [Deutsch](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [Español](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [Français](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [हिन्दी](../translated-docs/docs/PACKAGE_OVERVIEW.hi.md) · [日本語](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [한국어](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [中文 (中国大陆)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-CN.md) · [中文 (台灣)](../translated-docs/docs/PACKAGE_OVERVIEW.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](./PACKAGE_OVERVIEW.md) · [Deutsch](../translated-docs/docs/PACKAGE_OVERVIEW.de.md) · [Español](../translated-docs/docs/PACKAGE_OVERVIEW.es.md) · [Français](../translated-docs/docs/PACKAGE_OVERVIEW.fr.md) · [Hindi (Roman)](../translated-docs/docs/PACKAGE_OVERVIEW.hi-Latn.md) · [日本語](../translated-docs/docs/PACKAGE_OVERVIEW.ja.md) · [한국어](../translated-docs/docs/PACKAGE_OVERVIEW.ko.md) · [Português (Brasil)](../translated-docs/docs/PACKAGE_OVERVIEW.pt-BR.md) · [简体中文](../translated-docs/docs/PACKAGE_OVERVIEW.zh-Hans.md) · [繁體中文](../translated-docs/docs/PACKAGE_OVERVIEW.zh-Hant.md)</small>
 
 ---
 
@@ -31,7 +31,7 @@ For practical usage instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
   - [Output path resolution](#output-path-resolution)
   - [Flat link rewriting](#flat-link-rewriting)
 - [Shared infrastructure](#shared-infrastructure)
-  - [`OpenRouterClient`](#openrouterclient)
+  - [`LlmClient`](#openrouterclient)
   - [Config loading](#config-loading)
   - [Logger](#logger)
 - [Runtime helpers API](#runtime-helpers-api)
@@ -127,7 +127,8 @@ src/
 │   └── flat-link-rewrite.ts        Relative link rewriting for flat output
 │
 ├── api/
-│   └── openrouter.ts               OpenRouter HTTP client with model fallback chain
+│   ├── llm-client.ts               LlmClient: provider-agnostic chat client (AI SDK) with model fallback chain
+│   └── provider-models-catalog.ts  Fetch/parse any provider's OpenAI-compatible GET /models catalog
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
@@ -165,7 +166,7 @@ source files (JS/TS, optional `.astro`)
 strings.json  ─────────────────── master catalog
       │             { hash: { source, translated, models?, locations? } }
       ▼
-OpenRouterClient.translateUIBatch()
+LlmClient.translateUIBatch()
       │  sends JSON array of source strings, receives JSON array of translations (+ model id per batch)
       ▼
 de.json, pt-BR.json …  ─────────── per-locale flat maps: source → translation (no model metadata)
@@ -229,7 +230,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
 
-`OpenRouterClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list from `openrouter.translationModels` (or legacy default/fallback); for `translate-ui`, optional `ui.preferredModel` is prepended when set (deduplicated against the rest).
+`LlmClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list from the active provider's `translationModels`; for `translate-ui`, optional `ui.preferredModel` is prepended when set (deduplicated against the rest).
 
 ---
 
@@ -250,7 +251,7 @@ protected text  ──────────────── HTML tags, admo
 batches[]  ───────────────────── grouped by count + char limit
       │
       ▼  TranslationCache lookup
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  PlaceholderHandler.restoreAfterTranslation
 final text  ──────────────────── placeholders restored
@@ -313,11 +314,11 @@ Shared attribute/key protection for Astro templates and MDX JSX is implemented i
 
 SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)` with `translated_text`, `model`, `filepath`, `last_hit_at`, and related fields. The hash is SHA-256 first 16 hex chars of normalised content (whitespace collapsed).
 
-On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. Successful cache hits during doc translation clear stale `translation_failures` rows for that segment. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), removes translation rows whose metadata filepath points at a missing file, and prunes orphaned `translation_failures` rows; it backs up `cache.db` first unless `--no-backup` is passed.
+On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. Successful cache hits during doc translation clear stale `translation_failures` rows for that segment. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), removes translation rows whose metadata filepath points at a missing file, prunes orphaned `translation_failures` rows, and prunes orphaned `markdown_source_issues` rows whose resolved source path is missing on disk; it does not back up `cache.db` unless `--backup <path>` is passed, which writes a backup to that path first.
 
 The `translate-docs` command also uses **file tracking** so unchanged sources with existing outputs can skip work entirely. `--force-update` re-runs file processing while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. When every configured model fails AST validation on a markdown segment, `translate-docs` can progressively split the segment and retry smaller parts (`docs[].segmentSplitting.qualityRetrySplit`, default on). See [Getting Started](./GETTING_STARTED.md#cache-behaviour-and-translate-docs-flags) for the full flag table.
 
-**Batch prompt format:** `translate-docs --prompt-format` selects XML (`<seg>` / `<t>`) or JSON array/object shapes for `OpenRouterClient.translateDocumentBatch` only; extraction, placeholders, and validation are unchanged. See [Batch prompt format](./GETTING_STARTED.md#batch-prompt-format).
+**Batch prompt format:** `translate-docs --prompt-format` selects XML (`<seg>` / `<t>`) or JSON array/object shapes for `LlmClient.translateDocumentBatch` only; extraction, placeholders, and validation are unchanged. See [Batch prompt format](./GETTING_STARTED.md#batch-prompt-format).
 
 <a id="output-path-resolution"></a>
 ### Output path resolution
@@ -348,7 +349,7 @@ json[].contentPaths  →  resolve files (file | directory | glob)
 string leaves selected by keyPolicy (dot paths + minimatch)
       │
       ▼  PlaceholderHandler + batch + TranslationCache (shared SQLite)
-cache hit → skip, miss → OpenRouterClient.translateDocumentBatch
+cache hit → skip, miss → LlmClient.translateDocumentBatch
       │
       ▼  NestedJsonExtractor.reassemble
 output file  ─────────── expandJsonBlockOutputPath(outputPathTemplate)
@@ -366,13 +367,13 @@ output file  ─────────── expandJsonBlockOutputPath(outputP
 ## Shared infrastructure
 
 <a id="openrouterclient"></a>
-### `OpenRouterClient`
+### `LlmClient`
 
-Wraps the OpenRouter chat completions API. Key behaviours:
+Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). It resolves the active provider from `provider` / `providers`, builds one OpenAI-compatible client (`createOpenAICompatible`) for that provider's `baseUrl` + API key, and routes all calls through `generateText`. `OpenRouterClient` is kept as a deprecated alias. Key behaviours:
 
-- **Model fallback**: tries each model in the resolved list in order; falls back on HTTP errors or parse failures. UI translation resolves `ui.preferredModel` first when present, then `openrouter` models.
-- **Request timeout**: `openrouter.requestTimeoutMs` (default 30 seconds) aborts each chat-completion request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads the catalog (for example `check-models` and the optional pre-flight filter that drops unknown model ids).
-- **Rate limiting**: detects 429 responses, waits `retry-after` (or 2s), retries once.
+- **Model fallback**: tries each model in the resolved list in order; falls back on request or parse failures. UI translation resolves `ui.preferredModel` first when present, then the provider's `translationModels`.
+- **Request timeout**: the active provider's `requestTimeoutMs` (default 30 seconds) aborts each request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads a provider's model list for `check-models` (any provider) and the optional pre-flight filter that drops unknown model ids (OpenRouter-only).
+- **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field, `HTTP-Referer` / `X-Title` headers, and exact USD cost read from `usage.cost`. Token usage is reported for every provider; exact cost only when the provider returns it.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.
 
 <a id="config-loading"></a>
@@ -488,7 +489,7 @@ Key exports:
 | `MarkdownExtractor` | Extract translatable segments from markdown. |
 | `JsonExtractor` | Extract from Docusaurus JSON label files (UI catalogs, not MDX body). |
 | `SvgExtractor` | Extract from SVG files. |
-| `OpenRouterClient` | Make translation requests to OpenRouter. |
+| `LlmClient` | Make translation requests to the active LLM provider (`OpenRouterClient` is a deprecated alias). |
 | `PlaceholderHandler` | Protect/restore markdown syntax around translation (HTML tags, admonitions, anchors, MDX comments/JSX/braces, URLs, inline code, emphasis). |
 | `protectMdx` / `restoreMdx` | Protect/restore MDX comments, JSX tags, brace expressions, and JSX string attributes (called by `PlaceholderHandler`; also exported for direct use). |
 | `splitTranslatableIntoBatches` | Group segments into LLM-sized batches. |

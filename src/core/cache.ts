@@ -35,12 +35,42 @@ function loadSqlite(): SqliteModule {
 }
 
 /**
+ * Registry of open on-disk caches plus a single `process.on("exit")` safety net. The hook closes
+ * any cache still open when the process exits — including hard exits via `process.exit()` that skip
+ * a command's `finally { cache.close() }` (e.g. a second-Ctrl-C force-quit in `createRunInterruptScope`,
+ * `exitIfRunInterrupted`, or a `process.exit(1)` error path). `close()` checkpoints the WAL and
+ * unlinks the `-wal` / `-shm` sidecars, so this guarantees an interrupted command leaves the database
+ * closed cleanly instead of leaking sidecar files. `close()` is idempotent, so caches already closed
+ * by their command are skipped here. Only on-disk caches are tracked (`:memory:` has no sidecars).
+ */
+const openCaches = new Set<TranslationCache>();
+let exitHookInstalled = false;
+
+function ensureCacheExitHook(): void {
+  if (exitHookInstalled) {
+    return;
+  }
+  exitHookInstalled = true;
+  // 'exit' handlers may only do synchronous work; node:sqlite close + WAL checkpoint are synchronous.
+  process.on("exit", () => {
+    for (const cache of [...openCaches]) {
+      try {
+        cache.close();
+      } catch {
+        // Best-effort flush on process exit.
+      }
+    }
+  });
+}
+
+/**
  * SQLite translation cache. `better-sqlite3` uses a single native connection per instance
  * (no JS-level pool); reuse one instance per process for best throughput.
  */
 export class TranslationCache {
   private db: Sqlite.DatabaseSync;
   private readonly dbFilePath: string | null;
+  private closed = false;
 
   constructor(cachePath: string) {
     const { DatabaseSync } = loadSqlite();
@@ -59,6 +89,10 @@ export class TranslationCache {
     this.dbFilePath = path.join(cachePath, "cache.db");
     this.db = new DatabaseSync(this.dbFilePath);
     this.applyMigrations();
+    // Track on-disk caches so the process-exit safety net can close any left open by a hard exit
+    // (e.g. an interrupt that calls `process.exit()` and skips the command's `finally`).
+    openCaches.add(this);
+    ensureCacheExitHook();
   }
 
   private applyMigrations(): void {
@@ -1157,6 +1191,25 @@ export class TranslationCache {
     }
   }
 
+  /**
+   * Clear every row from `markdown_source_issues`, returning the number removed. Cleanup wipes the
+   * whole table outright rather than trying to reconcile which files are still configured: the
+   * diagnostics are cheap to regenerate by running `check-markdown` (or translating docs), and the
+   * dashboard already points users to that refresh. This avoids stale rows lingering for files that
+   * were renamed, deleted, or dropped from `docs[].contentPaths` (such rows are never revisited by a
+   * scan, so a per-file refresh can never clear them). With `dryRun`, counts without deleting.
+   */
+  clearAllMarkdownIssues(dryRun: boolean): number {
+    const countRow = this.db
+      .prepare("SELECT COUNT(*) as c FROM markdown_source_issues")
+      .get() as { c: number };
+    const removed = Number(countRow.c);
+    if (!dryRun && removed > 0) {
+      this.db.prepare("DELETE FROM markdown_source_issues").run();
+    }
+    return removed;
+  }
+
   listMarkdownSourceIssues(filters?: {
     filename?: string;
     issue_code?: string;
@@ -1258,8 +1311,19 @@ export class TranslationCache {
   }
 
   close(): void {
+    // Idempotent: a command's `finally` and the process-exit safety net may both call this. Closing
+    // an already-closed `node:sqlite` connection throws, so guard against the double close.
+    if (this.closed) {
+      return;
+    }
+    this.closed = true;
+    openCaches.delete(this);
     if (this.dbFilePath !== null) {
       try {
+        // Flush the WAL back into the main db before closing. When this is the last connection to
+        // the database, `db.close()` then unlinks the `-wal` / `-shm` sidecar files automatically.
+        // Sidecars can still linger if another process (e.g. an IDE SQLite viewer) holds the file
+        // open — SQLite cannot remove them until every connection is closed.
         this.db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
       } catch {
         // Best-effort flush before closing the on-disk connection.
@@ -1333,14 +1397,24 @@ export class TranslationCache {
     });
   }
 
-  /** Hot SQLite backup to another file. */
+  /** Hot SQLite backup to another file. The backup is finalized as a self-contained file. */
   async backupTo(destinationPath: string): Promise<void> {
     if (this.dbFilePath === null) {
       throw new CacheError("backup is not supported for :memory: databases");
     }
-    const { backup } = loadSqlite();
-    fs.mkdirSync(path.dirname(path.resolve(destinationPath)), { recursive: true });
-    await backup(this.db, destinationPath);
+    const { backup, DatabaseSync } = loadSqlite();
+    const resolved = path.resolve(destinationPath);
+    fs.mkdirSync(path.dirname(resolved), { recursive: true });
+    await backup(this.db, resolved);
+    // The copy inherits the source's WAL header, so open it once to checkpoint and switch to a
+    // rollback journal — otherwise the backup artifact can leave `-wal` / `-shm` sidecar files.
+    const backupDb = new DatabaseSync(resolved);
+    try {
+      backupDb.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+      backupDb.exec("PRAGMA journal_mode = DELETE");
+    } finally {
+      backupDb.close();
+    }
   }
 
   /** Replace the on-disk DB with a copied file; closes and reopens the connection. */

@@ -18,7 +18,7 @@
 3つのワークフローすべてでOpenRouter（互換性のある任意のLLM）を使用し、単一の設定ファイルを共有します。
 
 <small>**他の言語で読む：** </small>
-<small id="lang-list">[English (GB)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [हिन्दी](./GETTING_STARTED.hi.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [中文 (中国大陆)](./GETTING_STARTED.zh-CN.md) · [中文 (台灣)](./GETTING_STARTED.zh-TW.md)</small>
+<small id="lang-list">[English (UK)](../../docs/GETTING_STARTED.md) · [Deutsch](./GETTING_STARTED.de.md) · [Español](./GETTING_STARTED.es.md) · [Français](./GETTING_STARTED.fr.md) · [Hindi (Roman)](./GETTING_STARTED.hi-Latn.md) · [日本語](./GETTING_STARTED.ja.md) · [한국어](./GETTING_STARTED.ko.md) · [Português (Brasil)](./GETTING_STARTED.pt-BR.md) · [简体中文](./GETTING_STARTED.zh-Hans.md) · [繁體中文](./GETTING_STARTED.zh-Hant.md)</small>
 
 ---
 
@@ -81,8 +81,8 @@
   - [`concurrency`（任意）](#concurrency-optional)
   - [`batchConcurrency`（任意）](#batchconcurrency-optional)
   - [`fileConcurrency`（任意）](#fileconcurrency-optional)
-  - [`batchSize` / `maxBatchChars`（任意）](#batchsize--maxbatchchars-optional)
-  - [`openrouter`](#openrouter)
+  - [`batchSize` / `maxBatchChars` (オプション)](#batchsize--maxbatchchars-optional)
+  - [`provider` および `providers`](#openrouter)
   - [`features`](#features)
   - [`ui`](#ui)
   - [`cacheDir`](#cachedir)
@@ -139,7 +139,7 @@ ai-i18n-tools sync
 
 Linux、macOS、およびWSLでは、レジストリからのインストールによりCLIスクリプトの実行ビットが自動的に設定されます。Windowsでは、パッケージマネージャーがNodeを明示的に呼び出す`.cmd`および`.ps1`のシャムを生成します。
 
-OpenRouterのAPIキーを設定してください。
+プロバイダーの API キーを設定します（OpenRouter を例として示します。アクティブなプロバイダーに対応する環境変数を指定してください。詳細は[プリセットテーブル](#openrouter)を参照してください）。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -223,8 +223,8 @@ npx ai-i18n-tools init
 - `targetLocales` - 目標言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。 このリストから`ui-languages.json`マニフェストを作成するには`generate-ui-languages`を実行します。
 - `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン（例：`["src/"]`, `["src/**/*.ts"]`）。
 - `ui.stringsJson` - マスターカタログを書き込む場所（例：`"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - `de.json`、`pt-BR.json` などを出力する場所（例：`"src/locales/"`）。
-- `ui.preferredModel`（オプション） - `translate-ui` のみに使用する**最初に試す** OpenRouter モデル ID。失敗した場合、CLI は `openrouter.translationModels`（またはレガシー `defaultModel` / `fallbackModel`）を順に試行し、重複はスキップします。
+- `ui.flatOutputDir` - `de.json`、`pt-BR.json`などを記述する場所（例：`"src/locales/"`）。
+- `ui.preferredModel`（オプション） - **最初に**試行するモデルID（`translate-ui`のみ）。失敗した場合、CLIはアクティブなプロバイダーの`translationModels`を順に処理し、重複をスキップします。
 
 <a id="step-2-extract-strings"></a>
 ### ステップ 2：文字列の抽出
@@ -326,7 +326,7 @@ const t = useTranslations(locale, makeT(flat));
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json` を読み込み、各ターゲットロケールごとにバッチを OpenRouter に送信し、フラットな JSON ファイル（`de.json`、`fr.json` など）を `ui.flatOutputDir` に出力します。`ui.preferredModel` が設定されている場合、そのモデルが `openrouter.translationModels` のリストより優先して使用されます（ドキュメント翻訳やその他のコマンドは引き続き `openrouter` のみを使用します）。
+`strings.json`を読み込み、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。`ui.preferredModel`が設定されている場合、そのモデルはアクティブなプロバイダーの`translationModels`リストの前に試行されます（ドキュメント翻訳およびその他のコマンドは、プロバイダーのリストのみを使用します）。
 
 各エントリについて、`translate-ui`はオプションの`models`オブジェクト内に、各ロケールを正常に翻訳した**OpenRouterモデルID**を保存します（`translated`と同じロケールキーを使用）。ローカルの`dashboard`コマンドで編集された文字列は、そのロケールの`models`内でセンチネル値`user-edited`としてマークされます。`ui.flatOutputDir`配下のロケールごとのフラットファイルは、**ソース文字列 → 翻訳**のみを含み、`models`は含まれません（そのためランタイムバンドルは変更されません）。
 
@@ -401,7 +401,7 @@ export default i18n;
 
 このスニペットでは、`i18n` がこれらのフォルダの隣にあるかのように `./locales/…` と `./public/locales/…` を使用しています。ファイルが `src/` の下にある場合（一般的なケース）、インポートが `ui.stringsJson`、`uiLanguagesPath`、`ui.flatOutputDir` と同じパスに解決されるように `../locales/…` と `../public/locales/…` を使用してください。
 
-Reactがレンダリングする前（たとえばエントリーポイントの先頭）に `i18n.js` をインポートしてください。ユーザーが言語を変更したときは、`await loadLocale(code)` を呼び出した後に `i18n.changeLanguage(code)` を呼び出します。
+React がレンダリングされる前に `i18n.js` をインポートします (例: エントリ ポイントの先頭)。ユーザーが言語を変更した場合は、`await loadLocale(code)` を呼び出し、次に `await i18n.changeLanguage(code)` を呼び出します。
 
 `SOURCE_LOCALE` はエクスポートされているため、他のファイル（たとえば言語切り替えコンポーネント）でも `'./i18n'` から直接インポートできます。既存のi18next設定を移行する場合は、コンポーネント中に散在するハードコードされたソースロケール文字列（例：`'en-GB'` のチェック）を、i18nブートストラップファイルから `SOURCE_LOCALE` をインポートする形に置き換えてください。
 
@@ -545,7 +545,7 @@ function LanguageSelect({
 
   const handleChange = async (code: string) => {
     await loadLocale(code);
-    i18n.changeLanguage(code);
+    await i18n.changeLanguage(code);
     onChange(code);
   };
 
@@ -709,7 +709,7 @@ CLIはSQLiteで**ファイルトラッキング**を維持します（ファイ�
 <a id="batch-prompt-format"></a>
 #### バッチプロンプト形式
 
-`translate-docs` は、翻訳可能なセグメントを **バッチ** 単位で OpenRouter に送信します（`batchSize` / `maxBatchChars` ごとにグループ化）。`--prompt-format` フラグはそのバッチの **送信形式** のみを変更します。`PlaceholderHandler` トークン、マークダウンASTチェック、SQLiteキャッシュキー、バッチ解析失敗時のセグメント単位のフォールバックは変更されません。
+`translate-docs` は、アクティブな LLM プロバイダーに翻訳可能なセグメントを **バッチ** (`batchSize` / `maxBatchChars` でグループ化) で送信します。`--prompt-format` フラグは、そのバッチの **ワイヤーフォーマット** を変更するだけです。`PlaceholderHandler` トークン、Markdown AST チェック、SQLite キャッシュキー、およびバッチ解析が失敗した場合のセグメントごとのフォールバックは変更されません。
 
 | モード                   | ユーザーメッセージ                                                           | モデルの応答                                                 |
 |------------------------|------------------------------------------------------------------------|-------------------------------------------------------------|
@@ -1134,7 +1134,7 @@ npx ai-i18n-tools status
 ```json
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
+  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
   "features": {
     "translateUIStrings": true,
     "translateDocs": true,
@@ -1172,7 +1172,7 @@ npx ai-i18n-tools status
 
 ```json
 {
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-CN"],
+  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
   "docs": [
     {
       "contentPaths": ["docs/"],
@@ -1307,7 +1307,7 @@ The **Markdownの問題**タブには、`markdown_source_issues` SQLiteテーブ
 
 トークンを使用する前に**ソースのマークダウン**を修正したい場合に、このタブを使用します。特に品質チェックが構造の面で繰り返し失敗する場合に有効です。ファイルパス（キャッシュキーに対する部分一致、`doc-block:{index}:` プレフィックスを含む）、**問題コード**、または**ソースハッシュ**でフィルタリングできます。ファイルパス＋行番号、または最新のスキャン時刻でソート可能です。リンクボタンは、`ai-i18n-tools dashboard` 実行中のターミナルにファイル/行のヒントをログ出力します（「ドキュメント」タブと同様の仕組みです）。
 
-**行の更新：** `ai-i18n-tools check-markdown` を実行（オプションで `-p` / `--path` スコープ、`--no-cache` でSQLiteをスキップ、`--json` で標準出力に機械可読形式の出力、標準エラーに人間向けの行を出力）。デフォルトでは、`docs[].warnMarkdownSourceIssues` が `false` に設定されていない場合、各 `translate-docs` Markdownファイルの実行時に、そのファイルの行を再スキャンして置き換えます。キャッシュファイルパスのすべての翻訳をクリアすると、失敗のクリーンアップパスの一部として、そのファイルパスのMarkdown問題行も削除されます。
+**行の更新:** `ai-i18n-tools check-markdown` を実行します (オプションで `-p` / `--path` スコープ、SQLite をスキップするには `--no-cache`、stderr に人間の可読な行を、stdout に機械可読な出力を表示するには `--json` を使用します)。デフォルトでは、`docs[].warnMarkdownSourceIssues` が `false` に設定されていない場合、各 `translate-docs` マークダウンファイル実行は、そのファイルの行も再スキャンして置き換えます。キャッシュファイルパスのすべての翻訳をクリアすると、失敗と同じクリーンアップパスの一部として、そのファイルパスのマークダウン問題行が削除されます。`cleanup` は、解決されたソースパスがディスク上にないマークダウン問題行をさらに削除するため、削除または名前変更されたファイル (`check-markdown` でスキャンされただけで、翻訳されたことのないファイルでも) の診断が残ることはありません。
 
 ---
 
@@ -1370,24 +1370,52 @@ The **Markdownの問題**タブには、`markdown_source_issues` SQLiteテーブ
 ドキュメント翻訳のセグメントバッチ処理：APIリクエストごとのセグメント数と文字数の上限。デフォルト：**20**セグメント、**4096**文字（省略時）。
 
 <a id="openrouter"></a>
-### `openrouter`
+### `provider` と `providers`
 
-- `baseUrl`
-  OpenRouter API のベース URL。デフォルト：`https://openrouter.ai/api/v1`。
+`provider`（トップレベル、オプション）は、`providers`からアクティブなプロバイダーキーを選択します。プロバイダーが1つだけ設定されている場合はオプションですが、複数設定されている場合は必須です。
+
+`providers`（トップレベル）は、プロバイダーキーをそのブロックにマッピングします。組み込みキー（以下のプリセットテーブルを参照）には`translationModels`のみが必要ですが、その他のキーはカスタムのOpenAI互換エンドポイントを定義し、`baseUrl`（エンドポイントがキーを必要としない場合を除き、`apiKeyEnv`も）が必要です。
+
+各`providers.<name>`ブロックは以下を受け入れます：
+
 - `translationModels`
-  優先順に並べたモデル ID のリスト。最初のものが最初に試されます。エラー時には後続のエントリがフォールバックとして使用されます。`translate-ui` 専用に、`ui.preferredModel` を設定してこのリストの前に1つのモデルを試すこともできます（`ui` を参照）。
-- `defaultModel`
-  従来の単一プライマリモデル。`translationModels` が未設定または空の場合にのみ使用されます。
-- `fallbackModel`
-  従来の単一フォールバックモデル。`translationModels` が未設定または空の場合、`defaultModel` の後に使用されます。
+  モデルIDの優先順位付きリスト（プレフィックス`provider/`なしのプレーンなアップストリームID。OpenRouter IDはネイティブの`vendor/model`形式を維持します）。最初に試行され、エラーが発生した場合は後続のエントリがフォールバックとなります。`translate-ui`の場合のみ、このリストの前に1つのモデルを試すために`ui.preferredModel`を設定することもできます（`ui`を参照）。
+- `baseUrl`
+  OpenAI互換のベースURL。プリセットのベースURLをオーバーライドします。プリセット以外のプロバイダーには必須です。
+- `apiKeyEnv`
+  APIキーを含む環境変数。プリセットの環境変数をオーバーライドします。
+- `headers`
+  追加のHTTPヘッダー。このプロバイダーへのすべてのリクエストと共に送信されます。
 - `maxTokens`
-  リクエストごとの最大完了トークン数。デフォルト：`8192`。
+  リクエストあたりの最大完了トークン数。デフォルト：`8192`。
 - `temperature`
   サンプリング温度。デフォルト：`0.2`。
 - `requestTimeoutMs`
-  OpenRouter への各 HTTP リクエスト（チャット完了および内部 `GET /models` 呼び出し）の最大待機時間（ミリ秒単位）。デフォルト：`30000`（30秒）。
+  各リクエストの待機時間（ミリ秒）。デフォルト：`30000`（30秒）。
 
-**複数のモデルを使用する理由:** プロバイダーおよびモデルごとにコストが異なり、言語やロケールごとに品質のレベルも異なります。CLIがリクエストに失敗した場合に次のモデルを試行できるように、`openrouter.translationModels`を**順序付きフォールバックチェーン**（単一のモデルではなく）として構成してください。
+組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
+
+| プロバイダー | ベースURL | APIキー環境変数 |
+| --- | --- | --- |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
+| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
+| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `ollama` | `http://localhost:11434/v1` | （なし） |
+
+レガシーなトップレベルの`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeoutMs`を含む）も引き続き受け入れられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）に自動移行されます。`defaultModel` / `fallbackModel`は`translationModels`に折りたたまれます。
+
+`-P` を使用して、1 つの構成で複数のプロバイダーを構成し、それらを切り替える実行可能な例については、[`examples/multi-provider`](../../docs/../examples/multi-provider/) を参照してください（同じドキュメントの `openai`、`anthropic`、`nvidia`、および `deepseek`）。
+
+**複数のモデルを使用する理由：** プロバイダーおよびモデルによってコストが異なり、言語やロケールごとに品質レベルが異なります。`translationModels`を単一のモデルではなく、順序付きフォールバックチェーンとして**設定**することで、リクエストが失敗した場合にCLIが次のモデルを試行できるようにします。
 
 以下のリストは拡張可能な**ベースライン**として扱ってください。特定のロケールの翻訳が不十分または失敗する場合は、その言語またはスクリプトを効果的にサポートするモデルを調査し（オンラインリソースまたはプロバイダーのドキュメントを参照）、それらのOpenRouter IDをさらに代替手段として追加してください。
 
@@ -1418,9 +1446,9 @@ The **Markdownの問題**タブには、`markdown_source_issues` SQLiteテーブ
 
 <br />
 
-環境変数または`.env`ファイルで`OPENROUTER_API_KEY`を設定します。
+アクティブなプロバイダーのAPIキー環境変数（例：`OPENROUTER_API_KEY`）を環境または`.env`ファイルに設定します。
 
-`translationModels` を変更する前に、`npx ai-i18n-tools check-models` を実行して、構成された各モデル ID を OpenRouter のライブカタログ（`GET /models`）に対して検証してください。このコマンドは存在しないか、`expiration_date` を過ぎた ID を報告し、有効なモデルを100万トークンあたりの推定入出力価格（USD）とともに一覧表示し、構成された ID のいずれかが無効な場合に非ゼロのステータスで終了します。`OPENROUTER_API_KEY` が必要です。
+`translationModels`を変更する前に、`npx ai-i18n-tools check-models`を実行してください。このコマンドはすべてのプロバイダーに対して、設定されたモデルIDをそのプロバイダーの実際のモデル一覧（`GET /models`）と照合し、存在しないIDや`expiration_date`を過ぎたIDを報告し、有効なモデルの一覧を表示します。また、設定されたIDのいずれかが無効な場合、終了ステータスは非ゼロになります。プロバイダーが価格情報を返す場合（例：OpenRouter）、入力／出力の推定価格（100万トークンあたりの米ドル）も表示されます。
 
 <a id="features"></a>
 ### `features`
@@ -1438,13 +1466,13 @@ The **Markdownの問題**タブには、`markdown_source_issues` SQLiteテーブ
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")`呼び出しのためにスキャンされるディレクトリまたはグロブパターン（cwdに対して相対）。 `src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
+  `t("…")`呼び出しをスキャンするディレクトリまたはグロブパターン（カレントディレクトリからの相対パス）。`src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
 - `stringsJson`  
-  マスターカタログファイルへのパス。 `extract`によって更新されます。
+  マスターカタログファイルへのパス。`extract`によって更新されます。
 - `flatOutputDir`  
-  ロケールごとのJSONファイルが書き込まれるディレクトリ（`de.json`など）。
+  ロケールごとのJSONファイル（`de.json`など）が書き込まれるディレクトリ。
 - `preferredModel`  
-  オプション。 `translate-ui`のために最初に試みられるOpenRouterモデルID；その後、重複しないようにこのIDなしで`openrouter.translationModels`（またはレガシーモデル）を順番に使用します。
+  オプション。`translate-ui`のみで最初に試行されるモデルID。その後、アクティブなプロバイダーの`translationModels`が順に試行され、このIDの重複はありません。
 - `uiExtractor.funcNames`（またはレガシー`reactExtractor.funcNames`）  
   スキャンする追加の関数名（デフォルト：`["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（またはレガシー`reactExtractor.extensions`）  
@@ -1645,7 +1673,9 @@ npx ai-i18n-tools glossary-generate
 |------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `version`                                                                                                  | CLIのバージョンとビルドタイムスタンプを表示します（ルートプログラムの`-V` / `--version`と同一の情報）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `init [-t ui-markdown\|ui-docusaurus\|ui-starlight\|ui-astro-website\|ui-json-bundles] [-o path] [--with-translate-ignore]` | スターター設定ファイルを書き出す（`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`docs[].addFrontmatter`を含む）。`ui-json-bundles`はWorkflow 3をスキャフォールド（`json[]`のみ）。`--with-translate-ignore`はスターターの`.translate-ignore`を作成します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `check-models` | 設定された各OpenRouterモデルIDを`GET /models`に対して検証します（カタログのメンバーシップ、`expiration_date`、プロンプト／コンプリートの100万トークンあたりのUSD）。`OPENROUTER_API_KEY`を必要とします。設定されたIDのいずれかが存在しないまたは有効期限切れの場合、異常終了します。カタログリクエストに対して`openrouter.requestTimeoutMs`を尊重します。|
+| `check-models`                                                                                             |設定された各モデルIDをアクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。プロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーの場合は不要）。設定されたIDが欠落または期限切れの場合は非ゼロで終了し、プロバイダーの`requestTimeoutMs`を尊重します。プロバイダーが価格を返す場合（例：OpenRouter）、プロンプト/完了の100万トークンあたりのUSDも表示されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `list-models`                                                                                              |アクティブなプロバイダーが`GET /models`リスト（IDでソート。アクティブなプロバイダーは設定の`provider`キーに従い、`-P` / `--provider`でオーバーライド）を介してアドバタイズするすべてのモデルをリストします。プロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーの場合は不要）。プロバイダーが価格を返す場合（例：OpenRouter）、プロンプト/完了の100万トークンあたりのUSDも表示され、`expiration_date`を過ぎたエントリにタグ付けされます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `list-languages [search]`                                                                                  |バンドルされたUI言語カタログ（`data/ui-languages-complete.json`）を人間が読めるテーブル（コード、テキスト方向、英語名、ネイティブ名）としてリストします。設定やAPIキーは不要です。オプションの`search`タームを渡すと、コード、ネイティブ名、英語名、または方向がそれを含むエントリのみが保持されます（大文字と小文字を区別しません）。例：`list-languages portuguese`、`list-languages rtl`、`list-languages zh`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `extract`                                                                                                  | `t("…")` / `i18n.t("…")` リテラルから `strings.json` を更新し、任意で `package.json` 説明とマニフェストの `englishName` エントリを追加します（詳細は `ui.reactExtractor` を参照）。`ui.sourceRoots` が空でないことが必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` およびバンドルされた `data/ui-languages-complete.json`（設定されている場合は `--master`）を使用して、`ui-languages.json` を `ui.flatOutputDir`（または設定されている場合は `uiLanguagesPath`）に書き込みます。マスターファイルに存在しないロケールについては警告を出し、`TODO` プレースホルダーを出力します。カスタマイズされた `label` または `englishName` 値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値に置き換えられます。生成されたファイルは後で確認し、必要に応じて調整してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `translate-docs …`                                                                                         | 各`docs`ブロック（`contentPaths`、オプションの`docusaurusCatalogDir`）に対して、markdown/MDXおよびJSONを翻訳します。`-j`：並列処理するロケールの最大数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチのワイヤーフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1655,12 +1685,12 @@ npx ai-i18n-tools glossary-generate
 | `translate-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                               | UI 文字列のみ翻訳します（`strings.json` → ロケール JSON）。`--locale` / `ui-languages.json`：カンマ区切りの対象ロケール（デフォルトは設定または `ui-languages.json` から）。`--force`：すべてのエントリをロケールごとに再翻訳（既存の翻訳を無視）。`--dry-run`：書き込みなし、API 呼び出しもなし。`-j`：並列処理する最大ロケール数。`features.translateUIStrings` が必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `translate-json …`                                                                                         | `json[]`に従って入れ子になったJSONを翻訳します（`features.translateJson`が必要です）。共有SQLiteキャッシュ。`-l`、`-p` / `--path`、`--dry-run`、`--force`、`--force-update`、`-b`、`--prompt-format`。[Workflow 3](#workflow-3---json-file-translation)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `sync-ui [-l <codes>] [--force] [--dry-run] [-j <n>]`                                                      | UI文字列を抽出してから翻訳します（`features.translateUIStrings`が必要です）。UI専用 — ドキュメント、SVG、`json[]`は対象外です。`translate-ui`と同じ`-l`、`--force`、`--dry-run`、`-j`オプションを使用します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                      | 最初に `extract` **first** を実行（`features.translateUIStrings` が必要）して、`strings.json` がソースと一致した状態にした後、**source-locale** のUI文字列に対してLLMによるレビュー（スペル、文法）を実施します。**用語のヒント**は、`glossary.userGlossary` CSVからのみ取得されます（`translate-ui` と同じ範囲 — `strings.json` / `uiGlossary` は対象外のため、誤ったコピーが用語集として強化されることはありません）。OpenRouter（`OPENROUTER_API_KEY`）を使用します。アドバイスのみを提供（実行終了時に **0** を返します）。`cacheDir` 配下に **人間が読みやすい** 形式のレポート（要約、問題点、および文字列ごとの **OK** 行）として `lint-source-results_<timestamp>.log` を出力します。端末には要約カウントと問題点のみを表示（文字列ごとの `[ok]` 行は表示しません）。最後の行にログファイル名を出力します。`--json`: 機械が読み取り可能な完全なJSONレポートを標準出力にのみ出力（ログファイルは人間が読みやすいまま）。`--dry-run`: 依然として `extract` を実行し、バッチ計画のみを出力（API呼び出しは行わない）。`--chunk`: APIバッチあたりの文字列数（デフォルト **50**）。`-j`: 最大並列バッチ数（デフォルト `concurrency`）。`--json` を指定すると、人間向けの出力はstderrに出力されます。リンクには、`dashboard` UI文字列の「リンク」ボタンと同様に `path:line` を使用します。 |
+| `lint-source [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`                                      | `extract` **を最初に**実行します (`features.translateUIStrings` が必要)。これにより `strings.json` がソースと一致し、次にLLMが **ソースロケール** UI文字列をレビューします (スペル、文法)。**用語のヒント**は `glossary.userGlossary` CSVからのみ取得されます (`translate-ui` と同じスコープ — `strings.json` / `uiGlossary` ではないため、悪いコピーは用語集として強化されません)。アクティブなLLMプロバイダー (APIキー環境変数) を使用します。これはアドバイザリのみです (実行が完了した場合、終了コードは **0**)。`lint-source-results_<timestamp>.log` を `cacheDir` の下に **人間が読める**レポート (概要、問題、および文字列ごとの **OK** 行) として書き込みます。ターミナルには概要カウントと問題のみが表示されます (文字列ごとの `[ok]` 行は表示されません)。最後の行にログファイル名を表示します。`--json`: 標準出力に完全な機械可読JSONレポートのみを表示します (ログファイルは人間が読めるままです)。`--dry-run`: まだ `extract` を実行し、バッチプランのみを表示します (API呼び出しなし)。`--chunk`: APIバッチあたりの文字列数 (デフォルト **50**)。`-j`: 最大並列バッチ数 (デフォルト `concurrency`)。`--json` を使用すると、人間のような出力が標準エラーに出力されます。リンクは `path:line` を使用します。これは `dashboard` UI文字列の「リンク」ボタンと同様です。 |
 | `export-ui-xliff [-l <codes>] [-o <dir>] [--untranslated-only] [--dry-run]`              | `strings.json` を XLIFF 2.0 にエクスポートします（ターゲットロケールごとに1つの`.xliff`）。`-o` / `--output-dir`：出力ディレクトリ（デフォルト：カタログと同じフォルダー）。`--untranslated-only`：そのロケールで翻訳が欠落しているユニットのみ。読み取り専用。API はありません。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `sync …`                                                                                                   | 抽出（有効の場合）、次にUIの翻訳、次に`features.translateSVG`および`config.svg`が設定されている場合の`translate-svg`、次にドキュメントの翻訳、次に`features.translateJson`および`json[]`が設定されている場合の`translate-json` — ただし、`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`でスキップされた場合は除く。共有フラグ: `-l`、`-p` / `-f`、`--dry-run`、`-j`、`-b`（ドキュメントおよびJSONバッチ処理）、`--force` / `--force-update`（ドキュメントおよびJSON）。ドキュメントフェーズでは、`--emphasis-placeholders`および`--debug-failed`（`translate-docs`と同じ意味）も転送されます。`--prompt-format`は`sync`フラグではありません。ドキュメントおよびJSONのステップでは、組み込みのデフォルト（`json-array`）が使用されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `status [--max-columns <n>]`                                                             | `features.translateUIStrings`が有効の場合、ロケールごとのUIカバレッジ（`Translated` / `Missing` / `Total`）を出力します。次に、ファイル×ロケールごとのMarkdown翻訳ステータスを出力します（`--locale`フィルターなし。ロケールは設定から取得）。ロケール数が多い場合は、最大`n`列（デフォルトは**9**）の表に分割して繰り返し表示し、端末での行幅が狭くなるようにします。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `statistics [--max-columns <n>]`                                                         | ドキュメントキャッシュと`strings.json`の統計情報を出力します（翻訳ダッシュボードの**統計**と同じ集計値）。`--max-columns`：モデルごとのロケール列の最大数 × ロケールテーブル（デフォルトはダッシュボードと一致）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `cleanup [--dry-run] [--no-backup] [--backup <path>]`                                                      | 最初に `sync --force-update` を実行（抽出、UI、SVG、ドキュメント）し、次に古くなったセグメント行（null `last_hit_at`／空のファイルパス）を削除します。解決されたソースパスがディスク上に存在しない `file_tracking` 行を削除します。参照先のファイルが存在しない翻訳行を、その `filepath` メタデータに基づいて削除します。孤立した `translation_failures` 行を整理します。4つのカウント（古くなったセグメント、孤立した `file_tracking`、孤立した翻訳、孤立した失敗）をログ出力します。`--no-backup` でない限り、キャッシュディレクトリ内にタイムスタンプ付きのSQLiteバックアップを作成します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `cleanup [--dry-run] [--backup <path>]` | まず`sync --force-update`を実行し（抽出、UI、SVG、ドキュメント）、次に古いセグメント行（nullの`last_hit_at`/空のファイルパス）を削除します。解決されたソースパスがディスク上にない`file_tracking`行を削除します。`filepath`メタデータが欠落しているファイルを指している翻訳行を削除します。孤立した`translation_failures`行を削除します。解決されたソースパスがディスク上にない孤立した`markdown_source_issues`行を削除します。5つのカウント（古いセグメント、孤立した`file_tracking`、孤立した翻訳、孤立した失敗、孤立したマークダウンの問題）をログに記録します。`--backup <path>`が渡されない限り、SQLiteバックアップは作成されません。渡された場合、変更前にそのパスにバックアップが書き込まれます。 |
 | `clean-temp [-r\|--root <path>] [-f\|--force] [--dry-run]`                               | **設定なし。** ディレクトリツリーを走査して（デフォルト：カレントワーキングディレクトリ）`*.log`および`cache.db.backup*.sqlite`を検索し、`./…`パスを`find -print`のように出力します。一致する項目がある場合：`-f`／`--force`がない限り`Delete these files? (y/n)`を確認します（確認なしで削除）。一致する項目がない場合：確認せずに終了します。`--dry-run`：一覧表示のみ。確認や削除は行いません（`--force`を上書きします）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `dashboard [-p <port>] [--no-open]`                                                                        | 翻訳ダッシュボードを起動します（キャッシュセグメント、`strings.json`、用語集、失敗、統計情報のためのローカルWeb UI）。デフォルトポートは **8675**（使用不可の場合は次のポートを自動的に再試行）。`--no-open` を指定すると、デフォルトブラウザは自動的に開かれません。非推奨のエイリアス `editor` も引き続き動作しますが、警告メッセージを出力します。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `glossary-generate [-o <path>]`                                                          | 空の`glossary-user.csv`テンプレートを出力します。`-o`：出力パスを上書きします（デフォルトは設定ファイルの`glossary.userGlossary`、または`glossary-user.csv`）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -1675,6 +1705,7 @@ npx ai-i18n-tools glossary-generate
 | `-h` / `--help`              | ルートプログラム  | ルートプログラムまたはコマンド名と併用した場合のサブコマンドのヘルプを表示します。      |
 | `-c` / `--config <path>`     | すべてのコマンド | 設定ファイルのパス（デフォルト: `ai-i18n-tools.config.json`）。                                  |
 | `-v` / `--verbose`           | すべてのコマンド | 詳細ログ出力。                                                                          |
+| `-P` / `--provider <name>`   | すべてのコマンド | この実行のアクティブな LLM プロバイダー。設定の `provider` キーをオーバーライドします。`providers` の下で設定する必要があります。 |
 | `-w` / `--write-logs [path]` | すべてのコマンド | コンソール出力を `.log` ファイルに同時出力（デフォルトのパス: ルートの `cacheDir` 配下）。                |
 
 <a id="per-command-help"></a>
@@ -1698,10 +1729,12 @@ npx ai-i18n-tools glossary-generate
 <a id="environment-variables"></a>
 ## 環境変数
 
-| 変数               | 説明                                                |
+| Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | **必須**。OpenRouter API キー。                     |
-| `OPENROUTER_BASE_URL`   | APIのベースURLを上書きします。                                 |
+| `OPENROUTER_API_KEY`   | `openrouter` プロバイダーのAPIキー (アクティブな場合に必要)。 |
+| Other provider keys    | 各プロバイダーは独自のキー環境変数を読み取ります: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollamaは不要)。プロバイダーごとに `providers.<name>.apiKeyEnv` で上書きできます。 |
+| `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |
+| `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |
 | `I18N_SOURCE_LOCALE`    | 実行時に`sourceLocale`を上書きします。                        |
 | `I18N_TARGET_LOCALES`   | `targetLocales`を上書きするためのカンマ区切りのロケールコード。  |
 | `I18N_LOG_LEVEL`        | ロガーレベル（`debug`、`info`、`warn`、`error`、`silent`）。 |

@@ -10,7 +10,9 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 - **Runtime:** `import … from 'ai-i18n-tools/runtime'` — i18next helpers (`defaultI18nInitOptions`, `setupKeyAsDefaultT`, `makeLoadLocale`, `makeLocaleLoadersFromManifest`, `applyDirection`, language labels, plural helpers, etc.).
 - **Config:** root `ai-i18n-tools.config.json`, or `-c <path>`.
 
-Optional: set `openrouter.requestTimeoutMs` if the default **30000** ms per OpenRouter request is wrong for your network.
+- **LLM provider:** configure under `providers.<name>` and select the active one with the top-level `provider` key (optional when only one provider is configured). Built-in presets (OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Cerebras, Groq, Mistral, xAI, NVIDIA, Alibaba, APIFUN, Ollama) need only a `translationModels` list; their `baseUrl` and API-key env var are built in. Any OpenAI-compatible endpoint works by setting `providers.<name>.baseUrl` (+ `apiKeyEnv`). A legacy top-level `openrouter` block is auto-migrated to `providers.openrouter` on load.
+
+Optional: set `providers.<name>.requestTimeoutMs` if the default **30000** ms per request is wrong for your network.
 
 ### Three workflows (pick one per kind of content)
 
@@ -214,7 +216,7 @@ For sites that store UI copy in nested JSON files per locale (no `t()` in compon
 ```
 
 - `contentPaths`: string or array; each entry is a `.json` file, directory tree, or glob (minimatch).
-- `outputPathTemplate`: required; placeholders include `{locale}`, `{LOCALE}`, `{llocale}`, `{basename}`, `{stem}`, `{relativeToSourceRoot}`. Use `{llocale}` when output folders must match Astro-style lowercase route codes (`pt-br`, `zh-cn`) while `targetLocales` stays BCP-47 (`pt-BR`, `zh-CN`).
+- `outputPathTemplate`: required; placeholders include `{locale}`, `{LOCALE}`, `{llocale}`, `{basename}`, `{stem}`, `{relativeToSourceRoot}`. Use `{llocale}` when output folders must match Astro-style lowercase route codes (`pt-br`, `zh-hans`) while `targetLocales` stays BCP-47 (`pt-BR`, `zh-Hans`).
 - `keyPolicy.mode`: `allowlist`, `denylist`, or `both` (allowlist first, then subtract denylist). Paths use dot notation (`nav.home.label`); globs use minimatch. Bare names like `slug` match the final key segment.
 - Cache file tracking: `json-block:{blockIndex}:{projectRelPath}`.
 
@@ -259,10 +261,11 @@ Full config field reference: [GETTING_STARTED.md](./GETTING_STARTED.md).
 When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `lint-source`.
 
 - **Scaffold config:** `npx ai-i18n-tools init`
-- **Validate OpenRouter model ids:** `npx ai-i18n-tools check-models` (`OPENROUTER_API_KEY`)
+- **Validate model ids:** `npx ai-i18n-tools check-models` (active provider's API key; validates ids against the provider's `GET /models` list, with pricing when the provider returns it, e.g. OpenRouter)
+- **List available models:** `npx ai-i18n-tools list-models` (lists the active provider's `GET /models` catalog; use `-P` / `--provider` to inspect another configured provider)
 - **Build `ui-languages.json`:** `npx ai-i18n-tools generate-ui-languages`
 - **Refresh UI catalog:** `npx ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
-- **Translate UI:** `npx ai-i18n-tools translate-ui` (`OPENROUTER_API_KEY`; runs extract first)
+- **Translate UI:** `npx ai-i18n-tools translate-ui` (active provider's API key; runs extract first)
 - **Translate documentation:** `npx ai-i18n-tools translate-docs` — `docs[]`; Docusaurus catalog when `docusaurusCatalogDir` is set
 - **Translate nested JSON:** `npx ai-i18n-tools translate-json` — `json[]` when `translateJson` is on
 - **UI only (extract + translate):** `npx ai-i18n-tools sync-ui`
@@ -271,7 +274,7 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Status tables:** `npx ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
 - **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
 - **Web dashboard:** `npx ai-i18n-tools dashboard`
-- **Cleanup:** `npx ai-i18n-tools cleanup` (runs `sync --force-update`, then prunes stale cache rows; backs up SQLite by default)
+- **Cleanup:** `npx ai-i18n-tools cleanup` (runs `sync --force-update`, then prunes stale cache rows — including `markdown_source_issues` for source files missing on disk; backs up SQLite by default)
 - **All enabled pipelines:** `npx ai-i18n-tools sync` (`--no-ui`, `--no-svg`, `--no-json`, `--no-docs` to skip)
 
 Exhaustive CLI list and global flags: [README.md](../README.md#cli-commands). Use `-c <path>` when the config file is not the default. Flags and env vars: `npx ai-i18n-tools --help` and per-command `--help`.

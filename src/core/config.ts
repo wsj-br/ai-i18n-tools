@@ -8,12 +8,19 @@ import {
 import { ConfigValidationError } from "./errors.js";
 import {
   coerceTargetLocalesField,
+  disallowedScriptLetters,
   englishLanguageNameForLocale,
+  englishScriptName,
+  isLatinScriptLocale,
   localePathPlaceholders,
+  nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
+  scriptSubtag,
+  unicodeScriptPropertyForSubtag,
 } from "./locale-utils.js";
 import {
+  assertEffectiveLocalesInUiLanguagesMaster,
   buildUiLanguageRowsFromMaster,
   loadUiLanguagesMaster,
   resolveBundledUiLanguagesCompletePath,
@@ -32,17 +39,23 @@ import {
   type DocBlock,
   type I18nConfig,
   type I18nDocTranslateConfig,
-  type OpenRouterConfig,
   type RawI18nConfigInput,
   i18nConfigSchema,
 } from "./types.js";
+import { resolveActiveProvider, translationModelsForProvider } from "./llm-providers.js";
 
 export {
   coerceTargetLocalesField,
+  disallowedScriptLetters,
   englishLanguageNameForLocale,
+  englishScriptName,
+  isLatinScriptLocale,
   localePathPlaceholders,
+  nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
+  scriptSubtag,
+  unicodeScriptPropertyForSubtag,
 };
 
 const DEFAULT_OPENROUTER_MODELS: string[] = [
@@ -60,34 +73,27 @@ const DEFAULT_OPENROUTER_MODELS: string[] = [
 ];
 
 /**
- * Ordered OpenRouter models: non-empty `translationModels`, else legacy default + fallback.
+ * Ordered translation-model fallback chain for the active provider. Returns `[]` (rather than
+ * throwing) when no provider can be resolved, so callers can surface a friendly validation error.
  */
-export function resolveTranslationModels(o: OpenRouterConfig): string[] {
-  if (Array.isArray(o.translationModels) && o.translationModels.length > 0) {
-    const list = o.translationModels
-      .filter((m: unknown): m is string => typeof m === "string" && m.trim().length > 0)
-      .map((m: string) => m.trim());
-    if (list.length > 0) {
-      return list;
-    }
+export function resolveTranslationModels(
+  config: Pick<I18nConfig, "provider" | "providers">
+): string[] {
+  let active: string;
+  try {
+    active = resolveActiveProvider(config);
+  } catch {
+    return [];
   }
-  const out: string[] = [];
-  if (o.defaultModel?.trim()) {
-    out.push(o.defaultModel.trim());
-  }
-  const fb = o.fallbackModel?.trim();
-  if (fb && fb !== out[0]) {
-    out.push(fb);
-  }
-  return out;
+  return translationModelsForProvider(config, active);
 }
 
 /**
- * Ordered OpenRouter models for UI translation: optional `ui.preferredModel` first, then
- * {@link resolveTranslationModels} for `openrouter`, with the preferred id deduplicated from the tail.
+ * Ordered models for UI translation: optional `ui.preferredModel` first, then the active provider's
+ * {@link resolveTranslationModels}, with the preferred id deduplicated from the tail.
  */
 export function resolveUITranslationModels(config: I18nConfig): string[] {
-  const base = resolveTranslationModels(config.openrouter);
+  const base = resolveTranslationModels(config);
   const pref = config.ui.preferredModel?.trim();
   if (!pref) {
     return base;
@@ -168,12 +174,11 @@ export function toDocTranslateConfig(root: I18nConfig, block: DocBlock): I18nDoc
 export const defaultI18nConfigPartial: RawI18nConfigInput = {
   sourceLocale: "en",
   targetLocales: [],
-  openrouter: {
-    baseUrl: "https://openrouter.ai/api/v1",
-    translationModels: [...DEFAULT_OPENROUTER_MODELS],
-    maxTokens: 8192,
-    temperature: 0.2,
-    requestTimeoutMs: 30_000,
+  provider: "openrouter",
+  providers: {
+    openrouter: {
+      translationModels: [...DEFAULT_OPENROUTER_MODELS],
+    },
   },
   features: {
     translateUIStrings: false,
@@ -258,7 +263,6 @@ export function augmentConfigWithUiLanguagesMaster(config: I18nConfig): I18nConf
 }
 
 export function validateI18nBusinessRules(config: I18nConfig): void {
-  const models = resolveTranslationModels(config.openrouter);
   const needsDocTranslation =
     config.features.translateDocs ||
     config.docs.some((d) => Boolean(d.docusaurusCatalogDir?.trim()));
@@ -275,10 +279,14 @@ export function validateI18nBusinessRules(config: I18nConfig): void {
     );
   }
 
-  if ((needsDocTranslation || needsUITranslation || needsSvgApi) && models.length === 0) {
-    throw new ConfigValidationError(
-      "openrouter.translationModels (non-empty array), or legacy defaultModel, is required when translateUIStrings, translateSVG (with non-source locales), or doc translate features are enabled"
-    );
+  if (needsDocTranslation || needsUITranslation || needsSvgApi) {
+    const activeProvider = resolveActiveProvider(config);
+    const models = translationModelsForProvider(config, activeProvider);
+    if (models.length === 0) {
+      throw new ConfigValidationError(
+        `providers.${activeProvider}.translationModels (non-empty array) is required when translateUIStrings, translateSVG (with non-source locales), or doc translate features are enabled`
+      );
+    }
   }
 
   assertTargetLocalesAreLocaleCodes(config.targetLocales, "targetLocales");
@@ -341,10 +349,11 @@ export function assertSvgCommandConfig(config: I18nConfig): void {
     (l) => normalizeLocale(l) !== src
   );
   if (needsApi) {
-    const models = resolveTranslationModels(config.openrouter);
+    const activeProvider = resolveActiveProvider(config);
+    const models = translationModelsForProvider(config, activeProvider);
     if (models.length === 0) {
       throw new ConfigValidationError(
-        "translate-svg requires openrouter.translationModels (or legacy defaultModel) when translating to non-source locales"
+        `translate-svg requires providers.${activeProvider}.translationModels when translating to non-source locales`
       );
     }
   }
@@ -379,14 +388,18 @@ export function parseI18nConfig(input: RawI18nConfigInput): I18nConfig {
  * Does not re-validate; call {@link parseI18nConfig} after merge if shape may have changed.
  */
 export function applyEnvOverrides(config: I18nConfig): I18nConfig {
-  const baseUrl = process.env.OPENROUTER_BASE_URL?.trim();
-  const next: I18nConfig = {
-    ...config,
-    openrouter: {
-      ...config.openrouter,
-      ...(baseUrl ? { baseUrl } : {}),
-    },
-  };
+  const next: I18nConfig = { ...config, providers: { ...config.providers } };
+
+  // Override base URLs only for providers the user already configured, so we never create an extra
+  // provider entry (which would make the active-provider selection ambiguous).
+  const openrouterBaseUrl = process.env.OPENROUTER_BASE_URL?.trim();
+  if (openrouterBaseUrl && next.providers.openrouter) {
+    next.providers.openrouter = { ...next.providers.openrouter, baseUrl: openrouterBaseUrl };
+  }
+  const ollamaBaseUrl = process.env.OLLAMA_BASE_URL?.trim();
+  if (ollamaBaseUrl && next.providers.ollama) {
+    next.providers.ollama = { ...next.providers.ollama, baseUrl: ollamaBaseUrl };
+  }
 
   const targetsEnv = process.env.I18N_TARGET_LOCALES?.trim();
   if (targetsEnv) {
@@ -404,7 +417,33 @@ export function applyEnvOverrides(config: I18nConfig): I18nConfig {
 /**
  * Load `ai-i18n-tools.config.json` or a given path; merge defaults; validate.
  */
-export function loadI18nConfigFromFile(configPath: string, cwd = process.cwd()): I18nConfig {
+/**
+ * Set the active provider on raw config input (e.g. from the CLI `--provider` flag), overriding the
+ * `provider` key. Throws when the requested provider is not configured under `providers`.
+ */
+export function applyProviderOverrideToRawInput(
+  raw: RawI18nConfigInput,
+  providerOverride: string
+): void {
+  const name = providerOverride.trim();
+  if (!name) {
+    return;
+  }
+  const providers = (raw.providers ?? {}) as Record<string, unknown>;
+  const keys = Object.keys(providers);
+  if (!Object.prototype.hasOwnProperty.call(providers, name)) {
+    throw new ConfigValidationError(
+      `--provider "${name}" is not defined in providers (${keys.length > 0 ? keys.join(", ") : "none configured"})`
+    );
+  }
+  raw.provider = name;
+}
+
+export function loadI18nConfigFromFile(
+  configPath: string,
+  cwd = process.cwd(),
+  providerOverride?: string
+): I18nConfig {
   const resolved = path.isAbsolute(configPath) ? configPath : path.join(cwd, configPath);
   if (!fs.existsSync(resolved)) {
     throw new ConfigValidationError(`Config file not found: ${resolved}`);
@@ -424,10 +463,14 @@ export function loadI18nConfigFromFile(configPath: string, cwd = process.cwd()):
     json = JSON.parse(fs.readFileSync(resolved, "utf8")) as unknown;
   }
   const merged = mergeWithDefaults(json);
+  if (providerOverride !== undefined) {
+    applyProviderOverrideToRawInput(merged, providerOverride);
+  }
   expandTargetLocalesFileReferenceInRawInput(merged, cwd);
   expandDocTargetLocalesInRawInput(merged, cwd);
   expandJsonTargetLocalesInRawInput(merged, cwd);
   const parsed = parseI18nConfig(merged);
+  assertEffectiveLocalesInUiLanguagesMaster(parsed);
   const withEnv = applyEnvOverrides(parsed);
   validateI18nBusinessRules(withEnv);
   const augmented = augmentConfigWithUiLanguagesMaster(withEnv);
@@ -457,12 +500,11 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["de", "fr", "es", "pt-BR"],
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      maxTokens: 8192,
-      temperature: 0.2,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
     },
     features: {
       // Workflow 1: UI strings (extract runs automatically before translate)
@@ -505,12 +547,11 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr", "ja", "pt-BR"],
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      maxTokens: 8192,
-      temperature: 0.2,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
     },
     features: {
       translateUIStrings: false,
@@ -550,12 +591,11 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["ar", "es", "fr", "de", "pt-BR"],
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      maxTokens: 8192,
-      temperature: 0.2,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
     },
     features: {
       translateUIStrings: false,
@@ -602,12 +642,11 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr"],
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      maxTokens: 8192,
-      temperature: 0.2,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
     },
     features: {
       translateUIStrings: true,
@@ -640,12 +679,11 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr"],
-    openrouter: {
-      baseUrl: "https://openrouter.ai/api/v1",
-      translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      maxTokens: 8192,
-      temperature: 0.2,
-      requestTimeoutMs: 30_000,
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
     },
     features: {
       translateUIStrings: false,
