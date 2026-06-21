@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-06-21
+
 - **Changed**: cli/cache — `cleanup` no longer writes a SQLite backup by default. A backup is now made only when `--backup <path>` is passed, which writes the snapshot to that path before modifications. The `--no-backup` flag (previously needed to opt out of the automatic timestamped backup) has been removed, and `--backup` no longer has a default timestamped path.
 
 - **Fixed**: core/cache — `TranslationCache` now closes cleanly on any process exit via a `process.on("exit")` safety net that closes every still-open on-disk cache (registry of open instances; synchronous WAL checkpoint + `db.close()`). This covers hard exits that bypass a command's `finally { cache.close() }` — a second-`Ctrl-C` force-quit (`createRunInterruptScope`), `exitIfRunInterrupted`, and `process.exit(1)` error paths — so an interrupted command no longer leaves the `-wal` / `-shm` sidecar files behind. `TranslationCache.close()` is now idempotent (guarded by a `closed` flag) so the command's own close and the safety net never double-close the connection.

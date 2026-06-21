@@ -106,9 +106,7 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     }
     const listModelsCommand = `ai-i18n-tools list-models -P ${activeProvider}`;
     console.log(
-      chalk.yellow(
-        `\n  Run ${chalk.cyan(listModelsCommand)} to see the available models.`
-      )
+      chalk.yellow(`\n  Run ${chalk.cyan(listModelsCommand)} to see the available models.`)
     );
     console.log();
   }
@@ -126,7 +124,9 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     const showPricing = ok.some(({ entry }) => hasPricing(entry));
     console.log(
       chalk.green.bold(
-        showPricing ? "Valid (in models list) — pricing USD per 1M tokens" : "Valid (in models list)"
+        showPricing
+          ? "Valid (in models list) — pricing USD per 1M tokens"
+          : "Valid (in models list)"
       )
     );
     const idW = Math.max(8, ...ok.map((o) => o.id.length));

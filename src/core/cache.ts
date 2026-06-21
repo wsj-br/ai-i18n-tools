@@ -1200,9 +1200,9 @@ export class TranslationCache {
    * scan, so a per-file refresh can never clear them). With `dryRun`, counts without deleting.
    */
   clearAllMarkdownIssues(dryRun: boolean): number {
-    const countRow = this.db
-      .prepare("SELECT COUNT(*) as c FROM markdown_source_issues")
-      .get() as { c: number };
+    const countRow = this.db.prepare("SELECT COUNT(*) as c FROM markdown_source_issues").get() as {
+      c: number;
+    };
     const removed = Number(countRow.c);
     if (!dryRun && removed > 0) {
       this.db.prepare("DELETE FROM markdown_source_issues").run();

@@ -31,15 +31,15 @@ describe("resolveActiveProvider", () => {
   });
 
   it("throws when multiple providers exist without a selector", () => {
-    expect(() =>
-      resolveActiveProvider({ providers: { openai: {}, groq: {} } })
-    ).toThrow(/set a top-level "provider"/);
+    expect(() => resolveActiveProvider({ providers: { openai: {}, groq: {} } })).toThrow(
+      /set a top-level "provider"/
+    );
   });
 
   it("throws when the selector points to an undefined provider", () => {
-    expect(() =>
-      resolveActiveProvider({ provider: "mistral", providers: { openai: {} } })
-    ).toThrow(/not defined in providers/);
+    expect(() => resolveActiveProvider({ provider: "mistral", providers: { openai: {} } })).toThrow(
+      /not defined in providers/
+    );
   });
 });
 

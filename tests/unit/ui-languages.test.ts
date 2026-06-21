@@ -468,7 +468,11 @@ describe("ui-languages", () => {
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es"],
       json: [
-        { contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de", "fr"] },
+        {
+          contentPaths: ["a/"],
+          outputPathTemplate: "{locale}/a.json",
+          targetLocales: ["de", "fr"],
+        },
       ],
     });
     expect(resolveLocalesForJson(c, tmp, "de, es")).toEqual(["de"]);
@@ -478,7 +482,9 @@ describe("ui-languages", () => {
     const c = baseUiConfig({
       sourceLocale: "en",
       targetLocales: ["de", "fr", "es"],
-      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de"] }],
+      json: [
+        { contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["de"] },
+      ],
     });
     expect(() => resolveLocalesForJson(c, tmp, "es")).toThrow(/None of the requested/);
   });
@@ -490,7 +496,13 @@ describe("ui-languages", () => {
       ui: { flatOutputDir: "locales", sourceRoots: [], stringsJson: "strings.json" },
       cacheDir: ".translation-cache",
       docs: [{ contentPaths: [], outputDir: "./i18n" }],
-      json: [{ contentPaths: ["a/"], outputPathTemplate: "{locale}/a.json", targetLocales: ["x/y.json"] }],
+      json: [
+        {
+          contentPaths: ["a/"],
+          outputPathTemplate: "{locale}/a.json",
+          targetLocales: ["x/y.json"],
+        },
+      ],
       openrouter: { translationModels: ["m"] },
       features: { translateJson: true },
     });

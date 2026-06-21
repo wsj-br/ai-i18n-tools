@@ -524,11 +524,29 @@ describe("TranslationCache", () => {
     const configured = "doc-block:0:exists.md";
     const stale = "doc-block:0:renamed-away.md";
     cache.replaceMarkdownIssuesForFilepath(configured, [
-      { filepath: configured, sourceHash: "h1", startLine: 1, issueCode: "UNPAIRED_EMPHASIS", detail: "x" },
+      {
+        filepath: configured,
+        sourceHash: "h1",
+        startLine: 1,
+        issueCode: "UNPAIRED_EMPHASIS",
+        detail: "x",
+      },
     ]);
     cache.replaceMarkdownIssuesForFilepath(stale, [
-      { filepath: stale, sourceHash: "h2", startLine: 4, issueCode: "UNCLOSED_INLINE_CODE", detail: "y" },
-      { filepath: stale, sourceHash: "h3", startLine: 9, issueCode: "STRONG_OUTSIDE_INLINE_CODE", detail: "z" },
+      {
+        filepath: stale,
+        sourceHash: "h2",
+        startLine: 4,
+        issueCode: "UNCLOSED_INLINE_CODE",
+        detail: "y",
+      },
+      {
+        filepath: stale,
+        sourceHash: "h3",
+        startLine: 9,
+        issueCode: "STRONG_OUTSIDE_INLINE_CODE",
+        detail: "z",
+      },
     ]);
     const n = cache.clearAllMarkdownIssues(false);
     expect(n).toBe(3);

@@ -9,9 +9,8 @@ const { generateTextMock } = vi.hoisted(() => ({ generateTextMock: vi.fn() }));
 vi.mock("ai", () => ({ generateText: generateTextMock }));
 
 // Imported after vi.mock so the client picks up the mocked `generateText`.
-const { DocumentBatchAllModelsFailedError, LlmClient, OpenRouterClient } = await import(
-  "../../src/api/llm-client.js"
-);
+const { DocumentBatchAllModelsFailedError, LlmClient, OpenRouterClient } =
+  await import("../../src/api/llm-client.js");
 
 function llmConfig(
   models: string[] = ["model-a", "model-b"],

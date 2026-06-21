@@ -111,7 +111,11 @@ export function runListLanguages(search?: string): RunListLanguagesResult {
   const filtered = term === "" ? entries : entries.filter((entry) => entryMatches(entry, term));
 
   if (term === "") {
-    console.log(chalk.bold(`Available UI languages — ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`));
+    console.log(
+      chalk.bold(
+        `Available UI languages — ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`
+      )
+    );
   } else {
     console.log(
       chalk.bold(

@@ -609,9 +609,9 @@ describe("loadI18nConfigFromFile", () => {
     );
     try {
       expect(loadI18nConfigFromFile("ai-i18n-tools.config.json", dir).provider).toBe("openrouter");
-      expect(
-        loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "groq").provider
-      ).toBe("groq");
+      expect(loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "groq").provider).toBe(
+        "groq"
+      );
       // Empty/whitespace override leaves the config provider untouched.
       expect(loadI18nConfigFromFile("ai-i18n-tools.config.json", dir, "  ").provider).toBe(
         "openrouter"

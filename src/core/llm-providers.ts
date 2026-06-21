@@ -204,7 +204,10 @@ export function resolveModelsListRequestAuth(
 }
 
 /** Ordered translation-model fallback chain for the active provider. */
-export function translationModelsForProvider(config: ProviderSelectionConfig, name: string): string[] {
+export function translationModelsForProvider(
+  config: ProviderSelectionConfig,
+  name: string
+): string[] {
   const list = providerEntry(config, name).translationModels;
   if (!Array.isArray(list)) {
     return [];

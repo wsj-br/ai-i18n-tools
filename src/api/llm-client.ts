@@ -299,9 +299,9 @@ export class LlmClient {
   }
 
   /** Read OpenRouter's exact USD cost from `providerMetadata` (other providers: undefined). */
-  private extractCost(providerMetadata: Record<string, Record<string, unknown>> | undefined):
-    | number
-    | undefined {
+  private extractCost(
+    providerMetadata: Record<string, Record<string, unknown>> | undefined
+  ): number | undefined {
     const raw = providerMetadata?.[OPENROUTER_PROVIDER_KEY]?.cost;
     return typeof raw === "number" ? raw : undefined;
   }
@@ -340,7 +340,10 @@ export class LlmClient {
       });
     } catch (e) {
       if (this.debugTrafficFilePath) {
-        this.appendDebugLog("response", { model, error: e instanceof Error ? e.message : String(e) });
+        this.appendDebugLog("response", {
+          model,
+          error: e instanceof Error ? e.message : String(e),
+        });
       }
       throw new Error(
         `${this.provider} API error for model ${model}: ${e instanceof Error ? e.message : String(e)}`
@@ -450,7 +453,8 @@ export class LlmClient {
       {
         startModelIndex: options?.startModelIndex,
         docLogContext: options?.docLogContext,
-        validateResponse: (c) => this.assertExpectedScript(this.stripTranslateTags(c), targetLocale),
+        validateResponse: (c) =>
+          this.assertExpectedScript(this.stripTranslateTags(c), targetLocale),
       }
     );
 
