@@ -23,6 +23,7 @@ import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
 import { Glossary } from "../glossary/glossary.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
+import { t } from "../i18n/index.js";
 
 const DEFAULT_CHUNK = 50;
 
@@ -279,8 +280,9 @@ export async function runLintSource(
     return {
       report: emptyReport(config, cwd, stringsPathEarly),
       logFilePath: "",
-      exitWithError:
-        "[lint-source] Enable features.translateUIStrings in config (lint-source runs extract first so strings.json matches source).",
+      exitWithError: t(
+        "[lint-source] Enable features.translateUIStrings in config (lint-source runs extract first so strings.json matches source)."
+      ),
     };
   }
 
@@ -300,7 +302,7 @@ export async function runLintSource(
     return {
       report: emptyReport(config, cwd, stringsPath),
       logFilePath: "",
-      exitWithError: `strings.json not found: ${stringsPath}`,
+      exitWithError: t("strings.json not found: {{path}}", { path: stringsPath }),
     };
   }
 
@@ -311,7 +313,9 @@ export async function runLintSource(
     return {
       report: emptyReport(config, cwd, stringsPath),
       logFilePath: "",
-      exitWithError: `Invalid strings.json: ${e instanceof Error ? e.message : String(e)}`,
+      exitWithError: t("Invalid strings.json: {{error}}", {
+        error: e instanceof Error ? e.message : String(e),
+      }),
     };
   }
 
@@ -342,10 +346,14 @@ export async function runLintSource(
     fs.writeFileSync(logFilePath, formatLintSourceHumanLogText(report, cwd), "utf8");
     const humanFn = opts.json ? console.error : console.log;
     const logBase = path.basename(logFilePath);
-    humanFn(chalk.bold(`Summary: 0 string(s) — 0 with issues, 0 OK, 0 issue(s)`));
+    humanFn(chalk.bold(t("Summary: 0 string(s) — 0 with issues, 0 OK, 0 issue(s)")));
     humanFn("");
-    humanFn(chalk.green(`✔  0 strings checked — all OK (0 of 0). Results written to ${logBase}`));
-    humanFn(chalk.green(`   💵 Total OpenRouter cost: $0.000000`));
+    humanFn(
+      chalk.green(
+        t("✔  0 strings checked — all OK (0 of 0). Results written to {{logBase}}", { logBase })
+      )
+    );
+    humanFn(chalk.green(t("   💵 Total OpenRouter cost: $0.000000")));
     if (opts.json) {
       console.log(JSON.stringify(report, null, 2));
     }
@@ -357,7 +365,15 @@ export async function runLintSource(
     const outFn = opts.json ? console.error : console.log;
     outFn(
       chalk.cyan(
-        `[lint-source] dry-run: ${units.length} string(s), ${nChunks} batch(es) of up to ${chunkSize}, concurrency ${concurrency} — no API calls`
+        t(
+          "[lint-source] dry-run: {{count}} string(s), {{batches}} batch(es) of up to {{chunkSize}}, concurrency {{concurrency}} — no API calls",
+          {
+            count: units.length,
+            batches: nChunks,
+            chunkSize,
+            concurrency,
+          }
+        )
       )
     );
     outFn("");
@@ -391,16 +407,27 @@ export async function runLintSource(
     const logBase = path.basename(logFilePath);
     outFn(
       chalk.bold(
-        `Summary: ${units.length} string(s) — 0 with issues, ${units.length} OK, 0 issue(s)`
+        t("Summary: {{count}} string(s) — 0 with issues, {{ok}} OK, 0 issue(s)", {
+          count: units.length,
+          ok: units.length,
+        })
       )
     );
     outFn("");
     outFn(
       chalk.green(
-        `✔  ${units.length} strings checked — all OK (${units.length} of ${units.length}, dry-run). Results written to ${logBase}`
+        t(
+          "✔  {{count}} strings checked — all OK ({{ok}} of {{total}}, dry-run). Results written to {{logBase}}",
+          {
+            count: units.length,
+            ok: units.length,
+            total: units.length,
+            logBase,
+          }
+        )
       )
     );
-    outFn(chalk.green(`   💵 Total OpenRouter cost: $0.000000`));
+    outFn(chalk.green(t("   💵 Total OpenRouter cost: $0.000000")));
     if (opts.json) {
       console.log(JSON.stringify(report, null, 2));
     }
@@ -432,7 +459,9 @@ export async function runLintSource(
     return {
       report: emptyReport(config, cwd, stringsPath, units.length),
       logFilePath,
-      exitWithError: `LLM provider API key required for lint-source: ${e instanceof Error ? e.message : String(e)}`,
+      exitWithError: t("LLM provider API key required for lint-source: {{error}}", {
+        error: e instanceof Error ? e.message : String(e),
+      }),
     };
   }
 
@@ -477,7 +506,12 @@ export async function runLintSource(
       });
       if (opts.verbose && batch.lengthWarning) {
         console.error(
-          chalk.yellow(`[lint-source] batch ${batchIndex + 1}: ${batch.lengthWarning}`)
+          chalk.yellow(
+            t("[lint-source] batch {{batch}}: {{warning}}", {
+              batch: batchIndex + 1,
+              warning: batch.lengthWarning,
+            })
+          )
         );
       }
       const pairs: Array<{ unit: LintSourceUnit; issues: LintSourceIssue[] }> = [];
@@ -523,16 +557,36 @@ export async function runLintSource(
   for (const r of results) {
     if (r.kind === "err") {
       batchErrors.push({ batchIndex: r.batchIndex, message: r.message });
-      console.error(chalk.red(`❌ [lint-source] batch ${r.batchIndex + 1} failed: ${r.message}`));
+      console.error(
+        chalk.red(
+          t("❌ [lint-source] batch {{batch}} failed: {{error}}", {
+            batch: r.batchIndex + 1,
+            error: r.message,
+          })
+        )
+      );
       continue;
     }
     totalCostUsd += r.costUsd;
     if (opts.verbose && r.lengthWarning) {
-      console.error(chalk.yellow(`[lint-source] batch ${r.batchIndex + 1}: ${r.lengthWarning}`));
+      console.error(
+        chalk.yellow(
+          t("[lint-source] batch {{batch}}: {{warning}}", {
+            batch: r.batchIndex + 1,
+            warning: r.lengthWarning,
+          })
+        )
+      );
     }
     if (opts.verbose) {
       console.error(
-        chalk.gray(`[lint-source] batch ${r.batchIndex + 1}/${chunks.length} complete (${r.model})`)
+        chalk.gray(
+          t("[lint-source] batch {{batch}}/{{total}} complete ({{model}})", {
+            batch: r.batchIndex + 1,
+            total: chunks.length,
+            model: r.model,
+          })
+        )
       );
     }
     for (const { unit, issues } of r.pairs) {
@@ -586,7 +640,15 @@ export async function runLintSource(
 
   humanFn(
     chalk.bold(
-      `Summary: ${units.length} string(s) — ${unitsWithIssues} with issues, ${unitsOk} OK, ${issueCount} issue(s)`
+      t(
+        "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{issues}} issue(s)",
+        {
+          count: units.length,
+          withIssues: unitsWithIssues,
+          ok: unitsOk,
+          issues: issueCount,
+        }
+      )
     )
   );
   humanFn("");
@@ -597,10 +659,15 @@ export async function runLintSource(
     }
     const quoted = JSON.stringify(ru.originalText);
     for (const iss of ru.issues) {
-      const tag = iss.severity === "error" ? chalk.red("[error]") : chalk.yellow("[warning]");
+      const tag = iss.severity === "error" ? chalk.red(t("[error]")) : chalk.yellow(t("[warning]"));
       humanFn(`${tag} ${quoted}`);
       if (iss.suggestedText !== undefined && iss.suggestedText !== "") {
-        humanFn(`  ${chalk.green("→")} Suggested: ${JSON.stringify(iss.suggestedText)}`);
+        humanFn(
+          t("  {{arrow}} Suggested: {{suggested}}", {
+            arrow: chalk.green("→"),
+            suggested: JSON.stringify(iss.suggestedText),
+          })
+        );
       }
       humanFn(`  ${chalk.gray("→")} ${iss.message}`);
       for (const loc of ru.locations) {
@@ -608,7 +675,7 @@ export async function runLintSource(
         humanFn(`  ${chalk.cyan(`${disp}:${loc.line}`)}`);
       }
       if (ru.locations.length === 0) {
-        humanFn(`  ${chalk.gray("(no call-site locations in catalog)")}`);
+        humanFn(`  ${chalk.gray(t("(no call-site locations in catalog)"))}`);
       }
       humanFn("");
     }
@@ -621,23 +688,42 @@ export async function runLintSource(
   if (issueCount === 0) {
     humanFn(
       chalk.green(
-        `✔  ${units.length} strings checked — all OK (${unitsOk} of ${units.length}). Results written to ${logBase}`
+        t(
+          "✔  {{count}} strings checked — all OK ({{ok}} of {{total}}). Results written to {{logBase}}",
+          {
+            count: units.length,
+            ok: unitsOk,
+            total: units.length,
+            logBase,
+          }
+        )
       )
     );
   } else {
     humanFn(
       chalk.yellow(
-        `⚠  ${issueCount} issue(s) in ${unitsWithIssues} string(s); ${unitsOk} OK of ${units.length} total. Results written to ${logBase}`
+        t(
+          "⚠  {{issues}} issue(s) in {{withIssues}} string(s); {{ok}} OK of {{total}} total. Results written to {{logBase}}",
+          {
+            issues: issueCount,
+            withIssues: unitsWithIssues,
+            ok: unitsOk,
+            total: units.length,
+            logBase,
+          }
+        )
       )
     );
   }
-  humanFn(chalk.green(`   💵 Total OpenRouter cost: $${totalCostUsd.toFixed(6)}`));
+  humanFn(
+    chalk.green(t("   💵 Total OpenRouter cost: ${{cost}}", { cost: totalCostUsd.toFixed(6) }))
+  );
 
   if (batchErrors.length === chunks.length && chunks.length > 0) {
     return {
       report,
       logFilePath,
-      exitWithError: "All lint-source batches failed (see batchErrors in log file).",
+      exitWithError: t("All lint-source batches failed (see batchErrors in log file)."),
     };
   }
 

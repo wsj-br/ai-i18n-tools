@@ -4,7 +4,7 @@ title: Demonstração de Recursos de Tradução
 description: >-
   Um documento de referência que demonstra todos os elementos Markdown que o
   ai-i18n-tools sabe traduzir.
-translation_last_updated: '2026-06-21T00:43:34.878Z'
+translation_last_updated: '2026-06-22T19:38:46.465Z'
 source_file_mtime: '2026-05-04T21:42:57.361Z'
 source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
 translation_language: pt-BR

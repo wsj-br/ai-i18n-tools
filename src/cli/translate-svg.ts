@@ -31,6 +31,7 @@ import {
 } from "../utils/run-interrupt.js";
 import { formatElapsedMmSs, formatSegmentCacheHitSuffix, printModelsTryInOrder } from "./format.js";
 import { safeResolveActiveProvider } from "../core/llm-providers.js";
+import { t } from "../i18n/index.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
@@ -45,7 +46,7 @@ export async function runTranslateSvg(
   opts: TranslateRunOptions
 ): Promise<TranslateTotals> {
   if (!config.features.translateSVG) {
-    throw new Error("Enable features.translateSVG in config");
+    throw new Error(t("Enable features.translateSVG in config"));
   }
   assertSvgCommandConfig(config);
   const svg = config.svg!;
@@ -76,46 +77,64 @@ function printTranslateSvgSummary(
   provider?: string
 ): void {
   if (outcome === "success") {
-    console.log(chalk.bold.green("\n✅ SVG translation complete!\n"));
+    console.log(chalk.bold.green(`\n${t("✅ SVG translation complete!")}\n`));
   } else {
     console.log(
       chalk.bold.yellow(
-        "\n⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
+        `\n${t(
+          "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+        )}\n`
       )
     );
     printModelsTryInOrder(models, provider);
     console.log("");
   }
 
-  console.log(chalk.bold("📊 Summary:"));
-  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
-  console.log(`   Total files processed: ${sum.filesProcessed ?? 0}`);
-  console.log(`   Total files skipped:   ${sum.filesSkipped}`);
+  console.log(chalk.bold(t("📊 Summary:")));
   console.log(
-    `   Segments from cache:   ${sum.segmentsCached ?? 0}${formatSegmentCacheHitSuffix(
-      sum.segmentsCached,
-      sum.segmentsTranslated
-    )}`
+    `   ${t("Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) })}`
   );
-  console.log(`   Segments translated:   ${sum.segmentsTranslated ?? 0}`);
-  console.log(`   Segment translation failures: ${sum.segmentValidationFailures ?? 0}`);
-  console.log(`   Individual segment translations: ${sum.individualSegmentTranslations ?? 0}`);
-  console.log(`   Total tokens used:     ${(sum.inputTokens + sum.outputTokens).toLocaleString()}`);
+  console.log(`   ${t("Total files processed: {{count}}", { count: sum.filesProcessed ?? 0 })}`);
+  console.log(`   ${t("Total files skipped:   {{count}}", { count: sum.filesSkipped })}`);
+  console.log(
+    `   ${t("Segments from cache:   {{count}}{{suffix}}", {
+      count: sum.segmentsCached ?? 0,
+      suffix: formatSegmentCacheHitSuffix(sum.segmentsCached, sum.segmentsTranslated),
+    })}`
+  );
+  console.log(
+    `   ${t("Segments translated:   {{count}}", { count: sum.segmentsTranslated ?? 0 })}`
+  );
+  console.log(
+    `   ${t("Segment translation failures: {{count}}", {
+      count: sum.segmentValidationFailures ?? 0,
+    })}`
+  );
+  console.log(
+    `   ${t("Individual segment translations: {{count}}", {
+      count: sum.individualSegmentTranslations ?? 0,
+    })}`
+  );
+  console.log(
+    `   ${t("Total tokens used:     {{count}}", {
+      count: (sum.inputTokens + sum.outputTokens).toLocaleString(),
+    })}`
+  );
   if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
-    console.log(`   Files written:         0 (dry-run)`);
+    console.log(`   ${t("Files written:         0 (dry-run)")}`);
   } else if ((sum.filesWritten ?? 0) > 0) {
-    console.log(`   Files written:         ${sum.filesWritten}`);
+    console.log(`   ${t("Files written:         {{count}}", { count: sum.filesWritten })}`);
   }
   const cost = sum.costUsd ?? 0;
   const segNew = sum.segmentsTranslated ?? 0;
   if (segNew > 0) {
     if (cost > 0) {
-      console.log(`   Total cost:            $${cost.toFixed(6)}`);
+      console.log(`   ${t("Total cost:            ${{cost}}", { cost: cost.toFixed(6) })}`);
     } else {
-      console.log(`   Total cost:            $0.0000 (cost data not available from API)`);
+      console.log(`   ${t("Total cost:            $0.0000 (cost data not available from API)")}`);
     }
   } else {
-    console.log(`   Total cost:            $0.0000 (all segments from cache)`);
+    console.log(`   ${t("Total cost:            $0.0000 (all segments from cache)")}`);
   }
   console.log("");
 }
@@ -169,18 +188,23 @@ async function runTranslateSvgBody(
     chalk.gray(
       "\n\n___SVG Translation_______________________________________________________________________________________\n\n"
     ) +
-      chalk.bold(`\n🌐 Translating ${totalFileCount} SVG file(s) to ${locales.length} locale(s)\n`)
+      chalk.bold(
+        `\n${t("🌐 Translating {{fileCount}} SVG file(s) to {{localeCount}} locale(s)", {
+          fileCount: totalFileCount,
+          localeCount: locales.length,
+        })}\n`
+      )
   );
   printModelsTryInOrder(displayModels, displayProvider);
-  console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
+  console.log(chalk.cyan(`${t("Glossary terms:")} `) + chalk.magenta(`${glossary.size}`));
   console.log(
-    chalk.cyan(`SVG output: `) + chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
+    chalk.cyan(`${t("SVG output:")} `) + chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
   );
   if (opts.logPath) {
-    console.log(chalk.cyan(`Output log: `) + chalk.magenta(opts.logPath));
+    console.log(chalk.cyan(`${t("Output log:")} `) + chalk.magenta(opts.logPath));
   }
   if (opts.dryRun) {
-    console.log(chalk.yellow(`\n⚠️  Dry run mode - no changes will be made`));
+    console.log(chalk.yellow(`\n${t("⚠️  Dry run mode - no changes will be made")}`));
   }
   console.log("");
 
@@ -190,9 +214,10 @@ async function runTranslateSvgBody(
     Math.floor(opts.batchConcurrency ?? config.batchConcurrency ?? 4)
   );
 
-  console.log(chalk.cyan(`Locale concurrency: `) + chalk.magenta(`${localeConcurrency}`));
+  console.log(chalk.cyan(`${t("Locale concurrency:")} `) + chalk.magenta(`${localeConcurrency}`));
   console.log(
-    chalk.cyan(`Parallel API calls per file: `) + chalk.magenta(`${batchConcurrencyEffective}`)
+    chalk.cyan(`${t("Parallel API calls per file:")} `) +
+      chalk.magenta(`${batchConcurrencyEffective}`)
   );
   console.log("");
 
@@ -263,7 +288,9 @@ async function runTranslateSvgBody(
       }
       const under = relPathUnderSvgSource(rel, roots);
       if (!under) {
-        console.warn(chalk.yellow(`⚠️  Skip (not under svg.sourcePath): ${rel}`));
+        console.warn(
+          chalk.yellow(t("⚠️  Skip (not under svg.sourcePath): {{path}}", { path: rel }))
+        );
         continue;
       }
       const abs = path.join(opts.cwd, rel);
@@ -302,7 +329,14 @@ async function runTranslateSvgBody(
 
     const localeElapsed = Date.now() - localeStart;
     if (localeElapsed > 0) {
-      console.log(chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`));
+      console.log(
+        chalk.gray(
+          `   ${t("[{{locale}}] Time: {{time}}", {
+            locale,
+            time: formatElapsedMmSs(localeElapsed),
+          })}`
+        )
+      );
     }
 
     return { locale, partial, localeElapsed };

@@ -135,10 +135,20 @@ function firstArgStringLiteral(call: CallExpression): string | undefined {
   if (!arg0 || arg0.type === "SpreadElement") {
     return undefined;
   }
-  if (arg0.type !== "StringLiteral") {
-    return undefined;
+  if (arg0.type === "StringLiteral") {
+    return arg0.value;
   }
-  return arg0.value;
+  // Accept a template literal with no interpolation, e.g. t(`multi-line\nhelp text`); literals that
+  // embed ${expressions} cannot be a stable catalog key and are skipped.
+  if (
+    arg0.type === "TemplateLiteral" &&
+    arg0.expressions.length === 0 &&
+    arg0.quasis.length === 1
+  ) {
+    const cooked = arg0.quasis[0]?.value.cooked;
+    return typeof cooked === "string" ? cooked : undefined;
+  }
+  return undefined;
 }
 
 type StringQuote = '"' | "'" | "`";

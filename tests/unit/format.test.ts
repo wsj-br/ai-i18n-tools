@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   MODELS_TRY_ORDER_LOG_INDENT,
-  MODELS_TRY_ORDER_LOG_PREFIX,
   MODELS_TRY_ORDER_LOG_WIDTH,
   wrapCommaSeparatedListForWidth,
 } from "../../src/cli/format.js";
 
 describe("wrapCommaSeparatedListForWidth", () => {
   it("wraps at comma boundaries within width budgets", () => {
+    // Mirrors the production first-line budget: total width minus the localized prefix length
+    // (English `"Models (try in order): "` is 23 chars).
+    const prefixLength = "Models (try in order): ".length;
     const models = [
       "qwen/qwen3-235b-a22b-2507",
       "openai/gpt-4o-mini",
@@ -24,11 +26,11 @@ describe("wrapCommaSeparatedListForWidth", () => {
     const joined = models.join(", ");
     const parts = wrapCommaSeparatedListForWidth(
       joined,
-      MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_PREFIX.length,
+      MODELS_TRY_ORDER_LOG_WIDTH - prefixLength,
       MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_INDENT.length
     );
     expect(parts.length).toBeGreaterThanOrEqual(2);
-    const firstMax = MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_PREFIX.length;
+    const firstMax = MODELS_TRY_ORDER_LOG_WIDTH - prefixLength;
     const contMax = MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_INDENT.length;
     parts.forEach((p, i) => {
       expect(p.length).toBeLessThanOrEqual(i === 0 ? firstMax : contMax);

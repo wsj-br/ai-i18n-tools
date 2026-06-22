@@ -45,7 +45,9 @@ import {
 import { normalizeLocale } from "../core/config.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
+import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
+import { runMarkHtml } from "./mark-html.js";
 import {
   runTranslate,
   shouldRunJson,
@@ -69,6 +71,14 @@ import {
 import { TranslationCache } from "../core/cache.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
+import { displayWidth } from "../utils/table.js";
+import {
+  initUiI18nFromEnvironment,
+  t,
+  uiLocaleDirection,
+  loadUiBundle,
+  getUiLocale,
+} from "../i18n/index.js";
 import {
   createRunInterruptScope,
   exitIfRunInterrupted,
@@ -90,7 +100,8 @@ import { runCleanTemp } from "./clean-temp.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
-    if (err) console.warn(`[dashboard] Failed to open browser: ${err.message}`);
+    if (err)
+      console.warn(t("[dashboard] Failed to open browser: {{error}}", { error: err.message }));
   };
   if (process.platform === "darwin") {
     execFile("open", [url], onErr);
@@ -131,7 +142,14 @@ function listenTranslationDashboardServer(
         current += 1;
         attempt();
       } else {
-        console.error(chalk.red(`[dashboard] Failed to bind (port ${current}): ${err.message}`));
+        console.error(
+          chalk.red(
+            t("[dashboard] Failed to bind (port {{port}}): {{error}}", {
+              port: current,
+              error: err.message,
+            })
+          )
+        );
         process.exit(1);
       }
     });
@@ -160,6 +178,12 @@ function formatVersionOutput(): string {
   return `${version} - ${build}`;
 }
 
+// Resolve the tool's own UI locale before building the program, so that command/option help text
+// (constructed at module load) and all subsequent output are localized. Config `uiLanguage` is
+// applied later, once a command loads its config (see loadConfigOrExit), without disturbing the
+// higher-priority --ui-lang flag / AI_I18N_LANG env var.
+initUiI18nFromEnvironment();
+
 /** Plain entries store `translated[locale]` as a string; plural entries store per-CLDR-form maps. */
 function uiStringsEntryTranslatedForLocale(entry: unknown, locale: string): boolean {
   if (entry === null || typeof entry !== "object") {
@@ -182,6 +206,11 @@ function uiStringsEntryTranslatedForLocale(entry: unknown, locale: string): bool
 function filterIgnored(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
   return files.filter((f) => !isIgnored(ig, path.join(cwd, f), cwd));
+}
+
+/** Visible terminal-column width of a (possibly ANSI-colored) string. */
+function visWidth(s: string): number {
+  return displayWidth(stripAnsi(s));
 }
 
 /** When set, keep only markdown/JSON files that fall under the project-root-relative path filter. */
@@ -249,7 +278,7 @@ function resolveCliPathOrFile(opts: { path?: string; file?: string }): string | 
   const hasP = opts.path !== undefined && String(opts.path).trim() !== "";
   const hasF = opts.file !== undefined && String(opts.file).trim() !== "";
   if (hasP && hasF) {
-    throw new Error("Use either --path or --file, not both");
+    throw new Error(t("Use either --path or --file, not both"));
   }
   if (hasP) {
     return String(opts.path).trim();
@@ -279,7 +308,7 @@ function warnIfCliPathOrFileNotFound(
     ? path.normalize(trimmed)
     : path.resolve(projectRoot, trimmed);
   if (!fs.existsSync(resolved)) {
-    console.warn(chalk.yellow(`⚠️  path/file does not exist: ${trimmed}`));
+    console.warn(chalk.yellow(t("⚠️  path/file does not exist: {{path}}", { path: trimmed })));
   }
 }
 
@@ -306,11 +335,11 @@ function formatCliHelp(cmd: Command, helper: Help): string {
     helper.formatItem(term, termWidth, description, helper);
 
   let output: string[] = [
-    `${helper.styleTitle("Usage:")} ${helper.styleUsage(helper.commandUsage(cmd))}`,
+    `${helper.styleTitle(t("Usage:"))} ${helper.styleUsage(helper.commandUsage(cmd))}`,
     "",
   ];
 
-  const commandDescription = helper.commandDescription(cmd);
+  const commandDescription = t(helper.commandDescription(cmd));
   if (commandDescription.length > 0) {
     output = output.concat([
       helper.boxWrap(helper.styleCommandDescription(commandDescription), helpWidth),
@@ -323,10 +352,10 @@ function formatCliHelp(cmd: Command, helper: Help): string {
     .map((argument) =>
       formatLine(
         helper.styleArgumentTerm(helper.argumentTerm(argument)),
-        helper.styleArgumentDescription(helper.argumentDescription(argument))
+        helper.styleArgumentDescription(t(helper.argumentDescription(argument)))
       )
     );
-  output = output.concat(helper.formatItemList("Arguments:", argumentList, helper));
+  output = output.concat(helper.formatItemList(t("Arguments:"), argumentList, helper));
 
   if (helper.showGlobalOptions) {
     const globalOptionList = helper
@@ -334,48 +363,59 @@ function formatCliHelp(cmd: Command, helper: Help): string {
       .map((option) =>
         formatLine(
           helper.styleOptionTerm(helper.optionTerm(option)),
-          helper.styleOptionDescription(helper.optionDescription(option))
+          helper.styleOptionDescription(t(helper.optionDescription(option)))
         )
       );
-    output = output.concat(helper.formatItemList("Global Options:", globalOptionList, helper));
+    output = output.concat(helper.formatItemList(t("Global Options:"), globalOptionList, helper));
   }
+
+  // Commander's default group headings arrive as plain strings via groupItems; declaring them as
+  // t() literals here both registers them for extraction and localizes the default groups. Custom
+  // help-group headings still go through t(group) below.
+  const DEFAULT_OPTIONS_GROUP = "Options:";
+  const DEFAULT_COMMANDS_GROUP = "Commands:";
+  const defaultOptionsHeading = t("Options:");
+  const defaultCommandsHeading = t("Commands:");
 
   const optionGroups = helper.groupItems(
     [...cmd.options],
     helper.visibleOptions(cmd),
-    (option) => option.helpGroupHeading ?? "Options:"
+    (option) => option.helpGroupHeading ?? DEFAULT_OPTIONS_GROUP
   );
   optionGroups.forEach((options, group) => {
     const optionList = options.map((option) =>
       formatLine(
         helper.styleOptionTerm(helper.optionTerm(option)),
-        helper.styleOptionDescription(helper.optionDescription(option))
+        helper.styleOptionDescription(t(helper.optionDescription(option)))
       )
     );
-    output = output.concat(helper.formatItemList(group, optionList, helper));
+    const heading = group === DEFAULT_OPTIONS_GROUP ? defaultOptionsHeading : t(group);
+    output = output.concat(helper.formatItemList(heading, optionList, helper));
   });
 
   const commandGroups = helper.groupItems(
     [...cmd.commands],
     helper.visibleCommands(cmd),
-    (sub) => sub.helpGroup() || "Commands:"
+    (sub) => sub.helpGroup() || DEFAULT_COMMANDS_GROUP
   );
   commandGroups.forEach((commands, group) => {
     const commandList = commands.map((sub) =>
       formatLine(
         helper.styleSubcommandTerm(helper.subcommandTerm(sub)),
-        helper.styleSubcommandDescription(helper.subcommandDescription(sub))
+        helper.styleSubcommandDescription(t(helper.subcommandDescription(sub)))
       )
     );
-    output = output.concat(helper.formatItemList(group, commandList, helper));
+    const heading = group === DEFAULT_COMMANDS_GROUP ? defaultCommandsHeading : t(group);
+    output = output.concat(helper.formatItemList(heading, commandList, helper));
   });
 
   return output.join("\n");
 }
 
 /** Appended after the root command list (`ai-i18n-tools --help`). */
-const ROOT_CLI_HELP_AFTER = `
-More detail:
+// Surrounding newlines stay outside t(); the extractor trims catalog keys, so a leading/trailing
+// blank line in the argument would not match the trimmed key at runtime.
+const ROOT_CLI_HELP_AFTER = `\n${t(`More detail:
   ai-i18n-tools <command> --help          all options for that command
   ai-i18n-tools help <command>            same output
 
@@ -391,27 +431,47 @@ Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--
 Provider override (-P / --provider):
   Selects the active LLM provider for this run, overriding the config "provider" key.
   The name must be configured under "providers" (e.g. -P openai). Handy when several
-  providers are configured and you want to switch without editing the config file.
-`;
+  providers are configured and you want to switch without editing the config file.`)}\n`;
+
+// Load `.env` from the current working directory so provider API keys are
+// available in non-interactive shells (e.g. agent-run commands) that do not
+// source `.envrc`/`direnv`. Existing environment variables are not overridden.
+loadDotenv();
 
 const program = new Command();
 
 program
   .name("ai-i18n-tools")
   .description(
-    `Unified i18n toolkit for Node.js apps and documentation with AI translation (v${version})`
+    t(
+      "Unified i18n toolkit for Node.js apps and documentation with AI translation (v{{version}})",
+      {
+        version,
+      }
+    )
   )
-  .version(formatVersionOutput())
-  .option("-c, --config <path>", "Config file path", DEFAULT_CONFIG_FILENAME)
-  .option("-v, --verbose", "Verbose logging", false)
+  .version(formatVersionOutput(), "-V, --version", t("show the version number"))
+  .option("-c, --config <path>", t("Config file path"), DEFAULT_CONFIG_FILENAME)
+  .option("-v, --verbose", t("Verbose logging"), false)
   .option(
     "-P, --provider <name>",
-    "Active LLM provider (overrides the config `provider` key; must be configured under `providers`)"
+    t(
+      "Active LLM provider (overrides the config `provider` key; must be configured under `providers`)"
+    )
   )
   .option(
     "-w, --write-logs [path]",
-    "Tee console output to a .log file (default path: under cacheDir)"
-  );
+    t("Tee console output to a .log file (default path: under cacheDir)")
+  )
+  .option(
+    "-L, --ui-lang <code>",
+    t(
+      "Language for this tool's own UI/logs (BCP-47, e.g. es, pt-BR). Overrides AI_I18N_LANG and config uiLanguage."
+    )
+  )
+  // Register Commander's built-in help text as a catalog key so it (and every subcommand's -h, plus
+  // the `help` command) is localized via the render-time t() in formatCliHelp.
+  .helpOption("-h, --help", t("display help for command"));
 
 program.configureHelp({
   showGlobalOptions: true,
@@ -420,7 +480,7 @@ program.configureHelp({
 
 program
   .command("version")
-  .description("Show version and build time")
+  .description(t("Show version and build time"))
   .action(() => {
     console.log(formatVersionOutput());
   });
@@ -428,7 +488,9 @@ program
 program
   .command("check-models")
   .description(
-    "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)"
+    t(
+      "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)"
+    )
   )
   .action(async (_opts, cmd: Command) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -444,7 +506,9 @@ program
 program
   .command("list-models")
   .description(
-    "List the models advertised by the active provider's OpenAI-compatible `GET /models` endpoint (active provider follows the config `provider` key; override with -P/--provider). Shows input/output pricing (USD per 1M tokens) when the provider returns it"
+    t(
+      "List the models advertised by the active provider's OpenAI-compatible `GET /models` endpoint (active provider follows the config `provider` key; override with -P/--provider). Shows input/output pricing (USD per 1M tokens) when the provider returns it"
+    )
   )
   .action(async (_opts, cmd: Command) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -458,46 +522,44 @@ program
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools list-models
-  ai-i18n-tools -P openai list-models
-`
+  ai-i18n-tools -P openai list-models`)}\n`
   );
 
 program
   .command("list-languages")
   .description(
-    "List the bundled UI languages catalog (data/ui-languages-complete.json) formatted for humans; pass an optional SEARCH term to filter by code, native label, English name, or text direction (case-insensitive)"
+    t(
+      "List the bundled UI languages catalog (data/ui-languages-complete.json) formatted for humans; pass an optional SEARCH term to filter by code, native label, English name, or text direction (case-insensitive)"
+    )
   )
-  .argument("[search]", "Optional case-insensitive term to filter the catalog entries")
+  .argument("[search]", t("Optional case-insensitive term to filter the catalog entries"))
   .action((search?: string) => {
     const { exitCode } = runListLanguages(search);
     process.exitCode = exitCode;
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools list-languages
   ai-i18n-tools list-languages portuguese
   ai-i18n-tools list-languages rtl
-  ai-i18n-tools list-languages zh
-`
+  ai-i18n-tools list-languages zh`)}\n`
   );
 
 program
   .command("init")
-  .description("Write starter ai-i18n-tools JSON config")
-  .option("-o, --output <path>", "config file path", DEFAULT_CONFIG_FILENAME)
+  .description(t("Write starter ai-i18n-tools JSON config"))
+  .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
     "ui-markdown | ui-docusaurus | ui-starlight | ui-astro-website | ui-json-bundles",
     "ui-markdown"
   )
-  .option("--with-translate-ignore", "Create a starter .translate-ignore", false)
+  .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
   .action((opts: { output: string; template: string; withTranslateIgnore?: boolean }) => {
-    const t = opts.template.toLowerCase();
+    const tpl = opts.template.toLowerCase();
     const templateMap: Record<string, keyof typeof initConfigTemplates> = {
       "ui-markdown": "uiMarkdown",
       "ui-docusaurus": "uiDocusaurus",
@@ -505,16 +567,18 @@ program
       "ui-astro-website": "uiAstroWebsite",
       "ui-json-bundles": "uiJsonBundles",
     };
-    const key = templateMap[t];
+    const key = templateMap[tpl];
     if (!key) {
       console.error(
-        'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-astro-website", or "ui-json-bundles".'
+        t(
+          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-astro-website", or "ui-json-bundles".'
+        )
       );
       process.exitCode = 1;
       return;
     }
     writeInitConfigFile(opts.output, key);
-    console.log(`Wrote ${opts.output} (${key})`);
+    console.log(t("Wrote {{path}} ({{template}})", { path: opts.output, template: key }));
     if (opts.withTranslateIgnore) {
       const ignorePath = path.join(process.cwd(), ".translate-ignore");
       if (!fs.existsSync(ignorePath)) {
@@ -523,7 +587,7 @@ program
           ["node_modules/", ".git/", "*.min.js", "dist/", ""].join("\n"),
           "utf8"
         );
-        console.log("Wrote .translate-ignore");
+        console.log(t("Wrote .translate-ignore"));
       }
     }
   });
@@ -531,19 +595,21 @@ program
 program
   .command("write-heading-ids")
   .description(
-    'Insert `<a id="slug"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)'
+    t(
+      'Insert `<a id="slug"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)'
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only process files under this path (file or directory); project-relative or absolute"
+    t("Only process files under this path (file or directory); project-relative or absolute")
   )
-  .option("-f, --file <path>", "Same as --path")
+  .option("-f, --file <path>", t("Same as --path"))
   .option("--slug-style <mode>", "github | bitbucket | gitlab | pymdown | azure-devops", "github")
-  .option("--pymdown-case <mode>", "With pymdown: lower | title | none (default: lower)")
-  .option("--pymdown-normalize <mode>", "With pymdown: nfc | nfd | none (default: nfc)")
-  .option("--pymdown-percent-encode", "With pymdown: percent-encode slug (default on)", false)
-  .option("--no-pymdown-percent-encode", "With pymdown: disable percent-encoding", false)
-  .option("--dry-run", "Print files that would change; do not write", false)
+  .option("--pymdown-case <mode>", t("With pymdown: lower | title | none (default: lower)"))
+  .option("--pymdown-normalize <mode>", t("With pymdown: nfc | nfd | none (default: nfc)"))
+  .option("--pymdown-percent-encode", t("With pymdown: percent-encode slug (default on)"), false)
+  .option("--no-pymdown-percent-encode", t("With pymdown: disable percent-encoding"), false)
+  .option("--dry-run", t("Print files that would change; do not write"), false)
   .action((opts, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -564,7 +630,9 @@ program
     try {
       slugStyle = parseSlugStyle(o.slugStyle);
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
 
@@ -575,14 +643,16 @@ program
       o.noPymdownPercentEncode;
 
     if (pymdownFlagsUsed && slugStyle !== "pymdown") {
-      console.error(chalk.red("❌ --pymdown-* options are only valid with --slug-style pymdown."));
+      console.error(
+        chalk.red(t("❌ --pymdown-* options are only valid with --slug-style pymdown."))
+      );
       process.exit(1);
     }
 
     if (o.pymdownPercentEncode && o.noPymdownPercentEncode) {
       console.error(
         chalk.red(
-          "❌ Use either --pymdown-percent-encode or --no-pymdown-percent-encode, not both."
+          t("❌ Use either --pymdown-percent-encode or --no-pymdown-percent-encode, not both.")
         )
       );
       process.exit(1);
@@ -600,12 +670,14 @@ program
             })
           : undefined;
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
 
     if (!config.docs?.length) {
-      console.error(chalk.red("❌ [write-heading-ids] config has no docs[] blocks."));
+      console.error(chalk.red(t("❌ [write-heading-ids] config has no docs[] blocks.")));
       process.exit(1);
     }
 
@@ -621,12 +693,20 @@ program
       });
       console.log(
         chalk.green(
-          `\n✅ write-heading-ids: ${sum.filesWritten} file(s) updated, ${sum.filesUnchanged} unchanged`
+          "\n" +
+            t("✅ write-heading-ids: {{written}} file(s) updated, {{unchanged}} unchanged", {
+              written: sum.filesWritten,
+              unchanged: sum.filesUnchanged,
+            })
         )
       );
     } catch (e) {
       console.error(
-        chalk.red(`❌ [write-heading-ids] ${e instanceof Error ? e.message : String(e)}`)
+        chalk.red(
+          t("❌ [write-heading-ids] {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
       );
       process.exit(1);
     }
@@ -635,7 +715,9 @@ program
 program
   .command("extract")
   .description(
-    "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
+    t(
+      "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
+    )
   )
   .action(async (_opts, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -644,11 +726,62 @@ program
       const s = runExtract(config, projectRoot);
       console.log(
         chalk.green(
-          `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+          t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
+            found: s.found,
+            added: s.added,
+            updated: s.updated,
+            outPath: s.outPath,
+          })
         )
       );
     } catch (e) {
-      console.error(chalk.red(`❌ [extract] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [extract] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("mark-html")
+  .description(
+    t(
+      "Insert bare data-i18n / data-i18n-title / data-i18n-placeholder markers into HTML so source text is written once (extract then captures it). Does not call an LLM."
+    )
+  )
+  .argument("[paths...]", t("Files/dirs/globs to scan (default: .html/.htm under ui.sourceRoots)"))
+  .option("--write", t("Apply changes to disk (default: dry run / report only)"), false)
+  .action((paths: string[], opts: { write?: boolean }, cmd) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+    const g = cmd.optsWithGlobals() as { verbose?: boolean };
+    try {
+      const sum = runMarkHtml({
+        cwd: projectRoot,
+        config,
+        paths,
+        write: Boolean(opts.write),
+        verbose: Boolean(g.verbose),
+      });
+      const headline = sum.written
+        ? t("✅ mark-html: {{changed}}/{{scanned}} file(s) updated (+{{added}} marker(s))", {
+            changed: sum.filesChanged,
+            scanned: sum.filesScanned,
+            added: sum.markersAdded,
+          })
+        : t(
+            "✅ mark-html (dry run): {{changed}}/{{scanned}} file(s) would change (+{{added}} marker(s)); re-run with --write to apply",
+            { changed: sum.filesChanged, scanned: sum.filesScanned, added: sum.markersAdded }
+          );
+      console.log(chalk.green("\n" + headline));
+    } catch (e) {
+      console.error(
+        chalk.red(
+          t("❌ [mark-html] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   });
@@ -656,7 +789,9 @@ program
 function parsePositiveInt(optionLabel: string, value: string): number {
   const n = Number.parseInt(value, 10);
   if (!Number.isFinite(n) || n < 1) {
-    throw new InvalidArgumentError(`${optionLabel} must be a positive integer (got "${value}")`);
+    throw new InvalidArgumentError(
+      t('{{label}} must be a positive integer (got "{{value}}")', { label: optionLabel, value })
+    );
   }
   return n;
 }
@@ -736,7 +871,9 @@ function parseTranslatePromptFormat(raw: string | undefined): TranslateRunOption
     return raw;
   }
   throw new InvalidArgumentError(
-    `Invalid --prompt-format: ${raw} (expected xml, json-array, or json-object)`
+    t("Invalid --prompt-format: {{value}} (expected xml, json-array, or json-object)", {
+      value: raw,
+    })
   );
 }
 
@@ -794,12 +931,21 @@ async function runSyncPipeline(args: {
         const s = runExtract(config, projectRoot);
         console.log(
           chalk.green(
-            `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+            t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
+              found: s.found,
+              added: s.added,
+              updated: s.updated,
+              outPath: s.outPath,
+            })
           )
         );
       } catch (e) {
         console.error(
-          chalk.red(`❌ [sync][extract] ${e instanceof Error ? e.message : String(e)}`)
+          chalk.red(
+            t("❌ [sync][extract] {{error}}", {
+              error: e instanceof Error ? e.message : String(e),
+            })
+          )
         );
         throw e;
       }
@@ -818,7 +964,11 @@ async function runSyncPipeline(args: {
         if (isRunInterruptedError(e)) {
           throw e;
         }
-        console.error(chalk.red(`❌ [sync][ui] ${e instanceof Error ? e.message : String(e)}`));
+        console.error(
+          chalk.red(
+            t("❌ [sync][ui] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+          )
+        );
         throw e;
       }
     }
@@ -833,7 +983,11 @@ async function runSyncPipeline(args: {
         if (isRunInterruptedError(e)) {
           throw e;
         }
-        console.error(chalk.red(`❌ [sync][svg] ${e instanceof Error ? e.message : String(e)}`));
+        console.error(
+          chalk.red(
+            t("❌ [sync][svg] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+          )
+        );
         throw e;
       }
     }
@@ -897,7 +1051,9 @@ async function runSyncPipeline(args: {
         if (isRunInterruptedError(e)) {
           throw e;
         }
-        console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+        console.error(
+          chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+        );
         throw e;
       }
     }
@@ -909,7 +1065,11 @@ async function runSyncPipeline(args: {
         if (isRunInterruptedError(e)) {
           throw e;
         }
-        console.error(chalk.red(`❌ [sync][json] ${e instanceof Error ? e.message : String(e)}`));
+        console.error(
+          chalk.red(
+            t("❌ [sync][json] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+          )
+        );
         throw e;
       }
     }
@@ -921,56 +1081,68 @@ async function runSyncPipeline(args: {
 program
   .command("translate-docs")
   .description(
-    "Translate documentation (markdown, JSON) per config; -l/--locale <codes> limits targets (comma-separated; optional)"
+    t(
+      "Translate documentation (markdown, JSON) per config; -l/--locale <codes> limits targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: documentation targets from config (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
+    t(
+      "Target locales (comma-separated); default: documentation targets from config (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales; sourceLocale excluded)"
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only translate files under this path (file or directory); project-relative or absolute"
+    t("Only translate files under this path (file or directory); project-relative or absolute")
   )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--dry-run", "No writes, no API calls", false)
+  .option("-f, --file <path>", t("Same as --path"))
+  .option("--dry-run", t("No writes, no API calls"), false)
   .option(
     "--force",
-    "Re-translate: clear file tracking for each file and ignore segment cache (not combinable with --force-update)",
+    t(
+      "Re-translate: clear file tracking for each file and ignore segment cache (not combinable with --force-update)"
+    ),
     false
   )
   .option(
     "--force-update",
-    "Re-process files even when file tracking matches; still use segment cache (not combinable with --force)",
+    t(
+      "Re-process files even when file tracking matches; still use segment cache (not combinable with --force)"
+    ),
     false
   )
-  .option("--stats", "Show cache statistics and exit", false)
-  .option("--clear-cache [locale]", "Clear translation cache (all locales, or one locale)")
+  .option("--stats", t("Show cache statistics and exit"), false)
+  .option("--clear-cache [locale]", t("Clear translation cache (all locales, or one locale)"))
   .option("--type <kind>", "markdown | json")
-  .option("--json-only", "JSON only", false)
-  .option("--no-json", "Skip JSON", false)
-  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 3)")
+  .option("--json-only", t("JSON only"), false)
+  .option("--no-json", t("Skip JSON"), false)
+  .option("-j, --concurrency <n>", t("Max parallel target locales (default: config or 3)"))
   .option(
     "-b, --batch-concurrency <n>",
-    "Max parallel batch API calls per file (default: config or 4)"
+    t("Max parallel batch API calls per file (default: config or 4)")
   )
   .option(
     "--prompt-format <mode>",
-    "Batch segment prompt/response: xml (<seg>/<t>), json-array, or json-object",
+    t("Batch segment prompt/response: xml (<seg>/<t>), json-array, or json-object"),
     "json-array"
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (configuration has precedence over CLI flags)",
+    t(
+      "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (configuration has precedence over CLI flags)"
+    ),
     false
   )
   .option(
     "--no-emphasis-placeholders",
-    "Do not mask markdown emphasis (overrides CJK/RTL default, configuration has precedence over CLI flags)",
+    t(
+      "Do not mask markdown emphasis (overrides CJK/RTL default, configuration has precedence over CLI flags)"
+    ),
     false
   )
   .option(
     "--debug-failed",
-    "Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures",
+    t("Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures"),
     false
   )
   .action(async (_a, cmd) => {
@@ -987,9 +1159,15 @@ program
     if (raw.force && raw.forceUpdate) {
       console.error(
         chalk.red(
-          `\n❌ Use either --force or --force-update, not both.\n` +
-            `   --force: ignore segment cache and clear file tracking for processed files.\n` +
-            `   --force-update: re-run outputs when file tracking would skip; segment cache still applies.\n`
+          "\n" +
+            t("❌ Use either --force or --force-update, not both.") +
+            "\n" +
+            t("   --force: ignore segment cache and clear file tracking for processed files.") +
+            "\n" +
+            t(
+              "   --force-update: re-run outputs when file tracking would skip; segment cache still applies."
+            ) +
+            "\n"
         )
       );
       cmd.outputHelp();
@@ -998,10 +1176,10 @@ program
     if (raw.stats) {
       const cache = new TranslationCache(cacheDir);
       const cacheStats = cache.getStats();
-      console.log(chalk.bold("\n📊 Cache statistics:"));
-      console.log(`   Cached segments: ${cacheStats.totalSegments}`);
-      console.log(`   Tracked files: ${cacheStats.totalFiles}`);
-      console.log(`   By locale:`);
+      console.log(chalk.bold("\n" + t("📊 Cache statistics:")));
+      console.log(`   ${t("Cached segments: {{count}}", { count: cacheStats.totalSegments })}`);
+      console.log(`   ${t("Tracked files: {{count}}", { count: cacheStats.totalFiles })}`);
+      console.log(`   ${t("By locale:")}`);
       for (const [loc, count] of Object.entries(cacheStats.byLocale)) {
         console.log(`     - ${loc}: ${count}`);
       }
@@ -1019,8 +1197,11 @@ program
         if (allowed.size > 0 && !allowed.has(locale)) {
           console.error(
             chalk.red(
-              `\n❌ Locale "${locale}" is not in documentation target locales.\n` +
-                `   Configured: ${[...allowed].join(", ")}\n`
+              "\n" +
+                t('❌ Locale "{{locale}}" is not in documentation target locales.', { locale }) +
+                "\n" +
+                t("   Configured: {{locales}}", { locales: [...allowed].join(", ") }) +
+                "\n"
             )
           );
           cache.close();
@@ -1028,7 +1209,11 @@ program
         }
       }
       cache.clear(locale);
-      console.log(chalk.blue(`✅ Cache cleared${locale ? ` for ${locale}` : ""}`));
+      console.log(
+        chalk.blue(
+          locale ? t("✅ Cache cleared for {{locale}}", { locale }) : t("✅ Cache cleared")
+        )
+      );
       cache.close();
       return;
     }
@@ -1037,7 +1222,9 @@ program
     try {
       ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
 
@@ -1097,7 +1284,13 @@ program
             : "";
         console.log(
           chalk.gray(
-            `\n--- docs[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (${mdScoped.length} md, ${astroScoped.length} astro, ${jsonScoped.length} json) ---\n`
+            `\n--- docs[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (` +
+              t("{{md}} md, {{astro}} astro, {{json}} json", {
+                md: mdScoped.length,
+                astro: astroScoped.length,
+                json: jsonScoped.length,
+              }) +
+              `) ---\n`
           )
         );
         const sum = await runTranslate(
@@ -1118,7 +1311,9 @@ program
       ) {
         console.log(
           chalk.cyan(
-            `💡  All files were skipped (cache matches output). Use --force-update to re-process files (using translationcache) or --force to retranslate files`
+            t(
+              "💡 All files were skipped (cache matches output). Use --force-update to re-process files (using translation cache) or --force to retranslate files"
+            )
           )
         );
       }
@@ -1126,49 +1321,57 @@ program
       if (exitIfRunInterrupted(e)) {
         return;
       }
-      console.error(chalk.red(`❌ [translate-docs] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [translate-docs] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools translate-docs -l de,fr
   ai-i18n-tools translate-docs --locale pt-BR --dry-run
-  ai-i18n-tools translate-docs --path docs/guide --force-update
-`
+  ai-i18n-tools translate-docs --path docs/guide --force-update`)}\n`
   );
 
 program
   .command("translate-json")
   .description(
-    "Translate arbitrary nested JSON per config.json[] (requires features.translateJson); -l/--locale limits targets"
+    t(
+      "Translate arbitrary nested JSON per config.json[] (requires features.translateJson); -l/--locale limits targets"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: union of json[].targetLocales or root targetLocales"
+    t(
+      "Target locales (comma-separated); default: union of json[].targetLocales or root targetLocales"
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only translate files under this path (file, directory, or glob); project-relative or absolute"
+    t(
+      "Only translate files under this path (file, directory, or glob); project-relative or absolute"
+    )
   )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--dry-run", "No writes, no API calls", false)
-  .option("--force", "Re-translate: clear file tracking and ignore segment cache", false)
+  .option("-f, --file <path>", t("Same as --path"))
+  .option("--dry-run", t("No writes, no API calls"), false)
+  .option("--force", t("Re-translate: clear file tracking and ignore segment cache"), false)
   .option(
     "--force-update",
-    "Re-process when file tracking matches; segment cache still applies",
+    t("Re-process when file tracking matches; segment cache still applies"),
     false
   )
-  .option("-j, --concurrency <n>", "Reserved for future parallel locales")
+  .option("-j, --concurrency <n>", t("Reserved for future parallel locales"))
   .option(
     "-b, --batch-concurrency <n>",
-    "Max parallel batch API calls per file (default: config or 4)"
+    t("Max parallel batch API calls per file (default: config or 4)")
   )
   .option(
     "--prompt-format <mode>",
-    "Batch segment prompt/response: xml, json-array, or json-object",
+    t("Batch segment prompt/response: xml, json-array, or json-object"),
     "json-array"
   )
   .action(async (_a, cmd) => {
@@ -1181,7 +1384,9 @@ program
     try {
       ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
     try {
@@ -1191,7 +1396,11 @@ program
       if (exitIfRunInterrupted(e)) {
         return;
       }
-      console.error(chalk.red(`❌ [translate-json] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [translate-json] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   });
@@ -1199,33 +1408,41 @@ program
 program
   .command("translate-svg")
   .description(
-    "Translate  SVG files per config.svg (requires features.translateSVG); -l/--locale <codes> limits targets (comma-separated; optional)"
+    t(
+      "Translate SVG files per config.svg (requires features.translateSVG); -l/--locale <codes> limits targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales)"
+    t(
+      "Target locales (comma-separated); default: sourceLocale plus documentation targets (union across docs[]: each block uses its targetLocales if set, otherwise root targetLocales)"
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only translate files under this path (file or directory); project-relative or absolute"
+    t("Only translate files under this path (file or directory); project-relative or absolute")
   )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--dry-run", "No writes, no API calls", false)
+  .option("-f, --file <path>", t("Same as --path"))
+  .option("--dry-run", t("No writes, no API calls"), false)
   .option(
     "--force",
-    "Re-translate: clear file tracking for each file and ignore segment cache (not combinable with --force-update)",
+    t(
+      "Re-translate: clear file tracking for each file and ignore segment cache (not combinable with --force-update)"
+    ),
     false
   )
   .option(
     "--force-update",
-    "Re-process files even when file tracking matches; still use segment cache (not combinable with --force)",
+    t(
+      "Re-process files even when file tracking matches; still use segment cache (not combinable with --force)"
+    ),
     false
   )
-  .option("--no-cache", "Bypass SQLite cache", false)
-  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 3)")
+  .option("--no-cache", t("Bypass SQLite cache"), false)
+  .option("-j, --concurrency <n>", t("Max parallel target locales (default: config or 3)"))
   .option(
     "-b, --batch-concurrency <n>",
-    "Max parallel batch API calls per file (default: config or 4)"
+    t("Max parallel batch API calls per file (default: config or 4)")
   )
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -1236,9 +1453,15 @@ program
     if (raw.force && raw.forceUpdate) {
       console.error(
         chalk.red(
-          `\n❌ Use either --force or --force-update, not both.\n` +
-            `   --force: ignore segment cache and clear file tracking for processed files.\n` +
-            `   --force-update: re-run outputs when file tracking would skip; segment cache still applies.\n`
+          "\n" +
+            t("❌ Use either --force or --force-update, not both.") +
+            "\n" +
+            t("   --force: ignore segment cache and clear file tracking for processed files.") +
+            "\n" +
+            t(
+              "   --force-update: re-run outputs when file tracking would skip; segment cache still applies."
+            ) +
+            "\n"
         )
       );
       cmd.outputHelp();
@@ -1249,13 +1472,15 @@ program
     try {
       ({ translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
     const localeOpt = cmd.opts() as { locale?: string };
     translateOpts.locales = resolveLocalesForSvg(config, projectRoot, localeOpt.locale ?? null);
     if (!config.features.translateSVG) {
-      console.error(chalk.red("❌ [translate-svg] Enable features.translateSVG in config."));
+      console.error(chalk.red(t("❌ [translate-svg] Enable features.translateSVG in config.")));
       process.exit(1);
     }
     try {
@@ -1264,31 +1489,35 @@ program
       if (exitIfRunInterrupted(e)) {
         return;
       }
-      console.error(chalk.red(`❌ [translate-svg] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [translate-svg] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools translate-svg -l de,ja
-  ai-i18n-tools translate-svg --path assets/icons --no-cache
-`
+  ai-i18n-tools translate-svg --path assets/icons --no-cache`)}\n`
   );
 
 program
   .command("translate-ui")
   .description(
-    "Translate UI strings (strings.json → locale JSON via OpenRouter); -l/--locale <codes> limits targets (comma-separated; optional)"
+    t(
+      "Translate UI strings (strings.json → locale JSON via OpenRouter); -l/--locale <codes> limits targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
+    t("Target locales (comma-separated); default: ui-languages.json or config.targetLocales")
   )
-  .option("--dry-run", "No writes, no API calls", false)
-  .option("--force", "Re-translate all entries per locale", false)
-  .option("-j, --concurrency <n>", "Max parallel target locales (default: config or 4)")
+  .option("--dry-run", t("No writes, no API calls"), false)
+  .option("--force", t("Re-translate all entries per locale"), false)
+  .option("-j, --concurrency <n>", t("Max parallel target locales (default: config or 4)"))
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1301,7 +1530,9 @@ program
     };
     const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
     if (!config.features.translateUIStrings) {
-      console.error(chalk.red("❌ [translate-ui] Enable features.translateUIStrings in config."));
+      console.error(
+        chalk.red(t("❌ [translate-ui] Enable features.translateUIStrings in config."))
+      );
       process.exit(1);
     }
     const cacheDir = path.join(projectRoot, config.cacheDir);
@@ -1323,31 +1554,35 @@ program
       if (exitIfRunInterrupted(e)) {
         return;
       }
-      console.error(chalk.red(`❌ [translate-ui] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [translate-ui] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools translate-ui -l de,fr
-  ai-i18n-tools translate-ui --force --locale es
-`
+  ai-i18n-tools translate-ui --force --locale es`)}\n`
   );
 
 program
   .command("sync-ui")
   .description(
-    "Extract UI strings, then translate UI strings (requires features.translateUIStrings); -l/--locale <codes> limits targets (comma-separated; optional)"
+    t(
+      "Extract UI strings, then translate UI strings (requires features.translateUIStrings); -l/--locale <codes> limits targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
+    t("Target locales (comma-separated); default: ui-languages.json or config.targetLocales")
   )
-  .option("--dry-run", "No writes / no API", false)
-  .option("--force", "Re-translate all UI entries per locale", false)
-  .option("-j, --concurrency <n>", "Max parallel target locales (default: config)")
+  .option("--dry-run", t("No writes / no API"), false)
+  .option("--force", t("Re-translate all UI entries per locale"), false)
+  .option("-j, --concurrency <n>", t("Max parallel target locales (default: config)"))
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1362,7 +1597,7 @@ program
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync-ui");
 
     if (!config.features.translateUIStrings) {
-      console.error(chalk.red("❌ [sync-ui] Enable features.translateUIStrings in config."));
+      console.error(chalk.red(t("❌ [sync-ui] Enable features.translateUIStrings in config.")));
       process.exit(1);
     }
 
@@ -1370,12 +1605,21 @@ program
       const s = runExtract(config, projectRoot);
       console.log(
         chalk.green(
-          `✅ Extracted ${s.found} strings (${s.added} new, ${s.updated} updated) → ${s.outPath}`
+          t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
+            found: s.found,
+            added: s.added,
+            updated: s.updated,
+            outPath: s.outPath,
+          })
         )
       );
     } catch (e) {
       console.error(
-        chalk.red(`❌ [sync-ui][extract] ${e instanceof Error ? e.message : String(e)}`)
+        chalk.red(
+          t("❌ [sync-ui][extract] {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
       );
       process.exit(1);
     }
@@ -1398,29 +1642,33 @@ program
       if (exitIfRunInterrupted(e)) {
         return;
       }
-      console.error(chalk.red(`❌ [sync-ui][ui] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [sync-ui][ui] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools sync-ui -l de,fr
-  ai-i18n-tools sync-ui --locale ja --force
-`
+  ai-i18n-tools sync-ui --locale ja --force`)}\n`
   );
 
 program
   .command("lint-source")
   .description(
-    "Run extract (refresh strings.json), then lint source-locale UI strings via OpenRouter; writes results log under cacheDir"
+    t(
+      "Run extract (refresh strings.json), then lint source-locale UI strings via OpenRouter; writes results log under cacheDir"
+    )
   )
-  .option("-l, --locale <code>", "BCP-47 locale to lint (default: config sourceLocale)")
-  .option("--chunk <n>", "Strings per API batch (default: 50)", "50")
-  .option("-j, --concurrency <n>", "Max parallel batches (default: config.concurrency)")
-  .option("--dry-run", "Print batch plan only; no API calls", false)
-  .option("--json", "Write full JSON report to stdout (human output uses stderr)", false)
+  .option("-l, --locale <code>", t("BCP-47 locale to lint (default: config sourceLocale)"))
+  .option("--chunk <n>", t("Strings per API batch (default: 50)"), "50")
+  .option("-j, --concurrency <n>", t("Max parallel batches (default: config.concurrency)"))
+  .option("--dry-run", t("Print batch plan only; no API calls"), false)
+  .option("--json", t("Write full JSON report to stdout (human output uses stderr)"), false)
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1446,11 +1694,15 @@ program
         json: Boolean(o.json),
       });
       if (result.exitWithError) {
-        console.error(chalk.red(`❌ [lint-source] ${result.exitWithError}`));
+        console.error(chalk.red(t("❌ [lint-source] {{error}}", { error: result.exitWithError })));
         process.exit(1);
       }
     } catch (e) {
-      console.error(chalk.red(`❌ [lint-source] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [lint-source] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   });
@@ -1458,15 +1710,19 @@ program
 program
   .command("check-markdown")
   .description(
-    "Scan documentation markdown for unpaired emphasis / unclosed inline code; print path:line issues; refresh SQLite markdown_source_issues (use --no-cache to skip DB)"
+    t(
+      "Scan documentation markdown for unpaired emphasis / unclosed inline code; print path:line issues; refresh SQLite markdown_source_issues (use --no-cache to skip DB)"
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only check files under this path (project-relative or absolute); same idea as translate-docs --path"
+    t(
+      "Only check files under this path (project-relative or absolute); same idea as translate-docs --path"
+    )
   )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--json", "Write JSON report to stdout (human lines go to stderr)", false)
-  .option("--no-cache", "Do not read or write the translation cache database", false)
+  .option("-f, --file <path>", t("Same as --path"))
+  .option("--json", t("Write JSON report to stdout (human lines go to stderr)"), false)
+  .option("--no-cache", t("Do not read or write the translation cache database"), false)
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1488,7 +1744,11 @@ program
       });
       process.exit(exitCode);
     } catch (e) {
-      console.error(chalk.red(`❌ [check-markdown] ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(
+          t("❌ [check-markdown] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+        )
+      );
       process.exit(1);
     }
   });
@@ -1496,22 +1756,24 @@ program
 program
   .command("export-ui-xliff")
   .description(
-    "Export UI strings from strings.json to XLIFF 2.0 (one .xliff per target locale); -l/--locale <codes> selects targets (comma-separated; optional)"
+    t(
+      "Export UI strings from strings.json to XLIFF 2.0 (one .xliff per target locale); -l/--locale <codes> selects targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Target locales (comma-separated); default: ui-languages.json or config.targetLocales"
+    t("Target locales (comma-separated); default: ui-languages.json or config.targetLocales")
   )
   .option(
     "-o, --output-dir <path>",
-    "Output directory for .xliff files (default: same directory as strings.json)"
+    t("Output directory for .xliff files (default: same directory as strings.json)")
   )
   .option(
     "--untranslated-only",
-    "Include only units that have no translation for the target locale",
+    t("Include only units that have no translation for the target locale"),
     false
   )
-  .option("--dry-run", "Print paths that would be written without writing files", false)
+  .option("--dry-run", t("Print paths that would be written without writing files"), false)
   .action((_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1531,74 +1793,88 @@ program
       });
     } catch (e) {
       console.error(
-        chalk.red(`❌ [export-ui-xliff] ${e instanceof Error ? e.message : String(e)}`)
+        chalk.red(
+          t("❌ [export-ui-xliff] {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
       );
       process.exit(1);
     }
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools export-ui-xliff -l de,fr
-  ai-i18n-tools export-ui-xliff --locale ja --untranslated-only --dry-run
-`
+  ai-i18n-tools export-ui-xliff --locale ja --untranslated-only --dry-run`)}\n`
   );
 
 program
   .command("sync")
   .description(
-    "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*; -l/--locale <codes> applies to UI, SVG, and docs targets (comma-separated; optional)"
+    t(
+      "Extract UI strings (if enabled), then translate UI / SVG (if features.translateSVG + svg) / docs unless skipped with --no-*; -l/--locale <codes> applies to UI, SVG, and docs targets (comma-separated; optional)"
+    )
   )
   .option(
     "-l, --locale <codes>",
-    "Comma-separated target locales for translate-ui, translate-svg, and translate-docs steps (optional; defaults from config / ui-languages.json)"
+    t(
+      "Comma-separated target locales for translate-ui, translate-svg, and translate-docs steps (optional; defaults from config / ui-languages.json)"
+    )
   )
   .option(
     "-p, --path <path>",
-    "Only translate files under this path (docs/SVG); project-relative or absolute"
+    t("Only translate files under this path (docs/SVG); project-relative or absolute")
   )
-  .option("-f, --file <path>", "Same as --path")
-  .option("--dry-run", "No writes / no API", false)
+  .option("-f, --file <path>", t("Same as --path"))
+  .option("--dry-run", t("No writes / no API"), false)
   .option(
     "--force",
-    "Docs: clear file tracking and ignore segment cache (not combinable with --force-update)",
+    t("Docs: clear file tracking and ignore segment cache (not combinable with --force-update)"),
     false
   )
   .option(
     "--force-update",
-    "Docs: re-process even when file tracking matches; segment cache still applies",
+    t("Docs: re-process even when file tracking matches; segment cache still applies"),
     false
   )
-  .option("--no-ui", "Skip UI strings translation", false)
+  .option("--no-ui", t("Skip UI strings translation"), false)
   .option(
     "--no-svg",
-    "Skip SVG file translation (when features.translateSVG and config.svg)",
+    t("Skip SVG file translation (when features.translateSVG and config.svg)"),
     false
   )
-  .option("--no-docs", "Skip translate-docs (markdown, MDX, Astro, Docusaurus catalog JSON)", false)
-  .option("--no-json", "Skip generic json[] translation (translate-json)", false)
+  .option(
+    "--no-docs",
+    t("Skip translate-docs (markdown, MDX, Astro, Docusaurus catalog JSON)"),
+    false
+  )
+  .option("--no-json", t("Skip generic json[] translation (translate-json)"), false)
   .option(
     "-j, --concurrency <n>",
-    "Max parallel target locales for translate steps (default: config)"
+    t("Max parallel target locales for translate steps (default: config)")
   )
   .option(
     "-b, --batch-concurrency <n>",
-    "Max parallel batch API calls per file for docs (default: config)"
+    t("Max parallel batch API calls per file for docs (default: config)")
   )
   .option(
     "--emphasis-placeholders",
-    "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (unless docs[].emphasisPlaceholders overrides); CJK/RTL use this by default when flag is omitted",
+    t(
+      "Mask markdown emphasis delimiters (**, *, _, ~~) as placeholders before translation for all locales (unless docs[].emphasisPlaceholders overrides); CJK/RTL use this by default when flag is omitted"
+    ),
     false
   )
   .option(
     "--no-emphasis-placeholders",
-    "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by docs[].emphasisPlaceholders)",
+    t(
+      "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by docs[].emphasisPlaceholders)"
+    ),
     false
   )
   .option(
     "--debug-failed",
-    "Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures",
+    t("Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures"),
     false
   )
   .action(async (_a, cmd) => {
@@ -1617,9 +1893,15 @@ program
     if (!noDocs && syncOpts.force && syncOpts.forceUpdate) {
       console.error(
         chalk.red(
-          `\n❌ Use either --force or --force-update, not both.\n` +
-            `   --force: docs ignore segment cache and clear file tracking.\n` +
-            `   --force-update: docs re-run when file tracking would skip; segment cache still applies.\n`
+          "\n" +
+            t("❌ Use either --force or --force-update, not both.") +
+            "\n" +
+            t("   --force: docs ignore segment cache and clear file tracking.") +
+            "\n" +
+            t(
+              "   --force-update: docs re-run when file tracking would skip; segment cache still applies."
+            ) +
+            "\n"
         )
       );
       cmd.outputHelp();
@@ -1635,7 +1917,9 @@ program
     try {
       ({ uiLocales, translateOpts } = buildTranslateOpts(cmd, config, projectRoot, logPath));
     } catch (e) {
-      console.error(chalk.red(`❌ ${e instanceof Error ? e.message : String(e)}`));
+      console.error(
+        chalk.red(t("❌ {{error}}", { error: e instanceof Error ? e.message : String(e) }))
+      );
       process.exit(1);
     }
     const localeOpt = cmd.opts() as { locale?: string };
@@ -1661,13 +1945,11 @@ program
   })
   .addHelpText(
     "after",
-    `
-Examples:
+    `\n${t(`Examples:
   ai-i18n-tools sync -l de,fr
   ai-i18n-tools sync --locale ja --no-svg --dry-run
   ai-i18n-tools sync --no-docs --path docs/tutorial
-  ai-i18n-tools sync --no-json
-`
+  ai-i18n-tools sync --no-json`)}\n`
   );
 
 const DEFAULT_STATUS_MAX_COLUMNS = 9;
@@ -1676,14 +1958,14 @@ const DEFAULT_STATISTICS_MAX_COLUMNS = 6;
 
 program
   .command("status")
-  .description("Show UI string coverage and markdown translation status vs cache / output files")
+  .description(t("Show UI string coverage and markdown translation status vs cache / output files"))
   .option(
     "--max-columns <n>",
-    "Max locale columns per markdown status table",
+    t("Max locale columns per markdown status table"),
     (v: string) => {
       const n = parseInt(String(v), 10);
       if (!Number.isFinite(n) || n < 1) {
-        throw new InvalidArgumentError("Must be a positive integer.");
+        throw new InvalidArgumentError(t("Must be a positive integer."));
       }
       return n;
     },
@@ -1697,17 +1979,17 @@ program
     const maxColumns = opts.maxColumns;
 
     const padVis = (s: string, width: number): string => {
-      const visLen = stripAnsi(s).length;
+      const visLen = visWidth(s);
       return s + " ".repeat(Math.max(0, width - visLen));
     };
 
     const printMarkdownTableChunk = (chunkLocales: string[], rows: string[][]) => {
-      const headers = ["File", ...chunkLocales];
-      const colW = Math.max(12, ...rows.map((r) => stripAnsi(r[0]!).length), 8);
+      const headers = [t("File"), ...chunkLocales];
+      const colW = Math.max(12, ...rows.map((r) => visWidth(r[0]!)), 8);
       const localeColW = Math.max(
         4,
-        ...chunkLocales.map((l) => l.length),
-        ...rows.flatMap((r) => r.slice(1).map((c) => stripAnsi(String(c)).length))
+        ...chunkLocales.map((l) => displayWidth(l)),
+        ...rows.flatMap((r) => r.slice(1).map((c) => visWidth(String(c))))
       );
       const sep = (cols: string[]) => cols.join(" | ");
       console.log(
@@ -1749,7 +2031,15 @@ program
         const chunkLocales = locales.slice(start, end);
         const slicedRows = rows.map((r) => [r[0]!, ...r.slice(1 + start, 1 + end)]);
         if (showChunkLabels) {
-          console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+          console.log(
+            chalk.gray(
+              t("Locales {{start}}–{{end}} of {{total}}", {
+                start: start + 1,
+                end,
+                total: nLocales,
+              })
+            )
+          );
         }
         printMarkdownTableChunk(chunkLocales, slicedRows);
       }
@@ -1774,17 +2064,17 @@ program
         const pluralKeys = keys.filter((k) => isPluralStringsEntry(stringsData[k] as never));
 
         const uiHeaders = [
-          chalk.bold("Locale"),
-          chalk.bold("Translated"),
-          chalk.bold("Missing"),
-          chalk.bold("Total"),
+          chalk.bold(t("Locale")),
+          chalk.bold(t("Translated")),
+          chalk.bold(t("Missing")),
+          chalk.bold(t("Total")),
         ];
 
         const printUiSubset = (sectionTitle: string, subsetKeys: string[]) => {
           console.log(chalk.bold(sectionTitle));
           const n = subsetKeys.length;
           if (n === 0) {
-            console.log(chalk.gray("  (none)\n"));
+            console.log(chalk.gray(`  ${t("(none)")}\n`));
             return;
           }
           const pct = (num: number) => Math.round((num / n) * 100);
@@ -1805,21 +2095,15 @@ program
 
           const localeColW = Math.max(
             6,
-            stripAnsi(uiHeaders[0]!).length,
-            ...uiLocales.map((l) => l.length)
+            visWidth(uiHeaders[0]!),
+            ...uiLocales.map((l) => displayWidth(l))
           );
           const wTranslated = Math.max(
-            stripAnsi(uiHeaders[1]!).length,
-            ...uiRows.map((r) => stripAnsi(r[1]!).length)
+            visWidth(uiHeaders[1]!),
+            ...uiRows.map((r) => visWidth(r[1]!))
           );
-          const wMissing = Math.max(
-            stripAnsi(uiHeaders[2]!).length,
-            ...uiRows.map((r) => stripAnsi(r[2]!).length)
-          );
-          const wTotal = Math.max(
-            stripAnsi(uiHeaders[3]!).length,
-            ...uiRows.map((r) => stripAnsi(r[3]!).length)
-          );
+          const wMissing = Math.max(visWidth(uiHeaders[2]!), ...uiRows.map((r) => visWidth(r[2]!)));
+          const wTotal = Math.max(visWidth(uiHeaders[3]!), ...uiRows.map((r) => visWidth(r[3]!)));
           const uiSep = (cols: string[]) => cols.join(" | ");
 
           console.log(
@@ -1851,24 +2135,24 @@ program
           console.log();
         };
 
-        console.log(chalk.bold.cyan("\n📊 UI strings status"));
+        console.log(chalk.bold.cyan(`\n${t("📊 UI strings status")}`));
         console.log(chalk.gray(`(${stringsPath})\n`));
-        printUiSubset("Plain UI strings", plainKeys);
-        printUiSubset("Plural UI string groups", pluralKeys);
+        printUiSubset(t("Plain UI strings"), plainKeys);
+        printUiSubset(t("Plural UI string groups"), pluralKeys);
       }
     }
 
-    console.log(chalk.bold.cyan("\n📊 Translation status (markdown)"));
+    console.log(chalk.bold.cyan(`\n${t("📊 Translation status (markdown)")}`));
     console.log(
-      chalk.gray("Legend: ") +
+      chalk.gray(t("Legend: ")) +
         chalk.green("✓") +
-        chalk.gray(" up to date  ") +
+        chalk.gray(t(" up to date  ")) +
         chalk.yellow("●") +
-        chalk.gray(" stale or missing  ") +
+        chalk.gray(t(" stale or missing  ")) +
         chalk.gray("-") +
-        chalk.gray(" not generated  ") +
+        chalk.gray(t(" not generated  ")) +
         chalk.red("?") +
-        chalk.gray(" source read error")
+        chalk.gray(t(" source read error"))
     );
     for (let bi = 0; bi < config.docs.length; bi++) {
       const block = config.docs[bi]!;
@@ -1922,17 +2206,17 @@ program
 
     if (config.features.translateJson && config.json.length > 0) {
       const jsonLocales = getJsonTargetLocaleCodes(config);
-      console.log(chalk.bold.cyan("\n📊 Translation status (json[])"));
+      console.log(chalk.bold.cyan(`\n${t("📊 Translation status (json[])")}`));
       console.log(
-        chalk.gray("Legend: ") +
+        chalk.gray(t("Legend: ")) +
           chalk.green("✓") +
-          chalk.gray(" up to date  ") +
+          chalk.gray(t(" up to date  ")) +
           chalk.yellow("●") +
-          chalk.gray(" stale or missing  ") +
+          chalk.gray(t(" stale or missing  ")) +
           chalk.gray("-") +
-          chalk.gray(" not generated  ") +
+          chalk.gray(t(" not generated  ")) +
           chalk.red("?") +
-          chalk.gray(" source read error")
+          chalk.gray(t(" source read error"))
       );
       for (let bi = 0; bi < config.json.length; bi++) {
         const block = config.json[bi]!;
@@ -1993,7 +2277,15 @@ program
             const chunkLocales = jsonLocales.slice(start, end);
             const slicedRows = rows.map((r) => [r[0]!, ...r.slice(1 + start, 1 + end)]);
             if (showChunkLabels) {
-              console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+              console.log(
+                chalk.gray(
+                  t("Locales {{start}}–{{end}} of {{total}}", {
+                    start: start + 1,
+                    end,
+                    total: nLocales,
+                  })
+                )
+              );
             }
             printMarkdownTableChunk(chunkLocales, slicedRows);
           }
@@ -2007,15 +2299,17 @@ program
 program
   .command("statistics")
   .description(
-    "Show documentation cache and strings.json statistics (same aggregates as Translation Dashboard → Statistics)"
+    t(
+      "Show documentation cache and strings.json statistics (same aggregates as Translation Dashboard → Statistics)"
+    )
   )
   .option(
     "--max-columns <n>",
-    "Max locale columns per model × locale table",
+    t("Max locale columns per model × locale table"),
     (v: string) => {
       const n = parseInt(String(v), 10);
       if (!Number.isFinite(n) || n < 1) {
-        throw new InvalidArgumentError("Must be a positive integer.");
+        throw new InvalidArgumentError(t("Must be a positive integer."));
       }
       return n;
     },
@@ -2037,7 +2331,7 @@ program
       : null;
 
     const padVis = (s: string, width: number): string => {
-      const visLen = stripAnsi(s).length;
+      const visLen = visWidth(s);
       return s + " ".repeat(Math.max(0, width - visLen));
     };
 
@@ -2061,7 +2355,15 @@ program
         const end = Math.min(start + chunkSize, nLocales);
         const chunkLocales = locales.slice(start, end);
         if (showChunkLabels) {
-          console.log(chalk.gray(`Locales ${start + 1}–${end} of ${nLocales}`));
+          console.log(
+            chalk.gray(
+              t("Locales {{start}}–{{end}} of {{total}}", {
+                start: start + 1,
+                end,
+                total: nLocales,
+              })
+            )
+          );
         }
         printChunk(chunkLocales);
       }
@@ -2079,21 +2381,25 @@ program
       targetLocales: config.targetLocales,
     });
 
-    console.log(chalk.bold.cyan("\n📊 UI strings (strings.json)"));
+    console.log(chalk.bold.cyan(`\n${t("📊 UI strings (strings.json)")}`));
     console.log(chalk.gray(`(${stringsPath})\n`));
 
     if (!ui.available) {
-      console.log(chalk.gray("strings.json not configured or missing.\n"));
+      console.log(chalk.gray(`${t("strings.json not configured or missing.")}\n`));
     } else {
       console.log(
         chalk.gray(
-          `${ui.totalEntries} entries (${ui.plainTotal} plain, ${ui.pluralTotal} plural)\n`
+          `${t("{{total}} entries ({{plain}} plain, {{plural}} plural)", {
+            total: ui.totalEntries,
+            plain: ui.plainTotal,
+            plural: ui.pluralTotal,
+          })}\n`
         )
       );
       const uiCardLabelW = 22;
       const uiCardLines: [string, string][] = [
-        ["Plain entries", String(ui.plainTotal)],
-        ["Plural groups", String(ui.pluralTotal)],
+        [t("Plain entries"), String(ui.plainTotal)],
+        [t("Plural groups"), String(ui.pluralTotal)],
       ];
       for (const [label, val] of uiCardLines) {
         console.log(`${padVis(chalk.magenta(label + ":"), uiCardLabelW)} ${val}`);
@@ -2101,29 +2407,33 @@ program
       console.log();
 
       const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
-      const uiModelHeaders = [chalk.bold("Model"), chalk.bold("Entries"), chalk.bold("% of total")];
+      const uiModelHeaders = [
+        chalk.bold(t("Model")),
+        chalk.bold(t("Entries")),
+        chalk.bold(t("% of total")),
+      ];
       const uiModelRows: string[][] = ui.byModel.map((row) => [
         row.model,
         String(row.count),
         totalUiModelUsage === 0 ? "—" : `${pctPart(row.count, totalUiModelUsage)}`,
       ]);
       const wUiModel = Math.max(
-        stripAnsi(uiModelHeaders[0]!).length,
-        ...uiModelRows.map((r) => stripAnsi(r[0]!).length),
+        visWidth(uiModelHeaders[0]!),
+        ...uiModelRows.map((r) => visWidth(r[0]!)),
         5
       );
       const wUiEnt = Math.max(
-        stripAnsi(uiModelHeaders[1]!).length,
-        ...uiModelRows.map((r) => stripAnsi(r[1]!).length),
+        visWidth(uiModelHeaders[1]!),
+        ...uiModelRows.map((r) => visWidth(r[1]!)),
         8
       );
       const wUiPct = Math.max(
-        stripAnsi(uiModelHeaders[2]!).length,
-        ...uiModelRows.map((r) => stripAnsi(r[2]!).length),
+        visWidth(uiModelHeaders[2]!),
+        ...uiModelRows.map((r) => visWidth(r[2]!)),
         10
       );
       const uiSep = (cols: string[]) => cols.join(" | ");
-      console.log(chalk.magenta.bold("By model"));
+      console.log(chalk.magenta.bold(t("By model")));
       console.log(
         uiSep([
           padVis(uiModelHeaders[0]!, wUiModel),
@@ -2143,7 +2453,7 @@ program
       }
       console.log(
         uiSep([
-          padVis(chalk.bold("Total"), wUiModel),
+          padVis(chalk.bold(t("Total")), wUiModel),
           padVis(String(totalUiModelUsage), wUiEnt),
           padVis(totalUiModelUsage === 0 ? "—" : "100.0%", wUiPct),
         ])
@@ -2159,16 +2469,16 @@ program
       );
 
       const printUiMatrixChunk = (chunkLocales: string[]) => {
-        const headers = [chalk.bold("Model"), ...chunkLocales.map((loc) => chalk.bold(loc))];
+        const headers = [chalk.bold(t("Model")), ...chunkLocales.map((loc) => chalk.bold(loc))];
         const colWidths = headers.map((h, i) =>
           Math.max(
-            stripAnsi(h).length,
+            visWidth(h),
             ...ui.byModel.map((mRow) => {
-              if (i === 0) return stripAnsi(mRow.model).length;
+              if (i === 0) return visWidth(mRow.model);
               const cnt = uiMlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
               const tot = uiLocTotals.get(chunkLocales[i - 1]!) ?? 0;
               const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
-              return stripAnsi(cell).length;
+              return visWidth(cell);
             })
           )
         );
@@ -2192,55 +2502,59 @@ program
 
       const uiLocalesList = ui.plainByLocale.map((r) => r.locale);
       if (uiLocalesList.length === 0) {
-        console.log(chalk.magenta.bold("By model and locale"));
-        console.log(chalk.gray("  (no locale rows)\n"));
+        console.log(chalk.magenta.bold(t("By model and locale")));
+        console.log(chalk.gray(`  ${t("(no locale rows)")}\n`));
       } else {
-        console.log(chalk.magenta.bold("By model and locale"));
+        console.log(chalk.magenta.bold(t("By model and locale")));
         runChunkedLocaleTables(uiLocalesList, printUiMatrixChunk);
       }
     }
 
-    console.log(chalk.bold.cyan("\n📊 Documentation cache"));
+    console.log(chalk.bold.cyan(`\n${t("📊 Documentation cache")}`));
     console.log(chalk.gray(`(${cacheDir})\n`));
 
     const docCardLabelW = 22;
     const docLines: [string, string][] = [
-      ["Total segments", String(c.totalSegments)],
-      ["Stale", String(c.staleSegments)],
-      ["Active", String(c.activeSegments)],
-      ["Tracked files", String(c.totalFiles)],
-      ["Unique filepaths", String(c.uniqueFilepaths)],
-      ["Models used", String(c.byModel.length)],
-      ["Glossary entries", gl.available ? String(gl.totalTerms) : "0"],
+      [t("Total segments"), String(c.totalSegments)],
+      [t("Stale"), String(c.staleSegments)],
+      [t("Active"), String(c.activeSegments)],
+      [t("Tracked files"), String(c.totalFiles)],
+      [t("Unique filepaths"), String(c.uniqueFilepaths)],
+      [t("Models used"), String(c.byModel.length)],
+      [t("Glossary entries"), gl.available ? String(gl.totalTerms) : "0"],
     ];
     for (const [label, val] of docLines) {
       console.log(`${padVis(chalk.magenta(label + ":"), docCardLabelW)} ${val}`);
     }
     console.log();
 
-    const docModelHeaders = [chalk.bold("Model"), chalk.bold("Segments"), chalk.bold("% of total")];
+    const docModelHeaders = [
+      chalk.bold(t("Model")),
+      chalk.bold(t("Segments")),
+      chalk.bold(t("% of total")),
+    ];
     const docModelRows: string[][] = c.byModel.map((row) => [
       row.model,
       String(row.count),
       c.totalSegments === 0 ? "—" : `${pctPart(row.count, c.totalSegments)}`,
     ]);
     const wDocModel = Math.max(
-      stripAnsi(docModelHeaders[0]!).length,
-      ...docModelRows.map((r) => stripAnsi(r[0]!).length),
+      visWidth(docModelHeaders[0]!),
+      ...docModelRows.map((r) => visWidth(r[0]!)),
       5
     );
     const wDocSeg = Math.max(
-      stripAnsi(docModelHeaders[1]!).length,
-      ...docModelRows.map((r) => stripAnsi(r[1]!).length),
+      visWidth(docModelHeaders[1]!),
+      ...docModelRows.map((r) => visWidth(r[1]!)),
       9
     );
     const wDocPct = Math.max(
-      stripAnsi(docModelHeaders[2]!).length,
-      ...docModelRows.map((r) => stripAnsi(r[2]!).length),
+      visWidth(docModelHeaders[2]!),
+      ...docModelRows.map((r) => visWidth(r[2]!)),
       10
     );
     const docSep = (cols: string[]) => cols.join(" | ");
-    console.log(chalk.magenta.bold("By model"));
+    console.log(chalk.magenta.bold(t("By model")));
     console.log(
       docSep([
         padVis(docModelHeaders[0]!, wDocModel),
@@ -2262,7 +2576,7 @@ program
     }
     console.log(
       docSep([
-        padVis(chalk.bold("Total"), wDocModel),
+        padVis(chalk.bold(t("Total")), wDocModel),
         padVis(String(c.totalSegments), wDocSeg),
         padVis(c.totalSegments === 0 ? "—" : "100.0%", wDocPct),
       ])
@@ -2276,16 +2590,16 @@ program
     const cacheLocTotals = new Map(c.byLocale.map((row) => [row.locale, row.total] as const));
 
     const printDocMatrixChunk = (chunkLocales: string[]) => {
-      const headers = [chalk.bold("Model"), ...chunkLocales.map((loc) => chalk.bold(loc))];
+      const headers = [chalk.bold(t("Model")), ...chunkLocales.map((loc) => chalk.bold(loc))];
       const colWidths = headers.map((h, i) =>
         Math.max(
-          stripAnsi(h).length,
+          visWidth(h),
           ...c.byModel.map((mRow) => {
-            if (i === 0) return stripAnsi(mRow.model).length;
+            if (i === 0) return visWidth(mRow.model);
             const cnt = mlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
             const tot = cacheLocTotals.get(chunkLocales[i - 1]!) ?? 0;
             const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
-            return stripAnsi(cell).length;
+            return visWidth(cell);
           })
         )
       );
@@ -2309,10 +2623,10 @@ program
 
     const cacheLocales = c.byLocale.map((r) => r.locale);
     if (cacheLocales.length === 0) {
-      console.log(chalk.magenta.bold("By model and locale"));
-      console.log(chalk.gray("  (no locale rows)\n"));
+      console.log(chalk.magenta.bold(t("By model and locale")));
+      console.log(chalk.gray(`  ${t("(no locale rows)")}\n`));
     } else {
-      console.log(chalk.magenta.bold("By model and locale"));
+      console.log(chalk.magenta.bold(t("By model and locale")));
       runChunkedLocaleTables(cacheLocales, printDocMatrixChunk);
     }
 
@@ -2322,17 +2636,20 @@ program
 program
   .command("cleanup")
   .description(
-    "Clear the markdown_source_issues table, then run sync --force-update (extract, UI, SVG, docs) so it repopulates with only currently-configured docs; then clean stale segment rows (null last_hit_at / empty filepath) and remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
+    t(
+      "Clear the markdown_source_issues table, then run sync --force-update (extract, UI, SVG, docs) so it repopulates with only currently-configured docs; then clean stale segment rows (null last_hit_at / empty filepath) and remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
+    )
   )
-  .option("--dry-run", "Show only", false)
+  .option("--dry-run", t("Show only"), false)
   .option(
     "--backup <path>",
-    "Write a SQLite backup to <path> before modifications (no backup is made unless this is set)"
+    t("Write a SQLite backup to <path> before modifications (no backup is made unless this is set)")
   )
   .action(async (opts: { dryRun?: boolean; backup?: string }, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
 
+    const dryTag = opts.dryRun ? t(" (dry-run)") : "";
     const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, loaded.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "cleanup");
@@ -2354,14 +2671,17 @@ program
       try {
         const clearedMarkdownIssues = preCache.clearAllMarkdownIssues(Boolean(opts.dryRun));
         console.log(
-          `[cleanup] cleared markdown_source_issues before sync (repopulated by sync / check-markdown): ${clearedMarkdownIssues}${opts.dryRun ? " (dry-run)" : ""}`
+          t(
+            "[cleanup] cleared markdown_source_issues before sync (repopulated by sync / check-markdown): {{count}}",
+            { count: clearedMarkdownIssues }
+          ) + dryTag
         );
       } finally {
         preCache.close();
       }
     }
 
-    console.log(chalk.cyan("[cleanup] Running sync --force-update first…"));
+    console.log(chalk.cyan(t("[cleanup] Running sync --force-update first…")));
     try {
       await runSyncPipeline({
         config: loaded,
@@ -2387,11 +2707,11 @@ program
       if (shouldBackup && opts.backup) {
         const backupPath = path.resolve(cwd, opts.backup);
         await cache.backupTo(backupPath);
-        console.log(`[cleanup] Backup → ${backupPath}`);
+        console.log(t("[cleanup] Backup → {{path}}", { path: backupPath }));
       }
 
       const { count, deletedRows } = cache.cleanupStaleTranslations(Boolean(opts.dryRun));
-      console.log(`[cleanup] stale: ${count} row(s)${opts.dryRun ? " (dry-run)" : ""}`);
+      console.log(t("[cleanup] stale: {{count}} row(s)", { count }) + dryTag);
       if (opts.dryRun && deletedRows.length) {
         console.log(
           deletedRows
@@ -2406,7 +2726,9 @@ program
         Boolean(opts.dryRun)
       );
       console.log(
-        `[cleanup] orphaned file_tracking (missing on disk): ${prunedTracking}${opts.dryRun ? " (dry-run)" : ""}`
+        t("[cleanup] orphaned file_tracking (missing on disk): {{count}}", {
+          count: prunedTracking,
+        }) + dryTag
       );
 
       let orphanTranslations = 0;
@@ -2421,7 +2743,9 @@ program
         }
       }
       console.log(
-        `[cleanup] orphaned translations (missing on disk): ${orphanTranslations}${opts.dryRun ? " (dry-run)" : ""}`
+        t("[cleanup] orphaned translations (missing on disk): {{count}}", {
+          count: orphanTranslations,
+        }) + dryTag
       );
 
       const prunedFailures = cache.pruneOrphanedTranslationFailures(
@@ -2429,7 +2753,7 @@ program
         Boolean(opts.dryRun)
       );
       console.log(
-        `[cleanup] orphaned translation_failures: ${prunedFailures}${opts.dryRun ? " (dry-run)" : ""}`
+        t("[cleanup] orphaned translation_failures: {{count}}", { count: prunedFailures }) + dryTag
       );
     } finally {
       cache.close();
@@ -2439,11 +2763,13 @@ program
 program
   .command("clean-temp")
   .description(
-    "Find `*.log` and `cache.db.backup*.sqlite` under a directory tree, print paths (like find -print), then delete after `y` or with `-f` / `--force`"
+    t(
+      "Find `*.log` and `cache.db.backup*.sqlite` under a directory tree, print paths (like find -print), then delete after `y` or with `-f` / `--force`"
+    )
   )
-  .option("-r, --root <path>", "Directory to search (default: current working directory)", ".")
-  .option("-f, --force", "Delete matching files without prompting", false)
-  .option("--dry-run", "Print matching paths only; do not prompt or delete", false)
+  .option("-r, --root <path>", t("Directory to search (default: current working directory)"), ".")
+  .option("-f, --force", t("Delete matching files without prompting"), false)
+  .option("--dry-run", t("Print matching paths only; do not prompt or delete"), false)
   .action(async (opts: { root?: string; dryRun?: boolean; force?: boolean }) => {
     const rootDir = path.resolve(process.cwd(), opts.root ?? ".");
     await runCleanTemp({
@@ -2467,6 +2793,9 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     : null;
   const jsonSourceBlock = config.docs.find((b) => b.docusaurusCatalogDir?.trim());
 
+  // Resolve the dashboard's OWN UI locale (the singleton was already reinitialized with config
+  // `uiLanguage` during loadConfigOrExit); ship the matching flat bundle + direction to the browser.
+  const uiLocale = getUiLocale();
   let triggerShutdown: () => void = () => {};
   const app = createTranslationDashboardApp(cache, {
     cwd: projectRoot,
@@ -2476,13 +2805,18 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     targetLocales: config.targetLocales,
     docusaurusCatalogDir: jsonSourceBlock?.docusaurusCatalogDir?.trim() || null,
     onShutdown: () => triggerShutdown(),
+    uiI18n: {
+      locale: uiLocale,
+      dir: uiLocaleDirection(uiLocale),
+      bundle: loadUiBundle(uiLocale),
+    },
   });
 
   const staticDir = resolveDashboardAppStaticDir();
   if (fs.existsSync(staticDir)) {
     app.use(express.static(staticDir));
   } else {
-    console.warn(`[dashboard] Static dir missing: ${staticDir}`);
+    console.warn(t("[dashboard] Static dir missing: {{dir}}", { dir: staticDir }));
   }
 
   const server = http.createServer(app);
@@ -2507,7 +2841,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
     }
     shuttingDown = true;
     const exitCode = signal === "SIGINT" ? 130 : signal === "SIGTERM" ? 143 : 0;
-    console.log(chalk.yellow(`\n[dashboard] Shutting down…`));
+    console.log(chalk.yellow(`\n${t("[dashboard] Shutting down…")}`));
     server.close((err) => {
       closeCacheOnce();
       process.exit(err ? 1 : exitCode);
@@ -2525,19 +2859,25 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   process.once("SIGTERM", () => shutdown("SIGTERM"));
 
   listenTranslationDashboardServer(server, port, (actualPort) => {
-    console.log(chalk.green(`[dashboard] Listening on TCP port ${actualPort}`));
+    console.log(chalk.green(t("[dashboard] Listening on TCP port {{port}}", { port: actualPort })));
     if (actualPort !== port) {
       console.log(
         chalk.yellow(
-          `[dashboard] Requested port ${port} was unavailable; using port ${actualPort} instead.`
+          t(
+            "[dashboard] Requested port {{requested}} was unavailable; using port {{actual}} instead.",
+            {
+              requested: port,
+              actual: actualPort,
+            }
+          )
         )
       );
     }
     const url = `http://127.0.0.1:${actualPort}/`;
     console.log(chalk.green("-------------------------------------------"));
-    console.log(chalk.green("  ai-i18n-tools Translation Dashboard"));
+    console.log(chalk.green(`  ${t("ai-i18n-tools Translation Dashboard")}`));
     console.log(chalk.green("-------------------------------------------\n"));
-    console.log(`[dashboard] Running at ` + chalk.cyan(`${url}`));
+    console.log(t("[dashboard] Running at {{url}}", { url: chalk.cyan(url) }));
     if (!cmdOpts.noOpen) {
       openBrowser(url);
     }
@@ -2548,29 +2888,33 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
 program
   .command("dashboard")
   .description(
-    "Launch the Translation Dashboard (local web UI: cache segments, UI strings, glossary, failures, statistics)"
+    t(
+      "Launch the Translation Dashboard (local web UI: cache segments, UI strings, glossary, failures, statistics)"
+    )
   )
-  .option("-p, --port <n>", "Port", String(DEFAULT_DASHBOARD_PORT))
-  .option("--no-open", "Do not open the default browser")
+  .option("-p, --port <n>", t("Port"), String(DEFAULT_DASHBOARD_PORT))
+  .option("--no-open", t("Do not open the default browser"))
   .action(runDashboardCommand);
 
 program
   .command("editor", { hidden: true })
-  .description("Deprecated: use 'dashboard' instead")
-  .option("-p, --port <n>", "Port", String(DEFAULT_DASHBOARD_PORT))
-  .option("--no-open", "Do not open the default browser")
+  .description(t("Deprecated: use 'dashboard' instead"))
+  .option("-p, --port <n>", t("Port"), String(DEFAULT_DASHBOARD_PORT))
+  .option("--no-open", t("Do not open the default browser"))
   .action((_opts: { port?: string }, cmd: Command) => {
     console.warn(
-      chalk.yellow("The 'editor' command is deprecated; use 'ai-i18n-tools dashboard' instead.")
+      chalk.yellow(t("The 'editor' command is deprecated; use 'ai-i18n-tools dashboard' instead."))
     );
     runDashboardCommand(_opts, cmd);
   });
 
 program
   .command("generate-ui-languages")
-  .description("Write ui-languages.json from sourceLocale, targetLocales, and the master catalog")
-  .option("--master <path>", "Path to ui-languages-complete.json (default: bundled data file)")
-  .option("--dry-run", "Print JSON to stdout only; do not write the output file", false)
+  .description(
+    t("Write ui-languages.json from sourceLocale, targetLocales, and the master catalog")
+  )
+  .option("--master <path>", t("Path to ui-languages-complete.json (default: bundled data file)"))
+  .option("--dry-run", t("Print JSON to stdout only; do not write the output file"), false)
   .action((opts: { master?: string; dryRun?: boolean }, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -2578,7 +2922,7 @@ program
       ? path.resolve(cwd, opts.master)
       : resolveDefaultUiLanguagesMasterPath();
     if (!fs.existsSync(masterPath)) {
-      console.error(chalk.red(`Master file not found: ${masterPath}`));
+      console.error(chalk.red(t("Master file not found: {{path}}", { path: masterPath })));
       process.exit(1);
     }
     try {
@@ -2592,13 +2936,25 @@ program
       } else {
         console.log(
           chalk.green(
-            `✅ Wrote ${result.outPath} (${result.rows.length} row${result.rows.length === 1 ? "" : "s"})`
+            result.rows.length === 1
+              ? t("✅ Wrote {{path}} ({{count}} row)", {
+                  path: result.outPath,
+                  count: result.rows.length,
+                })
+              : t("✅ Wrote {{path}} ({{count}} rows)", {
+                  path: result.outPath,
+                  count: result.rows.length,
+                })
           )
         );
       }
     } catch (e) {
       console.error(
-        chalk.red(`❌ [generate-ui-languages] ${e instanceof Error ? e.message : String(e)}`)
+        chalk.red(
+          t("❌ [generate-ui-languages] {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
       );
       process.exit(1);
     }
@@ -2606,10 +2962,10 @@ program
 
 program
   .command("glossary-generate")
-  .description("Write an empty glossary-user.csv with standard headers")
+  .description(t("Write an empty glossary-user.csv with standard headers"))
   .option(
     "-o, --output <path>",
-    "Output path (default: config glossary.userGlossary or glossary-user.csv)"
+    t("Output path (default: config glossary.userGlossary or glossary-user.csv)")
   )
   .action((opts: { output?: string }, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -2619,11 +2975,11 @@ program
       : path.join(projectRoot, config.glossary?.userGlossary || "glossary-user.csv");
     const header = `"Original language string","locale","Translation","Force"\n`;
     if (fs.existsSync(out)) {
-      console.error(`Refusing to overwrite existing file: ${out}`);
+      console.error(t("Refusing to overwrite existing file: {{path}}", { path: out }));
       process.exit(1);
     }
     writeAtomicUtf8(out, header);
-    console.log(`Wrote ${out}`);
+    console.log(t("Wrote {{path}}", { path: out }));
   });
 
 program.addHelpText("after", ROOT_CLI_HELP_AFTER);

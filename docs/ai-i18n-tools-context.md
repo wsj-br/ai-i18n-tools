@@ -9,6 +9,7 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 - **CLI:** `npx ai-i18n-tools <command>` (or `pnpm exec ai-i18n-tools`).
 - **Runtime:** `import … from 'ai-i18n-tools/runtime'` — i18next helpers (`defaultI18nInitOptions`, `setupKeyAsDefaultT`, `makeLoadLocale`, `makeLocaleLoadersFromManifest`, `applyDirection`, language labels, plural helpers, etc.).
 - **Config:** root `ai-i18n-tools.config.json`, or `-c <path>`.
+- **Tool UI language:** the CLI help/logs and the dashboard localize themselves (separate from your project's locales). Resolution order, highest first: `-L` / `--ui-lang <code>`, the `AI_I18N_LANG` env var, the config `uiLanguage` key, then the host OS locale; unmatched values fall back to the closest shipped variation and finally to `en-GB`.
 
 - **LLM provider:** configure under `providers.<name>` and select the active one with the top-level `provider` key (optional when only one provider is configured). Built-in presets (OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Cerebras, Groq, Mistral, xAI, NVIDIA, Alibaba, APIFUN, Ollama) need only a `translationModels` list; their `baseUrl` and API-key env var are built in. Any OpenAI-compatible endpoint works by setting `providers.<name>.baseUrl` (+ `apiKeyEnv`). A legacy top-level `openrouter` block is auto-migrated to `providers.openrouter` on load.
 

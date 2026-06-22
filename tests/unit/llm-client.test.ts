@@ -592,6 +592,24 @@ describe("LlmClient", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(2);
   });
 
+  it("translateUIBatch accepts a zh-Hant segment containing the ℹ symbol without falling back", async () => {
+    generateTextMock.mockResolvedValue(genResult('["ℹ 設定 → 模型"]'));
+    const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["Settings"], "zh-Hant");
+    expect(r.translations).toEqual(["ℹ 設定 → 模型"]);
+    expect(generateTextMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("translateUIBatch falls back when zh-Hant output is predominantly Simplified", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(genResult('["无需注册或设置历史记录"]'))
+      .mockResolvedValueOnce(genResult('["無需帳戶或註冊歷史記錄"]'));
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["History"], "zh-Hant");
+    expect(r.translations).toEqual(["無需帳戶或註冊歷史記錄"]);
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
   it("translatePluralCardinalBatch rejects wrong-script forms when targetLocale is hi-Latn", async () => {
     generateTextMock
       .mockResolvedValueOnce(genResult('{"one":"1 फ़ाइल","other":"{{count}} फ़ाइलें"}'))
@@ -604,6 +622,198 @@ describe("LlmClient", () => {
     );
     expect(r.forms.one).toBe("1 file");
     expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("translateDocumentSegment folds a discarded wrong-script attempt's tokens/cost into the result", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult("नमस्ते दुनिया", {
+          cost: 0.001,
+          usage: { inputTokens: 5, outputTokens: 7, totalTokens: 12 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult("Namaste duniya", {
+          cost: 0.002,
+          usage: { inputTokens: 3, outputTokens: 4, totalTokens: 7 },
+        })
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translateDocumentSegment("Hello world", "hi-Latn", []);
+    expect(r.content).toBe("Namaste duniya");
+    expect(r.usage).toEqual({ inputTokens: 8, outputTokens: 11, totalTokens: 19 });
+    expect(r.cost).toBeCloseTo(0.003);
+  });
+
+  it("chat folds a discarded empty-content attempt's tokens/cost into the result", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult("   ", {
+          cost: 0.0005,
+          usage: { inputTokens: 1, outputTokens: 0, totalTokens: 1 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult("ok", { cost: 0.001, usage: { inputTokens: 2, outputTokens: 3, totalTokens: 5 } })
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
+    expect(r.content).toBe("ok");
+    expect(r.usage).toEqual({ inputTokens: 3, outputTokens: 3, totalTokens: 6 });
+    expect(r.cost).toBeCloseTo(0.0015);
+  });
+
+  it("translateDocumentBatch folds a discarded parse-failure attempt's tokens/cost into the result", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">only-one</t>`, {
+          cost: 0.001,
+          usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">A</t><t id="1">B</t>`, {
+          cost: 0.002,
+          usage: { inputTokens: 2, outputTokens: 2, totalTokens: 4 },
+        })
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    const r = await c.translateDocumentBatch(segs, "de");
+    expect(r.usage).toEqual({ inputTokens: 7, outputTokens: 7, totalTokens: 14 });
+    expect(r.cost).toBeCloseTo(0.003);
+  });
+
+  it("translateDocumentBatch sums discarded tokens but keeps cost undefined when no cost is reported", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">only-one</t>`, {
+          usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">A</t><t id="1">B</t>`, {
+          usage: { inputTokens: 2, outputTokens: 2, totalTokens: 4 },
+        })
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    const r = await c.translateDocumentBatch(segs, "de");
+    expect(r.usage.totalTokens).toBe(14);
+    expect(r.cost).toBeUndefined();
+  });
+
+  it("translateDocumentBatch attaches discarded tokens/cost to DocumentBatchAllModelsFailedError", async () => {
+    generateTextMock.mockResolvedValue(
+      genResult(`<t id="0">x</t>`, {
+        cost: 0.001,
+        usage: { inputTokens: 4, outputTokens: 1, totalTokens: 5 },
+      })
+    );
+    const c = new LlmClient({ config: llmConfig(["m1", "m2"]), apiKey: "k" });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    let err: unknown;
+    try {
+      await c.translateDocumentBatch(segs, "de", [], { docLogContext: { relativePath: "a.md" } });
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(DocumentBatchAllModelsFailedError);
+    const d = (err as InstanceType<typeof DocumentBatchAllModelsFailedError>).details;
+    expect(d.wastedUsage).toEqual({ inputTokens: 8, outputTokens: 2, totalTokens: 10 });
+    expect(d.wastedCost).toBeCloseTo(0.002);
+  });
+
+  it("translateUIBatch folds a discarded wrong-script attempt's tokens/cost into the result", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult('["सहेव"]', {
+          cost: 0.001,
+          usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult('["Sahej"]', {
+          cost: 0.002,
+          usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+        })
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["Save"], "hi-Latn");
+    expect(r.translations).toEqual(["Sahej"]);
+    expect(r.usage).toEqual({ inputTokens: 6, outputTokens: 6, totalTokens: 12 });
+    expect(r.cost).toBeCloseTo(0.003);
+  });
+
+  it("onApiUsage fires once per billed response, including a discarded parse-failure attempt", async () => {
+    const calls: Array<{ usage: GenResultOptions["usage"]; cost: number | undefined }> = [];
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">only-one</t>`, {
+          cost: 0.001,
+          usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">A</t><t id="1">B</t>`, {
+          cost: 0.002,
+          usage: { inputTokens: 2, outputTokens: 2, totalTokens: 4 },
+        })
+      );
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      onApiUsage: (usage, cost) => calls.push({ usage, cost }),
+    });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    await c.translateDocumentBatch(segs, "de");
+    expect(calls).toEqual([
+      { usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 }, cost: 0.001 },
+      { usage: { inputTokens: 2, outputTokens: 2, totalTokens: 4 }, cost: 0.002 },
+    ]);
+  });
+
+  it("onApiUsage fires for an empty-content billed response before fallback succeeds", async () => {
+    const calls: Array<{ inputTokens: number; cost: number | undefined }> = [];
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult("   ", {
+          cost: 0.0005,
+          usage: { inputTokens: 1, outputTokens: 0, totalTokens: 1 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult("ok", { cost: 0.001, usage: { inputTokens: 2, outputTokens: 3, totalTokens: 5 } })
+      );
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      onApiUsage: (usage, cost) => calls.push({ inputTokens: usage.inputTokens, cost }),
+    });
+    const r = await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
+    expect(r.content).toBe("ok");
+    expect(calls).toEqual([
+      { inputTokens: 1, cost: 0.0005 },
+      { inputTokens: 2, cost: 0.001 },
+    ]);
   });
 
   it("appendDebugLog writes request/response when debugTrafficFilePath set", async () => {

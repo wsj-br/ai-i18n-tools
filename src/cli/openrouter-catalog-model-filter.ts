@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
+import { t } from "../i18n/index.js";
 import { fetchOpenRouterModelsCatalog } from "../api/provider-models-catalog.js";
 import {
   OPENROUTER_PROVIDER_KEY,
@@ -55,7 +56,7 @@ export async function filterTranslationModelsAgainstOpenRouterCatalog(
   } catch {
     console.warn(
       chalk.yellow(
-        "[models] Could not load OpenRouter model catalog; using configured model ids unchanged."
+        t("[models] Could not load OpenRouter model catalog; using configured model ids unchanged.")
       )
     );
     return { models, unknownIds: [] };
@@ -69,7 +70,10 @@ export function warnIgnoredUnknownOpenRouterModels(unknownIds: string[]): void {
   }
   console.warn(
     chalk.yellow(
-      `[models] Ignoring ${unknownIds.length} model id(s) not listed by OpenRouter (removed or unknown slug):`
+      t(
+        "[models] Ignoring {{count}} model id(s) not listed by OpenRouter (removed or unknown slug):",
+        { count: unknownIds.length }
+      )
     )
   );
   for (const id of unknownIds) {
@@ -77,7 +81,10 @@ export function warnIgnoredUnknownOpenRouterModels(unknownIds: string[]): void {
   }
   console.warn(
     chalk.yellow(
-      "[models] Edit `openrouter.translationModels` in your config, then run `ai-i18n-tools check-models`."
+      t("[models] Edit {{configKey}} in your config, then run {{command}}.", {
+        configKey: "`openrouter.translationModels`",
+        command: "`ai-i18n-tools check-models`",
+      })
     )
   );
 }

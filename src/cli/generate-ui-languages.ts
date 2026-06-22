@@ -10,6 +10,7 @@ import {
 } from "../core/ui-languages-catalog.js";
 import { writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
+import { t } from "../i18n/index.js";
 
 /** Default bundled master file (next to `dist/` when running compiled CLI). */
 export function resolveDefaultUiLanguagesMasterPath(): string {
@@ -42,7 +43,7 @@ export function runGenerateUiLanguages(
 ): GenerateUiLanguagesResult {
   const uiPath = config.uiLanguagesPath?.trim();
   if (!uiPath) {
-    throw new Error("uiLanguagesPath must be set in config (output path for ui-languages.json)");
+    throw new Error(t("uiLanguagesPath must be set in config (output path for ui-languages.json)"));
   }
 
   const master = loadUiLanguagesMaster(path.resolve(options.masterPath));

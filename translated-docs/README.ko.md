@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLM 제공자
 
-번역 명령(`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` 및 관련 스크립트)은 LLM 제공자를 호출합니다. `check-markdown`는 그렇지 않습니다.
+번역 명령( `translate-ui` , `translate-docs` , `translate-json` , `sync` , `check-models` 및 관련 스크립트)은 LLM 제공자를 호출합니다. `check-markdown` , `mark-html` , `extract` 는 그렇지 않습니다.
 
 최상위 `providers` 맵 아래에서 제공자를 구성하고 최상위 `provider` 선택기로 활성 제공자를 선택합니다(제공자가 하나만 구성된 경우 선택 사항). 대부분의 제공자는 `translationModels` 목록만 필요합니다. `baseUrl` 및 API 키 환경 변수는 내장된 사전 설정에서 가져옵니다. 제공자별로 `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, `requestTimeoutMs`를 재정의할 수 있습니다. `requestTimeoutMs`은 각 요청에 대해 대기할 최대 시간(밀리초)입니다(기본값 `30000`).
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+일반 HTML 앱의 경우 요소에 기본 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커를 주석으로 추가합니다(소스 텍스트는 요소 자체의 textContent / title / placeholder에서 가져옵니다. 한 번 작성됨). `mark-html` 는 이를 대신 삽입하고 `extract` 는 이를 `strings.json` 로 캡처합니다. [시작하기 — 번역을 위한 HTML 표시](docs/GETTING_STARTED.ko.md#marking-html-for-translation)를 참조하십시오.
+
 각 명령어별 플래그 목록은 [시작하기 — CLI 참조](docs/GETTING_STARTED.ko.md#cli-reference)에 있습니다. 내장 사용법 텍스트를 보려면 `ai-i18n-tools <command> --help`을 실행하세요.
 
-모든 명령에 대한 전역 옵션: `-c <config>`(기본값: `ai-i18n-tools.config.json`), `-v`(상세), `-P` / `--provider <name>`(`providers` 아래에 구성되어야 함; 활성 LLM 공급자 재정의), 로그 파일에 콘솔 출력을 복제하기 위한 선택적 `-w` / `--write-logs [path]`(기본값: 번역 캐시 디렉터리 아래), `-V` / `--version`, `-h` / `--help`. 여러 명령에서 대상 로캘을 제한하기 위해 `-l` / `--locale <codes>`(쉼표로 구분된 BCP-47)을 허용합니다. `lint-source`는 단일 소스 로캘을 사용합니다. 명령 개요 테이블은 [시작하기](docs/GETTING_STARTED.ko.md#cli-reference)를 참조하십시오.
+모든 명령에 대한 전역 옵션: `-c <config>`(기본값: `ai-i18n-tools.config.json`), `-v`(상세), `-P` / `--provider <name>`(활성 LLM 제공자 재정의; `providers` 아래에 구성해야 함), `-L` / `--ui-lang <code>`(도구 자체 UI/로그에 대한 언어), 선택적 `-w` / `--write-logs [path]`를 사용하여 콘솔 출력을 로그 파일로 복사(기본값: 번역 캐시 디렉터리 아래), `-V` / `--version`, 및 `-h` / `--help`. 여러 명령은 대상 로캘을 제한하기 위해 `-l` / `--locale <codes>`(쉼표로 구분된 BCP-47)을 허용합니다. `lint-source`은 단일 소스 로캘을 사용합니다. 명령 개요 테이블은 [시작하기](docs/GETTING_STARTED.ko.md#cli-reference)를 참조하십시오.
+
+### 도구 UI 언어(로그, 도움말, 대시보드)
+
+이 도구는 자체 CLI 도움말, 트래픽이 많은 로그/요약 메시지 및 번역 대시보드를 지역화합니다. UI 로캘은 다음 소스에서 가장 높은 우선순위부터 확인됩니다.
+
+1. `-L` / `--ui-lang <code>` 전역 플래그(예: `-L pt-BR`).
+2. `AI_I18N_LANG` 환경 변수(예: `export AI_I18N_LANG=es`).
+3. `ai-i18n-tools.config.json`의 `uiLanguage` 구성 키(BCP-47 문자열).
+4. 호스트 OS 로캘(`Intl.DateTimeFormat().resolvedOptions().locale` 경유).
+
+요청된 로캘은 제공된 UI 언어와 정확하게 일치하거나 가장 가까운 변형과 일치합니다(예: `pt-PT`은 `pt-BR`로 확인되고 `en-US`은 `en-GB`으로 확인됨). 일치하는 항목이 없으면 소스 로캘(`en-GB`)으로 대체됩니다. 이는 프로젝트의 `sourceLocale` / `targetLocales`와 독립적입니다. 제공된 UI 언어: `en-GB`(소스) 및 `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, 및 `zh-Hant`.
 
 ---
 

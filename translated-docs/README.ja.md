@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLMプロバイダー
 
-翻訳コマンド（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models`、および関連スクリプト）はLLMプロバイダーを呼び出します。`check-markdown`は呼び出しません。
+翻訳コマンド（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models`、および関連スクリプト）はLLMプロバイダーを呼び出しますが、`check-markdown`、`mark-html`、および`extract`は呼び出しません。
 
 トップレベルの`providers`マップ内にプロバイダーを設定し、トップレベルの`provider`セレクターでアクティブなプロバイダーを選択します（プロバイダーが1つだけ設定されている場合は省略可能）。ほとんどのプロバイダーでは`translationModels`リストのみが必要です。`baseUrl`およびAPIキーの環境変数は組み込みプリセットから取得されます。プロバイダーごとに`baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature`、`requestTimeoutMs`をオーバーライドできます。`requestTimeoutMs`は各リクエストの最大待機時間（ミリ秒単位）です（デフォルトは`30000`）。
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+プレーンなHTMLアプリの場合、要素にベアな`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーを注釈付けします（ソーステキストは要素自身のtextContent / title / placeholderから取得され、一度だけ記述されます）。`mark-html`はそれらを挿入し、`extract`がそれらを`strings.json`にキャプチャします。 [Getting Started — Marking HTML for translation](docs/GETTING_STARTED.ja.md#marking-html-for-translation)を参照してください。
+
 各コマンドのフラグ一覧は[はじめに — CLIリファレンス](docs/GETTING_STARTED.ja.md#cli-reference)に記載されています。組み込みの使用方法テキストを表示するには`ai-i18n-tools <command> --help`を実行してください。
 
-すべてのコマンドでのグローバルオプション：`-c <config>`（デフォルト：`ai-i18n-tools.config.json`）、`-v`（詳細）、`-P` / `--provider <name>`（アクティブなLLMプロバイダーをオーバーライド。`providers` の下に設定されている必要があります）、コンソール出力をログファイルに複製するためのオプションの `-w` / `--write-logs [path]`（デフォルト：翻訳キャッシュディレクトリの下）、`-V` / `--version`、および `-h` / `--help`。いくつかのコマンドは、ターゲットロケールを制限するために `-l` / `--locale <codes>`（コンマ区切りのBCP-47）を受け入れます。`lint-source` は単一のソースロケールを使用します。コマンドの概要テーブルについては、[Getting Started](docs/GETTING_STARTED.ja.md#cli-reference) を参照してください。
+すべてのコマンドで利用可能なグローバルオプション: `-c <config>`（デフォルト: `ai-i18n-tools.config.json`）、`-v`（詳細表示）、`-P` / `--provider <name>`（アクティブなLLMプロバイダーをオーバーライド。`providers` の下に設定する必要があります）、`-L` / `--ui-lang <code>`（ツールのUI/ログ自体の言語）、オプションの `-w` / `--write-logs [path]` でコンソール出力をログファイルに記録（デフォルト: 翻訳キャッシュディレクトリの下）、`-V` / `--version`、および `-h` / `--help`。いくつかのコマンドは、ターゲットロケールを制限するために `-l` / `--locale <codes>`（コンマ区切りのBCP-47）を受け入れます。`lint-source` は単一のソースロケールを使用します。コマンドの概要表については、[はじめに](docs/GETTING_STARTED.ja.md#cli-reference) を参照してください。
+
+### ツールUI言語（ログ、ヘルプ、ダッシュボード）
+
+このツールは、独自のCLIヘルプ、トラフィックの多いログ/サマリーメッセージ、および翻訳ダッシュボードをローカライズします。UIロケールは、以下のソースから解決されます（優先度が高い順）:
+
+1. `-L` / `--ui-lang <code>` グローバルフラグ（例: `-L pt-BR`）。
+2. `AI_I18N_LANG` 環境変数（例: `export AI_I18N_LANG=es`）。
+3. `ai-i18n-tools.config.json` の `uiLanguage` 設定キー（BCP-47文字列）。
+4. ホストOSのロケール（`Intl.DateTimeFormat().resolvedOptions().locale` 経由）。
+
+要求されたロケールは、出荷されているUI言語と正確に一致するか、最も近いバリエーションと一致します（例: `pt-PT` は `pt-BR` に解決され、`en-US` は `en-GB` に解決されます）。一致するものがない場合は、ソースロケール（`en-GB`）にフォールバックします。これは、プロジェクトの `sourceLocale` / `targetLocales` とは独立しています。出荷されているUI言語: `en-GB`（ソース）に加えて、`de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans`、および `zh-Hant` です。
 
 ---
 

@@ -54,7 +54,7 @@
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
+├── CLI (src/cli/)             - commands: init, extract, mark-html, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -79,6 +79,7 @@ src/
 ├── cli/
 │   ├── index.ts                    CLI entry point (commander)
 │   ├── extract-strings.ts          `extract` command implementation
+│   ├── mark-html.ts                `mark-html` command (insert bare `data-i18n*` markers into HTML)
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
 │   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
@@ -105,6 +106,7 @@ src/
 │   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
 │   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
+│   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification
 │   ├── markdown-extractor.ts       Markdown / MDX segment extraction
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
@@ -177,7 +179,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。对于 `.astro` 源（在 `ui.uiExtractor.extensions` 中列出时），`ui-string-babel.ts` 会使用 `@babel/parser` 解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名称和文件扩展名可通过 `ui.uiExtractor` 进行配置（`ui.reactExtractor` 是一个支持的别名）。`extract` **还会将非扫描器输入合并到同一个目录中：** 当启用（默认）`package.json` `description` 时，项目 `package.json` `description` 会被处理，并且当 `includeUiLanguageEnglishNames` 启用且 `uiLanguagesPath` 设置时，`ui-languages.json` 中的每个 `englishName` 都会被处理（源中已找到的字符串会保留优先权）。段哈希是修剪后字符串的前 8 个十六进制字符的 **MD5** — 这些将成为 `strings.json` 中的键。
 
+对于 `.html` / `.htm` 源（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件路由到 `html-i18n-marks.ts`，后者会扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素的自身 `textContent` / `title` / `placeholder` 获取源文本；带值的标记（`data-i18n="Key"`）使用该值。相同的模块也支持 `mark-html` 命令，该命令会自动插入裸标记。HTML 文件永远不会到达 Babel / i18next-scanner 阶段。
+
 纯粹的 Astro SSG 站点可以跳过 i18next：在构建时加载扁平化的 `{locale}.json`，并通过源文本键解析 `t('English')`（参见 `examples/astro-website/src/i18n/t.ts` 和 [GETTING_STARTED — Astro 网站](GETTING_STARTED.zh-Hans.md#astro-website))。
+
+纯 HTML 应用遵循相同的目录模型，使用标记属性而不是 `t()` 调用 — 请参阅 [GETTING_STARTED — 标记 HTML 以供翻译](GETTING_STARTED.zh-Hans.md#marking-html-for-translation)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -269,6 +275,7 @@ output file  ─────────────────── Docusauru
 - `AstroTemplateExtractor` - 用于 `.astro` 营销页面的解析和替换（通过 `doc-translate.ts` 中的 `translateAstroFile` 进行 `translate-docs`）。提取面向用户的 HTML 文本节点和可翻译属性（`alt`、`title`、`aria-label`、`placeholder`），以及模板 `{expression}` 块中面向用户的字符串字面量。跳过前端 TypeScript、`<script>`、`<style>`、受保护的属性/键值以及 `t('…')` 中的字面量。重新组装会调整相对导入，当输出路径更深时（例如 `src/pages/de/index.astro`）。请参阅 [GETTING_STARTED — Astro 网站页面](GETTING_STARTED.zh-Hans.md#astro-website-parse-and-replace)。
 - `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus UI 目录，非 MDX 正文）。
 - `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，而非 `translate-docs`）。
+- `html-i18n-marks.ts` - 一个集中的 HTML 标签扫描器，由 `extract` 用于 `.html` / `.htm` 源，并由 `mark-html` 命令使用。`collectHtmlI18nStrings` / `collectHtmlI18nLocations` 读取 `data-i18n*` 标记属性（裸标记 → 元素 `textContent` / `title` / `placeholder`；带值的标记 → 值），并且 `markHtmlContent` 将裸标记插入到叶文本/标题/占位符元素中（幂等的，尊重 `data-i18n-ignore`，跳过类似代码和混合内容元素）。共享的 `normalizeI18nText` 助手使构建时密钥与浏览器运行时保持一致。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
 ### Astro 混合站点（UI + 页面 HTML）
@@ -486,6 +493,7 @@ console.log(
 | `parseI18nConfig` | 验证原始配置对象。 |
 | `TranslationCache` | SQLite 缓存 - 使用 `cacheDir` 路径进行实例化。 |
 | `UIStringExtractor` | 从 JS/TS 源中提取 `t("…")` 字符串。 |
+| `collectHtmlI18nStrings` / `markHtmlContent` | 扫描/插入 HTML 中的 `data-i18n*` 标记（支持 `extract` 用于 `.html` 和 `mark-html` 命令）。 |
 | `MarkdownExtractor` | 从 Markdown 中提取可翻译的片段。 |
 | `JsonExtractor` | 从 Docusaurus JSON 标签文件（UI 目录，非 MDX 正文）中提取。 |
 | `SvgExtractor` | 从 SVG 文件中提取。 |
@@ -513,13 +521,16 @@ console.log(
   "ui": {
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
-      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"]
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
     }
   }
 }
 ```
 
 （`ui.reactExtractor` 是 `ui.uiExtractor` 的完全支持的别名。）
+
+将 `.html` / `.htm` 添加到 `extensions` 中，以便在 `extract` 期间扫描 HTML 标记属性。`ui.uiExtractor.htmlI18nAttributes` 是可选的，默认为 `["data-i18n", "data-i18n-title", "data-i18n-placeholder"]`；`data-i18n` 映射到元素 `textContent`，而 `data-i18n-<attr>` 映射到该属性的值（例如 `data-i18n-aria-label`）。
 
 <a id="custom-extractors"></a>
 ### 自定义提取器

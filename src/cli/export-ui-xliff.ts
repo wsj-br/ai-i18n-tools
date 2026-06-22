@@ -12,6 +12,7 @@ import { normalizeLocale } from "../core/config.js";
 import { resolveLocalesForUI } from "../core/ui-languages.js";
 import { requiredCldrPluralForms } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
+import { t } from "../i18n/index.js";
 
 export type StringsJsonFile = Record<string, StringsJsonEntry>;
 
@@ -249,7 +250,7 @@ export function runExportUIXliff(
 ): ExportUIXliffSummary {
   const stringsPath = resolveStringsJsonPath(config, opts.cwd);
   if (!fs.existsSync(stringsPath)) {
-    throw new Error(`[export-ui-xliff] strings.json not found: ${stringsPath}`);
+    throw new Error(t("[export-ui-xliff] strings.json not found: {{path}}", { path: stringsPath }));
   }
 
   let raw: unknown;
@@ -257,12 +258,15 @@ export function runExportUIXliff(
     raw = JSON.parse(fs.readFileSync(stringsPath, "utf8"));
   } catch (e) {
     throw new Error(
-      `[export-ui-xliff] Failed to parse ${stringsPath}: ${e instanceof Error ? e.message : String(e)}`
+      t("[export-ui-xliff] Failed to parse {{path}}: {{error}}", {
+        path: stringsPath,
+        error: e instanceof Error ? e.message : String(e),
+      })
     );
   }
 
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new Error(`[export-ui-xliff] Invalid strings.json: expected an object`);
+    throw new Error(t("[export-ui-xliff] Invalid strings.json: expected an object"));
   }
 
   const data = raw as StringsJsonFile;
@@ -277,7 +281,9 @@ export function runExportUIXliff(
   }
   if (locales.length === 0) {
     throw new Error(
-      `[export-ui-xliff] No target locales to export (check targetLocales / ui-languages and --locale).`
+      t(
+        "[export-ui-xliff] No target locales to export (check targetLocales / ui-languages and --locale)."
+      )
     );
   }
 
@@ -307,13 +313,15 @@ export function runExportUIXliff(
     unitsPerLocale[normalized] = count;
 
     if (opts.dryRun) {
-      console.log(chalk.cyan(`[dry-run] would write ${outPath} (${count} units)`));
+      console.log(
+        chalk.cyan(t("[dry-run] would write {{path}} ({{count}} units)", { path: outPath, count }))
+      );
       continue;
     }
 
     writeAtomicUtf8(outPath, xml);
     filesWritten.push(outPath);
-    console.log(chalk.green(`✅ Wrote ${outPath} (${count} units)`));
+    console.log(chalk.green(t("✅ Wrote {{path}} ({{count}} units)", { path: outPath, count })));
   }
 
   return {

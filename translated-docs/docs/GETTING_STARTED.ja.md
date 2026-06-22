@@ -237,6 +237,105 @@ npx ai-i18n-tools extract
 
 スキャナーはカスタマイズ可能で、`ui.uiExtractor.funcNames`（またはレガシーの `ui.reactExtractor.funcNames`）を通じてカスタム関数名を追加できます。Astro のページおよびコンポーネントの場合は、`.astro` を `ui.uiExtractor.extensions` に追加してください。
 
+<a id="marking-html-for-translation"></a>
+### 翻訳対象のHTMLに印を付ける
+
+プレーンなHTMLアプリ（マークアップに`t("…")`呼び出しがない場合）では、属性を使用して翻訳対象の要素に印を付け、`extract`が要素自体から英語のテキストを取得するようにします。文字列リテラルの重複は不要です。
+
+値なしの形式（属性に値がなく、ソーステキストは要素から読み取られます）を優先してください。
+
+- `data-i18n` — キーは要素の`textContent`です。実行時に`el.textContent = t(key)`を設定します。
+- `data-i18n-title` — キーは要素の`title`です。実行時に翻訳された`title`を設定します。
+- `data-i18n-placeholder` — キーは要素の`placeholder`です。
+
+値付きの形式`data-i18n="Some key"`は、値なしの形式が機能しない場合にのみ使用してください。たとえば、子タグと混在するテキスト（混合コンテンツ要素）の場合や、キーが表示テキストと異なる必要がある場合です。要素（およびそのサブツリー）を除外するには`data-i18n-ignore`を使用します。
+
+制約: 値なしの`data-i18n`は、リーフテキスト要素（単一のテキストノードで、子要素がない場合）にのみ使用してください。これは、`textContent`を設定すると子要素がすべて置き換えられるためです。`Run <code>build</code> now.`のような段落の場合は、各テキスト部分を独自のマーカーでラップしてください。
+
+```html
+<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+```
+
+マーカーは手動で追加するか、`mark-html`コマンドに値なしマーカーを挿入させることができます。デフォルトではドライランとして機能し、ファイルごとにいくつのマーカーを追加するかを報告し、手動での`<span data-i18n>`が必要な混合コンテンツ要素をリストします。ドライランは`--write`を指定した場合にのみ書き込みを行います。
+
+```bash
+# Preview (no changes written)
+npx ai-i18n-tools mark-html public/index.html
+
+# Apply the bare markers
+npx ai-i18n-tools mark-html public/index.html --write
+```
+
+`mark-html`は冪等であり、`data-i18n-ignore`を尊重し、コードのような要素（`code`、`pre`、`kbd`、`samp`、`var`）や空のテキスト/数値のみのテキストには印を付けず、値付きマーカーを生成することはありません。印付けの後、報告された混合コンテンツフラグメントを手動でラップし、次に`.html`を`ui.uiExtractor.extensions`に追加して、`extract`が文字列をキャプチャできるようにします。
+
+```jsonc
+{
+  "ui": {
+    "sourceRoots": ["src", "public"],
+    "uiExtractor": { "extensions": [".ts", ".tsx", ".html"] }
+  }
+}
+```
+
+<a id="html-app-worked-example-dashboard"></a>
+#### 実例：プレーンなHTMLアプリ（バンドルされたダッシュボード）のローカライズ
+
+パッケージ固有の翻訳ダッシュボード（`src/dashboard-app`）も、これらのマーカーを使用します。その`index.html`には、次のようなプレーンなマーカーが含まれています。
+
+```html
+<button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
+<input type="text" id="seg-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
+<button id="dashboard-close" title="Stop the dashboard server and close this window" data-i18n-title data-i18n>Close</button>
+```
+
+`extract`は、各英語ソース文字列をカタログ（`strings.json`）に書き込み、`translate-ui`はロケールごとに1つのフラットバンドルを、英語ソーステキストをキーとして埋め込みます。典型的な静的HTMLアプリの場合、`ui.flatOutputDir`を`public/locales/`のようなWebサーバーで提供されるディレクトリに向けます。
+
+```bash
+npx ai-i18n-tools extract        # index.html markers → strings.json
+npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.json
+```
+
+```jsonc
+// public/locales/de.json
+{
+  "Next": "Weiter",
+  "Filename (partial)": "Dateiname (teilweise)",
+  "Stop the dashboard server and close this window": "Dashboard-Server stoppen und dieses Fenster schließen",
+  "Close": "Schließen"
+}
+```
+
+実行時には、アクティブなロケールのバンドルをロードし、印付けされた要素をウォークします。キーは、マーカーの値が存在する場合はその値から、存在しない場合は要素自体のテキスト/タイトル/プレースホルダー（抽出ツールが空白文字を正規化するのと同じ方法で正規化されます）から取得されます。
+
+```html
+<script type="module">
+  const locale = document.documentElement.lang || "en";
+  const bundle = locale.startsWith("en")
+    ? {}
+    : await fetch(`/locales/${locale}.json`).then((r) => (r.ok ? r.json() : {}));
+
+  const t = (key) => bundle[key] ?? key; // English source is the fallback
+  const norm = (s) => s.trim().replace(/\s+/g, " ");
+
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n") || norm(el.textContent || "");
+    if (key) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title") || norm(el.getAttribute("title") || "");
+    if (key) el.setAttribute("title", t(key));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder") || norm(el.getAttribute("placeholder") || "");
+    if (key) el.setAttribute("placeholder", t(key));
+  });
+</script>
+```
+
+このスニペットのマーカーウォーク部分は、[`src/dashboard-app/app.js`](../../docs/../src/dashboard-app/app.js)にある`applyStaticI18n`と全く同じです。英語のソーステキストがカタログキーであるため、翻訳されていない文字列は自動的に英語にフォールバックします。
+
+バンドルされたダッシュボードの違い：Nodeサーバーがあるため、静的な`/locales/{locale}.json`を取得しません。クライアントは`GET /api/ui-i18n`を呼び出し、サーバーはアクティブなロケール（`--ui-lang` > `AI_I18N_LANG` > 設定`uiLanguage` > ホストOS）を解決して`{ locale, dir, bundle }`を返します。その後、クライアントは（ロケールを選択するために`lang`を読むのではなく）その応答から`document.documentElement` `lang`/`dir`を設定してから`applyStaticI18n`を呼び出します。バンドル自体は翻訳対象のツールのコンテンツではなく、ダッシュボード自体のUI文字列であり、`src/i18n/locales/{locale}.json`に出荷され（ビルド時に`dist/i18n/locales`にコピーされ）、[`src/i18n/index.ts`](../../docs/../src/i18n/index.ts)の`loadUiBundle`によってサーバーサイドで読み取られます。ダッシュボードの`t()`は、上記の最小限の`t`とは異なり、`{{name}}`補間もサポートしています。
+
 <a id="astro-website-plain-astro-not-starlight"></a>
 ### Astro ウェブサイト（スターライトを使わないプレーンなAstro）
 
@@ -1676,7 +1775,8 @@ npx ai-i18n-tools glossary-generate
 | `check-models`                                                                                             |設定された各モデルIDをアクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。プロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーの場合は不要）。設定されたIDが欠落または期限切れの場合は非ゼロで終了し、プロバイダーの`requestTimeoutMs`を尊重します。プロバイダーが価格を返す場合（例：OpenRouter）、プロンプト/完了の100万トークンあたりのUSDも表示されます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `list-models`                                                                                              |アクティブなプロバイダーが`GET /models`リスト（IDでソート。アクティブなプロバイダーは設定の`provider`キーに従い、`-P` / `--provider`でオーバーライド）を介してアドバタイズするすべてのモデルをリストします。プロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーの場合は不要）。プロバイダーが価格を返す場合（例：OpenRouter）、プロンプト/完了の100万トークンあたりのUSDも表示され、`expiration_date`を過ぎたエントリにタグ付けされます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `list-languages [search]`                                                                                  |バンドルされたUI言語カタログ（`data/ui-languages-complete.json`）を人間が読めるテーブル（コード、テキスト方向、英語名、ネイティブ名）としてリストします。設定やAPIキーは不要です。オプションの`search`タームを渡すと、コード、ネイティブ名、英語名、または方向がそれを含むエントリのみが保持されます（大文字と小文字を区別しません）。例：`list-languages portuguese`、`list-languages rtl`、`list-languages zh`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `extract`                                                                                                  | `t("…")` / `i18n.t("…")` リテラルから `strings.json` を更新し、任意で `package.json` 説明とマニフェストの `englishName` エントリを追加します（詳細は `ui.reactExtractor` を参照）。`ui.sourceRoots` が空でないことが必要です。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `extract`                                                                                                  | `strings.json`を`t("…")` / `i18n.t("…")`リテラル、オプションの`package.json`説明、およびオプションのマニフェスト`englishName`エントリ（`ui.reactExtractor`を参照）から更新します。`.html` / `.htm`が`ui.uiExtractor.extensions`にリストされている場合、HTMLから`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーストリングもキャプチャします。空でない`ui.sourceRoots`が必要です。LLMは呼び出しません。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `mark-html [paths...] [--write]`                                                                           | HTMLに生の`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーを挿入するため、ソーステキストは（要素自体に）一度だけ記述されます。指定されたファイル/ディレクトリ/グロブをスキャンします（デフォルト：`.html` / `.htm`、`ui.sourceRoots`配下）。デフォルトではドライラン（ファイルごとの追加カウントと、手動での`<span data-i18n>`が必要な混合コンテンツ要素をレポートします）。`--write`で変更が適用されます。冪等であり、`data-i18n-ignore`（要素とそのサブツリーをスキップ）を尊重し、コードのような要素（`code`、`pre`、`kbd`、`samp`、`var`）や空/数値のみのテキストには決して触れず、値を持つマーカーを生成することはありません。LLMは呼び出しません。                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                    | `sourceLocale` + `targetLocales` およびバンドルされた `data/ui-languages-complete.json`（設定されている場合は `--master`）を使用して、`ui-languages.json` を `ui.flatOutputDir`（または設定されている場合は `uiLanguagesPath`）に書き込みます。マスターファイルに存在しないロケールについては警告を出し、`TODO` プレースホルダーを出力します。カスタマイズされた `label` または `englishName` 値を持つ既存のマニフェストがある場合、それらはマスターカタログのデフォルト値に置き換えられます。生成されたファイルは後で確認し、必要に応じて調整してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `translate-docs …`                                                                                         | 各`docs`ブロック（`contentPaths`、オプションの`docusaurusCatalogDir`）に対して、markdown/MDXおよびJSONを翻訳します。`-j`：並列処理するロケールの最大数。`-b`：ファイルごとの並列バッチAPI呼び出しの最大数。`--prompt-format`：バッチのワイヤーフォーマット（`xml` \| `json-array` \| `json-object`）。[キャッシュの動作と`translate-docs`フラグ](#cache-behaviour-and-translate-docs-flags)および[バッチプロンプトフォーマット](#batch-prompt-format)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `write-heading-ids …`                                                                                      | 少なくとも1つの`docs[]`ブロックが必要です。各ブロックの`contentPaths`の下に`.md` / `.mdx`を収集します（`.translate-ignore`を尊重します）。HTMLアンカーライン`<a id="slug"></a>`を、フラットATX`#`見出しの直前に**before**挿入します（フェンスコードブロック内の見出しはスキップします）。アンカーラインが既に存在する場合、現在の見出しテキストから派生したスラッグと一致しなくなった場合に`id`を更新します。`-p` / `--path` または `-f` / `--file`: プロジェクト相対のファイルまたはディレクトリに制限します。`--slug-style`: `github`（デフォルト; doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。`pymdown`を使用すると、オプションの`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--dry-run`: 変更のみを一覧表示します。 |

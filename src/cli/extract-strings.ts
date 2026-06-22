@@ -12,7 +12,13 @@ import {
   aggregateUiStringLocations,
   defaultFuncNamesFromConfig,
   uiStringHash,
+  type UiStringLocation,
 } from "../extractors/ui-string-locations.js";
+import {
+  collectHtmlI18nLocations,
+  collectHtmlI18nStrings,
+  HTML_I18N_MARKERS,
+} from "../extractors/html-i18n-marks.js";
 import {
   extractUiCallsFromFileContent,
   pluralMultiPlaceholderMissingCount,
@@ -26,6 +32,7 @@ import {
   resolveDefaultUiLanguagesMasterPath,
   runGenerateUiLanguages,
 } from "./generate-ui-languages.js";
+import { t } from "../i18n/index.js";
 
 export interface ExtractSummary {
   found: number;
@@ -47,10 +54,10 @@ type ScannedRow = {
  */
 export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   if (config.ui.sourceRoots.length === 0) {
-    throw new Error("ui.sourceRoots must be non-empty to extract UI strings");
+    throw new Error(t("ui.sourceRoots must be non-empty to extract UI strings"));
   }
 
-  console.log(chalk.cyan(`🔍 ${timestamp()} - Extracting UI strings…`));
+  console.log(chalk.cyan(t("🔍 {{time}} - Extracting UI strings…", { time: timestamp() })));
 
   const uiExtractor = getUiExtractorConfig(config.ui);
   const rx = new UIStringExtractor(uiExtractor, { cwd });
@@ -59,18 +66,29 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   const packageJsonPath = path.resolve(cwd, uiExtractor?.packageJsonPath ?? "package.json");
   const funcNames = defaultFuncNamesFromConfig(uiExtractor);
 
+  // HTML files use marker attributes (not Babel `t()` calls); keep them out of the AST passes.
+  const htmlExtensions = new Set([".html", ".htm"]);
+  const htmlFiles = files.filter((rel) => htmlExtensions.has(path.extname(rel).toLowerCase()));
+  const codeFiles = files.filter((rel) => !htmlExtensions.has(path.extname(rel).toLowerCase()));
+  const htmlMarkers = uiExtractor?.htmlI18nAttributes ?? [...HTML_I18N_MARKERS];
+
   const validationErrors: string[] = [];
-  for (const rel of files) {
+  for (const rel of codeFiles) {
     const abs = path.join(cwd, rel);
     const content = fs.readFileSync(abs, "utf8");
     const calls = extractUiCallsFromFileContent(content, rel, funcNames);
     for (const call of calls) {
       if (call.plurals && pluralMultiPlaceholderMissingCount(call.literal)) {
         validationErrors.push(
-          `[extract] plurals: string with multiple interpolations must include {{count}} for the plural axis.\n` +
-            `  String: ${JSON.stringify(call.literal)}\n` +
-            `  File: ${rel}\n` +
-            `  Line: ${call.line}`
+          t(
+            "[extract] plurals: string with multiple interpolations must include {{count}} for the plural axis."
+          ) +
+            "\n" +
+            t("  String: {{value}}", { value: JSON.stringify(call.literal) }) +
+            "\n" +
+            t("  File: {{file}}", { file: rel }) +
+            "\n" +
+            t("  Line: {{line}}", { line: call.line })
         );
       }
     }
@@ -80,7 +98,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   }
 
   const locByHash = aggregateUiStringLocations(
-    files,
+    codeFiles,
     (rel) => fs.readFileSync(path.join(cwd, rel), "utf8"),
     funcNames,
     {
@@ -93,7 +111,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   const byHash = new Map<string, ScannedRow>();
   let found = 0;
 
-  for (const rel of files) {
+  for (const rel of codeFiles) {
     const abs = path.join(cwd, rel);
     const content = fs.readFileSync(abs, "utf8");
     const segs = rx.extract(content, rel);
@@ -109,6 +127,32 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     }
   }
 
+  // HTML marker strings (data-i18n / data-i18n-*) feed the same catalog, keyed by English source text.
+  for (const rel of htmlFiles) {
+    const abs = path.join(cwd, rel);
+    const content = fs.readFileSync(abs, "utf8");
+    for (const s of collectHtmlI18nStrings(content, htmlMarkers)) {
+      const h = uiStringHash(s.value);
+      if (!byHash.has(h)) {
+        byHash.set(h, { source: s.value });
+        found++;
+      }
+    }
+    const htmlLocs = collectHtmlI18nLocations(content, rel, htmlMarkers);
+    for (const [h, locs] of htmlLocs) {
+      const cur: UiStringLocation[] = locByHash.get(h) ?? [];
+      const seen = new Set(cur.map((l) => `${l.file}:${l.line}`));
+      for (const l of locs) {
+        const key = `${l.file}:${l.line}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          cur.push(l);
+        }
+      }
+      locByHash.set(h, cur);
+    }
+  }
+
   for (const s of rx.packageDescriptionSegments()) {
     if (!byHash.has(s.hash)) {
       byHash.set(s.hash, { source: s.content });
@@ -121,7 +165,10 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     if (!fs.existsSync(masterPath)) {
       console.warn(
         chalk.yellow(
-          `⚠️  ${timestamp()} - includeUiLanguageEnglishNames is enabled but bundled ui-languages master was not found; skipping englishName merge.`
+          t(
+            "⚠️  {{time}} - includeUiLanguageEnglishNames is enabled but bundled ui-languages master was not found; skipping englishName merge.",
+            { time: timestamp() }
+          )
         )
       );
     } else {
@@ -142,7 +189,10 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
       } catch (err) {
         console.warn(
           chalk.yellow(
-            `⚠️  ${timestamp()} - Could not merge englishName hints from master catalog: ${err instanceof Error ? err.message : String(err)}`
+            t("⚠️  {{time}} - Could not merge englishName hints from master catalog: {{error}}", {
+              time: timestamp(),
+              error: err instanceof Error ? err.message : String(err),
+            })
           )
         );
       }
@@ -178,7 +228,10 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     if (shapeChange) {
       console.warn(
         chalk.yellow(
-          `⚠️  ${timestamp()} - Entry ${h}: plain/plural shape changed; clearing stored translations for this key.`
+          t(
+            "⚠️  {{time}} - Entry {{hash}}: plain/plural shape changed; clearing stored translations for this key.",
+            { time: timestamp(), hash: h }
+          )
         )
       );
     }
@@ -230,14 +283,20 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     } catch (e) {
       console.warn(
         chalk.yellow(
-          `⚠️  ${timestamp()} - Could not write ui-languages.json: ${e instanceof Error ? e.message : String(e)}`
+          t("⚠️  {{time}} - Could not write ui-languages.json: {{error}}", {
+            time: timestamp(),
+            error: e instanceof Error ? e.message : String(e),
+          })
         )
       );
     }
   } else {
     console.warn(
       chalk.yellow(
-        `⚠️  ${timestamp()} - Bundled ui-languages master not found at ${masterPath}; skipping ui-languages.json generation.`
+        t(
+          "⚠️  {{time}} - Bundled ui-languages master not found at {{path}}; skipping ui-languages.json generation.",
+          { time: timestamp(), path: masterPath }
+        )
       )
     );
   }

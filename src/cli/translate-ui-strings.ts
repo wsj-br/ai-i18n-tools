@@ -42,6 +42,7 @@ import {
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { safeResolveActiveProvider } from "../core/llm-providers.js";
+import { t } from "../i18n/index.js";
 const UI_CHUNK = 50;
 
 const RULE = "-".repeat(100);
@@ -64,9 +65,9 @@ function plainMissingBatchRangeLabel(
   const a = startIndex0 + 1;
   const b = startIndex0 + batchLen;
   if (batchLen === 1 || a === b) {
-    return `string ${a}/${totalMissing}`;
+    return t("string {{a}}/{{total}}", { a, total: totalMissing });
   }
-  return `strings ${a}–${b}/${totalMissing}`;
+  return t("strings {{a}}–{{b}}/{{total}}", { a, b, total: totalMissing });
 }
 
 export interface TranslateUIOptions {
@@ -185,7 +186,7 @@ export async function runTranslateUI(
   opts: TranslateUIOptions
 ): Promise<TranslateUISummary> {
   if (!config.features.translateUIStrings) {
-    throw new Error("Enable features.translateUIStrings in config");
+    throw new Error(t("Enable features.translateUIStrings in config"));
   }
 
   const { opts: boundOpts, scope: interruptScope } = bindRunInterruptScope(opts);
@@ -207,24 +208,34 @@ function printTranslateUiSummary(
   outcome: "success" | "interrupted"
 ): void {
   if (outcome === "success") {
-    console.log(chalk.bold.green("\n✅ UI translation complete!\n"));
+    console.log(chalk.bold.green(`\n${t("✅ UI translation complete!")}\n`));
   } else {
     console.log(
       chalk.bold.yellow(
-        "\n⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).\n"
+        `\n${t(
+          "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+        )}\n`
       )
     );
   }
-  console.log(chalk.bold("📊 Summary:"));
-  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
-  console.log(`   Strings updated:       ${stringsUpdated}`);
+  console.log(chalk.bold(t("📊 Summary:")));
   console.log(
-    `   Tokens used:           ${(inputTokens + outputTokens).toLocaleString()} (in: ${inputTokens.toLocaleString()} / out: ${outputTokens.toLocaleString()})`
+    `   ${t("Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) })}`
+  );
+  console.log(`   ${t("Strings updated:       {{count}}", { count: stringsUpdated })}`);
+  console.log(
+    `   ${t("Tokens used:           {{total}} (in: {{tokensIn}} / out: {{tokensOut}})", {
+      total: (inputTokens + outputTokens).toLocaleString(),
+      tokensIn: inputTokens.toLocaleString(),
+      tokensOut: outputTokens.toLocaleString(),
+    })}`
   );
   if (costUsd > 0) {
-    console.log(chalk.green(`   💵 Total cost:          $${costUsd.toFixed(6)}`));
+    console.log(
+      chalk.green(`   ${t("💵 Total cost:          ${{cost}}", { cost: costUsd.toFixed(6) })}`)
+    );
   } else {
-    console.log(`   Total cost:            $0.00 (all up to date or dry-run)`);
+    console.log(`   ${t("Total cost:            $0.00 (all up to date or dry-run)")}`);
   }
   console.log("");
 }
@@ -236,14 +247,18 @@ async function runTranslateUIBody(
   const stringsPath = resolveStringsJsonPath(config, opts.cwd);
   const stringsRel = stringsCatalogRelForLog(opts.cwd, stringsPath);
   if (!fs.existsSync(stringsPath)) {
-    throw new Error(`strings.json not found: ${stringsPath} (run extract first)`);
+    throw new Error(
+      t("strings.json not found: {{path}} (run extract first)", { path: stringsPath })
+    );
   }
 
   let strings: StringsFile;
   try {
     strings = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as StringsFile;
   } catch (e) {
-    throw new Error(`Invalid strings.json: ${e instanceof Error ? e.message : String(e)}`);
+    throw new Error(
+      t("Invalid strings.json: {{error}}", { error: e instanceof Error ? e.message : String(e) })
+    );
   }
 
   let entries = Object.entries(strings);
@@ -254,7 +269,7 @@ async function runTranslateUIBody(
   const targets = opts.locales.map((l) => normalizeLocale(l)).filter((l) => l !== srcNorm);
 
   if (targets.length === 0) {
-    throw new Error("No target locales after excluding sourceLocale");
+    throw new Error(t("No target locales after excluding sourceLocale"));
   }
 
   const glossaryUser = config.glossary?.userGlossary
@@ -310,11 +325,17 @@ async function runTranslateUIBody(
         ...csvRows.map((r) => r.map(csvEscapeCell).join(",")),
       ];
       writeAtomicUtf8(glossaryUser, `${lines.join("\n")}\n`);
-      console.log(
-        chalk.green(
-          `[user-glossary] Added ${addedToGlossary} user-edited entr${addedToGlossary === 1 ? "y" : "ies"} to ${config.glossary.userGlossary}`
-        )
-      );
+      const glossaryMsg =
+        addedToGlossary === 1
+          ? t("[user-glossary] Added {{count}} user-edited entry to {{path}}", {
+              count: addedToGlossary,
+              path: glossaryUser,
+            })
+          : t("[user-glossary] Added {{count}} user-edited entries to {{path}}", {
+              count: addedToGlossary,
+              path: glossaryUser,
+            });
+      console.log(chalk.green(glossaryMsg));
     }
   }
 
@@ -339,7 +360,9 @@ async function runTranslateUIBody(
       });
     } catch (e) {
       throw new Error(
-        `LLM provider API key required for UI translation: ${e instanceof Error ? e.message : String(e)}`
+        t("LLM provider API key required for UI translation: {{error}}", {
+          error: e instanceof Error ? e.message : String(e),
+        })
       );
     }
   }
@@ -352,23 +375,29 @@ async function runTranslateUIBody(
   console.log(
     chalk.gray(
       "\n\n___UI Translation________________________________________________________________________________________\n\n"
-    ) + chalk.bold(`🌐 Translating UI strings to ${targets.length} locale(s)\n`)
+    ) +
+      chalk.bold(
+        `${t("🌐 Translating UI strings to {{count}} locale(s)", { count: targets.length })}\n`
+      )
   );
   printModelsTryInOrder(models, client?.getProvider() ?? safeResolveActiveProvider(config));
-  console.log(chalk.cyan(`Strings: `) + chalk.magenta(`${entries.length} total entries`));
-  console.log(chalk.cyan(`Glossary terms: `) + chalk.magenta(`${glossary.size}`));
-  console.log(chalk.cyan(`Output dir: `) + chalk.magenta(outDir));
+  console.log(
+    chalk.cyan(`${t("Strings:")} `) +
+      chalk.magenta(t("{{count}} total entries", { count: entries.length }))
+  );
+  console.log(chalk.cyan(`${t("Glossary terms:")} `) + chalk.magenta(`${glossary.size}`));
+  console.log(chalk.cyan(`${t("Output dir:")} `) + chalk.magenta(outDir));
   if (opts.logPath) {
-    console.log(chalk.cyan(`Output log: `) + chalk.magenta(opts.logPath));
+    console.log(chalk.cyan(`${t("Output log:")} `) + chalk.magenta(opts.logPath));
   }
   if (targets.length > 1) {
     console.log(
-      chalk.cyan(`Parallel translations: `) +
-        chalk.magenta(`up to ${Math.min(parallelLimit, targets.length)}`)
+      chalk.cyan(`${t("Parallel translations:")} `) +
+        chalk.magenta(t("up to {{count}}", { count: Math.min(parallelLimit, targets.length) }))
     );
   }
   if (opts.dryRun) {
-    console.log(chalk.yellow(`\n⚠️  Dry run mode - no changes will be made`));
+    console.log(chalk.yellow(`\n${t("⚠️  Dry run mode - no changes will be made")}`));
   }
   console.log("");
 
@@ -384,7 +413,11 @@ async function runTranslateUIBody(
   try {
     // ── Step 0: fill source-locale cardinal forms for plural entries ─────────
     if (!opts.dryRun && client) {
-      console.log(chalk.cyan(`\n📌 Step 0 — source-locale (${srcNorm}) plural forms\n`));
+      console.log(
+        chalk.cyan(
+          `\n${t("📌 Step 0 — source-locale ({{locale}}) plural forms", { locale: srcNorm })}\n`
+        )
+      );
       let step0Count = 0;
       const step0Targets = Object.entries(strings).filter(
         (tuple): tuple is [string, StringsJsonPluralEntry] => {
@@ -419,7 +452,17 @@ async function runTranslateUIBody(
         >;
         console.log(
           chalk.green(
-            `✔️  ${srcNorm} ${stringsRel}: plural Step 0 ${si + 1}/${step0Total} (${h}) (1 plural group in batch, ${batch.usage.totalTokens} tokens)`
+            t(
+              "✔️  {{locale}} {{path}}: plural Step 0 {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens)",
+              {
+                locale: srcNorm,
+                path: stringsRel,
+                index: si + 1,
+                total: step0Total,
+                id: h,
+                tokens: batch.usage.totalTokens,
+              }
+            )
           )
         );
         if (!strings[h]) {
@@ -441,7 +484,11 @@ async function runTranslateUIBody(
       }
       if (step0Count > 0) {
         writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
-        console.log(chalk.green(`   Step 0 completed: ${step0Count} plural group(s) updated.\n`));
+        console.log(
+          chalk.green(
+            `   ${t("Step 0 completed: {{count}} plural group(s) updated.", { count: step0Count })}\n`
+          )
+        );
       }
       entries = Object.entries(strings);
     }
@@ -468,7 +515,11 @@ async function runTranslateUIBody(
       if (missingPlain.length > 0) {
         console.log(
           chalk.yellow(
-            `📄 ${timestamp()} - ${locale} [plain]: ${missingPlain.length} string(s) to translate`
+            t("📄 {{timestamp}} - {{locale}} [plain]: {{count}} string(s) to translate", {
+              timestamp: timestamp(),
+              locale,
+              count: missingPlain.length,
+            })
           )
         );
 
@@ -482,7 +533,15 @@ async function runTranslateUIBody(
             if (opts.verbose) {
               console.log(
                 chalk.yellow(
-                  `  ${timestamp()} - [dry-run] plain chunk ${chunkNum}/${chunkTotal} (${chunk.length} strings)`
+                  `  ${t(
+                    "{{timestamp}} - [dry-run] plain chunk {{num}}/{{total}} ({{count}} strings)",
+                    {
+                      timestamp: timestamp(),
+                      num: chunkNum,
+                      total: chunkTotal,
+                      count: chunk.length,
+                    }
+                  )}`
                 )
               );
             }
@@ -506,11 +565,29 @@ async function runTranslateUIBody(
 
           const rangeLabel = plainMissingBatchRangeLabel(i, chunk.length, missingPlain.length);
           const n = chunk.length;
-          console.log(
-            chalk.green(
-              `✔️  ${locale} ${stringsRel}: ${rangeLabel} (${n} string${n === 1 ? "" : "s"} in batch, ${uiBatch.usage.totalTokens} tokens)`
-            )
-          );
+          const batchMsg =
+            n === 1
+              ? t(
+                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} string in batch, {{tokens}} tokens)",
+                  {
+                    locale,
+                    path: stringsRel,
+                    range: rangeLabel,
+                    count: n,
+                    tokens: uiBatch.usage.totalTokens,
+                  }
+                )
+              : t(
+                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} strings in batch, {{tokens}} tokens)",
+                  {
+                    locale,
+                    path: stringsRel,
+                    range: rangeLabel,
+                    count: n,
+                    tokens: uiBatch.usage.totalTokens,
+                  }
+                );
+          console.log(chalk.green(batchMsg));
 
           chunk.forEach(([h], idx) => {
             let tr = uiBatch.translations[idx];
@@ -531,7 +608,14 @@ async function runTranslateUIBody(
           });
         }
       } else {
-        console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale} [plain]: up to date`));
+        console.log(
+          chalk.gray(
+            t("⏭️  {{timestamp}} - {{locale}} [plain]: up to date", {
+              timestamp: timestamp(),
+              locale,
+            })
+          )
+        );
       }
 
       // Pass B — plural rows for this locale
@@ -548,7 +632,11 @@ async function runTranslateUIBody(
       if (pluralTargets.length > 0) {
         console.log(
           chalk.yellow(
-            `📄 ${timestamp()} - ${locale} [plural]: ${pluralTargets.length} group(s) to translate`
+            t("📄 {{timestamp}} - {{locale}} [plural]: {{count}} group(s) to translate", {
+              timestamp: timestamp(),
+              locale,
+              count: pluralTargets.length,
+            })
           )
         );
       }
@@ -563,7 +651,10 @@ async function runTranslateUIBody(
           if (!pluralTranslatedLocaleHasContent(srcForms, srcNorm)) {
             console.warn(
               chalk.yellow(
-                `   ⚠️  Skip plural ${h}: missing non-empty plural forms for source locale ${srcNorm} (fill Step 0 or entries in strings.json, then run translate-ui again).`
+                `   ${t(
+                  "⚠️  Skip plural {{id}}: missing non-empty plural forms for source locale {{locale}} (fill Step 0 or entries in strings.json, then run translate-ui again).",
+                  { id: h, locale: srcNorm }
+                )}`
               )
             );
             continue;
@@ -603,7 +694,17 @@ async function runTranslateUIBody(
           });
           console.log(
             chalk.green(
-              `✔️  ${locale} ${stringsRel}: plural ${pi + 1}/${pluralTargets.length} (${h}) (1 plural group in batch, ${batch.usage.totalTokens} tokens)`
+              t(
+                "✔️  {{locale}} {{path}}: plural {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens)",
+                {
+                  locale,
+                  path: stringsRel,
+                  index: pi + 1,
+                  total: pluralTargets.length,
+                  id: h,
+                  tokens: batch.usage.totalTokens,
+                }
+              )
             )
           );
           const allReplacements = protectedParts.flatMap((p) => p.replacements);
@@ -638,14 +739,27 @@ async function runTranslateUIBody(
         writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
         if (opts.verbose) {
           console.log(
-            chalk.gray(`   ${timestamp()} - wrote ${Object.keys(flat).length} keys → ${localePath}`)
+            chalk.gray(
+              `   ${t("{{timestamp}} - wrote {{count}} keys → {{path}}", {
+                timestamp: timestamp(),
+                count: Object.keys(flat).length,
+                path: localePath,
+              })}`
+            )
           );
         }
       }
 
       const localeElapsed = Date.now() - localeStart;
       if (localeElapsed > 0) {
-        console.log(chalk.gray(`   [${locale}] Time: ${formatElapsedMmSs(localeElapsed)}`));
+        console.log(
+          chalk.gray(
+            `   ${t("[{{locale}}] Time: {{time}}", {
+              locale,
+              time: formatElapsedMmSs(localeElapsed),
+            })}`
+          )
+        );
       }
       langProgress.completed += 1;
     };
@@ -656,7 +770,7 @@ async function runTranslateUIBody(
       }
       await translateOneTargetLocale(targets[0]!);
       if (!opts.dryRun) {
-        console.log(chalk.blue(`💾 Writing strings.json`));
+        console.log(chalk.blue(t("💾 Writing strings.json")));
         writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
       }
     } else {
@@ -668,7 +782,11 @@ async function runTranslateUIBody(
         console.log(chalk.yellow(RULE));
         console.log(
           chalk.yellow(
-            ` 🚀 Running in parallel:    ${langList}   ${langProgress.completed}/${langProgress.total}`
+            ` ${t("🚀 Running in parallel:    {{langList}}   {{completed}}/{{total}}", {
+              langList,
+              completed: langProgress.completed,
+              total: langProgress.total,
+            })}`
           )
         );
         console.log(chalk.yellow(RULE));
@@ -682,7 +800,7 @@ async function runTranslateUIBody(
           opts.abortSignal
         );
         if (!opts.dryRun) {
-          console.log(chalk.blue(`💾 Writing strings.json`));
+          console.log(chalk.blue(t("💾 Writing strings.json")));
           writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
         }
       }
@@ -696,7 +814,12 @@ async function runTranslateUIBody(
       if (opts.verbose) {
         console.log(
           chalk.gray(
-            `   ${timestamp()} - wrote ${Object.keys(srcFlat).length} plural keys → ${srcPath} (${srcNorm})`
+            `   ${t("{{timestamp}} - wrote {{count}} plural keys → {{path}} ({{locale}})", {
+              timestamp: timestamp(),
+              count: Object.keys(srcFlat).length,
+              path: srcPath,
+              locale: srcNorm,
+            })}`
           )
         );
       }

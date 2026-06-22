@@ -80,7 +80,14 @@ export function targetScriptDirective(targetLocale: string | undefined): string 
     return PROMPTS.script.latinDirective;
   }
   const name = SCRIPT_DIRECTIVE_NAME_OVERRIDES[script] ?? englishScriptName(script) ?? script;
-  return PROMPTS.script.genericDirectiveTemplate.replace(/\{\{SCRIPT_NAME\}\}/g, name);
+  const base = PROMPTS.script.genericDirectiveTemplate.replace(/\{\{SCRIPT_NAME\}\}/g, name);
+  if (script === "Hans") {
+    return `${base}${PROMPTS.script.simplifiedHanClause}`;
+  }
+  if (script === "Hant") {
+    return `${base}${PROMPTS.script.traditionalHanClause}`;
+  }
+  return base;
 }
 
 /** Prefix `block` with the target-locale script directive (and a blank line) when one applies. */

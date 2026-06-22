@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
 import chalk from "chalk";
+import { t } from "../i18n/index.js";
 
 /** Basenames matched by `find … \( -name '*.log' -o -name 'cache.db.backup*.sqlite' \)`. */
 export function matchesCleanTempBasename(basename: string): boolean {
@@ -57,7 +58,7 @@ async function collectCleanTempFiles(rootAbs: string): Promise<string[]> {
 async function promptDeleteConfirmed(): Promise<boolean> {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   try {
-    const ans = await rl.question(chalk.red("\nDelete these files? (y/n) "));
+    const ans = await rl.question(chalk.red(t("\nDelete these files? (y/n) ")));
     return ans === "y";
   } finally {
     rl.close();
@@ -79,13 +80,13 @@ export type RunCleanTempOptions = {
 export async function runCleanTemp(opts: RunCleanTempOptions): Promise<void> {
   const rootAbs = path.resolve(opts.rootDir);
   if (!fs.existsSync(rootAbs)) {
-    console.error(`Directory not found: ${rootAbs}`);
+    console.error(t("Directory not found: {{path}}", { path: rootAbs }));
     process.exitCode = 1;
     return;
   }
   const st = await fs.promises.stat(rootAbs);
   if (!st.isDirectory()) {
-    console.error(`Not a directory: ${rootAbs}`);
+    console.error(t("Not a directory: {{path}}", { path: rootAbs }));
     process.exitCode = 1;
     return;
   }
@@ -97,15 +98,15 @@ export async function runCleanTemp(opts: RunCleanTempOptions): Promise<void> {
 
   if (opts.dryRun) {
     if (files.length > 0) {
-      console.log(chalk.gray("Dry run mode: no files will be deleted."));
+      console.log(chalk.gray(t("Dry run mode: no files will be deleted.")));
     } else {
-      console.log(chalk.green("Dry run mode: no files to delete."));
+      console.log(chalk.green(t("Dry run mode: no files to delete.")));
     }
     return;
   }
 
   if (files.length === 0) {
-    console.log(chalk.green("No files to delete."));
+    console.log(chalk.green(t("No files to delete.")));
     return;
   }
 
@@ -119,7 +120,12 @@ export async function runCleanTemp(opts: RunCleanTempOptions): Promise<void> {
       await fs.promises.unlink(abs);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      console.error(`Failed to delete ${formatFindPrintLine(rootAbs, abs)}: ${msg}`);
+      console.error(
+        t("Failed to delete {{file}}: {{error}}", {
+          file: formatFindPrintLine(rootAbs, abs),
+          error: msg,
+        })
+      );
       process.exitCode = 1;
     }
   }

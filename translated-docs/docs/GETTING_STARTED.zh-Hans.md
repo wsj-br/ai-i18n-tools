@@ -237,6 +237,105 @@ npx ai-i18n-tools extract
 
 扫描器是可配置的：通过 `ui.uiExtractor.funcNames`（或旧版 `ui.reactExtractor.funcNames`）添加自定义函数名称。对于 Astro 页面和组件，将 `.astro` 添加到 `ui.uiExtractor.extensions`。
 
+<a id="marking-html-for-translation"></a>
+### 为 HTML 标记以供翻译
+
+对于纯 HTML 应用（标记中没有 `t("…")` 调用），请使用属性标记可翻译元素，并让 `extract` 从元素本身捕获英文文本 — 无需重复的字符串字面量。
+
+优先使用裸露形式（属性无值；源文本从元素读取）：
+
+- `data-i18n` — 键是元素的 `textContent`；运行时您设置 `el.textContent = t(key)`。
+- `data-i18n-title` — 键是元素的 `title`；运行时您设置翻译后的 `title`。
+- `data-i18n-placeholder` — 键是元素的 `placeholder`。
+
+仅当裸露形式无法奏效时，才使用带值的形式 `data-i18n="Some key"`：混合内容元素（文本与子标签交错），或当键必须与可见文本不同时。使用 `data-i18n-ignore` 排除某个元素（及其子树）。
+
+约束：裸露的 `data-i18n` 仅用于叶子文本元素（单个文本节点，无子元素），因为设置 `textContent` 会替换任何子元素。对于像 `Run <code>build</code> now.` 这样的段落，请改用自己的标记包装每个文本片段：
+
+```html
+<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+```
+
+手动添加标记，或让 `mark-html` 命令为您插入裸露标记。默认情况下它是一个试运行 — 它会报告每个文件将添加多少标记，并列出需要手动 `<span data-i18n>` 的任何混合内容元素 — 仅使用 `--write` 进行写入：
+
+```bash
+# Preview (no changes written)
+npx ai-i18n-tools mark-html public/index.html
+
+# Apply the bare markers
+npx ai-i18n-tools mark-html public/index.html --write
+```
+
+`mark-html` 是幂等的，尊重 `data-i18n-ignore`，从不标记类似代码的元素（`code`、`pre`、`kbd`、`samp`、`var`）或空/仅数字文本，并且从不发出带值的标记。标记后，手动包装任何报告的混合内容片段，然后添加 `.html` 到 `ui.uiExtractor.extensions`，以便 `extract` 捕获字符串：
+
+```jsonc
+{
+  "ui": {
+    "sourceRoots": ["src", "public"],
+    "uiExtractor": { "extensions": [".ts", ".tsx", ".html"] }
+  }
+}
+```
+
+<a id="html-app-worked-example-dashboard"></a>
+#### 示例：本地化纯 HTML 应用（捆绑的仪表板）
+
+该软件包自带的翻译仪表板 (`src/dashboard-app`) 使用相同的标记。它的 `index.html` 包含裸标记，例如：
+
+```html
+<button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
+<input type="text" id="seg-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
+<button id="dashboard-close" title="Stop the dashboard server and close this window" data-i18n-title data-i18n>Close</button>
+```
+
+`extract` 将每个英文源字符串写入目录 (`strings.json`)，然后 `translate-ui` 为每个区域设置一个扁平化包，以英文源文本作为键。对于典型的静态 HTML 应用，您可以将 `ui.flatOutputDir` 指向一个 Web 服务器目录，例如 `public/locales/`：
+
+```bash
+npx ai-i18n-tools extract        # index.html markers → strings.json
+npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.json
+```
+
+```jsonc
+// public/locales/de.json
+{
+  "Next": "Weiter",
+  "Filename (partial)": "Dateiname (teilweise)",
+  "Stop the dashboard server and close this window": "Dashboard-Server stoppen und dieses Fenster schließen",
+  "Close": "Schließen"
+}
+```
+
+运行时，加载活动区域设置的包，并遍历标记的元素。键来自标记值（如果存在），否则来自元素本身的文本/标题/占位符（以提取器规范化空格的相同方式进行规范化）：
+
+```html
+<script type="module">
+  const locale = document.documentElement.lang || "en";
+  const bundle = locale.startsWith("en")
+    ? {}
+    : await fetch(`/locales/${locale}.json`).then((r) => (r.ok ? r.json() : {}));
+
+  const t = (key) => bundle[key] ?? key; // English source is the fallback
+  const norm = (s) => s.trim().replace(/\s+/g, " ");
+
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n") || norm(el.textContent || "");
+    if (key) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title") || norm(el.getAttribute("title") || "");
+    if (key) el.setAttribute("title", t(key));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder") || norm(el.getAttribute("placeholder") || "");
+    if (key) el.setAttribute("placeholder", t(key));
+  });
+</script>
+```
+
+此代码片段中处理标记的部分正是 [`src/dashboard-app/app.js`](../../docs/../src/dashboard-app/app.js) 中的 `applyStaticI18n`。由于英文源文本是目录的键，因此未翻译的字符串会自动回退到英文。
+
+捆绑式仪表板的不同之处：因为它有一个 Node 服务器，所以它不获取静态 `/locales/{locale}.json`。客户端调用 `GET /api/ui-i18n`，服务器解析活动区域设置（`--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统）并返回 `{ locale, dir, bundle }`。然后，客户端从该响应中设置 `document.documentElement` `lang`/`dir`（而不是读取 `lang` 来选择区域设置），然后再调用 `applyStaticI18n`。包本身不是翻译工具的内容——它们是仪表板自身的 UI 字符串，在 `src/i18n/locales/{locale}.json` 中提供（在构建时复制到 `dist/i18n/locales`），并在服务器端由 [`src/i18n/index.ts`](../../docs/../src/i18n/index.ts) 中的 `loadUiBundle` 读取。仪表板的 `t()` 也支持 `{{name}}` 插值，而上面的 `t` 则不支持。
+
 <a id="astro-website-plain-astro-not-starlight"></a>
 ### Astro 网站（纯 Astro，非 Starlight）
 
@@ -1676,7 +1775,8 @@ npx ai-i18n-tools glossary-generate
 | `check-models`                                                                                             | 将每个配置的模型 ID 与活动提供程序的 `GET /models` 列表（成员资格和 `expiration_date`）进行验证，需要该提供程序的 API 密钥（对于 Ollama 等无密钥提供程序则不需要），当任何配置的 ID 缺失或过期时以非零状态退出，并尊重提供程序的 `requestTimeoutMs`。当提供程序返回定价信息时（例如 OpenRouter），还会显示每 100 万个 token 的提示/完成定价（美元）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `list-models`                                                                                              | 列出活动提供程序通过其 `GET /models` 列表（按 ID 排序；活动提供程序遵循配置的 `provider` 键，可通过 `-P` / `--provider` 覆盖）公开的所有模型。需要该提供程序的 API 密钥（对于 Ollama 等无密钥提供程序则不需要）。当提供程序返回定价信息时（例如 OpenRouter），还会显示每 100 万个 token 的提示/完成定价（美元），并标记 `expiration_date` 之后过期的条目。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `list-languages [search]`                                                                                  | 以人类可读的表格形式列出捆绑的 UI 语言目录（`data/ui-languages-complete.json`）（代码、文本方向、英文名称、本地名称）；无需配置或 API 密钥。传递一个可选的 `search` 术语，以仅保留其代码、本地名称、英文名称或方向包含该术语的条目（不区分大小写），例如 `list-languages portuguese`、`list-languages rtl`、`list-languages zh`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `extract`                                                                                                  | 从 `t("…")` / `i18n.t("…")` 字面量、可选的 `package.json` 描述和可选的清单 `englishName` 条目（请参阅 `ui.reactExtractor`）更新 `strings.json`。需要非空的 `ui.sourceRoots`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `extract`                                                                                                  | 从 `t("…")` / `i18n.t("…")` 字面量、可选的 `package.json` 描述和可选的清单 `englishName` 条目（参见 `ui.reactExtractor`）更新 `strings.json`。当 `.html` / `.htm` 列在 `ui.uiExtractor.extensions` 中时，还会从 HTML 捕获 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记字符串。需要非空的 `ui.sourceRoots`。不调用 LLM。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `mark-html [paths...] [--write]`                                                                           | 将裸露的 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记插入 HTML 中，以便源文本只编写一次（编写在元素本身上）。扫描给定的文件/目录/glob（默认为 `.html` / `.htm`，位于 `ui.sourceRoots` 下）。默认执行模拟运行（报告每个文件的添加计数以及任何需要手动 `<span data-i18n>` 的混合内容元素）；`--write` 应用更改。幂等，尊重 `data-i18n-ignore`（跳过元素及其子树），从不触及类代码元素（`code`、`pre`、`kbd`、`samp`、`var`）或空/仅数字文本，并且从不发出有值的标记。不调用 LLM。                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `generate-ui-languages [--master <path>] [--dry-run]`                                                      | 使用 `sourceLocale` + `targetLocales` 和捆绑的 `data/ui-languages-complete.json`（或 `--master`）将 `ui-languages.json` 写入 `ui.flatOutputDir`（或设置时的 `uiLanguagesPath`）。如果主文件中缺少某个区域设置，则会发出警告并生成 `TODO` 占位符。如果您有包含自定义 `label` 或 `englishName` 值的现有清单，它们将被主目录的默认值替换 — 之后请查看并调整生成的文件。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `translate-docs …`                                                                                         | 为每个 `docs` 块（`contentPaths`，可选 `docusaurusCatalogDir`）翻译 markdown/MDX 和 JSON。`-j`：最大并行区域设置；`-b`：每个文件的最大并行批处理 API 调用。`--prompt-format`：批处理线格式（`xml` \| `json-array` \| `json-object`）。请参阅 [缓存行为和 `translate-docs` 标志](#cache-behaviour-and-translate-docs-flags) 和 [批处理提示格式](#batch-prompt-format)。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `write-heading-ids …`                                                                                      | 至少需要一个 `docs[]` 块。在每个块的 `contentPaths` 下收集 `.md` / `.mdx`（遵守 `.translate-ignore`）。在每个扁平 ATX `#` 标题的 **前面**插入一个 HTML 锚点行 `<a id="slug"></a>`（跳过代码块内的标题）；当锚点行已存在时，如果它不再匹配从当前标题文本派生的 slug，则更新 `id`。`-p` / `--path` 或 `-f` / `--file`：限制为项目相对文件或目录。`--slug-style`：`github`（默认；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。使用 `pymdown` 时，可选 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--dry-run`：仅列出更改。                                                                                                                                                                                                                                                                                                                                    |

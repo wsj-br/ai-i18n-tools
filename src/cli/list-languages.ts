@@ -1,6 +1,8 @@
 import fs from "fs";
 import chalk from "chalk";
 import { resolveBundledUiLanguagesCompletePath } from "../core/ui-languages-catalog.js";
+import { displayWidth, padEndDisplay } from "../utils/table.js";
+import { t } from "../i18n/index.js";
 
 export interface RunListLanguagesResult {
   exitCode: number;
@@ -18,7 +20,7 @@ function loadAllUiLanguages(absPath: string): UiLanguageEntry[] {
   const raw = fs.readFileSync(absPath, "utf8");
   const data = JSON.parse(raw) as unknown;
   if (!Array.isArray(data)) {
-    throw new Error("ui-languages-complete.json must be a JSON array");
+    throw new Error(t("ui-languages-complete.json must be a JSON array"));
   }
   const rows: UiLanguageEntry[] = [];
   for (const item of data) {
@@ -48,22 +50,28 @@ function entryMatches(entry: UiLanguageEntry, search: string): boolean {
 }
 
 function printLanguageTable(entries: UiLanguageEntry[]): void {
-  const codeW = Math.max(4, ...entries.map((e) => e.code.length));
-  const dirW = Math.max(3, ...entries.map((e) => e.direction.length));
-  const enW = Math.max(12, ...entries.map((e) => e.englishName.length));
+  // Headers are translated, so their (display) width must be included in the column
+  // sizing — a localized label like "Répertoire" is wider than the English "Dir".
+  const codeHeader = t("Code");
+  const dirHeader = t("Dir");
+  const enHeader = t("English name");
+  const nativeHeader = t("Native name");
+  const codeW = Math.max(displayWidth(codeHeader), ...entries.map((e) => displayWidth(e.code)));
+  const dirW = Math.max(displayWidth(dirHeader), ...entries.map((e) => displayWidth(e.direction)));
+  const enW = Math.max(displayWidth(enHeader), ...entries.map((e) => displayWidth(e.englishName)));
 
   // Native name is last because non-Latin scripts (combining marks, wide CJK glyphs)
   // have a display width that differs from their string length; keeping the variable-width
   // column last means its glyphs cannot push any later column out of alignment.
   console.log(
     "  " +
-      chalk.bold("Code".padEnd(codeW)) +
+      chalk.bold(padEndDisplay(codeHeader, codeW)) +
       "  " +
-      chalk.bold("Dir".padEnd(dirW)) +
+      chalk.bold(padEndDisplay(dirHeader, dirW)) +
       "  " +
-      chalk.bold("English name".padEnd(enW)) +
+      chalk.bold(padEndDisplay(enHeader, enW)) +
       "  " +
-      chalk.bold("Native name")
+      chalk.bold(nativeHeader)
   );
   console.log(
     "  " +
@@ -73,20 +81,20 @@ function printLanguageTable(entries: UiLanguageEntry[]): void {
       "  " +
       chalk.gray("-".repeat(enW)) +
       "  " +
-      chalk.gray("-".repeat(11))
+      chalk.gray("-".repeat(displayWidth(nativeHeader)))
   );
   for (const entry of entries) {
     const dir =
       entry.direction === "rtl"
-        ? chalk.yellow(entry.direction.padEnd(dirW))
-        : chalk.gray(entry.direction.padEnd(dirW));
+        ? chalk.yellow(padEndDisplay(entry.direction, dirW))
+        : chalk.gray(padEndDisplay(entry.direction, dirW));
     console.log(
       "  " +
-        chalk.cyan(entry.code.padEnd(codeW)) +
+        chalk.cyan(padEndDisplay(entry.code, codeW)) +
         "  " +
         dir +
         "  " +
-        entry.englishName.padEnd(enW) +
+        padEndDisplay(entry.englishName, enW) +
         "  " +
         entry.label
     );
@@ -111,24 +119,30 @@ export function runListLanguages(search?: string): RunListLanguagesResult {
   const filtered = term === "" ? entries : entries.filter((entry) => entryMatches(entry, term));
 
   if (term === "") {
-    console.log(
-      chalk.bold(
-        `Available UI languages — ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`
-      )
-    );
+    const summary =
+      entries.length === 1
+        ? t("Available UI languages — {{count}} entry.", { count: entries.length })
+        : t("Available UI languages — {{count}} entries.", { count: entries.length });
+    console.log(chalk.bold(summary));
   } else {
-    console.log(
-      chalk.bold(
-        `UI languages matching "${term}" — ${filtered.length} of ${entries.length} entr${
-          entries.length === 1 ? "y" : "ies"
-        }.`
-      )
-    );
+    const summary =
+      entries.length === 1
+        ? t('UI languages matching "{{term}}" — {{matched}} of {{total}} entry.', {
+            term,
+            matched: filtered.length,
+            total: entries.length,
+          })
+        : t('UI languages matching "{{term}}" — {{matched}} of {{total}} entries.', {
+            term,
+            matched: filtered.length,
+            total: entries.length,
+          });
+    console.log(chalk.bold(summary));
   }
   console.log();
 
   if (filtered.length === 0) {
-    console.log(chalk.yellow("No matching languages."));
+    console.log(chalk.yellow(t("No matching languages.")));
     console.log();
     return { exitCode: 0 };
   }

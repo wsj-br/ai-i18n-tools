@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLM-Anbieter
 
-Befehle zur Übersetzung (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` und zugehörige Skripte) rufen einen LLM-Anbieter auf; `check-markdown` tut dies nicht.
+Übersetzungsbefehle (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` und zugehörige Skripte) rufen einen LLM-Anbieter auf; `check-markdown`, `mark-html` und `extract` tun dies nicht.
 
 Konfigurieren Sie Anbieter unter einer Top-Level-Map `providers` und wählen Sie den aktiven mit einem Top-Level-Selektor `provider` aus (optional, wenn genau ein Anbieter konfiguriert ist). Die meisten Anbieter benötigen nur eine Liste `translationModels` — `baseUrl` und die Umgebungsvariable für den API-Schlüssel stammen aus einem integrierten Preset; Sie können `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature` und `requestTimeoutMs` pro Anbieter überschreiben. `requestTimeoutMs` ist die maximale Wartezeit in Millisekunden für jede Anfrage (Standard `30000`).
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+Für reine HTML-Apps versehen Sie Elemente mit einfachen `data-i18n` / `data-i18n-title` / `data-i18n-placeholder`-Markierungen (der Quelltext wird aus dem textContent / title / placeholder des Elements übernommen, einmal geschrieben); `mark-html` fügt sie für Sie ein und `extract` erfasst sie dann in `strings.json`. Siehe [Erste Schritte – HTML für die Übersetzung markieren](docs/GETTING_STARTED.de.md#marking-html-for-translation).
+
 Vollständige Listen der Befehlsflags finden Sie unter [Erste Schritte – CLI-Referenz](docs/GETTING_STARTED.de.md#cli-reference). Führen Sie `ai-i18n-tools <command> --help` aus, um die integrierte Hilfetextanzeige zu erhalten.
 
-Globale Optionen für jeden Befehl: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), `-P` / `--provider <name>` (überschreibt den aktiven LLM-Anbieter; muss unter `providers` konfiguriert sein), optional `-w` / `--write-logs [path]`, um die Konsolenausgabe in eine Protokolldatei zu leiten (Standard: im Verzeichnis des Übersetzungscaches), `-V` / `--version` und `-h` / `--help`. Mehrere Befehle akzeptieren `-l` / `--locale <codes>` (BCP-47, durch Kommas getrennt), um Ziel-Locales zu begrenzen; `lint-source` verwendet ein einzelnes Quell-Locale. Siehe [Erste Schritte](docs/GETTING_STARTED.de.md#cli-reference) für die Übersichtstabelle der Befehle.
+Globale Optionen für jeden Befehl: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), `-P` / `--provider <name>` (überschreibt den aktiven LLM-Anbieter; muss unter `providers` konfiguriert sein), `-L` / `--ui-lang <code>` (Sprache für die eigene Benutzeroberfläche/Protokolle des Tools), optional `-w` / `--write-logs [path]`, um die Konsolenausgabe in eine Protokolldatei zu schreiben (Standard: im Verzeichnis des Übersetzungscaches), `-V` / `--version` und `-h` / `--help`. Mehrere Befehle akzeptieren `-l` / `--locale <codes>` (BCP-47, durch Kommas getrennt), um Ziel-Locales einzuschränken; `lint-source` verwendet ein einzelnes Quell-Locale. Siehe [Erste Schritte](docs/GETTING_STARTED.de.md#cli-reference) für die Übersichtstabelle der Befehle.
+
+### Tool-UI-Sprache (Protokolle, Hilfe, Dashboard)
+
+Das Tool lokalisiert seine eigene CLI-Hilfe, häufig verwendete Protokoll-/Zusammenfassungsnachrichten und das Translation Dashboard. Das UI-Locale wird aus den folgenden Quellen ermittelt, wobei die höchste Priorität zuerst gilt:
+
+1. `-L` / `--ui-lang <code>` globale Flagge (z. B. `-L pt-BR`).
+2. `AI_I18N_LANG` Umgebungsvariable (z. B. `export AI_I18N_LANG=es`).
+3. Der `uiLanguage` Konfigurationsschlüssel in `ai-i18n-tools.config.json` (BCP-47-String).
+4. Das Host-Betriebssystem-Locale (über `Intl.DateTimeFormat().resolvedOptions().locale`).
+
+Das angeforderte Locale wird exakt oder nach der nächstgelegenen Variante mit den ausgelieferten UI-Sprachen abgeglichen (z. B. wird `pt-PT` zu `pt-BR` aufgelöst und `en-US` zu `en-GB`); wenn nichts übereinstimmt, wird auf das Quell-Locale (`en-GB`) zurückgegriffen. Dies ist unabhängig von den `sourceLocale` / `targetLocales` Ihres Projekts. Ausgelieferte UI-Sprachen: `en-GB` (Quelle) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` und `zh-Hant`.
 
 ---
 

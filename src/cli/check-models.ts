@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
+import { t } from "../i18n/index.js";
 import { resolveTranslationModels } from "../core/config.js";
 import {
   OPENROUTER_PROVIDER_KEY,
@@ -39,7 +40,11 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   const configured = resolveTranslationModels(config);
   if (configured.length === 0) {
     console.error(
-      chalk.red(`No models configured (set providers.${activeProvider}.translationModels).`)
+      chalk.red(
+        t("No models configured (set {{configKey}}).", {
+          configKey: `providers.${activeProvider}.translationModels`,
+        })
+      )
     );
     return { exitCode: 1 };
   }
@@ -47,7 +52,9 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   const settings = resolveProviderSettings(activeProvider, config);
   const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
-    console.error(chalk.red(`${settings.apiKeyEnv ?? "API key"} is required`));
+    console.error(
+      chalk.red(t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }))
+    );
     return { exitCode: 1 };
   }
 
@@ -94,25 +101,32 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
 
   console.log(
     chalk.bold(
-      `check-models: provider "${activeProvider}" — ${total} configured model(s); ${ok.length} ok; ${problemCount} problem(s).`
+      t(
+        'check-models: provider "{{provider}}" — {{total}} configured model(s); {{ok}} ok; {{problems}} problem(s).',
+        { provider: activeProvider, total, ok: ok.length, problems: problemCount }
+      )
     )
   );
   console.log();
 
   if (missing.length > 0) {
-    console.log(chalk.red.bold(`Not in ${activeProvider} models list`));
+    console.log(chalk.red.bold(t("Not in {{provider}} models list", { provider: activeProvider })));
     for (const m of missing) {
       console.log(chalk.red(`  • ${m.id}`));
     }
     const listModelsCommand = `ai-i18n-tools list-models -P ${activeProvider}`;
     console.log(
-      chalk.yellow(`\n  Run ${chalk.cyan(listModelsCommand)} to see the available models.`)
+      chalk.yellow(
+        t("\n  Run {{command}} to see the available models.", {
+          command: chalk.cyan(listModelsCommand),
+        })
+      )
     );
     console.log();
   }
 
   if (expired.length > 0) {
-    console.log(chalk.red.bold("Past expiration_date (removed or scheduled removal)"));
+    console.log(chalk.red.bold(t("Past expiration date (removed or scheduled removal)")));
     for (const e of expired) {
       console.log(chalk.red(`  • ${e.id}`));
       console.log(chalk.gray(`    expiration_date: ${e.expirationDate}`));
@@ -125,8 +139,8 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     console.log(
       chalk.green.bold(
         showPricing
-          ? "Valid (in models list) — pricing USD per 1M tokens"
-          : "Valid (in models list)"
+          ? t("Valid (in models list) — pricing USD per 1M tokens")
+          : t("Valid (in models list)")
       )
     );
     const idW = Math.max(8, ...ok.map((o) => o.id.length));
@@ -148,11 +162,11 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
 
   if (isOpenRouter) {
     console.log(
-      chalk.gray("Source: OpenRouter models directory @ ") +
+      chalk.gray(t("Source: OpenRouter models directory @ ")) +
         chalk.cyan("https://openrouter.ai/models\n")
     );
   } else {
-    console.log(chalk.gray(`Source: ${settings.baseUrl}/models\n`));
+    console.log(chalk.gray(t("Source: {{baseUrl}}/models\n", { baseUrl: settings.baseUrl })));
   }
 
   const exitCode = problemCount > 0 ? 1 : 0;

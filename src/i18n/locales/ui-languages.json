@@ -1,0 +1,63 @@
+[
+  {
+    "code": "en-GB",
+    "label": "English (UK)",
+    "englishName": "English (United Kingdom)",
+    "direction": "ltr",
+    "isSourceLocale": true
+  },
+  {
+    "code": "de",
+    "label": "Deutsch",
+    "englishName": "German",
+    "direction": "ltr"
+  },
+  {
+    "code": "es",
+    "label": "Español",
+    "englishName": "Spanish",
+    "direction": "ltr"
+  },
+  {
+    "code": "fr",
+    "label": "Français",
+    "englishName": "French",
+    "direction": "ltr"
+  },
+  {
+    "code": "hi-Latn",
+    "label": "Hindi (Roman)",
+    "englishName": "Hindi (Romanized)",
+    "direction": "ltr"
+  },
+  {
+    "code": "ja",
+    "label": "日本語",
+    "englishName": "Japanese",
+    "direction": "ltr"
+  },
+  {
+    "code": "ko",
+    "label": "한국어",
+    "englishName": "Korean",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  },
+  {
+    "code": "zh-Hans",
+    "label": "简体中文",
+    "englishName": "Chinese (Simplified)",
+    "direction": "ltr"
+  },
+  {
+    "code": "zh-Hant",
+    "label": "繁體中文",
+    "englishName": "Chinese (Traditional)",
+    "direction": "ltr"
+  }
+]

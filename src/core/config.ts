@@ -11,12 +11,15 @@ import {
   disallowedScriptLetters,
   englishLanguageNameForLocale,
   englishScriptName,
+  hanVariantCounts,
   isLatinScriptLocale,
   localePathPlaceholders,
   nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
+  scriptLetterCounts,
   scriptSubtag,
+  scriptValidationIssue,
   unicodeScriptPropertyForSubtag,
 } from "./locale-utils.js";
 import {
@@ -49,12 +52,15 @@ export {
   disallowedScriptLetters,
   englishLanguageNameForLocale,
   englishScriptName,
+  hanVariantCounts,
   isLatinScriptLocale,
   localePathPlaceholders,
   nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
+  scriptLetterCounts,
   scriptSubtag,
+  scriptValidationIssue,
   unicodeScriptPropertyForSubtag,
 };
 

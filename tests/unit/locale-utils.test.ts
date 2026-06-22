@@ -5,13 +5,16 @@ import {
   disallowedScriptLetters,
   englishLanguageNameForLocale,
   englishScriptName,
+  hanVariantCounts,
   isLatinScriptLocale,
   nonLatinLettersIn,
   normalizeLocale,
   normalizeManifestLocaleKey,
   parseLocaleList,
   primaryLanguageSubtag,
+  scriptLetterCounts,
   scriptSubtag,
+  scriptValidationIssue,
   unicodeScriptPropertyForSubtag,
 } from "../../src/core/locale-utils.js";
 
@@ -190,5 +193,108 @@ describe("disallowedScriptLetters", () => {
 
   it("composite/unknown scripts are not enforced", () => {
     expect(disallowedScriptLetters("anything ここ 한국", "Jpan")).toEqual([]);
+  });
+});
+
+describe("scriptLetterCounts", () => {
+  it("counts Latin separately and ignores symbols/punctuation/digits", () => {
+    const c = scriptLetterCounts("保存 OK 123 ℹ → ⚠");
+    expect(c.latin).toBe(2);
+    expect(c.nonLatinTotal).toBe(2);
+    expect(c.byScript.get("Han")).toBe(2);
+  });
+
+  it("buckets each meaningful letter under its Unicode script", () => {
+    const c = scriptLetterCounts("Привет 保存");
+    expect(c.byScript.get("Cyrillic")).toBe(6);
+    expect(c.byScript.get("Han")).toBe(2);
+  });
+});
+
+describe("hanVariantCounts", () => {
+  it("detects Simplified-exclusive characters", () => {
+    const c = hanVariantCounts("无需注册或设置");
+    expect(c.simplified).toBeGreaterThan(0);
+    expect(c.traditional).toBe(0);
+  });
+
+  it("detects Traditional-exclusive characters", () => {
+    const c = hanVariantCounts("無需帳戶或註冊");
+    expect(c.traditional).toBeGreaterThan(0);
+    expect(c.simplified).toBe(0);
+  });
+
+  it("returns zero counts for shared-only Han text", () => {
+    const c = hanVariantCounts("中文");
+    expect(c.simplified).toBe(0);
+    expect(c.traditional).toBe(0);
+  });
+
+  it("treats ambiguous valid-in-both glyphs (面, 制, 系) as shared, not Simplified", () => {
+    const c = hanVariantCounts("界面控制系統");
+    expect(c.simplified).toBe(0);
+    expect(c.traditional).toBe(1); // 統 is genuinely Traditional-exclusive
+  });
+});
+
+describe("scriptValidationIssue", () => {
+  it("returns null when there is no script subtag or for composite scripts", () => {
+    expect(scriptValidationIssue("anything", "")).toBeNull();
+    expect(scriptValidationIssue("ここ 한국", "Jpan")).toBeNull();
+  });
+
+  it("ignores letter-like symbols such as ℹ for Han targets (false-positive regression)", () => {
+    expect(scriptValidationIssue("ℹ 设置 → 模型", "Hans")).toBeNull();
+    expect(scriptValidationIssue("ℹ 設定 → 模型", "Hant")).toBeNull();
+  });
+
+  it("allows a short foreign-language quote inside a dominant-Han document", () => {
+    const text = "这是中文文档，其中包含简短的引用 नमस्ते 以及更多中文内容用于测试。";
+    expect(scriptValidationIssue(text, "Hans")).toBeNull();
+  });
+
+  it("flags output whose dominant script is wrong", () => {
+    const issue = scriptValidationIssue("Привет Салом дунё мир", "Hans");
+    expect(issue).not.toBeNull();
+    expect(issue?.message).toContain("Cyrillic");
+  });
+
+  it("passes when expected script dominates despite stray letters", () => {
+    expect(scriptValidationIssue("保存设置历史记录 П", "Hans")).toBeNull();
+  });
+
+  it("allows Latin-only / symbol-only output (handled by the prompt directive)", () => {
+    expect(scriptValidationIssue("GitHub {{URL_0}} OK", "Hans")).toBeNull();
+  });
+
+  it("discriminates Hans vs Hant via variant-distinct characters", () => {
+    expect(scriptValidationIssue("无需注册或设置历史记录", "Hant")).not.toBeNull();
+    expect(scriptValidationIssue("無需帳戶或註冊歷史", "Hans")).not.toBeNull();
+    expect(scriptValidationIssue("无需注册或设置历史记录", "Hans")).toBeNull();
+    expect(scriptValidationIssue("無需帳戶或註冊歷史", "Hant")).toBeNull();
+  });
+
+  it("does not flag Hans/Hant when only shared Han characters are present", () => {
+    expect(scriptValidationIssue("中文大生活的人", "Hans")).toBeNull();
+    expect(scriptValidationIssue("中文大生活的人", "Hant")).toBeNull();
+  });
+
+  it("does not flag a Traditional UI phrase that uses shared merge glyphs (界面/控制/系統)", () => {
+    expect(scriptValidationIssue("界面控制系統設定頁面", "Hant")).toBeNull();
+  });
+
+  it("does not flag a variant tie (4 distinct chars, 2 vs 2)", () => {
+    expect(scriptValidationIssue("设记設記", "Hant")).toBeNull();
+    expect(scriptValidationIssue("设记設記", "Hans")).toBeNull();
+  });
+
+  it("does not flag when there are too few variant-distinct characters", () => {
+    expect(scriptValidationIssue("设记", "Hant")).toBeNull();
+    expect(scriptValidationIssue("界面", "Hant")).toBeNull();
+  });
+
+  it("Latn target: requires Latin to dominate", () => {
+    expect(scriptValidationIssue("Namaste duniya café", "Latn")).toBeNull();
+    expect(scriptValidationIssue("नमस्ते दुनिया", "Latn")).not.toBeNull();
   });
 });

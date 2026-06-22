@@ -68,34 +68,51 @@ export function loadUiLanguagesMaster(absPath: string): Map<string, UiLanguageRo
 }
 
 /**
- * A locale is considered present in the master catalog when either:
- * - its normalized key matches a master `code` exactly, or
- * - it is a bare language subtag (no region/script, e.g. `en`, `zh`) whose primary subtag matches
- *   the primary subtag of some master entry (e.g. `en` ↔ `en-GB`/`en-US`).
+ * A locale is considered present in the master catalog only when its normalized key matches a
+ * master `code` exactly.
  *
- * The second rule keeps generic language codes valid even though the IANA-derived master only
- * enumerates regional/script variants for some languages, while still rejecting malformed tags
- * such as `hi-Lan`.
+ * Exact-match is the same rule {@link buildUiLanguageRowsFromMaster} uses to build the manifest, so
+ * validation and manifest construction never disagree. A bare language subtag that the catalog only
+ * carries regional/script variants for (e.g. `zh` → `zh-Hans`/`zh-Hant`, `pa` → `pa-IN`/`pa-PK`) is
+ * rejected here rather than silently degraded to a placeholder row at build time; such tags are
+ * script-ambiguous and have no sensible default variant. Callers surface the available variants via
+ * {@link bareSubtagVariantCodes}.
  */
 function isLocaleInUiLanguagesMaster(locale: string, master: Map<string, UiLanguageRow>): boolean {
-  if (master.has(normalizeManifestLocaleKey(locale))) {
-    return true;
-  }
+  return master.has(normalizeManifestLocaleKey(locale));
+}
+
+/**
+ * For a bare language subtag (no region/script, e.g. `pa`) with no exact catalog entry, return the
+ * catalog codes that share its primary subtag (e.g. `pa-IN`, `pa-PK`), sorted. Returns `[]` for
+ * tags that already carry a region/script or have no matching variants, so the suggestion is only
+ * offered when it is genuinely actionable.
+ */
+function bareSubtagVariantCodes(locale: string, master: Map<string, UiLanguageRow>): string[] {
   const trimmed = locale.trim();
-  const isBareLanguage = !/[-_]/.test(trimmed);
-  if (!isBareLanguage) {
-    return false;
+  if (/[-_]/.test(trimmed)) {
+    return [];
   }
   const primary = primaryLanguageSubtag(trimmed);
   if (!primary) {
-    return false;
+    return [];
   }
+  const variants: string[] = [];
   for (const row of master.values()) {
     if (primaryLanguageSubtag(row.code) === primary) {
-      return true;
+      variants.push(row.code);
     }
   }
-  return false;
+  return variants.sort((a, b) => a.localeCompare(b));
+}
+
+/** Join codes as `"a"`, `"a" or "b"`, `"a", "b" or "c"` for a human-readable suggestion. */
+function formatVariantSuggestion(codes: string[]): string {
+  const quoted = codes.map((c) => `"${c}"`);
+  if (quoted.length <= 1) {
+    return quoted.join("");
+  }
+  return `${quoted.slice(0, -1).join(", ")} or ${quoted[quoted.length - 1]}`;
 }
 
 /**
@@ -112,17 +129,23 @@ export function assertEffectiveLocalesInUiLanguagesMaster(config: I18nConfig): v
   }
   const master = loadUiLanguagesMaster(masterPath);
   const unknown: { path: string; message: string }[] = [];
+  const describeUnknown = (locale: string): string => {
+    const variants = bareSubtagVariantCodes(locale, master);
+    const suggestion =
+      variants.length > 0 ? `; did you mean ${formatVariantSuggestion(variants)}?` : "";
+    return `unknown locale "${locale.trim()}" (not in data/ui-languages-complete.json)${suggestion}`;
+  };
   if (!isLocaleInUiLanguagesMaster(config.sourceLocale, master)) {
     unknown.push({
       path: "sourceLocale",
-      message: `unknown locale "${config.sourceLocale.trim()}" (not in data/ui-languages-complete.json)`,
+      message: describeUnknown(config.sourceLocale),
     });
   }
   config.targetLocales.forEach((locale, index) => {
     if (!isLocaleInUiLanguagesMaster(locale, master)) {
       unknown.push({
         path: `targetLocales[${index}]`,
-        message: `unknown locale "${locale.trim()}" (not in data/ui-languages-complete.json)`,
+        message: describeUnknown(locale),
       });
     }
   });

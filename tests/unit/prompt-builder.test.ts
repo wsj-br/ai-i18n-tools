@@ -254,6 +254,11 @@ describe("targetScriptDirective", () => {
     expect(targetScriptDirective("zh-Hant")).toContain("Traditional Chinese (Han)");
   });
 
+  it("appends a Simplified/Traditional character-form clause for zh-Hans / zh-Hant", () => {
+    expect(targetScriptDirective("zh-Hans")).toContain("NEVER Traditional forms");
+    expect(targetScriptDirective("zh-Hant")).toContain("NEVER Simplified forms");
+  });
+
   it("returns empty string when there is no script subtag", () => {
     expect(targetScriptDirective("hi")).toBe("");
     expect(targetScriptDirective("en-GB")).toBe("");

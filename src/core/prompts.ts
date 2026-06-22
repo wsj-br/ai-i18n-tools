@@ -48,6 +48,10 @@ export interface ScriptPromptStrings {
   latinDirective: string;
   /** For any other script subtag; `{{SCRIPT_NAME}}` is the English script name (e.g. `Cyrillic`). */
   genericDirectiveTemplate: string;
+  /** Appended for `zh-Hans`: insist on Simplified character forms over Traditional ones. */
+  simplifiedHanClause: string;
+  /** Appended for `zh-Hant`: insist on Traditional character forms over Simplified ones. */
+  traditionalHanClause: string;
 }
 
 export interface PromptStrings {
@@ -201,5 +205,9 @@ Input format: JSON array of strings (same length and order as you must return).
       "SCRIPT REQUIREMENT (critical — overrides every other instruction): The target locale uses the Latin (Roman) alphabet. Write EVERY output string using ONLY Latin/Roman letters (a–z, A–Z), standard punctuation, digits, and any placeholders or markup that must be preserved. You MUST romanize (transliterate) the target language into Latin letters — translate the meaning, then write the result in Roman script. NEVER output any text in a native or non-Latin writing system (for example Devanagari देवनागरी, Cyrillic, Han/Chinese 汉字, Arabic, Hebrew, Hangul, Kana, Thai). If a word would normally be written in a non-Latin script, write its romanized form instead.",
     genericDirectiveTemplate:
       "SCRIPT REQUIREMENT (critical — overrides every other instruction): Write EVERY output string using the {{SCRIPT_NAME}} script. Do not substitute another writing system for the target language's words (keep placeholders, code, URLs, and markup unchanged).",
+    simplifiedHanClause:
+      " Use Simplified Chinese character forms (e.g. 设置, 历史, 网络, 简体, 关闭) — NEVER Traditional forms (設定, 歷史, 網絡, 繁體, 關閉).",
+    traditionalHanClause:
+      " Use Traditional Chinese character forms (e.g. 設定, 歷史, 網絡, 繁體, 關閉) — NEVER Simplified forms (设置, 历史, 网络, 简体, 关闭).",
   },
 };

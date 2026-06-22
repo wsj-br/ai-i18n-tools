@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLM 提供商
 
-翻译命令（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models` 和相关脚本）会调用 LLM 提供商；`check-markdown` 不会。
+翻译命令（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models` 及相关脚本）会调用 LLM 提供商；而 `check-markdown`、`mark-html` 和 `extract` 则不会。
 
 在顶层的 `providers` 映射下配置提供商，并通过顶层的 `provider` 选择器选择活动的提供商（当只有一个提供商配置时是可选的）。大多数提供商只需要一个 `translationModels` 列表 — `baseUrl` 和 API 密钥环境变量来自内置预设；您可以为每个提供商覆盖 `baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。`requestTimeoutMs` 是等待每个请求的最大时间（毫秒）（默认 `30000`）。
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+对于纯 HTML 应用，请使用裸露的 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记来注解元素（源文本取自元素的 own textContent / title / placeholder，只需编写一次）；`mark-html` 会为您插入这些标记，然后 `extract` 会将它们捕获到 `strings.json` 中。请参阅 [入门 — 为 HTML 添加翻译标记](docs/GETTING_STARTED.zh-Hans.md#marking-html-for-translation)。
+
 每个命令的完整标志列表见 [入门 — CLI 参考](docs/GETTING_STARTED.zh-Hans.md#cli-reference)。运行 `ai-i18n-tools <command> --help` 可查看内置的用法文本。
 
-每个命令的全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细）、`-P` / `--provider <name>`（覆盖活动的 LLM 提供程序；必须在 `providers` 下进行配置）、可选的 `-w` / `--write-logs [path]` 将控制台输出复制到日志文件（默认值：在翻译缓存目录下方）、`-V` / `--version` 以及 `-h` / `--help`。多个命令接受 `-l` / `--locale <codes>`（逗号分隔的 BCP-47）来限制目标区域设置；`lint-source` 使用单个源区域设置。请参阅 [入门](docs/GETTING_STARTED.zh-Hans.md#cli-reference) 查看命令概览表。
+全局选项，适用于所有命令：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细模式）、`-P` / `--provider <name>`（覆盖活动的 LLM 提供商；必须在 `providers` 下配置）、`-L` / `--ui-lang <code>`（工具自身的 UI/日志语言）、可选的 `-w` / `--write-logs [path]` 将控制台输出复制到日志文件（默认：在翻译缓存目录下方）、`-V` / `--version`，以及 `-h` / `--help`。多个命令接受 `-l` / `--locale <codes>`（逗号分隔的 BCP-47）来限制目标区域设置；`lint-source` 使用单一源区域设置。请参阅 [入门](docs/GETTING_STARTED.zh-Hans.md#cli-reference) 查看命令概览表。
+
+### 工具 UI 语言（日志、帮助、仪表板）
+
+该工具会本地化其自身的 CLI 帮助、高流量日志/摘要消息以及翻译仪表板。UI 区域设置从以下来源解析，优先级最高：
+
+1. `-L` / `--ui-lang <code>` 全局标志（例如 `-L pt-BR`）。
+2. `AI_I18N_LANG` 环境变量（例如 `export AI_I18N_LANG=es`）。
+3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 配置键（BCP-47 字符串）。
+4. 主机操作系统区域设置（通过 `Intl.DateTimeFormat().resolvedOptions().locale`）。
+
+请求的区域设置会与提供的 UI 语言进行精确匹配或按最接近的变体匹配（例如 `pt-PT` 解析为 `pt-BR`，`en-US` 解析为 `en-GB`）；当没有任何匹配项时，它将回退到源区域设置（`en-GB`）。这与您的项目的 `sourceLocale` / `targetLocales` 无关。提供的 UI 语言：`en-GB`（源语言）以及 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。
 
 ---
 

@@ -54,7 +54,7 @@ Vyavaharik upyog nirdeshon ke liye, [GETTING_STARTED.md](GETTING_STARTED.hi-Latn
 
 ```text
 ai-i18n-tools
-├── CLI (src/cli/)             - commands: init, extract, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
+├── CLI (src/cli/)             - commands: init, extract, mark-html, translate-ui, translate-svg, translate-docs, translate-json, sync, status, dashboard, …
 ├── Core (src/core/)           - config, types, cache, prompts, output paths, UI languages
 ├── Extractors (src/extractors/)  - segment extraction from JS/TS, markdown, JSON, SVG
 ├── Processors (src/processors/)  - MDX placeholders, HTML tags, admonitions, anchors, URLs, batching, validation, link rewriting, emphasis
@@ -79,6 +79,7 @@ src/
 ├── cli/
 │   ├── index.ts                    CLI entry point (commander)
 │   ├── extract-strings.ts          `extract` command implementation
+│   ├── mark-html.ts                `mark-html` command (insert bare `data-i18n*` markers into HTML)
 │   ├── translate-ui-strings.ts     `translate-ui` command implementation
 │   ├── doc-translate.ts            `translate-docs` command (documentation files only)
 │   ├── translate-json-run.ts       `translate-json` command (`json[]` nested locale bundles)
@@ -105,6 +106,7 @@ src/
 │   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
 │   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
+│   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification
 │   ├── markdown-extractor.ts       Markdown / MDX segment extraction
 │   ├── markdown-segment-split.ts   Optional segment splitting for long markdown blocks
@@ -177,7 +179,11 @@ de.json, pt-BR.json …  ─────────── per-locale flat maps:
 
 JS/TS files mein `t("literal")` aur `i18n.t("literal")` calls dhoondhne ke liye `i18next-scanner` ke `Parser.parseFuncFromString` ka upyog karta hai. `.astro` sources ke liye (jab `ui.uiExtractor.extensions` mein soochi-baddh ho), `ui-string-babel.ts` frontmatter aur template `{expression}` blocks ko `@babel/parser` ke saath parse karta hai aur wahi `funcNames` rules lagu karta hai. Function names aur file extensions `ui.uiExtractor` ke madhyam se configurable hain (`ui.reactExtractor` ek samarthit alias hai). `extract` **non-scanner inputs ko bhi usi catalog mein merge karta hai:** project `package.json` `description` jab `includePackageDescription` enabled ho (default), aur har `englishName` `ui-languages.json` se jab `includeUiLanguageEnglishNames` `true` ho aur `uiLanguagesPath` set ho (source mein pehle se mili strings ko prathamikta milti hai). Segment hashes trimmed source string ke **MD5 ke pehle 8 hex chars** hote hain — ye `strings.json` mein keys ban jaate hain.
 
+`.html` / `.htm` sources ke liye (jab `ui.uiExtractor.extensions` mein list kiya gaya ho), `extract` file ko `html-i18n-marks.ts` ke through route karta hai, jo `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker attributes ko scan karta hai (`ui.uiExtractor.htmlI18nAttributes` ke through configurable). Ek nanga marker apne source text ko element ke khud ke `textContent` / `title` / `placeholder` se leta hai; ek valued marker (`data-i18n="Key"`) value ka upyog karta hai. Yahi module `mark-html` command ko power karta hai, jo nange markers ko automatically insert karta hai. HTML files kabhi bhi Babel / i18next-scanner passes tak nahi pahunchti hain.
+
 Plain Astro SSG sites i18next ko skip kar sakte hain: build time par flat `{locale}.json` load karen aur source-text key dwara `t('English')` resolve karen (dekhen `examples/astro-website/src/i18n/t.ts` aur [GETTING_STARTED — Astro website](GETTING_STARTED.hi-Latn.md#astro-website)).
+
+Plain HTML apps marker attributes ke saath wahi catalog model follow karte hain `t()` calls ke bajaye — [GETTING_STARTED — Marking HTML for translation](GETTING_STARTED.hi-Latn.md#marking-html-for-translation) dekhein.
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -269,6 +275,7 @@ Sabhi extractors `BaseExtractor` ka vistar karte hain aur `extract(content, file
 - `AstroTemplateExtractor` - `.astro` marketing pages ke liye parse-and-replace (`translate-docs` via `translateAstroFile` in `doc-translate.ts`). User-facing HTML text nodes aur translatable attributes (`alt`, `title`, `aria-label`, `placeholder`) ko extract karta hai, saath hi template `{expression}` blocks ke andar string literals ko jab user-facing ho. Frontmatter TypeScript, `<script>`, `<style>`, protected attribute/key values, aur `t('…')` ke andar literals ko chhod deta hai. Reassembly relative imports ko adjust karta hai jab output paths gehre hote hain (jaise `src/pages/de/index.astro`). Dekhein [GETTING_STARTED — Astro website pages](GETTING_STARTED.hi-Latn.md#astro-website-parse-and-replace).
 - `JsonExtractor` - Docusaurus JSON label files (Docusaurus UI catalogs, not MDX body) se string values extract karta hai.
 - `SvgExtractor` - SVG se `<text>`, `<title>`, aur `<desc>` content extract karta hai (`translate-svg` dwara `config.svg` ke antargat files ke liye upyog kiya jata hai, `translate-docs` dwara nahi).
+- `html-i18n-marks.ts` - ek focused HTML tag scanner jise `extract` `.html` / `.htm` sources ke liye aur `mark-html` command dwara istemal kiya jata hai. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` `data-i18n*` marker attributes ko read karte hain (nanga marker → element `textContent` / `title` / `placeholder`; valued marker → value), aur `markHtmlContent` nange markers ko leaf text / title / placeholder elements mein insert karta hai (idempotent, `data-i18n-ignore` ko maan'ya karta hai, code-like aur mixed-content elements ko skip karta hai). Shared `normalizeI18nText` helper build-time keys ko browser runtime ke saman rakhta hai.
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
 ### Astro hybrid sites (UI + page HTML)
@@ -486,6 +493,7 @@ Mukhya exports:
 | `parseI18nConfig` | Ek raw config object ko validate karen. |
 | `TranslationCache` | SQLite cache - `cacheDir` path ke saath instantiate karen. |
 | `UIStringExtractor` | JS/TS source se `t("…")` strings extract karen. |
+| `collectHtmlI18nStrings` / `markHtmlContent` | HTML mein `data-i18n*` markers ko scan / insert karein (`extract` ko `.html` aur `mark-html` command ke liye power karta hai). |
 | `MarkdownExtractor` | Markdown se anuvadit hone yogya khand nikalein. |
 | `JsonExtractor` | Docusaurus JSON label files (UI catalogs, MDX body nahi) se nikalein. |
 | `SvgExtractor` | SVG files se nikalein. |
@@ -513,13 +521,16 @@ Config ke madhyam se gair-manak anuvad function names jodein:
   "ui": {
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
-      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"]
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
     }
   }
 }
 ```
 
 (`ui.reactExtractor` `ui.uiExtractor` ke liye ek poori tarah samarthit upnaam hai.)
+
+`.html` / `.htm` ko `extensions` mein add karein taaki `extract` ke dauran HTML marker attributes ko scan kiya ja sake. `ui.uiExtractor.htmlI18nAttributes` optional hai aur default `["data-i18n", "data-i18n-title", "data-i18n-placeholder"]` hai; `data-i18n` element `textContent` se map hota hai aur `data-i18n-<attr>` us attribute ke value se map hota hai (jaise `data-i18n-aria-label`).
 
 <a id="custom-extractors"></a>
 ### Custom extractors

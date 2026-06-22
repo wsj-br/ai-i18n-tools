@@ -12,6 +12,7 @@ import { matchesPathFilter, normalizePathFilterForProjectRoot } from "./doc-tran
 import { collectFilesByExtension } from "./file-utils.js";
 import type { I18nConfig } from "../core/types.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
+import { t } from "../i18n/index.js";
 
 const SLUG_STYLES = new Set<SlugStyle>([
   "github",
@@ -66,7 +67,7 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
   });
 
   if (relPaths.length === 0) {
-    console.log(chalk.yellow("[write-heading-ids] No markdown files matched."));
+    console.log(chalk.yellow(t("[write-heading-ids] No markdown files matched.")));
     return { filesWritten: 0, filesUnchanged: 0 };
   }
 
@@ -80,7 +81,12 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
       raw = fs.readFileSync(abs, "utf8");
     } catch (e) {
       console.error(
-        chalk.red(`[write-heading-ids] Cannot read ${rel}: ${e instanceof Error ? e.message : e}`)
+        chalk.red(
+          t("[write-heading-ids] Cannot read {{path}}: {{error}}", {
+            path: rel,
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
       );
       continue;
     }
@@ -94,17 +100,17 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
     if (next === raw) {
       filesUnchanged += 1;
       if (opts.verbose) {
-        console.log(chalk.gray(`  unchanged ${rel}`));
+        console.log(chalk.gray(t("  unchanged {{path}}", { path: rel })));
       }
       continue;
     }
 
     filesWritten += 1;
     if (opts.dryRun) {
-      console.log(chalk.cyan(`[dry-run] would update ${rel}`));
+      console.log(chalk.cyan(t("[dry-run] would update {{path}}", { path: rel })));
     } else {
       writeAtomicUtf8(abs, next);
-      console.log(chalk.green(`  wrote ${rel}`));
+      console.log(chalk.green(t("  Wrote {{path}}", { path: rel })));
     }
   }
 
@@ -119,7 +125,12 @@ export function parseSlugStyle(raw: string | undefined): SlugStyle {
   if (SLUG_STYLES.has(s as SlugStyle)) {
     return s as SlugStyle;
   }
-  throw new Error(`Invalid --slug-style "${raw}". Expected one of: ${[...SLUG_STYLES].join(", ")}`);
+  throw new Error(
+    t('Invalid --slug-style "{{value}}". Expected one of: {{styles}}', {
+      value: String(raw),
+      styles: [...SLUG_STYLES].join(", "),
+    })
+  );
 }
 
 export function parsePymdownCase(raw: string | undefined): PymdownSlugOptions["case"] {
@@ -127,7 +138,9 @@ export function parsePymdownCase(raw: string | undefined): PymdownSlugOptions["c
   if (v === "lower" || v === "title" || v === "none") {
     return v;
   }
-  throw new Error(`Invalid --pymdown-case "${raw}". Expected lower, title, or none.`);
+  throw new Error(
+    t('Invalid --pymdown-case "{{value}}". Expected lower, title, or none.', { value: String(raw) })
+  );
 }
 
 export function parsePymdownNormalize(raw: string | undefined): PymdownSlugOptions["normalize"] {
@@ -135,7 +148,11 @@ export function parsePymdownNormalize(raw: string | undefined): PymdownSlugOptio
   if (v === "nfc" || v === "nfd" || v === "none") {
     return v;
   }
-  throw new Error(`Invalid --pymdown-normalize "${raw}". Expected nfc, nfd, or none.`);
+  throw new Error(
+    t('Invalid --pymdown-normalize "{{value}}". Expected nfc, nfd, or none.', {
+      value: String(raw),
+    })
+  );
 }
 
 /** Merge CLI pymdown overrides onto defaults (percent-encode default true). */

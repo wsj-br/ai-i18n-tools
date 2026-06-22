@@ -29,6 +29,18 @@ describe("extractUiCallsFromSource", () => {
     const calls = extractUiCallsFromSource(src, "x.ts", ["t", "i18n.t"]);
     expect(calls.some((c) => c.literal === "Hello")).toBe(true);
   });
+
+  it("captures a template literal with no interpolation", () => {
+    const src = "const x = t(`Line one\nLine two`);";
+    const calls = extractUiCallsFromSource(src, "x.ts", ["t"]);
+    expect(calls.some((c) => c.literal === "Line one\nLine two")).toBe(true);
+  });
+
+  it("ignores template literals that interpolate expressions", () => {
+    const src = "const x = t(`Hello ${name}`);";
+    const calls = extractUiCallsFromSource(src, "x.ts", ["t"]);
+    expect(calls.length).toBe(0);
+  });
 });
 
 describe("pluralMultiPlaceholderMissingCount", () => {

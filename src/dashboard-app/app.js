@@ -6,6 +6,70 @@
   const HEALTH_PATH = "/api/health";
   const HEALTH_POLL_MS = 10_000; // 10 seconds
 
+  // ---------- Self-localization (dashboard's own UI) ----------
+  const I18N = { locale: "en-GB", dir: "ltr", bundle: {} };
+
+  /** Translate an English source string to the active dashboard locale, with {{name}} interpolation. */
+  function t(source, vars) {
+    const raw = I18N.bundle[source];
+    const text = typeof raw === "string" && raw.length > 0 ? raw : source;
+    if (!vars) return text;
+    return text.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (m, name) =>
+      vars[name] === undefined ? m : String(vars[name])
+    );
+  }
+
+  /**
+   * Collapse insignificant whitespace so a multi-line / indented source text node yields the same key
+   * the extractor computed. MUST stay identical to `normalizeI18nText` in
+   * `src/extractors/html-i18n-marks.ts`.
+   */
+  function normalizeI18nText(s) {
+    return s.trim().replace(/\s+/g, " ");
+  }
+
+  /**
+   * Translate static markup. Markers are bare by default (the source key is the element's own
+   * textContent / title / placeholder); a valued marker (data-i18n="Key") overrides the key.
+   */
+  function applyStaticI18n() {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n") || normalizeI18nText(el.textContent || "");
+      if (key) el.textContent = t(key);
+    });
+    document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-title") || normalizeI18nText(el.getAttribute("title") || "");
+      if (key) el.setAttribute("title", t(key));
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      const key =
+        el.getAttribute("data-i18n-placeholder") ||
+        normalizeI18nText(el.getAttribute("placeholder") || "");
+      if (key) el.setAttribute("placeholder", t(key));
+    });
+  }
+
+  /** Fetch the resolved UI locale + flat bundle from the server, then apply it to the document. */
+  function loadUiI18n() {
+    return nativeFetch("/api/ui-i18n", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data === "object") {
+          I18N.locale = data.locale || "en-GB";
+          I18N.dir = data.dir === "rtl" ? "rtl" : "ltr";
+          I18N.bundle = data.bundle && typeof data.bundle === "object" ? data.bundle : {};
+        }
+      })
+      .catch(() => {
+        /* keep English defaults when the endpoint is unavailable */
+      })
+      .finally(() => {
+        document.documentElement.setAttribute("lang", I18N.locale);
+        document.documentElement.setAttribute("dir", I18N.dir);
+        applyStaticI18n();
+      });
+  }
+
   function dashboardFetchFailureMeansServerGone(err) {
     if (!err || err.name === "AbortError") return false;
     return err instanceof TypeError;
@@ -164,21 +228,21 @@
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "icon-btn";
-      editBtn.title = "Edit";
+      editBtn.title = t("Edit");
       editBtn.textContent = "\u270F\uFE0F";
       editBtn.addEventListener("click", () => segOpenEditModal(row));
 
       const logLinksBtn = document.createElement("button");
       logLinksBtn.type = "button";
       logLinksBtn.className = "icon-btn log-links-btn";
-      logLinksBtn.title = "Show file links in server console";
+      logLinksBtn.title = t("Show file links in server console");
       logLinksBtn.textContent = "\uD83D\uDD17";
       logLinksBtn.addEventListener("click", (e) => segLogLinksToServer(row, e));
 
       const deleteBtn = document.createElement("button");
       deleteBtn.type = "button";
       deleteBtn.className = "icon-btn delete-btn";
-      deleteBtn.title = "Delete";
+      deleteBtn.title = t("Delete");
       deleteBtn.textContent = "\u274C";
       deleteBtn.addEventListener("click", () => segDeleteRow(row));
 
@@ -204,11 +268,15 @@
     seg.total = data.total;
     const totalPages = Math.max(1, Math.ceil(seg.total / seg.pageSize));
 
-    const info = `Showing ${(seg.currentPage - 1) * seg.pageSize + 1}\u2013${Math.min(seg.currentPage * seg.pageSize, seg.total)} of ${seg.total}`;
+    const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
+      from: (seg.currentPage - 1) * seg.pageSize + 1,
+      to: Math.min(seg.currentPage * seg.pageSize, seg.total),
+      total: seg.total,
+    });
     document.getElementById("seg-pagination-info").textContent = info;
     document.getElementById("seg-pagination-info-bottom").textContent = info;
 
-    const pi = `Page ${seg.currentPage} of ${totalPages}`;
+    const pi = t("Page {{page}} of {{totalPages}}", { page: seg.currentPage, totalPages });
     document.getElementById("seg-page-indicator").textContent = pi;
     document.getElementById("seg-page-indicator-bottom").textContent = pi;
 
@@ -224,11 +292,11 @@
       segRenderTable(data.rows);
       segUpdatePagination(data);
     } catch (err) {
-      alert("Error loading data: " + err.message);
+      alert(t("Error loading data: {{message}}", { message: err.message }));
     } finally {
       const applyBtn = document.getElementById("seg-btn-apply");
       if (applyBtn) {
-        applyBtn.textContent = "Apply";
+        applyBtn.textContent = t("Apply");
         applyBtn.disabled = false;
       }
     }
@@ -241,7 +309,7 @@
     const preserveFilter = filterFp.value;
     for (const sel of [del, filterFp]) {
       const preserved = sel === del ? preserveDel : preserveFilter;
-      sel.innerHTML = '<option value="">-- Select filepath --</option>';
+      sel.innerHTML = '<option value="">' + escapeHtml(t("-- Select filepath --")) + "</option>";
       for (const fp of filepaths) {
         const opt = document.createElement("option");
         opt.value = fp;
@@ -302,7 +370,7 @@
       segCloseEditModal();
       await segLoadData();
     } catch (err) {
-      alert("Error saving: " + err.message);
+      alert(t("Error saving: {{message}}", { message: err.message }));
     }
   }
 
@@ -321,18 +389,18 @@
       const btn = e && e.target && e.target.closest(".log-links-btn");
       if (btn) {
         const origTitle = btn.title;
-        btn.title = "Links logged to server console";
+        btn.title = t("Links logged to server console");
         setTimeout(() => {
           btn.title = origTitle;
         }, 2000);
       }
     } catch (err) {
-      alert("Error logging links: " + err.message);
+      alert(t("Error logging links: {{message}}", { message: err.message }));
     }
   }
 
   async function segDeleteRow(row) {
-    if (!confirm("Delete this translation?")) return;
+    if (!confirm(t("Delete this translation?"))) return;
     try {
       const sourceHashEnc = encodeURIComponent(row.source_hash);
       const localeEnc = encodeURIComponent(row.locale);
@@ -341,17 +409,17 @@
       await segLoadData();
       await segLoadFilepaths();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
   async function segDeleteFiltered() {
     const count = seg.total;
     if (count === 0) {
-      alert("No entries to delete.");
+      alert(t("No entries to delete."));
       return;
     }
-    if (!confirm(`Delete all ${count} filtered translation(s)?`)) return;
+    if (!confirm(t("Delete all {{count}} filtered translation(s)?", { count }))) return;
     try {
       const params = new URLSearchParams();
       if (seg.filters.filename) params.set("filename", seg.filters.filename);
@@ -366,33 +434,33 @@
       const res = await fetch(`/api/translations/by-filters${qs ? "?" + qs : ""}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
-      alert(`Deleted ${data.deleted} translation(s).`);
+      alert(t("Deleted {{deleted}} translation(s).", { deleted: data.deleted }));
       await segLoadData();
       await segLoadFilepaths();
       await segLoadLocales();
       await segLoadModels();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
   async function segDeleteByFilepath() {
     const filepath = document.getElementById("seg-select-filepath").value;
     if (!filepath) return;
-    if (!confirm(`Delete all translations for "${filepath}"?`)) return;
+    if (!confirm(t('Delete all translations for "{{filepath}}"?', { filepath }))) return;
     try {
       const res = await fetch(`/api/translations/by-filepath?filepath=${encodeURIComponent(filepath)}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
-      alert(`Deleted ${data.deleted} translation(s).`);
+      alert(t("Deleted {{deleted}} translation(s).", { deleted: data.deleted }));
       document.getElementById("seg-select-filepath").value = "";
       document.getElementById("seg-btn-delete-filepath").disabled = true;
       await segLoadData();
       await segLoadFilepaths();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
@@ -402,11 +470,11 @@
       if (!res.ok) return;
       const data = await res.json();
       document.getElementById("seg-th-source-text").textContent = formatWithSourceLocale(
-        "Source text",
+        t("Source text"),
         data.sourceLocale
       );
       const select = document.getElementById("seg-filter-locale");
-      select.innerHTML = '<option value="">All locales</option>';
+      select.innerHTML = '<option value="">' + escapeHtml(t("All locales")) + "</option>";
       for (const loc of data.locales) {
         const opt = document.createElement("option");
         opt.value = loc;
@@ -424,7 +492,7 @@
       if (!res.ok) return;
       const data = await res.json();
       const select = document.getElementById("seg-filter-model");
-      select.innerHTML = '<option value="">All models</option>';
+      select.innerHTML = '<option value="">' + escapeHtml(t("All models")) + "</option>";
       for (const model of data.models) {
         const opt = document.createElement("option");
         opt.value = model;
@@ -448,7 +516,7 @@
     seg.currentPage = 1;
     const applyBtn = document.getElementById("seg-btn-apply");
     if (applyBtn) {
-      applyBtn.textContent = "Loading...";
+      applyBtn.textContent = t("Loading...");
       applyBtn.disabled = true;
     }
     segLoadData();
@@ -594,7 +662,7 @@
       const linkBtn = document.createElement("button");
       linkBtn.type = "button";
       linkBtn.className = "icon-btn log-links-btn";
-      linkBtn.title = "Show source file/line in server console";
+      linkBtn.title = t("Show source file/line in server console");
       linkBtn.textContent = "\uD83D\uDD17";
       linkBtn.disabled = !row.filepath;
       linkBtn.addEventListener("pointerdown", (e) => {
@@ -608,9 +676,9 @@
       const cacheModelRaw = row.translation_model != null ? String(row.translation_model).trim() : "";
       const cacheModelHtml =
         cacheModelRaw !== ""
-          ? `<span class="fail-cache-translation-model" title="Model that successfully translated this segment">${escapeHtml(
-              cacheModelRaw
-            )}</span>`
+          ? `<span class="fail-cache-translation-model" title="${escapeHtml(
+              t("Model that successfully translated this segment")
+            )}">${escapeHtml(cacheModelRaw)}</span>`
           : "";
       const modelCellHtml = (() => {
         const parts = [];
@@ -626,12 +694,12 @@
         <td>${escapeHtml(row.start_line != null ? String(row.start_line) : "")}</td>
         <td>${escapeHtml(row.locale)}</td>
         <td><code>${escapeHtml(row.source_hash)}</code></td>
-        <td class="source-text" title="click to see the full source text">${escapeHtml(truncate(row.source_text, 200))}</td>
+        <td class="source-text" title="${escapeHtml(t("click to see the full source text"))}">${escapeHtml(truncate(row.source_text, 200))}</td>
         <td>${modelCellHtml}</td>
         <td>${escapeHtml(row.model_order != null ? String(row.model_order) : "\u2014")}</td>
         <td>${qualityHtml || "\u2014"}</td>
         <td title="${escapeHtml(row.error_message || "")}">${errorHtml || "\u2014"}</td>
-        <td>${row.fatal === 1 ? "Yes" : "No"}</td>
+        <td>${row.fatal === 1 ? escapeHtml(t("Yes")) : escapeHtml(t("No"))}</td>
         <td class="actions"></td>
       `;
       tr.querySelector(".actions").append(linkBtn);
@@ -642,7 +710,7 @@
       detailTr.innerHTML = `
         <td colspan="11">
           <div class="fail-detail-content">
-            <div class="fail-detail-title">Full source text</div>
+            <div class="fail-detail-title">${escapeHtml(t("Full source text"))}</div>
             <pre>${escapeHtml(row.source_text || "")}</pre>
           </div>
         </td>
@@ -684,10 +752,14 @@
   function failUpdatePagination(data) {
     failState.total = data.total;
     const totalPages = Math.max(1, Math.ceil(failState.total / failState.pageSize));
-    const info = `Showing ${(failState.currentPage - 1) * failState.pageSize + 1}\u2013${Math.min(failState.currentPage * failState.pageSize, failState.total)} of ${failState.total}`;
+    const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
+      from: (failState.currentPage - 1) * failState.pageSize + 1,
+      to: Math.min(failState.currentPage * failState.pageSize, failState.total),
+      total: failState.total,
+    });
     document.getElementById("fail-pagination-info").textContent = info;
     document.getElementById("fail-pagination-info-bottom").textContent = info;
-    const pi = `Page ${failState.currentPage} of ${totalPages}`;
+    const pi = t("Page {{page}} of {{totalPages}}", { page: failState.currentPage, totalPages });
     document.getElementById("fail-page-indicator").textContent = pi;
     document.getElementById("fail-page-indicator-bottom").textContent = pi;
     document.getElementById("fail-btn-prev").disabled = failState.currentPage <= 1;
@@ -700,7 +772,15 @@
     const el = document.getElementById("fail-summary");
     setStatus(
       el,
-      `Segments with failures: ${summary.segmentsWithFailure} | 1 failure: ${summary.segmentsWith1Failure} | 2 failures: ${summary.segmentsWith2Failures} | 3+ failures: ${summary.segmentsWith3OrMoreFailures}`,
+      t(
+        "Segments with failures: {{segmentsWithFailure}} | 1 failure: {{segmentsWith1Failure}} | 2 failures: {{segmentsWith2Failures}} | 3+ failures: {{segmentsWith3OrMoreFailures}}",
+        {
+          segmentsWithFailure: summary.segmentsWithFailure,
+          segmentsWith1Failure: summary.segmentsWith1Failure,
+          segmentsWith2Failures: summary.segmentsWith2Failures,
+          segmentsWith3OrMoreFailures: summary.segmentsWith3OrMoreFailures,
+        }
+      ),
       true
     );
   }
@@ -712,7 +792,7 @@
       failUpdatePagination(data);
       failRenderSummary(summary);
     } catch (err) {
-      alert("Error loading failures: " + err.message);
+      alert(t("Error loading failures: {{message}}", { message: err.message }));
     }
   }
 
@@ -727,7 +807,7 @@
         const locData = await locRes.json();
         const sel = document.getElementById("fail-filter-locale");
         const prev = sel.value;
-        sel.innerHTML = '<option value="">All locales</option>';
+        sel.innerHTML = '<option value="">' + escapeHtml(t("All locales")) + "</option>";
         for (const loc of locData.locales || []) {
           const opt = document.createElement("option");
           opt.value = loc;
@@ -740,7 +820,7 @@
         const modelData = await modelRes.json();
         const sel = document.getElementById("fail-filter-model");
         const prev = sel.value;
-        sel.innerHTML = '<option value="">All models</option>';
+        sel.innerHTML = '<option value="">' + escapeHtml(t("All models")) + "</option>";
         for (const model of modelData.models || []) {
           const opt = document.createElement("option");
           opt.value = model;
@@ -751,7 +831,7 @@
       }
       const qualitySel = document.getElementById("fail-filter-quality");
       const prevQuality = qualitySel.value;
-      qualitySel.innerHTML = '<option value="">All quality errors</option>';
+      qualitySel.innerHTML = '<option value="">' + escapeHtml(t("All quality errors")) + "</option>";
       for (const q of qRes.qualityErrors || []) {
         const opt = document.createElement("option");
         opt.value = q;
@@ -894,13 +974,13 @@
       const btn = e && e.target && e.target.closest(".log-links-btn");
       if (btn) {
         const origTitle = btn.title;
-        btn.title = "Links logged to server console";
+        btn.title = t("Links logged to server console");
         setTimeout(() => {
           btn.title = origTitle;
         }, 2000);
       }
     } catch (err) {
-      alert("Error logging links: " + err.message);
+      alert(t("Error logging links: {{message}}", { message: err.message }));
     }
   }
 
@@ -912,7 +992,7 @@
       const linkBtn = document.createElement("button");
       linkBtn.type = "button";
       linkBtn.className = "icon-btn log-links-btn";
-      linkBtn.title = "Show source file/line in server console";
+      linkBtn.title = t("Show source file/line in server console");
       linkBtn.textContent = "\uD83D\uDD17";
       linkBtn.disabled = !row.filepath;
       linkBtn.addEventListener("pointerdown", (ev) => {
@@ -941,10 +1021,13 @@
     const totalPages = Math.max(1, Math.ceil(mdissState.total / mdissState.pageSize));
     const lo = (mdissState.currentPage - 1) * mdissState.pageSize + 1;
     const hi = Math.min(mdissState.currentPage * mdissState.pageSize, mdissState.total);
-    const info = mdissState.total === 0 ? "No rows" : `Showing ${lo}\u2013${hi} of ${mdissState.total}`;
+    const info =
+      mdissState.total === 0
+        ? t("No rows")
+        : t("Showing {{from}}\u2013{{to}} of {{total}}", { from: lo, to: hi, total: mdissState.total });
     document.getElementById("mdiss-pagination-info").textContent = info;
     document.getElementById("mdiss-pagination-info-bottom").textContent = info;
-    const pi = `Page ${mdissState.currentPage} of ${totalPages}`;
+    const pi = t("Page {{page}} of {{totalPages}}", { page: mdissState.currentPage, totalPages });
     document.getElementById("mdiss-page-indicator").textContent = pi;
     document.getElementById("mdiss-page-indicator-bottom").textContent = pi;
     document.getElementById("mdiss-btn-prev").disabled = mdissState.currentPage <= 1;
@@ -955,7 +1038,7 @@
 
   function mdissRenderSummary(summary) {
     const el = document.getElementById("mdiss-summary");
-    const parts = [`Issue rows: ${summary.rowsWithIssues}`];
+    const parts = [t("Issue rows: {{rowsWithIssues}}", { rowsWithIssues: summary.rowsWithIssues })];
     const codes = summary.byCode || {};
     const keys = Object.keys(codes).sort();
     for (const k of keys) {
@@ -971,7 +1054,7 @@
       mdissUpdatePagination(data);
       mdissRenderSummary(summary);
     } catch (err) {
-      alert("Error loading markdown issues: " + err.message);
+      alert(t("Error loading markdown issues: {{message}}", { message: err.message }));
     }
   }
 
@@ -980,7 +1063,7 @@
       const qRes = await mdissFetchIssueCodes();
       const sel = document.getElementById("mdiss-filter-issue-code");
       const prev = sel.value;
-      sel.innerHTML = '<option value="">All issue codes</option>';
+      sel.innerHTML = '<option value="">' + escapeHtml(t("All issue codes")) + "</option>";
       for (const q of qRes.issueCodes || []) {
         const opt = document.createElement("option");
         opt.value = q;
@@ -1193,10 +1276,14 @@
     const slice = showPag ? uiState.filteredRows.slice(start, start + UI_PAGE_SIZE) : uiState.filteredRows;
 
     if (showPag) {
-      const info = `Showing ${total ? start + 1 : 0}\u2013${Math.min(start + UI_PAGE_SIZE, total)} of ${total}`;
+      const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
+        from: total ? start + 1 : 0,
+        to: Math.min(start + UI_PAGE_SIZE, total),
+        total,
+      });
       document.getElementById("ui-pagination-info").textContent = info;
       document.getElementById("ui-pagination-info-bottom").textContent = info;
-      const pi = `Page ${page} of ${totalPages}`;
+      const pi = t("Page {{page}} of {{totalPages}}", { page, totalPages });
       document.getElementById("ui-page-indicator").textContent = pi;
       document.getElementById("ui-page-indicator-bottom").textContent = pi;
       document.getElementById("ui-btn-prev").disabled = page <= 1;
@@ -1207,7 +1294,7 @@
 
     for (const { entry: e, locale: rowLocale } of slice) {
       const tr = document.createElement("tr");
-      const t = (e.translated || {})[rowLocale] != null ? String((e.translated || {})[rowLocale]) : "";
+      const trText = (e.translated || {})[rowLocale] != null ? String((e.translated || {})[rowLocale]) : "";
       const modelLabel =
         (e.models || {})[rowLocale] != null && String((e.models || {})[rowLocale]).trim() !== ""
           ? String((e.models || {})[rowLocale])
@@ -1217,26 +1304,26 @@
         <td title="${escapeHtml(uiFormatLocations(e.locations))}">${escapeHtml(truncate(uiFormatLocations(e.locations), 80))}</td>
         <td class="source-text">${escapeHtml(truncate(e.source, 200))}</td>
         <td>${escapeHtml(rowLocale)}</td>
-        <td>${escapeHtml(truncate(t, 120))}</td>
+        <td>${escapeHtml(truncate(trText, 120))}</td>
         <td title="${escapeHtml(modelLabel)}">${escapeHtml(truncate(modelLabel, 48))}</td>
         <td class="actions"></td>
       `;
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "icon-btn";
-      editBtn.title = "Edit";
+      editBtn.title = t("Edit");
       editBtn.textContent = "\u270F\uFE0F";
       editBtn.addEventListener("click", () => uiOpenModal(e, rowLocale));
       const logBtn = document.createElement("button");
       logBtn.type = "button";
       logBtn.className = "icon-btn log-links-btn";
-      logBtn.title = "Log file links to server console";
+      logBtn.title = t("Log file links to server console");
       logBtn.textContent = "\uD83D\uDD17";
       logBtn.addEventListener("click", (ev) => uiLogLinks(e, rowLocale, ev));
       const deleteBtn = document.createElement("button");
       deleteBtn.type = "button";
       deleteBtn.className = "icon-btn delete-btn";
-      deleteBtn.title = "Delete";
+      deleteBtn.title = t("Delete");
       deleteBtn.textContent = "\u274C";
       deleteBtn.addEventListener("click", () => uiDeleteRow(e, rowLocale));
       tr.querySelector(".actions").append(editBtn, logBtn, deleteBtn);
@@ -1250,7 +1337,7 @@
     document.getElementById("ui-modal-textarea").value = (entry.translated && entry.translated[locale]) || "";
     const modal = document.querySelector("#ui-modal-overlay .modal h2");
     if (modal) {
-      modal.textContent = `Edit UI translation (${locale})`;
+      modal.textContent = t("Edit UI translation ({{locale}})", { locale });
     }
     document.getElementById("ui-modal-overlay").classList.remove("hidden");
   }
@@ -1260,7 +1347,7 @@
     uiState.editingLocale = null;
     document.getElementById("ui-modal-overlay").classList.add("hidden");
     const modalH2 = document.querySelector("#ui-modal-overlay .modal h2");
-    if (modalH2) modalH2.textContent = "Edit UI translation";
+    if (modalH2) modalH2.textContent = t("Edit UI translation");
   }
 
   async function uiSaveModal() {
@@ -1278,12 +1365,12 @@
       uiCloseModal();
       await loadUiStrings();
     } catch (err) {
-      alert("Error saving: " + err.message);
+      alert(t("Error saving: {{message}}", { message: err.message }));
     }
   }
 
   async function uiDeleteRow(entry, locale) {
-    if (!confirm("Delete this translation?")) return;
+    if (!confirm(t("Delete this translation?"))) return;
     try {
       const res = await fetch(`/api/ui-strings/${encodeURIComponent(entry.id)}`, {
         method: "DELETE",
@@ -1294,17 +1381,17 @@
       if (!res.ok) throw new Error(pj.error || res.statusText);
       await loadUiStrings();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
   async function uiDeleteFiltered() {
     const count = uiState.filteredRows.length;
     if (count === 0) {
-      alert("No rows to delete.");
+      alert(t("No rows to delete."));
       return;
     }
-    if (!confirm(`Delete all ${count} filtered translation row(s)?`)) return;
+    if (!confirm(t("Delete all {{count}} filtered translation row(s)?", { count }))) return;
     try {
       const res = await fetch("/api/ui-strings/delete-rows", {
         method: "POST",
@@ -1315,10 +1402,10 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
-      alert(`Deleted ${data.deleted} translation(s).`);
+      alert(t("Deleted {{deleted}} translation(s).", { deleted: data.deleted }));
       await loadUiStrings();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
@@ -1336,31 +1423,34 @@
       const btn = e && e.target && e.target.closest(".log-links-btn");
       if (btn) {
         const o = btn.title;
-        btn.title = "Logged to server console";
+        btn.title = t("Logged to server console");
         setTimeout(() => {
           btn.title = o;
         }, 2000);
       }
     } catch (err) {
-      alert("Error logging links: " + err.message);
+      alert(t("Error logging links: {{message}}", { message: err.message }));
     }
   }
 
   async function loadUiStrings() {
-    setStatus(document.getElementById("ui-status"), "Loading\u2026", false);
+    setStatus(document.getElementById("ui-status"), t("Loading\u2026"), false);
     try {
       const meta = await fetch("/api/ui-strings/meta").then((r) => r.json());
       uiState.meta = meta;
       document.getElementById("ui-meta").textContent = meta.available
-        ? `File: ${meta.path || "(unknown)"} \u2014 locales: ${(meta.targetLocales || []).join(", ")}`
-        : "UI strings path not configured or file missing.";
-      document.getElementById("ui-th-source").textContent = formatWithSourceLocale("Source", meta.sourceLocale);
+        ? t("File: {{path}} \u2014 locales: {{locales}}", {
+            path: meta.path || t("(unknown)"),
+            locales: (meta.targetLocales || []).join(", "),
+          })
+        : t("UI strings path not configured or file missing.");
+      document.getElementById("ui-th-source").textContent = formatWithSourceLocale(t("Source"), meta.sourceLocale);
       const localeSel = document.getElementById("ui-edit-locale");
       const prevLocale = localeSel.value;
       localeSel.innerHTML = "";
       const allOpt = document.createElement("option");
       allOpt.value = "";
-      allOpt.textContent = "All locales";
+      allOpt.textContent = t("All locales");
       localeSel.appendChild(allOpt);
       for (const loc of meta.targetLocales || []) {
         const opt = document.createElement("option");
@@ -1371,19 +1461,19 @@
       const hasPrev = prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
       localeSel.value = hasPrev ? prevLocale : "";
       if (!meta.available) {
-        setStatus(document.getElementById("ui-status"), "Unavailable", false);
+        setStatus(document.getElementById("ui-status"), t("Unavailable"), false);
         document.getElementById("ui-table-body").innerHTML = "";
         document.getElementById("ui-filter-filename").value = "";
         const fpSel = document.getElementById("ui-filter-filepath-select");
-        fpSel.innerHTML = '<option value="">-- Select filepath --</option>';
+        fpSel.innerHTML = '<option value="">' + escapeHtml(t("-- Select filepath --")) + "</option>";
         fpSel.value = "";
         const modelSel = document.getElementById("ui-filter-model");
-        modelSel.innerHTML = '<option value="">All models</option>';
+        modelSel.innerHTML = '<option value="">' + escapeHtml(t("All models")) + "</option>";
         modelSel.value = "";
         return;
       }
       const data = await fetch("/api/ui-strings").then((r) => r.json());
-      if (!data.entries) throw new Error(data.error || "Bad response");
+      if (!data.entries) throw new Error(data.error || t("Bad response"));
       uiState.allEntries = data.entries
         .filter((e) => !e.plural)
         .map((e) => ({
@@ -1399,7 +1489,10 @@
       uiRenderTable();
       setStatus(
         document.getElementById("ui-status"),
-        `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
+        t("{{count}} plain entries ({{rows}} row(s) after filter)", {
+          count: uiState.allEntries.length,
+          rows: uiState.filteredRows.length,
+        }),
         true
       );
     } catch (e) {
@@ -1419,7 +1512,10 @@
     uiRenderTable();
     setStatus(
       document.getElementById("ui-status"),
-      `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
+      t("{{count}} plain entries ({{rows}} row(s) after filter)", {
+        count: uiState.allEntries.length,
+        rows: uiState.filteredRows.length,
+      }),
       true
     );
   }
@@ -1429,7 +1525,10 @@
     uiRenderTable();
     setStatus(
       document.getElementById("ui-status"),
-      `${uiState.allEntries.length} plain entries (${uiState.filteredRows.length} row(s) after filter)`,
+      t("{{count}} plain entries ({{rows}} row(s) after filter)", {
+        count: uiState.allEntries.length,
+        rows: uiState.filteredRows.length,
+      }),
       true
     );
   }
@@ -1673,20 +1772,23 @@
   }
 
   async function loadUiPlurals() {
-    setStatus(document.getElementById("up-status"), "Loading\u2026", false);
+    setStatus(document.getElementById("up-status"), t("Loading\u2026"), false);
     try {
       const meta = await fetch("/api/ui-strings/meta").then((r) => r.json());
       upState.meta = meta;
       document.getElementById("up-meta").textContent = meta.available
-        ? `File: ${meta.path || "(unknown)"} \u2014 plural locales: ${(meta.pluralLocales || []).join(", ")}`
-        : "UI strings path not configured or file missing.";
-      document.getElementById("up-th-source").textContent = formatWithSourceLocale("Source", meta.sourceLocale);
+        ? t("File: {{path}} \u2014 plural locales: {{locales}}", {
+            path: meta.path || t("(unknown)"),
+            locales: (meta.pluralLocales || []).join(", "),
+          })
+        : t("UI strings path not configured or file missing.");
+      document.getElementById("up-th-source").textContent = formatWithSourceLocale(t("Source"), meta.sourceLocale);
       const localeSel = document.getElementById("up-edit-locale");
       const prevLocale = localeSel.value;
       localeSel.innerHTML = "";
       const allOpt = document.createElement("option");
       allOpt.value = "";
-      allOpt.textContent = "All locales";
+      allOpt.textContent = t("All locales");
       localeSel.appendChild(allOpt);
       for (const loc of meta.pluralLocales || []) {
         const opt = document.createElement("option");
@@ -1697,16 +1799,17 @@
       const hasPrev = prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
       localeSel.value = hasPrev ? prevLocale : "";
       if (!meta.available) {
-        setStatus(document.getElementById("up-status"), "Unavailable", false);
+        setStatus(document.getElementById("up-status"), t("Unavailable"), false);
         document.getElementById("up-table-body").innerHTML = "";
         document.getElementById("up-filter-filename").value = "";
         document.getElementById("up-filter-filepath-select").innerHTML =
-          '<option value="">-- Select filepath --</option>';
-        document.getElementById("up-filter-model").innerHTML = '<option value="">All models</option>';
+          '<option value="">' + escapeHtml(t("-- Select filepath --")) + "</option>";
+        document.getElementById("up-filter-model").innerHTML =
+          '<option value="">' + escapeHtml(t("All models")) + "</option>";
         return;
       }
       const data = await fetch("/api/ui-strings").then((r) => r.json());
-      if (!data.entries) throw new Error(data.error || "Bad response");
+      if (!data.entries) throw new Error(data.error || t("Bad response"));
       upState.allEntries = data.entries
         .filter((e) => e.plural === true)
         .map((e) => ({
@@ -1726,7 +1829,10 @@
       upRenderTable();
       setStatus(
         document.getElementById("up-status"),
-        `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+        t("{{count}} plural group(s) ({{rows}} row(s) after filter)", {
+          count: upState.allEntries.length,
+          rows: upState.filteredRows.length,
+        }),
         true
       );
     } catch (e) {
@@ -1747,7 +1853,10 @@
     upRenderTable();
     setStatus(
       document.getElementById("up-status"),
-      `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+      t("{{count}} plural group(s) ({{rows}} row(s) after filter)", {
+        count: upState.allEntries.length,
+        rows: upState.filteredRows.length,
+      }),
       true
     );
   }
@@ -1757,7 +1866,10 @@
     upRenderTable();
     setStatus(
       document.getElementById("up-status"),
-      `${upState.allEntries.length} plural group(s) (${upState.filteredRows.length} row(s) after filter)`,
+      t("{{count}} plural group(s) ({{rows}} row(s) after filter)", {
+        count: upState.allEntries.length,
+        rows: upState.filteredRows.length,
+      }),
       true
     );
   }
@@ -1777,10 +1889,14 @@
     const slice = showPag ? upState.filteredRows.slice(start, start + UP_PAGE_SIZE) : upState.filteredRows;
 
     if (showPag) {
-      const info = `Showing ${total ? start + 1 : 0}\u2013${Math.min(start + UP_PAGE_SIZE, total)} of ${total}`;
+      const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
+        from: total ? start + 1 : 0,
+        to: Math.min(start + UP_PAGE_SIZE, total),
+        total,
+      });
       document.getElementById("up-pagination-info").textContent = info;
       document.getElementById("up-pagination-info-bottom").textContent = info;
-      const pi = `Page ${page} of ${totalPages}`;
+      const pi = t("Page {{page}} of {{totalPages}}", { page, totalPages });
       document.getElementById("up-page-indicator").textContent = pi;
       document.getElementById("up-page-indicator-bottom").textContent = pi;
       document.getElementById("up-btn-prev").disabled = page <= 1;
@@ -1797,7 +1913,9 @@
           : "\u2014";
       const zdBadge =
         e.zeroDigit === true
-          ? ' <span class="up-zerodigit-badge" title="zeroDigit hint for source forms">zeroDigit</span>'
+          ? ' <span class="up-zerodigit-badge" title="' +
+            escapeHtml(t("zeroDigit hint for source forms")) +
+            '">zeroDigit</span>'
           : "";
       tr.innerHTML = `
         <td><code>${escapeHtml(e.id)}</code>${zdBadge}</td>
@@ -1811,19 +1929,19 @@
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "icon-btn";
-      editBtn.title = "Edit forms";
+      editBtn.title = t("Edit forms");
       editBtn.textContent = "\u270F\uFE0F";
       editBtn.addEventListener("click", () => upOpenModal(e, rowLocale));
       const logBtn = document.createElement("button");
       logBtn.type = "button";
       logBtn.className = "icon-btn log-links-btn";
-      logBtn.title = "Log file links to server console";
+      logBtn.title = t("Log file links to server console");
       logBtn.textContent = "\uD83D\uDD17";
       logBtn.addEventListener("click", (ev) => uiLogLinks(e, rowLocale, ev));
       const deleteBtn = document.createElement("button");
       deleteBtn.type = "button";
       deleteBtn.className = "icon-btn delete-btn";
-      deleteBtn.title = "Delete locale bucket";
+      deleteBtn.title = t("Delete locale bucket");
       deleteBtn.textContent = "\u274C";
       deleteBtn.addEventListener("click", () => upDeleteRow(e, rowLocale));
       tr.querySelector(".actions").append(editBtn, logBtn, deleteBtn);
@@ -1848,12 +1966,12 @@
     const titleEl = document.getElementById("uip-modal-title");
     titleEl.textContent = "";
     const titleSpan = document.createElement("span");
-    titleSpan.textContent = `Plural forms (${locale})`;
+    titleSpan.textContent = t("Plural forms ({{locale}})", { locale });
     titleEl.appendChild(titleSpan);
     if (entry.zeroDigit === true) {
       const badge = document.createElement("span");
       badge.className = "up-zerodigit-badge";
-      badge.title = "zeroDigit (read-only)";
+      badge.title = t("zeroDigit (read-only)");
       badge.textContent = "zeroDigit";
       badge.style.marginLeft = "0.5rem";
       titleEl.appendChild(badge);
@@ -1876,8 +1994,8 @@
     upState.editingLocale = null;
     document.getElementById("uip-modal-overlay").classList.add("hidden");
     document.getElementById("uip-modal-fields").innerHTML = "";
-    const t = document.getElementById("uip-modal-title");
-    t.textContent = "Edit plural forms";
+    const titleEl = document.getElementById("uip-modal-title");
+    titleEl.textContent = t("Edit plural forms");
   }
 
   async function upSaveModal() {
@@ -1901,12 +2019,12 @@
       upCloseModal();
       await loadUiPlurals();
     } catch (err) {
-      alert("Error saving: " + err.message);
+      alert(t("Error saving: {{message}}", { message: err.message }));
     }
   }
 
   async function upDeleteRow(entry, locale) {
-    if (!confirm("Delete all plural forms for this locale?")) return;
+    if (!confirm(t("Delete all plural forms for this locale?"))) return;
     try {
       const res = await fetch(`/api/ui-strings/${encodeURIComponent(entry.id)}`, {
         method: "DELETE",
@@ -1917,17 +2035,17 @@
       if (!res.ok) throw new Error(pj.error || res.statusText);
       await loadUiPlurals();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
   async function upDeleteFiltered() {
     const count = upState.filteredRows.length;
     if (count === 0) {
-      alert("No rows to delete.");
+      alert(t("No rows to delete."));
       return;
     }
-    if (!confirm(`Delete all ${count} filtered locale bucket(s)?`)) return;
+    if (!confirm(t("Delete all {{count}} filtered locale bucket(s)?", { count }))) return;
     try {
       const res = await fetch("/api/ui-strings/delete-rows", {
         method: "POST",
@@ -1938,10 +2056,10 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
-      alert(`Deleted ${data.deleted} locale bucket(s).`);
+      alert(t("Deleted {{deleted}} locale bucket(s).", { deleted: data.deleted }));
       await loadUiPlurals();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
@@ -2012,7 +2130,7 @@
     }
     const star = document.createElement("option");
     star.value = "*";
-    star.textContent = "All locales (*)";
+    star.textContent = t("All locales (*)");
     selectEl.appendChild(star);
   }
 
@@ -2047,10 +2165,14 @@
     const slice = showPag ? glState.filtered.slice(start, start + GL_PAGE_SIZE) : glState.filtered;
 
     if (showPag) {
-      const info = `Showing ${total ? start + 1 : 0}\u2013${Math.min(start + GL_PAGE_SIZE, total)} of ${total}`;
+      const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
+        from: total ? start + 1 : 0,
+        to: Math.min(start + GL_PAGE_SIZE, total),
+        total,
+      });
       document.getElementById("gl-pagination-info").textContent = info;
       document.getElementById("gl-pagination-info-bottom").textContent = info;
-      const pi = `Page ${page} of ${totalPages}`;
+      const pi = t("Page {{page}} of {{totalPages}}", { page, totalPages });
       document.getElementById("gl-page-indicator").textContent = pi;
       document.getElementById("gl-page-indicator-bottom").textContent = pi;
       document.getElementById("gl-btn-prev").disabled = page <= 1;
@@ -2106,12 +2228,12 @@
       const saveBtn = document.createElement("button");
       saveBtn.type = "button";
       saveBtn.className = "btn-small";
-      saveBtn.textContent = "✅ Save";
+      saveBtn.textContent = t("✅ Save");
       saveBtn.addEventListener("click", () => glSaveRow(tr, idx));
       const delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.className = "btn-small btn-delete";
-      delBtn.textContent = "❌ Delete";
+      delBtn.textContent = t("❌ Delete");
       delBtn.addEventListener("click", () => glDeleteRow(idx));
       tdA.append(saveBtn, delBtn);
 
@@ -2140,32 +2262,38 @@
       if (!res.ok) throw new Error(pj.error || res.statusText);
       await loadGlossary();
     } catch (err) {
-      alert("Error saving: " + err.message);
+      alert(t("Error saving: {{message}}", { message: err.message }));
     }
   }
 
   async function glDeleteRow(rowIndex) {
-    if (!confirm("Delete this glossary row?")) return;
+    if (!confirm(t("Delete this glossary row?"))) return;
     try {
       const res = await fetch(`/api/glossary-user/${rowIndex}`, { method: "DELETE" });
       const pj = await res.json();
       if (!res.ok) throw new Error(pj.error || res.statusText);
       await loadGlossary();
     } catch (err) {
-      alert("Error deleting: " + err.message);
+      alert(t("Error deleting: {{message}}", { message: err.message }));
     }
   }
 
   async function loadGlossary() {
-    setStatus(document.getElementById("gl-status"), "Loading\u2026", false);
+    setStatus(document.getElementById("gl-status"), t("Loading\u2026"), false);
     glSetEditingVisible(false);
     try {
       const meta = await fetch("/api/glossary-user/meta").then((r) => r.json());
       glState.meta = meta;
       document.getElementById("gl-meta").textContent = meta.available
-        ? `File: ${meta.path || "(path)"} \u2014 target locales: ${(meta.targetLocales || []).join(", ")}`
-        : "glossary.userGlossary not configured.";
-      document.getElementById("gl-th-original").textContent = formatWithSourceLocale("Original", meta.sourceLocale);
+        ? t("File: {{path}} \u2014 target locales: {{locales}}", {
+            path: meta.path || t("(path)"),
+            locales: (meta.targetLocales || []).join(", "),
+          })
+        : t("glossary.userGlossary not configured.");
+      document.getElementById("gl-th-original").textContent = formatWithSourceLocale(
+        t("Original"),
+        meta.sourceLocale
+      );
       const glNewLocale = document.getElementById("gl-new-locale");
       glFillLocaleSelect(glNewLocale);
       glNewLocale.value = "*";
@@ -2176,7 +2304,7 @@
         prevGlFilterLocale && tlHas(prevGlFilterLocale, glFilterLocale) ? prevGlFilterLocale : "*";
       if (!meta.available) {
         glSetEditingVisible(false);
-        setStatus(document.getElementById("gl-status"), "No glossary path", false);
+        setStatus(document.getElementById("gl-status"), t("No glossary path"), false);
         document.getElementById("gl-table-body").innerHTML = "";
         return;
       }
@@ -2185,7 +2313,7 @@
       glState.rows = data.rows || [];
       glApplyFilters();
       glRenderTable();
-      setStatus(document.getElementById("gl-status"), `${glState.rows.length} row(s)`, true);
+      setStatus(document.getElementById("gl-status"), t("{{count}} row(s)", { count: glState.rows.length }), true);
     } catch (e) {
       setStatus(document.getElementById("gl-status"), String(e.message || e), false);
     }
@@ -2198,7 +2326,7 @@
       const translation = document.getElementById("gl-new-translation").value;
       const force = document.getElementById("gl-new-force").checked ? "true" : "";
       if (!original || locale === "") {
-        setStatus(document.getElementById("gl-status"), "Original and locale required", false);
+        setStatus(document.getElementById("gl-status"), t("Original and locale required"), false);
         return;
       }
       const pr = await fetch("/api/glossary-user", {
@@ -2207,7 +2335,7 @@
         body: JSON.stringify({ original, locale, translation, force }),
       });
       const pj = await pr.json();
-      setStatus(document.getElementById("gl-status"), pr.ok ? "Added." : pj.error, pr.ok);
+      setStatus(document.getElementById("gl-status"), pr.ok ? t("Added.") : pj.error, pr.ok);
       if (pr.ok) {
         document.getElementById("gl-new-original").value = "";
         document.getElementById("gl-new-translation").value = "";
@@ -2223,7 +2351,10 @@
       glRenderTable();
       setStatus(
         document.getElementById("gl-status"),
-        `${glState.rows.length} rows (${glState.filtered.length} after filter)`,
+        t("{{rows}} rows ({{filtered}} after filter)", {
+          rows: glState.rows.length,
+          filtered: glState.filtered.length,
+        }),
         true
       );
     }
@@ -2233,7 +2364,10 @@
       glRenderTable();
       setStatus(
         document.getElementById("gl-status"),
-        `${glState.rows.length} rows (${glState.filtered.length} after filter)`,
+        t("{{rows}} rows ({{filtered}} after filter)", {
+          rows: glState.rows.length,
+          filtered: glState.filtered.length,
+        }),
         true
       );
     }
@@ -2269,7 +2403,7 @@
   function loadStats() {
     const statusEl = document.getElementById("stats-status");
     const contentEl = document.getElementById("stats-content");
-    setStatus(statusEl, "Loading statistics...", false);
+    setStatus(statusEl, t("Loading statistics..."), false);
     contentEl.innerHTML = "";
 
     function pct(translated, total) {
@@ -2287,8 +2421,11 @@
       if (!byModel || byModel.length === 0 || !localeRows || localeRows.length === 0 || !byModelLocale)
         return "";
       const locales = localeRows.map((r) => r.locale);
-      let mHtml = '<h4 class="stats-subtitle">By model and locale</h4>';
-      mHtml += '<div style="overflow-x:auto; padding-bottom: 0.5rem;"><table class="stats-table" style="max-width:none;"><thead><tr><th>Model</th>';
+      let mHtml = '<h4 class="stats-subtitle">' + escapeHtml(t("By model and locale")) + "</h4>";
+      mHtml +=
+        '<div style="overflow-x:auto; padding-bottom: 0.5rem;"><table class="stats-table" style="max-width:none;"><thead><tr><th>' +
+        escapeHtml(t("Model")) +
+        "</th>";
       for (const loc of locales) {
         mHtml += `<th>${escapeHtml(loc)}</th>`;
       }
@@ -2332,7 +2469,7 @@
         return r.json();
       })
       .then((data) => {
-        setStatus(statusEl, "Statistics loaded.", true);
+        setStatus(statusEl, t("Statistics loaded."), true);
         const c = data.cache;
         const ui = data.uiStrings;
         const gl = data.glossary;
@@ -2340,32 +2477,51 @@
         let html = "";
         html += '<div class="stats-grid"><div class="stats-column">';
         
-        html += '<div class="stats-section"><h3 class="stats-section-title">Documentation cache</h3>';
+        html +=
+          '<div class="stats-section"><h3 class="stats-section-title">' +
+          escapeHtml(t("Documentation cache")) +
+          "</h3>";
         html += '<div class="stats-cards">';
-        html += `<div class="stats-card"><span class="stats-card-value">${c.totalSegments}</span><span class="stats-card-label">Total segments</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${c.staleSegments}</span><span class="stats-card-label">Stale</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${c.activeSegments}</span><span class="stats-card-label">Active</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${c.totalFiles}</span><span class="stats-card-label">Tracked files</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${c.uniqueFilepaths}</span><span class="stats-card-label">Unique filepaths</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${c.byModel.length}</span><span class="stats-card-label">Models used</span></div>`;
-        html += `<div class="stats-card"><span class="stats-card-value">${gl.available ? gl.totalTerms : 0}</span><span class="stats-card-label">Glossary entries</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.totalSegments}</span><span class="stats-card-label">${escapeHtml(t("Total segments"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.staleSegments}</span><span class="stats-card-label">${escapeHtml(t("Stale"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.activeSegments}</span><span class="stats-card-label">${escapeHtml(t("Active"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.totalFiles}</span><span class="stats-card-label">${escapeHtml(t("Tracked files"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.uniqueFilepaths}</span><span class="stats-card-label">${escapeHtml(t("Unique filepaths"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${c.byModel.length}</span><span class="stats-card-label">${escapeHtml(t("Models used"))}</span></div>`;
+        html += `<div class="stats-card"><span class="stats-card-value">${gl.available ? gl.totalTerms : 0}</span><span class="stats-card-label">${escapeHtml(t("Glossary entries"))}</span></div>`;
         html += "</div>";
 
         html +=
-          '<table class="stats-table"><thead><tr><th>Locale</th><th>Segments</th><th>Stale</th><th>Active</th></tr></thead><tbody>';
+          '<table class="stats-table"><thead><tr><th>' +
+          escapeHtml(t("Locale")) +
+          "</th><th>" +
+          escapeHtml(t("Segments")) +
+          "</th><th>" +
+          escapeHtml(t("Stale")) +
+          "</th><th>" +
+          escapeHtml(t("Active")) +
+          "</th></tr></thead><tbody>";
         for (const row of c.byLocale) {
           html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.total}</td><td>${row.stale}</td><td>${row.active}</td></tr>`;
         }
         html += "</tbody></table>";
 
         html +=
-          '<h4 class="stats-subtitle">By model</h4><table class="stats-table"><thead><tr><th>Model</th><th>Segments</th><th>% of total</th></tr></thead><tbody>';
+          '<h4 class="stats-subtitle">' +
+          escapeHtml(t("By model")) +
+          '</h4><table class="stats-table"><thead><tr><th>' +
+          escapeHtml(t("Model")) +
+          "</th><th>" +
+          escapeHtml(t("Segments")) +
+          "</th><th>" +
+          escapeHtml(t("% of total")) +
+          "</th></tr></thead><tbody>";
         for (const row of c.byModel) {
           const p = pctPart(row.count, c.totalSegments);
           html += `<tr><td>${escapeHtml(row.model)}</td><td>${row.count}</td><td>${p === "—" ? p : `${p}%`}</td></tr>`;
         }
         html += "</tbody>";
-        html += `<tfoot><tr class="stats-table-total"><th scope="row">Total</th><td>${c.totalSegments}</td><td>${
+        html += `<tfoot><tr class="stats-table-total"><th scope="row">${escapeHtml(t("Total"))}</th><td>${c.totalSegments}</td><td>${
           c.totalSegments === 0 ? "—" : "100.0%"
         }</td></tr></tfoot></table>`;
         
@@ -2373,26 +2529,54 @@
 
         html += '</div><div class="stats-column">';
 
-        html += '<div class="stats-section"><h3 class="stats-section-title">UI strings (strings.json)</h3>';
+        html +=
+          '<div class="stats-section"><h3 class="stats-section-title">' +
+          escapeHtml(t("UI strings (strings.json)")) +
+          "</h3>";
         if (!ui.available) {
-          html += '<p class="hint stats-unavailable">strings.json not configured or missing.</p>';
-        } else {
-          html += `<p class="hint">${ui.totalEntries} entries (${ui.plainTotal} plain, ${ui.pluralTotal} plural)</p>`;
-          html += '<div class="stats-cards">';
-          html += `<div class="stats-card"><span class="stats-card-value">${ui.plainTotal}</span><span class="stats-card-label">Plain entries</span></div>`;
-          html += `<div class="stats-card"><span class="stats-card-value">${ui.pluralTotal}</span><span class="stats-card-label">Plural groups</span></div>`;
-          html += "</div>";
-          html += '<h4 class="stats-subtitle">Plain coverage per locale</h4>';
           html +=
-            '<table class="stats-table"><thead><tr><th>Locale</th><th>Translated</th><th>Missing</th><th>Coverage</th></tr></thead><tbody>';
+            '<p class="hint stats-unavailable">' +
+            escapeHtml(t("strings.json not configured or missing.")) +
+            "</p>";
+        } else {
+          html += `<p class="hint">${escapeHtml(
+            t("{{total}} entries ({{plain}} plain, {{plural}} plural)", {
+              total: ui.totalEntries,
+              plain: ui.plainTotal,
+              plural: ui.pluralTotal,
+            })
+          )}</p>`;
+          html += '<div class="stats-cards">';
+          html += `<div class="stats-card"><span class="stats-card-value">${ui.plainTotal}</span><span class="stats-card-label">${escapeHtml(t("Plain entries"))}</span></div>`;
+          html += `<div class="stats-card"><span class="stats-card-value">${ui.pluralTotal}</span><span class="stats-card-label">${escapeHtml(t("Plural groups"))}</span></div>`;
+          html += "</div>";
+          html += '<h4 class="stats-subtitle">' + escapeHtml(t("Plain coverage per locale")) + "</h4>";
+          html +=
+            '<table class="stats-table"><thead><tr><th>' +
+            escapeHtml(t("Locale")) +
+            "</th><th>" +
+            escapeHtml(t("Translated")) +
+            "</th><th>" +
+            escapeHtml(t("Missing")) +
+            "</th><th>" +
+            escapeHtml(t("Coverage")) +
+            "</th></tr></thead><tbody>";
           for (const row of ui.plainByLocale) {
             const cov = pct(row.translated, ui.plainTotal);
             html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.translated}</td><td>${row.missing}</td><td>${cov}%</td></tr>`;
           }
           html += "</tbody></table>";
-          html += '<h4 class="stats-subtitle">Plural completeness per locale</h4>';
+          html += '<h4 class="stats-subtitle">' + escapeHtml(t("Plural completeness per locale")) + "</h4>";
           html +=
-            '<table class="stats-table"><thead><tr><th>Locale</th><th>Complete</th><th>Incomplete</th><th>Coverage</th></tr></thead><tbody>';
+            '<table class="stats-table"><thead><tr><th>' +
+            escapeHtml(t("Locale")) +
+            "</th><th>" +
+            escapeHtml(t("Complete")) +
+            "</th><th>" +
+            escapeHtml(t("Incomplete")) +
+            "</th><th>" +
+            escapeHtml(t("Coverage")) +
+            "</th></tr></thead><tbody>";
           for (const row of ui.pluralByLocale) {
             const cov = pct(row.complete, ui.pluralTotal);
             html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.complete}</td><td>${row.incomplete}</td><td>${cov}%</td></tr>`;
@@ -2401,13 +2585,21 @@
 
           const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
           html +=
-            '<h4 class="stats-subtitle">By model</h4><table class="stats-table"><thead><tr><th>Model</th><th>Entries</th><th>% of total</th></tr></thead><tbody>';
+            '<h4 class="stats-subtitle">' +
+            escapeHtml(t("By model")) +
+            '</h4><table class="stats-table"><thead><tr><th>' +
+            escapeHtml(t("Model")) +
+            "</th><th>" +
+            escapeHtml(t("Entries")) +
+            "</th><th>" +
+            escapeHtml(t("% of total")) +
+            "</th></tr></thead><tbody>";
           for (const row of ui.byModel) {
             const p = pctPart(row.count, totalUiModelUsage);
             html += `<tr><td>${escapeHtml(row.model)}</td><td>${row.count}</td><td>${p === "—" ? p : `${p}%`}</td></tr>`;
           }
           html += "</tbody>";
-          html += `<tfoot><tr class="stats-table-total"><th scope="row">Total</th><td>${totalUiModelUsage}</td><td>${
+          html += `<tfoot><tr class="stats-table-total"><th scope="row">${escapeHtml(t("Total"))}</th><td>${totalUiModelUsage}</td><td>${
             totalUiModelUsage === 0 ? "—" : "100.0%"
           }</td></tr></tfoot></table>`;
         }
@@ -2423,13 +2615,17 @@
           html += '<div class="stats-fullwidth">';
           if (cacheMatrix) {
             html +=
-              '<div class="stats-section"><h3 class="stats-section-title">Documentation cache — model × locale</h3>' +
+              '<div class="stats-section"><h3 class="stats-section-title">' +
+              escapeHtml(t("Documentation cache — model × locale")) +
+              "</h3>" +
               cacheMatrix +
               "</div>";
           }
           if (uiMatrix) {
             html +=
-              '<div class="stats-section"><h3 class="stats-section-title">UI strings — model × locale</h3>' +
+              '<div class="stats-section"><h3 class="stats-section-title">' +
+              escapeHtml(t("UI strings — model × locale")) +
+              "</h3>" +
               uiMatrix +
               "</div>";
           }
@@ -2472,5 +2668,6 @@
   uiInitListeners();
   upInitListeners();
   glInitListeners();
+  loadUiI18n();
 
 })();

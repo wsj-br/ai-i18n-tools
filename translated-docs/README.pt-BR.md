@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## Provedores de LLM
 
-Comandos de tradução (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` e scripts relacionados) chamam um provedor de LLM; `check-markdown` não.
+Os comandos de tradução (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` e scripts relacionados) chamam um provedor de LLM; `check-markdown`, `mark-html` e `extract` não.
 
 Configure provedores sob um mapa de nível superior `providers` e escolha o ativo com um seletor de nível superior `provider` (opcional quando exatamente um provedor é configurado). A maioria dos provedores precisa apenas de uma lista `translationModels` — `baseUrl` e a variável de ambiente da chave de API vêm de um preset integrado; você pode substituir `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature` e `requestTimeoutMs` por provedor. `requestTimeoutMs` é o tempo máximo em milissegundos para esperar por cada solicitação (padrão `30000`).
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+Para aplicativos HTML simples, anote os elementos com marcadores `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` brutos (o texto de origem é retirado do textContent / title / placeholder do próprio elemento, escrito uma vez); `mark-html` os insere para você e `extract` os captura em `strings.json`. Veja [Introdução — Marcando HTML para tradução](docs/GETTING_STARTED.pt-BR.md#marking-html-for-translation).
+
 Listas completas de flags por comando estão em [Introdução — Referência CLI](docs/GETTING_STARTED.pt-BR.md#cli-reference). Execute `ai-i18n-tools <command> --help` para ver o texto de uso integrado.
 
-Opções globais em todos os comandos: `-c <config>` (padrão: `ai-i18n-tools.config.json`), `-v` (verboso), `-P` / `--provider <name>` (substituir o provedor de LLM ativo; deve ser configurado em `providers`), `-w` / `--write-logs [path]` opcionais para duplicar a saída do console para um arquivo de log (padrão: no diretório de cache de tradução), `-V` / `--version` e `-h` / `--help`. Vários comandos aceitam `-l` / `--locale <codes>` (BCP-47 separado por vírgulas) para limitar os locais de destino; `lint-source` usa um único local de origem. Veja [Introdução](docs/GETTING_STARTED.pt-BR.md#cli-reference) para a tabela de visão geral dos comandos.
+Opções globais em todos os comandos: `-c <config>` (padrão: `ai-i18n-tools.config.json`), `-v` (verboso), `-P` / `--provider <name>` (substitui o provedor de LLM ativo; deve ser configurado em `providers`), `-L` / `--ui-lang <code>` (idioma da própria interface/logs da ferramenta), `-w` / `--write-logs [path]` opcionais para espelhar a saída do console em um arquivo de log (padrão: no diretório de cache de tradução), `-V` / `--version`, e `-h` / `--help`. Vários comandos aceitam `-l` / `--locale <codes>` (BCP-47 separado por vírgulas) para limitar os locais de destino; `lint-source` usa um único local de origem. Veja [Introdução](docs/GETTING_STARTED.pt-BR.md#cli-reference) para a tabela de visão geral dos comandos.
+
+### Idioma da interface da ferramenta (logs, ajuda, painel)
+
+A ferramenta localiza sua própria ajuda da CLI, mensagens de log/resumo de alto tráfego e o Painel de Tradução. O local da interface é resolvido destas fontes, com a maior prioridade primeiro:
+
+1. Flag global `-L` / `--ui-lang <code>` (ex: `-L pt-BR`).
+2. Variável de ambiente `AI_I18N_LANG` (ex: `export AI_I18N_LANG=es`).
+3. A chave de configuração `uiLanguage` em `ai-i18n-tools.config.json` (string BCP-47).
+4. O local do sistema operacional do host (via `Intl.DateTimeFormat().resolvedOptions().locale`).
+
+O local solicitado é comparado exatamente com os idiomas da interface enviados ou por variação mais próxima (por exemplo, `pt-PT` resolve para `pt-BR`, e `en-US` resolve para `en-GB`); quando nada corresponde, ele volta para o local de origem (`en-GB`). Isso é independente do `sourceLocale` / `targetLocales` do seu projeto. Idiomas da interface enviados: `en-GB` (origem) mais `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` e `zh-Hant`.
 
 ---
 

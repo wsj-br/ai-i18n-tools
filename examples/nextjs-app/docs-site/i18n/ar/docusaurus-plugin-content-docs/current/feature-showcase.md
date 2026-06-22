@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: عرض ميزة الترجمة
 description: مستند مرجعي يوضح كل عنصر في Markdown يمكن لـ ai-i18n-tools ترجمته.
-translation_last_updated: '2026-06-21T00:43:34.485Z'
+translation_last_updated: '2026-06-22T19:38:46.045Z'
 source_file_mtime: '2026-05-04T21:42:57.361Z'
 source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
 translation_language: ar

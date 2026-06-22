@@ -363,6 +363,12 @@ const uiExtractorSchema = z
      * `targetLocales` into `strings.json` when not already present from source scan (same MD5-8 keys).
      */
     includeUiLanguageEnglishNames: z.boolean().default(false),
+    /**
+     * HTML marker attributes scanned in `.html`/`.htm` sources (when listed in `extensions`). `data-i18n`
+     * uses the element `textContent`; `data-i18n-<attr>` uses that attribute's value (e.g. `data-i18n-title`).
+     * Defaults to `["data-i18n", "data-i18n-title", "data-i18n-placeholder"]` when omitted.
+     */
+    htmlI18nAttributes: z.array(z.string().min(1)).optional(),
   })
   .strict();
 
@@ -685,6 +691,13 @@ const jsonBlockSchema = z
 const i18nConfigSchemaInner = z
   .object({
     sourceLocale: z.string().min(1),
+    /**
+     * Locale (BCP-47) for the tool's OWN user interface — CLI logs, help text, and the dashboard.
+     * Independent of `sourceLocale` / `targetLocales` (which describe the project being translated).
+     * Lowest priority: overridden by `AI_I18N_LANG` and the `--ui-lang` flag. Unknown values degrade
+     * gracefully to the source locale, so no strict locale validation is applied here.
+     */
+    uiLanguage: z.string().min(1).optional(),
     /** Shared SQLite cache directory for all documentation blocks (and CLI log defaults). */
     cacheDir: z.string().min(1).default(".translation-cache"),
     /**

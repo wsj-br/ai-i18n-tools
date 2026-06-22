@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLM providers
 
-Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, aur sambandhit scripts) ek LLM provider ko call karte hain; `check-markdown` nahi karta.
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, aur sambandhit scripts) ek LLM provider ko call karte hain; `check-markdown`, `mark-html`, aur `extract` nahin karte hain.
 
 Providers ko top-level `providers` map ke tahat configure karein aur active wale ko top-level `provider` selector ke saath chunein (jab theek ek provider configure kiya gaya ho to optional). Adhikansh providers ko sirf ek `translationModels` list ki zaroorat hoti hai — `baseUrl` aur API-key environment variable ek built-in preset se aate hain; aap `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, aur `requestTimeoutMs` ko prati provider override kar sakte hain. `requestTimeoutMs` har request ke liye intezaar karne ka adhiktam samay milliseconds mein hai (default `30000`).
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+Plain HTML apps ke liye, elements ko bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers se annotate karen (source text element ke khud ke textContent / title / placeholder se liya jaata hai, ek baar likha jaata hai); `mark-html` unhein aapke liye insert karta hai aur `extract` phir unhein `strings.json` mein capture karta hai. [Getting Started — Marking HTML for translation](docs/GETTING_STARTED.hi-Latn.md#marking-html-for-translation) dekhen.
+
 Pratyek command ke liye flag lists [Getting Started — CLI reference](docs/GETTING_STARTED.hi-Latn.md#cli-reference) mein hain. Built-in upyog text ke liye `ai-i18n-tools <command> --help` chalaayein.
 
-Har command par global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karein; `providers` ke tahat configure kiya jaana chahiye), optional `-w` / `--write-logs [path]` console output ko ek log file mein tee karne ke liye (default: translation cache directory ke tahat), `-V` / `--version`, aur `-h` / `--help`. Kai commands `-l` / `--locale <codes>` (comma-separated BCP-47) ko target locales ko seemit karne ke liye swikaar karte hain; `lint-source` ek single source locale ka upyog karta hai. Command overview table ke liye [Getting Started](docs/GETTING_STARTED.hi-Latn.md#cli-reference) dekhein.
+Har command ke liye global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karein; `providers` ke tahat configure hona chahiye), `-L` / `--ui-lang <code>` (tool ke khud ke UI/logs ke liye language), console output ko log file mein tee karne ke liye optional `-w` / `--write-logs [path]` (default: translation cache directory ke niche), `-V` / `--version`, aur `-h` / `--help`. Kai commands target locales ko seemit karne ke liye `-l` / `--locale <codes>` (comma-separated BCP-47) accept karte hain; `lint-source` ek single source locale use karta hai. Command overview table ke liye [Getting Started](docs/GETTING_STARTED.hi-Latn.md#cli-reference) dekhein.
+
+### Tool UI language (logs, help, dashboard)
+
+Tool apne CLI help, high-traffic log/summary messages, aur Translation Dashboard ko localize karta hai. UI locale in sources se resolve hota hai, sabse highest priority pehle:
+
+1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`).
+2. `AI_I18N_LANG` environment variable (e.g. `export AI_I18N_LANG=es`).
+3. `ai-i18n-tools.config.json` mein `uiLanguage` config key (BCP-47 string).
+4. Host OS locale (`Intl.DateTimeFormat().resolvedOptions().locale` ke through).
+
+Requested locale shipped UI languages se exact match ya closest variation se match hota hai (e.g. `pt-PT` resolve hota hai `pt-BR` mein, aur `en-US` resolve hota hai `en-GB` mein); jab kuch bhi match nahi hota toh yeh source locale (`en-GB`) pe fallback ho jata hai. Yeh aapke project ke `sourceLocale` / `targetLocales` se independent hai. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, aur `zh-Hant`.
 
 ---
 

@@ -665,14 +665,14 @@ describe("loadI18nConfigFromFile", () => {
     }
   });
 
-  it("accepts bare language subtags that only have regional variants in the catalog", () => {
+  it("accepts bare language subtags that have an exact catalog entry", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-locale-ok-"));
     const p = path.join(dir, "ai-i18n-tools.config.json");
     fs.writeFileSync(
       p,
       JSON.stringify({
         sourceLocale: "en",
-        targetLocales: ["zh", "pt-BR", "fr"],
+        targetLocales: ["pt", "pt-BR", "fr"],
         providers: { openrouter: { translationModels: ["a"] } },
         features: { translateUIStrings: false, translateDocs: false },
       }),
@@ -680,6 +680,31 @@ describe("loadI18nConfigFromFile", () => {
     );
     try {
       expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir)).not.toThrow();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects a script-ambiguous bare subtag and suggests the catalog variants", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cfg-locale-bare-"));
+    const p = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["pa", "zh"],
+        providers: { openrouter: { translationModels: ["a"] } },
+        features: { translateUIStrings: false, translateDocs: false },
+      }),
+      "utf8"
+    );
+    try {
+      expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir)).toThrow(
+        /targetLocales\[0\].*unknown locale "pa".*did you mean "pa-IN" or "pa-PK"\?/
+      );
+      expect(() => loadI18nConfigFromFile("ai-i18n-tools.config.json", dir)).toThrow(
+        /targetLocales\[1\].*unknown locale "zh".*did you mean "zh-Hans" or "zh-Hant"\?/
+      );
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

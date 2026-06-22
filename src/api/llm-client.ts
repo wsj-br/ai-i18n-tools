@@ -20,7 +20,7 @@ import {
   normalizeLocale,
   resolveTranslationModels,
 } from "../core/config.js";
-import { disallowedScriptLetters, englishScriptName, scriptSubtag } from "../core/locale-utils.js";
+import { scriptSubtag, scriptValidationIssue } from "../core/locale-utils.js";
 import {
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
@@ -58,6 +58,34 @@ interface LlmMessage {
 }
 
 /**
+ * Running total of tokens/cost spent on billed responses that were ultimately discarded (empty
+ * content, parse failure, or wrong-script output) before a model in the fallback chain succeeded.
+ * `cost` stays `undefined` until at least one provider cost is reported (non-cost providers).
+ */
+interface DiscardedUsage {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  cost: number | undefined;
+}
+
+/**
+ * Thrown by {@link LlmClient.fetchCompletion} when a provider returns a billed response whose
+ * content is empty/unusable, so the model-fallback loop can still account for the spent tokens/cost
+ * instead of silently dropping them.
+ */
+class BilledCompletionError extends Error {
+  constructor(
+    message: string,
+    public readonly usage: LlmUsageStats,
+    public readonly cost: number | undefined
+  ) {
+    super(message);
+    this.name = "BilledCompletionError";
+  }
+}
+
+/**
  * OpenRouter returns `usage.cost` (USD) on non-streaming responses; surface it through
  * `providerMetadata.openrouter.cost` so the client can report exact spend.
  */
@@ -86,6 +114,10 @@ export class DocumentBatchAllModelsFailedError extends Error {
       lastError: unknown;
       /** HTTP response body text when the model returned content but parsing failed. */
       lastRawAssistantContent?: string;
+      /** Tokens spent across billed-but-discarded attempts before every model failed. */
+      wastedUsage?: LlmUsageStats;
+      /** USD cost spent across billed-but-discarded attempts (undefined when no cost was reported). */
+      wastedCost?: number;
     }
   ) {
     super(message);
@@ -107,6 +139,13 @@ export interface LlmClientOptions {
   logger?: Logger;
   httpReferer?: string;
   xTitle?: string;
+  /**
+   * Fires once per billed API response (whether the response is later accepted, rejected, or
+   * empty) with that call's tokens/cost. Lets callers maintain a live run total that survives
+   * interrupts/errors, since the usage is captured the moment the provider responds rather than
+   * only when the enclosing batch/file completes. Must be synchronous and must not throw.
+   */
+  onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
 }
 
 /** @deprecated Use {@link LlmClientOptions}. */
@@ -132,6 +171,7 @@ export class LlmClient {
   private readonly httpReferer: string;
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
+  private readonly onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
 
   constructor(opts: LlmClientOptions) {
     this.provider = resolveActiveProvider(opts.config);
@@ -179,6 +219,7 @@ export class LlmClient {
     this.sourceLanguageLabel = this.languageLabelForPrompt(opts.config.sourceLocale);
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
+    this.onApiUsage = opts.onApiUsage;
     this.providerInstance = this.buildProvider(settings);
   }
 
@@ -237,29 +278,26 @@ export class LlmClient {
    * Enforce the target locale's ISO 15924 script subtag on a model response, throwing
    * {@link ScriptValidationError} so the model-fallback loop retries with the next model.
    *
-   * For romanized (`*-Latn`) targets any non-Latin letter is rejected (output must be pure Latin).
-   * For other supported scripts (`Cyrl`, `Arab`, `Deva`, `Mong`, `Han`, …) only letters from a
-   * *different* non-Latin script are rejected — Latin text (code, URLs, brand names, placeholders)
-   * is always allowed, so this is free of false positives. See {@link disallowedScriptLetters}.
-   * Locales without a script subtag, and composite scripts (e.g. `Jpan`, `Kore`), are not enforced.
+   * Uses a statistical dominant-script check ({@link scriptValidationIssue}): Latin text
+   * (code, URLs, brand names, placeholders) and letter-like symbols such as `ℹ` are ignored,
+   * a stray foreign-language quote does not fail the output, and `zh-Hans`/`zh-Hant` are told
+   * apart via variant-distinct characters. Locales without a script subtag, and composite
+   * scripts (e.g. `Jpan`, `Kore`), are not enforced.
    */
   private assertExpectedScript(text: string, targetLocale: string): void {
     const script = scriptSubtag(targetLocale);
     if (!script) {
       return;
     }
-    const offending = disallowedScriptLetters(text, script, 5);
-    if (offending.length === 0) {
+    const issue = scriptValidationIssue(text, script);
+    if (!issue) {
       return;
     }
-    const expected =
-      script === "Latn"
-        ? "romanized Latin (Roman)"
-        : `${englishScriptName(script) ?? script} (${script})`;
+    const suffix = issue.sample.length > 0 ? ` (${issue.sample.join(" ")})` : "";
     throw new ScriptValidationError(
-      `Output for ${targetLocale} contains characters outside the expected ${expected} script (${offending.join(" ")})`,
+      `Output for ${targetLocale} ${issue.message}${suffix}`,
       text,
-      offending
+      issue.sample
     );
   }
 
@@ -296,6 +334,42 @@ export class LlmClient {
     messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
   ): LlmMessage[] {
     return messages.map((m) => ({ role: m.role, content: m.content }));
+  }
+
+  private static emptyDiscarded(): DiscardedUsage {
+    return { inputTokens: 0, outputTokens: 0, totalTokens: 0, cost: undefined };
+  }
+
+  /** Add a billed-but-discarded attempt's tokens/cost onto the running discarded total. */
+  private static addDiscarded(
+    acc: DiscardedUsage,
+    usage: LlmUsageStats,
+    cost: number | undefined
+  ): void {
+    acc.inputTokens += usage.inputTokens;
+    acc.outputTokens += usage.outputTokens;
+    acc.totalTokens += usage.totalTokens;
+    if (typeof cost === "number") {
+      acc.cost = (acc.cost ?? 0) + cost;
+    }
+  }
+
+  /** Fold discarded-attempt tokens/cost into the eventually-successful response's totals. */
+  private static foldDiscarded(
+    usage: LlmUsageStats,
+    cost: number | undefined,
+    discarded: DiscardedUsage
+  ): { usage: LlmUsageStats; cost: number | undefined } {
+    const mergedUsage: LlmUsageStats = {
+      inputTokens: usage.inputTokens + discarded.inputTokens,
+      outputTokens: usage.outputTokens + discarded.outputTokens,
+      totalTokens: usage.totalTokens + discarded.totalTokens,
+    };
+    const mergedCost =
+      cost === undefined && discarded.cost === undefined
+        ? undefined
+        : (cost ?? 0) + (discarded.cost ?? 0);
+    return { usage: mergedUsage, cost: mergedCost };
   }
 
   /** Read OpenRouter's exact USD cost from `providerMetadata` (other providers: undefined). */
@@ -358,6 +432,10 @@ export class LlmClient {
     };
     const cost = this.extractCost(result.providerMetadata);
 
+    // Report every billed response immediately so a live run total survives interrupts/errors,
+    // even for responses that are later rejected (empty content, parse/script failure) below.
+    this.onApiUsage?.(usage, cost);
+
     if (this.debugTrafficFilePath) {
       this.appendDebugLog("response", {
         model,
@@ -369,7 +447,11 @@ export class LlmClient {
     }
 
     if (!content || content.trim() === "") {
-      throw new Error(`Empty response content from ${this.provider} model ${model}`);
+      throw new BilledCompletionError(
+        `Empty response content from ${this.provider} model ${model}`,
+        usage,
+        cost
+      );
     }
 
     return { content, model, usage, cost };
@@ -387,15 +469,11 @@ export class LlmClient {
     const openRouterMessages = this.toOpenRouterMessages(messages);
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    const discarded = LlmClient.emptyDiscarded();
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
-      try {
-        const completion = await this.fetchCompletion(model, openRouterMessages);
-        options?.validateResponse?.(completion.content);
-        return completion;
-      } catch (e) {
-        lastError = e;
+      const warnFailure = (e: unknown): void => {
         const nextModel = this.modelsToTry[mi + 1];
         if (nextModel && options?.docLogContext) {
           this.warnModelSwitch(
@@ -408,7 +486,31 @@ export class LlmClient {
         } else if (!options?.docLogContext) {
           this.logger?.warn(`Model ${model} failed: ${e}`);
         }
+      };
+
+      let completion: ChatResponse;
+      try {
+        completion = await this.fetchCompletion(model, openRouterMessages);
+      } catch (e) {
+        lastError = e;
+        if (e instanceof BilledCompletionError) {
+          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+        }
+        warnFailure(e);
+        continue;
       }
+
+      try {
+        options?.validateResponse?.(completion.content);
+      } catch (e) {
+        lastError = e;
+        LlmClient.addDiscarded(discarded, completion.usage, completion.cost);
+        warnFailure(e);
+        continue;
+      }
+
+      const folded = LlmClient.foldDiscarded(completion.usage, completion.cost, discarded);
+      return { ...completion, usage: folded.usage, cost: folded.cost };
     }
 
     throw new Error(
@@ -509,6 +611,7 @@ export class LlmClient {
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    const discarded = LlmClient.emptyDiscarded();
     let lastFailureDetails:
       | {
           systemPrompt: string;
@@ -526,6 +629,9 @@ export class LlmClient {
         completion = await this.fetchCompletion(model, openRouterMessages);
       } catch (e) {
         lastError = e;
+        if (e instanceof BilledCompletionError) {
+          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+        }
         lastFailureDetails = {
           systemPrompt,
           userContent,
@@ -562,16 +668,18 @@ export class LlmClient {
         for (const value of translations.values()) {
           this.assertExpectedScript(value, locale);
         }
+        const folded = LlmClient.foldDiscarded(completion.usage, completion.cost, discarded);
         return {
           translations,
           model: completion.model,
-          usage: completion.usage,
-          cost: completion.cost,
+          usage: folded.usage,
+          cost: folded.cost,
           debugPrompt: { systemPrompt, userContent },
           rawAssistantContent: completion.content,
         };
       } catch (e) {
         lastError = e;
+        LlmClient.addDiscarded(discarded, completion.usage, completion.cost);
         lastFailureDetails = {
           systemPrompt,
           userContent,
@@ -593,7 +701,7 @@ export class LlmClient {
     }
 
     const msg = `All translation models failed for batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`;
-    const details =
+    const baseDetails =
       lastFailureDetails ??
       ({
         systemPrompt,
@@ -602,7 +710,15 @@ export class LlmClient {
         lastError,
         lastRawAssistantContent: undefined,
       } as const);
-    throw new DocumentBatchAllModelsFailedError(msg, details);
+    throw new DocumentBatchAllModelsFailedError(msg, {
+      ...baseDetails,
+      wastedUsage: {
+        inputTokens: discarded.inputTokens,
+        outputTokens: discarded.outputTokens,
+        totalTokens: discarded.totalTokens,
+      },
+      ...(discarded.cost !== undefined ? { wastedCost: discarded.cost } : {}),
+    });
   }
 
   /**
@@ -640,23 +756,36 @@ export class LlmClient {
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    const discarded = LlmClient.emptyDiscarded();
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      let result: ChatResponse;
       try {
-        const result = await this.fetchCompletion(model, openRouterMessages);
+        result = await this.fetchCompletion(model, openRouterMessages);
+      } catch (e) {
+        lastError = e;
+        if (e instanceof BilledCompletionError) {
+          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+        }
+        this.logger?.warn(`UI batch failed with ${model}: ${e}`);
+        continue;
+      }
+      try {
         const translations = parseUIJsonArrayResponse(result.content, texts.length);
         for (const value of translations) {
           this.assertExpectedScript(value, targetLocale);
         }
+        const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           translations,
           model: result.model,
-          usage: result.usage,
-          cost: result.cost,
+          usage: folded.usage,
+          cost: folded.cost,
         };
       } catch (e) {
         lastError = e;
+        LlmClient.addDiscarded(discarded, result.usage, result.cost);
         this.logger?.warn(`UI batch failed with ${model}: ${e}`);
       }
     }
@@ -701,21 +830,34 @@ export class LlmClient {
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    const discarded = LlmClient.emptyDiscarded();
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      let result: ChatResponse;
       try {
-        const result = await this.fetchCompletion(model, openRouterMessages);
+        result = await this.fetchCompletion(model, openRouterMessages);
+      } catch (e) {
+        lastError = e;
+        if (e instanceof BilledCompletionError) {
+          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+        }
+        this.logger?.warn(`lint-source batch failed with ${model}: ${e}`);
+        continue;
+      }
+      try {
         const { slots, lengthWarning } = parseLintSourceBatchResponse(result.content, texts.length);
+        const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           slots,
           model: result.model,
-          usage: result.usage,
-          cost: result.cost,
+          usage: folded.usage,
+          cost: folded.cost,
           lengthWarning,
         };
       } catch (e) {
         lastError = e;
+        LlmClient.addDiscarded(discarded, result.usage, result.cost);
         this.logger?.warn(`lint-source batch failed with ${model}: ${e}`);
       }
     }
@@ -753,25 +895,38 @@ export class LlmClient {
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
+    const discarded = LlmClient.emptyDiscarded();
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      let result: ChatResponse;
       try {
-        const result = await this.fetchCompletion(model, openRouterMessages);
+        result = await this.fetchCompletion(model, openRouterMessages);
+      } catch (e) {
+        lastError = e;
+        if (e instanceof BilledCompletionError) {
+          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+        }
+        this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
+        continue;
+      }
+      try {
         const forms = parsePluralFormsJsonResponse(result.content, expectedForms);
         if (options?.targetLocale) {
           for (const value of Object.values(forms)) {
             this.assertExpectedScript(value, options.targetLocale);
           }
         }
+        const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           forms,
           model: result.model,
-          usage: result.usage,
-          cost: result.cost,
+          usage: folded.usage,
+          cost: folded.cost,
         };
       } catch (e) {
         lastError = e;
+        LlmClient.addDiscarded(discarded, result.usage, result.cost);
         this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
       }
     }

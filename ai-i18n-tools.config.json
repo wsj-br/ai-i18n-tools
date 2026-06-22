@@ -9,10 +9,14 @@
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
+        "google/gemini-2.5-flash-lite",
         "meta-llama/llama-3.3-70b-instruct",
-        "qwen/qwen-2.5-72b-instruct",
+        "cohere/command-r-08-2024",
+        "google/gemini-2.5-flash",
         "openai/gpt-4o-mini",
+        "qwen/qwen-2.5-72b-instruct",
+        "google/gemma-4-26b-a4b-it",
+        "qwen/qwen3.6-35b-a3b",
         "deepseek/deepseek-v4-flash",
         "anthropic/claude-3-haiku",
         "z-ai/glm-4.7-flash",

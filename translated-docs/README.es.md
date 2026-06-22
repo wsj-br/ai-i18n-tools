@@ -117,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## Proveedores de LLM
 
-Los comandos de traducción (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` y scripts relacionados) llaman a un proveedor de LLM; `check-markdown` no lo hace.
+Los comandos de traducción (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` y scripts relacionados) llaman a un proveedor de LLM; `check-markdown`, `mark-html` y `extract` no.
 
 Configura los proveedores bajo un mapa de nivel superior `providers` y elige el activo con un selector de nivel superior `provider` (opcional cuando se configura exactamente un proveedor). La mayoría de los proveedores solo necesitan una lista `translationModels` — `baseUrl` y la variable de entorno de la clave API provienen de un preset integrado; puedes anular `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature` y `requestTimeoutMs` por proveedor. `requestTimeoutMs` es el tiempo máximo en milisegundos para esperar cada solicitud (predeterminado `30000`).
 
@@ -264,6 +264,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -284,9 +285,22 @@ ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
+Para aplicaciones HTML sencillas, anota los elementos con marcadores `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` sin formato (el texto fuente se toma del textContent / title / placeholder del elemento, escrito una vez); `mark-html` los inserta por ti y `extract` los captura en `strings.json`. Consulta [Primeros pasos — Marcado de HTML para traducción](docs/GETTING_STARTED.es.md#marking-html-for-translation).
+
 Las listas completas de banderas por comando están en [Comenzando — Referencia CLI](docs/GETTING_STARTED.es.md#cli-reference). Ejecute `ai-i18n-tools <command> --help` para ver el texto de uso integrado.
 
-Opciones globales en cada comando: `-c <config>` (predeterminado: `ai-i18n-tools.config.json`), `-v` (verboso), `-P` / `--provider <name>` (anular el proveedor de LLM activo; debe estar configurado en `providers`), opcional `-w` / `--write-logs [path]` para duplicar la salida de la consola a un archivo de registro (predeterminado: en el directorio de caché de traducción), `-V` / `--version`, y `-h` / `--help`. Varios comandos aceptan `-l` / `--locale <codes>` (BCP-47 separado por comas) para limitar las locales de destino; `lint-source` utiliza una única locale de origen. Consulte [Primeros pasos](docs/GETTING_STARTED.es.md#cli-reference) para ver la tabla general de comandos.
+Opciones globales en cada comando: `-c <config>` (predeterminado: `ai-i18n-tools.config.json`), `-v` (verboso), `-P` / `--provider <name>` (anula el proveedor de LLM activo; debe configurarse en `providers`), `-L` / `--ui-lang <code>` (idioma para la propia interfaz de usuario/registros de la herramienta), `-w` / `--write-logs [path]` opcional para duplicar la salida de la consola a un archivo de registro (predeterminado: en el directorio de caché de traducción), `-V` / `--version`, y `-h` / `--help`. Varios comandos aceptan `-l` / `--locale <codes>` (BCP-47 separado por comas) para limitar las locales de destino; `lint-source` utiliza una única locale de origen. Consulte [Introducción](docs/GETTING_STARTED.es.md#cli-reference) para ver la tabla de resumen de comandos.
+
+### Idioma de la interfaz de usuario de la herramienta (registros, ayuda, panel)
+
+La herramienta localiza su propia ayuda de CLI, mensajes de registro/resumen de alto tráfico y el panel de traducción. La locale de la interfaz de usuario se resuelve a partir de estas fuentes, con la máxima prioridad primero:
+
+1. Indicador global `-L` / `--ui-lang <code>` (por ejemplo, `-L pt-BR`).
+2. Variable de entorno `AI_I18N_LANG` (por ejemplo, `export AI_I18N_LANG=es`).
+3. La clave de configuración `uiLanguage` en `ai-i18n-tools.config.json` (cadena BCP-47).
+4. La locale del sistema operativo anfitrión (a través de `Intl.DateTimeFormat().resolvedOptions().locale`).
+
+La locale solicitada se compara exactamente con los idiomas de interfaz de usuario incluidos o por la variación más cercana (por ejemplo, `pt-PT` se resuelve en `pt-BR`, y `en-US` se resuelve en `en-GB`); cuando nada coincide, recurre a la locale de origen (`en-GB`). Esto es independiente de las `sourceLocale` / `targetLocales` de su proyecto. Idiomas de interfaz de usuario incluidos: `en-GB` (origen) más `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` y `zh-Hant`.
 
 ---
 

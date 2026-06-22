@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
+import { t } from "../i18n/index.js";
 import { toDocTranslateConfig } from "../core/config.js";
 import { TranslationCache } from "../core/cache.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
@@ -102,10 +103,12 @@ export async function runCheckMarkdown(opts: CheckMarkdownOptions): Promise<{ ex
     console.log(JSON.stringify({ issues: jsonRows, count: issueCount }, null, 2));
   } else if (issueCount > 0) {
     console.error(
-      chalk.red(`\n❌ check-markdown: ${issueCount} issue(s) in documentation sources`)
+      chalk.red(
+        t("\n❌ check-markdown: {{count}} issue(s) in documentation sources", { count: issueCount })
+      )
     );
   } else {
-    console.log(chalk.green("✅ check-markdown: no markdown source issues found"));
+    console.log(chalk.green(t("✅ check-markdown: no markdown source issues found")));
   }
 
   return { exitCode: issueCount > 0 ? 1 : 0 };

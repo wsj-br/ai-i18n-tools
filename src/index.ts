@@ -79,9 +79,12 @@ export {
   disallowedScriptLetters,
   englishLanguageNameForLocale,
   englishScriptName,
+  hanVariantCounts,
   isLatinScriptLocale,
   nonLatinLettersIn,
+  scriptLetterCounts,
   scriptSubtag,
+  scriptValidationIssue,
   unicodeScriptPropertyForSubtag,
   normalizeLocale,
   localePathPlaceholders,
@@ -151,6 +154,18 @@ export { SvgExtractor, type SvgExtractorOptions } from "./extractors/svg-extract
 export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
 /** @deprecated Use {@link UIStringExtractor} */
 export { UIStringExtractor as ReactExtractor } from "./extractors/ui-string-extractor.js";
+export {
+  HTML_I18N_MARKERS,
+  HTML_I18N_IGNORE_ATTR,
+  normalizeI18nText,
+  decodeBasicHtmlEntities,
+  collectHtmlI18nStrings,
+  collectHtmlI18nLocations,
+  markHtmlContent,
+  type HtmlI18nString,
+  type MarkHtmlResult,
+  type MarkHtmlSkipped,
+} from "./extractors/html-i18n-marks.js";
 
 export { PlaceholderHandler } from "./processors/placeholder-handler.js";
 export {

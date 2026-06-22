@@ -180,6 +180,16 @@ export interface TranslationDashboardOptions {
   docusaurusCatalogDir?: string | null;
   /** Optional hook invoked by `POST /api/shutdown` to stop the dashboard server. */
   onShutdown?: () => void;
+  /**
+   * Resolved self-localization payload for the dashboard's OWN UI (separate from the project's
+   * translation data). Served by `GET /api/ui-i18n`; the frontend uses it to localize labels and to
+   * set the document `dir`. When omitted, the dashboard UI renders in English (the source locale).
+   */
+  uiI18n?: {
+    locale: string;
+    dir: "ltr" | "rtl";
+    bundle: Record<string, string>;
+  };
 }
 
 /** Normalize cache filepath for console log-links (JSON rows may omit docusaurusCatalogDir prefix). */
@@ -865,6 +875,11 @@ export function createTranslationDashboardApp(
 
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true });
+  });
+
+  /** Self-localization payload for the dashboard's own UI (locale, layout direction, flat bundle). */
+  app.get("/api/ui-i18n", (_req, res) => {
+    res.json(opts.uiI18n ?? { locale: "en-GB", dir: "ltr", bundle: {} });
   });
 
   app.post("/api/shutdown", (_req, res) => {

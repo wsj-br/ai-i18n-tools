@@ -2,6 +2,8 @@
  * Shared locale normalization and list parsing (used by config, ui-languages, CLI).
  */
 
+import { SIMPLIFIED_ONLY, TRADITIONAL_ONLY } from "./han-variant-data.js";
+
 /** Placeholder values for `{locale}`, `{LOCALE}`, and `{llocale}` in output path templates. */
 export function localePathPlaceholders(locale: string): {
   locale: string;
@@ -194,10 +196,14 @@ const DISALLOWED_SCRIPT_RE_CACHE = new Map<string, RegExp>();
  * - Any other supported script (`Cyrl`, `Arab`, `Deva`, `Mong`, `Han`, …): letters from a *different*
  *   non-Latin script are reported, but Latin letters are always allowed (code, URLs, brand names,
  *   placeholders legitimately appear), so native-script→Latin fallback is **not** flagged here — that
- *   case is handled by the prompt directive instead. This keeps the check free of false positives.
+ *   case is handled by the prompt directive instead.
  * - Unsupported/composite script codes (e.g. `Jpan`, `Kore`) report nothing (no enforcement).
  *
  * Returns at most `limit` unique characters, in first-seen order.
+ *
+ * NOTE: This per-character sampler is retained for back-compat and tooling. Output-script
+ * *validation* uses the statistical {@link scriptValidationIssue} instead, which tolerates
+ * stray foreign letters and letter-like symbols (e.g. `ℹ`) and discriminates Hans vs Hant.
  */
 export function disallowedScriptLetters(text: string, scriptCode: string, limit = 5): string[] {
   const property = unicodeScriptPropertyForSubtag(scriptCode);
@@ -229,6 +235,237 @@ function collectMatches(text: string, re: RegExp, limit: number): string[] {
     }
   }
   return found;
+}
+
+/**
+ * Minimum share of meaningful (non-Latin, non-symbol) letters that must belong to the
+ * expected script for an output to pass validation. An output is flagged only when the
+ * expected script's share is at or below this threshold (i.e. it must be > 60% to pass),
+ * so stray foreign-language quotes and letter-like symbols never trip the check.
+ */
+export const EXPECTED_SCRIPT_MIN_SHARE = 0.6;
+
+/**
+ * Minimum number of variant-distinct (Simplified-only vs Traditional-only) characters required
+ * before a `zh-Hans` / `zh-Hant` mismatch is judged. Most Chinese characters are shared between
+ * the two writing systems, so a short segment yields very few variant-distinct characters; judging
+ * the whole segment from one or two of them (or a single mislabeled glyph) is unreliable, so below
+ * this count the variant check is skipped.
+ */
+export const VARIANT_MIN_SAMPLE = 4;
+
+const LETTER_RE = /\p{L}/u;
+const LATIN_LETTER_RE = /\p{Script=Latin}/u;
+/** Common (punctuation, digits, letter-like symbols such as `ℹ`) and Inherited (combining marks). */
+const COMMON_OR_INHERITED_RE = /[\p{Script=Common}\p{Script=Inherited}]/u;
+
+/** Distinct Unicode script property values we can attribute letters to (excludes Latin). */
+const NON_LATIN_SCRIPT_PROPERTIES: readonly string[] = Array.from(
+  new Set(Object.values(UNICODE_SCRIPT_PROPERTY_BY_SUBTAG))
+).filter((p) => p !== "Latin");
+
+const SCRIPT_PROPERTY_RE_CACHE = new Map<string, RegExp>();
+function scriptPropertyRe(property: string): RegExp {
+  let re = SCRIPT_PROPERTY_RE_CACHE.get(property);
+  if (!re) {
+    re = new RegExp(`\\p{Script=${property}}`, "u");
+    SCRIPT_PROPERTY_RE_CACHE.set(property, re);
+  }
+  return re;
+}
+
+/** Per-script letter tallies for a string, used by {@link scriptValidationIssue}. */
+export interface ScriptLetterCounts {
+  /** Count of Latin-script letters (code, URLs, brand names — always allowed). */
+  latin: number;
+  /** Count of letters that are non-Latin and not Common/Inherited (the meaningful signal). */
+  nonLatinTotal: number;
+  /** Non-Latin script property → letter count (a catch-all `"Other"` bucket may appear). */
+  byScript: Map<string, number>;
+  /** Non-Latin script property → up to 5 sample letters, first-seen order. */
+  samples: Map<string, string[]>;
+}
+
+/**
+ * Tally letters in `text` by Unicode script. Latin letters are counted separately (always
+ * allowed); Common/Inherited characters (digits, punctuation, symbols, combining marks, and
+ * letter-like symbols such as `ℹ`/`→`) are ignored entirely so they cannot skew the result.
+ * Every remaining letter is bucketed under its Unicode script property, or `"Other"`.
+ */
+export function scriptLetterCounts(text: string): ScriptLetterCounts {
+  const byScript = new Map<string, number>();
+  const samples = new Map<string, string[]>();
+  let latin = 0;
+  let nonLatinTotal = 0;
+  for (const ch of text) {
+    if (!LETTER_RE.test(ch)) {
+      continue;
+    }
+    if (LATIN_LETTER_RE.test(ch)) {
+      latin++;
+      continue;
+    }
+    if (COMMON_OR_INHERITED_RE.test(ch)) {
+      continue;
+    }
+    let property = "Other";
+    for (const candidate of NON_LATIN_SCRIPT_PROPERTIES) {
+      if (scriptPropertyRe(candidate).test(ch)) {
+        property = candidate;
+        break;
+      }
+    }
+    nonLatinTotal++;
+    byScript.set(property, (byScript.get(property) ?? 0) + 1);
+    const sample = samples.get(property) ?? [];
+    if (sample.length < 5 && !sample.includes(ch)) {
+      sample.push(ch);
+      samples.set(property, sample);
+    }
+  }
+  return { latin, nonLatinTotal, byScript, samples };
+}
+
+/** Counts of variant-distinct (Simplified-only vs Traditional-only) Han characters. */
+export interface HanVariantCounts {
+  simplified: number;
+  traditional: number;
+  simplifiedSamples: string[];
+  traditionalSamples: string[];
+}
+
+/**
+ * Count characters that are exclusive to Simplified or Traditional Chinese. Characters shared
+ * by both writing systems (the majority of any text) are ignored, so a string built only from
+ * shared characters yields `{ simplified: 0, traditional: 0 }` and cannot be classified.
+ */
+export function hanVariantCounts(text: string): HanVariantCounts {
+  let simplified = 0;
+  let traditional = 0;
+  const simplifiedSamples: string[] = [];
+  const traditionalSamples: string[] = [];
+  for (const ch of text) {
+    const isS = SIMPLIFIED_ONLY.has(ch);
+    const isT = TRADITIONAL_ONLY.has(ch);
+    // Characters listed under both lists are ambiguous → treat as shared.
+    if (isS === isT) {
+      continue;
+    }
+    if (isS) {
+      simplified++;
+      if (simplifiedSamples.length < 5) {
+        simplifiedSamples.push(ch);
+      }
+    } else {
+      traditional++;
+      if (traditionalSamples.length < 5) {
+        traditionalSamples.push(ch);
+      }
+    }
+  }
+  return { simplified, traditional, simplifiedSamples, traditionalSamples };
+}
+
+/** A statistical script-validation failure: a human-readable reason plus offending samples. */
+export interface ScriptValidationIssue {
+  /** Reason clause (no locale prefix), e.g. `is predominantly Cyrillic rather than the …`. */
+  message: string;
+  /** Up to a few representative offending characters, for logs. */
+  sample: string[];
+}
+
+function dominantNonLatinScript(counts: ScriptLetterCounts): string | undefined {
+  let best: string | undefined;
+  let bestCount = 0;
+  for (const [property, count] of counts.byScript) {
+    if (count > bestCount) {
+      best = property;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
+function scriptName(property: string): string {
+  return property === "Other" ? "another script" : property;
+}
+
+/**
+ * Statistical check that a model response is written in the locale's expected script
+ * ({@link scriptSubtag}). Returns `null` when the output is acceptable, or a
+ * {@link ScriptValidationIssue} describing the dominant wrong script otherwise.
+ *
+ * - No script subtag, or a composite/unsupported script (`Jpan`, `Kore`) → `null` (no enforcement).
+ * - `*-Latn` (romanized) targets: Latin letters must make up more than {@link EXPECTED_SCRIPT_MIN_SHARE}
+ *   of all letters; otherwise the dominant non-Latin script is reported.
+ * - Other scripts: Latin letters are ignored (code/URLs/brands), and the expected script must
+ *   account for more than {@link EXPECTED_SCRIPT_MIN_SHARE} of the remaining letters. A lone foreign
+ *   quote or a letter-like symbol (e.g. `ℹ`) therefore does not trip the check.
+ * - `zh-Hans` / `zh-Hant`: when the Han check passes, variant-distinct characters are tallied; the
+ *   mismatch is reported only when there are at least {@link VARIANT_MIN_SAMPLE} such characters AND
+ *   the wrong variant is a clear majority (> {@link EXPECTED_SCRIPT_MIN_SHARE}), so a tie or a lone
+ *   ambiguous glyph never trips it.
+ */
+export function scriptValidationIssue(
+  text: string,
+  scriptCode: string
+): ScriptValidationIssue | null {
+  const property = unicodeScriptPropertyForSubtag(scriptCode);
+  if (!property) {
+    return null;
+  }
+  const counts = scriptLetterCounts(text);
+
+  if (property === "Latin") {
+    const total = counts.latin + counts.nonLatinTotal;
+    if (total === 0) {
+      return null;
+    }
+    if (counts.latin / total > EXPECTED_SCRIPT_MIN_SHARE) {
+      return null;
+    }
+    const dominant = dominantNonLatinScript(counts);
+    return {
+      message: `is predominantly ${scriptName(dominant ?? "Other")} rather than the expected romanized Latin (Latn) script`,
+      sample: dominant ? (counts.samples.get(dominant) ?? []) : [],
+    };
+  }
+
+  if (counts.nonLatinTotal === 0) {
+    return null;
+  }
+  const expectedCount = counts.byScript.get(property) ?? 0;
+  if (expectedCount / counts.nonLatinTotal <= EXPECTED_SCRIPT_MIN_SHARE) {
+    const dominant = dominantNonLatinScript(counts) ?? "Other";
+    const expectedName = englishScriptName(scriptCode) ?? property;
+    return {
+      message: `is predominantly ${scriptName(dominant)} rather than the expected ${expectedName} (${scriptCode}) script`,
+      sample: counts.samples.get(dominant) ?? [],
+    };
+  }
+
+  if (scriptCode === "Hans" || scriptCode === "Hant") {
+    const variant = hanVariantCounts(text);
+    const exclusiveTotal = variant.simplified + variant.traditional;
+    // Too few variant-distinct characters to judge confidently (e.g. a 1-vs-1 tie).
+    if (exclusiveTotal < VARIANT_MIN_SAMPLE) {
+      return null;
+    }
+    const wantSimplified = scriptCode === "Hans";
+    const expectedVariant = wantSimplified ? variant.simplified : variant.traditional;
+    // Flag only when the wrong variant is a clear majority (> 60%), never on a tie or a thin margin.
+    if (expectedVariant / exclusiveTotal < 1 - EXPECTED_SCRIPT_MIN_SHARE) {
+      const expectedLabel = wantSimplified ? "Simplified (Hans)" : "Traditional (Hant)";
+      const actualLabel = wantSimplified ? "Traditional" : "Simplified";
+      const pct = Math.round(((exclusiveTotal - expectedVariant) / exclusiveTotal) * 100);
+      return {
+        message: `is predominantly ${actualLabel} Chinese (${pct}% of ${exclusiveTotal} variant-distinct characters) where ${expectedLabel} was expected`,
+        sample: wantSimplified ? variant.traditionalSamples : variant.simplifiedSamples,
+      };
+    }
+  }
+
+  return null;
 }
 
 /** Split CLI/config locale lists (commas and/or ASCII whitespace). Dedupes, preserves order. */

@@ -237,6 +237,105 @@ npx ai-i18n-tools extract
 
 Scanner configurable hai: `ui.uiExtractor.funcNames` (ya legacy `ui.reactExtractor.funcNames`) ke madhyam se custom function names jodein. Astro pages aur components ke liye, `ui.uiExtractor.extensions` mein `.astro` jodein.
 
+<a id="marking-html-for-translation"></a>
+### HTML ko anuvaad hetu chinhit karna
+
+Sadharan HTML apps ke liye (markup mein `t("…")` calls ke bina), anuvaad yogya elements ko attributes se chinhit karen aur `extract` ko element se hi Angrezi text capture karne den — koi duplicate string literal nahin.
+
+Sadharan roop ko tarjeeh den (attribute ka koi value nahin hota; source text element se padha jaata hai):
+
+- `data-i18n` — key element ka `textContent` hai; runtime par aap `el.textContent = t(key)` set karte hain.
+- `data-i18n-title` — key element ka `title` hai; runtime par aap anuvaadit `title` set karte hain.
+- `data-i18n-placeholder` — key element ka `placeholder` hai.
+
+Valued roop `data-i18n="Some key"` ka upyog kewal tab karen jab sadharan roop kaam na kar sake: mishrit-content elements (child tags ke saath interleave kiya gaya text), ya jab key dikhne wale text se alag honi chahiye. `data-i18n-ignore` ke saath kisi element (aur uske subtree) ko opt out karen.
+
+Badhyata: sadharan `data-i18n` kewal leaf text elements ke liye hai (ek akela text node, koi child element nahin), kyunki `textContent` set karne se koi bhi children replace ho jaate hain. `Run <code>build</code> now.` jaise paragraph ke liye, har text run ko uske apne marker mein wrap karen:
+
+```html
+<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+```
+
+Markers ko haath se joden, ya `mark-html` command ko sadharan markers aapke liye insert karne den. Yah default roop se ek dry run hai — yah batata hai ki yah prati file kitne markers jodega aur mishrit-content elements ki soochi deta hai jinhe manual `<span data-i18n>` ki zaroorat hai — aur kewal `--write` ke saath likhta hai:
+
+```bash
+# Preview (no changes written)
+npx ai-i18n-tools mark-html public/index.html
+
+# Apply the bare markers
+npx ai-i18n-tools mark-html public/index.html --write
+```
+
+`mark-html` idempotent hai, `data-i18n-ignore` ka sammaan karta hai, kabhi bhi code-jaise elements (`code`, `pre`, `kbd`, `samp`, `var`) ya khali / kewal sankhyatmak text ko mark nahin karta hai, aur kabhi bhi valued marker emit nahin karta hai. Marking ke baad, haath se report kiye gaye mishrit-content fragments ko wrap karen, phir `.html` ko `ui.uiExtractor.extensions` mein joden taaki `extract` strings capture kar sake:
+
+```jsonc
+{
+  "ui": {
+    "sourceRoots": ["src", "public"],
+    "uiExtractor": { "extensions": [".ts", ".tsx", ".html"] }
+  }
+}
+```
+
+<a id="html-app-worked-example-dashboard"></a>
+#### Karyaanvit udaharan: ek sadharan HTML app ko localize karna (bundled dashboard)
+
+Package ka Translation Dashboard (`src/dashboard-app`) yahi markers istemaal karta hai. Iska `index.html` aise bare markers rakhta hai:
+
+```html
+<button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
+<input type="text" id="seg-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
+<button id="dashboard-close" title="Stop the dashboard server and close this window" data-i18n-title data-i18n>Close</button>
+```
+
+`extract` har English source string ko catalog (`strings.json`) mein likhta hai, aur `translate-ui` har locale ke liye ek flat bundle bharta hai, jiska key English source text hota hai. Ek typical static HTML app ke liye aap `ui.flatOutputDir` ko web-served directory jaise `public/locales/` par point karenge:
+
+```bash
+npx ai-i18n-tools extract        # index.html markers → strings.json
+npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.json
+```
+
+```jsonc
+// public/locales/de.json
+{
+  "Next": "Weiter",
+  "Filename (partial)": "Dateiname (teilweise)",
+  "Stop the dashboard server and close this window": "Dashboard-Server stoppen und dieses Fenster schließen",
+  "Close": "Schließen"
+}
+```
+
+Runtime par, sakriya locale ke liye bundle load karen aur marked elements ko walk karen. Key marker value se aati hai jab maujood ho, anyatha element ke apne text / title / placeholder se (usi tarah normalize kiya gaya jaise extractor whitespace normalize karta hai):
+
+```html
+<script type="module">
+  const locale = document.documentElement.lang || "en";
+  const bundle = locale.startsWith("en")
+    ? {}
+    : await fetch(`/locales/${locale}.json`).then((r) => (r.ok ? r.json() : {}));
+
+  const t = (key) => bundle[key] ?? key; // English source is the fallback
+  const norm = (s) => s.trim().replace(/\s+/g, " ");
+
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n") || norm(el.textContent || "");
+    if (key) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title") || norm(el.getAttribute("title") || "");
+    if (key) el.setAttribute("title", t(key));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder") || norm(el.getAttribute("placeholder") || "");
+    if (key) el.setAttribute("placeholder", t(key));
+  });
+</script>
+```
+
+Is snippet ka marker-walking wala hissa `applyStaticI18n` mein [`src/dashboard-app/app.js`](../../docs/../src/dashboard-app/app.js) bilkul wahi hai. Kyunki English source text catalog key hai, untranslated strings automatically English mein fallback ho jaati hain.
+
+Bundled dashboard kaise alag hai: kyunki ismein Node server hai, yeh static `/locales/{locale}.json` fetch nahi karta. Client `GET /api/ui-i18n` ko call karta hai, aur server active locale (`--ui-lang` > `AI_I18N_LANG` > config `uiLanguage` > host OS) resolve karta hai aur `{ locale, dir, bundle }` return karta hai. Client phir us response se `document.documentElement` `lang`/`dir` set karta hai (locale choose karne ke liye `lang` padhne ke bajaye) `applyStaticI18n` ko call karne se pehle. Bundles khud translation ke liye tool ka content nahi hain — yeh dashboard ke UI strings hain, jo `src/i18n/locales/{locale}.json` mein ship kiye jaate hain (build par `dist/i18n/locales` mein copy hote hain) aur server-side par `loadUiBundle` dwara [`src/i18n/index.ts`](../../docs/../src/i18n/index.ts) mein padhe jaate hain. Dashboard ka `t()` `{{name}}` interpolation ko bhi support karta hai, upar diye gaye minimal `t` ke vipreet.
+
 <a id="astro-website-plain-astro-not-starlight"></a>
 ### Astro website (plain Astro, Starlight nahi)
 
@@ -1676,7 +1775,8 @@ npx ai-i18n-tools glossary-generate
 | `check-models` | Active provider ki `GET /models` list (sadasyata aur `expiration_date`) ke khilaf har configured model id ko validate karein, us provider ki API key ki avashyakta hai (Ollama jaise keyless providers ke liye koi nahi), jab koi configured id gayab ya samapt ho jati hai to non-zero exit karta hai, aur provider ke `requestTimeoutMs` ka samman karta hai. Jab provider pricing return karta hai (jaise OpenRouter), to prompt/completion ke liye 1M tokens ke hisab se USD bhi dikhata hai. |
 | `list-models` | Active provider dwara uski `GET /models` list ke madhyam se advertise kiye gaye har model ko list karein (id dwara sort kiya gaya; active provider config `provider` key ka palan karta hai, `-P` / `--provider` ke saath override karein). Us provider ki API key ki avashyakta hai (Ollama jaise keyless providers ke liye koi nahi). Jab provider pricing return karta hai (jaise OpenRouter), to prompt/completion ke liye 1M tokens ke hisab se USD bhi dikhata hai, aur `expiration_date` ke baad ki entries ko tag karta hai. |
 | `list-languages [search]` | Bundled UI languages catalog (`data/ui-languages-complete.json`) ko ek human-readable table (code, text direction, English name, native name) ke roop mein list karein; iske liye kisi config ya API key ki zaroorat nahi hai. Ek optional `search` term pass karein taaki sirf un entries ko rakha ja sake jinka code, native name, English name, ya direction ismein shamil ho (case-insensitive), jaise ki `list-languages portuguese`, `list-languages rtl`, `list-languages zh`. |
-| `extract` | `t("…")` / `i18n.t("…")` literals, optional `package.json` description, aur optional manifest `englishName` entries (dekhein `ui.reactExtractor`) se `strings.json` ko update karein. Non-empty `ui.sourceRoots` ki zaroorat hai. |
+| `extract`                                                                                                  | `strings.json` ko `t("…")` / `i18n.t("…")` literals, vaikalpik `package.json` vivaran, aur vaikalpik manifest `englishName` entries (dekhen `ui.reactExtractor`) se update karen. Jab `.html` / `.htm` `ui.uiExtractor.extensions` mein soochibaddh hote hain, to HTML se `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker strings bhi capture karta hai. Non-empty `ui.sourceRoots` ki zaroorat hai. LLM ko call nahin karta hai.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `mark-html [paths...] [--write]`                                                                           | HTML mein `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers daalein taaki source text ek baar hi likha jaaye (element par). Diye gaye files/dirs/globs ko scan karta hai (default: `.html` / `.htm` `ui.sourceRoots` ke andar). Default roop se dry run (prati-file add counts aur koi bhi mixed-content elements jo manual `<span data-i18n>` chahte hain, unke baare mein report karta hai); `--write` changes laagu karta hai. Idempotent, `data-i18n-ignore` ka sammaan karta hai (element aur uske subtree ko skip karta hai), code-like elements (`code`, `pre`, `kbd`, `samp`, `var`) ya khaali/sirf-ank wale text ko kabhi nahi chhoota, aur kabhi bhi valued marker nahi nikaalta. LLM ko call nahi karta hai.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `generate-ui-languages [--master <path>] [--dry-run]` | `ui-languages.json` ko `ui.flatOutputDir` (ya set hone par `uiLanguagesPath`) mein `sourceLocale` + `targetLocales` aur bundled `data/ui-languages-complete.json` (ya `--master`) ka upyog karke likhein. Master file se gayab locales ke liye warn karta hai aur `TODO` placeholders emit karta hai. Agar aapke paas customized `label` ya `englishName` values ke saath ek existing manifest hai, to unhein master catalog defaults se badal diya jayega — baad mein generate ki gayi file ki review karein aur adjust karein. |
 | `translate-docs …` | Har ek `docs` block (`contentPaths`, optional `docusaurusCatalogDir`) ke liye markdown/MDX aur JSON ka anuvad karein. `-j`: adhiktam samantar sthaniya bhashaen; `-b`: prati file adhiktam samantar batch API calls. `--prompt-format`: batch wire format (`xml` \| `json-array` \| `json-object`). [Cache vyavahar aur `translate-docs` flags](#cache-behaviour-and-translate-docs-flags) aur [Batch prompt format](#batch-prompt-format) dekhein. |
 | `write-heading-ids …` | Kam se kam ek `docs[]` block ki avashyakta hai. Har block ke `contentPaths` ke tahat `.md` / `.mdx` ikattha karta hai (`.translate-ignore` ka samman karta hai). Har flat ATX `#` heading (fenced code blocks ke andar headings ko chhodkar) se theek **pahle** ek HTML anchor line `<a id="slug"></a>` dalta hai; jab ek anchor line pahle se maujood ho, to yadi yah vartaman heading text se prapt slug se mel nahin khata hai to `id` ko update karta hai. `-p` / `--path` ya `-f` / `--file`: ek project-relative file ya directory tak seemit karein. `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. `pymdown` ke saath, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--dry-run`: keval badlavon ko soochibaddh karein. |

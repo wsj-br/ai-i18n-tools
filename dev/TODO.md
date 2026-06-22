@@ -14,12 +14,14 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## New features
 
-> no planned new features
+- Analyse to support translation of i18next project (probably is already supported with the JSON translation workflow)
 
 
 ## Improvements
 
-> no improvements planned
+- write a compreensive documenation in astro or docusaurus and publish it as a website in Github Pages 
+- separate the examples into different repositories to allow each example to be used as a standalone project 
+- create a example of the plain HTML similar to the dashboard app 
 
 ## Fixes
 

@@ -123,7 +123,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="openrouter"></a>
 ## LLM providers
 
-Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, and related scripts) call an LLM provider; `check-markdown` does not.
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, and related scripts) call an LLM provider; `check-markdown`, `mark-html`, and `extract` do not.
 
 Configure providers under a top-level `providers` map and pick the active one with a top-level `provider` selector (optional when exactly one provider is configured). Most providers need only a `translationModels` list — `baseUrl` and the API-key environment variable come from a built-in preset; you can override `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, and `requestTimeoutMs` per provider. `requestTimeoutMs` is the maximum time in milliseconds to wait for each request (default `30000`).
 
@@ -270,6 +270,7 @@ ai-i18n-tools list-models
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
+ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
 ai-i18n-tools translate-docs …
 ai-i18n-tools translate-json …
@@ -291,9 +292,22 @@ ai-i18n-tools help [command]
 ```
 
 
+For plain HTML apps, annotate elements with bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers (the source text is taken from the element's own textContent / title / placeholder, written once); `mark-html` inserts them for you and `extract` then captures them into `strings.json`. See [Getting Started — Marking HTML for translation](docs/GETTING_STARTED.md#marking-html-for-translation).
+
 Complete per-command flag lists are in [Getting Started — CLI reference](docs/GETTING_STARTED.md#cli-reference). Run `ai-i18n-tools <command> --help` for built-in usage text.
 
-Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (override the active LLM provider; must be configured under `providers`), optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory), `-V` / `--version`, and `-h` / `--help`. Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `lint-source` uses a single source locale. See [Getting Started](docs/GETTING_STARTED.md#cli-reference) for the command overview table.
+Global options on every command: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (override the active LLM provider; must be configured under `providers`), `-L` / `--ui-lang <code>` (language for the tool's own UI/logs), optional `-w` / `--write-logs [path]` to tee console output to a log file (default: under the translation cache directory), `-V` / `--version`, and `-h` / `--help`. Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `lint-source` uses a single source locale. See [Getting Started](docs/GETTING_STARTED.md#cli-reference) for the command overview table.
+
+### Tool UI language (logs, help, dashboard)
+
+The tool localizes its own CLI help, high-traffic log/summary messages, and the Translation Dashboard. The UI locale is resolved from these sources, highest priority first:
+
+1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`).
+2. `AI_I18N_LANG` environment variable (e.g. `export AI_I18N_LANG=es`).
+3. The `uiLanguage` config key in `ai-i18n-tools.config.json` (BCP-47 string).
+4. The host OS locale (via `Intl.DateTimeFormat().resolvedOptions().locale`).
+
+The requested locale is matched against the shipped UI languages exactly or by closest variation (for example `pt-PT` resolves to `pt-BR`, and `en-US` resolves to `en-GB`); when nothing matches it falls back to the source locale (`en-GB`). This is independent of your project's `sourceLocale` / `targetLocales`. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, and `zh-Hant`.
 
 ---
 

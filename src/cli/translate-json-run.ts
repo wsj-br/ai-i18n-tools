@@ -25,6 +25,7 @@ import {
   interruptErrorFromSignal,
   isRunInterruptedError,
 } from "../utils/run-interrupt.js";
+import { t } from "../i18n/index.js";
 
 export function expandJsonBlockOutputPath(
   template: string,
@@ -64,18 +65,20 @@ function printTranslateJsonSummary(
   outcome: "success" | "interrupted"
 ): void {
   if (outcome === "success") {
-    console.log(chalk.bold.green("\n✅ JSON translation complete!\n"));
+    console.log(chalk.bold.green(t("\n✅ JSON translation complete!\n")));
   } else {
     console.log(
       chalk.bold.yellow(
-        "\n⚠️  JSON translation interrupted — partial summary (reflects files completed before interrupt).\n"
+        t(
+          "\n⚠️  JSON translation interrupted — partial summary (reflects files completed before interrupt).\n"
+        )
       )
     );
   }
-  console.log(chalk.bold("📊 Summary:"));
-  console.log(`   Total elapsed time:    ${formatElapsedMmSs(wallElapsedMs)}`);
-  console.log(`   Files completed:       ${filesCompleted}`);
-  console.log(`   Files skipped:         ${filesSkipped}`);
+  console.log(chalk.bold(t("📊 Summary:")));
+  console.log(t("   Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) }));
+  console.log(t("   Files completed:       {{count}}", { count: filesCompleted }));
+  console.log(t("   Files skipped:         {{count}}", { count: filesSkipped }));
   console.log("");
 }
 
@@ -121,7 +124,15 @@ export async function translateNestedJsonFile(
     fs.existsSync(outPath)
   ) {
     if (opts.verbose) {
-      console.log(chalk.gray(`⏭️  ${timestamp()} - ${locale}  ${relSourcePath} (json, unchanged)`));
+      console.log(
+        chalk.gray(
+          t("⏭️  {{time}} - {{locale}}  {{path}} (json, unchanged)", {
+            time: timestamp(),
+            locale,
+            path: relSourcePath,
+          })
+        )
+      );
     }
     return { skipped: true };
   }
@@ -131,7 +142,15 @@ export async function translateNestedJsonFile(
   const translatableCount = segments.filter((s) => s.translatable).length;
   console.log(
     chalk.yellow(
-      `📄 ${locale} ${relSourcePath} (nested-json): ${segments.length} segment(s) (${translatableCount} translatable)`
+      t(
+        "📄 {{locale}} {{path}} (nested-json): {{count}} segment(s) ({{translatableCount}} translatable)",
+        {
+          locale,
+          path: relSourcePath,
+          count: segments.length,
+          translatableCount,
+        }
+      )
     )
   );
 
@@ -221,7 +240,14 @@ export async function translateNestedJsonFile(
         }
       }
     }
-    console.log(chalk.green(`   ✓ ${locale} → ${path.relative(projectRoot, outPath)}`));
+    console.log(
+      chalk.green(
+        t("   ✓ {{locale}} → {{path}}", {
+          locale,
+          path: path.relative(projectRoot, outPath),
+        })
+      )
+    );
   }
 
   return { skipped: false };
@@ -233,7 +259,7 @@ export async function runTranslateJson(
   opts: TranslateRunOptions
 ): Promise<void> {
   if (!config.features.translateJson) {
-    throw new Error("Enable features.translateJson in config");
+    throw new Error(t("Enable features.translateJson in config"));
   }
   const locales = opts.locales?.length
     ? opts.locales
@@ -241,7 +267,7 @@ export async function runTranslateJson(
   const src = normalizeLocale(config.sourceLocale);
   const targets = locales.filter((l) => normalizeLocale(l) !== src);
   if (targets.length === 0) {
-    console.log(chalk.yellow("No target locales for translate-json."));
+    console.log(chalk.yellow(t("No target locales for translate-json.")));
     return;
   }
 
@@ -271,7 +297,15 @@ export async function runTranslateJson(
         typeof block.description === "string" && block.description.trim()
           ? ` — ${block.description.trim()}`
           : "";
-      console.log(chalk.gray(`\n--- json[${bi}]${desc} (${files.length} file(s)) ---\n`));
+      console.log(
+        chalk.gray(
+          t("\n--- json[{{index}}]{{desc}} ({{count}} file(s)) ---\n", {
+            index: bi,
+            desc,
+            count: files.length,
+          })
+        )
+      );
       for (const locale of targets) {
         for (const rel of files) {
           if (opts.abortSignal?.aborted) {

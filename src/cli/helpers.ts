@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { loadI18nConfigFromFile, DEFAULT_CONFIG_FILENAME } from "../core/config.js";
 import { ConfigValidationError } from "../core/errors.js";
+import { initUiI18nFromEnvironment } from "../i18n/index.js";
 import type { DocArtifactKind } from "../core/output-paths.js";
 import { resolveDocumentationOutputPath } from "../core/output-paths.js";
 import type { I18nConfig, I18nDocTranslateConfig } from "../core/types.js";
@@ -73,6 +74,9 @@ export function loadConfigOrExit(
     const resolvedAbs = resolveConfigFileLocation(configFlag, searchCwd);
     const projectRoot = path.dirname(resolvedAbs);
     const config = loadI18nConfigFromFile(resolvedAbs, projectRoot, providerOverride);
+    // Re-resolve the tool's UI locale now that config is known. `--ui-lang` / `AI_I18N_LANG` still
+    // win over config `uiLanguage` (precedence handled inside the resolver).
+    initUiI18nFromEnvironment(config.uiLanguage ?? null);
     return { config, projectRoot };
   } catch (e) {
     console.error(

@@ -1,14 +1,12 @@
 /** Shared formatting helpers for CLI log output. */
 
 import chalk from "chalk";
+import { t } from "../i18n/index.js";
 
-/** Prefix for the translate-docs / translate-ui header line naming the active LLM provider. */
-export const PROVIDER_LOG_PREFIX = "Provider: ";
-
-/** Prefix for the translate-docs / translate-ui header line listing OpenRouter models. */
-export const MODELS_TRY_ORDER_LOG_PREFIX = "Models (try in order): ";
-
-/** Total maximum line length (characters) for that header; continuation lines use {@link MODELS_TRY_ORDER_LOG_INDENT}. */
+/**
+ * Total maximum line length (characters) for the `Models (try in order):` header;
+ * continuation lines use {@link MODELS_TRY_ORDER_LOG_INDENT}.
+ */
 export const MODELS_TRY_ORDER_LOG_WIDTH = 100;
 
 /** Indent for wrapped continuation lines (4 spaces). */
@@ -61,17 +59,18 @@ export function printModelsTryInOrder(models: readonly string[], provider?: stri
   }
   const providerName = provider?.trim();
   if (providerName) {
-    console.log(chalk.cyan(PROVIDER_LOG_PREFIX) + chalk.magenta(providerName));
+    console.log(chalk.cyan(t("Provider:") + " ") + chalk.magenta(providerName));
   }
+  const modelsPrefix = t("Models (try in order):") + " ";
   const parts = wrapCommaSeparatedListForWidth(
     models.join(", "),
-    MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_PREFIX.length,
+    MODELS_TRY_ORDER_LOG_WIDTH - modelsPrefix.length,
     MODELS_TRY_ORDER_LOG_WIDTH - MODELS_TRY_ORDER_LOG_INDENT.length
   );
   const out = parts
     .map((p, i) =>
       i === 0
-        ? chalk.cyan(MODELS_TRY_ORDER_LOG_PREFIX) + chalk.magenta(p)
+        ? chalk.cyan(modelsPrefix) + chalk.magenta(p)
         : MODELS_TRY_ORDER_LOG_INDENT + chalk.magenta(p)
     )
     .join("\n");

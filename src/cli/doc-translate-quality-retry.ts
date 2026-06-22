@@ -8,6 +8,7 @@ import { errorsIncludeAstMismatch, validateDocTranslatePair } from "../processor
 import type { Glossary } from "../glossary/glossary.js";
 import type { LlmClient } from "../api/llm-client.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
+import { t } from "../i18n/index.js";
 
 type ProtectState = {
   glossaryForceReplacements?: string[];
@@ -224,7 +225,7 @@ async function translateProtectedContent(
         mode: "debug",
       });
       if (debugLogPath) {
-        console.warn(chalk.gray(`  🧪 Debug log: ${debugLogPath}`));
+        console.warn(chalk.gray(t("  🧪 Debug log: {{path}}", { path: debugLogPath })));
       }
     }
 
@@ -268,7 +269,7 @@ async function translateProtectedContent(
         mode: "failed",
       });
       if (failureLogPath) {
-        console.warn(chalk.gray(`  📝 Failure log: ${failureLogPath}`));
+        console.warn(chalk.gray(t("  📝 Failure log: {{path}}", { path: failureLogPath })));
       }
     }
 
@@ -297,7 +298,11 @@ async function translateProtectedContent(
 function throwQualityFatal(params: TranslateOneSegmentQualityRetryParams, errors: string[]): never {
   const loc = params.docLog?.relativePath ?? "?";
   throw new Error(
-    `Doc translation quality failed (${params.locale}, ${loc}): ${params.segLabelSingle ? `${params.segLabelSingle}: ` : ""}${errors.join("; ")}`
+    t("Doc translation quality failed ({{locale}}, {{loc}}): {{detail}}", {
+      locale: params.locale,
+      loc,
+      detail: `${params.segLabelSingle ? `${params.segLabelSingle}: ` : ""}${errors.join("; ")}`,
+    })
   );
 }
 
@@ -362,7 +367,16 @@ export async function translateOneSegmentWithQualityRetry(
   const baseLoc = docLog?.relativePath ? `${locale} ${docLog.relativePath}` : locale;
   console.warn(
     chalk.magenta(
-      `  ✂️  ${baseLoc}: splitting segment into ${parts.length} part(s) after model exhaustion (depth ${splitDepth + 1}/${maxQualityRetrySplitDepth}) — ${segLabelSingle || `hash ${params.segmentHash}`}`
+      t(
+        "  ✂️  {{loc}}: splitting segment into {{parts}} part(s) after model exhaustion (depth {{depth}}/{{maxDepth}}) — {{label}}",
+        {
+          loc: baseLoc,
+          parts: parts.length,
+          depth: splitDepth + 1,
+          maxDepth: maxQualityRetrySplitDepth,
+          label: segLabelSingle || `hash ${params.segmentHash}`,
+        }
+      )
     )
   );
 

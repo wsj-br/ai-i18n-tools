@@ -137,6 +137,51 @@ describe("runExtract includeUiLanguageEnglishNames", () => {
     }
   });
 
+  it("captures data-i18n marker strings from .html sources with index.html locations", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "extract-html-"));
+    try {
+      fs.mkdirSync(path.join(tmp, "src"), { recursive: true });
+      fs.writeFileSync(
+        path.join(tmp, "src", "index.html"),
+        [
+          `<button data-i18n>Next</button>`,
+          `<input data-i18n-placeholder placeholder="Filename (partial)" />`,
+          `<button data-i18n="Save">overridden</button>`,
+          `<code>npm run build</code>`,
+        ].join("\n"),
+        "utf8"
+      );
+
+      const config = minimalExtractConfig({
+        targetLocales: ["de"],
+        ui: {
+          sourceRoots: ["src"],
+          stringsJson: "strings.json",
+          uiExtractor: {
+            extensions: [".ts", ".tsx", ".html"],
+            includeUiLanguageEnglishNames: false,
+          },
+        },
+      });
+
+      runExtract(config, tmp);
+      const out = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as Record<
+        string,
+        { source: string; locations?: Array<{ file: string; line: number }> }
+      >;
+
+      const nextHash = uiStringHash("Next");
+      expect(out[nextHash]?.source).toBe("Next");
+      expect(out[nextHash]?.locations?.[0]?.file).toBe("src/index.html");
+      expect(out[uiStringHash("Filename (partial)")]?.source).toBe("Filename (partial)");
+      expect(out[uiStringHash("Save")]?.source).toBe("Save");
+      // Code-like content is not a marker source.
+      expect(out[uiStringHash("npm run build")]).toBeUndefined();
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
   it("writes ui-languages.json on extract", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "extract-ui-json-"));
     try {

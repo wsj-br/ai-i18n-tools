@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
+import { t } from "../i18n/index.js";
 import {
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
@@ -44,7 +45,9 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
   const settings = resolveProviderSettings(activeProvider, config);
   const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
-    console.error(chalk.red(`${settings.apiKeyEnv ?? "API key"} is required`));
+    console.error(
+      chalk.red(t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }))
+    );
     return { exitCode: 1 };
   }
 
@@ -71,21 +74,26 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
   const entries = [...catalog.values()].sort((a, b) => a.id.localeCompare(b.id));
 
   console.log(
-    chalk.bold(`list-models: provider "${activeProvider}" — ${entries.length} model(s) available.`)
+    chalk.bold(
+      t('list-models: provider "{{provider}}" — {{count}} model(s) available.', {
+        provider: activeProvider,
+        count: entries.length,
+      })
+    )
   );
   console.log();
 
   if (entries.length === 0) {
-    console.log(chalk.yellow("No models returned by the provider."));
+    console.log(chalk.yellow(t("No models returned by the provider.")));
     console.log();
     return { exitCode: 0 };
   }
 
   const showPricing = entries.some((entry) => hasPricing(entry));
   if (showPricing) {
-    console.log(chalk.green.bold("Available models — pricing USD per 1M tokens"));
+    console.log(chalk.green.bold(t("Available models — pricing USD per 1M tokens")));
   } else {
-    console.log(chalk.green.bold("Available models"));
+    console.log(chalk.green.bold(t("Available models")));
   }
 
   const idW = Math.max(8, ...entries.map((e) => e.id.length));
@@ -94,7 +102,7 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
       typeof entry.expiration_date === "string" && isExpirationDatePast(entry.expiration_date);
     const label = modelDisplayName(entry);
     const name = label.length > 0 ? chalk.gray(` (${label})`) : "";
-    const expiredTag = expired ? chalk.red(" [expired]") : "";
+    const expiredTag = expired ? chalk.red(t(" [expired]")) : "";
     if (showPricing) {
       const input = formatUsdPerMillionTokens(entry.pricing?.prompt);
       const output = formatUsdPerMillionTokens(entry.pricing?.completion);
@@ -109,11 +117,11 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
 
   if (isOpenRouter) {
     console.log(
-      chalk.gray("Source: OpenRouter models directory @ ") +
+      chalk.gray(t("Source: OpenRouter models directory @ ")) +
         chalk.cyan("https://openrouter.ai/models\n")
     );
   } else {
-    console.log(chalk.gray(`Source: ${settings.baseUrl}/models\n`));
+    console.log(chalk.gray(t("Source: {{baseUrl}}/models\n", { baseUrl: settings.baseUrl })));
   }
 
   return { exitCode: 0 };

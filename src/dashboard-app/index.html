@@ -3,20 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ai-i18n-tools - Translation Dashboard</title>
+    <title data-i18n>ai-i18n-tools - Translation Dashboard</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="page">
       <header class="top">
         <div class="top-bar">
-          <h1>ai-i18n-tools - Translation Dashboard</h1>
+          <h1 data-i18n>ai-i18n-tools - Translation Dashboard</h1>
           <a
             href="https://github.com/wsj-br/ai-i18n-tools"
             class="top-github-brand"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="wsj-br/ai-i18n-tools on GitHub"
+            data-i18n-ignore
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -35,67 +36,67 @@
           </a>
         </div>
         <nav class="tabs" id="tabs">
-          <button type="button" data-tab="segments" class="active">Documentation</button>
-          <button type="button" data-tab="ui">UI strings</button>
-          <button type="button" data-tab="ui-plurals">UI plurals</button>
-          <button type="button" data-tab="glossary">Glossary</button>
-          <button type="button" data-tab="failures">Failures</button>
-          <button type="button" data-tab="md-issues">Markdown issues</button>
-          <button type="button" data-tab="stats">Statistics</button>
-          <button type="button" id="dashboard-close" class="tab-close" title="Stop the dashboard server and close this window">Close</button>
+          <button type="button" data-tab="segments" class="active" data-i18n>Documentation</button>
+          <button type="button" data-tab="ui" data-i18n>UI strings</button>
+          <button type="button" data-tab="ui-plurals" data-i18n>UI plurals</button>
+          <button type="button" data-tab="glossary" data-i18n>Glossary</button>
+          <button type="button" data-tab="failures" data-i18n>Failures</button>
+          <button type="button" data-tab="md-issues" data-i18n>Markdown issues</button>
+          <button type="button" data-tab="stats" data-i18n>Statistics</button>
+          <button type="button" id="dashboard-close" class="tab-close" title="Stop the dashboard server and close this window" data-i18n data-i18n-title>Close</button>
         </nav>
       </header>
 
       <main>
       <section id="panel-segments" class="panel active">
-        <p class="hint">Documentation cache - filter, edit, delete, log file links to the server console.</p>
+        <p class="hint" data-i18n>Documentation cache - filter, edit, delete, log file links to the server console.</p>
         <div class="container-inner">
           <section class="filters seg-filters">
             <div class="filter-row filter-row-seg-primary">
-              <select id="seg-filter-filepath-select" title="Choose filepath from list (sets filename filter)">
-                <option value="">-- Select filepath --</option>
+              <select id="seg-filter-filepath-select" title="Choose filepath from list (sets filename filter)" data-i18n-title>
+                <option value="" data-i18n>-- Select filepath --</option>
               </select>
-              <select id="seg-filter-locale" title="Filter by locale">
-                <option value="">All locales</option>
+              <select id="seg-filter-locale" title="Filter by locale" data-i18n-title>
+                <option value="" data-i18n>All locales</option>
               </select>
-              <select id="seg-filter-model" title="Filter by model">
-                <option value="">All models</option>
+              <select id="seg-filter-model" title="Filter by model" data-i18n-title>
+                <option value="" data-i18n>All models</option>
               </select>
-              <input type="text" id="seg-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
+              <input type="text" id="seg-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" data-i18n-title data-i18n-placeholder />
               <div class="filter-row-seg-primary-actions">
-                <select id="seg-filter-last-hit" title="Filter by last cache hit (stale = never hit this run)">
-                  <option value="">All entries</option>
-                  <option value="stale">Stale</option>
-                  <option value="active">Active</option>
+                <select id="seg-filter-last-hit" title="Filter by last cache hit (stale = never hit this run)" data-i18n-title>
+                  <option value="" data-i18n>All entries</option>
+                  <option value="stale" data-i18n>Stale</option>
+                  <option value="active" data-i18n>Active</option>
                 </select>
-                <button type="button" id="seg-btn-clear" class="seg-btn-clear">Clear</button>
-                <button type="button" id="seg-btn-apply">Apply</button>
+                <button type="button" id="seg-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+                <button type="button" id="seg-btn-apply" data-i18n>Apply</button>
               </div>
             </div>
             <div class="filter-row filter-row-seg-secondary">
-              <input type="text" id="seg-filter-source-hash" placeholder="Source hash" title="Filter by source_hash" />
-              <input type="text" id="seg-filter-source-text" placeholder="Source text search" title="Filter by source_text" />
-              <input type="text" id="seg-filter-translated-text" placeholder="Translated text search" title="Filter by translated_text" />
-              <button type="button" id="seg-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
+              <input type="text" id="seg-filter-source-hash" placeholder="Source hash" title="Filter by source_hash" data-i18n-title data-i18n-placeholder />
+              <input type="text" id="seg-filter-source-text" placeholder="Source text search" title="Filter by source_text" data-i18n-title data-i18n-placeholder />
+              <input type="text" id="seg-filter-translated-text" placeholder="Translated text search" title="Filter by translated_text" data-i18n-title data-i18n-placeholder />
+              <button type="button" id="seg-btn-delete-filtered" class="seg-btn-delete-filtered" data-i18n>Delete filtered</button>
             </div>
           </section>
 
           <section class="delete-by-filepath">
-            <label for="seg-select-filepath">Delete all translations for filepath:</label>
+            <label for="seg-select-filepath" data-i18n>Delete all translations for filepath:</label>
             <select id="seg-select-filepath">
-              <option value="">-- Select filepath --</option>
+              <option value="" data-i18n>-- Select filepath --</option>
             </select>
-            <button type="button" id="seg-btn-delete-filepath" disabled>Delete all</button>
+            <button type="button" id="seg-btn-delete-filepath" disabled data-i18n>Delete all</button>
           </section>
 
           <section class="pagination-top">
             <span id="seg-pagination-info"></span>
             <div class="pagination-controls">
-              <button type="button" id="seg-btn-prev" disabled>Previous</button>
+              <button type="button" id="seg-btn-prev" disabled data-i18n>Previous</button>
               <span id="seg-page-indicator"></span>
-              <button type="button" id="seg-btn-next" disabled>Next</button>
+              <button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
               <label>
-                Page size:
+                <span data-i18n>Page size:</span>
                 <select id="seg-page-size">
                   <option value="25">25</option>
                   <option value="50" selected>50</option>
@@ -109,16 +110,16 @@
             <table>
               <thead>
                 <tr>
-                  <th>Filepath</th>
-                  <th>Line #</th>
-                  <th>Source hash</th>
-                  <th id="seg-th-source-text">Source text</th>
-                  <th>Locale</th>
-                  <th>Translated text</th>
-                  <th>Model</th>
-                  <th>Created</th>
-                  <th>Last hit</th>
-                  <th>Actions</th>
+                  <th data-i18n>Filepath</th>
+                  <th data-i18n>Line #</th>
+                  <th data-i18n>Source hash</th>
+                  <th id="seg-th-source-text" data-i18n>Source text</th>
+                  <th data-i18n>Locale</th>
+                  <th data-i18n>Translated text</th>
+                  <th data-i18n>Model</th>
+                  <th data-i18n>Created</th>
+                  <th data-i18n>Last hit</th>
+                  <th data-i18n>Actions</th>
                 </tr>
               </thead>
               <tbody id="seg-table-body"></tbody>
@@ -128,70 +129,70 @@
           <section class="pagination-bottom">
             <span id="seg-pagination-info-bottom"></span>
             <div class="pagination-controls">
-              <button type="button" id="seg-btn-prev-bottom" disabled>Previous</button>
+              <button type="button" id="seg-btn-prev-bottom" disabled data-i18n>Previous</button>
               <span id="seg-page-indicator-bottom"></span>
-              <button type="button" id="seg-btn-next-bottom" disabled>Next</button>
+              <button type="button" id="seg-btn-next-bottom" disabled data-i18n>Next</button>
             </div>
           </section>
         </div>
       </section>
 
       <section id="panel-failures" class="panel">
-        <p class="hint">Translation failures - prioritize by retry order, inspect source segment, and log source links. 
-          — If you see old entries, run <code class="code-inline">ai-i18n-tools sync --force-update</code> and reopen the dashboard.</p>
+        <p class="hint"><span data-i18n>Translation failures - prioritize by retry order, inspect source segment, and log source links.</span>
+          — <span data-i18n>If you see old entries, run</span> <code class="code-inline">ai-i18n-tools sync --force-update</code> <span data-i18n>and reopen the dashboard.</span></p>
         <div id="fail-summary" class="status"></div>
         <div class="filters">
           <div class="filter-row filter-row-ui-primary">
-            <input type="text" id="fail-filter-filename" placeholder="Filename (partial)" />
+            <input type="text" id="fail-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
             <select id="fail-filter-locale">
-              <option value="">All locales</option>
+              <option value="" data-i18n>All locales</option>
             </select>
             <select id="fail-filter-model">
-              <option value="">All models</option>
+              <option value="" data-i18n>All models</option>
             </select>
             <select id="fail-filter-quality">
-              <option value="">All quality errors</option>
+              <option value="" data-i18n>All quality errors</option>
             </select>
             <select id="fail-filter-fatal">
-              <option value="">All entries</option>
-              <option value="true">Fatal only</option>
+              <option value="" data-i18n>All entries</option>
+              <option value="true" data-i18n>Fatal only</option>
             </select>
             <select id="fail-sort">
-              <option value="failures_desc">Sort: # Failures</option>
-              <option value="filepath_line_asc">Sort: filepath+line #</option>
+              <option value="failures_desc" data-i18n>Sort: # Failures</option>
+              <option value="filepath_line_asc" data-i18n>Sort: filepath+line #</option>
             </select>
-            <button type="button" id="fail-btn-clear" class="seg-btn-clear">Clear</button>
-            <button type="button" id="fail-btn-apply">Apply</button>
+            <button type="button" id="fail-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+            <button type="button" id="fail-btn-apply" data-i18n>Apply</button>
           </div>
           <div class="filter-row filter-row-seg-secondary">
-            <input type="text" id="fail-filter-source-hash" placeholder="Source hash" />
-            <input type="text" id="fail-filter-source-text" placeholder="Source text search" />
-            <input type="text" id="fail-filter-error-message" placeholder="Error message search" />
+            <input type="text" id="fail-filter-source-hash" placeholder="Source hash" data-i18n-placeholder />
+            <input type="text" id="fail-filter-source-text" placeholder="Source text search" data-i18n-placeholder />
+            <input type="text" id="fail-filter-error-message" placeholder="Error message search" data-i18n-placeholder />
           </div>
         </div>
         <section class="pagination-top">
           <span id="fail-pagination-info"></span>
           <div class="pagination-controls">
-            <button type="button" id="fail-btn-prev" disabled>Previous</button>
+            <button type="button" id="fail-btn-prev" disabled data-i18n>Previous</button>
             <span id="fail-page-indicator"></span>
-            <button type="button" id="fail-btn-next" disabled>Next</button>
+            <button type="button" id="fail-btn-next" disabled data-i18n>Next</button>
           </div>
         </section>
         <section class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Filepath</th>
-                <th>Line #</th>
-                <th>Locale</th>
-                <th>Source hash</th>
-                <th>Source text</th>
-                <th>Model</th>
-                <th># Failures</th>
-                <th>Quality error</th>
-                <th>Error message</th>
-                <th>Fatal</th>
-                <th>Actions</th>
+                <th data-i18n>Filepath</th>
+                <th data-i18n>Line #</th>
+                <th data-i18n>Locale</th>
+                <th data-i18n>Source hash</th>
+                <th data-i18n>Source text</th>
+                <th data-i18n>Model</th>
+                <th data-i18n># Failures</th>
+                <th data-i18n>Quality error</th>
+                <th data-i18n>Error message</th>
+                <th data-i18n>Fatal</th>
+                <th data-i18n>Actions</th>
               </tr>
             </thead>
             <tbody id="fail-table-body"></tbody>
@@ -200,57 +201,57 @@
         <section class="pagination-bottom">
           <span id="fail-pagination-info-bottom"></span>
           <div class="pagination-controls">
-            <button type="button" id="fail-btn-prev-bottom" disabled>Previous</button>
+            <button type="button" id="fail-btn-prev-bottom" disabled data-i18n>Previous</button>
             <span id="fail-page-indicator-bottom"></span>
-            <button type="button" id="fail-btn-next-bottom" disabled>Next</button>
+            <button type="button" id="fail-btn-next-bottom" disabled data-i18n>Next</button>
           </div>
         </section>
       </section>
 
       <section id="panel-md-issues" class="panel">
         <p class="hint">
-          Static markdown checks (unpaired emphasis delimiters, unclosed inline code) using the same rules as
-          <code class="code-inline">translate-docs</code>. Refresh by running
-          <code class="code-inline">ai-i18n-tools check-markdown</code> or translating docs. Not the same as
-          <strong>Failures</strong> (model / validation errors).
+          <span data-i18n>Static markdown checks (unpaired emphasis delimiters, unclosed inline code) using the same rules as</span>
+          <code class="code-inline">translate-docs</code>. <span data-i18n>Refresh by running</span>
+          <code class="code-inline">ai-i18n-tools check-markdown</code> <span data-i18n>or translating docs. Not the same as</span>
+          <strong data-i18n>Failures</strong> <span data-i18n>(model / validation errors).</span>
         </p>
         <div id="mdiss-summary" class="status"></div>
         <div class="filters">
           <div class="filter-row filter-row-ui-primary">
-            <input type="text" id="mdiss-filter-filename" placeholder="Filename / filepath (partial)" />
+            <input type="text" id="mdiss-filter-filename" placeholder="Filename / filepath (partial)" data-i18n-placeholder />
             <select id="mdiss-filter-issue-code">
-              <option value="">All issue codes</option>
+              <option value="" data-i18n>All issue codes</option>
             </select>
             <select id="mdiss-sort">
-              <option value="filepath_line_asc">Sort: filepath + line</option>
-              <option value="scanned_desc">Sort: scanned (newest)</option>
+              <option value="filepath_line_asc" data-i18n>Sort: filepath + line</option>
+              <option value="scanned_desc" data-i18n>Sort: scanned (newest)</option>
             </select>
-            <button type="button" id="mdiss-btn-clear" class="seg-btn-clear">Clear</button>
-            <button type="button" id="mdiss-btn-apply">Apply</button>
+            <button type="button" id="mdiss-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+            <button type="button" id="mdiss-btn-apply" data-i18n>Apply</button>
           </div>
           <div class="filter-row filter-row-seg-secondary">
-            <input type="text" id="mdiss-filter-source-hash" placeholder="Source hash" />
+            <input type="text" id="mdiss-filter-source-hash" placeholder="Source hash" data-i18n-placeholder />
           </div>
         </div>
         <section class="pagination-top">
           <span id="mdiss-pagination-info"></span>
           <div class="pagination-controls">
-            <button type="button" id="mdiss-btn-prev" disabled>Previous</button>
+            <button type="button" id="mdiss-btn-prev" disabled data-i18n>Previous</button>
             <span id="mdiss-page-indicator"></span>
-            <button type="button" id="mdiss-btn-next" disabled>Next</button>
+            <button type="button" id="mdiss-btn-next" disabled data-i18n>Next</button>
           </div>
         </section>
         <section class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Filepath (cache key)</th>
-                <th>Line</th>
-                <th>Source hash</th>
-                <th>Code</th>
-                <th>Detail</th>
-                <th>Scanned</th>
-                <th>Actions</th>
+                <th data-i18n>Filepath (cache key)</th>
+                <th data-i18n>Line</th>
+                <th data-i18n>Source hash</th>
+                <th data-i18n>Code</th>
+                <th data-i18n>Detail</th>
+                <th data-i18n>Scanned</th>
+                <th data-i18n>Actions</th>
               </tr>
             </thead>
             <tbody id="mdiss-table-body"></tbody>
@@ -259,9 +260,9 @@
         <section class="pagination-bottom">
           <span id="mdiss-pagination-info-bottom"></span>
           <div class="pagination-controls">
-            <button type="button" id="mdiss-btn-prev-bottom" disabled>Previous</button>
+            <button type="button" id="mdiss-btn-prev-bottom" disabled data-i18n>Previous</button>
             <span id="mdiss-page-indicator-bottom"></span>
-            <button type="button" id="mdiss-btn-next-bottom" disabled>Next</button>
+            <button type="button" id="mdiss-btn-next-bottom" disabled data-i18n>Next</button>
           </div>
         </section>
       </section>
@@ -271,41 +272,41 @@
         <div id="ui-status" class="status"></div>
         <div class="filters">
           <div class="filter-row filter-row-ui-primary">
-            <input type="text" id="ui-filter-id" placeholder="Id / hash" />
-            <input type="text" id="ui-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
-            <select id="ui-filter-filepath-select" title="Choose filepath from list (filters by location file)">
-              <option value="">-- Select filepath --</option>
+            <input type="text" id="ui-filter-id" placeholder="Id / hash" data-i18n-placeholder />
+            <input type="text" id="ui-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" data-i18n-title data-i18n-placeholder />
+            <select id="ui-filter-filepath-select" title="Choose filepath from list (filters by location file)" data-i18n-title>
+              <option value="" data-i18n>-- Select filepath --</option>
             </select>
-            <input type="text" id="ui-filter-source" placeholder="Source contains" />
-            <input type="text" id="ui-filter-translated" placeholder="Translated contains" />
-            <select id="ui-edit-locale" title="Locale for translated column, filter, and edit"></select>
-            <select id="ui-filter-model" title="Filter by model">
-              <option value="">All models</option>
+            <input type="text" id="ui-filter-source" placeholder="Source contains" data-i18n-placeholder />
+            <input type="text" id="ui-filter-translated" placeholder="Translated contains" data-i18n-placeholder />
+            <select id="ui-edit-locale" title="Locale for translated column, filter, and edit" data-i18n-title></select>
+            <select id="ui-filter-model" title="Filter by model" data-i18n-title>
+              <option value="" data-i18n>All models</option>
             </select>
-            <button type="button" id="ui-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
-            <button type="button" id="ui-btn-clear" class="seg-btn-clear">Clear</button>
-            <button type="button" id="ui-btn-apply">Apply filters</button>
+            <button type="button" id="ui-btn-delete-filtered" class="seg-btn-delete-filtered" data-i18n>Delete filtered</button>
+            <button type="button" id="ui-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+            <button type="button" id="ui-btn-apply" data-i18n>Apply filters</button>
           </div>
         </div>
         <section class="pagination-top hidden-ui" id="ui-pagination-wrap-top">
           <span id="ui-pagination-info"></span>
           <div class="pagination-controls">
-            <button type="button" id="ui-btn-prev" disabled>Previous</button>
+            <button type="button" id="ui-btn-prev" disabled data-i18n>Previous</button>
             <span id="ui-page-indicator"></span>
-            <button type="button" id="ui-btn-next" disabled>Next</button>
+            <button type="button" id="ui-btn-next" disabled data-i18n>Next</button>
           </div>
         </section>
         <section class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Id</th>
-                <th>Locations</th>
-                <th id="ui-th-source">Source</th>
-                <th>Locale</th>
-                <th>Translated</th>
-                <th>Model</th>
-                <th>Actions</th>
+                <th data-i18n>Id</th>
+                <th data-i18n>Locations</th>
+                <th id="ui-th-source" data-i18n>Source</th>
+                <th data-i18n>Locale</th>
+                <th data-i18n>Translated</th>
+                <th data-i18n>Model</th>
+                <th data-i18n>Actions</th>
               </tr>
             </thead>
             <tbody id="ui-table-body"></tbody>
@@ -314,9 +315,9 @@
         <section class="pagination-bottom hidden-ui" id="ui-pagination-wrap-bottom">
           <span id="ui-pagination-info-bottom"></span>
           <div class="pagination-controls">
-            <button type="button" id="ui-btn-prev-bottom" disabled>Previous</button>
+            <button type="button" id="ui-btn-prev-bottom" disabled data-i18n>Previous</button>
             <span id="ui-page-indicator-bottom"></span>
-            <button type="button" id="ui-btn-next-bottom" disabled>Next</button>
+            <button type="button" id="ui-btn-next-bottom" disabled data-i18n>Next</button>
           </div>
         </section>
       </section>
@@ -326,46 +327,46 @@
         <div id="up-status" class="status"></div>
         <div class="filters">
           <div class="filter-row filter-row-ui-primary">
-            <input type="text" id="up-filter-id" placeholder="Id / hash" />
-            <input type="text" id="up-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" />
-            <select id="up-filter-filepath-select" title="Choose filepath from list (filters by location file)">
-              <option value="">-- Select filepath --</option>
+            <input type="text" id="up-filter-id" placeholder="Id / hash" data-i18n-placeholder />
+            <input type="text" id="up-filter-filename" placeholder="Filename (partial)" title="Filter by filepath" data-i18n-title data-i18n-placeholder />
+            <select id="up-filter-filepath-select" title="Choose filepath from list (filters by location file)" data-i18n-title>
+              <option value="" data-i18n>-- Select filepath --</option>
             </select>
-            <input type="text" id="up-filter-source" placeholder="Source contains" />
-            <input type="text" id="up-filter-translated" placeholder="Form text contains" />
-            <select id="up-filter-status" title="Plural completeness">
-              <option value="">All status</option>
-              <option value="complete">Complete</option>
-              <option value="incomplete">Incomplete</option>
+            <input type="text" id="up-filter-source" placeholder="Source contains" data-i18n-placeholder />
+            <input type="text" id="up-filter-translated" placeholder="Form text contains" data-i18n-placeholder />
+            <select id="up-filter-status" title="Plural completeness" data-i18n-title>
+              <option value="" data-i18n>All status</option>
+              <option value="complete" data-i18n>Complete</option>
+              <option value="incomplete" data-i18n>Incomplete</option>
             </select>
-            <select id="up-edit-locale" title="Locale for forms column, filter, and edit"></select>
-            <select id="up-filter-model" title="Filter by model">
-              <option value="">All models</option>
+            <select id="up-edit-locale" title="Locale for forms column, filter, and edit" data-i18n-title></select>
+            <select id="up-filter-model" title="Filter by model" data-i18n-title>
+              <option value="" data-i18n>All models</option>
             </select>
-            <button type="button" id="up-btn-delete-filtered" class="seg-btn-delete-filtered">Delete filtered</button>
-            <button type="button" id="up-btn-clear" class="seg-btn-clear">Clear</button>
-            <button type="button" id="up-btn-apply">Apply filters</button>
+            <button type="button" id="up-btn-delete-filtered" class="seg-btn-delete-filtered" data-i18n>Delete filtered</button>
+            <button type="button" id="up-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+            <button type="button" id="up-btn-apply" data-i18n>Apply filters</button>
           </div>
         </div>
         <section class="pagination-top hidden-ui" id="up-pagination-wrap-top">
           <span id="up-pagination-info"></span>
           <div class="pagination-controls">
-            <button type="button" id="up-btn-prev" disabled>Previous</button>
+            <button type="button" id="up-btn-prev" disabled data-i18n>Previous</button>
             <span id="up-page-indicator"></span>
-            <button type="button" id="up-btn-next" disabled>Next</button>
+            <button type="button" id="up-btn-next" disabled data-i18n>Next</button>
           </div>
         </section>
         <section class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Id</th>
-                <th>Locations</th>
-                <th id="up-th-source">Source</th>
-                <th>Locale</th>
-                <th>Forms</th>
-                <th>Model</th>
-                <th>Actions</th>
+                <th data-i18n>Id</th>
+                <th data-i18n>Locations</th>
+                <th id="up-th-source" data-i18n>Source</th>
+                <th data-i18n>Locale</th>
+                <th data-i18n>Forms</th>
+                <th data-i18n>Model</th>
+                <th data-i18n>Actions</th>
               </tr>
             </thead>
             <tbody id="up-table-body"></tbody>
@@ -374,9 +375,9 @@
         <section class="pagination-bottom hidden-ui" id="up-pagination-wrap-bottom">
           <span id="up-pagination-info-bottom"></span>
           <div class="pagination-controls">
-            <button type="button" id="up-btn-prev-bottom" disabled>Previous</button>
+            <button type="button" id="up-btn-prev-bottom" disabled data-i18n>Previous</button>
             <span id="up-page-indicator-bottom"></span>
-            <button type="button" id="up-btn-next-bottom" disabled>Next</button>
+            <button type="button" id="up-btn-next-bottom" disabled data-i18n>Next</button>
           </div>
         </section>
       </section>
@@ -388,38 +389,38 @@
         </div>
         <div id="gl-editing-wrap">
         <div class="row-add" id="gl-add-row">
-          <input type="text" id="gl-new-original" placeholder="Original language string" />
+          <input type="text" id="gl-new-original" placeholder="Original language string" data-i18n-placeholder />
           <select id="gl-new-locale"></select>
-          <input type="text" id="gl-new-translation" placeholder="Translation" />
-          <label class="gl-force-label"><input type="checkbox" id="gl-new-force" /> Force</label>
-          <button type="button" id="gl-btn-add">Add row</button>
+          <input type="text" id="gl-new-translation" placeholder="Translation" data-i18n-placeholder />
+          <label class="gl-force-label"><input type="checkbox" id="gl-new-force" /> <span data-i18n>Force</span></label>
+          <button type="button" id="gl-btn-add" data-i18n>Add row</button>
         </div>
         <div class="filters">
           <div class="filter-row">
-            <input type="text" id="gl-filter-original" placeholder="Filter original" />
-            <select id="gl-filter-locale" title="Locale; * = all locales"></select>
-            <input type="text" id="gl-filter-translation" placeholder="Filter translation" />
-            <button type="button" id="gl-btn-clear" class="seg-btn-clear">Clear</button>
-            <button type="button" id="gl-btn-apply">Apply filters</button>
+            <input type="text" id="gl-filter-original" placeholder="Filter original" data-i18n-placeholder />
+            <select id="gl-filter-locale" title="Locale; * = all locales" data-i18n-title></select>
+            <input type="text" id="gl-filter-translation" placeholder="Filter translation" data-i18n-placeholder />
+            <button type="button" id="gl-btn-clear" class="seg-btn-clear" data-i18n>Clear</button>
+            <button type="button" id="gl-btn-apply" data-i18n>Apply filters</button>
           </div>
         </div>
         <section class="pagination-top hidden-ui" id="gl-pagination-wrap-top">
           <span id="gl-pagination-info"></span>
           <div class="pagination-controls">
-            <button type="button" id="gl-btn-prev" disabled>Previous</button>
+            <button type="button" id="gl-btn-prev" disabled data-i18n>Previous</button>
             <span id="gl-page-indicator"></span>
-            <button type="button" id="gl-btn-next" disabled>Next</button>
+            <button type="button" id="gl-btn-next" disabled data-i18n>Next</button>
           </div>
         </section>
         <section class="table-wrapper">
           <table class="grid-inline">
             <thead>
               <tr>
-                <th id="gl-th-original">Original</th>
-                <th>Locale</th>
-                <th>Translation</th>
-                <th>Force</th>
-                <th>Actions</th>
+                <th id="gl-th-original" data-i18n>Original</th>
+                <th data-i18n>Locale</th>
+                <th data-i18n>Translation</th>
+                <th data-i18n>Force</th>
+                <th data-i18n>Actions</th>
               </tr>
             </thead>
             <tbody id="gl-table-body"></tbody>
@@ -428,23 +429,23 @@
         <section class="pagination-bottom hidden-ui" id="gl-pagination-wrap-bottom">
           <span id="gl-pagination-info-bottom"></span>
           <div class="pagination-controls">
-            <button type="button" id="gl-btn-prev-bottom" disabled>Previous</button>
+            <button type="button" id="gl-btn-prev-bottom" disabled data-i18n>Previous</button>
             <span id="gl-page-indicator-bottom"></span>
-            <button type="button" id="gl-btn-next-bottom" disabled>Next</button>
+            <button type="button" id="gl-btn-next-bottom" disabled data-i18n>Next</button>
           </div>
         </section>
         </div>
       </section>
 
       <section id="panel-stats" class="panel">
-        <p class="hint" id="stats-hint">Cache and translation statistics.</p>
+        <p class="hint" id="stats-hint" data-i18n>Cache and translation statistics.</p>
         <div id="stats-status" class="status"></div>
         <div id="stats-content"></div>
       </section>
       </main>
 
       <footer class="site-footer">
-        <p style="color: white;">
+        <p style="color: white;" data-i18n-ignore>
           © 2026 Waldemar Scudeller Jr.
           <a href="https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/LICENSE"
              target="_blank"
@@ -465,17 +466,17 @@
       aria-labelledby="dashboard-server-down-title"
     >
       <div class="dashboard-server-down-card">
-        <h2 id="dashboard-server-down-title">Dashboard server unavailable</h2>
-        <p>The local Translation Dashboard HTTP server is not responding. It may have stopped (for example after Ctrl+C in the terminal).</p>
+        <h2 id="dashboard-server-down-title" data-i18n>Dashboard server unavailable</h2>
+        <p data-i18n>The local Translation Dashboard HTTP server is not responding. It may have stopped (for example after Ctrl+C in the terminal).</p>
         <p class="dashboard-server-down-hint">
-          Start it again from your project with <code class="code-inline">ai-i18n-tools dashboard</code>. This message disappears automatically when the server is reachable again.
+          <span data-i18n>Start it again from your project with</span> <code class="code-inline">ai-i18n-tools dashboard</code>. <span data-i18n>This message disappears automatically when the server is reachable again.</span>
         </p>
         <div class="dashboard-server-down-actions">
           <button
             type="button"
             id="dashboard-server-down-close"
             class="btn-save"
-            title="Browsers may block closing tabs not opened by script; close the tab manually if nothing happens."
+            title="Browsers may block closing tabs not opened by script; close the tab manually if nothing happens." data-i18n data-i18n-title
           >
             Close window
           </button>
@@ -485,33 +486,33 @@
 
     <div id="seg-modal-overlay" class="modal-overlay hidden">
       <div class="modal">
-        <h2>Edit translated text</h2>
+        <h2 data-i18n>Edit translated text</h2>
         <textarea id="seg-modal-textarea" rows="8"></textarea>
         <div class="modal-actions">
-          <button type="button" id="seg-btn-modal-cancel" class="btn-cancel">Cancel</button>
-          <button type="button" id="seg-btn-modal-save" class="btn-save">Save</button>
+          <button type="button" id="seg-btn-modal-cancel" class="btn-cancel" data-i18n>Cancel</button>
+          <button type="button" id="seg-btn-modal-save" class="btn-save" data-i18n>Save</button>
         </div>
       </div>
     </div>
 
     <div id="ui-modal-overlay" class="modal-overlay hidden">
       <div class="modal">
-        <h2>Edit UI translation</h2>
+        <h2 data-i18n>Edit UI translation</h2>
         <textarea id="ui-modal-textarea" rows="8"></textarea>
         <div class="modal-actions">
-          <button type="button" id="ui-btn-modal-cancel" class="btn-cancel">Cancel</button>
-          <button type="button" id="ui-btn-modal-save" class="btn-save">Save</button>
+          <button type="button" id="ui-btn-modal-cancel" class="btn-cancel" data-i18n>Cancel</button>
+          <button type="button" id="ui-btn-modal-save" class="btn-save" data-i18n>Save</button>
         </div>
       </div>
     </div>
 
     <div id="uip-modal-overlay" class="modal-overlay hidden">
       <div class="modal modal-wide">
-        <h2 id="uip-modal-title">Edit plural forms</h2>
+        <h2 id="uip-modal-title" data-i18n>Edit plural forms</h2>
         <div id="uip-modal-fields" class="uip-modal-fields"></div>
         <div class="modal-actions">
-          <button type="button" id="uip-btn-modal-cancel" class="btn-cancel">Cancel</button>
-          <button type="button" id="uip-btn-modal-save" class="btn-save">Save</button>
+          <button type="button" id="uip-btn-modal-cancel" class="btn-cancel" data-i18n>Cancel</button>
+          <button type="button" id="uip-btn-modal-save" class="btn-save" data-i18n>Save</button>
         </div>
       </div>
     </div>
