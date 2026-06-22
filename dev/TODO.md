@@ -14,9 +14,9 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## New features
 
-- Analyse to support translation of i18next project (probably is already supported with the JSON translation workflow)
-- Add a new cli command `bench-models` to benchmark the performance of the models, like we do in the presets-editor in transrewrt project (details in [translatePresetsBenchmark.js](https://raw.githubusercontent.com/wsj-br/transrewrt/refs/heads/main/dev/presets-editor/translatePresetsBenchmark.js)). Showing to the user the model ID, the input and output tokens, the time taken, and the cost in USD. The time should be the wall time translation time of each model.
-
+- analyse to support translation of i18next project (probably is already supported with the JSON translation workflow)
+- add a new cli command `bench-models` to benchmark the performance of the models, like we do in the presets-editor in transrewrt project (details in [translatePresetsBenchmark.js](https://raw.githubusercontent.com/wsj-br/transrewrt/refs/heads/main/dev/presets-editor/translatePresetsBenchmark.js)). Showing to the user the model ID, the input and output tokens, the time taken, and the cost in USD. The time should be the wall time translation time of each model.
+- add a new cli `purge-locale` to delete all translation cache for a given locale or locales. by default it remove all entries from the translations table, remove all entries from the file_tracking table, and remove all entries from the translation_failures table of the selected locale/locales. Don't need to remove the entries from the strings.json file of the selected locale/locales. 
 
 
 ## Improvements
@@ -27,7 +27,7 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## Fixes
 
-> no fixes
+- check if we detect placeholder leaks in the translation output
 
 ## To remove
 
