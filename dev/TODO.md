@@ -15,6 +15,8 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 ## New features
 
 - Analyse to support translation of i18next project (probably is already supported with the JSON translation workflow)
+- Add a new cli command `bench-models` to benchmark the performance of the models, like we do in the presets-editor in transrewrt project (details in [translatePresetsBenchmark.js](https://raw.githubusercontent.com/wsj-br/transrewrt/refs/heads/main/dev/presets-editor/translatePresetsBenchmark.js)). Showing to the user the model ID, the input and output tokens, the time taken, and the cost in USD. The time should be the wall time translation time of each model.
+
 
 
 ## Improvements
