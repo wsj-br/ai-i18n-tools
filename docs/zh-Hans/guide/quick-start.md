@@ -6,7 +6,7 @@
 <a id="runnable-examples"></a>
 ### 可运行的示例
 
-七个可运行的项目和夹具位于 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。请参阅 [示例](/examples) 目录（控制台应用程序、Next.js + Docusaurus、Astro 网站、Astro Starlight 文档、VitePress 文档、多提供商比较、Markdown 压力测试）。
+七个可运行的项目和夹具位于 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。请参阅[示例](/examples)目录（控制台应用程序、Next.js + Docusaurus、Astro 网站、Astro Starlight 文档、VitePress 文档、多提供商比较、Markdown 压力测试）。
 
 **独立运行一个示例**（无需克隆整个 monorepo）：
 

@@ -19,3 +19,14 @@ Causes fréquentes :
 3. Relancez `translate-docs` (ou `sync --force-update`) afin que chaque copie dans chaque langue inclue les lignes d'ancre mises à jour.
 
 Utilisez `--dry-run` sur `write-heading-ids` d'abord pour prévisualiser les modifications. Voir [Liens d'ancrage](/guide/documents/anchor-links) pour le modèle complet.
+
+<a id="image-or-asset-links-404-in-translated-docs"></a>
+## Liens d'image ou d'actif 404 dans les documents traduits
+
+Un lien Markdown ou `![alt](url)` fonctionne en anglais mais renvoie une erreur 404 dans les copies traduites, souvent parce que l'URL pointe toujours vers le dossier de la langue source ou un chemin statique uniquement en anglais.
+
+**Correction**
+
+1. Confirmez que la disposition de votre actif correspond à votre `docsOutput.style` (plate ou système de documentation). Voir [Réécriture de liens](/guide/documents/link-rewriting) et [Images et captures d'écran](/guide/images-and-screenshots/).
+2. Ajoutez ou ajustez `docsOutput.postProcessing.regexAdjustments` pour échanger des segments de locale ou relier des chemins `/img/…` absolus. Pour une disposition plate, rappelez-vous que le réécriveur de liens plats s'exécute **avant** `regexAdjustments` — faites correspondre les modèles à l'URL déjà préfixée.
+3. Assurez-vous que les fichiers d'actifs spécifiques à la locale existent aux chemins référencés par le Markdown réécrit (`translate-docs` réécrit les URL mais ne copie pas les fichiers raster).

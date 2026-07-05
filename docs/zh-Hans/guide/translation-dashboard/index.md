@@ -46,11 +46,13 @@ ai-i18n-tools dashboard
 | UI 字符串或复数 | 纯 `sync` 或 `translate-ui` | `--force`（覆盖 `user-edited` 行） |
 | 词汇表行 | 下一个 `translate-ui` 或 `proofread-ui` | — |
 
-手动编辑在缓存或 `strings.json` 中用模型 `user-edited` 标记。重新翻译未更改的源文本会跳过这些行，除非您使用 `--force`。
+**文档（SQLite 缓存）** — 手动编辑在缓存中用模型 `user-edited` 标记。对未更改的源重新运行 `translate-docs` 或 `sync` 会重用缓存的翻译（无 LLM 调用）。运行 `sync --force-update` 或 `translate-docs --force-update` 以从缓存刷新磁盘上的 Markdown。仅当您想绕过缓存并从 LLM 重新翻译（覆盖手动修复）时才使用 `--force`。
+
+**UI 字符串 (`strings.json`)** — 手动编辑在 `models[locale]` 中用 `user-edited` 标记。重新运行 `translate-ui` 或 `sync` 会跳过已存在翻译的条目。在 UI 命令上使用 `--force` 以重新翻译并覆盖手动修复。
 
 <a id="tips"></a>
 ## 提示
 
-- **日志链接按钮**（表格行中的 🔗）将文件:行提示打印到运行 `ai-i18n-tools dashboard` 的**终端** — 有助于从浏览器跳转到编辑器。
-- **关闭**（选项卡栏的右上角）会优雅地关闭仪表板服务器。
-- 如果服务器在浏览器选项卡仍打开时停止，则会出现叠加层；重新启动 `ai-i18n-tools dashboard` 以重新连接。
+- **日志链接按钮**（表格行中的 🔗）会将文件:行提示打印到运行 `ai-i18n-tools dashboard` 的**终端**中 — 这对于从浏览器跳转到编辑器非常有用。如果您正在使用基于 VS Code 的 IDE（如 Cursor、Antigravity 等），您可以 `CTRL`-点击终端窗口中的文件:行链接，以在指定行打开文件。
+- **关闭**（选项卡栏的右上角）会正常关闭仪表板服务器。
+- 如果服务器在浏览器选项卡仍打开时停止，则会出现一个覆盖层。重新启动 `ai-i18n-tools dashboard` 以重新连接，或者如果您已完成仪表板操作，则关闭窗口。

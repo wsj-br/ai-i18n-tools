@@ -40,13 +40,3 @@ Aap `--force` ko `--force-update` ke saath combine nahi kar sakte (ve mutually e
 | `json-object`          | Segment index dwara keyed ek JSON object `{"0":"…","1":"…",…}`.            | **Saman keys** aur translated values ke saath ek JSON object. |
 
 Run header `Batch prompt format: …` bhi print karta hai taki aap active mode ki pushti kar saken. JSON label files (`docusaurusCatalogDir`) aur SVG file batches usi setting ka upyog karte hain jab ve steps `translate-docs` (ya `sync` ke docs phase — `sync` is flag ko expose nahi karta hai; yah `json-array` par default hota hai) ke hisse ke roop mein chalte hain.
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## SQLite mein segment dedupe aur paths
-
-> **Note:** Yeh section `cleanup` behavior ya custom tooling ko debug karne ke liye upyogi internal cache key details ko cover karta hai. Adhikansh users ise skip kar sakte hain.
-
-- Segment rows ko globally `(source_hash, locale)` (hash = normalised content) dwara key kiya jata hai. Do files mein identical text ek row share karta hai; `translations.filepath` metadata hai (last writer), har file ke liye doosri cache entry nahi.
-- `file_tracking.filepath` namespaced keys ka upyog karta hai: `docs` block ke liye `doc-block:{index}:{relPath}` (`relPath` project-root-relative posix hai: markdown paths jaise collect kiye gaye hain; **JSON label files source file ke cwd-relative path ka upyog karte hain**, jaise `docs-site/i18n/en/code.json`, taki cleanup real file ko resolve kar sake), `translate-json` ke tahat `json[]` sources ke liye `json-block:{index}:{relPath}`, aur `translate-svg` ke tahat SVG files ke liye `svg-files:{relPath}`.
-- `translations.filepath` markdown, JSON, aur SVG segments ke liye cwd-relative posix paths store karta hai (SVG any assets ke saman path shape ka upyog karta hai; `svg-files:…` prefix **kewal** `file_tracking` par hai).
-- Run ke baad, `last_hit_at` kewal segment rows ke liye clear kiya jata hai **jo same translate scope mein hain** (`--path` aur enabled kinds ka samman karte hue) jo hit nahi hue the, taki ek filtered ya docs-only run unrelated files ko stale mark na kare.

@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 フラットレイアウトでのページ間アンカーリンクについては、[アンカーリンク](/guide/documents/anchor-links)を参照してください。
 
+組み込みの相対リンク修正以外のリンクとアセットURLの書き換えについては、[リンクの書き換え](/guide/documents/link-rewriting)（`docsOutput.postProcessing.regexAdjustments`）を参照してください。
+
 翻訳されたページでのスクリーンショットとラスターアセットについては、[画像とスクリーンショット](/guide/images-and-screenshots/)を参照してください。
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

@@ -6,7 +6,7 @@
 <a id="runnable-examples"></a>
 ### 실행 가능한 예시
 
-실행 가능한 7개의 프로젝트와 픽스처는 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있습니다. [예제](/examples) 카탈로그(콘솔 앱, Next.js + Docusaurus, Astro 웹사이트, Astro Starlight 문서, VitePress 문서, 다중 공급자 비교, 마크다운 스트레스 테스트)를 참조하세요.
+[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 아래에 7개의 실행 가능한 프로젝트와 픽스처가 있습니다. [예제](/examples) 카탈로그(콘솔 앱, Next.js + Docusaurus, Astro 웹사이트, Astro Starlight 문서, VitePress 문서, 다중 공급자 비교, 마크다운 스트레스 테스트)를 참조하세요.
 
 **하나의 예시를 독립적으로 실행합니다** (전체 모노레포를 복제하지 않고):
 

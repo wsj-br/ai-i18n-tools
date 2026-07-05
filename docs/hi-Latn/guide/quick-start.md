@@ -6,7 +6,7 @@ Default `init` template (`ui-markdown`) sirf **UI** extraction aur translation k
 <a id="runnable-examples"></a>
 ### Chalne yogya udaharan
 
-Saat chalne yogya projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhein (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, multi-provider comparison, markdown stress test).
+Saat chalne yogy project aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhen (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, multi-provider comparison, markdown stress test).
 
 **Ek udaharan ko alag se chalaen** (poore monorepo ko clone kiye bina):
 

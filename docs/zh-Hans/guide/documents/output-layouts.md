@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 有关平面布局中的跨页面锚点链接，请参阅[锚点链接](/guide/documents/anchor-links)。
 
+有关内置相对链接修复之外的链接和资产 URL 重写，请参阅[链接重写](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`)。
+
 有关翻译页面中的屏幕截图和栅格资产，请参阅[图像和屏幕截图](/guide/images-and-screenshots/)。
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

@@ -40,13 +40,3 @@ CLI는 SQLite에 **파일 추적**(파일당 소스 해시 × 로케일) 및 **�
 | `json-object`          | 세그먼트 인덱스로 키가 지정된 JSON 객체 `{"0":"…","1":"…",…}`.            | **동일한 키**를 가지고 번역된 값을 포함하는 JSON 객체. |
 
 실행 헤더는 활성 모드를 확인할 수 있도록 `Batch prompt format: …`도 출력합니다. JSON 레이블 파일(`docusaurusCatalogDir`) 및 SVG 파일 배치는 해당 단계가 `translate-docs`(또는 `sync`의 문서 단계 — `sync`는 이 플래그를 노출하지 않으며 기본값은 `json-array`임)의 일부로 실행될 때 동일한 설정을 사용합니다.
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## SQLite의 세그먼트 중복 제거 및 경로
-
-> **참고:** 이 섹션은 `cleanup` 동작이나 사용자 정의 도구 개발 시 디버깅에 유용한 내부 캐시 키 세부 정보를 다룹니다. 대부분의 사용자는 이 섹션을 건너뛰어도 됩니다.
-
-- 세그먼트 행은 `(source_hash, locale)`(해시 = 정규화된 콘텐츠)에 의해 전역적으로 키가 지정됩니다. 두 파일에 동일한 텍스트가 있으면 하나의 행을 공유합니다. `translations.filepath`은 메타데이터(최종 작성자)이며 파일당 두 번째 캐시 항목이 아닙니다.
-- `file_tracking.filepath`는 네임스페이스가 지정된 키를 사용합니다. `docs` 블록당 `doc-block:{index}:{relPath}`(`relPath`는 프로젝트 루트 기준 posix 형식이며, 마크다운 경로를 수집한 형태입니다. **JSON 레이블 파일은 소스 파일에 대한 현재 작업 디렉터리(cwd) 기준 경로를 사용합니다**, 예: `docs-site/i18n/en/code.json`. 따라서 정리 프로세스가 실제 파일을 확인할 수 있음), `translate-json` 아래의 `json[]` 소스용 `json-block:{index}:{relPath}`, `translate-svg` 아래의 SVG 파일용 `svg-files:{relPath}`.
-- `translations.filepath`는 마크다운, JSON 및 SVG 세그먼트에 대해 cwd 기준 posix 경로를 저장합니다(SVG는 다른 자산과 동일한 경로 형식을 사용하며, `svg-files:…` 접두사는 **오직** `file_tracking`에서만 사용됨).
-- 실행 후 `last_hit_at`는 **동일한 번역 범위 내**에서(`--path` 및 활성화된 유형을 존중하여) 접근되지 않은 세그먼트 행에 대해서만 지워지므로, 필터링되거나 문서 전용 실행 시 관련 없는 파일이 오래되었다고 표시되지 않습니다.

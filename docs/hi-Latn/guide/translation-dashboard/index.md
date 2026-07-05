@@ -46,11 +46,13 @@ Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / 
 | UI string ya plural | plain `sync` ya `translate-ui` | `--force` (`user-edited` rows ko overwrite karta hai) |
 | Glossary row | next `translate-ui` ya `proofread-ui` | — |
 
-Manual edits ko cache ya `strings.json` mein model `user-edited` ke saath tag kiya jaata hai. Unchanged source text ko re-translate karne se un rows ko skip kiya jaata hai jab tak aap `--force` ka upyog na karein.
+**Documentation (SQLite cache)** — Manual edits ko cache mein `user-edited` model ke saath tag kiya jaata hai. Unchanged source par `translate-docs` ya `sync` ko phir se chalaane se cached translation ka punarupyog hota hai (koi LLM call nahi). Cache se on-disk markdown ko refresh karne ke liye `sync --force-update` ya `translate-docs --force-update` chalaayein. `--force` ka upyog tabhi karein jab aap cache ko bypass karna chahte hain aur LLM se phir se translate karna chahte hain (manual fixes ko overwrite karte hue).
+
+**UI strings (`strings.json`)** — Manual edits ko `models[locale]` mein `user-edited` ke saath tag kiya jaata hai. `translate-ui` ya `sync` ko phir se chalaane se un entries ko chhod diya jaata hai jinka pehle se hi translation hai. Manual fixes ko phir se translate aur overwrite karne ke liye UI commands par `--force` ka upyog karein.
 
 <a id="tips"></a>
 ## Tips
 
-- **Log-link buttons** (table rows mein 🔗) **terminal** mein file:line hints print karte hain jahan `ai-i18n-tools dashboard` chal raha hai — browser se apne editor mein jump karne ke liye upyogi hai.
-- **Close** (tab bar ke top-right) dashboard server ko gracefully band kar deta hai.
-- Agar server band ho jaata hai jabki browser tab abhi bhi khula hai, to ek overlay dikhai deta hai; reconnect karne ke liye `ai-i18n-tools dashboard` ko restart karein.
+- **Log-link buttons** (table rows mein 🔗) **terminal** par file:line hints print karte hain jahan `ai-i18n-tools dashboard` chal raha hai — browser se apne editor par jaane ke liye upyogi hai. Yadi aap VS Code derived IDE (jaise Cursor, Antigravity, ...) ka upyog kar rahe hain, to aap Terminal window mein file:line link ko `CTRL`-click karke nirdisht line par file khol sakte hain.
+- **Close** (tab bar ke top-right mein) dashboard server ko gracefully band kar deta hai.
+- Yadi browser tab khula hone par server ruk jaata hai, to ek overlay dikhai deta hai. Reconnect karne ke liye `ai-i18n-tools dashboard` ko restart karein, ya yadi aap dashboard ka kaam poora kar chuke hain to window band kar dein.

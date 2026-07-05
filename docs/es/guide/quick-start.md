@@ -6,7 +6,7 @@ La plantilla predeterminada `init` (`ui-markdown`) solo permite la extracción y
 <a id="runnable-examples"></a>
 ### Ejemplos ejecutables
 
-Siete proyectos y accesorios ejecutables se encuentran en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consulte el catálogo de [Ejemplos](/examples) (aplicación de consola, Next.js + Docusaurus, sitio web de Astro, documentos de Astro Starlight, documentos de VitePress, comparación de múltiples proveedores, prueba de estrés de Markdown).
+Siete proyectos ejecutables y fixtures se encuentran en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consulta el catálogo de [Ejemplos](/examples) (aplicación de consola, Next.js + Docusaurus, sitio web de Astro, documentos de Astro Starlight, documentos de VitePress, comparación de múltiples proveedores, prueba de estrés de Markdown).
 
 **Ejecute un ejemplo de forma independiente** (sin clonar todo el monorepo):
 

@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 Flat layout mein cross-page anchor links ke liye, [Anchor links](/guide/documents/anchor-links) dekhen.
 
+Built-in relative-link fixes ke alawa link aur asset URL rewriting ke liye, [Link rewriting](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`) dekhein.
+
 Translate kiye gaye pages mein screenshots aur raster assets ke liye, [Images & Screenshots](/guide/images-and-screenshots/) dekhen.
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

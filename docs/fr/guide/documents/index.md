@@ -23,9 +23,10 @@ Les bundles JSON d'interface utilisateur imbriqués arbitraires (pas les catalog
 | Site Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Étape 1](#step-1-initialise-for-documentation) |
 | Site VitePress | `init -t ui-vitepress` + `json[]` pour le thème — [Intégration VitePress](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Étape 1](#step-1-initialise-for-documentation) |
-| README plat uniquement | `docsOutput.style = "flat"` — [Dispositions de sortie](/guide/documents/output-layouts), [sélecteur de langue](/guide/documents/language-switcher) facultatif |
+| Documents plats (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Mises en page de sortie](/guide/documents/output-layouts), [sélecteur de langue](/guide/documents/language-switcher) facultatif |
 | Où les fichiers traduits atterrissent | [Dispositions de sortie](/guide/documents/output-layouts) |
 | Liens `#anchor` entre pages | [Liens d'ancrage](/guide/documents/anchor-links) |
+| Réécriture d'URL de liens et d'actifs (`regexAdjustments`) | [Réécriture de liens](/guide/documents/link-rewriting) |
 | Captures d'écran dans la documentation | [Images et captures d'écran](/guide/images-and-screenshots/) |
 | Drapeaux et cache `translate-docs` | [Options CLI](/guide/documents/cli-options) |
 

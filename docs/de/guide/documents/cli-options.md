@@ -40,13 +40,3 @@ Sie können `--force` nicht mit `--force-update` kombinieren (beide schließen s
 | `json-object`          | Ein JSON-Objekt `{"0":"…","1":"…",…}`, indiziert nach Segmentindex.            | Ein JSON-Objekt mit den **gleichen Schlüsseln** und übersetzten Werten. |
 
 Der Ausführungsheader gibt auch `Batch prompt format: …` aus, damit Sie den aktiven Modus bestätigen können. JSON-Label-Dateien (`docusaurusCatalogDir`) und SVG-Dateibatches verwenden dieselbe Einstellung, wenn diese Schritte als Teil von `translate-docs` (oder der Dokumentationsphase von `sync` – `sync` macht dieses Flag nicht verfügbar; es wird standardmäßig auf `json-array` gesetzt) ausgeführt werden.
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## Segment-Deduplizierung und Pfade in SQLite
-
-> **Hinweis:** Dieser Abschnitt behandelt interne Cache-Key-Details, die zur Fehlersuche bei `cleanup`-Verhalten oder benutzerdefinierten Tools nützlich sind. Die meisten Benutzer können diesen Abschnitt überspringen.
-
-- Segmentzeilen sind global nach `(source_hash, locale)` gekennzeichnet (Hash = normalisierter Inhalt). Identischer Text in zwei Dateien teilt sich eine Zeile; `translations.filepath` ist Metadaten (letzter Bearbeiter), kein zweiter Cache-Eintrag pro Datei.
-- `file_tracking.filepath` verwendet namensraumbezogene Schlüssel: `doc-block:{index}:{relPath}` pro `docs`-Block (`relPath` ist projektstammrelativer posix: gesammelte Markdown-Pfade; **JSON-Bezeichnungsdateien verwenden den cwd-relativen Pfad zur Quelldatei**, z. B. `docs-site/i18n/en/code.json`, sodass die Bereinigung die echte Datei auflösen kann), `json-block:{index}:{relPath}` für `json[]`-Quellen unter `translate-json` und `svg-files:{relPath}` für SVG-Dateien unter `translate-svg`.
-- `translations.filepath` speichert cwd-relativ posix-Pfade für Markdown-, JSON- und SVG-Segmente (SVG verwendet dieselbe Pfadstruktur wie andere Assets; das Präfix `svg-files:…` steht **nur** bei `file_tracking`).
-- Nach einem Durchlauf wird `last_hit_at` nur für Segmentzeilen gelöscht, die **im gleichen Übersetzungsbereich** liegen (unter Berücksichtigung von `--path` und aktivierten Typen) und nicht angesprochen wurden, sodass ein gefilterter oder nur-Dokumentations-Durchlauf keine nicht betroffenen Dateien als veraltet markiert.

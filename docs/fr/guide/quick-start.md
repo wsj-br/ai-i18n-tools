@@ -6,7 +6,7 @@ Le modèle `init` par défaut (`ui-markdown`) permet uniquement l'extraction et 
 <a id="runnable-examples"></a>
 ### Exemples exécutables
 
-Sept projets et fixtures exécutables se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/examples) (application console, Next.js + Docusaurus, site web Astro, documentation Astro Starlight, documentation VitePress, comparaison multi-fournisseurs, test de stress Markdown).
+Sept projets exécutables et fixtures se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/examples) (application console, Next.js + Docusaurus, site web Astro, documentation Astro Starlight, documentation VitePress, comparaison multi-fournisseurs, test de stress Markdown).
 
 **Exécuter un exemple de manière autonome** (sans cloner l'ensemble du monorepo) :
 

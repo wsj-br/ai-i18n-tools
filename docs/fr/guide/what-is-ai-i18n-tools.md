@@ -1,22 +1,46 @@
 <a id="what-is-ai-i18n-tools"></a>
 # Qu'est-ce que ai-i18n-tools?
 
-Le package `ai-i18n-tools` offre trois surfaces de traduction :
+ai-i18n-tools est un outil en ligne de commande et une boîte à outils qui vous aide à traduire votre application et votre documentation à l'aide de votre fournisseur LLM préféré. Vous contrôlez tout à partir d'un seul fichier de configuration, en choisissant les fonctionnalités de traduction à activer. Utilisez la commande « sync » pour exécuter les modes dont vous avez besoin en une seule fois.
 
-- **Chaînes d'interface utilisateur** : extraire les appels `t("…")` de toute source JS/TS, les traduire via le [fournisseur LLM](/guide/providers-and-models) actif et écrire des fichiers JSON plats par locale, prêts pour i18next.
-- **Documents** : traduire les **pages markdown, MDX et `.astro`** listées dans `docs[].contentPaths` via `translate-docs`, avec mise en cache intelligente. Le **JSON de catalogue Docusaurus** facultatif (`docs[].docusaurusCatalogDir`, depuis `docusaurus write-translations`) est traduit dans la même commande lorsque `features.translateDocs` est activé — il s'agit des éléments d'interface du site (barre de navigation, pied de page, chaînes de thème), et non du texte dans `docs/`. Les corps de page **VitePress** utilisent le même pipeline `docs[]` ; les étiquettes de navigation/barre latérale/pied de page utilisent JSON (`json[]` / `translate-json`) — voir [intégration VitePress](/guide/vitepress-integration).
-- **JSON** : traduire des bundles JSON imbriqués arbitraires (par exemple `src/i18n/en/translation.json`) via les clés de premier niveau `json[]`, `features.translateJson` et `translate-json` — pour les sites qui conservent le texte de l'interface utilisateur dans des fichiers JSON par locale au lieu de `t()` dans le code source.
-- **Interface utilisateur de l'outil (intégrée)** — l'aide de la CLI, les journaux et le tableau de bord de traduction sont disponibles en plusieurs langues ; ceci est distinct de la traduction des chaînes d'interface utilisateur ou des documents de **votre** application.
+<a id="translation-modes"></a>
+## Modes de traduction
 
-Les ressources **SVG** utilisent `features.translateSVG`, le bloc `svg` de niveau supérieur et `translate-svg` (voir [référence CLI](/reference/cli-commands)).
+- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` (et marqueurs similaires) du code source JS/TS et écrit des fichiers JSON plats par langue pour i18next ou une recherche statique. Commandes : `extract`, `translate-ui`. Guide : [Chaînes d'interface utilisateur](/guide/ui-strings/).
+- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths`. Fonctionne avec VitePress, Starlight, Docusaurus, Astro et d'autres sites de documentation statiques. Commande : `translate-docs`. Guide : [Documents](/guide/documents/).
+- **JSON** — Traduit les paquets de langues JSON imbriqués (libellés de thème, remplacements i18n, copie d'application non présente dans la source) définis dans `json[]` de niveau supérieur. Commande : `translate-json`. Guide : [JSON](/guide/json).
+- **SVG** — Traduit le texte visible à l'intérieur des illustrations SVG (`<text>`, `<title>`, `<desc>`) et écrit un fichier de sortie par langue. Séparé de la traduction de documents — `translate-docs` ne modifie pas les ressources SVG. Commande : `translate-svg`. Guide : [Traduction SVG](/guide/svg-translation/).
 
-**Lequel dois-je utiliser ?**
+Les quatre modes utilisent le [fournisseur LLM](/guide/providers-and-models) actif, partagent le même fichier de configuration et réutilisent un cache SQLite afin que les réexécutions n'envoient que le texte nouveau ou modifié au modèle.
 
-- Chaînes visibles par l'utilisateur dans le code source via `t()` → Chaînes d'interface utilisateur (`extract` / `translate-ui`).
-- Pages localisées, JSON de l'habillage Docusaurus ou markdown VitePress → Documents (`translate-docs`).
-- JSON de thème VitePress ou autres fichiers de locale imbriqués autonomes → JSON (`translate-json`).
+<a id="which-should-i-use"></a>
+## Lequel dois-je utiliser ?
 
-Tous trois utilisent le fournisseur LLM actif (voir [Fournisseurs et modèles](/guide/providers-and-models)) et partagent un seul fichier de configuration.
+| Votre contenu | Mode | Commande |
+| --- | --- | --- |
+| Le code source utilise les marqueurs `t()` ou HTML `data-i18n` | Chaînes d'interface utilisateur | `extract` / `translate-ui` |
+| Pages localisées ou sites de documentation | Documents | `translate-docs` |
+| Fichiers de langue JSON imbriqués autonomes | JSON | `translate-json` |
+| Diagrammes ou illustrations avec des étiquettes en SVG | SVG | `translate-svg` |
+
+De nombreux projets combinent les modes — par exemple, les chaînes d'interface utilisateur et les documents pour un site VitePress, ou les documents et le SVG pour des guides illustrés. Consultez [Démarrage rapide](/guide/quick-start) pour les modèles de squelette et [Configuration](/reference/configuration) pour le schéma de configuration complet.
+
+<a id="examples"></a>
+## Exemples
+
+Le dépôt contient des exemples de projets exécutables sous `examples/` — chacun avec sa propre configuration, ses sorties de langue validées et son fichier README. Vous pouvez explorer les fichiers traduits sans clé API ; la réexécution de la traduction nécessite une clé de fournisseur (voir [Fournisseurs et modèles](/guide/providers-and-models)).
+
+| Exemple | Ce qu'il montre |
+| --- | --- |
+| [console-app](/examples#console-app) | Plus petite application de bout en bout : chaînes d'interface utilisateur `t()` et traduction du README |
+| [nextjs-app](/examples#nextjs-app) | Interface utilisateur Next.js, pluriels, SVG, site de documentation Docusaurus, tableau de bord |
+| [astro-website](/examples#astro-website) | Site marketing Astro : traduction HTML pleine page et chaînes `t()` |
+| [astro-docs](/examples#astro-docs) | Site de documentation Astro Starlight |
+| [vitepress-docs](/examples#vitepress-docs) | Documentation VitePress et JSON de thème |
+| [multi-provider](/examples#multi-provider) | Comparer les fournisseurs LLM sur le même document |
+| [test-markdown](/examples#test-markdown) | Tests de stress du pipeline Markdown (CJK, Devanagari, cas limites) |
+
+Voir [Exemples](/examples) pour les commandes de copie `npx degit` et un guide de choix.
 
 <a id="next-steps"></a>
 ## Prochaines étapes

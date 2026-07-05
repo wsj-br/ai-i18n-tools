@@ -46,11 +46,13 @@ La interfaz de usuario del panel de control utiliza la misma resolución de conf
 | Cadena o plural de la interfaz de usuario | `sync` o `translate-ui` simple | `--force` (sobrescribe `user-edited` filas) |
 | Fila del glosario | siguiente `translate-ui` o `proofread-ui` | — |
 
-Las ediciones manuales se etiquetan con el modelo `user-edited` en la caché o `strings.json`. La retraducción de texto de origen sin cambios omite esas filas a menos que use `--force`.
+**Documentación (caché de SQLite)** — Las ediciones manuales se etiquetan con el modelo `user-edited` en la caché. Volver a ejecutar `translate-docs` o `sync` en una fuente sin cambios reutiliza la traducción en caché (sin llamada a LLM). Ejecute `sync --force-update` o `translate-docs --force-update` para actualizar el markdown en disco desde la caché. Use `--force` solo si desea omitir la caché y volver a traducir desde el LLM (sobrescribiendo las correcciones manuales).
+
+**Cadenas de interfaz de usuario (`strings.json`)** — Las ediciones manuales se etiquetan con `user-edited` en `models[locale]`. Volver a ejecutar `translate-ui` o `sync` omite las entradas que ya tienen una traducción. Use `--force` en los comandos de la interfaz de usuario para volver a traducir y sobrescribir las correcciones manuales.
 
 <a id="tips"></a>
 ## Consejos
 
-- Los **botones de enlace de registro** (🔗 en las filas de la tabla) imprimen sugerencias de archivo:línea en la **terminal** donde se ejecuta `ai-i18n-tools dashboard`, lo que es útil para saltar del navegador a su editor.
-- **Cerrar** (parte superior derecha de la barra de pestañas) apaga el servidor del panel de control de forma segura.
-- Si el servidor se detiene mientras la pestaña del navegador aún está abierta, aparece una superposición; reinicie `ai-i18n-tools dashboard` para volver a conectarse.
+- Los **botones de enlace de registro** (🔗 en las filas de la tabla) imprimen sugerencias de archivo:línea en la **terminal** donde se ejecuta `ai-i18n-tools dashboard`, lo que es útil para saltar del navegador a su editor. Si está utilizando un IDE derivado de VS Code (como Cursor, Antigravity, ...), puede hacer clic con `CTRL` en el enlace archivo:línea en la ventana de la Terminal para abrir el archivo en la línea indicada.
+- **Cerrar** (parte superior derecha de la barra de pestañas) cierra el servidor del panel de control de forma segura.
+- Si el servidor se detiene mientras la pestaña del navegador aún está abierta, aparece una superposición. Reinicie `ai-i18n-tools dashboard` para volver a conectar, o cierre la ventana si ha terminado con el panel de control.

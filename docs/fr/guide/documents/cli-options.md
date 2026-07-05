@@ -40,13 +40,3 @@ Vous ne pouvez pas combiner `--force` avec `--force-update` (ils sont mutuelleme
 | `json-object`          | Un objet JSON `{"0":"…","1":"…",…}` indexé par l'index du segment.            | Un objet JSON avec les **mêmes clés** et des valeurs traduites. |
 
 L'en-tête d'exécution affiche également `Batch prompt format: …` afin que vous puissiez confirmer le mode actif. Les fichiers d'étiquettes JSON (`docusaurusCatalogDir`) et les lots de fichiers SVG utilisent le même paramètre lorsque ces étapes sont exécutées dans le cadre de `translate-docs` (ou de la phase de documentation de `sync` — `sync` n'expose pas ce drapeau ; il est par défaut à `json-array`).
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## Déduplication de segments et chemins dans SQLite
-
-> **Remarque :** Cette section décrit les détails internes des clés de cache, utiles pour le débogage du comportement de `cleanup` ou pour des outils personnalisés. La plupart des utilisateurs peuvent l'ignorer.
-
-- Les lignes de segment sont indexées globalement par `(source_hash, locale)` (hachage = contenu normalisé). Un texte identique dans deux fichiers partage une seule ligne ; `translations.filepath` est des métadonnées (dernier rédacteur), pas une entrée de cache supplémentaire par fichier.
-- `file_tracking.filepath` utilise des clés avec espace de noms : `doc-block:{index}:{relPath}` par bloc `docs` (`relPath` est un chemin posix relatif à la racine du projet : chemins markdown tels que collectés ; **les fichiers JSON d'étiquettes utilisent le chemin relatif au répertoire courant (cwd) du fichier source**, par exemple `docs-site/i18n/en/code.json`, afin que le nettoyage puisse résoudre le fichier réel), `json-block:{index}:{relPath}` pour les sources `json[]` sous `translate-json`, et `svg-files:{relPath}` pour les fichiers SVG sous `translate-svg`.
-- `translations.filepath` stocke les chemins posix relatifs au répertoire courant (cwd) pour les segments markdown, JSON et SVG (les SVG utilisent la même forme de chemin que les autres ressources ; le préfixe `svg-files:…` est **uniquement** sur `file_tracking`).
-- Après une exécution, `last_hit_at` est effacé uniquement pour les lignes de segment **dans la même portée de traduction** (en respectant `--path` et les types activés) qui n'ont pas été atteintes, ainsi une exécution filtrée ou limitée aux docs n'indique pas comme obsolètes les fichiers non concernés.

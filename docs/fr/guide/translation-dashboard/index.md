@@ -46,11 +46,13 @@ L'interface utilisateur du tableau de bord utilise la même résolution de param
 | Chaîne ou pluriel d'interface utilisateur | `sync` ou `translate-ui` simple | `--force` (écrase les lignes `user-edited`) |
 | Ligne du glossaire | prochain `translate-ui` ou `proofread-ui` | — |
 
-Les modifications manuelles sont étiquetées avec le modèle `user-edited` dans le cache ou `strings.json`. La retraduction du texte source inchangé ignore ces lignes, sauf si vous utilisez `--force`.
+**Documentation (cache SQLite)** — Les modifications manuelles sont étiquetées avec le modèle `user-edited` dans le cache. Réexécuter `translate-docs` ou `sync` sur une source inchangée réutilise la traduction mise en cache (pas d'appel LLM). Exécutez `sync --force-update` ou `translate-docs --force-update` pour actualiser le markdown sur disque à partir du cache. Utilisez `--force` uniquement si vous souhaitez contourner le cache et retraduire à partir du LLM (écrasant les corrections manuelles).
+
+**Chaînes d'interface utilisateur (`strings.json`)** — Les modifications manuelles sont étiquetées avec `user-edited` dans `models[locale]`. Réexécuter `translate-ui` ou `sync` ignore les entrées qui ont déjà une traduction. Utilisez `--force` sur les commandes d'interface utilisateur pour retraduire et écraser les corrections manuelles.
 
 <a id="tips"></a>
 ## Conseils
 
-- **Boutons de lien de journal** (🔗 dans les lignes de tableau) affichent des indications fichier:ligne dans le **terminal** où `ai-i18n-tools dashboard` est en cours d'exécution — utile pour passer du navigateur à votre éditeur.
-- **Fermer** (en haut à droite de la barre d'onglets) arrête le serveur du tableau de bord en douceur.
-- Si le serveur s'arrête alors que l'onglet du navigateur est toujours ouvert, une superposition apparaît ; redémarrez `ai-i18n-tools dashboard` pour vous reconnecter.
+- Les **boutons de lien de journal** (🔗 dans les lignes de tableau) affichent des indications fichier:ligne dans le **terminal** où `ai-i18n-tools dashboard` est en cours d'exécution — utile pour passer du navigateur à votre éditeur. Si vous utilisez un IDE dérivé de VS Code (comme Cursor, Antigravity, ...), vous pouvez cliquer sur le lien fichier:ligne dans la fenêtre du Terminal avec `CTRL` pour ouvrir le fichier à la ligne indiquée.
+- Le bouton **Fermer** (en haut à droite de la barre d'onglets) arrête le serveur du tableau de bord de manière élégante.
+- Si le serveur s'arrête alors que l'onglet du navigateur est toujours ouvert, une superposition apparaît. Redémarrez `ai-i18n-tools dashboard` pour vous reconnecter, ou fermez la fenêtre si vous avez terminé avec le tableau de bord.

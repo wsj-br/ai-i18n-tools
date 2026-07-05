@@ -23,9 +23,10 @@ Arbitrary nested UI JSON bundles (Docusaurus catalogs nahi) [JSON](/guide/json) 
 | Docusaurus site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Step 1](#step-1-initialise-for-documentation) |
 | VitePress site | `init -t ui-vitepress` + `json[]` theme ke liye — [VitePress integration](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Step 1](#step-1-initialise-for-documentation) |
-| Kewal flat README | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
+| Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
 | Jahan anuvadit files aati hain | [Output layouts](/guide/documents/output-layouts) |
 | Cross-page `#anchor` links | [Anchor links](/guide/documents/anchor-links) |
+| Link aur asset URL rewriting (`regexAdjustments`) | [Link rewriting](/guide/documents/link-rewriting) |
 | Docs mein screenshots | [Images & Screenshots](/guide/images-and-screenshots/) |
 | `translate-docs` flags aur cache | [CLI options](/guide/documents/cli-options) |
 

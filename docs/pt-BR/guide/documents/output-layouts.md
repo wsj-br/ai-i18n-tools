@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 Para links âncora entre páginas em layout plano, consulte [Links âncora](/guide/documents/anchor-links).
 
+Para reescrita de URL de link e ativo além das correções de link relativo integradas, consulte [Reescrita de link](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
+
 Para capturas de tela e ativos rasterizados em páginas traduzidas, consulte [Imagens e Capturas de Tela](/guide/images-and-screenshots/).
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

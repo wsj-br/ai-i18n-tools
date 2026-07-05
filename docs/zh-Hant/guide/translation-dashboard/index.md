@@ -46,11 +46,13 @@ ai-i18n-tools dashboard
 | UI 字串或複數 | 純 `sync` 或 `translate-ui` | `--force` (覆寫 `user-edited` 列) |
 | 詞彙表列 | 下一個 `translate-ui` 或 `proofread-ui` | — |
 
-手動編輯在快取或 `strings.json` 中以模型 `user-edited` 標記。重新翻譯未變更的來源文字會跳過這些列，除非您使用 `--force`。
+**文件 (SQLite 快取)** — 手動編輯在快取中會標記為模型 `user-edited`。在未變更的來源上重新執行 `translate-docs` 或 `sync` 會重複使用快取的翻譯 (無 LLM 呼叫)。執行 `sync --force-update` 或 `translate-docs --force-update` 以從快取重新整理磁碟上的 Markdown。僅當您想繞過快取並從 LLM 重新翻譯 (覆寫手動修正) 時，才使用 `--force`。
+
+**UI 字串 (`strings.json`)** — 手動編輯在 `models[locale]` 中會標記為 `user-edited`。重新執行 `translate-ui` 或 `sync` 會跳過已翻譯的條目。在 UI 命令上使用 `--force` 以重新翻譯並覆寫手動修正。
 
 <a id="tips"></a>
 ## 提示
 
-- **日誌連結按鈕**（表格列中的 🔗）會將檔案：行提示列印到執行 `ai-i18n-tools dashboard` 的**終端機** — 這對於從瀏覽器跳轉到編輯器很有用。
-- **關閉**（分頁列的右上角）會正常關閉儀表板伺服器。
-- 如果伺服器在瀏覽器分頁仍開啟時停止，會出現一個疊加層；重新啟動 `ai-i18n-tools dashboard` 以重新連線。
+- **日誌連結按鈕** (表格列中的 🔗) 會將檔案:行提示列印到執行 `ai-i18n-tools dashboard` 的**終端機** — 這對於從瀏覽器跳轉到編輯器非常有用。如果您使用 VS Code 衍生 IDE (例如 Cursor、Antigravity 等)，您可以 `CTRL`-點擊終端機視窗中的檔案:行連結，以在指定行開啟檔案。
+- **關閉** (分頁列的右上角) 會正常關閉儀表板伺服器。
+- 如果伺服器在瀏覽器分頁仍開啟時停止，則會出現一個疊加層。重新啟動 `ai-i18n-tools dashboard` 以重新連線，或者如果您已完成儀表板操作，請關閉視窗。

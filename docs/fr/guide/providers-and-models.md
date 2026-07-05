@@ -99,7 +99,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Chaque bloc de fournisseur peut définir ses propres `translationModels`, `maxTokens`, `temperature` et `requestTimeoutMs`. Un bloc `openrouter` de niveau supérieur hérité est toujours accepté et migré automatiquement vers `providers.openrouter` lors du chargement.
 
-Exemple exécutable avec quatre fournisseurs sur le même document : [`examples/multi-provider`](/examples#multi-provider).
+Exemple exécutable avec quatre fournisseurs sur le même document : [`examples/multi-provider`](/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Références supplémentaires

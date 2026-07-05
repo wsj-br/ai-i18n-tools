@@ -10,8 +10,6 @@ description: LLM を使用して JavaScript/TypeScript アプリケーション�
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-<small id="lang-list">[English (UK)](/) · [Deutsch](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) · [Español](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.es.md) · [Français](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.fr.md) · [Hindi (Roman)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.hi-Latn.md) · [日本語](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ja.md) · [한국어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ko.md) · [Português (Brasil)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.pt-BR.md) · [简体中文](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hans.md) · [繁體中文](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hant.md)</small>
-
 **お好みの AI モデルを使用してアプリとドキュメントを翻訳: ロックインも書き換えも不要です。**
 
 `ai-i18n-tools`は、大規模言語モデルを使用して、JavaScript/TypeScriptアプリケーションとドキュメントサイト（Docusaurus、Astro、Starlight、VitePress、プレーンなMarkdown/MDXを含む）を国際化するためのCLIおよびツールキットです。

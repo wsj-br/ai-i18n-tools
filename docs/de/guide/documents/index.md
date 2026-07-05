@@ -23,9 +23,10 @@ Beliebig verschachtelte UI-JSON-Bundles (keine Docusaurus-Kataloge) gehören in 
 | Docusaurus-Site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` – [Schritt 1](#step-1-initialise-for-documentation) |
 | VitePress-Site | `init -t ui-vitepress` + `json[]` für das Theme – [VitePress-Integration](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` – [Schritt 1](#step-1-initialise-for-documentation) |
-| Nur flache README | `docsOutput.style = "flat"` – [Ausgabe-Layouts](/guide/documents/output-layouts), optionaler [Sprachumschalter](/guide/documents/language-switcher) |
+| Flat-Dokumente (README, Changelogs usw.) | `docsOutput.style = "flat"` – [Ausgabelayouts](/guide/documents/output-layouts), optionaler [Sprachumschalter](/guide/documents/language-switcher) |
 | Wo übersetzte Dateien landen | [Ausgabe-Layouts](/guide/documents/output-layouts) |
 | Seitenübergreifende `#anchor`-Links | [Anker-Links](/guide/documents/anchor-links) |
+| Umschreiben von Link- und Asset-URLs (`regexAdjustments`) | [Link-Umschreibung](/guide/documents/link-rewriting) |
 | Screenshots in Docs | [Bilder & Screenshots](/guide/images-and-screenshots/) |
 | `translate-docs`-Flags und Cache | [CLI-Optionen](/guide/documents/cli-options) |
 

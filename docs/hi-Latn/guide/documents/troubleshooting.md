@@ -19,3 +19,14 @@ Aam kaaran:
 3. `translate-docs` (ya `sync --force-update`) ko phir se chalayein taaki har locale copy mein updated anchor lines shamil hon.
 
 Parivartanon ka purvavalokan karne ke liye pahle `--dry-run` ko `write-heading-ids` par upyog karein. Poore pattern ke liye [Anchor links](/guide/documents/anchor-links) dekhein.
+
+<a id="image-or-asset-links-404-in-translated-docs"></a>
+## Anuvaadit docs mein image ya asset links 404
+
+Ek markdown link ya `![alt](url)` English mein kaam karta hai lekin anuvaadit copies mein 404 return karta hai — aksar isliye kyuki URL abhi bhi source-locale folder ya English-only static path par point karta hai.
+
+**Theek karein**
+
+1. Pustak karein ki aapka asset layout aapke `docsOutput.style` (flat vs doc-system) se mel khata hai. [Link rewriting](/guide/documents/link-rewriting) aur [Images & Screenshots](/guide/images-and-screenshots/) dekhein.
+2. Locale segments ko swap karne ya absolute `/img/…` paths ko bridge karne ke liye `docsOutput.postProcessing.regexAdjustments` jodein ya adjust karein. Flat layout ke liye, yaad rakhein ki flat link rewriter `regexAdjustments` se **pehle** chalta hai — pehle se prefixed URL ke khilaaf patterns ka milaan karein.
+3. Sunishchit karein ki locale-specific asset files un paths par maujood hain jinhe rewritten markdown references karta hai (`translate-docs` URLs ko rewrite karta hai lekin raster files ko copy nahi karta).

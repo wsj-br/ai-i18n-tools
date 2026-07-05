@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 Para enlaces de anclaje entre páginas en un diseño plano, consulte [Enlaces de anclaje](/guide/documents/anchor-links).
 
+Para la reescritura de URL de enlaces y activos más allá de las correcciones de enlaces relativos integradas, consulta [Reescritura de enlaces](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
+
 Para capturas de pantalla y recursos ráster en páginas traducidas, consulte [Imágenes y capturas de pantalla](/guide/images-and-screenshots/).
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

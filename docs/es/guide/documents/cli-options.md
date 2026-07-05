@@ -40,13 +40,3 @@ No puedes combinar `--force` con `--force-update` (son mutuamente excluyentes).
 | `json-object`          | Un objeto JSON `{"0":"…","1":"…",…}` con clave por índice de segmento.            | Un objeto JSON con las **mismas claves** y valores traducidos. |
 
 El encabezado de ejecución también imprime `Batch prompt format: …` para que pueda confirmar el modo activo. Los archivos de etiquetas JSON (`docusaurusCatalogDir`) y los lotes de archivos SVG usan la misma configuración cuando esos pasos se ejecutan como parte de `translate-docs` (o la fase de documentos de `sync` — `sync` no expone este indicador; su valor predeterminado es `json-array`).
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## Deduplicación de segmentos y rutas en SQLite
-
-> **Nota:** Esta sección cubre detalles internos de claves de caché útiles para depurar el comportamiento de `cleanup` o herramientas personalizadas. La mayoría de los usuarios pueden omitirla.
-
-- Las filas de segmentos se indexan globalmente por `(source_hash, locale)` (hash = contenido normalizado). Texto idéntico en dos archivos comparte una sola fila; `translations.filepath` es metadato (último escritor), no una entrada de caché adicional por archivo.
-- `file_tracking.filepath` utiliza claves con espacio de nombres: `doc-block:{index}:{relPath}` por bloque `docs` (`relPath` es una ruta posix relativa a la raíz del proyecto: rutas markdown tal como se recopilan; **los archivos JSON de etiquetas usan la ruta relativa al directorio de trabajo actual (cwd) del archivo fuente**, por ejemplo `docs-site/i18n/en/code.json`, para que la limpieza pueda resolver el archivo real), `json-block:{index}:{relPath}` para fuentes `json[]` bajo `translate-json`, y `svg-files:{relPath}` para archivos SVG bajo `translate-svg`.
-- `translations.filepath` almacena rutas posix relativas al cwd para segmentos markdown, JSON y SVG (SVG usa la misma forma de ruta que otros recursos; el prefijo `svg-files:…` está **solo** en `file_tracking`).
-- Tras una ejecución, `last_hit_at` se borra únicamente para las filas de segmentos **en el mismo ámbito de traducción** (respetando `--path` y los tipos habilitados) que no se alcanzaron, por lo que una ejecución filtrada o solo de documentación no marca como obsoletos archivos no relacionados.

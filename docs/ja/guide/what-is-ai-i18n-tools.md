@@ -1,22 +1,46 @@
 <a id="what-is-ai-i18n-tools"></a>
 # ai-i18n-tools とは
 
-`ai-i18n-tools` パッケージは、3 つの翻訳機能を提供します。
+ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリとドキュメントを翻訳するのに役立つコマンドラインツールキットです。単一の設定ファイルからすべてを制御し、有効にする翻訳機能を選択できます。「sync」コマンドを使用して、必要なモードを一度に実行できます。
 
-- **UI文字列**: JS/TSソースから`t("…")`呼び出しを抽出し、アクティブな[LLMプロバイダー](/guide/providers-and-models)を介して翻訳し、i18nextに対応したロケールごとのフラットなJSONファイルを書き出します。
-- **ドキュメント**: `docs[].contentPaths`にリストされている**Markdown、MDX、および`.astro`ページ**を`translate-docs`を介してスマートキャッシュで翻訳します。オプションの**DocusaurusカタログJSON** (`docs[].docusaurusCatalogDir`、`docusaurus write-translations`から) は、`features.translateDocs`が有効な場合、同じコマンドで翻訳されます。これはサイトのクローム (ナビゲーションバー、フッター、テーマ文字列) であり、`docs/`の散文ではありません。**VitePress**のページ本文は同じ`docs[]`パイプラインを使用します。ナビゲーション/サイドバー/フッターのラベルはJSON (`json[]` / `translate-json`) を使用します。詳細については、[VitePress統合](/guide/vitepress-integration)を参照してください。
-- **JSON**: ソースの`t()`ではなく、ロケールごとのJSONファイルにUIコピーを保持するサイト向けに、トップレベルの`json[]`、`features.translateJson`、および`translate-json`を介して任意のネストされたJSONバンドル (例: `src/i18n/en/translation.json`) を翻訳します。
-- **ツールUI (組み込み)** — CLIヘルプ、ログ、および翻訳ダッシュボードは複数の言語で提供されます。これは、**ご自身の**アプリのUI文字列やドキュメントの翻訳とは別です。
+<a id="translation-modes"></a>
+## 翻訳モード
 
-**SVG** アセットは、`features.translateSVG`、トップレベルの `svg` ブロック、および `translate-svg` を使用します ([CLI リファレンス](/reference/cli-commands) を参照)。
+- **UI 文字列** — JS/TS ソースから `t("…")` 呼び出し (および類似のマーカー) を抽出し、i18next または静的ルックアップ用のフラットなロケールごとの JSON ファイルを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [UI 文字列](/guide/ui-strings/)。
+- **ドキュメント** — `docs[].contentPaths` にリストされている Markdown、MDX、および `.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Astro、およびその他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/guide/documents/)。
+- **JSON** — 最上位の `json[]` で定義されているネストされた JSON ロケールバンドル (テーマラベル、i18n オーバーライド、ソースにないアプリのコピー) を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/guide/json)。
+- **SVG** — SVG イラスト内の表示テキスト (`<text>`、`<title>`、`<desc>`) を翻訳し、ロケールごとに 1 つの出力ファイルを書き込みます。ドキュメント翻訳とは別です — `translate-docs` は SVG アセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG 翻訳](/guide/svg-translation/)。
 
-**どれを使用すべきですか？**
+これら 4 つのモードはすべて、アクティブな [LLM プロバイダー](/guide/providers-and-models) を使用し、同じ設定ファイルを共有し、SQLite キャッシュを再利用するため、再実行では新しいテキストまたは変更されたテキストのみがモデルに送信されます。
 
-- `t()` 経由でソース内のユーザー向け文字列 → UI 文字列 (`extract` / `translate-ui`)。
-- ローカライズされたページ、Docusaurus シェル JSON、または VitePress Markdown → ドキュメント (`translate-docs`)。
-- VitePress テーマ JSON またはその他のスタンドアロンのネストされたロケールファイル → JSON (`translate-json`)。
+<a id="which-should-i-use"></a>
+## どれを使用すべきですか？
 
-これら3つはすべてアクティブなLLMプロバイダー ([プロバイダーとモデル](/guide/providers-and-models)を参照) を使用し、単一の設定ファイルを共有します。
+| コンテンツ | モード | コマンド |
+| --- | --- | --- |
+| ソースコードが `t()` または HTML `data-i18n` マーカーを使用している場合 | UI 文字列 | `extract` / `translate-ui` |
+| ローカライズされたページまたはドキュメントサイト | ドキュメント | `translate-docs` |
+| スタンドアロンのネストされた JSON ロケールファイル | JSON | `translate-json` |
+| SVG にラベルが付いた図またはイラスト | SVG | `translate-svg` |
+
+多くのプロジェクトでは、複数のモードを組み合わせて使用します。たとえば、VitePress サイトの場合は UI 文字列とドキュメント、図解付きガイドの場合はドキュメントと SVG などです。[クイックスタート](/guide/quick-start) でスキャフォールドテンプレートを、[設定](/reference/configuration) で完全な設定スキーマを参照してください。
+
+<a id="examples"></a>
+## 例
+
+リポジトリには、`examples/` の下に実行可能なサンプルプロジェクトが同梱されています。それぞれに独自の設定、コミットされたロケール出力、および README が含まれています。API キーなしで翻訳されたファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です ([プロバイダーとモデル](/guide/providers-and-models) を参照)。
+
+| 例 | 内容 |
+| --- | --- |
+| [console-app](/examples#console-app) | 最小のエンドツーエンドアプリ: `t()` UI 文字列と README 翻訳 |
+| [nextjs-app](/examples#nextjs-app) | Next.js UI、複数形、SVG、Docusaurus ドキュメントサイト、ダッシュボード |
+| [astro-website](/examples#astro-website) | Astro マーケティングサイト: 全ページ HTML 翻訳と `t()` 文字列 |
+| [astro-docs](/examples#astro-docs) | Astro Starlight ドキュメントサイト |
+| [vitepress-docs](/examples#vitepress-docs) | VitePress ドキュメントとテーマ JSON |
+| [multi-provider](/examples#multi-provider) | 同じドキュメントで LLM プロバイダーを比較 |
+| [test-markdown](/examples#test-markdown) | Markdown パイプラインのストレステスト (CJK、デーヴァナーガリー、エッジケース) |
+
+[例](/examples) で `npx degit` コピーコマンドと選択ガイドを参照してください。
 
 <a id="next-steps"></a>
 ## 次のステップ

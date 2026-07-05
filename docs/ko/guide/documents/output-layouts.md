@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 플랫 레이아웃의 페이지 간 앵커 링크에 대한 자세한 내용은 [앵커 링크](/guide/documents/anchor-links)를 참조하세요.
 
+내장된 상대 링크 수정 외에 링크 및 애셋 URL 재작성에 대한 자세한 내용은 [링크 재작성](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`)을 참조하세요.
+
 번역된 페이지의 스크린샷 및 래스터 자산에 대한 자세한 내용은 [이미지 및 스크린샷](/guide/images-and-screenshots/)을 참조하세요.
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

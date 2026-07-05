@@ -1,21 +1,21 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # Der Flat-Link-Rewriter und der zweistufige Workflow
 
-Für `docsOutput.style = "flat"` (und sofern nicht `rewriteRelativeLinks: false` oder ein benutzerdefiniertes `pathTemplate` festgelegt ist) wird ein integrierter Umschreiber vor `postProcessing` ausgeführt. Dieser verarbeitet Querverweise zwischen Dokumenten (durch Hinzufügen von Gebietsschemakürzeln) und fügt einen Tiefenpräfix zu URLs von Nicht-Markdown-Ressourcen hinzu.
+Für `docsOutput.style = "flat"` (und sofern nicht `rewriteRelativeLinks: false` oder ein benutzerdefinierter `pathTemplate` festgelegt ist) wird ein integrierter Rewriter vor `postProcessing` ausgeführt. Er verarbeitet Cross-Doc-Links (fügt Gebietsschema-Suffixe hinzu) und stellt Nicht-Markdown-Asset-URLs ein Tiefenpräfix voran. Gebietsschema-spezifische Asset-Pfade (Screenshots, `/img/…`-Brücken) werden dann von `docsOutput.postProcessing.regexAdjustments` umgeschrieben.
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Zweistufiger Ablauf bei `docsOutput.style = "flat"`
 
 ```
-source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
+source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
 ```
 
 Beispiel mit `outputDir: "translated-docs/"` und Quelldatei `README.md` im Stammverzeichnis des Repos:
 
-1. Flacher Link-Rewriter: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (ein `../` für `translated-docs/`)
-2. `postProcessing`-Regex `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
+1. Flat-Link-Rewriter: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (ein `../` für `translated-docs/`)
+2. `regexAdjustments`-Regel `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-Bei `docsOutput.style = "doc-system"` (einschließlich `"docusaurus"`, `"astro-starlight"` und `"nested"`) wird der flache Link-Umschreiber nicht ausgeführt. `postProcessing` erhält die ursprüngliche URL aus dem übersetzten Markdown (typischerweise ein absoluter Pfad wie `/img/screenshots/en-GB/foo.png`).
+Für `docsOutput.style = "doc-system"` (einschließlich `"docusaurus"`, `"astro-starlight"` und `"nested"`) wird der Flat-Link-Rewriter nicht ausgeführt. `regexAdjustments` sieht die ursprüngliche URL aus dem übersetzten Markdown (typischerweise ein absoluter Pfad wie `/img/screenshots/en-GB/foo.png`).
 
 <a id="vitepress-link-normalizer"></a>
 ### VitePress-Link-Normalisierer (`style: "vitepress"`)
@@ -23,7 +23,7 @@ Bei `docsOutput.style = "doc-system"` (einschließlich `"docusaurus"`, `"astro-s
 Wenn `docsOutput.rewriteVitepressLinks` auf `true` gesetzt ist (Standard, wenn `style` auf `"vitepress"` gesetzt ist), wird ein separater Normalisierer nach der Segmentwiederherstellung ausgeführt (anstelle des Flat Rewriters). Er zielt auf VitePress / Doc-System-Sites ab, bei denen Englisch im Inhaltsstamm und Lokalisierungen in gleichrangigen Ordnern (`docs/de/guide/…`) liegen.
 
 ```
-source href  →  [VitePress link normalizer]  →  [postProcessing]  →  output href
+source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
 ```
 
 Typische Rewrites:
@@ -36,7 +36,7 @@ Typische Rewrites:
 
 Für Projekte, die `README.md` → `docs/index.md` synchronisieren, verwenden Sie vollständige GitHub-URLs in `README.md` für `LICENSE`, `examples/` und andere Dateien außerhalb des VitePress-Baums. Siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/vitepress-integration#readme-as-homepage).
 
-Der flache Rewriter und der VitePress-Normalisierer schließen sich pro `docs[]`-Block gegenseitig aus – nur einer wird vor `postProcessing` ausgeführt. Siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
+Der Flat-Rewriter und der VitePress-Normalisierer schließen sich pro `docs[]`-Block gegenseitig aus – nur einer wird vor `regexAdjustments` ausgeführt. Siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Tiefenpräfix pro Datei mit `flatPreserveRelativeDir`
@@ -45,7 +45,7 @@ Der Tiefenpräfix wird pro Ausgabedatei berechnet – nicht global für den gesa
 
 Das bedeutet, dass mit `flatPreserveRelativeDir: true` Quelldateien in Unterverzeichnissen automatisch das richtige Präfix erhalten. Zum Beispiel wird `docs/guide/quick-start.md` in `translated-docs/docs/guide/quick-start.<locale>.md` ausgegeben. Das Präfix pro Datei ist `../../docs/`, sodass ein Asset `translation-dashboard.png` (ein Geschwister des Quellbaums) zu `../../docs/translation-dashboard.png` wird – was von `translated-docs/docs/guide/` zurück zu `docs/translation-dashboard.png` korrekt aufgelöst wird.
 
-Für relative Pfade zu Ressourcen neben Quelldateien ist keine `postProcessing`-Regex-Korrektur erforderlich.
+Für Assets mit relativem Pfad neben Quelldateien ist keine `regexAdjustments`-Korrektur erforderlich.
 
 <a id="rewriterelativelinks-and-linkrewritedocsroot"></a>
 ### `rewriteRelativeLinks` und `linkRewriteDocsRoot`
@@ -56,6 +56,36 @@ Für relative Pfade zu Ressourcen neben Quelldateien ist keine `postProcessing`-
 | `docsOutput.linkRewriteDocsRoot`     | Stammverzeichnis, relativ zu dem `depthPrefix` berechnet wird (Standard: `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Beeinflusst die Struktur des Ausgabepfads, die der Umschreiber bei der Berechnung der Zielwege für bekannte übersetzte Dateien verwendet       |
 
+<a id="postprocessing-regexadjustments"></a>
+### `docsOutput.postProcessing.regexAdjustments`
+
+Konfigurieren Sie geordnete `{ "description"?, "search", "replace" }`-Regeln unter `docs[].docsOutput.postProcessing`, um Bild-, Screenshot- und andere Asset-URLs umzuschreiben, die von integrierten Rewritern nicht verarbeitet werden – typischerweise das Austauschen eines Gebietsschema-Ordnersegments (`screenshots/en-GB/` → `screenshots/de/`) oder das Überbrücken absoluter statischer Pfade (`/img/…` → `../assets/…`).
+
+Regeln werden auf den übersetzten Markdown-**Body** angewendet, nachdem die Segmentwiederherstellung und die integrierte Link-Umschreibung (flat oder VitePress) erfolgt sind und bevor `addFrontmatter` ausgeführt wird. Beim Flat-Layout schreiben Sie `search`-Muster gegen URLs **nachdem** das Tiefenpräfix angewendet wurde – passen Sie das Gebietsschema-Segment innerhalb des Pfads an, nicht das führende `../`.
+
+**Screenshot-Ordner pro Gebietsschema (Flat-Layout):**
+
+```json
+"docsOutput": {
+  "style": "flat",
+  "postProcessing": {
+    "regexAdjustments": [
+      {
+        "description": "Per-locale screenshot folders",
+        "search": "images/screenshots/[^/]+/",
+        "replace": "images/screenshots/${translatedLocale}/"
+      }
+    ]
+  }
+}
+```
+
+Verwenden Sie `[^/]+` anstelle der Festcodierung Ihres Quellgebietsschemas (`en-GB`), damit die Regel eine `sourceLocale`-Änderung übersteht. Der häufigste Platzhalter ist `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` und Pfadvariablen sind ebenfalls verfügbar – siehe [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting#replace-placeholders).
+
+Layout-spezifische Beispiele (flat, Doc-System, Docusaurus, Starlight): [Pro-Gebietsschema-Ordner](/guide/images-and-screenshots/per-locale-folder). Allgemeine seitenübergreifende Linkregeln: [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting). Feldreferenz: [Konfiguration – `docs`](/reference/configuration#docs).
+
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
+
+Siehe [Häufige Fehler und Fehlerbehebung](/guide/images-and-screenshots/troubleshooting) für festcodierte Gebietsschema-Regexes, fehlende Screenshot-Verzeichnisse und Docusaurus `/img/`-Bridging.

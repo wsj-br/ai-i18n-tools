@@ -23,9 +23,10 @@
 | Docusaurus 站点 | `init -t ui-docusaurus`，`docsOutput.style = "docusaurus"` — [步骤 1](#step-1-initialise-for-documentation) |
 | VitePress 站点 | `init -t ui-vitepress` + `json[]` 用于主题 — [VitePress 集成](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [步骤 1](#step-1-initialise-for-documentation) |
-| 仅平面 README | `docsOutput.style = "flat"` — [输出布局](/guide/documents/output-layouts)，可选[语言切换器](/guide/documents/language-switcher) |
+| 平面文档（README、更新日志等） | `docsOutput.style = "flat"` — [输出布局](/guide/documents/output-layouts)，可选的[语言切换器](/guide/documents/language-switcher) |
 | 翻译文件存放位置 | [输出布局](/guide/documents/output-layouts) |
 | 跨页面 `#anchor` 链接 | [锚点链接](/guide/documents/anchor-links) |
+| 链接和资产 URL 重写 (`regexAdjustments`) | [链接重写](/guide/documents/link-rewriting) |
 | 文档中的屏幕截图 | [图像和屏幕截图](/guide/images-and-screenshots/) |
 | `translate-docs` 标志和缓存 | [CLI 选项](/guide/documents/cli-options) |
 

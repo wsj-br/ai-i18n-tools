@@ -10,8 +10,6 @@ description: 用于使用大型语言模型 (LLM) 对 JavaScript/TypeScript 应�
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-<small id="lang-list">[英语（英国）](/) · [德语](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) · [西班牙语](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.es.md) · [法语](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.fr.md) · [印地语（罗马）](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.hi-Latn.md) · [日语](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ja.md) · [韩语](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ko.md) · [葡萄牙语（巴西）](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.pt-BR.md) · [简体中文](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hans.md) · [繁体中文](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hant.md)</small>
-
 **使用您选择的 AI 模型翻译您的应用程序和文档：无锁定，无需重写。**
 
 `ai-i18n-tools` 是一个用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 和工具包——包括 Docusaurus、Astro、Starlight、VitePress 和纯 Markdown/MDX——使用大型语言模型。

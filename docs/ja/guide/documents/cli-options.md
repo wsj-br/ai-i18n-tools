@@ -40,13 +40,3 @@ CLI は、SQLite に**ファイル追跡**（ファイルごとのソースハ�
 | `json-object`          | セグメントインデックスをキーとするJSONオブジェクト `{"0":"…","1":"…",…}`。            | **同じキー**と翻訳された値を持つJSONオブジェクト。 |
 
 実行ヘッダーには `Batch prompt format: …` も表示されるため、アクティブなモードを確認できます。JSON ラベルファイル (`docusaurusCatalogDir`) と SVG ファイルバッチは、これらのステップが `translate-docs` (または `sync` のドキュメントフェーズ — `sync` はこのフラグを公開しません。デフォルトは `json-array` です) の一部として実行される場合、同じ設定を使用します。
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## SQLite でのセグメントの重複排除とパス
-
-> **注記：** このセクションでは、`cleanup` の動作やカスタムツールのデバッグに役立つ内部キャッシュキーの詳細について説明します。ほとんどのユーザーはこのセクションをスキップできます。
-
-- セグメント行は `(source_hash, locale)` によってグローバルにキー付けされています（ハッシュ = 正規化されたコンテンツ）。2つのファイルに同一のテキストがある場合、1つの行を共有します；`translations.filepath` はメタデータ（最後の作成者）であり、ファイルごとの2番目のキャッシュエントリではありません。
-- `file_tracking.filepath` は名前空間付きキーを使用します：`doc-block:{index}:{relPath}` は `docs` ブロックごと（`relPath` はプロジェクトルート相対の posix: マークダウンパスとして収集されたもの；**JSON ラベルファイルはソースファイルへの cwd 相対パスを使用します**、例：`docs-site/i18n/en/code.json`、したがってクリーンアップは実際のファイルを解決できます）、`json-block:{index}:{relPath}` は `json[]` ソースのためのもので、`translate-json` の下にあり、`svg-files:{relPath}` は `translate-svg` の下の SVG ファイル用です。
-- `translations.filepath` はマークダウン、JSON、および SVG セグメントの cwd 相対 posix パスを保存します（SVG は他のアセットと同じパス形状を使用します；`svg-files:…` プレフィックスは **のみ** `file_tracking` にあります）。
-- 実行後、`last_hit_at` はセグメント行 **同じ翻訳スコープ内**（`--path` と有効な種類を尊重し）でヒットしなかったものに対してのみクリアされるため、フィルタリングされたまたはドキュメント専用の実行は無関係なファイルを古くなったとマークしません。

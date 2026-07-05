@@ -23,9 +23,10 @@ SVG 파일은 `features.translateSVG`이 활성화된 경우 [`translate-svg`](/
 | Docusaurus 사이트 | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [1단계](#step-1-initialise-for-documentation) |
 | VitePress 사이트 | `init -t ui-vitepress` + 테마용 `json[]` — [VitePress 통합](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [1단계](#step-1-initialise-for-documentation) |
-| 플랫 README만 | `docsOutput.style = "flat"` — [출력 레이아웃](/guide/documents/output-layouts), 선택적 [언어 전환기](/guide/documents/language-switcher) |
+| 플랫 문서(README, 변경 로그 등) | `docsOutput.style = "flat"` — [출력 레이아웃](/guide/documents/output-layouts), 선택적 [언어 전환기](/guide/documents/language-switcher) |
 | 번역된 파일이 저장되는 위치 | [출력 레이아웃](/guide/documents/output-layouts) |
 | 페이지 간 `#anchor` 링크 | [앵커 링크](/guide/documents/anchor-links) |
+| 링크 및 애셋 URL 재작성(`regexAdjustments`) | [링크 재작성](/guide/documents/link-rewriting) |
 | 문서의 스크린샷 | [이미지 및 스크린샷](/guide/images-and-screenshots/) |
 | `translate-docs` 플래그 및 캐시 | [CLI 옵션](/guide/documents/cli-options) |
 

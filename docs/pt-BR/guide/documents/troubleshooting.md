@@ -19,3 +19,14 @@ Causas comuns:
 3. Execute novamente `translate-docs` (ou `sync --force-update`) para que cada cópia em outro idioma inclua as linhas de âncora atualizadas.
 
 Use `--dry-run` em `write-heading-ids` primeiro para visualizar as alterações. Consulte [Links âncora](/guide/documents/anchor-links) para o padrão completo.
+
+<a id="image-or-asset-links-404-in-translated-docs"></a>
+## Links de imagem ou ativo retornam 404 em documentos traduzidos
+
+Um link Markdown ou `![alt](url)` funciona em inglês, mas retorna 404 em cópias traduzidas — geralmente porque o URL ainda aponta para a pasta do idioma de origem ou para um caminho estático somente em inglês.
+
+**Correção**
+
+1. Confirme se o layout do seu ativo corresponde ao seu `docsOutput.style` (plano vs. sistema de documentos). Consulte [Reescrita de links](/guide/documents/link-rewriting) e [Imagens e capturas de tela](/guide/images-and-screenshots/).
+2. Adicione ou ajuste `docsOutput.postProcessing.regexAdjustments` para trocar segmentos de localidade ou fazer a ponte entre caminhos `/img/…` absolutos. Para layout plano, lembre-se de que o reescritor de link plano é executado **antes** de `regexAdjustments` — combine padrões com o URL já prefixado.
+3. Certifique-se de que os arquivos de ativos específicos da localidade existam nos caminhos referenciados pelo Markdown reescrito (`translate-docs` reescreve URLs, mas não copia arquivos raster).

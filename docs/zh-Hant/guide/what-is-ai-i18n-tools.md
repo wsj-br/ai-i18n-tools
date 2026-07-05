@@ -1,22 +1,46 @@
 <a id="what-is-ai-i18n-tools"></a>
 # 什麼是 ai-i18n-tools？
 
-`ai-i18n-tools` 套件提供三種翻譯介面：
+ai-i18n-tools 是一個命令列工具和工具包，可協助您使用偏好的 LLM 供應商翻譯應用程式和文件。您可以透過單一設定檔控制所有內容，選擇要啟用哪些翻譯功能。使用「sync」命令一次執行您需要的模式。
 
-- **UI 字串**：從任何 JS/TS 原始碼中提取 `t("…")` 呼叫，透過作用中的 [LLM 供應商](/guide/providers-and-models) 進行翻譯，並寫入準備好用於 i18next 的平面每地區設定 JSON 檔案。
-- **文件**：透過 `translate-docs` 翻譯 `docs[].contentPaths` 中列出的 **markdown、MDX 和 `.astro` 頁面**，並具有智慧快取。當啟用 `features.translateDocs` 時，可選的 **Docusaurus 目錄 JSON** (`docs[].docusaurusCatalogDir`，來自 `docusaurus write-translations`) 會在同一命令中翻譯 — 網站外觀 (導覽列、頁尾、主題字串)，而不是 `docs/` 中的散文。**VitePress** 頁面主體使用相同的 `docs[]` 管道；導覽/側邊欄/頁尾標籤使用 JSON (`json[]` / `translate-json`) — 請參閱 [VitePress 整合](/guide/vitepress-integration)。
-- **JSON**：透過頂層 `json[]`、`features.translateJson` 和 `translate-json` 翻譯任意巢狀 JSON 捆綁包 (例如 `src/i18n/en/translation.json`) — 適用於將 UI 內容保存在每地區設定 JSON 檔案中而不是原始碼中的 `t()` 的網站。
-- **工具 UI (內建)** — CLI 說明、日誌和翻譯儀表板以多種語言提供；這與翻譯**您的**應用程式的 UI 字串或文件是分開的。
+<a id="translation-modes"></a>
+## 翻譯模式
 
-**SVG** 資產使用 `features.translateSVG`、頂層 `svg` 區塊和 `translate-svg` (請參閱 [CLI 參考](/reference/cli-commands))。
+- **UI 字串** — 從 JS/TS 來源中提取 `t("…")` 呼叫（和類似標記），並為 i18next 或靜態查詢寫入扁平的每個地區設定 JSON 檔案。命令：`extract`、`translate-ui`。指南：[UI 字串](/guide/ui-strings/)。
+- **文件** — 翻譯 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 頁面。適用於 VitePress、Starlight、Docusaurus、Astro 和其他靜態文件網站。命令：`translate-docs`。指南：[文件](/guide/documents/)。
+- **JSON** — 翻譯頂層 `json[]` 中定義的巢狀 JSON 地區設定套件（主題標籤、i18n 覆寫、不在來源中的應用程式副本）。命令：`translate-json`。指南：[JSON](/guide/json)。
+- **SVG** — 翻譯 SVG 插圖（`<text>`、`<title>`、`<desc>`）中的可見文字，並為每個地區設定寫入一個輸出檔案。與文件翻譯分開 — `translate-docs` 不會修改 SVG 資產。命令：`translate-svg`。指南：[SVG 翻譯](/guide/svg-translation/)。
 
-**我應該使用哪一個？**
+所有四種模式都使用作用中的 [LLM 供應商](/guide/providers-and-models)，共用相同的設定檔，並重複使用 SQLite 快取，因此重新執行只會將新的或變更的文字傳送給模型。
 
-- 透過 `t()` 在原始碼中面向使用者的字串 → UI 字串 (`extract` / `translate-ui`)。
-- 本地化頁面、Docusaurus shell JSON 或 VitePress markdown → 文件 (`translate-docs`)。
-- VitePress 主題 JSON 或其他獨立的巢狀地區設定檔案 → JSON (`translate-json`)。
+<a id="which-should-i-use"></a>
+## 我應該使用哪一個？
 
-所有這三者都使用作用中的 LLM 供應商（請參閱 [供應商和模型](/guide/providers-and-models)) 並共用一個設定檔。
+| 您的內容 | 模式 | 命令 |
+| --- | --- | --- |
+| 原始碼使用 `t()` 或 HTML `data-i18n` 標記 | UI 字串 | `extract` / `translate-ui` |
+| 本地化頁面或文件網站 | 文件 | `translate-docs` |
+| 獨立的巢狀 JSON 地區設定檔案 | JSON | `translate-json` |
+| 帶有 SVG 標籤的圖表或插圖 | SVG | `translate-svg` |
+
+許多專案結合了多種模式 — 例如，VitePress 網站的 UI 字串加上文件，或帶有插圖指南的文件加上 SVG。請參閱 [快速入門](/guide/quick-start) 以取得腳手架範本，並參閱 [設定](/reference/configuration) 以取得完整的設定架構。
+
+<a id="examples"></a>
+## 範例
+
+儲存庫在 `examples/` 下提供了可執行的範例專案 — 每個專案都有自己的設定、已提交的地區設定輸出和 README。您無需 API 金鑰即可瀏覽翻譯檔案；重新執行翻譯需要供應商金鑰（請參閱 [供應商和模型](/guide/providers-and-models)）。
+
+| 範例 | 顯示內容 |
+| --- | --- |
+| [console-app](/examples#console-app) | 最小的端到端應用程式：`t()` UI 字串加上 README 翻譯 |
+| [nextjs-app](/examples#nextjs-app) | Next.js UI、複數、SVG、Docusaurus 文件網站、儀表板 |
+| [astro-website](/examples#astro-website) | Astro 行銷網站：全頁 HTML 翻譯加上 `t()` 字串 |
+| [astro-docs](/examples#astro-docs) | Astro Starlight 文件網站 |
+| [vitepress-docs](/examples#vitepress-docs) | VitePress 文件加上主題 JSON |
+| [multi-provider](/examples#multi-provider) | 比較同一文件上的 LLM 供應商 |
+| [test-markdown](/examples#test-markdown) | Markdown 管線壓力測試（CJK、天城文、邊緣案例） |
+
+請參閱 [範例](/examples) 以取得 `npx degit` 複製命令和選擇指南。
 
 <a id="next-steps"></a>
 ## 後續步驟

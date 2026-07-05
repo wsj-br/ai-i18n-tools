@@ -46,11 +46,13 @@ ai-i18n-tools dashboard
 | UI 문자열 또는 복수형 | 일반 `sync` 또는 `translate-ui` | `--force` (`user-edited` 행을 덮어씁니다) |
 | 용어집 행 | 다음 `translate-ui` 또는 `proofread-ui` | — |
 
-수동 편집은 캐시 또는 `strings.json`에서 모델 `user-edited`으로 태그가 지정됩니다. 변경되지 않은 원본 텍스트를 다시 번역하면 `--force`를 사용하지 않는 한 해당 행을 건너뜁니다.
+**문서(SQLite 캐시)** — 수동 편집은 캐시에서 모델 `user-edited`으로 태그됩니다. 변경되지 않은 소스에서 `translate-docs` 또는 `sync`를 다시 실행하면 캐시된 번역이 재사용됩니다(LLM 호출 없음). 캐시에서 디스크의 마크다운을 새로 고치려면 `sync --force-update` 또는 `translate-docs --force-update`를 실행합니다. 캐시를 우회하고 LLM에서 다시 번역하려면(수동 수정 덮어쓰기) `--force`만 사용하십시오.
+
+**UI 문자열(`strings.json`)** — 수동 편집은 `models[locale]`에서 `user-edited`로 태그됩니다. `translate-ui` 또는 `sync`를 다시 실행하면 이미 번역이 있는 항목은 건너뜁니다. UI 명령에서 `--force`를 사용하여 수동 수정을 다시 번역하고 덮어씁니다.
 
 <a id="tips"></a>
 ## 팁
 
-- **로그 링크 버튼** (테이블 행의 🔗)은 `ai-i18n-tools dashboard`이 실행 중인 **터미널**에 파일:줄 힌트를 출력합니다. 브라우저에서 편집기로 이동하는 데 유용합니다.
-- **닫기** (탭 바의 오른쪽 상단)는 대시보드 서버를 정상적으로 종료합니다.
-- 브라우저 탭이 열려 있는 동안 서버가 중지되면 오버레이가 나타납니다. 다시 연결하려면 `ai-i18n-tools dashboard`을 다시 시작하십시오.
+- **로그 링크 버튼**(테이블 행의 🔗)은 `ai-i18n-tools dashboard`이 실행 중인 **터미널**에 파일:줄 힌트를 출력합니다. 이는 브라우저에서 편집기로 이동하는 데 유용합니다. VS Code 기반 IDE(Cursor, Antigravity 등)를 사용하는 경우 터미널 창에서 파일:줄 링크를 `CTRL` 클릭하여 해당 줄에서 파일을 열 수 있습니다.
+- **닫기**(탭 표시줄 오른쪽 상단)는 대시보드 서버를 정상적으로 종료합니다.
+- 브라우저 탭이 열려 있는 동안 서버가 중지되면 오버레이가 나타납니다. 다시 연결하려면 `ai-i18n-tools dashboard`를 다시 시작하거나, 대시보드 사용을 마쳤으면 창을 닫으십시오.

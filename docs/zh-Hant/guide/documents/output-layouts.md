@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 如需在平面佈局中建立跨頁錨點連結，請參閱[錨點連結](/guide/documents/anchor-links)。
 
+對於內建相對連結修正以外的連結和資產 URL 重寫，請參閱[連結重寫](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`)。
+
 如需在翻譯頁面中加入螢幕截圖和點陣圖資產，請參閱[圖片與螢幕截圖](/guide/images-and-screenshots/)。
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

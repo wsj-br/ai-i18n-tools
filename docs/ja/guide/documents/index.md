@@ -23,9 +23,10 @@ SVGファイルは、`features.translateSVG`が有効な場合、[`translate-svg
 | Docusaurusサイト | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [ステップ1](#step-1-initialise-for-documentation) |
 | VitePressサイト | `init -t ui-vitepress` + テーマ用の`json[]` — [VitePress統合](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [ステップ1](#step-1-initialise-for-documentation) |
-| フラットなREADMEのみ | `docsOutput.style = "flat"` — [出力レイアウト](/guide/documents/output-layouts)、オプションの[言語スイッチャー](/guide/documents/language-switcher) |
+| フラットドキュメント (README、変更ログなど) | `docsOutput.style = "flat"` — [出力レイアウト](/guide/documents/output-layouts)、オプションの[言語スイッチャー](/guide/documents/language-switcher) |
 | 翻訳されたファイルの保存場所 | [出力レイアウト](/guide/documents/output-layouts) |
 | ページ間の`#anchor`リンク | [アンカーリンク](/guide/documents/anchor-links) |
+| リンクとアセットの URL 書き換え (`regexAdjustments`) | [リンクの書き換え](/guide/documents/link-rewriting) |
 | ドキュメント内のスクリーンショット | [画像とスクリーンショット](/guide/images-and-screenshots/) |
 | `translate-docs`フラグとキャッシュ | [CLIオプション](/guide/documents/cli-options) |
 

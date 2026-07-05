@@ -23,9 +23,10 @@ Los paquetes JSON de UI anidados arbitrarios (no catálogos de Docusaurus) perte
 | Sitio de Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Paso 1](#step-1-initialise-for-documentation) |
 | Sitio de VitePress | `init -t ui-vitepress` + `json[]` para el tema — [Integración de VitePress](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Paso 1](#step-1-initialise-for-documentation) |
-| Solo README plano | `docsOutput.style = "flat"` — [Diseños de salida](/guide/documents/output-layouts), [selector de idioma](/guide/documents/language-switcher) opcional |
+| Documentos planos (README, registros de cambios, etc.) | `docsOutput.style = "flat"` — [Diseños de salida](/guide/documents/output-layouts), [selector de idioma](/guide/documents/language-switcher) opcional |
 | Dónde aterrizan los archivos traducidos | [Diseños de salida](/guide/documents/output-layouts) |
 | Enlaces `#anchor` entre páginas | [Enlaces de anclaje](/guide/documents/anchor-links) |
+| Reescritura de URL de enlaces y activos (`regexAdjustments`) | [Reescritura de enlaces](/guide/documents/link-rewriting) |
 | Capturas de pantalla en documentos | [Imágenes y capturas de pantalla](/guide/images-and-screenshots/) |
 | Banderas y caché de `translate-docs` | [Opciones de CLI](/guide/documents/cli-options) |
 

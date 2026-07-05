@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 Pour les liens d'ancrage inter-pages dans une disposition "à plat", voir [Liens d'ancrage](/guide/documents/anchor-links).
 
+Pour la réécriture d'URL de liens et de ressources au-delà des corrections de liens relatifs intégrées, consultez [Réécriture de liens](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
+
 Pour les captures d'écran et les ressources raster dans les pages traduites, voir [Images et captures d'écran](/guide/images-and-screenshots/).
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

@@ -1,0 +1,39 @@
+<a id="examples"></a>
+# 例
+
+GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にある実行可能なプロジェクト — それぞれに独自の構成、コミットされたロケール出力、および README があります。API キーなしで翻訳済みファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です（[プロバイダーとモデル](/guide/providers-and-models)）。
+
+<a id="run-standalone"></a>
+## スタンドアロンで実行 (`npx degit`)
+
+リポジトリ全体をクローンせずに、1 つの例をコピーします。それぞれが `"ai-i18n-tools": "^1.7.2"` を宣言し、npm から CLI をインストールします。
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
+cd <name>
+pnpm install
+```
+
+代わりに [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリを**すべて**クローンした場合は、リポジトリのルートで `pnpm install` と `pnpm run build` を実行し、次に `cd examples/<name>` を実行します。
+
+## 例のリスト
+
+<a id="console-app"></a>
+<a id="nextjs-app"></a>
+<a id="astro-website"></a>
+<a id="astro-docs"></a>
+<a id="vitepress-docs"></a>
+<a id="multi-provider"></a>
+<a id="test-markdown"></a>
+
+| 例 | 最適な用途 | degit でコピー | 実行 |
+| --- | --- | --- | --- |
+| [**console-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) | `t()` UI 文字列 + README 翻訳を含む最小限の動作するアプリ | `npx degit wsj-br/ai-i18n-tools/examples/console-app console-app` | `pnpm start` |
+| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 複数形 + ダッシュボード。Docusaurus ドキュメント + フラット README + SVG アセット | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev` (アプリ `:3030`; ドキュメント `:3040` の場合は `cd docs-site && pnpm start`) |
+| [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro ランディングページ: フルページ HTML + `t()` ハイブリッド | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
+| [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight ドキュメントサイト | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
+| [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress ドキュメントサイト + テーマ JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
+| [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
+| [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
+
+各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。

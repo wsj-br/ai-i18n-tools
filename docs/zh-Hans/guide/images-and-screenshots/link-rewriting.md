@@ -1,21 +1,21 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # 平面链接重写器和两步流
 
-对于 `docsOutput.style = "flat"`（并且除非设置了 `rewriteRelativeLinks: false` 或自定义 `pathTemplate`），在 `postProcessing` 之前会运行一个内置的重写器。它会处理跨文档链接（添加区域设置后缀）并为非 markdown 资源 URL 添加深度前缀。
+对于 `docsOutput.style = "flat"`（除非设置了 `rewriteRelativeLinks: false` 或自定义 `pathTemplate`），内置重写器会在 `postProcessing` 之前运行。它处理跨文档链接（添加区域设置后缀）并将深度前缀添加到非 Markdown 资产 URL。然后，区域设置特定的资产路径（屏幕截图、`/img/…` 桥接）由 `docsOutput.postProcessing.regexAdjustments` 重写。
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"` 时的两步流程
 
 ```
-source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
+source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
 ```
 
 在仓库根目录中，使用 `outputDir: "translated-docs/"` 和源 `README.md` 的示例：
 
-1. 扁平链接重写器：`images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png`（为 `translated-docs/` 创建一个 `../`）
-2. `postProcessing` 正则表达式 `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`：`../images/screenshots/de/foo.png`
+1. 平面链接重写器：`images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png`（`translated-docs/` 的一个 `../`）
+2. `regexAdjustments` 规则 `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`：`../images/screenshots/de/foo.png`
 
-对于 `docsOutput.style = "doc-system"`（包括 `"docusaurus"`、`"astro-starlight"` 和 `"nested"`），扁平链接重写器不会运行。`postProcessing` 会看到翻译后的 markdown 中的原始 URL（通常是像 `/img/screenshots/en-GB/foo.png` 这样的绝对路径）。
+对于 `docsOutput.style = "doc-system"`（包括 `"docusaurus"`、`"astro-starlight"` 和 `"nested"`），平面链接重写器不运行。`regexAdjustments` 会看到翻译后的 Markdown 中的原始 URL（通常是像 `/img/screenshots/en-GB/foo.png` 这样的绝对路径）。
 
 <a id="vitepress-link-normalizer"></a>
 ### VitePress 链接规范化器 (`style: "vitepress"`)
@@ -23,7 +23,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: local
 当 `docsOutput.rewriteVitepressLinks` 为 `true` 时（当 `style` 为 `"vitepress"` 时的默认值），在段重组后会运行一个单独的规范化器（而不是平面重写器）。它针对 VitePress / 文档系统站点，其中英文内容位于内容根目录，而本地化内容位于同级文件夹中（`docs/de/guide/…`）。
 
 ```
-source href  →  [VitePress link normalizer]  →  [postProcessing]  →  output href
+source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
 ```
 
 典型重写：
@@ -36,7 +36,7 @@ source href  →  [VitePress link normalizer]  →  [postProcessing]  →  outpu
 
 对于将 `README.md` 同步到 `docs/index.md` 的项目，请在 `README.md` 中使用完整的 GitHub URL，用于 `LICENSE`、`examples/` 以及 VitePress 树之外的其他文件。请参阅[VitePress 集成 — README 作为文档主页](/guide/vitepress-integration#readme-as-homepage)。
 
-平面重写器和 VitePress 规范化器在每个 `docs[]` 块中是互斥的 — 在 `postProcessing` 之前只有一个运行。请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
+平面重写器和 VitePress 规范化器在每个 `docs[]` 块中是互斥的 — 在 `regexAdjustments` 之前只有一个运行。请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 使用 `flatPreserveRelativeDir` 进行逐文件深度前缀
@@ -45,7 +45,7 @@ source href  →  [VitePress link normalizer]  →  [postProcessing]  →  outpu
 
 这意味着使用 `flatPreserveRelativeDir: true` 时，子目录中的源文件会自动获得正确的前缀。例如，`docs/guide/quick-start.md` 输出到 `translated-docs/docs/guide/quick-start.<locale>.md`。每个文件的前缀是 `../../docs/`，因此资产 `translation-dashboard.png`（源树的同级）变为 `../../docs/translation-dashboard.png` — 这可以从 `translated-docs/docs/guide/` 正确解析回 `docs/translation-dashboard.png`。
 
-对于与源文件并排的相对路径资源，不需要进行 `postProcessing` 正则表达式校正。
+对于源文件旁边的相对路径资产，不需要进行 `regexAdjustments` 校正。
 
 <a id="rewriterelativelinks-and-linkrewritedocsroot"></a>
 ### `rewriteRelativeLinks` 和 `linkRewriteDocsRoot`
@@ -56,6 +56,36 @@ source href  →  [VitePress link normalizer]  →  [postProcessing]  →  outpu
 | `docsOutput.linkRewriteDocsRoot`     | 计算 `depthPrefix` 的根目录（默认 `"."`）                                                        |
 | `docsOutput.flatPreserveRelativeDir` | 影响输出路径布局，重写器在计算已知翻译文件的目标路径时会使用该布局       |
 
+<a id="postprocessing-regexadjustments"></a>
+### `docsOutput.postProcessing.regexAdjustments`
+
+在 `docs[].docsOutput.postProcessing` 下配置有序的 `{ "description"?, "search", "replace" }` 规则，以重写内置重写器不处理的图像、屏幕截图和其他资产 URL — 通常是交换区域设置文件夹段（`screenshots/en-GB/` → `screenshots/de/`）或桥接绝对静态路径（`/img/…` → `../assets/…`）。
+
+规则在分段重组和内置链接重写（平面或 VitePress）之后、`addFrontmatter` 之前，在翻译后的 Markdown **正文**上运行。在平面布局上，针对应用深度前缀**之后**的 URL 编写 `search` 模式 — 匹配路径内的区域设置段，而不是开头的 `../`。
+
+**按区域设置的屏幕截图文件夹（平面布局）：**
+
+```json
+"docsOutput": {
+  "style": "flat",
+  "postProcessing": {
+    "regexAdjustments": [
+      {
+        "description": "Per-locale screenshot folders",
+        "search": "images/screenshots/[^/]+/",
+        "replace": "images/screenshots/${translatedLocale}/"
+      }
+    ]
+  }
+}
+```
+
+使用 `[^/]+` 而不是硬编码您的源区域设置 (`en-GB`)，这样规则在 `sourceLocale` 更改后仍然有效。最常见的占位符是 `${translatedLocale}`；`${sourceLocale}`、`${sourceFilename}`、`${translatedFilename}` 和路径变量也可用 — 请参阅[文档 — 链接重写](/guide/documents/link-rewriting#replace-placeholders)。
+
+特定于布局的示例（平面、文档系统、Docusaurus、Starlight）：[按区域设置的文件夹](/guide/images-and-screenshots/per-locale-folder)。通用跨页链接规则：[文档 — 链接重写](/guide/documents/link-rewriting)。字段参考：[配置 — `docs`](/reference/configuration#docs)。
+
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
+
+有关硬编码区域设置正则表达式、缺失的屏幕截图目录和 Docusaurus `/img/` 桥接，请参阅[常见错误和故障排除](/guide/images-and-screenshots/troubleshooting)。

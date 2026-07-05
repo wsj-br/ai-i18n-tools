@@ -1,21 +1,21 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # El reescritor de enlaces planos y el flujo de dos pasos
 
-Para `docsOutput.style = "flat"` (y a menos que `rewriteRelativeLinks: false` o un `pathTemplate` personalizado esté establecido), un reescritor integrado se ejecuta antes de `postProcessing`. Este gestiona enlaces entre documentos (añadiendo sufijos de configuración regional) y antepone un prefijo de profundidad a las URL de recursos que no son markdown.
+Para `docsOutput.style = "flat"` (y a menos que se establezca `rewriteRelativeLinks: false` o un `pathTemplate` personalizado), se ejecuta un reescritor integrado antes de `postProcessing`. Maneja enlaces entre documentos (añadiendo sufijos de configuración regional) y antepone un prefijo de profundidad a las URL de activos que no son de Markdown. Las rutas de activos específicas de la configuración regional (capturas de pantalla, puentes `/img/…`) son luego reescritas por `docsOutput.postProcessing.regexAdjustments`.
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Flujo en dos pasos cuando `docsOutput.style = "flat"`
 
 ```
-source URL  →  [flat link rewriter: depth prefix]  →  [postProcessing: locale segment]  →  output URL
+source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
 ```
 
 Ejemplo con `outputDir: "translated-docs/"` y el origen `README.md` en la raíz del repositorio:
 
 1. Reescritor de enlaces planos: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (un `../` para `translated-docs/`)
-2. Expresión regular `postProcessing` `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
+2. Regla `regexAdjustments` `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-Para `docsOutput.style = "doc-system"` (incluyendo `"docusaurus"`, `"astro-starlight"` y `"nested"`), el reescritor de enlaces planos no se ejecuta. `postProcessing` ve la URL original del markdown traducido (típicamente una ruta absoluta como `/img/screenshots/en-GB/foo.png`).
+Para `docsOutput.style = "doc-system"` (incluyendo `"docusaurus"`, `"astro-starlight"` y `"nested"`), el reescritor de enlaces planos no se ejecuta. `regexAdjustments` ve la URL original del Markdown traducido (normalmente una ruta absoluta como `/img/screenshots/en-GB/foo.png`).
 
 <a id="vitepress-link-normalizer"></a>
 ### Normalizador de enlaces de VitePress (`style: "vitepress"`)
@@ -23,7 +23,7 @@ Para `docsOutput.style = "doc-system"` (incluyendo `"docusaurus"`, `"astro-starl
 Cuando `docsOutput.rewriteVitepressLinks` es `true` (valor predeterminado cuando `style` es `"vitepress"`), se ejecuta un normalizador independiente después del reensamblaje del segmento (en lugar del reescritor plano). Está dirigido a sitios de VitePress/sistemas de documentación donde el inglés se encuentra en la raíz del contenido y las configuraciones regionales se encuentran en carpetas hermanas (`docs/de/guide/…`).
 
 ```
-source href  →  [VitePress link normalizer]  →  [postProcessing]  →  output href
+source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
 ```
 
 Reescrituras típicas:
@@ -36,7 +36,7 @@ Reescrituras típicas:
 
 Para proyectos que sincronizan `README.md` → `docs/index.md`, use URL completas de GitHub en `README.md` para `LICENSE`, `examples/` y otros archivos fuera del árbol de VitePress. Consulte [Integración de VitePress — README como la página de inicio de la documentación](/guide/vitepress-integration#readme-as-homepage).
 
-El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `postProcessing`. Consulte [Integración de VitePress — Convenciones de enlaces](/guide/vitepress-integration#link-conventions).
+El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `regexAdjustments`. Consulte [Integración de VitePress — Convenciones de enlaces](/guide/vitepress-integration#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Prefijo de profundidad por archivo con `flatPreserveRelativeDir`
@@ -45,7 +45,7 @@ El prefijo de profundidad se calcula por archivo de salida, no globalmente para 
 
 Esto significa que con `flatPreserveRelativeDir: true`, los archivos fuente en subdirectorios obtienen el prefijo correcto automáticamente. Por ejemplo, `docs/guide/quick-start.md` genera `translated-docs/docs/guide/quick-start.<locale>.md`. El prefijo por archivo es `../../docs/`, por lo que un activo `translation-dashboard.png` (un elemento del mismo nivel del árbol de origen) se convierte en `../../docs/translation-dashboard.png`, que se resuelve correctamente de `translated-docs/docs/guide/` a `docs/translation-dashboard.png`.
 
-No se necesita ninguna corrección mediante expresión regular `postProcessing` para recursos con rutas relativas junto a los archivos fuente.
+No se necesita corrección `regexAdjustments` para los activos de ruta relativa junto con los archivos de origen.
 
 <a id="rewriterelativelinks-and-linkrewritedocsroot"></a>
 ### `rewriteRelativeLinks` y `linkRewriteDocsRoot`
@@ -56,6 +56,36 @@ No se necesita ninguna corrección mediante expresión regular `postProcessing` 
 | `docsOutput.linkRewriteDocsRoot`     | Raíz desde la cual se calcula `depthPrefix` (valor predeterminado `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Afecta al diseño de la ruta de salida, que el reescritor utiliza al calcular las rutas de destino para archivos traducidos conocidos       |
 
+<a id="postprocessing-regexadjustments"></a>
+### `docsOutput.postProcessing.regexAdjustments`
+
+Configure reglas `{ "description"?, "search", "replace" }` ordenadas en `docs[].docsOutput.postProcessing` para reescribir URL de imágenes, capturas de pantalla y otros activos que los reescritores integrados no manejan; normalmente, intercambiando un segmento de carpeta de configuración regional (`screenshots/en-GB/` → `screenshots/de/`) o uniendo rutas estáticas absolutas (`/img/…` → `../assets/…`).
+
+Las reglas se ejecutan en el **cuerpo** del Markdown traducido después del reensamblaje de segmentos y la reescritura de enlaces incorporada (plana o VitePress), y antes de `addFrontmatter`. En el diseño plano, escriba patrones `search` contra las URL **después** de aplicar el prefijo de profundidad; haga coincidir el segmento de configuración regional dentro de la ruta, no el `../` inicial.
+
+**Carpetas de capturas de pantalla por configuración regional (diseño plano):**
+
+```json
+"docsOutput": {
+  "style": "flat",
+  "postProcessing": {
+    "regexAdjustments": [
+      {
+        "description": "Per-locale screenshot folders",
+        "search": "images/screenshots/[^/]+/",
+        "replace": "images/screenshots/${translatedLocale}/"
+      }
+    ]
+  }
+}
+```
+
+Utilice `[^/]+` en lugar de codificar su configuración regional de origen (`en-GB`) para que la regla sobreviva a un cambio de `sourceLocale`. El marcador de posición más común es `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` y las variables de ruta también están disponibles; consulte [Documentos — Reescritura de enlaces](/guide/documents/link-rewriting#replace-placeholders).
+
+Ejemplos específicos de diseño (plano, sistema de documentos, Docusaurus, Starlight): [Carpeta por configuración regional](/guide/images-and-screenshots/per-locale-folder). Reglas generales de enlaces entre páginas: [Documentos — Reescritura de enlaces](/guide/documents/link-rewriting). Referencia de campo: [Configuración — `docs`](/reference/configuration#docs).
+
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
+
+Consulte [Errores comunes y solución de problemas](/guide/images-and-screenshots/troubleshooting) para expresiones regulares de configuración regional codificadas, directorios de capturas de pantalla faltantes y puente `/img/` de Docusaurus.

@@ -40,13 +40,3 @@ Você não pode combinar `--force` com `--force-update` (são mutuamente exclusi
 | `json-object`          | Um objeto JSON `{"0":"…","1":"…",…}` indexado pelo índice do segmento.            | Um objeto JSON com as **mesmas chaves** e valores traduzidos. |
 
 O cabeçalho da execução também imprime `Batch prompt format: …` para que você possa confirmar o modo ativo. Os arquivos de rótulo JSON (`docusaurusCatalogDir`) e os lotes de arquivos SVG usam a mesma configuração quando essas etapas são executadas como parte de `translate-docs` (ou da fase de documentos de `sync` — `sync` não expõe esse sinalizador; ele assume como padrão `json-array`).
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## Desduplicação de segmentos e caminhos no SQLite
-
-> **Observação:** Esta seção aborda detalhes internos da chave de cache, úteis para depurar o comportamento do `cleanup` ou ferramentas personalizadas. A maioria dos usuários pode pular esta parte.
-
-- As linhas de segmento são indexadas globalmente por `(source_hash, locale)` (hash = conteúdo normalizado). Texto idêntico em dois arquivos compartilha uma única linha; `translations.filepath` é metadado (último escritor), não uma entrada de cache separada por arquivo.
-- `file_tracking.filepath` usa chaves com namespace: `doc-block:{index}:{relPath}` por bloco `docs` (`relPath` é o caminho posix relativo à raiz do projeto: caminhos markdown conforme coletados; **arquivos de rótulo JSON usam o caminho relativo ao diretório de trabalho atual (cwd) do arquivo de origem**, por exemplo, `docs-site/i18n/en/code.json`, para que a limpeza possa resolver o arquivo real), `json-block:{index}:{relPath}` para fontes `json[]` sob `translate-json`, e `svg-files:{relPath}` para arquivos SVG sob `translate-svg`.
-- `translations.filepath` armazena caminhos posix relativos ao cwd para segmentos markdown, JSON e SVG (SVG usa o mesmo formato de caminho que outros ativos; o prefixo `svg-files:…` está presente **apenas** em `file_tracking`).
-- Após uma execução, `last_hit_at` é limpo apenas para linhas de segmento **no mesmo escopo de tradução** (respeitando `--path` e tipos habilitados) que não foram acessadas, portanto, uma execução filtrada ou apenas de documentos não marca arquivos não relacionados como obsoletos.

@@ -46,11 +46,13 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 | String ou plural da UI | `sync` ou `translate-ui` simples | `--force` (sobrescreve `user-edited` linhas) |
 | Linha do glossário | próximo `translate-ui` ou `proofread-ui` | — |
 
-Edições manuais são marcadas com o modelo `user-edited` no cache ou `strings.json`. A re-tradução de texto de origem inalterado ignora essas linhas, a menos que você use `--force`.
+**Documentação (cache SQLite)** — Edições manuais são marcadas com o modelo `user-edited` no cache. Reexecutar `translate-docs` ou `sync` em uma fonte inalterada reutiliza a tradução em cache (sem chamada LLM). Execute `sync --force-update` ou `translate-docs --force-update` para atualizar o markdown em disco a partir do cache. Use `--force` somente se quiser ignorar o cache e re-traduzir do LLM (sobrescrevendo correções manuais).
+
+**Strings da UI (`strings.json`)** — Edições manuais são marcadas com `user-edited` em `models[locale]`. Reexecutar `translate-ui` ou `sync` ignora entradas que já possuem uma tradução. Use `--force` nos comandos da UI para re-traduzir e sobrescrever correções manuais.
 
 <a id="tips"></a>
 ## Dicas
 
-- **Botões de link de log** (🔗 nas linhas da tabela) imprimem dicas de arquivo:linha no **terminal** onde `ai-i18n-tools dashboard` está sendo executado — útil para pular do navegador para o seu editor.
-- **Fechar** (canto superior direito da barra de abas) desliga o servidor do painel de forma elegante.
-- Se o servidor parar enquanto a aba do navegador ainda estiver aberta, uma sobreposição aparece; reinicie `ai-i18n-tools dashboard` para reconectar.
+- **Botões de link de log** (🔗 nas linhas da tabela) imprimem dicas de arquivo:linha no **terminal** onde `ai-i18n-tools dashboard` está sendo executado — útil para pular do navegador para o seu editor. Se você estiver usando um IDE derivado do VS Code (como Cursor, Antigravity, ...), você pode clicar com o `CTRL` no link arquivo:linha na janela do Terminal para abrir o arquivo na linha indicada.
+- **Fechar** (canto superior direito da barra de abas) desliga o servidor do painel de forma graciosa.
+- Se o servidor parar enquanto a aba do navegador ainda estiver aberta, uma sobreposição aparecerá. Reinicie `ai-i18n-tools dashboard` para reconectar, ou feche a janela se você terminou com o painel.

@@ -40,13 +40,3 @@ CLI 在 SQLite 中保留**檔案追蹤**（每個檔案的來源雜湊 × 語言
 | `json-object`          | 以區段索引為鍵的 JSON 物件 `{"0":"…","1":"…",…}`。            | 具有 **相同鍵**和已翻譯值的 JSON 物件。 |
 
 執行標頭也會列印 `Batch prompt format: …`，以便您可以確認活動模式。JSON 標籤檔案 (`docusaurusCatalogDir`) 和 SVG 檔案批次在這些步驟作為 `translate-docs`（或 `sync` 的文件階段 — `sync` 不會公開此旗標；它預設為 `json-array`）的一部分執行時使用相同的設定。
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## SQLite 中的區段去重和路徑
-
-> **注意：** 本節涵蓋內部快取金鑰的詳細資訊，有助於偵錯 `cleanup` 行為或自訂工具。大多數使用者可以略過它。
-
-- 區段列以 `(source_hash, locale)`（雜湊 = 正規化內容）為全域鍵。兩個檔案中相同的文字會共用一個列；`translations.filepath` 是中繼資料（最後寫入者），而不是每個檔案的第二個快取項目。
-- `file_tracking.filepath` 使用命名空間金鑰：每個 `docs` 區塊的 `doc-block:{index}:{relPath}`（`relPath` 是相對於專案根目錄的 posix：收集的 markdown 路徑；**JSON 標籤檔案使用來源檔案的相對工作目錄路徑**，例如 `docs-site/i18n/en/code.json`，因此清理可以解析實際檔案），`json[]` 下的 `json[]` 來源的 `json-block:{index}:{relPath}`，以及 `translate-svg` 下的 SVG 檔案的 `svg-files:{relPath}`。
-- `translations.filepath` 儲存 markdown、JSON 和 SVG 區段的相對於工作目錄的 posix 路徑（SVG 使用與其他資產相同的路徑形狀；`svg-files:…` 前綴 **僅**用於 `file_tracking`）。
-- 執行後，僅針對 **相同翻譯範圍**中的區段列清除 `last_hit_at`（尊重 `--path` 和啟用的種類），這些區段列未被命中，因此經過篩選或僅限文件的執行不會將不相關的檔案標記為過時。

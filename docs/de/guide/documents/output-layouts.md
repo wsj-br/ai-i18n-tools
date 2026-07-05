@@ -49,6 +49,8 @@ docs/guide.md → i18n/guide.de.md
 
 Für seitenübergreifende Ankerlinks in einem flachen Layout siehe [Ankerlinks](/guide/documents/anchor-links).
 
+Informationen zum Umschreiben von Link- und Asset-URLs, die über die integrierten Korrekturen für relative Links hinausgehen, finden Sie unter [Link-Umschreibung](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
+
 Für Screenshots und Raster-Assets auf übersetzten Seiten siehe [Bilder & Screenshots](/guide/images-and-screenshots/).
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>

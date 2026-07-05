@@ -6,7 +6,7 @@
 <a id="runnable-examples"></a>
 ### 実行可能な例
 
-7つの実行可能なプロジェクトとフィクスチャは、[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)にあります。[例](/examples)カタログ（コンソールアプリ、Next.js + Docusaurus、Astroウェブサイト、Astro Starlightドキュメント、VitePressドキュメント、マルチプロバイダー比較、マークダウンストレステスト）を参照してください。
+実行可能な7つのプロジェクトとフィクスチャは、[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にあります。[例](/examples) カタログ（コンソールアプリ、Next.js + Docusaurus、Astro ウェブサイト、Astro Starlight ドキュメント、VitePress ドキュメント、マルチプロバイダー比較、Markdown ストレステスト）を参照してください。
 
 **1つの例をスタンドアロンで実行します**（モノレポ全体をクローンせずに）：
 

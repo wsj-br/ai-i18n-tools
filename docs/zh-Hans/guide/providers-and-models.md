@@ -99,7 +99,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每个提供者块都可以定义自己的 `translationModels`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。旧的顶级 `openrouter` 块仍然被接受，并在加载时自动迁移到 `providers.openrouter`。
 
-在同一文档中使用四个提供者的可运行示例：[`examples/multi-provider`](/examples#multi-provider)。
+在同一文档中使用四个提供程序的运行示例：[`examples/multi-provider`](/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### 更多参考

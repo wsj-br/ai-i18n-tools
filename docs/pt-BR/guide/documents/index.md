@@ -23,9 +23,10 @@ Pacotes JSON de UI aninhados arbitrários (não catálogos Docusaurus) pertencem
 | Site Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Passo 1](#step-1-initialise-for-documentation) |
 | Site VitePress | `init -t ui-vitepress` + `json[]` para tema — [Integração VitePress](/guide/vitepress-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Passo 1](#step-1-initialise-for-documentation) |
-| Apenas README simples | `docsOutput.style = "flat"` — [Layouts de saída](/guide/documents/output-layouts), [trocador de idioma](/guide/documents/language-switcher) opcional |
+| Documentos simples (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Layouts de saída](/guide/documents/output-layouts), [seletor de idioma](/guide/documents/language-switcher) opcional |
 | Onde os arquivos traduzidos são salvos | [Layouts de saída](/guide/documents/output-layouts) |
 | Links `#anchor` entre páginas | [Links de âncora](/guide/documents/anchor-links) |
+| Reescrita de URL de link e ativo (`regexAdjustments`) | [Reescrita de link](/guide/documents/link-rewriting) |
 | Capturas de tela na documentação | [Imagens e Capturas de Tela](/guide/images-and-screenshots/) |
 | Sinalizadores e cache `translate-docs` | [Opções da CLI](/guide/documents/cli-options) |
 

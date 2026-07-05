@@ -10,8 +10,6 @@ description: LLM을 사용하여 JavaScript/TypeScript 애플리케이션 및 �
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-<small id="lang-list">[영어(영국)](/) · [독일어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) · [스페인어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.es.md) · [프랑스어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.fr.md) · [힌디어(로마자)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.hi-Latn.md) · [일본어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ja.md) · [한국어](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.ko.md) · [포르투갈어(브라질)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.pt-BR.md) · [중국어(간체)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hans.md) · [중국어(번체)](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.zh-Hant.md)</small>
-
 **선택한 AI 모델을 사용하여 앱과 문서를 번역하세요. 종속성이나 다시 작성할 필요가 없습니다.**
 
 `ai-i18n-tools`는 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 Docusaurus, Astro, Starlight, VitePress, 일반 Markdown/MDX를 포함한 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다.

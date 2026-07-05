@@ -99,7 +99,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Jeder Provider-Block kann eigene `translationModels`, `maxTokens`, `temperature` und `requestTimeoutMs` definieren. Ein veralteter `openrouter`-Block der obersten Ebene wird weiterhin akzeptiert und beim Laden automatisch zu `providers.openrouter` migriert.
 
-Ausführbares Beispiel mit vier Providern im selben Dokument: [`examples/multi-provider`](/examples#multi-provider).
+Ausführbares Beispiel mit vier Anbietern im selben Dokument: [`examples/multi-provider`](/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Weitere Referenzen

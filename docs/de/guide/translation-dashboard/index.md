@@ -46,11 +46,13 @@ Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wi
 | UI-String oder Plural | einfaches `sync` oder `translate-ui` | `--force` (überschreibt `user-edited`-Zeilen) |
 | Glossar-Zeile | nächstes `translate-ui` oder `proofread-ui` | — |
 
-Manuelle Bearbeitungen werden im Cache oder `strings.json` mit dem Modell `user-edited` markiert. Das erneute Übersetzen von unverändertem Quelltext überspringt diese Zeilen, es sei denn, Sie verwenden `--force`.
+**Dokumentation (SQLite-Cache)** – Manuelle Bearbeitungen werden im Cache mit dem Modell `user-edited` markiert. Wenn Sie `translate-docs` oder `sync` für eine unveränderte Quelle erneut ausführen, wird die zwischengespeicherte Übersetzung wiederverwendet (kein LLM-Aufruf). Führen Sie `sync --force-update` oder `translate-docs --force-update` aus, um das Markdown auf der Festplatte aus dem Cache zu aktualisieren. Verwenden Sie `--force` nur, wenn Sie den Cache umgehen und eine Neuübersetzung vom LLM wünschen (manuelle Korrekturen werden überschrieben).
+
+**UI-Strings (`strings.json`)** – Manuelle Bearbeitungen werden in `models[locale]` mit `user-edited` markiert. Wenn Sie `translate-ui` oder `sync` erneut ausführen, werden Einträge übersprungen, die bereits eine Übersetzung haben. Verwenden Sie `--force` für UI-Befehle, um manuelle Korrekturen neu zu übersetzen und zu überschreiben.
 
 <a id="tips"></a>
 ## Tipps
 
-- **Log-Link-Schaltflächen** (🔗 in Tabellenzeilen) geben Datei:Zeilen-Hinweise an das **Terminal** aus, in dem `ai-i18n-tools dashboard` ausgeführt wird – nützlich, um vom Browser zu Ihrem Editor zu springen.
-- **Schließen** (oben rechts in der Tab-Leiste) fährt den Dashboard-Server ordnungsgemäß herunter.
-- Wenn der Server stoppt, während der Browser-Tab noch geöffnet ist, erscheint eine Überlagerung; starten Sie `ai-i18n-tools dashboard` neu, um die Verbindung wiederherzustellen.
+- **Log-Link-Schaltflächen** (🔗 in Tabellenzeilen) geben Datei:Zeilen-Hinweise an das **Terminal** aus, in dem `ai-i18n-tools dashboard` ausgeführt wird – nützlich, um vom Browser zu Ihrem Editor zu springen. Wenn Sie eine von VS Code abgeleitete IDE (wie Cursor, Antigravity, ...) verwenden, können Sie mit `CTRL`-Klick auf den Datei:Zeilen-Link im Terminalfenster die Datei an der angegebenen Zeile öffnen.
+- **Schließen** (oben rechts in der Tableiste) fährt den Dashboard-Server ordnungsgemäß herunter.
+- Wenn der Server stoppt, während die Browser-Registerkarte noch geöffnet ist, erscheint ein Overlay. Starten Sie `ai-i18n-tools dashboard` neu, um die Verbindung wiederherzustellen, oder schließen Sie das Fenster, wenn Sie mit dem Dashboard fertig sind.

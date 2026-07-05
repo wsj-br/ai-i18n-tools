@@ -40,13 +40,3 @@ CLI 在 SQLite 中保留 **文件跟踪**（每个文件 × 区域设置的源�
 | `json-object`          | 按分段索引 `{"0":"…","1":"…",…}` 键控的 JSON 对象。            | **键相同**且值已翻译的 JSON 对象。 |
 
 运行标题还会打印 `Batch prompt format: …`，以便您可以确认活动模式。JSON 标签文件 (`docusaurusCatalogDir`) 和 SVG 文件批次在这些步骤作为 `translate-docs`（或 `sync` 的文档阶段 — `sync` 不公开此标志；它默认为 `json-array`）的一部分运行时使用相同的设置。
-
-<a id="segment-dedupe-and-paths-in-sqlite"></a>
-## SQLite 中的段去重和路径
-
-> **注意：** 本节介绍的内部缓存键详细信息有助于调试 `cleanup` 行为或自定义工具。大多数用户可以跳过它。
-
-- 分段行由 `(source_hash, locale)`（哈希 = 规范化内容）全局键控。两个文件中的相同文本共享一行；`translations.filepath` 是元数据（最后写入者），而不是每个文件的第二个缓存条目。
-- `file_tracking.filepath` 使用命名空间键：每个 `docs` 块的 `doc-block:{index}:{relPath}`（`relPath` 是项目根目录相对的 posix：收集的 markdown 路径；**JSON 标签文件使用源文件相对于当前工作目录的路径**，例如 `docs-site/i18n/en/code.json`，因此清理可以解析真实文件），`json[]` 下的 `json-block:{index}:{relPath}` 用于 `json[]` 源，以及 `translate-svg` 下的 `svg-files:{relPath}` 用于 SVG 文件。
-- `translations.filepath` 存储 markdown、JSON 和 SVG 分段的相对于当前工作目录的 posix 路径（SVG 使用与其他资产相同的路径形状；**仅**在 `file_tracking` 上存在 `svg-files:…` 前缀）。
-- 运行后，仅针对 **相同翻译范围**内的分段行（尊重 `--path` 和启用的类型）清除 `last_hit_at`，这些行未被命中，因此过滤或仅文档运行不会将不相关的文件标记为过时。
