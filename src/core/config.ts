@@ -494,12 +494,13 @@ export const DEFAULT_CONFIG_FILENAME = "ai-i18n-tools.config.json";
 /**
  * Template objects for `init`.
  *
- * `ui-markdown` - Workflow 1 (UI string extraction/translation) for a React/Next.js app.
- * `ui-docusaurus` - Workflow 2 (markdown/JSON document translation) for Docusaurus sites.
- * `ui-starlight` - Workflow 2 (markdown document translation) for Astro Starlight sites.
+ * `ui-markdown` - UI strings (extraction/translation) for a React/Next.js app.
+ * `ui-docusaurus` - Documents (markdown/JSON translation) for Docusaurus sites.
+ * `ui-starlight` - Documents (markdown translation) for Astro Starlight sites.
+ * `ui-vitepress` - Documents (markdown translation) for VitePress sites, plus JSON theme JSON via `json[]`.
  *
  * Both templates include all top-level fields so the generated file is self-documenting.
- * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
+ * See the documentation site and `docs/reference/configuration.md` for a full field reference.
  */
 export const initConfigTemplates = {
   uiMarkdown: (): RawI18nConfigInput => ({
@@ -513,9 +514,9 @@ export const initConfigTemplates = {
       },
     },
     features: {
-      // Workflow 1: UI strings (extract runs automatically before translate)
+      // UI strings: UI strings (extract runs automatically before translate)
       translateUIStrings: true,
-      // Workflow 2: document translation (enable when you have markdown to translate)
+      // Documents: document translation (enable when you have markdown to translate)
       translateDocs: false,
 
       translateSVG: false,
@@ -640,6 +641,61 @@ export const initConfigTemplates = {
           },
         },
         addFrontmatter: true,
+      },
+    ],
+  }),
+
+  uiVitepress: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en-GB",
+    targetLocales: ["de", "fr", "es", "pt-BR"],
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
+    },
+    features: {
+      translateUIStrings: false,
+      translateDocs: true,
+      translateJson: true,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "./locales",
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [
+      {
+        contentPaths: ["docs/index.md", "docs/guide", "docs/reference"],
+        outputDir: "docs",
+        docsOutput: {
+          style: "vitepress",
+          docsRoot: "docs",
+          rewriteVitepressLinks: true,
+        },
+        addFrontmatter: true,
+      },
+    ],
+    json: [
+      {
+        description: "VitePress theme/nav/sidebar strings",
+        contentPaths: "docs/.vitepress/i18n/theme.en.json",
+        outputPathTemplate: "docs/.vitepress/i18n/theme.{locale}.json",
+        keyPolicy: {
+          mode: "denylist",
+          skipKeys: [],
+          translateKeys: [],
+        },
       },
     ],
   }),

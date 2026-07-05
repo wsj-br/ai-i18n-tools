@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "使用 LLM 对 JavaScript/TypeScript 应用程序和文档站点进行国际化的 CLI 和工具包。"
+  },
+  "nav": {
+    "guide": "指南",
+    "reference": "参考",
+    "examples": "示例",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "指南",
+    "introduction": "简介",
+    "whatIs": "什么是 ai-i18n-tools？",
+    "installation": "安装",
+    "quickStart": "快速入门",
+    "translationTypes": "翻译类型",
+    "uiStrings": "UI 字符串",
+    "documents": "文档",
+    "json": "JSON",
+    "integrations": "集成",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "图片和屏幕截图",
+    "svgTranslation": "SVG 翻译",
+    "providers": "LLM 提供商",
+    "runtimeHelpers": "运行时助手",
+    "dashboard": "翻译仪表板",
+    "reference": "参考",
+    "configuration": "配置",
+    "cli": "CLI 命令",
+    "architecture": "架构",
+    "programmaticApi": "编程 API",
+    "environment": "环境变量",
+    "examples": "示例",
+    "examplesOverview": "概述"
+  },
+  "footer": {
+    "message": "根据 MIT 许可证发布。",
+    "copyright": "版权所有 © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "上一页",
+    "next": "下一页"
+  },
+  "outline": {
+    "label": "在此页面上"
+  },
+  "langMenuLabel": "语言",
+  "search": {
+    "placeholder": "搜索"
+  }
+}

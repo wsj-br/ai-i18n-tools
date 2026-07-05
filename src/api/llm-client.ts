@@ -31,18 +31,18 @@ import {
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
-  buildLintSourcePromptMessages,
+  buildProofreadUIPromptMessages,
   buildUIPromptMessages,
   parseBatchJsonArrayResponse,
   parseBatchJsonObjectResponse,
   parseBatchTranslationResponse,
-  parseLintSourceBatchResponse,
+  parseProofreadUIBatchResponse,
   parsePluralFormsJsonResponse,
   parseUIJsonArrayResponse,
   ScriptValidationError,
   type DocumentBatchResponseFormat,
   type DocumentPromptContentType,
-  type LintSourceSlotResult,
+  type ProofreadUISlotResult,
 } from "../core/prompt-builder.js";
 import type { Logger } from "../utils/logger.js";
 
@@ -796,14 +796,14 @@ export class LlmClient {
   }
 
   /**
-   * `lint-source`: review a batch of source-locale UI strings; model returns JSON array of `{ issues: [...] }`.
+   * `proofread-ui`: review a batch of source-locale UI strings; model returns JSON array of `{ issues: [...] }`.
    */
-  async lintUISourceBatch(
+  async proofreadUISourceBatch(
     texts: string[],
     languageLabel: string,
     options?: { startModelIndex?: number; glossaryHints?: string[] }
   ): Promise<{
-    slots: LintSourceSlotResult[];
+    slots: ProofreadUISlotResult[];
     model: string;
     usage: LlmUsageStats;
     cost?: number;
@@ -818,7 +818,7 @@ export class LlmClient {
       };
     }
 
-    const { systemPrompt, userContent } = buildLintSourcePromptMessages(texts, {
+    const { systemPrompt, userContent } = buildProofreadUIPromptMessages(texts, {
       languageLabel,
       glossaryHints: options?.glossaryHints,
     });
@@ -842,11 +842,11 @@ export class LlmClient {
         if (e instanceof BilledCompletionError) {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
-        this.logger?.warn(`lint-source batch failed with ${model}: ${e}`);
+        this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
         continue;
       }
       try {
-        const { slots, lengthWarning } = parseLintSourceBatchResponse(result.content, texts.length);
+        const { slots, lengthWarning } = parseProofreadUIBatchResponse(result.content, texts.length);
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           slots,
@@ -858,12 +858,12 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         LlmClient.addDiscarded(discarded, result.usage, result.cost);
-        this.logger?.warn(`lint-source batch failed with ${model}: ${e}`);
+        this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
       }
     }
 
     throw new Error(
-      `All translation models failed for lint-source batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+      `All translation models failed for proofread-ui batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
     );
   }
 

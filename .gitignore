@@ -54,6 +54,10 @@ examples/**/.translation-cache/*
 # Documentation source (keep only compiled docs)
 docs-src/
 
+# VitePress build output
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
 # References to other repositories
 references/
 

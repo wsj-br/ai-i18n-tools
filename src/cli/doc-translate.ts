@@ -21,9 +21,12 @@ import { BatchTranslationError } from "../core/types.js";
 import {
   timestamp,
   formatElapsedMmSs,
-  formatSegmentCacheHitSuffix,
   printModelsTryInOrder,
 } from "./format.js";
+import {
+  mergeTranslateTotals,
+  printTranslationRunSummary,
+} from "./translate-summary.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
 import {
@@ -56,7 +59,8 @@ import {
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
-import { shouldRewriteFlatMarkdownLinks } from "../core/output-paths.js";
+import { shouldRewriteFlatMarkdownLinks, shouldRewriteVitepressLinks, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import { normalizeVitepressDocLinks } from "../processors/vitepress-link-normalize.js";
 import {
   applyMarkdownLanguageListPostProcessing,
   applyMarkdownPostProcessing,
@@ -70,6 +74,7 @@ import {
   ensureDirForFile,
   hashFileContent,
   resolveTranslatedOutputPath,
+  translatedOutputIsCurrent,
   writeAtomicUtf8,
 } from "./helpers.js";
 import { normalizeLocale } from "../core/config.js";
@@ -96,7 +101,10 @@ import {
   resolveMarkdownEmphasisPlaceholders,
   usesAutomaticEmphasisPlaceholdersForLocale,
 } from "../core/markdown-emphasis-defaults.js";
-import { collectMarkdownIssuesForSegment } from "../processors/markdown-source-diagnostics.js";
+import {
+  collectMalformedAdmonitionRows,
+  collectMarkdownIssuesForSegment,
+} from "../processors/markdown-source-diagnostics.js";
 import type { MarkdownSourceIssueInsert } from "../core/types.js";
 import {
   translateOneSegmentWithQualityRetry,
@@ -222,6 +230,7 @@ function emptyMarkdownProtectShell(): Omit<
     htmlTagMap: [],
     openMap: [],
     endMap: [],
+    titleCloseMap: [],
     htmlAnchors: [],
     docusaurusHeadingIds: [],
     mdxMap: [],
@@ -1645,6 +1654,7 @@ export async function scanAndRecordMarkdownSourceIssuesForTranslate(
   for (const s of segments) {
     markdownIssueRows.push(...collectMarkdownIssuesForSegment(s, fileTrackingKey));
   }
+  markdownIssueRows.push(...collectMalformedAdmonitionRows(content, fileTrackingKey));
   await withCacheMutex(opts.cacheMutex, () =>
     cache.replaceMarkdownIssuesForFilepath(fileTrackingKey, markdownIssueRows)
   );
@@ -1728,7 +1738,7 @@ export async function translateMarkdownFile(
     cache &&
     !opts.noCache &&
     cachedFileHash === fileHash &&
-    fs.existsSync(outPath)
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
       console.log(
@@ -1945,6 +1955,13 @@ export async function translateMarkdownFile(
       translatedMarkdownRelPaths,
     });
     output = matterStringify(newBody, parsed.data);
+  } else if (shouldRewriteVitepressLinks(config)) {
+    const parsed = matter(output);
+    const newBody = normalizeVitepressDocLinks(
+      parsed.content,
+      vitepressLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
+    );
+    output = matterStringify(newBody, parsed.data);
   }
 
   const moPost = config.doc.docsOutput.postProcessing;
@@ -2084,7 +2101,7 @@ export async function translateAstroFile(
     cache &&
     !opts.noCache &&
     cachedFileHash === fileHash &&
-    fs.existsSync(outPath)
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
       console.log(
@@ -2392,6 +2409,7 @@ export async function translateJsonFile(
       };
   const content = fileData.content;
   const fileHash = fileData.hash;
+  const sourceFileMtime = fileData.mtime;
   /** Cwd-relative path for cache/UI and `file_tracking` (must match `resolveDocTrackingKeyToAbs` under project root). */
   const relPathFromCwd = path.relative(opts.cwd, absSource).split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "json");
@@ -2424,7 +2442,7 @@ export async function translateJsonFile(
     cache &&
     !opts.noCache &&
     cachedFileHashJson === fileHash &&
-    fs.existsSync(outPath)
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
       console.log(
@@ -2643,6 +2661,7 @@ export async function translateSvgAssetFile(
   const forceLc = config.svg?.forceLowercase ?? false;
   const content = fs.readFileSync(absSource, "utf8");
   const fileHash = hashFileContent(content);
+  const sourceFileMtime = fs.statSync(absSource).mtime.toISOString();
 
   if (opts.force && cache && !opts.noCache) {
     await withCacheMutex(opts.cacheMutex, () => cache.clearFile(cacheKey, locale));
@@ -2669,7 +2688,7 @@ export async function translateSvgAssetFile(
     cache &&
     !opts.noCache &&
     cachedFileHashSvg === fileHash &&
-    fs.existsSync(outPath)
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
       console.log(
@@ -2931,28 +2950,7 @@ function accumulateFileTotals(
   totals: TranslateTotals,
   opts?: { skipUsage?: boolean }
 ): void {
-  if (skipped) {
-    target.filesSkipped += totals.filesSkipped;
-    target.filesProcessed = (target.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-    return;
-  }
-  target.filesWritten += totals.filesWritten;
-  target.filesProcessed = (target.filesProcessed ?? 0) + (totals.filesProcessed ?? 0);
-  // `liveSum` accrues tokens/cost incrementally via the client's `onApiUsage` sink (so interrupts
-  // still report spent work); skip them here to avoid double-counting completed files into it.
-  if (!opts?.skipUsage) {
-    target.inputTokens += totals.inputTokens;
-    target.outputTokens += totals.outputTokens;
-    target.costUsd = (target.costUsd ?? 0) + (totals.costUsd ?? 0);
-  }
-  target.segmentsCached = (target.segmentsCached ?? 0) + (totals.segmentsCached ?? 0);
-  target.segmentsTranslated = (target.segmentsTranslated ?? 0) + (totals.segmentsTranslated ?? 0);
-  target.segmentValidationFailures =
-    (target.segmentValidationFailures ?? 0) + (totals.segmentValidationFailures ?? 0);
-  target.individualSegmentTranslations =
-    (target.individualSegmentTranslations ?? 0) + (totals.individualSegmentTranslations ?? 0);
-  target.segmentQualitySplitRetries =
-    (target.segmentQualitySplitRetries ?? 0) + (totals.segmentQualitySplitRetries ?? 0);
+  mergeTranslateTotals(target, totals, skipped, opts);
 }
 
 function printTranslateDocsRunSummary(
@@ -2961,73 +2959,15 @@ function printTranslateDocsRunSummary(
   wallElapsedMs: number,
   outcome: "success" | "failure" | "interrupted"
 ): void {
-  if (outcome === "success") {
-    console.log(chalk.bold.green(`\n${t("✅ Translation complete!")}\n`));
-  } else if (outcome === "interrupted") {
-    console.log(
-      chalk.bold.yellow(
-        `\n${t(
-          "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
-        )}\n`
-      )
-    );
-  } else {
-    console.log(
-      chalk.bold.yellow(
-        `\n${t(
-          "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error)."
-        )}\n`
-      )
-    );
-  }
-
-  console.log(chalk.bold(t("📊 Summary:")));
-  console.log(t("   Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) }));
-  console.log(t("   Total files processed: {{count}}", { count: sum.filesProcessed ?? 0 }));
-  console.log(t("   Total files skipped:   {{count}}", { count: sum.filesSkipped }));
-  console.log(
-    t("   Segments from cache:   {{count}}{{suffix}}", {
-      count: sum.segmentsCached ?? 0,
-      suffix: formatSegmentCacheHitSuffix(sum.segmentsCached, sum.segmentsTranslated),
-    })
-  );
-  console.log(t("   Segments translated:   {{count}}", { count: sum.segmentsTranslated ?? 0 }));
-  console.log(
-    t("   Segment translation failures: {{count}}", {
-      count: sum.segmentValidationFailures ?? 0,
-    })
-  );
-  console.log(
-    t("   Individual segment translations: {{count}}", {
-      count: sum.individualSegmentTranslations ?? 0,
-    })
-  );
-  console.log(
-    t("   Quality split retries: {{count}}", { count: sum.segmentQualitySplitRetries ?? 0 })
-  );
-  console.log(
-    t("   Total tokens used:     {{tokens}}", {
-      tokens: (sum.inputTokens + sum.outputTokens).toLocaleString(),
-    })
-  );
-  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
-    console.log(t("   Files written:         0 (dry-run)"));
-  } else if ((sum.filesWritten ?? 0) > 0) {
-    console.log(t("   Files written:         {{count}}", { count: sum.filesWritten }));
-  }
-  const cost = sum.costUsd ?? 0;
-  const tokensUsed = (sum.inputTokens ?? 0) + (sum.outputTokens ?? 0);
-  const segNew = sum.segmentsTranslated ?? 0;
-  // Gate on actual API work (tokens/cost), not on completed-file segment counts: an interrupted
-  // run can have spent tokens/cost while no file finished, so `segmentsTranslated` is still 0.
-  if (cost > 0) {
-    console.log(t("   Total cost:            ${{amount}}", { amount: cost.toFixed(6) }));
-  } else if (tokensUsed > 0 || segNew > 0) {
-    console.log(t("   Total cost:            $0.0000 (cost data not available from API)"));
-  } else {
-    console.log(t("   Total cost:            $0.0000 (all segments from cache)"));
-  }
-  console.log("");
+  printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
+    success: t("✅ Translation complete!"),
+    interrupted: t(
+      "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+    ),
+    failure: t(
+      "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error)."
+    ),
+  });
 }
 
 /** Run translate for all enabled kinds and locales. */

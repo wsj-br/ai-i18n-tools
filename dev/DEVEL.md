@@ -7,7 +7,7 @@
     - [Optional: locale screenshots (`examples/nextjs-app`)](#optional-locale-screenshots-examplesnextjs-app)
     - [Optional: Translation Dashboard screenshot](#optional-translation-dashboard-screenshot)
   - [Setting Up the Workspace](#setting-up-the-workspace)
-    - [Exposing the CLI globally during development](#exposing-the-cli-globally-during-development)
+    - [Running the CLI during development](#running-the-cli-during-development)
   - [Common Scripts](#common-scripts)
   - [Project Structure](#project-structure)
   - [Running Examples](#running-examples)
@@ -52,7 +52,7 @@ Optional tuning: **`VIRTUAL_TIME_MS`** (default **8000**) delays capture so loca
 
 ### Optional: Translation Dashboard screenshot
 
-[`scripts/screenshot-translation-dashboard.sh`](../scripts/screenshot-translation-dashboard.sh) refreshes **`docs/translation-dashboard.png`** for [GETTING_STARTED.md](../docs/GETTING_STARTED.md). The dashboard UI is English-only (one PNG). Extra prerequisites:
+[`scripts/screenshot-translation-dashboard.sh`](../scripts/screenshot-translation-dashboard.sh) refreshes **`docs/public/translation-dashboard.png`** for the [Translation Dashboard](../docs/guide/translation-dashboard.md) guide page.
 
 | Dependency | Role |
 |------------|------|
@@ -71,40 +71,78 @@ pnpm install
 pnpm build
 ```
 
-After building, the CLI is available locally via `pnpm exec ai-i18n-tools` or through the npm scripts (e.g. `pnpm i18n:extract`).
+After building, invoke the CLI using one of the options in [Running the CLI during development](#running-the-cli-during-development) below.
 
-### Exposing the CLI globally during development
+### Running the CLI during development
 
-`pnpm exec ai-i18n-tools` and the `pnpm i18n:*` scripts work from inside this repo without any extra setup (after `pnpm build`, which also sets mode `0o755` on `dist/cli/index.js` via `scripts/chmod-cli-bin.mjs`). To call the bare `ai-i18n-tools` command from any directory against your local working tree:
+The published `bin` entry is `bin/ai-i18n-tools.mjs` — a stable shim that dynamically imports the compiled CLI at `dist/cli/index.js`. `pnpm build` runs `tsc` (source: `src/cli/index.ts`), then `scripts/chmod-cli-bin.mjs` sets mode `0o755` on both the shim and `dist/cli/index.js`. The root `prepare` script runs `scripts/ensure-built.mjs`, which builds when `dist/cli/index.js` is missing after `pnpm install`.
+
+**Why `pnpm exec ai-i18n-tools` does not work at the repo root:** pnpm links a package's `bin` into `node_modules/.bin` only for *dependents*, not for the package itself. At the monorepo root there is no `node_modules/.bin/ai-i18n-tools`, so bare `ai-i18n-tools`, `pnpm exec ai-i18n-tools`, and the root `pnpm i18n:*` scripts (which call the bare command name) all fail unless you use one of the workarounds below. Workspace examples that list `"ai-i18n-tools": "workspace:^"` do get the bin link — there `pnpm exec ai-i18n-tools` works as documented for consumer projects.
+
+**Option 1 — call the shim directly (always works after `pnpm build`):**
+
+```bash
+node bin/ai-i18n-tools.mjs status
+./bin/ai-i18n-tools.mjs status   # Linux/macOS/WSL after chmod
+```
+
+Some in-repo examples use this form explicitly, e.g. `node ../../bin/ai-i18n-tools.mjs …` in `examples/multi-provider`.
+
+**Option 2 — shell alias (bare command in any directory while developing):**
+
+From the repository root:
+
+```bash
+alias ai-i18n-tools='node "$(pwd)/bin/ai-i18n-tools.mjs"'
+```
+
+Or with a fixed clone path (adjust to your checkout):
+
+```bash
+alias ai-i18n-tools='node "$HOME/src/ai-i18n-tools/bin/ai-i18n-tools.mjs"'
+```
+
+Add the alias to `~/.bashrc` or `~/.zshrc` if you want it in every new shell. Rebuild (`pnpm build`) after CLI changes before invoking.
+
+**Option 3 — global install from the working tree (bare command everywhere):**
+
+Requires pnpm ≥ 11 (this repo uses pnpm 11.x). pnpm 11 removed `pnpm link --global`; register the local package with `pnpm add -g .` instead:
 
 ```bash
 pnpm install
 pnpm build
-pnpm link --global
+pnpm add -g .
 which ai-i18n-tools          # expect: $(pnpm bin -g)/ai-i18n-tools
 ```
 
-If `pnpm link --global` fails with:
+If global commands fail before or after `pnpm add -g .`, pnpm may report one of:
 
 ```text
 ERR_PNPM_NO_GLOBAL_BIN_DIR  Unable to find the global bin directory
 ```
 
-pnpm has never set up a global bin on this account. Run the one-time bootstrap and then open a new shell so the updated `PATH` is loaded:
+or (when `PNPM_HOME` is set but `$PNPM_HOME/bin` is not on `PATH`):
 
-```bash
-pnpm setup                   # appends PNPM_HOME + PATH to ~/.bashrc (or ~/.zshrc)
-exec $SHELL -l               # reload the shell
-pnpm bin -g                  # sanity check: prints e.g. /home/<user>/.local/share/pnpm
-pnpm link --global           # retry from the repo root
+```text
+The configured global bin directory "<path>/bin" is not in PATH
+Run "pnpm setup" to update your shell configuration.
 ```
 
-Undo with `pnpm uninstall -g ai-i18n-tools`.
+Run the one-time bootstrap, then open a new shell so the updated `PATH` is loaded:
+
+```bash
+pnpm setup                   # appends PNPM_HOME and $PNPM_HOME/bin to ~/.bashrc (or ~/.zshrc)
+exec $SHELL -l               # reload the shell
+pnpm bin -g                  # sanity check: prints e.g. /home/<user>/.local/share/pnpm/bin
+pnpm add -g .                # retry from the repo root
+```
+
+Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tools`).
 
 **Cross-platform notes**
 
 - Linux, macOS, and WSL: the CLI needs the executable bit on `dist/cli/index.js`; `pnpm build` sets it (see `scripts/chmod-cli-bin.mjs`).
-- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account.
+- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account. Prefer `node bin/ai-i18n-tools.mjs` or a PowerShell function over a bash `alias`.
 
 ## Common Scripts
 
@@ -165,10 +203,11 @@ pnpm test:watch        # re-run on changes
 ### Testing Placeholders Handling
 
 ```bash
-ai-i18n-tools translate-docs --path docs/markdown-mdx-stress-test.md --locale=pt-BR --force
+cd examples/test-markdown
+ai-i18n-tools translate-docs -c ai-i18n-tools.config.json --path test-markdown-stress-test.md --locale=en-GB --force
 ```
 
-check the output in `translated-docs/docs/markdown-mdx-stress-test.pt-BR.md`
+check the output in `examples/test-markdown/translated-docs/test-markdown-stress-test.en-GB.md`
 
 ### Test the translation end-to-end on the ai-i18n-tools documentation and the example projects
 
@@ -312,7 +351,7 @@ Controlled by the `files` field in `package.json`:
 | `dist/`            | Compiled JavaScript, type declarations, source maps                |
 | `data/`            | Bundled data (for example `ui-languages-complete.json` for `generate-ui-languages`) |
 | `README.md`        | Main English README                                                |
-| `docs/`            | English docs (GETTING_STARTED, LOCALE-ASSETS-GUIDE, PACKAGE_OVERVIEW, AI agent context) |
+| `docs/`            | VitePress documentation site (English source + locale trees; GitHub Pages on release) |
 | `LICENSE`          | MIT licence                                                        |
 
 Translated READMEs and docs live under `translated-docs/` in the Git repository only (see links in `README.md` / `docs/*.md` on GitHub).

@@ -1,0 +1,56 @@
+/* Smoother paragraph wrapping — avoids awkward breaks around inline code. */
+.vp-doc p,
+.vp-doc li {
+  text-wrap: pretty;
+}
+
+/* VitePress caps the prose column at 688px even on wide screens (see
+   VPDoc.vue's `.VPDoc.has-aside .content-container` rule), which forces
+   wide tables (commands, config references, etc.) into horizontal scroll
+   well before the viewport is actually full. Raise the ceiling so pages
+   can use more of the available width; on narrower viewports flex
+   shrinking still brings it back down, so this only kicks in when there's
+   room. `!important` is needed to beat VPDoc's scoped-style specificity. */
+@media (min-width: 1280px) {
+  .VPDoc.has-aside .content-container {
+    max-width: 960px !important;
+  }
+}
+
+/* VitePress renders tables at their natural (max-content) width and only
+   makes `.vp-doc table` a scrollable box (display: block + overflow-x:
+   auto) rather than constraining it — tables don't fill their container by
+   default. Force the table to the available width and let long, slash-
+   heavy `code` spans (npm commands, package paths) break instead of
+   pushing columns wider than the page, so the scrollbar only appears for
+   genuinely unbreakable content. */
+.vp-doc table {
+  width: 100%;
+}
+
+.vp-doc td code,
+.vp-doc th code {
+  overflow-wrap: anywhere;
+}
+
+/* Shields.io badges: VitePress base.css sets img { display: block } and
+   .vp-doc img { margin: 16px 0 }, which stacks badges vertically.
+   English index is h1 (from sync) + h2 (from README) + badge paragraph. */
+.vp-doc h1 + p,
+.vp-doc h1 + h2 + p,
+.vp-doc p:has(> a > img[src*="img.shields.io"]),
+.vp-doc p:has(> a > img[src*="badge.svg"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  align-items: center;
+}
+
+.vp-doc h1 + p img,
+.vp-doc h1 + h2 + p img,
+.vp-doc p:has(> a > img[src*="img.shields.io"]) img,
+.vp-doc p:has(> a > img[src*="badge.svg"]) img {
+  display: inline-block;
+  margin: 0 !important;
+  vertical-align: middle;
+}

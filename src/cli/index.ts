@@ -60,7 +60,7 @@ import {
 } from "./doc-translate.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
-import { runLintSource } from "./lint-source.js";
+import { runProofreadUI } from "./proofread-ui.js";
 import { runCheckMarkdown } from "./check-markdown.js";
 import { runExportUIXliff } from "./export-ui-xliff.js";
 import {
@@ -95,8 +95,10 @@ import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
 import { runListModels } from "./list-models.js";
+import { runBenchModels } from "./bench-models.js";
 import { runListLanguages } from "./list-languages.js";
 import { runCleanTemp } from "./clean-temp.js";
+import { runPurgeLocale } from "./purge-locale.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -424,7 +426,7 @@ Target locales (-l / --locale):
   -l, --locale <codes> with comma-separated BCP-47 codes (e.g. de,fr,pt-BR).
   When omitted, defaults come from config and ui-languages.json (see docs).
 
-  lint-source uses -l, --locale <code> for a single source locale to review.
+  proofread-ui uses -l, --locale <code> for a single source locale to review.
 
 Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.
 
@@ -528,6 +530,56 @@ program
   );
 
 program
+  .command("bench-models")
+  .description(
+    t(
+      "Benchmark each configured translation model by translating a sample in isolation (no fallback). Prints model id, input/output tokens, wall-clock time, and USD cost"
+    )
+  )
+  .option(
+    "--models <ids>",
+    t("Comma-separated model ids to benchmark (default: active provider's translationModels)")
+  )
+  .option("--text <text>", t("Inline sample text to translate (overrides --file and the default)"))
+  .option("--file <path>", t("Read the sample text from a file (project-relative or absolute)"))
+  .option("--source <locale>", t("Source locale (default: config sourceLocale)"))
+  .option(
+    "--target <locale>",
+    t("Target locale (default: first configured documentation target locale)")
+  )
+  .action(async (_opts, cmd: Command) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+    const o = cmd.opts() as {
+      models?: string;
+      text?: string;
+      file?: string;
+      source?: string;
+      target?: string;
+    };
+    try {
+      const { exitCode } = await runBenchModels(config, projectRoot, {
+        models: o.models ? o.models.split(",") : undefined,
+        text: o.text,
+        file: o.file,
+        source: o.source,
+        target: o.target,
+      });
+      process.exitCode = exitCode;
+    } catch {
+      process.exitCode = 1;
+    }
+  })
+  .addHelpText(
+    "after",
+    `\n${t(`Examples:
+  ai-i18n-tools bench-models
+  ai-i18n-tools bench-models --target fr-FR
+  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview
+  ai-i18n-tools bench-models --file docs/intro.md --target de-DE`)}\n`
+  );
+
+program
   .command("list-languages")
   .description(
     t(
@@ -554,7 +606,7 @@ program
   .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown | ui-docusaurus | ui-starlight | ui-astro-website | ui-json-bundles",
+    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-astro-website | ui-json-bundles",
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
@@ -564,6 +616,7 @@ program
       "ui-markdown": "uiMarkdown",
       "ui-docusaurus": "uiDocusaurus",
       "ui-starlight": "uiStarlight",
+      "ui-vitepress": "uiVitepress",
       "ui-astro-website": "uiAstroWebsite",
       "ui-json-bundles": "uiJsonBundles",
     };
@@ -571,7 +624,7 @@ program
     if (!key) {
       console.error(
         t(
-          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-astro-website", or "ui-json-bundles".'
+          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-astro-website", or "ui-json-bundles".'
         )
       );
       process.exitCode = 1;
@@ -1658,13 +1711,13 @@ program
   );
 
 program
-  .command("lint-source")
+  .command("proofread-ui")
   .description(
     t(
-      "Run extract (refresh strings.json), then lint source-locale UI strings via OpenRouter; writes results log under cacheDir"
+      "Run extract (refresh strings.json), then proofread source-locale UI strings via OpenRouter; writes results log under cacheDir"
     )
   )
-  .option("-l, --locale <code>", t("BCP-47 locale to lint (default: config sourceLocale)"))
+  .option("-l, --locale <code>", t("BCP-47 locale to proofread (default: config sourceLocale)"))
   .option("--chunk <n>", t("Strings per API batch (default: 50)"), "50")
   .option("-j, --concurrency <n>", t("Max parallel batches (default: config.concurrency)"))
   .option("--dry-run", t("Print batch plan only; no API calls"), false)
@@ -1681,7 +1734,7 @@ program
       json?: boolean;
     };
     try {
-      const result = await runLintSource(config, {
+      const result = await runProofreadUI(config, {
         cwd: projectRoot,
         locale: o.locale,
         chunkSize: parsePositiveInt("Chunk (--chunk)", o.chunk ?? "50"),
@@ -1694,13 +1747,13 @@ program
         json: Boolean(o.json),
       });
       if (result.exitWithError) {
-        console.error(chalk.red(t("❌ [lint-source] {{error}}", { error: result.exitWithError })));
+        console.error(chalk.red(t("❌ [proofread-ui] {{error}}", { error: result.exitWithError })));
         process.exit(1);
       }
     } catch (e) {
       console.error(
         chalk.red(
-          t("❌ [lint-source] {{error}}", { error: e instanceof Error ? e.message : String(e) })
+          t("❌ [proofread-ui] {{error}}", { error: e instanceof Error ? e.message : String(e) })
         )
       );
       process.exit(1);
@@ -2778,6 +2831,67 @@ program
       force: Boolean(opts.force),
     });
   });
+
+program
+  .command("purge-locale")
+  .description(
+    t(
+      "Delete all cached translations, file_tracking, and translation_failures rows for the given locale(s), plus the generated translated documents, the per-locale flat UI file, and the locale's strings.json entries (use --keep-files to purge only the cache)"
+    )
+  )
+  .option(
+    "-l, --locale <code>",
+    t("Locale to purge (repeat for multiple)"),
+    (val: string, prev: string[]) => [...prev, val],
+    [] as string[]
+  )
+  .option("--dry-run", t("Show what would be deleted; do not delete"), false)
+  .option("-y, --yes", t("Skip the confirmation prompt"), false)
+  .option("-f, --force", t("Alias for --yes"), false)
+  .option(
+    "--keep-files",
+    t("Only purge the SQLite cache; leave generated files and strings.json untouched"),
+    false
+  )
+  .option(
+    "--backup <path>",
+    t("Write a SQLite backup to <path> before deletion (no backup is made unless this is set)")
+  )
+  .action(
+    async (
+      opts: {
+        locale?: string[];
+        dryRun?: boolean;
+        yes?: boolean;
+        force?: boolean;
+        keepFiles?: boolean;
+        backup?: string;
+      },
+      cmd: Command
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+
+      const locales = opts.locale ?? [];
+      if (locales.length === 0) {
+        console.error(
+          chalk.red(t("❌ No locales provided. Pass at least one -l / --locale <code>."))
+        );
+        process.exit(1);
+      }
+
+      await runPurgeLocale({
+        cacheDir: path.join(projectRoot, config.cacheDir),
+        locales,
+        dryRun: Boolean(opts.dryRun),
+        force: Boolean(opts.yes || opts.force),
+        keepFiles: Boolean(opts.keepFiles),
+        config,
+        projectRoot,
+        backupPath: opts.backup ? path.resolve(cwd, opts.backup) : undefined,
+      });
+    }
+  );
 
 function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   const { configFlag, cwd, providerOverride } = withConfig(cmd);

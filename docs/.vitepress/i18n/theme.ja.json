@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "LLM を使用して JavaScript/TypeScript アプリケーションとドキュメントサイトを国際化するための CLI およびツールキット。"
+  },
+  "nav": {
+    "guide": "ガイド",
+    "reference": "リファレンス",
+    "examples": "例",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "ガイド",
+    "introduction": "はじめに",
+    "whatIs": "ai-i18n-tools とは？",
+    "installation": "インストール",
+    "quickStart": "クイックスタート",
+    "translationTypes": "翻訳タイプ",
+    "uiStrings": "UI文字列",
+    "documents": "ドキュメント",
+    "json": "JSON",
+    "integrations": "統合",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "画像とスクリーンショット",
+    "svgTranslation": "SVG の翻訳",
+    "providers": "LLM プロバイダー",
+    "runtimeHelpers": "ランタイムヘルパー",
+    "dashboard": "翻訳ダッシュボード",
+    "reference": "リファレンス",
+    "configuration": "設定",
+    "cli": "CLI コマンド",
+    "architecture": "アーキテクチャ",
+    "programmaticApi": "プログラム API",
+    "environment": "環境変数",
+    "examples": "例",
+    "examplesOverview": "概要"
+  },
+  "footer": {
+    "message": "MIT ライセンスでリリースされています。",
+    "copyright": "Copyright © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "前へ",
+    "next": "次へ"
+  },
+  "outline": {
+    "label": "このページで"
+  },
+  "langMenuLabel": "言語",
+  "search": {
+    "placeholder": "検索"
+  }
+}

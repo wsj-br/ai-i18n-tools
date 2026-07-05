@@ -24,6 +24,6 @@
     "node": ">=22.16.0"
   },
   "devDependencies": {
-    "ai-i18n-tools": "workspace:^"
+    "ai-i18n-tools": "^1.7.2"
   }
 }

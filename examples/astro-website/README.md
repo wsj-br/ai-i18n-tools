@@ -13,6 +13,38 @@ You do not need i18next or `ai-i18n-tools/runtime` for this static site; transla
 
 For catalog vs flat JSON key shapes, see [`docs/ai-i18n-tools-context.md`](../../docs/ai-i18n-tools-context.md) in the main repo.
 
+## Requirements
+
+- Node.js ≥ 22.16
+- [pnpm](https://pnpm.io/) ≥ 10.33
+- An [OpenRouter](https://openrouter.ai) API key (only when re-running translation)
+
+## Installation
+
+### Try this example on its own
+
+Copy only this example folder and install `ai-i18n-tools` from npm:
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website
+cd astro-website
+pnpm install
+```
+
+### From the full ai-i18n-tools repository
+
+Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). Run `pnpm install` and `pnpm run build` from the repository root; the workspace [`overrides`](../../pnpm-workspace.yaml) entry links `ai-i18n-tools` to your local checkout automatically.
+
+## Run the site
+
+From this directory (after degit + `pnpm install`, or `cd examples/astro-website` in the monorepo):
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:4321/](http://localhost:4321/) and try locale paths such as `/de/` and `/pt-br/`. Production build: `pnpm build` then `pnpm preview`.
+
 ---
 
 ## From vanilla Astro to a multilingual site

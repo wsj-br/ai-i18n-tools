@@ -4,9 +4,9 @@ import {
   buildDocumentSinglePrompt,
   buildPluralPassBPrompt,
   buildPluralStep0Prompt,
-  buildLintSourcePromptMessages,
+  buildProofreadUIPromptMessages,
   buildUIPromptMessages,
-  parseLintSourceBatchResponse,
+  parseProofreadUIBatchResponse,
   parsePluralFormsJsonResponse,
   parseBatchJsonArrayResponse,
   parseBatchJsonObjectResponse,
@@ -14,7 +14,7 @@ import {
   parseUIJsonArrayResponse,
   PromptParseError,
   DocumentBatchJsonParseError,
-  LintSourceJsonParseError,
+  ProofreadUIJsonParseError,
   PluralFormsParseError,
   UIJsonArrayParseError,
   ScriptValidationError,
@@ -393,20 +393,20 @@ describe("plural prompt builders and parsers", () => {
   });
 });
 
-describe("lint-source prompt and parser", () => {
-  it("buildLintSourcePromptMessages includes locale line and output contract", () => {
-    const { systemPrompt, userContent } = buildLintSourcePromptMessages(["Save"], {
+describe("proofread-ui prompt and parser", () => {
+  it("buildProofreadUIPromptMessages includes locale line and output contract", () => {
+    const { systemPrompt, userContent } = buildProofreadUIPromptMessages(["Save"], {
       languageLabel: "German",
       glossaryHints: ['- "Save" → "Speichern"'],
     });
     expect(systemPrompt).toContain("Locale / language of the strings under review: German");
-    expect(systemPrompt).toContain(PROMPTS.lintSource.outputContract.trim());
+    expect(systemPrompt).toContain(PROMPTS.proofreadUI.outputContract.trim());
     expect(systemPrompt).toContain("<glossary>");
     expect(userContent).toBe(JSON.stringify(["Save"], null, 2));
   });
 
-  it("parseLintSourceBatchResponse normalizes and pads malformed slots", () => {
-    const { slots, lengthWarning } = parseLintSourceBatchResponse(
+  it("parseProofreadUIBatchResponse normalizes and pads malformed slots", () => {
+    const { slots, lengthWarning } = parseProofreadUIBatchResponse(
       '[{"issues":[{"severity":"warn","message":"m1","suggestedText":"s1"}]}]',
       2
     );
@@ -420,9 +420,9 @@ describe("lint-source prompt and parser", () => {
     expect(slots[1]?.issues).toEqual([]);
   });
 
-  it("parseLintSourceBatchResponse throws on non-array", () => {
-    expect(() => parseLintSourceBatchResponse('{"issues":[]}', 1)).toThrow(
-      LintSourceJsonParseError
+  it("parseProofreadUIBatchResponse throws on non-array", () => {
+    expect(() => parseProofreadUIBatchResponse('{"issues":[]}', 1)).toThrow(
+      ProofreadUIJsonParseError
     );
   });
 });

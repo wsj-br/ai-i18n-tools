@@ -5,12 +5,27 @@ import {
   findUnclosedInlineCodeLine1Starts,
   pairMarkdownEmphasisDelimitersFromRuns,
 } from "./emphasis-placeholders.js";
+import {
+  ADMONITION_CLOSING_NOINDENT_RE,
+  ADMONITION_OPENER_COLONS_RE,
+  ADMONITION_UNTERMINATED_TITLE_RE,
+} from "./admonition-syntax.js";
+import { computeSegmentHash } from "../utils/hash.js";
+
+/** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
+const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
 
 export const MARKDOWN_SOURCE_ISSUE_CODES = {
   UNPAIRED_EMPHASIS: "UNPAIRED_EMPHASIS",
   UNCLOSED_INLINE_CODE: "UNCLOSED_INLINE_CODE",
   /** `**` / `__` wrapping a `[text](url)` link (put emphasis inside the link text only). */
   STRONG_OUTSIDE_LINK: "STRONG_OUTSIDE_LINK",
+  /** A `:::note` / nested admonition opener with no matching closing `:::` fence. */
+  ADMONITION_UNCLOSED: "ADMONITION_UNCLOSED",
+  /** A `:::` closing fence with no open admonition. */
+  ADMONITION_UNEXPECTED_CLOSE: "ADMONITION_UNEXPECTED_CLOSE",
+  /** A bracketed-title opener whose `[` is never closed on the line (`:::note[Title`). */
+  ADMONITION_UNTERMINATED_TITLE: "ADMONITION_UNTERMINATED_TITLE",
 } as const;
 
 export type MarkdownSourceIssueCode =
@@ -277,6 +292,81 @@ export function collectMarkdownSourceIssues(
   return issues;
 }
 
+/**
+ * Whole-file scan for malformed Docusaurus admonitions. This runs on the entire file (not per
+ * segment) because {@link MarkdownExtractor} absorbs malformations: an unclosed opener becomes one
+ * giant segment to EOF, a stray closer becomes plain text, and an unterminated `[` title falls back
+ * to the generic title path. `line1` values are absolute 1-based file lines.
+ */
+export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSourceIssue[] {
+  const issues: MarkdownSourceIssue[] = [];
+  const lines = neutralizeCommentsForMarkdownDiagnostics(fileText).split("\n");
+  const stack: { colonCount: number; openerLine1: number }[] = [];
+  let inCodeBlock = false;
+  let inFrontmatter = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!;
+    const line1 = i + 1;
+
+    if (i === 0 && line.trim() === "---") {
+      inFrontmatter = true;
+      continue;
+    }
+    if (inFrontmatter) {
+      if (line.trim() === "---") {
+        inFrontmatter = false;
+      }
+      continue;
+    }
+
+    if (MD_CODE_FENCE_LINE_RE.test(line)) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    if (inCodeBlock) {
+      continue;
+    }
+
+    const opener = line.match(ADMONITION_OPENER_COLONS_RE);
+    if (opener) {
+      if (ADMONITION_UNTERMINATED_TITLE_RE.test(line)) {
+        issues.push({
+          code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE,
+          message:
+            "Admonition title bracket `[` is never closed on this line. Add a matching `]` (e.g. `:::note[Title]`).",
+          line1,
+        });
+      }
+      stack.push({ colonCount: opener[1]!.length, openerLine1: line1 });
+      continue;
+    }
+
+    if (ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
+      if (stack.length > 0) {
+        stack.pop();
+      } else {
+        issues.push({
+          code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNEXPECTED_CLOSE,
+          message: "Admonition closing fence `:::` has no matching opener.",
+          line1,
+        });
+      }
+    }
+  }
+
+  for (const open of stack) {
+    issues.push({
+      code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+      message: "Admonition is never closed. Add a matching `:::` closing fence.",
+      line1: open.openerLine1,
+    });
+  }
+
+  issues.sort((a, b) => a.line1 - b.line1);
+  return issues;
+}
+
 /** Same segments as mdast structure comparison in {@link shouldCompareMarkdownStructure}. */
 export function shouldDiagnoseMarkdownSegment(seg: Segment): boolean {
   return (
@@ -296,6 +386,24 @@ export function collectMarkdownIssuesForSegment(
   return issues.map((i) => ({
     filepath: filepathForCache,
     sourceHash: seg.hash,
+    startLine: i.line1,
+    issueCode: i.code,
+    detail: i.message,
+  }));
+}
+
+/**
+ * File-level malformed-admonition rows for the cache. These issues have no owning segment, so a
+ * deterministic synthetic `sourceHash` is derived from the file key + code + line (pruning is by
+ * `filepath` only, never by hash, so this is safe and keeps verbose output stable across runs).
+ */
+export function collectMalformedAdmonitionRows(
+  fileText: string,
+  filepathForCache: string
+): MarkdownSourceIssueInsert[] {
+  return collectMalformedAdmonitionIssues(fileText).map((i) => ({
+    filepath: filepathForCache,
+    sourceHash: `admonition:${computeSegmentHash(`${filepathForCache}|${i.code}|${i.line1}`)}`,
     startLine: i.line1,
     issueCode: i.code,
     detail: i.message,

@@ -7,7 +7,7 @@ import {
   type PromptStrings,
   type DocumentPromptStrings,
   type UIPromptStrings,
-  type LintSourcePromptStrings,
+  type ProofreadUIPromptStrings,
 } from "./prompts.js";
 
 /**
@@ -23,7 +23,7 @@ import {
 export type DocumentPromptContentType = "markdown" | "json" | "svg";
 export type DocumentBatchResponseFormat = "xml-tags" | "json-array" | "json-object";
 
-export type { PromptStrings, DocumentPromptStrings, UIPromptStrings, LintSourcePromptStrings };
+export type { PromptStrings, DocumentPromptStrings, UIPromptStrings, ProofreadUIPromptStrings };
 export { PROMPTS };
 
 // ── Backward-compatible exported constants (derived from JSON) ────────────
@@ -329,9 +329,9 @@ Reply with ONLY one JSON object whose keys are exactly those category names and 
   };
 }
 
-// ── Lint-source prompt ────────────────────────────────────────────────────
+// ── Proofread-ui prompt ──────────────────────────────────────────────────
 
-export function buildLintSourcePromptMessages(
+export function buildProofreadUIPromptMessages(
   texts: string[],
   opts: {
     languageLabel: string;
@@ -340,15 +340,15 @@ export function buildLintSourcePromptMessages(
 ): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
-    PROMPTS.lintSource.glossaryPreamble
+    PROMPTS.proofreadUI.glossaryPreamble
   );
   const localeLine = `\n\nLocale / language of the strings under review: ${opts.languageLabel}`;
   const systemPrompt =
-    PROMPTS.lintSource.systemPrompt.join("\n") +
+    PROMPTS.proofreadUI.systemPrompt.join("\n") +
     localeLine +
     glossaryBlock +
     "\n\n" +
-    PROMPTS.lintSource.outputContract.trim();
+    PROMPTS.proofreadUI.outputContract.trim();
 
   const userContent = JSON.stringify(texts, null, 2);
 
@@ -389,10 +389,10 @@ export class PluralFormsParseError extends PromptParseError {
   }
 }
 
-export class LintSourceJsonParseError extends PromptParseError {
+export class ProofreadUIJsonParseError extends PromptParseError {
   constructor(message: string, rawResponse: string) {
     super(message, rawResponse);
-    this.name = "LintSourceJsonParseError";
+    this.name = "ProofreadUIJsonParseError";
   }
 }
 
@@ -412,12 +412,12 @@ export class ScriptValidationError extends PromptParseError {
   }
 }
 
-/** One slot in a lint-source batch response (aligned with input string index). */
-export interface LintSourceSlotResult {
-  issues: LintSourceIssue[];
+/** One slot in a proofread-ui batch response (aligned with input string index). */
+export interface ProofreadUISlotResult {
+  issues: ProofreadUIIssue[];
 }
 
-export interface LintSourceIssue {
+export interface ProofreadUIIssue {
   severity: "error" | "warning";
   message: string;
   suggestedText?: string;
@@ -429,44 +429,44 @@ export interface LintSourceIssue {
  * Parse JSON array from model: `[ { "issues": [...] }, ... ]` with length `expectedLength`.
  * If the model returns fewer or more slots than `expectedLength`, pads with empty issues or truncates (best-effort) and sets `lengthWarning`.
  */
-export function parseLintSourceBatchResponse(
+export function parseProofreadUIBatchResponse(
   content: string,
   expectedLength: number
-): { slots: LintSourceSlotResult[]; lengthWarning: string | null } {
+): { slots: ProofreadUISlotResult[]; lengthWarning: string | null } {
   const cleaned = cleanJsonResponse(content);
   let parsed: unknown;
   try {
     parsed = JSON.parse(cleaned);
   } catch (e) {
-    throw new LintSourceJsonParseError(
-      `lint-source batch: invalid JSON (${e instanceof Error ? e.message : String(e)})`,
+    throw new ProofreadUIJsonParseError(
+      `proofread-ui batch: invalid JSON (${e instanceof Error ? e.message : String(e)})`,
       content
     );
   }
   if (!Array.isArray(parsed)) {
-    throw new LintSourceJsonParseError("lint-source batch: response is not a JSON array", content);
+    throw new ProofreadUIJsonParseError("proofread-ui batch: response is not a JSON array", content);
   }
 
   let lengthWarning: string | null = null;
   if (parsed.length !== expectedLength) {
-    lengthWarning = `lint-source batch: expected ${expectedLength} slot objects, got ${parsed.length} (using best-effort padding/truncation)`;
+    lengthWarning = `proofread-ui batch: expected ${expectedLength} slot objects, got ${parsed.length} (using best-effort padding/truncation)`;
   }
 
-  const out: LintSourceSlotResult[] = [];
+  const out: ProofreadUISlotResult[] = [];
   for (let i = 0; i < expectedLength; i++) {
     const row = i < parsed.length ? parsed[i] : undefined;
     if (row === null || row === undefined || typeof row !== "object" || Array.isArray(row)) {
       if (row !== undefined) {
         lengthWarning =
           lengthWarning ??
-          `lint-source batch: slot ${i} is not a JSON object (treated as no issues)`;
+          `proofread-ui batch: slot ${i} is not a JSON object (treated as no issues)`;
       }
       out.push({ issues: [] });
       continue;
     }
     const rec = row as Record<string, unknown>;
     const rawIssues = rec["issues"];
-    const issues: LintSourceIssue[] = [];
+    const issues: ProofreadUIIssue[] = [];
     if (Array.isArray(rawIssues)) {
       for (const item of rawIssues) {
         if (item === null || typeof item !== "object" || Array.isArray(item)) {

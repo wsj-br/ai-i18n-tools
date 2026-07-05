@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "LLM ka upyog karke JavaScript/TypeScript applications aur documentation sites ko internationalize karne ke liye CLI aur toolkit."
+  },
+  "nav": {
+    "guide": "Margdarshika",
+    "reference": "Sandarbh",
+    "examples": "Udaharan",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "Margdarshika",
+    "introduction": "Parichay",
+    "whatIs": "ai-i18n-tools kya hai?",
+    "installation": "Sthapan",
+    "quickStart": "Turant shuru karen",
+    "translationTypes": "Anuvaad ke prakaar",
+    "uiStrings": "UI strings",
+    "documents": "Dastaavej",
+    "json": "JSON",
+    "integrations": "Integrations",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "Images aur Screenshots",
+    "svgTranslation": "SVG anuvaad",
+    "providers": "LLM pradaata",
+    "runtimeHelpers": "Runtime sahayak",
+    "dashboard": "Anuvaad Dashboard",
+    "reference": "Sandarbh",
+    "configuration": "Configuration",
+    "cli": "CLI commands",
+    "architecture": "Architecture",
+    "programmaticApi": "Programmatic API",
+    "environment": "Environment variables",
+    "examples": "Udaaharan",
+    "examplesOverview": "Overview"
+  },
+  "footer": {
+    "message": "MIT License ke tahat jaari kiya gaya.",
+    "copyright": "Copyright © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "Pichhla",
+    "next": "Agla"
+  },
+  "outline": {
+    "label": "Is page par"
+  },
+  "langMenuLabel": "Bhasha",
+  "search": {
+    "placeholder": "Khoj"
+  }
+}

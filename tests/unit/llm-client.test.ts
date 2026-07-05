@@ -450,19 +450,19 @@ describe("LlmClient", () => {
     spy.mockRestore();
   });
 
-  it("lintUISourceBatch returns empty slots for no texts", async () => {
+  it("proofreadUISourceBatch returns empty slots for no texts", async () => {
     const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
-    const r = await c.lintUISourceBatch([], "German");
+    const r = await c.proofreadUISourceBatch([], "German");
     expect(r.slots).toEqual([]);
     expect(r.lengthWarning).toBeNull();
   });
 
-  it("lintUISourceBatch parses model JSON response", async () => {
+  it("proofreadUISourceBatch parses model JSON response", async () => {
     generateTextMock.mockResolvedValue(
       genResult('[{"issues":[{"severity":"warn","message":"ok","suggestedText":"s"}]}]')
     );
     const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
-    const r = await c.lintUISourceBatch(["Save"], "German");
+    const r = await c.proofreadUISourceBatch(["Save"], "German");
     expect(r.slots).toHaveLength(1);
     expect(r.slots[0]?.issues[0]?.message).toBe("ok");
   });

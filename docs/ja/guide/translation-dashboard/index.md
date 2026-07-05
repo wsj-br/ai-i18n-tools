@@ -1,0 +1,56 @@
+<a id="translation-dashboard"></a>
+# 翻訳ダッシュボード
+
+翻訳ダッシュボードは、プロジェクトの翻訳データを検査および編集するためのローカルWeb UIです。次の3つのストアから読み取ります。
+
+- **SQLiteキャッシュ** (`cacheDir`) — ドキュメントセグメントの翻訳、失敗記録、Markdownの問題スキャン
+- **`strings.json`** — UI文字列カタログ（プレーン文字列と複数形グループ）
+- **ユーザー用語集CSV** (`glossary.userGlossary`) — `translate-ui`と`proofread-ui`の用語のヒント
+
+翻訳実行後にこれを使用して、SQLiteやJSONを手動で掘り下げることなく、問題を見つけたり、不正な出力を上書きしたり、キャッシュのカバレッジを確認したりできます。
+
+<a id="start-the-dashboard"></a>
+## ダッシュボードを起動する
+
+```bash
+ai-i18n-tools dashboard
+# Optional: choose port, do not auto-open browser
+# ai-i18n-tools dashboard -p 8765 --no-open
+```
+
+デフォルトのリッスンポートは **8675** です。そのポートが使用できない場合、サーバーは次のポートを試行します（最大1000回の試行）し、使用したポートをログに出力します。非推奨のエイリアス `editor` は引き続き機能しますが警告を出力します。代わりに `dashboard` を使用してください。
+
+ダッシュボードUIは、CLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/reference/environment-variables#tool-ui-language)を参照してください。
+
+![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+
+<a id="which-tab-should-i-use"></a>
+## どのタブを使用すればよいですか？
+
+| 実行したいこと | タブ | ガイド |
+| --- | --- | --- |
+| 翻訳に失敗したドキュメントセグメントを修正する | **失敗** | [失敗](/guide/translation-dashboard/failures) |
+| 翻訳する前にソースMarkdownを修正する | **Markdownの問題** | [Markdownの問題](/guide/translation-dashboard/markdown-issues) |
+| キャッシュされたドキュメント翻訳を上書きする | **ドキュメント** | [ドキュメントキャッシュ](/guide/translation-dashboard/documentation-cache) |
+| UIラベルを修正する | **UI文字列** | [UI文字列と複数形](/guide/translation-dashboard/ui-strings) |
+| 複数形を修正する (`one`、`other`、…) | **UI複数形** | [UI文字列と複数形](/guide/translation-dashboard/ui-strings) |
+| UI翻訳の用語をロックする | **用語集** | [用語集](/guide/translation-dashboard/glossary) |
+| キャッシュのカバレッジとモデルの使用状況を確認する | **統計** | [統計](/guide/translation-dashboard/statistics) |
+
+<a id="after-you-edit"></a>
+## 編集後
+
+| 編集したもの… | 次に実行する… | 避けるべきこと… |
+| --- | --- | --- |
+| ドキュメントキャッシュ行 | `sync --force-update` または `translate-docs --force-update` | — |
+| UI文字列または複数形 | プレーンな `sync` または `translate-ui` | `--force` (`user-edited`行を上書きします) |
+| 用語集行 | 次の `translate-ui` または `proofread-ui` | — |
+
+手動編集は、キャッシュまたは`strings.json`でモデル`user-edited`としてタグ付けされます。変更されていないソーステキストを再翻訳すると、`--force`を使用しない限り、これらの行はスキップされます。
+
+<a id="tips"></a>
+## ヒント
+
+- **ログリンクボタン** (テーブル行の🔗) は、`ai-i18n-tools dashboard`が実行されている**ターミナル**にファイル:行のヒントを出力します。これは、ブラウザからエディタにジャンプするのに役立ちます。
+- **閉じる** (タブバーの右上) は、ダッシュボードサーバーを正常にシャットダウンします。
+- ブラウザタブが開いている間にサーバーが停止した場合、オーバーレイが表示されます。再接続するには`ai-i18n-tools dashboard`を再起動してください。

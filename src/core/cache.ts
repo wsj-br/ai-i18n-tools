@@ -493,6 +493,21 @@ export class TranslationCache {
     }
   }
 
+  /** Count rows for a single locale across the three cache tables purged by {@link clear}. */
+  countLocaleRows(locale: string): {
+    translations: number;
+    fileTracking: number;
+    failures: number;
+  } {
+    const count = (sql: string): number =>
+      (this.db.prepare(sql).get(locale) as { c: number }).c;
+    return {
+      translations: count("SELECT COUNT(*) as c FROM translations WHERE locale = ?"),
+      fileTracking: count("SELECT COUNT(*) as c FROM file_tracking WHERE locale = ?"),
+      failures: count("SELECT COUNT(*) as c FROM translation_failures WHERE locale = ?"),
+    };
+  }
+
   /**
    * Set `last_hit_at = NULL` for markdown segments that were not hit this run.
    * Scoped to markdown-like paths only so JSON (and other) rows are not cleared.

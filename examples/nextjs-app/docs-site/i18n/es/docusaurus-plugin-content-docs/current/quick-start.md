@@ -4,8 +4,8 @@ title: Inicio rápido
 description: >-
   Obtén tu primer documento traducido en menos de cinco minutos utilizando
   ai-i18n-tools con este proyecto de ejemplo de Next.js.
-translation_last_updated: '2026-06-22T19:38:46.179Z'
-source_file_mtime: '2026-05-04T22:22:41.551Z'
+translation_last_updated: '2026-07-02T22:49:01.093Z'
+source_file_mtime: '2026-05-04T22:22:41.000Z'
 source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
 translation_language: es
 source_file_path: docs-site/docs/quick-start.md

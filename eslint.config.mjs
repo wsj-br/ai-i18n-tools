@@ -20,6 +20,8 @@ export default tseslint.config(
       "examples/**/docs-site/build/**",
       "examples/**/dist/**",
       "examples/**/.astro/**",
+      // External reference snapshots from other projects (temporary context only; deps may be missing).
+      "references/**",
     ],
   },
   eslint.configs.recommended,

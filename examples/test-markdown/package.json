@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rm -rf .translation-cache translated-docs/ && node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-pt-BR.json && node ../../bin/ai-i18n-tools.mjs translate-docs -c ai-i18n-tools.config-en-GB.json"
+    "build": "rm -rf .translation-cache translated-docs/ && ai-i18n-tools translate-docs -c ai-i18n-tools.config.json && ai-i18n-tools translate-docs -c ai-i18n-tools.config-en-GB.json"
+  },
+  "dependencies": {
+    "ai-i18n-tools": "^1.7.2"
   },
   "engines": {
     "node": ">=22.16.0"

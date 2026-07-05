@@ -1,0 +1,53 @@
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["pt-BR", "zh-Hans"],
+  "concurrency": 3,
+  "batchConcurrency": 3,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": false,
+    "translateDocs": true,
+    "translateJson": true,
+    "translateSVG": false
+  },
+  "cacheDir": ".translation-cache",
+  "glossary": {
+    "userGlossary": "glossary-user.csv"
+  },
+  "docs": [
+    {
+      "description": "VitePress docs (English source at docs/, translations under docs/{locale}/)",
+      "contentPaths": ["docs/index.md", "docs/guide"],
+      "outputDir": "docs",
+      "addFrontmatter": false,
+      "docsOutput": {
+        "style": "vitepress",
+        "docsRoot": "docs"
+      }
+    }
+  ],
+  "json": [
+    {
+      "description": "VitePress theme/nav/sidebar strings",
+      "contentPaths": "docs/.vitepress/i18n/theme.en.json",
+      "outputPathTemplate": "docs/.vitepress/i18n/theme.{locale}.json",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": [],
+        "translateKeys": []
+      }
+    }
+  ],
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "openai/gpt-4o-mini",
+        "google/gemini-2.5-flash"
+      ],
+      "maxTokens": 4096,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter"
+}

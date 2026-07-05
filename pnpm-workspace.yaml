@@ -5,6 +5,7 @@ packages:
   - "examples/nextjs-app/docs-site"
   - "examples/astro-docs"
   - "examples/astro-website"
+  - "examples/vitepress-docs"
 allowBuilds:
   sharp: true
   core-js: true
@@ -42,6 +43,7 @@ minimumReleaseAgeExclude:
   - "@img/sharp-win32-x64@0.35.2"
   - sharp@0.35.2
 overrides:
+  ai-i18n-tools: workspace:*
   postcss@<8.5.10: ^8.5.10
   serialize-javascript@<7.0.5: ^7.0.5
   uuid@<14.0.0: ">=14.0.0"

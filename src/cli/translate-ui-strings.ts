@@ -28,6 +28,11 @@ import {
 } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import type { TranslateTotals } from "./doc-translate.js";
+import {
+  printTranslationRunSummary,
+  UI_STRING_SUMMARY_LABELS,
+} from "./translate-summary.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import {
   bindRunInterruptScope,
@@ -199,45 +204,22 @@ export async function runTranslateUI(
   }
 }
 
-function printTranslateUiSummary(
+function printTranslateUiRunSummary(
+  opts: Pick<TranslateUIOptions, "dryRun">,
+  sum: TranslateTotals,
   wallElapsedMs: number,
-  stringsUpdated: number,
-  inputTokens: number,
-  outputTokens: number,
-  costUsd: number,
   outcome: "success" | "interrupted"
 ): void {
-  if (outcome === "success") {
-    console.log(chalk.bold.green(`\n${t("✅ UI translation complete!")}\n`));
-  } else {
-    console.log(
-      chalk.bold.yellow(
-        `\n${t(
-          "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
-        )}\n`
-      )
-    );
-  }
-  console.log(chalk.bold(t("📊 Summary:")));
-  console.log(
-    `   ${t("Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) })}`
-  );
-  console.log(`   ${t("Strings updated:       {{count}}", { count: stringsUpdated })}`);
-  console.log(
-    `   ${t("Tokens used:           {{total}} (in: {{tokensIn}} / out: {{tokensOut}})", {
-      total: (inputTokens + outputTokens).toLocaleString(),
-      tokensIn: inputTokens.toLocaleString(),
-      tokensOut: outputTokens.toLocaleString(),
-    })}`
-  );
-  if (costUsd > 0) {
-    console.log(
-      chalk.green(`   ${t("💵 Total cost:          ${{cost}}", { cost: costUsd.toFixed(6) })}`)
-    );
-  } else {
-    console.log(`   ${t("Total cost:            $0.00 (all up to date or dry-run)")}`);
-  }
-  console.log("");
+  printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
+    success: t("✅ UI translation complete!"),
+    interrupted: t(
+      "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+    ),
+  }, {
+    labels: UI_STRING_SUMMARY_LABELS,
+    showQualityMetrics: false,
+    allFromCacheCostNote: "   Total cost:            $0.0000 (all strings from cache)",
+  });
 }
 
 async function runTranslateUIBody(
@@ -405,6 +387,10 @@ async function runTranslateUIBody(
   let inputTokens = 0;
   let outputTokens = 0;
   let costUsd = 0;
+  let stringsCached = 0;
+  let stringsTranslated = 0;
+  let localesProcessed = 0;
+  let localesSkipped = 0;
 
   const wallStart = Date.now();
 
@@ -480,6 +466,7 @@ async function runTranslateUIBody(
         outputTokens += batch.usage.outputTokens;
         costUsd += batch.cost ?? 0;
         stringsUpdated++;
+        stringsTranslated++;
         step0Count++;
       }
       if (step0Count > 0) {
@@ -511,6 +498,14 @@ async function runTranslateUIBody(
         const t = entry.translated?.[locale];
         return t === undefined || String(t).trim() === "";
       });
+
+      const plainEligible = entries.filter(([, entry]) => {
+        if (isPluralStringsEntry(entry)) {
+          return false;
+        }
+        return Boolean((entry.source ?? "").trim());
+      }).length;
+      stringsCached += plainEligible - missingPlain.length;
 
       if (missingPlain.length > 0) {
         console.log(
@@ -604,6 +599,7 @@ async function runTranslateUIBody(
               ent.models = ent.models ?? {};
               ent.models[locale] = uiBatch.model;
               stringsUpdated++;
+              stringsTranslated++;
             }
           });
         }
@@ -628,6 +624,9 @@ async function runTranslateUIBody(
         }
         return true;
       });
+
+      const pluralEligible = entries.filter(([, entry]) => isPluralStringsEntry(entry)).length;
+      stringsCached += pluralEligible - pluralTargets.length;
 
       if (pluralTargets.length > 0) {
         console.log(
@@ -730,7 +729,14 @@ async function runTranslateUIBody(
           outputTokens += batch.usage.outputTokens;
           costUsd += batch.cost ?? 0;
           stringsUpdated++;
+          stringsTranslated++;
         }
+      }
+
+      if (missingPlain.length === 0 && pluralTargets.length === 0) {
+        localesSkipped++;
+      } else {
+        localesProcessed++;
       }
 
       const flat = buildFlatJsonForLocale(strings, locale);
@@ -826,15 +832,28 @@ async function runTranslateUIBody(
     }
 
     const wallElapsed = Date.now() - wallStart;
-
-    printTranslateUiSummary(
-      wallElapsed,
-      stringsUpdated,
+    let filesWritten = 0;
+    if (!opts.dryRun) {
+      filesWritten = targets.length;
+      if (stringsUpdated > 0) {
+        filesWritten++;
+      }
+      if (Object.keys(buildPluralOnlyFlatForSourceLocale(strings, srcNorm)).length > 0) {
+        filesWritten++;
+      }
+    }
+    const sum: TranslateTotals = {
+      filesWritten,
+      filesSkipped: localesSkipped,
+      filesProcessed: localesProcessed,
       inputTokens,
       outputTokens,
       costUsd,
-      "success"
-    );
+      segmentsCached: stringsCached,
+      segmentsTranslated: stringsTranslated,
+    };
+
+    printTranslateUiRunSummary(opts, sum, wallElapsed, "success");
 
     return {
       stringsUpdated,
@@ -845,14 +864,24 @@ async function runTranslateUIBody(
     };
   } catch (e) {
     if (isRunInterruptedError(e) || opts.abortSignal?.aborted) {
-      printTranslateUiSummary(
-        Date.now() - wallStart,
-        stringsUpdated,
+      let filesWritten = 0;
+      if (!opts.dryRun) {
+        filesWritten = targets.length;
+        if (stringsUpdated > 0) {
+          filesWritten++;
+        }
+      }
+      const sum: TranslateTotals = {
+        filesWritten,
+        filesSkipped: localesSkipped,
+        filesProcessed: localesProcessed,
         inputTokens,
         outputTokens,
         costUsd,
-        "interrupted"
-      );
+        segmentsCached: stringsCached,
+        segmentsTranslated: stringsTranslated,
+      };
+      printTranslateUiRunSummary(opts, sum, Date.now() - wallStart, "interrupted");
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);
     }
     throw e;

@@ -446,6 +446,7 @@ const docsOutputStyleSchema = z.enum([
   "doc-system",
   "docusaurus",
   "astro-starlight",
+  "vitepress",
 ]);
 
 const docsOutputSchema = z
@@ -459,8 +460,8 @@ const docsOutputSchema = z
     docsRoot: z.string().optional(),
     /**
      * Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` style.
-     * Required when `style` is `doc-system` (may be `""`). Set automatically for `docusaurus` and
-     * `astro-starlight` aliases at config load.
+     * Required when `style` is `doc-system` (may be `""`). Set automatically for `docusaurus`,
+     * `astro-starlight`, and `vitepress` aliases at config load.
      */
     localeSubpath: z.string().optional(),
     /** When set, overrides `style` for markdown output paths. */
@@ -485,6 +486,11 @@ const docsOutputSchema = z
      * for flat link rewriting (typically `.`).
      */
     linkRewriteDocsRoot: z.string().optional(),
+    /**
+     * When true, normalize markdown links for VitePress doc-system output after translation.
+     * Defaults to enabled when `docsOutput.style` is `"vitepress"`.
+     */
+    rewriteVitepressLinks: z.boolean().optional(),
     /**
      * Optional post-processing run on translated markdown body after reassembly/link rewrite.
      */

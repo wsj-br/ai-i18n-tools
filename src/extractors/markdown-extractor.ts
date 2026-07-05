@@ -17,6 +17,10 @@ import {
 } from "./frontmatter-fields.js";
 import { BaseExtractor } from "./base-extractor.js";
 import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
+import {
+  ADMONITION_CLOSING_NOINDENT_RE,
+  ADMONITION_OPENER_COLONS_RE,
+} from "../processors/admonition-syntax.js";
 
 /** Optional extraction behavior for markdown docs (e.g. skip language-list blocks from translation). */
 export type MarkdownExtractOptions = {
@@ -175,11 +179,12 @@ export class MarkdownExtractor extends BaseExtractor {
     let currentSegment: string[] = [];
     let currentSegmentStartLine = 0;
     let inCodeBlock = false;
-    let inAdmonition = false;
     let codeBlockContent: string[] = [];
     let codeBlockStartLine = 0;
     let admonitionContent: string[] = [];
     let admonitionStartLine = 0;
+    /** Stack of opener colon counts; nested admonitions push more colons than their parent. */
+    const admonitionDepths: number[] = [];
 
     const flushCurrentSegment = () => {
       if (currentSegment.length > 0) {
@@ -218,7 +223,7 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
 
-      if (langListStart !== -1 && lineIndex === langListStart && !inAdmonition) {
+      if (langListStart !== -1 && lineIndex === langListStart && admonitionDepths.length === 0) {
         const joinTightToPrevious = currentSegment.length > 0;
         flushCurrentSegment();
         const blockLines = lines.slice(langListStart, langListEnd + 1);
@@ -233,28 +238,33 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
 
-      if (line.match(/^:::\w+/)) {
-        flushCurrentSegment();
+      const admonitionOpener = line.match(ADMONITION_OPENER_COLONS_RE);
+      if (admonitionOpener) {
+        if (admonitionDepths.length === 0) {
+          flushCurrentSegment();
+          admonitionStartLine = lineIndex;
+        }
+        admonitionDepths.push(admonitionOpener[1]!.length);
         admonitionContent.push(line);
-        admonitionStartLine = lineIndex;
-        inAdmonition = true;
         continue;
       }
 
-      if (line === ":::" && inAdmonition) {
+      if (admonitionDepths.length > 0 && ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
         admonitionContent.push(line);
-        segments.push({
-          type: "admonition",
-          content: admonitionContent.join("\n"),
-          translatable: true,
-          startLine: bodyStartLine + admonitionStartLine,
-        });
-        admonitionContent = [];
-        inAdmonition = false;
+        admonitionDepths.pop();
+        if (admonitionDepths.length === 0) {
+          segments.push({
+            type: "admonition",
+            content: admonitionContent.join("\n"),
+            translatable: true,
+            startLine: bodyStartLine + admonitionStartLine,
+          });
+          admonitionContent = [];
+        }
         continue;
       }
 
-      if (inAdmonition) {
+      if (admonitionDepths.length > 0) {
         admonitionContent.push(line);
         continue;
       }

@@ -11,9 +11,9 @@
       "translationModels": [
         "~anthropic/claude-sonnet-latest",
         "openai/gpt-5.5",
-        "qwen/qwen3.7-plus",
+        "mistralai/mistral-large-2512",
         "z-ai/glm-5", 
-        "mistralai/mistral-large-2512"
+        "qwen/qwen3.7-plus"        
       ],
       "maxTokens": 8192,
       "temperature": 0.2

@@ -47,7 +47,18 @@ describe("PlaceholderHandler", () => {
     const src = `:::tip\nHi\n:::`;
     const p = h.protectAdmonitions(src);
     expect(p.openMap.length).toBeGreaterThan(0);
-    expect(h.restoreAdmonitions(p.text, p.openMap, p.endMap)).toContain(":::tip");
+    expect(h.restoreAdmonitions(p.text, p.openMap, p.endMap, p.titleCloseMap)).toContain(":::tip");
+  });
+
+  it("translates a bracketed admonition title end-to-end while protecting the syntax", () => {
+    const h = new PlaceholderHandler();
+    const src = ":::note[Your Title **with** `code`]\nBody text.\n:::";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.openMap).toEqual([":::note["]);
+    expect(st.titleCloseMap).toEqual(["]"]);
+    expect(st.text).toContain("{{ADM_OPEN_0}}Your Title");
+    expect(st.text).toContain("{{ADM_TCLOSE_0}}");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
   });
 
   it("restores Docusaurus heading id after model hyphen drift", () => {

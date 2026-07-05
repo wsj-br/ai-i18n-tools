@@ -1,4 +1,5 @@
 import path from "path";
+import type { VitepressLinkNormalizeContext } from "../processors/vitepress-link-normalize.js";
 import { localePathPlaceholders } from "./locale-utils.js";
 import type { I18nDocTranslateConfig } from "./types.js";
 import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
@@ -106,7 +107,8 @@ function resolveByStyle(
       return path.join(outBase, localeSeg, relPath);
     case "doc-system":
     case "docusaurus":
-    case "astro-starlight": {
+    case "astro-starlight":
+    case "vitepress": {
       const under =
         posixRel === docsRootPosix ||
         posixRel.startsWith(`${docsRootPosix}/`) ||
@@ -118,7 +120,7 @@ function resolveByStyle(
       let subpath: string;
       if (mo.style === "docusaurus") {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
-      } else if (mo.style === "astro-starlight") {
+      } else if (mo.style === "astro-starlight" || mo.style === "vitepress") {
         subpath = mo.localeSubpath?.trim() ?? "";
       } else {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
@@ -189,4 +191,28 @@ export function shouldRewriteFlatMarkdownLinks(config: I18nDocTranslateConfig): 
     return false;
   }
   return mo.style === "flat";
+}
+
+/** Whether to normalize markdown links for VitePress doc-system output. */
+export function shouldRewriteVitepressLinks(config: I18nDocTranslateConfig): boolean {
+  const mo = config.doc.docsOutput;
+  if (mo.rewriteVitepressLinks === false) {
+    return false;
+  }
+  if (mo.rewriteVitepressLinks === true) {
+    return true;
+  }
+  return mo.style === "vitepress";
+}
+
+/** Build context for VitePress link normalization from a doc translate config. */
+export function vitepressLinkNormalizeContext(
+  config: I18nDocTranslateConfig,
+  relPath: string
+): VitepressLinkNormalizeContext {
+  const mo = config.doc.docsOutput;
+  return {
+    relPath,
+    docsRoot: mo.docsRoot?.trim() || "docs",
+  };
 }

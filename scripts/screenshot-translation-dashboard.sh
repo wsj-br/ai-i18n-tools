@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Capture a headless screenshot of the Translation Dashboard for docs.
 #
-# Writes docs/translation-dashboard.png (English UI only; single capture).
+# Writes docs/public/translation-dashboard.png (English UI only; single capture).
 #
 # Prerequisites: built CLI (`pnpm build`), `chromium-headless-shell`.
 # By default this script starts `ai-i18n-tools dashboard --no-open`, waits for
@@ -17,7 +17,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 CLI="${ROOT}/dist/cli/index.js"
-OUT="${ROOT}/docs/translation-dashboard.png"
+OUT="${ROOT}/docs/public/translation-dashboard.png"
 PORT="${PORT:-8675}"
 if [[ -z "${BASE_URL+x}" ]]; then
   BASE_URL="http://127.0.0.1:${PORT}/"

@@ -1,66 +1,60 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
-[![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
-[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-一個 CLI 和工具包，用於使用大型語言模型國際化 JavaScript/TypeScript 應用程式和文件網站。它適用於 [OpenRouter](https://openrouter.ai/) 和任何 OpenAI 相容的提供者（OpenAI、Anthropic、Gemini、DeepSeek、Groq、Mistral、xAI、Cerebras、NVIDIA、Alibaba、APIFUN、Ollama 等）。三個模組化工作流程，全部共用單一設定檔，支援不同的翻譯需求：
-
-- **工作流程 1 — UI 翻譯：** 從 JS/TS（以及可選的 `.astro` 文件）中提取 `t("…")` 呼叫，並為 i18next 或靜態 SSG 查找生成扁平的、每個地區設定的 JSON。
-- **工作流程 2 — 文件翻譯：** 使用 `translate-docs` 翻譯 `docs[].contentPaths` 中列出的 markdown、MDX 和 `.astro` 頁面（用於網站和 Starlight）。
-- **工作流程 3 — JSON 文件翻譯：** 翻譯 `json[]` 中定義的任意巢狀 JSON 捆綁包。當 UI 文字儲存在每個地區設定的 JSON 文件中而不是在原始碼中使用 `t()` 時，請使用 `translate-json`。
-
-**SVG** 資產使用 `features.translateSVG`、頂層 `svg` 區塊和 `translate-svg` 進行翻譯，而不是 `docs[].contentPaths`。
-
-**我應該使用哪個工作流程？**
-- 原始碼使用 `t()` → **工作流程 1**（`extract` / `translate-ui`）
-- 本地化頁面或 Docusaurus 目錄 JSON → **工作流程 2**（`translate-docs`）
-- 僅獨立的、巢狀的 JSON 地區設定文件 → **工作流程 3**（`translate-json`）
-
-所有工作流程都維護一個文件/SQLite 快取，以確保只有新的或已變更的區段（字串或文字塊）會被傳送給 LLM。
-
-<small>**以其他語言閱讀：** </small>
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
+
+**使用您選擇的 AI 模型翻譯您的應用程式和文件：沒有鎖定，無需重寫。**
+
+`ai-i18n-tools` 是一個用於國際化 JavaScript/TypeScript 應用程式和文件網站的 CLI 和工具包，包括 Docusaurus、Astro、Starlight、VitePress 以及純 Markdown/MDX，它使用大型語言模型。
+
+將其指向任何提供者並開始翻譯：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**，任何 [OpenRouter](https://openrouter.ai/) 模型（單一 API 金鑰即可選擇數百種），或 **Ollama** 用於完全自我託管的離線翻譯。無需修改您的程式碼庫，即可為每個專案甚至每種語言切換提供者或模型。
+
+一個設定檔驅動三種翻譯模式，因此您可以根據內容的結構進行混合搭配：
+
+- **UI 字串** — 從 JS/TS（以及可選的 `.astro` 檔案）中提取 `t("…")` 呼叫，並為 i18next 或靜態 SSG 查找生成扁平的、按地區劃分的 JSON。
+- **文件** — 使用 `translate-docs` 翻譯 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 頁面。適用於 **VitePress**、**Starlight**、**Docusaurus**、基於 Astro 的網站，或任何從 Markdown/MDX/`.astro` 原始檔讀取的靜態網站生成器。
+- **JSON** — 翻譯 `json[]` 中定義的任意巢狀 JSON 捆綁包。當 UI 副本存在於按地區劃分的 JSON 檔案中，而不是原始碼中的 `t()` 呼叫時，請使用 `translate-json`。
+
+**SVG** 資產有自己的路徑：`features.translateSVG`、頂層 `svg` 區塊和 `translate-svg` — 而非 `docs[].contentPaths`。
+
+**我應該使用哪一個？**
+
+| 您的內容                                                                  | 指令                                     |
+|-------------------------------------------------------------------------------|---------------------------------------------|
+| 原始碼使用 `t()`                                                        | **UI 字串** — `extract` / `translate-ui` |
+| 本地化頁面或文件網站 (VitePress, Starlight, Docusaurus, Astro 等) | **文件** — `translate-docs`            |
+| 獨立的巢狀 JSON 地區檔案                                          | **JSON** — `translate-json`                 |
+
+這三種模式共用一個檔案/SQLite 快取，因此只有新增或變更的區段（字串或文字區塊）會重新傳送給模型 — 無論您使用哪個提供者，重新執行都快速且便宜。
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **目錄**
 
-- [核心工作流程](#core-workflows)
+- [翻譯類型](#translation-types)
 - [安裝](#installation)
   - [使用 CLI](#using-the-cli)
-- [LLM 提供者](#openrouter)
+- [LLM 提供者](#llm-providers)
 - [快速入門](#quick-start)
-  - [工作流程 1 - UI 翻譯](#workflow-1---ui-translation)
-  - [工作流程 2 - 文件翻譯](#workflow-2---document-translation)
-  - [Astro（純 Astro 和 Starlight）](#astro-plain-astro--starlight)
-  - [合併工作流程](#combined-workflow)
-- [執行階段助手](#runtime-helpers)
+  - [UI 字串](#ui-strings)
+  - [文件](#documents)
+  - [Astro (純 Astro 和 Starlight)](#astro-plain-astro--starlight)
+  - [組合同步](#combined-sync)
+- [執行時輔助工具](#runtime-helpers)
 - [CLI 命令](#cli-commands)
 - [文件](#documentation)
 - [授權](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<a id="core-workflows"></a>
-## 核心工作流程
+<a id="translation-types"></a>
+## 翻譯類型
 
-**工作流程 1 - UI 翻譯** — 適用於任何使用 i18next（React、Next.js、Node.js、CLI）或靜態 Astro SSG 的 JS/TS 專案
+每種翻譯類型都有其自己的指南，其中包含完整的配置詳細資訊：[UI 字串](../docs/guide/ui-strings/)、[文件](../docs/guide/documents/) 和 [JSON](../docs/guide/json.md)。有關並排比較，請參閱 [什麼是 ai-i18n-tools？](../docs/guide/what-is-ai-i18n-tools.md)。
 
-掃描原始碼文件中的 `t("…")` / `i18n.t("…")` 字面量（將 `.astro` 新增至 `ui.uiExtractor.extensions` 以支援 Astro 的 frontmatter 和模板表達式），建置主目錄（`strings.json`），透過 OpenRouter 翻譯每個地區設定中缺失的條目，並寫入扁平的 JSON 文件（`de.json`、`pt-BR.json` 等）。英文原始碼文字是這些捆綁包中的執行階段查找金鑰 — `strings.json` 是提取快取，而不是執行階段捆綁包。
-
-**工作流程 2 - 文件翻譯** — 適用於 `docs[].contentPaths` 下的 markdown、MDX 和 `.astro`
-
-主要設計用於 **markdown、MDX 和 `.astro` 文件**（Docusaurus、[Astro Starlight](https://starlight.astro.build/)、純 README 文件和純 Astro 行銷頁面）。`translate-docs` 會寫入具有共用 SQLite 快取的本地化副本。在 Docusaurus 網站上，將 `docs[].docusaurusCatalogDir` 設定為 `write-translations` 目錄資料夾，以便在同一命令中翻譯 shell JSON（導覽列、頁腳、主題字串）。`docs[].docsOutput.style` 支援 `"nested"`、`"flat"`、`"doc-system"`，以及別名 `"docusaurus"` / `"astro-starlight"`（請參閱入門中的 [輸出佈局](docs/GETTING_STARTED.zh-Hant.md#output-layouts)）。任何非 Docusaurus 目錄的任意巢狀 UI JSON 應歸類於工作流程 3（`json[]` / `translate-json`），而不是 `docs[]`。
-
-**工作流程 3 - JSON 文件翻譯** — 原始碼中沒有 `t()` 的巢狀地區設定 JSON
-
-透過頂層的 `json[]`、`features.translateJson` 和 `translate-json` 來翻譯檔案，例如 `src/i18n/en/translation.json`。使用 `init -t ui-json-bundles` 來建構。
-
-所有工作流程都共用 `ai-i18n-tools.config.json` 並可組合；`sync` 會依據您的 `translate-docs` 旗標依序執行提取、UI 翻譯、SVG 翻譯、`translate-json` 和 `features`。
+一些值得事先了解的事項：UI 字串透過活動的 LLM 提供者（請參閱 [LLM 提供者](#llm-providers)）翻譯每個地區中缺少的條目，並寫入扁平的 JSON 檔案（`de.json`、`pt-BR.json` 等），其中英文原始文字作為執行時查找鍵 — `strings.json` 是提取快取，而不是執行時捆綁包。文件支援 `docs[].docsOutput.style` 值 `"nested"`、`"flat"`、`"doc-system"`，以及別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`（請參閱 [輸出佈局](../docs/guide/documents/output-layouts.md)）。所有這三種都共用 `ai-i18n-tools.config.json` 並且可以組合；`sync` 根據您的 `features` 標誌，依序執行提取、UI 翻譯、翻譯 SVG、`translate-docs` 和 `translate-json`。
 
 ---
 
@@ -78,12 +72,9 @@ pnpm add ai-i18n-tools
 <a id="using-the-cli"></a>
 ### 使用 CLI
 
-**每個專案（建議）** — 安裝為開發相依性，然後透過 `npx`、`pnpm exec` 或 `package.json` 指令碼執行：
+在您的專案中安裝套件後，npm/pnpm/yarn 會將已發佈的 bin 項目 (`bin/ai-i18n-tools.mjs`) 連結到 `node_modules/.bin/ai-i18n-tools`。該墊片會從已安裝的套件載入編譯後的 CLI。
 
-```bash
-pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
-npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
-```
+**`package.json` 腳本（推薦）** — npm 和 pnpm 在執行腳本時會將 `node_modules/.bin` 預置到 `PATH`，因此您可以呼叫裸命令名稱：
 
 ```json
 "scripts": {
@@ -98,13 +89,25 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 }
 ```
 
-您也可以直接使用 ai-i18n-tools CLI 指令，例如 `ai-i18n-tools sync`。
+然後執行例如 `pnpm run i18n:sync` — 無需 `npx` 前綴。
 
-建議使用 `sync` 而非手動串連 `extract`、`translate-ui`、`translate-svg`、`translate-docs` 和 `translate-json` — 手動執行時容易弄錯順序和功能旗標。請參閱入門指南中的 [建議的 `package.json` 指令碼](docs/GETTING_STARTED.zh-Hant.md#recommended-packagejson-scripts)。
+**互動式 Shell** — 從您的專案根目錄（本地安裝後）：
 
-**零安裝一次性使用** — `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（僅下載該次呼叫的檔案）。
+```bash
+npx ai-i18n-tools sync        # npm
+pnpm exec ai-i18n-tools sync  # pnpm
+```
 
-> **提示：** 若要在互動式 shell 中直接執行 `ai-i18n-tools` 而不使用 `npx`，請將 `node_modules/.bin` 加入您的 `PATH` (bash/zsh：`export PATH="$PWD/node_modules/.bin:$PATH"`)。如需 direnv 和 Windows 的說明，請參閱 [開始使用](docs/GETTING_STARTED.zh-Hant.md#installation)。
+要在 bash/zsh 中輸入裸 `ai-i18n-tools` 命令，請將本地 bin 目錄前置到 `PATH`（請參閱 [使用 CLI](../docs/guide/installation.md#using-the-cli) 以了解 PowerShell、direnv 和 Windows 備註）：
+
+```bash
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+優先使用 `sync`，而不是手動串聯 `extract`、`translate-ui`、`translate-svg`、`translate-docs` 和 `translate-json` — 手動執行時，順序和功能標誌很容易出錯。請參閱快速入門指南中的 [推薦的 `package.json` 腳本](../docs/guide/quick-start.md#recommended-packagejson-scripts)。
+
+**零安裝一次性** — `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（僅針對該調用下載套件；`package.json` 中沒有條目）。
 
 設定您的提供者 API 金鑰（顯示 OpenRouter；請使用與您的提供者相符的變數）：
 
@@ -114,8 +117,8 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ---
 
-<a id="openrouter"></a>
-## LLM 提供者
+<a id="llm-providers"></a>
+## LLM 供應商
 
 翻譯指令（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models` 及相關指令碼）會呼叫 LLM 提供者；而 `check-markdown`、`mark-html` 和 `extract` 則不會。
 
@@ -136,9 +139,9 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 內建提供者預設值（金鑰 — 基本 URL — API 金鑰環境變數）：
 
-| 提供者 | 基本 URL | API 金鑰環境變數 |
-| --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| 提供者     | 基礎 URL                                                  | API-key 環境變數      |
+|--------------|-----------------------------------------------------------|----------------------|
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
 | `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
 | `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
@@ -154,19 +157,19 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 透過新增一個帶有 `baseUrl`（以及 `apiKeyEnv`，除非不需要金鑰）的新金鑰，來定義自訂的 OpenAI 相容提供者。模型 ID 是純粹的上游 ID — 提供者是在設定層級選擇的，因此不需要 `provider/` 前綴（OpenRouter ID 會保留其原生 `vendor/model` 形式）。
 
-每個供應商都會報告 Token 用量；僅當供應商（例如 OpenRouter）回傳確切的美元成本時，才會顯示該成本。`ai-i18n-tools check-models` 會將已設定的模型 ID，與作用中供應商的即時 `GET /models` 清單（任何供應商）進行驗證，並在供應商回傳時顯示定價（例如 OpenRouter）。`ai-i18n-tools list-models` 會列出作用中供應商所宣傳的每一個模型（使用 `-P` / `--provider` 來檢查另一個已設定的供應商）。
+每個提供者都會回報權杖使用量；僅當提供者回傳時（OpenRouter）才會顯示確切的美元成本。`ai-i18n-tools check-models` 會根據作用中提供者的即時 `GET /models` 清單（任何提供者）驗證已設定的模型 ID，並在提供者回傳時顯示定價（例如 OpenRouter）。`ai-i18n-tools list-models` 列出作用中提供者宣傳的每個模型（使用 `-P` / `--provider` 檢查另一個已設定的提供者）。`ai-i18n-tools bench-models` 透過單獨翻譯範例（模型平行執行，受 `concurrency` 限制）來基準測試每個已設定的模型，並列印每個模型的輸入/輸出權杖、實際執行時間和美元成本。
 
 仍然接受舊式的頂層 `openrouter` 設定區塊，並在載入時自動遷移到 `providers.openrouter`（帶有 `provider: "openrouter"`）。
 
-如需使用 `-P` 在單一文件中切換供應商的實際操作示範，請參閱 [`examples/multi-provider`](../examples/multi-provider/)（一個包含 `openai`、`anthropic`、`nvidia` 和 `deepseek` 的設定）。
+如需單一文件上使用 `-P` 切換提供者的實作示範，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)。
 
 ---
 
 <a id="quick-start"></a>
 ## 快速入門
 
-<a id="workflow-1---ui-translation"></a>
-### 工作流程 1 - UI 翻譯
+<a id="ui-strings"></a>
+### UI 字串
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
@@ -179,10 +182,10 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-然後使用 `'ai-i18n-tools/runtime'` 中的輔助函式在您的應用程式中整合 i18next。請參閱入門指南中的 [步驟 4：在執行階段整合 i18next](docs/GETTING_STARTED.zh-Hant.md#step-4-wire-i18next-at-runtime) 以取得完整設定。
+然後使用來自 `'ai-i18n-tools/runtime'` 的輔助工具將 i18next 連接到您的應用程式。有關完整設定，請參閱 UI 字串指南中的 [步驟 4：在執行時連接 i18next](../docs/guide/ui-strings/i18next-runtime.md)。
 
-<a id="workflow-2---document-translation"></a>
-### 工作流程 2 - 文件翻譯
+<a id="documents"></a>
+### 文件
 
 預設的 `init` 範本（`ui-markdown`）僅啟用 UI 提取。請在 `translate-docs` 之前使用以文件為導向的範本（或啟用 `features.translateDocs` 並新增 `docs[]`）：
 
@@ -193,6 +196,9 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight documentation
 # npx ai-i18n-tools init -t ui-starlight
 
+# VitePress documentation (pages + theme JSON)
+# npx ai-i18n-tools init -t ui-vitepress
+
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -201,28 +207,33 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-編輯 `ai-i18n-tools.config.json`：將 `docs[].contentPaths` 設定為 markdown、MDX 和/或 `.astro` 來源；`docs[].outputDir` 和 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"flat"` 等）。完整欄位參考：[工作流程 2 - 文件翻譯](docs/GETTING_STARTED.zh-Hant.md#workflow-2---document-translation)。
+編輯 `ai-i18n-tools.config.json`：將 `docs[].contentPaths` 設定為 Markdown、MDX 和/或 `.astro` 來源；`docs[].outputDir` 和 `docs[].docsOutput.style` (`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"flat"` 等)。完整欄位參考：[文件](../docs/guide/documents/)。
+
+<a id="vitepress"></a>
+### VitePress
+
+`init -t ui-vitepress` 會搭建 `docsOutput.style: "vitepress"`，以及用於主題/導覽/側邊欄字串的 `json[]` 區塊。執行 `sync` 以同時翻譯頁面 Markdown 和 `theme.{locale}.json`。請參閱 [VitePress 整合](../docs/guide/vitepress-integration.md) 和 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)。
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro（純 Astro 與 Starlight）
 
-**Astro Starlight** — `init -t ui-starlight`，然後 `translate-docs`。Starlight UI 的覆寫可以使用 `src/content/i18n/en.json` 和 `jsonPathTemplate` 在單獨的 `docs[]` 區塊中進行（如果需要）（[入門 → 工作流程 2](docs/GETTING_STARTED.zh-Hant.md#step-1-initialise-for-documentation))。
+**Astro Starlight** — `init -t ui-starlight`，然後是 `translate-docs`。Starlight UI 覆寫可以在需要時使用 `src/content/i18n/en.json` 和 `jsonPathTemplate` 在單獨的 `docs[]` 區塊中 ([文件 — 初始化文件](../docs/guide/documents/index.md#step-1-initialise-for-documentation))。
 
-**純 Astro**（行銷或應用程式網站，非 Starlight）— 將 [Astro 內建的 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合使用。參考專案：[`examples/astro-website`](../examples/astro-website/)（英文在 `/`，地區設定在 `/{locale}/`）。
+**純 Astro**（行銷或應用程式網站，而非 Starlight）— 將 [Astro 內建 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合。參考專案：[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)（英文在 `/`，地區設定在 `/{locale}/`）。
 
 大多數團隊使用兩種管道的**混合**：
 
-| 管道 | 用途 | 命令 | 輸出 |
-|----------|---------|----------|--------|
-| **頁面 HTML** | 範本主體中的標題、段落、導覽標籤、內嵌陣列 | `translate-docs` | 每種語言 `src/pages/{locale}/index.astro` |
+| 管線               | 用於                                                              | 指令                   | 輸出                                                 |
+|------------------------|----------------------------------------------------------------------|----------------------------|--------------------------------------------------------|
+| **頁面 HTML**          | 標題、段落、導覽標籤、範本主體中的內嵌陣列 | `translate-docs`           | 每個地區設定的 `src/pages/{locale}/index.astro`            |
 | **UI 字串 (`t()`)** | 前端資料、索引標籤、共用陣列 | `extract` → `translate-ui` | `public/locales/{locale}.json`（以英文來源為鍵） |
 
-使用 `init -t ui-astro-website` 建構 UI。對於 `.astro` 頁面中的硬式編碼 HTML，請啟用 `features.translateDocs` 並新增一個包含 `docs[]` 的 `docsOutput.style: "astro-starlight"` 區塊（請參閱 [Astro 網站頁面（剖析與取代）](docs/GETTING_STARTED.zh-Hant.md#astro-website-pages-parse-and-replace))。請保持 `targetLocales`、`i18n.locales` 在 `astro.config.mjs` 中，以及 `ui-languages.json` 對齊（Astro 路由使用小寫代碼，例如 `pt-br`；扁平化套件檔案名稱遵循組態的大小寫，例如 `pt-BR.json`）。
+使用 `init -t ui-astro-website` 搭建 UI。對於 `.astro` 頁面中的硬編碼 HTML，請啟用 `features.translateDocs` 並添加一個帶有 `docs[]` 的 `docsOutput.style: "astro-starlight"` 區塊（請參閱 [Astro 網站頁面（解析和替換）](../docs/guide/ui-strings/astro-website.md#astro-website-pages-parse-and-replace))。保持 `targetLocales`、`i18n.locales` 在 `astro.config.mjs` 中，以及 `ui-languages.json` 對齊（Astro 路由使用小寫代碼，例如 `pt-br`；扁平捆綁檔案名遵循配置大小寫，例如 `pt-BR.json`）。
 
-在建置時連接 `t()`，除非您新增用戶端島嶼，否則不需要 i18next — 請參閱 [Astro 網站 UI 字串（SSG）](docs/GETTING_STARTED.zh-Hant.md#astro-website-ui-strings-ssg) 和範例中的 `src/i18n/t.ts`。
+在建置時連接 `t()`，除非您添加客戶端島嶼，否則無需 i18next — 請參閱 [Astro 網站 UI 字串 (SSG)](../docs/guide/ui-strings/astro-website.md#astro-website-ui-strings-ssg) 和範例的 `src/i18n/t.ts`。
 
-<a id="combined-workflow"></a>
-### 組合工作流程
+<a id="combined-sync"></a>
+### 組合同步
 
 ```bash
 npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
@@ -261,8 +272,9 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -271,7 +283,7 @@ ai-i18n-tools translate-json …
 ai-i18n-tools translate-svg …
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
-ai-i18n-tools lint-source …
+ai-i18n-tools proofread-ui …
 ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
 ai-i18n-tools sync …
@@ -279,18 +291,20 @@ ai-i18n-tools status …
 ai-i18n-tools statistics …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
+ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
-對於純 HTML 應用程式，請使用裸露的 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記來註釋元素（來源文字取自元素的 textContent / title / placeholder，編寫一次）；`mark-html` 會為您插入這些標記，然後 `extract` 會將它們擷取到 `strings.json` 中。請參閱 [入門 — 為 HTML 加上翻譯標記](docs/GETTING_STARTED.zh-Hant.md#marking-html-for-translation)。
+對於純 HTML 應用程式，使用裸 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記註釋元素（原始文字取自元素本身的 textContent / title / placeholder，寫入一次）；`mark-html` 會為您插入它們，然後 `extract` 將它們捕獲到 `strings.json` 中。請參閱 [標記 HTML 以進行翻譯](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation)。
 
-完整的每條命令旗標清單請參閱 [開始使用 — CLI 參考資料](docs/GETTING_STARTED.zh-Hant.md#cli-reference)。執行 `ai-i18n-tools <command> --help` 以取得內建的使用說明文字。
+完整的每個命令旗標列表請參閱 [CLI 參考](../docs/reference/cli-commands.md)。執行 `ai-i18n-tools <command> --help` 以取得內建使用說明文字。
 
-全域選項適用於所有指令：`-c <config>`（預設為 `ai-i18n-tools.config.json`）、`-v`（詳細資訊）、`-P` / `--provider <name>`（覆寫作用中的 LLM 提供者；必須在 `providers` 下進行設定）、`-L` / `--ui-lang <code>`（工具本身 UI/日誌的語言）、可選的 `-w` / `--write-logs [path]` 將主控台輸出複製到日誌檔案（預設為翻譯快取目錄下）、`-V` / `--version`，以及 `-h` / `--help`。幾個指令接受 `-l` / `--locale <codes>`（逗號分隔的 BCP-47）來限制目標地區設定；`lint-source` 使用單一來源地區設定。請參閱 [入門](docs/GETTING_STARTED.zh-Hant.md#cli-reference) 以取得指令概覽表格。
+全域選項：`-c <config>`（預設值：`ai-i18n-tools.config.json`）、`-v`（詳細）、`-P` / `--provider <name>`（覆寫作用中的 LLM 提供者；必須在 `providers` 下設定）、`-L` / `--ui-lang <code>`（工具本身 UI/日誌的語言）、`-V` / `--version`，以及 `-h` / `--help` — 每個命令都接受。`-w` / `--write-logs [path]` 將控制台輸出導向到日誌檔案（預設值：翻譯快取目錄下），但僅在翻譯和同步命令（`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、`cleanup`）上生效。幾個命令接受 `-l` / `--locale <codes>`（逗號分隔的 BCP-47）以限制目標語言環境；`proofread-ui` 使用單一來源語言環境。請參閱 [CLI 參考](../docs/reference/cli-commands.md) 以取得命令概覽表。
 
+<a id="tool-ui-language-logs-help-dashboard"></a>
 ### 工具 UI 語言（日誌、說明、儀表板）
 
 此工具會本地化其自身的 CLI 說明、高流量日誌/摘要訊息以及翻譯儀表板。UI 地區設定是從以下來源解析的，優先順序由高至低：
@@ -300,22 +314,26 @@ ai-i18n-tools help [command]
 3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 設定鍵（BCP-47 字串）。
 4. 主機作業系統地區設定（透過 `Intl.DateTimeFormat().resolvedOptions().locale`）。
 
-所要求的地區設定會與提供的 UI 語言進行完全比對或最接近的變體比對（例如 `pt-PT` 解析為 `pt-BR`，而 `en-US` 解析為 `en-GB`）；當沒有比對時，它會回退到來源地區設定（`en-GB`）。這與您專案的 `sourceLocale` / `targetLocales` 無關。提供的 UI 語言：`en-GB`（來源）加上 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。
+所請求的語言環境會與已發布的 UI 語言完全匹配或透過最接近的變體匹配（例如 `pt-PT` 解析為 `pt-BR`，而 `en-US` 解析為 `en-GB`）；當沒有匹配項時，它會回退到來源語言環境 (`en-GB`)。當明確請求 UI 語言（透過旗標、環境變數或 `uiLanguage`）但沒有已發布的捆綁包匹配時，CLI 會列印一次性警告，指出將使用預設語言環境；僅從主機作業系統推斷的語言環境從不發出警告。這與您專案的 `sourceLocale` / `targetLocales` 無關。已發布的 UI 語言：`en-GB`（來源）加上 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。無需配置 — 預設情況下，工具會遵循您的作業系統語言環境。有關詳細資訊，請參閱 [工具 UI 語言](../docs/reference/environment-variables.md#tool-ui-language)。
 
 ---
 
 <a id="documentation"></a>
 ## 文件
 
-- [開始使用](docs/GETTING_STARTED.zh-Hant.md) - 所有工作流程（UI、文件/`.astro`、JSON 套件、Astro Starlight 和純 Astro）、CLI 參考資料以及設定欄位參考資料的完整設定。
-- [地區設定資產指南](docs/LOCALE-ASSETS-GUIDE.zh-Hant.md) - 已翻譯文件的螢幕擷取畫面和圖示化 SVG（模式 A–E、平面連結重寫器、螢幕擷取畫面指令碼）。
-- [套件總覽](docs/PACKAGE_OVERVIEW.zh-Hant.md) - 架構、內部結構、程式設計 API 和擴充點。
-- [AI Agent Context](../docs/ai-i18n-tools-context.md) - **針對使用此套件的應用程式：** 整合提示，用於下游專案（複製到您儲存庫的代理規則中）。
-- **此**儲存庫的維護者內部資訊：`dev/package-context.md`（僅限複製；不在 npm 上）。
+- [文件網站](https://wsj-br.github.io/ai-i18n-tools/) — 完整的 VitePress 指南（GitHub Pages 上有 9 種語言環境）。
+- [快速入門](../docs/guide/quick-start.md) — UI 字串、文件和 JSON 的設定（UI、docs/`.astro`、JSON 捆綁包、Astro Starlight 和純 Astro）。
+- [語言環境資產指南](../docs/guide/images-and-screenshots/) - 翻譯文件中螢幕截圖和圖示 SVG（扁平連結重寫器、螢幕截圖腳本）。
+- [架構](../docs/reference/architecture.md) - 架構、內部、程式化 API 和擴充點。
+- [AI 代理程式上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **適用於使用套件的應用程式：** 下游專案的整合提示（複製到您的儲存庫代理程式規則中）。
+- **此**儲存庫的維護者內部：`dev/package-context.md`（僅限複製；不在 npm 上）。
 
 ---
 
 <a id="license"></a>
 ## 授權
 
-MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)
+此專案根據 MIT 授權條款授權。 
+詳情請參閱 [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) 檔案。
+
+版權所有 &copy; 2026 Waldemar Scudeller Jr.

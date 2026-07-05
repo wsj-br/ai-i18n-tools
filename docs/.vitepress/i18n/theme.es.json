@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "CLI y kit de herramientas para internacionalizar aplicaciones y sitios de documentación de JavaScript/TypeScript usando LLM."
+  },
+  "nav": {
+    "guide": "Guía",
+    "reference": "Referencia",
+    "examples": "Ejemplos",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "Guía",
+    "introduction": "Introducción",
+    "whatIs": "¿Qué es ai-i18n-tools?",
+    "installation": "Instalación",
+    "quickStart": "Inicio rápido",
+    "translationTypes": "Tipos de traducción",
+    "uiStrings": "Cadenas de interfaz de usuario",
+    "documents": "Documentos",
+    "json": "JSON",
+    "integrations": "Integraciones",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "Imágenes y capturas de pantalla",
+    "svgTranslation": "Traducción SVG",
+    "providers": "Proveedores LLM",
+    "runtimeHelpers": "Ayudantes de tiempo de ejecución",
+    "dashboard": "Panel de traducción",
+    "reference": "Referencia",
+    "configuration": "Configuración",
+    "cli": "Comandos CLI",
+    "architecture": "Arquitectura",
+    "programmaticApi": "API programática",
+    "environment": "Variables de entorno",
+    "examples": "Ejemplos",
+    "examplesOverview": "Descripción general"
+  },
+  "footer": {
+    "message": "Publicado bajo la licencia MIT.",
+    "copyright": "Copyright © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "Anterior",
+    "next": "Siguiente"
+  },
+  "outline": {
+    "label": "En esta página"
+  },
+  "langMenuLabel": "Idioma",
+  "search": {
+    "placeholder": "Buscar"
+  }
+}

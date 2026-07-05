@@ -22,6 +22,14 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
       localePathLowercase: mo.localePathLowercase ?? true,
     };
   }
+  if (style === "vitepress") {
+    return {
+      ...mo,
+      style: "doc-system",
+      localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
+      localePathLowercase: mo.localePathLowercase ?? false,
+    };
+  }
   if (mo.style === "doc-system" && (mo.localeSubpath?.trim() ?? "") === "") {
     return {
       ...mo,
@@ -52,7 +60,7 @@ export function assertDocSystemLocaleSubpath(config: I18nConfig): void {
     if (mo.style === "doc-system" && mo.localeSubpath === undefined) {
       throw new ConfigValidationError(
         `docs[${i}].docsOutput.localeSubpath is required when style is "doc-system" ` +
-          `(use style "docusaurus" or "astro-starlight" for presets, or set localeSubpath explicitly)`
+          `(use style "docusaurus", "astro-starlight", or "vitepress" for presets, or set localeSubpath explicitly)`
       );
     }
   }

@@ -10,7 +10,7 @@ import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
-import { hashFileContent, writeAtomicUtf8 } from "./helpers.js";
+import { hashFileContent, translatedOutputIsCurrent, writeAtomicUtf8 } from "./helpers.js";
 import type { Segment } from "../core/types.js";
 import {
   protectSegmentForTranslation,
@@ -18,8 +18,12 @@ import {
   translateSegmentsBatched,
   type DocSegmentTranslation,
   type TranslateRunOptions,
+  type TranslateTotals,
 } from "./doc-translate.js";
-import { formatElapsedMmSs } from "./format.js";
+import {
+  mergeTranslateTotals,
+  printTranslationRunSummary,
+} from "./translate-summary.js";
 import {
   bindRunInterruptScope,
   interruptErrorFromSignal,
@@ -58,28 +62,14 @@ function timestamp(): string {
   return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
 }
 
-function printTranslateJsonSummary(
-  wallElapsedMs: number,
-  filesCompleted: number,
-  filesSkipped: number,
-  outcome: "success" | "interrupted"
-): void {
-  if (outcome === "success") {
-    console.log(chalk.bold.green(t("\n✅ JSON translation complete!\n")));
-  } else {
-    console.log(
-      chalk.bold.yellow(
-        t(
-          "\n⚠️  JSON translation interrupted — partial summary (reflects files completed before interrupt).\n"
-        )
-      )
-    );
-  }
-  console.log(chalk.bold(t("📊 Summary:")));
-  console.log(t("   Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) }));
-  console.log(t("   Files completed:       {{count}}", { count: filesCompleted }));
-  console.log(t("   Files skipped:         {{count}}", { count: filesSkipped }));
-  console.log("");
+function emptyTranslateTotals(): TranslateTotals {
+  return {
+    filesWritten: 0,
+    filesSkipped: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+  };
 }
 
 export async function translateNestedJsonFile(
@@ -90,10 +80,12 @@ export async function translateNestedJsonFile(
   locale: string,
   relSourcePath: string,
   opts: TranslateRunOptions & { cache?: TranslationCache }
-): Promise<{ skipped: boolean }> {
+): Promise<{ skipped: boolean; totals: TranslateTotals }> {
+  const totals = emptyTranslateTotals();
   const absSource = path.resolve(projectRoot, relSourcePath);
   const content = fs.readFileSync(absSource, "utf8");
   const fileHash = hashFileContent(content);
+  const sourceFileMtime = fs.statSync(absSource).mtime.toISOString();
   const outPath = expandJsonBlockOutputPath(
     block.outputPathTemplate,
     projectRoot,
@@ -121,7 +113,7 @@ export async function translateNestedJsonFile(
     cache &&
     !opts.noCache &&
     cachedHash === fileHash &&
-    fs.existsSync(outPath)
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
       console.log(
@@ -134,12 +126,15 @@ export async function translateNestedJsonFile(
         )
       );
     }
-    return { skipped: true };
+    totals.filesSkipped = 1;
+    totals.filesProcessed = 0;
+    return { skipped: true, totals };
   }
 
   const jx = new NestedJsonExtractor();
   const segments = jx.extract(content, relSourcePath, block.keyPolicy);
   const translatableCount = segments.filter((s) => s.translatable).length;
+  let segmentsCached = 0;
   console.log(
     chalk.yellow(
       t(
@@ -172,6 +167,7 @@ export async function translateNestedJsonFile(
       const hit = cache.getSegment(s.hash, locale, relSourcePath);
       if (hit) {
         translations.set(s.hash, { text: hit });
+        segmentsCached++;
         continue;
       }
     }
@@ -186,7 +182,14 @@ export async function translateNestedJsonFile(
     segmentIndicesInDoc.push(i);
   }
 
-  const { map } = await translateSegmentsBatched(
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures,
+    individualSegmentTranslations,
+  } = await translateSegmentsBatched(
     toBatch,
     placeholderById,
     new Map(),
@@ -212,9 +215,19 @@ export async function translateNestedJsonFile(
     opts.abortSignal
   );
 
-  for (const [h, t] of map) {
-    translations.set(h, t);
+  for (const [h, tr] of map) {
+    translations.set(h, tr);
   }
+
+  totals.inputTokens += inTok;
+  totals.outputTokens += outTok;
+  totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segmentValidationFailures;
+  totals.individualSegmentTranslations =
+    (totals.individualSegmentTranslations ?? 0) + individualSegmentTranslations;
+  totals.segmentsCached = segmentsCached;
+  totals.segmentsTranslated = translatableCount - segmentsCached;
+  totals.filesProcessed = 1;
 
   const output = jx.reassemble(segments, translations);
   if (!opts.dryRun) {
@@ -248,9 +261,10 @@ export async function translateNestedJsonFile(
         })
       )
     );
+    totals.filesWritten = 1;
   }
 
-  return { skipped: false };
+  return { skipped: false, totals };
 }
 
 export async function runTranslateJson(
@@ -277,8 +291,7 @@ export async function runTranslateJson(
   const cacheDir = path.join(projectRoot, config.cacheDir);
   const cache = opts.noCache ? undefined : new TranslationCache(cacheDir);
   const wallStart = Date.now();
-  let filesCompleted = 0;
-  let filesSkipped = 0;
+  const sum = emptyTranslateTotals();
 
   try {
     for (let bi = 0; bi < config.json.length; bi++) {
@@ -311,7 +324,7 @@ export async function runTranslateJson(
           if (opts.abortSignal?.aborted) {
             throw interruptErrorFromSignal(opts.abortSignal);
           }
-          const { skipped } = await translateNestedJsonFile(
+          const { skipped, totals } = await translateNestedJsonFile(
             config,
             block,
             bi,
@@ -323,23 +336,24 @@ export async function runTranslateJson(
               cache,
             }
           );
-          if (skipped) {
-            filesSkipped++;
-          } else {
-            filesCompleted++;
-          }
+          mergeTranslateTotals(sum, totals, skipped);
         }
       }
     }
-    printTranslateJsonSummary(Date.now() - wallStart, filesCompleted, filesSkipped, "success");
+    printTranslationRunSummary(opts, sum, Date.now() - wallStart, "success", {
+      success: t("✅ JSON translation complete!"),
+      interrupted: t(
+        "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+      ),
+    });
   } catch (e) {
     if (isRunInterruptedError(e) || opts.abortSignal?.aborted) {
-      printTranslateJsonSummary(
-        Date.now() - wallStart,
-        filesCompleted,
-        filesSkipped,
-        "interrupted"
-      );
+      printTranslationRunSummary(opts, sum, Date.now() - wallStart, "interrupted", {
+        success: t("✅ JSON translation complete!"),
+        interrupted: t(
+          "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+        ),
+      });
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);
     }
     throw e;

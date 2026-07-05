@@ -1,0 +1,28 @@
+{
+  "site": {
+    "title": "VitePress demonstração i18n",
+    "description": "Exemplo mínimo de ai-i18n-tools + VitePress"
+  },
+  "nav": {
+    "guide": "Guia"
+  },
+  "sidebar": {
+    "guide": "Guia",
+    "gettingStarted": "Introdução"
+  },
+  "footer": {
+    "message": "Demonstração licenciada sob MIT.",
+    "copyright": "Copyright © colaboradores do ai-i18n-tools"
+  },
+  "docFooter": {
+    "prev": "Anterior",
+    "next": "Próximo"
+  },
+  "outline": {
+    "label": "Nesta página"
+  },
+  "langMenuLabel": "Idioma",
+  "search": {
+    "placeholder": "Buscar"
+  }
+}

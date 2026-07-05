@@ -1,0 +1,31 @@
+{
+  "hash": "4122d6db",
+  "configHash": "94bb2eda",
+  "lockfileHash": "ca7472f0",
+  "browserHash": "3073fc82",
+  "optimized": {
+    "vue": {
+      "src": "../../../../../../node_modules/.pnpm/vue@3.5.39_typescript@6.0.3/node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "36ef9ebd",
+      "needsInterop": false
+    },
+    "vitepress > @vue/devtools-api": {
+      "src": "../../../../../../node_modules/.pnpm/@vue+devtools-api@8.1.5/node_modules/@vue/devtools-api/dist/index.js",
+      "file": "vitepress___@vue_devtools-api.js",
+      "fileHash": "eb0b99e0",
+      "needsInterop": false
+    },
+    "vitepress > @vueuse/core": {
+      "src": "../../../../../../node_modules/.pnpm/@vueuse+core@14.3.0_vue@3.5.39_typescript@6.0.3_/node_modules/@vueuse/core/dist/index.js",
+      "file": "vitepress___@vueuse_core.js",
+      "fileHash": "eb6f9a06",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-TWALDRMR": {
+      "file": "chunk-TWALDRMR.js"
+    }
+  }
+}

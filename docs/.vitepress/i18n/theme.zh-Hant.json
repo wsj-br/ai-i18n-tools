@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "用於使用大型語言模型 (LLM) 將 JavaScript/TypeScript 應用程式和文件網站國際化的 CLI 和工具包。"
+  },
+  "nav": {
+    "guide": "指南",
+    "reference": "參考",
+    "examples": "範例",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "指南",
+    "introduction": "簡介",
+    "whatIs": "什麼是 ai-i18n-tools？",
+    "installation": "安裝",
+    "quickStart": "快速入門",
+    "translationTypes": "翻譯類型",
+    "uiStrings": "UI 字串",
+    "documents": "文件",
+    "json": "JSON",
+    "integrations": "整合",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "圖片與螢幕截圖",
+    "svgTranslation": "SVG 翻譯",
+    "providers": "LLM 供應商",
+    "runtimeHelpers": "執行階段輔助程式",
+    "dashboard": "翻譯儀表板",
+    "reference": "參考",
+    "configuration": "組態",
+    "cli": "CLI 命令",
+    "architecture": "架構",
+    "programmaticApi": "程式化 API",
+    "environment": "環境變數",
+    "examples": "範例",
+    "examplesOverview": "概觀"
+  },
+  "footer": {
+    "message": "根據 MIT 授權條款發佈。",
+    "copyright": "版權所有 © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "上一個",
+    "next": "下一個"
+  },
+  "outline": {
+    "label": "在此頁面上"
+  },
+  "langMenuLabel": "語言",
+  "search": {
+    "placeholder": "搜尋"
+  }
+}

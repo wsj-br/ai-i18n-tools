@@ -4,8 +4,8 @@ title: Démarrage rapide
 description: >-
   Obtenez votre premier document traduit en moins de cinq minutes en utilisant
   ai-i18n-tools avec ce projet exemple Next.js.
-translation_last_updated: '2026-06-22T19:38:46.228Z'
-source_file_mtime: '2026-05-04T22:22:41.551Z'
+translation_last_updated: '2026-07-02T22:49:01.110Z'
+source_file_mtime: '2026-05-04T22:22:41.000Z'
 source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
 translation_language: fr
 source_file_path: docs-site/docs/quick-start.md

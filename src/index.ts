@@ -58,6 +58,8 @@ export {
   resolveDocumentationOutputPath,
   expandPathTemplate,
   shouldRewriteFlatMarkdownLinks,
+  shouldRewriteVitepressLinks,
+  vitepressLinkNormalizeContext,
   toPosix,
 } from "./core/output-paths.js";
 
@@ -208,7 +210,13 @@ export {
 } from "./processors/glossary-force-placeholders.js";
 
 export {
-  LlmClient,
+  normalizeVitepressDocLinks,
+  normalizeOneVitepressLink,
+  docsPathToVitepressRoute,
+  type VitepressLinkNormalizeContext,
+} from "./processors/vitepress-link-normalize.js";
+
+export {
   OpenRouterClient,
   type LlmClientOptions,
   type OpenRouterClientOptions,

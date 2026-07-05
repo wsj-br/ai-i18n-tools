@@ -30,6 +30,7 @@ export class PlaceholderHandler {
     htmlTagMap: string[];
     openMap: string[];
     endMap: string[];
+    titleCloseMap: string[];
     htmlAnchors: string[];
     docusaurusHeadingIds: string[];
     mdxMap: string[];
@@ -56,6 +57,7 @@ export class PlaceholderHandler {
       htmlTagMap: htmlTags.htmlTagMap,
       openMap: ad.openMap,
       endMap: ad.endMap,
+      titleCloseMap: ad.titleCloseMap,
       htmlAnchors: doc.htmlAnchors,
       docusaurusHeadingIds: doc.docusaurusHeadingIds,
       mdxMap: mdx.mdxMap,
@@ -74,6 +76,8 @@ export class PlaceholderHandler {
       htmlTagMap: string[];
       openMap: string[];
       endMap: string[];
+      /** Optional for backward compatibility with callers that protected before bracketed-title support shipped. */
+      titleCloseMap?: string[];
       htmlAnchors: string[];
       docusaurusHeadingIds: string[];
       /** Optional for backward compatibility with callers that protected before MDX support shipped. */
@@ -96,7 +100,7 @@ export class PlaceholderHandler {
     s = restoreMarkdownUrls(s, state.urlMap);
     s = restoreMdx(s, state.mdxMap ?? [], state.jsxAttributeMap ?? []);
     s = restoreDocAnchors(s, state.htmlAnchors, state.docusaurusHeadingIds);
-    s = restoreAdmonitionSyntax(s, state.openMap, state.endMap);
+    s = restoreAdmonitionSyntax(s, state.openMap, state.endMap, state.titleCloseMap ?? []);
     s = restoreHtmlTags(s, state.htmlTagMap);
     return s;
   }
@@ -110,12 +114,27 @@ export class PlaceholderHandler {
     return restoreMarkdownUrls(text, urlMap);
   }
 
-  protectAdmonitions(text: string): { text: string; openMap: string[]; endMap: string[] } {
+  protectAdmonitions(text: string): {
+    text: string;
+    openMap: string[];
+    endMap: string[];
+    titleCloseMap: string[];
+  } {
     const r = protectAdmonitionSyntax(text);
-    return { text: r.protected, openMap: r.openMap, endMap: r.endMap };
+    return {
+      text: r.protected,
+      openMap: r.openMap,
+      endMap: r.endMap,
+      titleCloseMap: r.titleCloseMap,
+    };
   }
 
-  restoreAdmonitions(text: string, openMap: string[], endMap: string[]): string {
-    return restoreAdmonitionSyntax(text, openMap, endMap);
+  restoreAdmonitions(
+    text: string,
+    openMap: string[],
+    endMap: string[],
+    titleCloseMap: string[] = []
+  ): string {
+    return restoreAdmonitionSyntax(text, openMap, endMap, titleCloseMap);
   }
 }

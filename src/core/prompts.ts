@@ -1,5 +1,5 @@
 /**
- * Centralized prompt strings for all translation modes (document, UI, lint-source).
+ * Centralized prompt strings for all translation modes (document, UI, proofread-ui).
  *
  * Edit prompt **content** here; assembly logic lives in `prompt-builder.ts`.
  */
@@ -34,8 +34,8 @@ export interface UIPromptStrings {
   glossaryPreamblePlural: string;
 }
 
-/** LLM `lint-source`: review source-locale UI copy (spelling, grammar, terminology). */
-export interface LintSourcePromptStrings {
+/** LLM `proofread-ui`: review source-locale UI copy (spelling, grammar, terminology). */
+export interface ProofreadUIPromptStrings {
   systemPrompt: string[];
   /** Shown with &lt;glossary&gt; for preferred terminology in the locale under review. */
   glossaryPreamble: string;
@@ -57,7 +57,7 @@ export interface ScriptPromptStrings {
 export interface PromptStrings {
   document: DocumentPromptStrings;
   ui: UIPromptStrings;
-  lintSource: LintSourcePromptStrings;
+  proofreadUI: ProofreadUIPromptStrings;
   script: ScriptPromptStrings;
 }
 
@@ -167,7 +167,7 @@ Do not change keys, add keys, remove keys, or return XML tags/markdown/code fenc
     ],
   },
 
-  lintSource: {
+  proofreadUI: {
     systemPrompt: [
       "You are a professional copy editor reviewing end-user-visible UI strings for software.",
       "",

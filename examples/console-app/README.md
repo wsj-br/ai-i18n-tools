@@ -13,7 +13,19 @@ This example demonstrates how to use `ai-i18n-tools` to internationalize a Node.
 
 ## Installation
 
-Run `pnpm install` from the **repository root**. The `pnpm-workspace.yaml` at the root declares both the library and this example as workspace packages, so pnpm links `ai-i18n-tools` directly to your local checkout via the `"ai-i18n-tools": "workspace:^"` entry in `package.json`. No separate build or link step is needed - just rebuild the library (`pnpm run build` in the repo root) whenever you change source files and the example will pick up the updated `dist/` automatically.
+### Try this example on its own
+
+Copy only this example folder and install `ai-i18n-tools` from npm:
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
+cd console-app
+pnpm install
+```
+
+### From the full ai-i18n-tools repository
+
+Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). Run `pnpm install` from the **repository root**. The workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares `"ai-i18n-tools": "^1.7.2"`. No separate link step is needed — rebuild the library (`pnpm run build` in the repo root) whenever you change source files and the example will pick up the updated `dist/` automatically.
 
 ```bash
 # From the repository root
@@ -22,6 +34,8 @@ pnpm run build
 ```
 
 ## Usage
+
+Run the commands below from this example's root directory. After `npx degit …` you are already there (`cd console-app`). From the full [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository, use `cd examples/console-app` instead.
 
 Run the application in English (default):
 

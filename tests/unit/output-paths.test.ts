@@ -242,6 +242,76 @@ describe("output-paths", () => {
     expect(toPosix(out)).toBe("/proj/src/content/docs/pt-BR/feature-showcase.mdx");
   });
 
+  it("vitepress alias writes directly under locale folder", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/guide/getting-started.md"],
+          outputDir: "docs",
+          docsOutput: { style: "vitepress", docsRoot: "docs" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "de",
+      "docs/guide/getting-started.md",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/docs/de/guide/getting-started.md");
+  });
+
+  it("vitepress preserves BCP-47 locale folder casing by default", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/index.md"],
+          outputDir: "docs",
+          docsOutput: { style: "vitepress", docsRoot: "docs" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "docs/index.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/docs/pt-BR/index.md");
+  });
+
+  it("vitepress with localePathLowercase true lowercases locale folder", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/index.md"],
+          outputDir: "docs",
+          docsOutput: {
+            style: "vitepress",
+            docsRoot: "docs",
+            localePathLowercase: true,
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "zh-Hans", "docs/index.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/docs/zh-hans/index.md");
+  });
+
+  it("vitepress pathTemplate overrides style", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/a.md"],
+          outputDir: "docs",
+          docsOutput: {
+            style: "vitepress",
+            docsRoot: "docs",
+            pathTemplate: "{outputDir}/custom/{locale}/{relPath}",
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "fr", "docs/a.md", "markdown");
+    expect(toPosix(out)).toBe("/proj/docs/custom/fr/docs/a.md");
+  });
+
   it("shouldRewriteFlatMarkdownLinks defaults for flat without template", () => {
     const c = cfg({
       docs: [

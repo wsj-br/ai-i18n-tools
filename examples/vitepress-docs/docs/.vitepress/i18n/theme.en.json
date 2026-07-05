@@ -1,0 +1,28 @@
+{
+  "site": {
+    "title": "VitePress i18n demo",
+    "description": "Minimal ai-i18n-tools + VitePress example"
+  },
+  "nav": {
+    "guide": "Guide"
+  },
+  "sidebar": {
+    "guide": "Guide",
+    "gettingStarted": "Getting started"
+  },
+  "footer": {
+    "message": "MIT-licensed demo.",
+    "copyright": "Copyright © ai-i18n-tools contributors"
+  },
+  "docFooter": {
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "outline": {
+    "label": "On this page"
+  },
+  "langMenuLabel": "Language",
+  "search": {
+    "placeholder": "Search"
+  }
+}

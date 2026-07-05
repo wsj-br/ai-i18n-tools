@@ -1,43 +1,47 @@
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
-[![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools)
-[![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-Bade bhasha model ka upyog karke JavaScript/TypeScript application aur documentation site ko internationalize karne ke liye ek CLI aur toolkit. Yah [OpenRouter](https://openrouter.ai/) aur kisi bhi OpenAI-compatible provider (OpenAI, Anthropic, Gemini, DeepSeek, Groq, Mistral, xAI, Cerebras, NVIDIA, Alibaba, APIFUN, Ollama, aur bahut kuch) ke saath kaam karta hai. Teen modular workflow, sabhi ek single config file share karte hain, jo alag-alag translation ki zarooraton ko support karte hain:
-
-- **Workflow 1 — UI Translation:** JS/TS se `t("…")` calls (aur optional roop se `.astro` files se) nikalta hai aur i18next ya static SSG lookup ke liye flat, per-locale JSON generate karta hai.
-- **Workflow 2 — Document Translation:** `docs[].contentPaths` mein list kiye gaye markdown, MDX, aur `.astro` pages (websites aur Starlight ke liye) ko `translate-docs` ka upyog karke translate karta hai.
-- **Workflow 3 — JSON File Translation:** `json[]` mein define kiye gaye arbitrary nested JSON bundles ko translate karta hai. `translate-json` ka upyog tab karein jab UI copy source mein `t()` ka upyog karne ke bajaye per-locale JSON files mein store ki jaati hai.
-
-**SVG** assets ko `features.translateSVG`, top-level `svg` block, aur `translate-svg` ka upyog karke translate kiya jaata hai — `docs[].contentPaths` ka nahi.
-
-**Mujhe kaun sa workflow use karna chahiye?**
-- Source `t()` ka upyog karta hai → **Workflow 1** (`extract` / `translate-ui`)
-- Localized pages ya Docusaurus catalog JSON → **Workflow 2** (`translate-docs`)
-- Sirf standalone, nested JSON locale files → **Workflow 3** (`translate-json`)
-
-Sabhi workflow ek file/SQLite cache maintain karte hain taaki yeh sunishchit kiya ja sake ki sirf naye ya badle hue segments (strings ya text chunks) hi LLM ko bheje jaate hain.
-
-<small>**Anya bhashaon mein padhen:** </small>
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
+
+**Apne pasand ke AI model ka upyog karke apne app aur documentation ka anuvad karein: koi lock-in nahi, koi rewrites nahi.**
+
+`ai-i18n-tools` JavaScript/TypeScript applications aur documentation sites - jismein Docusaurus, Astro, Starlight, VitePress, aur plain Markdown/MDX shamil hain - ko bade bhasha models ka upyog karke internationalize karne ke liye ek CLI aur toolkit hai.
+
+Ise kisi bhi provider par point karein aur anuvad karna shuru karein: **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, koi bhi [OpenRouter](https://openrouter.ai/) model (ek single API key ke saath chunne ke liye saikadon), ya **Ollama** poori tarah se self-hosted, offline anuvad ke liye. Providers ya models ko har project ke liye—ya har bhasha ke liye—bina apne codebase ko badle switch karein.
+
+Ek config file teen anuvad modes ko chalati hai, isliye aap apni content structure ke aadhar par mix aur match kar sakte hain:
+
+- **UI strings** — JS/TS (aur vikalp roop se `.astro` files) se `t("…")` calls nikalta hai aur i18next ya static SSG lookup ke liye flat, per-locale JSON generate karta hai.
+- **Documents** — Markdown, MDX, aur `.astro` pages ko translate karta hai jo `docs[].contentPaths` mein `translate-docs` ka upyog karke list kiye gaye hain. **VitePress**, **Starlight**, **Docusaurus**, Astro-based sites, ya kisi bhi static site generator ke saath kaam karta hai jo Markdown/MDX/`.astro` source files se padhta hai.
+- **JSON** — `json[]` mein paribhashit manmane nested JSON bundles ka anuvad karta hai. `translate-json` ka upyog karein jab UI copy source mein `t()` calls ke bajaye per-locale JSON files mein ho.
+
+**SVG** assets ko apna alag path milta hai: `features.translateSVG`, top-level `svg` block, aur `translate-svg`—na ki `docs[].contentPaths`.
+
+**Main kiska upyog karoon?**
+
+| Aapki content                                                                 | Command                                     |
+|-------------------------------------------------------------------------------|---------------------------------------------|
+| Source code `t()` ka upyog karta hai                                        | **UI strings** — `extract` / `translate-ui` |
+| Localized pages ya docs sites (VitePress, Starlight, Docusaurus, Astro, aadi) | **Documents** — `translate-docs`            |
+| Standalone, nested JSON locale files                                          | **JSON** — `translate-json`                 |
+
+Teeno ek file/SQLite cache share karte hain, isliye keval naye ya badle hue segments (strings ya text chunks) hi model ko dobara bheje jaate hain — reruns tez aur saste hote hain chahe aap koi bhi provider upyog kar rahe hon.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Vishay-soochi**
 
-- [Core workflows](#core-workflows)
+- [Anuvad ke prakar](#translation-types)
 - [Installation](#installation)
   - [CLI ka upyog karna](#using-the-cli)
-- [LLM providers](#openrouter)
-- [Turant shuru karein](#quick-start)
-  - [Workflow 1 - UI Translation](#workflow-1---ui-translation)
-  - [Workflow 2 - Document Translation](#workflow-2---document-translation)
+- [LLM providers](#llm-providers)
+- [Quick start](#quick-start)
+  - [UI strings](#ui-strings)
+  - [Documents](#documents)
   - [Astro (plain Astro & Starlight)](#astro-plain-astro--starlight)
-  - [Sanyukt workflow](#combined-workflow)
+  - [Combined sync](#combined-sync)
 - [Runtime helpers](#runtime-helpers)
 - [CLI commands](#cli-commands)
 - [Documentation](#documentation)
@@ -45,22 +49,12 @@ Sabhi workflow ek file/SQLite cache maintain karte hain taaki yeh sunishchit kiy
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<a id="core-workflows"></a>
-## Core workflows
+<a id="translation-types"></a>
+## Translation types
 
-**Workflow 1 - UI Translation** — i18next (React, Next.js, Node.js, CLIs) ya static Astro SSG ka upyog karne wale kisi bhi JS/TS project ke liye
+Har anuvad prakar ki apni guide hai jismein poore configuration details hain: [UI strings](../docs/guide/ui-strings/), [Documents](../docs/guide/documents/), aur [JSON](../docs/guide/json.md). Side-by-side tulna ke liye [What is ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) dekhein.
 
-Source files ko `t("…")` / `i18n.t("…")` literals ke liye scan karta hai (Astro frontmatter aur template expressions ke liye `ui.uiExtractor.extensions` mein `.astro` jodein), ek master catalog (`strings.json`) banata hai, OpenRouter ke madhyam se har locale ke liye missing entries ko translate karta hai, aur flat JSON files (`de.json`, `pt-BR.json`, …) likhta hai. English source text un bundles mein runtime lookup key hai — `strings.json` extraction cache hai, runtime bundle nahi.
-
-**Workflow 2 - Document Translation** — `docs[].contentPaths` ke antargat markdown, MDX, aur `.astro` ke liye
-
-Mukhya roop se **markdown, MDX, aur `.astro` documentation** (Docusaurus, [Astro Starlight](https://starlight.astro.build/), plain README files, aur plain Astro marketing pages) ke liye design kiya gaya hai. `translate-docs` ek shared SQLite cache ke saath localized copies likhta hai. Docusaurus sites par, `docs[].docusaurusCatalogDir` ko `write-translations` catalog folder par set karein taaki shell JSON (navbar, footer, theme strings) ko usi command mein translate kiya ja sake. `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"`, aur aliases `"docusaurus"` / `"astro-starlight"` ko support karta hai (Getting Started mein [Output layouts](docs/GETTING_STARTED.hi-Latn.md#output-layouts) dekhein). Arbitrary nested UI JSON jo Docusaurus catalog nahi hai, Workflow 3 (`json[]` / `translate-json`) mein aata hai, `docs[]` mein nahi.
-
-**Workflow 3 - JSON file translation** — source mein `t()` ke bina nested locale JSON
-
-Files ko translate karein jaise ki `src/i18n/en/translation.json` top-level `json[]`, `features.translateJson`, aur `translate-json` ke maadhyam se. `init -t ui-json-bundles` ke saath scaffold karein.
-
-Sabhi workflows `ai-i18n-tools.config.json` share karte hain aur unhein joda ja sakta hai; `sync` extract, UI translation, translate SVG, `translate-docs`, aur `translate-json` ko aapke `features` flags ke anusaar chalata hai.
+Kuchh baatein jo pehle se janana mahatvapurna hain: UI strings active LLM provider (dekhein [LLM providers](#llm-providers)) ke madhyam se har locale ke liye missing entries ka anuvad karta hai aur flat JSON files (`de.json`, `pt-BR.json`, …) likhta hai, jismein English source text runtime lookup key ke roop mein hota hai — `strings.json` extraction cache hai, na ki runtime bundle. Documents `docs[].docsOutput.style` values `"nested"`, `"flat"`, `"doc-system"`, aur aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` ko support karta hai (dekhein [Output layouts](../docs/guide/documents/output-layouts.md)). Teeno `ai-i18n-tools.config.json` share karte hain aur combine kiye ja sakte hain; `sync` extract, UI translation, translate SVG, `translate-docs`, aur `translate-json` ko aapke `features` flags ke anusaar chalata hai.
 
 ---
 
@@ -78,12 +72,9 @@ pnpm add ai-i18n-tools
 <a id="using-the-cli"></a>
 ### CLI ka upyog karna
 
-**Prati-project (sifarish kiya gaya)** — ek dev dependency ke roop mein install karein, phir `npx`, `pnpm exec`, ya ek `package.json` script ke maadhyam se chalayein:
+Apne project mein package install karne ke baad, npm/pnpm/yarn link published bin entry (`bin/ai-i18n-tools.mjs`) ko `node_modules/.bin/ai-i18n-tools` mein. Vah shim installed package se compiled CLI load karta hai.
 
-```bash
-pnpm add -D ai-i18n-tools     # or: npm i -D ai-i18n-tools
-npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
-```
+**`package.json` scripts (sifarish ki jaati hai)** — npm aur pnpm scripts chalate samay `node_modules/.bin` ko `PATH` se pehle jodte hain, isliye aap nange command naam ko call kar sakte hain:
 
 ```json
 "scripts": {
@@ -98,13 +89,25 @@ npx ai-i18n-tools sync        # or: pnpm exec ai-i18n-tools sync
 }
 ```
 
-Aap ai-i18n-tools CLI commands ka seedhe upyog bhi kar sakte hain, jaise ki `ai-i18n-tools sync`.
+Phir chalaen jaise ki `pnpm run i18n:sync` — koi `npx` prefix ki zaroorat nahin.
 
-`extract`, `translate-ui`, `translate-svg`, `translate-docs`, aur `translate-json` ko haath se chain karne ke bajaye `sync` ko prefer karein — order aur feature flags manually chalane par galat ho sakte hain. Getting Started mein [Recommended `package.json` scripts](docs/GETTING_STARTED.hi-Latn.md#recommended-packagejson-scripts) dekhein.
+**Interactive shell** — apne project root se (ek local install ke baad):
 
-**Zero-install one-off** — `npx ai-i18n-tools <cmd>` ya `pnpm dlx ai-i18n-tools <cmd>` (sirf us invocation ke liye download karta hai).
+```bash
+npx ai-i18n-tools sync        # npm
+pnpm exec ai-i18n-tools sync  # pnpm
+```
 
-> **Tip:** `npx` ke bina ek interactive shell mein `ai-i18n-tools` ko seedhe chalane ke liye, `node_modules/.bin` ko apne `PATH` mein jodein (bash/zsh: `export PATH="$PWD/node_modules/.bin:$PATH"`). direnv aur Windows instructions ke liye [Getting Started](docs/GETTING_STARTED.hi-Latn.md#installation) dekhein.
+Bash/zsh mein nange `ai-i18n-tools` command ko type karne ke liye, local bin directory ko `PATH` mein jodein (PowerShell, direnv, aur Windows notes ke liye [Using the CLI](../docs/guide/installation.md#using-the-cli) dekhein):
+
+```bash
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+`extract`, `translate-ui`, `translate-svg`, `translate-docs`, aur `translate-json` ko manually chain karne ke bajaye `sync` ko prefer karein — manually chalane par order aur feature flags galat ho sakte hain. Quick start guide mein [Recommended `package.json` scripts](../docs/guide/quick-start.md#recommended-packagejson-scripts) dekhein.
+
+**Zero-install one-off** — `npx ai-i18n-tools <cmd>` ya `pnpm dlx ai-i18n-tools <cmd>` (sirf us invocation ke liye package download karta hai; `package.json` mein koi entry nahin).
 
 Apni provider API key set karein (OpenRouter dikhaya gaya hai; apne provider ke liye matching variable ka upyog karein):
 
@@ -114,7 +117,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ---
 
-<a id="openrouter"></a>
+<a id="llm-providers"></a>
 ## LLM providers
 
 Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models`, aur sambandhit scripts) ek LLM provider ko call karte hain; `check-markdown`, `mark-html`, aur `extract` nahin karte hain.
@@ -137,7 +140,7 @@ Config ko edit kiye bina ek single run ke liye providers switch karne ke liye, g
 Built-in provider presets (key — base URL — API-key env var):
 
 | Provider | Base URL | API-key env var |
-| --- | --- | --- |
+|--------------|-----------------------------------------------------------|----------------------|
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
 | `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
@@ -154,19 +157,19 @@ Built-in provider presets (key — base URL — API-key env var):
 
 `baseUrl` (aur `apiKeyEnv` jab tak ki use kisi key ki zaroorat na ho) ke saath ek nayi key jodkar ek custom OpenAI-compatible provider define karein. Model ids plain upstream ids hain — provider ko config level par chuna jaata hai, isliye kisi `provider/` prefix ki zaroorat nahi hai (OpenRouter ids apne native `vendor/model` form ko barkarar rakhte hain).
 
-Token usage har provider ke liye report kiya jaata hai; exact USD cost tabhi dikhaya jaata hai jab provider ise return karta hai (OpenRouter). `ai-i18n-tools check-models` active provider ki live `GET /models` list (koi bhi provider) ke khilaaf configured model ids ko validate karta hai, aur jab provider ise return karta hai (jaise OpenRouter) to pricing dikhata hai. `ai-i18n-tools list-models` har us model ko list karta hai jise active provider advertise karta hai (kisi anya configured provider ka nireekshan karne ke liye `-P` / `--provider` ka upyog karein).
+Token ka upyog har provider ke liye report kiya jaata hai; sahi USD laagat tabhi dikhai jaati hai jab provider ise wapas karta hai (OpenRouter). `ai-i18n-tools check-models` active provider ki live `GET /models` list (koi bhi provider) ke khilaaf configured model ids ko validate karta hai, aur jab provider ise wapas karta hai (jaise OpenRouter) to pricing dikhata hai. `ai-i18n-tools list-models` har us model ko list karta hai jise active provider advertise karta hai (doosre configured provider ka nireekshan karne ke liye `-P` / `--provider` ka upyog karein). `ai-i18n-tools bench-models` ek sample ko isolation mein translate karke har configured model ko benchmark karta hai (models parallel mein chalte hain, `concurrency` dwara seemit) aur per-model input/output tokens, wall-clock time, aur USD laagat print karta hai.
 
 Ek legacy top-level `openrouter` config block abhi bhi swikar kiya jaata hai aur load hone par automatically `providers.openrouter` (`provider: "openrouter"` ke saath) mein migrate ho jaata hai.
 
-Ek single document par `-P` ke saath providers ko switch karne ka hands-on demo dekhne ke liye, [`examples/multi-provider`](../examples/multi-provider/) dekhein (`openai`, `anthropic`, `nvidia`, aur `deepseek` ke saath ek config).
+Ek single document par `-P` ke saath providers ko switch karne ke hands-on demo ke liye, [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) dekhen.
 
 ---
 
 <a id="quick-start"></a>
 ## Turant shuru karein
 
-<a id="workflow-1---ui-translation"></a>
-### Workflow 1 - UI Translation
+<a id="ui-strings"></a>
+### UI strings
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
@@ -179,10 +182,10 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-Phir `'ai-i18n-tools/runtime'` se helpers ka upyog karke apne app mein i18next ko wire karein. Poore setup ke liye Getting Started guide mein [Step 4: Wire i18next at runtime](docs/GETTING_STARTED.hi-Latn.md#step-4-wire-i18next-at-runtime) dekhein.
+Phir `'ai-i18n-tools/runtime'` se helpers ka upyog karke apne app mein i18next ko wire karein. Poore setup ke liye UI strings guide mein [Step 4: Wire i18next at runtime](../docs/guide/ui-strings/i18next-runtime.md) dekhein.
 
-<a id="workflow-2---document-translation"></a>
-### Workflow 2 - Document Translation
+<a id="documents"></a>
+### Documents
 
 Default `init` template (`ui-markdown`) kewal UI extraction ko enable karta hai. Docs-oriented template ka upyog karein (ya `features.translateDocs` ko enable karein aur `docs[]` jodein) `translate-docs` se pehle:
 
@@ -193,6 +196,9 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight documentation
 # npx ai-i18n-tools init -t ui-starlight
 
+# VitePress documentation (pages + theme JSON)
+# npx ai-i18n-tools init -t ui-vitepress
+
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -201,28 +207,33 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-`ai-i18n-tools.config.json` ko edit karein: `docs[].contentPaths` ko markdown, MDX, aur/ya `.astro` sources par set karein; `docs[].outputDir` aur `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"flat"`, aadi). Poora field reference: [Workflow 2 - Document Translation](docs/GETTING_STARTED.hi-Latn.md#workflow-2---document-translation).
+`ai-i18n-tools.config.json` edit karein: `docs[].contentPaths` ko markdown, MDX, aur/ya `.astro` sources par set karein; `docs[].outputDir` aur `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"flat"`, aadi). Poora field reference: [Documents](../docs/guide/documents/).
+
+<a id="vitepress"></a>
+### VitePress
+
+`init -t ui-vitepress` `docsOutput.style: "vitepress"` ke saath theme/nav/sidebar strings ke liye ek `json[]` block bhi scaffold karta hai. Page markdown aur `theme.{locale}.json` ko ek saath translate karne ke liye `sync` chalaen. [VitePress integration](../docs/guide/vitepress-integration.md) aur [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) dekhen.
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
 
-**Astro Starlight** — `init -t ui-starlight`, phir `translate-docs`. Starlight UI overrides ko ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain jab zaroorat ho ([Shuruat karna → Workflow 2](docs/GETTING_STARTED.hi-Latn.md#step-1-initialise-for-documentation)).
+**Astro Starlight** — `init -t ui-starlight`, phir `translate-docs`. Starlight UI overrides ko ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain jab zaroorat ho ([Documents — documentation ke liye initialise karein](../docs/guide/documents/index.md#step-1-initialise-for-documentation)).
 
-**Sadharan Astro** (marketing ya app sites, Starlight nahi) — [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath jodein. Sandarbh project: [`examples/astro-website`](../examples/astro-website/) (English `/` par, locales `/{locale}/` par).
+**Plain Astro** (marketing ya app sites, Starlight nahi) — [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath combine karein. Reference project: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (English `/` par, locales `/{locale}/` par).
 
 Adhikansh teamein do pipelines ka **hybrid** upyog karti hain:
 
-| Pipeline | Iske liye upyog karein | Commands | Output |
-|----------|---------|----------|--------|
-| **Page HTML** | Headings, paragraphs, nav labels, template body mein inline arrays | `translate-docs` | `src/pages/{locale}/index.astro` har locale ke liye |
+| Pipeline | Use for | Commands | Output |
+|------------------------|----------------------------------------------------------------------|----------------------------|--------------------------------------------------------|
+| **Page HTML** | Headings, paragraphs, nav labels, inline arrays in the template body | `translate-docs` | `src/pages/{locale}/index.astro` per locale |
 | **UI strings (`t()`)** | Frontmatter data, tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (key ke roop mein English source) |
 
-`init -t ui-astro-website` ke saath UI scaffold karein. `.astro` pages mein hardcoded HTML ke liye, `features.translateDocs` enable karein aur `docsOutput.style: "astro-starlight"` ke saath ek `docs[]` block jodein ([Astro website pages (parse-and-replace)](docs/GETTING_STARTED.hi-Latn.md#astro-website-pages-parse-and-replace) dekhein). `targetLocales`, `i18n.locales` ko `astro.config.mjs` mein, aur `ui-languages.json` ko align rakhein (Astro routes lowercase codes ka upyog karte hain jaise `pt-br`; flat bundle filenames config casing ka palan karte hain, jaise `pt-BR.json`).
+`init -t ui-astro-website` ke saath UI scaffold karein. `.astro` pages mein hardcoded HTML ke liye, `features.translateDocs` ko enable karein aur `docsOutput.style: "astro-starlight"` ke saath ek `docs[]` block jodein ([Astro website pages (parse-and-replace)](../docs/guide/ui-strings/astro-website.md#astro-website-pages-parse-and-replace) dekhein). `targetLocales`, `astro.config.mjs` mein `i18n.locales`, aur `ui-languages.json` ko align rakhein (Astro routes `pt-br` jaise lowercase codes ka upyog karte hain; flat bundle filenames config casing ka palan karte hain, jaise `pt-BR.json`).
 
-Build time par `t()` ko i18next ke bina wire karein jab tak aap client islands nahi jodte — [Astro website UI strings (SSG)](docs/GETTING_STARTED.hi-Latn.md#astro-website-ui-strings-ssg) aur example ke `src/i18n/t.ts` ko dekhein.
+`t()` ko build time par i18next ke bina wire karein jab tak ki aap client islands na jodein — [Astro website UI strings (SSG)](../docs/guide/ui-strings/astro-website.md#astro-website-ui-strings-ssg) aur example ke `src/i18n/t.ts` ko dekhein.
 
-<a id="combined-workflow"></a>
-### Sanyukt workflow
+<a id="combined-sync"></a>
+### Sanyukt sync
 
 ```bash
 npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
@@ -261,8 +272,9 @@ Nimnalikhit helpers `'ai-i18n-tools/runtime'` se export kiye jaate hain aur kisi
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -271,7 +283,7 @@ ai-i18n-tools translate-json …
 ai-i18n-tools translate-svg …
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
-ai-i18n-tools lint-source …
+ai-i18n-tools proofread-ui …
 ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
 ai-i18n-tools sync …
@@ -279,19 +291,21 @@ ai-i18n-tools status …
 ai-i18n-tools statistics …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
+ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
 ai-i18n-tools help [command]
 ```
 
-Plain HTML apps ke liye, elements ko bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers se annotate karen (source text element ke khud ke textContent / title / placeholder se liya jaata hai, ek baar likha jaata hai); `mark-html` unhein aapke liye insert karta hai aur `extract` phir unhein `strings.json` mein capture karta hai. [Getting Started — Marking HTML for translation](docs/GETTING_STARTED.hi-Latn.md#marking-html-for-translation) dekhen.
+Plain HTML apps ke liye, elements ko bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers ke saath annotate karein (source text element ke apne textContent / title / placeholder se liya gaya hai, ek baar likha gaya); `mark-html` unhein aapke liye insert karta hai aur `extract` phir unhein `strings.json` mein capture karta hai. [Marking HTML for translation](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation) dekhein.
 
-Pratyek command ke liye flag lists [Getting Started — CLI reference](docs/GETTING_STARTED.hi-Latn.md#cli-reference) mein hain. Built-in upyog text ke liye `ai-i18n-tools <command> --help` chalaayein.
+Prati-command flag lists [CLI reference](../docs/reference/cli-commands.md) mein hain. Built-in usage text ke liye `ai-i18n-tools <command> --help` chalayein.
 
-Har command ke liye global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karein; `providers` ke tahat configure hona chahiye), `-L` / `--ui-lang <code>` (tool ke khud ke UI/logs ke liye language), console output ko log file mein tee karne ke liye optional `-w` / `--write-logs [path]` (default: translation cache directory ke niche), `-V` / `--version`, aur `-h` / `--help`. Kai commands target locales ko seemit karne ke liye `-l` / `--locale <codes>` (comma-separated BCP-47) accept karte hain; `lint-source` ek single source locale use karta hai. Command overview table ke liye [Getting Started](docs/GETTING_STARTED.hi-Latn.md#cli-reference) dekhein.
+Global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karein; `providers` ke तहत configure kiya jaana chahiye), `-L` / `--ui-lang <code>` (tool ke apne UI/logs ke liye bhasha), `-V` / `--version`, aur `-h` / `--help` — har command par swikar kiya jaata hai. `-w` / `--write-logs [path]` console output ko ek log file mein tees karta hai (default: translation cache directory ke तहत), lekin kewal translation aur sync commands (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`) par prabhavi hota hai. Kai commands `-l` / `--locale <codes>` (comma-separated BCP-47) ko target locales ko seemit karne ke liye swikar karte hain; `proofread-ui` ek single source locale ka upyog karta hai. Command overview table ke liye [CLI reference](../docs/reference/cli-commands.md) dekhein.
 
-### Tool UI language (logs, help, dashboard)
+<a id="tool-ui-language-logs-help-dashboard"></a>
+### Tool UI bhasha (logs, help, dashboard)
 
 Tool apne CLI help, high-traffic log/summary messages, aur Translation Dashboard ko localize karta hai. UI locale in sources se resolve hota hai, sabse highest priority pehle:
 
@@ -300,22 +314,26 @@ Tool apne CLI help, high-traffic log/summary messages, aur Translation Dashboard
 3. `ai-i18n-tools.config.json` mein `uiLanguage` config key (BCP-47 string).
 4. Host OS locale (`Intl.DateTimeFormat().resolvedOptions().locale` ke through).
 
-Requested locale shipped UI languages se exact match ya closest variation se match hota hai (e.g. `pt-PT` resolve hota hai `pt-BR` mein, aur `en-US` resolve hota hai `en-GB` mein); jab kuch bhi match nahi hota toh yeh source locale (`en-GB`) pe fallback ho jata hai. Yeh aapke project ke `sourceLocale` / `targetLocales` se independent hai. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, aur `zh-Hant`.
+Anurodhit locale shipped UI languages se theek-theek ya sabse nikat variation se milta hai (udharan ke liye `pt-PT` `pt-BR` mein resolve hota hai, aur `en-US` `en-GB` mein resolve hota hai); jab kuch bhi match nahi karta hai to yeh source locale (`en-GB`) par wapas aa jaata hai. Jab ek UI language ko spasht roop se anurodhit kiya jaata hai (flag, env var, ya `uiLanguage` ke madhyam se) lekin koi shipped bundle match nahi karta hai, to CLI ek baar ki chetavani print karta hai ki default locale ka upyog kiya jaayega; host OS se anumanit locale kabhi chetavani nahi deta hai. Yeh aapke project ke `sourceLocale` / `targetLocales` se swatantra hai. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, aur `zh-Hant`. Koi configuration ki zaroorat nahi hai — default roop se tool aapke OS locale ka palan karta hai. Vistrit jaankari ke liye [Tool UI language](../docs/reference/environment-variables.md#tool-ui-language) dekhein.
 
 ---
 
 <a id="documentation"></a>
 ## Documentation
 
-- [Getting Started](docs/GETTING_STARTED.hi-Latn.md) - sabhi workflows ke liye poora setup (UI, docs/`.astro`, JSON bundles, Astro Starlight aur plain Astro), CLI reference, aur config field reference.
-- [Locale assets guide](docs/LOCALE-ASSETS-GUIDE.hi-Latn.md) - translated docs mein screenshots aur illustrated SVGs (Patterns A–E, flat link rewriter, screenshot scripts).
-- [Package Overview](docs/PACKAGE_OVERVIEW.hi-Latn.md) - architecture, internals, programmatic API, aur extension points.
-- [AI Agent Context](../docs/ai-i18n-tools-context.md) - **package ka upyog karne wale apps ke liye:** downstream projects ke liye integration prompts (apne repo ke agent rules mein copy karein).
-- **Is** repository ke liye Maintainer internals: `dev/package-context.md` (clone-only; npm par nahi).
+- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — poori VitePress guide (GitHub Pages par 9 locales).
+- [Quick start](../docs/guide/quick-start.md) — UI strings, documents, aur JSON ke liye setup (UI, docs/`.astro`, JSON bundles, Astro Starlight aur plain Astro).
+- [Locale assets guide](../docs/guide/images-and-screenshots/) - translated docs mein screenshots aur illustrated SVGs (flat link rewriter, screenshot scripts).
+- [Architecture](../docs/reference/architecture.md) - architecture, internals, programmatic API, aur extension points.
+- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **package ka upyog karne wale apps ke liye:** downstream projects ke liye integration prompts (apne repo ke agent rules mein copy karen).
+- **Is** repository ke liye maintainer internals: `dev/package-context.md` (keval clone; npm par nahi).
 
 ---
 
 <a id="license"></a>
 ## License
 
-MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br)
+Yah project MIT License ke tahat licensed hai.  
+Vistrit jankari ke liye [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) file dekhen.
+
+Copyright &copy; 2026 Waldemar Scudeller Jr.

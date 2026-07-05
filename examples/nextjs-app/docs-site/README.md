@@ -2,7 +2,17 @@
 
 This is a small [Docusaurus](https://docusaurus.io/) site bundled with the [Next.js example](../README.md). It mirrors the markdown files from the main repository’s `docs/` folder for convenient local reading.
 
-Translated copies live under `i18n/<locale>/docusaurus-plugin-content-docs/current/` (committed so you can read them without running translate). Regenerate with `pnpm run i18n:translate` in `examples/nextjs-app/` when sources change. English stays in `docs/`; switch locale via the navbar.
+Get the parent example with degit (includes this `docs-site/` folder):
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app
+cd nextjs-app
+pnpm install
+```
+
+See [../README.md](../README.md) for the full Next.js app setup and i18n workflow.
+
+Translated copies live under `i18n/<locale>/docusaurus-plugin-content-docs/current/` (committed so you can read them without running translate). Regenerate with `pnpm run i18n:translate` in the parent `nextjs-app/` folder when sources change. English stays in `docs/`; switch locale via the navbar.
 
 ## Two translation surfaces
 
@@ -15,10 +25,9 @@ Site shape follows [duplistatus](https://github.com/wsj-br/duplistatus)’s docu
 
 ## Build and view the docs
 
-From the **repository root**:
+From this directory (after degit: `cd nextjs-app/docs-site`; from the monorepo: `cd examples/nextjs-app/docs-site`):
 
 ```bash
-cd examples/nextjs-app/docs-site
 pnpm install
 ```
 
@@ -45,7 +54,7 @@ Then open paths such as `/getting-started`, `/fr/getting-started`, or `/pt-BR/ge
 
 ### Documentation pages (`docs/`)
 
-Author and edit English pages under `docs/`. From [`examples/nextjs-app/`](../), `pnpm run i18n:translate` runs `ai-i18n-tools translate-docs`, which writes localized markdown into `i18n/<locale>/docusaurus-plugin-content-docs/current/` (this is the main documentation output).
+Author and edit English pages under `docs/`. From the parent [`nextjs-app/`](../) folder, `pnpm run i18n:translate` runs `ai-i18n-tools translate-docs`, which writes localized markdown into `i18n/<locale>/docusaurus-plugin-content-docs/current/` (this is the main documentation output).
 
 ### `write-translations` (Docusaurus UI strings)
 
@@ -56,7 +65,7 @@ pnpm install
 pnpm run write-translations
 ```
 
-Commit updated files under `i18n/en/` when they change. Then run `pnpm run i18n:translate` from [`examples/nextjs-app/`](../) so `ai-i18n-tools translate-docs` turns **markdown pages** under `docs/` into each locale’s `docusaurus-plugin-content-docs/current/` (primary). When `jsonSource` is set in `ai-i18n-tools.config.json` and `features.translateJSON` is on, it also translates **shell JSON** from `i18n/en/` into sibling locale folders.
+Commit updated files under `i18n/en/` when they change. Then run `pnpm run i18n:translate` from the parent [`nextjs-app/`](../) folder so `ai-i18n-tools translate-docs` turns **markdown pages** under `docs/` into each locale’s `docusaurus-plugin-content-docs/current/` (primary). When `jsonSource` is set in `ai-i18n-tools.config.json` and `features.translateJSON` is on, it also translates **shell JSON** from `i18n/en/` into sibling locale folders.
 
 ### i18n and `pnpm start` (important)
 

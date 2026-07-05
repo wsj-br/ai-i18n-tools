@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-06-22T19:38:44.563Z'
-source_file_mtime: '2026-06-21T00:43:33.130Z'
-source_file_hash: d98df95b39d53feed4aac4ac38443d3eb044b3481426ccc1d8e6c3a8ddeee199
+translation_last_updated: '2026-07-02T22:49:00.277Z'
+source_file_mtime: '2026-07-02T22:42:46.979Z'
+source_file_hash: c84bd1299682e0741d9912e75f8cb7c256abbd066e338fd3c45274b524bbdb38
 translation_language: fr
 source_file_path: README.md
 translation_models:
@@ -23,7 +23,17 @@ Cet exemple montre comment utiliser `ai-i18n-tools` pour internationaliser une a
 
 ## Installation
 
-Exécutez `pnpm install` depuis la **racine du dépôt**. Le fichier `pnpm-workspace.yaml` à la racine déclare à la fois la bibliothèque et cet exemple comme des packages de l'espace de travail, donc pnpm lie `ai-i18n-tools` directement à votre copie locale via l'entrée `"ai-i18n-tools": "workspace:^"` dans `package.json`. Aucune étape de construction ou de liaison séparée n'est nécessaire - il suffit de reconstruire la bibliothèque (`pnpm run build` à la racine du dépôt) chaque fois que vous modifiez les fichiers sources et l'exemple récupérera automatiquement le `dist/` mis à jour.
+### Essayez cet exemple indépendamment
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
+cd console-app
+pnpm install
+```
+
+### Contributeurs au monorepo
+
+Exécutez `pnpm install` depuis la **racine du dépôt**. L'entrée de l'espace de travail [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) force `ai-i18n-tools` à utiliser la copie locale de l'espace de travail, même si cet exemple déclare `"ai-i18n-tools": "^1.7.2"`. Aucune étape de liaison séparée n'est nécessaire — reconstruisez la bibliothèque (`pnpm run build` à la racine du dépôt) chaque fois que vous modifiez les fichiers sources, et l'exemple utilisera automatiquement la version mise à jour de `dist/`.
 
 ```bash
 # From the repository root

@@ -7,10 +7,17 @@ import { toDocTranslateConfig } from "../core/config.js";
 import { TranslationCache } from "../core/cache.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
-import { collectMarkdownIssuesForSegment } from "../processors/markdown-source-diagnostics.js";
+import {
+  collectMalformedAdmonitionRows,
+  collectMarkdownIssuesForSegment,
+} from "../processors/markdown-source-diagnostics.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
-import { matchesPathFilter, buildMarkdownExtractOpts } from "./doc-translate.js";
+import {
+  matchesPathFilter,
+  buildMarkdownExtractOpts,
+  augmentMarkdownFilesFromPathFilter,
+} from "./doc-translate.js";
 
 function filterIgnoredFiles(files: string[], cwd: string): string[] {
   const ig = loadTranslateIgnore(".translate-ignore", cwd);
@@ -53,10 +60,23 @@ export async function runCheckMarkdown(opts: CheckMarkdownOptions): Promise<{ ex
     for (let bi = 0; bi < opts.config.docs.length; bi++) {
       const block = opts.config.docs[bi]!;
       const view = toDocTranslateConfig(opts.config, block);
-      const md = filterIgnoredFiles(
+      const discovered = filterIgnoredFiles(
         collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
         projectRoot
       ).filter((r) => matchesPathFilter(r, opts.pathFilter));
+
+      // Mirror translate-docs: an explicit --path/--file is processed even when it is outside
+      // every docs[].contentPaths (or excluded by .translate-ignore), attached to docs[0].
+      const { markdown: md, warnings } = augmentMarkdownFilesFromPathFilter(
+        projectRoot,
+        opts.pathFilter,
+        bi,
+        opts.config.docs,
+        discovered
+      );
+      for (const w of warnings) {
+        console.warn(chalk.yellow(`⚠️  ${w}`));
+      }
 
       const mdExtractOpts = buildMarkdownExtractOpts(view.doc);
       const extractor = new MarkdownExtractor();
@@ -66,7 +86,10 @@ export async function runCheckMarkdown(opts: CheckMarkdownOptions): Promise<{ ex
         const content = fs.readFileSync(abs, "utf8");
         const segments = extractor.extract(content, relPath, mdExtractOpts);
         const trackKey = documentationFileTrackingKey(bi, relPath);
-        const rows = segments.flatMap((s) => collectMarkdownIssuesForSegment(s, trackKey));
+        const rows = [
+          ...segments.flatMap((s) => collectMarkdownIssuesForSegment(s, trackKey)),
+          ...collectMalformedAdmonitionRows(content, trackKey),
+        ];
 
         if (cache) {
           cache.replaceMarkdownIssuesForFilepath(trackKey, rows);

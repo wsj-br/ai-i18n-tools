@@ -87,6 +87,45 @@ Paragraph.
     expect(segs.some((s) => s.type === "paragraph")).toBe(true);
   });
 
+  it("captures a nested admonition as one segment and reassembles it exactly", () => {
+    const block = [
+      ":::::info[Parent]",
+      "",
+      "Parent content.",
+      "",
+      "::::danger[Child]",
+      "",
+      "Child content.",
+      "",
+      ":::tip[Deep Child]",
+      "",
+      "Deep child content.",
+      "",
+      ":::",
+      "",
+      "::::",
+      "",
+      ":::::",
+    ].join("\n");
+    const md = `${block}\n\nTrailing paragraph.`;
+    const segs = ex.extract(md, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]!.content).toBe(block);
+    expect(segs.some((s) => s.type === "paragraph" && s.content === "Trailing paragraph.")).toBe(
+      true
+    );
+    const map = new Map<string, string>();
+    for (const s of segs) {
+      if (s.translatable) {
+        map.set(s.hash, s.content);
+      }
+    }
+    const out = ex.reassemble(segs, map);
+    expect(out).toContain(":::::info[Parent]");
+    expect(out).toContain("::::danger[Child]");
+  });
+
   it("treats top-level MDX `import` and `export` blocks as non-translatable code", () => {
     const md = `import Foo from '@site/src/components/Foo';
 

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  collectMalformedAdmonitionIssues,
+  collectMalformedAdmonitionRows,
   collectMarkdownIssuesForSegment,
   collectMarkdownSourceIssues,
   MARKDOWN_SOURCE_ISSUE_CODES,
@@ -179,5 +181,91 @@ describe("collectMarkdownIssuesForSegment", () => {
       translatable: false,
     });
     expect(collectMarkdownIssuesForSegment(seg, "x.md")).toEqual([]);
+  });
+});
+
+describe("collectMalformedAdmonitionIssues", () => {
+  it("flags an unclosed admonition opener at the opener line", () => {
+    const md = "Intro.\n\n:::note\nBody without a closing fence.";
+    const issues = collectMalformedAdmonitionIssues(md);
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+        line1: 3,
+      }),
+    ]);
+  });
+
+  it("flags a stray closing fence with no matching opener", () => {
+    const md = "Some text.\n\n:::";
+    const issues = collectMalformedAdmonitionIssues(md);
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNEXPECTED_CLOSE,
+        line1: 3,
+      }),
+    ]);
+  });
+
+  it("flags an unterminated bracketed title", () => {
+    const md = ":::note[Title without closing bracket\n\nBody\n\n:::";
+    const issues = collectMalformedAdmonitionIssues(md);
+    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE))
+      .toBe(true);
+    // The opener still counts toward balance, so it should NOT also report UNCLOSED.
+    expect(
+      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED)
+    ).toBe(false);
+  });
+
+  it("passes a well-formed nested admonition block", () => {
+    const md = [
+      ":::::info[Parent]",
+      "",
+      "Parent body.",
+      "",
+      "::::danger[Child]",
+      "",
+      "Child body.",
+      "",
+      ":::tip[Deep Child]",
+      "",
+      "Deep body.",
+      "",
+      ":::",
+      "",
+      "::::",
+      "",
+      ":::::",
+    ].join("\n");
+    expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+  });
+
+  it("does not flag :::-like lines inside a fenced code block", () => {
+    const md = "```md\n:::note\nNot a real admonition\n:::\n```\n\nReal prose.";
+    expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+  });
+
+  it("ignores admonition-like content inside YAML frontmatter", () => {
+    const md = "---\ntitle: x\n---\n\nBody.";
+    expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+  });
+});
+
+describe("collectMalformedAdmonitionRows", () => {
+  it("maps file-level issues to cache rows with a deterministic synthetic hash", () => {
+    const md = ":::note\nNo close.";
+    const rows = collectMalformedAdmonitionRows(md, "doc-block:0:guide.md");
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      filepath: "doc-block:0:guide.md",
+      issueCode: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+      startLine: 1,
+    });
+    expect(rows[0]?.sourceHash).toMatch(/^admonition:/);
+    // Stable across runs.
+    expect(collectMalformedAdmonitionRows(md, "doc-block:0:guide.md")[0]?.sourceHash).toBe(
+      rows[0]?.sourceHash
+    );
   });
 });

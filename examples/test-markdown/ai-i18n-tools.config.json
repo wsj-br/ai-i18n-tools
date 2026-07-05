@@ -1,0 +1,48 @@
+{
+  "sourceLocale": "pt-BR",
+  "targetLocales": [
+    "en-GB",
+    "hi",
+    "ja",
+    "ko",
+    "zh-Hans"
+  ],
+  "concurrency": 5,
+  "batchConcurrency": 5,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": false,
+    "translateDocs": true,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "cacheDir": ".translation-cache",
+  "docs": [
+    {
+      "description": "Portuguese markdown + MDX placeholder stress test",
+      "contentPaths": [
+        "test-markdown-pt-BR.md",
+        "test-markdown-stress-test.md"
+      ],
+      "outputDir": "translated-docs",
+      "addFrontmatter": false,
+      "docsOutput": {
+        "style": "flat",
+        "flatPreserveRelativeDir": true,
+        "linkRewriteDocsRoot": "."
+      }
+    }
+  ],
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "google/gemini-2.5-flash-lite",
+        "openai/gpt-4o-mini"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter"
+}

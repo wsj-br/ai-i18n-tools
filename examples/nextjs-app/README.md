@@ -19,25 +19,33 @@ screenshot
 
 ## Installation
 
-From the repository root, run:
+### Try this example on its own
+
+Copy only this example folder and install `ai-i18n-tools` from npm:
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app
+cd nextjs-app
+pnpm install
+```
+
+### From the full ai-i18n-tools repository
+
+Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). From the repository root, run:
 
 ```bash
 pnpm install
 ```
 
-The root `pnpm-workspace.yaml` includes the library and this example, so pnpm links `ai-i18n-tools` via `"ai-i18n-tools": "workspace:^"` in `package.json`. No separate build or link step is needed — after changing library sources, run `pnpm run build` at the repo root and the example will pick up the updated `dist/` automatically.
+The workspace [`overrides`](../../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares `"ai-i18n-tools": "^1.7.2"`. No separate build or link step is needed — after changing library sources, run `pnpm run build` at the repo root and the example will pick up the updated `dist/` automatically.
 
-**Working directory:** Run the Next.js app and all `pnpm run i18n:*` commands from `examples/nextjs-app` (where `ai-i18n-tools.config.json` lives), or pass `--config` / set the working directory so the CLI resolves that config.
+**Working directory:** Run the Next.js app and all `pnpm run i18n:*` commands from this example's root directory (after degit you are already in `nextjs-app/`; from the monorepo use `examples/nextjs-app/`, where `ai-i18n-tools.config.json` lives), or pass `--config` / set the working directory so the CLI resolves that config.
 
 ## Usage
 
+Run the commands below from this example's root directory. After `npx degit …` you are already there (`cd nextjs-app`). From the full [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository, use `cd examples/nextjs-app` instead.
+
 ### Next.js app (port 3030)
-
-From the repo root after `pnpm install`:
-
-```bash
-cd examples/nextjs-app
-```
 
 Development server:
 
@@ -69,8 +77,9 @@ The home page also shows a demo SVG at the bottom. The image URL follows `public
 
 ### Documentation site (port 3040)
 
+From the nested `docs-site/` folder (after degit: `cd docs-site`; from the monorepo: `cd examples/nextjs-app/docs-site`):
+
 ```bash
-cd examples/nextjs-app/docs-site
 pnpm install
 pnpm build
 pnpm start
@@ -139,9 +148,9 @@ Steps run in order:
 1. ``ai-i18n-tools extract`` — extracts UI strings and updates `locales/strings.json`.
 2. ``ai-i18n-tools translate-ui`` — writes flat locale JSON under `public/locales/` from `locales/strings.json`.
 3. ``ai-i18n-tools translate-svg`` — translates SVG files from `images/` to `public/assets/` when `features.translateSVG` is true and the `svg` block is set in `ai-i18n-tools.config.json` (this example uses flat names: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — translates Docusaurus **page content** (markdown/MDX under `docs-site/docs/`) into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, and when `features.translateJSON` and `jsonSource` are set, also translates **shell JSON** from `docs-site/i18n/en/` (per `documentations[]` in `ai-i18n-tools.config.json`; see Workflow 2 in `docs/GETTING_STARTED.md` at the repository root).
+4. ``ai-i18n-tools translate-docs`` — translates Docusaurus **page content** (markdown/MDX under `docs-site/docs/`) into `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, and when `features.translateJSON` and `jsonSource` are set, also translates **shell JSON** from `docs-site/i18n/en/` (per `documentations[]` in `ai-i18n-tools.config.json`; see [Documents](/guide/documents/) in the docs site).
 
-You can run any step individually (e.g. `ai-i18n-tools translate-svg`) when only the sources for that workflow have changed.
+You can run any step individually (e.g. `ai-i18n-tools translate-svg`) when only the sources for that translation type have changed.
 
 If logs show many skips and few writes, the tool is reusing existing outputs and the SQLite cache in `.translation-cache/`. To force re-translation, pass `--force` or `--force-update` on the relevant command where supported, or run `pnpm run i18n:clean` (deletes only `.translation-cache/` in this folder) and translate again.
 

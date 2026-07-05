@@ -9,18 +9,14 @@
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash-lite",
-        "meta-llama/llama-3.3-70b-instruct",
-        "cohere/command-r-08-2024",
         "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
         "qwen/qwen-2.5-72b-instruct",
         "google/gemma-4-26b-a4b-it",
-        "qwen/qwen3.6-35b-a3b",
         "deepseek/deepseek-v4-flash",
         "anthropic/claude-3-haiku",
         "z-ai/glm-4.7-flash",
-        "anthropic/claude-3.5-haiku",
         "google/gemini-3-flash-preview",
         "~anthropic/claude-haiku-latest",
         "google/gemma-4-31b-it",
@@ -34,19 +30,14 @@
   "features": {
     "translateUIStrings": false,
     "translateDocs": true,
-    "translateJson": false,
+    "translateJson": true,
     "translateSVG": false
   },
   "cacheDir": ".translation-cache",
   "docs": [
     {
-      "description": "README and docs/ markdown only (no UI strings pipeline)",
-      "contentPaths": [
-        "README.md",
-        "docs/GETTING_STARTED.md",
-        "docs/PACKAGE_OVERVIEW.md",
-        "docs/LOCALE-ASSETS-GUIDE.md"
-      ],
+      "description": "README.md (flat, GitHub-facing translations)",
+      "contentPaths": ["README.md"],
       "outputDir": "translated-docs",
       "addFrontmatter": false,
       "docsOutput": {
@@ -60,6 +51,29 @@
             "separator": " · "
           }
         }
+      }
+    },
+    {
+      "description": "VitePress website content",
+      "contentPaths": ["docs/index.md", "docs/guide", "docs/reference", "docs/examples.md"],
+      "outputDir": "docs",
+      "addFrontmatter": false,
+      "docsOutput": {
+        "style": "vitepress",
+        "docsRoot": "docs",
+        "rewriteVitepressLinks": true
+      }
+    }
+  ],
+  "json": [
+    {
+      "description": "VitePress theme/nav/sidebar strings",
+      "contentPaths": "docs/.vitepress/i18n/theme.en.json",
+      "outputPathTemplate": "docs/.vitepress/i18n/theme.{locale}.json",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": [],
+        "translateKeys": []
       }
     }
   ]

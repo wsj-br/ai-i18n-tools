@@ -19,13 +19,23 @@ captura de pantalla
 
 ## Instalación
 
+### Prueba este ejemplo por separado
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app
+cd nextjs-app
+pnpm install
+```
+
+### Colaboradores del monorepositorio
+
 Desde la raíz del repositorio, ejecute:
 
 ```bash
 pnpm install
 ```
 
-El `pnpm-workspace.yaml` raíz incluye la biblioteca y este ejemplo, por lo que pnpm enlaza `ai-i18n-tools` mediante `"ai-i18n-tools": "workspace:^"` en `package.json`. No se necesita un paso separado de compilación o enlace: después de cambiar las fuentes de la biblioteca, ejecute `pnpm run build` en la raíz del repositorio y el ejemplo cargará automáticamente la versión actualizada de `dist/`.
+La entrada del espacio de trabajo [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) fuerza a `ai-i18n-tools` a usar la copia local del espacio de trabajo aunque este ejemplo declare `"ai-i18n-tools": "^1.7.2"`. No se necesita ningún paso adicional de compilación o enlace: después de cambiar las fuentes de la biblioteca, ejecuta `pnpm run build` en la raíz del repositorio y el ejemplo cargará automáticamente la versión actualizada de `dist/`.
 
 **Directorio de trabajo:** Ejecute la aplicación Next.js y todos los comandos de `pnpm run i18n:*` desde `examples/nextjs-app` (donde reside `ai-i18n-tools.config.json`), o pase `--config` / establezca el directorio de trabajo para que la CLI resuelva esa configuración.
 

@@ -23,7 +23,21 @@ Compare with the Docusaurus demo at `examples/nextjs-app/docs-site/` — same tu
 - pnpm ≥ 10.33
 - OpenRouter API key (only when re-running translation)
 
-Install from the **repository root**:
+## Installation
+
+### Try this example on its own
+
+Copy only this example folder and install `ai-i18n-tools` from npm:
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs
+cd astro-docs
+pnpm install
+```
+
+### From the full ai-i18n-tools repository
+
+Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). Install from the repository root so the workspace [`overrides`](../../pnpm-workspace.yaml) entry links `ai-i18n-tools` to your local checkout:
 
 ```bash
 pnpm install
@@ -32,8 +46,9 @@ pnpm run build
 
 ## Run the site
 
+From this directory (after degit + `pnpm install`, or `cd examples/astro-docs` in the monorepo):
+
 ```bash
-cd examples/astro-docs
 pnpm dev
 ```
 
@@ -48,7 +63,7 @@ pnpm preview
 
 ## Translate documentation
 
-From `examples/astro-docs/`:
+From this directory:
 
 ```bash
 echo "OPENROUTER_API_KEY=sk-or-..." > .env

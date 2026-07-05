@@ -1,0 +1,55 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites using LLMs."
+  },
+  "nav": {
+    "guide": "Guide",
+    "reference": "Reference",
+    "examples": "Examples",
+    "github": "GitHub"
+  },
+  "sidebar": {
+    "guide": "Guide",
+    "introduction": "Introduction",
+    "whatIs": "What is ai-i18n-tools?",
+    "installation": "Installation",
+    "quickStart": "Quick start",
+    "translationTypes": "Translation types",
+    "uiStrings": "UI strings",
+    "documents": "Documents",
+    "json": "JSON",
+    "integrations": "Integrations",
+    "astro": "Astro",
+    "docusaurus": "Docusaurus",
+    "vitepress": "VitePress",
+    "imagesAndScreenshots": "Images & Screenshots",
+    "svgTranslation": "SVG translation",
+    "providers": "LLM providers",
+    "runtimeHelpers": "Runtime helpers",
+    "dashboard": "Translation Dashboard",
+    "reference": "Reference",
+    "configuration": "Configuration",
+    "cli": "CLI commands",
+    "architecture": "Architecture",
+    "programmaticApi": "Programmatic API",
+    "environment": "Environment variables",
+    "examples": "Examples",
+    "examplesOverview": "Overview"
+  },
+  "footer": {
+    "message": "Released under the MIT License.",
+    "copyright": "Copyright © Waldemar Scudeller Jr."
+  },
+  "docFooter": {
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "outline": {
+    "label": "On this page"
+  },
+  "langMenuLabel": "Language",
+  "search": {
+    "placeholder": "Search"
+  }
+}

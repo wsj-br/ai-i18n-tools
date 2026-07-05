@@ -29,7 +29,8 @@ import {
   isRunInterruptedError,
   interruptErrorFromSignal,
 } from "../utils/run-interrupt.js";
-import { formatElapsedMmSs, formatSegmentCacheHitSuffix, printModelsTryInOrder } from "./format.js";
+import { formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import { printTranslationRunSummary } from "./translate-summary.js";
 import { safeResolveActiveProvider } from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
 
@@ -76,67 +77,16 @@ function printTranslateSvgSummary(
   outcome: "success" | "interrupted",
   provider?: string
 ): void {
-  if (outcome === "success") {
-    console.log(chalk.bold.green(`\n${t("✅ SVG translation complete!")}\n`));
-  } else {
-    console.log(
-      chalk.bold.yellow(
-        `\n${t(
-          "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
-        )}\n`
-      )
-    );
+  if (outcome === "interrupted") {
     printModelsTryInOrder(models, provider);
     console.log("");
   }
-
-  console.log(chalk.bold(t("📊 Summary:")));
-  console.log(
-    `   ${t("Total elapsed time:    {{time}}", { time: formatElapsedMmSs(wallElapsedMs) })}`
-  );
-  console.log(`   ${t("Total files processed: {{count}}", { count: sum.filesProcessed ?? 0 })}`);
-  console.log(`   ${t("Total files skipped:   {{count}}", { count: sum.filesSkipped })}`);
-  console.log(
-    `   ${t("Segments from cache:   {{count}}{{suffix}}", {
-      count: sum.segmentsCached ?? 0,
-      suffix: formatSegmentCacheHitSuffix(sum.segmentsCached, sum.segmentsTranslated),
-    })}`
-  );
-  console.log(
-    `   ${t("Segments translated:   {{count}}", { count: sum.segmentsTranslated ?? 0 })}`
-  );
-  console.log(
-    `   ${t("Segment translation failures: {{count}}", {
-      count: sum.segmentValidationFailures ?? 0,
-    })}`
-  );
-  console.log(
-    `   ${t("Individual segment translations: {{count}}", {
-      count: sum.individualSegmentTranslations ?? 0,
-    })}`
-  );
-  console.log(
-    `   ${t("Total tokens used:     {{count}}", {
-      count: (sum.inputTokens + sum.outputTokens).toLocaleString(),
-    })}`
-  );
-  if (opts.dryRun && (sum.filesWritten ?? 0) === 0 && (sum.filesProcessed ?? 0) > 0) {
-    console.log(`   ${t("Files written:         0 (dry-run)")}`);
-  } else if ((sum.filesWritten ?? 0) > 0) {
-    console.log(`   ${t("Files written:         {{count}}", { count: sum.filesWritten })}`);
-  }
-  const cost = sum.costUsd ?? 0;
-  const segNew = sum.segmentsTranslated ?? 0;
-  if (segNew > 0) {
-    if (cost > 0) {
-      console.log(`   ${t("Total cost:            ${{cost}}", { cost: cost.toFixed(6) })}`);
-    } else {
-      console.log(`   ${t("Total cost:            $0.0000 (cost data not available from API)")}`);
-    }
-  } else {
-    console.log(`   ${t("Total cost:            $0.0000 (all segments from cache)")}`);
-  }
-  console.log("");
+  printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
+    success: t("✅ SVG translation complete!"),
+    interrupted: t(
+      "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+    ),
+  });
 }
 
 async function runTranslateSvgBody(

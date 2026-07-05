@@ -116,6 +116,31 @@ export function ensureDirForFile(filePath: string): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
 }
 
+/**
+ * Whether the translated output at `outPath` exists and is at least as new as its source file.
+ *
+ * Used to decide whether an unchanged (cache-hit) file can be skipped: a translation is recreated
+ * when the destination is missing or older than the source (e.g. the source was touched, restored,
+ * or edited-then-reverted to identical content) even when the source content hash is unchanged.
+ */
+export function translatedOutputIsCurrent(outPath: string, sourceMtimeIso: string): boolean {
+  let outMtimeMs: number;
+  try {
+    outMtimeMs = fs.statSync(outPath).mtimeMs;
+  } catch {
+    return false;
+  }
+  const sourceMtimeMs = Date.parse(sourceMtimeIso);
+  if (Number.isNaN(sourceMtimeMs)) {
+    return true;
+  }
+  // `mtimeMs` can carry sub-millisecond precision (e.g. 962.5378), while callers build
+  // `sourceMtimeIso` from `Date#toISOString()`, which rounds to whole milliseconds (→ 963).
+  // Comparing the raw float against the rounded source would mark the same instant as stale, so
+  // round the output mtime to millisecond resolution to match the source timestamp's granularity.
+  return Math.round(outMtimeMs) >= sourceMtimeMs;
+}
+
 /** Blocking sleep for synchronous retry paths (Windows rename contention). */
 function sleepSyncMs(ms: number): void {
   if (ms <= 0) return;
