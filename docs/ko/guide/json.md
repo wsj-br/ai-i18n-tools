@@ -5,6 +5,11 @@ UI 복사본을 소스에서 `t("…")` 대신 **로케일별 중첩 JSON 파일
 
 이 파이프라인은 **작동하지** 않습니다 `extract` — `strings.json` 카탈로그가 없습니다. `features.translateJson`로 활성화하고 최상위 `json[]`에 하나 이상의 항목을 추가하세요.
 
+<a id="per-locale-model-overrides"></a>
+### 로케일별 모델 재정의
+
+`translate-json`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`가 먼저 구성되면 `translationModels`를 사용합니다. 중첩된 JSON 번들을 위한 전용 모델이 특정 로캘에서 이점을 제공하는 경우에 이 방법을 사용하십시오. 예를 들어 `zh-Hans` / `zh-Hant` 테마 파일을 참조하십시오. [공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 참조.
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### 1단계: 중첩된 JSON 초기화
 

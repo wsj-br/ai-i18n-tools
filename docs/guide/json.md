@@ -5,6 +5,11 @@ Designed for projects that keep UI copy in **nested JSON files per locale** (for
 
 This pipeline does **not** run `extract` — there is no `strings.json` catalog. Enable it with `features.translateJson` and one or more entries in top-level `json[]`.
 
+<a id="per-locale-model-overrides"></a>
+### Per-locale model overrides
+
+`translate-json` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Use this for nested JSON bundles where certain locales benefit from dedicated models — for example `zh-Hans` / `zh-Hant` theme files. See [Providers and models](/guide/providers-and-models#model-fallback-chain).
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Step 1: Initialise for nested JSON
 

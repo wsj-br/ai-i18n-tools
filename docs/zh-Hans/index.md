@@ -14,13 +14,13 @@ description: 用于使用大型语言模型 (LLM) 对 JavaScript/TypeScript 应�
 
 `ai-i18n-tools` 是一个用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 和工具包——包括 Docusaurus、Astro、Starlight、VitePress 和纯 Markdown/MDX——使用大型语言模型。
 
-将其指向任何提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任何 [OpenRouter](https://openrouter.ai/) 模型（数百种可供选择，只需一个 API 密钥），或 **Ollama** 用于完全自托管的离线翻译。在不修改代码库的情况下，按项目甚至按语言切换提供商或模型。
+指向任意提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任意 [OpenRouter](https://openrouter.ai/) 模型（通过单个 API 密钥即可从数百个模型中选择），或用于完全自托管、离线翻译的 **Ollama**。可按项目或甚至按语言切换提供商或模型，无需修改代码库。
 
 一个配置文件驱动三种翻译模式，因此您可以根据内容的结构进行混合和匹配：
 
-- **UI 字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并为 i18next 或静态 SSG 查找生成扁平的、按区域设置的 JSON。
-- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 **VitePress**、**Starlight**、**Docusaurus**、基于 Astro 的站点，或任何从 Markdown/MDX/`.astro` 源文件读取的静态站点生成器。
-- **JSON** — 翻译 `json[]` 中定义的任意嵌套 JSON 包。当 UI 副本存在于按区域设置的 JSON 文件中而不是源中的 `t()` 调用时，请使用 `translate-json`。
+- **UI 字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并为 i18next 或静态 SSG 查找生成扁平化的按区域设置 JSON 文件。
+- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 **VitePress**、**Starlight**、**Docusaurus**、基于 Astro 的网站，或任何读取 Markdown/MDX/`.astro` 源文件的静态站点生成器。
+- **JSON** — 翻译在 `json[]` 中定义的任意嵌套 JSON 包。当 UI 文案存放在按区域设置的 JSON 文件中，而非源代码中的 `t()` 调用时，请使用 `translate-json`。
 
 **SVG** 资产有自己的路径：`features.translateSVG`、顶级 `svg` 块和 `translate-svg`——而不是 `docs[].contentPaths`。
 
@@ -257,7 +257,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

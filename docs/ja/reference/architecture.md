@@ -122,7 +122,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 - 文字列のJSON配列を送信し、翻訳された文字列のJSON配列を返信として要求します。
 - 利用可能な場合は用語集のヒントを含めてください。
 
-`LlmClient.translateUIBatch` は、解析またはネットワークエラーが発生した場合に、順に各モデルを試します。CLI は、アクティブなプロバイダーの `translationModels` からそのリストを構築します。`translate-ui` の場合、オプションの `ui.preferredModel` が設定されている場合は先頭に追加されます（残りのリストとは重複排除されます）。
+`LlmClient.translateUIBatch` は、解析エラーまたはネットワークエラーが発生した場合に備えて、各モデルを順番に試行します。CLI は、ターゲットロケールごとに `localeModels`、オプションの `uiModels`、および `translationModels` からそのリストを構築します ([プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain) を参照)。
 
 ---
 
@@ -180,10 +180,10 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 2. **アドモニションマーカー**（`:::note`、`:::`）- 開始行のディレクティブプレフィックスのみが```{{ADM_OPEN_N}}```に置き換えられます。同じ行のタイトルは、モデルが翻訳するために残されます。元のテキストとまったく同じように復元されます。
 3. **ドキュメントアンカー**（HTML `<a id="…">`、Docusaurus見出し`{#…}`）- そのまま保持されます。
 4. **MDX専用の構成要素**（`src/processors/mdx-placeholders.ts`）：
-   - **MDXコメント**（`{/* … */}`、Docusaurusの見出しID形式`{/* #my-id */}`を含む）は```{{MDX_N}}```に置き換えられます。
-   - **大文字のJSXタグ**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）- `docs[].protectAttributes`に属性名が表示されない限り、翻訳可能な文字列属性（`label`、`tooltip`、`aria-label`）がタグ内で```{{JXA_N}}```に書き換えられた```{{MDX_N}}```として保持されます。`<Tabs values={[ { label: '翻訳された文字列は、元の文字列の文字数とほぼ同じ長さである必要があります。' } ]}>`オブジェクトリテラル内（`docs[].protectKeys`でスキップ可能）の`label:`と`<TabItem value="翻訳された文字列は、元の文字列の文字数とほぼ同じ長さである必要があります。">`（`label`属性が存在しない場合、小文字のスラッグのような値はスキップされる）も抽出されます。セグメントに`||JXA_N: …||`行として追加され、`restoreMdx`によってマージされます。
-   - **MDXブレース式**（`{frontMatter.title}`、`style=`<code v-pre>{{…}}</code>``）- 深度を考慮したマッチングで、```{{MDX_N}}```に置き換えられます。
-5. **Markdown URL**（`](url)`、`src="…"`）- 翻訳後にマップから復元されます。
+   - **MDXコメント** (`{/* … */}`、Docusaurusの見出しID形式`{/* #my-id */}`を含む) は```{{MDX_N}}```に置き換えられます。
+   - **大文字のJSXタグ** (`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`) - ```{{MDX_N}}```として保持され、翻訳可能な文字列属性 (`label`、`tooltip`、`aria-label`) は、属性名が`docs[].protectAttributes`に表示されない限り、タグ内で```{{JXA_N}}```に書き換えられます。`<Tabs values={[ { label: '…' } ]}>`オブジェクトリテラル内の`label:` (`docs[].protectKeys`でスキップ可能) と`<TabItem value="…">` (`label`属性が存在しない場合、小文字のスラッグのような値はスキップ) も抽出されます。これらは`||JXA_N: …||`行としてセグメントに追加され、`restoreMdx`によってマージされます。
+   - **MDXブレース式** (`{frontMatter.title}`、<code v-pre>style={{…}}</code>) - 深度を考慮したマッチングで、```{{MDX_N}}```に置き換えられます。
+5. **Markdown URL** (`](url)`、`src="…"`) - 翻訳後にマップから復元されます。
 6. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`） - そのまま保持されます。
 7. **Markdownの強調**（オプション。CJK/RTLロケールでは自動有効） - 強調区切り記号をマスクします。
 
@@ -245,10 +245,10 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルフォールバック**: 解決されたリスト内の各モデルを順番に試行し、リクエストまたは解析の失敗時にフォールバックします。UI 翻訳は、存在する場合はまず `ui.preferredModel` を解決し、次にプロバイダーの `translationModels` を解決します。`bench-models` コマンドは、各 ID (`translationModels: [id]`、フォールバックなし) ごとに 1 つのシングルモデルクライアントを構築するため、各モデルの時間を測定し、個別に価格設定できます。
-- **リクエストタイムアウト**: アクティブなプロバイダーの `requestTimeoutMs` (デフォルト 30 秒) は、`AbortSignal.timeout` を介して各リクエストを中止します。CLI が `check-models` (任意のプロバイダー) のプロバイダーのモデルリストをロードするときに、`GET /models` に同じ値が適用されます。不明なモデル ID を削除するオプションの事前フライトフィルターは、アクティブなプロバイダーが OpenRouter の場合にのみ実行されます。
-- **OpenRouter エクストラ** (`openrouter` がアクティブな場合のみ): `provider` リクエストフィールド、`HTTP-Referer` / `X-Title` ヘッダー、および `usage.cost` から読み取られた正確な USD コストを介したスループットルーティング。トークン使用量はすべてのプロバイダーで報告されます。正確なコストは、プロバイダーがそれを返す場合にのみ報告されます。
-- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスの JSON をファイルに追加します。
+- **モデルのフォールバック**: 解決されたリストの各モデルを順番に試行し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決済みチェーンを取得します。設定されている場合は`localeModels(locale)`が最初、次に`uiModels`（UIパイプラインのみ）、次に`translationModels`です。ドキュメント、JSON、およびSVGの翻訳は、非UIチェーンを持つロケールごとのクライアントを作成します。`bench-models`コマンドは、設定されたIDごとに1つの単一モデルクライアントを構築します（`translationModels`、`uiModels`、および`localeModels`の結合。`translationModels: [id]`、フォールバックなし）。これにより、各モデルの時間を測定し、個別に価格設定できます。
+- **リクエストタイムアウト**: アクティブなプロバイダーの`requestTimeoutMs`（デフォルト30秒）は、`AbortSignal.timeout`を介して各リクエストを中止します。CLIが`check-models`（任意のプロバイダー）のプロバイダーのモデルリストをロードする場合、`GET /models`にも同じ値が適用されます。不明なモデルIDを削除するオプションのプリフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
+- **OpenRouterの追加機能**（`openrouter`がアクティブな場合のみ）: `provider`リクエストフィールド、`HTTP-Referer`/`X-Title`ヘッダー、および`usage.cost`から読み取られた正確なUSDコストを介したスループットルーティング。トークン使用量はすべてのプロバイダーで報告されます。正確なコストは、プロバイダーがそれを返す場合にのみ報告されます。
+- **デバッグトラフィックログ**: `debugTrafficFilePath`が設定されている場合、リクエストとレスポンスのJSONをファイルに追加します。
 
 <a id="config-loading"></a>
 ### 設定の読み込み

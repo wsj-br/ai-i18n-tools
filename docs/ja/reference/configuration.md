@@ -71,19 +71,23 @@
 各`providers.<name>`ブロックは以下を受け入れます：
 
 - `translationModels`
-  モデルIDの優先順位付きリスト（プレフィックス`provider/`なしのプレーンなアップストリームID。OpenRouter IDはネイティブの`vendor/model`形式を維持します）。最初に試行され、エラーが発生した場合は後続のエントリがフォールバックとなります。`translate-ui`の場合のみ、このリストの前に1つのモデルを試すために`ui.preferredModel`を設定することもできます（`ui`を参照）。
+  モデルIDの優先順位付きリスト（プレーンなアップストリームID、`provider/`プレフィックスなし。OpenRouter IDはネイティブの`vendor/model`形式を保持）。最初のエントリが最初に試行され、後のエントリはエラー時のフォールバックです。これは、より具体的な階層が適用されない場合の、すべてのパイプラインに対するグローバルなデフォルトチェーンです。
+- `uiModels`（オプション）
+  `translate-ui`、複数形生成（ステップ0とパスB）、および`proofread-ui`用の、UI専用の順序付きモデルリスト。ターゲットロケールに一致する`localeModels`エントリの後に、`translationModels`の前に試行されます。
+- `localeModels`（オプション）
+  **すべての**翻訳パイプラインに対するロケールごとのオーバーライド。`{ "locale": "<BCP-47>", "models": ["…"] }`オブジェクトの配列。ロケールタグは、大文字と小文字を区別せずに照合されます（`pt-br` = `pt-BR`）。各ロケールのリストは、そのロケールに対してのみ最初に試行され、次にパイプライン固有の階層（UIの場合は`uiModels`）と`translationModels`が試行されます。重複する正規化されたロケールキーは、設定の読み込み時に拒否されます。
 - `baseUrl`
   OpenAI互換のベースURL。プリセットのベースURLをオーバーライドします。プリセット以外のプロバイダーには必須です。
 - `apiKeyEnv`
-  APIキーを含む環境変数。プリセットの環境変数をオーバーライドします。
+  APIキーを保持する環境変数。プリセットの環境変数をオーバーライドします。
 - `headers`
-  追加のHTTPヘッダー。このプロバイダーへのすべてのリクエストと共に送信されます。
+  このプロバイダーへのすべてのリクエストとともに送信される追加のHTTPヘッダー。
 - `maxTokens`
-  リクエストあたりの最大完了トークン数。デフォルト：`8192`。
+  リクエストあたりの最大完了トークン数。デフォルト: `8192`。
 - `temperature`
-  サンプリング温度。デフォルト：`0.2`。
+  サンプリング温度。デフォルト: `0.2`。
 - `requestTimeoutMs`
-  各リクエストの待機時間（ミリ秒）。デフォルト：`30000`（30秒）。
+  各リクエストを待機する最大時間（ミリ秒）。デフォルト: `30000`（30秒）。
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
 
@@ -141,9 +145,9 @@
 
 アクティブなプロバイダーのAPIキー環境変数（例：`OPENROUTER_API_KEY`）を環境または`.env`ファイルに設定します。
 
-`translationModels`を変更する前に、`npx ai-i18n-tools check-models`を実行してください。このコマンドはすべてのプロバイダーに対して、設定されたモデルIDをそのプロバイダーの実際のモデル一覧（`GET /models`）と照合し、存在しないIDや`expiration_date`を過ぎたIDを報告し、有効なモデルの一覧を表示します。また、設定されたIDのいずれかが無効な場合、終了ステータスは非ゼロになります。プロバイダーが価格情報を返す場合（例：OpenRouter）、入力／出力の推定価格（100万トークンあたりの米ドル）も表示されます。
+モデルリストを変更する前に、`npx ai-i18n-tools check-models`を実行してください。これにより、各プロバイダーについて、設定された各モデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）が、そのプロバイダーのライブモデルリスト（`GET /models`）と照合され、不足しているIDや`expiration_date`を過ぎたIDが報告され、有効なモデルがリストアップされ、設定されたIDが無効な場合はゼロ以外の値で終了します。プロバイダーが価格情報（例: OpenRouter）を返す場合、推定入出力価格（100万トークンあたりの米ドル）も表示されます。
 
-設定されたモデルを実際の翻訳作業で比較するには、`npx ai-i18n-tools bench-models` を実行します。これは、各モデルを個別に（並行して、`concurrency` で制限して）1 つのサンプルを翻訳し、モデルごとの入出力トークン、実時間、USD コストを出力するため、`translationModels` の順序を決定する前に速度と価格を比較検討できます。
+設定されたモデルを実際の翻訳作業で比較するには、`npx ai-i18n-tools bench-models` を実行します。これは、`translationModels`、`uiModels`、および `localeModels` からの一意のモデル ID ごとに、各モデルを個別に（並行して、`concurrency` によって制限されます）1 つのサンプルを翻訳することでベンチマークを行い、モデルごとの入出力トークン、実時間、および USD コストを出力します。これにより、モデルリストを決定する前に速度と価格を比較検討できます。
 
 <a id="features"></a>
 ### `features`
@@ -161,19 +165,17 @@
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")`呼び出しをスキャンするディレクトリまたはグロブパターン（カレントディレクトリからの相対パス）。`src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
+  `t("…")`呼び出しのためにスキャンされるディレクトリまたはグロブパターン（現在の作業ディレクトリからの相対パス）。`src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
 - `stringsJson`  
   マスターカタログファイルへのパス。`extract`によって更新されます。
 - `flatOutputDir`  
   ロケールごとのJSONファイル（`de.json`など）が書き込まれるディレクトリ。
-- `preferredModel`  
-  オプション。`translate-ui`のみで最初に試行されるモデルID。その後、アクティブなプロバイダーの`translationModels`が順に試行され、このIDの重複はありません。
 - `uiExtractor.funcNames`（またはレガシー`reactExtractor.funcNames`）  
-  スキャンする追加の関数名（デフォルト：`["t", "i18n.t"]`）。
+  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（またはレガシー`reactExtractor.extensions`）  
-  含めるファイル拡張子（デフォルト：`[".js", ".jsx", ".ts", ".tsx"]`）。Astroフロントマターおよびテンプレート式用に`.astro`を追加します。
+  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。Astroのフロントマターとテンプレート式には`.astro`を追加します。
 - `uiExtractor.includePackageDescription`（またはレガシー`reactExtractor.includePackageDescription`）  
-  `true`（デフォルト）の場合、`extract`は、存在する場合、UI文字列として`package.json` `description`も含まれます。
+  `true`（デフォルト）の場合、`extract`は、存在する場合に`package.json` `description`もUI文字列として含めます。
 - `uiExtractor.packageJsonPath`（またはレガシー`reactExtractor.packageJsonPath`）  
   オプションの説明抽出に使用される`package.json`ファイルへのカスタムパス。
 - `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー`reactExtractor.includeUiLanguageEnglishNames`）

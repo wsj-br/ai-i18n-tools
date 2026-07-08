@@ -5,6 +5,11 @@
 
 これは、ロケール固有の**バイナリ**SVGファイルを出力する唯一のパイプラインです。`translate-docs`はマークダウンの代替テキストとリンク参照を翻訳しますが、SVGアセットを変更またはコピーしません。ページに翻訳されたラベル付きの図が必要な場合は、`features.translateSVG`を有効にして、トップレベルの`svg`ブロックを構成します。
 
+<a id="per-locale-model-overrides"></a>
+### ロケールごとのモデルオーバーライド
+
+`translate-svg` は **対象ロケールごと**にモデルを解決します: 設定されている場合は最初に `localeModels(locale)`、その後 `translationModels` を使用します。各ロケールの SVG 実行では独自のフォールバックチェーンが使用されます — これは、CJK ロケールの図表ラベルにスクリプトに最適化されたモデル（例: `ja`）が必要な場合に便利です。[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain) を参照してください。
+
 SVG翻訳は、`translate-docs`および`translate-json`と同じSQLiteキャッシュ（`cacheDir`）を使用します。すでに翻訳されたテキストセグメントはキャッシュから提供され、新規または変更されたソーステキストのみがLLMに送信されます。
 
 <a id="when-to-use-svg-translation"></a>

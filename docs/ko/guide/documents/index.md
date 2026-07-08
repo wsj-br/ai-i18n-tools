@@ -15,6 +15,11 @@ SVG 파일은 `features.translateSVG`이 활성화된 경우 [`translate-svg`](/
 
 임의의 중첩된 UI JSON 번들(Docusaurus 카탈로그 아님)은 `docs[]`가 아닌 [JSON](/guide/json) 파이프라인에 속합니다.
 
+<a id="per-locale-model-overrides"></a>
+### 로케일별 모델 재정의
+
+`translate-docs` 및 `sync`의 문서 단계는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`가 먼저 구성되면 공급자의 전역 `translationModels` 체인을 사용합니다. 기본 폴백 목록과 다른 모델이 필요한 특정 언어의 경우에 사용하십시오. 예를 들어, 전역 체인이 포르투갈어로 어려움을 겪을 때 Gemini를 `pt-BR` 문서에 사용하는 것을 선호하는 경우입니다. [공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 및 [구성 — `localeModels`](/reference/configuration#provider-and-providers)를 참조하십시오.
+
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
 

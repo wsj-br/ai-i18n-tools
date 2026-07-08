@@ -71,19 +71,23 @@ Traitement par lots des segments pour **translate-docs**, **translate-svg** et *
 Chaque bloc `providers.<name>` accepte :
 
 - `translationModels`
-  Liste ordonnée préférée d'ID de modèle (ID en amont simples, sans préfixe `provider/` ; les ID OpenRouter conservent leur forme native `vendor/model`). Le premier est essayé en premier ; les entrées ultérieures servent de repli en cas d'erreur. Pour `translate-ui` uniquement, vous pouvez également définir `ui.preferredModel` pour essayer un modèle avant cette liste (voir `ui`).
+  Liste ordonnée préférée des ID de modèle (ID en amont simples, sans préfixe `provider/` ; les ID OpenRouter conservent leur forme native `vendor/model`). Le premier est essayé en premier ; les entrées suivantes sont des solutions de repli en cas d'erreur. Il s'agit de la chaîne par défaut globale pour chaque pipeline lorsqu'aucun niveau plus spécifique ne s'applique.
+- `uiModels` (facultatif)
+  Liste de modèles ordonnée, réservée à l'interface utilisateur, pour `translate-ui`, la génération plurielle (Étape 0 et Passe B) et `proofread-ui`. Essayée après toute entrée `localeModels` correspondante pour le paramètre régional cible, avant `translationModels`.
+- `localeModels` (facultatif)
+  Remplacements par paramètre régional pour **tous** les pipelines de traduction. Tableau d'objets `{ "locale": "<BCP-47>", "models": ["…"] }`. Les balises de paramètre régional sont mises en correspondance sans tenir compte de la casse (`pt-br` = `pt-BR`). La liste de chaque paramètre régional est essayée en premier pour ce paramètre régional uniquement, puis les niveaux spécifiques au pipeline (`uiModels` pour l'interface utilisateur) et `translationModels`. Les clés de paramètre régional normalisées en double sont rejetées lors du chargement de la configuration.
 - `baseUrl`
-  URL de base compatible OpenAI. Remplace l'URL de base préréglée ; requis pour un fournisseur non préréglé.
+  URL de base compatible OpenAI. Remplace l'URL de base prédéfinie ; requise pour un fournisseur non prédéfini.
 - `apiKeyEnv`
-  Variable d'environnement contenant la clé API. Remplace la variable d'environnement préréglée.
+  Variable d'environnement contenant la clé API. Remplace la variable d'environnement prédéfinie.
 - `headers`
   En-têtes HTTP supplémentaires envoyés avec chaque requête à ce fournisseur.
 - `maxTokens`
-  Jetons de complétion maximum par requête. Défaut : `8192`.
+  Nombre maximal de jetons de complétion par requête. Par défaut : `8192`.
 - `temperature`
-  Température d'échantillonnage. Défaut : `0.2`.
+  Température d'échantillonnage. Par défaut : `0.2`.
 - `requestTimeoutMs`
-  Temps maximum en millisecondes à attendre pour chaque requête. Défaut : `30000` (30 secondes).
+  Temps maximal en millisecondes à attendre pour chaque requête. Par défaut : `30000` (30 secondes).
 
 Préréglages de fournisseurs intégrés (clé — URL de base — variable d'environnement de la clé API) :
 
@@ -141,9 +145,9 @@ Exemple `translationModels` (mêmes valeurs par défaut que `npx ai-i18n-tools i
 
 Définissez la variable d'environnement de la clé API du fournisseur actif (par ex. `OPENROUTER_API_KEY`) dans votre environnement ou dans le fichier `.env`.
 
-Avant de changer `translationModels`, exécutez `npx ai-i18n-tools check-models`. Pour chaque fournisseur, il vérifie chaque ID de modèle configuré par rapport à la liste des modèles actifs de ce fournisseur (`GET /models`), signale les ID manquants ou expirés (`expiration_date`), liste les modèles valides et se termine avec un code non nul si un ID configuré est invalide. Lorsque le fournisseur renvoie des tarifs (par exemple, OpenRouter), il affiche également les tarifs estimés en entrée/sortie (USD pour 1 million de jetons).
+Avant de modifier les listes de modèles, exécutez `npx ai-i18n-tools check-models`. Pour chaque fournisseur, il vérifie chaque ID de modèle configuré (`translationModels`, `uiModels` et toutes les entrées `localeModels`) par rapport à la liste de modèles en direct de ce fournisseur (`GET /models`), signale les ID manquants ou obsolètes (plus anciens que `expiration_date`), liste les modèles valides et se termine avec un code d'erreur si un ID configuré est invalide. Lorsque le fournisseur renvoie des informations de tarification (par exemple, OpenRouter), il affiche également les prix estimés d'entrée/sortie (USD par million de jetons).
 
-Pour comparer les modèles configurés sur un travail de traduction réel, exécutez `npx ai-i18n-tools bench-models`. Il traduit un échantillon via chaque modèle de manière isolée (en parallèle, limité par `concurrency`) et affiche les jetons d'entrée/sortie par modèle, le temps réel et le coût en USD, afin que vous puissiez évaluer la vitesse par rapport au prix avant de choisir un ordre `translationModels`.
+Pour comparer les modèles configurés sur un travail de traduction réel, exécutez `npx ai-i18n-tools bench-models`. Il évalue chaque ID de modèle unique à partir de `translationModels`, `uiModels` et `localeModels` en traduisant un échantillon à travers chacun d'eux de manière isolée (en parallèle, limité par `concurrency`) et affiche les jetons d'entrée/sortie par modèle, le temps réel et le coût en USD, afin que vous puissiez évaluer la vitesse par rapport au prix avant de choisir les listes de modèles.
 
 <a id="features"></a>
 ### `features`
@@ -161,21 +165,19 @@ Traduire les fichiers **SVG** avec `translate-svg` lorsque `features.translateSV
 ### `ui`
 
 - `sourceRoots`  
-  Répertoires ou motifs glob (relatifs au répertoire de travail actuel) analysés pour les appels `t("…")`. Prend en charge les motifs tels que `src/` ou `["src/**/*.ts"]`.
+  Répertoires ou modèles de glob (relatifs au répertoire de travail actuel) analysés pour les appels `t("…")`. Prend en charge des modèles comme `src/` ou `["src/**/*.ts"]`.
 - `stringsJson`  
-  Chemin vers le fichier catalogue principal. Mis à jour par `extract`.
+  Chemin d'accès au fichier de catalogue principal. Mis à jour par `extract`.
 - `flatOutputDir`  
-  Répertoire où les fichiers JSON par locale sont écrits (`de.json`, etc.).
-- `preferredModel`  
-  Facultatif. ID de modèle essayé en premier uniquement pour `translate-ui` ; puis la liste `translationModels` du fournisseur actif dans l'ordre, sans dupliquer cet ID.
+  Répertoire où les fichiers JSON par paramètre régional sont écrits (`de.json`, etc.).
 - `uiExtractor.funcNames` (ou l'ancien `reactExtractor.funcNames`)  
   Noms de fonctions supplémentaires à analyser (par défaut : `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (ou l'ancien `reactExtractor.extensions`)  
-  Extensions de fichiers à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`). Ajoutez `.astro` pour le frontmatter Astro et les expressions de modèle.
+  Extensions de fichier à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`). Ajoutez `.astro` pour le frontmatter et les expressions de modèle Astro.
 - `uiExtractor.includePackageDescription` (ou l'ancien `reactExtractor.includePackageDescription`)  
-  Lorsque `true` (par défaut), `extract` inclut également `package.json` `description` comme chaîne d'interface quand elle est présente.
+  Lorsque `true` (par défaut), `extract` inclut également `package.json` `description` comme chaîne d'interface utilisateur si présente.
 - `uiExtractor.packageJsonPath` (ou l'ancien `reactExtractor.packageJsonPath`)  
-  Chemin personnalisé vers le fichier `package.json` utilisé pour cette extraction facultative de description.
+  Chemin personnalisé vers le fichier `package.json` utilisé pour cette extraction de description facultative.
 - `uiExtractor.includeUiLanguageEnglishNames` (ou l'ancien `reactExtractor.includeUiLanguageEnglishNames`)
 
 Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englishName` du catalogue principal des langues d'interface utilisateur (construit à partir de `sourceLocale` + `targetLocales`) à `strings.json` s'il n'est pas déjà présent à partir de l'analyse source (mêmes clés de hachage). Ne lit pas `uiLanguagesPath`.

@@ -5,6 +5,11 @@ Projetado para projetos que mantêm o texto da UI em **arquivos JSON aninhados p
 
 Este pipeline **não** executa `extract` — não há catálogo `strings.json`. Habilite-o com `features.translateJson` e uma ou mais entradas no `json[]` de nível superior.
 
+<a id="per-locale-model-overrides"></a>
+### Substituições de modelo por localidade
+
+O `translate-json` resolve modelos **por localidade de destino**: primeiro `localeModels(locale)` quando configurado, depois `translationModels`. Use isso para pacotes JSON aninhados onde determinadas localidades se beneficiam de modelos dedicados — por exemplo, arquivos de tema `zh-Hans` / `zh-Hant`. Consulte [Provedores e modelos](/guide/providers-and-models#model-fallback-chain).
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Etapa 1: Inicializar para JSON aninhado
 

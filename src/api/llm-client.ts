@@ -131,7 +131,7 @@ export interface LlmClientOptions {
   apiKey?: string;
   /**
    * When set and non-empty, use this ordered model list instead of resolving from the active provider
-   * (e.g. UI translation with `ui.preferredModel` prepended to the provider's list).
+   * (e.g. locale-aware UI or document translation with `uiModels` / `localeModels` prepended).
    */
   translationModels?: string[];
   /** Append request/response JSON when set. */

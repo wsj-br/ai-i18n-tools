@@ -57,6 +57,8 @@ docs-src/
 # VitePress build output
 docs/.vitepress/cache/
 docs/.vitepress/dist/
+examples/**/.vitepress/cache/
+examples/**/.vitepress/dist/
 
 # References to other repositories
 references/

@@ -5,6 +5,11 @@ Entwickelt für **SVG-Illustrationen und -Diagramme**, die menschenlesbare Besch
 
 Dies ist die einzige Pipeline, die sprachspezifische **binäre** SVG-Dateien ausgibt. `translate-docs` übersetzt Markdown-Alt-Text und Link-Referenzen, ändert oder kopiert jedoch keine SVG-Assets. Wenn eine Seite ein Diagramm mit übersetzten Beschriftungen benötigt, aktivieren Sie `features.translateSVG` und konfigurieren Sie den übergeordneten `svg`-Block.
 
+<a id="per-locale-model-overrides"></a>
+### Modellüberschreibungen pro Gebietsschema
+
+`translate-svg` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Jeder SVG-Lauf eines Gebietsschemas verwendet seine eigene Fallback-Kette – nützlich, wenn Diagrammbeschriftungen in CJK-Gebietsschemas ein skriptoptimiertes Modell benötigen (z. B. `ja`). Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain).
+
 Die SVG-Übersetzung verwendet denselben SQLite-Cache wie `translate-docs` und `translate-json` (`cacheDir`). Bereits übersetzte Textsegmente werden aus dem Cache bereitgestellt; nur neuer oder geänderter Quelltext wird an das LLM gesendet.
 
 <a id="when-to-use-svg-translation"></a>

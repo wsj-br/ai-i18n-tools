@@ -4,7 +4,7 @@ import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import { t } from "../i18n/index.js";
 import { LlmClient } from "../api/llm-client.js";
-import { normalizeLocale, resolveTranslationModels } from "../core/config.js";
+import { normalizeLocale, resolveAllConfiguredModelIds, resolveTranslationModels } from "../core/config.js";
 import { resolveActiveProvider, resolveProviderSettings } from "../core/llm-providers.js";
 import { getDocumentationTargetLocaleCodes } from "../core/ui-languages.js";
 import { renderTable } from "../utils/table.js";
@@ -19,7 +19,7 @@ export interface RunBenchModelsResult {
 }
 
 export interface RunBenchModelsOptions {
-  /** Comma-separated model ids override (default: active provider's translationModels). */
+  /** Comma-separated model ids override (default: union of translationModels, uiModels, and localeModels). */
   models?: string[];
   /** Inline sample text to translate (wins over `file`). */
   text?: string;
@@ -72,9 +72,9 @@ function formatCost(cost: number | undefined): string {
 }
 
 /**
- * Benchmark each configured translation model in isolation: translate the same sample through a
- * single-model {@link LlmClient} (no fallback chain) and report wall-clock time, input/output
- * tokens, and USD cost. Models run sequentially so timings are not skewed by shared bandwidth.
+ * Benchmark each configured model id in isolation (`translationModels`, `uiModels`, and every
+ * `localeModels` entry, deduplicated): translate the same sample through a single-model
+ * {@link LlmClient} (no fallback chain) and report wall-clock time, input/output tokens, and USD cost.
  */
 export async function runBenchModels(
   config: I18nConfig,
@@ -101,7 +101,20 @@ export async function runBenchModels(
   const overrideModels = (opts.models ?? [])
     .map((m) => m.trim())
     .filter((m) => m.length > 0);
-  const models = overrideModels.length > 0 ? overrideModels : resolveTranslationModels(config);
+  const translationModels = resolveTranslationModels(config);
+  if (overrideModels.length === 0 && translationModels.length === 0) {
+    console.error(
+      chalk.red(
+        t("No models configured (set {{configKey}}).", {
+          configKey: `providers.${activeProvider}.translationModels`,
+        })
+      )
+    );
+    return { exitCode: 1 };
+  }
+
+  const models =
+    overrideModels.length > 0 ? overrideModels : resolveAllConfiguredModelIds(config);
   if (models.length === 0) {
     console.error(
       chalk.red(
@@ -290,10 +303,12 @@ export async function runBenchModels(
     ]);
   }
 
+  const totalRowIndex = okRows.length > 0 ? tableRows.length - 1 : undefined;
   const lines = renderTable({
     headers,
     rows: tableRows,
     align: ["left", "right", "right", "right", "right"],
+    separatorBeforeRows: totalRowIndex !== undefined ? [totalRowIndex] : undefined,
   });
   for (const line of lines) {
     console.log(line);

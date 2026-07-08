@@ -15,6 +15,11 @@ Los archivos SVG se traducen a través de [`translate-svg`](/reference/cli-comma
 
 Los paquetes JSON de UI anidados arbitrarios (no catálogos de Docusaurus) pertenecen a la canalización [JSON](/guide/json), no a `docs[]`.
 
+<a id="per-locale-model-overrides"></a>
+### Anulaciones de modelo por configuración regional
+
+`translate-docs` y el paso de documentación de `sync` resuelven los modelos **por configuración regional de destino**: primero `localeModels(locale)` cuando está configurado, luego la cadena global `translationModels` del proveedor. Utilice esto cuando un idioma específico necesite un modelo diferente al de su lista de reserva predeterminada; por ejemplo, prefiriendo Gemini para la documentación de `pt-BR` cuando la cadena global tiene dificultades con el portugués. Consulte [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain) y [Configuración — `localeModels`](/reference/configuration#provider-and-providers).
+
 <a id="which-guide-to-read"></a>
 ## Qué guía leer
 

@@ -537,8 +537,8 @@ program
     )
   )
   .option(
-    "--models <ids>",
-    t("Comma-separated model ids to benchmark (default: active provider's translationModels)")
+    "--model <ids>",
+    t("Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)")
   )
   .option("--text <text>", t("Inline sample text to translate (overrides --file and the default)"))
   .option("--file <path>", t("Read the sample text from a file (project-relative or absolute)"))
@@ -551,7 +551,7 @@ program
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const o = cmd.opts() as {
-      models?: string;
+      model?: string;
       text?: string;
       file?: string;
       source?: string;
@@ -559,7 +559,7 @@ program
     };
     try {
       const { exitCode } = await runBenchModels(config, projectRoot, {
-        models: o.models ? o.models.split(",") : undefined,
+        models: o.model ? o.model.split(",") : undefined,
         text: o.text,
         file: o.file,
         source: o.source,
@@ -575,7 +575,7 @@ program
     `\n${t(`Examples:
   ai-i18n-tools bench-models
   ai-i18n-tools bench-models --target fr-FR
-  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview
+  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview
   ai-i18n-tools bench-models --file docs/intro.md --target de-DE`)}\n`
   );
 

@@ -1,8 +1,10 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  integrations: [tailwind()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   i18n: {
     // Keep in sync with ai-i18n-tools.config.json targetLocales (+ sourceLocale); Astro uses lowercase.
     locales: ['en', 'de', 'fr', 'es', 'ar', 'ja', 'ko', 'zh-cn', 'zh-tw', 'pt-br'],

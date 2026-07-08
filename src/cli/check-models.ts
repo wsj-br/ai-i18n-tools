@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import { t } from "../i18n/index.js";
-import { resolveTranslationModels } from "../core/config.js";
+import { resolveAllConfiguredModelIds, resolveTranslationModels } from "../core/config.js";
 import {
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
@@ -37,8 +37,8 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     return { exitCode: 1 };
   }
 
-  const configured = resolveTranslationModels(config);
-  if (configured.length === 0) {
+  const translationModels = resolveTranslationModels(config);
+  if (translationModels.length === 0) {
     console.error(
       chalk.red(
         t("No models configured (set {{configKey}}).", {
@@ -48,6 +48,8 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     );
     return { exitCode: 1 };
   }
+
+  const configured = resolveAllConfiguredModelIds(config);
 
   const settings = resolveProviderSettings(activeProvider, config);
   const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";

@@ -71,19 +71,23 @@ Agrupamento de segmentos para **translate-docs**, **translate-svg** e **translat
 Cada bloco `providers.<name>` aceita:
 
 - `translationModels`
-  Lista ordenada preferencial de IDs de modelo (IDs upstream simples, sem prefixo `provider/`; IDs do OpenRouter mantêm sua forma nativa de `vendor/model`). O primeiro é tentado primeiro; entradas posteriores são fallbacks em caso de erro. Apenas para `translate-ui`, você também pode definir `ui.preferredModel` para tentar um modelo antes desta lista (consulte `ui`).
+  Lista ordenada preferencial de IDs de modelo (IDs puros do upstream, sem o prefixo `provider/`; IDs do OpenRouter mantêm sua forma nativa `vendor/model`). O primeiro é tentado primeiro; as entradas posteriores são fallbacks em caso de erro. Esta é a cadeia padrão global para cada pipeline quando nenhum nível mais específico se aplica.
+- `uiModels` (opcional)
+  Lista de modelos ordenada apenas para UI para `translate-ui`, geração de plurais (Etapa 0 e Passagem B) e `proofread-ui`. Tentada após qualquer entrada correspondente em `localeModels` para a localidade de destino, antes de `translationModels`.
+- `localeModels` (opcional)
+  Substituições por localidade para **todos** os pipelines de tradução. Array de objetos `{ "locale": "<BCP-47>", "models": ["…"] }`. As tags de localidade são comparadas sem distinção entre maiúsculas e minúsculas (`pt-br` = `pt-BR`). A lista de cada localidade é tentada primeiro apenas para aquela localidade, seguida pelos níveis específicos do pipeline (`uiModels` para UI) e `translationModels`. Chaves de localidade normalizadas duplicadas são rejeitadas no carregamento da configuração.
 - `baseUrl`
   URL base compatível com OpenAI. Substitui a URL base predefinida; obrigatório para um provedor não predefinido.
 - `apiKeyEnv`
   Variável de ambiente que contém a chave da API. Substitui a variável de ambiente predefinida.
 - `headers`
-  Cabeçalhos HTTP extras enviados com cada solicitação a este provedor.
+  Cabeçalhos HTTP extras enviados com cada solicitação para este provedor.
 - `maxTokens`
-  Tokens de conclusão máximos por solicitação. Padrão: `8192`.
+  Máximo de tokens de conclusão por solicitação. Padrão: `8192`.
 - `temperature`
   Temperatura de amostragem. Padrão: `0.2`.
 - `requestTimeoutMs`
-  Tempo máximo em milissegundos para aguardar cada solicitação. Padrão: `30000` (30 segundos).
+  Tempo máximo em milissegundos para aguardar por cada solicitação. Padrão: `30000` (30 segundos).
 
 Presets de provedores integrados (chave — URL base — variável de ambiente da chave de API):
 
@@ -141,9 +145,9 @@ Exemplo de `translationModels` (mesmos padrões do `npx ai-i18n-tools init`):
 
 Defina a variável de ambiente da chave de API do provedor ativo (por exemplo, `OPENROUTER_API_KEY`) em seu ambiente ou arquivo `.env`.
 
-Antes de alterar `translationModels`, execute `npx ai-i18n-tools check-models`. Para qualquer provedor, ele verifica cada ID de modelo configurado em relação à lista de modelos ativos desse provedor (`GET /models`), relata IDs ausentes ou expirados (`expiration_date`), lista os modelos válidos e sai com código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (por exemplo, OpenRouter), ele também mostra os preços estimados de entrada/saída (USD por 1 milhão de tokens).
+Antes de alterar as listas de modelos, execute `npx ai-i18n-tools check-models`. Para qualquer provedor, ele verifica cada ID de modelo configurado (`translationModels`, `uiModels` e todas as entradas de `localeModels`) em relação à lista de modelos ativos desse provedor (`GET /models`), relata IDs que estão ausentes ou após o `expiration_date`, lista os modelos válidos e encerra com código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (por exemplo, OpenRouter), ele também mostra os preços estimados de entrada/saída (USD por 1 milhão de tokens).
 
-Para comparar os modelos configurados em trabalho de tradução real, execute `npx ai-i18n-tools bench-models`. Ele traduz uma amostra através de cada modelo isoladamente (em paralelo, limitado por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD, para que você possa pesar a velocidade em relação ao preço antes de decidir sobre uma ordem de `translationModels`.
+Para comparar os modelos configurados em um trabalho de tradução real, execute `npx ai-i18n-tools bench-models`. Ele compara cada ID de modelo exclusivo de `translationModels`, `uiModels` e `localeModels` traduzindo uma amostra por meio de cada um isoladamente (em paralelo, limitado por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD, para que você possa pesar a velocidade em relação ao preço antes de definir as listas de modelos.
 
 <a id="features"></a>
 ### `features`
@@ -161,22 +165,20 @@ Para comparar os modelos configurados em trabalho de tradução real, execute `n
 ### `ui`
 
 - `sourceRoots`  
-  Diretórios ou padrões glob (relativos ao cwd) escaneados para chamadas `t("…")`. Suporta padrões como `src/` ou `["src/**/*.ts"]`.
+  Diretórios ou padrões glob (relativos ao diretório de trabalho atual) verificados para chamadas `t("…")`. Suporta padrões como `src/` ou `["src/**/*.ts"]`.
 - `stringsJson`  
   Caminho para o arquivo de catálogo mestre. Atualizado por `extract`.
 - `flatOutputDir`  
   Diretório onde os arquivos JSON por localidade são gravados (`de.json`, etc.).
-- `preferredModel`  
-  Opcional. ID do modelo tentado primeiro apenas para `translate-ui`; em seguida, a lista de `translationModels` do provedor ativo em ordem, sem duplicar este ID.
-- `uiExtractor.funcNames` (ou o legado `reactExtractor.funcNames`)  
-  Nomes adicionais de funções para escanear (padrão: `["t", "i18n.t"]`).
-- `uiExtractor.extensions` (ou o legado `reactExtractor.extensions`)  
-  Extensões de arquivo a incluir (padrão: `[".js", ".jsx", ".ts", ".tsx"]`). Adicione `.astro` para frontmatter Astro e expressões de modelo.
-- `uiExtractor.includePackageDescription` (ou o legado `reactExtractor.includePackageDescription`)  
-  Quando `true` (padrão), `extract` também inclui `package.json` `description` como uma string de interface quando presente.
-- `uiExtractor.packageJsonPath` (ou o legado `reactExtractor.packageJsonPath`)  
-  Caminho personalizado para o arquivo `package.json` usado para essa extração opcional de descrição.
-- `uiExtractor.includeUiLanguageEnglishNames` (ou o legado `reactExtractor.includeUiLanguageEnglishNames`)
+- `uiExtractor.funcNames` (ou legado `reactExtractor.funcNames`)  
+  Nomes de funções adicionais para verificar (padrão: `["t", "i18n.t"]`).
+- `uiExtractor.extensions` (ou legado `reactExtractor.extensions`)  
+  Extensões de arquivo a serem incluídas (padrão: `[".js", ".jsx", ".ts", ".tsx"]`). Adicione `.astro` para frontmatter do Astro e expressões de template.
+- `uiExtractor.includePackageDescription` (ou legado `reactExtractor.includePackageDescription`)  
+  Quando `true` (padrão), `extract` também inclui `package.json` `description` como uma string de UI quando presente.
+- `uiExtractor.packageJsonPath` (ou legado `reactExtractor.packageJsonPath`)  
+  Caminho personalizado para o arquivo `package.json` usado para essa extração de descrição opcional.
+- `uiExtractor.includeUiLanguageEnglishNames` (ou legado `reactExtractor.includeUiLanguageEnglishNames`)
 
 Quando `true` (padrão `false`), `extract` também adiciona cada `englishName` do catálogo mestre de idiomas da interface do usuário (construído a partir de `sourceLocale` + `targetLocales`) a `strings.json` quando ainda não presente na varredura da fonte (mesmas chaves hash). Não lê `uiLanguagesPath`.
 

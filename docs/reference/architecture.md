@@ -123,7 +123,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
 
-`LlmClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list from the active provider's `translationModels`; for `translate-ui`, optional `ui.preferredModel` is prepended when set (deduplicated against the rest).
+`LlmClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list per target locale from `localeModels`, optional `uiModels`, and `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -183,7 +183,7 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 4. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
    - **MDX comments** (`{/* … */}`, including Docusaurus heading-id form `{/* #my-id */}`) replaced with ```{{MDX_N}}```.
    - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as ```{{MDX_N}}``` with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to ```{{JXA_N}}``` inside the tag unless the attribute name appears in `docs[].protectAttributes`; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals (skippable via `docs[].protectKeys`) and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
-   - **MDX brace expressions** (`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) - depth-aware matching, replaced with ```{{MDX_N}}```.
+   - **MDX brace expressions** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - depth-aware matching, replaced with ```{{MDX_N}}```.
 5. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
 6. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
 7. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
@@ -246,7 +246,7 @@ When `docsOutput.style === "flat"`, translated markdown files are placed alongsi
 
 Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). It resolves the active provider from `provider` / `providers`, builds one OpenAI-compatible client (`createOpenAICompatible`) for that provider's `baseUrl` + API key, and routes all calls through `generateText`. `OpenRouterClient` is kept as a deprecated alias. Key behaviours:
 
-- **Model fallback**: tries each model in the resolved list in order; falls back on request or parse failures. UI translation resolves `ui.preferredModel` first when present, then the provider's `translationModels`. The `bench-models` command instead builds one single-model client per id (`translationModels: [id]`, no fallback) so it can time and price each model independently.
+- **Model fallback**: tries each model in the resolved list in order; falls back on request or parse failures. Each target locale gets its own resolved chain: `localeModels(locale)` first when configured, then `uiModels` (UI pipelines only), then `translationModels`. Document, JSON, and SVG translation create a per-locale client with the non-UI chain. The `bench-models` command instead builds one single-model client per configured id (union of `translationModels`, `uiModels`, and `localeModels`; `translationModels: [id]`, no fallback) so it can time and price each model independently.
 - **Request timeout**: the active provider's `requestTimeoutMs` (default 30 seconds) aborts each request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads a provider's model list for `check-models` (any provider). The optional pre-flight filter that drops unknown model ids runs only when the active provider is OpenRouter.
 - **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field, `HTTP-Referer` / `X-Title` headers, and exact USD cost read from `usage.cost`. Token usage is reported for every provider; exact cost only when the provider returns it.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.

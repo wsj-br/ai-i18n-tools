@@ -35,9 +35,16 @@ Establezca la clave de API del proveedor activo en su entorno o en el archivo `.
 
 `translationModels` es una **lista ordenada**, no una única opción. La CLI prueba el primer modelo; si la solicitud o el análisis fallan, pasa a la siguiente entrada. Configure varios modelos para que una interrupción transitoria o un modelo que tenga dificultades con una configuración regional no bloquee toda la ejecución.
 
-Solo para `translate-ui`, se intenta el `ui.preferredModel` opcional **antes** de la lista `translationModels` del proveedor (sin duplicados).
+**Niveles de resolución** (deduplicados, orden conservado):
 
-Los diferentes proveedores y modelos varían en costo, velocidad y calidad entre idiomas. Trate la lista predeterminada de `npx ai-i18n-tools init` como un punto de partida; amplíela cuando una configuración regional produzca resultados consistentemente deficientes. Valores predeterminados completos y justificación: [Configuración — `provider` y `providers`](/reference/configuration#provider-and-providers).
+| Canalización | Orden |
+| --- | --- |
+| UI (`translate-ui`, plurales, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
+| Documentos, JSON, SVG | `localeModels(locale)` → `translationModels` |
+
+La `providers.<active>.uiModels` opcional es una lista solo de UI que se prueba después de cualquier anulación por configuración regional coincidente y antes de la cadena global `translationModels`. La `providers.<active>.localeModels` opcional asigna una configuración regional BCP-47 a los modelos que se prueban **primero** para esa configuración regional en cada canalización (`pt-br` coincide con `pt-BR`). Cuando ninguna entrada `localeModels` coincide, solo se aplican los niveles específicos de la canalización.
+
+Los diferentes proveedores y modelos varían en costo, velocidad y calidad entre idiomas. Trate la lista predeterminada de `npx ai-i18n-tools init` como un punto de partida: amplíela cuando una configuración regional produzca resultados consistentemente deficientes, o agregue una entrada `localeModels` para esa configuración regional. Valores predeterminados completos y justificación: [Configuración — `provider` y `providers`](/reference/configuration#provider-and-providers).
 
 Ejemplo de configuración mínima (OpenRouter):
 
@@ -50,6 +57,12 @@ Ejemplo de configuración mínima (OpenRouter):
         "qwen/qwen3-235b-a22b-2507",
         "openai/gpt-4o-mini",
         "deepseek/deepseek-v4-flash"
+      ],
+      "uiModels": [
+        "anthropic/claude-sonnet-latest"
+      ],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     }
   }
@@ -65,7 +78,7 @@ Antes de cambiar `translationModels`, confirme que cada ID todavía esté dispon
 npx ai-i18n-tools check-models
 ```
 
-`check-models` llama al punto final `GET /models` del proveedor, informa las ID que faltan o que superan `expiration_date`, y sale con un valor distinto de cero si alguna ID configurada no es válida. Cuando el proveedor devuelve precios (OpenRouter lo hace), también muestra el USD estimado por 1 millón de tokens.
+`check-models` llama al punto final `GET /models` del proveedor, valida cada ID de `translationModels`, `uiModels` y `localeModels`, informa las ID que faltan o que superan `expiration_date`, y sale con un valor distinto de cero cuando cualquier ID configurada no es válida. Cuando el proveedor devuelve precios (OpenRouter lo hace), también muestra el USD estimado por 1 millón de tokens.
 
 Explore el catálogo completo anunciado por un proveedor:
 
@@ -73,7 +86,7 @@ Explore el catálogo completo anunciado por un proveedor:
 npx ai-i18n-tools list-models
 ```
 
-Compare los modelos configurados en una muestra de traducción real: cada modelo se ejecuta de forma aislada para que pueda comparar el tiempo real, el uso de tokens y el costo:
+Compare el rendimiento de los modelos configurados con una muestra de traducción real: cada ID único de `translationModels`, `uiModels` y `localeModels` se ejecuta de forma aislada para que pueda comparar el tiempo real, el uso de tokens y el costo:
 
 ```bash
 npx ai-i18n-tools bench-models
@@ -82,7 +95,7 @@ npx ai-i18n-tools bench-models
 Anule el texto de muestra, las configuraciones regionales o la lista de modelos:
 
 ```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --models openai/gpt-4o-mini,anthropic/claude-3-haiku
+npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
 Detalles del comando: [Referencia de la CLI](/reference/cli-commands).
@@ -97,7 +110,7 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Cada bloque de proveedor puede definir sus propios `translationModels`, `maxTokens`, `temperature` y `requestTimeoutMs`. Un bloque `openrouter` heredado de nivel superior todavía se acepta y se migra automáticamente a `providers.openrouter` al cargarse.
+Cada bloque de proveedor puede definir su propio `translationModels`, `uiModels` y `localeModels` opcionales, `maxTokens`, `temperature` y `requestTimeoutMs`. Todavía se acepta un bloque `openrouter` de nivel superior heredado y se migra automáticamente a `providers.openrouter` al cargarse.
 
 Ejemplo ejecutable con cuatro proveedores en el mismo documento: [`examples/multi-provider`](/examples#multi-provider).
 

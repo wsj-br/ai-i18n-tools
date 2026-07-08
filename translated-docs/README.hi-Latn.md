@@ -124,13 +124,27 @@ Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`
 
 Providers ko top-level `providers` map ke tahat configure karein aur active wale ko top-level `provider` selector ke saath chunein (jab theek ek provider configure kiya gaya ho to optional). Adhikansh providers ko sirf ek `translationModels` list ki zaroorat hoti hai — `baseUrl` aur API-key environment variable ek built-in preset se aate hain; aap `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, aur `requestTimeoutMs` ko prati provider override kar sakte hain. `requestTimeoutMs` har request ke liye intezaar karne ka adhiktam samay milliseconds mein hai (default `30000`).
 
+Pratyek provider block par vikalpik model star:
+
+- `translationModels` — vishvavyapi aadesh pratha (anuvaad visheshon ke liye avashyak).
+- `uiModels` — UI-matra pratha (`translate-ui`, bahuvachan utpatti, `proofread-ui`): kisi bhi milte `localeModels` pravesh ke baad koshish ki jaati hai, `translationModels` se pehle.
+- `localeModels` — pratyek-lok pratyakshikaran **sabhi** pipeline ke liye: pratyek pravesh ek BCP-47 lok ko ek aadeshit model suchi se jodta hai jo sirf us lok ke liye pehle koshish ki jaati hai (`pt-br` `pt-BR` se milta hai).
+
+Samadhan kram: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **docs / JSON / SVG** → `localeModels(locale)` → `translationModels`. Duplicate model ids ko chhodte hue kram banaye rakha jaata hai.
+
 Config ko edit kiye bina ek single run ke liye providers switch karne ke liye, global `-P` / `--provider <name>` option pass karein (jaise `ai-i18n-tools -P groq translate-ui`); naam configured `providers` keys mein se ek hona chahiye.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ Built-in provider presets (key — base URL — API-key env var):
 
 `baseUrl` (aur `apiKeyEnv` jab tak ki use kisi key ki zaroorat na ho) ke saath ek nayi key jodkar ek custom OpenAI-compatible provider define karein. Model ids plain upstream ids hain — provider ko config level par chuna jaata hai, isliye kisi `provider/` prefix ki zaroorat nahi hai (OpenRouter ids apne native `vendor/model` form ko barkarar rakhte hain).
 
-Token ka upyog har provider ke liye report kiya jaata hai; sahi USD laagat tabhi dikhai jaati hai jab provider ise wapas karta hai (OpenRouter). `ai-i18n-tools check-models` active provider ki live `GET /models` list (koi bhi provider) ke khilaaf configured model ids ko validate karta hai, aur jab provider ise wapas karta hai (jaise OpenRouter) to pricing dikhata hai. `ai-i18n-tools list-models` har us model ko list karta hai jise active provider advertise karta hai (doosre configured provider ka nireekshan karne ke liye `-P` / `--provider` ka upyog karein). `ai-i18n-tools bench-models` ek sample ko isolation mein translate karke har configured model ko benchmark karta hai (models parallel mein chalte hain, `concurrency` dwara seemit) aur per-model input/output tokens, wall-clock time, aur USD laagat print karta hai.
+Token ka upyog har provider ke liye report kiya jata hai; sahi USD lagat tabhi dikhai jati hai jab provider ise wapas karta hai (OpenRouter). `ai-i18n-tools check-models` sabhi configured model ids (`translationModels`, `uiModels`, aur har `localeModels` entry) ko active provider ki live `GET /models` list (koi bhi provider) ke khilaf validate karta hai, aur pricing tab dikhata hai jab provider ise wapas karta hai (jaise OpenRouter). `ai-i18n-tools list-models` har us model ko list karta hai jise active provider advertise karta hai (kisi anya configured provider ka nirikshan karne ke liye `-P` / `--provider` ka upyog karein). `ai-i18n-tools bench-models` har unique configured model id (`translationModels`, `uiModels`, aur `localeModels`) ko ek sample ko alag se translate karke benchmark karta hai (models samantar mein chalte hain, `concurrency` dwara seemit) aur prati-model input/output tokens, wall-clock samay, aur USD lagat print karta hai.
 
 Ek legacy top-level `openrouter` config block abhi bhi swikar kiya jaata hai aur load hone par automatically `providers.openrouter` (`provider: "openrouter"` ke saath) mein migrate ho jaata hai.
 
@@ -272,7 +286,7 @@ Nimnalikhit helpers `'ai-i18n-tools/runtime'` se export kiye jaate hain aur kisi
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

@@ -15,6 +15,11 @@ SVGファイルは、`features.translateSVG`が有効な場合、[`translate-svg
 
 任意のネストされたUI JSONバンドル（Docusaurusカタログではない）は、`docs[]`ではなく、[JSON](/guide/json)パイプラインに属します。
 
+<a id="per-locale-model-overrides"></a>
+### ロケールごとのモデルオーバーライド
+
+`translate-docs`と`sync`のドキュメントステップは、モデルを**ターゲットロケールごとに**解決します。まず、設定されている場合は`localeModels(locale)`、次にプロバイダーのグローバル`translationModels`チェーンを解決します。これは、特定の言語でデフォルトのフォールバックリストとは異なるモデルが必要な場合に使用します。たとえば、グローバルチェーンがポルトガル語で苦戦する場合に、`pt-BR`ドキュメントにGeminiを優先する場合などです。[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)および[構成 — `localeModels`](/reference/configuration#provider-and-providers)を参照してください。
+
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
 

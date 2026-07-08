@@ -71,7 +71,11 @@ Segment batching for **translate-docs**, **translate-svg**, and **translate-json
 Each `providers.<name>` block accepts:
 
 - `translationModels`
-  Preferred ordered list of model IDs (plain upstream ids, no `provider/` prefix; OpenRouter ids keep their native `vendor/model` form). The first is tried first; later entries are fallbacks on error. For `translate-ui` only, you can also set `ui.preferredModel` to try one model before this list (see `ui`).
+  Preferred ordered list of model IDs (plain upstream ids, no `provider/` prefix; OpenRouter ids keep their native `vendor/model` form). The first is tried first; later entries are fallbacks on error. This is the global default chain for every pipeline when no more specific tier applies.
+- `uiModels` (optional)
+  Ordered UI-only model list for `translate-ui`, plural generation (Step 0 and Pass B), and `proofread-ui`. Tried after any matching `localeModels` entry for the target locale, before `translationModels`.
+- `localeModels` (optional)
+  Per-locale overrides for **all** translation pipelines. Array of `{ "locale": "<BCP-47>", "models": ["…"] }` objects. Locale tags are matched case-insensitively (`pt-br` = `pt-BR`). Each locale's list is tried first for that locale only, then pipeline-specific tiers (`uiModels` for UI) and `translationModels`. Duplicate normalized locale keys are rejected at config load.
 - `baseUrl`
   OpenAI-compatible base URL. Overrides the preset base URL; required for a non-preset provider.
 - `apiKeyEnv`
@@ -141,9 +145,9 @@ Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
 
 Set the active provider's API-key env var (e.g. `OPENROUTER_API_KEY`) in your environment or `.env` file.
 
-Before changing `translationModels`, run `npx ai-i18n-tools check-models`. For any provider it verifies each configured model id against that provider's live model list (`GET /models`), reports ids that are missing or past `expiration_date`, lists the valid models, and exits non-zero when any configured id is invalid. When the provider returns pricing (e.g. OpenRouter) it also shows estimated input/output pricing (USD per 1M tokens).
+Before changing model lists, run `npx ai-i18n-tools check-models`. For any provider it verifies each configured model id (`translationModels`, `uiModels`, and all `localeModels` entries) against that provider's live model list (`GET /models`), reports ids that are missing or past `expiration_date`, lists the valid models, and exits non-zero when any configured id is invalid. When the provider returns pricing (e.g. OpenRouter) it also shows estimated input/output pricing (USD per 1M tokens).
 
-To compare the configured models on real translation work, run `npx ai-i18n-tools bench-models`. It translates one sample through each model in isolation (in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost, so you can weigh speed against price before settling on a `translationModels` order.
+To compare the configured models on real translation work, run `npx ai-i18n-tools bench-models`. It benchmarks every unique model id from `translationModels`, `uiModels`, and `localeModels` by translating one sample through each in isolation (in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost, so you can weigh speed against price before settling on model lists.
 
 <a id="features"></a>
 ### `features`
@@ -168,8 +172,6 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
   Path to the master catalog file. Updated by `extract`.
 - `flatOutputDir`  
   Directory where per-locale JSON files are written (`de.json`, etc.).
-- `preferredModel`  
-  Optional. Model id tried first for `translate-ui` only; then the active provider's `translationModels` in order, without duplicating this id.
 - `uiExtractor.funcNames` (or legacy `reactExtractor.funcNames`)  
   Additional function names to scan (default: `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (or legacy `reactExtractor.extensions`)  

@@ -11,13 +11,9 @@ import { LlmClient } from "../api/llm-client.js";
 import {
   englishLanguageNameForLocale,
   normalizeLocale,
-  resolveUITranslationModels,
 } from "../core/config.js";
-import {
-  filterTranslationModelsAgainstOpenRouterCatalog,
-  MODELS_ALL_UNKNOWN_AFTER_FILTER,
-  warnIgnoredUnknownOpenRouterModels,
-} from "./openrouter-catalog-model-filter.js";
+import { createFilteredLlmClient } from "./llm-client-factory.js";
+import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filter.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
@@ -434,33 +430,23 @@ export async function runProofreadUI(
     return { report, logFilePath };
   }
 
-  const resolvedUi = resolveUITranslationModels(config);
-  let translationModelsForClient: string[] | undefined = undefined;
-  if (resolvedUi.length > 0) {
-    const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedUi, config);
-    warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
-    if (filtered.models.length === 0) {
+  let client: LlmClient;
+  try {
+    client = await createFilteredLlmClient(config, localeNorm, { ui: true });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg === MODELS_ALL_UNKNOWN_AFTER_FILTER) {
       return {
         report: emptyReport(config, cwd, stringsPath, units.length),
         logFilePath,
         exitWithError: MODELS_ALL_UNKNOWN_AFTER_FILTER,
       };
     }
-    translationModelsForClient = filtered.models;
-  }
-
-  let client: LlmClient;
-  try {
-    client = new LlmClient({
-      config,
-      ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
-    });
-  } catch (e) {
     return {
       report: emptyReport(config, cwd, stringsPath, units.length),
       logFilePath,
       exitWithError: t("LLM provider API key required for proofread-ui: {{error}}", {
-        error: e instanceof Error ? e.message : String(e),
+        error: msg,
       }),
     };
   }

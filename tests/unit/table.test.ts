@@ -60,4 +60,23 @@ describe("renderTable", () => {
     });
     expect(lines).toEqual(["   N", "  10", "   1"]);
   });
+
+  it("inserts a rule line before listed row indices", () => {
+    const lines = renderTable({
+      headers: ["Model", "Cost"],
+      rows: [
+        ["a", "1"],
+        ["TOTAL", "3"],
+      ],
+      align: ["left", "right"],
+      separatorBeforeRows: [1],
+    });
+    expect(lines).toEqual([
+      "  Model  Cost",
+      "  -----  ----",
+      "  a         1",
+      "  -----  ----",
+      "  TOTAL     3",
+    ]);
+  });
 });

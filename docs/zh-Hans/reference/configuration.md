@@ -71,19 +71,23 @@
 每个 `providers.<name>` 块接受：
 
 - `translationModels`
-  首选的模型 ID 列表（纯粹的上游 ID，无 `provider/` 前缀；OpenRouter ID 保留其本地 `vendor/model` 格式）。第一个模型优先尝试；后续条目在出错时作为备用。仅对于 `translate-ui`，您还可以设置 `ui.preferredModel` 在此列表之前尝试一个模型（请参阅 `ui`）。
+  首选的模型ID有序列表（纯上游ID，无`provider/`前缀；OpenRouter ID保留其原生`vendor/model`形式）。第一个优先尝试；后续条目在出错时作为备用。这是每个管道的全局默认链，当没有更具体的层级适用时。
+- `uiModels`（可选）
+  用于`translate-ui`、复数生成（步骤0和B阶段）和`proofread-ui`的有序UI专用模型列表。在目标语言环境的任何匹配`localeModels`条目之后，`translationModels`之前尝试。
+- `localeModels`（可选）
+  每个语言环境覆盖**所有**翻译管道。`{ "locale": "<BCP-47>", "models": ["…"] }`对象的数组。语言环境标签不区分大小写匹配（`pt-br` = `pt-BR`）。每个语言环境的列表仅在该语言环境优先尝试，然后是管道特定层级（UI为`uiModels`）和`translationModels`。配置加载时会拒绝重复的规范化语言环境键。
 - `baseUrl`
-  OpenAI 兼容的基础 URL。覆盖预设的基础 URL；对于非预设提供商是必需的。
+  OpenAI兼容的基础URL。覆盖预设的基础URL；非预设提供商必需。
 - `apiKeyEnv`
-  包含 API 密钥的环境变量。覆盖预设的环境变量。
+  包含API密钥的环境变量。覆盖预设环境变量。
 - `headers`
-  发送到此提供商的每个请求的额外 HTTP 标头。
+  发送给此提供商的每个请求附带的额外HTTP头。
 - `maxTokens`
   每个请求的最大完成令牌数。默认值：`8192`。
 - `temperature`
   采样温度。默认值：`0.2`。
 - `requestTimeoutMs`
-  等待每个请求的最大毫秒数。默认值：`30000`（30 秒）。
+  等待每个请求的最大时间（毫秒）。默认值：`30000`（30秒）。
 
 内置提供商预设（键 — 基本 URL — API 密钥环境变量）：
 
@@ -141,9 +145,9 @@
 
 在您的环境中或 `.env` 文件中设置活动提供商的 API 密钥环境变量（例如 `OPENROUTER_API_KEY`）。
 
-在更改 `translationModels` 之前，请运行 `npx ai-i18n-tools check-models`。对于任何提供程序，它会将其配置的每个模型 ID 与该提供程序的实时模型列表（`GET /models`）进行验证，报告缺失或过期的 ID（`expiration_date`），列出有效模型，并在任何配置的 ID 无效时以非零状态退出。当提供程序返回定价信息时（例如 OpenRouter），它还会显示每 100 万个 token 的估算输入/输出定价（美元）。
+在更改模型列表之前，请运行 `npx ai-i18n-tools check-models`。对于任何提供商，它都会根据该提供商的实时模型列表 (`GET /models`) 验证每个配置的模型 ID (`translationModels`、`uiModels` 和所有 `localeModels` 条目)，报告缺失或已过时的 ID (`expiration_date`)，列出有效模型，并在任何配置的 ID 无效时以非零退出。当提供商返回定价（例如 OpenRouter）时，它还会显示估计的输入/输出定价（每百万个令牌的美元）。
 
-要比较配置的模型在实际翻译工作中的表现，请运行 `npx ai-i18n-tools bench-models`。它会通过每个模型独立翻译一个样本（并行进行，受 `concurrency` 限制），并打印每个模型的输入/输出令牌、实际运行时间以及美元成本，这样您就可以在确定 `translationModels` 顺序之前权衡速度与价格。
+要在实际翻译工作中比较已配置的模型，请运行 `npx ai-i18n-tools bench-models`。它会对 `translationModels`、`uiModels` 和 `localeModels` 中的每个唯一模型 ID 进行基准测试，方法是分别通过每个模型独立翻译一个样本（并行执行，受 `concurrency` 限制），并打印每个模型的输入/输出 token 数、实际耗时和美元成本，以便你在最终确定模型列表之前权衡速度与价格。
 
 <a id="features"></a>
 ### `features`
@@ -160,23 +164,21 @@
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  扫描 `t("…")` 调用的目录或 glob 模式（相对于当前工作目录）。支持类似 `src/` 或 `["src/**/*.ts"]` 的模式。
-- `stringsJson`  
-  主目录文件的路径。由 `extract` 更新。
-- `flatOutputDir`  
-  写入每个区域设置的 JSON 文件的目录（例如 `de.json`）。
-- `preferredModel`  
-  可选。仅用于 `translate-ui` 的首选模型 ID；然后按顺序使用活动提供商的 `translationModels`，不重复此 ID。
-- `uiExtractor.funcNames`（或旧版 `reactExtractor.funcNames`）  
+- `sourceRoots`
+  扫描`t("…")`调用的目录或全局模式（相对于当前工作目录）。支持`src/`或`["src/**/*.ts"]`等模式。
+- `stringsJson`
+  主目录文件的路径。由`extract`更新。
+- `flatOutputDir`
+  写入每个语言环境JSON文件的目录（`de.json`等）。
+- `uiExtractor.funcNames`（或旧版`reactExtractor.funcNames`）
   要扫描的附加函数名称（默认值：`["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（或旧版 `reactExtractor.extensions`）  
-  要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。添加 `.astro` 以支持 Astro 前置 matter 和模板表达式。
-- `uiExtractor.includePackageDescription`（或旧版 `reactExtractor.includePackageDescription`）  
-  当 `true`（默认值）为 true 时，`extract` 还会将清单中的 `package.json` `description` 作为 UI 字符串包含在内（如果存在）。
-- `uiExtractor.packageJsonPath`（或旧版 `reactExtractor.packageJsonPath`）  
-  用于该可选描述提取的 `package.json` 文件的自定义路径。
-- `uiExtractor.includeUiLanguageEnglishNames`（或旧版 `reactExtractor.includeUiLanguageEnglishNames`）
+- `uiExtractor.extensions`（或旧版`reactExtractor.extensions`）
+  要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。添加`.astro`用于Astro frontmatter和模板表达式。
+- `uiExtractor.includePackageDescription`（或旧版`reactExtractor.includePackageDescription`）
+  当`true`（默认）时，如果存在，`extract`还会将`package.json` `description`作为UI字符串包含在内。
+- `uiExtractor.packageJsonPath`（或旧版`reactExtractor.packageJsonPath`）
+  用于可选描述提取的`package.json`文件的自定义路径。
+- `uiExtractor.includeUiLanguageEnglishNames`（或旧版`reactExtractor.includeUiLanguageEnglishNames`）
 
 当 `true`（默认 `false`）时，`extract` 还会将捆绑的 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`（如果源扫描中尚未存在，哈希键相同）。不读取 `uiLanguagesPath`。
 

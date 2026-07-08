@@ -71,15 +71,19 @@ Segment-Batching für **translate-docs**, **translate-svg** und **translate-json
 Jeder `providers.<name>`-Block akzeptiert:
 
 - `translationModels`
-  Bevorzugte geordnete Liste von Modell-IDs (einfache Upstream-IDs, kein `provider/`-Präfix; OpenRouter-IDs behalten ihre native `vendor/model`-Form). Die erste wird zuerst versucht; spätere Einträge sind Fallbacks bei Fehlern. Nur für `translate-ui` können Sie auch `ui.preferredModel` setzen, um ein Modell vor dieser Liste zu versuchen (siehe `ui`).
+  Bevorzugte geordnete Liste von Modell-IDs (reine Upstream-IDs, kein `provider/`-Präfix; OpenRouter-IDs behalten ihr natives `vendor/model`-Format). Die erste wird zuerst versucht; spätere Einträge sind Fallbacks bei Fehlern. Dies ist die globale Standardkette für jede Pipeline, wenn keine spezifischere Ebene zutrifft.
+- `uiModels` (optional)
+  Geordnete, nur für die Benutzeroberfläche bestimmte Modellliste für `translate-ui`, Pluralgenerierung (Schritt 0 und Durchgang B) und `proofread-ui`. Wird nach jedem passenden `localeModels`-Eintrag für das Zielland vor `translationModels` versucht.
+- `localeModels` (optional)
+  Pro-Locale-Überschreibungen für **alle** Übersetzungs-Pipelines. Array von `{ "locale": "<BCP-47>", "models": ["…"] }`-Objekten. Locale-Tags werden unabhängig von Groß- und Kleinschreibung abgeglichen (`pt-br` = `pt-BR`). Die Liste jedes Locales wird zuerst nur für dieses Locale versucht, dann Pipeline-spezifische Ebenen (`uiModels` für UI) und `translationModels`. Doppelte normalisierte Locale-Schlüssel werden beim Laden der Konfiguration abgelehnt.
 - `baseUrl`
-  OpenAI-kompatible Basis-URL. Überschreibt die Preset-Basis-URL; erforderlich für einen Nicht-Preset-Provider.
+  OpenAI-kompatible Basis-URL. Überschreibt die voreingestellte Basis-URL; erforderlich für einen nicht voreingestellten Anbieter.
 - `apiKeyEnv`
-  Umgebungsvariable, die den API-Schlüssel enthält. Überschreibt die Preset-Umgebungsvariable.
+  Umgebungsvariable, die den API-Schlüssel enthält. Überschreibt die voreingestellte Umgebungsvariable.
 - `headers`
-  Zusätzliche HTTP-Header, die mit jeder Anfrage an diesen Provider gesendet werden.
+  Zusätzliche HTTP-Header, die mit jeder Anfrage an diesen Anbieter gesendet werden.
 - `maxTokens`
-  Maximale Abschluss-Token pro Anfrage. Standard: `8192`.
+  Maximale Vervollständigungs-Tokens pro Anfrage. Standard: `8192`.
 - `temperature`
   Sampling-Temperatur. Standard: `0.2`.
 - `requestTimeoutMs`
@@ -141,9 +145,9 @@ Beispiel `translationModels` (gleiche Standardeinstellungen wie `npx ai-i18n-too
 
 Legen Sie die API-Schlüssel-Umgebungsvariable des aktiven Providers (z. B. `OPENROUTER_API_KEY`) in Ihrer Umgebung oder in der `.env`-Datei fest.
 
-Bevor Sie `translationModels` ändern, führen Sie `npx ai-i18n-tools check-models` aus. Für jeden Anbieter überprüft es jede konfigurierte Modell-ID anhand der Live-Modellliste dieses Anbieters (`GET /models`), meldet fehlende oder abgelaufene IDs (`expiration_date`), listet die gültigen Modelle auf und wird mit einem Rückgabewert ungleich Null beendet, wenn eine konfigurierte ID ungültig ist. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch die geschätzten Ein- und Ausgabepreise (USD pro 1 Million Tokens) angezeigt.
+Bevor Sie Modelllisten ändern, führen Sie `npx ai-i18n-tools check-models` aus. Für jeden Anbieter überprüft es jede konfigurierte Modell-ID (`translationModels`, `uiModels` und alle `localeModels`-Einträge) anhand der Live-Modellliste dieses Anbieters (`GET /models`), meldet fehlende oder über `expiration_date` liegende IDs, listet die gültigen Modelle auf und beendet sich mit einem von Null verschiedenen Wert, wenn eine konfigurierte ID ungültig ist. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch geschätzte Eingabe-/Ausgabepreise (USD pro 1 Mio. Tokens) angezeigt.
 
-Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu vergleichen, führen Sie `npx ai-i18n-tools bench-models` aus. Es übersetzt ein Beispiel isoliert durch jedes Modell (parallel, begrenzt durch `concurrency`) und gibt pro Modell die Eingabe-/Ausgabe-Tokens, die tatsächliche Zeit und die USD-Kosten aus, sodass Sie Geschwindigkeit gegen Preis abwägen können, bevor Sie sich für eine `translationModels`-Reihenfolge entscheiden.
+Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu vergleichen, führen Sie `npx ai-i18n-tools bench-models` aus. Es bewertet jede eindeutige Modell-ID aus `translationModels`, `uiModels` und `localeModels`, indem es eine Stichprobe durch jedes Modell isoliert (parallel, begrenzt durch `concurrency`) übersetzt und pro Modell die Eingabe-/Ausgabe-Tokens, die verstrichene Zeit und die USD-Kosten ausgibt, sodass Sie Geschwindigkeit gegen Preis abwägen können, bevor Sie sich für Modelllisten entscheiden.
 
 <a id="features"></a>
 ### `features`
@@ -165,15 +169,13 @@ Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu verg
 - `stringsJson`  
   Pfad zur Master-Katalogdatei. Wird von `extract` aktualisiert.
 - `flatOutputDir`  
-  Verzeichnis, in das pro Gebiet JSON-Dateien geschrieben werden (`de.json` usw.).
-- `preferredModel`  
-  Optional. Modell-ID, die zuerst für `translate-ui` versucht wird; dann die `translationModels`-Reihenfolge des aktiven Providers, ohne diese ID zu duplizieren.
+  Verzeichnis, in das die JSON-Dateien pro Locale geschrieben werden (`de.json`, etc.).
 - `uiExtractor.funcNames` (oder veraltet `reactExtractor.funcNames`)  
   Zusätzliche zu scannende Funktionsnamen (Standard: `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (oder veraltet `reactExtractor.extensions`)  
-  Einzuschließende Dateierweiterungen (Standard: `[".js", ".jsx", ".ts", ".tsx"]`). `.astro` für Astro-Frontmatter und Template-Ausdrücke hinzufügen.
+  Dateierweiterungen, die eingeschlossen werden sollen (Standard: `[".js", ".jsx", ".ts", ".tsx"]`). Fügen Sie `.astro` für Astro-Frontmatter und Template-Ausdrücke hinzu.
 - `uiExtractor.includePackageDescription` (oder veraltet `reactExtractor.includePackageDescription`)  
-  Wenn `true` (Standard), schließt `extract` auch `package.json` `description` als UI-Text ein, falls vorhanden.
+  Wenn `true` (Standard), schließt `extract` auch `package.json` `description` als UI-String ein, falls vorhanden.
 - `uiExtractor.packageJsonPath` (oder veraltet `reactExtractor.packageJsonPath`)  
   Benutzerdefinierter Pfad zur `package.json`-Datei, die für die optionale Beschreibungsextraktion verwendet wird.
 - `uiExtractor.includeUiLanguageEnglishNames` (oder veraltet `reactExtractor.includeUiLanguageEnglishNames`)

@@ -5,6 +5,11 @@ Designed for **SVG illustrations and diagrams** that contain human-readable labe
 
 This is the only pipeline that emits locale-specific **binary** SVG files. `translate-docs` translates markdown alt text and link references, but it does not modify or copy SVG assets. When a page needs a diagram with translated labels, enable `features.translateSVG` and configure the top-level `svg` block.
 
+<a id="per-locale-model-overrides"></a>
+### Per-locale model overrides
+
+`translate-svg` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Each locale's SVG run uses its own fallback chain — useful when diagram labels in CJK locales need a script-tuned model (for example `ja`). See [Providers and models](/guide/providers-and-models#model-fallback-chain).
+
 SVG translation uses the same SQLite cache as `translate-docs` and `translate-json` (`cacheDir`). Already-translated text segments are served from cache; only new or changed source text is sent to the LLM.
 
 <a id="when-to-use-svg-translation"></a>

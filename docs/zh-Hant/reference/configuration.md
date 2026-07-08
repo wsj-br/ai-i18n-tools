@@ -71,19 +71,23 @@
 每個 `providers.<name>` 區塊接受：
 
 - `translationModels`
-  模型 ID 的偏好排序列表（純上游 ID，無 `provider/` 前綴；OpenRouter ID 保留其原生 `vendor/model` 格式）。第一個優先嘗試；後續項目在發生錯誤時作為備用。僅適用於 `translate-ui`，您也可以設定 `ui.preferredModel` 在此列表之前嘗試一個模型（請參閱 `ui`）。
+  模型 ID 的首選有序列表（純上游 ID，無 `provider/` 前綴；OpenRouter ID 保留其原生 `vendor/model` 形式）。第一個優先嘗試；後續條目在出錯時作為備用。這是每個管道的全局預設鏈，當沒有更具體的層級適用時。
+- `uiModels` (可選)
+  用於 `translate-ui`、複數生成（步驟 0 和階段 B）和 `proofread-ui` 的僅限 UI 的有序模型列表。在目標語言環境的任何匹配 `localeModels` 條目之後，`translationModels` 之前嘗試。
+- `localeModels` (可選)
+  **所有**翻譯管道的每個語言環境覆寫。`{ "locale": "<BCP-47>", "models": ["…"] }` 物件陣列。語言環境標籤不區分大小寫匹配（`pt-br` = `pt-BR`）。每個語言環境的列表僅針對該語言環境優先嘗試，然後是管道特定的層級（UI 為 `uiModels`）和 `translationModels`。在配置載入時拒絕重複的標準化語言環境鍵。
 - `baseUrl`
-  OpenAI 相容的基礎 URL。覆寫預設的基礎 URL；對於非預設提供者為必要。
+  與 OpenAI 相容的基礎 URL。覆寫預設的基礎 URL；非預設提供者需要此項。
 - `apiKeyEnv`
   儲存 API 金鑰的環境變數。覆寫預設的環境變數。
 - `headers`
-  傳送至此提供者的每個請求的額外 HTTP 標頭。
+  每次向此提供者發送請求時傳送的額外 HTTP 標頭。
 - `maxTokens`
-  每個請求的最大完成 token 數。預設值：`8192`。
+  每個請求的最大完成權杖數。預設值：`8192`。
 - `temperature`
   取樣溫度。預設值：`0.2`。
 - `requestTimeoutMs`
-  等待每個請求的最大時間（毫秒）。預設值：`30000`（30 秒）。
+  等待每個請求的最長時間（毫秒）。預設值：`30000`（30 秒）。
 
 內建提供者預設值（金鑰 — 基本 URL — API 金鑰環境變數）：
 
@@ -141,9 +145,9 @@
 
 在您的環境或 `.env` 檔案中設定活躍提供者的 API 金鑰環境變數（例如 `OPENROUTER_API_KEY`）。
 
-在變更 `translationModels` 之前，請執行 `npx ai-i18n-tools check-models`。對於任何提供者，它會將每個已設定的模型 ID 與該提供者的即時模型清單（`GET /models`）進行驗證，報告遺失或過期的 ID（`expiration_date`），列出有效模型，並在任何已設定的 ID 無效時以非零值退出。當提供者返回定價時（例如 OpenRouter），它也會顯示每 100 萬個 token 的預估輸入/輸出定價（美元）。
+在更改模型列表之前，請執行 `npx ai-i18n-tools check-models`。對於任何提供者，它會根據該提供者的即時模型列表 (`GET /models`) 驗證每個已配置的模型 ID (`translationModels`、`uiModels` 和所有 `localeModels` 條目)，報告缺失或超過 `expiration_date` 的 ID，列出有效模型，並在任何已配置 ID 無效時以非零值退出。當提供者返回定價 (例如 OpenRouter) 時，它還會顯示估計的輸入/輸出定價 (每 1M 權杖的美元價格)。
 
-若要比較已設定的模型在實際翻譯工作上的表現，請執行 `npx ai-i18n-tools bench-models`。它會透過每個模型獨立翻譯一個範例（平行進行，受 `concurrency` 限制），並列印每個模型的輸入/輸出權杖、實際執行時間和美元成本，以便您在確定 `translationModels` 順序之前權衡速度與價格。
+若要在實際翻譯工作上比較已設定的模型，請執行 `npx ai-i18n-tools bench-models`。它會透過獨立翻譯一個樣本（並行執行，受 `concurrency` 限制），對來自 `translationModels`、`uiModels` 與 `localeModels` 的每個唯一模型 ID 進行基準測試，並輸出每個模型的輸入/輸出權杖、實際耗時與美元成本，讓您在確定模型清單前能權衡速度與價格。
 
 <a id="features"></a>
 ### `features`
@@ -161,19 +165,17 @@
 ### `ui`
 
 - `sourceRoots`  
-  相對於目前工作目錄掃描 `t("…")` 呼叫的目錄或 glob 模式。支援類似 `src/` 或 `["src/**/*.ts"]` 的模式。
+  掃描 `t("…")` 呼叫的目錄或全域模式（相對於目前工作目錄）。支援 `src/` 或 `["src/**/*.ts"]` 等模式。
 - `stringsJson`  
   主目錄檔案的路徑。由 `extract` 更新。
 - `flatOutputDir`  
-  寫入每個地區 JSON 檔案的目錄（例如 `de.json`）。
-- `preferredModel`  
-  可選。僅用於 `translate-ui` 的第一個嘗試模型 ID；然後依序是活躍提供者的 `translationModels`，但不重複此 ID。
+  寫入每個語言環境 JSON 檔案的目錄（`de.json` 等）。
 - `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）  
-  要掃描的額外函數名稱（預設值：`["t", "i18n.t"]`）。
+  要掃描的其他函數名稱（預設值：`["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（或舊版 `reactExtractor.extensions`）  
-  要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。新增 `.astro` 以支援 Astro 前置碼和範本表達式。
+  要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。為 Astro 前置內容和模板表達式新增 `.astro`。
 - `uiExtractor.includePackageDescription`（或舊版 `reactExtractor.includePackageDescription`）  
-  當 `true`（預設值）時，`extract` 也會將資訊清單中的 `package.json` `description` 作為 UI 字串包含在內（如果存在）。
+  當 `true`（預設）時，`extract` 也會將 `package.json` `description` 作為 UI 字串包含在內（如果存在）。
 - `uiExtractor.packageJsonPath`（或舊版 `reactExtractor.packageJsonPath`）  
   用於該可選描述提取的 `package.json` 檔案的自訂路徑。
 - `uiExtractor.includeUiLanguageEnglishNames`（或舊版 `reactExtractor.includeUiLanguageEnglishNames`）

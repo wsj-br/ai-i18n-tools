@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { coerceContentPathsField, preprocessLegacyConfigInput } from "./config-migrate.js";
-import { coerceTargetLocalesField } from "./locale-utils.js";
+import { coerceTargetLocalesField, normalizeLocale } from "./locale-utils.js";
 
 /** Markdown / JSON / UI / SVG segment classification. */
 export type SegmentType =
@@ -299,6 +299,15 @@ export interface ChatResponse {
  * Define `baseUrl` (and usually `apiKeyEnv`) to use a custom OpenAI-compatible endpoint that has
  * no built-in preset.
  */
+const localeModelsEntrySchema = z
+  .object({
+    /** BCP-47 locale code; matched case-insensitively via {@link normalizeLocale}. */
+    locale: z.string().min(1),
+    /** Ordered model fallback chain for this locale (tried before global lists). */
+    models: z.array(z.string().min(1)).min(1),
+  })
+  .strict();
+
 const providerEntrySchema = z
   .object({
     /** OpenAI-compatible base URL (e.g. `https://api.example.com/v1`). Overrides the preset baseUrl. */
@@ -309,12 +318,40 @@ const providerEntrySchema = z
     headers: z.record(z.string(), z.string()).optional(),
     /** Ordered model fallback chain (plain upstream model ids, no provider prefix). */
     translationModels: z.array(z.string().min(1)).optional(),
+    /**
+     * Optional UI-only model chain (`translate-ui`, plural generation, `proofread-ui`). Tried after
+     * matching `localeModels` and before `translationModels`.
+     */
+    uiModels: z.array(z.string().min(1)).optional(),
+    /**
+     * Optional per-locale model overrides. Each entry is tried first when translating to that locale
+     * (all pipelines), then pipeline-specific tiers (`uiModels` for UI) and `translationModels`.
+     */
+    localeModels: z.array(localeModelsEntrySchema).optional(),
     maxTokens: z.number().int().positive().optional(),
     temperature: z.number().min(0).max(2).optional(),
     /** Max time to wait for each chat-completions request. Default 30s. */
     requestTimeoutMs: z.number().int().positive().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((entry, ctx) => {
+    const localeModels = entry.localeModels;
+    if (!localeModels?.length) {
+      return;
+    }
+    const seen = new Set<string>();
+    for (const row of localeModels) {
+      const key = normalizeLocale(row.locale);
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `providers localeModels: duplicate locale "${row.locale}" (normalized: "${key}")`,
+        });
+        return;
+      }
+      seen.add(key);
+    }
+  });
 
 const providersConfigSchema = z.record(z.string().min(1), providerEntrySchema);
 
@@ -517,11 +554,6 @@ const uiConfigSchema = z.preprocess(
       stringsJson: z.string().min(1).default("strings.json"),
       /** Directory for flat per-locale JSON (`de.json`, …). */
       flatOutputDir: z.string().min(1).default("./locales"),
-      /**
-       * When set, UI translation (`translate-ui`) tries this OpenRouter model first, then the rest of
-       * `openrouter.translationModels` (or legacy default/fallback) in order, skipping duplicates.
-       */
-      preferredModel: z.string().min(1).optional(),
       /** Scanner options (extensions, `funcNames`, …). Preferred over `reactExtractor`. */
       uiExtractor: uiExtractorSchema.optional(),
       /** @deprecated Use `uiExtractor` (still accepted). */
@@ -778,6 +810,7 @@ const i18nConfigSchemaInner = z
 export const i18nConfigSchema = z.preprocess(preprocessLegacyConfigInput, i18nConfigSchemaInner);
 
 export type I18nConfig = z.infer<typeof i18nConfigSchemaInner>;
+export type LocaleModelsEntry = z.infer<typeof localeModelsEntrySchema>;
 export type LlmProviderConfig = z.infer<typeof providerEntrySchema>;
 export type ProvidersConfig = z.infer<typeof providersConfigSchema>;
 /** @deprecated The single `openrouter` block was replaced by the `providers` map; use {@link LlmProviderConfig}. */

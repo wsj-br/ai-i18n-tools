@@ -124,13 +124,27 @@ Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`,
 
 Configurez les fournisseurs sous une carte de niveau supérieur `providers` et choisissez celui actif avec un sélecteur de niveau supérieur `provider` (facultatif lorsqu'un seul fournisseur est configuré). La plupart des fournisseurs n'ont besoin que d'une liste `translationModels` — `baseUrl` et la variable d'environnement de la clé API proviennent d'un préréglage intégré ; vous pouvez remplacer `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, et `requestTimeoutMs` par fournisseur. `requestTimeoutMs` est le temps maximum en millisecondes à attendre pour chaque requête (par défaut `30000`).
 
+Niveaux de modèle facultatifs sur chaque bloc de fournisseur :
+
+- `translationModels` — chaîne de secours globale ordonnée (requise pour les fonctionnalités de traduction).
+- `uiModels` — chaîne uniquement pour l'interface utilisateur (`translate-ui`, génération plurielle, `proofread-ui`) : essayée après toute entrée `localeModels` correspondante, avant `translationModels`.
+- `localeModels` — remplacements par locale pour **tous** les pipelines : chaque entrée mappe une locale BCP-47 à une liste de modèles ordonnée essayée en premier pour cette locale uniquement (`pt-br` correspond à `pt-BR`).
+
+Ordre de résolution : **UI** → `localeModels(locale)` → `uiModels` → `translationModels` ; **docs / JSON / SVG** → `localeModels(locale)` → `translationModels`. Les identifiants de modèle en double sont ignorés tout en préservant l'ordre.
+
 Pour changer de fournisseur pour une seule exécution sans modifier la configuration, passez l'option globale `-P` / `--provider <name>` (par exemple `ai-i18n-tools -P groq translate-ui`) ; le nom doit être l'une des clés `providers` configurées.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ Préréglages de fournisseurs intégrés (clé — URL de base — variable d'en
 
 Définissez un fournisseur personnalisé compatible avec OpenAI en ajoutant une nouvelle clé avec `baseUrl` (et `apiKeyEnv` sauf si aucune clé n'est nécessaire). Les identifiants de modèle sont des identifiants directs en amont — le fournisseur est choisi au niveau de la configuration, donc aucun préfixe `provider/` n'est nécessaire (les identifiants OpenRouter conservent leur forme native `vendor/model`).
 
-L'utilisation des jetons est signalée pour chaque fournisseur ; le coût exact en USD n'est affiché que lorsque le fournisseur le renvoie (OpenRouter). `ai-i18n-tools check-models` valide les ID de modèle configurés par rapport à la liste `GET /models` en direct du fournisseur actif (tout fournisseur), et affiche les prix lorsque le fournisseur les renvoie (par exemple, OpenRouter). `ai-i18n-tools list-models` répertorie tous les modèles annoncés par le fournisseur actif (utilisez `-P` / `--provider` pour inspecter un autre fournisseur configuré). `ai-i18n-tools bench-models` évalue chaque modèle configuré en traduisant un échantillon de manière isolée (les modèles s'exécutent en parallèle, limités par `concurrency`) et affiche les jetons d'entrée/sortie par modèle, le temps réel et le coût en USD.
+L'utilisation des jetons est signalée pour chaque fournisseur ; le coût exact en USD n'est affiché que lorsque le fournisseur le renvoie (OpenRouter). `ai-i18n-tools check-models` valide tous les ID de modèle configurés (`translationModels`, `uiModels` et chaque entrée `localeModels`) par rapport à la liste `GET /models` active du fournisseur (tout fournisseur), et affiche les prix lorsque le fournisseur les renvoie (par exemple, OpenRouter). `ai-i18n-tools list-models` répertorie chaque modèle annoncé par le fournisseur actif (utilisez `-P` / `--provider` pour inspecter un autre fournisseur configuré). `ai-i18n-tools bench-models` évalue chaque ID de modèle configuré unique (`translationModels`, `uiModels` et `localeModels`) en traduisant un échantillon de manière isolée (les modèles s'exécutent en parallèle, limités par `concurrency`) et affiche les jetons d'entrée/sortie par modèle, le temps écoulé et le coût en USD.
 
 Un bloc de configuration de niveau supérieur hérité `openrouter` est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement.
 
@@ -272,7 +286,7 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

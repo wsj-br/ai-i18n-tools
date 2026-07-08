@@ -124,13 +124,27 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 최상위 `providers` 맵 아래에서 제공자를 구성하고 최상위 `provider` 선택기로 활성 제공자를 선택합니다(제공자가 하나만 구성된 경우 선택 사항). 대부분의 제공자는 `translationModels` 목록만 필요합니다. `baseUrl` 및 API 키 환경 변수는 내장된 사전 설정에서 가져옵니다. 제공자별로 `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, `requestTimeoutMs`를 재정의할 수 있습니다. `requestTimeoutMs`은 각 요청에 대해 대기할 최대 시간(밀리초)입니다(기본값 `30000`).
 
+각 공급자 블록의 선택적 모델 계층:
+
+- `translationModels` — 전역 순서 대체 체인(번역 기능에 필요).
+- `uiModels` — UI 전용 체인(`translate-ui`, 복수 생성, `proofread-ui`): 일치하는 `localeModels` 항목 다음에 `translationModels` 이전에 시도됩니다.
+- `localeModels` — **모든** 파이프라인에 대한 로케일별 재정의: 각 항목은 BCP-47 로케일을 해당 로케일에 대해서만 먼저 시도되는 순서가 지정된 모델 목록에 매핑합니다(`pt-br`는 `pt-BR`과 일치).
+
+해결 순서: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **문서 / JSON / SVG** → `localeModels(locale)` → `translationModels`. 중복 모델 ID는 순서를 유지하면서 건너뜁니다.
+
 구성을 편집하지 않고 단일 실행에 대해 공급자를 전환하려면 전역 `-P` / `--provider <name>` 옵션(예: `ai-i18n-tools -P groq translate-ui`)을 전달하십시오. 이름은 구성된 `providers` 키 중 하나여야 합니다.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 사용자 지정 OpenAI 호환 제공자를 정의하려면 `baseUrl`(키가 필요하지 않은 경우 `apiKeyEnv` 제외)와 함께 새 키를 추가합니다. 모델 ID는 일반 업스트림 ID입니다. 제공자는 구성 수준에서 선택되므로 `provider/` 접두사가 필요하지 않습니다(OpenRouter ID는 네이티브 `vendor/model` 형식을 유지합니다).
 
-토큰 사용량은 모든 제공업체에 대해 보고됩니다. 정확한 USD 비용은 제공업체가 반환하는 경우에만 표시됩니다(OpenRouter). `ai-i18n-tools check-models`은(는) 구성된 모델 ID를 활성 제공업체의 라이브 `GET /models` 목록(모든 제공업체)과 비교하여 유효성을 검사하고, 제공업체가 반환하는 경우 가격을 표시합니다(예: OpenRouter). `ai-i18n-tools list-models`은(는) 활성 제공업체가 광고하는 모든 모델을 나열합니다(`-P` / `--provider`를 사용하여 다른 구성된 제공업체를 검사). `ai-i18n-tools bench-models`은(는) 샘플을 개별적으로 번역하여 각 구성된 모델을 벤치마킹하고(모델은 `concurrency`에 의해 제한되어 병렬로 실행됨) 모델별 입력/출력 토큰, 실제 시간 및 USD 비용을 출력합니다.
+토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 USD 비용은 공급자가 반환하는 경우에만 표시됩니다(OpenRouter). `ai-i18n-tools check-models`는 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 활성 공급자의 라이브 `GET /models` 목록(모든 공급자)에 대해 검증하고, 공급자가 반환하는 경우(예: OpenRouter) 가격을 표시합니다. `ai-i18n-tools list-models`는 활성 공급자가 광고하는 모든 모델을 나열합니다(`-P` / `--provider`를 사용하여 다른 구성된 공급자를 검사). `ai-i18n-tools bench-models`는 고유하게 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 `localeModels`)를 샘플을 개별적으로 번역하여 벤치마킹하고(모델은 `concurrency`에 의해 제한되어 병렬로 실행됨) 모델별 입력/출력 토큰, 실제 시간 및 USD 비용을 출력합니다.
 
 레거시 최상위 `openrouter` 구성 블록은 여전히 허용되며 로드 시 `providers.openrouter` (`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다.
 
@@ -272,7 +286,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

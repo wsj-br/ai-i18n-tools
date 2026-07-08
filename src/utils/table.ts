@@ -63,6 +63,8 @@ export interface RenderTableOptions {
   align?: Array<"left" | "right">;
   /** When true (default), include a header separator rule line. */
   rule?: boolean;
+  /** 0-based row indices: insert a column-width rule line immediately before each listed row. */
+  separatorBeforeRows?: number[];
 }
 
 /**
@@ -105,12 +107,18 @@ export function renderTable(options: RenderTableOptions): string[] {
     return indent + parts.join(gap);
   };
 
+  const formatRule = (): string => indent + widths.map((w) => "-".repeat(w)).join(gap);
+
   const lines: string[] = [formatRow(headers)];
   if (showRule) {
-    lines.push(indent + widths.map((w) => "-".repeat(w)).join(gap));
+    lines.push(formatRule());
   }
-  for (const row of rows) {
-    lines.push(formatRow(row));
+  const separatorBefore = new Set(options.separatorBeforeRows ?? []);
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    if (separatorBefore.has(rowIndex)) {
+      lines.push(formatRule());
+    }
+    lines.push(formatRow(rows[rowIndex]!));
   }
   return lines;
 }

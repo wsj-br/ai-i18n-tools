@@ -9,13 +9,13 @@
 
 `ai-i18n-tools` 是一个用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 和工具包——包括 Docusaurus、Astro、Starlight、VitePress 和纯 Markdown/MDX——使用大型语言模型。
 
-将其指向任何提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任何 [OpenRouter](https://openrouter.ai/) 模型（数百种可供选择，只需一个 API 密钥），或 **Ollama** 用于完全自托管的离线翻译。在不修改代码库的情况下，按项目甚至按语言切换提供商或模型。
+指向任意提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任意 [OpenRouter](https://openrouter.ai/) 模型（通过单个 API 密钥即可从数百个模型中选择），或用于完全自托管、离线翻译的 **Ollama**。可按项目或甚至按语言切换提供商或模型，无需修改代码库。
 
 一个配置文件驱动三种翻译模式，因此您可以根据内容的结构进行混合和匹配：
 
-- **UI 字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并为 i18next 或静态 SSG 查找生成扁平的、按区域设置的 JSON。
-- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 **VitePress**、**Starlight**、**Docusaurus**、基于 Astro 的站点，或任何从 Markdown/MDX/`.astro` 源文件读取的静态站点生成器。
-- **JSON** — 翻译 `json[]` 中定义的任意嵌套 JSON 包。当 UI 副本存在于按区域设置的 JSON 文件中而不是源中的 `t()` 调用时，请使用 `translate-json`。
+- **UI 字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并为 i18next 或静态 SSG 查找生成扁平化的按区域设置 JSON 文件。
+- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 **VitePress**、**Starlight**、**Docusaurus**、基于 Astro 的网站，或任何读取 Markdown/MDX/`.astro` 源文件的静态站点生成器。
+- **JSON** — 翻译在 `json[]` 中定义的任意嵌套 JSON 包。当 UI 文案存放在按区域设置的 JSON 文件中，而非源代码中的 `t()` 调用时，请使用 `translate-json`。
 
 **SVG** 资产有自己的路径：`features.translateSVG`、顶级 `svg` 块和 `translate-svg`——而不是 `docs[].contentPaths`。
 
@@ -124,13 +124,27 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 在顶层的 `providers` 映射下配置提供商，并通过顶层的 `provider` 选择器选择活动的提供商（当只有一个提供商配置时是可选的）。大多数提供商只需要一个 `translationModels` 列表 — `baseUrl` 和 API 密钥环境变量来自内置预设；您可以为每个提供商覆盖 `baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。`requestTimeoutMs` 是等待每个请求的最大时间（毫秒）（默认 `30000`）。
 
+每个提供程序块上的可选模型层级：
+
+- `translationModels` — 全局有序回退链（翻译功能所需）。
+- `uiModels` — 仅限 UI 链（`translate-ui`，复数生成，`proofread-ui`）：在匹配任何 `localeModels` 条目后尝试，但在 `translationModels` 之前。
+- `localeModels` — 每个区域设置的 **所有** 管道的覆盖：每个条目将 BCP-47 区域设置映射到一个有序模型列表，仅在该区域设置下首先尝试（`pt-br` 匹配 `pt-BR`）。
+
+解析顺序：**UI** → `localeModels(locale)` → `uiModels` → `translationModels`；**文档 / JSON / SVG** → `localeModels(locale)` → `translationModels`。重复的模型 ID 会被跳过，同时保留顺序。
+
 若要在不编辑配置的情况下为单次运行切换提供程序，请传递全局 `-P` / `--provider <name>` 选项（例如 `ai-i18n-tools -P groq translate-ui`）；名称必须是已配置的 `providers` 键之一。
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 通过添加一个带有 `baseUrl`（以及 `apiKeyEnv`，除非不需要密钥）的新键来定义自定义的 OpenAI 兼容提供商。模型 ID 是纯粹的上游 ID — 提供商在配置级别选择，因此不需要 `provider/` 前缀（OpenRouter ID 保留其原生的 `vendor/model` 格式）。
 
-每个提供商都会报告令牌使用情况；仅当提供商返回时（OpenRouter）才会显示确切的美元成本。`ai-i18n-tools check-models` 根据活动提供商的实时 `GET /models` 列表（任何提供商）验证配置的模型 ID，并在提供商返回时显示定价（例如 OpenRouter）。`ai-i18n-tools list-models` 列出了活动提供商宣传的每个模型（使用 `-P` / `--provider` 检查其他配置的提供商）。`ai-i18n-tools bench-models` 通过单独翻译样本（模型并行运行，受 `concurrency` 限制）来基准测试每个配置的模型，并打印每个模型的输入/输出令牌、实际时间和美元成本。
+每个提供商都会报告令牌使用量；仅当提供商返回确切美元费用时才显示（OpenRouter）。`ai-i18n-tools check-models` 会根据当前提供商的实时 `GET /models` 列表（适用于任何提供商）验证所有已配置的模型 ID（`translationModels`、`uiModels` 以及每个 `localeModels` 条目），并在提供商返回定价时显示（例如 OpenRouter）。`ai-i18n-tools list-models` 列出当前提供商公布的所有模型（使用 `-P` / `--provider` 查看其他已配置的提供商）。`ai-i18n-tools bench-models` 通过独立翻译一个样本来对每个唯一的已配置模型 ID（`translationModels`、`uiModels` 和 `localeModels`）进行基准测试（模型并行运行，受 `concurrency` 限制），并打印每个模型的输入/输出令牌数、实际耗时和美元费用。
 
 仍然接受旧的顶级 `openrouter` 配置块，并在加载时自动迁移到 `providers.openrouter`（带有 `provider: "openrouter"`）。
 
@@ -272,7 +286,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

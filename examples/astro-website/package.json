@@ -16,9 +16,9 @@
     "i18n:sync": "ai-i18n-tools sync"
   },
   "dependencies": {
-    "@astrojs/tailwind": "^6.0.2",
-    "astro": "^6.4.8",
-    "tailwindcss": "^3.4.19"
+    "@tailwindcss/vite": "^4.3.2",
+    "astro": "^7.0.6",
+    "tailwindcss": "^4.3.2"
   },
   "engines": {
     "node": ">=22.16.0"

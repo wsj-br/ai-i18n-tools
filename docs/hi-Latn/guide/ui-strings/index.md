@@ -28,8 +28,8 @@ Yeh `ai-i18n-tools.config.json` ko `ui-markdown` template ke saath likhta hai. I
 - `targetLocales` - aapki target bhashao ke liye BCP-47 codes ka array (jaise `["de", "fr", "pt-BR"]`). Is list se `ui-languages.json` manifest banane ke liye `generate-ui-languages` chalayein.
 - `ui.sourceRoots` - `t("…")` calls ke liye scan karne ke liye directories ya glob patterns (jaise `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - master catalog kahan likhna hai (jaise `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - `de.json`, `pt-BR.json`, aadi kahan likhna hai (jaise `"src/locales/"`).
-- `ui.preferredModel` (optional) - `translate-ui` ke liye **sabse pehle** try karne ke liye model id; failure par CLI active provider ke `translationModels` ke saath order mein jaari rakhta hai, duplicates ko chhodte hue.
+- `ui.flatOutputDir` - jahaan `de.json`, `pt-BR.json`, aadi likhna hai (jaise `"src/locales/"`).
+- `providers.<active>.uiModels` (vaikalpik) - `translate-ui`, bahuvachan utpatti, aur `proofread-ui` ke liye kramabaddh UI-only model soochi (kisi bhi milte-julte `localeModels` entry ke baad, `translationModels` se pehle). [Providers and models](/guide/providers-and-models#model-fallback-chain) dekhen.
 
 <a id="step-2-extract-strings"></a>
 ## Step 2: Strings nikalen
@@ -49,7 +49,12 @@ Scanner configurable hai: `ui.uiExtractor.funcNames` (ya legacy `ui.reactExtract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json` padhta hai, har target locale ke liye active LLM provider ko batches bhejta hai, flat JSON files (`de.json`, `fr.json`, etc.) ko `ui.flatOutputDir` mein likhta hai. Jab `ui.preferredModel` set hota hai, to us model ko active provider ki `translationModels` list se pehle try kiya jaata hai (document translation aur anya commands keval provider ki list ka upyog karte hain).
+`strings.json` padhta hai, har target locale ke liye active LLM provider ko batches bhejta hai, flat JSON files (`de.json`, `fr.json`, aadi) ko `ui.flatOutputDir` mein likhta hai. Model selection UI chain ka upyog karta hai: `localeModels(locale)` → `uiModels` → `translationModels` ([Providers and models](/guide/providers-and-models#model-fallback-chain) dekhen).
+
+<a id="per-locale-model-overrides"></a>
+### Pratyaik sthanik model override
+
+Vaikalpik `providers.<active>.localeModels` entries ek BCP-47 locale ko ek kramabaddh model soochi se map karti hain jo us locale ke liye `uiModels` aur `translationModels` se **pehle** prayas ki jaati hai. Vahi `localeModels` entries document, JSON, aur SVG translation par bhi lagu hoti hain. Locale tags case-insensitively milte hain (`pt-br` = `pt-BR`). Yadi koi entry nahi milti hai, to UI kaarya ke liye keval `uiModels` aur `translationModels` ka upyog kiya jaata hai.
 
 Har entry ke liye, `translate-ui` ek optional `models` object mein **active provider se model id** store karta hai jisne har locale ka safaltapoorvak anuvad kiya (`translated` ke saman locale keys). Translation Dashboard mein edit kiye gaye strings ko us locale ke liye `models` mein sentinel value `user-edited` se mark kiya jata hai. `ui.flatOutputDir` ke tahat per-locale flat files keval **source string → translation** rahte hain; unmein `models` shamil nahi hota (isliye runtime bundles aparivartit rahte hain).
 

@@ -15,6 +15,11 @@ Les fichiers SVG sont traduits via [`translate-svg`](/reference/cli-commands) lo
 
 Les bundles JSON d'interface utilisateur imbriqués arbitraires (pas les catalogues Docusaurus) appartiennent au pipeline [JSON](/guide/json), et non à `docs[]`.
 
+<a id="per-locale-model-overrides"></a>
+### Substitutions de modèle par locale
+
+`translate-docs` et l'étape de documentation de `sync` résolvent les modèles **par locale cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis la chaîne globale `translationModels` du fournisseur. Utilisez ceci lorsqu'une langue spécifique nécessite un modèle différent de votre liste de secours par défaut — par exemple, préférer Gemini pour la documentation `pt-BR` lorsque la chaîne globale a des difficultés avec le portugais. Voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain) et [Configuration — `localeModels`](/reference/configuration#provider-and-providers).
+
 <a id="which-guide-to-read"></a>
 ## Quel guide lire
 

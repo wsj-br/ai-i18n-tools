@@ -5,6 +5,11 @@ Conçu pour les projets qui conservent le texte de l'interface utilisateur dans 
 
 Ce pipeline n'exécute **pas** `extract` — il n'y a pas de catalogue `strings.json`. Activez-le avec `features.translateJson` et une ou plusieurs entrées dans le `json[]` de niveau supérieur.
 
+<a id="per-locale-model-overrides"></a>
+### Substitutions de modèle par locale
+
+`translate-json` résout les modèles **par locale cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Utilisez ceci pour les bundles JSON imbriqués où certaines locales bénéficient de modèles dédiés — par exemple les fichiers de thème `zh-Hans` / `zh-Hant`. Voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain).
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Étape 1 : Initialiser pour JSON imbriqué
 

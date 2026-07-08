@@ -15,6 +15,11 @@ SVG files ka anuvad [`translate-svg`](/reference/cli-commands) ke madhyam se kiy
 
 Arbitrary nested UI JSON bundles (Docusaurus catalogs nahi) [JSON](/guide/json) pipeline mein aate hain, `docs[]` mein nahi.
 
+<a id="per-locale-model-overrides"></a>
+### Pratyaik sthanik model override
+
+`translate-docs` aur `sync` ke docs step model ko **pratyaik target locale ke liye** resolve karte hain: `localeModels(locale)` pahle jab configure kiya jata hai, phir provider ki global `translationModels` chain. Iska upyog tab karein jab kisi vishesh bhasha ko aapki default fallback list se alag model ki avashyakta ho — udaharan ke liye, `pt-BR` documentation ke liye Gemini ko prefer karna jab global chain Portuguese ke saath mushkil me ho. [Providers aur models](/guide/providers-and-models#model-fallback-chain) aur [Configuration — `localeModels`](/reference/configuration#provider-and-providers) dekhein.
+
 <a id="which-guide-to-read"></a>
 ## Kaun sa guide padhein
 

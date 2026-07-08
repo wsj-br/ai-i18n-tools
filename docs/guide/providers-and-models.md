@@ -35,9 +35,16 @@ Set the active provider's API key in your environment or `.env` file. The CLI au
 
 `translationModels` is an **ordered list**, not a single choice. The CLI tries the first model; on request or parse failure it moves to the next entry. Configure several models so a transient outage or a model that struggles with a locale does not block the whole run.
 
-For `translate-ui` only, optional `ui.preferredModel` is tried **before** the provider's `translationModels` list (deduplicated).
+**Resolution tiers** (deduplicated, order preserved):
 
-Different providers and models vary in cost, speed, and quality across languages. Treat the default list from `npx ai-i18n-tools init` as a starting point — expand it when a locale consistently produces poor results. Full defaults and rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
+| Pipeline | Order |
+| --- | --- |
+| UI (`translate-ui`, plurals, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
+| Documents, JSON, SVG | `localeModels(locale)` → `translationModels` |
+
+Optional `providers.<active>.uiModels` is a UI-only list tried after any matching per-locale override and before the global `translationModels` chain. Optional `providers.<active>.localeModels` maps a BCP-47 locale to models tried **first** for that locale in every pipeline (`pt-br` matches `pt-BR`). When no `localeModels` entry matches, only the pipeline-specific tiers apply.
+
+Different providers and models vary in cost, speed, and quality across languages. Treat the default list from `npx ai-i18n-tools init` as a starting point — expand it when a locale consistently produces poor results, or add a `localeModels` entry for that locale. Full defaults and rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
 
 Example minimal config (OpenRouter):
 
@@ -50,6 +57,12 @@ Example minimal config (OpenRouter):
         "qwen/qwen3-235b-a22b-2507",
         "openai/gpt-4o-mini",
         "deepseek/deepseek-v4-flash"
+      ],
+      "uiModels": [
+        "anthropic/claude-sonnet-latest"
+      ],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     }
   }
@@ -65,7 +78,7 @@ Before changing `translationModels`, confirm each id is still available on the a
 npx ai-i18n-tools check-models
 ```
 
-`check-models` calls the provider's `GET /models` endpoint, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter does), it also shows estimated USD per 1M tokens.
+`check-models` calls the provider's `GET /models` endpoint, validates every id from `translationModels`, `uiModels`, and `localeModels`, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter does), it also shows estimated USD per 1M tokens.
 
 Browse the full catalog advertised by a provider:
 
@@ -73,7 +86,7 @@ Browse the full catalog advertised by a provider:
 npx ai-i18n-tools list-models
 ```
 
-Benchmark configured models on a real translation sample — each model runs in isolation so you can compare wall-clock time, token usage, and cost:
+Benchmark configured models on a real translation sample — each unique id from `translationModels`, `uiModels`, and `localeModels` runs in isolation so you can compare wall-clock time, token usage, and cost:
 
 ```bash
 npx ai-i18n-tools bench-models
@@ -82,7 +95,7 @@ npx ai-i18n-tools bench-models
 Override the sample text, locales, or model list:
 
 ```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --models openai/gpt-4o-mini,anthropic/claude-3-haiku
+npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
 Command details: [CLI reference](/reference/cli-commands).
@@ -97,7 +110,7 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Each provider block can define its own `translationModels`, `maxTokens`, `temperature`, and `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
+Each provider block can define its own `translationModels`, optional `uiModels` and `localeModels`, `maxTokens`, `temperature`, and `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
 
 Runnable example with four providers on the same document: [`examples/multi-provider`](/examples#multi-provider).
 

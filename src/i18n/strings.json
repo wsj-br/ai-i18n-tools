@@ -150,7 +150,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 410
+        "line": 406
       }
     ]
   },
@@ -212,7 +212,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 419
+        "line": 415
       }
     ]
   },
@@ -336,7 +336,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 258
+        "line": 262
       }
     ]
   },
@@ -402,7 +402,7 @@
       },
       {
         "file": "src/cli/check-models.ts",
-        "line": 56
+        "line": 58
       },
       {
         "file": "src/cli/list-models.ts",
@@ -440,6 +440,10 @@
         "line": 108
       },
       {
+        "file": "src/cli/bench-models.ts",
+        "line": 121
+      },
+      {
         "file": "src/cli/check-models.ts",
         "line": 44
       }
@@ -472,7 +476,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 128
+        "line": 141
       }
     ]
   },
@@ -503,7 +507,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 140
+        "line": 153
       }
     ]
   },
@@ -534,7 +538,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 162
+        "line": 175
       }
     ]
   },
@@ -565,7 +569,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 179
+        "line": 192
       }
     ]
   },
@@ -596,7 +600,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 196
+        "line": 209
       }
     ]
   },
@@ -627,7 +631,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 228
+        "line": 241
       }
     ]
   },
@@ -658,7 +662,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 240
+        "line": 253
       }
     ]
   },
@@ -689,7 +693,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 266
+        "line": 279
       },
       {
         "file": "src/cli/index.ts",
@@ -764,7 +768,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 267
+        "line": 280
       }
     ]
   },
@@ -795,7 +799,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 268
+        "line": 281
       }
     ]
   },
@@ -826,7 +830,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 269
+        "line": 282
       }
     ]
   },
@@ -857,7 +861,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 270
+        "line": 283
       }
     ]
   },
@@ -888,7 +892,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 281
+        "line": 294
       }
     ]
   },
@@ -919,7 +923,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 285
+        "line": 298
       }
     ]
   },
@@ -950,7 +954,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 306
+        "line": 321
       }
     ]
   },
@@ -981,7 +985,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 313
+        "line": 328
       }
     ]
   },
@@ -1074,7 +1078,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 104
+        "line": 106
       }
     ]
   },
@@ -1105,7 +1109,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 113
+        "line": 115
       }
     ]
   },
@@ -1136,7 +1140,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 120
+        "line": 122
       }
     ]
   },
@@ -1167,7 +1171,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 129
+        "line": 131
       }
     ]
   },
@@ -1198,7 +1202,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 142
+        "line": 144
       }
     ]
   },
@@ -1229,7 +1233,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 143
+        "line": 145
       }
     ]
   },
@@ -1260,7 +1264,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 165
+        "line": 167
       },
       {
         "file": "src/cli/list-models.ts",
@@ -1295,7 +1299,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 169
+        "line": 171
       },
       {
         "file": "src/cli/list-models.ts",
@@ -1582,11 +1586,11 @@
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1467
+        "line": 1468
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1480
+        "line": 1481
       }
     ]
   },
@@ -1679,7 +1683,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 332
+        "line": 333
       }
     ]
   },
@@ -1710,7 +1714,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 412
+        "line": 413
       }
     ]
   },
@@ -1741,7 +1745,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 478
+        "line": 479
       }
     ]
   },
@@ -1772,7 +1776,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 578
+        "line": 579
       }
     ]
   },
@@ -1803,7 +1807,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1098
+        "line": 1099
       }
     ]
   },
@@ -1834,7 +1838,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1129
+        "line": 1130
       }
     ]
   },
@@ -1865,7 +1869,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1136
+        "line": 1137
       }
     ]
   },
@@ -1896,11 +1900,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1178
+        "line": 1179
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1542
+        "line": 1543
       }
     ]
   },
@@ -1931,7 +1935,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1491
+        "line": 1492
       }
     ]
   },
@@ -1962,7 +1966,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1509
+        "line": 1510
       }
     ]
   },
@@ -1993,7 +1997,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1665
+        "line": 1666
       }
     ]
   },
@@ -2024,19 +2028,19 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1720
+        "line": 1721
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2076
+        "line": 2084
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2417
+        "line": 2425
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2663
+        "line": 2671
       }
     ]
   },
@@ -2067,11 +2071,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1745
+        "line": 1746
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2101
+        "line": 2109
       }
     ]
   },
@@ -2102,7 +2106,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1766
+        "line": 1767
       }
     ]
   },
@@ -2133,11 +2137,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1835
+        "line": 1836
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2191
+        "line": 2199
       }
     ]
   },
@@ -2168,7 +2172,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2126
+        "line": 2134
       }
     ]
   },
@@ -2199,7 +2203,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2442
+        "line": 2450
       }
     ]
   },
@@ -2230,7 +2234,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2461
+        "line": 2469
       }
     ]
   },
@@ -2261,7 +2265,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2688
+        "line": 2696
       }
     ]
   },
@@ -2292,7 +2296,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2732
+        "line": 2740
       }
     ]
   },
@@ -2323,7 +2327,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2933
+        "line": 2941
       }
     ]
   },
@@ -2354,7 +2358,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2955
+        "line": 2963
       }
     ]
   },
@@ -2385,7 +2389,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2956
+        "line": 2964
       }
     ]
   },
@@ -2416,7 +2420,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2959
+        "line": 2967
       }
     ]
   },
@@ -2447,7 +2451,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3065
+        "line": 3044
       }
     ]
   },
@@ -2478,7 +2482,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3070
+        "line": 3049
       }
     ]
   },
@@ -2509,15 +2513,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3082
+        "line": 3068
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 149
+        "line": 142
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 370
+        "line": 359
       }
     ]
   },
@@ -2548,7 +2552,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3084
+        "line": 3070
       }
     ]
   },
@@ -2579,15 +2583,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3087
+        "line": 3073
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 154
+        "line": 147
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 373
+        "line": 362
       }
     ]
   },
@@ -2618,15 +2622,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3090
+        "line": 3076
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 157
+        "line": 150
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 382
+        "line": 371
       }
     ]
   },
@@ -2657,11 +2661,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3104
+        "line": 3090
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 167
+        "line": 160
       }
     ]
   },
@@ -2692,7 +2696,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3106
+        "line": 3092
       }
     ]
   },
@@ -2723,11 +2727,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3109
+        "line": 3095
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 169
+        "line": 162
       }
     ]
   },
@@ -2758,7 +2762,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3112
+        "line": 3098
       }
     ]
   },
@@ -2789,7 +2793,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3115
+        "line": 3101
       }
     ]
   },
@@ -2820,7 +2824,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3178
+        "line": 3177
       }
     ]
   },
@@ -2851,15 +2855,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3329
+        "line": 3328
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 284
+        "line": 282
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 763
+        "line": 774
       }
     ]
   },
@@ -2890,7 +2894,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3377
+        "line": 3376
       }
     ]
   },
@@ -3421,6 +3425,68 @@
       }
     ]
   },
+  "dfbd38a9": {
+    "source": "UI models (try in order):",
+    "translated": {
+      "es": "Modelos de IU (probar en orden):",
+      "fr": "Modèles d'interface (essayer dans l'ordre) :",
+      "ja": "UIモデル(順番に試行):",
+      "hi-Latn": "UI models (kram mein try karein):",
+      "de": "UI-Modelle (in dieser Reihenfolge ausprobieren):",
+      "ko": "UI 모델(순서대로 시도):",
+      "pt-BR": "Modelos de UI (tentar em ordem):",
+      "zh-Hans": "界面模型（按顺序尝试）：",
+      "zh-Hant": "UI 模型（依序嘗試）："
+    },
+    "models": {
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/format.ts",
+        "line": 110
+      }
+    ]
+  },
+  "ff409a5c": {
+    "source": "Locale models ({{locale}}):",
+    "translated": {
+      "es": "Modelos de configuración regional ({{locale}}):",
+      "fr": "Modèles de langue ({{locale}}) :",
+      "ja": "ロケールモデル({{locale}}):",
+      "hi-Latn": "Locale models ({{locale}}):",
+      "de": "Sprachmodelle ({{locale}}):",
+      "ko": "로케일 모델({{locale}}):",
+      "pt-BR": "Modelos de localidade ({{locale}}):",
+      "zh-Hans": "语言区域模型（{{locale}}）：",
+      "zh-Hant": "語系模型（{{locale}}）："
+    },
+    "models": {
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/format.ts",
+        "line": 114
+      }
+    ]
+  },
   "6105ebd9": {
     "source": "Provider:",
     "translated": {
@@ -3448,7 +3514,7 @@
     "locations": [
       {
         "file": "src/cli/format.ts",
-        "line": 62
+        "line": 130
       }
     ]
   },
@@ -3479,7 +3545,7 @@
     "locations": [
       {
         "file": "src/cli/format.ts",
-        "line": 64
+        "line": 132
       }
     ]
   },
@@ -4227,23 +4293,23 @@
       }
     ]
   },
-  "76ffc323": {
-    "source": "Comma-separated model ids to benchmark (default: active provider's translationModels)",
+  "655899ca": {
+    "source": "Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)",
     "translated": {
-      "es": "Ids de modelos separados por comas para evaluar (predeterminado: translationModels del proveedor activo)",
-      "fr": "Identifiants de modèles séparés par des virgules à tester (par défaut : translationModels du fournisseur actif)",
-      "de": "Kommagetrennte Modell-IDs für den Benchmark (Standard: translationModels des aktiven Anbieters)",
-      "ja": "ベンチマーク対象のモデル ID をカンマ区切りで指定 (デフォルト: アクティブなプロバイダーの translationModels)",
-      "hi-Latn": "Benchmark karne ke liye comma-separated model ids (default: active provider ke translationModels)",
-      "pt-BR": "IDs de modelos separados por vírgula para benchmark (padrão: translationModels do provedor ativo)",
-      "zh-Hans": "要进行基准测试的模型 ID，以逗号分隔（默认：当前提供商的 translationModels）",
-      "zh-Hant": "以逗號分隔的模型 ID 清單，用於基準測試（預設：使用中提供者的 translationModels）",
-      "ko": "벤치마킹할 쉼표로 구분된 모델 ID (기본값: 활성 공급자의 translationModels)"
+      "de": "Kommagetrennte Modell-IDs für den Benchmark (Standard: alle konfigurierten Modell-IDs aus translationModels, uiModels und localeModels)",
+      "es": "Ids de modelo separados por comas para evaluar (predeterminado: todos los ids de modelo configurados en translationModels, uiModels y localeModels)",
+      "fr": "Identifiants de modèles séparés par des virgules à évaluer (par défaut : tous les identifiants de modèles configurés dans translationModels, uiModels et localeModels)",
+      "ja": "ベンチマーク対象のモデル ID をカンマ区切りで指定します（デフォルト: translationModels、uiModels、localeModels に設定されているすべてのモデル ID）",
+      "hi-Latn": "Benchmark karne ke liye comma-separated model ids (default: translationModels, uiModels, aur localeModels se configure kiye gaye sabhi model ids)",
+      "pt-BR": "IDs de modelos separados por vírgula para o benchmark (padrão: todos os IDs de modelos configurados em translationModels, uiModels e localeModels)",
+      "zh-Hans": "以逗号分隔的待测试模型 ID(默认为 translationModels、uiModels 和 localeModels 中配置的所有模型 ID)",
+      "zh-Hant": "以逗號分隔的模型 ID 以進行基準測試（預設：translationModels、uiModels 和 localeModels 中所有已設定的模型 ID）",
+      "ko": "벤치마크할 모델 ID (쉼표로 구분, 기본값: translationModels, uiModels, localeModels에 설정된 모든 모델 ID)"
     },
     "models": {
+      "de": "~anthropic/claude-sonnet-latest",
       "es": "~anthropic/claude-sonnet-latest",
       "fr": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
       "ja": "~anthropic/claude-sonnet-latest",
       "hi-Latn": "~anthropic/claude-sonnet-latest",
       "pt-BR": "~anthropic/claude-sonnet-latest",
@@ -4382,23 +4448,23 @@
       }
     ]
   },
-  "f81a5d6c": {
-    "source": "Examples:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+  "cb6e4355": {
+    "source": "Examples:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
     "translated": {
-      "es": "Ejemplos:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "fr": "Exemples :\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "de": "Beispiele:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "ja": "例:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "hi-Latn": "Udaaharan:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "pt-BR": "Exemplos:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "zh-Hans": "示例：\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "zh-Hant": "範例：\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
-      "ko": "예시:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --models openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE"
+      "de": "Beispiele:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "es": "Ejemplos:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "fr": "Exemples :\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "ja": "使用例:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "hi-Latn": "Udaharan:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "pt-BR": "Exemplos:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "zh-Hans": "示例:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "zh-Hant": "範例：\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE",
+      "ko": "예시:\n  ai-i18n-tools bench-models\n  ai-i18n-tools bench-models --target fr-FR\n  ai-i18n-tools bench-models --model openai/gpt-5.3-codex,google/gemini-3-flash-preview\n  ai-i18n-tools bench-models --file docs/intro.md --target de-DE"
     },
     "models": {
+      "de": "~anthropic/claude-sonnet-latest",
       "es": "~anthropic/claude-sonnet-latest",
       "fr": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
       "ja": "~anthropic/claude-sonnet-latest",
       "hi-Latn": "~anthropic/claude-sonnet-latest",
       "pt-BR": "~anthropic/claude-sonnet-latest",
@@ -12139,7 +12205,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 283
+        "line": 279
       }
     ]
   },
@@ -12170,7 +12236,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 305
+        "line": 301
       }
     ]
   },
@@ -12201,11 +12267,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 316
+        "line": 312
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 242
+        "line": 239
       }
     ]
   },
@@ -12236,7 +12302,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 349
+        "line": 345
       }
     ]
   },
@@ -12267,7 +12333,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 353
+        "line": 349
       }
     ]
   },
@@ -12298,11 +12364,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 356
+        "line": 352
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 430
+        "line": 426
       }
     ]
   },
@@ -12333,7 +12399,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 368
+        "line": 364
       }
     ]
   },
@@ -12364,7 +12430,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 462
+        "line": 448
       }
     ]
   },
@@ -12395,11 +12461,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 510
+        "line": 496
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 574
+        "line": 560
       }
     ]
   },
@@ -12430,7 +12496,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 562
+        "line": 548
       }
     ]
   },
@@ -12461,7 +12527,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 584
+        "line": 570
       }
     ]
   },
@@ -12492,7 +12558,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 643
+        "line": 629
       }
     ]
   },
@@ -12523,7 +12589,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 662
+        "line": 648
       }
     ]
   },
@@ -12554,7 +12620,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 662
+        "line": 648
       }
     ]
   },
@@ -12585,7 +12651,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 666
+        "line": 652
       }
     ]
   },
@@ -12616,7 +12682,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 678
+        "line": 664
       }
     ]
   },
@@ -12647,7 +12713,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 691
+        "line": 677
       }
     ]
   },
@@ -12678,7 +12744,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 705
+        "line": 691
       }
     ]
   },
@@ -12709,7 +12775,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 719
+        "line": 705
       }
     ]
   },
@@ -12740,7 +12806,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 726
+        "line": 712
       }
     ]
   },
@@ -13112,7 +13178,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 121
+        "line": 122
       }
     ]
   },
@@ -13143,7 +13209,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 140
+        "line": 141
       }
     ]
   },
@@ -13174,7 +13240,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 276
+        "line": 280
       }
     ]
   },
@@ -13205,7 +13271,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 284
+        "line": 288
       }
     ]
   },
@@ -13236,7 +13302,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 315
+        "line": 319
       }
     ]
   },
@@ -13267,11 +13333,11 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 344
+        "line": 348
       },
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 352
+        "line": 356
       }
     ]
   },
@@ -13288,16 +13354,6 @@
       "ko": "⚠️  JSON 번역이 중단됨 — 부분 요약(토큰 및 비용은 중단 전 완료된 API 작업 기준).",
       "pt-BR": "⚠️  Tradução JSON interrompida — resumo parcial (tokens e custo refletem o trabalho de API concluído antes da interrupção)."
     },
-    "locations": [
-      {
-        "file": "src/cli/translate-json-run.ts",
-        "line": 345
-      },
-      {
-        "file": "src/cli/translate-json-run.ts",
-        "line": 353
-      }
-    ],
     "models": {
       "es": "~anthropic/claude-sonnet-latest",
       "fr": "~anthropic/claude-sonnet-latest",
@@ -13308,7 +13364,17 @@
       "zh-Hans": "~anthropic/claude-sonnet-latest",
       "ko": "~anthropic/claude-sonnet-latest",
       "pt-BR": "~anthropic/claude-sonnet-latest"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-json-run.ts",
+        "line": 349
+      },
+      {
+        "file": "src/cli/translate-json-run.ts",
+        "line": 357
+      }
+    ]
   },
   "30ce5c36": {
     "source": "📊 Summary:",
@@ -13647,7 +13713,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 50
+        "line": 48
       }
     ]
   },
@@ -13678,7 +13744,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 85
+        "line": 83
       }
     ]
   },
@@ -13709,7 +13775,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 86
+        "line": 84
       }
     ]
   },
@@ -13740,7 +13806,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 142
+        "line": 125
       }
     ]
   },
@@ -13771,7 +13837,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 151
+        "line": 144
       }
     ]
   },
@@ -13802,7 +13868,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 242
+        "line": 240
       }
     ]
   },
@@ -13833,7 +13899,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 73
+        "line": 70
       }
     ]
   },
@@ -13864,7 +13930,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 75
+        "line": 72
       }
     ]
   },
@@ -13895,7 +13961,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 194
+        "line": 191
       }
     ]
   },
@@ -13926,7 +13992,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 214
+        "line": 211
       }
     ]
   },
@@ -13957,7 +14023,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 215
+        "line": 212
       }
     ]
   },
@@ -13988,7 +14054,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 233
+        "line": 230
       }
     ]
   },
@@ -14019,7 +14085,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 254
+        "line": 251
       }
     ]
   },
@@ -14050,7 +14116,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 312
+        "line": 309
       }
     ]
   },
@@ -14081,38 +14147,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 316
-      }
-    ]
-  },
-  "e9ed0552": {
-    "source": "LLM provider API key required for UI translation: {{error}}",
-    "translated": {
-      "es": "Se requiere clave de API del proveedor LLM para la traducción de interfaz: {{error}}",
-      "fr": "Clé API du fournisseur LLM requise pour la traduction de l'interface : {{error}}",
-      "hi-Latn": "UI translation ke liye LLM provider API key zaroori hai: {{error}}",
-      "ja": "UI翻訳にはLLMプロバイダーのAPIキーが必要です: {{error}}",
-      "de": "LLM-Provider-API-Schlüssel für UI-Übersetzung erforderlich: {{error}}",
-      "pt-BR": "Chave de API do provedor LLM necessária para tradução de interface: {{error}}",
-      "zh-Hant": "介面翻譯需要 LLM 提供者 API 金鑰：{{error}}",
-      "ko": "UI 번역에 LLM 공급자 API 키가 필요합니다: {{error}}",
-      "zh-Hans": "UI 翻译需要 LLM 提供程序 API 密钥：{{error}}"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "z-ai/glm-5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "mistralai/mistral-large-2512"
-    },
-    "locations": [
-      {
-        "file": "src/cli/translate-ui-strings.ts",
-        "line": 345
+        "line": 313
       }
     ]
   },
@@ -14143,7 +14178,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 362
+        "line": 339
       }
     ]
   },
@@ -14174,7 +14209,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 367
+        "line": 356
       }
     ]
   },
@@ -14205,7 +14240,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 368
+        "line": 357
       }
     ]
   },
@@ -14236,7 +14271,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 371
+        "line": 360
       }
     ]
   },
@@ -14267,7 +14302,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 377
+        "line": 366
       }
     ]
   },
@@ -14298,7 +14333,42 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 378
+        "line": 367
+      }
+    ]
+  },
+  "e9ed0552": {
+    "source": "LLM provider API key required for UI translation: {{error}}",
+    "translated": {
+      "es": "Se requiere clave de API del proveedor LLM para la traducción de interfaz: {{error}}",
+      "fr": "Clé API du fournisseur LLM requise pour la traduction de l'interface : {{error}}",
+      "hi-Latn": "UI translation ke liye LLM provider API key zaroori hai: {{error}}",
+      "ja": "UI翻訳にはLLMプロバイダーのAPIキーが必要です: {{error}}",
+      "de": "LLM-Provider-API-Schlüssel für UI-Übersetzung erforderlich: {{error}}",
+      "pt-BR": "Chave de API do provedor LLM necessária para tradução de interface: {{error}}",
+      "zh-Hant": "介面翻譯需要 LLM 提供者 API 金鑰：{{error}}",
+      "ko": "UI 번역에 LLM 공급자 API 키가 필요합니다: {{error}}",
+      "zh-Hans": "UI 翻译需要 LLM 提供程序 API 密钥：{{error}}"
+    },
+    "models": {
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "de": "z-ai/glm-5",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "mistralai/mistral-large-2512"
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-ui-strings.ts",
+        "line": 396
+      },
+      {
+        "file": "src/cli/translate-ui-strings.ts",
+        "line": 490
       }
     ]
   },
@@ -14329,7 +14399,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 404
+        "line": 403
       }
     ]
   },
@@ -14360,7 +14430,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 441
+        "line": 440
       }
     ]
   },
@@ -14391,7 +14461,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 476
+        "line": 475
       }
     ]
   },
@@ -14422,7 +14492,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 513
+        "line": 524
       }
     ]
   },
@@ -14453,7 +14523,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 531
+        "line": 542
       }
     ]
   },
@@ -14484,7 +14554,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 565
+        "line": 576
       }
     ]
   },
@@ -14515,7 +14585,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 575
+        "line": 586
       }
     ]
   },
@@ -14546,7 +14616,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 609
+        "line": 620
       }
     ]
   },
@@ -14577,7 +14647,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 634
+        "line": 645
       }
     ]
   },
@@ -14608,7 +14678,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 653
+        "line": 664
       }
     ]
   },
@@ -14639,7 +14709,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 696
+        "line": 707
       }
     ]
   },
@@ -14670,7 +14740,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 749
+        "line": 760
       }
     ]
   },
@@ -14701,42 +14771,42 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 779
+        "line": 790
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 809
+        "line": 820
       }
     ]
   },
-  "29149c0c": {
-    "source": "🚀 Running in parallel:    {{langList}}   {{completed}}/{{total}}",
+  "4cdee330": {
+    "source": "🚀 Running in parallel: {{completed}}/{{total}} - {{langList}}",
     "translated": {
-      "es": "🚀 Ejecutando en paralelo:    {{langList}}   {{completed}}/{{total}}",
-      "fr": "🚀 Exécution en parallèle :    {{langList}}   {{completed}}/{{total}}",
-      "hi-Latn": "🚀 Running in parallel:    {{langList}}   {{completed}}/{{total}}",
-      "ja": "🚀 並列実行中:    {{langList}}   {{completed}}/{{total}}",
-      "de": "🚀 Wird parallel ausgeführt:    {{langList}}   {{completed}}/{{total}}",
-      "pt-BR": "🚀 Executando em paralelo:    {{langList}}   {{completed}}/{{total}}",
-      "zh-Hant": "🚀 並行執行中：    {{langList}}   {{completed}}/{{total}}",
-      "ko": "🚀 병렬 실행 중:    {{langList}}   {{completed}}/{{total}}",
-      "zh-Hans": "🚀 正在并行运行：    {{langList}}   {{completed}}/{{total}}"
+      "es": "🚀 Ejecutando en paralelo: {{completed}}/{{total}} - {{langList}}",
+      "ja": "🚀 並列実行中: {{completed}}/{{total}} - {{langList}}",
+      "hi-Latn": "🚀 Parallel mein chal raha hai: {{completed}}/{{total}} - {{langList}}",
+      "fr": "🚀 Exécution en parallèle : {{completed}}/{{total}} - {{langList}}",
+      "de": "🚀 Läuft parallel: {{completed}}/{{total}} - {{langList}}",
+      "ko": "🚀 병렬 실행 중: {{completed}}/{{total}} - {{langList}}",
+      "pt-BR": "🚀 Executando em paralelo: {{completed}}/{{total}} - {{langList}}",
+      "zh-Hans": "🚀 并行运行中：{{completed}}/{{total}} - {{langList}}",
+      "zh-Hant": "🚀 平行執行：{{completed}}/{{total}} - {{langList}}"
     },
     "models": {
       "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
       "ja": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
       "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
       "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "openai/gpt-5.5"
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "zh-Hant": "minimax/minimax-m2.7"
     },
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 791
+        "line": 802
       }
     ]
   },
@@ -14767,7 +14837,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 823
+        "line": 834
       }
     ]
   },

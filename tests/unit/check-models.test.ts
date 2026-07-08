@@ -121,6 +121,59 @@ describe("runCheckModels", () => {
     expect(r.exitCode).toBe(1);
   });
 
+  it("exitCode 1 when a model from uiModels is missing from catalog", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          data: [{ id: "base-model", pricing: { prompt: "0", completion: "0" } }],
+        }),
+    }) as unknown as typeof fetch;
+
+    const cfg = minimalConfig(["base-model"]);
+    cfg.providers.openrouter!.uiModels = ["ui-only-model"];
+    const r = await runCheckModels(cfg);
+    expect(r.exitCode).toBe(1);
+  });
+
+  it("exitCode 1 when a model from localeModels is missing from catalog", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          data: [{ id: "base-model", pricing: { prompt: "0", completion: "0" } }],
+        }),
+    }) as unknown as typeof fetch;
+
+    const cfg = minimalConfig(["base-model"]);
+    cfg.providers.openrouter!.localeModels = [{ locale: "de", models: ["locale-only-model"] }];
+    const r = await runCheckModels(cfg);
+    expect(r.exitCode).toBe(1);
+  });
+
+  it("exitCode 0 when translationModels, uiModels, and localeModels ids all exist", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          data: [
+            { id: "base-model", pricing: { prompt: "0", completion: "0" } },
+            { id: "ui-only-model", pricing: { prompt: "0", completion: "0" } },
+            { id: "locale-only-model", pricing: { prompt: "0", completion: "0" } },
+          ],
+        }),
+    }) as unknown as typeof fetch;
+
+    const cfg = minimalConfig(["base-model"]);
+    cfg.providers.openrouter!.uiModels = ["ui-only-model"];
+    cfg.providers.openrouter!.localeModels = [{ locale: "de", models: ["locale-only-model"] }];
+    const r = await runCheckModels(cfg);
+    expect(r.exitCode).toBe(0);
+  });
+
   it("validates configured models against a non-OpenRouter provider's models list", async () => {
     const prevOpenAi = process.env.OPENAI_API_KEY;
     process.env.OPENAI_API_KEY = "sk-openai";

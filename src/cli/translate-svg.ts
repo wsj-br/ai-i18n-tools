@@ -3,8 +3,10 @@ import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import {
   assertSvgCommandConfig,
+  dedupeOrderedModelIds,
   normalizeLocale,
   resolveTranslationModels,
+  resolveTranslationModelsForLocale,
 } from "../core/config.js";
 import { relPathUnderSvgSource } from "../core/svg-asset-paths.js";
 import { collectFilesByExtension } from "./file-utils.js";
@@ -12,11 +14,7 @@ import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
-import {
-  filterTranslationModelsAgainstOpenRouterCatalog,
-  MODELS_ALL_UNKNOWN_AFTER_FILTER,
-  warnIgnoredUnknownOpenRouterModels,
-} from "./openrouter-catalog-model-filter.js";
+import { createFilteredLlmClient } from "./llm-client-factory.js";
 import {
   translateSvgAssetFile,
   type TranslateRunOptions,
@@ -29,9 +27,9 @@ import {
   isRunInterruptedError,
   interruptErrorFromSignal,
 } from "../utils/run-interrupt.js";
-import { formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import { formatElapsedMmSs, printModelsTryInOrder, printTranslationModelSummary, localeModelRowsForRun } from "./format.js";
 import { printTranslationRunSummary } from "./translate-summary.js";
-import { safeResolveActiveProvider } from "../core/llm-providers.js";
+import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
 
 function filterIgnored(files: string[], cwd: string): string[] {
@@ -104,23 +102,6 @@ async function runTranslateSvgBody(
   const resolvedModels = resolveTranslationModels(config);
   const needsApi = !opts.dryRun && hasNonSourceTarget && resolvedModels.length > 0;
 
-  let translationModelsForClient: string[] | undefined = undefined;
-  if (needsApi && resolvedModels.length > 0) {
-    const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedModels, config);
-    warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
-    if (filtered.models.length === 0) {
-      throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
-    }
-    translationModelsForClient = filtered.models;
-  }
-
-  const client = needsApi
-    ? new LlmClient({
-        config,
-        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
-      })
-    : null;
-
   const glossaryUi = config.glossary?.uiGlossary
     ? path.join(opts.cwd, config.glossary.uiGlossary)
     : undefined;
@@ -131,8 +112,10 @@ async function runTranslateSvgBody(
   const noopHitKeys = new Set<string>();
 
   const totalFileCount = files.length;
-  const displayModels = client?.getConfiguredModels() ?? resolvedModels;
-  const displayProvider = client?.getProvider() ?? safeResolveActiveProvider(config);
+  const displayModels = dedupeOrderedModelIds(
+    ...locales.map((loc) => resolveTranslationModelsForLocale(config, loc))
+  );
+  const displayProvider = safeResolveActiveProvider(config);
 
   console.log(
     chalk.gray(
@@ -145,7 +128,17 @@ async function runTranslateSvgBody(
         })}\n`
       )
   );
-  printModelsTryInOrder(displayModels, displayProvider);
+  printTranslationModelSummary({
+    resolvedModels: displayModels,
+    provider: displayProvider,
+    localeModels:
+      displayProvider !== undefined
+        ? localeModelRowsForRun(
+            localeModelsMapForProvider(config, displayProvider),
+            locales
+          )
+        : undefined,
+  });
   console.log(chalk.cyan(`${t("Glossary terms:")} `) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(`${t("SVG output:")} `) + chalk.magenta(`${path.resolve(opts.cwd, svg.outputDir)}`)
@@ -228,6 +221,11 @@ async function runTranslateSvgBody(
       individualSegmentTranslations: 0,
     };
     const localeStart = Date.now();
+
+    let client: LlmClient | null = null;
+    if (needsApi) {
+      client = await createFilteredLlmClient(config, locale);
+    }
 
     for (const rel of files) {
       if (runOpts.abortSignal?.aborted) {

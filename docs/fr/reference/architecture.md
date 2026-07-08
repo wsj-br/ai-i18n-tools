@@ -122,7 +122,7 @@ i18next charge ces fichiers comme des bundles de ressources et recherche les tra
 - Envoyer un tableau JSON de chaînes et demander en retour un tableau JSON de traductions.
 - Inclure des indices de glossaire quand disponibles.
 
-`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre, en se rabattant sur les erreurs d'analyse ou réseau. La CLI construit cette liste à partir de la `translationModels` du fournisseur actif ; pour `translate-ui`, une `ui.preferredModel` optionnelle est ajoutée au début lorsqu'elle est définie (supprimée en double par rapport au reste).
+`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre, en se rabattant sur les erreurs d'analyse ou de réseau. La CLI construit cette liste par locale cible à partir de `localeModels`, de `uiModels` facultatifs et de `translationModels` (voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -181,9 +181,9 @@ Avant la traduction, la syntaxe sensible est remplacée par des jetons opaques a
 3. **Ancres de document** (HTML `<a id="…">`, en-tête Docusaurus `{#…}`) - conservées telles quelles.
 4. **Constructions spécifiques à MDX** (`src/processors/mdx-placeholders.ts`) :
    - **Commentaires MDX** (`{/* … */}`, y compris le format d'ID d'en-tête Docusaurus `{/* #my-id */}`) remplacés par ```{{MDX_N}}```.
-   - **Balises JSX capitalisées** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - conservées comme ```{{MDX_N}}``` avec des attributs de chaîne traduisibles (`label`, `tooltip`, `aria-label`) réécrits en ```{{JXA_N}}``` à l'intérieur de la balise, sauf si le nom de l'attribut apparaît dans `docs[].protectAttributes` ; `label:` à l'intérieur des littéraux d'objet `<Tabs values={[ { label: '…' } ]}>` (sautables via `docs[].protectKeys`) et `<TabItem value="…">` (lorsqu'aucun attribut `label` n'existe, en sautant les valeurs de type slug en minuscules) sont également extraits. Ajoutés au segment sous forme de lignes `||JXA_N: …||`, fusionnés par `restoreMdx`.
-   - **Expressions d'accolades MDX** (`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) - correspondance sensible à la profondeur, remplacées par ```{{MDX_N}}```.
-5. **URL Markdown** (`](url)`, `src="…"`) - restaurées à partir d'une carte après traduction.
+   - **Balises JSX capitalisées** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - conservées comme ```{{MDX_N}}``` avec des attributs de chaîne traduisibles (`label`, `tooltip`, `aria-label`) réécrits en ```{{JXA_N}}``` à l'intérieur de la balise, sauf si le nom de l'attribut apparaît dans `docs[].protectAttributes` ; `label:` à l'intérieur des littéraux d'objet `<Tabs values={[ { label: '…' } ]}>` (sautables via `docs[].protectKeys`) et `<TabItem value="…">` (lorsqu'aucun attribut `label` n'existe, en ignorant les valeurs de type slug en minuscules) sont également extraits. Ajoutés au segment sous forme de lignes `||JXA_N: …||`, fusionnés par `restoreMdx`.
+   - **Expressions d'accolades MDX** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - correspondance sensible à la profondeur, remplacées par ```{{MDX_N}}```.
+5. **URL Markdown** (`](url)`, `src="…"`) - restaurées à partir d'une carte après la traduction.
 6. **Portées de code en ligne** (`` `code` ``) et **code en ligne en gras** (`**`code`**`) - conservés tels quels.
 7. **Mise en emphase en markdown** (facultatif, activé automatiquement pour les paramètres régionaux CJK/RTL) - les délimiteurs d'emphase sont masqués.
 
@@ -245,10 +245,10 @@ Lorsque `docsOutput.style === "flat"`, les fichiers markdown traduits sont plac�
 
 Client de chat indépendant du fournisseur, basé sur le Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). Il résout le fournisseur actif à partir de `provider` / `providers`, construit un client compatible OpenAI (`createOpenAICompatible`) pour la `baseUrl` et la clé API de ce fournisseur, et achemine tous les appels via `generateText`. `OpenRouterClient` est conservé comme alias obsolète. Comportements clés :
 
-- **Restauration du modèle** : essaie chaque modèle de la liste résolue dans l'ordre ; se rabat en cas d'échec de la requête ou de l'analyse. La traduction de l'interface utilisateur résout d'abord `ui.preferredModel` si présent, puis le `translationModels` du fournisseur. La commande `bench-models` construit à la place un seul client à modèle unique par identifiant (`translationModels: [id]`, sans restauration) afin de pouvoir chronométrer et tarifer chaque modèle indépendamment.
-- **Délai d'expiration de la requête** : le `requestTimeoutMs` du fournisseur actif (30 secondes par défaut) annule chaque requête via `AbortSignal.timeout`. La même valeur s'applique à `GET /models` lorsque la CLI charge une liste de modèles de fournisseur pour `check-models` (tout fournisseur). Le filtre pré-vol facultatif qui supprime les identifiants de modèle inconnus ne s'exécute que lorsque le fournisseur actif est OpenRouter.
-- **Extras OpenRouter** (uniquement lorsque `openrouter` est actif) : routage du débit via le champ de requête `provider`, les en-têtes `HTTP-Referer` / `X-Title`, et le coût exact en USD lu à partir de `usage.cost`. L'utilisation des jetons est signalée pour chaque fournisseur ; le coût exact uniquement lorsque le fournisseur le renvoie.
-- **Journal de trafic de débogage** : si `debugTrafficFilePath` est défini, ajoute le JSON de la requête et de la réponse à un fichier.
+- **Repli de modèle** : essaie chaque modèle de la liste résolue dans l'ordre ; se replie en cas d'échec de requête ou d'analyse. Chaque locale cible obtient sa propre chaîne résolue : `localeModels(locale)` en premier lorsqu'il est configuré, puis `uiModels` (pipelines d'interface utilisateur uniquement), puis `translationModels`. La traduction de documents, JSON et SVG crée un client par locale avec la chaîne non-UI. La commande `bench-models` construit plutôt un client à modèle unique par ID configuré (union de `translationModels`, `uiModels` et `localeModels` ; `translationModels: [id]`, sans repli) afin de pouvoir chronométrer et évaluer chaque modèle indépendamment.
+- **Délai d'attente de la requête** : le `requestTimeoutMs` du fournisseur actif (30 secondes par défaut) annule chaque requête via `AbortSignal.timeout`. La même valeur s'applique à `GET /models` lorsque la CLI charge la liste des modèles d'un fournisseur pour `check-models` (tout fournisseur). Le filtre de pré-vol facultatif qui supprime les ID de modèle inconnus ne s'exécute que lorsque le fournisseur actif est OpenRouter.
+- **Extras OpenRouter** (uniquement lorsque `openrouter` est actif) : routage du débit via le champ de requête `provider`, les en-têtes `HTTP-Referer` / `X-Title` et le coût exact en USD lu à partir de `usage.cost`. L'utilisation des jetons est signalée pour chaque fournisseur ; le coût exact uniquement lorsque le fournisseur le renvoie.
+- **Journal de trafic de débogage** : si `debugTrafficFilePath` est défini, ajoute le JSON de la requête et de la réponse à un fichier.
 
 <a id="config-loading"></a>
 ### Chargement de la configuration

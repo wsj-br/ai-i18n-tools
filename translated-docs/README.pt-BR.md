@@ -54,7 +54,7 @@ Todos os três compartilham um cache de arquivo/SQLite, então apenas segmentos 
 
 Cada tipo de tradução tem seu próprio guia com detalhes completos de configuração: [Strings de UI](../docs/guide/ui-strings/), [Documentos](../docs/guide/documents/) e [JSON](../docs/guide/json.md). Consulte [O que é ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) para uma comparação lado a lado.
 
-Algumas coisas que vale a pena saber de antemão: Strings de UI traduz entradas ausentes por localidade via provedor LLM ativo (consulte [Provedores LLM](#llm-providers)) e grava arquivos JSON planos (`de.json`, `pt-BR.json`, …), com o texto de origem em inglês como a chave de pesquisa em tempo de execução — `strings.json` é o cache de extração, não o pacote em tempo de execução. Documentos suporta valores `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"` e aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (consulte [Layouts de saída](../docs/guide/documents/output-layouts.md)). Todos os três compartilham `ai-i18n-tools.config.json` e podem ser combinados; `sync` executa extração, tradução de UI, tradução de SVG, `translate-docs` e `translate-json` em ordem de acordo com suas flags `features`.
+Algumas coisas importantes para saber de antemão: UI strings traduz entradas ausentes por localidade por meio do provedor de LLM ativo (consulte [Provedores de LLM](#llm-providers)) e grava arquivos JSON planos (`de.json`, `pt-BR.json`, …), com o texto de origem em inglês como a chave de busca em tempo de execução — `strings.json` é o cache de extração, não o pacote de tempo de execução. Documents suporta valores de `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"` e aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (consulte [Layouts de saída](../docs/guide/documents/output-layouts.md)). Todos os três compartilham `ai-i18n-tools.config.json` e podem ser combinados; `sync` executa extract, UI translation, translate SVG, `translate-docs` e `translate-json` em ordem, de acordo com suas flags `features`.
 
 ---
 
@@ -124,13 +124,27 @@ Os comandos de tradução (`translate-ui`, `translate-docs`, `translate-json`, `
 
 Configure provedores sob um mapa de nível superior `providers` e escolha o ativo com um seletor de nível superior `provider` (opcional quando exatamente um provedor é configurado). A maioria dos provedores precisa apenas de uma lista `translationModels` — `baseUrl` e a variável de ambiente da chave de API vêm de um preset integrado; você pode substituir `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature` e `requestTimeoutMs` por provedor. `requestTimeoutMs` é o tempo máximo em milissegundos para esperar por cada solicitação (padrão `30000`).
 
+Níveis de modelo opcionais em cada bloco de provedor:
+
+- `translationModels` — cadeia de fallback global ordenada (obrigatória para recursos de tradução).
+- `uiModels` — cadeia exclusiva para UI (`translate-ui`, geração de plurais, `proofread-ui`): tentada após qualquer entrada `localeModels` correspondente, antes de `translationModels`.
+- `localeModels` — substituições por localidade para **todos** os pipelines: cada entrada mapeia uma localidade BCP-47 para uma lista ordenada de modelos tentada primeiro apenas para aquela localidade (`pt-br` corresponde a `pt-BR`).
+
+Ordem de resolução: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **docs / JSON / SVG** → `localeModels(locale)` → `translationModels`. IDs de modelos duplicados são ignorados, preservando a ordem.
+
 Para alternar provedores para uma única execução sem editar a configuração, passe a opção global `-P` / `--provider <name>` (por exemplo, `ai-i18n-tools -P groq translate-ui`); o nome deve ser uma das chaves de `providers` configuradas.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ Presets de provedores integrados (chave — URL base — variável de ambiente d
 
 Defina um provedor personalizado compatível com OpenAI adicionando uma nova chave com `baseUrl` (e `apiKeyEnv` a menos que não precise de chave). IDs de modelo são IDs diretos do upstream — o provedor é escolhido no nível de configuração, portanto, nenhum prefixo `provider/` é necessário (IDs do OpenRouter mantêm sua forma nativa `vendor/model`).
 
-O uso de tokens é relatado para cada provedor; o custo exato em USD é mostrado apenas quando o provedor o retorna (OpenRouter). `ai-i18n-tools check-models` valida os IDs de modelo configurados em relação à lista `GET /models` ativa do provedor (qualquer provedor) e mostra os preços quando o provedor os retorna (por exemplo, OpenRouter). `ai-i18n-tools list-models` lista todos os modelos que o provedor ativo anuncia (use `-P` / `--provider` para inspecionar outro provedor configurado). `ai-i18n-tools bench-models` compara cada modelo configurado traduzindo uma amostra isoladamente (os modelos são executados em paralelo, limitados por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD.
+O uso de tokens é relatado para cada provedor; o custo exato em USD é mostrado apenas quando o provedor o retorna (OpenRouter). `ai-i18n-tools check-models` valida todos os IDs de modelo configurados (`translationModels`, `uiModels` e cada entrada `localeModels`) em relação à lista `GET /models` ativa do provedor (qualquer provedor) e mostra os preços quando o provedor os retorna (por exemplo, OpenRouter). `ai-i18n-tools list-models` lista todos os modelos que o provedor ativo anuncia (use `-P` / `--provider` para inspecionar outro provedor configurado). `ai-i18n-tools bench-models` compara cada ID de modelo configurado exclusivo (`translationModels`, `uiModels` e `localeModels`) traduzindo uma amostra isoladamente (os modelos são executados em paralelo, limitados por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD.
 
 Um bloco de configuração `openrouter` de nível superior legado ainda é aceito e é migrado automaticamente para `providers.openrouter` (com `provider: "openrouter"`) ao carregar.
 
@@ -272,7 +286,7 @@ Os seguintes auxiliares são exportados de `'ai-i18n-tools/runtime'` e funcionam
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

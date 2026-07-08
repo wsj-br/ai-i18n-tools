@@ -5,6 +5,11 @@ Entwickelt für Projekte, die UI-Texte in **verschachtelten JSON-Dateien pro Geb
 
 Diese Pipeline führt **kein** `extract` aus – es gibt keinen `strings.json`-Katalog. Aktivieren Sie sie mit `features.translateJson` und einem oder mehreren Einträgen in der obersten Ebene `json[]`.
 
+<a id="per-locale-model-overrides"></a>
+### Modellüberschreibungen pro Gebietsschema
+
+`translate-json` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Verwenden Sie dies für verschachtelte JSON-Bundles, bei denen bestimmte Lokale von dedizierten Modellen profitieren – zum Beispiel `zh-Hans`- / `zh-Hant`-Themendateien. Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain).
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Schritt 1: Initialisierung für verschachtelte JSON-Dateien
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   MODELS_TRY_ORDER_LOG_INDENT,
   MODELS_TRY_ORDER_LOG_WIDTH,
+  localeModelRowsForRun,
   wrapCommaSeparatedListForWidth,
 } from "../../src/cli/format.js";
 
@@ -42,5 +43,20 @@ describe("wrapCommaSeparatedListForWidth", () => {
     const t = "a, b";
     const parts = wrapCommaSeparatedListForWidth(t, 80, 80);
     expect(parts).toEqual([t]);
+  });
+});
+
+describe("localeModelRowsForRun", () => {
+  it("returns only locales in the run that have configured models", () => {
+    const map = new Map<string, string[]>([
+      ["zh-Hans", ["a", "b"]],
+      ["de", ["c"]],
+      ["fr", []],
+    ]);
+    const rows = localeModelRowsForRun(map, ["zh-Hans", "de", "es"]);
+    expect(rows).toEqual([
+      { locale: "zh-Hans", models: ["a", "b"] },
+      { locale: "de", models: ["c"] },
+    ]);
   });
 });

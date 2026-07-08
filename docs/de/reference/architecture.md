@@ -122,7 +122,7 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen über den Que
 - Senden Sie ein JSON-Array mit Zeichenketten und fordern Sie ein JSON-Array mit Übersetzungen an.
 - Geben Sie Glossarhinweise an, falls verfügbar.
 
-`LlmClient.translateUIBatch` versucht jedes Modell der Reihe nach und greift bei Parse- oder Netzwerkfehlern auf ein Fallback zurück. Die CLI erstellt diese Liste aus dem aktiven Anbieter `translationModels`; für `translate-ui` wird optional `ui.preferredModel` vorangestellt, wenn es gesetzt ist (wird von den übrigen dedupliziert).
+`LlmClient.translateUIBatch` versucht jedes Modell der Reihe nach und greift bei Analyse- oder Netzwerkfehlern auf das nächste zurück. Die CLI erstellt diese Liste pro Ziellokale aus `localeModels`, optional `uiModels` und `translationModels` (siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -180,10 +180,10 @@ Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetz
 2. **Admonitions-Marker** (`:::note`, `:::`) – Nur das Direktivenpräfix in der Eröffnungszeile wird durch ```{{ADM_OPEN_N}}``` ersetzt; jeder Titel in derselben Zeile wird dem Modell zur Übersetzung überlassen. Wird mit dem exakten Originaltext wiederhergestellt.
 3. **Dokumentenanker** (HTML `<a id="…">`, Docusaurus-Überschrift `{#…}`) – werden wörtlich beibehalten.
 4. **Nur-MDX-Konstrukte** (`src/processors/mdx-placeholders.ts`):
-   - **MDX-Kommentare** (`{/* … */}`, einschließlich Docusaurus-Überschriften-ID-Form `{/* #my-id */}`) werden durch ```{{MDX_N}}``` ersetzt.
-   - **Großgeschriebene JSX-Tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) – werden als ```{{MDX_N}}``` beibehalten, wobei übersetzbare String-Attribute (`label`, `tooltip`, `aria-label`) innerhalb des Tags zu ```{{JXA_N}}``` umgeschrieben werden, es sei denn, der Attributname erscheint in `docs[].protectAttributes`; `label:` innerhalb von `<Tabs values={[ { label: '…' } ]}>`-Objektliteralen (überspringbar über `docs[].protectKeys`) und `<TabItem value="…">` (wenn kein `label`-Attribut existiert, wobei kleingeschriebene Slug-ähnliche Werte übersprungen werden) werden ebenfalls extrahiert. Als `||JXA_N: …||`-Zeilen an das Segment angehängt, von `restoreMdx` wieder zusammengeführt.
-   - **MDX-Klammerausdrücke** (`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) – tiefenbewusste Übereinstimmung, ersetzt durch ```{{MDX_N}}```.
-5. **Markdown-URLs** (`](url)`, `src="…"`) – werden nach der Übersetzung aus einer Zuordnung wiederhergestellt.
+   - **MDX-Kommentare** (`{/* … */}`, einschließlich Docusaurus-Überschriften-ID-Form `{/* #my-id */}`) ersetzt durch ```{{MDX_N}}```.
+   - **Großgeschriebene JSX-Tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) – beibehalten als ```{{MDX_N}}``` mit übersetzbaren String-Attributen (`label`, `tooltip`, `aria-label`), die innerhalb des Tags in ```{{JXA_N}}``` umgeschrieben werden, es sei denn, der Attributname erscheint in `docs[].protectAttributes`; `label:` innerhalb von `<Tabs values={[ { label: '…' } ]}>`-Objektliteralen (überspringbar über `docs[].protectKeys`) und `<TabItem value="…">` (wenn kein `label`-Attribut existiert, wobei klein geschriebene Slug-ähnliche Werte übersprungen werden) werden ebenfalls extrahiert. An das Segment als `||JXA_N: …||`-Zeilen angehängt, von `restoreMdx` wieder zusammengeführt.
+   - **MDX-Klammerausdrücke** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) – tiefenbewusste Übereinstimmung, ersetzt durch ```{{MDX_N}}```.
+5. **Markdown-URLs** (`](url)`, `src="…"`) – nach der Übersetzung aus einer Zuordnung wiederhergestellt.
 6. **Inline-Code-Abschnitte** (`` `code` ``) und **fett formatierte Inline-Codes** (`**`code`**`) – bleiben erhalten.
 7. **Markdown-Hervorhebungen** (optional, automatisch aktiviert für CJK-/RTL-Lokalisierungen) – Hervorhebungs-Trennzeichen werden maskiert.
 
@@ -245,10 +245,10 @@ Wenn `docsOutput.style === "flat"`, werden übersetzte Markdown-Dateien mit Gebi
 
 Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) basiert. Er ermittelt den aktiven Anbieter aus `provider` / `providers`, erstellt einen OpenAI-kompatiblen Client (`createOpenAICompatible`) für die `baseUrl` + API-Schlüssel des jeweiligen Anbieters und leitet alle Aufrufe über `generateText`. `OpenRouterClient` bleibt als veralteter Alias erhalten. Wichtige Verhaltensweisen:
 
-- **Modell-Fallback**: Versucht jedes Modell in der aufgelösten Liste der Reihe nach; greift bei Anforderungs- oder Analysefehlern auf das nächste zurück. Die UI-Übersetzung löst zuerst `ui.preferredModel` auf, falls vorhanden, dann das `translationModels` des Anbieters. Der Befehl `bench-models` erstellt stattdessen einen Einzelmodell-Client pro ID (`translationModels: [id]`, kein Fallback), um jedes Modell unabhängig voneinander zeitlich und preislich bewerten zu können.
-- **Anforderungs-Timeout**: Das `requestTimeoutMs` des aktiven Anbieters (Standard 30 Sekunden) bricht jede Anforderung über `AbortSignal.timeout` ab. Derselbe Wert gilt für `GET /models`, wenn die CLI die Modellliste eines Anbieters für `check-models` (jeder Anbieter) lädt. Der optionale Pre-Flight-Filter, der unbekannte Modell-IDs verwirft, wird nur ausgeführt, wenn der aktive Anbieter OpenRouter ist.
-- **OpenRouter-Extras** (nur wenn `openrouter` aktiv ist): Durchsatz-Routing über das Anforderungsfeld `provider`, `HTTP-Referer` / `X-Title`-Header und exakte USD-Kosten, gelesen aus `usage.cost`. Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen Kosten nur, wenn der Anbieter sie zurückgibt.
-- **Debug-Traffic-Log**: Wenn `debugTrafficFilePath` gesetzt ist, werden Anforderungs- und Antwort-JSON an eine Datei angehängt.
+- **Modell-Fallback**: Versucht jedes Modell in der aufgelösten Liste der Reihe nach; greift bei Anforderungs- oder Analysefehlern auf das nächste zurück. Jedes Zielland erhält seine eigene aufgelöste Kette: `localeModels(locale)` zuerst, wenn konfiguriert, dann `uiModels` (nur UI-Pipelines), dann `translationModels`. Dokument-, JSON- und SVG-Übersetzung erstellen einen Client pro Gebietsschema mit der Nicht-UI-Kette. Der Befehl `bench-models` erstellt stattdessen einen Einzelmodell-Client pro konfigurierter ID (Vereinigung von `translationModels`, `uiModels` und `localeModels`; `translationModels: [id]`, kein Fallback), sodass er jedes Modell unabhängig voneinander zeitlich und preislich bewerten kann.
+- **Anforderungs-Timeout**: Der `requestTimeoutMs` des aktiven Anbieters (Standard 30 Sekunden) bricht jede Anforderung über `AbortSignal.timeout` ab. Derselbe Wert gilt für `GET /models`, wenn die CLI die Modellliste eines Anbieters für `check-models` (jeder Anbieter) lädt. Der optionale Pre-Flight-Filter, der unbekannte Modell-IDs verwirft, wird nur ausgeführt, wenn der aktive Anbieter OpenRouter ist.
+- **OpenRouter-Extras** (nur wenn `openrouter` aktiv ist): Durchsatz-Routing über das Anforderungsfeld `provider`, `HTTP-Referer` / `X-Title`-Header und genaue USD-Kosten, gelesen von `usage.cost`. Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen Kosten nur, wenn der Anbieter sie zurückgibt.
+- **Debug-Verkehrsprotokoll**: Wenn `debugTrafficFilePath` gesetzt ist, werden Anforderungs- und Antwort-JSON an eine Datei angehängt.
 
 <a id="config-loading"></a>
 ### Laden der Konfiguration

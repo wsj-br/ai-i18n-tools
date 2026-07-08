@@ -28,8 +28,8 @@ Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown`. Edítal
 - `targetLocales` - matriz de códigos BCP-47 para tus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecuta `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
 - `ui.sourceRoots` - directorios o patrones glob para escanear llamadas a `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - ubicación donde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - dónde escribir `de.json`, `pt-BR.json`, etc. (ej. `"src/locales/"`).
-- `ui.preferredModel` (opcional) - ID del modelo a probar **primero** solo para `translate-ui`; en caso de error, la CLI continúa con los `translationModels` del proveedor activo en orden, omitiendo duplicados.
+- `ui.flatOutputDir`: dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
+- `providers.<active>.uiModels` (opcional): lista de modelos solo de interfaz de usuario ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada coincidente de `localeModels`, antes de `translationModels`). Consulta [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Paso 2: Extraer cadenas
@@ -49,7 +49,12 @@ El escáner es configurable: añade nombres de funciones personalizadas a travé
 npx ai-i18n-tools translate-ui
 ```
 
-Lee `strings.json`, envía lotes al proveedor LLM activo para cada locale de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. Cuando se establece `ui.preferredModel`, se intenta ese modelo antes de la lista de `translationModels` del proveedor activo (la traducción de documentos y otros comandos solo usan la lista del proveedor).
+Lee `strings.json`, envía lotes al proveedor de LLM activo para cada configuración regional de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. La selección del modelo utiliza la cadena de la interfaz de usuario: `localeModels(locale)` → `uiModels` → `translationModels` (consulta [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain)).
+
+<a id="per-locale-model-overrides"></a>
+### Anulaciones de modelo por configuración regional
+
+Las entradas opcionales de `providers.<active>.localeModels` asignan una configuración regional BCP-47 a una lista de modelos ordenada que se prueba **antes** de `uiModels` y `translationModels` para esa configuración regional. Las mismas entradas de `localeModels` también se aplican a la traducción de documentos, JSON y SVG. Las etiquetas de configuración regional se comparan sin distinguir entre mayúsculas y minúsculas (`pt-br` = `pt-BR`). Si no hay ninguna entrada coincidente, solo se utilizan `uiModels` y `translationModels` para el trabajo de la interfaz de usuario.
 
 Para cada entrada, `translate-ui` almacena el **ID de modelo del proveedor activo** que tradujo con éxito cada idioma en un objeto `models` opcional (las mismas claves de idioma que `translated`). Las cadenas editadas en el Panel de traducción se marcan con el valor centinela `user-edited` en `models` para ese idioma. Los archivos planos por idioma en `ui.flatOutputDir` permanecen solo como **cadena de origen → traducción**; no incluyen `models` (por lo que los paquetes en tiempo de ejecución permanecen sin cambios).
 

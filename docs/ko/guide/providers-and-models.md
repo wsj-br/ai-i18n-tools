@@ -35,9 +35,16 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 `translationModels`은 단일 선택이 아닌 **정렬된 목록**입니다. CLI는 첫 번째 모델을 시도하고, 요청 또는 구문 분석 실패 시 다음 항목으로 이동합니다. 일시적인 중단이나 특정 로케일에서 어려움을 겪는 모델이 전체 실행을 차단하지 않도록 여러 모델을 구성하세요.
 
-`translate-ui`에 대해서만 선택적 `ui.preferredModel`이 공급자의 `translationModels` 목록 **전에** 시도됩니다(중복 제거됨).
+**해결 계층** (중복 제거, 순서 유지):
 
-다양한 공급자와 모델은 언어에 따라 비용, 속도, 품질이 다릅니다. `npx ai-i18n-tools init`의 기본 목록을 시작점으로 삼고, 로케일에서 지속적으로 좋지 않은 결과가 나올 경우 확장하세요. 전체 기본값 및 근거: [구성 — `provider` 및 `providers`](/reference/configuration#provider-and-providers).
+| 파이프라인 | 순서 |
+| --- | --- |
+| UI (`translate-ui`, 복수형, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
+| 문서, JSON, SVG | `localeModels(locale)` → `translationModels` |
+
+선택 사항인 `providers.<active>.uiModels`는 UI 전용 목록으로, 일치하는 로케일별 재정의 다음에, 그리고 전역 `translationModels` 체인 이전에 시도됩니다. 선택 사항인 `providers.<active>.localeModels`는 BCP-47 로케일을 모든 파이프라인에서 해당 로케일에 대해 **먼저** 시도되는 모델에 매핑합니다 (`pt-br`는 `pt-BR`와 일치). `localeModels` 항목이 일치하지 않으면 파이프라인별 계층만 적용됩니다.
+
+다양한 제공업체와 모델은 언어에 따라 비용, 속도 및 품질이 다릅니다. `npx ai-i18n-tools init`의 기본 목록을 시작점으로 간주하고, 로케일에서 일관되게 좋지 않은 결과가 나오면 확장하거나 해당 로케일에 대한 `localeModels` 항목을 추가하세요. 전체 기본값 및 근거: [구성 — `provider` 및 `providers`](/reference/configuration#provider-and-providers).
 
 최소 구성 예시 (OpenRouter):
 
@@ -50,6 +57,12 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
         "qwen/qwen3-235b-a22b-2507",
         "openai/gpt-4o-mini",
         "deepseek/deepseek-v4-flash"
+      ],
+      "uiModels": [
+        "anthropic/claude-sonnet-latest"
+      ],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     }
   }
@@ -65,7 +78,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 npx ai-i18n-tools check-models
 ```
 
-`check-models`은 공급자의 `GET /models` 엔드포인트를 호출하고, 누락되거나 `expiration_date`를 초과한 ID를 보고하며, 구성된 ID가 유효하지 않은 경우 0이 아닌 값으로 종료됩니다. 공급자가 가격을 반환하는 경우(OpenRouter는 반환함), 100만 토큰당 예상 USD도 표시합니다.
+`check-models`는 제공업체의 `GET /models` 엔드포인트를 호출하고, `translationModels`, `uiModels`, `localeModels`의 모든 ID를 검증하며, 누락되거나 `expiration_date`를 초과한 ID를 보고하고, 구성된 ID가 유효하지 않으면 0이 아닌 값으로 종료합니다. 제공업체가 가격을 반환하는 경우(OpenRouter의 경우), 100만 토큰당 예상 USD도 표시합니다.
 
 공급자가 광고하는 전체 카탈로그를 탐색합니다.
 
@@ -73,7 +86,7 @@ npx ai-i18n-tools check-models
 npx ai-i18n-tools list-models
 ```
 
-실제 번역 샘플에서 구성된 모델을 벤치마킹합니다. 각 모델은 독립적으로 실행되므로 실제 시간, 토큰 사용량 및 비용을 비교할 수 있습니다.
+실제 번역 샘플에서 구성된 모델을 벤치마킹하세요. `translationModels`, `uiModels`, `localeModels`의 각 고유 ID는 격리된 상태로 실행되므로 실제 시간, 토큰 사용량 및 비용을 비교할 수 있습니다.
 
 ```bash
 npx ai-i18n-tools bench-models
@@ -82,7 +95,7 @@ npx ai-i18n-tools bench-models
 샘플 텍스트, 로케일 또는 모델 목록을 재정의합니다.
 
 ```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --models openai/gpt-4o-mini,anthropic/claude-3-haiku
+npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
 명령 세부 정보: [CLI 참조](/reference/cli-commands).
@@ -97,7 +110,7 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-각 공급자 블록은 자체 `translationModels`, `maxTokens`, `temperature` 및 `requestTimeoutMs`를 정의할 수 있습니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`로 자동 마이그레이션됩니다.
+각 제공업체 블록은 자체 `translationModels`, 선택 사항인 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeoutMs`를 정의할 수 있습니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`로 자동 마이그레이션됩니다.
 
 동일한 문서에 4개의 공급자가 있는 실행 가능한 예시: [`examples/multi-provider`](/examples#multi-provider).
 

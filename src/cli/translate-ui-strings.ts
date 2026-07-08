@@ -10,15 +10,12 @@ import type {
 import { isPluralStringsEntry } from "../core/types.js";
 import { LlmClient } from "../api/llm-client.js";
 import {
+  dedupeOrderedModelIds,
   englishLanguageNameForLocale,
   normalizeLocale,
   resolveUITranslationModels,
 } from "../core/config.js";
-import {
-  filterTranslationModelsAgainstOpenRouterCatalog,
-  MODELS_ALL_UNKNOWN_AFTER_FILTER,
-  warnIgnoredUnknownOpenRouterModels,
-} from "./openrouter-catalog-model-filter.js";
+import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { buildPluralPassBPrompt, buildPluralStep0Prompt } from "../core/prompt-builder.js";
 import {
   compactIdenticalPluralForms,
@@ -27,7 +24,7 @@ import {
   requiredCldrPluralForms,
 } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
-import { timestamp, formatElapsedMmSs, printModelsTryInOrder } from "./format.js";
+import { timestamp, formatElapsedMmSs, printTranslationModelSummary, localeModelRowsForRun } from "./format.js";
 import type { TranslateTotals } from "./doc-translate.js";
 import {
   printTranslationRunSummary,
@@ -46,11 +43,11 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
-import { safeResolveActiveProvider } from "../core/llm-providers.js";
+import { safeResolveActiveProvider, localeModelsMapForProvider, uiModelsForProvider } from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
 const UI_CHUNK = 50;
 
-const RULE = "-".repeat(100);
+const RULE = "⋯".repeat(30);
 
 /** Project-relative path to the strings catalog for logs (parity with translate-docs `relativePath`). */
 function stringsCatalogRelForLog(cwd: string, stringsPath: string): string {
@@ -110,7 +107,7 @@ function localeLabelForPrompt(config: I18nConfig, localeCode: string): string {
       ? configured.trim()
       : englishLanguageNameForLocale(n);
   if (display && display.length > 0) {
-    return `${n}: ${display}`;
+    return `${display}`;
   }
   return localeCode;
 }
@@ -323,33 +320,13 @@ async function runTranslateUIBody(
 
   const glossary = new Glossary(undefined, glossaryUser, targets);
 
-  let client: LlmClient | null = null;
-  if (!opts.dryRun) {
-    const resolvedUi = resolveUITranslationModels(config);
-    let translationModelsForClient: string[] | undefined = undefined;
-    if (resolvedUi.length > 0) {
-      const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolvedUi, config);
-      warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
-      if (filtered.models.length === 0) {
-        throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
-      }
-      translationModelsForClient = filtered.models;
-    }
-    try {
-      client = new LlmClient({
-        config,
-        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
-      });
-    } catch (e) {
-      throw new Error(
-        t("LLM provider API key required for UI translation: {{error}}", {
-          error: e instanceof Error ? e.message : String(e),
-        })
-      );
-    }
-  }
-
-  const models = client?.getConfiguredModels() ?? [];
+  const allLocalesForModels = dedupeOrderedModelIds(
+    [srcNorm],
+    targets.map((loc) => normalizeLocale(loc))
+  );
+  const displayModels = dedupeOrderedModelIds(
+    ...allLocalesForModels.map((loc) => resolveUITranslationModels(config, loc))
+  );
 
   const parallelLimit = Math.max(1, Math.floor(opts.concurrency ?? config.concurrency ?? 4));
 
@@ -362,7 +339,19 @@ async function runTranslateUIBody(
         `${t("🌐 Translating UI strings to {{count}} locale(s)", { count: targets.length })}\n`
       )
   );
-  printModelsTryInOrder(models, client?.getProvider() ?? safeResolveActiveProvider(config));
+  const provider = safeResolveActiveProvider(config);
+  printTranslationModelSummary({
+    resolvedModels: displayModels,
+    provider,
+    uiModels: provider !== undefined ? uiModelsForProvider(config, provider) : undefined,
+    localeModels:
+      provider !== undefined
+        ? localeModelRowsForRun(
+            localeModelsMapForProvider(config, provider),
+            targets.map((loc) => normalizeLocale(loc))
+          )
+        : undefined,
+  });
   console.log(
     chalk.cyan(`${t("Strings:")} `) +
       chalk.magenta(t("{{count}} total entries", { count: entries.length }))
@@ -398,7 +387,17 @@ async function runTranslateUIBody(
 
   try {
     // ── Step 0: fill source-locale cardinal forms for plural entries ─────────
-    if (!opts.dryRun && client) {
+    if (!opts.dryRun) {
+      let step0Client: LlmClient;
+      try {
+        step0Client = await createFilteredLlmClient(config, srcNorm, { ui: true });
+      } catch (e) {
+        throw new Error(
+          t("LLM provider API key required for UI translation: {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        );
+      }
       console.log(
         chalk.cyan(
           `\n${t("📌 Step 0 — source-locale ({{locale}}) plural forms", { locale: srcNorm })}\n`
@@ -431,7 +430,7 @@ async function runTranslateUIBody(
           glossaryHints: hints,
           intlPluralLocaleTag: srcNorm,
         });
-        const batch = await client.translatePluralCardinalBatch(req, msgs);
+        const batch = await step0Client.translatePluralCardinalBatch(req, msgs);
         const forms = compactIdenticalPluralForms(batch.forms, srcNorm) as Record<
           CldrPluralForm,
           string
@@ -482,6 +481,18 @@ async function runTranslateUIBody(
 
     const translateOneTargetLocale = async (locale: string): Promise<void> => {
       const localeStart = Date.now();
+      let localeClient: LlmClient | null = null;
+      if (!opts.dryRun) {
+        try {
+          localeClient = await createFilteredLlmClient(config, locale, { ui: true });
+        } catch (e) {
+          throw new Error(
+            t("LLM provider API key required for UI translation: {{error}}", {
+              error: e instanceof Error ? e.message : String(e),
+            })
+          );
+        }
+      }
 
       // Pass A — plain (non-plural) rows
       const missingPlain = entries.filter(([_hash, entry]) => {
@@ -524,7 +535,7 @@ async function runTranslateUIBody(
           const chunkNum = Math.floor(i / UI_CHUNK) + 1;
           const chunkTotal = Math.ceil(missingPlain.length / UI_CHUNK);
 
-          if (opts.dryRun || !client) {
+          if (opts.dryRun || !localeClient) {
             if (opts.verbose) {
               console.log(
                 chalk.yellow(
@@ -551,7 +562,7 @@ async function runTranslateUIBody(
             glossaryReplacementsPerString.push(g.replacements);
           }
           const hints = glossary.findTermsInText(protectedSources.join("\n"), locale);
-          const uiBatch = await client.translateUIBatch(protectedSources, locale, {
+          const uiBatch = await localeClient.translateUIBatch(protectedSources, locale, {
             glossaryHints: hints,
           });
           inputTokens += uiBatch.usage.inputTokens;
@@ -640,7 +651,7 @@ async function runTranslateUIBody(
         );
       }
 
-      if (!opts.dryRun && client) {
+      if (!opts.dryRun && localeClient) {
         for (let pi = 0; pi < pluralTargets.length; pi++) {
           const [h, entry] = pluralTargets[pi]!;
           if (!isPluralStringsEntry(entry)) {
@@ -688,7 +699,7 @@ async function runTranslateUIBody(
             intlPluralLocaleTag: locale,
             targetLocale: locale,
           });
-          const batch = await client.translatePluralCardinalBatch(reqTarget, msgs, {
+          const batch = await localeClient.translatePluralCardinalBatch(reqTarget, msgs, {
             targetLocale: locale,
           });
           console.log(
@@ -788,7 +799,7 @@ async function runTranslateUIBody(
         console.log(chalk.yellow(RULE));
         console.log(
           chalk.yellow(
-            ` ${t("🚀 Running in parallel:    {{langList}}   {{completed}}/{{total}}", {
+            ` ${t("🚀 Running in parallel: {{completed}}/{{total}} - {{langList}}   ", {
               langList,
               completed: langProgress.completed,
               total: langProgress.total,

@@ -13,7 +13,7 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - serialize-javascript@7.0.5
   - "@11ty/gray-matter@2.1.0"
-  - "@types/node@26.0.0"
+  - "@types/node@26.0.0 || 26.1.1"
   - semver@7.8.5
   - "@img/sharp-darwin-arm64@0.35.2"
   - "@img/sharp-darwin-x64@0.35.2"
@@ -42,6 +42,9 @@ minimumReleaseAgeExclude:
   - "@img/sharp-win32-ia32@0.35.2"
   - "@img/sharp-win32-x64@0.35.2"
   - sharp@0.35.2
+  - i18next@26.3.5
+  - "@ai-sdk/gateway@4.0.13"
+  - ai@7.0.17
 overrides:
   ai-i18n-tools: workspace:*
   postcss@<8.5.10: ^8.5.10
@@ -51,10 +54,3 @@ overrides:
   gray-matter: npm:@11ty/gray-matter@^2.1.0
   esbuild@>=0.27.3 <0.28.1: ^0.28.1
   http-proxy-middleware@>=0.16.0 <3.0.6: ^3.0.6
-peerDependencyRules:
-  allowedVersions:
-    # @astrojs/tailwind 6.0.2 is the final release and pins its astro peer to
-    # ^3 || ^4 || ^5, but it works with astro 6 (the astro-website example
-    # builds). Accept astro 6 for this integration instead of forcing a
-    # Tailwind v4 / @tailwindcss/vite migration of the example.
-    "@astrojs/tailwind>astro": "6"

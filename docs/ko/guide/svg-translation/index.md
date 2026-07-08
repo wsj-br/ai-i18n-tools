@@ -5,6 +5,11 @@
 
 이것은 로케일별 **바이너리** SVG 파일을 내보내는 유일한 파이프라인입니다. `translate-docs`는 마크다운 대체 텍스트 및 링크 참조를 번역하지만 SVG 자산을 수정하거나 복사하지 않습니다. 페이지에 번역된 레이블이 있는 다이어그램이 필요한 경우 `features.translateSVG`을 활성화하고 최상위 `svg` 블록을 구성합니다.
 
+<a id="per-locale-model-overrides"></a>
+### 로케일별 모델 재정의
+
+`translate-svg`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`이 먼저 구성되면 `translationModels`가 사용됩니다. 각 로캘의 SVG 실행에는 자체 폴백 체인이 있습니다. CJK 로캘에서 다이어그램 레이블이 스크립트에 맞춘 모델이 필요한 경우(예: `ja`) 유용합니다. 자세한 내용은 [공급자 및 모델](/guide/providers-and-models#model-fallback-chain)을 참조하십시오.
+
 SVG 번역은 `translate-docs` 및 `translate-json` (`cacheDir`)과 동일한 SQLite 캐시를 사용합니다. 이미 번역된 텍스트 세그먼트는 캐시에서 제공되며, 새롭거나 변경된 소스 텍스트만 LLM으로 전송됩니다.
 
 <a id="when-to-use-svg-translation"></a>

@@ -122,7 +122,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 - 문자열의 JSON 배열을 보내고 번역된 결과의 JSON 배열을 반환하도록 요청합니다.
 - 가능할 경우 용어집 힌트를 포함합니다.
 
-`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석 또는 네트워크 오류 시 대체합니다. CLI는 활성 공급자의 `translationModels`에서 해당 목록을 빌드합니다. `translate-ui`의 경우, 설정된 경우 선택적 `ui.preferredModel`가 앞에 추가됩니다(나머지와 중복 제거됨).
+`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석 또는 네트워크 오류 시 대체합니다. CLI는 `localeModels`, 선택적 `uiModels` 및 `translationModels`에서 대상 로케일별로 해당 목록을 빌드합니다([공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 참조).
 
 ---
 
@@ -181,9 +181,9 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 2. **어드모니션 마커**(`:::note`, `:::`) - 시작 줄의 지시문 접두사만 ```{{ADM_OPEN_N}}```로 대체됩니다. 같은 줄의 제목은 모델이 번역하도록 남겨둡니다. 정확한 원본 텍스트로 복원됩니다.
 3. **문서 앵커**(HTML `<a id="…">`, Docusaurus 헤딩 `{#…}`) - 그대로 유지됩니다.
 4. **MDX 전용 구성**(`src/processors/mdx-placeholders.ts`):
-   - **MDX 주석**(`{/* … */}`, Docusaurus 헤딩 ID 형식 `{/* #my-id */}` 포함)은 ```{{MDX_N}}```로 대체됩니다.
-   - **대문자 JSX 태그**(`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - ```{{MDX_N}}```로 유지되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 `docs[].protectAttributes`에 속성 이름이 나타나지 않는 한 태그 내에서 ```{{JXA_N}}```로 다시 작성됩니다. `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내부의 `label:`(`docs[].protectKeys`을 통해 건너뛸 수 있음) 및 `<TabItem value="…">`(`label` 속성이 없고 소문자 슬러그와 같은 값이 건너뛰어지는 경우)도 추출됩니다. `||JXA_N: …||` 줄로 세그먼트에 추가되고 `restoreMdx`에 의해 다시 병합됩니다.
-   - **MDX 중괄호 표현식**(`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) - 깊이 인식 일치, ```{{MDX_N}}```으로 대체됩니다.
+   - **MDX 주석**(`{/* … */}`, Docusaurus 헤더 ID 형식 `{/* #my-id */}` 포함)이 ```{{MDX_N}}```로 대체되었습니다.
+   - **대문자로 시작하는 JSX 태그**(`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - 태그 내에서 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)이 ```{{JXA_N}}```로 다시 작성되지 않는 한 ```{{MDX_N}}```로 유지됩니다. 단, 속성 이름이 `docs[].protectAttributes`에 나타나는 경우는 예외입니다. `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내부의 `label:`(`docs[].protectKeys`를 통해 건너뛸 수 있음)와 `<TabItem value="…">`(`label` 속성이 없을 때 소문자 슬러그와 같은 값 건너뛰기)도 추출됩니다. `||JXA_N: …||` 줄로 세그먼트에 추가되고 `restoreMdx`에 의해 다시 병합됩니다.
+   - **MDX 중괄호 표현식**(`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - 깊이 인식 일치, ```{{MDX_N}}```로 대체됩니다.
 5. **마크다운 URL**(`](url)`, `src="…"`) - 번역 후 맵에서 복원됩니다.
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
@@ -246,9 +246,9 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 
 Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 공급자 독립적인 채팅 클라이언트입니다. 활성 공급자를 `provider` / `providers`에서 확인하고, 해당 공급자의 `baseUrl` + API 키에 대한 OpenAI 호환 클라이언트( `createOpenAICompatible` )를 빌드한 다음, 모든 호출을 `generateText`를 통해 라우팅합니다. `OpenRouterClient`는 더 이상 사용되지 않는 별칭으로 유지됩니다. 주요 동작:
 
-- **모델 대체(Model fallback)**: 확인된 목록의 각 모델을 순서대로 시도합니다. 요청 또는 구문 분석 실패 시 대체됩니다. UI 번역은 `ui.preferredModel`가 있는 경우 먼저 확인하고, 그 다음 공급자의 `translationModels`를 확인합니다. `bench-models` 명령은 ID당 하나의 단일 모델 클라이언트를 빌드하므로(`translationModels: [id]`, 대체 없음) 각 모델의 시간과 가격을 독립적으로 책정할 수 있습니다.
-- **요청 시간 초과(Request timeout)**: 활성 공급자의 `requestTimeoutMs`(기본값 30초)는 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. CLI가 `check-models` (모든 공급자)에 대한 공급자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알 수 없는 모델 ID를 삭제하는 선택적 사전 필터는 활성 공급자가 OpenRouter인 경우에만 실행됩니다.
-- **OpenRouter 추가 기능(OpenRouter extras)**(`openrouter`가 활성 상태인 경우에만 해당): `provider` 요청 필드, `HTTP-Referer` / `X-Title` 헤더를 통한 처리량 라우팅, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 비용은 공급자가 반환하는 경우에만 보고됩니다.
+- **모델 대체(Model fallback)**: 확인된 목록의 각 모델을 순서대로 시도합니다. 요청 또는 구문 분석 실패 시 대체됩니다. 각 대상 로케일은 자체적으로 확인된 체인을 가져옵니다. 구성된 경우 `localeModels(locale)`가 먼저 적용되고, 그 다음 `uiModels`(UI 파이프라인만 해당), 그 다음 `translationModels`가 적용됩니다. 문서, JSON 및 SVG 번역은 비 UI 체인을 사용하여 로케일별 클라이언트를 생성합니다. 대신 `bench-models` 명령은 구성된 ID( `translationModels`, `uiModels` 및 `localeModels`의 통합, `translationModels: [id]`, 대체 없음)당 하나의 단일 모델 클라이언트를 빌드하여 각 모델의 시간과 가격을 독립적으로 측정할 수 있습니다.
+- **요청 시간 초과(Request timeout)**: 활성 공급자의 `requestTimeoutMs`(기본값 30초)는 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. 동일한 값은 CLI가 `check-models`(모든 공급자)에 대한 공급자의 모델 목록을 로드할 때 `GET /models`에 적용됩니다. 알 수 없는 모델 ID를 삭제하는 선택적 사전 필터는 활성 공급자가 OpenRouter인 경우에만 실행됩니다.
+- **OpenRouter 추가 기능(OpenRouter extras)**( `openrouter`가 활성 상태인 경우에만 해당): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 비용은 공급자가 반환하는 경우에만 보고됩니다.
 - **디버그 트래픽 로그(Debug traffic log)**: `debugTrafficFilePath`가 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다.
 
 <a id="config-loading"></a>

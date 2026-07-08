@@ -132,13 +132,27 @@ Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`
 
 Configure providers under a top-level `providers` map and pick the active one with a top-level `provider` selector (optional when exactly one provider is configured). Most providers need only a `translationModels` list — `baseUrl` and the API-key environment variable come from a built-in preset; you can override `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, and `requestTimeoutMs` per provider. `requestTimeoutMs` is the maximum time in milliseconds to wait for each request (default `30000`).
 
+Optional model tiers on each provider block:
+
+- `translationModels` — global ordered fallback chain (required for translation features).
+- `uiModels` — UI-only chain (`translate-ui`, plural generation, `proofread-ui`): tried after any matching `localeModels` entry, before `translationModels`.
+- `localeModels` — per-locale overrides for **all** pipelines: each entry maps a BCP-47 locale to an ordered model list tried first for that locale only (`pt-br` matches `pt-BR`).
+
+Resolution order: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **docs / JSON / SVG** → `localeModels(locale)` → `translationModels`. Duplicate model ids are skipped while preserving order.
+
 To switch providers for a single run without editing the config, pass the global `-P` / `--provider <name>` option (e.g. `ai-i18n-tools -P groq translate-ui`); the name must be one of the configured `providers` keys.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -165,7 +179,7 @@ Built-in provider presets (key — base URL — API-key env var):
 
 Define a custom OpenAI-compatible provider by adding a new key with `baseUrl` (and `apiKeyEnv` unless it needs no key). Model ids are plain upstream ids — the provider is chosen at the config level, so no `provider/` prefix is needed (OpenRouter ids keep their native `vendor/model` form).
 
-Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates configured model ids against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks each configured model by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
+Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates all configured model ids (`translationModels`, `uiModels`, and every `localeModels` entry) against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks every unique configured model id (`translationModels`, `uiModels`, and `localeModels`) by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
 
 A legacy top-level `openrouter` config block is still accepted and is automatically migrated to `providers.openrouter` (with `provider: "openrouter"`) on load.
 
@@ -280,7 +294,7 @@ The following helpers are exported from `'ai-i18n-tools/runtime'` and work in an
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

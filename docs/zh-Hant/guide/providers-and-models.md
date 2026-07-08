@@ -35,9 +35,16 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 `translationModels` 是一個**有序列表**，而不是單一選擇。CLI 會嘗試第一個模型；如果請求或解析失敗，它會移至下一個條目。設定多個模型，這樣暫時性中斷或難以處理特定語言環境的模型就不會阻礙整個執行。
 
-僅針對 `translate-ui`，可選的 `ui.preferredModel` 會在供應商的 `translationModels` 列表（已去重）**之前**嘗試。
+**解析層次** (去重，保持順序):
 
-不同的供應商和模型在不同語言的成本、速度和品質上有所差異。將 `npx ai-i18n-tools init` 中的預設列表視為起點 — 當某個語言環境持續產生不良結果時，請擴展它。完整的預設值和原理：[設定 — `provider` 和 `providers`](/reference/configuration#provider-and-providers)。
+| 管道 | 順序 |
+| --- | --- |
+| UI (`translate-ui`, 複數, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
+| 文件，JSON，SVG | `localeModels(locale)` → `translationModels` |
+
+可選的 `providers.<active>.uiModels` 是一個僅限 UI 的清單，在任何匹配的本地化覆蓋和全局 `translationModels` 鏈之前嘗試。可選的 `providers.<active>.localeModels` 將 BCP-47 本地化映射到每個管道中為該本地化**首先**嘗試的模型（`pt-br` 匹配 `pt-BR`）。當沒有 `localeModels` 項目匹配時，僅應用管道特定的層次。
+
+不同的提供者和模型在不同語言中的成本、速度和質量各不相同。將 `npx ai-i18n-tools init` 的默認清單視為起點——當某個本地化始終產生不良結果時擴展它，或為該本地化添加 `localeModels` 項目。默認值和理由：[配置 — `provider` 和 `providers`](/reference/configuration#provider-and-providers)。
 
 最小設定範例 (OpenRouter)：
 
@@ -50,6 +57,12 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
         "qwen/qwen3-235b-a22b-2507",
         "openai/gpt-4o-mini",
         "deepseek/deepseek-v4-flash"
+      ],
+      "uiModels": [
+        "anthropic/claude-sonnet-latest"
+      ],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     }
   }
@@ -65,7 +78,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 npx ai-i18n-tools check-models
 ```
 
-`check-models` 呼叫供應商的 `GET /models` 端點，報告遺失或已過期 `expiration_date` 的 ID，並且當任何配置的 ID 無效時，以非零值退出。當供應商返回定價時 (OpenRouter 會)，它還會顯示每 1M 令牌的估計美元費用。
+`check-models` 呼叫提供者的 `GET /models` 端點，驗證來自 `translationModels`、`uiModels` 和 `localeModels` 的每一個 id，報告缺失或已過 `expiration_date` 的 id，並在任何配置的 id 無效時以非零值退出。當提供者返回價格（OpenRouter 會這樣做時），它還會顯示每 1M 標記的預估 USD。
 
 瀏覽供應商宣傳的完整目錄：
 
@@ -73,7 +86,7 @@ npx ai-i18n-tools check-models
 npx ai-i18n-tools list-models
 ```
 
-在真實翻譯樣本上基準測試已配置的模型 — 每個模型獨立運行，因此您可以比較實際時間、令牌使用量和成本：
+對已設定的模型進行效能基準測試，使用真實翻譯樣本——`translationModels`、`uiModels` 和 `localeModels` 中的每個唯一識別碼都會獨立執行，方便您比較實際耗時、權杖使用量和成本：
 
 ```bash
 npx ai-i18n-tools bench-models
@@ -82,7 +95,7 @@ npx ai-i18n-tools bench-models
 覆寫樣本文字、語言環境或模型列表：
 
 ```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --models openai/gpt-4o-mini,anthropic/claude-3-haiku
+npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
 指令詳情：[CLI 參考](/reference/cli-commands)。
@@ -97,7 +110,7 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-每個提供者區塊都可以定義自己的 `translationModels`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。傳統的頂層 `openrouter` 區塊仍然接受，並在載入時自動遷移到 `providers.openrouter`。
+每個提供者塊可以定義自己的 `translationModels`，可選的 `uiModels` 和 `localeModels`，`maxTokens`，`temperature` 和 `requestTimeoutMs`。仍然接受遺留的頂層 `openrouter` 塊，並在加載時自動遷移到 `providers.openrouter`。
 
 在同一文件中包含四個提供者的可執行範例：[`examples/multi-provider`](/examples#multi-provider)。
 

@@ -5,6 +5,11 @@
 
 这是唯一一个发出特定于语言环境的 **二进制** SVG 文件的管道。`translate-docs` 翻译 Markdown 替代文本和链接引用，但它不修改或复制 SVG 资产。当页面需要带有翻译标签的图表时，启用 `features.translateSVG` 并配置顶级 `svg` 块。
 
+<a id="per-locale-model-overrides"></a>
+### 每个区域模型覆盖
+
+`translate-svg` 解析模型 **按目标区域设置**：`localeModels(locale)` 配置后优先使用，然后是 `translationModels`。每个区域设置的 SVG 运行使用自己的回退链——当 CJK 区域设置中的图表标签需要脚本调整的模型时（例如 `ja`），这非常有用。参见 [提供程序和模型](/guide/providers-and-models#model-fallback-chain)。
+
 SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的 SQLite 缓存。已翻译的文本段从缓存中提供；只有新的或更改的源文本才会发送到 LLM。
 
 <a id="when-to-use-svg-translation"></a>

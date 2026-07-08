@@ -5,6 +5,11 @@ Un projects ke liye design kiya gaya hai jo UI copy ko **nested JSON files mein 
 
 Yeh pipeline **nahin** chalta hai `extract` — yahaan koi `strings.json` catalog nahin hai. Ise `features.translateJson` ke saath aur top-level `json[]` mein ek ya adhik entries ke saath enable karein.
 
+<a id="per-locale-model-overrides"></a>
+### Pratyaik sthanik model override
+
+`translate-json` **pratyek target locale** ke liye models ko resolve karta hai: jab configure kiya jaata hai to pehle `localeModels(locale)`, phir `translationModels`. Iska upyog nested JSON bundles ke liye karein jahaan kuch locales ko samarpit models se laabh hota hai — udaaharan ke liye `zh-Hans` / `zh-Hant` theme files. [Providers aur models](/guide/providers-and-models#model-fallback-chain) dekhein.
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Step 1: Nested JSON ke liye initialise karein
 

@@ -5,6 +5,11 @@ UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**�
 
 このパイプラインは実行し**ない** `extract` — カタログ`strings.json`はありません。それを有効にするには、`features.translateJson`とトップレベルの`json[]`に1つ以上のエントリが必要です。
 
+<a id="per-locale-model-overrides"></a>
+### ロケールごとのモデルオーバーライド
+
+`translate-json`はモデルを**ターゲットロケール**ごとに解決します: `localeModels(locale)`は最初に構成されたときに、次に`translationModels`。ネストされたJSONバンドルの特定のロケールに専用のモデルが必要な場合にこれを使用します。たとえば、`zh-Hans` / `zh-Hant`テーマファイル。詳しくは、[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)を参照してください。
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### ステップ 1: ネストされたJSON向けに初期化
 

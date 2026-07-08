@@ -45,7 +45,14 @@ import {
   type RawI18nConfigInput,
   i18nConfigSchema,
 } from "./types.js";
-import { resolveActiveProvider, translationModelsForProvider } from "./llm-providers.js";
+import {
+  allConfiguredModelIdsForProvider,
+  dedupeOrderedModelIds,
+  localeModelsForProvider,
+  resolveActiveProvider,
+  translationModelsForProvider,
+  uiModelsForProvider,
+} from "./llm-providers.js";
 
 export {
   coerceTargetLocalesField,
@@ -94,23 +101,63 @@ export function resolveTranslationModels(
   return translationModelsForProvider(config, active);
 }
 
+export { dedupeOrderedModelIds } from "./llm-providers.js";
+
+export interface ResolveTranslationModelsForLocaleOptions {
+  /** When true, include `uiModels` between locale and global `translationModels` tiers. */
+  ui?: boolean;
+}
+
 /**
- * Ordered models for UI translation: optional `ui.preferredModel` first, then the active provider's
- * {@link resolveTranslationModels}, with the preferred id deduplicated from the tail.
+ * Ordered model fallback chain for a target locale on the active provider.
+ *
+ * - UI tasks: `localeModels(locale)` → `uiModels` → `translationModels`
+ * - Other tasks: `localeModels(locale)` → `translationModels`
  */
-export function resolveUITranslationModels(config: I18nConfig): string[] {
-  const base = resolveTranslationModels(config);
-  const pref = config.ui.preferredModel?.trim();
-  if (!pref) {
-    return base;
+export function resolveTranslationModelsForLocale(
+  config: Pick<I18nConfig, "provider" | "providers">,
+  locale: string,
+  opts?: ResolveTranslationModelsForLocaleOptions
+): string[] {
+  let active: string;
+  try {
+    active = resolveActiveProvider(config);
+  } catch {
+    return [];
   }
-  const out: string[] = [pref];
-  for (const m of base) {
-    if (m !== pref) {
-      out.push(m);
-    }
+  const localeTier = localeModelsForProvider(config, active, locale);
+  const translationTier = translationModelsForProvider(config, active);
+  if (opts?.ui) {
+    const uiTier = uiModelsForProvider(config, active);
+    return dedupeOrderedModelIds(localeTier, uiTier, translationTier);
   }
-  return out;
+  return dedupeOrderedModelIds(localeTier, translationTier);
+}
+
+/**
+ * Ordered models for UI translation for a locale: {@link resolveTranslationModelsForLocale} with `ui: true`.
+ */
+export function resolveUITranslationModels(
+  config: Pick<I18nConfig, "provider" | "providers">,
+  locale: string
+): string[] {
+  return resolveTranslationModelsForLocale(config, locale, { ui: true });
+}
+
+/**
+ * Union of all model ids on the active provider (`translationModels`, `uiModels`, `localeModels`).
+ * Used by `check-models`.
+ */
+export function resolveAllConfiguredModelIds(
+  config: Pick<I18nConfig, "provider" | "providers">
+): string[] {
+  let active: string;
+  try {
+    active = resolveActiveProvider(config);
+  } catch {
+    return [];
+  }
+  return allConfiguredModelIdsForProvider(config, active);
 }
 
 function deepMergeDefaults<T extends Record<string, unknown>>(base: T, override: unknown): T {

@@ -1,5 +1,6 @@
 import type { I18nConfig, LlmProviderConfig } from "./types.js";
 import { ConfigValidationError } from "./errors.js";
+import { normalizeLocale } from "./locale-utils.js";
 
 /** Global LLM defaults applied when a provider block (and its preset) do not specify them. */
 export const DEFAULT_LLM_MAX_TOKENS = 8192;
@@ -212,7 +213,76 @@ export function translationModelsForProvider(
   if (!Array.isArray(list)) {
     return [];
   }
+  return trimModelIdList(list);
+}
+
+/** Ordered UI-only model fallback chain for a provider. */
+export function uiModelsForProvider(config: ProviderSelectionConfig, name: string): string[] {
+  const list = providerEntry(config, name).uiModels;
+  if (!Array.isArray(list)) {
+    return [];
+  }
+  return trimModelIdList(list);
+}
+
+/** Per-locale model chains keyed by normalized BCP-47 locale. */
+export function localeModelsMapForProvider(
+  config: ProviderSelectionConfig,
+  name: string
+): Map<string, string[]> {
+  const rows = providerEntry(config, name).localeModels;
+  const map = new Map<string, string[]>();
+  if (!Array.isArray(rows)) {
+    return map;
+  }
+  for (const row of rows) {
+    const key = normalizeLocale(row.locale);
+    map.set(key, trimModelIdList(row.models));
+  }
+  return map;
+}
+
+function trimModelIdList(list: string[]): string[] {
   return list
     .filter((m): m is string => typeof m === "string" && m.trim().length > 0)
     .map((m) => m.trim());
+}
+
+/** Merge ordered model lists, keeping first occurrence of each id. */
+export function dedupeOrderedModelIds(...lists: string[][]): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const list of lists) {
+    for (const id of list) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        out.push(id);
+      }
+    }
+  }
+  return out;
+}
+
+/** Locale-specific models for a provider, or `[]` when unset. */
+export function localeModelsForProvider(
+  config: ProviderSelectionConfig,
+  name: string,
+  locale: string
+): string[] {
+  return localeModelsMapForProvider(config, name).get(normalizeLocale(locale)) ?? [];
+}
+
+/** Union of all model ids configured on a provider (for `check-models`). */
+export function allConfiguredModelIdsForProvider(
+  config: ProviderSelectionConfig,
+  name: string
+): string[] {
+  const entry = providerEntry(config, name);
+  const localeRows = entry.localeModels ?? [];
+  const localeIds = localeRows.flatMap((row) => trimModelIdList(row.models));
+  return dedupeOrderedModelIds(
+    trimModelIdList(entry.translationModels ?? []),
+    trimModelIdList(entry.uiModels ?? []),
+    localeIds
+  );
 }

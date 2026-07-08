@@ -71,7 +71,11 @@ Ek saath anuvaad kiye gaye adhiktam **lakshya sthaan** (`translate-ui`, `transla
 Har `providers.<name>` block swikaar karta hai:
 
 - `translationModels`
-  Model IDs ki pasandeeda ordered list (plain upstream ids, koi `provider/` prefix nahin; OpenRouter ids apne native `vendor/model` form ko banaye rakhte hain). Pehla pehle try kiya jaata hai; baad ke entries error par fallbacks hain. Keval `translate-ui` ke liye, aap is list se pehle ek model try karne ke liye `ui.preferredModel` bhi set kar sakte hain (`ui` dekhen).
+  Model ID ki pasandida kramit suchi (sadharan upstream ID, koi `provider/` prefix nahi; OpenRouter ID apni mul `vendor/model` form rakhte hain). Pehle ko pehle prayas kiya jata hai; baad ki pravishtiyan galti hone par fallback hoti hain. Yah har pipeline ke liye vaishvik default chain hai jab koi aur vishisht tier lagu nahi hota hai.
+- `uiModels` (vaikalpik)
+  `translate-ui`, bahuvachan generation (Step 0 aur Pass B), aur `proofread-ui` ke liye kramit UI-only model suchi. Target locale ke liye kisi bhi matching `localeModels` entry ke baad, `translationModels` se pehle prayas kiya jata hai.
+- `localeModels` (vaikalpik)
+  **Sabhi** translation pipelines ke liye per-locale overrides. `{ "locale": "<BCP-47>", "models": ["…"] }` objects ka array. Locale tags case-insensitively match kiye jate hain (`pt-br` = `pt-BR`). Har locale ki suchi us locale ke liye pehle prayas ki jati hai, phir pipeline-specific tiers (UI ke liye `uiModels`) aur `translationModels`. Duplicate normalized locale keys ko config load par asweekar kiya jata hai.
 - `baseUrl`
   OpenAI-compatible base URL. Preset base URL ko override karta hai; non-preset provider ke liye avashyak hai.
 - `apiKeyEnv`
@@ -83,7 +87,7 @@ Har `providers.<name>` block swikaar karta hai:
 - `temperature`
   Sampling temperature. Default: `0.2`.
 - `requestTimeoutMs`
-  Har request ke liye intazaar karne ka adhiktam samay milliseconds mein. Default: `30000` (30 seconds).
+  Har request ke liye intazar karne ka milliseconds mein adhiktam samay. Default: `30000` (30 seconds).
 
 Built-in provider presets (key — base URL — API-key env var):
 
@@ -141,9 +145,9 @@ Udaharan `translationModels` (`npx ai-i18n-tools init` ke saman defaults):
 
 Apne environment ya `.env` file mein active provider ka API-key env var (jaise `OPENROUTER_API_KEY`) set karen.
 
-`translationModels` badalne se pehle, `npx ai-i18n-tools check-models` chalayen. Kisi bhi provider ke liye yah har configured model id ko us provider ki live model list (`GET /models`) ke khilaf verify karta hai, gayab ya `expiration_date` se aage ki ids ki report karta hai, valid models ki suchi banata hai, aur jab koi configured id invalid hoti hai to non-zero exit karta hai. Jab provider pricing wapas karta hai (jaise OpenRouter) to yah anumanit input/output pricing (USD prati 1M tokens) bhi dikhata hai.
+Model suchiyon ko badalne se pehle, `npx ai-i18n-tools check-models` chalaen. Kisi bhi provider ke liye yah har configured model id (`translationModels`, `uiModels`, aur sabhi `localeModels` entries) ko us provider ki live model suchi (`GET /models`) ke khilaf verify karta hai, missing ya `expiration_date` se aage ki ids ki report karta hai, vaidh models ki suchi banata hai, aur jab koi configured id invalid hoti hai to non-zero exit karta hai. Jab provider pricing return karta hai (jaise OpenRouter) to yah anumanit input/output pricing (USD prati 1M tokens) bhi dikhata hai.
 
-Vastavik anuvad kary par configure kiye gaye modelon ki tulna karne ke liye, `npx ai-i18n-tools bench-models` chalayen. Yah har model ke madhyam se ek sample ka anuvad karta hai (samantar mein, `concurrency` dwara seemit) aur prati-model input/output token, wall-clock samay, aur USD lagat print karta hai, taki aap `translationModels` order par nirnay lene se pahle gati aur kimat ka tulnatmak adhyayan kar saken.
+Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx ai-i18n-tools bench-models` chalayen. Yah `translationModels`, `uiModels`, aur `localeModels` se har anokhe model id ko benchmark karta hai, har ek ko alag-alag (parallel mein, `concurrency` dwara seemit) ek sample ka anuvad karke, aur prati-model input/output tokens, wall-clock samay, aur USD lagat print karta hai, taki aap model suchiyon par nirnay lene se pahle gati aur kimat ka tulnatmak adhyayan kar saken.
 
 <a id="features"></a>
 ### `features`
@@ -160,22 +164,20 @@ SVG files ka `translate-svg` ke saath **anuvad karen** jab `features.translateSV
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`
-Directories ya glob patterns (cwd ke sapeksh) `t("…")` calls ke liye scan kiye gaye. `src/` ya `["src/**/*.ts"]` jaise patterns ko support karta hai.
-- `stringsJson`
-Master catalog file ka path. `extract` dwara update kiya gaya.
-- `flatOutputDir`
-Directory jahan prati-locale JSON files likhe jate hain (`de.json`, aadi).
-- `preferredModel`
-Optional. Model id pehle keval `translate-ui` ke liye try kiya gaya; phir active provider ka `translationModels` kram mein, is id ko duplicate kiye bina.
-- `uiExtractor.funcNames` (ya legacy `reactExtractor.funcNames`)
-Scan karne ke liye atirikt function names (default: `["t", "i18n.t"]`).
-- `uiExtractor.extensions` (ya legacy `reactExtractor.extensions`)
-Shamil karne ke liye file extensions (default: `[".js", ".jsx", ".ts", ".tsx"]`). Astro frontmatter aur template expressions ke liye `.astro` joden.
-- `uiExtractor.includePackageDescription` (ya legacy `reactExtractor.includePackageDescription`)
-Jab `true` (default), `extract` mein `package.json` `description` bhi shamil hota hai jab maujood ho to ek UI string ke roop mein.
-- `uiExtractor.packageJsonPath` (ya legacy `reactExtractor.packageJsonPath`)
-Us optional description extraction ke liye upyog kiye jane wale `package.json` file ka custom path.
+- `sourceRoots`  
+  Directories ya glob patterns (cwd ke sapeksh) jo `t("…")` calls ke liye scan kiye jate hain. `src/` ya `["src/**/*.ts"]` jaise patterns ko support karta hai.
+- `stringsJson`  
+  Master catalog file ka path. `extract` dwara update kiya gaya.
+- `flatOutputDir`  
+  Directory jahan per-locale JSON files likhe jate hain (`de.json`, ityadi).
+- `uiExtractor.funcNames` (ya legacy `reactExtractor.funcNames`)  
+  Scan karne ke liye atirikt function names (default: `["t", "i18n.t"]`).
+- `uiExtractor.extensions` (ya legacy `reactExtractor.extensions`)  
+  Shamil karne ke liye file extensions (default: `[".js", ".jsx", ".ts", ".tsx"]`). Astro frontmatter aur template expressions ke liye `.astro` joden.
+- `uiExtractor.includePackageDescription` (ya legacy `reactExtractor.includePackageDescription`)  
+  Jab `true` (default), `extract` mein `package.json` `description` bhi shamil hota hai jab maujood ho to ek UI string ke roop mein.
+- `uiExtractor.packageJsonPath` (ya legacy `reactExtractor.packageJsonPath`)  
+  Us vaikalpik vivaran extraction ke liye upyog kiye jane wale `package.json` file ka custom path.
 - `uiExtractor.includeUiLanguageEnglishNames` (ya legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
 Jab `true` (default `false`), `extract` bhi bundled ui-languages master catalog (`sourceLocale` + `targetLocales` se nirmit) se har `englishName` ko `strings.json` mein jodta hai jab vah source scan se pahle se maujood na ho (saman hash keys). `uiLanguagesPath` nahi padhta hai.

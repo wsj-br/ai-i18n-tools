@@ -10,7 +10,10 @@ import {
   parseI18nConfig,
   parseLocaleList,
   resolveTranslationModels,
+  resolveTranslationModelsForLocale,
   resolveUITranslationModels,
+  resolveAllConfiguredModelIds,
+  dedupeOrderedModelIds,
   validateI18nBusinessRules,
   writeInitConfigFile,
 } from "../../src/core/config.js";
@@ -61,6 +64,72 @@ describe("resolveTranslationModels", () => {
   });
 });
 
+describe("dedupeOrderedModelIds", () => {
+  it("preserves order and drops duplicates across tiers", () => {
+    expect(dedupeOrderedModelIds(["a", "b"], ["b", "c"], ["a", "d"])).toEqual(["a", "b", "c", "d"]);
+  });
+});
+
+describe("resolveTranslationModelsForLocale", () => {
+  const providerConfig = {
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: ["t1", "t2"],
+        uiModels: ["u1", "t1"],
+        localeModels: [
+          { locale: "pt-br", models: ["l1", "t1"] },
+          { locale: "zh-Hans", models: ["l2"] },
+        ],
+      },
+    },
+  } as const;
+
+  it("merges locale + ui + translation for UI tasks", () => {
+    expect(
+      resolveTranslationModelsForLocale(providerConfig, "pt-BR", { ui: true })
+    ).toEqual(["l1", "t1", "u1", "t2"]);
+  });
+
+  it("merges locale + translation only for non-UI tasks", () => {
+    expect(resolveTranslationModelsForLocale(providerConfig, "pt-BR")).toEqual(["l1", "t1", "t2"]);
+  });
+
+  it("normalizes locale tags when matching localeModels", () => {
+    expect(resolveTranslationModelsForLocale(providerConfig, "pt-br", { ui: true })).toEqual([
+      "l1",
+      "t1",
+      "u1",
+      "t2",
+    ]);
+  });
+
+  it("falls back to ui + translation when no locale entry matches", () => {
+    expect(resolveTranslationModelsForLocale(providerConfig, "de", { ui: true })).toEqual([
+      "u1",
+      "t1",
+      "t2",
+    ]);
+  });
+});
+
+describe("resolveAllConfiguredModelIds", () => {
+  it("returns the union of translation, ui, and locale model ids", () => {
+    expect(
+      resolveAllConfiguredModelIds({
+        provider: "openrouter",
+        providers: {
+          openrouter: {
+            translationModels: ["t1", "t2"],
+            uiModels: ["u1"],
+            localeModels: [{ locale: "de", models: ["l1", "t1"] }],
+          },
+        },
+      })
+    ).toEqual(["t1", "t2", "u1", "l1"]);
+  });
+});
+
 describe("resolveUITranslationModels", () => {
   function uiConfig(overrides: Record<string, unknown>): I18nConfig {
     return parseI18nConfig(
@@ -91,46 +160,45 @@ describe("resolveUITranslationModels", () => {
     );
   }
 
-  it("returns base order when preferredModel is unset", () => {
-    expect(resolveUITranslationModels(uiConfig({}))).toEqual(["a", "b"]);
+  it("returns translationModels when no uiModels or localeModels", () => {
+    expect(resolveUITranslationModels(uiConfig({}), "de")).toEqual(["a", "b"]);
   });
 
-  it("prepends preferredModel and skips duplicate in the tail", () => {
+  it("prepends uiModels before translationModels", () => {
     expect(
       resolveUITranslationModels(
         uiConfig({
-          ui: {
-            sourceRoots: ["src/"],
-            stringsJson: "strings.json",
-            flatOutputDir: "./locales",
-            preferredModel: "b",
-          },
-        })
-      )
-    ).toEqual(["b", "a"]);
-  });
-
-  it("prepends preferredModel before the active provider's models", () => {
-    expect(
-      resolveUITranslationModels(
-        uiConfig({
-          provider: "openrouter",
           providers: {
             openrouter: {
-              translationModels: ["x", "y"],
+              translationModels: ["a", "b"],
+              uiModels: ["b", "c"],
               maxTokens: 8192,
               temperature: 0.2,
             },
           },
-          ui: {
-            sourceRoots: ["src/"],
-            stringsJson: "strings.json",
-            flatOutputDir: "./locales",
-            preferredModel: "z",
-          },
-        })
+        }),
+        "de"
       )
-    ).toEqual(["z", "x", "y"]);
+    ).toEqual(["b", "c", "a"]);
+  });
+
+  it("prepends localeModels before uiModels and translationModels", () => {
+    expect(
+      resolveUITranslationModels(
+        uiConfig({
+          providers: {
+            openrouter: {
+              translationModels: ["a", "b"],
+              uiModels: ["u"],
+              localeModels: [{ locale: "de", models: ["l", "a"] }],
+              maxTokens: 8192,
+              temperature: 0.2,
+            },
+          },
+        }),
+        "de"
+      )
+    ).toEqual(["l", "a", "u", "b"]);
   });
 });
 
@@ -148,6 +216,61 @@ describe("parseI18nConfig", () => {
     );
     expect(c.sourceLocale).toBe("en");
     expect(c.docs[0].outputDir).toBe("./out");
+  });
+
+  it("accepts providers.uiModels and providers.localeModels", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        provider: "openrouter",
+        providers: {
+          openrouter: {
+            translationModels: ["a"],
+            uiModels: ["u"],
+            localeModels: [{ locale: "de", models: ["l"] }],
+          },
+        },
+        cacheDir: ".translation-cache",
+        docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+      })
+    );
+    expect(c.providers.openrouter?.uiModels).toEqual(["u"]);
+    expect(c.providers.openrouter?.localeModels).toEqual([{ locale: "de", models: ["l"] }]);
+  });
+
+  it("rejects duplicate localeModels locale keys after normalization", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          provider: "openrouter",
+          providers: {
+            openrouter: {
+              translationModels: ["a"],
+              localeModels: [
+                { locale: "pt-BR", models: ["x"] },
+                { locale: "pt-br", models: ["y"] },
+              ],
+            },
+          },
+          cacheDir: ".translation-cache",
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        })
+      )
+    ).toThrow(/duplicate locale/i);
+  });
+
+  it("rejects legacy ui.preferredModel", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          ui: { ...uiDefaults, preferredModel: "openai/gpt-4o-mini" },
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        })
+      )
+    ).toThrow();
   });
 
   it("merges sourceFiles into contentPaths and dedupes", () => {

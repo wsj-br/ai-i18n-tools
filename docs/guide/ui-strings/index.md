@@ -29,7 +29,7 @@ This writes `ai-i18n-tools.config.json` with the `ui-markdown` template. Edit it
 - `ui.sourceRoots` - directories or glob patterns to scan for `t("…")` calls (e.g. `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - where to write the master catalog (e.g. `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - where to write `de.json`, `pt-BR.json`, etc. (e.g. `"src/locales/"`).
-- `ui.preferredModel` (optional) - model id to try **first** for `translate-ui` only; on failure the CLI continues with the active provider's `translationModels` in order, skipping duplicates.
+- `providers.<active>.uiModels` (optional) - ordered UI-only model list for `translate-ui`, plural generation, and `proofread-ui` (after any matching `localeModels` entry, before `translationModels`). See [Providers and models](/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Step 2: Extract strings
@@ -49,7 +49,12 @@ The scanner is configurable: add custom function names via `ui.uiExtractor.funcN
 npx ai-i18n-tools translate-ui
 ```
 
-Reads `strings.json`, sends batches to the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. When `ui.preferredModel` is set, that model is attempted before the active provider's `translationModels` list (document translation and other commands use the provider's list only).
+Reads `strings.json`, sends batches to the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
+
+<a id="per-locale-model-overrides"></a>
+### Per-locale model overrides
+
+Optional `providers.<active>.localeModels` entries map a BCP-47 locale to an ordered model list tried **before** `uiModels` and `translationModels` for that locale. The same `localeModels` entries also apply to document, JSON, and SVG translation. Locale tags are matched case-insensitively (`pt-br` = `pt-BR`). If no entry matches, only `uiModels` and `translationModels` are used for UI work.
 
 For each entry, `translate-ui` stores the **model id from the active provider** that successfully translated each locale in an optional `models` object (same locale keys as `translated`). Strings edited in the Translation Dashboard are marked with the sentinel value `user-edited` in `models` for that locale. The per-locale flat files under `ui.flatOutputDir` remain **source string → translation** only; they do not include `models` (so runtime bundles stay unchanged).
 

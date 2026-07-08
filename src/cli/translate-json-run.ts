@@ -10,6 +10,7 @@ import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
+import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { hashFileContent, translatedOutputIsCurrent, writeAtomicUtf8 } from "./helpers.js";
 import type { Segment } from "../core/types.js";
 import {
@@ -156,7 +157,10 @@ export async function translateNestedJsonFile(
   >();
   const toBatch: Segment[] = [];
   const segmentIndicesInDoc: number[] = [];
-  const client = new LlmClient({ config });
+  let client: LlmClient | null = null;
+  if (!opts.dryRun) {
+    client = await createFilteredLlmClient(config, locale);
+  }
 
   for (let i = 0; i < segments.length; i++) {
     const s = segments[i]!;

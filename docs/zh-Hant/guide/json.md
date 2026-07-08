@@ -5,6 +5,11 @@
 
 這個管道不**運行** — 沒有`extract` — 因為沒有 `strings.json` 目錄。使用 `features.translateJson` 並在頂級 `json[]` 中加入一個或多個項目來啟用它。
 
+<a id="per-locale-model-overrides"></a>
+### 每個地區模型覆蓋
+
+`translate-json` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。在嵌套的 JSON 包中使用此功能，某些地區可以從專用模型中受益——例如 `zh-Hans` / `zh-Hant` 主題文件。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)。
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### 步驟 1：初始化巢狀 JSON
 

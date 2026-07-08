@@ -35,9 +35,16 @@ Apne environment ya `.env` file mein active provider ki API key set karen. CLI w
 
 `translationModels` ek **ordered list** hai, na ki ek single choice. CLI pahle model ko try karta hai; request ya parse failure par yah agali entry par chala jata hai. Kai models ko configure karen taki ek transient outage ya ek model jo kisi locale ke saath sangharsh karta hai, poore run ko block na kare.
 
-Kewal `translate-ui` ke liye, optional `ui.preferredModel` ko provider ki `translationModels` list se **pahle** try kiya jata hai (deduplicated).
+**Resolution tiers** (deduplicated, order preserved):
 
-Vibhinn providers aur models ki laagat, gati aur gunvatta alag-alag bhashaon mein bhinn hoti hai. `npx ai-i18n-tools init` se default list ko ek shuruaati bindu ke roop mein dekhen — jab koi locale lagatar kharab parinaam deta hai to ise badhaen. Poore defaults aur rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
+| Pipeline | Order |
+| --- | --- |
+| UI (`translate-ui`, plurals, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
+| Documents, JSON, SVG | `localeModels(locale)` → `translationModels` |
+
+Optional `providers.<active>.uiModels` ek UI-only list hai jo kisi bhi matching per-locale override ke baad aur global `translationModels` chain se pehle try ki jaati hai. Optional `providers.<active>.localeModels` ek BCP-47 locale ko models se map karta hai jo har pipeline mein us locale ke liye **sabse pehle** try kiye jaate hain (`pt-br` `pt-BR` se match karta hai). Jab koi `localeModels` entry match nahi karti, toh sirf pipeline-specific tiers apply hote hain.
+
+Alag-alag providers aur models ki cost, speed, aur quality languages mein alag-alag hoti hai. `npx ai-i18n-tools init` se default list ko ek shuruaati point maanein — jab koi locale consistently kharab results deta hai, toh ise badhaayein, ya us locale ke liye ek `localeModels` entry jodein. Poore defaults aur rationale: [Configuration — `provider` aur `providers`](/reference/configuration#provider-and-providers).
 
 Udaaharan minimal config (OpenRouter):
 
@@ -50,6 +57,12 @@ Udaaharan minimal config (OpenRouter):
         "qwen/qwen3-235b-a22b-2507",
         "openai/gpt-4o-mini",
         "deepseek/deepseek-v4-flash"
+      ],
+      "uiModels": [
+        "anthropic/claude-sonnet-latest"
+      ],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     }
   }
@@ -65,7 +78,7 @@ Udaaharan minimal config (OpenRouter):
 npx ai-i18n-tools check-models
 ```
 
-`check-models` provider ke `GET /models` endpoint ko call karta hai, un ids ki report karta hai jo gayab hain ya `expiration_date` se aage hain, aur jab koi configured id invalid hoti hai to non-zero exit karta hai. Jab provider pricing wapas karta hai (OpenRouter karta hai), to yah 1M tokens ke liye anumanit USD bhi dikhata hai.
+`check-models` provider ke `GET /models` endpoint ko call karta hai, `translationModels`, `uiModels`, aur `localeModels` se har id ko validate karta hai, missing ya `expiration_date` se aage ki ids ko report karta hai, aur jab koi configured id invalid hoti hai toh non-zero exit karta hai. Jab provider pricing return karta hai (OpenRouter karta hai), toh yeh 1M tokens ke liye anumaanit USD bhi dikhata hai.
 
 Ek provider dwara vigyapit poori catalog browse karen:
 
@@ -73,7 +86,7 @@ Ek provider dwara vigyapit poori catalog browse karen:
 npx ai-i18n-tools list-models
 ```
 
-Ek vastavik anuvaad sample par configured models ka benchmark karen — har model alag-alag chalta hai taki aap wall-clock time, token usage, aur cost ki tulna kar saken:
+Ek vastavik anuvaad sample par configure kiye gaye models ka benchmark karein — `translationModels`, `uiModels`, aur `localeModels` se har ek unique ID alag se chalti hai taaki aap wall-clock samay, token upyog, aur laagat ki tulna kar sakein:
 
 ```bash
 npx ai-i18n-tools bench-models
@@ -82,7 +95,7 @@ npx ai-i18n-tools bench-models
 Sample text, locales, ya model list ko override karen:
 
 ```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --models openai/gpt-4o-mini,anthropic/claude-3-haiku
+npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
 Command details: [CLI reference](/reference/cli-commands).
@@ -97,7 +110,7 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Har ek provider block apni khud ki `translationModels`, `maxTokens`, `temperature`, aur `requestTimeoutMs` define kar sakta hai. Ek legacy top-level `openrouter` block abhi bhi swikar kiya jata hai aur load hone par `providers.openrouter` mein auto-migrate ho jata hai.
+Har provider block apni khud ki `translationModels`, optional `uiModels` aur `localeModels`, `maxTokens`, `temperature`, aur `requestTimeoutMs` define kar sakta hai. Ek legacy top-level `openrouter` block abhi bhi accept kiya jaata hai aur load hone par `providers.openrouter` mein auto-migrate ho jaata hai.
 
 Ek hi document par chaar providers ke saath chalne wala udaharan: [`examples/multi-provider`](/examples#multi-provider).
 

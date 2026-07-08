@@ -122,7 +122,7 @@ i18next inhein resource bundles ke roop mein load karta hai aur source string (k
 - Strings ka ek JSON array bhejte hain aur badle mein translations ka ek JSON array anurodh karte hain.
 - Uplabdh hone par glossary hints shamil karte hain.
 
-`LlmClient.translateUIBatch` har model ko kram mein prayas karta hai, parse ya network errors par wapas aata hai. CLI active provider ke `translationModels` se us list ko banata hai; `translate-ui` ke liye, vaikalpik `ui.preferredModel` ko set hone par aage joda jata hai (baaki ke khilaaf deduplicate kiya gaya).
+`LlmClient.translateUIBatch` har model ko kram mein prayas karta hai, parse ya network error par wapas aata hai. CLI `localeModels`, vaikalpik `uiModels`, aur `translationModels` (dekhen [Providers and models](/guide/providers-and-models#model-fallback-chain)) se har target locale ke liye us suchi ka nirmaan karta hai.
 
 ---
 
@@ -180,10 +180,10 @@ Translation se pehle, sensitive syntax ko opaque tokens se badal diya jaata hai 
 2. **Admonition markers** (`:::note`, `:::`) - opening line par keval directive prefix ko ```{{ADM_OPEN_N}}``` se badal diya jata hai; usi line par koi bhi title model ke anuvad ke liye chhod diya jata hai. Sahi mool text ke saath bahal kiya gaya.
 3. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - jyon ka tyon rakha gaya.
 4. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
-   - **MDX comments** (`{/* … */}`, jisme Docusaurus heading-id form `{/* #my-id */}` shamil hai) ko ```{{MDX_N}}``` se badal diya gaya.
-   - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - ```{{MDX_N}}``` ke roop mein surakshit rakha gaya hai jisme anuvad yogya string attributes (`label`, `tooltip`, `aria-label`) ko tag ke andar ```{{JXA_N}}``` mein dobara likha gaya hai jab tak ki attribute ka naam `docs[].protectAttributes` mein na dikhe; `<Tabs values={[ { label: '…' } ]}>` object literals ke andar `label:` (`docs[].protectKeys` ke madhyam se skip kiya ja sakta hai) aur `<TabItem value="…">` (jab koi `label` attribute maujood na ho, lowercase slug-like values ko skip karte hue) ko bhi nikala jata hai. Segment mein `||JXA_N: …||` lines ke roop mein joda gaya, `restoreMdx` dwara wapas milaya gaya.
-   - **MDX brace expressions** (`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) - depth-aware matching, ```{{MDX_N}}``` se badal diya gaya.
-5. **Markdown URLs** (`](url)`, `src="…"`) - anuvad ke baad ek map se bahal kiya gaya.
+   - **MDX comments** (`{/* … */}`, jismein Docusaurus heading-id form `{/* #my-id */}` shaamil hai) ko ```{{MDX_N}}``` se badal diya gaya hai.
+   - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - ko ```{{MDX_N}}``` ke roop mein rakha gaya hai jismein anuvaad yogya string attributes (`label`, `tooltip`, `aria-label`) ko tag ke andar ```{{JXA_N}}``` mein dobara likha gaya hai jab tak ki attribute ka naam `docs[].protectAttributes` mein na dikhe; `label:` ko `<Tabs values={[ { label: '…' } ]}>` object literals (`docs[].protectKeys` ke maadhyam se chhodne yogya) aur `<TabItem value="…">` (jab koi `label` attribute maujood na ho, lowercase slug-like values ko chhodkar) ke andar bhi nikala jaata hai. Segment mein `||JXA_N: …||` lines ke roop mein joda gaya, `restoreMdx` dwara wapas merge kiya gaya.
+   - **MDX brace expressions** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - depth-aware matching, ko ```{{MDX_N}}``` se badal diya gaya hai.
+5. **Markdown URLs** (`](url)`, `src="…"`) - anuvaad ke baad ek map se restore kiya gaya hai.
 6. **Inline code spans** (`` `code` ``) aur **bold-wrapped inline code** (`**`code`**`) - preserve kiye jaate hain.
 7. **Markdown emphasis** (optional, CJK/RTL locales ke liye auto-enabled) - emphasis delimiters masked.
 
@@ -245,10 +245,10 @@ Jab `docsOutput.style === "flat"`, anuvadit markdown files locale suffixes ke sa
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) par bana provider-agnostic chat client. Yah `provider` / `providers` se active provider ko resolve karta hai, us provider ke `baseUrl` + API key ke liye ek OpenAI-compatible client (`createOpenAICompatible`) banata hai, aur sabhi calls ko `generateText` ke madhyam se route karta hai. `OpenRouterClient` ko ek deprecated alias ke roop mein rakha gaya hai. Mukhya vyavahar:
 
-- **Model fallback**: resolve kiye gaye list mein har model ko kram mein try karta hai; request ya parse failures par fallback karta hai. UI translation `ui.preferredModel` ko pehle resolve karta hai jab maujood ho, phir provider ke `translationModels` ko. `bench-models` command iske bajaye har id ke liye ek single-model client banata hai (`translationModels: [id]`, koi fallback nahi) taaki har model ko independently time aur price kar sake.
-- **Request timeout**: active provider ka `requestTimeoutMs` (default 30 seconds) `AbortSignal.timeout` ke madhyam se har request ko abort karta hai. Yahi value `GET /models` par lagu hoti hai jab CLI `check-models` (koi bhi provider) ke liye provider ki model list load karta hai. Optional pre-flight filter jo unknown model ids ko drop karta hai, tabhi chalta hai jab active provider OpenRouter ho.
-- **OpenRouter extras** (sirf tab jab `openrouter` active ho): `provider` request field ke madhyam se throughput routing, `HTTP-Referer` / `X-Title` headers, aur `usage.cost` se padhi gayi exact USD cost. Token usage har provider ke liye report kiya jata hai; exact cost tabhi jab provider ise return kare.
-- **Debug traffic log**: agar `debugTrafficFilePath` set hai, to request aur response JSON ko ek file mein jodta hai.
+- **Model fallback**: hal ki gayi suchi mein har model ko kram mein prayas karta hai; anurodh ya parse asafaltaon par wapas aata hai. Har target locale ko apni hal ki gayi shrinkhala milti hai: `localeModels(locale)` pahle jab configure kiya gaya ho, phir `uiModels` (sirf UI pipelines), phir `translationModels`. Document, JSON, aur SVG anuvad ek per-locale client banate hain jismein non-UI shrinkhala hoti hai. Iske bajaye `bench-models` command har configure kiye gaye id ke liye ek single-model client banata hai (`translationModels`, `uiModels`, aur `localeModels` ka union; `translationModels: [id]`, koi fallback nahi) taki yah har model ko swantantra roop se samay aur kimat de sake.
+- **Request timeout**: sakriya provider ka `requestTimeoutMs` (default 30 seconds) har anurodh ko `AbortSignal.timeout` ke madhyam se rokta hai. Yahi maan `GET /models` par lagu hota hai jab CLI `check-models` ke liye ek provider ki model suchi load karta hai (koi bhi provider). Vikalpik pre-flight filter jo agyat model ids ko hata deta hai, tabhi chalta hai jab sakriya provider OpenRouter ho.
+- **OpenRouter extras** (sirf tab jab `openrouter` sakriya ho): `provider` request field ke madhyam se throughput routing, `HTTP-Referer` / `X-Title` headers, aur `usage.cost` se padhi gayi sahi USD lagat. Token upyog har provider ke liye report kiya jata hai; sahi lagat tabhi jab provider ise wapas karta hai.
+- **Debug traffic log**: yadi `debugTrafficFilePath` set hai, to request aur response JSON ko ek file mein jodta hai.
 
 <a id="config-loading"></a>
 ### Config loading

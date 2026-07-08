@@ -124,13 +124,27 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 在頂級 `providers` 映射下配置提供者，並使用頂級 `provider` 選擇器選擇作用中的提供者（當只有一個提供者配置時為可選）。大多數提供者僅需要 `translationModels` 列表 — `baseUrl` 和 API 金鑰環境變數來自內建預設值；您可以為每個提供者覆寫 `baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。`requestTimeoutMs` 是等待每個請求的最大時間（毫秒）（預設為 `30000`）。
 
+每個提供者區塊上的可選模型層級：
+
+- `translationModels` — 全局有序備選鏈（翻譯功能所需）。
+- `uiModels` — 仅限 UI 的鏈（`translate-ui`，多數生成，`proofread-ui`）：在任何匹配的 `localeModels` 項目之後嘗試，但在 `translationModels` 之前。
+- `localeModels` — 每個區域設置的覆蓋項，適用於 **所有** 管道：每個項目將 BCP-47 區域設置映射到一個有序模型列表，僅在該區域設置下首先嘗試（`pt-br` 匹配 `pt-BR`）。
+
+解析順序：**UI** → `localeModels(locale)` → `uiModels` → `translationModels`；**文檔 / JSON / SVG** → `localeModels(locale)` → `translationModels`。重複的模型 ID 會被跳過，同時保留順序。
+
 若要在不編輯設定檔的情況下切換單次執行的提供者，請傳遞全域選項 `-P` / `--provider <name>`（例如 `ai-i18n-tools -P groq translate-ui`）；名稱必須是已設定的 `providers` 索引鍵之一。
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 透過新增一個帶有 `baseUrl`（以及 `apiKeyEnv`，除非不需要金鑰）的新金鑰，來定義自訂的 OpenAI 相容提供者。模型 ID 是純粹的上游 ID — 提供者是在設定層級選擇的，因此不需要 `provider/` 前綴（OpenRouter ID 會保留其原生 `vendor/model` 形式）。
 
-每個提供者都會回報權杖使用量；僅當提供者回傳時（OpenRouter）才會顯示確切的美元成本。`ai-i18n-tools check-models` 會根據作用中提供者的即時 `GET /models` 清單（任何提供者）驗證已設定的模型 ID，並在提供者回傳時顯示定價（例如 OpenRouter）。`ai-i18n-tools list-models` 列出作用中提供者宣傳的每個模型（使用 `-P` / `--provider` 檢查另一個已設定的提供者）。`ai-i18n-tools bench-models` 透過單獨翻譯範例（模型平行執行，受 `concurrency` 限制）來基準測試每個已設定的模型，並列印每個模型的輸入/輸出權杖、實際執行時間和美元成本。
+每個供應商都會回報權杖使用量；確切的美元成本僅在供應商回傳時顯示（OpenRouter）。`ai-i18n-tools check-models` 會根據目前供應商的即時 `GET /models` 清單（任何供應商）驗證所有已設定的模型 ID（`translationModels`、`uiModels` 以及每個 `localeModels` 項目），並在供應商回傳時顯示定價（例如 OpenRouter）。`ai-i18n-tools list-models` 列出目前供應商宣傳的所有模型（使用 `-P` / `--provider` 來檢查另一個已設定的供應商）。`ai-i18n-tools bench-models` 透過獨立翻譯樣本來對每個不重複的已設定模型 ID（`translationModels`、`uiModels` 和 `localeModels`）進行基準測試（模型並行執行，受 `concurrency` 限制），並印出每個模型的輸入/輸出權杖數、實際耗時與美元成本。
 
 仍然接受舊式的頂層 `openrouter` 設定區塊，並在載入時自動遷移到 `providers.openrouter`（帶有 `provider: "openrouter"`）。
 
@@ -272,7 +286,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

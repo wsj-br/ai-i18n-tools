@@ -15,6 +15,11 @@ SVG-Dateien werden über [`translate-svg`](/reference/cli-commands) übersetzt, 
 
 Beliebig verschachtelte UI-JSON-Bundles (keine Docusaurus-Kataloge) gehören in die [JSON](/guide/json)-Pipeline, nicht in `docs[]`.
 
+<a id="per-locale-model-overrides"></a>
+### Modellüberschreibungen pro Gebietsschema
+
+`translate-docs` und der Docs-Schritt von `sync` lösen Modelle **pro Zielgebietsschema** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann die globale `translationModels`-Kette des Anbieters. Verwenden Sie dies, wenn eine bestimmte Sprache ein anderes Modell als Ihre Standard-Fallback-Liste benötigt – zum Beispiel, wenn Sie Gemini für die `pt-BR`-Dokumentation bevorzugen, wenn die globale Kette Schwierigkeiten mit Portugiesisch hat. Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain) und [Konfiguration — `localeModels`](/reference/configuration#provider-and-providers).
+
 <a id="which-guide-to-read"></a>
 ## Welchen Leitfaden Sie lesen sollten
 

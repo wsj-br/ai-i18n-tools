@@ -5,6 +5,11 @@
 
 Yeh ekmatra pipeline hai jo locale-specific **binary** SVG files utpann karta hai. `translate-docs` markdown alt text aur link references ko translate karta hai, lekin yeh SVG assets ko modify ya copy nahi karta hai. Jab kisi page ko translated labels ke saath diagram ki zaroorat hoti hai, to `features.translateSVG` ko enable karein aur top-level `svg` block ko configure karein.
 
+<a id="per-locale-model-overrides"></a>
+### Pratyaik sthanik model override
+
+`translate-svg` models ko **prati target locale** resolve karta hai: `localeModels(locale)` pahle jab configure kiya gaya ho, phir `translationModels`. Har locale ka SVG run apni fallback chain ka upyog karta hai — yah tab upyogi hota hai jab CJK locales mein diagram labels ko script-tuned model ki zaroorat hoti hai (jaise `ja`). [Providers aur models](/guide/providers-and-models#model-fallback-chain) dekhen.
+
 SVG translation wahi SQLite cache ka upyog karta hai jo `translate-docs` aur `translate-json` (`cacheDir`) karte hain. Pehle se translate kiye gaye text segments cache se serve kiye jaate hain; kewal naya ya badla hua source text LLM ko bheja jaata hai.
 
 <a id="when-to-use-svg-translation"></a>

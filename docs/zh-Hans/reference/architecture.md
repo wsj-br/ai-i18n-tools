@@ -122,7 +122,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 - 发送字符串的 JSON 数组，并要求返回翻译的 JSON 数组。
 - 在可用时包含术语表提示。
 
-`LlmClient.translateUIBatch` 按顺序尝试每个模型，在解析或网络错误时回退。CLI 从活动提供程序的 `translationModels` 构建该列表；对于 `translate-ui`，当设置（与其余部分去重）时，会在前面添加可选的 `ui.preferredModel`。
+`LlmClient.translateUIBatch` 按顺序尝试每个模型，并在解析或网络错误时回退。CLI 根据 `localeModels`、可选的 `uiModels` 和 `translationModels` 为每个目标区域设置构建该列表（请参阅[提供商和模型](/guide/providers-and-models#model-fallback-chain))。
 
 ---
 
@@ -180,10 +180,10 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 2. **提示标记**（`:::note`、`:::`）- 只有起始行上的指令前缀被替换为```{{ADM_OPEN_N}}```；任何同一行的标题都留给模型翻译。用确切的原始文本恢复。
 3. **文档锚点**（HTML `<a id="…">`、Docusaurus标题`{#…}`）- 逐字保留。
 4. **仅MDX结构**（`src/processors/mdx-placeholders.ts`）：
-- **MDX注释**(`{/* … */}`，包括Docusaurus标题ID形式`{/* #my-id */}`)替换为```{{MDX_N}}```。
-- **大写JSX标签**(`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`)保留为```{{MDX_N}}```，可翻译的字符串属性(`label`、`tooltip`、`aria-label`)重写为```{{JXA_N}}```，除非属性名出现在`docs[].protectAttributes`中;`label:`在`<Tabs values={[ { label: '…' } ]}>`对象文字(可通过`docs[].protectKeys`跳过)和`<TabItem value="…">`(当没有`label`属性时，跳过小写slug样式的值)中也会被提取。作为`||JXA_N: …||`行附加到段落中,由`restoreMdx`合并回去。
-- **MDX大括号表达式**(`{frontMatter.title}`、`style=`<code v-pre>{{…}}</code>``)- 深度感知匹配,替换为```{{MDX_N}}```。
-5. **Markdown URL**(`](url)`、`src="…"`)- 从映射表中还原。
+   - **MDX 注释**（`{/* … */}`，包括 Docusaurus 标题 ID 形式 `{/* #my-id */}`）替换为 ```{{MDX_N}}```。
+   - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）——保留为 ```{{MDX_N}}```，其中可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 ```{{JXA_N}}```，除非属性名称出现在 `docs[].protectAttributes` 中；`label:` 在 `<Tabs values={[ { label: '…' } ]}>` 对象字面量中（可通过 `docs[].protectKeys` 跳过）和 `<TabItem value="…">`（当不存在 `label` 属性时，跳过小写类似 slug 的值）也被提取。作为 `||JXA_N: …||` 行附加到段落，由 `restoreMdx` 合并回去。
+   - **MDX 大括号表达式**（`{frontMatter.title}`，<code v-pre>style={{…}}</code>）——深度感知匹配，替换为 ```{{MDX_N}}```。
+5. **Markdown URL**（`](url)`，`src="…"`）——翻译后从映射中恢复。
 6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
 7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
 
@@ -245,10 +245,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 基于 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）构建的提供商无关的聊天客户端。它从 `provider` / `providers` 解析活动提供商，为该提供商的 `baseUrl` + API 密钥构建一个 OpenAI 兼容的客户端（`createOpenAICompatible`），并通过 `generateText` 路由所有调用。`OpenRouterClient` 保留为已弃用的别名。关键行为：
 
-- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。UI 翻译在存在时首先解析 `ui.preferredModel`，然后是提供程序的 `translationModels`。`bench-models` 命令改为为每个 ID 构建一个单模型客户端 (`translationModels: [id]`，无回退)，以便它可以独立地对每个模型进行计时和定价。
-- **请求超时**：活动提供程序的 `requestTimeoutMs` (默认 30 秒) 通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models` (任何提供程序) 加载提供程序的模型列表时，相同的值适用于 `GET /models`。仅当活动提供程序是 OpenRouter 时，才会运行删除未知模型 ID 的可选预检过滤器。
-- **OpenRouter 额外功能** (仅当 `openrouter` 处于活动状态时)：通过 `provider` 请求字段进行吞吐量路由，`HTTP-Referer` / `X-Title` 标头，以及从 `usage.cost` 读取的精确美元成本。所有提供程序都会报告令牌使用情况；仅当提供程序返回时才报告精确成本。
-- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 附加到文件中。
+- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首选 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 流水线），接着是 `translationModels`。文档、JSON 和 SVG 翻译会使用非 UI 链为每个区域设置创建一个客户端。而 `bench-models` 命令会为每个配置的 ID 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
+- **请求超时**：活动提供程序的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供程序）加载提供程序的模型列表时，相同的值也适用于 `GET /models`。丢弃未知模型 ID 的可选预检过滤器仅在活动提供程序为 OpenRouter 时运行。
+- **OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段、`HTTP-Referer` / `X-Title` 标头进行吞吐量路由，并从 `usage.cost` 读取准确的美元成本。每个提供程序都会报告令牌使用情况；仅当提供程序返回时才提供准确成本。
+- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中。
 
 <a id="config-loading"></a>
 ### 加载配置

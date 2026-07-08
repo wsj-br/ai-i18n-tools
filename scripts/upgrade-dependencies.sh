@@ -223,6 +223,7 @@ _doctor_upgrade_dir() {
   # current tree. Detect that case and tell the user to fix the build first.
   if [ "$rc" -ne 0 ] && ! grep -qE '✓|✗|→|Upgrading' "$logf"; then
     upgrade_warn "   ↳ [${label}] ncu doctor could not run - the verify command likely fails on the current tree. Fix the existing build, then re-run."
+    DOCTOR_BLOCKED="${DOCTOR_BLOCKED}"$'\n'"${label}"
     return 0
   fi
 
@@ -233,6 +234,32 @@ _doctor_upgrade_dir() {
     upgrade_warn "   ↳ build-breaking upgrades reverted in ${label}: $(printf '%s ' $reverted)"
     REVERTED_PKGS="${REVERTED_PKGS}"$'\n'"${reverted}"
   fi
+  return 0
+}
+
+# Run every workspace package's verify command once before doctor upgrades.
+# ncu --doctor refuses to start when the baseline already fails; catching that
+# early avoids a long partial upgrade (and leaves fewer "skipped" packages).
+_preflight_verify() {
+  local d label verify failed=0
+  upgrade_log "🔍  Preflight: verifying each package before doctor upgrades..."
+  for d in "${WORKSPACE_DIRS[@]}"; do
+    verify=$(detect_verify_cmd "$d")
+    [ -z "$verify" ] && continue
+    label=$(dir_label "$d")
+    upgrade_log "   ↳ [${label}] ${verify}"
+    if (cd "$d" && eval "$verify") 2>&1 | pr -o 6 -T; then
+      upgrade_ok "      ✔ ${label}"
+    else
+      upgrade_err "      ✖ ${label} failed preflight verify"
+      failed=1
+    fi
+  done
+  if [ "$failed" -eq 1 ]; then
+    upgrade_err "❌  Preflight verify failed. Fix the current tree, then re-run the upgrade."
+    return 1
+  fi
+  upgrade_ok "✔  Preflight verify passed for all packages with a verify script."
   return 0
 }
 
@@ -622,6 +649,14 @@ _print_summary() {
   fi
 
   echo ""
+  local blocked
+  blocked=$(printf '%s\n' ${DOCTOR_BLOCKED:-} | grep -v '^$' | sort -u)
+  if [ -n "$blocked" ]; then
+    upgrade_err "Doctor could not run (baseline verify failed) for:"
+    printf '    - %s\n' $blocked
+  fi
+
+  echo ""
   if [ -n "${PEER_ISSUES:-}" ]; then
     upgrade_warn "Peer dependency issues (not auto-fixed; review manually):"
     printf '%s\n' "$PEER_ISSUES" | pr -o 4 -T
@@ -642,6 +677,7 @@ _upgrade_dependencies() {
   local PKG_MGR ESLINT_REJECT SNAPSHOT_DIR
   local REVERTED_PKGS="" FORCED_PKGS="" SEC_REMAINING="" SEC_VERIFY_LOG=""
   local VULN_BEFORE="" VULN_AFTER="" SEC_VERIFY_FAILED=0 PEER_ISSUES=""
+  local DOCTOR_BLOCKED=""
   local -a WORKSPACE_DIRS=()
 
   echo ""
@@ -666,6 +702,19 @@ _upgrade_dependencies() {
   _snapshot_manifests
   _compute_eslint_reject
 
+  # Fail closed before any doctor upgrade when the current tree already breaks
+  # a package's verify command. Set UPGRADE_SKIP_PREFLIGHT=1 to keep the old
+  # continue-and-skip-per-package behaviour (e.g. intentional partial upgrades).
+  if [ -z "${UPGRADE_SKIP_PREFLIGHT:-}" ]; then
+    if ! _preflight_verify; then
+      _print_summary
+      cd "$orig_pwd" 2>/dev/null || true
+      return 1
+    fi
+  else
+    upgrade_warn "⏭  Skipping preflight verify (UPGRADE_SKIP_PREFLIGHT=1)."
+  fi
+
   local d
   for d in "${WORKSPACE_DIRS[@]}"; do
     _doctor_upgrade_dir "$d"
@@ -687,6 +736,15 @@ _upgrade_dependencies() {
   cd "$orig_pwd" 2>/dev/null || true
 
   if [ "${SEC_VERIFY_FAILED:-0}" -eq 1 ]; then
+    return 1
+  fi
+  if [ -n "$(printf '%s' "${DOCTOR_BLOCKED:-}" | grep -v '^$' || true)" ]; then
+    return 1
+  fi
+  # Peer mismatches are usually resolution warnings the doctor verify does not
+  # catch. Fail closed in CI / when UPGRADE_STRICT_PEERS=1 so automation notices.
+  if [ -n "${PEER_ISSUES:-}" ] && { [ -n "${CI:-}" ] || [ -n "${UPGRADE_STRICT_PEERS:-}" ]; }; then
+    upgrade_err "❌  Peer dependency issues remain (CI/UPGRADE_STRICT_PEERS treats these as failure)."
     return 1
   fi
   return 0

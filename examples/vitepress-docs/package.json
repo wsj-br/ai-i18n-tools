@@ -6,6 +6,7 @@
   "scripts": {
     "docs:dev": "vitepress dev docs --port 3060",
     "docs:build": "vitepress build docs",
+    "build": "vitepress build docs",
     "docs:preview": "vitepress preview docs --port 3060",
     "i18n:translate": "node ../../bin/ai-i18n-tools.mjs translate-docs",
     "i18n:sync": "node ../../bin/ai-i18n-tools.mjs sync",

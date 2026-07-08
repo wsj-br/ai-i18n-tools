@@ -5,6 +5,11 @@ Diseñado para proyectos que mantienen las copias de la interfaz de usuario en *
 
 Este pipeline **no** ejecuta `extract`; no hay un catálogo `strings.json`. Habilítelo con `features.translateJson` y una o más entradas en el `json[]` de nivel superior.
 
+<a id="per-locale-model-overrides"></a>
+### Anulaciones de modelo por configuración regional
+
+`translate-json` resuelve los modelos **por configuración regional de destino**: primero `localeModels(locale)` cuando está configurado, luego `translationModels`. Utilice esto para paquetes JSON anidados donde ciertas configuraciones regionales se benefician de modelos dedicados, por ejemplo, archivos de tema `zh-Hans` / `zh-Hant`. Consulte [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain).
+
 <a id="step-1-initialise-for-nested-json"></a>
 ### Paso 1: Inicializar para JSON anidado
 

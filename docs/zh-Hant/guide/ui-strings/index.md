@@ -28,8 +28,8 @@ npx ai-i18n-tools init
 - `targetLocales` - 您的目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 以從此清單建立 `ui-languages.json` manifest。
 - `ui.sourceRoots` - 要掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
 - `ui.stringsJson` - 要寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - 要寫入 `de.json`、`pt-BR.json` 等的位置（例如 `"src/locales/"`）。
-- `ui.preferredModel`（選用）- 嘗試**首先**用於 `translate-ui` 的模型 ID；失敗時，CLI 會依序繼續使用作用中提供者的 `translationModels`，並略過重複項。
+- `ui.flatOutputDir` - 用於寫入 `de.json`、`pt-BR.json` 等（例如 `"src/locales/"`）。
+- `providers.<active>.uiModels`（可選）- `translate-ui` 的僅 UI 模型列表，用於多數生成和 `proofread-ui`（在任何匹配的 `localeModels` 項目之後，`translationModels` 之前）。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)。
 
 <a id="step-2-extract-strings"></a>
 ## 步驟 2：提取字串
@@ -49,7 +49,12 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-讀取 `strings.json`，將批次傳送給每個目標地區的活躍 LLM 提供者，將扁平化的 JSON 檔案（`de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。當設定了 `ui.preferredModel` 時，會先嘗試該模型，然後再嘗試活躍提供者的 `translationModels` 清單（文件翻譯和其他命令僅使用提供者的清單）。
+讀取 `strings.json`，將批次發送到每個目標區域設置的活躍 LLM 提供者，將扁平的 JSON 文件（`de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)）。
+
+<a id="per-locale-model-overrides"></a>
+### 每個地區模型覆蓋
+
+可選的 `providers.<active>.localeModels` 項目將 BCP-47 區域設置映射到為該區域設置嘗試的有序模型列表，**在** `uiModels` 和 `translationModels` 之前。相同的 `localeModels` 項目也適用於文檔、JSON 和 SVG 翻譯。區域標籤不區分大小寫（`pt-br` = `pt-BR`）。如果沒有匹配項，則僅使用 `uiModels` 和 `translationModels` 進行 UI 工作。
 
 對於每個條目，`translate-ui` 會儲存來自作用中提供者的 **模型 ID**，該提供者已成功翻譯選用 `models` 物件中的每個地區設定 (與 `translated` 具有相同的地區設定金鑰)。在翻譯儀表板中編輯的字串，會以該地區設定的 `models` 中的標記值 `user-edited` 標記。`ui.flatOutputDir` 下的每個地區設定平面檔案仍僅包含 **來源字串 → 翻譯**；它們不包含 `models` (因此執行階段套件保持不變)。
 

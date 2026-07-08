@@ -5,6 +5,11 @@ Projetado para **ilustrações e diagramas SVG** que contêm rótulos legíveis 
 
 Este é o único pipeline que emite arquivos SVG **binários** específicos da localidade. O `translate-docs` traduz o texto alternativo do markdown e as referências de link, mas não modifica nem copia os ativos SVG. Quando uma página precisa de um diagrama com rótulos traduzidos, ative o `features.translateSVG` e configure o bloco `svg` de nível superior.
 
+<a id="per-locale-model-overrides"></a>
+### Substituições de modelo por localidade
+
+O `translate-svg` resolve modelos **por localidade de destino**: primeiro o `localeModels(locale)`, quando configurado, e depois o `translationModels`. A execução de cada SVG por localidade utiliza sua própria cadeia de fallback — útil quando rótulos de diagramas em localidades CJK precisam de um modelo ajustado para o script (por exemplo, `ja`). Consulte [Provedores e modelos](/guide/providers-and-models#model-fallback-chain).
+
 A tradução SVG usa o mesmo cache SQLite que `translate-docs` e `translate-json` (`cacheDir`). Segmentos de texto já traduzidos são servidos do cache; apenas texto de origem novo ou alterado é enviado para o LLM.
 
 <a id="when-to-use-svg-translation"></a>

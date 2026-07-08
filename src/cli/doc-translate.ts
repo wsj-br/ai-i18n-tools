@@ -21,7 +21,8 @@ import { BatchTranslationError } from "../core/types.js";
 import {
   timestamp,
   formatElapsedMmSs,
-  printModelsTryInOrder,
+  printTranslationModelSummary,
+  localeModelRowsForRun,
 } from "./format.js";
 import {
   mergeTranslateTotals,
@@ -45,13 +46,12 @@ import {
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
-import { resolveTranslationModels } from "../core/config.js";
-import { safeResolveActiveProvider } from "../core/llm-providers.js";
 import {
-  filterTranslationModelsAgainstOpenRouterCatalog,
-  MODELS_ALL_UNKNOWN_AFTER_FILTER,
-  warnIgnoredUnknownOpenRouterModels,
-} from "./openrouter-catalog-model-filter.js";
+  dedupeOrderedModelIds,
+  resolveTranslationModelsForLocale,
+} from "../core/config.js";
+import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
+import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
 import {
   computeFlatLinkRewritePrefixes,
@@ -3018,37 +3018,6 @@ export async function runTranslate(
 
   const needsApi = !opts.dryRun && config.features.translateDocs;
 
-  let translationModelsForClient: string[] | undefined = undefined;
-  if (needsApi) {
-    const resolved = resolveTranslationModels(config);
-    if (resolved.length > 0) {
-      const filtered = await filterTranslationModelsAgainstOpenRouterCatalog(resolved, config);
-      warnIgnoredUnknownOpenRouterModels(filtered.unknownIds);
-      if (filtered.models.length === 0) {
-        throw new Error(MODELS_ALL_UNKNOWN_AFTER_FILTER);
-      }
-      translationModelsForClient = filtered.models;
-    }
-  }
-
-  const client = needsApi
-    ? new LlmClient({
-        config,
-        ...(translationModelsForClient ? { translationModels: translationModelsForClient } : {}),
-        // Capture every billed API response into the live total the instant the provider responds,
-        // so an interrupt (Ctrl-C) or error still reports the tokens/cost already spent — even for
-        // work in batches/files that never finished and so were never recorded via recordFileTotals.
-        // Synchronous integer/float increments are atomic in single-threaded JS (no mutex needed).
-        onApiUsage: (usage, cost) => {
-          liveSum.inputTokens += usage.inputTokens;
-          liveSum.outputTokens += usage.outputTokens;
-          if (typeof cost === "number") {
-            liveSum.costUsd = (liveSum.costUsd ?? 0) + cost;
-          }
-        },
-      })
-    : null;
-
   const glossaryUi = config.glossary?.uiGlossary
     ? path.join(opts.cwd, config.glossary.uiGlossary)
     : undefined;
@@ -3065,8 +3034,10 @@ export async function runTranslate(
   const glossary = new Glossary(glossaryUi, glossaryUser, locales);
 
   const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
-  const models = client?.getConfiguredModels() ?? [];
-  const provider = client?.getProvider() ?? safeResolveActiveProvider(config);
+  const displayModels = dedupeOrderedModelIds(
+    ...locales.map((loc) => resolveTranslationModelsForLocale(config, loc))
+  );
+  const provider = safeResolveActiveProvider(config);
 
   const docDescription = config.doc.description?.trim();
   const translatingHeadline = docDescription
@@ -3086,7 +3057,14 @@ export async function runTranslate(
       "\n\n___DOCUMENTATION Translation_____________________________________________________________________________\n\n"
     ) + chalk.bold(`\n${translatingHeadline}`)
   );
-  printModelsTryInOrder(models, provider);
+  printTranslationModelSummary({
+    resolvedModels: displayModels,
+    provider,
+    localeModels:
+      provider !== undefined
+        ? localeModelRowsForRun(localeModelsMapForProvider(config, provider), locales)
+        : undefined,
+  });
   console.log(chalk.cyan(t("Glossary terms: ")) + chalk.magenta(`${glossary.size}`));
   console.log(
     chalk.cyan(t("Output: ")) + chalk.magenta(`${path.resolve(opts.cwd, config.doc.outputDir)}`)
@@ -3178,6 +3156,19 @@ export async function runTranslate(
 
     try {
       throwIfAbortSignal(runOpts.abortSignal);
+
+      let client: LlmClient | null = null;
+      if (needsApi) {
+        client = await createFilteredLlmClient(config, locale, {
+          onApiUsage: (usage, cost) => {
+            liveSum.inputTokens += usage.inputTokens;
+            liveSum.outputTokens += usage.outputTokens;
+            if (typeof cost === "number") {
+              liveSum.costUsd = (liveSum.costUsd ?? 0) + cost;
+            }
+          },
+        });
+      }
 
       if (shouldRunMarkdown(opts, config)) {
         if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.doc, config, runOpts)) {

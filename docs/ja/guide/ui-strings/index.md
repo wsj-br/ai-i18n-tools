@@ -28,8 +28,8 @@ npx ai-i18n-tools init
 - `targetLocales` - 目標言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。 このリストから`ui-languages.json`マニフェストを作成するには`generate-ui-languages`を実行します。
 - `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン（例：`["src/"]`, `["src/**/*.ts"]`）。
 - `ui.stringsJson` - マスターカタログを書き込む場所（例：`"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - `de.json`、`pt-BR.json`などを記述する場所（例：`"src/locales/"`）。
-- `ui.preferredModel`（オプション） - **最初に**試行するモデルID（`translate-ui`のみ）。失敗した場合、CLIはアクティブなプロバイダーの`translationModels`を順に処理し、重複をスキップします。
+- `ui.flatOutputDir` - `de.json`、`pt-BR.json`などを記述する場所（例: `"src/locales/"`）。
+- `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および`proofread-ui`（一致する`localeModels`エントリの後、`translationModels`の前）のための、UI専用モデルの順序付きリスト。詳細については、「[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)」を参照してください。
 
 <a id="step-2-extract-strings"></a>
 ## ステップ2: 文字列を抽出する
@@ -49,7 +49,12 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json`を読み込み、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。`ui.preferredModel`が設定されている場合、そのモデルはアクティブなプロバイダーの`translationModels`リストの前に試行されます（ドキュメント翻訳およびその他のコマンドは、プロバイダーのリストのみを使用します）。
+`strings.json`を読み取り、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデル選択にはUIチェーンが使用されます: `localeModels(locale)` → `uiModels` → `translationModels`（「[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)」を参照）。
+
+<a id="per-locale-model-overrides"></a>
+### ロケールごとのモデルオーバーライド
+
+オプションの`providers.<active>.localeModels`エントリは、BCP-47ロケールを、そのロケールに対して**前に** `uiModels`と`translationModels`が試行された順序付きモデルリストにマッピングします。同じ`localeModels`エントリは、ドキュメント、JSON、SVGの翻訳にも適用されます。ロケールタグは、大文字と小文字を区別せずに照合されます（`pt-br` = `pt-BR`）。一致するエントリがない場合、UI作業には`uiModels`と`translationModels`のみが使用されます。
 
 各エントリについて、`translate-ui`は、オプションの`models`オブジェクト (`translated`と同じロケールキー) 内で、各ロケールを正常に翻訳した**アクティブプロバイダーからのモデルID**を格納します。翻訳ダッシュボードで編集された文字列は、そのロケールの`models`で、番兵値`user-edited`でマークされます。`ui.flatOutputDir`の下にあるロケールごとのフラットファイルは、**ソース文字列 → 翻訳**のみのままであり、`models`は含まれません (そのため、ランタイムバンドルは変更されません)。
 

@@ -122,7 +122,7 @@ O i18next carrega esses arquivos como pacotes de recursos e procura traduções 
 - Envie um array JSON de strings e solicite um array JSON de traduções em retorno.
 - Inclua dicas de glossário quando disponíveis.
 
-`LlmClient.translateUIBatch` tenta cada modelo em ordem, recorrendo a erros de análise ou de rede. A CLI constrói essa lista a partir do `translationModels` do provedor ativo; para `translate-ui`, `ui.preferredModel` opcional é anexado quando definido (deduplicado contra o restante).
+O `LlmClient.translateUIBatch` tenta cada modelo em ordem, recorrendo ao próximo em caso de erros de análise (parse) ou de rede. A CLI cria essa lista por localidade de destino a partir de `localeModels`, do opcional `uiModels` e de `translationModels` (consulte [Provedores e modelos](/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -180,10 +180,10 @@ Antes da tradução, a sintaxe sensível é substituída por tokens opacos para 
 2. **Marcadores de advertência** (`:::note`, `:::`) - apenas o prefixo da diretiva na linha de abertura é substituído por ```{{ADM_OPEN_N}}```; qualquer título na mesma linha é deixado para o modelo traduzir. Restaurado com o texto original exato.
 3. **Âncoras de documento** (HTML `<a id="…">`, cabeçalho Docusaurus `{#…}`) - preservadas literalmente.
 4. **Construções apenas MDX** (`src/processors/mdx-placeholders.ts`):
-- **Comentários MDX** (`{/* … */}`, incluindo a forma de ID de cabeçalho do Docusaurus `{/* #my-id */}`) substituídos por ```{{MDX_N}}```.
-- **Tags JSX com letras maiúsculas** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preservadas como ```{{MDX_N}}``` com atributos de string traduzíveis (`label`, `tooltip`, `aria-label`) reescritos para ```{{JXA_N}}``` dentro da tag, a menos que o nome do atributo apareça em `docs[].protectAttributes`; `label:` dentro de `<Tabs values={[ { label: '…' } ]}>` literais de objeto (ignoráveis via `docs[].protectKeys`) e `<TabItem value="…">` (quando não há atributo `label`, ignorando valores semelhantes a slug em minúsculas) também são extraídos. Anexados ao segmento como linhas `||JXA_N: …||`, mesclados de volta por `restoreMdx`.
-- **Expressões de chave MDX** (`{frontMatter.title}`, `style=`<code v-pre>{{…}}</code>``) - correspondência consciente da profundidade, substituída por ```{{MDX_N}}```.
-5. **URLs Markdown** (`](url)`, `src="…"`) - restaurados de um mapa após a tradução.
+   - **Comentários MDX** (`{/* … */}`, incluindo o formato de heading-id do Docusaurus `{/* #my-id */}`) substituídos por ```{{MDX_N}}```.
+   - **Tags JSX com iniciais maiúsculas** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preservadas como ```{{MDX_N}}``` com atributos de string traduzíveis (`label`, `tooltip`, `aria-label`) reescritos para ```{{JXA_N}}``` dentro da tag, a menos que o nome do atributo apareça em `docs[].protectAttributes`; `label:` dentro de literais de objeto `<Tabs values={[ { label: '…' } ]}>` (ignoráveis via `docs[].protectKeys`) e `<TabItem value="…">` (quando não existe o atributo `label`, ignorando valores em minúsculas semelhantes a slugs) também são extraídos. Anexados ao segmento como linhas `||JXA_N: …||`, mesclados de volta por `restoreMdx`.
+   - **Expressões de chaves MDX** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - correspondência sensível à profundidade, substituídas por ```{{MDX_N}}```.
+5. **URLs Markdown** (`](url)`, `src="…"`) - restauradas de um mapa após a tradução.
 6. **Trechos de código embutidos** (`` `code` ``) e **código embutido em negrito** (`**`code`**`) - preservados.
 7. **Ênfase em markdown** (opcional, ativado automaticamente para localidades CJK/RTL) - delimitadores de ênfase mascarados.
 
@@ -245,10 +245,10 @@ Quando `docsOutput.style === "flat"`, os arquivos markdown traduzidos são coloc
 
 Cliente de chat independente de provedor construído sobre o Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). Ele resolve o provedor ativo a partir de `provider` / `providers`, constrói um cliente compatível com OpenAI (`createOpenAICompatible`) para o `baseUrl` + chave de API desse provedor e roteia todas as chamadas através de `generateText`. `OpenRouterClient` é mantido como um alias obsoleto. Comportamentos chave:
 
-- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; retorna em caso de falha de solicitação ou análise. A tradução da UI resolve `ui.preferredModel` primeiro, se presente, depois o `translationModels` do provedor. O comando `bench-models` constrói um cliente de modelo único por ID (`translationModels: [id]`, sem fallback) para que possa cronometrar e precificar cada modelo independentemente.
-- **Tempo limite de solicitação**: o `requestTimeoutMs` do provedor ativo (padrão 30 segundos) anula cada solicitação via `AbortSignal.timeout`. O mesmo valor se aplica a `GET /models` quando a CLI carrega uma lista de modelos do provedor para `check-models` (qualquer provedor). O filtro pré-voo opcional que descarta IDs de modelo desconhecidos é executado apenas quando o provedor ativo é OpenRouter.
-- **Extras do OpenRouter** (somente quando `openrouter` está ativo): roteamento de throughput via campo de solicitação `provider`, cabeçalhos `HTTP-Referer` / `X-Title` e custo exato em USD lido de `usage.cost`. O uso de tokens é relatado para cada provedor; o custo exato somente quando o provedor o retorna.
-- **Log de tráfego de depuração**: se `debugTrafficFilePath` estiver definido, anexa o JSON de solicitação e resposta a um arquivo.
+- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; retorna em caso de falha de solicitação ou análise. Cada localidade de destino obtém sua própria cadeia resolvida: `localeModels(locale)` primeiro quando configurado, depois `uiModels` (somente pipelines de UI), depois `translationModels`. A tradução de Documentos, JSON e SVG cria um cliente por localidade com a cadeia não-UI. O comando `bench-models` em vez disso, constrói um único cliente de modelo por ID configurado (união de `translationModels`, `uiModels` e `localeModels`; `translationModels: [id]`, sem fallback) para que possa cronometrar e precificar cada modelo independentemente.
+- **Tempo limite da solicitação**: o `requestTimeoutMs` do provedor ativo (padrão 30 segundos) anula cada solicitação via `AbortSignal.timeout`. O mesmo valor se aplica a `GET /models` quando a CLI carrega a lista de modelos de um provedor para `check-models` (qualquer provedor). O filtro de pré-voo opcional que descarta IDs de modelo desconhecidos é executado apenas quando o provedor ativo é o OpenRouter.
+- **Extras do OpenRouter** (somente quando `openrouter` está ativo): roteamento de throughput via campo de solicitação `provider`, cabeçalhos `HTTP-Referer` / `X-Title` e custo exato em USD lido de `usage.cost`. O uso de token é relatado para cada provedor; o custo exato somente quando o provedor o retorna.
+- **Log de tráfego de depuração**: se `debugTrafficFilePath` estiver definido, anexa JSON de solicitação e resposta a um arquivo.
 
 <a id="config-loading"></a>
 ### Carregamento de configuração

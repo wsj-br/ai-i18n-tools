@@ -71,19 +71,23 @@
 각 `providers.<name>` 블록은 다음을 허용합니다:
 
 - `translationModels`
-  선호하는 모델 ID 순서 목록 (일반 업스트림 ID, `provider/` 접두사 없음; OpenRouter ID는 기본 `vendor/model` 형식 유지). 첫 번째가 먼저 시도되며, 오류 시 나중 항목이 대체됩니다. `translate-ui`의 경우, 이 목록보다 먼저 하나의 모델을 시도하도록 `ui.preferredModel`를 설정할 수도 있습니다 (`ui` 참조).
+  선호하는 모델 ID의 정렬된 목록(일반적인 업스트림 ID, `provider/` 접두사 없음; OpenRouter ID는 고유한 `vendor/model` 형식을 유지). 첫 번째 항목이 먼저 시도되며, 이후 항목은 오류 발생 시 대체 항목으로 사용됩니다. 이는 더 구체적인 계층이 적용되지 않을 때 모든 파이프라인에 대한 전역 기본 체인입니다.
+- `uiModels` (선택 사항)
+  `translate-ui`, 복수 생성(단계 0 및 통과 B), `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다. 대상 로케일에 대한 일치하는 `localeModels` 항목 다음에, `translationModels` 이전에 시도됩니다.
+- `localeModels` (선택 사항)
+  **모든** 번역 파이프라인에 대한 로케일별 재정의입니다. `{ "locale": "<BCP-47>", "models": ["…"] }` 객체 배열입니다. 로케일 태그는 대소문자를 구분하지 않고 일치합니다(`pt-br` = `pt-BR`). 각 로케일의 목록은 해당 로케일에 대해서만 먼저 시도된 다음, 파이프라인별 계층(UI의 경우 `uiModels`) 및 `translationModels`이 시도됩니다. 중복된 정규화된 로케일 키는 구성 로드 시 거부됩니다.
 - `baseUrl`
-  OpenAI 호환 기본 URL. 사전 설정 기본 URL을 재정의하며, 사전 설정이 아닌 공급자의 경우 필수입니다.
+  OpenAI 호환 기본 URL입니다. 사전 설정된 기본 URL을 재정의합니다. 사전 설정되지 않은 공급자에게 필요합니다.
 - `apiKeyEnv`
-  API 키를 포함하는 환경 변수. 사전 설정 환경 변수를 재정의합니다.
+  API 키를 포함하는 환경 변수입니다. 사전 설정된 환경 변수를 재정의합니다.
 - `headers`
-  이 공급자로의 모든 요청에 전송되는 추가 HTTP 헤더.
+  이 공급자에 대한 모든 요청과 함께 전송되는 추가 HTTP 헤더입니다.
 - `maxTokens`
-  요청당 최대 완료 토큰 수. 기본값: `8192`.
+  요청당 최대 완료 토큰 수입니다. 기본값: `8192`.
 - `temperature`
-  샘플링 온도. 기본값: `0.2`.
+  샘플링 온도입니다. 기본값: `0.2`.
 - `requestTimeoutMs`
-  각 요청을 기다리는 최대 시간 (밀리초). 기본값: `30000` (30초).
+  각 요청을 기다리는 최대 시간(밀리초)입니다. 기본값: `30000` (30초).
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
 
@@ -141,9 +145,9 @@
 
 활성 공급자의 API 키 환경 변수 (예: `OPENROUTER_API_KEY`)를 환경 또는 `.env` 파일에 설정하십시오.
 
-`translationModels`을(를) 변경하기 전에 `npx ai-i18n-tools check-models`을(를) 실행하세요. 모든 제공업체에 대해 구성된 각 모델 ID를 해당 제공업체의 라이브 모델 목록(`GET /models`)과 대조하여 확인하고, 누락되었거나 `expiration_date`이(가) 지난 ID를 보고하며, 유효한 모델 목록을 표시하고, 구성된 ID 중 유효하지 않은 것이 있으면 0이 아닌 값으로 종료합니다. 제공업체가 가격 책정 정보(예: OpenRouter)를 반환하는 경우, 예상 입력/출력 가격(1백만 토큰당 USD)도 표시합니다.
+모델 목록을 변경하기 전에 `npx ai-i18n-tools check-models`을(를) 실행하십시오. 모든 공급자에 대해 구성된 각 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 해당 공급자의 라이브 모델 목록(`GET /models`)과 비교하여 확인하고, 누락되거나 `expiration_date`를 초과하는 ID를 보고하며, 유효한 모델을 나열하고, 구성된 ID가 유효하지 않은 경우 0이 아닌 값으로 종료합니다. 공급자가 가격 책정(예: OpenRouter)을 반환하는 경우 예상 입력/출력 가격(100만 토큰당 USD)도 표시합니다.
 
-구성된 모델을 실제 번역 작업에서 비교하려면 `npx ai-i18n-tools bench-models`을(를) 실행하십시오. 이 명령은 각 모델을 독립적으로(병렬로, `concurrency`에 의해 제한됨) 통해 하나의 샘플을 번역하고 모델별 입력/출력 토큰, 실제 시간, USD 비용을 출력하므로 `translationModels` 순서를 결정하기 전에 속도와 가격을 비교할 수 있습니다.
+실제 번역 작업에서 구성된 모델을 비교하려면 `npx ai-i18n-tools bench-models`을(를) 실행하세요. 이 명령은 `translationModels`, `uiModels`, `localeModels`의 모든 고유 모델 ID를 각각 개별적으로(`concurrency`에 의해 제한된 병렬로) 하나의 샘플을 번역하여 벤치마킹하고, 모델별 입력/출력 토큰, 실제 시간, USD 비용을 출력하므로 모델 목록을 확정하기 전에 속도와 가격을 비교할 수 있습니다.
 
 <a id="features"></a>
 ### `features`
@@ -161,22 +165,20 @@
 ### `ui`
 
 - `sourceRoots`  
-  `t("…")` 호출을 검색하는 디렉터리 또는 glob 패턴 (cwd 기준). `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
+  `t("…")` 호출을 스캔하는 디렉터리 또는 전역 패턴(현재 작업 디렉터리 기준)입니다. `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
 - `stringsJson`  
-  마스터 카탈로그 파일의 경로. `extract`에 의해 업데이트됩니다.
+  마스터 카탈로그 파일의 경로입니다. `extract`에 의해 업데이트됩니다.
 - `flatOutputDir`  
-  로케일별 JSON 파일 (`de.json` 등)이 작성되는 디렉터리.
-- `preferredModel`  
-  선택 사항. `translate-ui`에 대해 먼저 시도되는 모델 ID; 그 다음 활성 공급자의 `translationModels`를 순서대로 시도하며, 이 ID는 중복되지 않습니다.
-- `uiExtractor.funcNames`(또는 레거시 `reactExtractor.funcNames`)  
+  로케일별 JSON 파일(`de.json` 등)이 작성되는 디렉터리입니다.
+- `uiExtractor.funcNames` (또는 레거시 `reactExtractor.funcNames`)  
   스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
-- `uiExtractor.extensions`(또는 레거시 `reactExtractor.extensions`)  
-  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프론트매터 및 템플릿 표현을 위해 `.astro`를 추가하십시오.
-- `uiExtractor.includePackageDescription`(또는 레거시 `reactExtractor.includePackageDescription`)  
-  `true`(기본값)일 때, `extract`은 또한 UI 문자열로 `package.json` `description`를 포함합니다.
-- `uiExtractor.packageJsonPath`(또는 레거시 `reactExtractor.packageJsonPath`)  
-  해당 선택적 설명 추출에 사용되는 `package.json` 파일에 대한 사용자 정의 경로.
-- `uiExtractor.includeUiLanguageEnglishNames`(또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
+- `uiExtractor.extensions` (또는 레거시 `reactExtractor.extensions`)  
+  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프론트매터 및 템플릿 표현식의 경우 `.astro`을(를) 추가합니다.
+- `uiExtractor.includePackageDescription` (또는 레거시 `reactExtractor.includePackageDescription`)  
+  `true` (기본값)인 경우, `extract`은(는) 존재하는 경우 `package.json` `description`을(를) UI 문자열로도 포함합니다.
+- `uiExtractor.packageJsonPath` (또는 레거시 `reactExtractor.packageJsonPath`)  
+  선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로입니다.
+- `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
 `true`(기본값 `false`)인 경우, `extract`는 번들로 제공되는 UI 언어 마스터 카탈로그( `sourceLocale` + `targetLocales`에서 빌드됨)의 각 `englishName`를 소스 스캔에서 아직 존재하지 않는 경우(동일한 해시 키) `strings.json`에 추가합니다. `uiLanguagesPath`을 읽지 않습니다.
 

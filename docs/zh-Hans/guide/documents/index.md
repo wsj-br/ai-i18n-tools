@@ -15,6 +15,11 @@
 
 任意嵌套的 UI JSON 包（非 Docusaurus 目录）属于 [JSON](/guide/json) 管道，而不属于 `docs[]`。
 
+<a id="per-locale-model-overrides"></a>
+### 每个区域模型覆盖
+
+`translate-docs` 和 `sync` 的文档步骤解析模型 **按目标区域**：首先配置 `localeModels(locale)`，然后是提供商的全局 `translationModels` 链。当特定语言需要与默认回退列表不同的模型时使用此功能——例如，当全局链在处理葡萄牙语时遇到困难时，优先选择 Gemini 用于 `pt-BR` 文档。参见 [提供商和模型](/guide/providers-and-models#model-fallback-chain) 和 [配置 — `localeModels`](/reference/configuration#provider-and-providers)。
+
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
 

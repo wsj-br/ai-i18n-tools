@@ -28,8 +28,8 @@ Dies schreibt `ai-i18n-tools.config.json` mit der `ui-markdown`-Vorlage. Bearbei
 - `targetLocales` - Array von BCP-47-Codes für Ihre Zielsprache(n) (z. B. `["de", "fr", "pt-BR"]`). Führen Sie `generate-ui-languages` aus, um das `ui-languages.json`-Manifest aus dieser Liste zu erstellen.
 - `ui.sourceRoots` - Verzeichnisse oder Glob-Muster, die nach `t("…")`-Aufrufen durchsucht werden sollen (z. B. `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - Wo das Master-Katalog geschrieben werden soll (z. B. `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - wo `de.json`, `pt-BR.json` usw. geschrieben werden (z. B. `"src/locales/"`).
-- `ui.preferredModel` (optional) - Modell-ID, die **zuerst** für `translate-ui` versucht wird; bei einem Fehler fährt die CLI mit der Reihenfolge der `translationModels` des aktiven Providers fort, wobei Duplikate übersprungen werden.
+- `ui.flatOutputDir` – wo `de.json`, `pt-BR.json` usw. geschrieben werden sollen (z. B. `"src/locales/"`).
+- `providers.<active>.uiModels` (optional) – geordnete, nur für die Benutzeroberfläche bestimmte Modellliste für `translate-ui`, Pluralgenerierung und `proofread-ui` (nach einem übereinstimmenden `localeModels`-Eintrag, vor `translationModels`). Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Schritt 2: Zeichenfolgen extrahieren
@@ -49,7 +49,12 @@ Der Scanner ist konfigurierbar: Fügen Sie benutzerdefinierte Funktionsnamen üb
 npx ai-i18n-tools translate-ui
 ```
 
-Liest `strings.json`, sendet Batches an den aktiven LLM-Provider für jedes Zielgebiet, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Wenn `ui.preferredModel` gesetzt ist, wird dieses Modell vor der `translationModels`-Liste des aktiven Providers versucht (Dokumentübersetzung und andere Befehle verwenden nur die Liste des Providers).
+Liest `strings.json`, sendet Batches an den aktiven LLM-Anbieter für jedes Zielland, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain)).
+
+<a id="per-locale-model-overrides"></a>
+### Modellüberschreibungen pro Gebietsschema
+
+Optionale `providers.<active>.localeModels`-Einträge ordnen ein BCP-47-Gebietsschema einer geordneten Modellliste zu, die **vor** `uiModels` und `translationModels` für dieses Gebietsschema versucht wird. Dieselben `localeModels`-Einträge gelten auch für die Dokument-, JSON- und SVG-Übersetzung. Gebietsschema-Tags werden ohne Berücksichtigung der Groß-/Kleinschreibung abgeglichen (`pt-br` = `pt-BR`). Wenn kein Eintrag übereinstimmt, werden für die UI-Arbeit nur `uiModels` und `translationModels` verwendet.
 
 Für jeden Eintrag speichert `translate-ui` die **Modell-ID des aktiven Anbieters**, der jede Sprache erfolgreich übersetzt hat, in einem optionalen `models`-Objekt (dieselben Sprachschlüssel wie `translated`). Im Übersetzungs-Dashboard bearbeitete Zeichenfolgen werden mit dem Sentinel-Wert `user-edited` in `models` für diese Sprache markiert. Die sprachspezifischen Flatfiles unter `ui.flatOutputDir` bleiben nur **Quellzeichenfolge → Übersetzung**; sie enthalten keine `models` (sodass Laufzeit-Bundles unverändert bleiben).
 

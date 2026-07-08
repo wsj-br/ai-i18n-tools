@@ -124,13 +124,27 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 トップレベルの`providers`マップ内にプロバイダーを設定し、トップレベルの`provider`セレクターでアクティブなプロバイダーを選択します（プロバイダーが1つだけ設定されている場合は省略可能）。ほとんどのプロバイダーでは`translationModels`リストのみが必要です。`baseUrl`およびAPIキーの環境変数は組み込みプリセットから取得されます。プロバイダーごとに`baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature`、`requestTimeoutMs`をオーバーライドできます。`requestTimeoutMs`は各リクエストの最大待機時間（ミリ秒単位）です（デフォルトは`30000`）。
 
+各プロバイダーブロックのオプションのモデル階層:
+
+- `translationModels` — グローバルな順序付きフォールバックチェーン（翻訳機能に必須）。
+- `uiModels` — UIのみのチェーン（`translate-ui`、複数形生成、`proofread-ui`）：一致する`localeModels`エントリの後、`translationModels`の前に試行されます。
+- `localeModels` — **すべての**パイプラインのロケールごとのオーバーライド：各エントリはBCP-47ロケールを、そのロケールのみで最初に試行される順序付きモデルリストにマッピングします（`pt-br`は`pt-BR`と一致します）。
+
+解決順序: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **ドキュメント / JSON / SVG** → `localeModels(locale)` → `translationModels`。重複するモデルIDは、順序を維持しながらスキップされます。
+
 設定を編集せずに単一の実行でプロバイダーを切り替えるには、グローバルオプション `-P` / `--provider <name>` を渡します（例：`ai-i18n-tools -P groq translate-ui`）。名前は設定済みの `providers` キーのいずれかである必要があります。
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -157,7 +171,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 カスタムのOpenAI互換プロバイダーを定義するには、`baseUrl`（キーが不要な場合を除く`apiKeyEnv`）を持つ新しいキーを追加します。モデルIDはプレーンなアップストリームIDです。プロバイダーは設定レベルで選択されるため、`provider/`プレフィックスは不要です（OpenRouter IDはネイティブの`vendor/model`形式を維持します）。
 
-トークンの使用量はすべてのプロバイダーで報告されます。正確な USD コストは、プロバイダーがそれを返す場合（OpenRouter）にのみ表示されます。`ai-i18n-tools check-models` は、設定されたモデル ID をアクティブなプロバイダーのライブ `GET /models` リスト（任意のプロバイダー）に対して検証し、プロバイダーがそれを返す場合（例：OpenRouter）に価格を表示します。`ai-i18n-tools list-models` は、アクティブなプロバイダーが宣伝するすべてのモデルをリストします（別の設定済みプロバイダーを検査するには `-P` / `--provider` を使用します）。`ai-i18n-tools bench-models` は、各設定済みモデルを個別にサンプルを翻訳することでベンチマークし（モデルは `concurrency` で制限され並行して実行されます）、モデルごとの入力/出力トークン、実時間、および USD コストを出力します。
+トークンの使用状況はプロバイダーごとに報告されます。正確なUSDコストは、プロバイダーがそれを返す場合（OpenRouter）にのみ表示されます。`ai-i18n-tools check-models`は、設定されたすべてのモデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）を、アクティブなプロバイダーのライブ`GET /models`リスト（任意のプロバイダー）に対して検証し、プロバイダーが価格を返す場合（例：OpenRouter）に価格を表示します。`ai-i18n-tools list-models`は、アクティブなプロバイダーが宣伝するすべてのモデルをリストします（別の設定済みプロバイダーを検査するには`-P` / `--provider`を使用します）。`ai-i18n-tools bench-models`は、一意に設定されたすべてのモデルID（`translationModels`、`uiModels`、および`localeModels`）を、サンプルを個別に翻訳することによってベンチマークします（モデルは並行して実行され、`concurrency`によって制限されます）。そして、モデルごとの入出力トークン、実時間、およびUSDコストを出力します。
 
 レガシーなトップレベルの`openrouter`設定ブロックも引き続き受け入れられ、ロード時に`providers.openrouter`（`provider: "openrouter"`付き）に自動的に移行されます。
 
@@ -272,7 +286,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 ai-i18n-tools version
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools bench-models [--models <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
+ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …

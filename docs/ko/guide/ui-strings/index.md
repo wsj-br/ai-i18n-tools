@@ -28,8 +28,8 @@ npx ai-i18n-tools init
 - `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). `generate-ui-languages`를 실행하여 이 목록에서 `ui-languages.json` 매니페스트를 생성합니다.
 - `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 glob 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - 마스터 카탈로그를 작성할 위치 (예: `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성하는 위치 (예: `"src/locales/"`).
-- `ui.preferredModel` (선택 사항) - `translate-ui`에 대해 **먼저** 시도할 모델 ID; 실패 시 CLI는 활성 공급자의 `translationModels`를 순서대로 계속 진행하며 중복은 건너<0xEB><0x9B><0x81>니다.
+- `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성할 위치(예: `"src/locales/"`).
+- `providers.<active>.uiModels`(선택 사항) - `translate-ui`, 복수 생성, `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다(일치하는 `localeModels` 항목 다음, `translationModels` 이전). [공급자 및 모델](/guide/providers-and-models#model-fallback-chain)을 참조하세요.
 
 <a id="step-2-extract-strings"></a>
 ## 2단계: 문자열 추출
@@ -49,7 +49,12 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json`를 읽고, 각 대상 로케일에 대해 활성 LLM 공급자로 일괄 전송하며, `de.json`, `fr.json` 등 플랫 JSON 파일을 `ui.flatOutputDir`에 씁니다. `ui.preferredModel`가 설정된 경우 해당 모델은 활성 공급자의 `translationModels` 목록보다 먼저 시도됩니다 (문서 번역 및 기타 명령은 공급자의 목록만 사용).
+`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 공급자에게 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인 `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 참조).
+
+<a id="per-locale-model-overrides"></a>
+### 로케일별 모델 재정의
+
+선택적 `providers.<active>.localeModels` 항목은 BCP-47 로케일을 해당 로케일에 대한 `uiModels` 및 `translationModels` **이전**에 시도된 정렬된 모델 목록에 매핑합니다. 동일한 `localeModels` 항목은 문서, JSON 및 SVG 번역에도 적용됩니다. 로케일 태그는 대소문자를 구분하지 않고 일치합니다(`pt-br` = `pt-BR`). 일치하는 항목이 없으면 UI 작업에 `uiModels` 및 `translationModels`만 사용됩니다.
 
 각 항목에 대해 `translate-ui`는 선택적 `models` 개체(`translated`와 동일한 로케일 키)에 각 로케일을 성공적으로 번역한 **활성 공급자의 모델 ID**를 저장합니다. 번역 대시보드에서 편집된 문자열은 해당 로케일에 대해 `models`에 센티넬 값 `user-edited`으로 표시됩니다. `ui.flatOutputDir` 아래의 로케일별 플랫 파일은 **원본 문자열 → 번역**만 유지하며, `models`를 포함하지 않습니다(따라서 런타임 번들은 변경되지 않습니다).
 

@@ -124,7 +124,8 @@ detect_workspace_dirs() {
 
 # detect_verify_cmd DIR: echo the build-safety verify command for a package
 # directory, chaining whichever of typecheck/lint/build scripts exist. Prefers
-# the fast typecheck+lint pair; falls back to build only. Empty if none exist.
+# the fast typecheck+lint pair; falls back to build (or docs:build when there is
+# no `build` script, e.g. VitePress packages). Empty if none exist.
 detect_verify_cmd() {
   local dir=$1 scripts
   scripts=$(node -e '
@@ -132,10 +133,13 @@ detect_verify_cmd() {
     try {
       const p = JSON.parse(fs.readFileSync(process.argv[1] + "/package.json", "utf8"));
       const s = p.scripts || {};
-      const have = ["typecheck", "lint", "build"].filter(x => typeof s[x] === "string" && s[x].length);
-      let chosen = have.filter(x => x !== "build");
-      if (chosen.length === 0 && have.includes("build")) chosen = ["build"];
-      process.stdout.write(chosen.join(","));
+      const isScript = (x) => typeof s[x] === "string" && s[x].length;
+      const fast = ["typecheck", "lint"].filter(isScript);
+      let chosen = "";
+      if (fast.length) chosen = fast.join(",");
+      else if (isScript("build")) chosen = "build";
+      else if (isScript("docs:build")) chosen = "docs:build";
+      process.stdout.write(chosen);
     } catch (e) {}
   ' "$dir" 2>/dev/null) || scripts=""
 

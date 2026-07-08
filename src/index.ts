@@ -76,7 +76,10 @@ export {
 
 export {
   resolveTranslationModels,
+  resolveTranslationModelsForLocale,
   resolveUITranslationModels,
+  resolveAllConfiguredModelIds,
+  dedupeOrderedModelIds,
   coerceTargetLocalesField,
   disallowedScriptLetters,
   englishLanguageNameForLocale,
@@ -233,6 +236,10 @@ export {
   resolveProviderSettings,
   resolveApiKey,
   translationModelsForProvider,
+  uiModelsForProvider,
+  localeModelsForProvider,
+  localeModelsMapForProvider,
+  allConfiguredModelIdsForProvider,
   type LlmProviderPreset,
   type ResolvedProviderSettings,
 } from "./core/llm-providers.js";
