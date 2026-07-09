@@ -78,7 +78,8 @@ examples/vitepress-docs/
 ├── package.json
 └── docs/
     ├── .vitepress/
-    │   ├── config.mts           # loads theme.{locale}.json per locale
+    │   ├── config.mts                    # loads theme.{locale}.json per locale
+    │   ├── config.hardcoded.example.mts  # optional: inline theme shape before loadTheme migration
     │   └── i18n/
     │       ├── theme.en.json    # English theme catalog (source)
     │       ├── theme.pt-BR.json # committed translations

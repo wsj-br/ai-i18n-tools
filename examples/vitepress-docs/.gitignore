@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Translation cache (keep cache.db for reuse across clones)
+.translation-cache/*
+!.translation-cache/cache.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# VitePress dev/build output
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+docs/.vitepress/.temp/
+
+# OS
+.DS_Store
