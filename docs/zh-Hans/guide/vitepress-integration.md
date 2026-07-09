@@ -127,6 +127,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动翻译 |
 | Nextra | 主题字典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动生成 |
+| Fumadocs | UI 覆盖目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 内置 UI 字符串（多语言）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
 
 **不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于不相关的应用语言包。有关其他框架模式，请参见 [Docusaurus 集成](/guide/docusaurus-integration) 和 [Nextra 集成](/guide/nextra-integration)。

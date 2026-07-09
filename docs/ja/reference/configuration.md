@@ -155,7 +155,7 @@
 | フィールド | パイプライン | 説明 |
 |---|---|---|
 | `translateUIStrings` | 1 | `t("…")` / `i18n.t("…")` を `strings.json` に抽出し、エントリを翻訳してロケールごとのフラット JSON を書き込みます（抽出は自動的に実行されます。カタログのみを更新するには、スタンドアロンの `extract` を使用します）。 |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` ページの翻訳。`docs[].docusaurusCatalogDir` が設定されている場合の Docusaurus シェル JSON。設定されている場合の Nextra `_meta` / 辞書。`docsOutput.vitepressThemeCatalog` が設定されている場合の VitePress テーマ。 |
+| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` ページを翻訳します。`docs[].docusaurusCatalogDir` が設定されている場合は Docusaurus シェル JSON を翻訳します。Nextra `_meta` / 設定されている場合は辞書を翻訳します。`docsOutput.vitepressThemeCatalog` が設定されている場合は VitePress テーマを翻訳します。`meta.json` / UI カタログは `docsOutput.style` が `"fumadocs"` の場合に翻訳します。 |
 | `translateJson` | 3 | `json[]` 配下の任意のネストされた JSON（`translate-json`）。 |
 | `translateSVG` | — | `.svg` ファイルを翻訳（トップレベルの `svg` ブロックが必要です）。 |
 
@@ -276,8 +276,18 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 `true` の場合、翻訳後に VitePress リンク正規化ツールを実行します。`docsOutput.style` が `"vitepress"` の場合、デフォルトで有効になります。ロケールフォルダが `docsRoot` の下の英語の隣にある `doc-system` レイアウトで使用します。README スタイルの `docs/guide/…` パスをサイトルート（`/guide/…`）に、ロケール相対 `../guide/…` リンクを書き換えます。VitePress ツリー外のリポジトリファイル（`LICENSE`、`examples/`）へのリンクには、英語のソースで完全な URL を使用します — [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage) を参照してください。
 - `docsOutput.rewriteNextraLinks`
 `true` の場合、翻訳後に Nextra リンク正規化ツールを実行します。`docsOutput.style` が `"nextra"` の場合、デフォルトで有効になります。Next.js `i18n` の `content/en/…` および相対 `.mdx` パスをロケールに依存しないサイトルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) を参照してください。
+- `docsOutput.fumadocsParser`
+`"dot"` (デフォルト) または `"dir"`。ドットは英語ソースの横に `stem.{locale}.mdx` を書き込みます。ディレクトリは Nextra のようにロケールフォルダを書き込みます。[Fumadocs 統合 — ページレイアウト](/guide/fumadocs-integration#page-layout) を参照してください。
+- `docsOutput.rewriteFumadocsLinks`
+`true` の場合、翻訳後に Fumadocs リンク正規化ツールを実行します。`docsOutput.style` が `"fumadocs"` の場合、デフォルトで有効になります。コンテンツパスと相対 `.mdx` リンクを `/docs/…` ルートに書き換えます。
+- `docsOutput.fumadocsUiCatalog`
+オプション。Fumadocs UI オーバーライドカタログのブートストラップ + `translate-docs` 内の翻訳。フィールド: `sourcePath` (例: `lib/layout.shared.ts`)、`catalogPath` (生成された英語 JSON)、オプションの `outputPathTemplate` (デフォルト: `ui.{locale}.json` の横の `catalogPath`)。
+- `docs[].fumadocsMetaGlob`
+`meta.json` が `docsOutput.style` の場合の `"fumadocs"` コレクションのオプションのグロブ。デフォルト: `meta.json` の下の再帰的な `docsOutput.docsRoot`。
+- `docs[].fumadocsMetaTranslatableKeys`
+Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフォルト: `title`、`description`)。
 - `docsOutput.vitepressThemeCatalog`
-オプション。`translate-docs` 内の VitePress テーマ/ナビゲーション/サイドバーカタログのブートストラップ + 翻訳。フィールド: `configPath`（テーマ文字列を含む VitePress 設定）、`catalogPath`（生成された英語のネストされた JSON）、オプションの `outputPathTemplate`（デフォルト: `catalogPath` の隣の `theme.{locale}.json`）。
+オプション。VitePress テーマ/ナビゲーション/サイドバーカタログのブートストラップ + `translate-docs` 内の翻訳。フィールド: `configPath` (テーマ文字列を含む VitePress 設定)、`catalogPath` (生成された英語のネストされた JSON)、オプションの `outputPathTemplate` (デフォルト: `theme.{locale}.json` の横の `catalogPath`)。
 
 **ポストプロセス**
 

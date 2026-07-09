@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "이미지 및 스크린샷",
     "svgTranslation": "SVG 번역",
     "providers": "LLM 공급자",
@@ -36,8 +37,7 @@
     "programmaticApi": "프로그래밍 방식 API",
     "environment": "환경 변수",
     "examples": "예시",
-    "examplesOverview": "개요",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "개요"
   },
   "footer": {
     "message": "MIT 라이선스에 따라 배포됩니다.",

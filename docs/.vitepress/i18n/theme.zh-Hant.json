@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "圖片與螢幕截圖",
     "svgTranslation": "SVG 翻譯",
     "providers": "LLM 供應商",
@@ -36,8 +37,7 @@
     "programmaticApi": "程式化 API",
     "environment": "環境變數",
     "examples": "範例",
-    "examplesOverview": "概觀",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "概觀"
   },
   "footer": {
     "message": "根據 MIT 授權條款發佈。",

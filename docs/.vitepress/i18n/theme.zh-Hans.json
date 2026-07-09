@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "图片和屏幕截图",
     "svgTranslation": "SVG 翻译",
     "providers": "LLM 提供商",
@@ -36,8 +37,7 @@
     "programmaticApi": "编程 API",
     "environment": "环境变量",
     "examples": "示例",
-    "examplesOverview": "概述",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "概述"
   },
   "footer": {
     "message": "根据 MIT 许可证发布。",

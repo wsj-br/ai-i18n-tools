@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "Images aur Screenshots",
     "svgTranslation": "SVG anuvaad",
     "providers": "LLM pradaata",
@@ -36,8 +37,7 @@
     "programmaticApi": "Programmatic API",
     "environment": "Environment variables",
     "examples": "Udaaharan",
-    "examplesOverview": "Overview",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "Overview"
   },
   "footer": {
     "message": "MIT License ke tahat jaari kiya gaya.",

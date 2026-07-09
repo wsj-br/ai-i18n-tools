@@ -155,7 +155,7 @@
 | 필드                | 파이프라인 | 설명                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")`를 `strings.json`로 추출한 다음, 항목을 번역하고 로케일별 플랫 JSON을 작성합니다(추출은 자동으로 실행됩니다. 카탈로그만 새로 고치려면 독립형 `extract`를 사용하세요). |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` 페이지 번역; `docs[].docusaurusCatalogDir`가 설정된 경우 Docusaurus 셸 JSON; Nextra `_meta` / 구성된 경우 사전; `docsOutput.vitepressThemeCatalog`가 설정된 경우 VitePress 테마. |
+| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` 페이지 번역; `docs[].docusaurusCatalogDir`가 설정된 경우 Docusaurus 셸 JSON; Nextra `_meta` / 구성된 경우 사전; `docsOutput.vitepressThemeCatalog`가 설정된 경우 VitePress 테마; `docsOutput.style`가 `"fumadocs"`인 경우 Fumadocs `meta.json` / UI 카탈로그. |
 | `translateJson` | 3 | `json[]` 아래의 임의의 중첩된 JSON (`translate-json`). |
 | `translateSVG` | — | `.svg` 파일 번역 (최상위 `svg` 블록 필요). |
 
@@ -276,8 +276,18 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 `true`인 경우 번역 후 VitePress 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"vitepress"`인 경우 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래 영어 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 다시 작성합니다. VitePress 트리 외부의 리포지토리 파일(`LICENSE`, `examples/`)에 대한 링크의 경우 영어 소스에 전체 URL을 사용합니다. [VitePress 통합 — 문서 홈페이지로서의 README](/guide/vitepress-integration#readme-as-homepage)를 참조하세요.
 - `docsOutput.rewriteNextraLinks`
 `true`인 경우 번역 후 Nextra 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"nextra"`인 경우 기본적으로 활성화됩니다. Next.js `i18n`의 경우 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하세요.
+- `docsOutput.fumadocsParser`
+`"dot"`(기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`를 작성합니다. dir은 Nextra와 같은 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/guide/fumadocs-integration#page-layout)을 참조하십시오.
+- `docsOutput.rewriteFumadocsLinks`
+`true`인 경우 번역 후 Fumadocs 링크 정규화 도구를 실행합니다. `docsOutput.style`가 `"fumadocs"`인 경우 기본적으로 활성화됩니다. 콘텐츠 경로 및 상대 `.mdx` 링크를 `/docs/…` 경로로 다시 작성합니다.
+- `docsOutput.fumadocsUiCatalog`
+선택 사항입니다. `translate-docs` 내의 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역. 필드: `sourcePath`(예: `lib/layout.shared.ts`), `catalogPath`(생성된 영어 JSON), 선택 사항인 `outputPathTemplate`(기본값: `catalogPath` 옆의 `ui.{locale}.json`).
+- `docs[].fumadocsMetaGlob`
+`docsOutput.style`가 `"fumadocs"`인 경우 `meta.json` 컬렉션에 대한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
+- `docs[].fumadocsMetaTranslatableKeys`
+Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
-선택 사항입니다. `translate-docs` 내의 VitePress 테마/탐색/사이드바 카탈로그 부트스트랩 + 번역. 필드: `configPath`(테마 문자열이 있는 VitePress 구성), `catalogPath`(생성된 영어 중첩 JSON), 선택 사항 `outputPathTemplate`(기본값: `catalogPath` 옆의 `theme.{locale}.json`).
+선택 사항입니다. `translate-docs` 내의 VitePress 테마/탐색/사이드바 카탈로그 부트스트랩 + 번역. 필드: `configPath`(테마 문자열이 있는 VitePress 구성), `catalogPath`(생성된 영어 중첩 JSON), 선택 사항인 `outputPathTemplate`(기본값: `catalogPath` 옆의 `theme.{locale}.json`).
 
 **후처리**
 

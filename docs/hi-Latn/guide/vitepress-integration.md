@@ -127,6 +127,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
 
 Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [Nextra integration](/guide/nextra-integration) dekhein.

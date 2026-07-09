@@ -261,7 +261,7 @@ Os seguintes auxiliares são exportados de `'ai-i18n-tools/runtime'` e funcionam
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Conexão recomendada: key-trim + plural `wrapT` de `strings.json`, opcionalmente mescla chaves plurais `translate-ui` `{sourceLocale}.json`. |
 | `wrapT(i18n, options)`                                                 | Wrapper de nível inferior com suporte a plurais `t()` (geralmente instalado por `setupKeyAsDefaultT`).                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                               | Cria o índice do grupo de plurais que `wrapT` utiliza a partir das linhas do catálogo com `"plural": true`.                                                    |
-| `extractInterpolationNamesForWrap(key)`                                  | Analisa nomes `{{var}}` a partir de uma chave de origem para `wrapT` / fallback de corte de chave.                                                              |
+| `extractInterpolationNamesForWrap(key)`                                  | Analisa nomes <code v-pre>{{var}}</code> a partir de uma chave de origem para `wrapT` / fallback de corte de chave.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | Apenas um invólucro de nível inferior para key-trim (obsoleto para conexão de aplicativo; prefira `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Gera o mapa `localeLoaders` para `makeLoadLocale` a partir de `ui-languages.json` (cada `code` exceto `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para carregamento assíncrono de arquivos de localidade. |
@@ -269,7 +269,7 @@ Os seguintes auxiliares são exportados de `'ai-i18n-tools/runtime'` e funcionam
 | `applyDirection(lng, element?)` | Define o atributo `dir` em `document.documentElement`. |
 | `getUILanguageLabel(lang, t)` | Rótulo exibido para uma linha no menu de idiomas (com i18n). |
 | `getUILanguageLabelNative(lang)` | Rótulo exibido sem chamar `t()` (estilo cabeçalho). |
-| `interpolateTemplate(str, vars)` | Substituição de baixo nível `{{var}}` em uma string simples (usado internamente; o código do aplicativo deve usar `t()`). |
+| `interpolateTemplate(str, vars)` | Substituição de baixo nível <code v-pre>{{var}}</code> em uma string simples (usado internamente; o código do aplicativo deve usar `t()`). |
 | `flipUiArrowsForRtl(text, isRtl)` | Inverte `→` para `←` em layouts da direita para a esquerda (RTL). |
 
 ---

@@ -127,6 +127,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 사이드바 레이블 | 문서 — `style: "nextra"` + `translate-docs`일 때 자동 |
 | Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 사이드바 레이블 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
+| Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
 
 **프레임워크 셸/테마 문자열을 `json[]`에 넣지 마십시오** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴에 대해서는 [Docusaurus 통합](/guide/docusaurus-integration) 및 [Nextra 통합](/guide/nextra-integration)을 참조하십시오.

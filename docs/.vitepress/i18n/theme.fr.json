@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "Images et captures d'écran",
     "svgTranslation": "Traduction SVG",
     "providers": "Fournisseurs LLM",
@@ -36,8 +37,7 @@
     "programmaticApi": "API programmatique",
     "environment": "Variables d'environnement",
     "examples": "Exemples",
-    "examplesOverview": "Aperçu",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "Aperçu"
   },
   "footer": {
     "message": "Publié sous licence MIT.",

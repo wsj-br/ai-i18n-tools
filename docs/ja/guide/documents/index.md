@@ -9,6 +9,8 @@ Docusaurusサイトでは、`docusaurusCatalogDir`を`write-translations`カタ�
 
 [Nextra](/guide/nextra-integration) サイトでは、ページ本文は`docsOutput.style: "nextra"`とともに同じ`docs[]`パイプラインを使用します。`_meta.ts`サイドバーのラベルは`translate-docs`によって自動的に収集および翻訳され、テーマ辞書文字列は同じパイプラインで`docs[].nextraDictionaryPath`を介して翻訳されます。
 
+[Fumadocs](/guide/fumadocs-integration) サイトでは、ページ本文は `docsOutput.style: "fumadocs"` と `fumadocsParser` `"dot"` (デフォルト) または `"dir"` を使用します。`meta.json` サイドバーラベルは自動的に収集されます。UI のオーバーライドは `docsOutput.fumadocsUiCatalog` を介して翻訳されます。
+
 Markdownに埋め込まれたPNGやその他のラスター画像については、[画像とスクリーンショット](/guide/images-and-screenshots/)を参照してください。`translate-docs`は代替テキストのみを翻訳し、ラスターファイルをコピーしません。
 
 READMEまたはドキュメントにオプションの**言語スイッチャー**ブロックを配置するには、`docsOutput.style`を`"flat"`に設定します。詳細については、[言語スイッチャー](/guide/documents/language-switcher)を参照してください。
@@ -30,6 +32,7 @@ SVGファイルは、`features.translateSVG`が有効な場合、[`translate-svg
 | Docusaurusサイト | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [ステップ1](#step-1-initialise-for-documentation) |
 | VitePressサイト | テーマには`init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress統合](/guide/vitepress-integration) |
 | Nextraサイト | 辞書には`init -t ui-nextra` + `nextraDictionaryPath` (サイドバー`_meta.ts`は自動) — [Nextra統合](/guide/nextra-integration) |
+| Fumadocs サイト | UI には `init -t ui-fumadocs` + `fumadocsUiCatalog` (サイドバー `meta.json` は自動) — [Fumadocs 統合](/guide/fumadocs-integration) |
 | Astro Starlight | `init -t ui-starlight` — [ステップ1](#step-1-initialise-for-documentation) |
 | フラットドキュメント (README、変更ログなど) | `docsOutput.style = "flat"` — [出力レイアウト](/guide/documents/output-layouts)、オプションの[言語スイッチャー](/guide/documents/language-switcher) |
 | 翻訳されたファイルの保存場所 | [出力レイアウト](/guide/documents/output-layouts) |
@@ -73,10 +76,10 @@ npx ai-i18n-tools init -t ui-astro-website
 - `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
 - `cacheDir` - すべてのパイプライン共通のSQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
 - `docs` - ドキュメントブロックの配列。各ブロックには、オプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などが含まれます。
-- `docs[].description` - メンテナー向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
-- `docs[].contentPaths` - Markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
-- `docs[].outputDir` - そのブロックの翻訳済み出力ルート。
-- `docs[].docsOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（[出力レイアウト](/guide/documents/output-layouts)を参照）。
+- `docs[].description` - メンテナー向けのオプションの短いメモ。設定すると、`translate-docs` の見出しと `status` のセクションヘッダーに表示されます。
+- `docs[].contentPaths` - Markdown/MDX/`.astro` ソース (および Docusaurus シェル JSON 用のオプションの `docusaurusCatalogDir`)。
+- `docs[].outputDir` - そのブロックの翻訳された出力ルート。
+- `docs[].docsOutput.style` - `"nested"` (デフォルト)、`"flat"`、`"doc-system"`、またはエイリアス `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([出力レイアウト](/guide/documents/output-layouts) を参照)。
 
 **プライマリ対サプライメンタリ：** ローカライズされたページには `contentPaths` を使用してください。`write-translations` から Docusaurus シェルの JSON も必要な場合は、`docusaurusCatalogDir` を設定します。ページの翻訳のみを行う場合は、`docusaurusCatalogDir` を省略してください。
 

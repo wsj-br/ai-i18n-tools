@@ -155,7 +155,7 @@ Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu verg
 | Feld | Pipeline | Beschreibung |
 |---|---|---|
 | `translateUIStrings` | 1 | Extrahiert `t("…")` / `i18n.t("…")` in `strings.json`, übersetzt dann Einträge und schreibt Flat JSON pro Gebietsschema (die Extraktion läuft automatisch; verwenden Sie das eigenständige `extract`, um nur den Katalog zu aktualisieren). |
-| `translateDocs` | 2 | Übersetzt `.md` / `.mdx` / `.astro` Seiten; Docusaurus-Shell-JSON, wenn `docs[].docusaurusCatalogDir` gesetzt ist; Nextra `_meta` / Wörterbuch, wenn konfiguriert; VitePress-Theme, wenn `docsOutput.vitepressThemeCatalog` gesetzt ist. |
+| `translateDocs` | 2 | Übersetzt `.md` / `.mdx` / `.astro` Seiten; Docusaurus Shell-JSON, wenn `docs[].docusaurusCatalogDir` gesetzt ist; Nextra `_meta` / Wörterbuch, wenn konfiguriert; VitePress-Theme, wenn `docsOutput.vitepressThemeCatalog` gesetzt ist; Fumadocs `meta.json` / UI-Katalog, wenn `docsOutput.style` `"fumadocs"` ist. |
 | `translateJson` | 3 | Beliebige verschachtelte JSON-Struktur unter `json[]` (`translate-json`). |
 | `translateSVG` | — | Übersetzen Sie `.svg`-Dateien (erfordert den `svg`-Block auf oberster Ebene). |
 
@@ -276,8 +276,18 @@ Repo-Stammverzeichnis, das beim Berechnen von Präfixen für Flat-Link-Umschreib
 Wenn `true`, führen Sie den VitePress-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich Locale-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repo-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/vitepress-integration#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
 Wenn `true`, führen Sie den Nextra-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in locale-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/guide/nextra-integration#link-conventions).
+- `docsOutput.fumadocsParser`
+`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben englische Quellen; dir schreibt Locale-Ordner wie Nextra. Siehe [Fumadocs-Integration – Seitenlayout](/guide/fumadocs-integration#page-layout).
+- `docsOutput.rewriteFumadocsLinks`
+Wenn `true`, führen Sie den Fumadocs-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` `"fumadocs"` ist. Schreibt Inhaltspfade und relative `.mdx`-Links in `/docs/…`-Routen um.
+- `docsOutput.fumadocsUiCatalog`
+Optional. Fumadocs UI-Überschreibungskatalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `sourcePath` (z. B. `lib/layout.shared.ts`), `catalogPath` (generiertes englisches JSON), optional `outputPathTemplate` (Standard: `ui.{locale}.json` neben `catalogPath`).
+- `docs[].fumadocsMetaGlob`
+Optionale Globs für die `meta.json`-Sammlung, wenn `docsOutput.style` `"fumadocs"` ist. Standard: rekursives `meta.json` unter `docsOutput.docsRoot`.
+- `docs[].fumadocsMetaTranslatableKeys`
+Eigenschaftsnamen, deren String-Werte in Fumadocs `meta.json` übersetzt werden (Standard: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
-Optional. VitePress-Theme-/Navigations-/Sidebar-Katalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `configPath` (VitePress-Konfiguration mit Theme-Strings), `catalogPath` (generiertes englisches verschachteltes JSON), optional `outputPathTemplate` (Standard: `theme.{locale}.json` neben `catalogPath`).
+Optional. VitePress Theme/Nav/Sidebar Katalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `configPath` (VitePress-Konfiguration mit Theme-Strings), `catalogPath` (generiertes englisches verschachteltes JSON), optional `outputPathTemplate` (Standard: `theme.{locale}.json` neben `catalogPath`).
 
 **Nachbearbeitung**
 

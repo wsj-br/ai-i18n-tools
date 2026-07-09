@@ -199,9 +199,6 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Nextra documentation (pages + _meta.ts + theme dictionary)
 # npx ai-i18n-tools init -t ui-nextra
 
-# Fumadocs documentation (pages + meta.json + UI catalog)
-# npx ai-i18n-tools init -t ui-fumadocs
-
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -210,7 +207,7 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
+Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
 
 <a id="vitepress"></a>
 ### VitePress
@@ -221,11 +218,6 @@ Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, an
 ### Nextra
 
 `init -t ui-nextra` scaffolds `docsOutput.style: "nextra"`. `translate-docs` automatically collects and translates `_meta.ts` sidebar labels; set `docs[].nextraDictionaryPath` to also translate the theme dictionary module (e.g. `app/_dictionaries/en.ts`) — all in the same `sync` run, no JSON sidecars. See [Nextra integration](/guide/nextra-integration) and [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
-
-<a id="fumadocs"></a>
-### Fumadocs
-
-`init -t ui-fumadocs` scaffolds `docsOutput.style: "fumadocs"` with the **dot** parser by default. `translate-docs` translates MDX pages, `meta.json` sidebar labels, and UI overrides via `docsOutput.fumadocsUiCatalog` in one `sync` run. See [Fumadocs integration](/guide/fumadocs-integration) and [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
@@ -265,7 +257,7 @@ The following helpers are exported from `'ai-i18n-tools/runtime'` and work in an
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })`   | Recommended wiring: key-trim + plural `wrapT` from `strings.json`, optionally merges `translate-ui` `{sourceLocale}.json` plural keys. |
 | `wrapT(i18n, options)`                                                 | Lower-level plural-aware `t()` wrapper (usually installed by `setupKeyAsDefaultT`).                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                             | Builds the plural group index `wrapT` uses from catalog rows with `"plural": true`.                                                    |
-| `extractInterpolationNamesForWrap(key)`                                | Parses `{{var}}` names from a source key for `wrapT` / key-trim fallback.                                                              |
+| `extractInterpolationNamesForWrap(key)`                                | Parses <code v-pre>{{var}}</code> names from a source key for `wrapT` / key-trim fallback.                                                              |
 | `wrapI18nWithKeyTrim(i18n)`                                            | Lower-level key-trim wrapper only (deprecated for app wiring; prefer `setupKeyAsDefaultT`).                                            |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Builds the `localeLoaders` map for `makeLoadLocale` from `ui-languages.json` (every `code` except `sourceLocale`).                     |
 | `makeLoadLocale(i18n, loaders, sourceLocale)`                          | Factory for async locale file loading.                                                                                                 |
@@ -273,7 +265,7 @@ The following helpers are exported from `'ai-i18n-tools/runtime'` and work in an
 | `applyDirection(lng, element?)`                                        | Sets `dir` attribute on `document.documentElement`.                                                                                    |
 | `getUILanguageLabel(lang, t)`                                          | Display label for a language menu row (with i18n).                                                                                     |
 | `getUILanguageLabelNative(lang)`                                       | Display label without calling `t()` (header-style).                                                                                    |
-| `interpolateTemplate(str, vars)`                                       | Low-level `{{var}}` substitution on a plain string (used internally; app code should use `t()` instead).                               |
+| `interpolateTemplate(str, vars)`                                       | Low-level <code v-pre>{{var}}</code> substitution on a plain string (used internally; app code should use `t()` instead).                               |
 | `flipUiArrowsForRtl(text, isRtl)`                                      | Flip `→` to `←` for RTL layouts.                                                                                                       |
 
 ---

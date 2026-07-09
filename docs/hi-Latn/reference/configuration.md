@@ -155,7 +155,7 @@ Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx
 | Field                | Pipeline | Description                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")` ko `strings.json` mein extract karein, phir entries ka anuvaad karein aur har-locale flat JSON likhein (extract apne aap chalta hai; catalog ko refresh karne ke liye standalone `extract` ka upyog karein). |
-| `translateDocs`      | 2        | Anuvaadit `.md` / `.mdx` / `.astro` pannaon; Docusaurus shell JSON jab `docs[].docusaurusCatalogDir` set hota hai; Nextra `_meta` / shabdakosh jab konfigure kiya jata hai; VitePress theme jab `docsOutput.vitepressThemeCatalog` set hota hai. |
+| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` pejon ka anuvad karein; Docusaurus shell JSON jab `docs[].docusaurusCatalogDir` set ho; Nextra `_meta` / dictionary jab configure kiya gaya ho; VitePress theme jab `docsOutput.vitepressThemeCatalog` set ho; Fumadocs `meta.json` / UI catalog jab `docsOutput.style` `"fumadocs"` ho. |
 | `translateJson` | 3 | `json[]` (`translate-json`) ke tahat manmana nested JSON. |
 | `translateSVG` | — | `.svg` files ka anuvad karen (top-level `svg` block ki avashyakta hai). |
 
@@ -276,8 +276,18 @@ Repo root jo flat-link rewrite prefixes ka ganana karte samay upyog kiya jata ha
 Jab `true`, to anuvaadan ke baad VitePress link normalizer chalayein. Default roop se `docsOutput.style` `"vitepress"` hota hai jab saksham hota hai. Iska upyog karein kisi bhi `doc-system` layout ke saath jahan sthaniya folder Angrezi ke bagal mein `docsRoot` par baithe hain. README-shaili `docs/guide/…` pathon ko site routes (`/guide/…`) aur sthaniya-sambandhit `../guide/…` linkon mein punah likhta hai. Repo fileon ke liye jo VitePress tree (`LICENSE`, `examples/`) ke bahar hain, Angrezi strot mein poore URL ka upyog karein — [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage) dekhain.
 - `docsOutput.rewriteNextraLinks`
 Jab `true`, to anuvaadan ke baad Nextra link normalizer chalayein. Default roop se `docsOutput.style` `"nextra"` hota hai jab saksham hota hai. `content/en/…` aur sambandhit `.mdx` pathon ko sthaniya-tatparja site routes (`/guide/…`) mein punah likhta hai Next.js `i18n` ke liye. [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) dekhain.
+- `docsOutput.fumadocsParser`
+`"dot"` (default) ya `"dir"`. Dot angrezi sroton ke bagal mein `stem.{locale}.mdx` likhta hai; dir Nextra jaise locale folder likhta hai. [Fumadocs integration — Page layout](/guide/fumadocs-integration#page-layout) dekhein.
+- `docsOutput.rewriteFumadocsLinks`
+Jab `true` ho, anuvad ke baad Fumadocs link normalizer chalayein. Jab `docsOutput.style` `"fumadocs"` ho to default roop se saksham hota hai. Content path aur relative `.mdx` links ko `/docs/…` routes mein rewrite karta hai.
+- `docsOutput.fumadocsUiCatalog`
+Vaishayik. Fumadocs UI override catalog bootstrap + `translate-docs` ke andar anuvad. Fields: `sourcePath` (jaise `lib/layout.shared.ts`), `catalogPath` (generated English JSON), vaishayik `outputPathTemplate` (default: `ui.{locale}.json` `catalogPath` ke bagal mein).
+- `docs[].fumadocsMetaGlob`
+`meta.json` collection ke liye vaishayik glob(s) jab `docsOutput.style` `"fumadocs"` ho. Default: `docsOutput.docsRoot` ke neeche recursive `meta.json`.
+- `docs[].fumadocsMetaTranslatableKeys`
+Property names jinke string values Fumadocs `meta.json` mein anuvadit hote hain (default: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
-Vikalpik. VitePress theme/nav/sidebar catalog bootstrap + anuvaadan `translate-docs` ke andar. Fields: `configPath` (VitePress config with theme strings), `catalogPath` (generated English nested JSON), vikalpik `outputPathTemplate` (default: `theme.{locale}.json` `catalogPath` ke bagal mein).
+Vaishayik. VitePress theme/nav/sidebar catalog bootstrap + `translate-docs` ke andar anuvad. Fields: `configPath` (VitePress config jismein theme strings hain), `catalogPath` (generated English nested JSON), vaishayik `outputPathTemplate` (default: `theme.{locale}.json` `catalogPath` ke bagal mein).
 
 **Post-processing**
 

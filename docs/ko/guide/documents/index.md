@@ -9,6 +9,8 @@ Docusaurus 사이트에서는 `docusaurusCatalogDir`를 `write-translations` 카
 
 [Nextra](/guide/nextra-integration) 사이트에서 페이지 본문은 `docsOutput.style: "nextra"`과 함께 동일한 `docs[]` 파이프라인을 사용합니다. `_meta.ts` 사이드바 레이블은 `translate-docs`에 의해 자동으로 수집 및 번역됩니다. 테마 사전 문자열은 동일한 파이프라인에서 `docs[].nextraDictionaryPath`를 통해 번역됩니다.
 
+[Fumadocs](/guide/fumadocs-integration) 사이트의 페이지 본문은 `docsOutput.style: "fumadocs"`와 함께 `fumadocsParser` `"dot"`(기본값) 또는 `"dir"`을 사용합니다. `meta.json` 사이드바 레이블은 자동으로 수집되며, UI 오버라이드는 `docsOutput.fumadocsUiCatalog`를 통해 번역됩니다.
+
 마크다운에 포함된 PNG 및 기타 래스터 이미지에 대해서는 [이미지 및 스크린샷](/guide/images-and-screenshots/)을 참조하십시오. `translate-docs`는 alt 텍스트만 번역하며 래스터 파일을 복사하지 않습니다.
 
 README 또는 문서에 선택적 **언어 전환기** 블록을 추가하려면 `docsOutput.style`를 `"flat"`로 설정하십시오. [언어 전환기](/guide/documents/language-switcher)를 참조하십시오.
@@ -30,6 +32,7 @@ SVG 파일은 `features.translateSVG`이 활성화된 경우 [`translate-svg`](/
 | Docusaurus 사이트 | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [1단계](#step-1-initialise-for-documentation) |
 | VitePress 사이트 | 테마용 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 통합](/guide/vitepress-integration) |
 | Nextra 사이트 | 사전용 `init -t ui-nextra` + `nextraDictionaryPath` (사이드바 `_meta.ts`는 자동) — [Nextra 통합](/guide/nextra-integration) |
+| Fumadocs 사이트 | `init -t ui-fumadocs` + `fumadocsUiCatalog`를 사용한 UI(사이드바 `meta.json`는 자동임) — [Fumadocs 통합](/guide/fumadocs-integration) |
 | Astro Starlight | `init -t ui-starlight` — [1단계](#step-1-initialise-for-documentation) |
 | 플랫 문서(README, 변경 로그 등) | `docsOutput.style = "flat"` — [출력 레이아웃](/guide/documents/output-layouts), 선택적 [언어 전환기](/guide/documents/language-switcher) |
 | 번역된 파일이 저장되는 위치 | [출력 레이아웃](/guide/documents/output-layouts) |
@@ -73,10 +76,10 @@ npx ai-i18n-tools init -t ui-astro-website
 - `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
 - `cacheDir` - 모든 파이프라인에 공유되는 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리이기도 함).
 - `docs` - 문서 블록들의 배열. 각 블록은 선택적 `description`, `contentPaths`(문자열 또는 배열; 파일, 디렉터리 또는 glob), `outputDir`, 선택적 `docusaurusCatalogDir`, `docsOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등을 포함할 수 있습니다.
-- `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모입니다. 설정하면 `translate-docs` 헤드라인과 `status` 섹션 헤더에 나타납니다.
-- `docs[].contentPaths` - 마크다운/MDX/`.astro` 소스(및 Docusaurus 셸 JSON용 선택적 `docusaurusCatalogDir`).
-- `docs[].outputDir` - 해당 블록의 번역된 출력 루트입니다.
-- `docs[].docsOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`([출력 레이아웃](/guide/documents/output-layouts) 참조).
+- `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모입니다. 설정된 경우, `translate-docs` 제목과 `status` 섹션 헤더에 표시됩니다.
+- `docs[].contentPaths` - 마크다운/MDX/`.astro` 소스(および 선택적 `docusaurusCatalogDir`를 사용한 Docusaurus 쉘 JSON).
+- `docs[].outputDir` - 해당 블록의 번역 출력 루트입니다.
+- `docs[].docsOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"`, 또는 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` 별칭(참조: [출력 레이아웃](/guide/documents/output-layouts)).
 
 **주요 vs 보조:** 로컬화된 페이지에 대해 `contentPaths`에 집중하십시오. `docusaurusCatalogDir`을 설정하면 `write-translations`에서 Docusaurus 셸 JSON도 필요할 때입니다. 페이지만 번역하는 경우 `docusaurusCatalogDir`는 생략하십시오.
 

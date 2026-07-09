@@ -24,6 +24,7 @@
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
     "nextra": "Nextra",
+    "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "画像とスクリーンショット",
     "svgTranslation": "SVG の翻訳",
     "providers": "LLM プロバイダー",
@@ -36,8 +37,7 @@
     "programmaticApi": "プログラム API",
     "environment": "環境変数",
     "examples": "例",
-    "examplesOverview": "概要",
-    "fumadocs": "Fumadocs"
+    "examplesOverview": "概要"
   },
   "footer": {
     "message": "MIT ライセンスでリリースされています。",

@@ -9,6 +9,8 @@ Sur les sites [VitePress](/guide/vitepress-integration), les corps de page utili
 
 Sur les sites [Nextra](/guide/nextra-integration), les corps de page utilisent le même pipeline `docs[]` avec `docsOutput.style: "nextra"`. Les étiquettes de la barre latérale `_meta.ts` sont collectées et traduites automatiquement par `translate-docs` ; les chaînes du dictionnaire de thème sont traduites via `docs[].nextraDictionaryPath` dans le même pipeline.
 
+Sur les sites [Fumadocs](/guide/fumadocs-integration), les corps de page utilisent `docsOutput.style: "fumadocs"` avec `fumadocsParser` `"dot"` (par défaut) ou `"dir"`. Les étiquettes de la barre latérale `meta.json` sont collectées automatiquement ; les remplacements d'interface utilisateur sont traduits via `docsOutput.fumadocsUiCatalog`.
+
 Pour les images PNG et autres images matricielles intégrées dans le markdown, voir [Images et captures d'écran](/guide/images-and-screenshots/). `translate-docs` ne traduit que le texte alternatif ; il ne copie pas les fichiers matriciels.
 
 Pour un bloc **sélecteur de langue** facultatif dans le README ou la documentation, définissez `docsOutput.style` sur `"flat"` — voir [Sélecteur de langue](/guide/documents/language-switcher).
@@ -30,6 +32,7 @@ Les paquets JSON d'interface utilisateur imbriqués arbitraires, sans rapport av
 | Site Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Étape 1](#step-1-initialise-for-documentation) |
 | Site VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` pour le thème — [Intégration VitePress](/guide/vitepress-integration) |
 | Site Nextra | `init -t ui-nextra` + `nextraDictionaryPath` pour le dictionnaire (la barre latérale `_meta.ts` est automatique) — [Intégration Nextra](/guide/nextra-integration) |
+| Site Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` pour l'interface utilisateur (la `meta.json` de la barre latérale est automatique) — [Intégration Fumadocs](/guide/fumadocs-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Étape 1](#step-1-initialise-for-documentation) |
 | Documents plats (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Mises en page de sortie](/guide/documents/output-layouts), [sélecteur de langue](/guide/documents/language-switcher) facultatif |
 | Où les fichiers traduits atterrissent | [Dispositions de sortie](/guide/documents/output-layouts) |
@@ -74,9 +77,9 @@ Modifiez le fichier `ai-i18n-tools.config.json` généré :
 - `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de journal par défaut pour `--write-logs`).
 - `docs` - tableau de blocs de documentation. Chaque bloc possède des options `description`, `contentPaths` (chaîne ou tableau ; fichier, répertoire ou motif générique), `outputDir`, `docusaurusCatalogDir` facultatif, `docsOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `docs[].description` - courte note facultative pour les mainteneurs. Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` et dans les en-têtes de section `status`.
-- `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON de l'habillage Docusaurus).
+- `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON de l'interpréteur de commandes Docusaurus).
 - `docs[].outputDir` - racine de sortie traduite pour ce bloc.
-- `docs[].docsOutput.style` - `"nested"` (par défaut), `"flat"`, `"doc-system"`, ou les alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` (voir [Dispositions de sortie](/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (par défaut), `"flat"`, `"doc-system"`, ou les alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (voir [Dispositions de sortie](/guide/documents/output-layouts)).
 
 **Principal contre secondaire :** Concentrez-vous sur `contentPaths` pour les pages localisées. Définissez `docusaurusCatalogDir` lorsque vous avez également besoin du JSON du shell Docusaurus depuis `write-translations`. Omettez `docusaurusCatalogDir` si vous traduisez uniquement les pages.
 

@@ -98,6 +98,8 @@ Facultatif : remplacez la collection par `docs[].nextraMetaGlob` ou restreignez 
 | VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Étiquettes de la barre latérale `_meta.ts` | Documents — auto lorsque `style: "nextra"` + `translate-docs` |
 | Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | étiquettes de barre latérale `meta.json` | Documents — auto lorsque `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | catalogue de remplacements d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline d'interface supplémentaire | Documents — `translate-docs` (pages uniquement) |
 
 Ne placez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés. Consultez [Intégration Docusaurus](/guide/docusaurus-integration) et [Intégration VitePress](/guide/vitepress-integration) pour les autres modèles de framework.

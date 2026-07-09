@@ -261,7 +261,7 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Connexion recommandée : suppression des clés + pluriel `wrapT` à partir de `strings.json`, fusionne éventuellement les clés plurielles `translate-ui` `{sourceLocale}.json`. |
 | `wrapT(i18n, options)`                                                 | Enveloppe `t()` de bas niveau prenant en compte le pluriel (généralement installée par `setupKeyAsDefaultT`).                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                               | Construit l'index du groupe pluriel utilisé par `wrapT` à partir des lignes du catalogue avec `"plural": true`.                                                    |
-| `extractInterpolationNamesForWrap(key)`                                  | Analyse les noms `{{var}}` à partir d'une clé source pour `wrapT` / repli par suppression de clé.                                                              |
+| `extractInterpolationNamesForWrap(key)`                                  | Analyse les noms <code v-pre>{{var}}</code> à partir d'une clé source pour `wrapT` / repli par suppression de clé.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | Enrobage bas niveau uniquement pour la suppression des clés (obsolète pour la connexion applicative ; privilégier `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Construit la table `localeLoaders` pour `makeLoadLocale` à partir de `ui-languages.json` (chaque `code` sauf `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Fabrique pour le chargement asynchrone des fichiers de langue. |
@@ -269,7 +269,7 @@ Les utilitaires suivants sont exportés depuis `'ai-i18n-tools/runtime'` et fonc
 | `applyDirection(lng, element?)` | Définit l'attribut `dir` sur `document.documentElement`. |
 | `getUILanguageLabel(lang, t)` | Libellé d'affichage pour une ligne de menu de langue (avec i18n). |
 | `getUILanguageLabelNative(lang)` | Libellé d'affichage sans appel à `t()` (style en-tête). |
-| `interpolateTemplate(str, vars)` | Substitution `{{var}}` bas niveau sur une chaîne simple (utilisée en interne ; le code applicatif devrait utiliser `t()` à la place). |
+| `interpolateTemplate(str, vars)` | Substitution <code v-pre>{{var}}</code> bas niveau sur une chaîne simple (utilisée en interne ; le code applicatif devrait utiliser `t()` à la place). |
 | `flipUiArrowsForRtl(text, isRtl)` | Inverse `→` en `←` pour les dispositions RTL. |
 
 ---

@@ -9,6 +9,8 @@
 
 在 [Nextra](/guide/nextra-integration) 站点中，页面正文使用与 `docsOutput.style: "nextra"` 相同的 `docs[]` 管道。`_meta.ts` 侧边栏标签由 `translate-docs` 自动收集并翻译；主题字典字符串在同一管道中通过 `docs[].nextraDictionaryPath` 进行翻译。
 
+在 [Fumadocs](/guide/fumadocs-integration) 站点中，页面正文使用 `docsOutput.style: "fumadocs"`，并带有 `fumadocsParser` `"dot"`（默认）或 `"dir"`。`meta.json` 侧边栏标签会自动收集；UI 覆盖项通过 `docsOutput.fumadocsUiCatalog` 进行翻译。
+
 对于嵌入在 Markdown 中的 PNG 和其他栅格图像，请参阅[图像和屏幕截图](/guide/images-and-screenshots/)。`translate-docs` 仅翻译替代文本；它不复制栅格文件。
 
 对于 README 或文档中可选的**语言切换器**块，请将 `docsOutput.style` 设置为 `"flat"` — 请参阅[语言切换器](/guide/documents/language-switcher)。
@@ -30,6 +32,7 @@
 | Docusaurus 站点 | `init -t ui-docusaurus`，`docsOutput.style = "docusaurus"` — [步骤 1](#step-1-initialise-for-documentation) |
 | VitePress 站点 | 用于主题的 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 集成](/guide/vitepress-integration) |
 | Nextra 站点 | 用于字典的 `init -t ui-nextra` + `nextraDictionaryPath`（侧边栏 `_meta.ts` 是自动的）— [Nextra 集成](/guide/nextra-integration) |
+| Fumadocs 站点 | 用于 UI 的 `init -t ui-fumadocs` + `fumadocsUiCatalog`（侧边栏 `meta.json` 是自动的）— [Fumadocs 集成](/guide/fumadocs-integration) |
 | Astro Starlight | `init -t ui-starlight` — [步骤 1](#step-1-initialise-for-documentation) |
 | 平面文档（README、更新日志等） | `docsOutput.style = "flat"` — [输出布局](/guide/documents/output-layouts)，可选的[语言切换器](/guide/documents/language-switcher) |
 | 翻译文件存放位置 | [输出布局](/guide/documents/output-layouts) |
@@ -73,10 +76,10 @@ npx ai-i18n-tools init -t ui-astro-website
 - `targetLocales` - BCP-47 区域设置代码数组（例如 `["de", "fr", "es"]`）。
 - `cacheDir` - 所有管道的共享 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
 - `docs` - 文档块数组。每个块都有可选的 `description`、`contentPaths`（字符串或数组；文件、目录或 glob）、`outputDir`、可选的 `docusaurusCatalogDir`、`docsOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
-- `docs[].description` - 供维护者使用的可选简短说明。设置后，它会出现在 `translate-docs` 标题和 `status` 章节标题中。
-- `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus 外壳 JSON 的可选 `docusaurusCatalogDir`）。
+- `docs[].description` - 为维护者提供的可选简短说明。设置后，它会出现在 `translate-docs` 标题和 `status` 章节标题中。
+- `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus shell JSON 的可选 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 该区块的翻译输出根目录。
-- `docs[].docsOutput.style` - `"nested"`（默认）、`"flat"`、`"doc-system"`，或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（参见 [输出布局](/guide/documents/output-layouts)）。
+- `docs[].docsOutput.style` - `"nested"`（默认）、`"flat"`、`"doc-system"`，或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（参见[输出布局](/guide/documents/output-layouts)）。
 
 **主要与补充：** 专注于 `contentPaths` 用于本地化页面。当您还需要来自 `write-translations` 的 Docusaurus shell JSON 时，请设置 `docusaurusCatalogDir`。如果您只翻译页面，请省略 `docusaurusCatalogDir`。
 

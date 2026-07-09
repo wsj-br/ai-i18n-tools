@@ -98,6 +98,8 @@ Opcional: substitua a coleta com `docs[].nextraMetaGlob` ou restrinja os nomes d
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
 | Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Rótulos de barra lateral `meta.json` | Documentos — auto quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
 **Não** coloque strings de shell/tema do framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração VitePress](/guide/vitepress-integration) para os outros padrões de framework.

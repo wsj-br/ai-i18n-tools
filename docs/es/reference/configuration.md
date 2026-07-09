@@ -155,7 +155,7 @@ Para comparar los modelos configurados en un trabajo de traducción real, ejecut
 | Campo                | Canalización | Descripción                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | Extraer `t("…")` / `i18n.t("…")` en `strings.json`, luego traducir las entradas y escribir JSON plano por configuración regional (la extracción se ejecuta automáticamente; usar `extract` independiente para actualizar solo el catálogo). |
-| `translateDocs` | 2 | Traducir páginas `.md` / `.mdx` / `.astro`; JSON de shell de Docusaurus cuando `docs[].docusaurusCatalogDir` está configurado; `_meta` de Nextra / diccionario cuando está configurado; tema de VitePress cuando `docsOutput.vitepressThemeCatalog` está configurado. |
+| `translateDocs`      | 2        | Traducir `.md` / `.mdx` / `.astro` páginas; shell JSON de Docusaurus cuando `docs[].docusaurusCatalogDir` esté configurado; Nextra `_meta` / diccionario cuando esté configurado; tema VitePress cuando `docsOutput.vitepressThemeCatalog` esté configurado; Fumadocs `meta.json` / catálogo de interfaz de usuario cuando `docsOutput.style` esté `"fumadocs"`. |
 | `translateJson`      | 3        | JSON anidado arbitrario bajo `json[]` (`translate-json`).                                                                                                           |
 | `translateSVG`       | —        | Traducir archivos `.svg` (requiere el bloque `svg` de nivel superior).                                                                                                       |
 
@@ -276,8 +276,18 @@ Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlac
 Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño `doc-system` donde las carpetas de configuración regional se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` estilo README a rutas de sitio (`/guide/…`) y enlaces `../guide/…` relativos a la configuración regional. Para enlaces a archivos de repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en la fuente en inglés; consulte [Integración de VitePress — README como la página de inicio de los documentos](/guide/vitepress-integration#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
 Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"nextra"`. Reescribe `content/en/…` y las rutas relativas `.mdx` a rutas de sitio neutrales a la configuración regional (`/guide/…`) para Next.js `i18n`. Consulte [Integración de Nextra — Convenciones de enlaces](/guide/nextra-integration#link-conventions).
+- `docsOutput.fumadocsParser`
+`"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a las fuentes en inglés; dir escribe carpetas de idioma como Nextra. Consulte [Integración de Fumadocs — Diseño de página](/guide/fumadocs-integration#page-layout).
+- `docsOutput.rewriteFumadocsLinks`
+Cuando `true`, ejecute el normalizador de enlaces de Fumadocs después de la traducción. Predeterminado habilitado cuando `docsOutput.style` es `"fumadocs"`. Reescribe rutas de contenido y enlaces relativos `.mdx` a rutas `/docs/…`.
+- `docsOutput.fumadocsUiCatalog`
+Opcional. Catálogo de inicio de override de interfaz de usuario de Fumadocs + traducción dentro de `translate-docs`. Campos: `sourcePath` (por ejemplo, `lib/layout.shared.ts`), `catalogPath` (JSON en inglés generado), `outputPathTemplate` opcional (predeterminado: `ui.{locale}.json` junto a `catalogPath`).
+- `docs[].fumadocsMetaGlob`
+Opcional glob(s) para la recopilación `meta.json` cuando `docsOutput.style` es `"fumadocs"`. Predeterminado: recursivo `meta.json` debajo de `docsOutput.docsRoot`.
+- `docs[].fumadocsMetaTranslatableKeys`
+Nombres de propiedades cuyos valores de cadena se traducen en Fumadocs `meta.json` (predeterminado: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
-Opcional. Arranque del catálogo de temas/navegación/barra lateral de VitePress + traducción dentro de `translate-docs`. Campos: `configPath` (configuración de VitePress con cadenas de tema), `catalogPath` (JSON anidado en inglés generado), `outputPathTemplate` opcional (predeterminado: `theme.{locale}.json` junto a `catalogPath`).
+Opcional. Catálogo de inicio de tema/navegación/barra lateral de VitePress + traducción dentro de `translate-docs`. Campos: `configPath` (configuración de VitePress con cadenas de tema), `catalogPath` (JSON anidado en inglés generado), `outputPathTemplate` opcional (predeterminado: `theme.{locale}.json` junto a `catalogPath`).
 
 **Posprocesado**
 

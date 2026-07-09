@@ -127,6 +127,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | VitePress | Catálogo de temas/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Etiquetas de la barra lateral de `_meta.ts` | Documentos — automático cuando `style: "nextra"` + `translate-docs` |
 | Nextra | Diccionario de temas `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Etiquetas de barra lateral de `meta.json` | Documentos — auto cuando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de anulaciones de interfaz de usuario | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
 
 **No** ponga cadenas de shell/tema del framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration) e [Integración de Nextra](/guide/nextra-integration) para ver los otros patrones del framework.
