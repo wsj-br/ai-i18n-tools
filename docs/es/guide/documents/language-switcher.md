@@ -62,8 +62,8 @@ Para etiquetas endónimas (`label: "local"`), genere o mantenga `ui-languages.js
 
 | Ejemplo | Archivos |
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Este paquete (README plano + sitio VitePress) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (bloque README: `docsOutput.style = "flat"`; bloque del sitio: `docsOutput.style = "vitepress"`; tema JSON a través de `json[]`) |
+| Este paquete (README plano + sitio VitePress) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (bloque README: `docsOutput.style = "flat"`; bloque del sitio: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | README plano + documentos de Docusaurus | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (segundo bloque: `docsOutput.style = "flat"`; primer bloque: `docsOutput.style = "docusaurus"`) |
-| Documentos de VitePress (demostración mínima) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + catálogo de temas `json[]`) |
+| Documentos de VitePress (demostración mínima) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 La línea inmediatamente antes de `<small id="lang-list">` (por ejemplo, `**Read in other languages:**`) es un segmento normal traducible y se localiza en cada configuración regional de destino; solo la fila de enlaces dentro de los marcadores se regenera textualmente, salvo por `href` y las etiquetas generadas por el manifiesto.

@@ -9,9 +9,10 @@
 
 **エイリアス**（同じレイアウトエンジン、プリセット済み `localeSubpath`）：
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath`は`docusaurus-plugin-content-docs/current`（Docusaurus i18nプラグインレイアウト）にデフォルトします。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath`は`""`（翻訳されたページは`{outputDir}/{locale}/`の直下に配置され、[Starlight](https://starlight.astro.build/guides/i18n/)と一致し、`outputDir`が`docsRoot`に等しい場合）にデフォルトします。
-- `docsOutput.style = "vitepress"` — `doc-system`と同じレイアウトですが、`localeSubpath`は空です。BCP-47ロケールフォルダ名は保存されます（`localePathLowercase`は`false`にデフォルトします）。[VitePress統合](/guide/vitepress-integration)を参照してください。
+- `docsOutput.style = "docusaurus"` — `localeSubpath` はデフォルトで `docusaurus-plugin-content-docs/current` に設定されています (Docusaurus i18n プラグインのレイアウト)。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` はデフォルトで `""` に設定されています (`{outputDir}/{locale}/` の直下にある翻訳済みページ。英語がコンテンツルートにあり、`outputDir` が `docsRoot` と等しい場合の [Starlight](https://starlight.astro.build/guides/i18n/) と一致します)。
+- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。BCP-47 ロケールフォルダ名は保持されます (`localePathLowercase` はデフォルトで `false` に設定されています)。[VitePress の統合](/guide/vitepress-integration) を参照してください。
+- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。英語のソースはロケールフォルダ (例: `content/en/`) の下にあります。[Nextra の統合](/guide/nextra-integration) を参照してください。
 
 Docusaurus プリセット（主なドキュメントページ）：
 
@@ -31,6 +32,12 @@ VitePressプリセット（コンテンツルートに英語、ソースの隣�
 docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 ```
 
+Nextra プリセット (英語はロケールフォルダの下、ターゲットのロケールフォルダは兄弟関係):
+
+```text
+content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
+```
+
 オプションのJSONラベル — `docusaurusCatalogDir` からのDocusaurusシェル文字列（MDX本文コピーではない）：
 
 ```text
@@ -39,7 +46,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlightは多数のロケール向けUI文字列を提供しています。必要に応じて、カスタムUIの上書きには、別個の `docs[]` ブロック内で `src/content/i18n/en.json` と `jsonPathTemplate: "{outputDir}/{locale}.json"` を使用します。
 
-VitePressのナビゲーション/サイドバー/フッター文字列はMarkdownにはありません。`docs/.vitepress/i18n/theme.en.json`を作成し、JSON（`json[]`、`features.translateJson`）で翻訳します。「[VitePress統合](/guide/vitepress-integration)」を参照してください。
+VitePress のナビゲーション/サイドバー/フッターの文字列は Markdown ではありません。`docsOutput.vitepressThemeCatalog` を設定し、**`translate-docs`** 内で翻訳してください。[VitePress の統合](/guide/vitepress-integration) を参照してください。
+
+Nextra テーマ辞書 (`.ts`) と `_meta.ts` のサイドバーラベルは Markdown ではありません。`style: "nextra"` の場合、`docs[].nextraDictionaryPath` と自動 `_meta` コレクションをすべて **`translate-docs`** 内で使用してください。[Nextra の統合](/guide/nextra-integration) を参照してください。
 
 `docsOutput.style = "flat"` — 翻訳されたファイルをロケールサフィックス付きでソース横に、またはサブディレクトリ内に配置します。`docsOutput.style = "flat"` の場合、ページ間の相対リンクは自動的に書き換えられます（`rewriteRelativeLinks: false` またはカスタムの `pathTemplate` が設定されていない限り）。
 

@@ -155,7 +155,7 @@ Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu verg
 | Feld | Pipeline | Beschreibung |
 |---|---|---|
 | `translateUIStrings` | 1 | Extrahiert `t("…")` / `i18n.t("…")` in `strings.json`, übersetzt dann Einträge und schreibt Flat JSON pro Gebietsschema (die Extraktion läuft automatisch; verwenden Sie das eigenständige `extract`, um nur den Katalog zu aktualisieren). |
-| `translateDocs` | 2 | Übersetzen Sie `.md` / `.mdx` / `.astro` Seiten; Docusaurus-Shell-JSON, wenn `docs[].docusaurusCatalogDir` gesetzt ist. |
+| `translateDocs` | 2 | Übersetzt `.md` / `.mdx` / `.astro` Seiten; Docusaurus-Shell-JSON, wenn `docs[].docusaurusCatalogDir` gesetzt ist; Nextra `_meta` / Wörterbuch, wenn konfiguriert; VitePress-Theme, wenn `docsOutput.vitepressThemeCatalog` gesetzt ist. |
 | `translateJson` | 3 | Beliebige verschachtelte JSON-Struktur unter `json[]` (`translate-json`). |
 | `translateSVG` | — | Übersetzen Sie `.svg`-Dateien (erfordert den `svg`-Block auf oberster Ebene). |
 
@@ -240,16 +240,24 @@ Optionaler Alias, der beim Laden in `contentPaths` zusammengeführt wird.
 - `targetLocales`
 Optionale Untermenge von Sprachen (Lokalisierungen) nur für diesen Block (sonst die obergeordnete `targetLocales`). Die wirksamen Dokumentationssprachen ergeben sich als Vereinigung über alle Blöcke.
 - `docusaurusCatalogDir`
-Optional. Quellverzeichnis für Docusaurus-JSON-Beschriftungskataloge für diesen Block (z. B. `"i18n/en"` aus `docusaurus write-translations`). Seiteninhalte stammen immer aus `contentPaths`; `docusaurusCatalogDir` liefert nur Shell-/UI-JSON, nicht MDX.
+Optional. Quellverzeichnis für Docusaurus-JSON-Label-Kataloge für diesen Block (z. B. `"i18n/en"` von `docusaurus write-translations`). Seiteninhalte stammen immer von `contentPaths`; `docusaurusCatalogDir` liefert nur Shell-/UI-JSON, nicht MDX.
+- `nextraMetaGlob`
+Optionale Glob(s) für Nextra `_meta.ts` / `_meta.tsx` / `_meta.js` unter `docsRoot`. Wenn `docsOutput.style` auf `"nextra"` gesetzt ist und dies weggelassen wird, werden alle `_meta`-Dateien unter `docsRoot` automatisch gesammelt.
+- `nextraMetaTranslatableKeys`
+Optionale Eigenschaftsnamen, deren Zeichenfolgenwerte in Nextra `_meta`-Objekten übersetzt werden (Standard: `title`, `display`, `breadcrumb`).
+- `nextraDictionaryPath`
+Optionales englisches Nextra-Theme-Wörterbuchmodul (z. B. `"app/_dictionaries/en.ts"`). Wird während `{dir}/{locale}.ts` nach `translate-docs` übersetzt.
+- `nextraDictionaryOutputTemplate`
+Optionale Ausgabevorlage für lokale Wörterbuchmodule (Standard: `{dir}/{locale}.ts` relativ zum Wörterbuchverzeichnis).
 
 **Ausgabe-Layout**
 
 - `outputDir`
 Stammverzeichnis für die übersetzte Ausgabe dieses Blocks.
 - `docsOutput.style`
-`"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"`.
+`"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`.
 - `docsOutput.localeSubpath`
-Pfadsegment zwischen `{locale}/` und `{relativeToDocsRoot}` für `doc-system` (erforderlich bei direkter Verwendung von `style: "doc-system"`; voreingestellt bei Verwendung eines Alias). Verwenden Sie `""` für Starlight-ähnliche Gebietsschema-Ordner.
+Pfadsegment zwischen `{locale}/` und `{relativeToDocsRoot}` für `doc-system` (erforderlich bei direkter Verwendung von `style: "doc-system"`; voreingestellt bei Verwendung eines Alias). Verwenden Sie `""` für Starlight-ähnliche Locale-Ordner.
 - `docsOutput.docsRoot`
 Quell-Dokumentationsstamm für Docusaurus-Layout (z. B. `"docs"`). Standard `"docs"`, wenn weggelassen.
 - `docsOutput.pathTemplate`
@@ -261,11 +269,15 @@ Wenn `true`, verwenden integrierte Ausgabelayouts (`nested`, `flat`, `doc-system
 - `docsOutput.flatPreserveRelativeDir`
 Wenn `docsOutput.style = "flat"`, Quellunterverzeichnisse beibehalten, damit Dateien mit demselben Basisnamen nicht kollidieren. Standard `false`.
 - `docsOutput.rewriteRelativeLinks`
-Relative Links nach der Übersetzung umschreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
+Schreibt relative Links nach der Übersetzung um (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
 - `docsOutput.linkRewriteDocsRoot`
-Das Repository-Root, das beim Berechnen von Präfixen für Flat-Link-Umschreibungen verwendet wird. Lassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Root.
+Repo-Stammverzeichnis, das beim Berechnen von Präfixen für Flat-Link-Umschreibungen verwendet wird. Belassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projektstammverzeichnis.
 - `docsOutput.rewriteVitepressLinks`
-Wenn `true`, führen Sie den VitePress-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Locale-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/vitepress-integration#readme-as-homepage).
+Wenn `true`, führen Sie den VitePress-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich Locale-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repo-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/vitepress-integration#readme-as-homepage).
+- `docsOutput.rewriteNextraLinks`
+Wenn `true`, führen Sie den Nextra-Link-Normalisierer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in locale-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/guide/nextra-integration#link-conventions).
+- `docsOutput.vitepressThemeCatalog`
+Optional. VitePress-Theme-/Navigations-/Sidebar-Katalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `configPath` (VitePress-Konfiguration mit Theme-Strings), `catalogPath` (generiertes englisches verschachteltes JSON), optional `outputPathTemplate` (Standard: `theme.{locale}.json` neben `catalogPath`).
 
 **Nachbearbeitung**
 

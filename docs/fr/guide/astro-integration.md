@@ -47,6 +47,20 @@ Pointez `contentPaths` vers vos fichiers et répertoires `.md` / `.mdx` anglais.
 
 Les remplacements d'interface utilisateur de Starlight peuvent utiliser `src/content/i18n/en.json` avec `jsonPathTemplate` dans un bloc `docs[]` séparé si nécessaire — voir [Documents — initialiser pour la documentation](/guide/documents/#step-1-initialise-for-documentation).
 
+<a id="framework-shell-translation"></a>
+### Traduction du shell du framework
+
+Starlight fournit ses propres chaînes d'interface utilisateur intégrées pour de nombreuses langues (libellés de navigation, espace réservé de recherche, table des matières, etc.) — il n'y a pas de pipeline de shell/thème distinct à configurer, contrairement à Docusaurus, VitePress ou Nextra :
+
+| Framework | Chaînes de shell/thème | Pipeline |
+|-----------|----------------------|----------|
+| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
+| Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Libellés de la barre latérale `_meta.ts` + dictionnaire de thème `.ts` | Documents — voir [Intégration Nextra](/guide/nextra-integration) |
+
+Voir [Intégration Docusaurus](/guide/docusaurus-integration) et [Intégration VitePress](/guide/vitepress-integration) pour les autres modèles de framework.
+
 <a id="example-project"></a>
 ### Exemple de projet
 

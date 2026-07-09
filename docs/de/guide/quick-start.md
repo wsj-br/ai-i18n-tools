@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Schnellstart
 
-Die Standardvorlage `init` (`ui-markdown`) ermöglicht nur die Extraktion und Übersetzung der **Benutzeroberfläche**. Die Vorlagen `ui-docusaurus`, `ui-starlight` und `ui-vitepress` ermöglichen die **Dokumentenübersetzung** (`translate-docs`); `ui-vitepress` erstellt auch JSON für das VitePress-Theme-JSON. Die Vorlage `ui-astro-website` erstellt die **UI**-Extraktion für einfache Astro-Apps (einschließlich `.astro`-Dateien); fügen Sie einen `docs[]`-Block hinzu (siehe [Astro-Webseiten (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)), wenn Sie auch `translate-docs` für `.astro`-Seiten-HTML wünschen. Die Referenz [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) verwendet **beide** Pipelines. Verwenden Sie `sync`, wenn Sie einen Befehl wünschen, der Extraktion, UI-Übersetzung, optionale SVG-Dateiübersetzung und Dokumentationsübersetzung gemäß Ihrer Konfiguration ausführt.
+Die Standardvorlage `init` (`ui-markdown`) ermöglicht nur die Extraktion und Übersetzung der **Benutzeroberfläche**. Die Vorlagen `ui-docusaurus`, `ui-starlight`, `ui-vitepress` und `ui-nextra` ermöglichen die **Dokumentenübersetzung** (`translate-docs`); `ui-vitepress` gerüstet auch `docsOutput.vitepressThemeCatalog` für VitePress-Themenzeichenketten, und `ui-nextra` gerüstet `docs[].nextraDictionaryPath` für das Nextra-Themenwörterbuch (Seitenleisten-`_meta.ts` wird automatisch gesammelt). Die Vorlage `ui-astro-website` gerüstet die **UI**-Extraktion für einfache Astro-Apps (einschließlich `.astro`-Dateien); fügen Sie einen `docs[]`-Block hinzu (siehe [Astro-Webseiten (Parsen und Ersetzen)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)), wenn Sie auch `translate-docs` für `.astro`-Seiten-HTML wünschen. Die Referenz [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) verwendet **beide** Pipelines. Verwenden Sie `sync`, wenn Sie einen Befehl wünschen, der Extraktion, UI-Übersetzung, optionale SVG-Dateiübersetzung und Dokumentationsübersetzung gemäß Ihrer Konfiguration ausführt.
 
 <a id="runnable-examples"></a>
 ### Ausführbare Beispiele
 
-Sieben ausführbare Projekte und Fixtures befinden sich unter [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Siehe den [Beispielkatalog](/examples) (Konsolen-App, Next.js + Docusaurus, Astro-Website, Astro Starlight-Dokumente, VitePress-Dokumente, Multi-Provider-Vergleich, Markdown-Stresstest).
+Neun ausführbare Projekte und Fixtures befinden sich unter [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Siehe den [Beispielkatalog](/examples) (Konsolen-App, Next.js + Docusaurus, Astro-Website, Astro Starlight-Dokumentation, VitePress-Dokumentation, Nextra-Dokumentation, Multi-Provider-Vergleich, Markdown-Stresstest).
 
 **Ein Beispiel eigenständig ausführen** (ohne das gesamte Monorepo zu klonen):
 
@@ -30,6 +30,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
+# Nextra docs: npx ai-i18n-tools init -t ui-nextra
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

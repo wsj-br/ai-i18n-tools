@@ -80,15 +80,18 @@ Wenn `docusaurusCatalogDir` gesetzt und `features.translateDocs` aktiviert ist, 
 
 Legen Sie Docusaurus-Shell-JSON nicht in `json[]` ab; verwenden Sie stattdessen `docs[].docusaurusCatalogDir` mit Dokumenten.
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus vs. VitePress Shell-JSON
+<a id="framework-shell-translation"></a>
+## Übersetzung der Framework-Shell
 
 | Framework | Shell / Theme-Strings | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Benutzerdefinierter verschachtelter JSON-Katalog, den Sie erstellen | JSON — `json[]` + `translate-json` (oder `sync`, wenn `translateJson` aktiviert ist) |
+| VitePress | Theme-/Navigations-/Seitenleistenkatalog | Dokumente – `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "nextra"` + `translate-docs` |
+| Nextra | Theme-Wörterbuch `.ts` | Dokumente – `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
 
-Siehe [VitePress-Integration](/guide/vitepress-integration) für das VitePress-Muster.
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [VitePress-Integration](/guide/vitepress-integration) und [Nextra-Integration](/guide/nextra-integration) für die VitePress-/Nextra-Muster.
 
 <a id="example-project"></a>
 ## Beispielprojekt

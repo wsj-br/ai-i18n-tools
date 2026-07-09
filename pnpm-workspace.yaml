@@ -6,6 +6,7 @@ packages:
   - "examples/astro-docs"
   - "examples/astro-website"
   - "examples/vitepress-docs"
+  - "examples/nextra-docs"
 allowBuilds:
   sharp: true
   core-js: true
@@ -54,3 +55,5 @@ overrides:
   gray-matter: npm:@11ty/gray-matter@^2.1.0
   esbuild@>=0.27.3 <0.28.1: ^0.28.1
   http-proxy-middleware@>=0.16.0 <3.0.6: ^3.0.6
+patchedDependencies:
+  nextra-theme-docs@4.6.1: patches/nextra-theme-docs@4.6.1.patch

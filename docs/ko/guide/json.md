@@ -100,7 +100,8 @@ npx ai-i18n-tools status
 |-----------|-----|
 | JS/TS/Astro의 `t("…")` / `i18n.t("…")`에 있는 UI 문자열 | [UI 문자열](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` 카탈로그 (`{ "key": { "message": "…", "description": "…" } }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs`, **아님** `json[]` |
-| VitePress 테마/탐색/사이드바 JSON (작성하는 중첩 카탈로그) | JSON — `json[]` + `translate-json`; 페이지 본문은 문서에 유지됩니다 — [VitePress 통합](/guide/vitepress-integration) 참조 |
+| VitePress 테마/탐색/사이드바 문자열 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **`json[]`를 사용하지 마십시오** — [VitePress 통합](/guide/vitepress-integration) 참조 |
+| Nextra `_meta.ts` 레이블 및 테마 사전 `.ts` | 문서 — `translate-docs` (`style: "nextra"`일 때 자동 `_meta`, 선택 사항 `nextraDictionaryPath`); **`json[]`를 사용하지 마십시오** — [Nextra 통합](/guide/nextra-integration) 참조 |
 | 독립형 중첩 로케일 JSON (ZenBrowser 스타일 `translation.json` 트리) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>`가 포함된 그림 `.svg` 파일 | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (선택 사항, 세 가지 주요 파이프라인 중 하나가 아님) |
 

@@ -2,7 +2,7 @@
 
 Minimal [VitePress](https://vitepress.dev/) site translated by [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) using `docsOutput.style: "vitepress"`.
 
-English source pages live at `docs/`. Translated copies are committed under `docs/pt-BR/` and `docs/zh-Hans/`. VitePress nav/sidebar labels live in `docs/.vitepress/i18n/theme.en.json` and are translated to `theme.{locale}.json` via JSON (`json[]` / `translate-json`).
+English source pages live at `docs/`. Translated copies are committed under `docs/pt-BR/` and `docs/zh-Hans/`. VitePress nav/sidebar labels are loaded from `docs/.vitepress/i18n/theme.{locale}.json`, bootstrapped and translated via **`docsOutput.vitepressThemeCatalog`** inside `translate-docs`.
 
 Full integration guide: [VitePress integration](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration/) on the main documentation site.
 

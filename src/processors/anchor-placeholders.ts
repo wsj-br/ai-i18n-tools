@@ -2,7 +2,8 @@ const HTML_ANCHOR_PREFIX = "{{ANC_";
 const HEADING_ID_PREFIX = "{{HDG_";
 const PLACEHOLDER_SUFFIX = "}}";
 
-const HTML_ID_ANCHOR_RE = /<a\s+id\s*=\s*(["'])([^"']*)\1[^>]*>\s*<\/a>/gi;
+/** Matches doctoc-style `<a id="slug"></a>` lines used before ATX headings. */
+export const HTML_ID_ANCHOR_RE = /<a\s+id\s*=\s*(["'])([^"']*)\1[^>]*>\s*<\/a>/gi;
 
 const DOCUS_HEADING_ID_RE = /\{#[^}]+\}/g;
 

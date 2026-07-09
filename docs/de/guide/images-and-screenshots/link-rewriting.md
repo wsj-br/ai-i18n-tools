@@ -17,7 +17,7 @@ Beispiel mit `outputDir: "translated-docs/"` und Quelldatei `README.md` im Stamm
 
 Für `docsOutput.style = "doc-system"` (einschließlich `"docusaurus"`, `"astro-starlight"` und `"nested"`) wird der Flat-Link-Rewriter nicht ausgeführt. `regexAdjustments` sieht die ursprüngliche URL aus dem übersetzten Markdown (typischerweise ein absoluter Pfad wie `/img/screenshots/en-GB/foo.png`).
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress-Link-Normalisierer (`style: "vitepress"`)
 
 Wenn `docsOutput.rewriteVitepressLinks` auf `true` gesetzt ist (Standard, wenn `style` auf `"vitepress"` gesetzt ist), wird ein separater Normalisierer nach der Segmentwiederherstellung ausgeführt (anstelle des Flat Rewriters). Er zielt auf VitePress / Doc-System-Sites ab, bei denen Englisch im Inhaltsstamm und Lokalisierungen in gleichrangigen Ordnern (`docs/de/guide/…`) liegen.
@@ -56,7 +56,7 @@ Für Assets mit relativem Pfad neben Quelldateien ist keine `regexAdjustments`-K
 | `docsOutput.linkRewriteDocsRoot`     | Stammverzeichnis, relativ zu dem `depthPrefix` berechnet wird (Standard: `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Beeinflusst die Struktur des Ausgabepfads, die der Umschreiber bei der Berechnung der Zielwege für bekannte übersetzte Dateien verwendet       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 Konfigurieren Sie geordnete `{ "description"?, "search", "replace" }`-Regeln unter `docs[].docsOutput.postProcessing`, um Bild-, Screenshot- und andere Asset-URLs umzuschreiben, die von integrierten Rewritern nicht verarbeitet werden – typischerweise das Austauschen eines Gebietsschema-Ordnersegments (`screenshots/en-GB/` → `screenshots/de/`) oder das Überbrücken absoluter statischer Pfade (`/img/…` → `../assets/…`).

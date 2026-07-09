@@ -5,7 +5,7 @@ import { normalizeLocale } from "./locale-utils.js";
 /** Global LLM defaults applied when a provider block (and its preset) do not specify them. */
 export const DEFAULT_LLM_MAX_TOKENS = 8192;
 export const DEFAULT_LLM_TEMPERATURE = 0.2;
-export const DEFAULT_LLM_REQUEST_TIMEOUT_MS = 30_000;
+export const DEFAULT_LLM_REQUEST_TIMEOUT_MS = 45_000;
 
 /** Provider key used for OpenRouter-specific behaviour (routing field, catalog/pricing). */
 export const OPENROUTER_PROVIDER_KEY = "openrouter";

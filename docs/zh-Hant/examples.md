@@ -3,7 +3,7 @@
 
 GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下的可執行專案 — 每個專案都有自己的設定、已提交的地區設定輸出和 README。您無需 API 金鑰即可探索翻譯檔案；重新執行翻譯需要提供者金鑰（[提供者和模型](/guide/providers-and-models))。
 
-<a id="run-standalone"></a>
+<a id="run-standalone-npx-degit"></a>
 ## 獨立執行 (`npx degit`)
 
 複製一個範例，而無需複製整個儲存庫。每個範例都宣告 `"ai-i18n-tools": "^1.7.2"` 並從 npm 安裝 CLI：
@@ -16,7 +16,8 @@ pnpm install
 
 如果您複製了**整個** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 儲存庫，請在儲存庫根目錄執行 `pnpm install` 和 `pnpm run build`，然後執行 `cd examples/<name>`。
 
-## 範例列表
+<a id="list-of-examples"></a>
+## 範例清單
 
 <a id="console-app"></a>
 <a id="nextjs-app"></a>

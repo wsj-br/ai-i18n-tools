@@ -17,7 +17,7 @@ Example with `outputDir: "translated-docs/"` and source `README.md` at repo root
 
 For `docsOutput.style = "doc-system"` (including `"docusaurus"`, `"astro-starlight"`, and `"nested"`), the flat link rewriter does not run. `regexAdjustments` sees the original URL from the translated markdown (typically an absolute path like `/img/screenshots/en-GB/foo.png`).
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress link normalizer (`style: "vitepress"`)
 
 When `docsOutput.rewriteVitepressLinks` is `true` (default when `style` is `"vitepress"`), a separate normalizer runs after segment reassembly (instead of the flat rewriter). It targets VitePress / doc-system sites where English lives at the content root and locales sit in sibling folders (`docs/de/guide/…`).
@@ -56,7 +56,7 @@ No `regexAdjustments` correction is needed for relative-path assets alongside so
 | `docsOutput.linkRewriteDocsRoot`     | Root from which `depthPrefix` is computed (default `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Affects output path layout, which the rewriter uses when computing target paths for known translated files       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 Configure ordered `{ "description"?, "search", "replace" }` rules under `docs[].docsOutput.postProcessing` to rewrite image, screenshot, and other asset URLs that built-in rewriters do not handle — typically swapping a locale folder segment (`screenshots/en-GB/` → `screenshots/de/`) or bridging absolute static paths (`/img/…` → `../assets/…`).

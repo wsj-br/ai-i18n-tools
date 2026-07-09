@@ -18,7 +18,7 @@ Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei d
 
 Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 Fügen Sie geordnete `{ "description"?, "search", "replace" }`-Regeln unter `docs[].docsOutput.postProcessing` hinzu, wenn die integrierten Umschreiber nicht ausreichen – zum Beispiel:

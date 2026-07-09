@@ -1,0 +1,43 @@
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["pt-BR", "zh-Hans"],
+  "concurrency": 3,
+  "batchConcurrency": 3,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": false,
+    "translateDocs": true,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "cacheDir": ".translation-cache",
+  "glossary": {
+    "userGlossary": "glossary-user.csv"
+  },
+  "docs": [
+    {
+      "description": "Nextra docs (English source at content/en/, translations under content/{locale}/)",
+      "contentPaths": ["content/en"],
+      "outputDir": "content",
+      "addFrontmatter": false,
+      "nextraDictionaryPath": "app/_dictionaries/en.ts",
+      "docsOutput": {
+        "style": "nextra",
+        "docsRoot": "content/en",
+        "rewriteNextraLinks": true
+      }
+    }
+  ],
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "openai/gpt-4o-mini",
+        "google/gemini-2.5-flash"
+      ],
+      "maxTokens": 4096,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter"
+}

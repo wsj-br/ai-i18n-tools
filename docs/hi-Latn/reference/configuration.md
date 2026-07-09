@@ -155,7 +155,7 @@ Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx
 | Field                | Pipeline | Description                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")` ko `strings.json` mein extract karein, phir entries ka anuvaad karein aur har-locale flat JSON likhein (extract apne aap chalta hai; catalog ko refresh karne ke liye standalone `extract` ka upyog karein). |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` pages ka anuvad karen; Docusaurus shell JSON jab `docs[].docusaurusCatalogDir` set ho. |
+| `translateDocs`      | 2        | Anuvaadit `.md` / `.mdx` / `.astro` pannaon; Docusaurus shell JSON jab `docs[].docusaurusCatalogDir` set hota hai; Nextra `_meta` / shabdakosh jab konfigure kiya jata hai; VitePress theme jab `docsOutput.vitepressThemeCatalog` set hota hai. |
 | `translateJson` | 3 | `json[]` (`translate-json`) ke tahat manmana nested JSON. |
 | `translateSVG` | — | `.svg` files ka anuvad karen (top-level `svg` block ki avashyakta hai). |
 
@@ -240,18 +240,26 @@ Load hone par `contentPaths` mein mila hua vikalpik alias.
 - `targetLocales`
 Is block ke liye locales ka vikalpik upsamuchchay (anyatha root `targetLocales`). Prabhavi documentation locales blocks ke paar ka union hain.
 - `docusaurusCatalogDir`
-Vikalpik. Is block ke liye Docusaurus JSON label catalogs ke liye source directory (jaise `"i18n/en"` `docusaurus write-translations` se). Page bodies hamesha `contentPaths` se aate hain; `docusaurusCatalogDir` keval shell/UI JSON pradan karta hai, MDX nahin.
+Vikalpik. Docusaurus JSON lebal catalogon ke liye strot nirdeshika (jaise ki `"i18n/en"` from `docusaurus write-translations`). Page sharir hamesha `contentPaths` se aate hain; `docusaurusCatalogDir` keval shell/UI JSON pradaan karta hai, MDX nahin.
+- `nextraMetaGlob`
+Vikalpik glob(s) Nextra `_meta.ts` / `_meta.tsx` / `_meta.js` ke liye `docsRoot` ke niche. Jab `docsOutput.style` `"nextra"` hota hai aur yeh chhoda jata hai, to `_meta` file `docsRoot` ke niche svayam hi ikattha ki jati hain.
+- `nextraMetaTranslatableKeys`
+Vikalpik gunon ke naam jinke string mulya Nextra `_meta` vastuon mein anuvaadit hote hain (default: `title`, `display`, `breadcrumb`).
+- `nextraDictionaryPath`
+Vikalpik Angrezi Nextra theme shabdakosh module (jaise ki `"app/_dictionaries/en.ts"`). `{dir}/{locale}.ts` ke dauran `translate-docs` mein anuvaadit hota hai.
+- `nextraDictionaryOutputTemplate`
+Vikalpik output template sthaniya shabdakosh moduleon ke liye (default: `{dir}/{locale}.ts` shabdakosh nirdeshika ke sanrakshan mein).
 
 **Output layout**
 
 - `outputDir`
-Is block ke liye anuvadit output ke liye root directory.
+Is block ke liye anuvaadit output ke liye mul nirdeshika.
 - `docsOutput.style`
-`"nested"` (default), `"flat"`, `"doc-system"`, ya aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"`.
+`"nested"` (default), `"flat"`, `"doc-system"`, ya upnaamon `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`.
 - `docsOutput.localeSubpath`
-`doc-system` ke liye `{locale}/` aur `{relativeToDocsRoot}` ke beech path segment (`style: "doc-system"` ka sidhe upyog karte samay avashyak; alias ka upyog karte samay preset). Starlight-style locale folders ke liye `""` ka upyog karen.
+Path segment `{locale}/` aur `{relativeToDocsRoot}` ke beech `doc-system` ke liye (aavashyak jab `style: "doc-system"` keval upyog kiya jata hai; preset jab upnaam ka upyog kiya jata hai). Starlight-shaili sthaniya folderon ke liye `""` ka upyog karein.
 - `docsOutput.docsRoot`
-Docusaurus layout ke liye source docs root (jaise `"docs"`). Chhodne par default `"docs"`.
+Docusaurus layout ke liye strot docs mul (jaise ki `"docs"`). Default `"docs"` jab chhoda jata hai.
 - `docsOutput.pathTemplate`
 Custom markdown output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{docsRoot}"</code>, <code>"{relativeToDocsRoot}"</code>.
 - `docsOutput.jsonPathTemplate`
@@ -261,11 +269,15 @@ Jab `true`, built-in output layouts (`nested`, `flat`, `doc-system` bina `pathTe
 - `docsOutput.flatPreserveRelativeDir`
 Jab `docsOutput.style = "flat"`, source subdirectories ko banaye rakhen taki saman basename wali files takrayen nahi. Default `false`.
 - `docsOutput.rewriteRelativeLinks`
-Anuvaad ke baad relative links ko phir se likhen (jab `docsOutput.style = "flat"` aur koi custom `pathTemplate` na ho to swatah saksham ho jaata hai).
+Anuvaadan ke baad sambandhit linkon ko punah likhein (svayam-prabhavit jab `docsOutput.style = "flat"` aur koi vishisht `pathTemplate` nahin hota).
 - `docsOutput.linkRewriteDocsRoot`
-Flat-link rewrite prefixes ki ganna karte samay upyog kiya gaya repo root. Aam taur par ise `"."` chhod den jab tak ki aapke anuvaadit docs kisi alag project root ke tahat na hon.
+Repo root jo flat-link rewrite prefixes ka ganana karte samay upyog kiya jata hai. Aamtaur par isey `"."` ke roop mein chhod dein, jab tak ki aapke anuvaadit docs kisi alag project root ke niche nahin hain.
 - `docsOutput.rewriteVitepressLinks`
-Jab `true` ho, to anuvaad ke baad VitePress link normalizer chalaen. Jab `docsOutput.style` `"vitepress"` ho to swatah saksham ho jaata hai. Kisi bhi `doc-system` layout ke saath upyog karen jahan locale folders English ke bagal mein `docsRoot` ke tahat hon. README-style `docs/guide/…` paths ko site routes (`/guide/…`) aur locale-relative `../guide/…` links mein phir se likhta hai. VitePress tree ke bahar repo files (`LICENSE`, `examples/`) ke links ke liye, English source mein poore URLs ka upyog karen — dekhen [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage).
+Jab `true`, to anuvaadan ke baad VitePress link normalizer chalayein. Default roop se `docsOutput.style` `"vitepress"` hota hai jab saksham hota hai. Iska upyog karein kisi bhi `doc-system` layout ke saath jahan sthaniya folder Angrezi ke bagal mein `docsRoot` par baithe hain. README-shaili `docs/guide/…` pathon ko site routes (`/guide/…`) aur sthaniya-sambandhit `../guide/…` linkon mein punah likhta hai. Repo fileon ke liye jo VitePress tree (`LICENSE`, `examples/`) ke bahar hain, Angrezi strot mein poore URL ka upyog karein — [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage) dekhain.
+- `docsOutput.rewriteNextraLinks`
+Jab `true`, to anuvaadan ke baad Nextra link normalizer chalayein. Default roop se `docsOutput.style` `"nextra"` hota hai jab saksham hota hai. `content/en/…` aur sambandhit `.mdx` pathon ko sthaniya-tatparja site routes (`/guide/…`) mein punah likhta hai Next.js `i18n` ke liye. [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) dekhain.
+- `docsOutput.vitepressThemeCatalog`
+Vikalpik. VitePress theme/nav/sidebar catalog bootstrap + anuvaadan `translate-docs` ke andar. Fields: `configPath` (VitePress config with theme strings), `catalogPath` (generated English nested JSON), vikalpik `outputPathTemplate` (default: `theme.{locale}.json` `catalogPath` ke bagal mein).
 
 **Post-processing**
 

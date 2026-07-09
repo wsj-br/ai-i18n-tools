@@ -82,6 +82,7 @@ function guideSidebar(t: ThemeCatalog) {
             { text: t.sidebar.astro, link: "/guide/astro-integration" },
             { text: t.sidebar.docusaurus, link: "/guide/docusaurus-integration" },
             { text: t.sidebar.vitepress, link: "/guide/vitepress-integration" },
+            { text: t.sidebar.nextra, link: "/guide/nextra-integration" },
           ],
         },
         {

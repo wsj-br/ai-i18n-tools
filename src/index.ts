@@ -58,7 +58,9 @@ export {
   resolveDocumentationOutputPath,
   expandPathTemplate,
   shouldRewriteFlatMarkdownLinks,
+  shouldRewriteNextraLinks,
   shouldRewriteVitepressLinks,
+  nextraLinkNormalizeContext,
   vitepressLinkNormalizeContext,
   toPosix,
 } from "./core/output-paths.js";
@@ -218,6 +220,13 @@ export {
   docsPathToVitepressRoute,
   type VitepressLinkNormalizeContext,
 } from "./processors/vitepress-link-normalize.js";
+
+export {
+  normalizeNextraDocLinks,
+  normalizeOneNextraLink,
+  docsPathToNextraRoute,
+  type NextraLinkNormalizeContext,
+} from "./processors/nextra-link-normalize.js";
 
 export {
   OpenRouterClient,

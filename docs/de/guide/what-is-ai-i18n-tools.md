@@ -6,10 +6,10 @@ ai-i18n-tools ist ein Befehlszeilentool und Toolkit, das Ihnen hilft, Ihre App u
 <a id="translation-modes"></a>
 ## Übersetzungsmodi
 
-- **UI-Strings** – Extrahieren Sie `t("…")`-Aufrufe (und ähnliche Marker) aus JS/TS-Quellcode und schreiben Sie flache JSON-Dateien pro Gebietsschema für i18next oder statische Nachschlagevorgänge. Befehle: `extract`, `translate-ui`. Anleitung: [UI-Strings](/guide/ui-strings/).
-- **Dokumente** – Übersetzen Sie Markdown-, MDX- und `.astro`-Seiten, die in `docs[].contentPaths` aufgeführt sind. Funktioniert mit VitePress, Starlight, Docusaurus, Astro und anderen statischen Dokumentationsseiten. Befehl: `translate-docs`. Anleitung: [Dokumente](/guide/documents/).
-- **JSON** – Übersetzen Sie verschachtelte JSON-Gebietsschema-Bundles (Themenbezeichnungen, i18n-Überschreibungen, App-Texte, die nicht im Quellcode enthalten sind), die in der obersten Ebene `json[]` definiert sind. Befehl: `translate-json`. Anleitung: [JSON](/guide/json).
-- **SVG** – Übersetzen Sie sichtbaren Text in SVG-Illustrationen (`<text>`, `<title>`, `<desc>`) und schreiben Sie eine Ausgabedatei pro Gebietsschema. Getrennt von der Dokumentübersetzung – `translate-docs` ändert keine SVG-Assets. Befehl: `translate-svg`. Anleitung: [SVG-Übersetzung](/guide/svg-translation/).
+- **UI-Strings** – Extrahieren Sie `t("…")`-Aufrufe (und ähnliche Marker) aus JS/TS-Quellcode und schreiben Sie flache, pro-locale JSON-Dateien für i18next oder statische Nachschlagevorgänge. Befehle: `extract`, `translate-ui`. Anleitung: [UI-Strings](/guide/ui-strings/).
+- **Dokumente** – Übersetzen Sie Markdown-, MDX- und `.astro`-Seiten, die in `docs[].contentPaths` aufgeführt sind. Funktioniert mit VitePress, Starlight, Docusaurus, Nextra, Astro und anderen statischen Dokumentationsseiten. Befehl: `translate-docs`. Anleitung: [Dokumente](/guide/documents/).
+- **JSON** – Übersetzen Sie verschachtelte JSON-Locale-Bundles (Themenbezeichnungen, i18n-Überschreibungen, App-Texte, die nicht im Quellcode enthalten sind), die in der obersten Ebene `json[]` definiert sind. Befehl: `translate-json`. Anleitung: [JSON](/guide/json).
+- **SVG** – Übersetzen Sie sichtbaren Text in SVG-Illustrationen (`<text>`, `<title>`, `<desc>`) und schreiben Sie eine Ausgabedatei pro Locale. Getrennt von der Dokumentübersetzung – `translate-docs` ändert keine SVG-Assets. Befehl: `translate-svg`. Anleitung: [SVG-Übersetzung](/guide/svg-translation/).
 
 Alle vier Modi verwenden den aktiven [LLM-Anbieter](/guide/providers-and-models), teilen sich dieselbe Konfigurationsdatei und verwenden einen SQLite-Cache wieder, sodass bei erneuten Ausführungen nur neuer oder geänderter Text an das Modell gesendet wird.
 
@@ -36,7 +36,8 @@ Das Repository enthält ausführbare Beispielprojekte unter `examples/` – jede
 | [nextjs-app](/examples#nextjs-app) | Next.js UI, Pluralformen, SVG, Docusaurus-Dokumentationsseite, Dashboard |
 | [astro-website](/examples#astro-website) | Astro-Marketingseite: vollständige HTML-Übersetzung plus `t()`-Strings |
 | [astro-docs](/examples#astro-docs) | Astro Starlight-Dokumentationsseite |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress-Dokumente plus Theme-JSON |
+| [vitepress-docs](/examples#vitepress-docs) | VitePress-Dokumente plus Themenkatalog |
+| [nextra-docs](/examples#nextra-docs) | Nextra-Dokumente plus `_meta.ts`-Seitenleistenbeschriftungen und Themenwörterbuch |
 | [multi-provider](/examples#multi-provider) | LLM-Anbieter für dasselbe Dokument vergleichen |
 | [test-markdown](/examples#test-markdown) | Markdown-Pipeline-Stresstests (CJK, Devanagari, Grenzfälle) |
 

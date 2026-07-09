@@ -3,8 +3,8 @@
 
 GitHub의 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있는 실행 가능한 프로젝트 — 각각 고유한 구성, 커밋된 로케일 출력 및 README를 포함합니다. API 키 없이 번역된 파일을 탐색할 수 있습니다. 번역을 다시 실행하려면 공급자 키가 필요합니다([공급자 및 모델](/guide/providers-and-models)).
 
-<a id="run-standalone"></a>
-## 독립 실행형 실행 (`npx degit`)
+<a id="run-standalone-npx-degit"></a>
+## 독립 실행 (`npx degit`)
 
 전체 저장소를 복제하지 않고 예시 하나를 복사합니다. 각 예시는 `"ai-i18n-tools": "^1.7.2"`를 선언하고 npm에서 CLI를 설치합니다.
 
@@ -16,6 +16,7 @@ pnpm install
 
 대신 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소 **전체**를 복제한 경우, 저장소 루트에서 `pnpm install` 및 `pnpm run build`를 실행한 다음 `cd examples/<name>`를 실행합니다.
 
+<a id="list-of-examples"></a>
 ## 예시 목록
 
 <a id="console-app"></a>

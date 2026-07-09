@@ -17,7 +17,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: loc
 
 `docsOutput.style = "doc-system"` ke liye (jismein `"docusaurus"`, `"astro-starlight"`, aur `"nested"` shamil hain), flat link rewriter nahi chalta hai. `regexAdjustments` translated markdown se original URL dekhta hai (aam taur par `/img/screenshots/en-GB/foo.png` jaisa ek absolute path).
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress link normalizer (`style: "vitepress"`)
 
 Jab `docsOutput.rewriteVitepressLinks` `true` hota hai (jab `style` `"vitepress"` ho to default), segment reassembly ke baad ek alag normalizer chalta hai (flat rewriter ke bajaye). Yah VitePress / doc-system sites ko target karta hai jahan English content root par rahti hai aur locales sibling folders (`docs/de/guide/…`) mein hote hain.
@@ -56,7 +56,7 @@ Source files ke saath relative-path assets ke liye kisi `regexAdjustments` corre
 | `docsOutput.linkRewriteDocsRoot`     | Root jahan se `depthPrefix` compute kiya jaata hai (default `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Output path layout ko prabhavit karta hai, jise rewriter gyat anuvadit files ke liye target paths compute karte samay upyog karta hai       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 Built-in rewriters dwara handle na kiye gaye image, screenshot, aur anya asset URLs ko rewrite karne ke liye `docs[].docsOutput.postProcessing` ke तहत ordered `{ "description"?, "search", "replace" }` rules configure karen — aam taur par ek locale folder segment (`screenshots/en-GB/` → `screenshots/de/`) ko swap karna ya absolute static paths ko bridge karna (`/img/…` → `../assets/…`).

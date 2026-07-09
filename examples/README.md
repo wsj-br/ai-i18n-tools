@@ -25,6 +25,7 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [astro-website](./astro-website/) | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` |
 | [astro-docs](./astro-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` |
 | [vitepress-docs](./vitepress-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` |
+| [nextra-docs](./nextra-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` |
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 
@@ -46,6 +47,7 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [astro-website](./astro-website/)   | Workspace app      | UI + `.astro` page HTML (hybrid)         | Astro (static marketing site)    |
 | [astro-docs](./astro-docs/)         | Workspace app      | Starlight / MDX docs only                | Astro Starlight                  |
 | [vitepress-docs](./vitepress-docs/) | Workspace app      | VitePress docs only (`vitepress` preset) | VitePress                        |
+| [nextra-docs](./nextra-docs/)       | Workspace app      | Nextra 4 MDX + `_meta.ts` / dictionary `.ts` shell (`nextra` preset) | Next.js + Nextra              |
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 
@@ -129,7 +131,7 @@ Compare with [`nextjs-app/docs-site/`](./nextjs-app/docs-site/) — same tutoria
 
 ## [vitepress-docs](./vitepress-docs/)
 
-Minimal **[VitePress](https://vitepress.dev/)** documentation site (port 3060) using `docsOutput.style: "vitepress"`.
+Minimal [**VitePress**](https://vitepress.dev/) documentation site (port 3060) using `docsOutput.style: "vitepress"`.
 
 **What it demonstrates**
 
@@ -140,6 +142,23 @@ Minimal **[VitePress](https://vitepress.dev/)** documentation site (port 3060) u
 **Good starting point if** you document a product with VitePress and want committed translated markdown in the repo.
 
 → [vitepress-docs/README.md](./vitepress-docs/README.md)
+
+---
+
+## [nextra-docs](./nextra-docs/)
+
+Minimal [**Nextra 4**](https://nextra.site/) documentation site (port 3070) using `docsOutput.style: "nextra"`.
+
+**What it demonstrates**
+
+- English sources at `content/en/`; committed translations under `content/pt-BR/` and `content/zh-Hans/`
+- Inline English literals in `_meta.ts` sidebar files and a `.ts` theme dictionary (`app/_dictionaries/en.ts`) — no JSON sidecars
+- `translate-docs` collects and translates `_meta.ts` / `_meta.tsx` and the dictionary `.ts` automatically (`docs[].nextraDictionaryPath`)
+- `init -t ui-nextra` style config and `pnpm run i18n:sync` to refresh translations
+
+**Good starting point if** you document a product with Nextra 4 (App Router + `content/` layout) and want committed translated MDX in the repo.
+
+→ [nextra-docs/README.md](./nextra-docs/README.md)
 
 ---
 
@@ -187,6 +206,7 @@ Markdown **stress-test fixture** for the document translation pipeline.
 | Astro landing page (HTML + `t()` hybrid) | [astro-website](./astro-website/) |
 | Astro Starlight docs site | [astro-docs](./astro-docs/) |
 | VitePress docs site | [vitepress-docs](./vitepress-docs/) |
+| Nextra 4 docs site | [nextra-docs](./nextra-docs/) |
 | Pick or benchmark an LLM provider | [multi-provider](./multi-provider/) |
 | Regression-test markdown / CJK translation | [test-markdown](./test-markdown/) |
 

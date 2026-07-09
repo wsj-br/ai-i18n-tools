@@ -17,7 +17,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: loc
 
 `docsOutput.style = "doc-system"`（`"docusaurus"`、`"astro-starlight"`、`"nested"`を含む）の場合、フラットリンクリライターは実行されません。`regexAdjustments`は、翻訳されたマークダウンからの元のURL（通常は`/img/screenshots/en-GB/foo.png`のような絶対パス）を参照します。
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress リンク正規化機能 (`style: "vitepress"`)
 
 `docsOutput.rewriteVitepressLinks`が`true`（`style`が`"vitepress"`の場合のデフォルト）の場合、セグメントの再構成後に（フラットなリライターではなく）別のノーマライザーが実行されます。これは、英語がコンテンツルートにあり、ロケールが兄弟フォルダー（`docs/de/guide/…`）にあるVitePress / ドキュメントシステムサイトを対象としています。
@@ -56,7 +56,7 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `docsOutput.linkRewriteDocsRoot`     | `depthPrefix`の計算元となるルート（既定値は`"."`）                                                        |
 | `docsOutput.flatPreserveRelativeDir` | 出力パスのレイアウトに影響し、リライターは既知の翻訳済みファイルのターゲットパスを計算する際にこのレイアウトを使用します       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 組み込みのリライターが処理しない画像、スクリーンショット、その他のアセットURLを書き換えるには、`docs[].docsOutput.postProcessing`の下に順序付けられた`{ "description"?, "search", "replace" }`ルールを設定します。通常、ロケールフォルダセグメントを交換する（`screenshots/en-GB/` → `screenshots/de/`）か、絶対静的パスをブリッジする（`/img/…` → `../assets/…`）ことになります。

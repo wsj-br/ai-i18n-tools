@@ -15,7 +15,7 @@ Die Codebasis ist in vier Schichten organisiert. Verwenden Sie diesen Abschnitt 
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | UI-Quellen scannen → `strings.json` aktualisieren → flaches Gebietsschema-JSON füllen (`de.json`, …) |
 | 2 | `translate-svg` *(optional)* | SVG-Text unter `config.svg` übersetzen |
-| 3 | `translate-docs` | Markdown, MDX, `.astro`-Seiten und Docusaurus-JSON-Kataloge übersetzen |
+| 3 | `translate-docs` | Markdown-, MDX-, `.astro`-Seiten übersetzen; Docusaurus-Katalog-JSON; Nextra `_meta` / Wörterbuch `.ts`; VitePress-Themenkatalog |
 | 4 | `translate-json` *(optional)* | Verschachtelte JSON-Blätter unter `json[]` übersetzen |
 
 Jede Pipeline folgt demselben Kernzyklus: **Segmente extrahieren → Syntax schützen → stapeln → Cache-Lookup oder LLM-Aufruf → Ausgabe schreiben**. Gemeinsame Dienste in der Mitte – Konfiguration, Platzhalter, Cache, Glossar, `LlmClient` – werden unter [Gemeinsame Infrastruktur](#shared-infrastructure) beschrieben.
@@ -266,7 +266,7 @@ Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/op
 9. `augmentConfigWithUiLanguagesMaster` – Manifest-Anzeigenamen aus dem gebündelten Masterkatalog anhängen.
 10. `assertEffectiveLocalesInUiLanguagesMaster` – Gebietsschema-Codes bei Bedarf gegen den Masterkatalog validieren.
 
-`init` schreibt Starter-Konfigurationen aus `initConfigTemplates`: `ui-markdown` (UI + optionales App-Markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress-Dokumente + Theme-JSON über `json[]`), `ui-astro-website` (einfache Astro-UI; fügen Sie `docs[]` für die `.astro`-Seitenübersetzung hinzu), `ui-json-bundles` (nur JSON `json[]`). Siehe [Schnellstart – Initialisieren](/guide/quick-start#step-1-initialise).
+`init` schreibt Starter-Konfigurationen aus `initConfigTemplates`: `ui-markdown` (UI + optionales App-Markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress-Dokumente + `vitepressThemeCatalog`), `ui-nextra` (Nextra-Dokumente + `nextraDictionaryPath`), `ui-astro-website` (einfache Astro-UI; fügen Sie `docs[]` für die `.astro`-Seitenübersetzung hinzu), `ui-json-bundles` (nur JSON `json[]`). Siehe [Schnellstart – Initialisieren](/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Protokollierung (Logger)

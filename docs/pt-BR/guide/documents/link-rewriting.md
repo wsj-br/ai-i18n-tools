@@ -18,7 +18,7 @@ Qual reescrevedor é executado depende de `docsOutput.style`:
 
 Para regras de autoria específicas do VitePress, consulte [Integração VitePress — Convenções de link](/guide/vitepress-integration#link-conventions).
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 Adicione regras `{ "description"?, "search", "replace" }` ordenadas em `docs[].docsOutput.postProcessing` quando os reescrevedores integrados não forem suficientes — por exemplo:

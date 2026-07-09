@@ -10,8 +10,9 @@
 **Aliases** (saman layout engine, preset `localeSubpath`):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` default roop se `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout) par set hota hai.
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` default roop se `""` par set hota hai (translated pages seedhe `{outputDir}/{locale}/` ke neeche, [Starlight](https://starlight.astro.build/guides/i18n/) se mel khate hue jab English content root par ho aur `outputDir` barabar `docsRoot` ho).
-- `docsOutput.style = "vitepress"` — `doc-system` jaisa hi layout jismein `localeSubpath` khali ho; BCP-47 locale folder names ko preserve kiya jata hai (`localePathLowercase` default roop se `false` par set hota hai). [VitePress integration](/guide/vitepress-integration) dekhen.
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` default roop se `""` par set hota hai (anuvadit prishth seedhe `{outputDir}/{locale}/` ke neeche, [Starlight](https://starlight.astro.build/guides/i18n/) se mel khate hain jab angrezi content root par hoti hai aur `outputDir` `docsRoot` ke barabar hota hai).
+- `docsOutput.style = "vitepress"` — `doc-system` jaisa hi layout hai jismein `localeSubpath` khaali hai; BCP-47 locale folder ke naam surakshit rakhe jaate hain (`localePathLowercase` default roop se `false` par set hota hai). [VitePress integration](/guide/vitepress-integration) dekhen.
+- `docsOutput.style = "nextra"` — `doc-system` jaisa hi layout hai jismein `localeSubpath` khaali hai; angrezi source ek locale folder ke neeche rahta hai (jaise `content/en/`). [Nextra integration](/guide/nextra-integration) dekhen.
 
 Docusaurus preset (primary documentation pages):
 
@@ -31,6 +32,12 @@ VitePress preset (content root par English, source ke bagal mein locale folders)
 docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 ```
 
+Nextra preset (locale folder ke neeche angrezi, targets ke liye sibling locale folders):
+
+```text
+content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
+```
+
 Optional JSON labels — `docusaurusCatalogDir` se Docusaurus shell strings (MDX body copy nahi):
 
 ```text
@@ -39,7 +46,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight kai locales ke liye UI strings ship karta hai; optional custom UI overrides `src/content/i18n/en.json` ka upyog `jsonPathTemplate: "{outputDir}/{locale}.json"` ke saath ek alag `docs[]` block mein karte hain jab zaroorat ho.
 
-VitePress nav/sidebar/footer strings markdown mein nahi hote hain — `docs/.vitepress/i18n/theme.en.json` likhein aur JSON (`json[]`, `features.translateJson`) ke saath anuvaad karein. [VitePress integration](/guide/vitepress-integration) dekhein.
+VitePress nav/sidebar/footer strings markdown mein nahin hain — `docsOutput.vitepressThemeCatalog` ko configure karein aur **`translate-docs`** ke andar anuvad karein. [VitePress integration](/guide/vitepress-integration) dekhen.
+
+Nextra theme dictionary (`.ts`) aur `_meta.ts` sidebar labels markdown mein nahin hain — `docs[].nextraDictionaryPath` aur automatic `_meta` collection ka upyog karein jab `style: "nextra"`, sabhi **`translate-docs`** ke andar. [Nextra integration](/guide/nextra-integration) dekhen.
 
 `docsOutput.style = "flat"` — translated files ko source ke bagal mein locale suffix ke saath, ya ek subdirectory mein rakhta hai. Pages ke beech relative links automatically rewrite ho jaate hain jab `docsOutput.style = "flat"` (jab tak `rewriteRelativeLinks: false` ya ek custom `pathTemplate` set na ho).
 

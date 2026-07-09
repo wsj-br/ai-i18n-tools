@@ -3,7 +3,7 @@
 
 將 `init -t ui-vitepress` 和 `docsOutput.style: "vitepress"` 用於 [VitePress](https://vitepress.dev/) 文件網站。此預設是 `doc-system` 的別名，具有空的 `localeSubpath` 並保留 BCP-47 語言環境資料夾名稱（`localePathLowercase` 預設為 `false`，因此資料夾保持為 `pt-BR`、`zh-Hans` 等）。
 
-另請參閱[文件](/guide/documents/)、[JSON](/guide/json)（主題字串）以及可執行的[examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)示範。此儲存庫本身的`docs/`下的文件網站是完整的VitePress + ai-i18n-tools參考（九種語言環境、主題JSON、GitHub Pages）。
+另見[文件](/guide/documents/)與可執行的 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) 示範。本儲存庫自身的文件網站位於 `docs/` 之下，是一個完整的 VitePress + ai-i18n-tools 參考實作（九種語言、主題目錄、GitHub Pages）。
 
 <a id="quick-start"></a>
 ## 快速入門
@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
 ```
 
-當您在一次 `sync` 執行中翻譯頁面內容和 VitePress 介面字串時，請同時啟用 `features.translateDocs` 和 `features.translateJson`。
+當您要在一次 `sync` 執行中同時翻譯頁面內容與 VitePress 介面字串時，請啟用 `features.translateDocs`。
 
 <a id="page-layout"></a>
 ## 頁面佈局
@@ -48,44 +48,96 @@ docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 <a id="theme-strings"></a>
 ## 主題字串
 
-VitePress 的導航、側邊欄、頁尾、搜尋框預留位置和其他 `themeConfig` 標籤不會從 markdown 中提取。請建立一個巢狀 JSON 目錄（例如 `docs/.vitepress/i18n/theme.en.json`），然後使用 JSON 進行翻譯：
+VitePress 的導覽列、側邊、側邊欄、頁尾、搜尋預留位置及其他 `themeConfig` 標籤不會從 markdown 中提取。請設定 **`docsOutput.vitepressThemeCatalog`**，讓 **`translate-docs`** 從 `.vitepress/config.mts` 啟動英文目錄（當字串為內嵌時），並翻譯各語言的主題 JSON 檔案：
 
 ```json
 {
   "features": {
-    "translateJson": true
+    "translateDocs": true
   },
-  "json": [
+  "docs": [
     {
-      "description": "VitePress theme/nav/sidebar strings",
-      "contentPaths": "docs/.vitepress/i18n/theme.en.json",
-      "outputPathTemplate": "docs/.vitepress/i18n/theme.{locale}.json"
+      "contentPaths": ["docs/index.md", "docs/guide"],
+      "outputDir": "docs",
+      "docsOutput": {
+        "style": "vitepress",
+        "docsRoot": "docs",
+        "vitepressThemeCatalog": {
+          "configPath": "docs/.vitepress/config.mts",
+          "catalogPath": "docs/.vitepress/i18n/theme.en.json"
+        }
+      }
     }
   ]
 }
 ```
 
-在 `.vitepress/config.mts` 中載入每個語言環境檔案，並從翻譯後的 JSON（導航文字、側邊欄組標題、頁腳訊息等）建構 `locales[code].themeConfig`。不要在 `config.mts` 中硬編碼翻譯後的標籤 — 當英文變更時，使用 `sync` / `translate-json` 重新生成它們。
+- **`catalogPath`** — 產生的英文巢狀 JSON（啟動輸出）。當英文內容存在於 `config.mts` 時，作者不需手動維護此檔案；重新執行 `sync` 即可重新整理。
+- **`outputPathTemplate`**（可選）— 各語言各語言輸出；預設：與 `catalogPath` 相同的目錄，並帶有 `theme.{locale}.json`。
 
-此套件在[docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/.vitepress/config.mts)中載入`theme.{locale}.json`；與[examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)比較，以了解最小的雙語言環境設定。
+透過 `loadTheme()` 在 `.vitepress/config.mts` 中載入各語言檔案，並從翻譯後的 JSON 建置 `locales[code].themeConfig`。請參閱 [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts)。
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus 與 VitePress Shell JSON
+**請勿**使用 `json[]` 來處理 VitePress 主題字串 — 該模式僅適用於無關的應用程式語言套件。
+
+<a id="wire-config-mts-to-generated-theme-json"></a>
+## 將 config.mts 連接至產生的主題 JSON（一次性設定）
+
+在首次以 `vitepressThemeCatalog` 成功執行 `i18n:sync` / `translate-docs` 後，儲存庫已產生 `theme.en.json` 與 `theme.{locale}.json`，但**現有**的網站可能仍在 `config.mts` 中保留硬編碼的 `text:` / `message:` 字串。在設定檔透過 `loadTheme()` 載入翻譯 JSON 之前，VitePress 不會使用該翻譯 JSON。
+
+**不在工具範圍內：** 自動程式碼重構。每個專案使用以下提示一次（或參照範例設定檔手動重構）。
+
+1. **時機** — 在首次同步產生 `catalogPath` 與各語言主題檔案之後；在預期開發/建置時看到翻譯後的導覽列/側邊欄之前。
+2. **保持不變** — 路由連結（`/guide/…`）、語言鍵、`defineConfig` 結構、非字串選項（搜尋提供者、摺疊旗標）。
+3. **參考** — [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts) 與產生的 `theme.en.json` 結構。
+4. **驗證** — `pnpm docs:dev`，在導覽列切換語言，確認側邊欄/頁尾/搜尋預留位置已翻譯；`pnpm docs:build` 通過。
+
+**AI 代理程式提示範例**（複製到 Cursor 或其他程式碼代理中）：
+
+```markdown
+Refactor our VitePress config to load theme strings from generated JSON files instead of hardcoded literals.
+
+Context:
+- ai-i18n-tools already generated English and locale theme catalogs via `docsOutput.vitepressThemeCatalog`.
+- English catalog: `docs/.vitepress/i18n/theme.en.json`
+- Locale catalogs: `docs/.vitepress/i18n/theme.{locale}.json` (e.g. pt-BR, zh-Hans)
+- Target file: `docs/.vitepress/config.mts` (or our project's equivalent path)
+- Reference pattern: https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/docs/.vitepress/config.mts
+
+Requirements:
+1. Add `loadTheme(localeFile: string)` that reads JSON from `docs/.vitepress/i18n/` (use `import.meta.url` / `fileURLToPath` for ESM paths).
+2. Add `themeConfigFor(t)` that builds VitePress `themeConfig` from the catalog — keep all **links and structure** in TypeScript; only **display strings** come from JSON keys matching `theme.en.json`.
+3. Wire `locales.root` and each target locale in `locales[code]` to `loadTheme('theme.en.json')` or `loadTheme('theme.{code}.json')`, then `themeConfig: themeConfigFor(theme)`.
+4. Align locale codes with `ai-i18n-tools.config.json` `targetLocales` and existing VitePress `locales` keys.
+5. Do **not** change markdown content paths, `base`, or link targets — only move translatable labels out of inline string literals.
+6. Preserve any project-specific options (ignoreDeadLinks, head config, etc.).
+
+After editing:
+- Run `pnpm docs:dev` (or our docs dev script) and confirm English + at least one translated locale show correct nav/sidebar/footer/search placeholder.
+- If a string exists in config but not in `theme.en.json`, add a matching key to the JSON shape in `themeConfigFor` and note that the user should re-run `i18n:sync` to refresh catalogs from config if needed.
+
+Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
+```
+
+<a id="framework-shell-translation"></a>
+## 框架外殼翻譯
 
 | 框架 | Shell / 主題字串 | 管道 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 目錄 (`{ message, description }`) | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 您編寫的自訂巢狀 JSON 目錄 | JSON — `json[]` + `translate-json` (或當 `translateJson` 開啟時為 `sync`) |
+| VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 | 文件——自動時 `style: "nextra"` + `translate-docs` |
+| Nextra | 主題字典 `.ts` | 文件——`docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | 內建 UI 字串（多種語系）；無額外外殼管線 | 文件 — `translate-docs`（僅限頁面） |
 
-請勿將 VitePress 主題 JSON 放入 `docs[]`；請改用 `json[]`。
+**不**將框架 shell/主題字串放在 `json[]` ——該管道是為無關的應用程式區域套件而設。請參考 [Docusaurus 整合](/guide/docusaurus-integration) 和 [Nextra 整合](/guide/nextra-integration) 以了解其他框架模式。
 
 <a id="example-project"></a>
 ## 範例專案
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — 英文來源位於`docs/`，已提交`pt-BR`和`zh-Hans`頁面樹，以及`theme.pt-BR.json` / `theme.zh-Hans.json`。在連接埠3060上執行`pnpm run docs:dev`。
 
-<a id="readme-as-homepage"></a>
-## README 作為文件首頁
+<a id="readme-as-the-docs-homepage"></a>
+## 以 README 作為文件首頁
 
 有些專案將`README.md`複製到VitePress網站作為`docs/index.md`（此儲存庫在`docs:build`之前使用`scripts/sync-readme-to-docs.mjs`）。該模式在GitHub和文件網站之間共用一個檔案，但連結規則不同：
 

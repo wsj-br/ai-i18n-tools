@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Inicio rápido
 
-La plantilla predeterminada `init` (`ui-markdown`) solo permite la extracción y traducción de la **interfaz de usuario**. Las plantillas `ui-docusaurus`, `ui-starlight` y `ui-vitepress` permiten la traducción de **documentos** (`translate-docs`); `ui-vitepress` también genera JSON para el tema JSON de VitePress. La plantilla `ui-astro-website` genera la extracción de la **interfaz de usuario** para aplicaciones Astro simples (incluidos los archivos `.astro`); agregue un bloque `docs[]` (consulte [Páginas del sitio web de Astro (analizar y reemplazar)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) cuando también desee `translate-docs` para el HTML de la página `.astro`. La referencia [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) utiliza **ambas** canalizaciones. Use `sync` cuando desee un comando que ejecute la extracción, la traducción de la interfaz de usuario, la traducción opcional de archivos SVG y la traducción de la documentación de acuerdo con su configuración.
+La plantilla predeterminada `init` (`ui-markdown`) solo habilita la extracción y traducción de la **interfaz de usuario**. Las plantillas `ui-docusaurus`, `ui-starlight`, `ui-vitepress` y `ui-nextra` habilitan la traducción de **documentos** (`translate-docs`); `ui-vitepress` también genera `docsOutput.vitepressThemeCatalog` para las cadenas del tema de VitePress, y `ui-nextra` genera `docs[].nextraDictionaryPath` para el diccionario del tema de Nextra (la `_meta.ts` de la barra lateral se recopila automáticamente). La plantilla `ui-astro-website` genera la extracción de la **interfaz de usuario** para aplicaciones Astro simples (incluidos los archivos `.astro`); agregue un bloque `docs[]` (consulte [Páginas del sitio web de Astro (analizar y reemplazar)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) cuando también desee `translate-docs` para el HTML de la página `.astro`. La [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) de referencia utiliza **ambos** pipelines. Use `sync` cuando desee un comando que ejecute la extracción, la traducción de la interfaz de usuario, la traducción opcional de archivos SVG y la traducción de la documentación de acuerdo con su configuración.
 
 <a id="runnable-examples"></a>
 ### Ejemplos ejecutables
 
-Siete proyectos ejecutables y fixtures se encuentran en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consulta el catálogo de [Ejemplos](/examples) (aplicación de consola, Next.js + Docusaurus, sitio web de Astro, documentos de Astro Starlight, documentos de VitePress, comparación de múltiples proveedores, prueba de estrés de Markdown).
+Nueve proyectos y accesorios ejecutables se encuentran en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consulte el catálogo de [Ejemplos](/examples) (aplicación de consola, Next.js + Docusaurus, sitio web de Astro, documentos de Astro Starlight, documentos de VitePress, documentos de Nextra, comparación de múltiples proveedores, prueba de estrés de markdown).
 
 **Ejecute un ejemplo de forma independiente** (sin clonar todo el monorepo):
 
@@ -30,6 +30,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
+# Nextra docs: npx ai-i18n-tools init -t ui-nextra
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

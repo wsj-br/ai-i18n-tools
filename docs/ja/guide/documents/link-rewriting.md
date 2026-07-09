@@ -18,7 +18,7 @@
 
 VitePress 固有のオーサリングルールについては、「[VitePress 統合 — リンク規則](/guide/vitepress-integration#link-conventions)」を参照してください。
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 組み込みのリライターでは不十分な場合は、`docs[].docsOutput.postProcessing` の下に順序付けられた `{ "description"?, "search", "replace" }` ルールを追加します。たとえば、次のようになります。

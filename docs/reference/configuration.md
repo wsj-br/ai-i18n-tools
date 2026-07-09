@@ -156,7 +156,7 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
 | Field                | Pipeline | Description                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | Extract `t("…")` / `i18n.t("…")` into `strings.json`, then translate entries and write per-locale flat JSON (extract runs automatically; use standalone `extract` to refresh the catalog only). |
-| `translateDocs`      | 2        | Translate `.md` / `.mdx` / `.astro` pages; Docusaurus shell JSON when `docs[].docusaurusCatalogDir` is set.                                                         |
+| `translateDocs`      | 2        | Translate `.md` / `.mdx` / `.astro` pages; Docusaurus shell JSON when `docs[].docusaurusCatalogDir` is set; Nextra `_meta` / dictionary when configured; VitePress theme when `docsOutput.vitepressThemeCatalog` is set. |
 | `translateJson`      | 3        | Arbitrary nested JSON under `json[]` (`translate-json`).                                                                                                           |
 | `translateSVG`       | —        | Translate `.svg` files (requires the top-level `svg` block).                                                                                                       |
 
@@ -245,13 +245,21 @@ Optional alias merged into `contentPaths` at load.
 Optional subset of locales for this block only (otherwise root `targetLocales`). Effective documentation locales are the union across blocks.
 - `docusaurusCatalogDir`
 Optional. Source directory for Docusaurus JSON label catalogs for this block (e.g. `"i18n/en"` from `docusaurus write-translations`). Page bodies always come from `contentPaths`; `docusaurusCatalogDir` only supplies shell/UI JSON, not MDX.
+- `nextraMetaGlob`
+Optional glob(s) for Nextra `_meta.ts` / `_meta.tsx` / `_meta.js` under `docsRoot`. When `docsOutput.style` is `"nextra"` and this is omitted, all `_meta` files under `docsRoot` are collected automatically.
+- `nextraMetaTranslatableKeys`
+Optional property names whose string values are translated in Nextra `_meta` objects (default: `title`, `display`, `breadcrumb`).
+- `nextraDictionaryPath`
+Optional English Nextra theme dictionary module (e.g. `"app/_dictionaries/en.ts"`). Translated to `{dir}/{locale}.ts` during `translate-docs`.
+- `nextraDictionaryOutputTemplate`
+Optional output template for locale dictionary modules (default: `{dir}/{locale}.ts` relative to the dictionary directory).
 
 **Output layout**
 
 - `outputDir`
 Root directory for translated output for this block.
 - `docsOutput.style`
-`"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"`.
+`"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`.
 - `docsOutput.localeSubpath`
 Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` (required when using `style: "doc-system"` directly; preset when using an alias). Use `""` for Starlight-style locale folders.
 - `docsOutput.docsRoot`
@@ -270,6 +278,10 @@ Rewrite relative links after translation (auto-enabled when `docsOutput.style = 
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `docsOutput.rewriteVitepressLinks`
 When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage).
+- `docsOutput.rewriteNextraLinks`
+When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+- `docsOutput.vitepressThemeCatalog`
+Optional. VitePress theme/nav/sidebar catalog bootstrap + translation inside `translate-docs`. Fields: `configPath` (VitePress config with theme strings), `catalogPath` (generated English nested JSON), optional `outputPathTemplate` (default: `theme.{locale}.json` beside `catalogPath`).
 
 **Post-processing**
 

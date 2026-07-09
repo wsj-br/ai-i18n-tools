@@ -100,7 +100,8 @@ npx ai-i18n-tools status
 |-----------|-----|
 | JS/TS/Astro の `t("…")` / `i18n.t("…")` の UI 文字列 | [UI 文字列](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations`カタログ (`{ "key": { "message": "…", "description": "…" } }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs`、`json[]`は**使用しません** |
-| VitePressテーマ/ナビゲーション/サイドバーJSON (作成するネストされたカタログ) | JSON — `json[]` + `translate-json`; ページ本文はドキュメントに残ります — [VitePress統合](/guide/vitepress-integration)を参照してください |
+| VitePress テーマ/ナビゲーション/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **使用しない** `json[]` — [VitePress 統合](/guide/vitepress-integration) を参照 |
+| Nextra `_meta.ts` ラベルとテーマ辞書 `.ts` | ドキュメント — `translate-docs` (`style: "nextra"` の場合は自動 `_meta`、オプションの `nextraDictionaryPath`); **使用しない** `json[]` — [Nextra 統合](/guide/nextra-integration) を参照 |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 

@@ -8,7 +8,7 @@
   "features": {
     "translateUIStrings": false,
     "translateDocs": true,
-    "translateJson": true,
+    "translateJson": false,
     "translateSVG": false
   },
   "cacheDir": ".translation-cache",
@@ -23,19 +23,11 @@
       "addFrontmatter": false,
       "docsOutput": {
         "style": "vitepress",
-        "docsRoot": "docs"
-      }
-    }
-  ],
-  "json": [
-    {
-      "description": "VitePress theme/nav/sidebar strings",
-      "contentPaths": "docs/.vitepress/i18n/theme.en.json",
-      "outputPathTemplate": "docs/.vitepress/i18n/theme.{locale}.json",
-      "keyPolicy": {
-        "mode": "denylist",
-        "skipKeys": [],
-        "translateKeys": []
+        "docsRoot": "docs",
+        "vitepressThemeCatalog": {
+          "configPath": "docs/.vitepress/config.mts",
+          "catalogPath": "docs/.vitepress/i18n/theme.en.json"
+        }
       }
     }
   ],

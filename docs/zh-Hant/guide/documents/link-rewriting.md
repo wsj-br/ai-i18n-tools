@@ -18,7 +18,7 @@
 
 有關 VitePress 特定的撰寫規則，請參閱[VitePress 整合 — 連結慣例](/guide/vitepress-integration#link-conventions)。
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 當內建重寫器不足時，請在 `docs[].docsOutput.postProcessing` 下新增有序的 `{ "description"?, "search", "replace" }` 規則 — 例如：

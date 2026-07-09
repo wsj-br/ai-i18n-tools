@@ -7,14 +7,14 @@
 
 **Traduisez votre application et votre documentation à l'aide du modèle d'IA de votre choix : pas de verrouillage, pas de réécriture.**
 
-`ai-i18n-tools` est un CLI et une boîte à outils pour internationaliser les applications et les sites de documentation JavaScript/TypeScript – y compris Docusaurus, Astro, Starlight, VitePress et Markdown/MDX simple – à l'aide de grands modèles linguistiques.
+`ai-i18n-tools` est une interface de ligne de commande (CLI) et une boîte à outils pour internationaliser les applications et les sites de documentation JavaScript/TypeScript – y compris Docusaurus, Astro, Starlight, VitePress, Nextra, et les fichiers Markdown/MDX simples – en utilisant des modèles de langage étendus.
 
 Pointez-le vers n'importe quel fournisseur et commencez à traduire : **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, n'importe quel modèle [OpenRouter](https://openrouter.ai/) (des centaines de choix avec une seule clé API), ou **Ollama** pour une traduction entièrement auto-hébergée et hors ligne. Changez de fournisseur ou de modèle par projet – ou même par langue – sans modifier votre base de code.
 
 Un fichier de configuration pilote trois modes de traduction, vous pouvez donc les combiner en fonction de la structure de votre contenu :
 
-- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` de JS/TS (et éventuellement des fichiers `.astro`) et génère du JSON plat par locale pour i18next ou une recherche SSG statique.
-- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths` à l'aide de `translate-docs`. Fonctionne avec **VitePress**, **Starlight**, **Docusaurus**, les sites basés sur Astro, ou tout générateur de site statique qui lit à partir de fichiers source Markdown/MDX/`.astro`.
+- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` des fichiers JS/TS (et éventuellement `.astro`) et génère un JSON plat, par locale, pour i18next ou une recherche SSG statique.
+- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths` en utilisant `translate-docs`. Fonctionne avec **VitePress**, **Starlight**, **Docusaurus**, **Nextra**, les sites basés sur Astro, ou tout générateur de site statique qui lit à partir de fichiers source Markdown/MDX/`.astro`.
 - **JSON** — Traduit des paquets JSON imbriqués arbitraires définis dans `json[]`. Utilisez `translate-json` lorsque le texte de l'interface utilisateur se trouve dans des fichiers JSON par locale au lieu d'appels `t()` dans le code source.
 
 Les ressources **SVG** ont leur propre chemin : `features.translateSVG`, le bloc `svg` de niveau supérieur et `translate-svg` – pas `docs[].contentPaths`.
@@ -24,7 +24,7 @@ Les ressources **SVG** ont leur propre chemin : `features.translateSVG`, le bloc
 | Votre contenu                                                                 | Commande                                    |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | Le code source utilise `t()`                                                | **Chaînes d'interface utilisateur** — `extract` / `translate-ui` |
-| Pages localisées ou sites de documentation (VitePress, Starlight, Docusaurus, Astro, etc.) | **Documents** — `translate-docs`            |
+| Pages ou sites de documentation localisés (VitePress, Starlight, Docusaurus, Nextra, Astro, etc.) | **Documents** — `translate-docs` |
 | Fichiers de locale JSON autonomes et imbriqués                                | **JSON** — `translate-json`                 |
 
 Les trois partagent un cache fichier/SQLite, de sorte que seuls les segments (chaînes ou blocs de texte) nouveaux ou modifiés sont renvoyés au modèle – les réexécutions sont rapides et peu coûteuses, quel que soit le fournisseur que vous utilisez.
@@ -40,10 +40,13 @@ Les trois partagent un cache fichier/SQLite, de sorte que seuls les segments (ch
 - [Démarrage rapide](#quick-start)
   - [Chaînes d'interface utilisateur](#ui-strings)
   - [Documents](#documents)
+  - [VitePress](#vitepress)
+  - [Nextra](#nextra)
   - [Astro (Astro simple et Starlight)](#astro-plain-astro--starlight)
   - [Synchronisation combinée](#combined-sync)
 - [Assistants d'exécution](#runtime-helpers)
 - [Commandes CLI](#cli-commands)
+  - [Langue de l'interface utilisateur de l'outil (journaux, aide, tableau de bord)](#tool-ui-language-logs-help-dashboard)
 - [Documentation](#documentation)
 - [Licence](#license)
 
@@ -54,7 +57,7 @@ Les trois partagent un cache fichier/SQLite, de sorte que seuls les segments (ch
 
 Chaque type de traduction a son propre guide avec tous les détails de configuration : [Chaînes d'interface utilisateur](../docs/guide/ui-strings/), [Documents](../docs/guide/documents/) et [JSON](../docs/guide/json.md). Voir [Qu'est-ce que ai-i18n-tools ?](../docs/guide/what-is-ai-i18n-tools.md) pour une comparaison côte à côte.
 
-Quelques points à savoir d'emblée : les chaînes d'interface utilisateur traduisent les entrées manquantes par locale via le fournisseur LLM actif (voir [Fournisseurs LLM](#llm-providers)) et écrivent des fichiers JSON plats (`de.json`, `pt-BR.json`, …), avec le texte source anglais comme clé de recherche d'exécution — `strings.json` est le cache d'extraction, pas le paquet d'exécution. Les documents prennent en charge les valeurs `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"` et les alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (voir [Dispositions de sortie](../docs/guide/documents/output-layouts.md)). Les trois partagent `ai-i18n-tools.config.json` et peuvent être combinés ; `sync` exécute l'extraction, la traduction de l'interface utilisateur, la traduction SVG, `translate-docs` et `translate-json` dans l'ordre selon vos drapeaux `features`.
+Quelques points importants à savoir d'emblée : les chaînes d'interface utilisateur traduisent les entrées manquantes par locale via le fournisseur LLM actif (voir [Fournisseurs LLM](#llm-providers)) et écrivent des fichiers JSON plats (`de.json`, `pt-BR.json`, …), avec le texte source anglais comme clé de recherche d'exécution — `strings.json` est le cache d'extraction, pas le paquet d'exécution. Les documents prennent en charge les valeurs `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"`, et les alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` (voir [Dispositions de sortie](../docs/guide/documents/output-layouts.md)). Les trois partagent `ai-i18n-tools.config.json` et peuvent être combinés ; `sync` exécute l'extraction, la traduction de l'interface utilisateur, la traduction SVG, `translate-docs` et `translate-json` dans l'ordre selon vos drapeaux `features`.
 
 ---
 
@@ -210,8 +213,11 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight documentation
 # npx ai-i18n-tools init -t ui-starlight
 
-# VitePress documentation (pages + theme JSON)
+# VitePress documentation (pages + theme catalog)
 # npx ai-i18n-tools init -t ui-vitepress
+
+# Nextra documentation (pages + _meta.ts + theme dictionary)
+# npx ai-i18n-tools init -t ui-nextra
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
@@ -221,12 +227,17 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-Modifiez `ai-i18n-tools.config.json` : définissez `docs[].contentPaths` sur les sources markdown, MDX et/ou `.astro` ; `docs[].outputDir` et `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"flat"`, etc.). Référence complète des champs : [Documents](../docs/guide/documents/).
+Modifiez `ai-i18n-tools.config.json` : définissez `docs[].contentPaths` sur les sources markdown, MDX et/ou `.astro` ; `docs[].outputDir` et `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"flat"`, etc.). Référence complète du champ : [Documents](../docs/guide/documents/).
 
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` échafaude `docsOutput.style: "vitepress"` plus un bloc `json[]` pour les chaînes de thème/navigation/barre latérale. Exécutez `sync` pour traduire le markdown de la page et `theme.{locale}.json` ensemble. Voir [Intégration VitePress](../docs/guide/vitepress-integration.md) et [exemples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+`init -t ui-vitepress` échafaude `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` pour les chaînes de navigation/barre latérale/pied de page. Exécutez `sync` pour traduire le markdown de la page et le catalogue de thèmes ensemble — pas de pipeline JSON séparé. Voir [Intégration VitePress](../docs/guide/vitepress-integration.md) et [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+
+<a id="nextra"></a>
+### Nextra
+
+`init -t ui-nextra` échafaude `docsOutput.style: "nextra"`. `translate-docs` collecte et traduit automatiquement les étiquettes de la barre latérale `_meta.ts` ; définissez `docs[].nextraDictionaryPath` pour traduire également le module de dictionnaire de thème (par exemple `app/_dictionaries/en.ts`) — le tout dans la même exécution `sync`, sans fichiers JSON auxiliaires. Voir [Intégration Nextra](../docs/guide/nextra-integration.md) et [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (Astro classique et Starlight)
@@ -288,7 +299,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -339,8 +350,8 @@ La locale demandée est mise en correspondance avec les langues d'interface util
 - [Démarrage rapide](../docs/guide/quick-start.md) — configuration pour les chaînes d'interface utilisateur, les documents et le JSON (interface utilisateur, documents/`.astro`, bundles JSON, Astro Starlight et Astro simple).
 - [Guide des ressources locales](../docs/guide/images-and-screenshots/) - captures d'écran et SVG illustrés dans les documents traduits (réécriveur de liens plats, scripts de capture d'écran).
 - [Architecture](../docs/reference/architecture.md) - architecture, internes, API programmatique et points d'extension.
-- [Contexte de l'agent IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **pour les applications utilisant le package :** invites d'intégration pour les projets en aval (à copier dans les règles d'agent de votre dépôt).
-- Internes du mainteneur pour **ce** dépôt : `dev/package-context.md` (clone uniquement ; pas sur npm).
+- [Contexte de l'agent IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) – **pour les applications utilisant le package :** invites d'intégration pour les projets en aval (à copier dans les règles de l'agent de votre dépôt).
+- Guide du mainteneur pour **ce** dépôt : `AGENT.md` (règles et workflows ; clonage uniquement ; pas sur npm). Référence du pipeline : `docs/reference/`. Développement local et publication : `dev/DEVEL.md`.
 
 ---
 

@@ -5,7 +5,9 @@
 
 Docusaurusサイトでは、`docusaurusCatalogDir`を`write-translations`カタログフォルダー（例: `docs-site/i18n/en`）に設定します。これにより、`translate-docs`にはシェルJSONも含まれます。ナビゲーションバー、フッター、テーマの文字列などです。
 
-[VitePress](/guide/vitepress-integration)サイトでは、ページ本体は同じ`docs[]`パイプラインを使用します。ナビゲーション、サイドバー、フッターのラベルは別のJSONカタログにあり、[JSON](/guide/json)パイプラインと`translate-json`を使用して翻訳します。
+[VitePress](/guide/vitepress-integration) サイトでは、ページ本文は同じ`docs[]`パイプラインを使用します。ナビゲーション、サイドバー、フッターのラベルは`docsOutput.vitepressThemeCatalog`にあり、`translate-docs`は英語のカタログをブートストラップし、ページと一緒に翻訳します。個別のパイプラインは必要ありません。
+
+[Nextra](/guide/nextra-integration) サイトでは、ページ本文は`docsOutput.style: "nextra"`とともに同じ`docs[]`パイプラインを使用します。`_meta.ts`サイドバーのラベルは`translate-docs`によって自動的に収集および翻訳され、テーマ辞書文字列は同じパイプラインで`docs[].nextraDictionaryPath`を介して翻訳されます。
 
 Markdownに埋め込まれたPNGやその他のラスター画像については、[画像とスクリーンショット](/guide/images-and-screenshots/)を参照してください。`translate-docs`は代替テキストのみを翻訳し、ラスターファイルをコピーしません。
 
@@ -13,7 +15,7 @@ READMEまたはドキュメントにオプションの**言語スイッチャー
 
 SVGファイルは、`features.translateSVG`が有効な場合、[`translate-svg`](/reference/cli-commands)を介して翻訳されます。`docs[]` / `contentPaths`を介してではありません。
 
-任意のネストされたUI JSONバンドル（Docusaurusカタログではない）は、`docs[]`ではなく、[JSON](/guide/json)パイプラインに属します。
+ドキュメントフレームワークのシェル/テーマ文字列とは無関係な任意のネストされたUI JSONバンドルは、`docs[]`ではなく、[JSON](/guide/json)パイプラインに属します。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
@@ -26,7 +28,8 @@ SVGファイルは、`features.translateSVG`が有効な場合、[`translate-svg
 | 設定 | ここから開始 |
 | --- | --- |
 | Docusaurusサイト | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [ステップ1](#step-1-initialise-for-documentation) |
-| VitePressサイト | `init -t ui-vitepress` + テーマ用の`json[]` — [VitePress統合](/guide/vitepress-integration) |
+| VitePressサイト | テーマには`init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress統合](/guide/vitepress-integration) |
+| Nextraサイト | 辞書には`init -t ui-nextra` + `nextraDictionaryPath` (サイドバー`_meta.ts`は自動) — [Nextra統合](/guide/nextra-integration) |
 | Astro Starlight | `init -t ui-starlight` — [ステップ1](#step-1-initialise-for-documentation) |
 | フラットドキュメント (README、変更ログなど) | `docsOutput.style = "flat"` — [出力レイアウト](/guide/documents/output-layouts)、オプションの[言語スイッチャー](/guide/documents/language-switcher) |
 | 翻訳されたファイルの保存場所 | [出力レイアウト](/guide/documents/output-layouts) |
@@ -54,7 +57,7 @@ VitePressドキュメントサイトの場合:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-`features.translateJson`を有効にし、VitePressテーマ文字列の`json[]`エントリを追加してください。[VitePress統合](/guide/vitepress-integration)を参照してください。
+ナビゲーション/サイドバー/フッター文字列には`docsOutput.vitepressThemeCatalog`を設定します — [VitePress統合](/guide/vitepress-integration)を参照してください。
 
 プレーンなAstroウェブサイトUI（Starlightなし）の場合：
 
@@ -70,10 +73,10 @@ npx ai-i18n-tools init -t ui-astro-website
 - `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
 - `cacheDir` - すべてのパイプライン共通のSQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
 - `docs` - ドキュメントブロックの配列。各ブロックには、オプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などが含まれます。
-- `docs[].description` - メンテナー向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`セクションヘッダーに表示されます。
+- `docs[].description` - メンテナー向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
 - `docs[].contentPaths` - Markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
-- `docs[].outputDir` - そのブロックの翻訳された出力ルート。
-- `docs[].docsOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"`（[出力レイアウト](/guide/documents/output-layouts)を参照）。
+- `docs[].outputDir` - そのブロックの翻訳済み出力ルート。
+- `docs[].docsOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（[出力レイアウト](/guide/documents/output-layouts)を参照）。
 
 **プライマリ対サプライメンタリ：** ローカライズされたページには `contentPaths` を使用してください。`write-translations` から Docusaurus シェルの JSON も必要な場合は、`docusaurusCatalogDir` を設定します。ページの翻訳のみを行う場合は、`docusaurusCatalogDir` を省略してください。
 

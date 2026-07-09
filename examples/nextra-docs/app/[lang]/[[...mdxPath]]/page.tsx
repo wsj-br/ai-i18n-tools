@@ -1,0 +1,36 @@
+import { generateStaticParamsFor, importPage } from "nextra/pages";
+import type { FC } from "react";
+import { useMDXComponents as getMDXComponents } from "../../../mdx-components";
+import { resolveSiteLocale } from "../../../lib/site-locales";
+
+export const generateStaticParams = generateStaticParamsFor("mdxPath");
+
+type PageProps = Readonly<{
+  params: Promise<{
+    mdxPath: string[];
+    lang: string;
+  }>;
+}>;
+
+export async function generateMetadata(props: PageProps) {
+  const params = await props.params;
+  const lang = resolveSiteLocale(params.lang);
+  const { metadata } = await importPage(params.mdxPath, lang);
+  return metadata;
+}
+
+const Wrapper = getMDXComponents().wrapper;
+
+const Page: FC<PageProps> = async (props) => {
+  const params = await props.params;
+  const lang = resolveSiteLocale(params.lang);
+  const result = await importPage(params.mdxPath, lang);
+  const { default: MDXContent, toc, metadata, sourceCode } = result;
+  return (
+    <Wrapper toc={toc} metadata={metadata} sourceCode={sourceCode}>
+      <MDXContent {...props} params={{ ...params, lang }} />
+    </Wrapper>
+  );
+};
+
+export default Page;

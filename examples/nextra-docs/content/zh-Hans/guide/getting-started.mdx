@@ -1,0 +1,31 @@
+# 开始使用
+
+## 运行网站
+
+从 `examples/Nextra-docs`:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+打开 [http://localhost:3070/](http://localhost:3070/) 并通过语言菜单切换语言。
+
+## 翻译文档
+
+```bash
+echo "OPENROUTER_API_KEY=sk-or-..." > .env
+pnpm run i18n:sync
+```
+
+配置: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/Nextra-docs/ai-i18n-tools.config.json)。
+
+## 布局回顾
+
+| 产物 | 来源 | 翻译使用 |
+| --- | --- | --- |
+| MDX 页面 | `content/en/` | `translate-docs` (`style: "Nextra"`) |
+| 主题字符串 | `app/_dictionaries/en.json` | `translate-json` |
+| 侧边栏标签 | `i18n/meta.en.json` | `translate-json` |
+
+返回 [主页](/)。

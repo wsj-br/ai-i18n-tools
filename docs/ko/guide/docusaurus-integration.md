@@ -80,15 +80,18 @@ Docusaurus 탐색 모음, 바닥글, 검색 자리 표시자 및 기타 테마/�
 
 Docusaurus 셸 JSON을 `json[]`에 넣지 마십시오. 대신 Documents와 함께 `docs[].docusaurusCatalogDir`을(를) 사용하십시오.
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus 대 VitePress 셸 JSON
+<a id="framework-shell-translation"></a>
+## 프레임워크 셸 번역
 
 | 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 직접 작성하는 사용자 지정 중첩 JSON 카탈로그 | JSON — `json[]` + `translate-json` (또는 `translateJson`이(가) 켜져 있을 때 `sync`) |
+| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 레이블 | 문서 — `style: "nextra"` + `translate-docs`일 때 자동 |
+| Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
 
-VitePress 패턴은 [VitePress 통합](/guide/vitepress-integration)을(를) 참조하십시오.
+**프레임워크 셸/테마 문자열을 `json[]`에 넣지 마십시오** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. [VitePress 통합](/guide/vitepress-integration) 및 [Nextra 통합](/guide/nextra-integration)에서 VitePress/Nextra 패턴을 참조하십시오.
 
 <a id="example-project"></a>
 ## 예제 프로젝트

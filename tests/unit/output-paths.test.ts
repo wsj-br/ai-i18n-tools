@@ -4,6 +4,8 @@ import {
   expandPathTemplate,
   resolveDocumentationOutputPath,
   shouldRewriteFlatMarkdownLinks,
+  shouldRewriteNextraLinks,
+  shouldRewriteVitepressLinks,
   toPosix,
 } from "../../src/core/output-paths.js";
 
@@ -312,6 +314,46 @@ describe("output-paths", () => {
     expect(toPosix(out)).toBe("/proj/docs/custom/fr/docs/a.md");
   });
 
+  it("nextra alias writes directly under locale folder from content/en", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/en/guide/getting-started.mdx"],
+          outputDir: "content",
+          docsOutput: { style: "nextra", docsRoot: "content/en" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt-BR",
+      "content/en/guide/getting-started.mdx",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/content/pt-BR/guide/getting-started.mdx");
+  });
+
+  it("nextra preserves BCP-47 locale folder casing by default", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/en/index.mdx"],
+          outputDir: "content",
+          docsOutput: { style: "nextra", docsRoot: "content/en" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "zh-Hans",
+      "content/en/index.mdx",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/content/zh-Hans/index.mdx");
+  });
+
   it("shouldRewriteFlatMarkdownLinks defaults for flat without template", () => {
     const c = cfg({
       docs: [
@@ -323,6 +365,68 @@ describe("output-paths", () => {
       ],
     });
     expect(shouldRewriteFlatMarkdownLinks(c)).toBe(true);
+  });
+
+  // Regression: `docsOutput.style` is rewritten to canonical "doc-system" by config
+  // normalization, so these defaults must survive via `stylePreset`, not a direct
+  // `style === "vitepress"` / `"nextra"` comparison (which would never match here).
+  it("shouldRewriteVitepressLinks defaults to true for the vitepress alias after normalization", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/index.md"],
+          outputDir: "docs",
+          docsOutput: { style: "vitepress", docsRoot: "docs" },
+        },
+      ],
+    });
+    expect(c.doc.docsOutput.style).toBe("doc-system");
+    expect(shouldRewriteVitepressLinks(c)).toBe(true);
+  });
+
+  it("shouldRewriteVitepressLinks respects explicit false override on the vitepress alias", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/index.md"],
+          outputDir: "docs",
+          docsOutput: { style: "vitepress", docsRoot: "docs", rewriteVitepressLinks: false },
+        },
+      ],
+    });
+    expect(shouldRewriteVitepressLinks(c)).toBe(false);
+  });
+
+  it("shouldRewriteVitepressLinks is false for non-vitepress styles by default", () => {
+    const c = cfg();
+    expect(shouldRewriteVitepressLinks(c)).toBe(false);
+  });
+
+  it("shouldRewriteNextraLinks defaults to true for the nextra alias after normalization", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/en/index.mdx"],
+          outputDir: "content",
+          docsOutput: { style: "nextra", docsRoot: "content/en" },
+        },
+      ],
+    });
+    expect(c.doc.docsOutput.style).toBe("doc-system");
+    expect(shouldRewriteNextraLinks(c)).toBe(true);
+  });
+
+  it("shouldRewriteNextraLinks respects explicit false override on the nextra alias", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/en/index.mdx"],
+          outputDir: "content",
+          docsOutput: { style: "nextra", docsRoot: "content/en", rewriteNextraLinks: false },
+        },
+      ],
+    });
+    expect(shouldRewriteNextraLinks(c)).toBe(false);
   });
 
   it("JSON uses nested layout by default", () => {

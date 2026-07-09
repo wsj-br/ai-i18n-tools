@@ -5,7 +5,9 @@ Mukhya roop se **markdown, MDX, aur `.astro` documentation** ke liye design kiya
 
 Docusaurus sites par, `docusaurusCatalogDir` ko apne `write-translations` catalog folder (jaise `docs-site/i18n/en`) par bhi set karein. Phir `translate-docs` mein shell JSON bhi shamil hai — navbar, footer, aur theme strings.
 
-[VitePress](/guide/vitepress-integration) sites par, page bodies wahi `docs[]` pipeline ka upyog karte hain. Nav, sidebar, aur footer labels ek alag JSON catalog mein hote hain — unka anuvad [JSON](/guide/json) pipeline aur `translate-json` ke saath karein.
+[VitePress](/guide/vitepress-integration) sites par, page bodies wahi `docs[]` pipeline use karte hain. Nav, sidebar, aur footer labels `docsOutput.vitepressThemeCatalog` mein hote hain — `translate-docs` English catalog ko bootstrap karta hai aur pages ke saath translate karta hai, koi alag pipeline nahi.
+
+[Nextra](/guide/nextra-integration) site par, page bodies `docs[]` pipeline ka upyog `docsOutput.style: "nextra"` ke saath karte hain. `_meta.ts` sidebar labels ko `translate-docs` dwara automatically collect aur translate kiya jaata hai; theme dictionary strings ko usi pipeline mein `docs[].nextraDictionaryPath` ke madhyam se translate kiya jaata hai.
 
 Markdown mein embedded PNG aur anya raster images ke liye, [Images & Screenshots](/guide/images-and-screenshots/) dekhein. `translate-docs` kewal alt text ka anuvad karta hai; yeh raster files ko copy nahi karta hai.
 
@@ -13,7 +15,7 @@ README ya docs mein ek optional **language switcher** block ke liye, `docsOutput
 
 SVG files ka anuvad [`translate-svg`](/reference/cli-commands) ke madhyam se kiya jata hai jab `features.translateSVG` enable hota hai — `docs[]` / `contentPaths` ke madhyam se nahi.
 
-Arbitrary nested UI JSON bundles (Docusaurus catalogs nahi) [JSON](/guide/json) pipeline mein aate hain, `docs[]` mein nahi.
+Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strings se unrelated hain, unhe [JSON](/guide/json) pipeline mein hona chahiye, na ki `docs[]` mein.
 
 <a id="per-locale-model-overrides"></a>
 ### Pratyaik sthanik model override
@@ -26,7 +28,8 @@ Arbitrary nested UI JSON bundles (Docusaurus catalogs nahi) [JSON](/guide/json) 
 | Aapka setup | Yahan se shuru karein |
 | --- | --- |
 | Docusaurus site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Step 1](#step-1-initialise-for-documentation) |
-| VitePress site | `init -t ui-vitepress` + `json[]` theme ke liye — [VitePress integration](/guide/vitepress-integration) |
+| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` theme ke liye — [VitePress integration](/guide/vitepress-integration) |
+| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` dictionary ke liye (sidebar `_meta.ts` automatic hai) — [Nextra integration](/guide/nextra-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Step 1](#step-1-initialise-for-documentation) |
 | Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
 | Jahan anuvadit files aati hain | [Output layouts](/guide/documents/output-layouts) |
@@ -54,7 +57,7 @@ VitePress documentation sites ke lie:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-`features.translateJson` enable karen aur VitePress theme strings ke lie ek `json[]` entry add karen — [VitePress integration](/guide/vitepress-integration) dekhen.
+Nav/sidebar/footer strings ke liye `docsOutput.vitepressThemeCatalog` set karein — [VitePress integration](/guide/vitepress-integration) dekhein.
 
 Plain Astro website UI ke liye (koi Starlight nahi):
 
@@ -70,10 +73,10 @@ Generate kiye gaye `ai-i18n-tools.config.json` ko edit karein:
 - `targetLocales` - BCP-47 locale codes ka array (jaise `["de", "fr", "es"]`).
 - `cacheDir` - sabhi pipelines ke liye shared SQLite cache directory (aur `--write-logs` ke liye default log directory).
 - `docs` - documentation blocks ka array. Har block mein optional `description`, `contentPaths` (string ya array; file, directory, ya glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, aadi.
-- `docs[].description` - maintainers ke liye optional short note. Jab set kiya jata hai, to yeh `translate-docs` headline aur `status` section headers mein dikhai deta hai.
+- `docs[].description` - maintainers ke liye optional short note. Jab set kiya jata hai, to yah `translate-docs` headline aur `status` section headers mein dikhai deta hai.
 - `docs[].contentPaths` - markdown/MDX/`.astro` sources (aur Docusaurus shell JSON ke liye optional `docusaurusCatalogDir`).
-- `docs[].outputDir` - us block ke liye anuvadit output root.
-- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (dekhein [Output layouts](/guide/documents/output-layouts)).
+- `docs[].outputDir` - us block ke liye translated output root.
+- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` ([Output layouts](/guide/documents/output-layouts) dekhein).
 
 **Primary vs supplementary:** Localised pages ke liye `contentPaths` par dhyaan den. Jab aapko `write-translations` se Docusaurus shell JSON ki bhi zaroorat ho to `docusaurusCatalogDir` set karen. Yadi aap kewal pages translate karte hain to `docusaurusCatalogDir` ko chhod den.
 

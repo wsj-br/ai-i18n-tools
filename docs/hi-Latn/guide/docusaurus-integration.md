@@ -80,15 +80,18 @@ Jab `docusaurusCatalogDir` set hota hai aur `features.translateDocs` enable hota
 
 Docusaurus shell JSON ko `json[]` mein na rakhein; iske bajaye Documents ke saath `docs[].docusaurusCatalogDir` ka upyog karein.
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus vs VitePress shell JSON
+<a id="framework-shell-translation"></a>
+## Framework shell anuvaad
 
 | Framework | Shell / theme strings | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Custom nested JSON catalog jo aap author karte hain | JSON — `json[]` + `translate-json` (ya `translateJson` on hone par `sync`) |
+| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
+| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
 
-VitePress pattern ke liye [VitePress integration](/guide/vitepress-integration) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalen — vah pipeline asambandhit app locale bundles ke liye hai. VitePress/Nextra patterns ke liye [VitePress integration](/guide/vitepress-integration) aur [Nextra integration](/guide/nextra-integration) dekhen.
 
 <a id="example-project"></a>
 ## Example project

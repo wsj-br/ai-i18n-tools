@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | UI 소스 스캔 → `strings.json` 업데이트 → 플랫 로케일 JSON 채우기(`de.json`, …) |
 | 2 | `translate-svg` *(선택 사항)* | `config.svg` 아래의 SVG 텍스트 번역 |
-| 3 | `translate-docs` | 마크다운, MDX, `.astro` 페이지 및 Docusaurus JSON 카탈로그 번역 |
+| 3 | `translate-docs` | 마크다운, MDX, `.astro` 페이지 번역; Docusaurus 카탈로그 JSON; Nextra `_meta` / 사전 `.ts`; VitePress 테마 카탈로그 |
 | 4 | `translate-json` *(선택 사항)* | `json[]` 아래의 중첩된 JSON 리프 번역 |
 
 모든 파이프라인은 동일한 핵심 루프를 따릅니다. **세그먼트 추출 → 구문 보호 → 일괄 처리 → 캐시 조회 또는 LLM 호출 → 출력 쓰기**. 중간의 공유 서비스(구성, 자리 표시자, 캐시, 용어집, `LlmClient`)는 [공유 인프라](#shared-infrastructure)에 설명되어 있습니다.
@@ -267,7 +267,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 9. `augmentConfigWithUiLanguagesMaster` - 번들로 제공되는 마스터 카탈로그에서 매니페스트 표시 이름을 첨부합니다.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 해당되는 경우 마스터 카탈로그에 대해 로케일 코드를 검증합니다.
 
-`init`는 `initConfigTemplates`에서 시작 구성(starter configs)을 작성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `json[]`를 통한 테마 JSON), `ui-astro-website`(일반 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가), `ui-json-bundles`(JSON `json[]`만 해당). [빠른 시작 — 초기화](/guide/quick-start#step-1-initialise)를 참조하십시오.
+`init`는 `initConfigTemplates`에서 시작 구성 파일을 작성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `vitepressThemeCatalog`), `ui-nextra`(Nextra 문서 + `nextraDictionaryPath`), `ui-astro-website`(일반 Astro UI; `docs[]`를 추가하여 `.astro` 페이지 번역), `ui-json-bundles`(JSON `json[]`만). [빠른 시작 — 초기화](/guide/quick-start#step-1-initialise)를 참조하세요.
 
 <a id="logger"></a>
 ### 로거

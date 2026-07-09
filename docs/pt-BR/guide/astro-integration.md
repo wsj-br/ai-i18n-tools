@@ -47,6 +47,20 @@ Aponte `contentPaths` para seus arquivos e diretórios `.md` / `.mdx` em inglês
 
 As substituições da UI do Starlight podem usar `src/content/i18n/en.json` com `jsonPathTemplate` em um bloco `docs[]` separado quando necessário — consulte [Documentos — inicializar para documentação](/guide/documents/#step-1-initialise-for-documentation).
 
+<a id="framework-shell-translation"></a>
+### Tradução do shell do framework
+
+O Starlight fornece suas próprias strings de UI integradas para muitos idiomas (rótulos de navegação, espaço reservado de pesquisa, sumário e assim por diante) — não há um pipeline de shell/tema separado para configurar, ao contrário do Docusaurus, VitePress ou Nextra:
+
+| Framework | Strings de shell / tema | Pipeline |
+|-----------|----------------------|----------|
+| Astro Starlight | Strings de UI integradas (muitos idiomas); nenhum pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
+| Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Rótulos da barra lateral `_meta.ts` + dicionário de tema `.ts` | Documentos — veja [integração Nextra](/guide/nextra-integration) |
+
+Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração VitePress](/guide/vitepress-integration) para os outros padrões de framework.
+
 <a id="example-project"></a>
 ### Projeto de exemplo
 

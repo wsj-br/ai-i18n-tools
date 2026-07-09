@@ -1,0 +1,31 @@
+# Começando
+
+## Executar o site
+
+A partir de `examples/Nextra-docs`:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+Abra [http://localhost:3070/](http://localhost:3070/) e mude os idiomas com o menu de idiomas.
+
+## Traduzir documentação
+
+```bash
+echo "OPENROUTER_API_KEY=sk-or-..." > .env
+pnpm run i18n:sync
+```
+
+Configuração: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/Nextra-docs/ai-i18n-tools.config.json).
+
+## Recapitulação do layout
+
+| Artefato | Fonte | Traduzido com |
+| --- | --- | --- |
+| Páginas MDX | `content/en/` | `translate-docs` (`style: "Nextra"`) |
+| Strings de tema | `app/_dictionaries/en.json` | `translate-json` |
+| Rótulos da barra lateral | `i18n/meta.en.json` | `translate-json` |
+
+Retorne à [página inicial](/).

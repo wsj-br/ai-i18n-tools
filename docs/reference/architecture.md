@@ -16,7 +16,7 @@ The codebase is organised in four layers. Use this section for the mental model;
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | Scan UI sources → update `strings.json` → fill flat locale JSON (`de.json`, …) |
 | 2 | `translate-svg` *(optional)* | Translate SVG text under `config.svg` |
-| 3 | `translate-docs` | Translate markdown, MDX, `.astro` pages, and Docusaurus JSON catalogs |
+| 3 | `translate-docs` | Translate markdown, MDX, `.astro` pages; Docusaurus catalog JSON; Nextra `_meta` / dictionary `.ts`; VitePress theme catalog |
 | 4 | `translate-json` *(optional)* | Translate nested JSON leaves under `json[]` |
 
 Every pipeline follows the same core loop: **extract segments → protect syntax → batch → cache lookup or LLM call → write output**. Shared services in the middle — config, placeholders, cache, glossary, `LlmClient` — are described under [Shared infrastructure](#shared-infrastructure).
@@ -267,7 +267,7 @@ Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai
 9. `augmentConfigWithUiLanguagesMaster` - attach manifest display names from the bundled master catalog.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - validate locale codes against the master catalog when applicable.
 
-`init` writes starter configs from `initConfigTemplates`: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + theme JSON via `json[]`), `ui-astro-website` (plain Astro UI; add `docs[]` for `.astro` page translation), `ui-json-bundles` (JSON `json[]` only). See [Quick start — Initialise](/guide/quick-start#step-1-initialise).
+`init` writes starter configs from `initConfigTemplates`: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; add `docs[]` for `.astro` page translation), `ui-json-bundles` (JSON `json[]` only). See [Quick start — Initialise](/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Logger

@@ -100,7 +100,8 @@ Quando `translateJson` está ativado, `status` imprime uma seção `json[]` (✓
 |-----------|-----|
 | Strings da UI em `t("…")` / `i18n.t("…")` em JS/TS/Astro | [Strings da UI](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Catálogo Docusaurus `write-translations` (`{ "key": { "message": "…", "description": "…" } }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs`, **não** `json[]` |
-| JSON de tema/navegação/barra lateral do VitePress (catálogo aninhado que você cria) | JSON — `json[]` + `translate-json`; os corpos das páginas permanecem em Documentos — consulte [integração VitePress](/guide/vitepress-integration) |
+| Strings de tema/navegação/barra lateral do VitePress | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **não** use `json[]` — consulte [Integração VitePress](/guide/vitepress-integration) |
+| Rótulos `_meta.ts` do Nextra e dicionário de tema `.ts` | Documentos — `translate-docs` (`_meta` automático quando `style: "nextra"`, `nextraDictionaryPath` opcional); **não** use `json[]` — consulte [Integração Nextra](/guide/nextra-integration) |
 | JSON de localidade aninhada autônoma (árvores `translation.json` estilo ZenBrowser) | JSON — `json[]` + `translate-json` |
 | Arquivos `.svg` ilustrados com `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (opcional; não é um dos três pipelines principais) |
 

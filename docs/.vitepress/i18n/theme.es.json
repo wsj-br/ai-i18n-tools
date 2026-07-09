@@ -23,6 +23,7 @@
     "astro": "Astro",
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
+    "nextra": "Nextra",
     "imagesAndScreenshots": "Imágenes y capturas de pantalla",
     "svgTranslation": "Traducción SVG",
     "providers": "Proveedores LLM",

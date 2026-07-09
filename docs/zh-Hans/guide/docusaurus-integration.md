@@ -80,15 +80,18 @@ Docusaurus 导航栏、页脚、搜索占位符以及其他主题/插件标签�
 
 不要将 Docusaurus shell JSON 放在 `json[]` 中；请使用 `docs[].docusaurusCatalogDir` 和 Documents。
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus 与 VitePress shell JSON
+<a id="framework-shell-translation"></a>
+## 框架外壳翻译
 
 | 框架 | Shell / 主题字符串 | 管道 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 目录 (`{ message, description }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 您编写的自定义嵌套 JSON 目录 | JSON — `json[]` + `translate-json`（或当 `translateJson` 开启时为 `sync`） |
+| VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动翻译 |
+| Nextra | 主题字典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | 内置 UI 字符串（多语言）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
 
-有关 VitePress 模式，请参阅 [VitePress 集成](/guide/vitepress-integration)。
+**不要**将框架外壳/主题字符串放入 `json[]` — 该流水线用于无关的应用语言包。有关 VitePress/Nextra 模式，请参阅 [VitePress 集成](/guide/vitepress-integration) 和 [Nextra 集成](/guide/nextra-integration)。
 
 <a id="example-project"></a>
 ## 示例项目

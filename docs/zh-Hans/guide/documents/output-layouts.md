@@ -10,8 +10,9 @@
 **别名**（相同的布局引擎，预设 `localeSubpath`）：
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` 默认为 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 插件布局）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`（翻译页面直接位于 `{outputDir}/{locale}/` 下，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配，当英文位于内容根目录且 `outputDir` 等于 `docsRoot` 时）。
-- `docsOutput.style = "vitepress"` — 与 `doc-system` 相同的布局，`localeSubpath` 为空；BCP-47 区域设置文件夹名称保留（`localePathLowercase` 默认为 `false`）。请参阅 [VitePress 集成](/guide/vitepress-integration)。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`（翻译后的页面直接位于 `{outputDir}/{locale}/` 下，当英语位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配）。
+- `docsOutput.style = "vitepress"` — 布局与 `doc-system` 相同，但 `localeSubpath` 为空；保留 BCP-47 语言环境文件夹名称（`localePathLowercase` 默认为 `false`）。参见 [VitePress 集成](/guide/vitepress-integration)。
+- `docsOutput.style = "nextra"` — 布局与 `doc-system` 相同，但 `localeSubpath` 为空；英语源文件位于语言环境文件夹下（例如 `content/en/`）。参见 [Nextra 集成](/guide/nextra-integration)。
 
 Docusaurus 预设（主要的文档页面）：
 
@@ -31,6 +32,12 @@ VitePress 预设（英文在内容根目录，区域设置文件夹在源文件�
 docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 ```
 
+Nextra 预设（英语位于语言环境文件夹下，目标语言使用同级的语言环境文件夹）：
+
+```text
+content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
+```
+
 可选的 JSON 标签——来自 `docusaurusCatalogDir` 的 Docusaurus 壳字符串（非 MDX 正文内容）：
 
 ```text
@@ -39,7 +46,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight 为许多本地化版本提供了 UI 字符串；可选的自定义 UI 覆盖使用 `src/content/i18n/en.json` 和 `jsonPathTemplate: "{outputDir}/{locale}.json"` 在单独的 `docs[]` 块中，以备不时之需。
 
-VitePress 导航/侧边栏/页脚字符串不在 markdown 中——使用 JSON（`json[]`、`features.translateJson`）编写 `docs/.vitepress/i18n/theme.en.json` 并进行翻译。请参阅[VitePress 集成](/guide/vitepress-integration)。
+VitePress 导航/侧边栏/页脚字符串不在 markdown 中 — 请配置 `docsOutput.vitepressThemeCatalog` 并在 **`translate-docs`** 内进行翻译。参见 [VitePress 集成](/guide/vitepress-integration)。
+
+Nextra 主题字典 (`.ts`) 和 `_meta.ts` 侧边栏标签不在 markdown 中 — 当 `style: "nextra"` 时，请使用 `docs[].nextraDictionaryPath` 和自动 `_meta` 收集，所有操作均在 **`translate-docs`** 内进行。参见 [Nextra 集成](/guide/nextra-integration)。
 
 `docsOutput.style = "flat"`——将翻译后的文件放置在源旁边，并带有本地化后缀，或放在子目录中。当 `docsOutput.style = "flat"` 时（除非设置了 `rewriteRelativeLinks: false` 或自定义 `pathTemplate`），页面之间的相对链接会自动重写。
 

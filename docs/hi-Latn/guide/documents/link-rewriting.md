@@ -18,7 +18,7 @@ Custom `pathTemplate` flat rewriter ko disable kar deta hai jab tak aap `rewrite
 
 VitePress-specific authoring rules ke liye, [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions) dekhen.
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 Jab built-in rewriters paryapt na hon, toh `docs[].docsOutput.postProcessing` ke tahat ordered `{ "description"?, "search", "replace" }` rules joden — udaharan ke liye:

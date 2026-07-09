@@ -61,9 +61,9 @@ Para rótulos endonímicos (`label: "local"`), gere ou mantenha `ui-languages.js
 ## 5. Exemplos neste repositório
 
 | Exemplo | Arquivos |
-|---|---|
-| Este pacote (README simples + site VitePress) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (bloco README: `docsOutput.style = "flat"`; bloco do site: `docsOutput.style = "vitepress"`; JSON do tema via `json[]`) |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Este pacote (README simples + site VitePress) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (bloco README: `docsOutput.style = "flat"`; bloco do site: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | README simples + documentos Docusaurus | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (segundo bloco: `docsOutput.style = "flat"`; primeiro bloco: `docsOutput.style = "docusaurus"`) |
-| Documentos VitePress (demonstração mínima) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + catálogo de tema `json[]`) |
+| Documentação VitePress (demonstração mínima) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 A linha imediatamente antes de `<small id="lang-list">` (por exemplo, `**Read in other languages:**`) é um segmento normal passível de tradução e é localizada em cada localidade de destino; apenas a linha de links dentro dos marcadores é regenerada literalmente, exceto por `href` e rótulos gerados pelo manifesto.

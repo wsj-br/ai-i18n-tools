@@ -1,6 +1,6 @@
 # ai-i18n-tools — agent context
 
-Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behavior, runtime imports). Developing the package itself: see `dev/package-context.md` in the upstream repo.
+Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behavior, runtime imports). Developing the package itself: see `AGENT.md` and `docs/reference/` in the upstream repo.
 
 ---
 
@@ -13,7 +13,7 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 
 - **LLM provider:** configure under `providers.<name>` and select the active one with the top-level `provider` key (optional when only one provider is configured). Built-in presets (OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Cerebras, Groq, Mistral, xAI, NVIDIA, Alibaba, APIFUN, Ollama) need only a `translationModels` list; their `baseUrl` and API-key env var are built in. Any OpenAI-compatible endpoint works by setting `providers.<name>.baseUrl` (+ `apiKeyEnv`). A legacy top-level `openrouter` block is auto-migrated to `providers.openrouter` on load.
 
-Optional: set `providers.<name>.requestTimeoutMs` if the default **30000** ms per request is wrong for your network.
+Optional: set `providers.<name>.requestTimeoutMs` if the default **45000** ms per request is wrong for your network.
 
 ### Three translation types (pick one per kind of content)
 

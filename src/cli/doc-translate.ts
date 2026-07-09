@@ -18,6 +18,7 @@ import { segmentTranslationText } from "../core/types.js";
 export type { DocSegmentTranslation };
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { BatchTranslationError } from "../core/types.js";
+import { matchesDocsOutputStylePreset } from "../core/docs-output-normalize.js";
 import {
   timestamp,
   formatElapsedMmSs,
@@ -59,7 +60,8 @@ import {
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
-import { shouldRewriteFlatMarkdownLinks, shouldRewriteVitepressLinks, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import { shouldRewriteFlatMarkdownLinks, shouldRewriteNextraLinks, shouldRewriteVitepressLinks, nextraLinkNormalizeContext, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import { normalizeNextraDocLinks } from "../processors/nextra-link-normalize.js";
 import { normalizeVitepressDocLinks } from "../processors/vitepress-link-normalize.js";
 import {
   applyMarkdownLanguageListPostProcessing,
@@ -96,6 +98,15 @@ import {
   throwIfAbortSignal,
 } from "../utils/run-interrupt.js";
 import { FileContentCache } from "./file-content-cache.js";
+import {
+  collectNextraMetaFiles,
+  translateNextraMetaFiles,
+} from "./nextra-meta-translate.js";
+import { translateNextraDictionary } from "./nextra-dictionary-translate.js";
+import {
+  bootstrapVitepressThemeCatalog,
+  runVitepressThemeShell,
+} from "./vitepress-theme-catalog.js";
 import {
   describeEmphasisPlaceholdersPolicy,
   resolveMarkdownEmphasisPlaceholders,
@@ -1119,7 +1130,7 @@ export async function translateSegmentsBatched(
       };
     }
 
-    const logBatchSuccess = (res: { usage: { totalTokens: number } }) => {
+    const logBatchSuccess = (res: { usage: { totalTokens: number }; model: string }) => {
       if (docLog && batchDocIndices[bi]) {
         const idxs = batchDocIndices[bi]!;
         const n = batch.length;
@@ -1127,20 +1138,28 @@ export async function translateSegmentsBatched(
         const range = segRangeLabel(idxs, docLog.totalSegments);
         const batchSummary =
           n === 1
-            ? t("✔️  {{loc}} {{path}}: {{range}} ({{n}} segment in batch, {{tok}} tokens)", {
-                loc: locale,
-                path: docLog.relativePath,
-                range,
-                n,
-                tok: totalTok,
-              })
-            : t("✔️  {{loc}} {{path}}: {{range}} ({{n}} segments in batch, {{tok}} tokens)", {
-                loc: locale,
-                path: docLog.relativePath,
-                range,
-                n,
-                tok: totalTok,
-              });
+            ? t(
+                "✔️  {{loc}} {{path}}: {{range}} ({{n}} segment in batch, {{tok}} tokens, model: {{model}})",
+                {
+                  loc: locale,
+                  path: docLog.relativePath,
+                  range,
+                  n,
+                  tok: totalTok,
+                  model: res.model,
+                }
+              )
+            : t(
+                "✔️  {{loc}} {{path}}: {{range}} ({{n}} segments in batch, {{tok}} tokens, model: {{model}})",
+                {
+                  loc: locale,
+                  path: docLog.relativePath,
+                  range,
+                  n,
+                  tok: totalTok,
+                  model: res.model,
+                }
+              );
         console.log(chalk.green(batchSummary));
       }
     };
@@ -1960,6 +1979,13 @@ export async function translateMarkdownFile(
     const newBody = normalizeVitepressDocLinks(
       parsed.content,
       vitepressLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
+    );
+    output = matterStringify(newBody, parsed.data);
+  } else if (shouldRewriteNextraLinks(config)) {
+    const parsed = matter(output);
+    const newBody = normalizeNextraDocLinks(
+      parsed.content,
+      nextraLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
     );
     output = matterStringify(newBody, parsed.data);
   }
@@ -3108,6 +3134,18 @@ export async function runTranslate(
 
   const cacheMutex = cache && locales.length > 1 ? new AsyncMutex() : undefined;
   const fileContentCache = new FileContentCache();
+  const nextraMetaRelPaths =
+    matchesDocsOutputStylePreset(config.doc.docsOutput, "nextra") && config.features.translateDocs
+      ? collectNextraMetaFiles(opts.cwd, config)
+      : [];
+  const vitepressBootstrap =
+    config.doc.docsOutput.vitepressThemeCatalog && config.features.translateDocs
+      ? bootstrapVitepressThemeCatalog(config, opts.cwd, {
+          force: opts.force,
+          dryRun: opts.dryRun,
+          verbose: opts.verbose,
+        })
+      : null;
   const runOpts: TranslateRunOptions = {
     ...opts,
     batchConcurrency: batchConcurrencyEffective,
@@ -3305,6 +3343,61 @@ export async function runTranslate(
             await recordFileTotals(partial, skipped, totals);
             await yieldToEventLoop();
           }
+        }
+      }
+
+      if (config.features.translateDocs) {
+        if (nextraMetaRelPaths.length > 0) {
+          const metaTotals = await translateNextraMetaFiles(
+            config,
+            locale,
+            opts.cwd,
+            nextraMetaRelPaths,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys
+          );
+          accumulateFileTotals(partial, false, metaTotals);
+          await liveSumMutex.runExclusive(async () => {
+            accumulateFileTotals(liveSum, false, metaTotals, { skipUsage: true });
+          });
+        }
+
+        if (config.doc.nextraDictionaryPath?.trim()) {
+          const dictTotals = await translateNextraDictionary(
+            config,
+            locale,
+            opts.cwd,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys
+          );
+          accumulateFileTotals(partial, false, dictTotals);
+          await liveSumMutex.runExclusive(async () => {
+            accumulateFileTotals(liveSum, false, dictTotals, { skipUsage: true });
+          });
+        }
+
+        if (vitepressBootstrap) {
+          const themeTotals = await runVitepressThemeShell(
+            config,
+            locale,
+            opts.cwd,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys,
+            vitepressBootstrap
+          );
+          accumulateFileTotals(partial, false, themeTotals);
+          await liveSumMutex.runExclusive(async () => {
+            accumulateFileTotals(liveSum, false, themeTotals, { skipUsage: true });
+          });
         }
       }
 

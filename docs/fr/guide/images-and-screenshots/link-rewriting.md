@@ -17,7 +17,7 @@ Exemple avec `outputDir: "translated-docs/"` et une source `README.md` située �
 
 Pour `docsOutput.style = "doc-system"` (y compris `"docusaurus"`, `"astro-starlight"` et `"nested"`), le réécriveur de liens plats ne s'exécute pas. `regexAdjustments` voit l'URL d'origine du markdown traduit (généralement un chemin absolu comme `/img/screenshots/en-GB/foo.png`).
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### Normaliseur de liens VitePress (`style: "vitepress"`)
 
 Lorsque `docsOutput.rewriteVitepressLinks` est `true` (par défaut lorsque `style` est `"vitepress"`), un normaliseur distinct s'exécute après le réassemblage du segment (au lieu du réécriveur plat). Il cible les sites VitePress / doc-system où l'anglais se trouve à la racine du contenu et les locales se trouvent dans des dossiers frères (`docs/de/guide/…`).
@@ -56,7 +56,7 @@ Aucune correction `regexAdjustments` n'est nécessaire pour les actifs à chemin
 | `docsOutput.linkRewriteDocsRoot`     | Répertoire racine à partir duquel `depthPrefix` est calculé (valeur par défaut `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | Affecte la structure du chemin de sortie, que le réécriture utilise lors du calcul des chemins cibles pour les fichiers traduits connus       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 Configurez des règles `{ "description"?, "search", "replace" }` ordonnées sous `docs[].docsOutput.postProcessing` pour réécrire les URL d'images, de captures d'écran et d'autres actifs que les réécriveurs intégrés ne gèrent pas — généralement en échangeant un segment de dossier de paramètres régionaux (`screenshots/en-GB/` → `screenshots/de/`) ou en reliant des chemins statiques absolus (`/img/…` → `../assets/…`).

@@ -155,7 +155,7 @@
 | フィールド | パイプライン | 説明 |
 |---|---|---|
 | `translateUIStrings` | 1 | `t("…")` / `i18n.t("…")` を `strings.json` に抽出し、エントリを翻訳してロケールごとのフラット JSON を書き込みます（抽出は自動的に実行されます。カタログのみを更新するには、スタンドアロンの `extract` を使用します）。 |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` ページを翻訳。`docs[].docusaurusCatalogDir` が設定されている場合は Docusaurus シェルの JSON になります。 |
+| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` ページの翻訳。`docs[].docusaurusCatalogDir` が設定されている場合の Docusaurus シェル JSON。設定されている場合の Nextra `_meta` / 辞書。`docsOutput.vitepressThemeCatalog` が設定されている場合の VitePress テーマ。 |
 | `translateJson` | 3 | `json[]` 配下の任意のネストされた JSON（`translate-json`）。 |
 | `translateSVG` | — | `.svg` ファイルを翻訳（トップレベルの `svg` ブロックが必要です）。 |
 
@@ -240,18 +240,26 @@ SQLiteキャッシュディレクトリ（すべての`docs`ブロックで共�
 - `targetLocales`
 このブロックにのみ適用される任意のロケールのサブセット（指定しない場合はルートの `targetLocales` を使用）。有効なドキュメントロケールは、すべてのブロックの和集合となります。
 - `docusaurusCatalogDir`
-任意。このブロックの Docusaurus JSON ラベルカタログのソースディレクトリ（例：`"i18n/en"` から `docusaurus write-translations`）。ページ本文は常に `contentPaths` から取得されます。`docusaurusCatalogDir` はシェル/UI の JSON のみを提供し、MDX は対象外です。
+オプション。このブロックの Docusaurus JSON ラベルカタログのソースディレクトリ（例: `docusaurus write-translations` からの `"i18n/en"`）。ページ本文は常に `contentPaths` から取得されます。`docusaurusCatalogDir` はシェル/UI JSON のみを提供し、MDX は提供しません。
+- `nextraMetaGlob`
+オプション。`docsRoot` 配下の Nextra `_meta.ts` / `_meta.tsx` / `_meta.js` のグロブ。`docsOutput.style` が `"nextra"` で、これが省略されている場合、`docsRoot` 配下のすべての `_meta` ファイルが自動的に収集されます。
+- `nextraMetaTranslatableKeys`
+オプション。Nextra `_meta` オブジェクトで文字列値が翻訳されるプロパティ名（デフォルト: `title`、`display`、`breadcrumb`）。
+- `nextraDictionaryPath`
+オプション。英語の Nextra テーマ辞書モジュール（例: `"app/_dictionaries/en.ts"`）。`translate-docs` 中に `{dir}/{locale}.ts` に翻訳されます。
+- `nextraDictionaryOutputTemplate`
+オプション。ロケール辞書モジュールの出力テンプレート（デフォルト: 辞書ディレクトリに対する `{dir}/{locale}.ts`）。
 
 **出力レイアウト**
 
 - `outputDir`
 このブロックの翻訳済み出力のルートディレクトリ。
 - `docsOutput.style`
-`"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"`。
+`"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`。
 - `docsOutput.localeSubpath`
-`doc-system`の`{locale}/`と`{relativeToDocsRoot}`の間のパスセグメント（`style: "doc-system"`を直接使用する場合に必須。エイリアスを使用する場合はプリセット）。Starlightスタイルのロケールフォルダには`""`を使用します。
+`{locale}/` と `{relativeToDocsRoot}` の間の `doc-system` のパスセグメント（`style: "doc-system"` を直接使用する場合は必須。エイリアスを使用する場合はプリセット）。Starlight スタイルのロケールフォルダには `""` を使用します。
 - `docsOutput.docsRoot`
-Docusaurusレイアウトのソースドキュメントルート（例：`"docs"`）。省略した場合のデフォルトは`"docs"`。
+Docusaurus レイアウトのソースドキュメントルート（例: `"docs"`）。省略した場合のデフォルトは `"docs"`。
 - `docsOutput.pathTemplate`
 カスタムMarkdown出力パス。プレースホルダー：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{docsRoot}"</code>、<code>"{relativeToDocsRoot}"</code>。
 - `docsOutput.jsonPathTemplate`
@@ -261,11 +269,15 @@ Docusaurusレイアウトのソースドキュメントルート（例：`"docs"
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`の場合、ソースサブディレクトリを保持して、同じベース名のファイルが衝突しないようにします。デフォルトは`false`。
 - `docsOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`docsOutput.style = "flat"`でカスタム`pathTemplate`がない場合に自動的に有効になります）。
+翻訳後に相対リンクを書き換えます（`docsOutput.style = "flat"` でカスタム `pathTemplate` がない場合は自動的に有効になります）。
 - `docsOutput.linkRewriteDocsRoot`
-フラットリンクの書き換えプレフィックスを計算する際に使用されるリポのルート。通常、翻訳されたドキュメントが別のプロジェクトルートにある場合を除き、これは`"."`のままにしておきます。
+フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルートにある場合を除き、通常はこれを `"."` のままにしておきます。
 - `docsOutput.rewriteVitepressLinks`
-`true`の場合、翻訳後にVitePressリンク正規化ツールを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。`docsRoot`の下の英語の隣にロケールフォルダがある`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）に、ロケール相対の`../guide/…`リンクを書き換えます。VitePressツリー外のリポファイル（`LICENSE`、`examples/`）へのリンクには、英語のソースで完全なURLを使用してください — [VitePress統合 — READMEをドキュメントのホームページとして使用](/guide/vitepress-integration#readme-as-homepage)を参照してください。
+`true` の場合、翻訳後に VitePress リンク正規化ツールを実行します。`docsOutput.style` が `"vitepress"` の場合、デフォルトで有効になります。ロケールフォルダが `docsRoot` の下の英語の隣にある `doc-system` レイアウトで使用します。README スタイルの `docs/guide/…` パスをサイトルート（`/guide/…`）に、ロケール相対 `../guide/…` リンクを書き換えます。VitePress ツリー外のリポジトリファイル（`LICENSE`、`examples/`）へのリンクには、英語のソースで完全な URL を使用します — [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage) を参照してください。
+- `docsOutput.rewriteNextraLinks`
+`true` の場合、翻訳後に Nextra リンク正規化ツールを実行します。`docsOutput.style` が `"nextra"` の場合、デフォルトで有効になります。Next.js `i18n` の `content/en/…` および相対 `.mdx` パスをロケールに依存しないサイトルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) を参照してください。
+- `docsOutput.vitepressThemeCatalog`
+オプション。`translate-docs` 内の VitePress テーマ/ナビゲーション/サイドバーカタログのブートストラップ + 翻訳。フィールド: `configPath`（テーマ文字列を含む VitePress 設定）、`catalogPath`（生成された英語のネストされた JSON）、オプションの `outputPathTemplate`（デフォルト: `catalogPath` の隣の `theme.{locale}.json`）。
 
 **ポストプロセス**
 

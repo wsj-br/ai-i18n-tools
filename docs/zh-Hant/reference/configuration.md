@@ -155,7 +155,7 @@
 | 欄位                | 管道 | 說明                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | 將 `t("…")` / `i18n.t("…")` 提取到 `strings.json` 中，然後翻譯條目並寫入每個地區設定的平面 JSON（提取自動執行；使用獨立的 `extract` 僅重新整理目錄）。 |
-| `translateDocs`      | 2        | 翻譯 `.md` / `.mdx` / `.astro` 頁面；當設定了 `docs[].docusaurusCatalogDir` 時，Docusaurus 會提供 shell JSON。                                                         |
+| `translateDocs`      | 2        | 翻譯 `.md` / `.mdx` / `.astro` 頁面；設定 `docs[].docusaurusCatalogDir` 時翻譯 Docusaurus 殼層 JSON；設定後翻譯 Nextra `_meta` / 字典；設定 `docsOutput.vitepressThemeCatalog` 時翻譯 VitePress 主題。 |
 | `translateJson`      | 3        | `json[]`（`translate-json`）下的任意巢狀 JSON。                                                                                                           |
 | `translateSVG`       | —        | 翻譯 `.svg` 檔案（需要頂層的 `svg` 區塊）。                                                                                                       |
 
@@ -240,16 +240,24 @@ SQLite 快取目錄（所有 `docs` 區塊共用）。預設 `.translation-cache
 - `targetLocales`
 此區塊的可選地區設定子集 (否則使用根目錄 `targetLocales`)。有效的地區設定是跨區塊的聯集。
 - `docusaurusCatalogDir`
-可選。此區塊的 Docusaurus JSON 標籤目錄來源目錄 (例如來自 `docusaurus write-translations` 的 `"i18n/en"`)。頁面內文一律來自 `contentPaths`；`docusaurusCatalogDir` 僅提供外殼/UI 的 JSON，而非 MDX。
+選用。此區塊的 Docusaurus JSON 標籤目錄來源目錄（例如來自 `docusaurus write-translations` 的 `"i18n/en"`）。頁面內容一律來自 `contentPaths`；`docusaurusCatalogDir` 僅提供殼層/UI JSON，不提供 MDX。
+- `nextraMetaGlob`
+選用的萬用字元（glob），用於 `docsRoot` 下的 Nextra `_meta.ts` / `_meta.tsx` / `_meta.js`。當 `docsOutput.style` 為 `"nextra"` 且省略此項時，`docsRoot` 下的所有 `_meta` 檔案會自動收集。
+- `nextraMetaTranslatableKeys`
+選用的屬性名稱，其字串值會在 Nextra `_meta` 物件中翻譯（預設：`title`、`display`、`breadcrumb`）。
+- `nextraDictionaryPath`
+選用的英文 Nextra 主題字典模組（例如 `"app/_dictionaries/en.ts"`）。在 `translate-docs` 期間翻譯為 `{dir}/{locale}.ts`。
+- `nextraDictionaryOutputTemplate`
+選用的地區字典模組輸出地區字典模組輸出範本（預設：相對於字典目錄的 `{dir}/{locale}.ts`）。
 
 **輸出佈局**
 
 - `outputDir`
 此區塊翻譯輸出的根目錄。
 - `docsOutput.style`
-`"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`。
+`"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`。
 - `docsOutput.localeSubpath`
-`doc-system` 的 `{locale}/` 和 `{relativeToDocsRoot}` 之間的路徑區段（直接使用 `style: "doc-system"` 時為必填；使用別名時預設）。使用 `""` 作為 Starlight 風格的語言環境資料夾。
+`{locale}/` 與 `{relativeToDocsRoot}` 之間用於 `doc-system` 的路徑區段（直接使用 `style: "doc-system"` 時為必填；使用別名時為預設值）。使用 `""` 處理 Starlight 風格的地區資料夾。
 - `docsOutput.docsRoot`
 Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時預設為 `"docs"`。
 - `docsOutput.pathTemplate`
@@ -261,11 +269,15 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 - `docsOutput.flatPreserveRelativeDir`
 當 `docsOutput.style = "flat"` 時，保留來源子目錄，以便具有相同基本名稱的檔案不會衝突。預設 `false`。
 - `docsOutput.rewriteRelativeLinks`
-翻譯後重寫相對連結（當啟用`docsOutput.style = "flat"`且沒有自訂`pathTemplate`時自動啟用）。
+翻譯後重寫相對連結（當 `docsOutput.style = "flat"` 且無自訂 `pathTemplate` 時自動啟用）。
 - `docsOutput.linkRewriteDocsRoot`
-計算扁平連結重寫前綴時使用的儲存庫根目錄。通常將其保留為`"."`，除非您的翻譯文件位於不同的專案根目錄下。
+計算扁平連結重寫前綴時使用的儲存庫根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常保持為 `"."`。
 - `docsOutput.rewriteVitepressLinks`
-當`true`時，在翻譯後執行VitePress連結正規化器。當`docsOutput.style`為`"vitepress"`時，預設為啟用。與任何`doc-system`佈局一起使用，其中語言環境資料夾位於`docsRoot`下的英文旁邊。將README樣式的`docs/guide/…`路徑重寫為網站路由（`/guide/…`）和語言環境相關的`../guide/…`連結。對於指向VitePress樹外部儲存庫檔案的連結（`LICENSE`、`examples/`），請在英文原始碼中使用完整URL — 請參閱[VitePress整合 — README作為文件首頁](/guide/vitepress-integration#readme-as-homepage)。
+當 `true` 時，在翻譯後執行 VitePress 連結正規化工具。當 `docsOutput.style` 為 `"vitepress"` 時預設啟用。適用於任何地區資料夾與英文並列於 `docsRoot` 下的 `doc-system` 版面配置。將 README 風格的 `docs/guide/…` 路徑重寫為網站路由（`/guide/…`）及地區相對 `../guide/…` 連結。對於指向 VitePress 樹狀結構外儲存庫檔案的連結（`LICENSE`、`examples/`），請在英文來源中使用完整 URL — 請參閱 [VitePress 整合 — README 作為文件首頁](/guide/vitepress-integration#readme-as-homepage)。
+- `docsOutput.rewriteNextraLinks`
+當 `true` 時，在翻譯後執行 Nextra 連結正規化工具。當 `docsOutput.style` 為 `"nextra"` 時預設啟用。將 `content/en/…` 及相對 `.mdx` 路徑重寫為地區中立的網站路由（`/guide/…`），供 Next.js `i18n` 使用。請參閱 [Nextra 整合 — 連結慣例](/guide/nextra-integration#link-conventions)。
+- `docsOutput.vitepressThemeCatalog`
+選用。在 `translate-docs` 內進行 VitePress 主題/導覽/側邊欄目錄啟動與翻譯。欄位：`configPath`（含主題字串的 VitePress 設定）、`catalogPath`（產生的英文巢狀 JSON）、選用的 `outputPathTemplate`（預設：`catalogPath` 旁的 `theme.{locale}.json`）。
 
 **後處理**
 

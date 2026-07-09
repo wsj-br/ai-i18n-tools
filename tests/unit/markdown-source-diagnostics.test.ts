@@ -100,6 +100,22 @@ describe("collectMarkdownSourceIssues", () => {
     );
   });
 
+  it("does not treat _ inside HTML id anchors as emphasis", () => {
+    const md = '<a id="sidebar-labels-_metats"></a>\n## Sidebar labels (`_meta.ts`)';
+    const issues = collectMarkdownSourceIssues(md, { segmentStartLine: 76 });
+    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS)).toEqual(
+      []
+    );
+  });
+
+  it("still flags unpaired _ in prose after HTML id anchors are neutralized", () => {
+    const md = '<a id="ok"></a> broken _emphasis';
+    const issues = collectMarkdownSourceIssues(md);
+    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS).length).toBe(
+      1
+    );
+  });
+
   it("skips closed {{placeholder}} spans before scanning for strong-outside-link", () => {
     const issues = collectMarkdownSourceIssues("{{TOKEN}} **[link](https://x.test)**", {
       segmentStartLine: 1,

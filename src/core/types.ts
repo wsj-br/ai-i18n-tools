@@ -484,12 +484,20 @@ const docsOutputStyleSchema = z.enum([
   "docusaurus",
   "astro-starlight",
   "vitepress",
+  "nextra",
 ]);
 
 const docsOutputSchema = z
   .object({
     /** Built-in layout when `pathTemplate` is unset. */
     style: docsOutputStyleSchema.default("nested"),
+    /**
+     * Internal/derived: the original alias (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`,
+     * `"nextra"`) before config loading rewrites `style` to canonical `"doc-system"`. Not meant to
+     * be set by hand — read this (in addition to `style`) when a feature needs to know which
+     * framework preset was requested, since `style` itself no longer carries that after normalization.
+     */
+    stylePreset: docsOutputStyleSchema.optional(),
     /**
      * Directory prefix (posix, relative to cwd) for doc sources under `doc-system` layout.
      * Only paths under this prefix use `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`.
@@ -498,7 +506,7 @@ const docsOutputSchema = z
     /**
      * Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` style.
      * Required when `style` is `doc-system` (may be `""`). Set automatically for `docusaurus`,
-     * `astro-starlight`, and `vitepress` aliases at config load.
+     * `astro-starlight`, `vitepress`, and `nextra` aliases at config load.
      */
     localeSubpath: z.string().optional(),
     /** When set, overrides `style` for markdown output paths. */
@@ -528,6 +536,22 @@ const docsOutputSchema = z
      * Defaults to enabled when `docsOutput.style` is `"vitepress"`.
      */
     rewriteVitepressLinks: z.boolean().optional(),
+    /**
+     * When true, normalize markdown links for Nextra doc-system output after translation.
+     * Defaults to enabled when `docsOutput.style` is `"nextra"`.
+     */
+    rewriteNextraLinks: z.boolean().optional(),
+    /**
+     * VitePress theme/nav/sidebar catalog bootstrap + translation (inside translate-docs).
+     */
+    vitepressThemeCatalog: z
+      .object({
+        configPath: z.string().min(1),
+        catalogPath: z.string().min(1),
+        outputPathTemplate: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
     /**
      * Optional post-processing run on translated markdown body after reassembly/link rewrite.
      */
@@ -638,6 +662,14 @@ const docBlockSchema = z
     outputDir: z.string().min(1).default("./i18n"),
     /** Docusaurus `write-translations` catalog directory (e.g. docs-site/i18n/en). When set, catalog JSON is translated during `translate-docs` if `features.translateDocs` is enabled. */
     docusaurusCatalogDir: z.string().optional(),
+    /** Glob(s) for Nextra _meta files under docsRoot (default: recursive _meta.ts, _meta.tsx, _meta.js under docsOutput.docsRoot). */
+    nextraMetaGlob: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
+    /** Property names whose string values are translatable in Nextra `_meta` objects. */
+    nextraMetaTranslatableKeys: z.array(z.string().min(1)).optional(),
+    /** English Nextra theme dictionary module, e.g. `app/_dictionaries/en.ts`. */
+    nextraDictionaryPath: z.string().optional(),
+    /** Output template for locale dictionary modules. Default: `{dir}/{locale}.ts`. */
+    nextraDictionaryOutputTemplate: z.string().min(1).optional(),
     docsOutput: docsOutputSchema.default({
       style: "nested",
       flatPreserveRelativeDir: false,

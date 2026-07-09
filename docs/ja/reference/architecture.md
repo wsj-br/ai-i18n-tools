@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | UIソースのスキャン → `strings.json`の更新 → フラットなロケールJSON（`de.json`など）の入力 |
 | 2 | `translate-svg` *(オプション)* | `config.svg`配下のSVGテキストを翻訳 |
-| 3 | `translate-docs` | Markdown、MDX、`.astro`ページ、Docusaurus JSONカタログを翻訳 |
+| 3 | `translate-docs` | Markdown、MDX、`.astro` ページを翻訳。Docusaurus カタログ JSON。Nextra `_meta` / 辞書 `.ts`。VitePress テーマカタログ |
 | 4 | `translate-json` *(オプション)* | `json[]`配下のネストされたJSONリーフを翻訳 |
 
 すべてのパイプラインは、**セグメントの抽出 → 構文の保護 → バッチ処理 → キャッシュ検索またはLLM呼び出し → 出力の書き込み**という同じコアループに従います。設定、プレースホルダー、キャッシュ、用語集、`LlmClient`などの中央の共有サービスについては、[共有インフラストラクチャ](#shared-infrastructure)で説明しています。
@@ -266,7 +266,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 9. `augmentConfigWithUiLanguagesMaster` - バンドルされたマスターカタログからマニフェスト表示名を添付します。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 該当する場合、マスターカタログに対してロケールコードを検証します。
 
-`init` は `initConfigTemplates` からスターター構成を書き込みます: `ui-markdown` (UI + オプションのアプリマークダウン)、`ui-docusaurus`、`ui-starlight`、`ui-vitepress` (VitePress ドキュメント + `json[]` を介したテーマ JSON)、`ui-astro-website` (プレーンな Astro UI; `.astro` ページ翻訳用に `docs[]` を追加)、`ui-json-bundles` (JSON `json[]` のみ)。[クイックスタート — 初期化](/guide/quick-start#step-1-initialise) を参照してください。
+`init` は `initConfigTemplates` からスターター構成を書き込みます: `ui-markdown` (UI + オプションのアプリマークダウン)、`ui-docusaurus`、`ui-starlight`、`ui-vitepress` (VitePress ドキュメント + `vitepressThemeCatalog`)、`ui-nextra` (Nextra ドキュメント + `nextraDictionaryPath`)、`ui-astro-website` (プレーンな Astro UI。`docs[]` を追加して `.astro` ページを翻訳)、`ui-json-bundles` (JSON `json[]` のみ)。[クイックスタート — 初期化](/guide/quick-start#step-1-initialise) を参照してください。
 
 <a id="logger"></a>
 ### ロガー

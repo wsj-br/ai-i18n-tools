@@ -20,7 +20,8 @@
         { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ],
       "maxTokens": 8192,
-      "temperature": 0.2
+      "temperature": 0.2,
+      "requestTimeoutMs": 60000
     }
   },
   "features": {

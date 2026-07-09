@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Removed**: `dev/package-context.md` — maintainer reference consolidated into `AGENT.md` (deep-reference pointers) and existing `docs/reference/` pages.
+- **Changed**: `AGENT.md`, `README.md`, `docs/ai-i18n-tools-context.md` — documentation pointers now reference `AGENT.md`, `docs/reference/`, and `dev/DEVEL.md` instead of `dev/package-context.md`.
 - **Added**: config — optional `providers.<name>.uiModels` (UI-only fallback chain for `translate-ui`, plural generation, and `proofread-ui`) and `localeModels` (per-locale overrides for all translation pipelines). Resolution order: UI → `localeModels` → `uiModels` → `translationModels`; docs/JSON/SVG → `localeModels` → `translationModels`. `check-models` validates the union of all configured model ids.
 - **Changed**: cli — translation runs print configured `uiModels` and per-locale `localeModels` tiers after the resolved fallback chain in the startup model summary.
 - **Changed**: cli — `bench-models` accepts `--model <ids>` (comma-separated) to benchmark specific models instead of the configured list. When `--model` is passed, `translationModels` no longer needs to be set in config.

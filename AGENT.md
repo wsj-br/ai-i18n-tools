@@ -2,7 +2,7 @@
 
 Canonical maintainer and AI agent guide for working inside this repository. Use this file with any agent or automation tool (Cursor, Claude Code, Copilot, custom scripts, etc.) — not a Cursor-specific rules file.
 
-For integrating the published npm package into another project, read `docs/ai-i18n-tools-context.md` instead. For deep internals, see `dev/package-context.md`.
+For integrating the published npm package into another project, read `docs/ai-i18n-tools-context.md` instead. For pipeline internals, config/CLI reference, and local dev, see [Deep reference](#deep-reference) below.
 
 ---
 
@@ -40,7 +40,8 @@ Read `docs/ai-i18n-tools-context.md` before modifying source, tests, examples, o
 | `README.md` | Canonical landing copy; synced into `docs/index.md` via `scripts/sync-readme-to-docs.mjs` |
 | `docs/` | VitePress documentation site (English source + `docs/<locale>/` translations; GitHub Pages on release) |
 | `docs/ai-i18n-tools-context.md` | Consumer integration guide (shipped on npm under `docs/`) — required reading before code changes |
-| `dev/package-context.md` | Maintainer internals (clone-only; not on npm) |
+| `docs/reference/` | Canonical reference (architecture, CLI, config, programmatic API, env vars) |
+| `dev/DEVEL.md` | Local dev setup, examples, testing, publishing |
 | `translated-docs/` | Flat README translations from the first `docs[]` block in root config |
 
 When changing English documentation, edit source under `docs/` (or `README.md` for the homepage) and run `pnpm i18n:sync` to regenerate locale trees and theme JSON — do not manually translate pages.
@@ -67,6 +68,21 @@ When editing English documentation:
 
 ---
 
+## Deep reference
+
+| Topic | Path |
+|------|------|
+| Architecture, data flows, extension points | `docs/reference/architecture.md` |
+| CLI commands and flags | `docs/reference/cli-commands.md` |
+| Config schema | `docs/reference/configuration.md` |
+| Programmatic API | `docs/reference/programmatic-api.md` |
+| Environment variables | `docs/reference/environment-variables.md` |
+| Local dev, examples, publishing | `dev/DEVEL.md` |
+
+`sync` order (unless skipped): when `translateUIStrings` → `extract` then `translate-ui` (`--no-ui`); when `translateSVG` + `svg` → `translate-svg` (`--no-svg`); when `translateDocs` or any `docs[].docusaurusCatalogDir` → `translate-docs` (`--no-docs`); when `translateJson` + `json[]` → `translate-json` (`--no-json`).
+
+---
+
 ## Build and test commands
 
 ```bash
@@ -81,6 +97,7 @@ pnpm typecheck        # tsc --noEmit (src + tests tsconfigs)
 pnpm i18n:self        # regenerate the tool's own UI bundles (src/i18n/locales)
 pnpm i18n:sync        # sync README → docs/index.md, then translate docs + theme JSON
 pnpm docs:build       # build VitePress site (runs sync-readme + escape-vue-braces first)
+pnpm update-tocs # refresh doctoc TOCs in README.md and dev/*.md
 pnpm clean && pnpm build   # full rebuild from scratch
 ```
 
@@ -107,7 +124,7 @@ src/
 └── utils/            Logger, hash, .translate-ignore parser, display-width table, .env loader
 tests/                Vitest test files (mirror src/ structure)
 data/                 Bundled JSON (ui-languages-complete.json; published to npm)
-dev/                  Maintainer internals: CHANGELOG.md, DEVEL.md, package-context.md
+dev/                  Maintainer internals: CHANGELOG.md, DEVEL.md
 docs/                 VitePress site (English + docs/<locale>/; ai-i18n-tools-context.md shipped on npm)
 translated-docs/      Pipeline output — do not hand-edit
 examples/             console-app, nextjs-app, astro-website, astro-docs, vitepress-docs, multi-provider, test-markdown

@@ -155,7 +155,7 @@
 | 字段 | 管道 | 描述 |
 |---|---|---|
 | `translateUIStrings` | 1 | 将 `t("…")` / `i18n.t("…")` 提取到 `strings.json` 中，然后翻译条目并写入每个区域设置的平面 JSON（提取自动运行；仅使用独立的 `extract` 刷新目录）。 |
-| `translateDocs`      | 2        | 翻译 `.md` / `.mdx` / `.astro` 页面；当设置了 `docs[].docusaurusCatalogDir` 时，Docusaurus 会生成 shell JSON。                                                         |
+| `translateDocs`      | 2        | 翻译 `.md` / `.mdx` / `.astro` 页面；设置了 `docs[].docusaurusCatalogDir` 时的 Docusaurus 外壳 JSON；配置时的 Nextra `_meta` / 字典；设置了 `docsOutput.vitepressThemeCatalog` 时的 VitePress 主题。 |
 | `translateJson`      | 3        | `json[]`（`translate-json`）下的任意嵌套 JSON。                                                                                                           |
 | `translateSVG`       | —        | 翻译 `.svg` 文件（需要顶层的 `svg` 块）。                                                                                                       |
 
@@ -240,16 +240,24 @@ SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`�
 - `targetLocales`
 此块的可选区域设置子集（否则为根 `targetLocales`）。有效的文档区域设置是跨块的并集。
 - `docusaurusCatalogDir`
-可选。此块的 Docusaurus JSON 标签目录的源目录（例如，来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`docusaurusCatalogDir` 仅提供 shell/UI JSON，不提供 MDX。
+可选。此块的 Docusaurus JSON 标签目录的源目录（例如来自 `docusaurus write-translations` 的 `"i18n/en"`）。页面正文始终来自 `contentPaths`；`docusaurusCatalogDir` 仅提供外壳/UI JSON，不提供 MDX。
+- `nextraMetaGlob`
+`docsRoot` 下 Nextra `_meta.ts` / `_meta.tsx` / `_meta.js` 的可选 glob。当 `docsOutput.style` 为 `"nextra"` 且省略此项时，将自动收集 `docsRoot` 下的所有 `_meta` 文件。
+- `nextraMetaTranslatableKeys`
+可选属性名称，其字符串值将在 Nextra `_meta` 对象中被翻译（默认：`title`、`display`、`breadcrumb`）。
+- `nextraDictionaryPath`
+可选的英文 Nextra 主题字典模块（例如 `"app/_dictionaries/en.ts"`）。在 `translate-docs` 期间翻译为 `{dir}/{locale}.ts`。
+- `nextraDictionaryOutputTemplate`
+区域设置字典模块的可选输出模板（默认：相对于字典目录的 `{dir}/{locale}.ts`）。
 
 **输出布局**
 
 - `outputDir`
-此块的翻译输出根目录。
+此块翻译输出的根目录。
 - `docsOutput.style`
-`"nested"`（默认）、`"flat"`、`"doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`。
+`"nested"`（默认）、`"flat"`、`"doc-system"`，或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`。
 - `docsOutput.localeSubpath`
-`{locale}/` 和 `{relativeToDocsRoot}` 之间用于 `doc-system` 的路径段（直接使用 `style: "doc-system"` 时必需；使用别名时预设）。使用 `""` 表示 Starlight 风格的语言环境文件夹。
+`doc-system` 的 `{locale}/` 和 `{relativeToDocsRoot}` 之间的路径段（直接使用 `style: "doc-system"` 时必需；使用别名时预设）。对于 Starlight 风格的区域设置文件夹，请使用 `""`。
 - `docsOutput.docsRoot`
 Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为 `"docs"`。
 - `docsOutput.pathTemplate`
@@ -261,11 +269,15 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 - `docsOutput.flatPreserveRelativeDir`
 当 `docsOutput.style = "flat"` 时，保留源子目录，以便具有相同基本名称的文件不会冲突。默认 `false`。
 - `docsOutput.rewriteRelativeLinks`
-翻译后重写相对链接（当`docsOutput.style = "flat"`且没有自定义`pathTemplate`时自动启用）。
+翻译后重写相对链接（当 `docsOutput.style = "flat"` 且没有自定义 `pathTemplate` 时自动启用）。
 - `docsOutput.linkRewriteDocsRoot`
-计算平面链接重写前缀时使用的仓库根目录。通常将其保留为`"."`，除非您的翻译文档位于不同的项目根目录下。
+计算扁平链接重写前缀时使用的仓库根目录。通常保留为 `"."`，除非你的翻译文档位于不同的项目根目录下。
 - `docsOutput.rewriteVitepressLinks`
-当`true`时，在翻译后运行VitePress链接规范化器。当`docsOutput.style`为`"vitepress"`时，默认启用。与任何`doc-system`布局一起使用，其中语言环境文件夹与英文文件夹并排位于`docsRoot`下。将README样式的`docs/guide/…`路径重写为站点路由（`/guide/…`）和语言环境相对的`../guide/…`链接。对于指向VitePress树外部仓库文件的链接（`LICENSE`，`examples/`），请在英文源中使用完整URL——请参阅[VitePress集成——README作为文档主页](/guide/vitepress-integration#readme-as-homepage)。
+当为 `true` 时，在翻译后运行 VitePress 链接规范化器。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何区域设置文件夹与英文并列位于 `docsRoot` 下的 `doc-system` 布局。将 README 风格的 `docs/guide/…` 路径重写为站点路由 (`/guide/…`) 和区域设置相对的 `../guide/…` 链接。对于指向 VitePress 树之外的仓库文件的链接 (`LICENSE`, `examples/`)，请在英文源中使用完整 URL —— 参见 [VitePress 集成 —— README 作为文档主页](/guide/vitepress-integration#readme-as-homepage)。
+- `docsOutput.rewriteNextraLinks`
+当为 `true` 时，在翻译后运行 Nextra 链接规范化器。当 `docsOutput.style` 为 `"nextra"` 时默认启用。为 Next.js `i18n` 将 `content/en/…` 和相对 `.mdx` 路径重写为区域设置中立的站点路由 (`/guide/…`)。参见 [Nextra 集成 —— 链接约定](/guide/nextra-integration#link-conventions)。
+- `docsOutput.vitepressThemeCatalog`
+可选。`translate-docs` 内的 VitePress 主题/导航/侧边栏目录引导程序 + 翻译。字段：`configPath`（包含主题字符串的 VitePress 配置）、`catalogPath`（生成的英文嵌套 JSON）、可选的 `outputPathTemplate`（默认：`catalogPath` 旁边的 `theme.{locale}.json`）。
 
 **后处理**
 

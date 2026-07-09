@@ -15,7 +15,7 @@ A base de código está organizada em quatro camadas. Use esta seção para o mo
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | Escanear fontes da UI → atualizar `strings.json` → preencher JSON de localidade plana (`de.json`, …) |
 | 2 | `translate-svg` *(opcional)* | Traduzir texto SVG em `config.svg` |
-| 3 | `translate-docs` | Traduzir markdown, MDX, páginas `.astro` e catálogos JSON do Docusaurus |
+| 3 | `translate-docs` | Traduzir páginas markdown, MDX, `.astro`; JSON de catálogo Docusaurus; `_meta` / dicionário `.ts` Nextra; catálogo de temas VitePress |
 | 4 | `translate-json` *(opcional)* | Traduzir folhas JSON aninhadas em `json[]` |
 
 Todo pipeline segue o mesmo loop principal: **extrair segmentos → proteger sintaxe → agrupar → pesquisa de cache ou chamada LLM → gravar saída**. Serviços compartilhados no meio — configuração, placeholders, cache, glossário, `LlmClient` — são descritos em [Infraestrutura compartilhada](#shared-infrastructure).
@@ -266,7 +266,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 9. `augmentConfigWithUiLanguagesMaster` - anexa nomes de exibição de manifesto do catálogo mestre empacotado.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - valida códigos de localidade em relação ao catálogo mestre quando aplicável.
 
-`init` escreve configurações iniciais de `initConfigTemplates`: `ui-markdown` (UI + markdown de aplicativo opcional), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentos VitePress + JSON de tema via `json[]`), `ui-astro-website` (UI Astro simples; adicione `docs[]` para tradução de página `.astro`), `ui-json-bundles` (somente JSON `json[]`). Veja [Início rápido — Inicializar](/guide/quick-start#step-1-initialise).
+`init` escreve configurações iniciais de `initConfigTemplates`: `ui-markdown` (UI + markdown de aplicativo opcional), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentos VitePress + `vitepressThemeCatalog`), `ui-nextra` (documentos Nextra + `nextraDictionaryPath`), `ui-astro-website` (UI Astro simples; adicione `docs[]` para tradução de página `.astro`), `ui-json-bundles` (somente `json[]` JSON). Consulte [Início rápido — Inicializar](/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Registrador de eventos (Logger)

@@ -1,5 +1,7 @@
 import path from "path";
+import type { NextraLinkNormalizeContext } from "../processors/nextra-link-normalize.js";
 import type { VitepressLinkNormalizeContext } from "../processors/vitepress-link-normalize.js";
+import { matchesDocsOutputStylePreset } from "./docs-output-normalize.js";
 import { localePathPlaceholders } from "./locale-utils.js";
 import type { I18nDocTranslateConfig } from "./types.js";
 import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
@@ -108,7 +110,8 @@ function resolveByStyle(
     case "doc-system":
     case "docusaurus":
     case "astro-starlight":
-    case "vitepress": {
+    case "vitepress":
+    case "nextra": {
       const under =
         posixRel === docsRootPosix ||
         posixRel.startsWith(`${docsRootPosix}/`) ||
@@ -120,7 +123,7 @@ function resolveByStyle(
       let subpath: string;
       if (mo.style === "docusaurus") {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
-      } else if (mo.style === "astro-starlight" || mo.style === "vitepress") {
+      } else if (mo.style === "astro-starlight" || mo.style === "vitepress" || mo.style === "nextra") {
         subpath = mo.localeSubpath?.trim() ?? "";
       } else {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
@@ -202,7 +205,19 @@ export function shouldRewriteVitepressLinks(config: I18nDocTranslateConfig): boo
   if (mo.rewriteVitepressLinks === true) {
     return true;
   }
-  return mo.style === "vitepress";
+  return matchesDocsOutputStylePreset(mo, "vitepress");
+}
+
+/** Whether to normalize markdown links for Nextra doc-system output. */
+export function shouldRewriteNextraLinks(config: I18nDocTranslateConfig): boolean {
+  const mo = config.doc.docsOutput;
+  if (mo.rewriteNextraLinks === false) {
+    return false;
+  }
+  if (mo.rewriteNextraLinks === true) {
+    return true;
+  }
+  return matchesDocsOutputStylePreset(mo, "nextra");
 }
 
 /** Build context for VitePress link normalization from a doc translate config. */
@@ -214,5 +229,17 @@ export function vitepressLinkNormalizeContext(
   return {
     relPath,
     docsRoot: mo.docsRoot?.trim() || "docs",
+  };
+}
+
+/** Build context for Nextra link normalization from a doc translate config. */
+export function nextraLinkNormalizeContext(
+  config: I18nDocTranslateConfig,
+  relPath: string
+): NextraLinkNormalizeContext {
+  const mo = config.doc.docsOutput;
+  return {
+    relPath,
+    docsRoot: mo.docsRoot?.trim() || "content/en",
   };
 }

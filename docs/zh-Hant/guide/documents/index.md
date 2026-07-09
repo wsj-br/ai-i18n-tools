@@ -5,7 +5,9 @@
 
 在 Docusaurus 網站上，也將 `docusaurusCatalogDir` 設定為您的 `write-translations` 目錄資料夾（例如 `docs-site/i18n/en`）。然後 `translate-docs` 也會包含 shell JSON — 導覽列、頁腳和主題字串。
 
-在 [VitePress](/guide/vitepress-integration) 網站上，頁面主體使用相同的 `docs[]` 管道。導覽、側邊欄和頁腳標籤位於單獨的 JSON 目錄中 — 使用 [JSON](/guide/json) 管道和 `translate-json` 翻譯它們。
+在 [VitePress](/guide/vitepress-integration) 網站上，頁面主體使用相同的 `docs[]` 管線。導覽列、側邊欄與頁尾標籤位於 `docsOutput.vitepressThemeCatalog` — `translate-docs` 會初始化英文目錄並將其與頁面一同翻譯，無需單獨的管線。
+
+在 [Nextra](/guide/nextra-integration) 網站上，頁面主體使用與 `docsOutput.style: "nextra"` 相同的 `docs[]` 管線。`_meta.ts` 側邊欄標籤由 `translate-docs` 自動收集並翻譯；主題字典字串透過同一管線中的 `docs[].nextraDictionaryPath` 進行翻譯。
 
 對於嵌入在 Markdown 中的 PNG 和其他點陣圖影像，請參閱[影像與螢幕截圖](/guide/images-and-screenshots/)。`translate-docs` 僅翻譯替代文字；它不複製點陣圖檔案。
 
@@ -13,7 +15,7 @@
 
 當啟用 `features.translateSVG` 時，SVG 檔案透過 [`translate-svg`](/reference/cli-commands) 翻譯 — 而不是透過 `docs[]` / `contentPaths`。
 
-任意巢狀的 UI JSON 捆綁包（非 Docusaurus 目錄）屬於 [JSON](/guide/json) 管道，而不屬於 `docs[]`。
+與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/guide/json) 管線，而非 `docs[]`。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
@@ -26,7 +28,8 @@
 | 您的設定 | 從這裡開始 |
 | --- | --- |
 | Docusaurus 網站 | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [步驟 1](#step-1-initialise-for-documentation) |
-| VitePress 網站 | `init -t ui-vitepress` + `json[]` 用於主題 — [VitePress 整合](/guide/vitepress-integration) |
+| VitePress 網站 | 用於主題的 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 整合](/guide/vitepress-integration) |
+| Nextra 網站 | 用於字典的 `init -t ui-nextra` + `nextraDictionaryPath`（側邊欄 `_meta.ts` 為自動）— [Nextra 整合](/guide/nextra-integration) |
 | Astro Starlight | `init -t ui-starlight` — [步驟 1](#step-1-initialise-for-documentation) |
 | 平面文件（README、變更日誌等） | `docsOutput.style = "flat"` — [輸出佈局](/guide/documents/output-layouts)，可選的[語言切換器](/guide/documents/language-switcher) |
 | 翻譯檔案的存放位置 | [輸出佈局](/guide/documents/output-layouts) |
@@ -54,7 +57,7 @@ npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-啟用 `features.translateJson` 並為 VitePress 主題字串新增一個 `json[]` 條目 — 請參閱[VitePress 整合](/guide/vitepress-integration)。
+為導覽列/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` — 請參閱 [VitePress 整合](/guide/vitepress-integration)。
 
 適用於純 Astro 網站 UI（無 Starlight）：
 
@@ -70,10 +73,10 @@ npx ai-i18n-tools init -t ui-astro-website
 - `targetLocales` - BCP-47 地區設定代碼陣列（例如 `["de", "fr", "es"]`）。
 - `cacheDir` - 所有管道的共用 SQLite 快取目錄（以及 `--write-logs` 的預設記錄目錄）。
 - `docs` - 文件區塊陣列。每個區塊都有選擇性的 `description`、`contentPaths`（字串或陣列；檔案、目錄或 glob）、`outputDir`、選擇性的 `docusaurusCatalogDir`、`docsOutput`、選擇性的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
-- `docs[].description` - 供維護者使用的可選簡短備註。設定後，它會出現在 `translate-docs` 標題和 `status` 區段標題中。
-- `docs[].contentPaths` - Markdown/MDX/`.astro` 來源（以及 Docusaurus shell JSON 的可選 `docusaurusCatalogDir`）。
+- `docs[].description` - 維護者的可選簡短註記。設定後，它會出現在 `translate-docs` 標題與 `status` 區段標頭中。
+- `docs[].contentPaths` - markdown/MDX/`.astro` 原始碼（以及 Docusaurus 殼層 JSON 的可選 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 該區塊的翻譯輸出根目錄。
-- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`（請參閱[輸出佈局](/guide/documents/output-layouts))。
+- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（請參閱 [輸出佈局](/guide/documents/output-layouts)）。
 
 **主要與補充：** 專注於 `contentPaths` 以進行本地化頁面。當您也需要來自 `write-translations` 的 Docusaurus shell JSON 時，請設定 `docusaurusCatalogDir`。如果您只翻譯頁面，請省略 `docusaurusCatalogDir`。
 

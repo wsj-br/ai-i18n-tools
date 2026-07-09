@@ -47,6 +47,20 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 Starlight UI 재정의는 필요한 경우 별도의 `docs[]` 블록에서 `src/content/i18n/en.json`와 `jsonPathTemplate`를 사용할 수 있습니다. [문서 — 문서화를 위한 초기화](/guide/documents/#step-1-initialise-for-documentation)를 참조하세요.
 
+<a id="framework-shell-translation"></a>
+### 프레임워크 셸 번역
+
+Starlight는 많은 로케일에 대해 자체 내장 UI 문자열(탐색 레이블, 검색 자리 표시자, 목차 등)을 제공합니다. Docusaurus, VitePress 또는 Nextra와 달리 구성할 별도의 셸/테마 파이프라인이 없습니다.
+
+| 프레임워크 | 셸/테마 문자열 | 파이프라인 |
+|-----------|----------------------|----------|
+| Astro Starlight | 내장 UI 문자열(다양한 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
+| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 레이블 + 테마 사전 `.ts` | 문서 — [Nextra 통합](/guide/nextra-integration) 참조 |
+
+다른 프레임워크 패턴은 [Docusaurus 통합](/guide/docusaurus-integration) 및 [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
+
 <a id="example-project"></a>
 ### 예제 프로젝트
 

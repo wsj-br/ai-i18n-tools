@@ -9,9 +9,10 @@
 
 **Aliases** (mesmo mecanismo de layout, `localeSubpath` predefinido):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` assume como padrão `docusaurus-plugin-content-docs/current` (layout do plugin i18n do Docusaurus).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` assume como padrão `""` (páginas traduzidas diretamente em `{outputDir}/{locale}/`, correspondendo a [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`).
-- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume como padrão `false`). Consulte [Integração VitePress](/guide/vitepress-integration).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` assume o padrão `docusaurus-plugin-content-docs/current` (layout do plugin i18n do Docusaurus).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` assume o padrão `""` (páginas traduzidas diretamente em `{outputDir}/{locale}/`, correspondendo ao [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`).
+- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume o padrão `false`). Consulte [integração com VitePress](/guide/vitepress-integration).
+- `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês reside em uma pasta de localidade (por exemplo, `content/en/`). Consulte [integração com Nextra](/guide/nextra-integration).
 
 Predefinição Docusaurus (páginas principais de documentação):
 
@@ -31,6 +32,12 @@ Predefinição VitePress (inglês na raiz do conteúdo, pastas de localidade ao 
 docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 ```
 
+Predefinição Nextra (inglês em uma pasta de localidade, pastas de localidade irmãs para destinos):
+
+```text
+content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
+```
+
 Rótulos JSON opcionais — strings do shell Docusaurus de `docusaurusCatalogDir` (não o corpo do MDX):
 
 ```text
@@ -39,7 +46,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 O Starlight fornece strings de interface em vários idiomas; substituições personalizadas opcionais usam `src/content/i18n/en.json` com `jsonPathTemplate: "{outputDir}/{locale}.json"` em um bloco `docs[]` separado quando necessário.
 
-As strings de navegação/barra lateral/rodapé do VitePress não estão em markdown — crie `docs/.vitepress/i18n/theme.en.json` e traduza com JSON (`json[]`, `features.translateJson`). Consulte [Integração VitePress](/guide/vitepress-integration).
+As strings de navegação/barra lateral/rodapé do VitePress não estão em markdown — configure `docsOutput.vitepressThemeCatalog` e traduza dentro de **`translate-docs`**. Consulte [integração com VitePress](/guide/vitepress-integration).
+
+O dicionário de tema Nextra (`.ts`) e os rótulos da barra lateral `_meta.ts` não estão em markdown — use `docs[].nextraDictionaryPath` e coleta automática de `_meta` quando `style: "nextra"`, tudo dentro de **`translate-docs`**. Consulte [integração com Nextra](/guide/nextra-integration).
 
 `docsOutput.style = "flat"` — coloca os arquivos traduzidos ao lado do código-fonte com sufixo de localidade, ou em um subdiretório. Links relativos entre páginas são reescritos automaticamente quando `docsOutput.style = "flat"` (a menos que `rewriteRelativeLinks: false` ou um `pathTemplate` personalizado seja definido).
 

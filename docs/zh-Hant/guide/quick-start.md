@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # 快速入門
 
-預設的 `init` 範本 (`ui-markdown`) 僅啟用 **UI** 擷取和翻譯。`ui-docusaurus`、`ui-starlight` 和 `ui-vitepress` 範本啟用 **文件** 翻譯 (`translate-docs`)；`ui-vitepress` 也為 VitePress 主題 JSON 建立 JSON 骨架。`ui-astro-website` 範本為純 Astro 應用程式 (包括 `.astro` 檔案) 建立 **UI** 擷取骨架；當您也想為 `translate-docs` 頁面 HTML 進行 `.astro` 時，請新增一個 `docs[]` 區塊 (請參閱 [Astro 網站頁面 (解析與替換)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace))。參考 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用 **兩種** 管線。當您想要一個命令來根據您的設定執行擷取、UI 翻譯、可選的 SVG 檔案翻譯和文件翻譯時，請使用 `sync`。
+預設的 `init` 模板（`ui-markdown`）僅啟用 **UI** 抽取與翻譯。`ui-docusaurus`、`ui-starlight`、`ui-vitepress` 與 `ui-nextra` 模板啟用 **文件** 翻譯（`translate-docs`）；`ui-vitepress` 還會為 VitePress 主題字串搭建 `docsOutput.vitepressThemeCatalog`，而 `ui-nextra` 會為 Nextra 主題字典搭建 `docs[].nextraDictionaryPath`（側邊欄 `_meta.ts` 會自動收集）。`ui-astro-website` 模板為純 Astro 應用程式（包含 `.astro` 檔案）搭建 **UI** 抽取；當你也想為 `.astro` 頁面 HTML 進行 `translate-docs` 時，請加入 `docs[]` 區塊（參見 [Astro 網站頁面（parse-and-replace）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。參考專案 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 同時使用了 **兩條** 管線。當你想要以單一指令根據設定執行抽取、UI 翻譯、可選的 SVG 檔案翻譯以及文件翻譯時，請使用 `sync`。
 
 <a id="runnable-examples"></a>
 ### 可執行的範例
 
-七個可執行的專案和固定裝置位於 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。請參閱 [範例](/examples) 目錄（主控台應用程式、Next.js + Docusaurus、Astro 網站、Astro Starlight 文件、VitePress 文件、多供應商比較、Markdown 壓力測試）。
+九個可執行的專案與測試資料位於 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)。請參閱 [範例](/examples) 目錄（主控台應用程式、Next.js + Docusaurus、Astro 網站、Astro Starlight 文件、VitePress 文件、Nextra 文件、多供應商比較、Markdown 壓力測試）。
 
 **獨立執行一個範例**（無需複製整個單一儲存庫）：
 
@@ -30,6 +30,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
+# Nextra docs: npx ai-i18n-tools init -t ui-nextra
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

@@ -80,15 +80,18 @@ Docusaurusのナビバー、フッター、検索プレースホルダー、他�
 
 DocusaurusシェルJSONを`json[]`に配置しないでください。代わりに、ドキュメントで`docs[].docusaurusCatalogDir`を使用します。
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus vs VitePress シェルJSON
+<a id="framework-shell-translation"></a>
+## フレームワークシェルの翻訳
 
 | フレームワーク | シェル/テーマ文字列 | パイプライン |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | カスタムのネストされたJSONカタログ | JSON — `json[]` + `translate-json`（または`sync`が有効な場合`translateJson`） |
+| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の場合に自動 |
+| Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
 
-VitePressのパターンについては、[VitePress統合](/guide/vitepress-integration)を参照してください。
+**不要**将框架 shell/主题字符串放在 `json[]` 中 —— 该管道用于无关的应用程序本地化包。请参阅 [VitePress 集成](/guide/vitepress-integration) 和 [Nextra 集成](/guide/nextra-integration) 以了解 VitePress/Nextra 模式。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

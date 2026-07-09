@@ -6,10 +6,10 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 <a id="translation-modes"></a>
 ## 翻译模式
 
-- **UI 字符串** — 从 JS/TS 源代码中提取 `t("…")` 调用（和类似标记），并为 i18next 或静态查找写入扁平的每个区域设置 JSON 文件。命令：`extract`、`translate-ui`。指南：[UI 字符串](/guide/ui-strings/)。
-- **文档** — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 VitePress、Starlight、Docusaurus、Astro 和其他静态文档站点。命令：`translate-docs`。指南：[文档](/guide/documents/)。
-- **JSON** — 翻译顶级 `json[]` 中定义的嵌套 JSON 区域设置包（主题标签、i18n 覆盖、不在源代码中的应用程序文本）。命令：`translate-json`。指南：[JSON](/guide/json)。
-- **SVG** — 翻译 SVG 插图（`<text>`、`<title>`、`<desc>`）中可见的文本，并为每个区域设置写入一个输出文件。与文档翻译分开 — `translate-docs` 不修改 SVG 资产。命令：`translate-svg`。指南：[SVG 翻译](/guide/svg-translation/)。
+- **UI 字符串** — 从 JS/TS 源码中提取 `t("…")` 调用（及类似标记），为 i18next 或静态查找写入按语言环境分组的扁平 JSON 文件。命令：`extract`、`translate-ui`。指南：[UI 字符串](/guide/ui-strings/)。
+- **文档** — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。支持 VitePress、Starlight、Docusaurus、Nextra、Astro 及其他静态文档站点。命令：`translate-docs`。指南：[文档](/guide/documents/)。
+- **JSON** — 翻译在顶层 `json[]` 中定义的嵌套 JSON 语言环境包（主题标签、i18n 覆盖、源码中未包含的应用文案）。命令：`translate-json`。指南：[JSON](/guide/json)。
+- **SVG** — 翻译 SVG 插图中的可见文本（`<text>`、`<title>`、`<desc>`），并为每个语言环境写入一个输出文件。与文档翻译相互独立 — `translate-docs` 不会修改 SVG 资源。命令：`translate-svg`。指南：[SVG 翻译](/guide/svg-translation/)。
 
 所有四种模式都使用活动的 [LLM 提供商](/guide/providers-and-models)，共享相同的配置文件，并重用 SQLite 缓存，因此重新运行只会将新的或更改的文本发送到模型。
 
@@ -36,7 +36,8 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 | [nextjs-app](/examples#nextjs-app) | Next.js UI、复数、SVG、Docusaurus 文档站点、仪表板 |
 | [astro-website](/examples#astro-website) | Astro 营销站点：全页 HTML 翻译加 `t()` 字符串 |
 | [astro-docs](/examples#astro-docs) | Astro Starlight 文档站点 |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress 文档加主题 JSON |
+| [vitepress 文档](/examples#vitepress-docs) | VitePress 文档及主题目录 |
+| [nextra 文档](/examples#nextra-docs) | Nextra 文档及 `_meta.ts` 侧边栏标签和主题词典 |
 | [multi-provider](/examples#multi-provider) | 比较同一文档上的 LLM 提供商 |
 | [test-markdown](/examples#test-markdown) | Markdown 管道压力测试（CJK、天城文、边缘情况） |
 

@@ -155,7 +155,7 @@
 | 필드                | 파이프라인 | 설명                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")`를 `strings.json`로 추출한 다음, 항목을 번역하고 로케일별 플랫 JSON을 작성합니다(추출은 자동으로 실행됩니다. 카탈로그만 새로 고치려면 독립형 `extract`를 사용하세요). |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` 페이지 번역; `docs[].docusaurusCatalogDir`가 설정된 경우 Docusaurus 셸 JSON 사용. |
+| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` 페이지 번역; `docs[].docusaurusCatalogDir`가 설정된 경우 Docusaurus 셸 JSON; Nextra `_meta` / 구성된 경우 사전; `docsOutput.vitepressThemeCatalog`가 설정된 경우 VitePress 테마. |
 | `translateJson` | 3 | `json[]` 아래의 임의의 중첩된 JSON (`translate-json`). |
 | `translateSVG` | — | `.svg` 파일 번역 (최상위 `svg` 블록 필요). |
 
@@ -240,16 +240,24 @@ SQLite 캐시 디렉터리(모든 `docs` 블록에서 공유). 기본값 `.trans
 - `targetLocales`
 이 블록에만 적용되는 선택적 로케일 하위 집합(그렇지 않으면 루트 `targetLocales` 사용). 유효한 문서 로케일은 모든 블록의 합집합입니다.
 - `docusaurusCatalogDir`
-선택 사항입니다. 이 블록의 Docusaurus JSON 레이블 카탈로그에 대한 소스 디렉터리(예: `"i18n/en"` from `docusaurus write-translations`). 페이지 본문은 항상 `contentPaths`에서 오며, `docusaurusCatalogDir`는 셸/UI JSON만 제공하고 MDX는 제공하지 않습니다.
+선택 사항입니다. 이 블록에 대한 Docusaurus JSON 레이블 카탈로그의 소스 디렉터리(예: `docusaurus write-translations`의 `"i18n/en"`). 페이지 본문은 항상 `contentPaths`에서 가져옵니다. `docusaurusCatalogDir`는 셸/UI JSON만 제공하며 MDX는 제공하지 않습니다.
+- `nextraMetaGlob`
+`docsRoot` 아래 Nextra `_meta.ts` / `_meta.tsx` / `_meta.js`에 대한 선택적 glob입니다. `docsOutput.style`이 `"nextra"`이고 이 항목이 생략되면 `docsRoot` 아래의 모든 `_meta` 파일이 자동으로 수집됩니다.
+- `nextraMetaTranslatableKeys`
+Nextra `_meta` 개체에서 문자열 값이 번역되는 선택적 속성 이름(기본값: `title`, `display`, `breadcrumb`).
+- `nextraDictionaryPath`
+선택적 영어 Nextra 테마 사전 모듈(예: `"app/_dictionaries/en.ts"`). `translate-docs` 중에 `{dir}/{locale}.ts`로 번역됩니다.
+- `nextraDictionaryOutputTemplate`
+로케일 사전 모듈에 대한 선택적 출력 템플릿(기본값: 사전 디렉터리를 기준으로 `{dir}/{locale}.ts`).
 
 **출력 레이아웃**
 
 - `outputDir`
 이 블록에 대한 번역된 출력의 루트 디렉터리입니다.
 - `docsOutput.style`
-`"nested"`(기본값), `"flat"`, `"doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`.
+`"nested"`(기본값), `"flat"`, `"doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`.
 - `docsOutput.localeSubpath`
-`doc-system`에 대한 `{locale}/`와 `{relativeToDocsRoot}` 사이의 경로 세그먼트(`style: "doc-system"`를 직접 사용할 때 필요하며, 별칭을 사용할 때 미리 설정됨). Starlight 스타일 로케일 폴더에는 `""`을 사용하십시오.
+`doc-system`에 대한 `{locale}/`과 `{relativeToDocsRoot}` 사이의 경로 세그먼트(`style: "doc-system"`을 직접 사용하는 경우 필수, 별칭을 사용하는 경우 사전 설정). Starlight 스타일 로케일 폴더에는 `""`를 사용합니다.
 - `docsOutput.docsRoot`
 Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기본값은 `"docs"`입니다.
 - `docsOutput.pathTemplate`
@@ -263,9 +271,13 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.rewriteRelativeLinks`
 번역 후 상대 링크를 다시 작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없는 경우 자동 활성화됨).
 - `docsOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않는 한 일반적으로 `"."`로 둡니다.
+플랫 링크 다시 작성 접두사를 계산할 때 사용되는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않는 한 일반적으로 `"."`로 둡니다.
 - `docsOutput.rewriteVitepressLinks`
-`true`인 경우 번역 후 VitePress 링크 정규화 도구를 실행합니다. `docsOutput.style`가 `"vitepress"`인 경우 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래 영어 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 다시 작성합니다. VitePress 트리 외부의 저장소 파일(`LICENSE`, `examples/`)에 대한 링크의 경우 영어 소스에서 전체 URL을 사용합니다. [VitePress 통합 — README를 문서 홈페이지로 사용](/guide/vitepress-integration#readme-as-homepage)을 참조하세요.
+`true`인 경우 번역 후 VitePress 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"vitepress"`인 경우 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래 영어 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 다시 작성합니다. VitePress 트리 외부의 리포지토리 파일(`LICENSE`, `examples/`)에 대한 링크의 경우 영어 소스에 전체 URL을 사용합니다. [VitePress 통합 — 문서 홈페이지로서의 README](/guide/vitepress-integration#readme-as-homepage)를 참조하세요.
+- `docsOutput.rewriteNextraLinks`
+`true`인 경우 번역 후 Nextra 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"nextra"`인 경우 기본적으로 활성화됩니다. Next.js `i18n`의 경우 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하세요.
+- `docsOutput.vitepressThemeCatalog`
+선택 사항입니다. `translate-docs` 내의 VitePress 테마/탐색/사이드바 카탈로그 부트스트랩 + 번역. 필드: `configPath`(테마 문자열이 있는 VitePress 구성), `catalogPath`(생성된 영어 중첩 JSON), 선택 사항 `outputPathTemplate`(기본값: `catalogPath` 옆의 `theme.{locale}.json`).
 
 **후처리**
 

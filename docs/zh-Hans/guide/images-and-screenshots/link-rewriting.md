@@ -17,7 +17,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: loc
 
 对于 `docsOutput.style = "doc-system"`（包括 `"docusaurus"`、`"astro-starlight"` 和 `"nested"`），平面链接重写器不运行。`regexAdjustments` 会看到翻译后的 Markdown 中的原始 URL（通常是像 `/img/screenshots/en-GB/foo.png` 这样的绝对路径）。
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress 链接规范化器 (`style: "vitepress"`)
 
 当 `docsOutput.rewriteVitepressLinks` 为 `true` 时（当 `style` 为 `"vitepress"` 时的默认值），在段重组后会运行一个单独的规范化器（而不是平面重写器）。它针对 VitePress / 文档系统站点，其中英文内容位于内容根目录，而本地化内容位于同级文件夹中（`docs/de/guide/…`）。
@@ -56,7 +56,7 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `docsOutput.linkRewriteDocsRoot`     | 计算 `depthPrefix` 的根目录（默认 `"."`）                                                        |
 | `docsOutput.flatPreserveRelativeDir` | 影响输出路径布局，重写器在计算已知翻译文件的目标路径时会使用该布局       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 在 `docs[].docsOutput.postProcessing` 下配置有序的 `{ "description"?, "search", "replace" }` 规则，以重写内置重写器不处理的图像、屏幕截图和其他资产 URL — 通常是交换区域设置文件夹段（`screenshots/en-GB/` → `screenshots/de/`）或桥接绝对静态路径（`/img/…` → `../assets/…`）。

@@ -15,7 +15,7 @@ Le code est organisé en quatre couches. Utilisez cette section pour le modèle 
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | Analyser les sources de l'interface utilisateur → mettre à jour `strings.json` → remplir le JSON de locale plat (`de.json`, …) |
 | 2 | `translate-svg` *(facultatif)* | Traduire le texte SVG sous `config.svg` |
-| 3 | `translate-docs` | Traduire le markdown, MDX, les pages `.astro` et les catalogues JSON de Docusaurus |
+| 3 | `translate-docs` | Traduire les pages Markdown, MDX, `.astro` ; le JSON du catalogue Docusaurus ; le dictionnaire `_meta` / `.ts` de Nextra ; le catalogue de thèmes VitePress |
 | 4 | `translate-json` *(facultatif)* | Traduire les feuilles JSON imbriquées sous `json[]` |
 
 Chaque pipeline suit la même boucle principale : **extraire les segments → protéger la syntaxe → regrouper → rechercher dans le cache ou appeler le LLM → écrire la sortie**. Les services partagés au milieu — configuration, espaces réservés, cache, glossaire, `LlmClient` — sont décrits sous [Infrastructure partagée](#shared-infrastructure).
@@ -266,7 +266,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)` :
 9. `augmentConfigWithUiLanguagesMaster` - attacher les noms d'affichage du manifeste à partir du catalogue principal fourni.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - valider les codes de locale par rapport au catalogue principal, le cas échéant.
 
-`init` écrit les configurations de démarrage à partir de `initConfigTemplates` : `ui-markdown` (interface utilisateur + markdown d'application facultatif), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentation VitePress + JSON de thème via `json[]`), `ui-astro-website` (interface utilisateur Astro simple ; ajouter `docs[]` pour la traduction de page `.astro`), `ui-json-bundles` (JSON `json[]` uniquement). Voir [Démarrage rapide — Initialiser](/guide/quick-start#step-1-initialise).
+`init` écrit des configurations de démarrage à partir de `initConfigTemplates` : `ui-markdown` (UI + Markdown d'application facultatif), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentation VitePress + `vitepressThemeCatalog`), `ui-nextra` (documentation Nextra + `nextraDictionaryPath`), `ui-astro-website` (UI Astro simple ; ajouter `docs[]` pour la traduction de pages `.astro`), `ui-json-bundles` (`json[]` JSON uniquement). Voir [Démarrage rapide — Initialiser](/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Journalisation (Logger)

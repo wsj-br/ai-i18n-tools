@@ -6,10 +6,10 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 <a id="translation-modes"></a>
 ## 翻訳モード
 
-- **UI 文字列** — JS/TS ソースから `t("…")` 呼び出し (および類似のマーカー) を抽出し、i18next または静的ルックアップ用のフラットなロケールごとの JSON ファイルを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [UI 文字列](/guide/ui-strings/)。
-- **ドキュメント** — `docs[].contentPaths` にリストされている Markdown、MDX、および `.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Astro、およびその他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/guide/documents/)。
-- **JSON** — 最上位の `json[]` で定義されているネストされた JSON ロケールバンドル (テーマラベル、i18n オーバーライド、ソースにないアプリのコピー) を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/guide/json)。
-- **SVG** — SVG イラスト内の表示テキスト (`<text>`、`<title>`、`<desc>`) を翻訳し、ロケールごとに 1 つの出力ファイルを書き込みます。ドキュメント翻訳とは別です — `translate-docs` は SVG アセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG 翻訳](/guide/svg-translation/)。
+- **UI文字列** — JS/TSソースから`t("…")`呼び出し（および同様のマーカー）を抽出し、i18nextまたは静的ルックアップ用のロケールごとのフラットなJSONファイルを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [UI文字列](/guide/ui-strings/)。
+- **ドキュメント** — `docs[].contentPaths`にリストされているMarkdown、MDX、および`.astro`ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Astro、およびその他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/guide/documents/)。
+- **JSON** — 最上位の`json[]`で定義されているネストされたJSONロケールバンドル（テーマラベル、i18nオーバーライド、ソースにないアプリコピー）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/guide/json)。
+- **SVG** — SVGイラスト（`<text>`、`<title>`、`<desc>`）内の表示テキストを翻訳し、ロケールごとに1つの出力ファイルを書き込みます。ドキュメント翻訳とは別です — `translate-docs`はSVGアセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG翻訳](/guide/svg-translation/)。
 
 これら 4 つのモードはすべて、アクティブな [LLM プロバイダー](/guide/providers-and-models) を使用し、同じ設定ファイルを共有し、SQLite キャッシュを再利用するため、再実行では新しいテキストまたは変更されたテキストのみがモデルに送信されます。
 
@@ -36,7 +36,8 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 | [nextjs-app](/examples#nextjs-app) | Next.js UI、複数形、SVG、Docusaurus ドキュメントサイト、ダッシュボード |
 | [astro-website](/examples#astro-website) | Astro マーケティングサイト: 全ページ HTML 翻訳と `t()` 文字列 |
 | [astro-docs](/examples#astro-docs) | Astro Starlight ドキュメントサイト |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress ドキュメントとテーマ JSON |
+| [vitepress-docs](/examples#vitepress-docs) | VitePressドキュメントとテーマカタログ |
+| [nextra-docs](/examples#nextra-docs) | Nextraドキュメントと`_meta.ts`サイドバーラベルおよびテーマ辞書 |
 | [multi-provider](/examples#multi-provider) | 同じドキュメントで LLM プロバイダーを比較 |
 | [test-markdown](/examples#test-markdown) | Markdown パイプラインのストレステスト (CJK、デーヴァナーガリー、エッジケース) |
 

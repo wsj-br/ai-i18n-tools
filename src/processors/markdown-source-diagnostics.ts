@@ -10,6 +10,7 @@ import {
   ADMONITION_OPENER_COLONS_RE,
   ADMONITION_UNTERMINATED_TITLE_RE,
 } from "./admonition-syntax.js";
+import { HTML_ID_ANCHOR_RE } from "./anchor-placeholders.js";
 import { computeSegmentHash } from "../utils/hash.js";
 
 /** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
@@ -234,13 +235,14 @@ function markerSample(run: { marker: string; count: number }): string {
 }
 
 /**
- * Replace MDX JSX comments and HTML comments with spaces of equal length so characters inside
- * (`*` in `/*`, `` ` `` in examples, etc.) are not scanned as markdown emphasis or inline code.
- * Offsets and line numbers stay aligned with the original `text`.
+ * Replace MDX JSX comments, HTML comments, and doctoc-style `<a id="…"></a>` anchors with spaces
+ * of equal length so characters inside (`*` in `/*`, `_` in slug ids, etc.) are not scanned as
+ * markdown emphasis or inline code. Offsets and line numbers stay aligned with the original `text`.
  */
 function neutralizeCommentsForMarkdownDiagnostics(text: string): string {
   let s = text.replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, (m) => " ".repeat(m.length));
   s = s.replace(/<!--[\s\S]*?-->/g, (m) => " ".repeat(m.length));
+  s = s.replace(HTML_ID_ANCHOR_RE, (m) => " ".repeat(m.length));
   return s;
 }
 

@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # クイックスタート
 
-デフォルトの`init`テンプレート（`ui-markdown`）は、**UI**の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、および`ui-vitepress`テンプレートは、**ドキュメント**の翻訳（`translate-docs`）を有効にします。`ui-vitepress`は、VitePressテーマJSONのJSONも足場とします。`ui-astro-website`テンプレートは、プレーンなAstroアプリ（`.astro`ファイルを含む）の**UI**抽出を足場とします。`docs[]`ブロック（[Astroウェブサイトページ（解析と置換）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照）を追加すると、`.astro`ページHTMLの`translate-docs`も必要になります。参照[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)は、**両方**のパイプラインを使用します。設定に従って、抽出、UI翻訳、オプションのSVGファイル翻訳、およびドキュメント翻訳を実行する1つのコマンドが必要な場合は、`sync`を使用します。
+デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、および `ui-nextra` テンプレートは、**ドキュメント** の翻訳 (`translate-docs`) を有効にします。`ui-vitepress` は VitePress テーマ文字列の `docsOutput.vitepressThemeCatalog` も足場として提供し、`ui-nextra` は Nextra テーマ辞書 (サイドバーの `_meta.ts` は自動的に収集されます) の `docs[].nextraDictionaryPath` を足場として提供します。`ui-astro-website` テンプレートは、プレーンな Astro アプリ (`.astro` ファイルを含む) の **UI** 抽出を足場として提供します。`.astro` ページの HTML の `translate-docs` も必要な場合は、`docs[]` ブロック ([Astro ウェブサイトのページ (解析と置換)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) を参照) を追加します。リファレンスの [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) は **両方** のパイプラインを使用します。設定に従って、抽出、UI 翻訳、オプションの SVG ファイル翻訳、ドキュメント翻訳を実行する 1 つのコマンドが必要な場合は、`sync` を使用します。
 
 <a id="runnable-examples"></a>
 ### 実行可能な例
 
-実行可能な7つのプロジェクトとフィクスチャは、[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にあります。[例](/examples) カタログ（コンソールアプリ、Next.js + Docusaurus、Astro ウェブサイト、Astro Starlight ドキュメント、VitePress ドキュメント、マルチプロバイダー比較、Markdown ストレステスト）を参照してください。
+9 つの実行可能なプロジェクトとフィクスチャは [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) の下にあります。[例](/examples) カタログ (コンソールアプリ、Next.js + Docusaurus、Astro ウェブサイト、Astro Starlight ドキュメント、VitePress ドキュメント、Nextra ドキュメント、マルチプロバイダー比較、マークダウンストレステスト) を参照してください。
 
 **1つの例をスタンドアロンで実行します**（モノレポ全体をクローンせずに）：
 
@@ -30,6 +30,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
+# Nextra docs: npx ai-i18n-tools init -t ui-nextra
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

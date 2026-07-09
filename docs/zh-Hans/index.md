@@ -12,15 +12,15 @@ description: 用于使用大型语言模型 (LLM) 对 JavaScript/TypeScript 应�
 
 **使用您选择的 AI 模型翻译您的应用程序和文档：无锁定，无需重写。**
 
-`ai-i18n-tools` 是一个用于国际化 JavaScript/TypeScript 应用程序和文档站点的 CLI 和工具包——包括 Docusaurus、Astro、Starlight、VitePress 和纯 Markdown/MDX——使用大型语言模型。
+`ai-i18n-tools` 是一个用于国际化 JavaScript/TypeScript 应用和文档站点的命令行工具和工具包——支持 Docusaurus、Astro、Starlight、VitePress、Nextra 以及纯 Markdown/MDX——基于大语言模型实现。
 
 指向任意提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任意 [OpenRouter](https://openrouter.ai/) 模型（通过单个 API 密钥即可从数百个模型中选择），或用于完全自托管、离线翻译的 **Ollama**。可按项目或甚至按语言切换提供商或模型，无需修改代码库。
 
 一个配置文件驱动三种翻译模式，因此您可以根据内容的结构进行混合和匹配：
 
-- **UI 字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并为 i18next 或静态 SSG 查找生成扁平化的按区域设置 JSON 文件。
-- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 **VitePress**、**Starlight**、**Docusaurus**、基于 Astro 的网站，或任何读取 Markdown/MDX/`.astro` 源文件的静态站点生成器。
-- **JSON** — 翻译在 `json[]` 中定义的任意嵌套 JSON 包。当 UI 文案存放在按区域设置的 JSON 文件中，而非源代码中的 `t()` 调用时，请使用 `translate-json`。
+- **界面字符串** — 从 JS/TS（以及可选的 `.astro` 文件）中提取 `t("…")` 调用，并生成扁平的、按语言区域划分的 JSON，供 i18next 或静态 SSG 查找使用。
+- **文档** — 使用 `translate-docs` 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。支持 **VitePress**、**Starlight**、**Docusaurus**、**Nextra**、基于 Astro 的站点，或任何从 Markdown/MDX/`.astro` 源文件读取的静态站点生成器。
+- **JSON** — 翻译 `json[]` 中定义的任意嵌套 JSON 资源包。当界面文案存放在按语言区域划分的 JSON 文件中而非源码中的 `t()` 调用时，请使用 `translate-json`。
 
 **SVG** 资产有自己的路径：`features.translateSVG`、顶级 `svg` 块和 `translate-svg`——而不是 `docs[].contentPaths`。
 
@@ -29,7 +29,7 @@ description: 用于使用大型语言模型 (LLM) 对 JavaScript/TypeScript 应�
 | 您的内容                                                                  | 命令                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | 源代码使用 `t()`                                                        | **UI 字符串** — `extract` / `translate-ui` |
-| 本地化页面或文档站点（VitePress、Starlight、Docusaurus、Astro 等） | **文档** — `translate-docs`            |
+| 本地化页面或文档站点（VitePress、Starlight、Docusaurus、Nextra、Astro 等） | **文档** — `translate-docs`            |
 | 独立、嵌套的 JSON 区域设置文件                                          | **JSON** — `translate-json`                 |
 
 所有这三种都共享一个文件/SQLite 缓存，因此只有新的或更改的段（字符串或文本块）才会被重新发送到模型——无论您使用哪个提供商，重新运行都快速且便宜。
@@ -39,7 +39,7 @@ description: 用于使用大型语言模型 (LLM) 对 JavaScript/TypeScript 应�
 
 每种翻译类型都有自己的指南，其中包含完整的配置详细信息：[UI 字符串](/guide/ui-strings/)、[文档](/guide/documents/) 和 [JSON](/guide/json)。请参阅[什么是 ai-i18n-tools？](/guide/what-is-ai-i18n-tools) 以进行并排比较。
 
-一些值得提前了解的事情：UI 字符串通过活动的 LLM 提供程序（请参阅 [LLM 提供程序](#llm-providers)）翻译每个区域设置中缺失的条目，并写入平面 JSON 文件（`de.json`、`pt-BR.json` 等），其中英文源文本作为运行时查找键 — `strings.json` 是提取缓存，而不是运行时捆绑包。文档支持 `docs[].docsOutput.style` 值 `"nested"`、`"flat"`、`"doc-system"` 和别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"`（请参阅 [输出布局](/guide/documents/output-layouts)）。所有这三种都共享 `ai-i18n-tools.config.json` 并且可以组合；`sync` 根据您的 `features` 标志按顺序运行提取、UI 翻译、翻译 SVG、`translate-docs` 和 `translate-json`。
+事先需要了解几点：UI 字符串会通过当前活跃的 LLM 提供商按区域设置翻译缺失的条目（参见 [LLM 提供商](#llm-providers)），并写入扁平的 JSON 文件（`de.json`、`pt-BR.json`、…），以英文源文本作为运行时查找键 —— `strings.json` 是提取缓存，而非运行时包。Documents 支持 `docs[].docsOutput.style` 值 `"nested"`、`"flat"`、`"doc-system"`，以及别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（参见 [输出布局](/guide/documents/output-layouts)）。这三者共享 `ai-i18n-tools.config.json` 并可组合使用；`sync` 会根据你的 `features` 标志依次执行提取、UI 翻译、SVG 翻译、`translate-docs` 和 `translate-json`。
 
 ---
 
@@ -109,13 +109,27 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 在顶层的 `providers` 映射下配置提供商，并通过顶层的 `provider` 选择器选择活动的提供商（当只有一个提供商配置时是可选的）。大多数提供商只需要一个 `translationModels` 列表 — `baseUrl` 和 API 密钥环境变量来自内置预设；您可以为每个提供商覆盖 `baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature` 和 `requestTimeoutMs`。`requestTimeoutMs` 是等待每个请求的最大时间（毫秒）（默认 `30000`）。
 
+每个提供程序块上的可选模型层级：
+
+- `translationModels` — 全局有序回退链（翻译功能所需）。
+- `uiModels` — 仅限 UI 链（`translate-ui`，复数生成，`proofread-ui`）：在匹配任何 `localeModels` 条目后尝试，但在 `translationModels` 之前。
+- `localeModels` — 每个区域设置的 **所有** 管道的覆盖：每个条目将 BCP-47 区域设置映射到一个有序模型列表，仅在该区域设置下首先尝试（`pt-br` 匹配 `pt-BR`）。
+
+解析顺序：**UI** → `localeModels(locale)` → `uiModels` → `translationModels`；**文档 / JSON / SVG** → `localeModels(locale)` → `translationModels`。重复的模型 ID 会被跳过，同时保留顺序。
+
 若要在不编辑配置的情况下为单次运行切换提供程序，请传递全局 `-P` / `--provider <name>` 选项（例如 `ai-i18n-tools -P groq translate-ui`）；名称必须是已配置的 `providers` 键之一。
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -142,7 +156,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 通过添加一个带有 `baseUrl`（以及 `apiKeyEnv`，除非不需要密钥）的新键来定义自定义的 OpenAI 兼容提供商。模型 ID 是纯粹的上游 ID — 提供商在配置级别选择，因此不需要 `provider/` 前缀（OpenRouter ID 保留其原生的 `vendor/model` 格式）。
 
-每个提供商都会报告令牌使用情况；仅当提供商返回时（OpenRouter）才会显示确切的美元成本。`ai-i18n-tools check-models` 根据活动提供商的实时 `GET /models` 列表（任何提供商）验证配置的模型 ID，并在提供商返回时显示定价（例如 OpenRouter）。`ai-i18n-tools list-models` 列出了活动提供商宣传的每个模型（使用 `-P` / `--provider` 检查其他配置的提供商）。`ai-i18n-tools bench-models` 通过单独翻译样本（模型并行运行，受 `concurrency` 限制）来基准测试每个配置的模型，并打印每个模型的输入/输出令牌、实际时间和美元成本。
+每个提供商都会报告令牌使用量；仅当提供商返回确切美元费用时才显示（OpenRouter）。`ai-i18n-tools check-models` 会根据当前提供商的实时 `GET /models` 列表（适用于任何提供商）验证所有已配置的模型 ID（`translationModels`、`uiModels` 以及每个 `localeModels` 条目），并在提供商返回定价时显示（例如 OpenRouter）。`ai-i18n-tools list-models` 列出当前提供商公布的所有模型（使用 `-P` / `--provider` 查看其他已配置的提供商）。`ai-i18n-tools bench-models` 通过独立翻译一个样本来对每个唯一的已配置模型 ID（`translationModels`、`uiModels` 和 `localeModels`）进行基准测试（模型并行运行，受 `concurrency` 限制），并打印每个模型的输入/输出令牌数、实际耗时和美元费用。
 
 仍然接受旧的顶级 `openrouter` 配置块，并在加载时自动迁移到 `providers.openrouter`（带有 `provider: "openrouter"`）。
 
@@ -181,8 +195,11 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight documentation
 # npx ai-i18n-tools init -t ui-starlight
 
-# VitePress documentation (pages + theme JSON)
+# VitePress documentation (pages + theme catalog)
 # npx ai-i18n-tools init -t ui-vitepress
+
+# Nextra documentation (pages + _meta.ts + theme dictionary)
+# npx ai-i18n-tools init -t ui-nextra
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
@@ -192,12 +209,17 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-编辑 `ai-i18n-tools.config.json`：将 `docs[].contentPaths` 设置为 markdown、MDX 和/或 `.astro` 源；`docs[].outputDir` 和 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"flat"` 等）。完整字段参考：[文档](/guide/documents/)。
+编辑 `ai-i18n-tools.config.json`：将 `docs[].contentPaths` 设置为 markdown、MDX 和/或 `.astro` 源；`docs[].outputDir` 和 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"flat"` 等）。完整字段参考：[Documents](/guide/documents/)。
 
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` 搭建 `docsOutput.style: "vitepress"` 以及用于主题/导航/侧边栏字符串的 `json[]` 块。运行 `sync` 以同时翻译页面 markdown 和 `theme.{locale}.json`。请参阅 [VitePress 集成](/guide/vitepress-integration) 和 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)。
+`init -t ui-vitepress` 会搭建 `docsOutput.style: "vitepress"` 以及用于导航/侧边栏/页脚字符串的 `docsOutput.vitepressThemeCatalog`。运行 `sync` 可同时翻译页面 markdown 和主题目录 —— 无需单独的 JSON 流程。参见 [VitePress 集成](/guide/vitepress-integration) 和 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)。
+
+<a id="nextra"></a>
+### Nextra
+
+`init -t ui-nextra` 会搭建 `docsOutput.style: "nextra"`。`translate-docs` 会自动收集并翻译 `_meta.ts` 侧边栏标签；设置 `docs[].nextraDictionaryPath` 可同时翻译主题字典模块（例如 `app/_dictionaries/en.ts`）—— 全部在同一次 `sync` 运行中完成，无需 JSON 附属文件。参见 [Nextra 集成](/guide/nextra-integration) 和 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)。
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro（纯 Astro 和 Starlight）
@@ -259,7 +281,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -310,8 +332,8 @@ ai-i18n-tools help [command]
 - [快速入门](/guide/quick-start) — UI字符串、文档和JSON的设置（UI、docs/`.astro`、JSON捆绑包、Astro Starlight和纯Astro）。
 - [语言环境资产指南](/guide/images-and-screenshots/) - 翻译文档中的屏幕截图和插图SVG（平面链接重写器、屏幕截图脚本）。
 - [架构](/reference/architecture) - 架构、内部、程序化API和扩展点。
-- [AI代理上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **适用于使用此包的应用程序：** 下游项目的集成提示（复制到您的仓库的代理规则中）。
-- **此**仓库的维护者内部：`dev/package-context.md`（仅限克隆；不在npm上）。
+- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **对于使用该包的应用：** 面向下游项目的集成提示（复制到你的仓库的代理规则中）。
+- **本**仓库的维护者指南：`AGENT.md`（规则与工作流；仅限克隆；不在 npm 上）。流水线参考：`docs/reference/`。本地开发与发布：`dev/DEVEL.md`。
 
 ---
 

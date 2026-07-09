@@ -61,9 +61,9 @@ Für Endonym-Labels (`label: "local"`) generieren oder pflegen Sie `ui-languages
 ## 5. Beispiele in diesem Repository
 
 | Beispiel | Dateien |
-|---|---|
-| Dieses Paket (flaches README + VitePress-Site) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README-Block: `docsOutput.style = "flat"`; Site-Block: `docsOutput.style = "vitepress"`; Theme-JSON über `json[]`) |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dieses Paket (flaches README + VitePress-Site) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README-Block: `docsOutput.style = "flat"`; Site-Block: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | Flaches README + Docusaurus-Dokumentation | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (zweiter Block: `docsOutput.style = "flat"`; erster Block: `docsOutput.style = "docusaurus"`) |
-| VitePress-Dokumentation (minimales Demo) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `json[]` Theme-Katalog) |
+| VitePress-Dokumentation (Minimal-Demo) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 Die Zeile unmittelbar vor `<small id="lang-list">` (z. B. `**Read in other languages:**`) ist ein normaler übersetzbarer Abschnitt und wird in jedem Zielgebietsschema lokalisiert; nur die Link-Zeile innerhalb der Marker wird wortwörtlich neu generiert, abgesehen von `href` und manifestgesteuerten Bezeichnungen.

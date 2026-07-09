@@ -18,7 +18,7 @@ Un `pathTemplate` personnalisé désactive le réécriveur plat, sauf si vous d�
 
 Pour les règles de rédaction spécifiques à VitePress, voir [Intégration VitePress — Conventions de liens](/guide/vitepress-integration#link-conventions).
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 Ajoutez des règles `{ "description"?, "search", "replace" }` ordonnées sous `docs[].docsOutput.postProcessing` lorsque les réécriveurs intégrés ne suffisent pas — par exemple :

@@ -47,6 +47,20 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 Starlight UI 覆寫可以在需要時於獨立的 `docs[]` 區塊中使用 `src/content/i18n/en.json` 搭配 `jsonPathTemplate` — 請參閱[文件 — 初始化文件](/guide/documents/#step-1-initialise-for-documentation)。
 
+<a id="framework-shell-translation"></a>
+### 框架外殼翻譯
+
+Starlight 為許多地區語言內建了自身的 UI 字串（導覽標籤、搜尋預留位置、目錄等等）——與 Docusaurus、VitePress 或 Nextra 不同，不需要設定額外的外殼/主題管線：
+
+| 框架 | 外殼 / 主題字串 | 管線 |
+|-----------|----------------------|----------|
+| Astro Starlight | 內建 UI 字串（多種地區語言）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
+| Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 + 主題字典 `.ts` | 文件 — 請參閱 [Nextra 整合](/guide/nextra-integration) |
+
+其他框架模式請參閱 [Docusaurus 整合](/guide/docusaurus-integration) 與 [VitePress 整合](/guide/vitepress-integration)。
+
 <a id="example-project"></a>
 ### 範例專案
 

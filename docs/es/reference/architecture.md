@@ -15,7 +15,7 @@ El código base está organizado en cuatro capas. Utilice esta sección para el 
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | Escanear fuentes de la interfaz de usuario → actualizar `strings.json` → rellenar JSON de configuración regional plana (`de.json`, …) |
 | 2 | `translate-svg` *(opcional)* | Traducir texto SVG bajo `config.svg` |
-| 3 | `translate-docs` | Traducir markdown, MDX, páginas `.astro` y catálogos JSON de Docusaurus |
+| 3 | `translate-docs` | Traducir páginas de markdown, MDX, `.astro`; JSON de catálogo de Docusaurus; `_meta` / diccionario `.ts` de Nextra; catálogo de temas de VitePress |
 | 4 | `translate-json` *(opcional)* | Traducir hojas JSON anidadas bajo `json[]` |
 
 Cada pipeline sigue el mismo bucle central: **extraer segmentos → proteger sintaxis → agrupar → buscar en caché o llamar a LLM → escribir salida**. Los servicios compartidos en el medio —configuración, marcadores de posición, caché, glosario, `LlmClient`— se describen en [Infraestructura compartida](#shared-infrastructure).
@@ -266,7 +266,7 @@ Canalización `loadI18nConfigFromFile(configPath, cwd)`:
 9. `augmentConfigWithUiLanguagesMaster` - adjuntar nombres de visualización de manifiesto del catálogo maestro incluido.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - validar códigos de configuración regional contra el catálogo maestro cuando corresponda.
 
-`init` escribe configuraciones de inicio desde `initConfigTemplates`: `ui-markdown` (UI + markdown de aplicación opcional), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentos de VitePress + JSON de tema a través de `json[]`), `ui-astro-website` (UI de Astro simple; agregar `docs[]` para la traducción de página de `.astro`), `ui-json-bundles` (solo `json[]` JSON). Consulte [Inicio rápido — Inicializar](/guide/quick-start#step-1-initialise).
+`init` escribe configuraciones iniciales desde `initConfigTemplates`: `ui-markdown` (UI + markdown de aplicación opcional), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentos de VitePress + `vitepressThemeCatalog`), `ui-nextra` (documentos de Nextra + `nextraDictionaryPath`), `ui-astro-website` (UI de Astro simple; añadir `docs[]` para la traducción de páginas `.astro`), `ui-json-bundles` (solo `json[]` JSON). Consulte [Inicio rápido — Inicializar](/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Registrador (Logger)

@@ -5,7 +5,9 @@ Diseñado principalmente para **documentación de markdown, MDX y `.astro`** ges
 
 En los sitios de Docusaurus, también configure `docusaurusCatalogDir` en su carpeta de catálogo de `write-translations` (por ejemplo, `docs-site/i18n/en`). Entonces `translate-docs` también incluye JSON de shell — cadenas de la barra de navegación, el pie de página y el tema.
 
-En los sitios de [VitePress](/guide/vitepress-integration), los cuerpos de las páginas usan la misma canalización de `docs[]`. Las etiquetas de navegación, barra lateral y pie de página residen en un catálogo JSON separado — tradúzcalas con la canalización [JSON](/guide/json) y `translate-json`.
+En los sitios de [VitePress](/guide/vitepress-integration), los cuerpos de las páginas utilizan la misma canalización `docs[]`. Las etiquetas de navegación, barra lateral y pie de página se encuentran en `docsOutput.vitepressThemeCatalog`; `translate-docs` arranca el catálogo en inglés y lo traduce junto con las páginas, sin una canalización separada.
+
+En los sitios de [Nextra](/guide/nextra-integration), los cuerpos de las páginas utilizan la misma canalización `docs[]` con `docsOutput.style: "nextra"`. Las etiquetas de la barra lateral de `_meta.ts` son recopiladas y traducidas automáticamente por `translate-docs`; las cadenas del diccionario del tema se traducen a través de `docs[].nextraDictionaryPath` en la misma canalización.
 
 Para imágenes PNG y otras imágenes rasterizadas incrustadas en markdown, consulte [Imágenes y capturas de pantalla](/guide/images-and-screenshots/). `translate-docs` solo traduce el texto alternativo; no copia archivos rasterizados.
 
@@ -13,7 +15,7 @@ Para un bloque opcional de **selector de idioma** en README o documentos, config
 
 Los archivos SVG se traducen a través de [`translate-svg`](/reference/cli-commands) cuando `features.translateSVG` está habilitado — no a través de `docs[]` / `contentPaths`.
 
-Los paquetes JSON de UI anidados arbitrarios (no catálogos de Docusaurus) pertenecen a la canalización [JSON](/guide/json), no a `docs[]`.
+Los paquetes JSON de interfaz de usuario anidados arbitrarios no relacionados con las cadenas de shell/tema de un framework de documentación pertenecen a la canalización [JSON](/guide/json), no a `docs[]`.
 
 <a id="per-locale-model-overrides"></a>
 ### Anulaciones de modelo por configuración regional
@@ -26,7 +28,8 @@ Los paquetes JSON de UI anidados arbitrarios (no catálogos de Docusaurus) perte
 | Su configuración | Empiece aquí |
 | --- | --- |
 | Sitio de Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Paso 1](#step-1-initialise-for-documentation) |
-| Sitio de VitePress | `init -t ui-vitepress` + `json[]` para el tema — [Integración de VitePress](/guide/vitepress-integration) |
+| Sitio de VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` para el tema — [Integración de VitePress](/guide/vitepress-integration) |
+| Sitio de Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para el diccionario (la barra lateral `_meta.ts` es automática) — [Integración de Nextra](/guide/nextra-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Paso 1](#step-1-initialise-for-documentation) |
 | Documentos planos (README, registros de cambios, etc.) | `docsOutput.style = "flat"` — [Diseños de salida](/guide/documents/output-layouts), [selector de idioma](/guide/documents/language-switcher) opcional |
 | Dónde aterrizan los archivos traducidos | [Diseños de salida](/guide/documents/output-layouts) |
@@ -54,7 +57,7 @@ Para sitios de documentación de VitePress:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Habilite `features.translateJson` y agregue una entrada `json[]` para las cadenas de tema de VitePress; consulte [Integración de VitePress](/guide/vitepress-integration).
+Establezca `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/barra lateral/pie de página — consulte [Integración de VitePress](/guide/vitepress-integration).
 
 Para la interfaz de un sitio web Astro plano (sin Starlight):
 
@@ -70,10 +73,10 @@ Edite el `ai-i18n-tools.config.json` generado:
 - `targetLocales` - matriz de códigos de localización BCP-47 (por ejemplo, `["de", "fr", "es"]`).
 - `cacheDir` - directorio compartido de caché SQLite para todas las canalizaciones (y directorio predeterminado de registros para `--write-logs`).
 - `docs` - matriz de bloques de documentación. Cada bloque tiene `description`, `contentPaths` (cadena o matriz; archivo, directorio o patrón), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
-- `docs[].description` - nota corta opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.
-- `docs[].contentPaths` - fuentes de markdown/MDX/`.astro` (y `docusaurusCatalogDir` opcional para JSON de shell de Docusaurus).
+- `docs[].description` - nota breve opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.
+- `docs[].contentPaths` - fuentes markdown/MDX/`.astro` (y `docusaurusCatalogDir` opcional para el JSON de shell de Docusaurus).
 - `docs[].outputDir` - raíz de salida traducida para ese bloque.
-- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (consulte [Diseños de salida](/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` (consulte [Diseños de salida](/guide/documents/output-layouts)).
 
 **Principal frente a suplementario:** Enfóquese en `contentPaths` para páginas localizadas. Establezca `docusaurusCatalogDir` cuando también necesite JSON del shell de Docusaurus desde `write-translations`. Omita `docusaurusCatalogDir` si solo traduce páginas.
 

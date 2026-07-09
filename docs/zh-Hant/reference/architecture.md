@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | 掃描 UI 原始碼 → 更新 `strings.json` → 填寫平面語言環境 JSON (`de.json`，…) |
 | 2 | `translate-svg` *(選用)* | 翻譯 `config.svg` 下的 SVG 文字 |
-| 3 | `translate-docs` | 翻譯 Markdown、MDX、`.astro` 頁面和 Docusaurus JSON 目錄 |
+| 3 | `translate-docs` | 翻譯 markdown、MDX、`.astro` 頁面；Docusaurus 目錄 JSON；Nextra `_meta` / 字典 `.ts`；VitePress 主題目錄 |
 | 4 | `translate-json` *(選用)* | 翻譯 `json[]` 下的巢狀 JSON 葉節點 |
 
 每個管線都遵循相同的核心迴圈：**提取區段 → 保護語法 → 批次處理 → 快取查詢或 LLM 呼叫 → 寫入輸出**。中間的共用服務 — 設定、預留位置、快取、詞彙表、`LlmClient` — 在[共用基礎設施](#shared-infrastructure)下描述。
@@ -266,7 +266,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 9. `augmentConfigWithUiLanguagesMaster` - 從捆綁的主目錄中附加清單顯示名稱。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 在適用時根據主目錄驗證地區設定代碼。
 
-`init` 從 `initConfigTemplates` 寫入入門設定：`ui-markdown`（UI + 可選應用程式 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + 透過 `json[]` 的主題 JSON）、`ui-astro-website`（純 Astro UI；新增 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）。請參閱 [快速入門 — 初始化](/guide/quick-start#step-1-initialise)。
+`init` 會從 `initConfigTemplates` 寫入入門設定：`ui-markdown`（UI + 可選的應用程式 markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文件 + `nextraDictionaryPath`）、`ui-astro-website`（純 Astro UI；加入 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）。請參閱[快速入門 — 初始化](/guide/quick-start#step-1-initialise)。
 
 <a id="logger"></a>
 ### 記錄器

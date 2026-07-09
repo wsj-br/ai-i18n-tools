@@ -4,6 +4,19 @@ import type { DocBlock, DocsOutputConfig, I18nConfig } from "./types.js";
 
 type DocsOutputStyle = DocsOutputConfig["style"];
 
+/**
+ * True when `mo` was configured with the given framework alias (`"docusaurus"`, `"astro-starlight"`,
+ * `"vitepress"`, `"nextra"`), whether or not `normalizeDocsOutputStyle` has already rewritten
+ * `style` to canonical `"doc-system"`. Use this instead of comparing `mo.style` directly for any
+ * check that needs to know which preset was requested.
+ */
+export function matchesDocsOutputStylePreset(
+  mo: DocsOutputConfig,
+  preset: DocsOutputStyle
+): boolean {
+  return mo.style === preset || mo.stylePreset === preset;
+}
+
 /** Resolve alias styles to canonical `doc-system` with default `localeSubpath`. */
 export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig {
   const style = mo.style as DocsOutputStyle;
@@ -11,6 +24,7 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
     return {
       ...mo,
       style: "doc-system",
+      stylePreset: mo.stylePreset ?? style,
       localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : DOCUSAURUS_LOCALE_SUBPATH,
     };
   }
@@ -18,6 +32,7 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
     return {
       ...mo,
       style: "doc-system",
+      stylePreset: mo.stylePreset ?? style,
       localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
       localePathLowercase: mo.localePathLowercase ?? true,
     };
@@ -26,6 +41,16 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
     return {
       ...mo,
       style: "doc-system",
+      stylePreset: mo.stylePreset ?? style,
+      localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
+      localePathLowercase: mo.localePathLowercase ?? false,
+    };
+  }
+  if (style === "nextra") {
+    return {
+      ...mo,
+      style: "doc-system",
+      stylePreset: mo.stylePreset ?? style,
       localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
       localePathLowercase: mo.localePathLowercase ?? false,
     };
@@ -60,7 +85,7 @@ export function assertDocSystemLocaleSubpath(config: I18nConfig): void {
     if (mo.style === "doc-system" && mo.localeSubpath === undefined) {
       throw new ConfigValidationError(
         `docs[${i}].docsOutput.localeSubpath is required when style is "doc-system" ` +
-          `(use style "docusaurus", "astro-starlight", or "vitepress" for presets, or set localeSubpath explicitly)`
+          `(use style "docusaurus", "astro-starlight", "vitepress", or "nextra" for presets, or set localeSubpath explicitly)`
       );
     }
   }

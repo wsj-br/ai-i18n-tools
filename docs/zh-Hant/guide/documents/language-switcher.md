@@ -60,10 +60,10 @@
 <a id="5-examples-in-this-repository"></a>
 ## 5. 此儲存庫中的範例
 
-| 範例 | 檔案 |
+| 範例                            | 檔案                                                                                                                                                                                        |
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 此套件 (平面 README + VitePress 網站) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README 區塊：`docsOutput.style = "flat"`；網站區塊：`docsOutput.style = "vitepress"`；透過 `json[]` 的主題 JSON) |
+| 此套件（扁平 README + VitePress 網站） | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README 區塊：`docsOutput.style = "flat"`；網站區塊：`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | 平面 README + Docusaurus 文件 | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (第二個區塊：`docsOutput.style = "flat"`；第一個區塊：`docsOutput.style = "docusaurus"`) |
-| VitePress 文件 (最小化演示) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `json[]` 主題目錄) |
+| VitePress 文件（最小示範）      | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` 前面一行 (例如 `**Read in other languages:**`) 是一個正常的翻譯區段，並在每個目標地區語言中進行本地化；只有標記內的連結列會逐字重新產生，但 `href` 和由資訊清單驅動的標籤除外。

@@ -606,7 +606,7 @@ program
   .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-astro-website | ui-json-bundles",
+    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-astro-website | ui-json-bundles",
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
@@ -617,6 +617,7 @@ program
       "ui-docusaurus": "uiDocusaurus",
       "ui-starlight": "uiStarlight",
       "ui-vitepress": "uiVitepress",
+      "ui-nextra": "uiNextra",
       "ui-astro-website": "uiAstroWebsite",
       "ui-json-bundles": "uiJsonBundles",
     };
@@ -624,7 +625,7 @@ program
     if (!key) {
       console.error(
         t(
-          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-astro-website", or "ui-json-bundles".'
+          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-astro-website", or "ui-json-bundles".'
         )
       );
       process.exitCode = 1;

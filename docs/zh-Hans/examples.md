@@ -3,7 +3,7 @@
 
 GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下的可运行项目 — 每个项目都有自己的配置、已提交的区域设置输出和 README。您可以在没有 API 密钥的情况下浏览翻译文件；重新运行翻译需要提供商密钥（[提供商和模型](/guide/providers-and-models)）。
 
-<a id="run-standalone"></a>
+<a id="run-standalone-npx-degit"></a>
 ## 独立运行 (`npx degit`)
 
 复制一个示例，无需克隆整个存储库。每个示例都声明 `"ai-i18n-tools": "^1.7.2"` 并从 npm 安装 CLI：
@@ -16,6 +16,7 @@ pnpm install
 
 如果您克隆了 **整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，而不是单独下载包，运行 `pnpm install` 和 `pnpm run build` 在仓库根目录，然后运行 `cd examples/<name>`。
 
+<a id="list-of-examples"></a>
 ## 示例列表
 
 <a id="console-app"></a>

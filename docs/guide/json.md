@@ -100,7 +100,8 @@ When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, 
 |-----------|-----|
 | UI strings in `t("…")` / `i18n.t("…")` in JS/TS/Astro | [UI strings](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, **not** `json[]` |
-| VitePress theme/nav/sidebar JSON (nested catalog you author) | JSON — `json[]` + `translate-json`; page bodies stay in Documents — see [VitePress integration](/guide/vitepress-integration) |
+| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **do not** use `json[]` — see [VitePress integration](/guide/vitepress-integration) |
+| Nextra `_meta.ts` labels and theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` when `style: "nextra"`, optional `nextraDictionaryPath`); **do not** use `json[]` — see [Nextra integration](/guide/nextra-integration) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
 | Illustrated `.svg` files with `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (optional; not one of the three main pipelines) |
 

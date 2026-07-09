@@ -18,7 +18,7 @@
 
 VitePress별 작성 규칙은 [VitePress 통합 — 링크 규칙](/guide/vitepress-integration#link-conventions)을 참조하세요.
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
 
 내장 재작성기가 충분하지 않을 때 `docs[].docsOutput.postProcessing` 아래에 정렬된 `{ "description"?, "search", "replace" }` 규칙을 추가합니다. 예를 들면 다음과 같습니다.

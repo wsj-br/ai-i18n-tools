@@ -705,7 +705,7 @@ export const initConfigTemplates = {
     features: {
       translateUIStrings: false,
       translateDocs: true,
-      translateJson: true,
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {
@@ -729,20 +729,56 @@ export const initConfigTemplates = {
           style: "vitepress",
           docsRoot: "docs",
           rewriteVitepressLinks: true,
+          vitepressThemeCatalog: {
+            configPath: "docs/.vitepress/config.mts",
+            catalogPath: "docs/.vitepress/i18n/theme.en.json",
+          },
         },
         addFrontmatter: true,
       },
     ],
-    json: [
+  }),
+
+  uiNextra: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en-GB",
+    targetLocales: ["pt-BR", "zh-Hans"],
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
+    },
+    features: {
+      translateUIStrings: false,
+      translateDocs: true,
+      translateJson: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "./locales",
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [
       {
-        description: "VitePress theme/nav/sidebar strings",
-        contentPaths: "docs/.vitepress/i18n/theme.en.json",
-        outputPathTemplate: "docs/.vitepress/i18n/theme.{locale}.json",
-        keyPolicy: {
-          mode: "denylist",
-          skipKeys: [],
-          translateKeys: [],
+        contentPaths: ["content/en"],
+        outputDir: "content",
+        nextraDictionaryPath: "app/_dictionaries/en.ts",
+        docsOutput: {
+          style: "nextra",
+          docsRoot: "content/en",
+          rewriteNextraLinks: true,
         },
+        addFrontmatter: false,
       },
     ],
   }),

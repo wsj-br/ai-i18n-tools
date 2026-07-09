@@ -5,7 +5,9 @@ Designed primarily for **markdown, MDX, and `.astro` documentation** managed thr
 
 On Docusaurus sites, also set `docusaurusCatalogDir` to your `write-translations` catalog folder (e.g. `docs-site/i18n/en`). Then `translate-docs` includes shell JSON too — navbar, footer, and theme strings.
 
-On [VitePress](/guide/vitepress-integration) sites, page bodies use the same `docs[]` pipeline. Nav, sidebar, and footer labels live in a separate JSON catalog — translate them with the [JSON](/guide/json) pipeline and `translate-json`.
+On [VitePress](/guide/vitepress-integration) sites, page bodies use the same `docs[]` pipeline. Nav, sidebar, and footer labels live in `docsOutput.vitepressThemeCatalog` — `translate-docs` bootstraps the English catalog and translates it alongside pages, no separate pipeline.
+
+On [Nextra](/guide/nextra-integration) sites, page bodies use the same `docs[]` pipeline with `docsOutput.style: "nextra"`. `_meta.ts` sidebar labels are collected and translated automatically by `translate-docs`; theme dictionary strings translate via `docs[].nextraDictionaryPath` in the same pipeline.
 
 For PNG and other raster images embedded in markdown, see [Images & Screenshots](/guide/images-and-screenshots/). `translate-docs` translates alt text only; it does not copy raster files.
 
@@ -13,7 +15,7 @@ For an optional **language switcher** block in README or docs, set `docsOutput.s
 
 SVG files are translated via [`translate-svg`](/reference/cli-commands) when `features.translateSVG` is enabled — not through `docs[]` / `contentPaths`.
 
-Arbitrary nested UI JSON bundles (not Docusaurus catalogs) belong in the [JSON](/guide/json) pipeline, not in `docs[]`.
+Arbitrary nested UI JSON bundles unrelated to a documentation framework's shell/theme strings belong in the [JSON](/guide/json) pipeline, not in `docs[]`.
 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
@@ -26,7 +28,8 @@ Arbitrary nested UI JSON bundles (not Docusaurus catalogs) belong in the [JSON](
 | Your setup | Start here |
 | --- | --- |
 | Docusaurus site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Step 1](#step-1-initialise-for-documentation) |
-| VitePress site | `init -t ui-vitepress` + `json[]` for theme — [VitePress integration](/guide/vitepress-integration) |
+| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` for theme — [VitePress integration](/guide/vitepress-integration) |
+| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` for dictionary (sidebar `_meta.ts` is automatic) — [Nextra integration](/guide/nextra-integration) |
 | Astro Starlight | `init -t ui-starlight` — [Step 1](#step-1-initialise-for-documentation) |
 | Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
 | Where translated files land | [Output layouts](/guide/documents/output-layouts) |
@@ -54,7 +57,7 @@ For VitePress documentation sites:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Enable `features.translateJson` and add a `json[]` entry for VitePress theme strings — see [VitePress integration](/guide/vitepress-integration).
+Set `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings — see [VitePress integration](/guide/vitepress-integration).
 
 For plain Astro website UI (no Starlight):
 
@@ -73,7 +76,7 @@ Edit the generated `ai-i18n-tools.config.json`:
 - `docs[].description` - optional short note for maintainers. When set, it appears in the `translate-docs` headline and in `status` section headers.
 - `docs[].contentPaths` - markdown/MDX/`.astro` sources (and optional `docusaurusCatalogDir` for Docusaurus shell JSON).
 - `docs[].outputDir` - translated output root for that block.
-- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (see [Output layouts](/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` (see [Output layouts](/guide/documents/output-layouts)).
 
 **Primary vs supplementary:** Focus on `contentPaths` for localised pages. Set `docusaurusCatalogDir` when you also need Docusaurus shell JSON from `write-translations`. Omit `docusaurusCatalogDir` if you only translate pages.
 

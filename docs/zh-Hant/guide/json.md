@@ -100,7 +100,8 @@ npx ai-i18n-tools status
 |-----------|-----|
 | JS/TS/Astro 中的 UI 字串位於 `t("…")` / `i18n.t("…")` | [UI 字串](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` 目錄 (`{ "key": { "message": "…", "description": "…" } }`) | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs`，**不是** `json[]` |
-| VitePress 主題/導覽/側邊欄 JSON (您編寫的巢狀目錄) | JSON — `json[]` + `translate-json`；頁面主體保留在文件中 — 請參閱 [VitePress 整合](/guide/vitepress-integration) |
+| VitePress 主題/導覽列/側邊欄字串 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs`；**請勿**使用 `json[]` — 請參閱 [VitePress 整合](/guide/vitepress-integration) |
+| Nextra `_meta.ts` 標籤與主題字典 `.ts` | 文件 — `translate-docs`（當 `style: "nextra"` 時自動 `_meta`，選用 `nextraDictionaryPath`）；**請勿**使用 `json[]` — 請參閱 [Nextra 整合](/guide/nextra-integration) |
 | 獨立的巢狀地區設定 JSON (ZenBrowser 樣式 `translation.json` 樹) | JSON — `json[]` + `translate-json` |
 | 附有 `<text>` / `<title>` / `<desc>` 的圖解 `.svg` 檔案 | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (選用；非三個主要管道之一) |
 

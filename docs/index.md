@@ -10,14 +10,14 @@ description: CLI and toolkit for internationalizing JavaScript/TypeScript applic
 
 **Translate your app and documentation using the AI model of your choice: no lock-in, no rewrites.**
 
-`ai-i18n-tools` is a CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites - including Docusaurus, Astro, Starlight, VitePress, and plain Markdown/MDX - using large language models.
+`ai-i18n-tools` is a CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites - including Docusaurus, Astro, Starlight, VitePress, Nextra, and plain Markdown/MDX - using large language models.
 
 Point it at any provider and start translating: **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, any [OpenRouter](https://openrouter.ai/) model (hundreds to choose from with a single API key), or **Ollama** for fully self-hosted, offline translation. Switch providers or models per project—or even per language—without modifying your codebase.
 
 One config file drives three translation modes, so you can mix and match based on how your content is structured:
 
 - **UI strings** — Extracts `t("…")` calls from JS/TS (and optionally `.astro` files) and generates flat, per-locale JSON for i18next or static SSG lookup.
-- **Documents** — Translates Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths` using `translate-docs`. Works with **VitePress**, **Starlight**, **Docusaurus**, Astro-based sites, or any static site generator that reads from Markdown/MDX/`.astro` source files.
+- **Documents** — Translates Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths` using `translate-docs`. Works with **VitePress**, **Starlight**, **Docusaurus**, **Nextra**, Astro-based sites, or any static site generator that reads from Markdown/MDX/`.astro` source files.
 - **JSON** — Translates arbitrary nested JSON bundles defined in `json[]`. Use `translate-json` when UI copy lives in per-locale JSON files instead of `t()` calls in source.
 
 **SVG** assets get their own path: `features.translateSVG`, the top-level `svg` block, and `translate-svg`—not `docs[].contentPaths`.
@@ -27,7 +27,7 @@ One config file drives three translation modes, so you can mix and match based o
 | Your content                                                                  | Command                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | Source code uses `t()`                                                        | **UI strings** — `extract` / `translate-ui` |
-| Localized pages or docs sites (VitePress, Starlight, Docusaurus, Astro, etc.) | **Documents** — `translate-docs`            |
+| Localized pages or docs sites (VitePress, Starlight, Docusaurus, Nextra, Astro, etc.) | **Documents** — `translate-docs`            |
 | Standalone, nested JSON locale files                                          | **JSON** — `translate-json`                 |
 
 All three share a file/SQLite cache, so only new or changed segments (strings or text chunks) are ever re-sent to the model — reruns are fast and cheap regardless of which provider you're using.
@@ -37,7 +37,7 @@ All three share a file/SQLite cache, so only new or changed segments (strings or
 
 Each translation type has its own guide with full configuration details: [UI strings](/guide/ui-strings/), [Documents](/guide/documents/), and [JSON](/guide/json). See [What is ai-i18n-tools?](/guide/what-is-ai-i18n-tools) for a side-by-side comparison.
 
-A few things worth knowing up front: UI strings translates missing entries per locale via the active LLM provider (see [LLM providers](#llm-providers)) and writes flat JSON files (`de.json`, `pt-BR.json`, …), with the English source text as the runtime lookup key — `strings.json` is the extraction cache, not the runtime bundle. Documents supports `docs[].docsOutput.style` values `"nested"`, `"flat"`, `"doc-system"`, and aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` (see [Output layouts](/guide/documents/output-layouts)). All three share `ai-i18n-tools.config.json` and can be combined; `sync` runs extract, UI translation, translate SVG, `translate-docs`, and `translate-json` in order according to your `features` flags.
+A few things worth knowing up front: UI strings translates missing entries per locale via the active LLM provider (see [LLM providers](#llm-providers)) and writes flat JSON files (`de.json`, `pt-BR.json`, …), with the English source text as the runtime lookup key — `strings.json` is the extraction cache, not the runtime bundle. Documents supports `docs[].docsOutput.style` values `"nested"`, `"flat"`, `"doc-system"`, and aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` (see [Output layouts](/guide/documents/output-layouts)). All three share `ai-i18n-tools.config.json` and can be combined; `sync` runs extract, UI translation, translate SVG, `translate-docs`, and `translate-json` in order according to your `features` flags.
 
 ---
 
@@ -107,13 +107,27 @@ Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `sync`
 
 Configure providers under a top-level `providers` map and pick the active one with a top-level `provider` selector (optional when exactly one provider is configured). Most providers need only a `translationModels` list — `baseUrl` and the API-key environment variable come from a built-in preset; you can override `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature`, and `requestTimeoutMs` per provider. `requestTimeoutMs` is the maximum time in milliseconds to wait for each request (default `30000`).
 
+Optional model tiers on each provider block:
+
+- `translationModels` — global ordered fallback chain (required for translation features).
+- `uiModels` — UI-only chain (`translate-ui`, plural generation, `proofread-ui`): tried after any matching `localeModels` entry, before `translationModels`.
+- `localeModels` — per-locale overrides for **all** pipelines: each entry maps a BCP-47 locale to an ordered model list tried first for that locale only (`pt-br` matches `pt-BR`).
+
+Resolution order: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **docs / JSON / SVG** → `localeModels(locale)` → `translationModels`. Duplicate model ids are skipped while preserving order.
+
 To switch providers for a single run without editing the config, pass the global `-P` / `--provider <name>` option (e.g. `ai-i18n-tools -P groq translate-ui`); the name must be one of the configured `providers` keys.
 
 ```jsonc
 {
   "provider": "openrouter",
   "providers": {
-    "openrouter": { "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"] },
+    "openrouter": {
+      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
+      "uiModels": ["anthropic/claude-sonnet-latest"],
+      "localeModels": [
+        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+      ]
+    },
     "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
@@ -140,7 +154,7 @@ Built-in provider presets (key — base URL — API-key env var):
 
 Define a custom OpenAI-compatible provider by adding a new key with `baseUrl` (and `apiKeyEnv` unless it needs no key). Model ids are plain upstream ids — the provider is chosen at the config level, so no `provider/` prefix is needed (OpenRouter ids keep their native `vendor/model` form).
 
-Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates configured model ids against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks each configured model by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
+Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates all configured model ids (`translationModels`, `uiModels`, and every `localeModels` entry) against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks every unique configured model id (`translationModels`, `uiModels`, and `localeModels`) by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
 
 A legacy top-level `openrouter` config block is still accepted and is automatically migrated to `providers.openrouter` (with `provider: "openrouter"`) on load.
 
@@ -179,8 +193,11 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight documentation
 # npx ai-i18n-tools init -t ui-starlight
 
-# VitePress documentation (pages + theme JSON)
+# VitePress documentation (pages + theme catalog)
 # npx ai-i18n-tools init -t ui-vitepress
+
+# Nextra documentation (pages + _meta.ts + theme dictionary)
+# npx ai-i18n-tools init -t ui-nextra
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
@@ -190,12 +207,17 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
+Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
 
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` scaffolds `docsOutput.style: "vitepress"` plus a `json[]` block for theme/nav/sidebar strings. Run `sync` to translate page markdown and `theme.{locale}.json` together. See [VitePress integration](/guide/vitepress-integration) and [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+`init -t ui-vitepress` scaffolds `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings. Run `sync` to translate page markdown and the theme catalog together — no separate JSON pipeline. See [VitePress integration](/guide/vitepress-integration) and [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+
+<a id="nextra"></a>
+### Nextra
+
+`init -t ui-nextra` scaffolds `docsOutput.style: "nextra"`. `translate-docs` automatically collects and translates `_meta.ts` sidebar labels; set `docs[].nextraDictionaryPath` to also translate the theme dictionary module (e.g. `app/_dictionaries/en.ts`) — all in the same `sync` run, no JSON sidecars. See [Nextra integration](/guide/nextra-integration) and [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
@@ -257,7 +279,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -309,7 +331,7 @@ The requested locale is matched against the shipped UI languages exactly or by c
 - [Locale assets guide](/guide/images-and-screenshots/) - screenshots and illustrated SVGs in translated docs (flat link rewriter, screenshot scripts).
 - [Architecture](/reference/architecture) - architecture, internals, programmatic API, and extension points.
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **for apps using the package:** integration prompts for downstream projects (copy into your repo’s agent rules).
-- Maintainer internals for **this** repository: `dev/package-context.md` (clone-only; not on npm).
+- Maintainer guide for **this** repository: `AGENT.md` (rules and workflows; clone-only; not on npm). Pipeline reference: `docs/reference/`. Local dev and publishing: `dev/DEVEL.md`.
 
 ---
 

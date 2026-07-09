@@ -62,8 +62,8 @@ Endonym labels (`label: "local"`) ke liye, `ui-languages.json` ko `generate-ui-l
 
 | Udaharan | Files |
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Yah package (flat README + VitePress site) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README block: `docsOutput.style = "flat"`; site block: `docsOutput.style = "vitepress"`; theme JSON via `json[]`) |
+| Yah package (flat README + VitePress site) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README block: `docsOutput.style = "flat"`; site block: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | Flat README + Docusaurus docs | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (doosra block: `docsOutput.style = "flat"`; pehla block: `docsOutput.style = "docusaurus"`) |
-| VitePress docs (minimal demo) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `json[]` theme catalog) |
+| VitePress docs (minimal demo) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` se theek pehle ki line (jaise ki `**Read in other languages:**`) ek normal translatable segment hai aur har target locale mein sthanikrit hoti hai; sirf markers ke andar ki link row ko `href` aur manifest-driven labels ke alawa verbatim regenerate kiya jaata hai.

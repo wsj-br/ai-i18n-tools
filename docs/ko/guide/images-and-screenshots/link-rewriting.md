@@ -17,7 +17,7 @@ source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: loc
 
 `docsOutput.style = "doc-system"`(포함 `"docusaurus"`, `"astro-starlight"`, 및 `"nested"`)의 경우, 플랫 링크 재작성기는 실행되지 않습니다. `regexAdjustments`는 번역된 마크다운의 원본 URL(일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로)을 봅니다.
 
-<a id="vitepress-link-normalizer"></a>
+<a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress 링크 정규화 도구 (`style: "vitepress"`)
 
 `docsOutput.rewriteVitepressLinks`가 `true`일 때(기본값은 `style`가 `"vitepress"`일 때), 세그먼트 재조립 후에 별도의 정규화 도구가 실행됩니다(플랫 재작성기 대신). 이는 영어가 콘텐츠 루트에 있고 로케일이 형제 폴더(예: `docs/de/guide/…`)에 있는 VitePress/문서 시스템 사이트를 대상으로 합니다.
@@ -56,7 +56,7 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `docsOutput.linkRewriteDocsRoot`     | `depthPrefix`가 계산되는 기준 루트(기본값 `"."`)                                                        |
 | `docsOutput.flatPreserveRelativeDir` | 출력 경로 레이아웃에 영향을 주며, 리라이터는 알려진 번역 파일의 대상 경로를 계산할 때 이를 사용함       |
 
-<a id="postprocessing-regexadjustments"></a>
+<a id="docsoutputpostprocessingregexadjustments"></a>
 ### `docsOutput.postProcessing.regexAdjustments`
 
 내장 재작성기가 처리하지 않는 이미지, 스크린샷 및 기타 자산 URL을 재작성하려면 `docs[].docsOutput.postProcessing` 아래에 정렬된 `{ "description"?, "search", "replace" }` 규칙을 구성하십시오. 일반적으로 로케일 폴더 세그먼트(`screenshots/en-GB/` → `screenshots/de/`)를 교환하거나 절대 정적 경로(`/img/…` → `../assets/…`)를 연결합니다.

@@ -5,6 +5,10 @@ import path from "path";
  * `docs` blocks exist, so the same relative path in different blocks does not collide.
  */
 const PREFIX = "doc-block:";
+const JSON_PREFIX = "json-block:";
+const META_PREFIX = "nextra-meta:";
+const DICTIONARY_PREFIX = "nextra-dictionary:";
+const VITEPRESS_THEME_PREFIX = "vitepress-theme:";
 
 /**
  * @param relPath - Path segment after the block id: project-root-relative posix (e.g. markdown under
@@ -17,7 +21,7 @@ export function documentationFileTrackingKey(blockIndex: number, relPath: string
 
 /** Resolve a stored filepath key to an absolute path under project root for existence checks. */
 export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string): string {
-  for (const prefix of [PREFIX, JSON_PREFIX]) {
+  for (const prefix of [PREFIX, JSON_PREFIX, META_PREFIX, DICTIONARY_PREFIX, VITEPRESS_THEME_PREFIX]) {
     if (filepath.startsWith(prefix)) {
       const rest = filepath.slice(prefix.length);
       const idx = rest.indexOf(":");
@@ -34,7 +38,20 @@ export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string
  * For editor / server console links: `doc-block:{n}:rel/path` → `rel/path`; returns `filepath` unchanged
  * when it is not a documentation file-tracking key (e.g. plain paths, `svg-files:…`).
  */
-const JSON_PREFIX = "json-block:";
+export function metaFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${META_PREFIX}${blockIndex}:${p}`;
+}
+
+export function dictionaryFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${DICTIONARY_PREFIX}${blockIndex}:${p}`;
+}
+
+export function vitepressThemeFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${VITEPRESS_THEME_PREFIX}${blockIndex}:${p}`;
+}
 
 export function jsonBlockFileTrackingKey(blockIndex: number, relPath: string): string {
   const p = relPath.split("\\").join("/");

@@ -3,7 +3,7 @@
 
 GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にある実行可能なプロジェクト — それぞれに独自の構成、コミットされたロケール出力、および README があります。API キーなしで翻訳済みファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です（[プロバイダーとモデル](/guide/providers-and-models)）。
 
-<a id="run-standalone"></a>
+<a id="run-standalone-npx-degit"></a>
 ## スタンドアロンで実行 (`npx degit`)
 
 リポジトリ全体をクローンせずに、1 つの例をコピーします。それぞれが `"ai-i18n-tools": "^1.7.2"` を宣言し、npm から CLI をインストールします。
@@ -16,6 +16,7 @@ pnpm install
 
 代わりに [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリを**すべて**クローンした場合は、リポジトリのルートで `pnpm install` と `pnpm run build` を実行し、次に `cd examples/<name>` を実行します。
 
+<a id="list-of-examples"></a>
 ## 例のリスト
 
 <a id="console-app"></a>

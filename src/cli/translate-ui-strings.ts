@@ -438,7 +438,7 @@ async function runTranslateUIBody(
         console.log(
           chalk.green(
             t(
-              "✔️  {{locale}} {{path}}: plural Step 0 {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens)",
+              "✔️  {{locale}} {{path}}: plural Step 0 {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens, model: {{model}})",
               {
                 locale: srcNorm,
                 path: stringsRel,
@@ -446,6 +446,7 @@ async function runTranslateUIBody(
                 total: step0Total,
                 id: h,
                 tokens: batch.usage.totalTokens,
+                model: batch.model,
               }
             )
           )
@@ -574,23 +575,25 @@ async function runTranslateUIBody(
           const batchMsg =
             n === 1
               ? t(
-                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} string in batch, {{tokens}} tokens)",
+                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} string in batch, {{tokens}} tokens, model: {{model}})",
                   {
                     locale,
                     path: stringsRel,
                     range: rangeLabel,
                     count: n,
                     tokens: uiBatch.usage.totalTokens,
+                    model: uiBatch.model,
                   }
                 )
               : t(
-                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} strings in batch, {{tokens}} tokens)",
+                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} strings in batch, {{tokens}} tokens, model: {{model}})",
                   {
                     locale,
                     path: stringsRel,
                     range: rangeLabel,
                     count: n,
                     tokens: uiBatch.usage.totalTokens,
+                    model: uiBatch.model,
                   }
                 );
           console.log(chalk.green(batchMsg));
@@ -705,7 +708,7 @@ async function runTranslateUIBody(
           console.log(
             chalk.green(
               t(
-                "✔️  {{locale}} {{path}}: plural {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens)",
+                "✔️  {{locale}} {{path}}: plural {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens, model: {{model}})",
                 {
                   locale,
                   path: stringsRel,
@@ -713,6 +716,7 @@ async function runTranslateUIBody(
                   total: pluralTargets.length,
                   id: h,
                   tokens: batch.usage.totalTokens,
+                  model: batch.model,
                 }
               )
             )

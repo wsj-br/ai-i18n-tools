@@ -100,7 +100,8 @@ npx ai-i18n-tools status
 |-----------|-----|
 | JS/TS/Astro 中的 UI 字符串位于 `t("…")` / `i18n.t("…")` 中 | [UI 字符串](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` 目录 (`{ "key": { "message": "…", "description": "…" } }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs`，**不是** `json[]` |
-| VitePress 主题/导航/侧边栏 JSON（您编写的嵌套目录） | JSON — `json[]` + `translate-json`；页面正文保留在文档中 — 请参阅 [VitePress 集成](/guide/vitepress-integration) |
+| VitePress 主题/导航/侧边栏字符串 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs`；**不要**使用 `json[]` — 参见 [VitePress 集成](/guide/vitepress-integration) |
+| Nextra `_meta.ts` 标签和主题字典 `.ts` | 文档 — `translate-docs`（当 `style: "nextra"` 时自动 `_meta`，可选 `nextraDictionaryPath`）；**不要**使用 `json[]` — 参见 [Nextra 集成](/guide/nextra-integration) |
 | 独立嵌套区域设置 JSON（ZenBrowser 风格的 `translation.json` 树） | JSON — `json[]` + `translate-json` |
 | 带有 `<text>` / `<title>` / `<desc>` 的图示 `.svg` 文件 | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg`（可选；不是三个主要管道之一） |
 

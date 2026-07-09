@@ -3,7 +3,7 @@
 
 Runnable projects under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) on GitHub — each with its own config, committed locale outputs, and README. You can explore translated files without an API key; re-running translation requires a provider key ([Providers and models](/guide/providers-and-models)).
 
-<a id="run-standalone"></a>
+<a id="run-standalone-npx-degit"></a>
 ## Run standalone (`npx degit`)
 
 Copy one example without cloning the full repository. Each declares `"ai-i18n-tools": "^1.7.2"` and installs the CLI from npm:
@@ -17,6 +17,7 @@ pnpm install
 If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository instead, run `pnpm install` and `pnpm run build` at the repository root, then `cd examples/<name>`.
 
 
+<a id="list-of-examples"></a>
 ## List of Examples
 
 <a id="console-app"></a>

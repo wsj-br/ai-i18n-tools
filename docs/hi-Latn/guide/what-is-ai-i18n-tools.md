@@ -6,10 +6,10 @@ ai-i18n-tools ek command-line tool aur toolkit hai jo aapko apne pasandida LLM p
 <a id="translation-modes"></a>
 ## Anuvad modes
 
-- **UI strings** — JS/TS source se `t("…")` calls (aur is tarah ke markers) nikaalein aur i18next ya static lookup ke liye flat per-locale JSON files likhein. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/).
-- **Documents** — `docs[].contentPaths` mein soochi mein diye gaye Markdown, MDX, aur `.astro` pages ka anuvad karein. VitePress, Starlight, Docusaurus, Astro, aur anya static doc sites ke saath kaam karta hai. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
-- **JSON** — Top-level `json[]` mein paribhashit nested JSON locale bundles (theme labels, i18n overrides, app copy jo source mein nahi hai) ka anuvad karein. Command: `translate-json`. Guide: [JSON](/guide/json).
-- **SVG** — SVG illustrations (`<text>`, `<title>`, `<desc>`) ke andar dikhne wale text ka anuvad karein aur har locale ke liye ek output file likhein. Document translation se alag — `translate-docs` SVG assets ko modify nahi karta hai. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
+- **UI strings** — JS/TS source se `t("…")` calls (aur similar markers) extract karein aur i18next ya static lookup ke liye flat per-locale JSON files likhein. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/).
+- **Documents** — Markdown, MDX, aur `.astro` pages ko translate karein jo `docs[].contentPaths` mein listed hain. VitePress, Starlight, Docusaurus, Nextra, Astro, aur anya static doc sites ke saath kaam karta hai. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
+- **JSON** — Top-level `json[]` mein define kiye gaye nested JSON locale bundles (theme labels, i18n overrides, app copy jo source mein nahi hai) ko translate karein. Command: `translate-json`. Guide: [JSON](/guide/json).
+- **SVG** — SVG illustrations (`<text>`, `<title>`, `<desc>`) ke andar visible text ko translate karein aur har locale ke liye ek output file likhein. Document translation se alag — `translate-docs` SVG assets ko modify nahi karta hai. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
 
 Charon modes active [LLM provider](/guide/providers-and-models) ka upyog karte hain, ek hi config file share karte hain, aur ek SQLite cache ka punarupyog karte hain taaki reruns kewal naye ya badle hue text ko model mein bhejte hain.
 
@@ -36,7 +36,8 @@ Repository `examples/` ke tahat chalne wale example projects ship karta hai — 
 | [nextjs-app](/examples#nextjs-app) | Next.js UI, plurals, SVG, Docusaurus docs site, dashboard |
 | [astro-website](/examples#astro-website) | Astro marketing site: full-page HTML translation aur `t()` strings |
 | [astro-docs](/examples#astro-docs) | Astro Starlight documentation site |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress docs aur theme JSON |
+| [vitepress-docs](/examples#vitepress-docs) | VitePress docs aur theme catalog |
+| [nextra-docs](/examples#nextra-docs) | Nextra docs aur `_meta.ts` sidebar labels aur theme dictionary |
 | [multi-provider](/examples#multi-provider) | Ek hi document par LLM providers ki tulna karein |
 | [test-markdown](/examples#test-markdown) | Markdown pipeline stress tests (CJK, Devanagari, edge cases) |
 

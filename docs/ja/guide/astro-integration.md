@@ -47,6 +47,20 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます。詳細については、[ドキュメント — ドキュメントの初期化](/guide/documents/#step-1-initialise-for-documentation)を参照してください。
 
+<a id="framework-shell-translation"></a>
+### フレームワークシェルの翻訳
+
+Starlightは、多くのロケール（ナビゲーションラベル、検索プレースホルダー、目次など）向けに独自の組み込みUI文字列を出荷しています。Docusaurus、VitePress、Nextraとは異なり、設定する個別のシェル/テーマパイプラインはありません。
+
+| フレームワーク | シェル / テーマ文字列 | パイプライン |
+|-----------|----------------------|----------|
+| Astro Starlight | 組み込みUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
+| Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts`サイドバーラベル + テーマ辞書`.ts` | ドキュメント — [Nextra統合](/guide/nextra-integration)を参照 |
+
+他のフレームワークパターンについては、[Docusaurus統合](/guide/docusaurus-integration)と[VitePress統合](/guide/vitepress-integration)を参照してください。
+
 <a id="example-project"></a>
 ### プロジェクト例
 

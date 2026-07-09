@@ -3,7 +3,7 @@
 
 GitHub par [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke tahat chalne yogya project — har ek apni config, committed locale outputs, aur README ke saath. Aap API key ke bina anuvaadit files ko explore kar sakte hain; anuvaad ko phir se chalane ke liye ek provider key ki avashyakta hoti hai ([Providers and models](/guide/providers-and-models)).
 
-<a id="run-standalone"></a>
+<a id="run-standalone-npx-degit"></a>
 ## Standalone chalaen (`npx degit`)
 
 Poori repository ko clone kiye bina ek udaharan copy karein. Har ek `"ai-i18n-tools": "^1.7.2"` ghoshit karta hai aur npm se CLI install karta hai:
@@ -16,7 +16,8 @@ pnpm install
 
 Yadi aapne iske bajay **poori** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository ko clone kiya hai, to repository root par `pnpm install` aur `pnpm run build` chalaen, phir `cd examples/<name>`.
 
-## Udaharanon ki Soochi
+<a id="list-of-examples"></a>
+## Udaharanon ki soochi
 
 <a id="console-app"></a>
 <a id="nextjs-app"></a>

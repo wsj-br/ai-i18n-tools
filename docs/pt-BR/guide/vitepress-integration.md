@@ -3,7 +3,7 @@
 
 Use `init -t ui-vitepress` e `docsOutput.style: "vitepress"` para sites de documentação [VitePress](https://vitepress.dev/). O preset é um alias para `doc-system` com um `localeSubpath` vazio e nomes de pastas de localidade BCP-47 preservados (`localePathLowercase` assume o padrão `false`, então as pastas permanecem `pt-BR`, `zh-Hans`, etc.).
 
-Consulte também [Documentos](/guide/documents/), [JSON](/guide/json) (strings de tema) e a demonstração executável [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/). O próprio site de documentação deste repositório em `docs/` é uma referência completa do VitePress + ai-i18n-tools (nove locais, JSON de tema, GitHub Pages).
+Consulte também [Documentos](/guide/documents/) e a demonstração executável [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/). O próprio site de documentação deste repositório em `docs/` é uma referência completa do VitePress + ai-i18n-tools (nove locais, catálogo de temas, GitHub Pages).
 
 <a id="quick-start"></a>
 ## Primeiros passos
@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
 ```
 
-Habilite `features.translateDocs` e `features.translateJson` ao traduzir o conteúdo da página e as strings do chrome do VitePress em uma única execução de `sync`.
+Habilite `features.translateDocs` ao traduzir o conteúdo da página e as strings do chrome do VitePress em uma única execução de `sync`.
 
 <a id="page-layout"></a>
 ## Layout da página
@@ -48,43 +48,95 @@ Conecte a [internacionalização](https://vitepress.dev/guide/i18n) do VitePress
 <a id="theme-strings"></a>
 ## Strings de tema
 
-Os rótulos de navegação, barra lateral, rodapé, placeholder de pesquisa e outros `themeConfig` do VitePress não são extraídos do markdown. Crie um catálogo JSON aninhado (por exemplo `docs/.vitepress/i18n/theme.en.json`) e traduza-o com JSON:
+A navegação, barra lateral, rodapé, placeholder de pesquisa e outros rótulos `themeConfig` do VitePress não são extraídos do markdown. Configure o **`docsOutput.vitepressThemeCatalog`** para que o **`translate-docs`** inicialize o catálogo em inglês a partir de `.vitepress/config.mts` (quando as strings estão inline) e traduza os arquivos JSON do tema do local:
 
 ```json
 {
   "features": {
-    "translateJson": true
+    "translateDocs": true
   },
-  "json": [
+  "docs": [
     {
-      "description": "VitePress theme/nav/sidebar strings",
-      "contentPaths": "docs/.vitepress/i18n/theme.en.json",
-      "outputPathTemplate": "docs/.vitepress/i18n/theme.{locale}.json"
+      "contentPaths": ["docs/index.md", "docs/guide"],
+      "outputDir": "docs",
+      "docsOutput": {
+        "style": "vitepress",
+        "docsRoot": "docs",
+        "vitepressThemeCatalog": {
+          "configPath": "docs/.vitepress/config.mts",
+          "catalogPath": "docs/.vitepress/i18n/theme.en.json"
+        }
+      }
     }
   ]
 }
 ```
 
-Carregue o arquivo por localidade em `.vitepress/config.mts` e construa `locales[code].themeConfig` a partir do JSON traduzido (texto de navegação, títulos de grupo da barra lateral, mensagem de rodapé e assim por diante). Não codifique rótulos traduzidos em `config.mts` — regenere-os com `sync` / `translate-json` quando o inglês mudar.
+- **`catalogPath`** — JSON aninhado em inglês gerado (saída de bootstrap). Os autores não mantêm este arquivo manualmente quando o inglês está em `config.mts`; execute novamente `sync` para atualizá-lo.
+- **`outputPathTemplate`** (opcional) — saídas por local; padrão: mesmo diretório que `catalogPath` com `theme.{locale}.json`.
 
-Este pacote carrega `theme.{locale}.json` em [docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/.vitepress/config.mts); compare com [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) para uma configuração mínima de dois locais.
+Carregue o arquivo por local em `.vitepress/config.mts` via `loadTheme()` e construa `locales[code].themeConfig` a partir do JSON traduzido. Consulte [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts).
 
-<a id="docusaurus-vs-vitepress-shell-json"></a>
-## Docusaurus vs. JSON shell do VitePress
+**Não** use `json[]` para strings de tema do VitePress — esse padrão é apenas para pacotes de local de aplicativos não relacionados.
+
+<a id="wire-config-mts-to-generated-theme-json"></a>
+## Conectar config.mts ao JSON de tema gerado (uma única vez)
+
+Após a primeira execução bem-sucedida de `i18n:sync` / `translate-docs` com `vitepressThemeCatalog`, o repositório gerou `theme.en.json` e `theme.{locale}.json`, mas um site **existente** ainda pode ter strings `text:` / `message:` codificadas em `config.mts`. O VitePress não usará o JSON traduzido até que a configuração o carregue via `loadTheme()`.
+
+**Não está no escopo da ferramenta:** codemod automático. Use o prompt abaixo uma vez por projeto (ou refatore manualmente usando a configuração de exemplo).
+
+1. **Quando** — após a primeira sincronização produzir `catalogPath` e arquivos de tema de local; antes de esperar navegação/barra lateral traduzida em dev/build.
+2. **Manter inalterado** — links de rota (`/guide/…`), chaves de local, estrutura `defineConfig`, opções não-string (provedor de pesquisa, sinalizadores recolhidos).
+3. **Referência** — [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts) e formato `theme.en.json` gerado.
+4. **Verificar** — `pnpm docs:dev`, alternar local na navegação, confirmar que barra lateral/rodapé/placeholder de pesquisa traduzem; `pnpm docs:build` passa.
+
+**Exemplo de prompt de agente de IA** (copie para o Cursor ou outro agente de codificação):
+
+```markdown
+Refactor our VitePress config to load theme strings from generated JSON files instead of hardcoded literals.
+
+Context:
+- ai-i18n-tools already generated English and locale theme catalogs via `docsOutput.vitepressThemeCatalog`.
+- English catalog: `docs/.vitepress/i18n/theme.en.json`
+- Locale catalogs: `docs/.vitepress/i18n/theme.{locale}.json` (e.g. pt-BR, zh-Hans)
+- Target file: `docs/.vitepress/config.mts` (or our project's equivalent path)
+- Reference pattern: https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/docs/.vitepress/config.mts
+
+Requirements:
+1. Add `loadTheme(localeFile: string)` that reads JSON from `docs/.vitepress/i18n/` (use `import.meta.url` / `fileURLToPath` for ESM paths).
+2. Add `themeConfigFor(t)` that builds VitePress `themeConfig` from the catalog — keep all **links and structure** in TypeScript; only **display strings** come from JSON keys matching `theme.en.json`.
+3. Wire `locales.root` and each target locale in `locales[code]` to `loadTheme('theme.en.json')` or `loadTheme('theme.{code}.json')`, then `themeConfig: themeConfigFor(theme)`.
+4. Align locale codes with `ai-i18n-tools.config.json` `targetLocales` and existing VitePress `locales` keys.
+5. Do **not** change markdown content paths, `base`, or link targets — only move translatable labels out of inline string literals.
+6. Preserve any project-specific options (ignoreDeadLinks, head config, etc.).
+
+After editing:
+- Run `pnpm docs:dev` (or our docs dev script) and confirm English + at least one translated locale show correct nav/sidebar/footer/search placeholder.
+- If a string exists in config but not in `theme.en.json`, add a matching key to the JSON shape in `themeConfigFor` and note that the user should re-run `i18n:sync` to refresh catalogs from config if needed.
+
+Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
+```
+
+<a id="framework-shell-translation"></a>
+## Tradução do shell do framework
 
 | Framework | Strings Shell / tema | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo JSON aninhado personalizado que você cria | JSON — `json[]` + `translate-json` (ou `sync` quando `translateJson` está ativado) |
+| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
+| Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-Não coloque o JSON do tema VitePress em `docs[]`; use `json[]` em vez disso.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração Nextra](/guide/nextra-integration) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — Fontes em inglês em `docs/`, árvores de páginas `pt-BR` e `zh-Hans` confirmadas, mais `theme.pt-BR.json` / `theme.zh-Hans.json`. Execute `pnpm run docs:dev` na porta 3060.
 
-<a id="readme-as-homepage"></a>
+<a id="readme-as-the-docs-homepage"></a>
 ## README como a página inicial da documentação
 
 Alguns projetos copiam `README.md` para o site VitePress como `docs/index.md` (este repositório usa `scripts/sync-readme-to-docs.mjs` antes de `docs:build`). Esse padrão compartilha um arquivo entre o GitHub e o site de documentação, mas as regras de link diferem:

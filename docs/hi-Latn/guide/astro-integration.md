@@ -47,6 +47,20 @@ Ek `docs[]` block configure karein:
 
 Starlight UI overrides ko zaroorat padne par ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain — dekhen [Documents — documentation ke liye initialise karen](/guide/documents/#step-1-initialise-for-documentation).
 
+<a id="framework-shell-translation"></a>
+### Framework shell anuvaad
+
+Starlight kai locales ke liye apni khud ki built-in UI string bhejta hai (nav label, search placeholder, vishay-suchi, aadi) — Docusaurus, VitePress, ya Nextra ke vipreet, configure karne ke liye koi alag shell/theme pipeline nahi hai:
+
+| Framework | Shell / theme strings | Pipeline |
+|-----------|----------------------|----------|
+| Astro Starlight | Built-in UI strings (kai locales); koi atirikt shell pipeline nahi | Documents — `translate-docs` (keval page) |
+| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` sidebar label + theme dictionary `.ts` | Documents — [Nextra integration](/guide/nextra-integration) dekhen |
+
+Anya framework pattern ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [VitePress integration](/guide/vitepress-integration) dekhen.
+
 <a id="example-project"></a>
 ### Example project
 

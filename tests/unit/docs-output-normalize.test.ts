@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
-import { normalizeDocsOutputStyle } from "../../src/core/docs-output-normalize.js";
+import {
+  matchesDocsOutputStylePreset,
+  normalizeDocsOutputStyle,
+} from "../../src/core/docs-output-normalize.js";
 
 describe("normalizeDocsOutputStyle", () => {
   it("maps docusaurus alias to doc-system with default localeSubpath", () => {
@@ -51,6 +54,16 @@ describe("normalizeDocsOutputStyle", () => {
     expect(out.localePathLowercase).toBe(false);
   });
 
+  it("maps nextra alias to doc-system with empty localeSubpath and localePathLowercase false", () => {
+    const out = normalizeDocsOutputStyle({
+      style: "nextra",
+      flatPreserveRelativeDir: false,
+    });
+    expect(out.style).toBe("doc-system");
+    expect(out.localeSubpath).toBe("");
+    expect(out.localePathLowercase).toBe(false);
+  });
+
   it("preserves explicit localePathLowercase true on vitepress", () => {
     const out = normalizeDocsOutputStyle({
       style: "vitepress",
@@ -67,6 +80,44 @@ describe("normalizeDocsOutputStyle", () => {
       flatPreserveRelativeDir: false,
     });
     expect(out.localeSubpath).toBe("custom");
+  });
+
+  it("records stylePreset for each alias so it survives the style rewrite to doc-system", () => {
+    for (const style of ["docusaurus", "astro-starlight", "vitepress", "nextra"] as const) {
+      const out = normalizeDocsOutputStyle({ style, flatPreserveRelativeDir: false });
+      expect(out.style).toBe("doc-system");
+      expect(out.stylePreset).toBe(style);
+    }
+  });
+
+  it("leaves stylePreset unset for non-alias styles", () => {
+    const nested = normalizeDocsOutputStyle({ style: "nested", flatPreserveRelativeDir: false });
+    expect(nested.stylePreset).toBeUndefined();
+    const flat = normalizeDocsOutputStyle({ style: "flat", flatPreserveRelativeDir: false });
+    expect(flat.stylePreset).toBeUndefined();
+  });
+});
+
+describe("matchesDocsOutputStylePreset", () => {
+  it("matches the raw alias before normalization", () => {
+    expect(
+      matchesDocsOutputStylePreset(
+        { style: "vitepress", flatPreserveRelativeDir: false },
+        "vitepress"
+      )
+    ).toBe(true);
+  });
+
+  it("matches via stylePreset after normalization rewrote style to doc-system", () => {
+    const normalized = normalizeDocsOutputStyle({ style: "nextra", flatPreserveRelativeDir: false });
+    expect(matchesDocsOutputStylePreset(normalized, "nextra")).toBe(true);
+    expect(matchesDocsOutputStylePreset(normalized, "vitepress")).toBe(false);
+  });
+
+  it("does not match unrelated styles", () => {
+    expect(
+      matchesDocsOutputStylePreset({ style: "flat", flatPreserveRelativeDir: false }, "nextra")
+    ).toBe(false);
   });
 });
 
@@ -95,6 +146,7 @@ describe("parseI18nConfig doc-system", () => {
       })
     );
     expect(c.docs[0]!.docsOutput.style).toBe("doc-system");
+    expect(c.docs[0]!.docsOutput.stylePreset).toBe("docusaurus");
     expect(c.docs[0]!.docsOutput.localeSubpath).toBe("docusaurus-plugin-content-docs/current");
   });
 
@@ -115,6 +167,7 @@ describe("parseI18nConfig doc-system", () => {
       })
     );
     expect(c.docs[0]!.docsOutput.style).toBe("doc-system");
+    expect(c.docs[0]!.docsOutput.stylePreset).toBe("astro-starlight");
     expect(c.docs[0]!.docsOutput.localeSubpath).toBe("");
   });
 
@@ -135,6 +188,29 @@ describe("parseI18nConfig doc-system", () => {
       })
     );
     expect(c.docs[0]!.docsOutput.style).toBe("doc-system");
+    expect(c.docs[0]!.docsOutput.stylePreset).toBe("vitepress");
+    expect(c.docs[0]!.docsOutput.localeSubpath).toBe("");
+    expect(c.docs[0]!.docsOutput.localePathLowercase).toBe(false);
+  });
+
+  it("normalizes nextra alias to doc-system on parse", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en-GB",
+        targetLocales: ["pt-BR"],
+        openrouter: baseOpenRouter,
+        features: { translateDocs: true },
+        docs: [
+          {
+            contentPaths: ["content/en/index.mdx"],
+            outputDir: "content",
+            docsOutput: { style: "nextra", docsRoot: "content/en" },
+          },
+        ],
+      })
+    );
+    expect(c.docs[0]!.docsOutput.style).toBe("doc-system");
+    expect(c.docs[0]!.docsOutput.stylePreset).toBe("nextra");
     expect(c.docs[0]!.docsOutput.localeSubpath).toBe("");
     expect(c.docs[0]!.docsOutput.localePathLowercase).toBe(false);
   });

@@ -15,7 +15,7 @@ Codebase chaar paratyon mein vyavasthit hai. Is bhaag ka upyog mansik model ke l
 | --- | --- | --- |
 | 1 | `extract` → `translate-ui` | UI strot ko scan karein → `strings.json` ko update karein → flat locale JSON (`de.json`, …) ko bharein |
 | 2 | `translate-svg` *(vaikalpik)* | `config.svg` ke neeche SVG text ko anuvaadit karein |
-| 3 | `translate-docs` | Markdown, MDX, `.astro` pannon, aur Docusaurus JSON catalogs ko anuvaadit karein |
+| 3 | `translate-docs` | Markdown, MDX, `.astro` pages ka anuvaad karein; Docusaurus catalog JSON; Nextra `_meta` / dictionary `.ts`; VitePress theme catalog |
 | 4 | `translate-json` *(vaikalpik)* | `json[]` ke neeche nested JSON pattiyon ko anuvaadit karein |
 
 Har pipeline ek hi mukhya loop ka paalan karti hai: **segment nikalein → syntax ka sanrakshan karein → batch → cache lookup ya LLM call → output likhein**. Madhyasth sevaayein — config, placeholders, cache, glossary, `LlmClient` — [Shared infrastructure](#shared-infrastructure) ke neeche varnit hain.
@@ -266,7 +266,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) par bana provider-agnostic ch
 9. `augmentConfigWithUiLanguagesMaster` - bundled master catalog se manifest display names attach karein.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - jab lagu ho to master catalog ke khilaf locale codes ko validate karein.
 
-`init` `initConfigTemplates` se starter configs likhta hai: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + theme JSON via `json[]`), `ui-astro-website` (plain Astro UI; `.astro` page translation ke liye `docs[]` jodein), `ui-json-bundles` (JSON `json[]` only). Dekhein [Quick start — Initialise](/guide/quick-start#step-1-initialise).
+`init` `initConfigTemplates` se starter configs likhta hai: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; `docs[]` ko `.astro` page anuvaad ke liye jodein), `ui-json-bundles` (JSON `json[]` only). [Quick start — Initialise](/guide/quick-start#step-1-initialise) dekhein.
 
 <a id="logger"></a>
 ### Logger

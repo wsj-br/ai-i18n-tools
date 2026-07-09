@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Turant shuru karein
 
-Default `init` template (`ui-markdown`) sirf **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, aur `ui-vitepress` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme JSON ke liye JSON ko bhi scaffold karta hai. `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction ko scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain to ek `docs[]` block (dekhein [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) jodein. Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek hi command mein extract, UI translation, optional SVG file translation, aur documentation translation ko apni config ke anusaar chalana chahte hain, to `sync` ka upyog karein.
+Default `init` template (`ui-markdown`) sirf **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, aur `ui-nextra` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme strings ke liye `docsOutput.vitepressThemeCatalog` bhi scaffold karta hai, aur `ui-nextra` Nextra theme dictionary ke liye `docs[].nextraDictionaryPath` scaffold karta hai (sidebar `_meta.ts` automatically collect kiya jaata hai). `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain, to ek `docs[]` block jodein ([Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) dekhein). Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek command chahte hain jo aapki config ke anusaar extract, UI translation, optional SVG file translation, aur documentation translation chalati hai, to `sync` ka upyog karein.
 
 <a id="runnable-examples"></a>
 ### Chalne yogya udaharan
 
-Saat chalne yogy project aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhen (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, multi-provider comparison, markdown stress test).
+Nau runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhein (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, multi-provider comparison, markdown stress test).
 
 **Ek udaharan ko alag se chalaen** (poore monorepo ko clone kiye bina):
 
@@ -30,6 +30,7 @@ npx ai-i18n-tools translate-ui
 npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
+# Nextra docs: npx ai-i18n-tools init -t ui-nextra
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 
