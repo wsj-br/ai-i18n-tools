@@ -64,6 +64,18 @@ describe("normalizeDocsOutputStyle", () => {
     expect(out.localePathLowercase).toBe(false);
   });
 
+  it("maps fumadocs alias to doc-system with dot parser default", () => {
+    const out = normalizeDocsOutputStyle({
+      style: "fumadocs",
+      flatPreserveRelativeDir: false,
+    });
+    expect(out.style).toBe("doc-system");
+    expect(out.stylePreset).toBe("fumadocs");
+    expect(out.localeSubpath).toBe("");
+    expect(out.localePathLowercase).toBe(false);
+    expect(out.fumadocsParser).toBe("dot");
+  });
+
   it("preserves explicit localePathLowercase true on vitepress", () => {
     const out = normalizeDocsOutputStyle({
       style: "vitepress",

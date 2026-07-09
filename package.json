@@ -44,7 +44,7 @@
     "clean": "rm -rf dist/",
     "clean:workspace": "bash scripts/clean-workspace.sh",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm test",
-    "pre-release": "pnpm i18n:self && pnpm run format && pnpm run lint && pnpm run clean && pnpm run build && pnpm test && pnpm run docs:build && pnpm --dir examples/nextjs-app/docs-site build && pnpm --dir examples/astro-docs build && pnpm --dir examples/astro-website build && pnpm --dir examples/vitepress-docs docs:build && pnpm --dir examples/nextra-docs build",
+    "pre-release": "pnpm i18n:self && pnpm run format && pnpm run lint && pnpm run clean && pnpm run build && pnpm test && pnpm run docs:build && pnpm --dir examples/nextjs-app/docs-site build && pnpm --dir examples/astro-docs build && pnpm --dir examples/astro-website build && pnpm --dir examples/vitepress-docs docs:build && pnpm --dir examples/nextra-docs build && pnpm --dir examples/fumadocs-docs build",
     "docs:sync-readme": "node scripts/sync-readme-to-docs.mjs",
     "docs:dev": "node scripts/sync-readme-to-docs.mjs && node scripts/escape-vue-braces-in-docs.mjs && vitepress dev docs",
     "docs:build": "node scripts/sync-readme-to-docs.mjs && node scripts/escape-vue-braces-in-docs.mjs && vitepress build docs",

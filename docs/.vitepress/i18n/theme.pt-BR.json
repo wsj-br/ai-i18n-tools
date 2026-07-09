@@ -36,7 +36,8 @@
     "programmaticApi": "API Programática",
     "environment": "Variáveis de ambiente",
     "examples": "Exemplos",
-    "examplesOverview": "Visão geral"
+    "examplesOverview": "Visão geral",
+    "fumadocs": "Fumadocs"
   },
   "footer": {
     "message": "Lançado sob a Licença MIT.",

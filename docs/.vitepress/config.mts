@@ -83,6 +83,7 @@ function guideSidebar(t: ThemeCatalog) {
             { text: t.sidebar.docusaurus, link: "/guide/docusaurus-integration" },
             { text: t.sidebar.vitepress, link: "/guide/vitepress-integration" },
             { text: t.sidebar.nextra, link: "/guide/nextra-integration" },
+            { text: t.sidebar.fumadocs, link: "/guide/fumadocs-integration" },
           ],
         },
         {

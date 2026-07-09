@@ -36,7 +36,8 @@
     "programmaticApi": "프로그래밍 방식 API",
     "environment": "환경 변수",
     "examples": "예시",
-    "examplesOverview": "개요"
+    "examplesOverview": "개요",
+    "fumadocs": "Fumadocs"
   },
   "footer": {
     "message": "MIT 라이선스에 따라 배포됩니다.",

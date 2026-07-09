@@ -156,7 +156,7 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
 | Field                | Pipeline | Description                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | Extract `t("…")` / `i18n.t("…")` into `strings.json`, then translate entries and write per-locale flat JSON (extract runs automatically; use standalone `extract` to refresh the catalog only). |
-| `translateDocs`      | 2        | Translate `.md` / `.mdx` / `.astro` pages; Docusaurus shell JSON when `docs[].docusaurusCatalogDir` is set; Nextra `_meta` / dictionary when configured; VitePress theme when `docsOutput.vitepressThemeCatalog` is set. |
+| `translateDocs`      | 2        | Translate `.md` / `.mdx` / `.astro` pages; Docusaurus shell JSON when `docs[].docusaurusCatalogDir` is set; Nextra `_meta` / dictionary when configured; VitePress theme when `docsOutput.vitepressThemeCatalog` is set; Fumadocs `meta.json` / UI catalog when `docsOutput.style` is `"fumadocs"`. |
 | `translateJson`      | 3        | Arbitrary nested JSON under `json[]` (`translate-json`).                                                                                                           |
 | `translateSVG`       | —        | Translate `.svg` files (requires the top-level `svg` block).                                                                                                       |
 
@@ -280,6 +280,16 @@ Repo root used when computing flat-link rewrite prefixes. Usually leave this as 
 When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
 When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+- `docsOutput.fumadocsParser`
+`"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside English sources; dir writes locale folders like Nextra. See [Fumadocs integration — Page layout](/guide/fumadocs-integration#page-layout).
+- `docsOutput.rewriteFumadocsLinks`
+When `true`, run the Fumadocs link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"fumadocs"`. Rewrites content paths and relative `.mdx` links to `/docs/…` routes.
+- `docsOutput.fumadocsUiCatalog`
+Optional. Fumadocs UI override catalog bootstrap + translation inside `translate-docs`. Fields: `sourcePath` (e.g. `lib/layout.shared.ts`), `catalogPath` (generated English JSON), optional `outputPathTemplate` (default: `ui.{locale}.json` beside `catalogPath`).
+- `docs[].fumadocsMetaGlob`
+Optional glob(s) for `meta.json` collection when `docsOutput.style` is `"fumadocs"`. Default: recursive `meta.json` under `docsOutput.docsRoot`.
+- `docs[].fumadocsMetaTranslatableKeys`
+Property names whose string values are translated in Fumadocs `meta.json` (default: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
 Optional. VitePress theme/nav/sidebar catalog bootstrap + translation inside `translate-docs`. Fields: `configPath` (VitePress config with theme strings), `catalogPath` (generated English nested JSON), optional `outputPathTemplate` (default: `theme.{locale}.json` beside `catalogPath`).
 

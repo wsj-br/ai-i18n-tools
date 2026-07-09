@@ -36,7 +36,8 @@
     "programmaticApi": "编程 API",
     "environment": "环境变量",
     "examples": "示例",
-    "examplesOverview": "概述"
+    "examplesOverview": "概述",
+    "fumadocs": "Fumadocs"
   },
   "footer": {
     "message": "根据 MIT 许可证发布。",

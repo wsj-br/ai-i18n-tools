@@ -44,6 +44,7 @@ import {
 } from "./helpers.js";
 import { normalizeLocale } from "../core/config.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
+import { filterFumadocsDotMarkdownSources } from "../core/fumadocs-dot-source-filter.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
@@ -606,7 +607,7 @@ program
   .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-astro-website | ui-json-bundles",
+    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-json-bundles",
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
@@ -618,6 +619,7 @@ program
       "ui-starlight": "uiStarlight",
       "ui-vitepress": "uiVitepress",
       "ui-nextra": "uiNextra",
+      "ui-fumadocs": "uiFumadocs",
       "ui-astro-website": "uiAstroWebsite",
       "ui-json-bundles": "uiJsonBundles",
     };
@@ -625,7 +627,7 @@ program
     if (!key) {
       console.error(
         t(
-          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-astro-website", or "ui-json-bundles".'
+          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", or "ui-json-bundles".'
         )
       );
       process.exitCode = 1;
@@ -1051,7 +1053,11 @@ async function runSyncPipeline(args: {
           const block = config.docs[bi]!;
           const view = toDocTranslateConfig(config, block);
           const mdBase = filterIgnored(
-            collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+            filterFumadocsDotMarkdownSources(
+              collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+              view,
+              config
+            ),
             projectRoot
           );
           const md = warnAndAugmentMarkdownForExplicitPath(
@@ -1289,7 +1295,11 @@ program
         const block = config.docs[bi]!;
         const view = toDocTranslateConfig(config, block);
         const mdBase = filterIgnored(
-          collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+          filterFumadocsDotMarkdownSources(
+            collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+            view,
+            config
+          ),
           projectRoot
         );
         const md = warnAndAugmentMarkdownForExplicitPath(
@@ -2212,7 +2222,11 @@ program
       const block = config.docs[bi]!;
       const view = toDocTranslateConfig(config, block);
       const md = filterIgnored(
-        collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+        filterFumadocsDotMarkdownSources(
+          collectFilesByExtension(block.contentPaths, [".md", ".mdx"], projectRoot),
+          view,
+          config
+        ),
         projectRoot
       );
       if (md.length === 0) {

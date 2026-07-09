@@ -5,6 +5,7 @@ on:
     types: [published]
   workflow_dispatch:
 
+# Scoped at workflow level; deploy steps need pages + OIDC (see job below).
 permissions:
   contents: read
   pages: write
@@ -15,8 +16,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  # Build and deploy in one job so we only need a single hosted runner.
+  # A separate deploy job can fail with "job was not acquired by Runner" when
+  # GitHub's runner pool is under pressure, even though the build already succeeded.
+  deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
 
@@ -34,18 +42,14 @@ jobs:
       - name: Build documentation site
         run: pnpm run docs:build
 
-      - uses: actions/configure-pages@v5
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.vitepress/dist
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
         id: deployment
+        uses: actions/deploy-pages@v5

@@ -7,8 +7,10 @@ import path from "path";
 const PREFIX = "doc-block:";
 const JSON_PREFIX = "json-block:";
 const META_PREFIX = "nextra-meta:";
+const FUMADOCS_META_PREFIX = "fumadocs-meta:";
 const DICTIONARY_PREFIX = "nextra-dictionary:";
 const VITEPRESS_THEME_PREFIX = "vitepress-theme:";
+const FUMADOCS_UI_PREFIX = "fumadocs-ui:";
 
 /**
  * @param relPath - Path segment after the block id: project-root-relative posix (e.g. markdown under
@@ -21,7 +23,15 @@ export function documentationFileTrackingKey(blockIndex: number, relPath: string
 
 /** Resolve a stored filepath key to an absolute path under project root for existence checks. */
 export function resolveDocTrackingKeyToAbs(projectRoot: string, filepath: string): string {
-  for (const prefix of [PREFIX, JSON_PREFIX, META_PREFIX, DICTIONARY_PREFIX, VITEPRESS_THEME_PREFIX]) {
+  for (const prefix of [
+    PREFIX,
+    JSON_PREFIX,
+    META_PREFIX,
+    FUMADOCS_META_PREFIX,
+    DICTIONARY_PREFIX,
+    VITEPRESS_THEME_PREFIX,
+    FUMADOCS_UI_PREFIX,
+  ]) {
     if (filepath.startsWith(prefix)) {
       const rest = filepath.slice(prefix.length);
       const idx = rest.indexOf(":");
@@ -51,6 +61,16 @@ export function dictionaryFileTrackingKey(blockIndex: number, relPath: string): 
 export function vitepressThemeFileTrackingKey(blockIndex: number, relPath: string): string {
   const p = relPath.split("\\").join("/");
   return `${VITEPRESS_THEME_PREFIX}${blockIndex}:${p}`;
+}
+
+export function fumadocsMetaFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${FUMADOCS_META_PREFIX}${blockIndex}:${p}`;
+}
+
+export function fumadocsUiFileTrackingKey(blockIndex: number, relPath: string): string {
+  const p = relPath.split("\\").join("/");
+  return `${FUMADOCS_UI_PREFIX}${blockIndex}:${p}`;
 }
 
 export function jsonBlockFileTrackingKey(blockIndex: number, relPath: string): string {

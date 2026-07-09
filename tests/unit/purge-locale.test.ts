@@ -349,6 +349,48 @@ describe("runPurgeLocale with generated files", () => {
     expect(fs.existsSync(otherLocale)).toBe(true);
   });
 
+  it("sweeps fumadocs dot-parser outputs by locale filename suffix", async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "purge-locale-fumadocs-dot-"));
+    roots.push(root);
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["pt", "zh"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: { translateDocs: true },
+        ui: { sourceRoots: ["src"], stringsJson: "strings.json", flatOutputDir: "locales" },
+        cacheDir: ".cache",
+        docs: [
+          {
+            contentPaths: ["content/docs"],
+            outputDir: "content/docs",
+            docsOutput: {
+              style: "fumadocs",
+              docsRoot: "content/docs",
+              fumadocsParser: "dot",
+            },
+          },
+        ],
+      })
+    );
+    fs.mkdirSync(path.join(root, "content/docs/guide"), { recursive: true });
+    fs.writeFileSync(path.join(root, "content/docs/index.mdx"), "# Hi\n");
+    fs.writeFileSync(path.join(root, "content/docs/index.pt.mdx"), "# Olá\n");
+    fs.writeFileSync(path.join(root, "content/docs/guide/start.zh.mdx"), "# 你好\n");
+
+    const cacheDir = path.join(root, ".cache");
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    await runPurgeLocale({ cacheDir, locales: ["pt"], force: true, config, projectRoot: root });
+
+    expect(fs.existsSync(path.join(root, "content/docs/index.pt.mdx"))).toBe(false);
+    expect(fs.existsSync(path.join(root, "content/docs/guide/start.zh.mdx"))).toBe(true);
+  });
+
   it("dry-run reports files but deletes nothing", async () => {
     const { root, cacheDir } = makeProject();
     const config = buildConfig();

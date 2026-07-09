@@ -1,0 +1,24 @@
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": ["pt-BR", "zh-Hans"],
+  "features": {
+    "translateDocs": true
+  },
+  "docs": [
+    {
+      "contentPaths": ["content/docs/en"],
+      "outputDir": "content/docs",
+      "docsOutput": {
+        "style": "fumadocs",
+        "docsRoot": "content/docs/en",
+        "fumadocsParser": "dir",
+        "rewriteFumadocsLinks": true,
+        "fumadocsUiCatalog": {
+          "sourcePath": "lib/layout.shared.ts",
+          "catalogPath": "lib/i18n/ui.en.json"
+        }
+      },
+      "addFrontmatter": false
+    }
+  ]
+}

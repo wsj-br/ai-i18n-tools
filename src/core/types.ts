@@ -485,6 +485,7 @@ const docsOutputStyleSchema = z.enum([
   "astro-starlight",
   "vitepress",
   "nextra",
+  "fumadocs",
 ]);
 
 const docsOutputSchema = z
@@ -493,7 +494,7 @@ const docsOutputSchema = z
     style: docsOutputStyleSchema.default("nested"),
     /**
      * Internal/derived: the original alias (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`,
-     * `"nextra"`) before config loading rewrites `style` to canonical `"doc-system"`. Not meant to
+     * `"nextra"`, `"fumadocs"`) before config loading rewrites `style` to canonical `"doc-system"`. Not meant to
      * be set by hand — read this (in addition to `style`) when a feature needs to know which
      * framework preset was requested, since `style` itself no longer carries that after normalization.
      */
@@ -506,7 +507,7 @@ const docsOutputSchema = z
     /**
      * Path segment between `{locale}/` and `{relativeToDocsRoot}` for `doc-system` style.
      * Required when `style` is `doc-system` (may be `""`). Set automatically for `docusaurus`,
-     * `astro-starlight`, `vitepress`, and `nextra` aliases at config load.
+     * `astro-starlight`, `vitepress`, `nextra`, and `fumadocs` aliases at config load.
      */
     localeSubpath: z.string().optional(),
     /** When set, overrides `style` for markdown output paths. */
@@ -541,6 +542,26 @@ const docsOutputSchema = z
      * Defaults to enabled when `docsOutput.style` is `"nextra"`.
      */
     rewriteNextraLinks: z.boolean().optional(),
+    /**
+     * Fumadocs i18n content layout: `dot` (filename suffix, default) or `dir` (locale folders).
+     */
+    fumadocsParser: z.enum(["dot", "dir"]).optional(),
+    /**
+     * When true, normalize markdown links for Fumadocs doc-system output after translation.
+     * Defaults to enabled when `docsOutput.style` is `"fumadocs"`.
+     */
+    rewriteFumadocsLinks: z.boolean().optional(),
+    /**
+     * Fumadocs UI strings catalog bootstrap + translation (inside translate-docs).
+     */
+    fumadocsUiCatalog: z
+      .object({
+        sourcePath: z.string().min(1),
+        catalogPath: z.string().min(1),
+        outputPathTemplate: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
     /**
      * VitePress theme/nav/sidebar catalog bootstrap + translation (inside translate-docs).
      */
@@ -670,6 +691,10 @@ const docBlockSchema = z
     nextraDictionaryPath: z.string().optional(),
     /** Output template for locale dictionary modules. Default: `{dir}/{locale}.ts`. */
     nextraDictionaryOutputTemplate: z.string().min(1).optional(),
+    /** Glob(s) for Fumadocs meta.json files under docsRoot (default: recursive meta.json). */
+    fumadocsMetaGlob: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
+    /** Property names whose string values are translatable in Fumadocs `meta.json` files. */
+    fumadocsMetaTranslatableKeys: z.array(z.string().min(1)).optional(),
     docsOutput: docsOutputSchema.default({
       style: "nested",
       flatPreserveRelativeDir: false,

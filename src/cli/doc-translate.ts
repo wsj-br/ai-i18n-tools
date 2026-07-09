@@ -60,7 +60,8 @@ import {
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
-import { shouldRewriteFlatMarkdownLinks, shouldRewriteNextraLinks, shouldRewriteVitepressLinks, nextraLinkNormalizeContext, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import { shouldRewriteFlatMarkdownLinks, shouldRewriteFumadocsLinks, shouldRewriteNextraLinks, shouldRewriteVitepressLinks, fumadocsLinkNormalizeContext, nextraLinkNormalizeContext, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import { normalizeFumadocsDocLinks } from "../processors/fumadocs-link-normalize.js";
 import { normalizeNextraDocLinks } from "../processors/nextra-link-normalize.js";
 import { normalizeVitepressDocLinks } from "../processors/vitepress-link-normalize.js";
 import {
@@ -107,6 +108,14 @@ import {
   bootstrapVitepressThemeCatalog,
   runVitepressThemeShell,
 } from "./vitepress-theme-catalog.js";
+import {
+  collectFumadocsMetaFiles,
+  translateFumadocsMetaFiles,
+} from "./fumadocs-meta-translate.js";
+import {
+  bootstrapFumadocsUiCatalog,
+  runFumadocsUiShell,
+} from "./fumadocs-ui-catalog.js";
 import {
   describeEmphasisPlaceholdersPolicy,
   resolveMarkdownEmphasisPlaceholders,
@@ -1988,6 +1997,13 @@ export async function translateMarkdownFile(
       nextraLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
     );
     output = matterStringify(newBody, parsed.data);
+  } else if (shouldRewriteFumadocsLinks(config)) {
+    const parsed = matter(output);
+    const newBody = normalizeFumadocsDocLinks(
+      parsed.content,
+      fumadocsLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
+    );
+    output = matterStringify(newBody, parsed.data);
   }
 
   const moPost = config.doc.docsOutput.postProcessing;
@@ -3138,9 +3154,21 @@ export async function runTranslate(
     matchesDocsOutputStylePreset(config.doc.docsOutput, "nextra") && config.features.translateDocs
       ? collectNextraMetaFiles(opts.cwd, config)
       : [];
+  const fumadocsMetaRelPaths =
+    matchesDocsOutputStylePreset(config.doc.docsOutput, "fumadocs") && config.features.translateDocs
+      ? collectFumadocsMetaFiles(opts.cwd, config)
+      : [];
   const vitepressBootstrap =
     config.doc.docsOutput.vitepressThemeCatalog && config.features.translateDocs
       ? bootstrapVitepressThemeCatalog(config, opts.cwd, {
+          force: opts.force,
+          dryRun: opts.dryRun,
+          verbose: opts.verbose,
+        })
+      : null;
+  const fumadocsUiBootstrap =
+    config.doc.docsOutput.fumadocsUiCatalog && config.features.translateDocs
+      ? bootstrapFumadocsUiCatalog(config, opts.cwd, {
           force: opts.force,
           dryRun: opts.dryRun,
           verbose: opts.verbose,
@@ -3397,6 +3425,42 @@ export async function runTranslate(
           accumulateFileTotals(partial, false, themeTotals);
           await liveSumMutex.runExclusive(async () => {
             accumulateFileTotals(liveSum, false, themeTotals, { skipUsage: true });
+          });
+        }
+
+        if (fumadocsMetaRelPaths.length > 0) {
+          const metaTotals = await translateFumadocsMetaFiles(
+            config,
+            locale,
+            opts.cwd,
+            fumadocsMetaRelPaths,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys
+          );
+          accumulateFileTotals(partial, false, metaTotals);
+          await liveSumMutex.runExclusive(async () => {
+            accumulateFileTotals(liveSum, false, metaTotals, { skipUsage: true });
+          });
+        }
+
+        if (fumadocsUiBootstrap) {
+          const uiTotals = await runFumadocsUiShell(
+            config,
+            locale,
+            opts.cwd,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys,
+            fumadocsUiBootstrap
+          );
+          accumulateFileTotals(partial, false, uiTotals);
+          await liveSumMutex.runExclusive(async () => {
+            accumulateFileTotals(liveSum, false, uiTotals, { skipUsage: true });
           });
         }
       }

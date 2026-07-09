@@ -7,6 +7,7 @@ packages:
   - "examples/astro-website"
   - "examples/vitepress-docs"
   - "examples/nextra-docs"
+  - "examples/fumadocs-docs"
 allowBuilds:
   sharp: true
   core-js: true

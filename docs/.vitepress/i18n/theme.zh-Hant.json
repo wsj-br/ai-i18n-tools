@@ -36,7 +36,8 @@
     "programmaticApi": "程式化 API",
     "environment": "環境變數",
     "examples": "範例",
-    "examplesOverview": "概觀"
+    "examplesOverview": "概觀",
+    "fumadocs": "Fumadocs"
   },
   "footer": {
     "message": "根據 MIT 授權條款發佈。",

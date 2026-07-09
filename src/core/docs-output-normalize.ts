@@ -6,7 +6,7 @@ type DocsOutputStyle = DocsOutputConfig["style"];
 
 /**
  * True when `mo` was configured with the given framework alias (`"docusaurus"`, `"astro-starlight"`,
- * `"vitepress"`, `"nextra"`), whether or not `normalizeDocsOutputStyle` has already rewritten
+ * `"vitepress"`, `"nextra"`, `"fumadocs"`), whether or not `normalizeDocsOutputStyle` has already rewritten
  * `style` to canonical `"doc-system"`. Use this instead of comparing `mo.style` directly for any
  * check that needs to know which preset was requested.
  */
@@ -55,6 +55,16 @@ export function normalizeDocsOutputStyle(mo: DocsOutputConfig): DocsOutputConfig
       localePathLowercase: mo.localePathLowercase ?? false,
     };
   }
+  if (style === "fumadocs") {
+    return {
+      ...mo,
+      style: "doc-system",
+      stylePreset: mo.stylePreset ?? style,
+      localeSubpath: mo.localeSubpath !== undefined ? mo.localeSubpath : "",
+      localePathLowercase: mo.localePathLowercase ?? false,
+      fumadocsParser: mo.fumadocsParser ?? "dot",
+    };
+  }
   if (mo.style === "doc-system" && (mo.localeSubpath?.trim() ?? "") === "") {
     return {
       ...mo,
@@ -85,7 +95,7 @@ export function assertDocSystemLocaleSubpath(config: I18nConfig): void {
     if (mo.style === "doc-system" && mo.localeSubpath === undefined) {
       throw new ConfigValidationError(
         `docs[${i}].docsOutput.localeSubpath is required when style is "doc-system" ` +
-          `(use style "docusaurus", "astro-starlight", "vitepress", or "nextra" for presets, or set localeSubpath explicitly)`
+          `(use style "docusaurus", "astro-starlight", "vitepress", "nextra", or "fumadocs" for presets, or set localeSubpath explicitly)`
       );
     }
   }

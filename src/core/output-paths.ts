@@ -1,7 +1,9 @@
 import path from "path";
+import type { FumadocsLinkNormalizeContext } from "../processors/fumadocs-link-normalize.js";
 import type { NextraLinkNormalizeContext } from "../processors/nextra-link-normalize.js";
 import type { VitepressLinkNormalizeContext } from "../processors/vitepress-link-normalize.js";
 import { matchesDocsOutputStylePreset } from "./docs-output-normalize.js";
+import { isFumadocsDirParser, isFumadocsDotParser } from "./fumadocs-parser.js";
 import { localePathPlaceholders } from "./locale-utils.js";
 import type { I18nDocTranslateConfig } from "./types.js";
 import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
@@ -104,6 +106,23 @@ function resolveByStyle(
     return path.join(outBase, localeSeg, relPath);
   }
 
+  if (isFumadocsDotParser(mo)) {
+    let relForDot = posixRel;
+    const underDocsRoot =
+      posixRel === docsRootPosix || posixRel.startsWith(`${docsRootPosix}/`);
+    if (underDocsRoot) {
+      relForDot = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
+    }
+    const parsed = path.posix.parse(relForDot || path.posix.basename(posixRel));
+    const stem = parsed.name;
+    const ext = parsed.ext;
+    const dir = parsed.dir;
+    if (dir && dir !== ".") {
+      return path.join(outBase, dir, `${stem}.${localeSeg}${ext}`);
+    }
+    return path.join(outBase, `${stem}.${localeSeg}${ext}`);
+  }
+
   switch (mo.style) {
     case "nested":
       return path.join(outBase, localeSeg, relPath);
@@ -111,7 +130,8 @@ function resolveByStyle(
     case "docusaurus":
     case "astro-starlight":
     case "vitepress":
-    case "nextra": {
+    case "nextra":
+    case "fumadocs": {
       const under =
         posixRel === docsRootPosix ||
         posixRel.startsWith(`${docsRootPosix}/`) ||
@@ -123,7 +143,13 @@ function resolveByStyle(
       let subpath: string;
       if (mo.style === "docusaurus") {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
-      } else if (mo.style === "astro-starlight" || mo.style === "vitepress" || mo.style === "nextra") {
+      } else if (
+        mo.style === "astro-starlight" ||
+        mo.style === "vitepress" ||
+        mo.style === "nextra" ||
+        mo.style === "fumadocs" ||
+        isFumadocsDirParser(mo)
+      ) {
         subpath = mo.localeSubpath?.trim() ?? "";
       } else {
         subpath = mo.localeSubpath?.trim() ?? DOCUSAURUS_PLUGIN;
@@ -220,6 +246,18 @@ export function shouldRewriteNextraLinks(config: I18nDocTranslateConfig): boolea
   return matchesDocsOutputStylePreset(mo, "nextra");
 }
 
+/** Whether to normalize markdown links for Fumadocs doc-system output. */
+export function shouldRewriteFumadocsLinks(config: I18nDocTranslateConfig): boolean {
+  const mo = config.doc.docsOutput;
+  if (mo.rewriteFumadocsLinks === false) {
+    return false;
+  }
+  if (mo.rewriteFumadocsLinks === true) {
+    return true;
+  }
+  return matchesDocsOutputStylePreset(mo, "fumadocs");
+}
+
 /** Build context for VitePress link normalization from a doc translate config. */
 export function vitepressLinkNormalizeContext(
   config: I18nDocTranslateConfig,
@@ -241,5 +279,17 @@ export function nextraLinkNormalizeContext(
   return {
     relPath,
     docsRoot: mo.docsRoot?.trim() || "content/en",
+  };
+}
+
+/** Build context for Fumadocs link normalization from a doc translate config. */
+export function fumadocsLinkNormalizeContext(
+  config: I18nDocTranslateConfig,
+  relPath: string
+): FumadocsLinkNormalizeContext {
+  const mo = config.doc.docsOutput;
+  return {
+    relPath,
+    docsRoot: mo.docsRoot?.trim() || "content/docs",
   };
 }

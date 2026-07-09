@@ -6,6 +6,7 @@ import { t } from "../i18n/index.js";
 import { TranslationCache } from "../core/cache.js";
 import { normalizeLocale, toDocTranslateConfig } from "../core/config.js";
 import type { I18nConfig, StringsJsonEntry } from "../core/types.js";
+import { isFumadocsDotParser } from "../core/fumadocs-parser.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, resolveTranslatedOutputPath, writeAtomicUtf8 } from "./helpers.js";
 
@@ -99,7 +100,7 @@ function sweepLocaleDocOutputsOnDisk(
   const outBase = path.resolve(projectRoot, view.doc.outputDir);
   const localeSeg = (mo.localePathLowercase ?? false) ? locale.toLowerCase() : locale;
 
-  if (mo.style === "flat") {
+  if (mo.style === "flat" || isFumadocsDotParser(mo)) {
     return listFilesRecursive(outBase, DOC_EXTENSIONS).filter((f) => {
       const base = path.basename(f);
       const ext = path.extname(base);

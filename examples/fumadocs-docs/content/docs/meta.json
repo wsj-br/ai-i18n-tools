@@ -1,0 +1,5 @@
+{
+  "title": "Documentation",
+  "description": "Fumadocs example for ai-i18n-tools",
+  "pages": ["index", "guide/getting-started"]
+}

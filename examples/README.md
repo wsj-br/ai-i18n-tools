@@ -26,6 +26,7 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [astro-docs](./astro-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` |
 | [vitepress-docs](./vitepress-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` |
 | [nextra-docs](./nextra-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` |
+| [fumadocs-docs](./fumadocs-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` |
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 
@@ -48,6 +49,7 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [astro-docs](./astro-docs/)         | Workspace app      | Starlight / MDX docs only                | Astro Starlight                  |
 | [vitepress-docs](./vitepress-docs/) | Workspace app      | VitePress docs only (`vitepress` preset) | VitePress                        |
 | [nextra-docs](./nextra-docs/)       | Workspace app      | Nextra 4 MDX + `_meta.ts` / dictionary `.ts` shell (`nextra` preset) | Next.js + Nextra              |
+| [fumadocs-docs](./fumadocs-docs/)   | Workspace app      | Fumadocs 4 MDX + `meta.json` / UI catalog (`fumadocs` preset, dot parser) | Next.js + Fumadocs         |
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 
@@ -159,6 +161,23 @@ Minimal [**Nextra 4**](https://nextra.site/) documentation site (port 3070) usin
 **Good starting point if** you document a product with Nextra 4 (App Router + `content/` layout) and want committed translated MDX in the repo.
 
 → [nextra-docs/README.md](./nextra-docs/README.md)
+
+---
+
+## [fumadocs-docs](./fumadocs-docs/)
+
+Minimal [**Fumadocs**](https://www.fumadocs.dev/) 4 documentation site (port **3080**) using `docsOutput.style: "fumadocs"` with the **dot** parser.
+
+**What it demonstrates**
+
+- English MDX at `content/docs/`; committed dot-suffix translations (`*.pt.mdx`, `*.zh.mdx`)
+- `meta.json` sidebar translation and UI catalog bootstrap from `lib/layout.shared.ts`
+- `init -t ui-fumadocs` style config and `pnpm run i18n:sync` to refresh translations
+- Dir-parser alternative documented in `ai-i18n-tools.config.dir.example.json`
+
+**Good starting point if** you document a product with Fumadocs (App Router, SWR-style filename suffixes).
+
+→ [fumadocs-docs/README.md](./fumadocs-docs/README.md)
 
 ---
 

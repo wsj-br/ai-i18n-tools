@@ -58,8 +58,10 @@ export {
   resolveDocumentationOutputPath,
   expandPathTemplate,
   shouldRewriteFlatMarkdownLinks,
+  shouldRewriteFumadocsLinks,
   shouldRewriteNextraLinks,
   shouldRewriteVitepressLinks,
+  fumadocsLinkNormalizeContext,
   nextraLinkNormalizeContext,
   vitepressLinkNormalizeContext,
   toPosix,
@@ -227,6 +229,27 @@ export {
   docsPathToNextraRoute,
   type NextraLinkNormalizeContext,
 } from "./processors/nextra-link-normalize.js";
+
+export {
+  normalizeFumadocsDocLinks,
+  normalizeOneFumadocsLink,
+  docsPathToFumadocsRoute,
+  type FumadocsLinkNormalizeContext,
+} from "./processors/fumadocs-link-normalize.js";
+
+export {
+  filterFumadocsDotMarkdownSources,
+  isFumadocsDotLocaleSuffixedSource,
+  fumadocsDotLocaleSuffixes,
+} from "./core/fumadocs-dot-source-filter.js";
+
+export {
+  fumadocsParserMode,
+  isFumadocsPreset,
+  isFumadocsDotParser,
+  isFumadocsDirParser,
+  type FumadocsParserMode,
+} from "./core/fumadocs-parser.js";
 
 export {
   OpenRouterClient,

@@ -36,7 +36,8 @@
     "programmaticApi": "プログラム API",
     "environment": "環境変数",
     "examples": "例",
-    "examplesOverview": "概要"
+    "examplesOverview": "概要",
+    "fumadocs": "Fumadocs"
   },
   "footer": {
     "message": "MIT ライセンスでリリースされています。",

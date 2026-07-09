@@ -4,6 +4,7 @@ import {
   expandPathTemplate,
   resolveDocumentationOutputPath,
   shouldRewriteFlatMarkdownLinks,
+  shouldRewriteFumadocsLinks,
   shouldRewriteNextraLinks,
   shouldRewriteVitepressLinks,
   toPosix,
@@ -427,6 +428,79 @@ describe("output-paths", () => {
       ],
     });
     expect(shouldRewriteNextraLinks(c)).toBe(false);
+  });
+
+  it("fumadocs dot parser writes locale suffix beside source", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/docs/index.mdx"],
+          outputDir: "content/docs",
+          docsOutput: {
+            style: "fumadocs",
+            docsRoot: "content/docs",
+            fumadocsParser: "dot",
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(c, cwd, "pt", "content/docs/guide/start.mdx", "markdown");
+    expect(toPosix(out)).toBe("/proj/content/docs/guide/start.pt.mdx");
+  });
+
+  it("fumadocs dir parser writes under locale folder from content/docs/en", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/docs/en"],
+          outputDir: "content/docs",
+          docsOutput: {
+            style: "fumadocs",
+            docsRoot: "content/docs/en",
+            fumadocsParser: "dir",
+          },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt-BR",
+      "content/docs/en/guide/start.mdx",
+      "markdown"
+    );
+    expect(toPosix(out)).toBe("/proj/content/docs/pt-BR/guide/start.mdx");
+  });
+
+  it("shouldRewriteFumadocsLinks defaults to true for the fumadocs alias after normalization", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/docs/index.mdx"],
+          outputDir: "content/docs",
+          docsOutput: { style: "fumadocs", docsRoot: "content/docs" },
+        },
+      ],
+    });
+    expect(c.doc.docsOutput.style).toBe("doc-system");
+    expect(shouldRewriteFumadocsLinks(c)).toBe(true);
+  });
+
+  it("shouldRewriteFumadocsLinks respects explicit false override", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/docs/index.mdx"],
+          outputDir: "content/docs",
+          docsOutput: {
+            style: "fumadocs",
+            docsRoot: "content/docs",
+            rewriteFumadocsLinks: false,
+          },
+        },
+      ],
+    });
+    expect(shouldRewriteFumadocsLinks(c)).toBe(false);
   });
 
   it("JSON uses nested layout by default", () => {

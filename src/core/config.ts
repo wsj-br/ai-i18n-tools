@@ -783,6 +783,54 @@ export const initConfigTemplates = {
     ],
   }),
 
+  uiFumadocs: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en-GB",
+    targetLocales: ["pt", "zh"],
+    provider: "openrouter",
+    providers: {
+      openrouter: {
+        translationModels: [...DEFAULT_OPENROUTER_MODELS],
+      },
+    },
+    features: {
+      translateUIStrings: false,
+      translateDocs: true,
+      translateJson: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "./locales",
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [
+      {
+        contentPaths: ["content/docs"],
+        outputDir: "content/docs",
+        docsOutput: {
+          style: "fumadocs",
+          docsRoot: "content/docs",
+          fumadocsParser: "dot",
+          rewriteFumadocsLinks: true,
+          fumadocsUiCatalog: {
+            sourcePath: "lib/layout.shared.ts",
+            catalogPath: "lib/i18n/ui.en.json",
+          },
+        },
+        addFrontmatter: false,
+      },
+    ],
+  }),
+
   uiAstroWebsite: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en",

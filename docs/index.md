@@ -199,6 +199,9 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Nextra documentation (pages + _meta.ts + theme dictionary)
 # npx ai-i18n-tools init -t ui-nextra
 
+# Fumadocs documentation (pages + meta.json + UI catalog)
+# npx ai-i18n-tools init -t ui-fumadocs
+
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -207,7 +210,7 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
+Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, and/or `.astro` sources; `docs[].outputDir` and `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"`, etc.). Full field reference: [Documents](/guide/documents/).
 
 <a id="vitepress"></a>
 ### VitePress
@@ -218,6 +221,11 @@ Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, an
 ### Nextra
 
 `init -t ui-nextra` scaffolds `docsOutput.style: "nextra"`. `translate-docs` automatically collects and translates `_meta.ts` sidebar labels; set `docs[].nextraDictionaryPath` to also translate the theme dictionary module (e.g. `app/_dictionaries/en.ts`) — all in the same `sync` run, no JSON sidecars. See [Nextra integration](/guide/nextra-integration) and [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
+
+<a id="fumadocs"></a>
+### Fumadocs
+
+`init -t ui-fumadocs` scaffolds `docsOutput.style: "fumadocs"` with the **dot** parser by default. `translate-docs` translates MDX pages, `meta.json` sidebar labels, and UI overrides via `docsOutput.fumadocsUiCatalog` in one `sync` run. See [Fumadocs integration](/guide/fumadocs-integration) and [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
