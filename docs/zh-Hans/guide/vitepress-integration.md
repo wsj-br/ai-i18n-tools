@@ -131,7 +131,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | Fumadocs | UI 覆盖目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 内置 UI 字符串（多语言）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
 
-**不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于不相关的应用语言包。有关其他框架模式，请参见 [Docusaurus 集成](/guide/docusaurus-integration) 和 [Nextra 集成](/guide/nextra-integration)。
+请**勿**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于无关的应用程序语言包。有关其他框架模式，请参见 [Docusaurus 集成](/guide/docusaurus-integration) 和 [Fumadocs 集成](/guide/fumadocs-integration)。
 
 <a id="example-project"></a>
 ## 示例项目

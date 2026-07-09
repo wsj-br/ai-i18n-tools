@@ -58,8 +58,9 @@ Starlight 自带了许多语言环境的内置 UI 字符串（导航标签、搜
 | Docusaurus | `write-translations` 目录 (`{ message, description }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 侧边栏标签 + 主题字典 `.ts` | 文档 — 参见 [Nextra 集成](/guide/nextra-integration) |
+| Fumadocs | `meta.json` 侧边栏标签 + UI 覆盖目录 | 文档 — 参见 [Fumadocs 集成](/guide/fumadocs-integration) |
 
-有关其他框架模式，请参见 [Docusaurus 集成](/guide/docusaurus-integration) 和 [VitePress 集成](/guide/vitepress-integration)。
+关于其他框架模式，请参见 [Docusaurus 集成](/guide/docusaurus-integration)、[VitePress 集成](/guide/vitepress-integration)、[Nextra 集成](/guide/nextra-integration) 和 [Fumadocs 集成](/guide/fumadocs-integration)。
 
 <a id="example-project"></a>
 ### 示例项目

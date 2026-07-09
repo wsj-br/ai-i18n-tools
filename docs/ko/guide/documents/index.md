@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 탐색/사이드바/바닥글 문자열에 대해 `docsOutput.vitepressThemeCatalog`을(를) 설정합니다. [VitePress 통합](/guide/vitepress-integration)을(를) 참조하십시오.
 
+Nextra 문서 사이트의 경우:
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+테마 사전 문자열에 대해 `docs[].nextraDictionaryPath`을(를) 설정합니다. [Nextra 통합](/guide/nextra-integration)을(를) 참조하세요. 사이드바 `_meta.ts` 레이블은 자동으로 수집됩니다.
+
+Fumadocs 문서 사이트의 경우:
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`을(를) 설정합니다. [Fumadocs 통합](/guide/fumadocs-integration)을(를) 참조하세요. 사이드바 `meta.json` 레이블은 자동으로 수집됩니다.
+
 일반 Astro 웹사이트 UI(스타라이트 없음)의 경우:
 
 ```bash

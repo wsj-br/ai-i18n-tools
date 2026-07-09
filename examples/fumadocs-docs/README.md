@@ -1,6 +1,6 @@
 # fumadocs-docs
 
-Minimal [Fumadocs](https://www.fumadocs.dev/) 4 site demonstrating the **`fumadocs`** preset with the **dot** i18n parser (SWR-style `*.pt.mdx` / `*.zh.mdx` suffixes).
+Minimal [Fumadocs](https://www.fumadocs.dev/) site demonstrating the **`fumadocs`** preset with the **dot** i18n parser (SWR-style `*.pt-BR.mdx` / `*.zh-Hans.mdx` suffixes).
 
 ## Quick start
 
@@ -22,21 +22,21 @@ pnpm run i18n:sync
 This translates:
 
 - MDX pages under `content/docs/` (dot suffix outputs)
-- `meta.json` sidebar (`meta.pt.json`, etc.)
+- `meta.json` sidebar (`meta.pt-BR.json`, etc.)
 - UI overrides bootstrapped from `lib/layout.shared.ts` into `lib/i18n/ui.{locale}.json`
 
 Config: `ai-i18n-tools.config.json` (`init -t ui-fumadocs`).
 
 ### Dir parser (locale folders)
 
-For Nextra-style `content/docs/en/` → `content/docs/pt-BR/` layouts, see `ai-i18n-tools.config.dir.example.json` and [Fumadocs integration](/guide/fumadocs-integration#dir-parser-nextra-style).
+For Nextra-style `content/docs/en/` → `content/docs/pt-BR/` layouts, see `ai-i18n-tools.config.dir.example.json` and [Fumadocs integration](https://wsj-br.github.io/ai-i18n-tools/guide/fumadocs-integration#dir-parser-nextra-style).
 
 ## Layout
 
 ```text
 content/docs/index.mdx              English source
-content/docs/index.pt.mdx           Portuguese (dot suffix)
-content/docs/guide/getting-started.zh.mdx
+content/docs/index.pt-BR.mdx        Portuguese (dot suffix)
+content/docs/guide/fumadocs-integration.zh-Hans.mdx
 content/docs/meta.json              Sidebar (shared)
 lib/i18n/ui.en.json                 UI catalog (bootstrap + translate)
 lib/layout.shared.ts                English UI overrides + loadUiCatalog()

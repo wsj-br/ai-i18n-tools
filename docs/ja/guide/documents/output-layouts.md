@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` はデフォルトで `""` に設定されています (`{outputDir}/{locale}/` の直下にある翻訳済みページ。英語がコンテンツルートにあり、`outputDir` が `docsRoot` と等しい場合の [Starlight](https://starlight.astro.build/guides/i18n/) と一致します)。
 - `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。BCP-47 ロケールフォルダ名は保持されます (`localePathLowercase` はデフォルトで `false` に設定されています)。[VitePress の統合](/guide/vitepress-integration) を参照してください。
 - `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。英語のソースはロケールフォルダ (例: `content/en/`) の下にあります。[Nextra の統合](/guide/nextra-integration) を参照してください。
+- `docsOutput.style = "fumadocs"` — 空の`localeSubpath`を持つ`doc-system`と同じレイアウト。英語のソースは、`fumadocsParser`が`"dir"`の場合、ドットサフィックスファイル（デフォルト）またはロケールフォルダを使用します。[Fumadocsの統合](/guide/fumadocs-integration)を参照してください。
 
 Docusaurus プリセット（主なドキュメントページ）：
 
@@ -38,6 +39,18 @@ Nextra プリセット (英語はロケールフォルダの下、ターゲッ�
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Fumadocsプリセット — ドットパーサー（デフォルト、英語ソースの横にロケールサフィックス）:
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Fumadocsプリセット — ディレクトリパーサー（Nextraスタイルのロケールフォルダ）:
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 オプションのJSONラベル — `docusaurusCatalogDir` からのDocusaurusシェル文字列（MDX本文コピーではない）：
 
 ```text
@@ -49,6 +62,8 @@ Starlightは多数のロケール向けUI文字列を提供しています。必
 VitePress のナビゲーション/サイドバー/フッターの文字列は Markdown ではありません。`docsOutput.vitepressThemeCatalog` を設定し、**`translate-docs`** 内で翻訳してください。[VitePress の統合](/guide/vitepress-integration) を参照してください。
 
 Nextra テーマ辞書 (`.ts`) と `_meta.ts` のサイドバーラベルは Markdown ではありません。`style: "nextra"` の場合、`docs[].nextraDictionaryPath` と自動 `_meta` コレクションをすべて **`translate-docs`** 内で使用してください。[Nextra の統合](/guide/nextra-integration) を参照してください。
+
+Fumadocs UIのオーバーライド（`lib/layout.shared.ts`）と`meta.json`のサイドバーラベルはMarkdownではありません。**`translate-docs`** 内に、`style: "fumadocs"`の場合に`docsOutput.fumadocsUiCatalog`と自動`meta.json`コレクションを使用してください。[Fumadocsの統合](/guide/fumadocs-integration)を参照してください。
 
 `docsOutput.style = "flat"` — 翻訳されたファイルをロケールサフィックス付きでソース横に、またはサブディレクトリ内に配置します。`docsOutput.style = "flat"` の場合、ページ間の相対リンクは自動的に書き換えられます（`rewriteRelativeLinks: false` またはカスタムの `pathTemplate` が設定されていない限り）。
 

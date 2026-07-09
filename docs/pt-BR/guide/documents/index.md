@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 Defina `docsOutput.vitepressThemeCatalog` para strings de navegação/barra lateral/rodapé — veja [Integração VitePress](/guide/vitepress-integration).
 
+Para sites de documentação Nextra:
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+Defina `docs[].nextraDictionaryPath` para strings do dicionário de temas — consulte [Integração Nextra](/guide/nextra-integration). Os rótulos da barra lateral `_meta.ts` são coletados automaticamente.
+
+Para sites de documentação Fumadocs:
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+Defina `docsOutput.fumadocsUiCatalog` para substituições de UI — consulte [Integração Fumadocs](/guide/fumadocs-integration). Os rótulos da barra lateral `meta.json` são coletados automaticamente.
+
 Para interface de site Astro simples (sem Starlight):
 
 ```bash

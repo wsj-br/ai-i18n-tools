@@ -131,14 +131,41 @@ Verwenden Sie **nicht** `json[]` für Fumadocs-UI-Strings – diese Pipeline ist
 | Nextra | Theme-Wörterbuch `.ts` | Dokumente – `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI-Überschreibungskatalog | Dokumente – `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Integrierte UI-Strings | Dokumente – `translate-docs` (nur Seiten) |
+| Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
+
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/guide/docusaurus-integration), [VitePress-Integration](/guide/vitepress-integration) und [Nextra-Integration](/guide/nextra-integration) für die anderen Framework-Muster.
 
 <a id="link-conventions"></a>
 ## Link-Konventionen
 
-Wenn `rewriteFumadocsLinks` aktiviert ist (Standard für die `fumadocs`-Voreinstellung), werden Markdown-Links zu `content/docs/…` oder relativen `.mdx`-Pfaden in gebietsschema-neutrale Routen `/docs/…` umgeschrieben (`.mdx` entfernen, `index` zusammenführen). Externe URLs, `mailto:` und `#anchors` bleiben unverändert.
+Fumadocs bedient sprachpräfixierte Routen über Next.js-Middleware (`/docs/getting-started`, `/pt/docs/getting-started`). **Links innerhalb von Seiten sollten sprachneutral bleiben** (`/docs/getting-started`), damit der aktive Sprachpräfix automatisch angewendet wird.
 
-Verwenden Sie `/docs/...` in der englischen Quelle, wenn Sie stabile Routen über alle Gebietsschemas hinweg wünschen. Siehe [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting).
+Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in jeder übersetzten Datei automatisch korrigiert:
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks` ist standardmäßig aktiviert, wenn `style` auf `"fumadocs"` gesetzt ist.
+
+| Autor in englischer Quelle | Nach Normalisierer |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | unverändert (vollständige URL) |
+
+**Regeln für die Erstellung**
+
+- Dokumentenlinks über mehrere Seiten hinweg: Verwenden Sie **sprachneutrale Site-Routen** (`/docs/…`) in englischem MDX oder `content/docs/…` / relative `.mdx`-Pfade und lassen Sie diese vom Normalisierer während `sync` umschreiben.
+- Repository-Dateien außerhalb des Inhaltsbaums: Verwenden Sie **vollständige URLs**.
+- Bearbeiten Sie Links in sprachsuffixierten Kopien (`*.pt.mdx`) oder `content/{locale}/`-Bäumen **nicht** manuell – generieren Sie sie mit `sync` / `translate-docs` neu.
+
+Siehe auch [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting) und [Konfiguration – `docsOutput`](/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Gebietsschema-Codes
@@ -159,6 +186,7 @@ Fumadocs-Projekte können mehrere `defineDocs`-Blöcke in `source.config.ts` def
 ## Querverweise
 
 - [Konfiguration – `docsOutput`](/reference/configuration#docsoutput)
-- [Ausgabe-Layouts](/guide/documents/output-layouts)
-- [Nextra-Integration](/guide/nextra-integration) (Dir-Parser-Mentalmodell)
+- [Ausgabelayouts](/guide/documents/output-layouts)
+- [Docusaurus-Integration](/guide/docusaurus-integration)
+- [Nextra-Integration](/guide/nextra-integration) (mentales Modell des Verzeichnis-Parsers)
 - [VitePress-Integration](/guide/vitepress-integration) (UI-Katalog-Bootstrap-Muster)

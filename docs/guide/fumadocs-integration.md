@@ -131,14 +131,41 @@ Standard locales may be covered by `@fumadocs/language/*` presets without LLM co
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` sidebar labels | Documents — auto when `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings | Documents — `translate-docs` (pages only) |
+| Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
+
+Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), and [Nextra integration](/guide/nextra-integration) for the other framework patterns.
 
 <a id="link-conventions"></a>
 ## Link conventions
 
-When `rewriteFumadocsLinks` is enabled (default for the `fumadocs` preset), markdown links to `content/docs/…` or relative `.mdx` paths are rewritten to locale-neutral routes `/docs/…` (strip `.mdx`, collapse `index`). External URLs, `mailto:`, and `#anchors` are unchanged.
+Fumadocs serves locale-prefixed routes via Next.js middleware (`/docs/getting-started`, `/pt/docs/getting-started`). **In-page links should stay locale-neutral** (`/docs/getting-started`) so the active locale prefix is applied automatically.
 
-Use `/docs/...` in English source when you want stable routes across locales. See [Documents — link rewriting](/guide/documents/link-rewriting).
+Enable the built-in normalizer so `translate-docs` fixes links in every translated file automatically:
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks` defaults to enabled when `style` is `"fumadocs"`.
+
+| Author in English source | After normalizer |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](../guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | unchanged (full URL) |
+
+**Authoring rules**
+
+- Cross-page doc links: use **locale-neutral site routes** (`/docs/…`) in English MDX, or `content/docs/…` / relative `.mdx` paths and let the normalizer rewrite them during `sync`.
+- Repo files outside the content tree: use **full URLs**.
+- Do **not** hand-edit links in locale-suffixed copies (`*.pt.mdx`) or `content/{locale}/` trees — regenerate with `sync` / `translate-docs`.
+
+See also [Documents — link rewriting](/guide/documents/link-rewriting) and [Configuration — `docsOutput`](/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Locale codes
@@ -160,5 +187,6 @@ Fumadocs projects may define several `defineDocs` blocks in `source.config.ts` (
 
 - [Configuration — `docsOutput`](/reference/configuration#docsoutput)
 - [Output layouts](/guide/documents/output-layouts)
+- [Docusaurus integration](/guide/docusaurus-integration)
 - [Nextra integration](/guide/nextra-integration) (dir parser mental model)
 - [VitePress integration](/guide/vitepress-integration) (UI catalog bootstrap pattern)

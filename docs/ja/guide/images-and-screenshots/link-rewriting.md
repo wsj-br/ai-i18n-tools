@@ -38,6 +38,16 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 
 フラットリライターとVitePressノーマライザーは、`docs[]`ブロックごとに相互に排他的です。`regexAdjustments`の前に実行されるのはどちらか一方のみです。[VitePress統合 — リンク規則](/guide/vitepress-integration#link-conventions)を参照してください。
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Nextra リンク正規化機能 (`style: "nextra"`)
+
+`docsOutput.rewriteNextraLinks` が `true` の場合 (`style` が `"nextra"` の場合のデフォルト)、セグメント再構築後に別の正規化機能が実行されます。これにより、`content/en/…` と相対 `.mdx` パスがロケールに依存しないルート (`/guide/…`) に書き換えられます。[Nextra 統合 — リンク規則](/guide/nextra-integration#link-conventions) を参照してください。
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Fumadocs リンク正規化機能 (`style: "fumadocs"`)
+
+`docsOutput.rewriteFumadocsLinks` が `true` の場合 (`style` が `"fumadocs"` の場合のデフォルト)、セグメント再構築後に別の正規化機能が実行されます。これにより、`content/docs/…` と相対 `.mdx` パスがロケールに依存しないルート (`/docs/…`) に書き換えられます。[Fumadocs 統合 — リンク規則](/guide/fumadocs-integration#link-conventions) を参照してください。
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### ファイルごとの深さ接頭辞と`flatPreserveRelativeDir`
 

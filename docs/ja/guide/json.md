@@ -102,6 +102,7 @@ npx ai-i18n-tools status
 | Docusaurus `write-translations`カタログ (`{ "key": { "message": "…", "description": "…" } }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs`、`json[]`は**使用しません** |
 | VitePress テーマ/ナビゲーション/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **使用しない** `json[]` — [VitePress 統合](/guide/vitepress-integration) を参照 |
 | Nextra `_meta.ts` ラベルとテーマ辞書 `.ts` | ドキュメント — `translate-docs` (`style: "nextra"` の場合は自動 `_meta`、オプションの `nextraDictionaryPath`); **使用しない** `json[]` — [Nextra 統合](/guide/nextra-integration) を参照 |
+| Fumadocs `meta.json` ラベルと UI オーバーライドカタログ | ドキュメント — `translate-docs` (`style: "fumadocs"` の場合は自動 `meta.json`、オプションの `fumadocsUiCatalog`); **使用しないでください** `json[]` — [Fumadocs 統合](/guide/fumadocs-integration) を参照してください |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 

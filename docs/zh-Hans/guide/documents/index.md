@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 为导航/侧边栏/页脚字符串设置 `docsOutput.vitepressThemeCatalog` — 参见 [VitePress 集成](/guide/vitepress-integration)。
 
+对于 Nextra 文档站点：
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+设置 `docs[].nextraDictionaryPath` 用于主题字典字符串 — 参见 [Nextra 集成](/guide/nextra-integration)。侧边栏 `_meta.ts` 标签会自动收集。
+
+对于 Fumadocs 文档站点：
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+设置 `docsOutput.fumadocsUiCatalog` 用于 UI 覆盖 — 参见 [Fumadocs 集成](/guide/fumadocs-integration)。侧边栏 `meta.json` 标签会自动收集。
+
 适用于纯 Astro 网站 UI（无 Starlight）：
 
 ```bash

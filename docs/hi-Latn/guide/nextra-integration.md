@@ -102,7 +102,7 @@ JSON sidecars (`i18n/meta.en.json`) ya patli `_meta.ts` files jo anuvadit JSON i
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
 
-Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [VitePress integration](/guide/vitepress-integration) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), aur [Fumadocs integration](/guide/fumadocs-integration) dekhein.
 
 <a id="example-project"></a>
 ## Example project

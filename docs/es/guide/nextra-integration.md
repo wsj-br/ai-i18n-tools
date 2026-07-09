@@ -102,7 +102,7 @@ Opcional: anule la recopilación con `docs[].nextraMetaGlob` o restrinja los nom
 | Fumadocs | Catálogo de anulaciones de interfaz de usuario | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
 
-**No** ponga cadenas de shell/tema de framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration) e [Integración de VitePress](/guide/vitepress-integration) para ver los otros patrones de framework.
+**No** ponga cadenas de shell/tema de framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration), [Integración de VitePress](/guide/vitepress-integration) e [Integración de Fumadocs](/guide/fumadocs-integration) para ver los otros patrones de framework.
 
 <a id="example-project"></a>
 ## Proyecto de ejemplo

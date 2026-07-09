@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""` (translated pages directly under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`).
 - `docsOutput.style = "vitepress"` — same layout as `doc-system` with empty `localeSubpath`; BCP-47 locale folder names are preserved (`localePathLowercase` defaults to `false`). See [VitePress integration](/guide/vitepress-integration).
 - `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; English source lives under a locale folder (e.g. `content/en/`). See [Nextra integration](/guide/nextra-integration).
+- `docsOutput.style = "fumadocs"` — same layout as `doc-system` with empty `localeSubpath`; English source uses dot-suffix files (default) or a locale folder when `fumadocsParser` is `"dir"`. See [Fumadocs integration](/guide/fumadocs-integration).
 
 Docusaurus preset (primary documentation pages):
 
@@ -38,6 +39,18 @@ Nextra preset (English under a locale folder, sibling locale folders for targets
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Fumadocs preset — dot parser (default; locale suffix beside English source):
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Fumadocs preset — dir parser (Nextra-style locale folders):
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 Optional JSON labels — Docusaurus shell strings from `docusaurusCatalogDir` (not MDX body copy):
 
 ```text
@@ -49,6 +62,8 @@ Starlight ships UI strings for many locales; optional custom UI overrides use `s
 VitePress nav/sidebar/footer strings are not in markdown — configure `docsOutput.vitepressThemeCatalog` and translate inside **`translate-docs`**. See [VitePress integration](/guide/vitepress-integration).
 
 Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdown — use `docs[].nextraDictionaryPath` and automatic `_meta` collection when `style: "nextra"`, all inside **`translate-docs`**. See [Nextra integration](/guide/nextra-integration).
+
+Fumadocs UI overrides (`lib/layout.shared.ts`) and `meta.json` sidebar labels are not in markdown — use `docsOutput.fumadocsUiCatalog` and automatic `meta.json` collection when `style: "fumadocs"`, all inside **`translate-docs`**. See [Fumadocs integration](/guide/fumadocs-integration).
 
 `docsOutput.style = "flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically when `docsOutput.style = "flat"` (unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set).
 

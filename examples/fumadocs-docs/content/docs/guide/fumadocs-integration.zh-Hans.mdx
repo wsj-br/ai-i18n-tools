@@ -1,0 +1,200 @@
+---
+title: Fumadocs 集成
+description: 在 Next.js App Router 上将 ai-i18n-tools 用于 Fumadocs 4 文档站点
+---
+
+
+
+<a id="fumadocs-integration"></a>
+# Fumadocs 集成
+
+在 Next.js App Router 上将 `init -t ui-fumadocs` 和 `docsOutput.style: "fumadocs"` 用于 [Fumadocs](https://www.fumadocs.dev/) 4 文档站点。此预设是 `doc-system` 的别名，它使用空的 `localeSubpath` 并保留 BCP-47 或短 locale 代码（`localePathLowercase` 默认为 `false`）。
+
+另请参阅 [文档](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) 和可运行的 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 演示（dot 解析器，端口 3080）。
+
+<a id="quick-start"></a>
+## 快速入门
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+# edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
+pnpm run i18n:sync   # or: ai-i18n-tools sync
+pnpm run build       # Next.js build (project-specific script)
+```
+
+在一次 `sync` 运行中，翻译页面内容、`meta.json` 侧边栏标签以及 Fumadocs UI 覆盖时，启用 `features.translateDocs`。
+
+<a id="page-layout"></a>
+## 页面布局
+
+Fumadocs 通过 `docsOutput.fumadocsParser` 支持两种 i18n 内容布局。**dot** 解析器是默认选项（Fumadocs 内置以及 [SWR](https://github.com/vercel/swr-site) 等生产站点）。
+
+### Dot 解析器（默认）
+
+英文 MDX 文件位于集合的根目录。翻译后的副本在同一目录中使用 locale 后缀：
+
+```text
+content/docs/index.mdx                              →  content/docs/index.pt-BR.mdx
+content/docs/guide/fumadocs-integration.mdx         →  content/docs/guide/fumadocs-integration.zh-Hans.mdx
+```
+
+```json
+{
+  "contentPaths": ["content/docs"],
+  "outputDir": "content/docs",
+  "docsOutput": {
+    "style": "fumadocs",
+    "docsRoot": "content/docs",
+    "fumadocsParser": "dot",
+    "rewriteFumadocsLinks": true
+  }
+}
+```
+
+在 `lib/i18n.ts` 中将 `targetLocales` 与 `defineI18n().languages` 精确对齐（示例使用 `pt-BR` 和 `zh-Hans`）。
+
+<a id="dir-parser-nextra-style"></a>
+### Dir 解析器（Nextra 风格）
+
+对于习惯 locale 文件夹（`content/docs/en/` → `content/docs/pt-BR/`）的团队，请将 `fumadocsParser` 设置为 `"dir"`：
+
+```text
+content/docs/en/index.mdx           →  content/docs/pt-BR/index.mdx
+content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
+```
+
+```json
+{
+  "contentPaths": ["content/docs/en"],
+  "outputDir": "content/docs",
+  "docsOutput": {
+    "style": "fumadocs",
+    "docsRoot": "content/docs/en",
+    "fumadocsParser": "dir",
+    "rewriteFumadocsLinks": true
+  }
+}
+```
+
+请参阅 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 中的 `ai-i18n-tools.config.dir.example.json` 以获取可直接复制粘贴的 dir 配置。其心智模型与 [Nextra 集成](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration#page-layout) 匹配。
+
+<a id="meta-json-sidebar"></a>
+## 侧边栏（`meta.json`）
+
+Fumadocs 使用 JSON `meta.json` 文件来定义侧边栏结构和标题。当 `docsOutput.style` 为 `"fumadocs"` 时，**`translate-docs`** 会在 `docsRoot`（或 `docs[].fumadocsMetaGlob`）下收集 `meta.json`，翻译 `docs[].fumadocsMetaTranslatableKeys` 中列出的键的字符串值（默认：`title`、`description`），并写入 locale 输出：
+
+| 解析器 | 英文源 | 输出 |
+|--------|----------------|--------|
+| **dot** | `content/docs/**/meta.json` | `content/docs/**/meta.{locale}.json` |
+| **dir** | `content/docs/en/**/meta.json` | `content/docs/{locale}/**/meta.json` |
+
+**请勿**翻译 `pages` 的 slug 数组、`root`、`icon`、`defaultOpen` 或其他结构性键——仅翻译人类可读的标签。
+
+<a id="ui-catalog"></a>
+## UI 目录
+
+Fumadocs 布局的 UI 元素（搜索占位符、区域设置显示名称以及 `defineTranslations` / `i18n.translations()` 的其他覆盖项，在 `lib/layout.shared.ts` 中）不会从 markdown 中提取。请配置 **`docsOutput.fumadocsUiCatalog`**，以便 **`translate-docs`** 从 `sourcePath` 初始化英文目录，并按区域设置进行 JSON 翻译：
+
+```json
+{
+  "features": {
+    "translateDocs": true
+  },
+  "docs": [
+    {
+      "contentPaths": ["content/docs"],
+      "outputDir": "content/docs",
+      "docsOutput": {
+        "style": "fumadocs",
+        "docsRoot": "content/docs",
+        "fumadocsParser": "dot",
+        "fumadocsUiCatalog": {
+          "sourcePath": "lib/layout.shared.ts",
+          "catalogPath": "lib/i18n/ui.en.json"
+        }
+      }
+    }
+  ]
+}
+```
+
+- **`catalogPath`** — 生成的英文扁平化 JSON（引导输出）。当英文覆盖项在 `sync` 中更改时，请重新运行 `layout.shared.ts`。
+- **`outputPathTemplate`**（可选）— 按区域设置生成的输出；默认：`ui.{locale}.json` 与 `catalogPath` 并列。
+
+在 `layout.shared.ts` 中通过 `loadUiCatalog(locale)` 加载每个区域设置的 JSON，并在根布局中与 `i18nProvider(translations, lang)` 合并。
+请参阅 [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts)。
+
+标准区域设置可能由 `@fumadocs/language/*` 预设覆盖，无需 LLM 成本；目录仅翻译英文块中的 **项目覆盖项**。
+
+**请勿**将 Fumadocs UI 字符串用于 `json[]` — 该管道用于不相关的应用程序区域设置包。
+
+<a id="framework-shell-translation"></a>
+## 框架外壳翻译
+
+| 框架 | 外壳/主题字符串 | 管道 |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations` 目录 | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 侧边栏标签 | 文档 — `style: "nextra"` + `translate-docs` 自动执行 |
+| Nextra | 主题词典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 侧边栏标签 | 文档 — `style: "fumadocs"` + `translate-docs` 自动执行 |
+| Fumadocs | UI 覆盖项目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 内置 UI 字符串（多区域设置）；无额外外壳管道 | 文档 — `translate-docs`（仅页面） |
+
+请 **勿**将框架外壳/主题字符串放入 `json[]` — 该管道用于不相关的应用程序区域设置包。请参阅 [Docusaurus 集成](https://wsj-br.github.io/ai-i18n-tools/guide/docusaurus-integration)、[VitePress 集成](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration) 和 [Nextra 集成](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration) 以了解其他框架模式。
+
+<a id="link-conventions"></a>
+## 链接约定
+
+Fumadocs 通过 Next.js 中间件（`/docs/guide/fumadocs-integration`、`/pt-BR/docs/guide/fumadocs-integration`）提供带区域设置前缀的路由。**页面内链接应保持区域设置中性**（`/docs/guide/fumadocs-integration`），以便自动应用活动的区域设置前缀。
+
+启用内置的规范化程序，以便 `translate-docs` 自动修复每个翻译文件中的链接：
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+当 `style` 为 `"fumadocs"` 时，`rewriteFumadocsLinks` 默认为启用状态。
+
+| 英文源中的作者 | 规范化后 |
+|--------------------------|------------------|
+| `[Guide](/docs/guide/fumadocs-integration)` | `[Guide](/docs/guide/fumadocs-integration)` |
+| `[Home](/docs)` | `[Home](/docs)` |
+| `[Guide](/docs/guide/fumadocs-integration)` | `[Guide](/docs/guide/fumadocs-integration)` |
+| `[Demo](https://github.com/org/repo)` | unchanged (full URL) |
+
+**创作规则**
+
+- 跨页面文档链接：在英文 MDX 中使用 **区域设置无关的站点路由** (`/docs/…`)，或使用 `content/docs/…` / 相对 `.mdx` 路径，并让 normalizer 在 `sync` 期间重写它们。
+- 内容树之外的仓库文件：使用 **完整 URL**。
+- 请 **不要** 手动编辑区域设置后缀副本（`*.pt-BR.mdx`、`*.zh-Hans.mdx`）或 `content/{locale}/` 树中的链接 — 使用 `sync` / `translate-docs` 重新生成。
+
+另请参阅 [文档 — 链接重写](https://wsj-br.github.io/ai-i18n-tools/guide/documents/link-rewriting) 和 [配置 — `docsOutput`](https://wsj-br.github.io/ai-i18n-tools/reference/configuration#docsoutput)。
+
+<a id="locale-codes"></a>
+## 区域设置代码
+
+在您的 Fumadocs 应用中，将 `targetLocales` 保持与 `ai-i18n-tools.config.json` 中的 `defineI18n().languages` **完全一致**。此示例使用 BCP-47 代码 (`pt-BR`, `zh-Hans`)；目录配置使用与区域设置文件夹相同的代码。没有强制的规范化 — 不匹配的代码将导致错误的输出路径或丢失的页面。
+
+<a id="multiple-collections"></a>
+## 多个集合
+
+Fumadocs 项目可以在 `source.config.ts` 中定义多个 `defineDocs` 块（文档、博客、示例）。为每个您翻译的集合添加一个 `docs[]` 块，每个块都有自己的 `contentPaths`、`outputDir` 和 `docsRoot`。
+
+<a id="example-project"></a>
+## 示例项目
+
+[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) — 英文 MDX 位于 `content/docs/`，已提交 `pt-BR` 和 `zh-Hans` 点后缀页面，`meta.json` 和 `lib/i18n/ui.{locale}.json`。在端口 **3080** 上运行 `pnpm run dev`。
+
+<a id="cross-references"></a>
+## 交叉引用
+
+- [配置 — `docsOutput`](https://wsj-br.github.io/ai-i18n-tools/reference/configuration#docsoutput)
+- [输出布局](https://wsj-br.github.io/ai-i18n-tools/guide/documents/output-layouts)
+- [Docusaurus 集成](https://wsj-br.github.io/ai-i18n-tools/guide/docusaurus-integration)
+- [Nextra 集成](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration) (目录解析器心智模型)
+- [VitePress 集成](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration) (UI 目录引导模式)

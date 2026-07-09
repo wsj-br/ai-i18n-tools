@@ -38,6 +38,16 @@ Un projects ke liye jo `README.md` → `docs/index.md` ko sync karte hain, `READ
 
 Flat rewriter aur VitePress normalizer prati `docs[]` block mein paraspar anany hain — `regexAdjustments` se pehle sirf ek chalta hai. [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions) dekhen.
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Nextra link normalizer (`style: "nextra"`)
+
+Jab `docsOutput.rewriteNextraLinks` `true` hota hai (jab `style` `"nextra"` hota hai to default), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/en/…` aur relative `.mdx` paths ko locale-neutral routes (`/guide/…`) mein rewrite karta hai. Dekhen [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Fumadocs link normalizer (`style: "fumadocs"`)
+
+Jab `docsOutput.rewriteFumadocsLinks` `true` hota hai (jab `style` `"fumadocs"` hota hai to default), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/docs/…` aur relative `.mdx` paths ko locale-neutral routes (`/docs/…`) mein rewrite karta hai. Dekhen [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions).
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir` ke saath prati-file depth prefix
 

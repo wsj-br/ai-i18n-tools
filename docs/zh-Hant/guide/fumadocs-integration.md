@@ -131,14 +131,41 @@ Fumadocs 版面配置的介面元素（搜尋預留位置、地區顯示名稱�
 | Nextra | 主題字典 `.ts` | 文件——`docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動處理 |
 | Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 內建 UI 字串 | 文件 — `translate-docs`（僅限頁面）|
+| Astro Starlight | 內建 UI 字串（多種語系）；無額外外殼管線 | 文件 — `translate-docs`（僅限頁面） |
+
+請**勿**將框架外殼/主題字串放入 `json[]` — 該管線適用於不相關的應用程式語言套件。其他框架模式請參閱 [Docusaurus 整合](/guide/docusaurus-integration)、[VitePress 整合](/guide/vitepress-integration) 與 [Nextra 整合](/guide/nextra-integration)。
 
 <a id="link-conventions"></a>
 ## 連結慣例
 
-當 `rewriteFumadocsLinks` 啟用時（`fumadocs` 預設集的預設值），指向 `content/docs/…` 或相對 `.mdx` 路徑的 Markdown 連結會被改寫為地區中立的路由 `/docs/…`（移除 `.mdx`，摺疊 `index`）。外部 URL、`mailto:` 與 `#anchors` 保持不變。
+Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-started`、`/pt/docs/getting-started`）。**頁內連結應保持語言中立**（`/docs/getting-started`），以便自動套用當前語言前綴。
 
-當您希望在各個地區設定之間維持穩定的路由時，請在英文來源中使用 `/docs/...`。請參閱[文件 — 連結改寫](/guide/documents/link-rewriting)。
+啟用內建的正規化器，讓 `translate-docs` 自動修復每個翻譯檔案中的連結：
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+當 `style` 為 `"fumadocs"` 時，`rewriteFumadocsLinks` 預設為啟用。
+
+| 英文來源中的作者 | 正規化後 |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | 不變（完整 URL） |
+
+**撰寫規則**
+
+- 跨頁面文件連結：在英文 MDX 中使用**語言中立的網站路由**（`/docs/…`），或使用 `content/docs/…` / 相對 `.mdx` 路徑，讓正規化器在 `sync` 期間改寫它們。
+- 內容樹之外的儲存庫檔案：使用**完整 URL**。
+- 請**勿**手動編輯帶語言後綴副本（`*.pt.mdx`）或 `content/{locale}/` 樹中的連結 — 請使用 `sync` / `translate-docs` 重新產生。
+
+另請參閱 [文件 — 連結改寫](/guide/documents/link-rewriting) 與 [設定 — `docsOutput`](/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## 地區設定代碼
@@ -159,6 +186,7 @@ Fumadocs 專案可在 `source.config.ts` 中定義多個 `defineDocs` 區塊（�
 ## 交叉參照
 
 - [設定 — `docsOutput`](/reference/configuration#docsoutput)
-- [輸出佈局](/guide/documents/output-layouts)
+- [輸出版面](/guide/documents/output-layouts)
+- [Docusaurus 整合](/guide/docusaurus-integration)
 - [Nextra 整合](/guide/nextra-integration)（目錄解析器心智模型）
 - [VitePress 整合](/guide/vitepress-integration)（UI 目錄啟動模式）

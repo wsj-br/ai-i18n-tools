@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath`는 기본적으로 `""`로 설정됩니다(`{outputDir}/{locale}/` 바로 아래에 번역된 페이지가 있으며, 영어 콘텐츠가 루트에 있고 `outputDir`이 `docsRoot`과 같을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치합니다).
 - `docsOutput.style = "vitepress"` — `doc-system`과 동일한 레이아웃이며 `localeSubpath`이 비어 있습니다. BCP-47 로케일 폴더 이름은 유지됩니다(`localePathLowercase`는 기본적으로 `false`으로 설정됩니다). [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
 - `docsOutput.style = "nextra"` — `doc-system`와 동일한 레이아웃이며 `localeSubpath`이 비어 있습니다. 영어 소스는 로케일 폴더(예: `content/en/`) 아래에 있습니다. [Nextra 통합](/guide/nextra-integration)을 참조하세요.
+- `docsOutput.style = "fumadocs"` — 비어 있는 `localeSubpath`를 제외하고 `doc-system`과 동일한 레이아웃입니다. 영어 소스는 점 접미사 파일(기본값) 또는 `fumadocsParser`가 `"dir"`일 때 로케일 폴더를 사용합니다. [Fumadocs 통합](/guide/fumadocs-integration)을 참조하세요.
 
 Docusaurus 사전 설정(기본 문서 페이지):
 
@@ -38,6 +39,18 @@ Nextra 사전 설정(로케일 폴더 아래의 영어, 대상에 대한 형제 
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Fumadocs 사전 설정 — 점 구문 분석기(기본값, 영어 소스 옆 로케일 접미사):
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Fumadocs 사전 설정 — 디렉터리 구문 분석기(Nextra 스타일 로케일 폴더):
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 선택적 JSON 레이블 — `docusaurusCatalogDir`에서 가져온 Docusaurus 셸 문자열(MDX 본문 복사는 아님):
 
 ```text
@@ -49,6 +62,8 @@ Starlight는 여러 로케일의 UI 문자열을 제공하며, 필요 시 선택
 VitePress 탐색/사이드바/바닥글 문자열은 마크다운에 없습니다. `docsOutput.vitepressThemeCatalog`을 구성하고 **`translate-docs`** 내에서 번역하세요. [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
 
 Nextra 테마 사전(`.ts`) 및 `_meta.ts` 사이드바 레이블은 마크다운에 없습니다. `style: "nextra"`일 때 `docs[].nextraDictionaryPath` 및 자동 `_meta` 컬렉션을 모두 **`translate-docs`** 내에서 사용하세요. [Nextra 통합](/guide/nextra-integration)을 참조하세요.
+
+Fumadocs UI 재정의(`lib/layout.shared.ts`) 및 `meta.json` 사이드바 레이블은 마크다운에 없습니다. **`translate-docs`** 내에서 `style: "fumadocs"`일 때 `docsOutput.fumadocsUiCatalog` 및 자동 `meta.json` 컬렉션을 사용합니다. [Fumadocs 통합](/guide/fumadocs-integration)을 참조하세요.
 
 `docsOutput.style = "flat"` — 로케일 접미사가 붙거나 하위 디렉터리에 소스 옆에 번역된 파일을 배치함. `docsOutput.style = "flat"`일 경우 페이지 간 상대 링크가 자동으로 다시 작성됨(`rewriteRelativeLinks: false` 또는 사용자 지정 `pathTemplate`이 설정된 경우 제외).
 

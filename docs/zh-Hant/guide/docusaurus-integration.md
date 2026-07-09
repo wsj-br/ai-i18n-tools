@@ -89,9 +89,11 @@ Docusaurus 導覽列、頁尾、搜尋佔位符以及其他主題/外掛程式�
 | VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 側邊欄標籤 | 文件——自動時 `style: "nextra"` + `translate-docs` |
 | Nextra | 主題字典 `.ts` | 文件——`docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動處理 |
+| Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 內建 UI 字串（多種語系）；無額外外殼管線 | 文件 — `translate-docs`（僅限頁面） |
 
-請**勿**將框架外殼/主題字串放入 `json[]` — 該管線用於無關的應用程式語系套件。關於 VitePress/Nextra 模式，請參閱 [VitePress 整合](/guide/vitepress-integration) 與 [Nextra 整合](/guide/nextra-integration)。
+請**勿**將框架外殼/主題字串放入 `json[]` —— 該管線適用於不相關的應用程式語言套件。關於其他框架模式，請參閱 [VitePress 整合](/guide/vitepress-integration)、[Nextra 整合](/guide/nextra-integration) 與 [Fumadocs 整合](/guide/fumadocs-integration)。
 
 <a id="example-project"></a>
 ## 範例專案

@@ -38,6 +38,16 @@ Für Projekte, die `README.md` → `docs/index.md` synchronisieren, verwenden Si
 
 Der Flat-Rewriter und der VitePress-Normalisierer schließen sich pro `docs[]`-Block gegenseitig aus – nur einer wird vor `regexAdjustments` ausgeführt. Siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Nextra-Link-Normalisierer (`style: "nextra"`)
+
+Wenn `docsOutput.rewriteNextraLinks` auf `true` gesetzt ist (Standard, wenn `style` auf `"nextra"` gesetzt ist), wird nach der Segmentwiederherstellung ein separater Normalisierer ausgeführt. Dieser schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/guide/…`). Siehe [Nextra-Integration – Link-Konventionen](/guide/nextra-integration#link-conventions).
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Fumadocs-Link-Normalisierer (`style: "fumadocs"`)
+
+Wenn `docsOutput.rewriteFumadocsLinks` auf `true` gesetzt ist (Standard, wenn `style` auf `"fumadocs"` gesetzt ist), wird nach der Segmentwiederherstellung ein separater Normalisierer ausgeführt. Dieser schreibt `content/docs/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/docs/…`). Siehe [Fumadocs-Integration – Link-Konventionen](/guide/fumadocs-integration#link-conventions).
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Tiefenpräfix pro Datei mit `flatPreserveRelativeDir`
 

@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 ナビゲーション/サイドバー/フッター文字列には`docsOutput.vitepressThemeCatalog`を設定します — [VitePress統合](/guide/vitepress-integration)を参照してください。
 
+Nextraドキュメントサイトの場合:
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+テーマ辞書文字列には`docs[].nextraDictionaryPath`を設定します — [Nextra統合](/guide/nextra-integration)を参照してください。サイドバーの`_meta.ts`ラベルは自動的に収集されます。
+
+Fumadocsドキュメントサイトの場合:
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+UIオーバーライドには`docsOutput.fumadocsUiCatalog`を設定します — [Fumadocs統合](/guide/fumadocs-integration)を参照してください。サイドバーの`meta.json`ラベルは自動的に収集されます。
+
 プレーンなAstroウェブサイトUI（Starlightなし）の場合：
 
 ```bash

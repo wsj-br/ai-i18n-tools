@@ -12,11 +12,17 @@ El reescritor que se ejecuta depende de `docsOutput.style`:
 | --- | --- | --- |
 | `"flat"` (predeterminado cuando no hay `pathTemplate` personalizado) | Reescriptor de enlaces planos (`rewriteRelativeLinks`, activado por defecto) | Enlaces relativos entre páginas (`guide.md` → `guide.de.md`) y prefijos de profundidad para URL de activos que no son markdown |
 | `"vitepress"` | Normalizador de enlaces de VitePress (`rewriteVitepressLinks`, activado por defecto) | Rutas `docs/guide/…` de estilo README → rutas del sitio (`/guide/…`) |
+| `"nextra"` | Normalizador de enlaces de Nextra (`rewriteNextraLinks`, activado por defecto) | Rutas `content/en/…` y `.mdx` relativas → rutas neutrales respecto al idioma (`/guide/…`) |
+| `"fumadocs"` | Normalizador de enlaces de Fumadocs (`rewriteFumadocsLinks`, activado por defecto) | Rutas `content/docs/…` y `.mdx` relativas → rutas neutrales respecto al idioma (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Ninguno | Las URL de origen pasan sin cambios hasta `postProcessing` |
 
 `pathTemplate` personalizado desactiva el reescritor plano a menos que establezca `rewriteRelativeLinks: true` explícitamente. Consulte [Diseños de salida](/guide/documents/output-layouts) y [Enlaces de anclaje](/guide/documents/anchor-links) para el manejo de `#anchor` entre páginas.
 
 Para las reglas de autoría específicas de VitePress, consulte [Integración de VitePress — Convenciones de enlaces](/guide/vitepress-integration#link-conventions).
+
+Para las reglas de autoría específicas de Nextra, consulte [Integración de Nextra — Convenciones de enlaces](/guide/nextra-integration#link-conventions).
+
+Para las reglas de autoría específicas de Fumadocs, consulte [Integración de Fumadocs — Convenciones de enlaces](/guide/fumadocs-integration#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ Normalmente **no** necesita `regexAdjustments` cuando:
 - Los activos se encuentran junto a los archivos de origen y el prefijo de profundidad por archivo del reescritor plano los resuelve correctamente
 - El inglés y cada copia traducida usan la **misma** URL (imágenes compartidas en la raíz del sitio, activos colocados, rutas del sitio de VitePress después del normalizador)
 - Los enlaces internos del sitio de VitePress usan rutas del sitio o rutas `docs/guide/…` con `rewriteVitepressLinks: true`
+- Los enlaces en la página de Nextra y Fumadocs utilizan rutas neutrales respecto al idioma (`/guide/…`, `/docs/…`) o rutas de raíz de contenido con `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>
 ## Ejemplo de configuración completa

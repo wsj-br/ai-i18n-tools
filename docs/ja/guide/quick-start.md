@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # クイックスタート
 
-デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、および `ui-nextra` テンプレートは、**ドキュメント** の翻訳 (`translate-docs`) を有効にします。`ui-vitepress` は VitePress テーマ文字列の `docsOutput.vitepressThemeCatalog` も足場として提供し、`ui-nextra` は Nextra テーマ辞書 (サイドバーの `_meta.ts` は自動的に収集されます) の `docs[].nextraDictionaryPath` を足場として提供します。`ui-astro-website` テンプレートは、プレーンな Astro アプリ (`.astro` ファイルを含む) の **UI** 抽出を足場として提供します。`.astro` ページの HTML の `translate-docs` も必要な場合は、`docs[]` ブロック ([Astro ウェブサイトのページ (解析と置換)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) を参照) を追加します。リファレンスの [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) は **両方** のパイプラインを使用します。設定に従って、抽出、UI 翻訳、オプションの SVG ファイル翻訳、ドキュメント翻訳を実行する 1 つのコマンドが必要な場合は、`sync` を使用します。
+デフォルトの`init`テンプレート（`ui-markdown`）は、**UI**の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、および`ui-fumadocs`テンプレートは、**ドキュメント**の翻訳（`translate-docs`）を有効にします。`ui-vitepress`はVitePressテーマ文字列用の`docsOutput.vitepressThemeCatalog`も足場を固め、`ui-nextra`はNextraテーマ辞書用の`docs[].nextraDictionaryPath`を足場を固め（サイドバーの`_meta.ts`は自動的に収集されます）、`ui-fumadocs`はFumadocs UIオーバーライド用の`docsOutput.fumadocsUiCatalog`を足場を固めます（サイドバーの`meta.json`は自動的に収集されます）。`ui-astro-website`テンプレートは、プレーンなAstroアプリ（`.astro`ファイルを含む）の**UI**抽出を足場を固めます。`.astro`ページのHTMLの`translate-docs`も必要な場合は、`docs[]`ブロックを追加します（[Astroウェブサイトページ（解析と置換）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照）。リファレンス[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)は、**両方**のパイプラインを使用します。設定に従って、抽出、UI翻訳、オプションのSVGファイル翻訳、およびドキュメント翻訳を実行する1つのコマンドが必要な場合は、`sync`を使用します。
 
 <a id="runnable-examples"></a>
 ### 実行可能な例
 
-9 つの実行可能なプロジェクトとフィクスチャは [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) の下にあります。[例](/examples) カタログ (コンソールアプリ、Next.js + Docusaurus、Astro ウェブサイト、Astro Starlight ドキュメント、VitePress ドキュメント、Nextra ドキュメント、マルチプロバイダー比較、マークダウンストレステスト) を参照してください。
+9つの実行可能なプロジェクトとフィクスチャは、[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)にあります。[例](/examples)カタログ（コンソールアプリ、Next.js + Docusaurus、Astroウェブサイト、Astro Starlightドキュメント、VitePressドキュメント、Nextraドキュメント、Fumadocsドキュメント、マルチプロバイダー比較、マークダウンストレステスト）を参照してください。
 
 **1つの例をスタンドアロンで実行します**（モノレポ全体をクローンせずに）：
 
@@ -31,6 +31,7 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
 # Nextra docs: npx ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

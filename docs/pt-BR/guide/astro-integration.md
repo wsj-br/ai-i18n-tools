@@ -58,8 +58,9 @@ O Starlight fornece suas próprias strings de UI integradas para muitos idiomas 
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Rótulos da barra lateral `_meta.ts` + dicionário de tema `.ts` | Documentos — veja [integração Nextra](/guide/nextra-integration) |
+| Fumadocs | Catálogo de rótulos da barra lateral + substituições de UI `meta.json` | Documentos — veja [integração Fumadocs](/guide/fumadocs-integration) |
 
-Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração VitePress](/guide/vitepress-integration) para os outros padrões de framework.
+Veja [integração Docusaurus](/guide/docusaurus-integration), [integração VitePress](/guide/vitepress-integration), [integração Nextra](/guide/nextra-integration) e [integração Fumadocs](/guide/fumadocs-integration) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ### Projeto de exemplo

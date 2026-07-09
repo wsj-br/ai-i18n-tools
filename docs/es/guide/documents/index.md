@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 Establezca `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/barra lateral/pie de página — consulte [Integración de VitePress](/guide/vitepress-integration).
 
+Para sitios de documentación de Nextra:
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+Establezca `docs[].nextraDictionaryPath` para las cadenas del diccionario de temas; consulte [Integración de Nextra](/guide/nextra-integration). Las etiquetas `_meta.ts` de la barra lateral se recopilan automáticamente.
+
+Para sitios de documentación de Fumadocs:
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+Establezca `docsOutput.fumadocsUiCatalog` para las anulaciones de la interfaz de usuario; consulte [Integración de Fumadocs](/guide/fumadocs-integration). Las etiquetas `meta.json` de la barra lateral se recopilan automáticamente.
+
 Para la interfaz de un sitio web Astro plano (sin Starlight):
 
 ```bash

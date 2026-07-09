@@ -12,15 +12,15 @@ description: LLM을 사용하여 JavaScript/TypeScript 애플리케이션 및 �
 
 **선택한 AI 모델을 사용하여 앱과 문서를 번역하세요. 종속성이나 다시 작성할 필요가 없습니다.**
 
-`ai-i18n-tools`는 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 Docusaurus, Astro, Starlight, VitePress, Nextra, 일반 Markdown/MDX를 포함한 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다.
+`ai-i18n-tools`는 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs, 일반 Markdown/MDX를 포함한 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다.
 
 어떤 공급자든 지정하여 번역을 시작하세요. **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, 모든 [OpenRouter](https://openrouter.ai/) 모델(단일 API 키로 수백 가지 중에서 선택 가능) 또는 완전 자체 호스팅 오프라인 번역을 위한 **Ollama**를 사용할 수 있습니다. 코드베이스를 수정하지 않고도 프로젝트별 또는 언어별로 공급자나 모델을 전환할 수 있습니다.
 
 하나의 구성 파일이 세 가지 번역 모드를 구동하므로 콘텐츠 구조에 따라 혼합하여 사용할 수 있습니다.
 
-- **UI 문자열** — JS/TS(선택적으로 `.astro` 파일)에서 `t("…")` 호출을 추출하고 i18next 또는 정적 SSG 조회를 위한 플랫한 로케일별 JSON을 생성합니다.
-- **문서** — `docs[].contentPaths`에 나열된 Markdown, MDX 및 `.astro` 페이지를 `translate-docs`를 사용하여 번역합니다. **VitePress**, **Starlight**, **Docusaurus**, **Nextra**, Astro 기반 사이트 또는 Markdown/MDX/`.astro` 소스 파일에서 읽는 모든 정적 사이트 생성기와 함께 작동합니다.
-- **JSON** — `json[]`에 정의된 임의의 중첩된 JSON 번들을 번역합니다. UI 복사본이 소스의 `t()` 호출 대신 로케일별 JSON 파일에 있는 경우 `translate-json`을 사용합니다.
+- **UI 문자열** — JS/TS(선택적으로 `.astro` 파일)에서 `t("…")` 호출을 추출하고 i18next 또는 정적 SSG 조회를 위한 플랫, 로케일별 JSON을 생성합니다.
+- **문서** — `translate-docs`를 사용하여 `docs[].contentPaths`에 나열된 Markdown, MDX 및 `.astro` 페이지를 번역합니다. **VitePress**, **Starlight**, **Docusaurus**, **Nextra**, **Fumadocs**, Astro 기반 사이트 또는 Markdown/MDX/`.astro` 소스 파일에서 읽는 모든 정적 사이트 생성기와 함께 작동합니다.
+- **JSON** — `json[]`에 정의된 임의의 중첩 JSON 번들을 번역합니다. UI 복사본이 소스의 `t()` 호출 대신 로케일별 JSON 파일에 있는 경우 `translate-json`을 사용합니다.
 
 **SVG** 자산은 자체 경로를 가집니다. `features.translateSVG`, 최상위 `svg` 블록 및 `translate-svg`이며, `docs[].contentPaths`는 아닙니다.
 
@@ -29,7 +29,7 @@ description: LLM을 사용하여 JavaScript/TypeScript 애플리케이션 및 �
 | 귀하의 콘텐츠                                                                  | 명령                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | 소스 코드는 `t()`를 사용합니다                                                        | **UI 문자열** — `extract` / `translate-ui` |
-| 현지화된 페이지 또는 문서 사이트(VitePress, Starlight, Docusaurus, Nextra, Astro 등) | **문서** — `translate-docs` |
+| 현지화된 페이지 또는 문서 사이트(VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 등) | **문서** — `translate-docs` |
 | 독립형, 중첩 JSON 로케일 파일                                          | **JSON** — `translate-json`                 |
 
 세 가지 모두 파일/SQLite 캐시를 공유하므로 새롭거나 변경된 세그먼트(문자열 또는 텍스트 청크)만 모델로 다시 전송됩니다. 어떤 공급자를 사용하든 재실행은 빠르고 저렴합니다.
@@ -39,7 +39,7 @@ description: LLM을 사용하여 JavaScript/TypeScript 애플리케이션 및 �
 
 각 번역 유형에는 전체 구성 세부 정보가 포함된 자체 가이드가 있습니다: [UI 문자열](/guide/ui-strings/), [문서](/guide/documents/), [JSON](/guide/json). 병렬 비교는 [ai-i18n-tools란 무엇인가요?](/guide/what-is-ai-i18n-tools)를 참조하세요.
 
-미리 알아두어야 할 몇 가지 사항: UI 문자열은 활성 LLM 공급자( [LLM 공급자](#llm-providers) 참조)를 통해 로케일별로 누락된 항목을 번역하고, 영어 원본 텍스트를 런타임 조회 키로 사용하여 플랫 JSON 파일(`de.json`, `pt-BR.json`, …)을 작성합니다. `strings.json`는 런타임 번들이 아닌 추출 캐시입니다. 문서는 `docs[].docsOutput.style` 값 `"nested"`, `"flat"`, `"doc-system"` 및 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`을 지원합니다( [출력 레이아웃](/guide/documents/output-layouts) 참조). 세 가지 모두 `ai-i18n-tools.config.json`을 공유하며 결합할 수 있습니다. `sync`는 `features` 플래그에 따라 추출, UI 번역, SVG 번역, `translate-docs`, `translate-json`를 순서대로 실행합니다.
+미리 알아두어야 할 몇 가지 사항: UI 문자열은 활성 LLM 공급자를 통해 로케일별로 누락된 항목을 번역하고([LLM 공급자](#llm-providers) 참조), 영어 원문 텍스트를 런타임 조회 키로 사용하여 플랫 JSON 파일(`de.json`, `pt-BR.json`, …)을 작성합니다. `strings.json`는 런타임 번들이 아닌 추출 캐시입니다. 문서는 `docs[].docsOutput.style` 값 `"nested"`, `"flat"`, `"doc-system"` 및 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`을 지원합니다([출력 레이아웃](/guide/documents/output-layouts) 참조). 이 세 가지 모두 `ai-i18n-tools.config.json`를 공유하며 결합할 수 있습니다. `sync`은 `features` 플래그에 따라 추출, UI 번역, SVG 번역, `translate-docs`, `translate-json`를 순서대로 실행합니다.
 
 ---
 
@@ -158,8 +158,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 USD 비용은 공급자가 반환하는 경우에만 표시됩니다(OpenRouter). `ai-i18n-tools check-models`는 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 활성 공급자의 라이브 `GET /models` 목록(모든 공급자)에 대해 검증하고, 공급자가 반환하는 경우(예: OpenRouter) 가격을 표시합니다. `ai-i18n-tools list-models`는 활성 공급자가 광고하는 모든 모델을 나열합니다(`-P` / `--provider`를 사용하여 다른 구성된 공급자를 검사). `ai-i18n-tools bench-models`는 고유하게 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 `localeModels`)를 샘플을 개별적으로 번역하여 벤치마킹하고(모델은 `concurrency`에 의해 제한되어 병렬로 실행됨) 모델별 입력/출력 토큰, 실제 시간 및 USD 비용을 출력합니다.
 
-레거시 최상위 `openrouter` 구성 블록은 여전히 허용되며 로드 시 `providers.openrouter` (`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다.
-
 단일 문서에서 `-P`를 사용하여 공급자를 전환하는 실습 데모는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)를 참조하세요.
 
 ---
@@ -201,6 +199,9 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Nextra documentation (pages + _meta.ts + theme dictionary)
 # npx ai-i18n-tools init -t ui-nextra
 
+# Fumadocs documentation (pages + meta.json + UI catalog)
+# npx ai-i18n-tools init -t ui-fumadocs
+
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -209,7 +210,7 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-`ai-i18n-tools.config.json` 편집: `docs[].contentPaths`을 마크다운, MDX 및/또는 `.astro` 소스로 설정합니다. `docs[].outputDir` 및 `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"flat"` 등). 전체 필드 참조: [문서](/guide/documents/).
+`ai-i18n-tools.config.json`를 편집합니다. `docs[].contentPaths`을(를) 마크다운, MDX 및/또는 `.astro` 소스로 설정합니다. `docs[].outputDir` 및 `docs[].docsOutput.style`(`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"` 등). 전체 필드 참조: [문서](/guide/documents/).
 
 <a id="vitepress"></a>
 ### VitePress
@@ -220,6 +221,11 @@ npx ai-i18n-tools status
 ### Nextra
 
 `init -t ui-nextra`는 `docsOutput.style: "nextra"`을 스캐폴드합니다. `translate-docs`는 `_meta.ts` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docs[].nextraDictionaryPath`를 설정하여 테마 사전 모듈(예: `app/_dictionaries/en.ts`)도 번역합니다. 이 모든 작업은 동일한 `sync` 실행에서 JSON 사이드카 없이 수행됩니다. [Nextra 통합](/guide/nextra-integration) 및 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)를 참조하세요.
+
+<a id="fumadocs"></a>
+### Fumadocs
+
+`init -t ui-fumadocs`는 Nextra 스타일 로케일 폴더를 위해 점 파서(기본값) 또는 디렉토리 파서로 `docsOutput.style: "fumadocs"`을(를) 스캐폴드합니다. `translate-docs`는 `meta.json` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docsOutput.fumadocsUiCatalog`를 설정하여 `lib/layout.shared.ts`의 UI 재정의도 번역합니다. 이 모든 작업은 동일한 `sync` 실행에서 JSON 사이드카 없이 수행됩니다. [Fumadocs 통합](/guide/fumadocs-integration) 및 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)를 참조하십시오.
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (순수 Astro 및 Starlight)
@@ -281,7 +287,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -328,9 +334,9 @@ ai-i18n-tools help [command]
 <a id="documentation"></a>
 ## 문서
 
-- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — 전체 VitePress 가이드 (GitHub Pages에 9개 로케일).
-- [빠른 시작](/guide/quick-start) — UI 문자열, 문서 및 JSON 설정 (UI, 문서/`.astro`, JSON 번들, Astro Starlight 및 일반 Astro).
-- [로케일 자산 가이드](/guide/images-and-screenshots/) - 번역된 문서의 스크린샷 및 그림 SVG (플랫 링크 재작성기, 스크린샷 스크립트).
+- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — 전체 VitePress 가이드(GitHub Pages의 9개 로케일).
+- [빠른 시작](/guide/quick-start) — UI 문자열, 문서 및 JSON 설정(UI, docs/`.astro`, JSON 번들, VitePress, Nextra, Fumadocs, Astro Starlight 및 일반 Astro).
+- [로케일 자산 가이드](/guide/images-and-screenshots/) - 번역된 문서의 스크린샷 및 그림 SVG(플랫 링크 재작성기, 스크린샷 스크립트).
 - [아키텍처](/reference/architecture) - 아키텍처, 내부, 프로그래밍 API 및 확장 지점.
 - [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - 패키지를 사용하는 앱을 위한 **통합 프롬프트:** 다운스트림 프로젝트용 (리포지토리의 에이전트 규칙에 복사).
 - **이** 리포지토리를 위한 관리자 가이드: `AGENT.md` (규칙 및 워크플로; 클론 전용; npm에 없음). 파이프라인 참조: `docs/reference/`. 로컬 개발 및 게시: `dev/DEVEL.md`.

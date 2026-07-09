@@ -58,8 +58,9 @@ Starlight incluye sus propias cadenas de interfaz de usuario integradas para muc
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Catálogo de temas/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Etiquetas de la barra lateral `_meta.ts` + diccionario de temas `.ts` | Documentos — ver [integración de Nextra](/guide/nextra-integration) |
+| Fumadocs | Etiquetas de la barra lateral + catálogo de anulaciones de la interfaz de usuario `meta.json` | Documentos — véase [integración de Fumadocs](/guide/fumadocs-integration) |
 
-Consulta [integración de Docusaurus](/guide/docusaurus-integration) e [integración de VitePress](/guide/vitepress-integration) para ver los otros patrones de framework.
+Véase [integración de Docusaurus](/guide/docusaurus-integration), [integración de VitePress](/guide/vitepress-integration), [integración de Nextra](/guide/nextra-integration) e [integración de Fumadocs](/guide/fumadocs-integration) para ver los otros patrones de framework.
 
 <a id="example-project"></a>
 ### Proyecto de ejemplo

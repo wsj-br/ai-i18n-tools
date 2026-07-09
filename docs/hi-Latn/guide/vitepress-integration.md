@@ -131,7 +131,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
 
-Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [Nextra integration](/guide/nextra-integration) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline asambandhit app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [Fumadocs integration](/guide/fumadocs-integration) dekhein.
 
 <a id="example-project"></a>
 ## Example project

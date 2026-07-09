@@ -12,11 +12,17 @@
 | --- | --- | --- |
 | `"flat"` (カスタム `pathTemplate` がない場合のデフォルト) | フラットリンクのリライター (`rewriteRelativeLinks`、デフォルトでオン) | ページ間の相対リンク (`guide.md` → `guide.de.md`) およびマークダウン以外のアセット URL の深さプレフィックス |
 | `"vitepress"` | VitePress リンク正規化機能 (`rewriteVitepressLinks`、デフォルトでオン) | README スタイルの `docs/guide/…` パス → サイトルート (`/guide/…`) |
+| `"nextra"` | Nextra リンク正規化機能 (`rewriteNextraLinks`、デフォルトでオン) | `content/en/…` および相対 `.mdx` パス → ロケールに依存しないルート (`/guide/…`) |
+| `"fumadocs"` | Fumadocs リンク正規化機能 (`rewriteFumadocsLinks`、デフォルトでオン) | `content/docs/…` および相対 `.mdx` パス → ロケールに依存しないルート (`/docs/…`) |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | なし | ソース URL は `postProcessing` まで変更されずに渡されます |
 
 カスタム `pathTemplate` は、`rewriteRelativeLinks: true` を明示的に設定しない限り、フラットリライターを無効にします。ページ間の `#anchor` の処理については、「[出力レイアウト](/guide/documents/output-layouts)」と「[アンカーリンク](/guide/documents/anchor-links)」を参照してください。
 
 VitePress 固有のオーサリングルールについては、「[VitePress 統合 — リンク規則](/guide/vitepress-integration#link-conventions)」を参照してください。
+
+Nextra 固有のオーサリング規則については、「[Nextra 統合 — リンク規則](/guide/nextra-integration#link-conventions)」を参照してください。
+
+Fumadocs 固有のオーサリング規則については、「[Fumadocs 統合 — リンク規則](/guide/fumadocs-integration#link-conventions)」を参照してください。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ Docusaurus、Starlight、または共有静的ツリーからスクリーンシ�
 - アセットがソースファイルの横にあり、フラットリライターのファイルごとの深さプレフィックスがそれらを正しく解決します
 - 英語とすべての翻訳されたコピーが**同じ** URL を使用している (サイトルートの共有画像、併置されたアセット、正規化後の VitePress サイトルート)
 - VitePress のサイト内リンクがサイトルートまたは `docs/guide/…` パスを `rewriteVitepressLinks: true` とともに使用している
+- Nextra および Fumadocs のページ内リンクでは、ロケールに依存しないルート (`/guide/…`、`/docs/…`) または `rewriteNextraLinks` / `rewriteFumadocsLinks: true` を使用したコンテンツルートパスを使用します。
 
 <a id="full-config-example"></a>
 ## 完全な設定例

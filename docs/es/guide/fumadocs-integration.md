@@ -131,14 +131,41 @@ Las locales estándar pueden estar cubiertas por los ajustes preestablecidos de 
 | Nextra | Diccionario de temas `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | Etiquetas de barra lateral de `meta.json` | Documentos — auto cuando `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | Catálogo de anulaciones de interfaz de usuario | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Cadenas de interfaz de usuario integradas | Documentos — `translate-docs` (solo páginas) |
+| Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
+
+No **coloque** cadenas de shell/tema de framework en `json[]` — esa tubería es para paquetes de locale de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration), [Integración de VitePress](/guide/vitepress-integration) y [Integración de Nextra](/guide/nextra-integration) para los otros patrones de framework.
 
 <a id="link-conventions"></a>
 ## Convenciones de enlaces
 
-Cuando `rewriteFumadocsLinks` está habilitado (predeterminado para el ajuste preestablecido de `fumadocs`), los enlaces de markdown a `content/docs/…` o rutas `.mdx` relativas se reescriben en rutas neutrales de locale `/docs/…` (quitar `.mdx`, colapsar `index`). Las URLs externas, `mailto:` y `#anchors` no cambian.
+Fumadocs sirve rutas con prefijo de locale a través de middleware de Next.js (`/docs/getting-started`, `/pt/docs/getting-started`). **Los enlaces dentro de la página deben permanecer neutrales en cuanto al locale** (`/docs/getting-started`) para que el prefijo de locale activo se aplique automáticamente.
 
-Utilice `/docs/...` en la fuente de inglés cuando desee rutas estables en varios locales. Consulte [Documentos — reescritura de enlaces](/guide/documents/link-rewriting).
+Habilite el normalizador incorporado para que `translate-docs` corrija los enlaces en cada archivo traducido automáticamente:
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks` se habilita de forma predeterminada cuando `style` es `"fumadocs"`.
+
+| Autor en fuente en inglés | Después del normalizador |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | sin cambios (URL completa) |
+
+**Reglas de autoría**
+
+- Enlaces de documentos entre páginas: use **rutas de sitio neutrales en cuanto al locale** (`/docs/…`) en MDX en inglés, o `content/docs/…` / rutas relativas `.mdx` y deje que el normalizador las reescriba durante `sync`.
+- Archivos de repositorio fuera del árbol de contenido: use **URLs completas**.
+- No **edite manualmente** los enlaces en copias con sufijo de locale (`*.pt.mdx`) o árboles `content/{locale}/` — regenere con `sync` / `translate-docs`.
+
+Consulte también [Documentos — reescritura de enlaces](/guide/documents/link-rewriting) y [Configuración — `docsOutput`](/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Códigos de locale
@@ -160,5 +187,6 @@ Los proyectos de Fumadocs pueden definir varios bloques de `defineDocs` en `sour
 
 - [Configuración — `docsOutput`](/reference/configuration#docsoutput)
 - [Diseños de salida](/guide/documents/output-layouts)
-- [Integración de Nextra](/guide/nextra-integration) (modelo mental de analizador de directorio)
+- [Integración de Docusaurus](/guide/docusaurus-integration)
+- [Integración de Nextra](/guide/nextra-integration) (modelo mental de analizador de directorios)
 - [Integración de VitePress](/guide/vitepress-integration) (patrón de arranque de catálogo de interfaz de usuario)

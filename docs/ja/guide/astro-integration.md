@@ -58,8 +58,9 @@ Starlightは、多くのロケール（ナビゲーションラベル、検索�
 | Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts`サイドバーラベル + テーマ辞書`.ts` | ドキュメント — [Nextra統合](/guide/nextra-integration)を参照 |
+| Fumadocs | `meta.json` サイドバーラベル + UI オーバーライドカタログ | ドキュメント — [Fumadocs 連携](/guide/fumadocs-integration) を参照 |
 
-他のフレームワークパターンについては、[Docusaurus統合](/guide/docusaurus-integration)と[VitePress統合](/guide/vitepress-integration)を参照してください。
+その他のフレームワークパターンについては、[Docusaurus 連携](/guide/docusaurus-integration)、[VitePress 連携](/guide/vitepress-integration)、[Nextra 連携](/guide/nextra-integration)、および [Fumadocs 連携](/guide/fumadocs-integration) を参照してください。
 
 <a id="example-project"></a>
 ### プロジェクト例

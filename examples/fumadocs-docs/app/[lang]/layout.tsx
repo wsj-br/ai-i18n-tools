@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { RootProvider } from "fumadocs-ui/provider/next";
+import { I18nProvider } from "fumadocs-ui/contexts/i18n";
 import { i18nProvider } from "fumadocs-ui/i18n";
 import { translations } from "@/lib/layout.shared";
-import "../global.css";
+import { SetHtmlLang } from "./set-html-lang";
 
 export default async function LangLayout({
   children,
@@ -14,10 +14,9 @@ export default async function LangLayout({
   const { lang } = await params;
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body>
-        <RootProvider i18n={i18nProvider(translations, lang)}>{children}</RootProvider>
-      </body>
-    </html>
+    <I18nProvider {...i18nProvider(translations, lang)}>
+      <SetHtmlLang lang={lang} />
+      {children}
+    </I18nProvider>
   );
 }

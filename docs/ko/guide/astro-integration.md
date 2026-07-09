@@ -58,8 +58,9 @@ Starlight는 많은 로케일에 대해 자체 내장 UI 문자열(탐색 레이
 | Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 사이드바 레이블 + 테마 사전 `.ts` | 문서 — [Nextra 통합](/guide/nextra-integration) 참조 |
+| Fumadocs | `meta.json` 사이드바 레이블 + UI 재정의 카탈로그 | 문서 — [Fumadocs 통합](/guide/fumadocs-integration) 참조 |
 
-다른 프레임워크 패턴은 [Docusaurus 통합](/guide/docusaurus-integration) 및 [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
+다른 프레임워크 패턴은 [Docusaurus 통합](/guide/docusaurus-integration), [VitePress 통합](/guide/vitepress-integration), [Nextra 통합](/guide/nextra-integration), [Fumadocs 통합](/guide/fumadocs-integration)을 참조하세요.
 
 <a id="example-project"></a>
 ### 예제 프로젝트

@@ -89,9 +89,11 @@ Do not put Docusaurus shell JSON in `json[]`; use `docs[].docusaurusCatalogDir` 
 | VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` sidebar labels | Documents — auto when `style: "nextra"` + `translate-docs` |
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` sidebar labels | Documents — auto when `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
 
-Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [VitePress integration](/guide/vitepress-integration) and [Nextra integration](/guide/nextra-integration) for the VitePress/Nextra patterns.
+Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [VitePress integration](/guide/vitepress-integration), [Nextra integration](/guide/nextra-integration), and [Fumadocs integration](/guide/fumadocs-integration) for the other framework patterns.
 
 <a id="example-project"></a>
 ## Example project

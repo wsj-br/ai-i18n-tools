@@ -1,3 +1,18 @@
+diff --git a/dist/components/last-updated.js b/dist/components/last-updated.js
+index ff8b0670f5ec5a42ea3a4c12f757e4c694e1efbf..747a346e0423921cc6aa8564c149d6cc863dca1a 100644
+--- a/dist/components/last-updated.js
++++ b/dist/components/last-updated.js
+@@ -21,7 +21,9 @@ const LastUpdated = (t0) => {
+   }
+   let t3;
+   if ($[0] !== i18n.length || $[1] !== locale || $[2] !== pathname) {
+-    t3 = i18n.length ? pathname.split("/", 2)[1] : locale;
++    const pathnameLocale = pathname.split("/", 2)[1];
++    const configuredLocale = i18n.find((l) => l.locale === pathnameLocale)?.locale;
++    t3 = i18n.length ? configuredLocale ?? locale : locale;
+     $[0] = i18n.length;
+     $[1] = locale;
+     $[2] = pathname;
 diff --git a/dist/layout.js b/dist/layout.js
 index 57a511faacf75820f822be305d66c61494ca998a..c02892e001c45861cfaeaccaadfc73feea18ca01 100644
 --- a/dist/layout.js

@@ -131,7 +131,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | Fumadocs | Catálogo de anulaciones de interfaz de usuario | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
 
-**No** ponga cadenas de shell/tema del framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration) e [Integración de Nextra](/guide/nextra-integration) para ver los otros patrones del framework.
+**No** ponga cadenas de shell/tema de framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [Integración de Docusaurus](/guide/docusaurus-integration) e [Integración de Fumadocs](/guide/fumadocs-integration) para ver los otros patrones de framework.
 
 <a id="example-project"></a>
 ## Proyecto de ejemplo

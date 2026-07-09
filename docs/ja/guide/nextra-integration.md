@@ -102,7 +102,7 @@ JSON サイドカー (`i18n/meta.en.json`) や、翻訳された JSON をイン�
 | Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
 
-**不要**将框架 shell/主题字符串放在 `json[]` 中 —— 该管道用于无关的应用程序本地化包。请参阅 [Docusaurus 集成](/guide/docusaurus-integration) 和 [VitePress 集成](/guide/vitepress-integration) 以了解其他框架模式。
+Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), and [Fumadocs integration](/guide/fumadocs-integration) for the other framework patterns.
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

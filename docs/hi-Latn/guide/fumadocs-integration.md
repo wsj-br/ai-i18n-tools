@@ -131,14 +131,41 @@ Fumadocs UI strings ke liye `json[]` ka upyog **na karein** — vah pipeline asa
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings | Documents — `translate-docs` (sirf pages) |
+| Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
+
+Framework shell/theme string ko `json[]` mein **na** daalein — vah pipeline asambandhit app locale bundle ke liye hai. Anya framework pattern ke liye [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), aur [Nextra integration](/guide/nextra-integration) dekhein.
 
 <a id="link-conventions"></a>
 ## Link conventions
 
-Jab `rewriteFumadocsLinks` enable hota hai (`fumadocs` preset ke liye default), `content/docs/…` ya relative `.mdx` paths ke markdown links ko locale-neutral routes `/docs/…` mein rewrite kiya jata hai (`.mdx` hatayein, `index` ko collapse karein). External URLs, `mailto:`, aur `#anchors` mein koi badlav nahi hota hai.
+Fumadocs Next.js middleware (`/docs/getting-started`, `/pt/docs/getting-started`) ke madhyam se locale-prefixed routes serve karta hai. **In-page links ko locale-neutral rehna chahiye** (`/docs/getting-started`) taki active locale prefix apne aap apply ho jaye.
 
-English source mein `/docs/...` ka upyog karein jab aap locales mein stable routes chahte hain. Dekhein [Documents — link rewriting](/guide/documents/link-rewriting).
+Built-in normalizer ko enable karein taaki `translate-docs` har translated file mein links ko automatically theek kar de:
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks` default roop se enable hota hai jab `style` `"fumadocs"` hota hai.
+
+| Angrezi source mein lekhak | Normalizer ke baad |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | aparivartit (poora URL) |
+
+**Authoring rules**
+
+- Cross-page doc links: Angrezi MDX mein **locale-neutral site routes** (`/docs/…`) ka upyog karein, ya `content/docs/…` / relative `.mdx` paths ka upyog karein aur normalizer ko `sync` ke dauran unhein rewrite karne dein.
+- Content tree ke bahar repo files: **full URLs** ka upyog karein.
+- Locale-suffixed copies (`*.pt.mdx`) ya `content/{locale}/` trees mein links ko haath se edit **na** karein — `sync` / `translate-docs` ke saath regenerate karein.
+
+[Documents — link rewriting](/guide/documents/link-rewriting) aur [Configuration — `docsOutput`](/reference/configuration#docsoutput) bhi dekhein.
 
 <a id="locale-codes"></a>
 ## Locale codes
@@ -160,5 +187,6 @@ Fumadocs projects `source.config.ts` mein kai `defineDocs` blocks define kar sak
 
 - [Configuration — `docsOutput`](/reference/configuration#docsoutput)
 - [Output layouts](/guide/documents/output-layouts)
+- [Docusaurus integration](/guide/docusaurus-integration)
 - [Nextra integration](/guide/nextra-integration) (dir parser mental model)
 - [VitePress integration](/guide/vitepress-integration) (UI catalog bootstrap pattern)

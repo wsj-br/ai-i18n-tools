@@ -58,8 +58,9 @@ Starlight kai locales ke liye apni khud ki built-in UI string bhejta hai (nav la
 | Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` sidebar label + theme dictionary `.ts` | Documents — [Nextra integration](/guide/nextra-integration) dekhen |
+| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — dekhiye [Fumadocs integration](/guide/fumadocs-integration) |
 
-Anya framework pattern ke liye [Docusaurus integration](/guide/docusaurus-integration) aur [VitePress integration](/guide/vitepress-integration) dekhen.
+Dusre framework patterns ke liye [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), [Nextra integration](/guide/nextra-integration), aur [Fumadocs integration](/guide/fumadocs-integration) dekhen.
 
 <a id="example-project"></a>
 ### Example project

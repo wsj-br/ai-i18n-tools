@@ -58,8 +58,9 @@ Starlight liefert eigene integrierte UI-Strings für viele Sprachen (Navigations
 | Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente – `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Theme-/Navigations-/Seitenleistenkatalog | Dokumente – `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts`-Seitenleistenbeschriftungen + Theme-Wörterbuch `.ts` | Dokumente – siehe [Nextra-Integration](/guide/nextra-integration) |
+| Fumadocs | `meta.json` Seitenleistenbeschriftungen + UI-Überschreibungen Katalog | Dokumente – siehe [Fumadocs-Integration](/guide/fumadocs-integration) |
 
-Siehe [Docusaurus-Integration](/guide/docusaurus-integration) und [VitePress-Integration](/guide/vitepress-integration) für die anderen Framework-Muster.
+Siehe [Docusaurus-Integration](/guide/docusaurus-integration), [VitePress-Integration](/guide/vitepress-integration), [Nextra-Integration](/guide/nextra-integration) und [Fumadocs-Integration](/guide/fumadocs-integration) für die anderen Framework-Muster.
 
 <a id="example-project"></a>
 ### Beispielprojekt

@@ -89,9 +89,11 @@ Não coloque o JSON shell do Docusaurus em `json[]`; use `docs[].docusaurusCatal
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
 | Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Rótulos de barra lateral `meta.json` | Documentos — auto quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-**Não** coloque strings de shell/tema do framework em `json[]` — esse pipeline é para pacotes de localização de aplicativos não relacionados. Consulte [integração VitePress](/guide/vitepress-integration) e [integração Nextra](/guide/nextra-integration) para os padrões VitePress/Nextra.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração VitePress](/guide/vitepress-integration), [integração Nextra](/guide/nextra-integration) e [integração Fumadocs](/guide/fumadocs-integration) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo

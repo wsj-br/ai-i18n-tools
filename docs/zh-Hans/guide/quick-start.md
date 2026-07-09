@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # 快速入门
 
-默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus`、`ui-starlight`、`ui-vitepress` 和 `ui-nextra` 模板启用 **文档** 翻译（`translate-docs`）；`ui-vitepress` 还会为 VitePress 主题字符串搭建 `docsOutput.vitepressThemeCatalog`，而 `ui-nextra` 会为 Nextra 主题字典搭建 `docs[].nextraDictionaryPath`（侧边栏 `_meta.ts` 会自动收集）。`ui-astro-website` 模板为普通 Astro 应用搭建 **UI** 提取（包括 `.astro` 文件）；当你还需要对 `.astro` 页面 HTML 进行 `translate-docs` 时，请添加 `docs[]` 块（参见 [Astro 网站页面（解析并替换）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。参考项目 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用了 **两种** 流水线。当你希望通过一条命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译以及文档翻译时，请使用 `sync`。
+默认的 `init` 模板（`ui-markdown`）仅启用 **UI** 提取和翻译。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra` 和 `ui-fumadocs` 模板启用 **文档** 翻译（`translate-docs`）；`ui-vitepress` 还会为 VitePress 主题字符串搭建 `docsOutput.vitepressThemeCatalog`，`ui-nextra` 为 Nextra 主题字典搭建 `docs[].nextraDictionaryPath`（侧边栏 `_meta.ts` 会自动收集），`ui-fumadocs` 为 Fumadocs UI 覆盖搭建 `docsOutput.fumadocsUiCatalog`（侧边栏 `meta.json` 会自动收集）。`ui-astro-website` 模板为纯 Astro 应用搭建 **UI** 提取（包括 `.astro` 文件）；当你还需要对 `.astro` 页面 HTML 进行 `translate-docs` 时，请添加 `docs[]` 块（参见 [Astro 网站页面（解析并替换）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。参考项目 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用了 **两种** 流水线。当你希望通过一条命令根据配置运行提取、UI 翻译、可选的 SVG 文件翻译和文档翻译时，请使用 `sync`。
 
 <a id="runnable-examples"></a>
 ### 可运行的示例
 
-九个可运行的项目和测试夹具位于 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。请参阅 [示例](/examples) 目录（控制台应用、Next.js + Docusaurus、Astro 网站、Astro Starlight 文档、VitePress 文档、Nextra 文档、多提供商对比、Markdown 压力测试）。
+九个可运行的项目和测试夹具位于 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。请参阅 [示例](/examples) 目录（控制台应用、Next.js + Docusaurus、Astro 网站、Astro Starlight 文档、VitePress 文档、Nextra 文档、Fumadocs 文档、多提供商对比、Markdown 压力测试）。
 
 **独立运行一个示例**（无需克隆整个 monorepo）：
 
@@ -31,6 +31,7 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
 # Nextra docs: npx ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

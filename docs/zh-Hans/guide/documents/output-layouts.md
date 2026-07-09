@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`（翻译后的页面直接位于 `{outputDir}/{locale}/` 下，当英语位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配）。
 - `docsOutput.style = "vitepress"` — 布局与 `doc-system` 相同，但 `localeSubpath` 为空；保留 BCP-47 语言环境文件夹名称（`localePathLowercase` 默认为 `false`）。参见 [VitePress 集成](/guide/vitepress-integration)。
 - `docsOutput.style = "nextra"` — 布局与 `doc-system` 相同，但 `localeSubpath` 为空；英语源文件位于语言环境文件夹下（例如 `content/en/`）。参见 [Nextra 集成](/guide/nextra-integration)。
+- `docsOutput.style = "fumadocs"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；英文源使用点后缀文件（默认），或在 `fumadocsParser` 为 `"dir"` 时使用区域设置文件夹。参见 [Fumadocs 集成](/guide/fumadocs-integration)。
 
 Docusaurus 预设（主要的文档页面）：
 
@@ -38,6 +39,18 @@ Nextra 预设（英语位于语言环境文件夹下，目标语言使用同级�
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Fumadocs 预设 — 点解析器（默认；区域设置后缀位于英文源旁边）：
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Fumadocs 预设 — 目录解析器（Nextra 风格的区域设置文件夹）：
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 可选的 JSON 标签——来自 `docusaurusCatalogDir` 的 Docusaurus 壳字符串（非 MDX 正文内容）：
 
 ```text
@@ -49,6 +62,8 @@ Starlight 为许多本地化版本提供了 UI 字符串；可选的自定义 UI
 VitePress 导航/侧边栏/页脚字符串不在 markdown 中 — 请配置 `docsOutput.vitepressThemeCatalog` 并在 **`translate-docs`** 内进行翻译。参见 [VitePress 集成](/guide/vitepress-integration)。
 
 Nextra 主题字典 (`.ts`) 和 `_meta.ts` 侧边栏标签不在 markdown 中 — 当 `style: "nextra"` 时，请使用 `docs[].nextraDictionaryPath` 和自动 `_meta` 收集，所有操作均在 **`translate-docs`** 内进行。参见 [Nextra 集成](/guide/nextra-integration)。
+
+Fumadocs UI 覆盖 (`lib/layout.shared.ts`) 和 `meta.json` 侧边栏标签不在 markdown 中 — 使用 `docsOutput.fumadocsUiCatalog` 和自动 `meta.json` 收集（当 `style: "fumadocs"` 时），全部位于 **`translate-docs`** 内。参见 [Fumadocs 集成](/guide/fumadocs-integration)。
 
 `docsOutput.style = "flat"`——将翻译后的文件放置在源旁边，并带有本地化后缀，或放在子目录中。当 `docsOutput.style = "flat"` 时（除非设置了 `rewriteRelativeLinks: false` 或自定义 `pathTemplate`），页面之间的相对链接会自动重写。
 

@@ -131,7 +131,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração Nextra](/guide/nextra-integration) para os outros padrões de framework.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração Fumadocs](/guide/fumadocs-integration) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo

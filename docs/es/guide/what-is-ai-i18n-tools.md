@@ -6,10 +6,10 @@ ai-i18n-tools es una herramienta de línea de comandos y un kit de herramientas 
 <a id="translation-modes"></a>
 ## Modos de traducción
 
-- **Cadenas de interfaz de usuario** — Extraiga las llamadas a `t("…")` (y marcadores similares) del código fuente JS/TS y escriba archivos JSON planos por configuración regional para i18next o búsqueda estática. Comandos: `extract`, `translate-ui`. Guía: [Cadenas de interfaz de usuario](/guide/ui-strings/).
-- **Documentos** — Traduzca las páginas Markdown, MDX y `.astro` que aparecen en `docs[].contentPaths`. Funciona con VitePress, Starlight, Docusaurus, Nextra, Astro y otros sitios de documentación estática. Comando: `translate-docs`. Guía: [Documentos](/guide/documents/).
-- **JSON** — Traduzca los paquetes de configuración regional JSON anidados (etiquetas de tema, anulaciones de i18n, copias de aplicaciones que no están en el código fuente) definidos en `json[]` de nivel superior. Comando: `translate-json`. Guía: [JSON](/guide/json).
-- **SVG** — Traduzca el texto visible dentro de las ilustraciones SVG (`<text>`, `<title>`, `<desc>`) y escriba un archivo de salida por configuración regional. Separado de la traducción de documentos — `translate-docs` no modifica los activos SVG. Comando: `translate-svg`. Guía: [Traducción de SVG](/guide/svg-translation/).
+- **Cadenas de interfaz de usuario** — Extrae llamadas `t("…")` (y marcadores similares) del código fuente JS/TS y escribe archivos JSON planos por configuración regional para i18next o búsqueda estática. Comandos: `extract`, `translate-ui`. Guía: [Cadenas de interfaz de usuario](/guide/ui-strings/).
+- **Documentos** — Traduce páginas Markdown, MDX y `.astro` listadas en `docs[].contentPaths`. Funciona con VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro y otros sitios de documentación estática. Comando: `translate-docs`. Guía: [Documentos](/guide/documents/).
+- **JSON** — Traduce paquetes de configuración regional JSON anidados (etiquetas de tema, anulaciones de i18n, copias de aplicaciones que no están en el código fuente) definidos en `json[]` de nivel superior. Comando: `translate-json`. Guía: [JSON](/guide/json).
+- **SVG** — Traduce el texto visible dentro de las ilustraciones SVG (`<text>`, `<title>`, `<desc>`) y escribe un archivo de salida por configuración regional. Separado de la traducción de documentos: `translate-docs` no modifica los activos SVG. Comando: `translate-svg`. Guía: [Traducción de SVG](/guide/svg-translation/).
 
 Los cuatro modos utilizan el [proveedor de LLM](/guide/providers-and-models) activo, comparten el mismo archivo de configuración y reutilizan una caché de SQLite para que las nuevas ejecuciones solo envíen texto nuevo o modificado al modelo.
 
@@ -38,6 +38,7 @@ El repositorio incluye proyectos de ejemplo ejecutables en `examples/`, cada uno
 | [astro-docs](/examples#astro-docs) | Sitio de documentación de Astro Starlight |
 | [vitepress-docs](/examples#vitepress-docs) | Documentos de VitePress más catálogo de temas |
 | [nextra-docs](/examples#nextra-docs) | Documentos de Nextra más etiquetas de barra lateral `_meta.ts` y diccionario de temas |
+| [fumadocs-docs](/examples#fumadocs-docs) | Documentos de Fumadocs más etiquetas de barra lateral `meta.json` y catálogo de interfaz de usuario |
 | [multi-provider](/examples#multi-provider) | Comparar proveedores de LLM en el mismo documento |
 | [test-markdown](/examples#test-markdown) | Pruebas de estrés de la canalización de Markdown (CJK, Devanagari, casos extremos) |
 

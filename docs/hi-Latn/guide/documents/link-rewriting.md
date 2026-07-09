@@ -12,11 +12,17 @@ Kaun sa rewriter chalta hai, yeh `docsOutput.style` par nirbhar karta hai:
 | --- | --- | --- |
 | `"flat"` (jab koi custom `pathTemplate` na ho toh default) | Flat link rewriter (`rewriteRelativeLinks`, default roop se chalu) | Cross-page relative links (`guide.md` → `guide.de.md`) aur non-markdown asset URLs ke liye depth prefixes |
 | `"vitepress"` | VitePress link normalizer (`rewriteVitepressLinks`, default roop se chalu) | README-style `docs/guide/…` paths → site routes (`/guide/…`) |
+| `"nextra"` | Nextra link normalizer (`rewriteNextraLinks`, default roop se chalu) | `content/en/…` aur relative `.mdx` paths → locale-neutral routes (`/guide/…`) |
+| `"fumadocs"` | Fumadocs link normalizer (`rewriteFumadocsLinks`, default roop se chalu) | `content/docs/…` aur relative `.mdx` paths → locale-neutral routes (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Koi nahi | Source URLs `postProcessing` tak bina badle rehte hain |
 
 Custom `pathTemplate` flat rewriter ko disable kar deta hai jab tak aap `rewriteRelativeLinks: true` ko spasht roop se set na karen. Cross-page `#anchor` handling ke liye [Output layouts](/guide/documents/output-layouts) aur [Anchor links](/guide/documents/anchor-links) dekhen.
 
 VitePress-specific authoring rules ke liye, [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions) dekhen.
+
+Nextra-specific authoring rules ke liye, [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) dekhen.
+
+Fumadocs-specific authoring rules ke liye, [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions) dekhen.
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ Aapko aam taur par `regexAdjustments` ki zaroorat **nahi** hoti jab:
 - Assets source files ke bagal mein hote hain aur flat rewriter ka per-file depth prefix unhe sahi dhang se resolve karta hai
 - English aur har translated copy **ek hi** URL ka upyog karte hain (site root par shared images, colocated assets, normalizer ke baad VitePress site routes)
 - VitePress in-site links site routes ya `docs/guide/…` paths ka upyog karte hain `rewriteVitepressLinks: true` ke saath
+- Nextra aur Fumadocs in-page links locale-neutral routes (`/guide/…`, `/docs/…`) ya content-root paths ka upyog karte hain `rewriteNextraLinks` / `rewriteFumadocsLinks: true` ke saath
 
 <a id="full-config-example"></a>
 ## Poora config example

@@ -38,6 +38,16 @@ Para proyectos que sincronizan `README.md` → `docs/index.md`, use URL completa
 
 El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `regexAdjustments`. Consulte [Integración de VitePress — Convenciones de enlaces](/guide/vitepress-integration#link-conventions).
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Normalizador de enlaces de Nextra (`style: "nextra"`)
+
+Cuando `docsOutput.rewriteNextraLinks` es `true` (predeterminado cuando `style` es `"nextra"`), se ejecuta un normalizador independiente después del reensamblaje del segmento. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas neutrales para la configuración regional (`/guide/…`). Consulte [Integración de Nextra — Convenciones de enlaces](/guide/nextra-integration#link-conventions).
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Normalizador de enlaces de Fumadocs (`style: "fumadocs"`)
+
+Cuando `docsOutput.rewriteFumadocsLinks` es `true` (predeterminado cuando `style` es `"fumadocs"`), se ejecuta un normalizador independiente después del reensamblaje del segmento. Reescribe las rutas `content/docs/…` y `.mdx` relativas a rutas neutrales para la configuración regional (`/docs/…`). Consulte [Integración de Fumadocs — Convenciones de enlaces](/guide/fumadocs-integration#link-conventions).
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Prefijo de profundidad por archivo con `flatPreserveRelativeDir`
 

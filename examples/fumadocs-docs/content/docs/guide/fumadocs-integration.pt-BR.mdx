@@ -1,0 +1,199 @@
+---
+title: Integração com Fumadocs
+description: Use ai-i18n-tools com sites de documentação Fumadocs 4 no Next.js App Router
+---
+
+
+
+<a id="fumadocs-integration"></a>
+# Integração com Fumadocs
+
+Use `init -t ui-fumadocs` e `docsOutput.style: "fumadocs"` para sites de documentação [Fumadocs](https://www.fumadocs.dev/) 4 no Next.js App Router. O preset é um alias para `doc-system` com um `localeSubpath` vazio e códigos de localidade BCP-47 ou curtos preservados (`localePathLowercase` tem como padrão `false`).
+
+Veja também [Documentos](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) e a demonstração executável [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (parser de ponto, porta 3080).
+
+<a id="quick-start"></a>
+## Início rápido
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+# edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
+pnpm run i18n:sync   # or: ai-i18n-tools sync
+pnpm run build       # Next.js build (project-specific script)
+```
+
+Ative `features.translateDocs` ao traduzir o conteúdo da página, rótulos da barra lateral `meta.json` e substituições da interface do Fumadocs em uma única execução de `sync`.
+
+<a id="page-layout"></a>
+## Layout da página
+
+O Fumadocs suporta dois layouts de conteúdo i18n via `docsOutput.fumadocsParser`. O parser **dot** é o padrão (integrado ao Fumadocs e sites de produção como [SWR](https://github.com/vercel/swr-site)).
+
+### Parser Dot (padrão)
+
+O MDX em inglês fica na raiz da coleção. Cópias traduzidas usam um sufixo de local no mesmo diretório:
+
+```text
+content/docs/index.mdx                              →  content/docs/index.pt-BR.mdx
+content/docs/guide/fumadocs-integration.mdx         →  content/docs/guide/fumadocs-integration.zh-Hans.mdx
+```
+
+```json
+{
+  "contentPaths": ["content/docs"],
+  "outputDir": "content/docs",
+  "docsOutput": {
+    "style": "fumadocs",
+    "docsRoot": "content/docs",
+    "fumadocsParser": "dot",
+    "rewriteFumadocsLinks": true
+  }
+}
+```
+
+Alinhe `targetLocales` com `defineI18n().languages` em `lib/i18n.ts` exatamente (o exemplo usa `pt-BR` e `zh-Hans`).
+
+<a id="dir-parser-nextra-style"></a>
+### Analisador de diretório (estilo Nextra)
+
+Para equipes acostumadas com pastas de local (`content/docs/en/` → `content/docs/pt-BR/`), defina `fumadocsParser` para `"dir"`:
+
+```text
+content/docs/en/index.mdx           →  content/docs/pt-BR/index.mdx
+content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
+```
+
+```json
+{
+  "contentPaths": ["content/docs/en"],
+  "outputDir": "content/docs",
+  "docsOutput": {
+    "style": "fumadocs",
+    "docsRoot": "content/docs/en",
+    "fumadocsParser": "dir",
+    "rewriteFumadocsLinks": true
+  }
+}
+```
+
+Veja `ai-i18n-tools.config.dir.example.json` em [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) para uma configuração de diretório copiar e colar. O modelo mental corresponde à [integração Nextra](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration#page-layout).
+
+<a id="meta-json-sidebar"></a>
+## Barra lateral (`meta.json`)
+
+Fumadocs usa arquivos JSON `meta.json` para a estrutura e os títulos da barra lateral. Quando `docsOutput.style` é `"fumadocs"`, **`translate-docs`** coleta `meta.json` sob `docsRoot` (ou `docs[].fumadocsMetaGlob`), traduz valores de string para chaves listadas em `docs[].fumadocsMetaTranslatableKeys` (padrão: `title`, `description`), e grava saídas de localidade:
+
+| Analisador | Origem em inglês | Saída |
+|--------|----------------|--------|
+| **dot** | `content/docs/**/meta.json` | `content/docs/**/meta.{locale}.json` |
+| **dir** | `content/docs/en/**/meta.json` | `content/docs/{locale}/**/meta.json` |
+
+**Não** traduza arrays de slug `pages`, `root`, `icon`, `defaultOpen`, ou outras chaves estruturais — apenas rótulos legíveis por humanos.
+
+<a id="ui-catalog"></a>
+## Catálogo da UI
+
+O chrome do layout do Fumadocs (placeholder de pesquisa, nomes de exibição de localidade e outras substituições de `defineTranslations` / `i18n.translations()` em `lib/layout.shared.ts`) não é extraído do markdown. Configure **`docsOutput.fumadocsUiCatalog`** para que **`translate-docs`** inicialize o catálogo em inglês a partir de `sourcePath` e traduza o JSON por localidade:
+
+```json
+{
+  "features": {
+    "translateDocs": true
+  },
+  "docs": [
+    {
+      "contentPaths": ["content/docs"],
+      "outputDir": "content/docs",
+      "docsOutput": {
+        "style": "fumadocs",
+        "docsRoot": "content/docs",
+        "fumadocsParser": "dot",
+        "fumadocsUiCatalog": {
+          "sourcePath": "lib/layout.shared.ts",
+          "catalogPath": "lib/i18n/ui.en.json"
+        }
+      }
+    }
+  ]
+}
+```
+
+- **`catalogPath`** — JSON plano em inglês gerado (saída de bootstrap). Reexecute `sync` quando as substituições em inglês em `layout.shared.ts` mudarem.
+- **`outputPathTemplate`** (opcional) — saídas por localidade; padrão: `ui.{locale}.json` ao lado de `catalogPath`.
+
+Carregue o JSON por localidade em `layout.shared.ts` via `loadUiCatalog(locale)` e mescle com `i18nProvider(translations, lang)` no seu layout raiz. Veja [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts).
+
+Localidades padrão podem ser cobertas por predefinições de `@fumadocs/language/*` sem custo de LLM; o catálogo traduz **substituições de projeto** apenas no bloco em inglês.
+
+**Não** use `json[]` para strings de UI do Fumadocs — esse pipeline é para pacotes de localidade de aplicativos não relacionados.
+
+<a id="framework-shell-translation"></a>
+## Tradução do shell do framework
+
+| Framework | Strings do shell / tema | Pipeline |
+|-----------|----------------------|----------|
+| Docusaurus | Catálogo `write-translations` | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Catálogo de tema/navegação/barra lateral | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Rótulos da barra lateral `_meta.ts` | Documents — automático quando `style: "nextra"` + `translate-docs` |
+| Nextra | Dicionário de temas `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Strings de UI integradas (muitos locais); sem pipeline de shell adicional | Documentos — `translate-docs` (apenas páginas) |
+
+**Não** coloque strings de shell/tema do framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Veja [Integração Docusaurus](https://wsj-br.github.io/ai-i18n-tools/guide/docusaurus-integration), [Integração VitePress](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration) e [Integração Nextra](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration) para os outros padrões de framework.
+
+<a id="link-conventions"></a>
+## Convenções de links
+
+O Fumadocs atende rotas com prefixo de localidade via middleware do Next.js (`/docs/guide/fumadocs-integration`, `/pt-BR/docs/guide/fumadocs-integration`). **Links na página devem permanecer neutros em relação à localidade** (`/docs/guide/fumadocs-integration`), para que o prefixo de localidade ativo seja aplicado automaticamente.
+
+Habilite o normalizador integrado para que o `translate-docs` corrija automaticamente os links em todos os arquivos traduzidos:
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+O `rewriteFumadocsLinks` vem habilitado por padrão quando o `style` é `"fumadocs"`.
+
+| Autor no fonte em inglês | Após o normalizador |
+|--------------------------|------------------|
+| `[Guide](/docs/guide/fumadocs-integration)` | `[Guide](/docs/guide/fumadocs-integration)` |
+| `[Home](/docs)` | `[Home](/docs)` |
+| `[Guide](/docs/guide/fumadocs-integration)` | `[Guide](/docs/guide/fumadocs-integration)` |
+| `[Demo](https://github.com/org/repo)` | inalterado (URL completo) |
+
+**Regras de autoria**
+
+- Links de documentação entre páginas: use **rotas de site neutras em relação ao idioma** (`/docs/…`) em MDX em inglês, ou caminhos `content/docs/…` / relativos `.mdx` e deixe o normalizador reescrevê-los durante `sync`.
+- Arquivos do repositório fora da árvore de conteúdo: use **URLs completos**.
+- **Não** edite manualmente links em cópias com sufixo de idioma (`*.pt-BR.mdx`, `*.zh-Hans.mdx`) ou árvores `content/{locale}/` — regenere com `sync` / `translate-docs`.
+
+Consulte também [Documentos — reescrita de links](https://wsj-br.github.io/ai-i18n-tools/guide/documents/link-rewriting) e [Configuração — `docsOutput`](https://wsj-br.github.io/ai-i18n-tools/reference/configuration#docsoutput).
+
+<a id="locale-codes"></a>
+## Códigos de localidade
+
+Mantenha `targetLocales` em `ai-i18n-tools.config.json` alinhado com `defineI18n().languages` em seu aplicativo Fumadocs **exatamente**. Este exemplo de ponto usa códigos BCP-47 (`pt-BR`, `zh-Hans`); as configurações de diretório usam os mesmos códigos que as pastas de localidade. Não há normalização forçada — códigos incompatíveis produzem caminhos de saída errados ou páginas ausentes.
+
+<a id="multiple-collections"></a>
+## Múltiplas coleções
+
+Projetos Fumadocs podem definir vários blocos `defineDocs` em `source.config.ts` (docs, blog, exemplos). Adicione um bloco `docs[]` por coleção que você traduzir, cada um com seu próprio `contentPaths`, `outputDir` e `docsRoot`.
+
+<a id="example-project"></a>
+## Exemplo de projeto
+
+[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) — MDX em inglês em `content/docs/`, com commit de `pt-BR` e `zh-Hans` páginas com sufixo de ponto, `meta.json` e `lib/i18n/ui.{locale}.json`. Execute `pnpm run dev` na porta **3080**.
+
+<a id="cross-references"></a>
+## Referências cruzadas
+
+- [Configuração — `docsOutput`](https://wsj-br.github.io/ai-i18n-tools/reference/configuration#docsoutput)
+- [Layouts de saída](https://wsj-br.github.io/ai-i18n-tools/guide/documents/output-layouts)
+- [Integração com Docusaurus](https://wsj-br.github.io/ai-i18n-tools/guide/docusaurus-integration)
+- [Integração com Nextra](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration) (modelo mental do parser de diretório)
+- [Integração com VitePress](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration) (padrão de bootstrap de catálogo de UI)

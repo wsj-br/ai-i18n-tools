@@ -102,6 +102,7 @@ Cuando `translateJson` está activado, `status` imprime una sección `json[]` (�
 | Catálogo Docusaurus `write-translations` (`{ "key": { "message": "…", "description": "…" } }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs`, **no** `json[]` |
 | Cadenas de tema/navegación/barra lateral de VitePress | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **no** use `json[]` — consulte [Integración de VitePress](/guide/vitepress-integration) |
 | Etiquetas `_meta.ts` de Nextra y diccionario de temas `.ts` | Documentos — `translate-docs` (`_meta` automático cuando `style: "nextra"`, `nextraDictionaryPath` opcional); **no** use `json[]` — consulte [Integración de Nextra](/guide/nextra-integration) |
+| Catálogo de etiquetas de Fumadocs `meta.json` y anulaciones de interfaz de usuario | Documentos — `translate-docs` (automático `meta.json` cuando `style: "fumadocs"`, opcional `fumadocsUiCatalog`); **no** use `json[]` — consulte [integración de Fumadocs](/guide/fumadocs-integration) |
 | JSON de configuración regional anidada independiente (árboles `translation.json` estilo ZenBrowser) | JSON — `json[]` + `translate-json` |
 | Archivos `.svg` ilustrados con `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (opcional; no es una de las tres tuberías principales) |
 

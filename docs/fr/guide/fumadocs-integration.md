@@ -131,14 +131,41 @@ Les paramètres régionaux standard peuvent être couverts par les préréglages
 | Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | étiquettes de barre latérale `meta.json` | Documents — auto lorsque `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | catalogue de remplacements d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées | Documents — `translate-docs` (pages uniquement) |
+| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline d'interface supplémentaire | Documents — `translate-docs` (pages uniquement) |
+
+Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés. Voir [Intégration Docusaurus](/guide/docusaurus-integration), [Intégration VitePress](/guide/vitepress-integration) et [Intégration Nextra](/guide/nextra-integration) pour les autres modèles de framework.
 
 <a id="link-conventions"></a>
 ## Conventions de lien
 
-Lorsque `rewriteFumadocsLinks` est activé (par défaut pour le préréglage `fumadocs`), les liens Markdown vers `content/docs/…` ou les chemins relatifs `.mdx` sont réécrits en routes neutres vis-à-vis des paramètres régionaux `/docs/…` (supprimer `.mdx`, réduire `index`). Les URL externes, `mailto:` et `#anchors` restent inchangées.
+Fumadocs sert des routes préfixées par les paramètres régionaux via le middleware Next.js (`/docs/getting-started`, `/pt/docs/getting-started`). **Les liens dans la page doivent rester neutres par rapport aux paramètres régionaux** (`/docs/getting-started`) afin que le préfixe des paramètres régionaux actifs soit appliqué automatiquement.
 
-Utilisez `/docs/...` dans la source anglaise lorsque vous souhaitez des routes stables entre les paramètres régionaux. Voir [Documents — réécriture de liens](/guide/documents/link-rewriting).
+Activez le normaliseur intégré pour que `translate-docs` corrige automatiquement les liens dans chaque fichier traduit :
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks` est activé par défaut lorsque `style` est `"fumadocs"`.
+
+| Auteur dans la source anglaise | Après le normalisateur |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | inchangé (URL complète) |
+
+**Règles de rédaction**
+
+- Liens de documentation inter-pages : utilisez des **routes de site neutres par rapport aux paramètres régionaux** (`/docs/…`) dans le MDX anglais, ou des chemins `content/docs/…` / `.mdx` relatifs et laissez le normalisateur les réécrire pendant `sync`.
+- Fichiers de dépôt en dehors de l'arborescence de contenu : utilisez des **URL complètes**.
+- Ne modifiez **pas** manuellement les liens dans les copies suffixées par les paramètres régionaux (`*.pt.mdx`) ou les arborescences `content/{locale}/` — régénérez avec `sync` / `translate-docs`.
+
+Voir aussi [Documents — réécriture de liens](/guide/documents/link-rewriting) et [Configuration — `docsOutput`](/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Codes de paramètres régionaux
@@ -160,5 +187,6 @@ Les projets Fumadocs peuvent définir plusieurs blocs `defineDocs` dans `source.
 
 - [Configuration — `docsOutput`](/reference/configuration#docsoutput)
 - [Dispositions de sortie](/guide/documents/output-layouts)
+- [Intégration Docusaurus](/guide/docusaurus-integration)
 - [Intégration Nextra](/guide/nextra-integration) (modèle mental de l'analyseur de répertoire)
-- [Intégration VitePress](/guide/vitepress-integration) (modèle d'amorçage du catalogue d'interface utilisateur)
+- [Intégration VitePress](/guide/vitepress-integration) (modèle de démarrage du catalogue d'interface utilisateur)

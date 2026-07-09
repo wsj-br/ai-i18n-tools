@@ -38,6 +38,16 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 
 플랫 재작성기와 VitePress 정규화기는 `docs[]` 블록당 상호 배타적입니다. `regexAdjustments` 전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/guide/vitepress-integration#link-conventions)을 참조하십시오.
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Nextra 링크 정규화 도구 (`style: "nextra"`)
+
+`docsOutput.rewriteNextraLinks`가 `true`일 때 (`style`가 `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이 도구는 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하십시오.
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Fumadocs 링크 정규화 도구 (`style: "fumadocs"`)
+
+`docsOutput.rewriteFumadocsLinks`가 `true`일 때 (`style`가 `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이 도구는 `content/docs/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/guide/fumadocs-integration#link-conventions)을 참조하십시오.
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir`과 함께 사용하는 파일별 깊이 접두사
 

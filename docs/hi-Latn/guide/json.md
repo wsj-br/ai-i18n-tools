@@ -102,6 +102,7 @@ Jab `translateJson` chalu hota hai, to `status` ek `json[]` section print karta 
 | Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, `json[]` **nahi** |
 | VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **na karein** `json[]` ka upyog — [VitePress integration](/guide/vitepress-integration) dekhein |
 | Nextra `_meta.ts` labels aur theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` jab `style: "nextra"`, optional `nextraDictionaryPath`); **na karein** `json[]` ka upyog — [Nextra integration](/guide/nextra-integration) dekhein |
+| Fumadocs `meta.json` lebel aur UI override catalog | Dastavez — `translate-docs` (auto `meta.json` jab `style: "fumadocs"`, vaikalpik `fumadocsUiCatalog`); **nahin** upyog karein `json[]` — dekhein [Fumadocs integration](/guide/fumadocs-integration) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>` ke saath illustrated `.svg` files | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (vaikalpik; teen mukhya pipelines mein se ek nahin) |
 

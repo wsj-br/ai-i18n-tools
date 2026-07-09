@@ -7,7 +7,7 @@ ai-i18n-tools ek command-line tool aur toolkit hai jo aapko apne pasandida LLM p
 ## Anuvad modes
 
 - **UI strings** — JS/TS source se `t("…")` calls (aur similar markers) extract karein aur i18next ya static lookup ke liye flat per-locale JSON files likhein. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/).
-- **Documents** — Markdown, MDX, aur `.astro` pages ko translate karein jo `docs[].contentPaths` mein listed hain. VitePress, Starlight, Docusaurus, Nextra, Astro, aur anya static doc sites ke saath kaam karta hai. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
+- **Documents** — Markdown, MDX, aur `.astro` pages ko translate karein jo `docs[].contentPaths` mein listed hain. VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, aur anya static doc sites ke saath kaam karta hai. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
 - **JSON** — Top-level `json[]` mein define kiye gaye nested JSON locale bundles (theme labels, i18n overrides, app copy jo source mein nahi hai) ko translate karein. Command: `translate-json`. Guide: [JSON](/guide/json).
 - **SVG** — SVG illustrations (`<text>`, `<title>`, `<desc>`) ke andar visible text ko translate karein aur har locale ke liye ek output file likhein. Document translation se alag — `translate-docs` SVG assets ko modify nahi karta hai. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
 
@@ -38,6 +38,7 @@ Repository `examples/` ke tahat chalne wale example projects ship karta hai — 
 | [astro-docs](/examples#astro-docs) | Astro Starlight documentation site |
 | [vitepress-docs](/examples#vitepress-docs) | VitePress docs aur theme catalog |
 | [nextra-docs](/examples#nextra-docs) | Nextra docs aur `_meta.ts` sidebar labels aur theme dictionary |
+| [fumadocs-docs](/examples#fumadocs-docs) | Fumadocs docs plus `meta.json` sidebar labels aur UI catalog |
 | [multi-provider](/examples#multi-provider) | Ek hi document par LLM providers ki tulna karein |
 | [test-markdown](/examples#test-markdown) | Markdown pipeline stress tests (CJK, Devanagari, edge cases) |
 

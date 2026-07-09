@@ -7,7 +7,7 @@ ai-i18n-tools is a command-line tool and toolkit that helps you translate your a
 ## Translation modes
 
 - **UI strings** — Extract `t("…")` calls (and similar markers) from JS/TS source and write flat per-locale JSON files for i18next or static lookup. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/).
-- **Documents** — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Astro, and other static doc sites. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
+- **Documents** — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and other static doc sites. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
 - **JSON** — Translate nested JSON locale bundles (theme labels, i18n overrides, app copy not in source) defined in top-level `json[]`. Command: `translate-json`. Guide: [JSON](/guide/json).
 - **SVG** — Translate visible text inside SVG illustrations (`<text>`, `<title>`, `<desc>`) and write one output file per locale. Separate from document translation — `translate-docs` does not modify SVG assets. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
 
@@ -38,6 +38,7 @@ The repository ships runnable example projects under `examples/` — each with i
 | [astro-docs](/examples#astro-docs) | Astro Starlight documentation site |
 | [vitepress-docs](/examples#vitepress-docs) | VitePress docs plus theme catalog |
 | [nextra-docs](/examples#nextra-docs) | Nextra docs plus `_meta.ts` sidebar labels and theme dictionary |
+| [fumadocs-docs](/examples#fumadocs-docs) | Fumadocs docs plus `meta.json` sidebar labels and UI catalog |
 | [multi-provider](/examples#multi-provider) | Compare LLM providers on the same document |
 | [test-markdown](/examples#test-markdown) | Markdown pipeline stress tests (CJK, Devanagari, edge cases) |
 

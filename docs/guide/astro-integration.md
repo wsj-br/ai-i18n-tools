@@ -58,8 +58,9 @@ Starlight ships its own built-in UI strings for many locales (nav labels, search
 | Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` sidebar labels + theme dictionary `.ts` | Documents — see [Nextra integration](/guide/nextra-integration) |
+| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — see [Fumadocs integration](/guide/fumadocs-integration) |
 
-See [Docusaurus integration](/guide/docusaurus-integration) and [VitePress integration](/guide/vitepress-integration) for the other framework patterns.
+See [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), [Nextra integration](/guide/nextra-integration), and [Fumadocs integration](/guide/fumadocs-integration) for the other framework patterns.
 
 <a id="example-project"></a>
 ### Example project

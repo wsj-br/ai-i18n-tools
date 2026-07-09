@@ -102,7 +102,7 @@ Optional: override collection with `docs[].nextraMetaGlob` or restrict translata
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
 
-Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [Docusaurus integration](/guide/docusaurus-integration) and [VitePress integration](/guide/vitepress-integration) for the other framework patterns.
+Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [Docusaurus integration](/guide/docusaurus-integration), [VitePress integration](/guide/vitepress-integration), and [Fumadocs integration](/guide/fumadocs-integration) for the other framework patterns.
 
 <a id="example-project"></a>
 ## Example project

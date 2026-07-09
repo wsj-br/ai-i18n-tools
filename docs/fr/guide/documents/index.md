@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 Définissez `docsOutput.vitepressThemeCatalog` pour les chaînes de navigation/barre latérale/pied de page — voir [Intégration VitePress](/guide/vitepress-integration).
 
+Pour les sites de documentation Nextra :
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+Définissez `docs[].nextraDictionaryPath` pour les chaînes du dictionnaire de thèmes — voir [Intégration Nextra](/guide/nextra-integration). Les étiquettes `_meta.ts` de la barre latérale sont collectées automatiquement.
+
+Pour les sites de documentation Fumadocs :
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+Définissez `docsOutput.fumadocsUiCatalog` pour les remplacements d'interface utilisateur — voir [Intégration Fumadocs](/guide/fumadocs-integration). Les étiquettes `meta.json` de la barre latérale sont collectées automatiquement.
+
 Pour une interface utilisateur Astro simple (sans Starlight) :
 
 ```bash

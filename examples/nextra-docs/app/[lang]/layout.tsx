@@ -42,7 +42,9 @@ const RootLayout: FC<LayoutProps> = async ({ children, params }) => {
           docsRepositoryBase="https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs"
           editLink={dictionary.editLink}
           toc={{ title: dictionary.tocTitle }}
-          lastUpdated={<LastUpdated>{dictionary.lastUpdated}</LastUpdated>}
+          lastUpdated={
+            <LastUpdated locale={lang}>{dictionary.lastUpdated}</LastUpdated>
+          }
           i18n={[
             { locale: "en", name: LOCALE_LABELS.en },
             { locale: "pt-BR", name: LOCALE_LABELS["pt-BR"] },

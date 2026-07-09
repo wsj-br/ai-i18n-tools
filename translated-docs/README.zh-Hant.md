@@ -7,15 +7,15 @@
 
 **使用您選擇的 AI 模型翻譯您的應用程式和文件：沒有鎖定，無需重寫。**
 
-`ai-i18n-tools` 是一套 CLI 工具與工具包，用於將 JavaScript/TypeScript 應用程式與文件網站國際化——包括 Docusaurus、Astro、Starlight、VitePress、Nextra 以及純 Markdown/MDX——並使用大型語言模型進行翻譯。
+`ai-i18n-tools` 是一套用於國際化 JavaScript/TypeScript 應用程式與文件網站的 CLI 與工具組 — 支援 Docusaurus、Astro、Starlight、VitePress、Nextra、Fumadocs 以及純 Markdown/MDX — 並使用大型語言模型。
 
 將其指向任何提供者並開始翻譯：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**，任何 [OpenRouter](https://openrouter.ai/) 模型（單一 API 金鑰即可選擇數百種），或 **Ollama** 用於完全自我託管的離線翻譯。無需修改您的程式碼庫，即可為每個專案甚至每種語言切換提供者或模型。
 
 一個設定檔驅動三種翻譯模式，因此您可以根據內容的結構進行混合搭配：
 
-- **UI 字串** — 從 JS/TS（以及可選的 `.astro` 檔案）中提取 `t("…")` 呼叫，並為每個語系產生平面的 JSON，供 i18next 或靜態 SSG 查詢使用。
-- **文件** — 使用 `translate-docs` 翻譯列於 `docs[].contentPaths` 中的 Markdown、MDX 與 `.astro` 頁面。支援 **VitePress**、**Starlight**、**Docusaurus**、**Nextra**、基於 Astro 的網站，或任何從 Markdown/MDX/`.astro` 原始檔案讀取內容的靜態網站產生器。
-- **JSON** — 翻譯定義於 `json[]` 中的任意巢狀 JSON 套件。當 UI 文案存放在各語系的 JSON 檔案中，而非原始碼中的 `t()` 呼叫時，請使用 `translate-json`。
+- **介面字串** — 從 JS/TS（以及可選的 `.astro` 檔案）中擷取 `t("…")` 呼叫，並為每個語系產生扁平的 JSON，供 i18next 或靜態 SSG 查詢使用。
+- **文件** — 使用 `translate-docs` 翻譯列於 `docs[].contentPaths` 中的 Markdown、MDX 與 `.astro` 頁面。支援 **VitePress**、**Starlight**、**Docusaurus**、**Nextra**、**Fumadocs**、基於 Astro 的網站，或任何從 Markdown/MDX/`.astro` 原始檔讀取內容的靜態網站產生器。
+- **JSON** — 翻譯定義於 `json[]` 中的任意巢狀 JSON 套件。當介面文案存放在各語系的 JSON 檔案中，而非原始碼中的 `t()` 呼叫時，請使用 `translate-json`。
 
 **SVG** 資產有自己的路徑：`features.translateSVG`、頂層 `svg` 區塊和 `translate-svg` — 而非 `docs[].contentPaths`。
 
@@ -24,7 +24,7 @@
 | 您的內容                                                                  | 指令                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | 原始碼使用 `t()`                                                        | **UI 字串** — `extract` / `translate-ui` |
-| 已在地化的頁面或文件網站（VitePress、Starlight、Docusaurus、Nextra、Astro 等） | **文件** — `translate-docs`            |
+| 已在地化的頁面或文件網站（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 等） | **文件** — `translate-docs`            |
 | 獨立的巢狀 JSON 地區檔案                                          | **JSON** — `translate-json`                 |
 
 這三種模式共用一個檔案/SQLite 快取，因此只有新增或變更的區段（字串或文字區塊）會重新傳送給模型 — 無論您使用哪個提供者，重新執行都快速且便宜。
@@ -42,13 +42,14 @@
   - [文件](#documents)
   - [VitePress](#vitepress)
   - [Nextra](#nextra)
+  - [Fumadocs](#fumadocs)
   - [Astro（純 Astro 與 Starlight）](#astro-plain-astro--starlight)
   - [合併同步](#combined-sync)
-- [執行時期輔助函式](#runtime-helpers)
+- [執行階段輔助函式](#runtime-helpers)
 - [CLI 指令](#cli-commands)
-  - [工具 UI 語言（日誌、說明、儀表板）](#tool-ui-language-logs-help-dashboard)
+  - [工具介面語言（日誌、說明、儀表板）](#tool-ui-language-logs-help-dashboard)
 - [文件](#documentation)
-- [授權條款](#license)
+- [授權](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -57,7 +58,7 @@
 
 每種翻譯類型都有其自己的指南，其中包含完整的配置詳細資訊：[UI 字串](../docs/guide/ui-strings/)、[文件](../docs/guide/documents/) 和 [JSON](../docs/guide/json.md)。有關並排比較，請參閱 [什麼是 ai-i18n-tools？](../docs/guide/what-is-ai-i18n-tools.md)。
 
-有幾點值得事先了解：UI 字串會透過目前使用的 LLM 供應商（見 [LLM 供應商](#llm-providers)）為每個語系翻譯缺失的項目，並寫入平面 JSON 檔案（`de.json`、`pt-BR.json`、…），以英文原始文字作為執行時期的查詢鍵——`strings.json` 是提取快取，而非執行時期的套件。文件支援 `docs[].docsOutput.style` 值 `"nested"`、`"flat"`、`"doc-system"`，以及別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"`（見[輸出佈局](../docs/guide/documents/output-layouts.md)）。三者共用 `ai-i18n-tools.config.json` 且可合併使用；`sync` 會根據您的 `features` 旗標，依序執行提取、UI 翻譯、SVG 翻譯、`translate-docs` 與 `translate-json`。
+有幾點值得事先了解：介面字串會透過目前使用的 LLM 供應商（見 [LLM 供應商](#llm-providers)）翻譯各語系中缺失的項目，並寫入扁平的 JSON 檔案（`de.json`、`pt-BR.json`、…），以英文原文作為執行階段的查詢鍵 — `strings.json` 是擷取快取，而非執行階段的套件。文件支援 `docs[].docsOutput.style` 值 `"nested"`、`"flat"`、`"doc-system"`，以及別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（見[輸出佈局](../docs/guide/documents/output-layouts.md)）。三者共用 `ai-i18n-tools.config.json` 且可合併使用；`sync` 會根據您的 `features` 旗標，依序執行擷取、介面翻譯、SVG 翻譯、`translate-docs` 與 `translate-json`。
 
 ---
 
@@ -176,8 +177,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 每個供應商都會回報權杖使用量；確切的美元成本僅在供應商回傳時顯示（OpenRouter）。`ai-i18n-tools check-models` 會根據目前供應商的即時 `GET /models` 清單（任何供應商）驗證所有已設定的模型 ID（`translationModels`、`uiModels` 以及每個 `localeModels` 項目），並在供應商回傳時顯示定價（例如 OpenRouter）。`ai-i18n-tools list-models` 列出目前供應商宣傳的所有模型（使用 `-P` / `--provider` 來檢查另一個已設定的供應商）。`ai-i18n-tools bench-models` 透過獨立翻譯樣本來對每個不重複的已設定模型 ID（`translationModels`、`uiModels` 和 `localeModels`）進行基準測試（模型並行執行，受 `concurrency` 限制），並印出每個模型的輸入/輸出權杖數、實際耗時與美元成本。
 
-仍然接受舊式的頂層 `openrouter` 設定區塊，並在載入時自動遷移到 `providers.openrouter`（帶有 `provider: "openrouter"`）。
-
 如需單一文件上使用 `-P` 切換提供者的實作示範，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)。
 
 ---
@@ -219,6 +218,9 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Nextra documentation (pages + _meta.ts + theme dictionary)
 # npx ai-i18n-tools init -t ui-nextra
 
+# Fumadocs documentation (pages + meta.json + UI catalog)
+# npx ai-i18n-tools init -t ui-fumadocs
+
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
 # npx ai-i18n-tools init -t ui-astro-website
 
@@ -227,7 +229,7 @@ npx ai-i18n-tools status
 # npx ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
-編輯 `ai-i18n-tools.config.json`：將 `docs[].contentPaths` 設定為 Markdown、MDX 及/或 `.astro` 原始檔案；`docs[].outputDir` 與 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"flat"` 等）。完整欄位參考：[文件](../docs/guide/documents/)。
+編輯 `ai-i18n-tools.config.json`：將 `docs[].contentPaths` 設定為 Markdown、MDX 及/或 `.astro` 原始檔；`docs[].outputDir` 與 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"fumadocs"`、`"flat"` 等）。完整欄位參考：[文件](../docs/guide/documents/)。
 
 <a id="vitepress"></a>
 ### VitePress
@@ -238,6 +240,11 @@ npx ai-i18n-tools status
 ### Nextra
 
 `init -t ui-nextra` 會建立 `docsOutput.style: "nextra"`。`translate-docs` 會自動收集並翻譯 `_meta.ts` 側邊欄標籤；設定 `docs[].nextraDictionaryPath` 可同時翻譯主題字典模組（例如 `app/_dictionaries/en.ts`）——全部在同一個 `sync` 執行中完成，無需 JSON 附帶檔案。請參閱 [Nextra 整合](../docs/guide/nextra-integration.md) 與 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)。
+
+<a id="fumadocs"></a>
+### Fumadocs
+
+`init -t ui-fumadocs` 會以點號解析器（預設）或目錄解析器為 Nextra 風格的語系資料夾搭建 `docsOutput.style: "fumadocs"`。`translate-docs` 會自動收集並翻譯 `meta.json` 側邊欄標籤；設定 `docsOutput.fumadocsUiCatalog` 可同時翻譯 `lib/layout.shared.ts` 中的介面覆寫 — 全部在同一個 `sync` 執行中完成，無需 JSON 附加檔案。請參閱 [Fumadocs 整合](../docs/guide/fumadocs-integration.md) 與 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)。
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro（純 Astro 與 Starlight）
@@ -299,7 +306,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
@@ -346,10 +353,10 @@ ai-i18n-tools help [command]
 <a id="documentation"></a>
 ## 文件
 
-- [文件網站](https://wsj-br.github.io/ai-i18n-tools/) — 完整的 VitePress 指南（GitHub Pages 上有 9 種語言環境）。
-- [快速入門](../docs/guide/quick-start.md) — UI 字串、文件和 JSON 的設定（UI、docs/`.astro`、JSON 捆綁包、Astro Starlight 和純 Astro）。
-- [語言環境資產指南](../docs/guide/images-and-screenshots/) - 翻譯文件中螢幕截圖和圖示 SVG（扁平連結重寫器、螢幕截圖腳本）。
-- [架構](../docs/reference/architecture.md) - 架構、內部、程式化 API 和擴充點。
+- [文件網站](https://wsj-br.github.io/ai-i18n-tools/) — 完整的 VitePress 指南（GitHub Pages 上的 9 種語系）。
+- [快速入門](../docs/guide/quick-start.md) — 介面字串、文件與 JSON 的設定（介面、docs/`.astro`、JSON 套件、VitePress、Nextra、Fumadocs、Astro Starlight 與純 Astro）。
+- [語系素材指南](../docs/guide/images-and-screenshots/) — 已翻譯文件中的截圖與插圖 SVG（扁平連結改寫器、截圖腳本）。
+- [架構](../docs/reference/architecture.md) — 架構、內部運作、程式化 API 與擴充點。
 - [AI 代理上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **針對使用該套件的應用程式：** 供下游專案使用的整合提示詞（複製到你的儲存庫的代理規則中）。
 - **此**儲存庫的維護者指南：`AGENT.md`（規則與工作流程；僅限複製；不在 npm 上）。管線參考：`docs/reference/`。本地開發與發佈：`dev/DEVEL.md`。
 

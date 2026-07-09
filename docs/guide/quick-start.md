@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Quick start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, and `ui-nextra` templates enable **document** translation (`translate-docs`); `ui-vitepress` also scaffolds `docsOutput.vitepressThemeCatalog` for VitePress theme strings, and `ui-nextra` scaffolds `docs[].nextraDictionaryPath` for the Nextra theme dictionary (sidebar `_meta.ts` is collected automatically). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, and `ui-fumadocs` templates enable **document** translation (`translate-docs`); `ui-vitepress` also scaffolds `docsOutput.vitepressThemeCatalog` for VitePress theme strings, `ui-nextra` scaffolds `docs[].nextraDictionaryPath` for the Nextra theme dictionary (sidebar `_meta.ts` is collected automatically), and `ui-fumadocs` scaffolds `docsOutput.fumadocsUiCatalog` for Fumadocs UI overrides (sidebar `meta.json` is collected automatically). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
 
 <a id="runnable-examples"></a>
 ### Runnable examples
 
-Nine runnable projects and fixtures live under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). See the [Examples](/examples) catalog (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, multi-provider comparison, markdown stress test).
+Nine runnable projects and fixtures live under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). See the [Examples](/examples) catalog (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, Fumadocs docs, multi-provider comparison, markdown stress test).
 
 **Run one example standalone** (without cloning the whole monorepo):
 
@@ -31,6 +31,7 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
 # Nextra docs: npx ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

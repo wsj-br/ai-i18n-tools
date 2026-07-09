@@ -12,11 +12,17 @@ Welcher Umschreiber ausgeführt wird, hängt von `docsOutput.style` ab:
 | --- | --- | --- |
 | `"flat"` (Standard, wenn kein benutzerdefiniertes `pathTemplate`) | Flacher Link-Umschreiber (`rewriteRelativeLinks`, standardmäßig aktiviert) | Seitenübergreifende relative Links (`guide.md` → `guide.de.md`) und Tiefenpräfixe für Nicht-Markdown-Asset-URLs |
 | `"vitepress"` | VitePress Link-Normalisierer (`rewriteVitepressLinks`, standardmäßig aktiviert) | README-ähnliche `docs/guide/…`-Pfade → Website-Routen (`/guide/…`) |
+| `"nextra"` | Nextra-Link-Normalisierer (`rewriteNextraLinks`, standardmäßig aktiviert) | `content/en/…` und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/guide/…`) |
+| `"fumadocs"` | Fumadocs-Link-Normalisierer (`rewriteFumadocsLinks`, standardmäßig aktiviert) | `content/docs/…` und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Keine | Quell-URLs werden bis `postProcessing` unverändert durchgereicht |
 
 Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei denn, Sie legen `rewriteRelativeLinks: true` explizit fest. Siehe [Ausgabe-Layouts](/guide/documents/output-layouts) und [Anker-Links](/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
 
 Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
+
+Für Nextra-spezifische Authoring-Regeln siehe [Nextra-Integration – Link-Konventionen](/guide/nextra-integration#link-conventions).
+
+Für Fumadocs-spezifische Authoring-Regeln siehe [Fumadocs-Integration – Link-Konventionen](/guide/fumadocs-integration#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ Sie benötigen `regexAdjustments` normalerweise **nicht**, wenn:
 - Assets liegen neben den Quelldateien und der flache Rewriter mit Dateitiefe-Präfix löst sie korrekt auf
 - Englisch und jede übersetzte Kopie verwenden die **gleiche** URL (gemeinsame Bilder im Stammverzeichnis der Website, gemeinsam genutzte Assets, VitePress-Webrouten nach Normalisierung)
 - VitePress-Links innerhalb der Website verwenden Webrouten oder `docs/guide/…`-Pfade mit `rewriteVitepressLinks: true`
+- Nextra- und Fumadocs-interne Links verwenden gebietsschema-neutrale Routen (`/guide/…`, `/docs/…`) oder Inhaltsstammverzeichnispfade mit `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>
 ## Vollständiges Konfigurationsbeispiel

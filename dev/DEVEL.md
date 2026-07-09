@@ -233,7 +233,7 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 | `pnpm docs:preview`     | Preview the built docs site                                            |
 | `pnpm docs:publish`     | Trigger the **Deploy Docs** GitHub Actions workflow (see below)        |
 | `pnpm update-tocs`      | Regenerate doctoc TOCs in root `*.md` and `dev/*.md` (heading changes) |
-| `pnpm docs:sync-readme` | Copy `README.md` → `docs/index.md` only                                |
+| `pnpm docs:sync` | Copy `README.md` → `docs/index.md` only                                |
 
 
 The docs site deploys to GitHub Pages on release via `.github/workflows/docs.yml` (separate from the npm tarball). See [Publishing documentation to GitHub Pages](#publishing-documentation-to-github-pages) for setup, `pnpm docs:publish`, and the pre-publish checklist.

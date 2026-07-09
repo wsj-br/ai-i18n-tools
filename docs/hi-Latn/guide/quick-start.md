@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Turant shuru karein
 
-Default `init` template (`ui-markdown`) sirf **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, aur `ui-nextra` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme strings ke liye `docsOutput.vitepressThemeCatalog` bhi scaffold karta hai, aur `ui-nextra` Nextra theme dictionary ke liye `docs[].nextraDictionaryPath` scaffold karta hai (sidebar `_meta.ts` automatically collect kiya jaata hai). `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain, to ek `docs[]` block jodein ([Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) dekhein). Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek command chahte hain jo aapki config ke anusaar extract, UI translation, optional SVG file translation, aur documentation translation chalati hai, to `sync` ka upyog karein.
+Default `init` template (`ui-markdown`) kewal **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, aur `ui-fumadocs` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme strings ke liye `docsOutput.vitepressThemeCatalog` ko bhi scaffold karta hai, `ui-nextra` Nextra theme dictionary ke liye `docs[].nextraDictionaryPath` ko scaffold karta hai (sidebar `_meta.ts` automatically collect kiya jata hai), aur `ui-fumadocs` Fumadocs UI overrides ke liye `docsOutput.fumadocsUiCatalog` ko scaffold karta hai (sidebar `meta.json` automatically collect kiya jata hai). `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction ko scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain to ek `docs[]` block (dekhen [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) add karen. Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek command chahte hain jo aapki config ke anusaar extract, UI translation, optional SVG file translation, aur documentation translation ko run karta hai, to `sync` ka upyog karen.
 
 <a id="runnable-examples"></a>
 ### Chalne yogya udaharan
 
-Nau runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhein (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, multi-provider comparison, markdown stress test).
+Nau (9) runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhen (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, Fumadocs docs, multi-provider comparison, markdown stress test).
 
 **Ek udaharan ko alag se chalaen** (poore monorepo ko clone kiye bina):
 
@@ -31,6 +31,7 @@ npx ai-i18n-tools init -t ui-docusaurus
 # Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
 # VitePress docs: npx ai-i18n-tools init -t ui-vitepress
 # Nextra docs: npx ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
 # Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
 npx ai-i18n-tools translate-docs
 

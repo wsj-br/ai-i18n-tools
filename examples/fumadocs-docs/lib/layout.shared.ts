@@ -20,6 +20,12 @@ export const translations = i18n
       displayName: "English",
       "Search(search trigger)": "Search docs",
     },
+    "pt-BR": {
+      displayName: "Português (Brasil)",
+    },
+    "zh-Hans": {
+      displayName: "简体中文",
+    },
   });
 
 export function baseOptions(locale: string): BaseLayoutProps {

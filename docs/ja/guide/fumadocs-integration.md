@@ -131,14 +131,41 @@ Fumadocs UI 文字列には `json[]` を**使用しないでください**。こ
 | Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の場合は自動 |
 | Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込み UI 文字列 | ドキュメント — `translate-docs` (ページのみ) |
+| Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
+
+**不**要将框架 shell/主题字符串放入 `json[]` 中 —— 该管道用于无关的应用程序本地化包。请参阅 [Docusaurus 集成](/guide/docusaurus-integration)、[VitePress 集成](/guide/vitepress-integration) 和 [Nextra 集成](/guide/nextra-integration) 以了解其他框架模式。
 
 <a id="link-conventions"></a>
 ## リンクの慣例
 
-`rewriteFumadocsLinks` が有効な場合 (`fumadocs` プリセットのデフォルト)、`content/docs/…` または相対 `.mdx` パスへのマークダウンリンクは、ロケールに依存しないルート `/docs/…` に書き換えられます (`.mdx` を削除し、`index` を折りたたみます)。外部 URL、`mailto:`、および `#anchors` は変更されません。
+Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/getting-started`）を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールニュートラルであるべきです**（`/docs/getting-started`）。そうすることで、アクティブなロケールプレフィックスが自動的に適用されます。
 
-ロケール間で安定したルートが必要な場合は、英語のソースで `/docs/...` を使用してください。[ドキュメント — リンクの書き換え](/guide/documents/link-rewriting) を参照してください。
+組み込みのノーマライザーを有効にすると、`translate-docs` がすべての翻訳ファイル内のリンクを自動的に修正します。
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks`は、`style`が`"fumadocs"`の場合にデフォルトで有効になります。
+
+| 英語ソースの作成者 | 正規化後 |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | 変更なし (完全な URL) |
+
+**作成ルール**
+
+- ページ間のドキュメントリンク: 英語のMDXでは**ロケールニュートラルなサイトルート**（`/docs/…`）を使用するか、`content/docs/…` / 相対`.mdx`パスを使用して、`sync`中に正規化ツールで書き換えさせます。
+- コンテンツツリー外のリポジトリファイル: **完全なURL**を使用します。
+- ロケールサフィックス付きコピー（`*.pt.mdx`）や`content/{locale}/`ツリー内のリンクを手動で編集**しないでください**。`sync` / `translate-docs`で再生成してください。
+
+こちらも参照してください: [Documents — link rewriting](/guide/documents/link-rewriting) および [Configuration — `docsOutput`](/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## ロケールコード
@@ -158,7 +185,8 @@ Fumadocs プロジェクトでは、`source.config.ts` に複数の `defineDocs`
 <a id="cross-references"></a>
 ## 相互参照
 
-- [設定 — `docsOutput`](/reference/configuration#docsoutput)
-- [出力レイアウト](/guide/documents/output-layouts)
-- [Nextra 統合](/guide/nextra-integration) (ディレクトリパーサーのメンタルモデル)
-- [VitePress 統合](/guide/vitepress-integration) (UI カタログのブートストラップパターン)
+- [Configuration — `docsOutput`](/reference/configuration#docsoutput)
+- [Output layouts](/guide/documents/output-layouts)
+- [Docusaurus integration](/guide/docusaurus-integration)
+- [Nextra integration](/guide/nextra-integration) (dir parser mental model)
+- [VitePress integration](/guide/vitepress-integration) (UI catalog bootstrap pattern)

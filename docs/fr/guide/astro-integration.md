@@ -58,8 +58,9 @@ Starlight fournit ses propres chaînes d'interface utilisateur intégrées pour 
 | Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Libellés de la barre latérale `_meta.ts` + dictionnaire de thème `.ts` | Documents — voir [Intégration Nextra](/guide/nextra-integration) |
+| Fumadocs | Étiquettes de barre latérale `meta.json` + catalogue de remplacements d'interface utilisateur | Documents — voir [intégration Fumadocs](/guide/fumadocs-integration) |
 
-Voir [Intégration Docusaurus](/guide/docusaurus-integration) et [Intégration VitePress](/guide/vitepress-integration) pour les autres modèles de framework.
+Voir [intégration Docusaurus](/guide/docusaurus-integration), [intégration VitePress](/guide/vitepress-integration), [intégration Nextra](/guide/nextra-integration) et [intégration Fumadocs](/guide/fumadocs-integration) pour les autres modèles de framework.
 
 <a id="example-project"></a>
 ### Exemple de projet

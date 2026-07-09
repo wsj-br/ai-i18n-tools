@@ -58,8 +58,9 @@ Starlight 為許多地區語言內建了自身的 UI 字串（導覽標籤、搜
 | Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | `_meta.ts` 側邊欄標籤 + 主題字典 `.ts` | 文件 — 請參閱 [Nextra 整合](/guide/nextra-integration) |
+| Fumadocs | `meta.json` 側邊欄標籤 + UI 覆寫目錄 | 文件 — 請見 [Fumadocs 整合](/guide/fumadocs-integration) |
 
-其他框架模式請參閱 [Docusaurus 整合](/guide/docusaurus-integration) 與 [VitePress 整合](/guide/vitepress-integration)。
+請見 [Docusaurus 整合](/guide/docusaurus-integration)、[VitePress 整合](/guide/vitepress-integration)、[Nextra 整合](/guide/nextra-integration) 與 [Fumadocs 整合](/guide/fumadocs-integration) 以了解其他框架模式。
 
 <a id="example-project"></a>
 ### 範例專案

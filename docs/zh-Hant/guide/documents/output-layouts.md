@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` 預設為 `""`（翻譯後的頁面直接置於 `{outputDir}/{locale}/` 之下，當英文內容位於內容根目錄且 `outputDir` 等於 `docsRoot` 時，與 [Starlight](https://starlight.astro.build/guides/i18n/) 相符）。
 - `docsOutput.style = "vitepress"` — 佈局與 `doc-system` 相同但 `localeSubpath` 為空；保留 BCP-47 語系資料夾名稱（`localePathLowercase` 預設為 `false`）。請參閱 [VitePress 整合](/guide/vitepress-integration)。
 - `docsOutput.style = "nextra"` — 佈局與 `doc-system` 相同但 `localeSubpath` 為空；英文來源置於語系資料夾下（例如 `content/en/`）。請參閱 [Nextra 整合](/guide/nextra-integration)。
+- `docsOutput.style = "fumadocs"` — 與 `doc-system` 相同的版面配置，但 `localeSubpath` 為空；英文來源使用點後綴檔案（預設），或當 `fumadocsParser` 為 `"dir"` 時使用語言資料夾。請參閱 [Fumadocs 整合](/guide/fumadocs-integration)。
 
 Docusaurus 預設（主要文件頁面）：
 
@@ -38,6 +39,18 @@ Nextra 預設配置（英文置於語系資料夾下，目標語言使用同層�
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Fumadocs 預設 — 點剖析器（預設；語言後綴位於英文來源旁）：
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Fumadocs 預設 — 目錄剖析器（Nextra 風格語言資料夾）：
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 選擇性的 JSON 標籤 — Docusaurus 外殼字串來自 `docusaurusCatalogDir`（非 MDX 主體內容）：
 
 ```text
@@ -49,6 +62,8 @@ Starlight 為許多地區提供 UI 字串；選擇性的自訂 UI 覆蓋使用 `
 VitePress 的導覽列/側邊欄/頁尾字串不在 markdown 中——請設定 `docsOutput.vitepressThemeCatalog` 並在 **`translate-docs`** 內進行翻譯。請參閱 [VitePress 整合](/guide/vitepress-integration)。
 
 Nextra 主題字典（`.ts`）與 `_meta.ts` 側邊欄標籤不在 markdown 中——請使用 `docs[].nextraDictionaryPath` 並在 `style: "nextra"` 時自動收集 `_meta`，全部在 **`translate-docs`** 內完成。請參閱 [Nextra 整合](/guide/nextra-integration)。
+
+Fumadocs UI 覆寫（`lib/layout.shared.ts`）和 `meta.json` 側邊欄標籤不在 markdown 中 — 當 `style: "fumadocs"` 時使用 `docsOutput.fumadocsUiCatalog` 和自動 `meta.json` 集合，全部在 **`translate-docs`** 內。請參閱 [Fumadocs 整合](/guide/fumadocs-integration)。
 
 `docsOutput.style = "flat"` — 將翻譯後的檔案放置在來源旁邊，並帶有地區後綴，或放在子目錄中。當 `docsOutput.style = "flat"` 時（除非設定了 `rewriteRelativeLinks: false` 或自訂的 `pathTemplate`），頁面之間的相對連結會自動重寫。
 

@@ -13,6 +13,7 @@
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` assume o padrão `""` (páginas traduzidas diretamente em `{outputDir}/{locale}/`, correspondendo ao [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`).
 - `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume o padrão `false`). Consulte [integração com VitePress](/guide/vitepress-integration).
 - `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês reside em uma pasta de localidade (por exemplo, `content/en/`). Consulte [integração com Nextra](/guide/nextra-integration).
+- `docsOutput.style = "fumadocs"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês usa arquivos com sufixo de ponto (padrão) ou uma pasta de localidade quando `fumadocsParser` é `"dir"`. Consulte [Integração Fumadocs](/guide/fumadocs-integration).
 
 Predefinição Docusaurus (páginas principais de documentação):
 
@@ -38,6 +39,18 @@ Predefinição Nextra (inglês em uma pasta de localidade, pastas de localidade 
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
+Predefinição Fumadocs — analisador de ponto (padrão; sufixo de localidade ao lado da fonte em inglês):
+
+```text
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
+```
+
+Predefinição Fumadocs — analisador de diretório (pastas de localidade estilo Nextra):
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
 Rótulos JSON opcionais — strings do shell Docusaurus de `docusaurusCatalogDir` (não o corpo do MDX):
 
 ```text
@@ -49,6 +62,8 @@ O Starlight fornece strings de interface em vários idiomas; substituições per
 As strings de navegação/barra lateral/rodapé do VitePress não estão em markdown — configure `docsOutput.vitepressThemeCatalog` e traduza dentro de **`translate-docs`**. Consulte [integração com VitePress](/guide/vitepress-integration).
 
 O dicionário de tema Nextra (`.ts`) e os rótulos da barra lateral `_meta.ts` não estão em markdown — use `docs[].nextraDictionaryPath` e coleta automática de `_meta` quando `style: "nextra"`, tudo dentro de **`translate-docs`**. Consulte [integração com Nextra](/guide/nextra-integration).
+
+As substituições da UI do Fumadocs (`lib/layout.shared.ts`) e os rótulos da barra lateral `meta.json` não estão em markdown — use `docsOutput.fumadocsUiCatalog` e a coleta automática de `meta.json` quando `style: "fumadocs"`, tudo dentro de **`translate-docs`**. Consulte [Integração Fumadocs](/guide/fumadocs-integration).
 
 `docsOutput.style = "flat"` — coloca os arquivos traduzidos ao lado do código-fonte com sufixo de localidade, ou em um subdiretório. Links relativos entre páginas são reescritos automaticamente quando `docsOutput.style = "flat"` (a menos que `rewriteRelativeLinks: false` ou um `pathTemplate` personalizado seja definido).
 

@@ -12,11 +12,17 @@ Which rewriter runs depends on `docsOutput.style`:
 | --- | --- | --- |
 | `"flat"` (default when no custom `pathTemplate`) | Flat link rewriter (`rewriteRelativeLinks`, on by default) | Cross-page relative links (`guide.md` → `guide.de.md`) and depth prefixes for non-markdown asset URLs |
 | `"vitepress"` | VitePress link normalizer (`rewriteVitepressLinks`, on by default) | README-style `docs/guide/…` paths → site routes (`/guide/…`) |
+| `"nextra"` | Nextra link normalizer (`rewriteNextraLinks`, on by default) | `content/en/…` and relative `.mdx` paths → locale-neutral routes (`/guide/…`) |
+| `"fumadocs"` | Fumadocs link normalizer (`rewriteFumadocsLinks`, on by default) | `content/docs/…` and relative `.mdx` paths → locale-neutral routes (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | None | Source URLs pass through unchanged until `postProcessing` |
 
 Custom `pathTemplate` disables the flat rewriter unless you set `rewriteRelativeLinks: true` explicitly. See [Output layouts](/guide/documents/output-layouts) and [Anchor links](/guide/documents/anchor-links) for cross-page `#anchor` handling.
 
 For VitePress-specific authoring rules, see [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions).
+
+For Nextra-specific authoring rules, see [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+
+For Fumadocs-specific authoring rules, see [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ You usually **do not** need `regexAdjustments` when:
 - Assets sit beside source files and the flat rewriter's per-file depth prefix resolves them correctly
 - English and every translated copy use the **same** URL (shared images at site root, colocated assets, VitePress site routes after normalizer)
 - VitePress in-site links use site routes or `docs/guide/…` paths with `rewriteVitepressLinks: true`
+- Nextra and Fumadocs in-page links use locale-neutral routes (`/guide/…`, `/docs/…`) or content-root paths with `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>
 ## Full config example

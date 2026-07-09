@@ -131,14 +131,41 @@ Fumadocs 레이아웃 크롬(검색 플레이스 홀더, 로케일 표시 이름
 | Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` 사이드바 레이블 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
 | Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열 | 문서 — `translate-docs` (페이지만) |
+| Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
+
+**프레임워크 셸/테마 문자열을 `json[]`에 넣지 마십시오** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴에 대해서는 [Docusaurus 통합](/guide/docusaurus-integration), [VitePress 통합](/guide/vitepress-integration), 및 [Nextra 통합](/guide/nextra-integration)을 참조하십시오.
 
 <a id="link-conventions"></a>
 ## 링크 규칙
 
-`rewriteFumadocsLinks`가 활성화되면(기본값은 `fumadocs` 프리셋), `content/docs/…` 또는 상대 경로 `.mdx`의 마크다운 링크가 로케일 중립 경로 `/docs/…`로 다시 작성됩니다(`.mdx` 제거, `index` 축소). 외부 URL, `mailto:`, `#anchors`은 변경되지 않습니다.
+Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-started`)를 통해 로케일 접두사가 붙은 경로를 제공합니다. 활성 로케일 접두사가 자동으로 적용되도록 **페이지 내 링크는 로케일 중립적이어야 합니다**(`/docs/getting-started`).
 
-로케일 전체에서 안정적인 경로를 사용하려면 영어 소스에서 `/docs/...`를 사용하십시오. [문서 — 링크 다시 작성](/guide/documents/link-rewriting)을 참조하십시오.
+내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 합니다.
+
+```json
+"docsOutput": {
+  "style": "fumadocs",
+  "docsRoot": "content/docs",
+  "rewriteFumadocsLinks": true
+}
+```
+
+`rewriteFumadocsLinks`는 `style`이 `"fumadocs"`일 때 기본적으로 활성화됩니다.
+
+| 영어 원본 작성자 | 정규화 후 |
+|--------------------------|------------------|
+| `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
+| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Demo](https://github.com/org/repo)` | 변경 없음 (전체 URL) |
+
+**작성 규칙**
+
+- 페이지 간 문서 링크: 영어 MDX에서 **로케일 중립 사이트 경로**(`/docs/…`)를 사용하거나, `content/docs/…` / 상대 `.mdx` 경로를 사용하고 `sync` 중에 정규화 도구가 다시 작성하도록 합니다.
+- 콘텐츠 트리 외부의 저장소 파일: **전체 URL**을 사용합니다.
+- 로케일 접미사가 붙은 복사본(`*.pt.mdx`) 또는 `content/{locale}/` 트리에서 링크를 수동으로 편집**하지 마십시오**. `sync` / `translate-docs`로 다시 생성하십시오.
+
+참조: [문서 — 링크 재작성](/guide/documents/link-rewriting) 및 [구성 — `docsOutput`](/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## 로케일 코드
@@ -160,5 +187,6 @@ Fumadocs 프로젝트는 `source.config.ts`(문서, 블로그, 예제)에 여러
 
 - [구성 — `docsOutput`](/reference/configuration#docsoutput)
 - [출력 레이아웃](/guide/documents/output-layouts)
-- [Nextra 통합](/guide/nextra-integration) (디렉토리 파서 정신 모델)
+- [Docusaurus 통합](/guide/docusaurus-integration)
+- [Nextra 통합](/guide/nextra-integration) (디렉터리 파서 정신 모델)
 - [VitePress 통합](/guide/vitepress-integration) (UI 카탈로그 부트스트랩 패턴)

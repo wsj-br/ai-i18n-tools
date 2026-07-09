@@ -102,7 +102,7 @@ Opcional: substitua a coleta com `docs[].nextraMetaGlob` ou restrinja os nomes d
 | Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-**Não** coloque strings de shell/tema do framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration) e [integração VitePress](/guide/vitepress-integration) para os outros padrões de framework.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração Docusaurus](/guide/docusaurus-integration), [integração VitePress](/guide/vitepress-integration) e [integração Fumadocs](/guide/fumadocs-integration) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo

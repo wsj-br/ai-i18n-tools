@@ -62,6 +62,22 @@ npx ai-i18n-tools init -t ui-vitepress
 
 Set `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings — see [VitePress integration](/guide/vitepress-integration).
 
+For Nextra documentation sites:
+
+```bash
+npx ai-i18n-tools init -t ui-nextra
+```
+
+Set `docs[].nextraDictionaryPath` for theme dictionary strings — see [Nextra integration](/guide/nextra-integration). Sidebar `_meta.ts` labels are collected automatically.
+
+For Fumadocs documentation sites:
+
+```bash
+npx ai-i18n-tools init -t ui-fumadocs
+```
+
+Set `docsOutput.fumadocsUiCatalog` for UI overrides — see [Fumadocs integration](/guide/fumadocs-integration). Sidebar `meta.json` labels are collected automatically.
+
 For plain Astro website UI (no Starlight):
 
 ```bash

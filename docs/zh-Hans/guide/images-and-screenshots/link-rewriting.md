@@ -38,6 +38,16 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 
 平面重写器和 VitePress 规范化器在每个 `docs[]` 块中是互斥的 — 在 `regexAdjustments` 之前只有一个运行。请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
 
+<a id="nextra-link-normalizer-style-nextra"></a>
+### Nextra 链接规范化器 (`style: "nextra"`)
+
+当 `docsOutput.rewriteNextraLinks` 为 `true`（`style` 为 `"nextra"` 时的默认值）时，在片段重组后会运行一个单独的规范化器。它会将 `content/en/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/guide/nextra-integration#link-conventions)。
+
+<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+### Fumadocs 链接规范化器 (`style: "fumadocs"`)
+
+当 `docsOutput.rewriteFumadocsLinks` 为 `true`（`style` 为 `"fumadocs"` 时的默认值）时，在片段重组后会运行一个单独的规范化器。它会将 `content/docs/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/docs/…`)。请参阅 [Fumadocs 集成 — 链接约定](/guide/fumadocs-integration#link-conventions)。
+
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 使用 `flatPreserveRelativeDir` 进行逐文件深度前缀
 

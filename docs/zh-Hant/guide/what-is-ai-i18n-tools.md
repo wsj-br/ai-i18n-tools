@@ -7,9 +7,9 @@ ai-i18n-tools 是一個命令列工具和工具包，可協助您使用偏好的
 ## 翻譯模式
 
 - **UI 字串** — 從 JS/TS 原始碼中擷取 `t("…")` 呼叫（及類似標記），為每個語系寫入扁平的 JSON 檔案，供 i18next 或靜態查詢使用。指令：`extract`、`translate-ui`。指南：[UI 字串](/guide/ui-strings/)。
-- **文件** — 翻譯列於 `docs[].contentPaths` 的 Markdown、MDX 及 `.astro` 頁面。支援 VitePress、Starlight、Docusaurus、Nextra、Astro 及其他靜態文件網站。指令：`translate-docs`。指南：[文件](/guide/documents/)。
-- **JSON** — 翻譯定義於頂層 `json[]` 的巢狀 JSON 語系套件（主題標籤、i18n 覆寫、不在原始碼中的應用程式文案）。指令：`translate-json`。指南：[JSON](/guide/json)。
-- **SVG** — 翯譯 SVG 插圖（`<text>`、`<title>`、`<desc>`）中的可見文字，並為每個語系寫入一個輸出檔案。此功能與文件翻譯分開 — `translate-docs` 不會修改 SVG 資產。指令：`translate-svg`。指南：[SVG 翻譯](/guide/svg-translation/)。
+- **文件** — 翻譯列於 `docs[].contentPaths` 中的 Markdown、MDX 與 `.astro` 頁面。支援 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 及其他靜態文件網站。指令：`translate-docs`。指南：[文件](/guide/documents/)。
+- **JSON** — 翻譯定義於頂層 `json[]` 中的巢狀 JSON 語系套件（主題標籤、i18n 覆寫、不在原始碼中的應用程式文案）。指令：`translate-json`。指南：[JSON](/guide/json)。
+- **SVG** — 翻譯 SVG 插圖（`<text>`、`<title>`、`<desc>`）中的可見文字，並為每個語系寫入一個輸出檔案。與文件翻譯分開 — `translate-docs` 不會修改 SVG 資產。指令：`translate-svg`。指南：[SVG 翻譯](/guide/svg-translation/)。
 
 所有四種模式都使用作用中的 [LLM 供應商](/guide/providers-and-models)，共用相同的設定檔，並重複使用 SQLite 快取，因此重新執行只會將新的或變更的文字傳送給模型。
 
@@ -38,6 +38,7 @@ ai-i18n-tools 是一個命令列工具和工具包，可協助您使用偏好的
 | [astro-docs](/examples#astro-docs) | Astro Starlight 文件網站 |
 | [vitepress-docs](/examples#vitepress-docs) | VitePress 文件加上主題目錄 |
 | [nextra-docs](/examples#nextra-docs) | Nextra 文件加上 `_meta.ts` 側邊欄標籤與主題字典 |
+| [fumadocs-docs](/examples#fumadocs-docs) | Fumadocs 文件，加上 `meta.json` 側邊欄標籤與 UI 目錄 |
 | [multi-provider](/examples#multi-provider) | 比較同一文件上的 LLM 供應商 |
 | [test-markdown](/examples#test-markdown) | Markdown 管線壓力測試（CJK、天城文、邊緣案例） |
 

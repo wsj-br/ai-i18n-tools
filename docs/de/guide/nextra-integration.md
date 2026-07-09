@@ -102,7 +102,7 @@ Erstellen Sie **keine** JSON-Sidecars (`i18n/meta.en.json`) oder dünne `_meta.t
 | Fumadocs | UI-Überschreibungskatalog | Dokumente – `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
 
-Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/guide/docusaurus-integration) und [VitePress-Integration](/guide/vitepress-integration) für die anderen Framework-Muster.
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/guide/docusaurus-integration), [VitePress-Integration](/guide/vitepress-integration) und [Fumadocs-Integration](/guide/fumadocs-integration) für die anderen Framework-Muster.
 
 <a id="example-project"></a>
 ## Beispielprojekt

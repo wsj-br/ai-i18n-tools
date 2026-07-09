@@ -12,11 +12,17 @@
 | --- | --- | --- |
 | `"flat"` (사용자 지정 `pathTemplate`이 없을 때 기본값) | 플랫 링크 재작성기 (`rewriteRelativeLinks`, 기본적으로 켜짐) | 페이지 간 상대 링크 (`guide.md` → `guide.de.md`) 및 비마크다운 자산 URL의 깊이 접두사 |
 | `"vitepress"` | VitePress 링크 정규화기 (`rewriteVitepressLinks`, 기본적으로 켜짐) | README 스타일 `docs/guide/…` 경로 → 사이트 경로 (`/guide/…`) |
+| `"nextra"` | Nextra 링크 정규화 도구(`rewriteNextraLinks`, 기본적으로 켜짐) | `content/en/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로(`/guide/…`) |
+| `"fumadocs"` | Fumadocs 링크 정규화 도구(`rewriteFumadocsLinks`, 기본적으로 켜짐) | `content/docs/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로(`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | 없음 | `postProcessing`까지 소스 URL은 변경되지 않고 통과 |
 
 사용자 지정 `pathTemplate`는 `rewriteRelativeLinks: true`을 명시적으로 설정하지 않는 한 플랫 재작성기를 비활성화합니다. 페이지 간 `#anchor` 처리에 대해서는 [출력 레이아웃](/guide/documents/output-layouts) 및 [앵커 링크](/guide/documents/anchor-links)를 참조하세요.
 
 VitePress별 작성 규칙은 [VitePress 통합 — 링크 규칙](/guide/vitepress-integration#link-conventions)을 참조하세요.
+
+Nextra별 작성 규칙은 [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하세요.
+
+Fumadocs별 작성 규칙은 [Fumadocs 통합 — 링크 규칙](/guide/fumadocs-integration#link-conventions)을 참조하세요.
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 - 자산이 소스 파일 옆에 있고 플랫 재작성기의 파일별 깊이 접두사가 올바르게 해결하는 경우
 - 영어 및 모든 번역된 사본이 **동일한** URL을 사용하는 경우 (사이트 루트의 공유 이미지, 공동 배치된 자산, 정규화기 후 VitePress 사이트 경로)
 - VitePress 인-사이트 링크가 사이트 경로 또는 `docs/guide/…` 경로와 `rewriteVitepressLinks: true`를 사용하는 경우
+- Nextra 및 Fumadocs 페이지 내 링크는 로케일 중립 경로(`/guide/…`, `/docs/…`) 또는 `rewriteNextraLinks` / `rewriteFumadocsLinks: true`가 있는 콘텐츠 루트 경로를 사용합니다.
 
 <a id="full-config-example"></a>
 ## 전체 구성 예시

@@ -131,7 +131,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 | Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
 | Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
 
-**不要**将框架 shell/主题字符串放在 `json[]` 中 —— 该管道用于无关的应用程序本地化包。请参阅 [Docusaurus 集成](/guide/docusaurus-integration) 和 [Nextra 集成](/guide/nextra-integration) 以了解其他框架模式。
+**フレームワークのシェル/テーマ文字列を`json[]`に入れないでください** — そのパイプラインは無関係なアプリのロケールバンドル用です。他のフレームワークパターンについては、[Docusaurus統合](/guide/docusaurus-integration)および[Fumadocs統合](/guide/fumadocs-integration)を参照してください。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

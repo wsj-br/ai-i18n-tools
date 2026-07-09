@@ -12,11 +12,17 @@
 | --- | --- | --- |
 | `"flat"`（没有自定义 `pathTemplate` 时的默认值） | 平面链接重写器 (`rewriteRelativeLinks`，默认开启) | 跨页面相对链接 (`guide.md` → `guide.de.md`) 和非 Markdown 资产 URL 的深度前缀 |
 | `"vitepress"` | VitePress 链接规范化器 (`rewriteVitepressLinks`，默认开启) | README 风格的 `docs/guide/…` 路径 → 站点路由 (`/guide/…`) |
+| `"nextra"` | Nextra 链接规范化器（`rewriteNextraLinks`，默认开启） | `content/en/…` 和相对 `.mdx` 路径 → 区域设置中立路由（`/guide/…`） |
+| `"fumadocs"` | Fumadocs 链接规范化器（`rewriteFumadocsLinks`，默认开启） | `content/docs/…` 和相对 `.mdx` 路径 → 区域设置中立路由（`/docs/…`） |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | 无 | 源 URL 在 `postProcessing` 之前保持不变 |
 
 自定义 `pathTemplate` 会禁用平面重写器，除非您明确设置 `rewriteRelativeLinks: true`。有关跨页面 `#anchor` 处理，请参阅[输出布局](/guide/documents/output-layouts)和[锚点链接](/guide/documents/anchor-links)。
 
 有关 VitePress 特定的编写规则，请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
+
+有关 Nextra 特定的编写规则，请参阅 [Nextra 集成 — 链接约定](/guide/nextra-integration#link-conventions)。
+
+有关 Fumadocs 特定的编写规则，请参阅 [Fumadocs 集成 — 链接约定](/guide/fumadocs-integration#link-conventions)。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -117,6 +123,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 - 资产位于源文件旁边，并且扁平重写器的每个文件深度前缀正确解析它们
 - 英语和每个翻译副本使用**相同**的 URL（站点根目录下的共享图像、并置资产、规范化器后的 VitePress 站点路由）
 - VitePress 站内链接使用站点路由或带有 `rewriteVitepressLinks: true` 的 `docs/guide/…` 路径
+- Nextra 和 Fumadocs 页内链接使用区域设置中立路由（`/guide/…`、`/docs/…`）或带有 `rewriteNextraLinks` / `rewriteFumadocsLinks: true` 的内容根路径
 
 <a id="full-config-example"></a>
 ## 完整配置示例
