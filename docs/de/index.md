@@ -261,7 +261,7 @@ Die folgenden Hilfsfunktionen werden von `'ai-i18n-tools/runtime'` exportiert un
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Empfohlene Verkabelung: Schlüsselbereinigung + Plural-`wrapT` aus `strings.json`, optional fusioniert `translate-ui` `{sourceLocale}.json` Pluralschlüssel. |
 | `wrapT(i18n, options)`                                                 | Niedrigstufige, pluralbehaftete `t()`-Wrapper (normalerweise installiert von `setupKeyAsDefaultT`).                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                               | Erstellt den Pluralgruppenindex, den `wrapT` aus Katalogzeilen mit `"plural": true` verwendet.                                                    |
-| `extractInterpolationNamesForWrap(key)`                                | Parst <code v-pre>{{var}}</code>-Namen aus einem Quellschlüssel für `wrapT` / Schlüsselkürzung als Fallback.                                                              |
+| `extractInterpolationNamesForWrap(key)`                                  | Parst `{{var}}`-Namen aus einem Quellschlüssel für `wrapT` / Schlüsselkürzung-Rückfalloption.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | Nur Wrapper für niedrigstufige Schlüsselbereinigung (veraltet für App-Verkabelung; bevorzugen Sie `setupKeyAsDefaultT`). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Erstellt die `localeLoaders`-Zuordnung für `makeLoadLocale` aus `ui-languages.json` (jedes `code` außer `sourceLocale`). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Factory für asynchrones Laden von Lokalisierungsdateien. |
@@ -269,7 +269,7 @@ Die folgenden Hilfsfunktionen werden von `'ai-i18n-tools/runtime'` exportiert un
 | `applyDirection(lng, element?)` | Setzt das `dir`-Attribut auf `document.documentElement`. |
 | `getUILanguageLabel(lang, t)` | Anzeigelabel für eine Sprachmenüzeile (mit i18n). |
 | `getUILanguageLabelNative(lang)` | Anzeigelabel ohne Aufruf von `t()` (Kopfzeilen-Stil). |
-| `interpolateTemplate(str, vars)`                                       | Low-Level-<code v-pre>{{var}}</code>-Substitution für eine einfache Zeichenfolge (intern verwendet; App-Code sollte stattdessen `t()` verwenden).                               |
+| `interpolateTemplate(str, vars)` | Low-Level `{{var}}`-Substitution an einem einfachen String (wird intern verwendet; Anwendungscode sollte stattdessen `t()` nutzen). |
 | `flipUiArrowsForRtl(text, isRtl)` | Kehrt `→` zu `←` für LTR-Layouts um. |
 
 ---

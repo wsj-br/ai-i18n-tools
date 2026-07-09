@@ -259,7 +259,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推奨される構成：`wrapT`からのキーのトリムおよび複数形`strings.json`、オプションで`translate-ui` `{sourceLocale}.json`の複数形キーをマージします。 |
 | `wrapT(i18n, options)`                                                 | 複数形対応の低レベルな `t()` ラッパー（通常は `setupKeyAsDefaultT` によってインストールされる）。                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                               | カタログ行の `"plural": true` から、`wrapT` が使用する複数形グループインデックスを構築します。                                                    |
-| `extractInterpolationNamesForWrap(key)` | `wrapT` / キーのトリムフォールバックのソースキーから<code v-pre>{{var}}</code>名を解析します。 |
+| `extractInterpolationNamesForWrap(key)`                                  | ソースキーから `{{var}}` 名を解析し、`wrapT` / キーのトリムフォールバックに使用します。                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | 下位レベルのキー・トリムラッパーのみ（アプリ構成では非推奨。代わりに`setupKeyAsDefaultT`を使用してください）。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `localeLoaders`の`makeLoadLocale`マップを`ui-languages.json`から構築します（`code`を除くすべての`sourceLocale`）。 |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 非同期ロケールファイル読み込み用のファクトリ。 |
@@ -267,7 +267,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `applyDirection(lng, element?)` | `document.documentElement`に`dir`属性を設定。 |
 | `getUILanguageLabel(lang, t)` | 言語メニュー行の表示ラベル（i18n付き）。 |
 | `getUILanguageLabelNative(lang)` | `t()`呼び出しなしの表示ラベル（ヘッダー形式）。 |
-| `interpolateTemplate(str, vars)` | プレーン文字列に対する低レベルの<code v-pre>{{var}}</code>置換（内部で使用されます。アプリコードでは代わりに`t()`を使用してください）。 |
+| `interpolateTemplate(str, vars)` | 単純な文字列に対する低レベルの`{{var}}`置換（内部使用。アプリコードは代わりに`t()`を使用すべき）。 |
 | `flipUiArrowsForRtl(text, isRtl)` | RTLレイアウト向けに`→`を`←`に反転。 |
 
 ---

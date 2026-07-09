@@ -259,7 +259,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推荐的连接方式：从 `strings.json` 中提取键修剪 + 复数 `wrapT`，可选地合并 `translate-ui` `{sourceLocale}.json` 复数键。 |
 | `wrapT(i18n, options)` | 低级别的、感知复数的 `t()` 包装器（通常由 `setupKeyAsDefaultT` 安装）。 |
 | `buildPluralIndexFromStringsJson(entries)` | 从带有 `"plural": true` 的目录行构建复数组索引 `wrapT`。 |
-| `extractInterpolationNamesForWrap(key)` | 从源键解析 <code v-pre>{{var}}</code> 名称，用于 `wrapT`/键修剪回退。 |
+| `extractInterpolationNamesForWrap(key)` | 从源键解析 `{{var}}` 名称，用于 `wrapT` / 键修剪回退。 |
 | `wrapI18nWithKeyTrim(i18n)` | 仅低级别的键修剪包装器（应用程序连接已弃用；首选 `setupKeyAsDefaultT`）。 |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | 为 `makeLoadLocale` 从 `ui-languages.json` 构建 `localeLoaders` 映射（每个 `code`，除了 `sourceLocale`）。 |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 异步加载区域设置文件的工厂。 |
@@ -267,7 +267,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `applyDirection(lng, element?)` | 在 `document.documentElement` 上设置 `dir` 属性。 |
 | `getUILanguageLabel(lang, t)` | 语言菜单行的显示标签（带 i18n）。 |
 | `getUILanguageLabelNative(lang)` | 不调用 `t()` 的显示标签（标题样式）。 |
-| `interpolateTemplate(str, vars)` | 对纯字符串进行低级 <code v-pre>{{var}}</code> 替换（内部使用；应用程序代码应改用 `t()`）。 |
+| `interpolateTemplate(str, vars)`                                       | 在纯字符串上进行低级 `{{var}}` 替换（内部使用；应用代码应改用 `t()`）。                               |
 | `flipUiArrowsForRtl(text, isRtl)`                                      | 为 RTL 布局将 `→` 翻转为 `←`。                                                                                                       |
 
 ---

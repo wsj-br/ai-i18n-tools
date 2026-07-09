@@ -259,7 +259,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 권장 연결 방식: `strings.json`에서 키 정리(key-trim) 및 복수형 `wrapT` 처리를 수행하고, 필요 시 `translate-ui` `{sourceLocale}.json` 복수형 키를 병합합니다. |
 | `wrapT(i18n, options)`                                                 | 복수형 인식 기능을 갖춘 저수준 `t()` 래퍼 (일반적으로 `setupKeyAsDefaultT`에 의해 설치됨).                                                    |
 | `buildPluralIndexFromStringsJson(entries)`                               | 카탈로그 행의 `"plural": true`를 사용하여 `wrapT`에서 사용하는 복수형 그룹 인덱스를 생성합니다.                                                    |
-| `extractInterpolationNamesForWrap(key)` | `wrapT`/키 트리밍 대체용 소스 키에서 <code v-pre>{{var}}</code> 이름을 구문 분석합니다. |
+| `extractInterpolationNamesForWrap(key)`                                  | 소스 키에서 `{{var}}` 이름을 구문 분석하여 `wrapT` / 키 자르기 폴백에 사용합니다.                                                              |
 | `wrapI18nWithKeyTrim(i18n)` | 낮은 수준의 키 정리(key-trim) 래퍼만 제공합니다. (애플리케이션 연결 시 사용되지 않으며, `setupKeyAsDefaultT` 사용을 권장합니다.) |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `ui-languages.json`에서 `makeLoadLocale`의 `localeLoaders` 맵을 생성합니다. (`sourceLocale` 제외한 모든 `code` 포함) |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | 비동기 로케일 파일 로딩을 위한 팩토리입니다. |
@@ -267,7 +267,7 @@ npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → transl
 | `applyDirection(lng, element?)` | `document.documentElement`에 `dir` 속성을 설정합니다. |
 | `getUILanguageLabel(lang, t)` | 언어 메뉴 항목을 위한 표시 레이블 (i18n 사용). |
 | `getUILanguageLabelNative(lang)` | `t()` 호출 없이 표시 레이블 생성 (헤더 스타일). |
-| `interpolateTemplate(str, vars)` | 일반 문자열에 대한 하위 수준 <code v-pre>{{var}}</code> 대체(내부적으로 사용, 앱 코드는 대신 `t()` 사용). |
+| `interpolateTemplate(str, vars)` | 일반 문자열에 대한 낮은 수준의 `{{var}}` 치환 (내부적으로 사용; 앱 코드는 대신 `t()` 사용 권장). |
 | `flipUiArrowsForRtl(text, isRtl)` | RTL 레이아웃을 위해 `→`을 `←`로 전환합니다. |
 
 ---

@@ -3,6 +3,7 @@
  * Sync README.md -> docs/index.md for the VitePress site homepage.
  * Run from repo root: node scripts/sync-readme-to-docs.mjs
  */
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -64,6 +65,20 @@ description: CLI and toolkit for internationalizing JavaScript/TypeScript applic
 
 `;
 
+const newContent = frontmatter + content.trim() + "\n";
+
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
-fs.writeFileSync(outPath, frontmatter + content.trim() + "\n", "utf8");
+
+if (fs.existsSync(outPath)) {
+  const diffResult = spawnSync("diff", ["-q", outPath, "-"], {
+    input: newContent,
+    encoding: "utf8",
+  });
+  if (diffResult.status === 0) {
+    console.log(`Skipped ${path.relative(ROOT, outPath)} — no changes from README.md`);
+    process.exit(0);
+  }
+}
+
+fs.writeFileSync(outPath, newContent, "utf8");
 console.log(`Wrote ${path.relative(ROOT, outPath)} from README.md`);

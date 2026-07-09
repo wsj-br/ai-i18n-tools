@@ -261,7 +261,7 @@ Nimnalikhit helpers `'ai-i18n-tools/runtime'` se export kiye jaate hain aur kisi
 | `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Anushansit wiring: key-trim + plural `wrapT` `strings.json` se, vikalp roop se `translate-ui` `{sourceLocale}.json` plural keys ko merge karta hai. |
 | `wrapT(i18n, options)` | Lower-level plural-aware `t()` wrapper (aam taur par `setupKeyAsDefaultT` dwara install kiya jaata hai). |
 | `buildPluralIndexFromStringsJson(entries)` | Plural group index banata hai jiska upyog `wrapT` `"plural": true` ke saath catalog rows se karta hai. |
-| `extractInterpolationNamesForWrap(key)`                                | `wrapT` / key-trim fallback ke liye ek source key se <code v-pre>{{var}}</code> naamon ko parse karta hai.                                                              |
+| `extractInterpolationNamesForWrap(key)` | `wrapT` / key-trim fallback ke liye source key se `{{var}}` names ko parse karta hai. |
 | `wrapI18nWithKeyTrim(i18n)` | Lower-level key-trim wrapper keval (app wiring ke liye deprecated; `setupKeyAsDefaultT` ko prefer karein). |
 | `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `makeLoadLocale` ke liye `localeLoaders` map banata hai `ui-languages.json` se (har `code` `sourceLocale` ko chhodkar). |
 | `makeLoadLocale(i18n, loaders, sourceLocale)` | Async locale file loading ke liye factory. |
@@ -269,7 +269,7 @@ Nimnalikhit helpers `'ai-i18n-tools/runtime'` se export kiye jaate hain aur kisi
 | `applyDirection(lng, element?)` | `document.documentElement` par `dir` attribute set karta hai. |
 | `getUILanguageLabel(lang, t)` | ek bhasha menu row ke liye display label (i18n ke saath). |
 | `getUILanguageLabelNative(lang)` | `t()` ko call kiye bina display label (header-style). |
-| `interpolateTemplate(str, vars)`                                       | Ek plain string par low-level <code v-pre>{{var}}</code> substitution (internally upyog kiya jaata hai; app code ko iske bajaye `t()` ka upyog karna chahiye).                               |
+| `interpolateTemplate(str, vars)` | ek saadhaaran string par low-level `{{var}}` substitution (internally upyog kiya jaata hai; app code ko iske bajaye `t()` ka upyog karna chahiye). |
 | `flipUiArrowsForRtl(text, isRtl)` | RTL layouts ke liye `→` ko `←` mein flip karein. |
 
 ---
