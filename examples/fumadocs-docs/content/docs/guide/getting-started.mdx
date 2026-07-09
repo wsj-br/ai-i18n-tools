@@ -1,0 +1,36 @@
+---
+title: Getting started
+description: Run and translate the Fumadocs example
+---
+
+# Getting started
+
+## Run the site
+
+From `examples/fumadocs-docs`:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+Open [http://localhost:3080/docs](http://localhost:3080/docs) and switch locales with the language menu.
+
+## Translate documentation
+
+```bash
+echo "OPENROUTER_API_KEY=sk-or-..." > .env
+pnpm run i18n:sync
+```
+
+Config: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/ai-i18n-tools.config.json).
+
+## Layout recap
+
+| Artifact | Source | Translated with |
+| --- | --- | --- |
+| MDX pages | `content/docs/` | `translate-docs` (`style: "fumadocs"`, dot parser) |
+| Sidebar labels | `content/docs/meta.json` | `translate-docs` |
+| UI strings | `lib/layout.shared.ts` | `translate-docs` → `lib/i18n/ui.{locale}.json` |
+
+Return to the [home page](/docs).

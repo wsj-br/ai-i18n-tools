@@ -1,52 +1,21 @@
 ---
-title: 概述
-description: Fumadocs dot-parser 示例 (用于 ai-i18n-tools)
+title: 主页
+description: 使用 ai-i18n-tools 翻译的最小 Fumadocs 文档站点
 ---
 
 
 
-# fumadocs-docs
+# Fumadocs + ai-i18n-tools
 
-Minimal [Fumadocs](https://www.fumadocs.dev/) 站点，演示了 **`fumadocs`** 预设以及 **dot** i18n 解析器（SWR 风格的 `*.pt-BR.mdx` / `*.zh-Hans.mdx` 后缀）。
+此示例展示了使用 **dot** 解析器的 **`fumadocs`** 输出预设：英文源页面位于 `content/docs/*.mdx`，翻译副本则以区域设置后缀（`*.pt-BR.mdx`、`*.zh-Hans.mdx`）的形式写入。
 
-## 快速开始
+## 您将看到什么
 
-从 monorepo 根目录（在运行 `pnpm install` 和 `pnpm run build` 之后）：
+- 采用 `docsOutput.style: "Fumadocs"` 的 `init -t ui-fumadocs` 风格配置
+- 仅支持两种目标语言环境 (`pt-BR`, `zh-Hans`)，以实现快速、可读的演示
+- 已提交翻译，因此 `pnpm run dev` 无需 API 密钥即可工作
+- 侧边栏标签 (`meta.json`) 和 UI 目录 (`lib/i18n/ui.{locale}.json`) 通过 `translate-docs` 翻译
 
-```bash
-pnpm --dir examples/fumadocs-docs dev
-```
+## 后续步骤
 
-打开 [http://localhost:3080/docs](http://localhost:3080/docs)。
-
-## 翻译
-
-```bash
-cd examples/fumadocs-docs
-pnpm run i18n:sync
-```
-
-这会翻译：
-
-- `content/docs/` 下的 MDX 页面（dot 后缀输出）
-- `meta.json` 侧边栏（`meta.pt-BR.json` 等）
-- 从 `lib/layout.shared.ts` 引导到 `lib/i18n/ui.{locale}.json` 的 UI 覆盖
-
-配置：`ai-i18n-tools.config.json` (`init -t ui-fumadocs`)。
-
-### 目录解析器（locale 文件夹）
-
-对于 Nextra 风格的 `content/docs/en/` → `content/docs/pt-BR/` 布局，请参阅 `ai-i18n-tools.config.dir.example.json` 和 [Fumadocs 集成](/docs/guide/fumadocs-integration#dir-parser-nextra-style)。
-
-## 布局
-
-```text
-content/docs/index.mdx                        English source
-content/docs/index.pt-BR.mdx                  Portuguese (dot suffix)
-content/docs/guide/fumadocs-integration.zh-Hans.mdx
-content/docs/meta.json                        Sidebar (shared)
-lib/i18n/ui.en.json                           UI catalog (bootstrap + translate)
-lib/layout.shared.ts                          English UI overrides + loadUiCatalog()
-```
-
-有关完整的设置指南，请参阅 [Fumadocs 集成](/docs/guide/fumadocs-integration)。
+阅读[入门](/docs/guide/getting-started)并与[主文档网站](https://wsj-br.github.io/ai-i18n-tools/guide/Fumadocs-integration/)上的完整说明进行比较。

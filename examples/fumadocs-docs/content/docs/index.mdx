@@ -1,50 +1,19 @@
 ---
-title: Overview
-description: Fumadocs dot-parser example for ai-i18n-tools
+title: Home
+description: Minimal Fumadocs documentation site translated with ai-i18n-tools
 ---
 
-# fumadocs-docs
+# Fumadocs + ai-i18n-tools
 
-Minimal [Fumadocs](https://www.fumadocs.dev/) site demonstrating the **`fumadocs`** preset with the **dot** i18n parser (SWR-style `*.pt-BR.mdx` / `*.zh-Hans.mdx` suffixes).
+This example shows the **`fumadocs`** output preset with the **dot** parser: English source pages live at `content/docs/*.mdx` and translated copies are written as locale suffixes (`*.pt-BR.mdx`, `*.zh-Hans.mdx`).
 
-## Quick start
+## What you will see
 
-From the monorepo root (after `pnpm install` and `pnpm run build`):
+- `init -t ui-fumadocs`-style config with `docsOutput.style: "fumadocs"`
+- Two target locales only (`pt-BR`, `zh-Hans`) for a fast, readable demo
+- Committed translations so `pnpm run dev` works without an API key
+- Sidebar labels (`meta.json`) and UI catalog (`lib/i18n/ui.{locale}.json`) translated via `translate-docs`
 
-```bash
-pnpm --dir examples/fumadocs-docs dev
-```
+## Next steps
 
-Open [http://localhost:3080/docs](http://localhost:3080/docs).
-
-## Translation
-
-```bash
-cd examples/fumadocs-docs
-pnpm run i18n:sync
-```
-
-This translates:
-
-- MDX pages under `content/docs/` (dot suffix outputs)
-- `meta.json` sidebar (`meta.pt-BR.json`, etc.)
-- UI overrides bootstrapped from `lib/layout.shared.ts` into `lib/i18n/ui.{locale}.json`
-
-Config: `ai-i18n-tools.config.json` (`init -t ui-fumadocs`).
-
-### Dir parser (locale folders)
-
-For Nextra-style `content/docs/en/` → `content/docs/pt-BR/` layouts, see `ai-i18n-tools.config.dir.example.json` and [Fumadocs integration](/docs/guide/fumadocs-integration#dir-parser-nextra-style).
-
-## Layout
-
-```text
-content/docs/index.mdx                        English source
-content/docs/index.pt-BR.mdx                  Portuguese (dot suffix)
-content/docs/guide/fumadocs-integration.zh-Hans.mdx
-content/docs/meta.json                        Sidebar (shared)
-lib/i18n/ui.en.json                           UI catalog (bootstrap + translate)
-lib/layout.shared.ts                          English UI overrides + loadUiCatalog()
-```
-
-See [Fumadocs integration](/docs/guide/fumadocs-integration) for the full setup guide.
+Read [Getting started](/docs/guide/getting-started) and compare with the full write-up on the [main documentation site](https://wsj-br.github.io/ai-i18n-tools/guide/fumadocs-integration/).

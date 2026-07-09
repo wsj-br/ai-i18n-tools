@@ -32,7 +32,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
   const catalog = loadUiCatalog(locale);
   return {
     nav: {
-      title: catalog["site.title"] ?? "Fumadocs example",
+      title: catalog["site.title"] ?? "Fumadocs + ai-i18n-tools",
     },
   };
 }

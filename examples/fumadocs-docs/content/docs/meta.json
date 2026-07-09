@@ -1,5 +1,5 @@
 {
-  "title": "fumadocs-docs",
-  "description": "Fumadocs dot-parser example for ai-i18n-tools",
+  "title": "Fumadocs + ai-i18n-tools",
+  "description": "Minimal Fumadocs documentation site translated with ai-i18n-tools.",
   "pages": ["index", "guide"]
 }

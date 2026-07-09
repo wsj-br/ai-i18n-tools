@@ -1,52 +1,21 @@
 ---
-title: Visão geral
-description: Exemplo do Fumadocs dot-parser para ai-i18n-tools
+title: Início
+description: Site de documentação Fumadocs mínimo traduzido com ai-i18n-tools
 ---
 
 
 
-# fumadocs-docs
+# Fumadocs + ai-i18n-tools
 
-Site mínimo do [Fumadocs](https://www.fumadocs.dev/) demonstrando o preset **`fumadocs`** com o parser i18n **dot** (sufixos no estilo SWR `*.pt-BR.mdx` / `*.zh-Hans.mdx`).
+Este exemplo mostra o preset de saída **`fumadocs`** com o parser **dot**: as páginas de origem em inglês estão em `content/docs/*.mdx` e as cópias traduzidas são escritas como sufixos de localidade (`*.pt-BR.mdx`, `*.zh-Hans.mdx`).
 
-## Início rápido
+## O que você verá
 
-A partir da raiz do monorepo (após `pnpm install` e `pnpm run build`):
+- Configuração estilo `init -t ui-fumadocs` com `docsOutput.style: "Fumadocs"`
+- Apenas dois locais de destino (`pt-BR`, `zh-Hans`) para uma demonstração rápida e legível
+- Traduções confirmadas para que `pnpm run dev` funcione sem uma chave de API
+- Rótulos da barra lateral (`meta.json`) e catálogo da UI (`lib/i18n/ui.{locale}.json`) traduzidos via `translate-docs`
 
-```bash
-pnpm --dir examples/fumadocs-docs dev
-```
+## Próximas etapas
 
-Abra [http://localhost:3080/docs](http://localhost:3080/docs).
-
-## Tradução
-
-```bash
-cd examples/fumadocs-docs
-pnpm run i18n:sync
-```
-
-Isso traduz:
-
-- Páginas MDX em `content/docs/` (saídas com sufixo dot)
-- Barra lateral `meta.json` (`meta.pt-BR.json`, etc.)
-- Substituições de UI inicializadas de `lib/layout.shared.ts` para `lib/i18n/ui.{locale}.json`
-
-Configuração: `ai-i18n-tools.config.json` (`init -t ui-fumadocs`).
-
-### Parser de diretório (pastas de locale)
-
-Para layouts no estilo Nextra de `content/docs/en/` para `content/docs/pt-BR/`, consulte `ai-i18n-tools.config.dir.example.json` e [integração com Fumadocs](/docs/guide/fumadocs-integration#dir-parser-nextra-style).
-
-## Layout
-
-```text
-content/docs/index.mdx                        English source
-content/docs/index.pt-BR.mdx                  Portuguese (dot suffix)
-content/docs/guide/fumadocs-integration.zh-Hans.mdx
-content/docs/meta.json                        Sidebar (shared)
-lib/i18n/ui.en.json                           UI catalog (bootstrap + translate)
-lib/layout.shared.ts                          English UI overrides + loadUiCatalog()
-```
-
-Veja [integração Fumadocs](/docs/guide/fumadocs-integration) para o guia de configuração completo.
+Leia [Primeiros passos](/docs/guide/getting-started) e compare com o artigo completo no [site principal da documentação](https://wsj-br.github.io/ai-i18n-tools/guide/Fumadocs-integration/).

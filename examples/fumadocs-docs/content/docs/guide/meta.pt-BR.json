@@ -1,7 +1,6 @@
 {
-  "title": "Integração",
+  "title": "Guia",
   "pages": [
-    "fumadocs-integration"
-  ],
-  "defaultOpen": true
+    "getting-started"
+  ]
 }

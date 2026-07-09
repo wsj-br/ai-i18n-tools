@@ -1,0 +1,38 @@
+---
+title: Introdução
+description: Execute e traduza o exemplo Fumadocs
+---
+
+
+
+# Introdução
+
+## Execute o site
+
+A partir de `examples/Fumadocs-docs`:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+Abra [http://localhost:3080/docs](http://localhost:3080/docs) e alterne os idiomas com o menu de idiomas.
+
+## Traduzir documentação
+
+```bash
+echo "OPENROUTER_API_KEY=sk-or-..." > .env
+pnpm run i18n:sync
+```
+
+Configuração: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/Fumadocs-docs/ai-i18n-tools.config.json).
+
+## Resumo do layout
+
+| Artefato | Origem | Traduzido com |
+| --- | --- | --- |
+| Páginas MDX | `content/docs/` | `translate-docs` (`style: "Fumadocs"`, analisador de ponto) |
+| Rótulos da barra lateral | `content/docs/meta.json` | `translate-docs` |
+| Strings da UI | `lib/layout.shared.ts` | `translate-docs` → `lib/i18n/ui.{locale}.json` |
+
+Voltar para a [página inicial](/docs).

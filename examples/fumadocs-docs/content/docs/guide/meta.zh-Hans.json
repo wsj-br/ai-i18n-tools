@@ -1,7 +1,6 @@
 {
-  "title": "集成",
+  "title": "指南",
   "pages": [
-    "fumadocs-integration"
-  ],
-  "defaultOpen": true
+    "getting-started"
+  ]
 }

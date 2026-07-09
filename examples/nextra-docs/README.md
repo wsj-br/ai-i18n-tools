@@ -54,7 +54,7 @@ pnpm run build
 pnpm run start
 ```
 
-> **Note:** Nextra 4.6.1 is incompatible with Zod 4.4.x until an upstream fix ships. This example includes a small `pnpm` patch for `nextra-theme-docs` (see `patches/`). When installing from the monorepo root, the same patch is applied via the workspace `pnpm-workspace.yaml`.
+> **Note:** Nextra 4.6.1 is incompatible with Zod 4.4.x until an upstream fix ships. This example includes a small `pnpm` patch for `nextra-theme-docs` (see `patches/`) covering layout props and `LastUpdated` locale handling. When installing from the monorepo root, the same patch is applied via the workspace `pnpm-workspace.yaml`.
 
 ## Translate documentation
 
@@ -74,6 +74,9 @@ examples/nextra-docs/
 ├── package.json
 ├── next.config.ts
 ├── proxy.ts
+├── patches/
+├── public/
+│   └── favicon.ico
 ├── app/
 │   ├── [lang]/
 │   │   ├── layout.tsx

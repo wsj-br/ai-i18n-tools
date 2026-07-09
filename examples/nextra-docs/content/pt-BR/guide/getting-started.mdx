@@ -2,7 +2,7 @@
 
 ## Executar o site
 
-A partir de `examples/Nextra-docs`:
+A partir de `examples/nextra-docs`:
 
 ```bash
 pnpm install
@@ -18,14 +18,14 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
 pnpm run i18n:sync
 ```
 
-Configuração: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/Nextra-docs/ai-i18n-tools.config.json).
+Configuração: [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextra-docs/ai-i18n-tools.config.json).
 
 ## Recapitulação do layout
 
 | Artefato | Fonte | Traduzido com |
 | --- | --- | --- |
 | Páginas MDX | `content/en/` | `translate-docs` (`style: "Nextra"`) |
-| Strings de tema | `app/_dictionaries/en.json` | `translate-json` |
-| Rótulos da barra lateral | `i18n/meta.en.json` | `translate-json` |
+| Strings de tema | `app/_dictionaries/en.ts` | `translate-docs` (`nextraDictionaryPath`) |
+| Rótulos da barra lateral | `content/en/**/_meta.ts` | `translate-docs` |
 
 Retorne à [página inicial](/).

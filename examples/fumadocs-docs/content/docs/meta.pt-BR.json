@@ -1,6 +1,6 @@
 {
-  "title": "fumadocs-docs",
-  "description": "Exemplo do Fumadocs dot-parser para ai-i18n-tools",
+  "title": "Fumadocs + ai-i18n-tools",
+  "description": "Site de documentação mínimo do Fumadocs traduzido com ai-i18n-tools.",
   "pages": [
     "index",
     "guide"

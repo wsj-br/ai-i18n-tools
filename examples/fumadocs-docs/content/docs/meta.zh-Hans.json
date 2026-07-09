@@ -1,6 +1,6 @@
 {
-  "title": "fumadocs-docs",
-  "description": "Fumadocs dot-parser 示例，适用于 ai-i18n-tools",
+  "title": "Fumadocs + ai-i18n-tools",
+  "description": "使用 ai-i18n-tools 翻译的最小 Fumadocs 文档站点。",
   "pages": [
     "index",
     "guide"
