@@ -4,7 +4,7 @@ Minimal [Fumadocs](https://www.fumadocs.dev/) site translated by [ai-i18n-tools]
 
 English source pages live at `content/docs/`. Translated copies are committed as dot-suffix files (`*.pt-BR.mdx`, `*.zh-Hans.mdx`). Sidebar labels live in `content/docs/meta.json`; UI strings are bootstrapped from `lib/layout.shared.ts` into `lib/i18n/ui.en.json`. Both are translated via **`translate-docs`** (no `json[]` sidecars).
 
-Full integration guide: [Fumadocs integration](https://wsj-br.github.io/ai-i18n-tools/guide/fumadocs-integration/) on the main documentation site.
+Full integration guide: [Fumadocs integration](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/fumadocs/) on the main documentation site.
 
 ## Locales
 
@@ -90,4 +90,4 @@ examples/fumadocs-docs/
 
 ### Dir parser (locale folders)
 
-For Nextra-style `content/docs/en/` → `content/docs/pt-BR/` layouts, see `ai-i18n-tools.config.dir.example.json` and [Fumadocs integration](https://wsj-br.github.io/ai-i18n-tools/guide/fumadocs-integration#dir-parser-nextra-style).
+For Nextra-style `content/docs/en/` → `content/docs/pt-BR/` layouts, see `ai-i18n-tools.config.dir.example.json` and [Fumadocs integration](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/fumadocs#dir-parser-nextra-style).

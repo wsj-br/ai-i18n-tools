@@ -23,6 +23,7 @@ import {
   writeInitConfigFile,
   toDocTranslateConfig,
 } from "../core/config.js";
+import { scaffoldVitepressInitFiles } from "./vitepress-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
@@ -539,7 +540,9 @@ program
   )
   .option(
     "--model <ids>",
-    t("Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)")
+    t(
+      "Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)"
+    )
   )
   .option("--text <text>", t("Inline sample text to translate (overrides --file and the default)"))
   .option("--file <path>", t("Read the sample text from a file (project-relative or absolute)"))
@@ -635,6 +638,9 @@ program
     }
     writeInitConfigFile(opts.output, key);
     console.log(t("Wrote {{path}} ({{template}})", { path: opts.output, template: key }));
+    if (key === "uiVitepress") {
+      scaffoldVitepressInitFiles(process.cwd());
+    }
     if (opts.withTranslateIgnore) {
       const ignorePath = path.join(process.cwd(), ".translate-ignore");
       if (!fs.existsSync(ignorePath)) {

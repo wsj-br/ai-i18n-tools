@@ -25,6 +25,7 @@ import {
   resolveLocalesForJson,
   resolveLocalesForSvg,
   resolveLocalesForUI,
+  resolveLanguagesManifestAbsPath,
   resolveUiLanguagesAbsPath,
   resolveUiTranslationTargetCodes,
 } from "../../src/core/ui-languages.js";
@@ -40,7 +41,7 @@ function baseUiConfig(over: Record<string, unknown> = {}): I18nConfig {
     mergeWithDefaults({
       sourceLocale: "en-GB",
       targetLocales: ["de", "fr"],
-      uiLanguagesPath: "ui-languages.json",
+      languagesManifestPath: "ui-languages.json",
       ui: {
         sourceRoots: [],
         stringsJson: "strings.json",
@@ -416,13 +417,20 @@ describe("ui-languages", () => {
     expect(() => loadUiLanguageEntries(p)).toThrow(/no valid entries/);
   });
 
-  it("resolveUiLanguagesAbsPath resolves relative, absolute, and missing paths", () => {
-    const rel = baseUiConfig({ uiLanguagesPath: "locales/ui-languages.json" });
-    expect(resolveUiLanguagesAbsPath(rel, tmp)).toBe(path.join(tmp, "locales/ui-languages.json"));
-    const abs = baseUiConfig({ uiLanguagesPath: "/abs/ui-languages.json" });
-    expect(resolveUiLanguagesAbsPath(abs, tmp)).toBe("/abs/ui-languages.json");
-    expect(resolveUiLanguagesAbsPath({ uiLanguagesPath: undefined } as I18nConfig, tmp)).toBeNull();
-    expect(resolveUiLanguagesAbsPath({ uiLanguagesPath: "   " } as I18nConfig, tmp)).toBeNull();
+  it("resolveLanguagesManifestAbsPath resolves relative, absolute, and missing paths", () => {
+    const rel = baseUiConfig({ languagesManifestPath: "locales/ui-languages.json" });
+    expect(resolveLanguagesManifestAbsPath(rel, tmp)).toBe(
+      path.join(tmp, "locales/ui-languages.json")
+    );
+    const abs = baseUiConfig({ languagesManifestPath: "/abs/ui-languages.json" });
+    expect(resolveLanguagesManifestAbsPath(abs, tmp)).toBe("/abs/ui-languages.json");
+    expect(
+      resolveLanguagesManifestAbsPath({ languagesManifestPath: undefined } as I18nConfig, tmp)
+    ).toBeNull();
+    expect(
+      resolveLanguagesManifestAbsPath({ languagesManifestPath: "   " } as I18nConfig, tmp)
+    ).toBeNull();
+    expect(resolveUiLanguagesAbsPath(rel, tmp)).toBe(resolveLanguagesManifestAbsPath(rel, tmp));
   });
 
   it("resolveLocalesForUI uses targetLocales when no --locale is given", () => {

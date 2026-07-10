@@ -105,8 +105,7 @@ export function applyDirection(lng: string, element?: DirectionTarget): void {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const doc = (globalThis as Record<string, any>)["document"] as
-    | { documentElement?: DirectionTarget }
-    | undefined;
+    { documentElement?: DirectionTarget } | undefined;
   if (doc?.documentElement) {
     doc.documentElement.setAttribute("dir", dir);
   }

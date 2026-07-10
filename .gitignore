@@ -46,6 +46,16 @@ coverage/
 tmp/
 temp/
 *.tmp
+*.backup.*
+
+# Framework / toolchain generated (see also scripts/clean-workspace.sh)
+.next/
+out/
+.docusaurus/
+.source/
+.astro/
+next-env.d.ts
+*.tsbuildinfo
 
 # Example apps - track cache.db so clones reuse SQLite cache; ignore other cache dir files
 examples/**/.translation-cache/*
@@ -57,8 +67,10 @@ docs-src/
 # VitePress build output
 docs/.vitepress/cache/
 docs/.vitepress/dist/
+docs/.vitepress/.temp/
 examples/**/.vitepress/cache/
 examples/**/.vitepress/dist/
+examples/**/.vitepress/.temp/
 
 # References to other repositories
 references/

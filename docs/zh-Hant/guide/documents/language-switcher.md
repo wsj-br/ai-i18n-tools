@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. 標籤清單
 
-對於內名標籤 (`label: "local"`)，透過 `generate-ui-languages` 生成或維護 `ui-languages.json` (需要 [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional))。此儲存庫的僅文件配置沒有 UI 管道，因此標籤來自 `sourceLocale` + `targetLocales` 的捆綁主目錄。
+對於內名標籤 (`label: "local"`)，透過 `generate-ui-languages` 生成或維護 `ui-languages.json`（寫入至 [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional)，預設為 `{ui.flatOutputDir}/ui-languages.json`）。此儲存庫的僅文件設定沒有 UI 管線，且磁碟上沒有專案資訊清單，因此標籤來自 `sourceLocale` + `targetLocales` 的內建主目錄。
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. 此儲存庫中的範例

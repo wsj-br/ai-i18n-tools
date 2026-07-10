@@ -79,7 +79,7 @@ function LanguageSelect({
 ]
 ```
 
-매니페스트는 `generate-ui-languages`가 `sourceLocale` + `targetLocales` 및 번들된 마스터 카탈로그에서 생성합니다. 이 파일은 `uiLanguagesPath`(필수)에 기록됩니다. 구성에서 로케일을 변경하는 경우, 파일을 새로 고치려면 `generate-ui-languages`를 다시 실행하세요.
+매니페스트는 `generate-ui-languages` 또는 `extract`에 의해 `sourceLocale` + `targetLocales` 및 번들된 마스터 카탈로그에서 생성됩니다. `languagesManifestPath`에 작성됩니다(생략 시 기본값은 `{ui.flatOutputDir}/ui-languages.json`). 구성에서 로케일을 변경한 경우, 파일을 갱신하려면 `generate-ui-languages` 또는 `extract`을 다시 실행하세요.
 
 <a id="rtl-languages"></a>
 ## RTL 언어

@@ -1,9 +1,9 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import uiLanguages from "../i18n/ui-languages.json";
-import { normalizeAstroLocale, resolveUiLanguage } from "../i18n/locale";
+import { resolveUiLanguage, toAstroRouteLocale } from "../i18n/locale";
 
-const current = normalizeAstroLocale(Astro.currentLocale ?? "en");
+const current = toAstroRouteLocale(Astro.currentLocale ?? "en");
 const currentRow = resolveUiLanguage(Astro.currentLocale);
 ---
 <div class="relative">
@@ -24,13 +24,13 @@ const currentRow = resolveUiLanguage(Astro.currentLocale);
     <ul class="absolute end-0 z-50 mt-2 min-w-[12rem] max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/95 backdrop-blur-xl shadow-xl shadow-black/40 py-1">
       {
         uiLanguages.map((row) => {
-          const code = normalizeAstroLocale(row.code);
-          const active = code === current;
+          const routeLocale = toAstroRouteLocale(row.code);
+          const active = routeLocale === current;
           return (
             <li>
               <a
-                href={getRelativeLocaleUrl(code)}
-                hreflang={code}
+                href={getRelativeLocaleUrl(routeLocale)}
+                hreflang={row.code}
                 dir={row.direction}
                 class:list={[
                   "block px-3 py-2 text-sm transition-colors",

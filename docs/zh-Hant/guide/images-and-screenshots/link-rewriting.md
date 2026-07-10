@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (來自本地化檔案) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 不變（儲存庫路徑使用完整 URL） |
 
-對於將 `README.md` 同步到 `docs/index.md` 的專案，請在 `README.md` 中使用完整的 GitHub URL，用於 `LICENSE`、`examples/` 以及 VitePress 樹之外的其他檔案。請參閱 [VitePress 整合 — 將 README 作為文件首頁](/guide/vitepress-integration#readme-as-homepage)。
+對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 樹狀結構外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — README 作為文件首頁](/guide/integrations/vitepress#readme-as-homepage)。
 
-平面重寫器和 VitePress 正規化器在每個 `docs[]` 區塊中是互斥的 — 在 `regexAdjustments` 之前只有一個會執行。請參閱 [VitePress 整合 — 連結慣例](/guide/vitepress-integration#link-conventions)。
+扁平化重寫器與 VitePress 正規化工具在每個 `docs[]` 區塊中互斥 — 在 `regexAdjustments` 之前僅會執行其中一個。請參閱 [VitePress 整合 — 連結慣例](/guide/integrations/vitepress#link-conventions)。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 連結正規化器 (`style: "nextra"`)
 
-當 `docsOutput.rewriteNextraLinks` 為 `true`（`style` 為 `"nextra"` 時的預設值），區段重組後會執行一個獨立的正規化器。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為語系中立的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/guide/nextra-integration#link-conventions)。
+當 `docsOutput.rewriteNextraLinks` 為 `true`（預設為 `style` 是 `"nextra"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/guide/integrations/nextra#link-conventions)。
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs 連結正規化器 (`style: "fumadocs"`)
 
-當 `docsOutput.rewriteFumadocsLinks` 為 `true`（`style` 為 `"fumadocs"` 時的預設值），區段重組後會執行一個獨立的正規化器。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為語系中立的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/guide/fumadocs-integration#link-conventions)。
+當 `docsOutput.rewriteFumadocsLinks` 為 `true`（預設為 `style` 是 `"fumadocs"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/guide/integrations/fumadocs#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 針對檔案的深度前綴（使用 `flatPreserveRelativeDir`）

@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro ウェブサイト
 
-静的な Astro マーケティングサイトまたはアプリサイト（Starlight ではないプレーンな Astro）の場合、[Astro の組み込み i18n ルーティング](https://docs.astro.build/en/guides/internationalization/)と ai-i18n-tools を組み合わせます。[Astro 統合](/guide/astro-integration)も参照してください。
+静的な Astro のマーケティングサイトまたはアプリサイト (Starlight ではなく、プレーンな Astro) では、[Astro の組み込み i18n ルーティング](https://docs.astro.build/en/guides/internationalization/) と ai-i18n-tools を組み合わせます。[Astro インテグレーション](/guide/integrations/astro) も参照してください。
 
 リファレンス実装は [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) です（その [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) も参照）。英語は `/`、9 つのターゲットロケールは `/{locale}/`（`de`、`fr`、`es`、`ar`、`ja`、`ko`、`zh-cn`、`zh-tw`、`pt-br`）です。
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-例に含まれるサポート用ヘルパー：ラベル、方向、BCP-47 コード用の `src/i18n/utils.ts`、`src/i18n/locale.ts`、`ui-languages.json`。`targetLocales` を変更した後に `generate-ui-languages` を実行してください（オプションで `ui.uiLanguagesPath` を設定し、マニフェストがヘルパーの隣に配置されるようにします。例：`src/i18n/ui-languages.json`）。`MainLayout.astro` は `resolveUiLanguage(Astro.currentLocale)` から `<html lang>` および `<html dir>` を設定します。`LanguagePicker.astro` は `astro:i18n` からの `getRelativeLocaleUrl` を使用します。
+例におけるサポートヘルパー: ラベル、方向、BCP-47コード用の `src/i18n/utils.ts`, `src/i18n/locale.ts`, `ui-languages.json`。`targetLocales` を変更した後、`generate-ui-languages` を実行します（オプションで `languagesManifestPath` を設定し、マニフェストをヘルパーと同じ場所に配置します。例: `src/i18n/ui-languages.json`）。`MainLayout.astro` は `resolveUiLanguage(Astro.currentLocale)` から `<html lang>` と `<html dir>` を設定します。`LanguagePicker.astro` は `astro:i18n` から `getRelativeLocaleUrl` を使用します。
 
 <a id="pages-parse-and-replace"></a>
 ## ページ（解析と置換）

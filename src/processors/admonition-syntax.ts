@@ -40,8 +40,7 @@ export const ADMONITION_CLOSING_NOINDENT_RE = /^(:{3,})\s*$/;
 export const ADMONITION_OPENER_COLONS_RE = /^(:{3,})\w/;
 
 /** GitHub-style alert opener line `> [!NOTE]`. */
-export const GITHUB_ALERT_LINE_RE =
-  /^\s*>\s*\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*$/i;
+export const GITHUB_ALERT_LINE_RE = /^\s*>\s*\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*$/i;
 
 /**
  * A bracketed-title opener whose `[` is never closed on the same line

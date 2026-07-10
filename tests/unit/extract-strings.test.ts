@@ -23,7 +23,7 @@ function minimalExtractConfig(overrides: Record<string, unknown> = {}) {
         flatOutputDir: "./locales",
         ...((overrides.ui as object) ?? {}),
       },
-      uiLanguagesPath: "locales/ui-languages.json",
+      languagesManifestPath: "locales/ui-languages.json",
       ...overrides,
     })
   );

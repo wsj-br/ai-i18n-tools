@@ -18,18 +18,21 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (선택 사항)
 
-도구 자체 UI 언어(CLI 도움말, 로그/요약, 번역 대시보드)에 대한 BCP-47 코드입니다. `sourceLocale` / `targetLocales`과는 독립적이며, `-L` / `--ui-lang` 플래그 및 `AI_I18N_LANG` 환경 변수에 의해 재정의됩니다. 알 수 없는 값은 소스 로케일(`en-GB`)로 정상적으로 저하됩니다. 엄격한 유효성 검사는 없습니다. [도구 UI 언어](/reference/environment-variables#tool-ui-language)를 참조하십시오.
+도구 자체 UI 언어(CLI 도움말, 로그/요약, 번역 대시보드)의 BCP-47 코드입니다. `sourceLocale` / `targetLocales`과(와) 독립적이며, `-L` / `--ui-lang` 플래그 및 `AI_I18N_LANG` 환경 변수에 의해 재정의됩니다. 알 수 없는 값은 소스 로케일(`en-GB`)로 정상적으로 저하되며, 엄격한 유효성 검사는 수행되지 않습니다. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath` (선택 사항)
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath` (선택 사항)
 
-표시 이름, 로캘 필터링 및 언어 목록 후처리에 사용되는 `ui-languages.json` 매니페스트의 경로입니다. 생략하면 CLI는 `ui.flatOutputDir/ui-languages.json` 위치에서 매니페스트를 찾습니다.
+루트 수준의 선택적 문자열입니다 (`ui` 아래에 중첩되지 않음). `extract`와 `generate-ui-languages`가 `ui-languages.json` 매니페스트를 작성하는 경로이며, CLI가 표시 이름과 언어 목록 후처리를 위해 이를 읽어오는 경로입니다. 생략 시, 구성 로드 시 기본값으로 `ui.flatOutputDir/ui-languages.json`가 사용됩니다.
 
 다음과 같은 경우에 사용하세요:
 
-- 매니페스트가 `ui.flatOutputDir` 외부에 존재하므로 CLI에서 명시적으로 이를 가리켜야 합니다.
-- [언어 전환기 사후 처리](#language-switcher-languagelistblock)(`languageListBlock`)를 사용해 매니페스트로부터 로케일 레이블을 생성하려는 경우입니다.
-- `extract`는 매니페스트의 `englishName` 항목을 `strings.json`에 병합해야 합니다(`ui.reactExtractor.includeUiLanguageEnglishNames: true` 필요).
+- 매니페스트는 `ui.flatOutputDir` 외부에 위치해야 합니다 (예: `src/i18n/` 아래의 앱 헬퍼 옆).
+- [언어 전환 후처리](#language-switcher-languagelistblock) (`languageListBlock`)가 번들된 마스터 카탈로그만이 아닌 프로젝트 매니페스트로부터 로케일 라벨을 빌드하도록 하려는 경우.
+
+`includeUiLanguageEnglishNames`는 이 파일을 **읽지 않습니다** — 번들된 마스터 카탈로그를 사용합니다 (아래 `ui.uiExtractor` 참조).
+
+**레거시:** 구성 파일을 로드할 때 루트 수준의 `uiLanguagesPath`는 여전히 허용되며, 자동으로 `languagesManifestPath`로 다시 작성됩니다.
 
 <a id="concurrency-optional"></a>
 ### `concurrency` (선택 사항)
@@ -180,7 +183,7 @@
   선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로입니다.
 - `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
-`true`(기본값 `false`)인 경우, `extract`는 번들로 제공되는 UI 언어 마스터 카탈로그( `sourceLocale` + `targetLocales`에서 빌드됨)의 각 `englishName`를 소스 스캔에서 아직 존재하지 않는 경우(동일한 해시 키) `strings.json`에 추가합니다. `uiLanguagesPath`을 읽지 않습니다.
+`true`(기본값 `false`)인 경우, `extract`는 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로부터 빌드됨)의 각 `englishName`를 소스 스캔에서 이미 존재하지 않는 한(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`는 읽지 않습니다.
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -269,21 +272,21 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다. 기본값은 `false`입니다.
 - `docsOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 다시 작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없는 경우 자동 활성화됨).
+번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동으로 활성화됨).
 - `docsOutput.linkRewriteDocsRoot`
-플랫 링크 다시 작성 접두사를 계산할 때 사용되는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않는 한 일반적으로 `"."`로 둡니다.
+플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두십시오.
 - `docsOutput.rewriteVitepressLinks`
-`true`인 경우 번역 후 VitePress 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"vitepress"`인 경우 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래 영어 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 다시 작성합니다. VitePress 트리 외부의 리포지토리 파일(`LICENSE`, `examples/`)에 대한 링크의 경우 영어 소스에 전체 URL을 사용합니다. [VitePress 통합 — 문서 홈페이지로서의 README](/guide/vitepress-integration#readme-as-homepage)를 참조하세요.
+`true`일 때, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래의 영어 폴더 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용하십시오. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 영어 소스에 전체 URL을 사용하십시오 — [VitePress 통합 — 문서 홈페이지로서의 README](/guide/integrations/vitepress#readme-as-homepage)를 참조하십시오.
 - `docsOutput.rewriteNextraLinks`
-`true`인 경우 번역 후 Nextra 링크 정규화 도구를 실행합니다. `docsOutput.style`이 `"nextra"`인 경우 기본적으로 활성화됩니다. Next.js `i18n`의 경우 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하세요.
+`true`일 때, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이 `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`을 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하십시오.
 - `docsOutput.fumadocsParser`
-`"dot"`(기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`를 작성합니다. dir은 Nextra와 같은 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/guide/fumadocs-integration#page-layout)을 참조하십시오.
+`"dot"` (기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/guide/integrations/fumadocs#page-layout)을 참조하십시오.
 - `docsOutput.rewriteFumadocsLinks`
-`true`인 경우 번역 후 Fumadocs 링크 정규화 도구를 실행합니다. `docsOutput.style`가 `"fumadocs"`인 경우 기본적으로 활성화됩니다. 콘텐츠 경로 및 상대 `.mdx` 링크를 `/docs/…` 경로로 다시 작성합니다.
+`true`일 때, 번역 후 Fumadocs 링크 정규화기를 실행합니다. `docsOutput.style`이 `"fumadocs"`일 때 기본적으로 활성화됩니다. 콘텐츠 경로와 상대 `.mdx` 링크를 `/docs/…` 라우트로 재작성합니다.
 - `docsOutput.fumadocsUiCatalog`
-선택 사항입니다. `translate-docs` 내의 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역. 필드: `sourcePath`(예: `lib/layout.shared.ts`), `catalogPath`(생성된 영어 JSON), 선택 사항인 `outputPathTemplate`(기본값: `catalogPath` 옆의 `ui.{locale}.json`).
+선택 사항. `translate-docs` 내부의 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역입니다. 필드: `sourcePath` (예: `lib/layout.shared.ts`), `catalogPath` (생성된 영어 JSON), 선택적 `outputPathTemplate` (기본값: `catalogPath` 옆의 `ui.{locale}.json`).
 - `docs[].fumadocsMetaGlob`
-`docsOutput.style`가 `"fumadocs"`인 경우 `meta.json` 컬렉션에 대한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
+`docsOutput.style`이 `"fumadocs"`일 때 `meta.json` 컬렉션에 대한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
@@ -292,12 +295,12 @@ Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값
 **후처리**
 
 - `docsOutput.postProcessing`
-번역된 **마크다운 본문**에 대한 선택적 변환(YAML 키 및 비산문 프런트 매터 값은 보존됨). 세그먼트 재조립 및 링크 재작성(플랫 또는 VitePress) 후, `addFrontmatter` 전에 실행됩니다.
+번역된 **마크다운 본문**에 대한 선택적 변환입니다 (YAML 키와 비산문 프론트 매터 값은 보존됩니다). 세그먼트 재조립 및 링크 재작성(flat 또는 VitePress) 이후, `addFrontmatter` 이전에 실행됩니다.
 - `docsOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }`의 정렬된 목록입니다. `search`는 정규식 패턴입니다(일반 문자열은 플래그 `g` 또는 `/pattern/flags`를 사용합니다). `replace`은 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`와 같은 자리 표시자를 지원합니다.
+`{ "description"?, "search", "replace" }`의 정렬된 목록입니다. `search`는 정규식 패턴입니다 (일반 문자열은 플래그 `g`를 사용하거나 `/pattern/flags`를 사용합니다). `replace`는 `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`와 같은 플레이스홀더를 지원합니다.
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — 원본 및 번역된 마크다운에서 제한된 "다른 언어로 읽기" 링크 행을 다시 생성합니다. `label: "local"`인 경우 고유어 레이블에 `uiLanguagesPath`(또는 `ui.flatOutputDir/ui-languages.json`의 매니페스트)가 필요합니다.
+`{ "start", "end", "separator", "label"? }` — 소스 및 번역된 마크다운에서 제한된 "다른 언어로 읽기" 링크 행을 재생성합니다. `label: "local"`일 때 고유어 라벨을 위해 `languagesManifestPath`(또는 `ui.flatOutputDir/ui-languages.json`의 매니페스트)가 필요합니다.
 
 **동작 및 메타데이터**
 

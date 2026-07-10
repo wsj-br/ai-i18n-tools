@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 A porta de escuta padrão é **8675**. Se essa porta estiver indisponível, o servidor tenta a próxima porta (até 1000 tentativas) e registra a porta escolhida. O alias obsoleto `editor` ainda funciona, mas exibe um aviso — prefira usar `dashboard`.
 
-A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da UI da ferramenta](/reference/environment-variables#tool-ui-language).
+A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da interface da ferramenta](/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

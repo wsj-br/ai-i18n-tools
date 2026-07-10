@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### ツールUIの言語
 
-CLIは、翻訳するロケールとは独立して、独自のヘルプテキスト、ログの概要、および翻訳ダッシュボードをローカライズします。デフォルトでは、OSのロケールに従います。設定で`-L pt-BR`、`export AI_I18N_LANG=es`、または`"uiLanguage"`を使用してオーバーライドします。[ツールUIの言語](/reference/environment-variables#tool-ui-language)を参照してください。
+CLIは、翻訳対象のロケールとは独立して、独自のヘルプテキスト、ログの要約、翻訳ダッシュボードをローカライズします。デフォルトではOSのロケールに従います。設定内の`-L pt-BR`、`export AI_I18N_LANG=es`、または`"uiLanguage"`で上書きします。[ツールUI言語](/guide/tool-ui-language)を参照してください。

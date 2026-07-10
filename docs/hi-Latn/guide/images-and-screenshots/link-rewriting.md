@@ -34,19 +34,19 @@ Aam rewrites:
 | `../guide/foo.md` (ek locale file se) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | aparivartit (repo paths ke liye poore URLs ka upyog karen) |
 
-Un projects ke liye jo `README.md` → `docs/index.md` ko sync karte hain, `README.md` mein `LICENSE`, `examples/`, aur VitePress tree ke bahar ki anya files ke liye poore GitHub URLs ka upyog karen. Dekhen [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage).
+Un projects ke liye jo `README.md` → `docs/index.md` sync karte hain, `README.md` mein poore GitHub URLs ka upyog karein `LICENSE`, `examples/`, aur VitePress tree ke bahar ki anya files ke liye. Dekhein [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
 
-Flat rewriter aur VitePress normalizer prati `docs[]` block mein paraspar anany hain — `regexAdjustments` se pehle sirf ek chalta hai. [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions) dekhen.
+Flat rewriter aur VitePress normalizer `docs[]` block ke hisaab se mutually exclusive hain — `regexAdjustments` se pehle sirf ek chalta hai. Dekhein [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra link normalizer (`style: "nextra"`)
 
-Jab `docsOutput.rewriteNextraLinks` `true` hota hai (jab `style` `"nextra"` hota hai to default), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/en/…` aur relative `.mdx` paths ko locale-neutral routes (`/guide/…`) mein rewrite karta hai. Dekhen [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+Jab `docsOutput.rewriteNextraLinks` `true` ho (default jab `style` `"nextra"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/en/…` aur relative `.mdx` paths ko locale-neutral routes (`/guide/…`) mein rewrite karta hai. Dekhein [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs link normalizer (`style: "fumadocs"`)
 
-Jab `docsOutput.rewriteFumadocsLinks` `true` hota hai (jab `style` `"fumadocs"` hota hai to default), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/docs/…` aur relative `.mdx` paths ko locale-neutral routes (`/docs/…`) mein rewrite karta hai. Dekhen [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions).
+Jab `docsOutput.rewriteFumadocsLinks` `true` ho (default jab `style` `"fumadocs"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/docs/…` aur relative `.mdx` paths ko locale-neutral routes (`/docs/…`) mein rewrite karta hai. Dekhein [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir` ke saath prati-file depth prefix

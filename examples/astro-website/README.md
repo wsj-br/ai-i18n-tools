@@ -94,7 +94,7 @@ astro.config (no i18n)    →      astro.config.mjs (i18n.locales, …)
 
 `prefixDefaultLocale: false` keeps English at `/` without `/en/` (same idea as [hide default language in the URL](https://docs.astro.build/en/recipes/i18n/#hide-default-language-in-the-url) in the Astro i18n recipe).
 
-Locale metadata (`label`, `direction`, BCP-47 `code`) lives in `src/i18n/ui-languages.json` (`ui.uiLanguagesPath` in config). Regenerate it after changing `targetLocales`:
+Locale metadata (`label`, `direction`, BCP-47 `code`) lives in `src/i18n/ui-languages.json` (`languagesManifestPath` in config). Regenerate it after changing `targetLocales`:
 
 ```bash
 pnpm i18n:locales
@@ -165,11 +165,11 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
     "translateUIStrings": true,
     "translateMarkdown": true
   },
+  "languagesManifestPath": "src/i18n/ui-languages.json",
   "ui": {
     "sourceRoots": ["src/"],
     "stringsJson": "src/i18n/strings.json",
     "flatOutputDir": "public/locales",
-    "uiLanguagesPath": "src/i18n/ui-languages.json",
     "uiExtractor": {
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro"],
       "funcNames": ["t", "i18n.t"]

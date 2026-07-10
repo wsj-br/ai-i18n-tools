@@ -18,18 +18,21 @@ Matriz de códigos de configuración regional BCP-47 a los que traducir (por eje
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (opcional)
 
-Código BCP-47 para el idioma de la interfaz de usuario de la herramienta (ayuda de la CLI, registros/resúmenes y el Panel de traducción). Es independiente de `sourceLocale` / `targetLocales` y se anula mediante el indicador `-L` / `--ui-lang` y la variable de entorno `AI_I18N_LANG`. Los valores desconocidos se degradan correctamente a la configuración regional de origen (`en-GB`); no hay una validación estricta. Consulte [Idioma de la interfaz de usuario de la herramienta](/reference/environment-variables#tool-ui-language).
+Código BCP-47 para el idioma de la interfaz de usuario de la herramienta (ayuda de la CLI, registros/resúmenes y el Panel de traducción). Es independiente de `sourceLocale` / `targetLocales` y se anula mediante el indicador `-L` / `--ui-lang` y la variable de entorno `AI_I18N_LANG`. Los valores desconocidos se degradan correctamente a la configuración regional de origen (`en-GB`); no hay una validación estricta. Consulte [Idioma de la interfaz de usuario de la herramienta](/guide/tool-ui-language).
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath` (opcional)
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath` (opcional)
 
-Ruta al manifiesto `ui-languages.json` utilizado para nombres mostrados, filtrado por configuración regional y postprocesamiento de listas de idiomas. Si se omite, la CLI busca el manifiesto en `ui.flatOutputDir/ui-languages.json`.
+Cadena opcional de nivel raíz (no anidada bajo `ui`). Ruta donde `extract` y `generate-ui-languages` escriben el manifiesto `ui-languages.json`, y donde la CLI lo lee para nombres de visualización y post-procesamiento de la lista de idiomas. Cuando se omite, el valor predeterminado es `ui.flatOutputDir/ui-languages.json` al cargar la configuración.
 
 Utiliza esto cuando:
 
-- El manifiesto está fuera de `ui.flatOutputDir` y debe indicar explícitamente la CLI.
-- Desea [post-procesado del selector de idioma](#language-switcher-languagelistblock) (`languageListBlock`) para generar etiquetas de idioma a partir del manifiesto.
-- `extract` debería fusionar entradas `englishName` del manifiesto en `strings.json` (requiere `ui.reactExtractor.includeUiLanguageEnglishNames: true`).
+- El manifiesto debe residir fuera de `ui.flatOutputDir` (por ejemplo, junto a los ayudantes de la aplicación en `src/i18n/`).
+- Desea que el [post-procesamiento del selector de idioma](#language-switcher-languagelistblock) (`languageListBlock`) cree etiquetas de configuración regional a partir del manifiesto del proyecto en lugar de solo el catálogo maestro incluido.
+
+`includeUiLanguageEnglishNames` **no** lee este archivo, utiliza el catálogo maestro incluido (consulte `ui.uiExtractor` a continuación).
+
+**Heredado:** `uiLanguagesPath` de nivel raíz todavía se acepta al cargar un archivo de configuración y se reescribe automáticamente a `languagesManifestPath`.
 
 <a id="concurrency-optional"></a>
 ### `concurrency` (opcional)
@@ -180,7 +183,7 @@ Para comparar los modelos configurados en un trabajo de traducción real, ejecut
   Ruta personalizada al archivo `package.json` utilizado para esa extracción de descripción opcional.
 - `uiExtractor.includeUiLanguageEnglishNames` (o el obsoleto `reactExtractor.includeUiLanguageEnglishNames`)
 
-Cuando `true` (predeterminado `false`), `extract` también agrega cada `englishName` del catálogo maestro de idiomas de la interfaz de usuario incluido (creado a partir de `sourceLocale` + `targetLocales`) a `strings.json` cuando aún no está presente en el análisis de origen (mismas claves hash). No lee `uiLanguagesPath`.
+Cuando `true` (predeterminado `false`), `extract` también agrega cada `englishName` del catálogo maestro de ui-languages incluido (construido a partir de `sourceLocale` + `targetLocales`) a `strings.json` cuando aún no está presente en el escaneo de origen (mismas claves hash). No lee `languagesManifestPath`.
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -269,21 +272,21 @@ Cuando `true`, los diseños de salida integrados (`nested`, `flat`, `doc-system`
 - `docsOutput.flatPreserveRelativeDir`
 Cuando `docsOutput.style = "flat"`, mantenga los subdirectorios de origen para que los archivos con el mismo nombre base no colisionen. Predeterminado `false`.
 - `docsOutput.rewriteRelativeLinks`
-Reescribir enlaces relativos después de la traducción (habilitado automáticamente cuando `docsOutput.style = "flat"` y no hay `pathTemplate` personalizado).
+Reescribe los enlaces relativos después de la traducción (habilitado automáticamente cuando `docsOutput.style = "flat"` y no hay `pathTemplate` personalizado).
 - `docsOutput.linkRewriteDocsRoot`
-Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Normalmente, déjelo como `"."` a menos que sus documentos traducidos se encuentren bajo una raíz de proyecto diferente.
+Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Normalmente, déjelo como `"."` a menos que su documentación traducida se encuentre bajo una raíz de proyecto diferente.
 - `docsOutput.rewriteVitepressLinks`
-Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño `doc-system` donde las carpetas de configuración regional se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` estilo README a rutas de sitio (`/guide/…`) y enlaces `../guide/…` relativos a la configuración regional. Para enlaces a archivos de repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en la fuente en inglés; consulte [Integración de VitePress — README como la página de inicio de los documentos](/guide/vitepress-integration#readme-as-homepage).
+Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño `doc-system` donde las carpetas de localización se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` de estilo README a rutas del sitio (`/guide/…`) y enlaces `../guide/…` relativos a la localización. Para enlaces a archivos del repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en la fuente en inglés — consulte [Integración de VitePress — README como la página de inicio de la documentación](/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"nextra"`. Reescribe `content/en/…` y las rutas relativas `.mdx` a rutas de sitio neutrales a la configuración regional (`/guide/…`) para Next.js `i18n`. Consulte [Integración de Nextra — Convenciones de enlaces](/guide/nextra-integration#link-conventions).
+Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"nextra"`. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas de sitio neutrales a la localización (`/guide/…`) para Next.js `i18n`. Consulte [Integración de Nextra — Convenciones de enlaces](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a las fuentes en inglés; dir escribe carpetas de idioma como Nextra. Consulte [Integración de Fumadocs — Diseño de página](/guide/fumadocs-integration#page-layout).
+`"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a las fuentes en inglés; dir escribe carpetas de localización como Nextra. Consulte [Integración de Fumadocs — Diseño de página](/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
-Cuando `true`, ejecute el normalizador de enlaces de Fumadocs después de la traducción. Predeterminado habilitado cuando `docsOutput.style` es `"fumadocs"`. Reescribe rutas de contenido y enlaces relativos `.mdx` a rutas `/docs/…`.
+Cuando `true`, ejecute el normalizador de enlaces de Fumadocs después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"fumadocs"`. Reescribe las rutas de contenido y los enlaces `.mdx` relativos a las rutas `/docs/…`.
 - `docsOutput.fumadocsUiCatalog`
-Opcional. Catálogo de inicio de override de interfaz de usuario de Fumadocs + traducción dentro de `translate-docs`. Campos: `sourcePath` (por ejemplo, `lib/layout.shared.ts`), `catalogPath` (JSON en inglés generado), `outputPathTemplate` opcional (predeterminado: `ui.{locale}.json` junto a `catalogPath`).
+Opcional. Catálogo de anulación de la interfaz de usuario de Fumadocs y traducción dentro de `translate-docs`. Campos: `sourcePath` (por ejemplo, `lib/layout.shared.ts`), `catalogPath` (JSON en inglés generado), `outputPathTemplate` opcional (predeterminado: `ui.{locale}.json` junto a `catalogPath`).
 - `docs[].fumadocsMetaGlob`
-Opcional glob(s) para la recopilación `meta.json` cuando `docsOutput.style` es `"fumadocs"`. Predeterminado: recursivo `meta.json` debajo de `docsOutput.docsRoot`.
+Glob(s) opcional(es) para la colección `meta.json` cuando `docsOutput.style` es `"fumadocs"`. Predeterminado: `meta.json` recursivo bajo `docsOutput.docsRoot`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Nombres de propiedades cuyos valores de cadena se traducen en Fumadocs `meta.json` (predeterminado: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
@@ -292,12 +295,12 @@ Opcional. Catálogo de inicio de tema/navegación/barra lateral de VitePress + t
 **Posprocesado**
 
 - `docsOutput.postProcessing`
-Transformaciones opcionales en el **cuerpo de markdown** traducido (las claves YAML y los valores de metadatos no textuales se conservan). Se ejecuta después del reensamblaje de segmentos y la reescritura de enlaces (planos o VitePress), y antes de `addFrontmatter`.
+Transformaciones opcionales en el **cuerpo de markdown** traducido (las claves YAML y los valores de metadatos no textuales se conservan). Se ejecuta después del reensamblaje de segmentos y la reescritura de enlaces (plano o VitePress), y antes de `addFrontmatter`.
 - `docsOutput.postProcessing.regexAdjustments`
 Lista ordenada de `{ "description"?, "search", "replace" }`. `search` es un patrón de expresión regular (la cadena simple usa la bandera `g`, o `/pattern/flags`). `replace` admite marcadores de posición como `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — regenera una fila de enlaces delimitada "leer en otros idiomas" en el markdown de origen y traducido. Requiere `uiLanguagesPath` (o un manifiesto en `ui.flatOutputDir/ui-languages.json`) para las etiquetas endónimas cuando `label: "local"`.
+`{ "start", "end", "separator", "label"? }` — regenera una fila de enlaces delimitada "leer en otros idiomas" en markdown de origen y traducido. Requiere `languagesManifestPath` (o un manifiesto en `ui.flatOutputDir/ui-languages.json`) para etiquetas endónimas cuando `label: "local"`.
 
 **Comportamiento y metadatos**
 

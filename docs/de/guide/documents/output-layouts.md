@@ -9,11 +9,11 @@
 
 **Aliase** (gleicher Layout-Engine, voreingestellter `localeSubpath`):
 
-- `docsOutput.style = "docusaurus"` – `localeSubpath` ist standardmäßig auf `docusaurus-plugin-content-docs/current` eingestellt (Docusaurus i18n Plugin-Layout).
-- `docsOutput.style = "astro-starlight"` – `localeSubpath` ist standardmäßig auf `""` eingestellt (übersetzte Seiten direkt unter `{outputDir}/{locale}/`, passend zu [Starlight](https://starlight.astro.build/guides/i18n/), wenn Englisch im Inhaltsstamm liegt und `outputDir` gleich `docsRoot` ist).
-- `docsOutput.style = "vitepress"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; BCP-47-Gebietsschema-Ordnernamen bleiben erhalten (`localePathLowercase` ist standardmäßig auf `false` eingestellt). Siehe [VitePress-Integration](/guide/vitepress-integration).
-- `docsOutput.style = "nextra"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle befindet sich unter einem Gebietsschema-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/guide/nextra-integration).
-- `docsOutput.style = "fumadocs"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; die englische Quelle verwendet Dateien mit Punktsuffix (Standard) oder einen Gebietsschemaordner, wenn `fumadocsParser` `"dir"` ist. Siehe [Fumadocs-Integration](/guide/fumadocs-integration).
+- `docsOutput.style = "docusaurus"` – `localeSubpath` ist standardmäßig `docusaurus-plugin-content-docs/current` (Docusaurus i18n-Plugin-Layout).
+- `docsOutput.style = "astro-starlight"` – `localeSubpath` ist standardmäßig `""` (übersetzte Seiten direkt unter `{outputDir}/{locale}/`, passend zu [Starlight](https://starlight.astro.build/guides/i18n/), wenn Englisch im Inhaltsstamm liegt und `outputDir` gleich `docsRoot` ist).
+- `docsOutput.style = "vitepress"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; BCP-47-Gebietsschema-Ordnernamen bleiben erhalten (`localePathLowercase` ist standardmäßig `false`). Siehe [VitePress-Integration](/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle befindet sich unter einem Gebietsschema-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/guide/integrations/nextra).
+- `docsOutput.style = "fumadocs"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle verwendet Dateien mit Punktsuffix (Standard) oder einen Gebietsschema-Ordner, wenn `fumadocsParser` `"dir"` ist. Siehe [Fumadocs-Integration](/guide/integrations/fumadocs).
 
 Docusaurus-Voreinstellung (primäre Dokumentationsseiten):
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight liefert UI-Zeichenketten für viele Sprachen; optionale benutzerdefinierte UI-Überschreibungen verwenden `src/content/i18n/en.json` mit `jsonPathTemplate: "{outputDir}/{locale}.json"` in einem separaten `docs[]`-Block, wenn nötig.
 
-VitePress Navigations-/Seitenleisten-/Fußzeilen-Strings sind nicht in Markdown – konfigurieren Sie `docsOutput.vitepressThemeCatalog` und übersetzen Sie innerhalb von **`translate-docs`**. Siehe [VitePress-Integration](/guide/vitepress-integration).
+VitePress Navigations-/Seitenleisten-/Fußzeilen-Strings sind nicht in Markdown – konfigurieren Sie `docsOutput.vitepressThemeCatalog` und übersetzen Sie innerhalb von **`translate-docs`**. Siehe [VitePress-Integration](/guide/integrations/vitepress).
 
-Nextra-Themenwörterbuch (`.ts`) und `_meta.ts`-Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docs[].nextraDictionaryPath` und die automatische `_meta`-Sammlung, wenn `style: "nextra"`, alles innerhalb von **`translate-docs`**. Siehe [Nextra-Integration](/guide/nextra-integration).
+Nextra Theme-Wörterbuch (`.ts`) und `_meta.ts` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docs[].nextraDictionaryPath` und die automatische `_meta`-Sammlung, wenn `style: "nextra"`, alles innerhalb von **`translate-docs`**. Siehe [Nextra-Integration](/guide/integrations/nextra).
 
-Fumadocs UI-Überschreibungen (`lib/layout.shared.ts`) und `meta.json`-Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von **`translate-docs`**. Siehe [Fumadocs-Integration](/guide/fumadocs-integration).
+Fumadocs UI-Überschreibungen (`lib/layout.shared.ts`) und `meta.json` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von **`translate-docs`**. Siehe [Fumadocs-Integration](/guide/integrations/fumadocs).
 
 `docsOutput.style = "flat"` — platziert übersetzte Dateien neben der Quelle mit einem Sprachsuffix oder in einem Unterverzeichnis. Relative Links zwischen Seiten werden automatisch umgeschrieben, wenn `docsOutput.style = "flat"` (es sei denn, `rewriteRelativeLinks: false` oder ein benutzerdefiniertes `pathTemplate` ist gesetzt).
 

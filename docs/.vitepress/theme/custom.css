@@ -4,6 +4,96 @@
   text-wrap: pretty;
 }
 
+/* --- Home page (layout: home) --- */
+
+.VPHome .VPContent {
+  padding-bottom: 0 !important;
+}
+
+.VPHome .VPHero .name {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.VPHome .VPHero .text {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.VPHome .VPHero .tagline {
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
+.VPHome .VPHero .image-src {
+  max-width: 128px;
+  max-height: 128px;
+}
+
+.VPHome .VPFeatures {
+  padding-bottom: 2rem;
+}
+
+.VPHome .VPFeature .title {
+  font-weight: 600;
+}
+
+.VPHome .VPFeature .details {
+  line-height: 1.55;
+  opacity: 0.88;
+}
+
+.VPHome .home-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 0.5rem;
+  max-width: 960px;
+  padding: 0 24px;
+}
+
+.VPHome .home-badges img {
+  display: inline-block;
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
+.VPHome .vp-doc {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 24px 4rem;
+}
+
+.VPHome .vp-doc > h2:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.VPHome .vp-doc h2 {
+  border-top: 1px solid var(--vp-c-divider);
+  padding-top: 2rem;
+  margin-top: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.VPHome .vp-doc pre {
+  border-radius: 10px;
+}
+
+.VPHome .vp-doc table {
+  width: 100%;
+}
+
+/* --- Doc pages --- */
+
 /* VitePress caps the prose column at 688px even on wide screens (see
    VPDoc.vue's `.VPDoc.has-aside .content-container` rule), which forces
    wide tables (commands, config references, etc.) into horizontal scroll
@@ -36,8 +126,10 @@
 /* Shields.io badges: VitePress base.css sets img { display: block } and
    .vp-doc img { margin: 16px 0 }, which stacks badges vertically.
    English index is h1 (from sync) + h2 (from README) + badge paragraph. */
-.vp-doc h1 + p,
-.vp-doc h1 + h2 + p,
+.vp-doc h1 + p:has(> a > img[src*="img.shields.io"]),
+.vp-doc h1 + p:has(> a > img[src*="badge.svg"]),
+.vp-doc h1 + h2 + p:has(> a > img[src*="img.shields.io"]),
+.vp-doc h1 + h2 + p:has(> a > img[src*="badge.svg"]),
 .vp-doc p:has(> a > img[src*="img.shields.io"]),
 .vp-doc p:has(> a > img[src*="badge.svg"]) {
   display: flex;
@@ -46,8 +138,10 @@
   align-items: center;
 }
 
-.vp-doc h1 + p img,
-.vp-doc h1 + h2 + p img,
+.vp-doc h1 + p:has(> a > img[src*="img.shields.io"]) img,
+.vp-doc h1 + p:has(> a > img[src*="badge.svg"]) img,
+.vp-doc h1 + h2 + p:has(> a > img[src*="img.shields.io"]) img,
+.vp-doc h1 + h2 + p:has(> a > img[src*="badge.svg"]) img,
 .vp-doc p:has(> a > img[src*="img.shields.io"]) img,
 .vp-doc p:has(> a > img[src*="badge.svg"]) img {
   display: inline-block;

@@ -111,9 +111,9 @@ describe("collectMarkdownSourceIssues", () => {
   it("still flags unpaired _ in prose after HTML id anchors are neutralized", () => {
     const md = '<a id="ok"></a> broken _emphasis';
     const issues = collectMarkdownSourceIssues(md);
-    expect(issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS).length).toBe(
-      1
-    );
+    expect(
+      issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNPAIRED_EMPHASIS).length
+    ).toBe(1);
   });
 
   it("skips closed {{placeholder}} spans before scanning for strong-outside-link", () => {
@@ -226,12 +226,13 @@ describe("collectMalformedAdmonitionIssues", () => {
   it("flags an unterminated bracketed title", () => {
     const md = ":::note[Title without closing bracket\n\nBody\n\n:::";
     const issues = collectMalformedAdmonitionIssues(md);
-    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE))
-      .toBe(true);
-    // The opener still counts toward balance, so it should NOT also report UNCLOSED.
     expect(
-      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED)
-    ).toBe(false);
+      issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE)
+    ).toBe(true);
+    // The opener still counts toward balance, so it should NOT also report UNCLOSED.
+    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED)).toBe(
+      false
+    );
   });
 
   it("passes a well-formed nested admonition block", () => {

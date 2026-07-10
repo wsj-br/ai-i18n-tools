@@ -148,7 +148,12 @@ function collectFromObject(
     const extract =
       policy === "dictionary"
         ? shouldExtractDictionaryString(value)
-        : shouldExtractMetaString(keyName, prefix ? prefix.split(".").pop() ?? null : null, value, translatableKeys);
+        : shouldExtractMetaString(
+            keyName,
+            prefix ? (prefix.split(".").pop() ?? null) : null,
+            value,
+            translatableKeys
+          );
 
     if (!extract) {
       continue;

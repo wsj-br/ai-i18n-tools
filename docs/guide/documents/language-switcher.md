@@ -55,7 +55,7 @@ If a file has no matching block, the CLI logs a warning (when `--verbose`) and l
 <a id="4-label-manifest"></a>
 ## 4. Label manifest
 
-For endonym labels (`label: "local"`), generate or maintain `ui-languages.json` via `generate-ui-languages` (requires [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional)). This repo's docs-only config has no UI pipeline, so labels come from the bundled master catalog for `sourceLocale` + `targetLocales`.
+For endonym labels (`label: "local"`), generate or maintain `ui-languages.json` via `generate-ui-languages` (written to [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), which defaults to `{ui.flatOutputDir}/ui-languages.json`). This repo's docs-only config has no UI pipeline and no project manifest on disk, so labels come from the bundled master catalog for `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Examples in this repository

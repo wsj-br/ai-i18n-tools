@@ -63,13 +63,13 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。对于 `.astro` 源（在 `ui.uiExtractor.extensions` 中列出时），`ui-string-babel.ts` 会使用 `@babel/parser` 解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名称和文件扩展名可通过 `ui.uiExtractor` 进行配置（`ui.reactExtractor` 是一个支持的别名）。`extract` **还会将非扫描器输入合并到同一个目录中：** 当启用（默认）`package.json` `description` 时，项目 `package.json` `description` 会被处理，并且当 `includeUiLanguageEnglishNames` 启用且 `uiLanguagesPath` 设置时，`ui-languages.json` 中的每个 `englishName` 都会被处理（源中已找到的字符串会保留优先权）。段哈希是修剪后字符串的前 8 个十六进制字符的 **MD5** — 这些将成为 `strings.json` 中的键。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。对于 `.astro` 源（当在 `ui.uiExtractor.extensions` 中列出时），`ui-string-babel.ts` 使用 `@babel/parser` 解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名和文件扩展名可通过 `ui.uiExtractor` 配置（`ui.reactExtractor` 是受支持的别名）。`extract` **还会将非扫描器输入合并到同一目录中：** 当启用 `includePackageDescription`（默认）时的项目 `package.json` `description`，以及当 `includeUiLanguageEnglishNames` 为 `true` 时来自捆绑的 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）的每个 `englishName`（已在源中找到的字符串保持优先级；不读取 `languagesManifestPath`）。`extract` 还会在 `languagesManifestPath` 处重新生成 `ui-languages.json`。段哈希是修剪后的源字符串的 **MD5 前 8 个十六进制字符** —— 它们成为 `strings.json` 中的键。
 
 对于 `.html` / `.htm` 源（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件路由到 `html-i18n-marks.ts`，后者会扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素的自身 `textContent` / `title` / `placeholder` 获取源文本；带值的标记（`data-i18n="Key"`）使用该值。相同的模块也支持 `mark-html` 命令，该命令会自动插入裸标记。HTML 文件永远不会到达 Babel / i18next-scanner 阶段。
 
-纯 Astro SSG 站点可以跳过 i18next：在构建时加载平面 `{locale}.json` 并通过源文本键解析 `t('English')`（请参阅 `examples/astro-website/src/i18n/t.ts` 和 [UI 字符串 — Astro 网站](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
+纯 Astro SSG 站点可以跳过 i18next：在构建时加载扁平化的 `{locale}.json`，并按源文本键解析 `t('English')`（参见 `examples/astro-website/src/i18n/t.ts` 和 [UI 字符串 — Astro 网站](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
 
-纯 HTML 应用程序遵循相同的目录模型，使用标记属性而不是 `t()` 调用 — 请参阅 [标记 HTML 以进行翻译](/guide/ui-strings/plain-html#marking-html-for-translation)。
+纯 HTML 应用遵循相同的目录模型，使用标记属性代替 `t()` 调用 — 参见[为翻译标记 HTML](/guide/ui-strings/plain-html#marking-html-for-translation)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@
 }
 ```
 
-`models`（可选）— 按区域设置，模型在该区域设置上次成功 `translate-ui` 运行后生成的翻译（或 `user-edited`，如果文本是从翻译仪表板保存的）。`locations`（可选）— `extract` 找到字符串的位置（扫描器 + 包描述行；仅清单 `englishName` 字符串可能省略 `locations`）。
+`models`（可选）—— 按区域设置，在最后一次针对该区域设置的成功 `translate-ui` 运行后生成该翻译的模型（如果文本是从翻译仪表板保存的，则为 `user-edited`）。`locations`（可选）—— `extract` 找到字符串的位置（扫描器 + 包描述行；捆绑主 `englishName` 字符串可能会省略 `locations`）。
 
-`extract` 添加新密钥并保留扫描中仍存在的密钥的现有 `translated` / `models` 数据（扫描器字面量、可选描述、可选清单 `englishName`）。`translate-ui` 填充缺失的 `translated` 条目，更新其翻译的区域设置的 `models`，并写入扁平化的区域设置文件。
+`extract` 添加新键，并为扫描中仍然存在的键（扫描器字面量、可选描述、可选的捆绑主 `englishName`）保留现有的 `translated` / `models` 数据。`translate-ui` 填充缺失的 `translated` 条目，为其翻译的区域设置更新 `models`，并写入扁平的区域设置文件。
 
-`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` 的 JSON 数组（BCP-47 `code`、UI `label`、引用 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 从 `sourceLocale` + `targetLocales` 和捆绑的主 `data/ui-languages-complete.json` 构建项目文件。
+`ui-languages.json` **清单** —— `{ code, label, englishName, direction }` 的 JSON 数组（BCP-47 `code`、UI `label`、参考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 或 `extract` 从 `sourceLocale` + `targetLocales` 和捆绑的主 `data/ui-languages-complete.json` 构建项目文件。
 
 <a id="flat-locale-files"></a>
 ### 扁平化区域设置文件
@@ -144,10 +144,10 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 所有提取器都扩展 `BaseExtractor` 并实现 `extract(content, filepath): Segment[]`。
 
-- `MarkdownExtractor` - 将 markdown 分割成类型化段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被归类为 **不可翻译**（`slug`、`id` 和其他路由键保持稳定）。顶级 `export ...` 块（例如 React 组件定义）被归类为不可翻译的 `other` 段，与现有的 `import ...` 处理并行。以大写 JSX 标签开头的多行块（例如 `<Tabs>` 块）被归类为可翻译的段落。不可翻译的段（代码块、原始 HTML）被逐字保留。
-- `AstroTemplateExtractor` - 用于 `.astro` 营销页面（通过 `doc-translate.ts` 中的 `translateAstroFile` 的 `translate-docs`）的解析和替换。提取面向用户的 HTML 文本节点和可翻译属性（`alt`、`title`、`aria-label`、`placeholder`），以及模板 `{expression}` 块中面向用户的字符串字面量。跳过 frontmatter TypeScript、`<script>`、`<style>`、受保护的属性/键值以及 `t('…')` 中的字面量。当输出路径更深时（例如 `src/pages/de/index.astro`），重新组装会调整相对导入。请参阅 [Astro 网站页面](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
-- `JsonExtractor` - 从 Docusaurus JSON 标签文件（Docusaurus UI 目录，而不是 MDX 正文）中提取字符串值。
-- `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，而不是由 `translate-docs` 使用）。
+- `MarkdownExtractor` - 将 markdown 拆分为带类型的片段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被归类为**不可翻译**（`slug`、`id`和其他路由键保持不变）。顶层 `export ...` 块（例如 React 组件定义）与现有的 `import ...` 处理一起被归类为不可翻译的 `other` 片段。以大写 JSX 标签开头的多行块（例如 `<Tabs>` 块）被归类为可翻译段落。不可翻译的片段（代码块、原始 HTML）将原样保留。
+- `AstroTemplateExtractor` - 针 `.astro` 营销页面的解析并替换（通过 `doc-translate.ts` 中的 `translateAstroFile` 使用 `translate-docs`）。提取面向用户的 HTML 文本节点和可翻译属性（`alt`、`title`、`aria-label`、`placeholder`），以及模板 `{expression}` 块中面向用户时的字符串字面量。跳过 frontmatter TypeScript、`<script>`、`<style>`、受保护的属性/键值，以及 `t('…')` 内部的字面量。当输出路径更深时，重新组装会调整相对导入（例如 `src/pages/de/index.astro`）。参见[Astro 网站页面](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
+- `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus UI 目录，而非 MDX 正文）。
+- `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，而非由 `translate-docs` 使用）。
 - `html-i18n-marks.ts` - 一个集中的 HTML 标签扫描器，由 `extract` 用于 `.html` / `.htm` 源，并由 `mark-html` 命令使用。`collectHtmlI18nStrings` / `collectHtmlI18nLocations` 读取 `data-i18n*` 标记属性（裸标记 → 元素 `textContent` / `title` / `placeholder`；带值的标记 → 值），并且 `markHtmlContent` 将裸标记插入到叶文本/标题/占位符元素中（幂等的，尊重 `data-i18n-ignore`，跳过类似代码和混合内容元素）。共享的 `normalizeI18nText` 助手使构建时密钥与浏览器运行时保持一致。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -215,7 +215,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 <a id="flat-link-rewriting"></a>
 ### 扁平链接重写
 
-当 `docsOutput.style === "flat"` 时，翻译后的 Markdown 文件会与源文件并排放置，并带有区域设置后缀。页面之间的相对链接会被重写，以便 `[Guide](./guide.md)` 在 `readme.de.md` 中指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（对于没有自定义 `pathTemplate` 的平面样式自动启用）。在 `postProcessing.regexAdjustments` 运行之前，相同的过程会为非 Markdown 资产 URL 添加每个文件的深度前缀 — 请参阅 [平面链接重写器](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
+当 `docsOutput.style === "flat"` 时，翻译后的 markdown 文件会带有区域设置后缀放置在源文件旁边。页面之间的相对链接会被重写，使 `readme.de.md` 中的 `[Guide](./guide.md)` 指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（对于没有自定义 `pathTemplate` 的扁平样式自动启用）。同一遍处理会在 `postProcessing.regexAdjustments` 运行之前，为非 markdown 资产 URL 添加按文件深度的前缀 — 参见[扁平链接重写器](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 
@@ -255,9 +255,9 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 `loadI18nConfigFromFile(configPath, cwd)` 管道：
 
-1. 读取并解析 `ai-i18n-tools.config.json`（JSON）。
-2. `mergeWithDefaults` - 与 `defaultI18nConfigPartial` 进行深度合并，并将任何 `docs[].sourceFiles` 条目合并到 `contentPaths` 中。
-3. `expandTargetLocalesFileReferenceInRawInput` - 如果 `targetLocales` 是文件路径，则加载清单并展开为区域设置代码；设置 `uiLanguagesPath`。
+1. 读取并解析 `ai-i18n-tools.config.json` (JSON)。
+2. `mergeWithDefaults` - 与 `defaultI18nConfigPartial` 深度合并，并将任何 `docs[].sourceFiles` 条目合并到 `contentPaths` 中。
+3. `expandTargetLocalesFileReferenceInRawInput` - 将 `targetLocales` 强制转换为数组并拒绝类路径条目（必须是 BCP-47 代码，而不是指向 `ui-languages.json` 的路径）；在 `mergeWithDefaults` 期间 `languagesManifestPath` 默认为 `{ui.flatOutputDir}/ui-languages.json`。
 4. `expandDocumentationTargetLocalesInRawInput` - 对每个 `docs[].targetLocales` 条目执行相同操作。
 5. `expandJsonTargetLocalesInRawInput` - 每个 `json[].targetLocales` 条目都相同。
 6. `parseI18nConfig` - Zod 验证 + `validateI18nBusinessRules`。

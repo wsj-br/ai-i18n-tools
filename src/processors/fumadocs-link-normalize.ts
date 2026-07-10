@@ -19,8 +19,7 @@ function stripMdExtension(path: string): string {
 /** Map a docs-root-relative path to a Fumadocs site route (`/docs/...`). */
 export function docsPathToFumadocsRoute(docsRoot: string, subpath: string): string {
   const posix = toPosix(subpath);
-  const wantsTrailingSlash =
-    posix.endsWith("/") || /\/index(?:\.mdx?)?$/iu.test(posix);
+  const wantsTrailingSlash = posix.endsWith("/") || /\/index(?:\.mdx?)?$/iu.test(posix);
 
   const root = stripTrailingSlash(toPosix(docsRoot));
   let clean = stripMdExtension(stripTrailingSlash(posix));
@@ -65,10 +64,7 @@ function resolveRelativePath(fromDir: string, target: string): string {
  * Normalize one markdown URL for Fumadocs doc-system output.
  * Returns the original href when no rule applies.
  */
-export function normalizeOneFumadocsLink(
-  href: string,
-  ctx: FumadocsLinkNormalizeContext
-): string {
+export function normalizeOneFumadocsLink(href: string, ctx: FumadocsLinkNormalizeContext): string {
   const trimmed = href.trim();
   if (!trimmed) return trimmed;
   if (trimmed.startsWith("#")) return trimmed;
@@ -137,10 +133,7 @@ function rewriteUrlsInMarkdown(body: string, ctx: FumadocsLinkNormalizeContext):
 }
 
 /** Rewrite markdown link targets for Fumadocs doc-system / fumadocs layout output. */
-export function normalizeFumadocsDocLinks(
-  body: string,
-  ctx: FumadocsLinkNormalizeContext
-): string {
+export function normalizeFumadocsDocLinks(body: string, ctx: FumadocsLinkNormalizeContext): string {
   return rewriteUrlsInMarkdown(body, {
     ...ctx,
     relPath: toPosix(ctx.relPath),

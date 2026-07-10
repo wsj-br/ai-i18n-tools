@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-07-02T22:49:00.280Z'
-source_file_mtime: '2026-07-02T22:42:46.979Z'
-source_file_hash: c84bd1299682e0741d9912e75f8cb7c256abbd066e338fd3c45274b524bbdb38
+translation_last_updated: '2026-07-10T17:11:30.981Z'
+source_file_mtime: '2026-07-09T16:56:13.750Z'
+source_file_hash: dcf4013f15bc8b51e6c8c55f7963ed55c9f1ce31a17b3dfd87ba1ff877e62c94
 translation_language: pt-BR
 source_file_path: README.md
 translation_models:
@@ -25,15 +25,17 @@ Este exemplo demonstra como usar `ai-i18n-tools` para internacionalizar um aplic
 
 ### Experimente este exemplo por conta própria
 
+Copie apenas esta pasta de exemplo e instale `ai-i18n-tools` do npm:
+
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
 ```
 
-### Colaboradores do monorepo
+### Do repositório completo ai-i18n-tools
 
-Execute `pnpm install` a partir da **raiz do repositório**. A entrada do workspace [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) força o `ai-i18n-tools` a usar a cópia local do workspace, mesmo que este exemplo declare `"ai-i18n-tools": "^1.7.2"`. Nenhuma etapa separada de linkagem é necessária — recompile a biblioteca (`pnpm run build` na raiz do repositório) sempre que alterar os arquivos-fonte e o exemplo usará automaticamente a versão atualizada do `dist/`.
+Use isso quando você clonou o repositório **inteiro** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) (não apenas esta pasta com degit). Execute `pnpm install` a partir da **raiz do repositório**. A entrada do workspace [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) força o `ai-i18n-tools` a usar a cópia local do workspace, mesmo que este exemplo declare `"ai-i18n-tools": "^1.7.2"`. Nenhuma etapa separada de linkagem é necessária — recompile a biblioteca (`pnpm run build` na raiz do repositório) sempre que você alterar os arquivos-fonte e o exemplo usará automaticamente a versão atualizada do `dist/`.
 
 ```bash
 # From the repository root
@@ -42,6 +44,8 @@ pnpm run build
 ```
 
 ## Uso
+
+Execute os comandos abaixo a partir do diretório raiz deste exemplo. Após `npx degit …`, você já está lá (`cd console-app`). Do repositório completo [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), use `cd examples/console-app` em vez disso.
 
 Execute o aplicativo em inglês (padrão):
 

@@ -98,7 +98,7 @@ Override the sample text, locales, or model list:
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Command details: [CLI reference](/reference/cli-commands).
+Command details: [CLI reference](/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Multiple providers

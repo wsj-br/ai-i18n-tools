@@ -18,11 +18,11 @@ Kaun sa rewriter chalta hai, yeh `docsOutput.style` par nirbhar karta hai:
 
 Custom `pathTemplate` flat rewriter ko disable kar deta hai jab tak aap `rewriteRelativeLinks: true` ko spasht roop se set na karen. Cross-page `#anchor` handling ke liye [Output layouts](/guide/documents/output-layouts) aur [Anchor links](/guide/documents/anchor-links) dekhen.
 
-VitePress-specific authoring rules ke liye, [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions) dekhen.
+VitePress-vishisht lekhak niyamom ke liye, dekhen [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
 
-Nextra-specific authoring rules ke liye, [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) dekhen.
+Nextra-vishisht lekhak niyamom ke liye, dekhen [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 
-Fumadocs-specific authoring rules ke liye, [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions) dekhen.
+Fumadocs-vishisht lekhak niyamom ke liye, dekhen [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

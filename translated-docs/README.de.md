@@ -24,7 +24,7 @@ Eine Konfigurationsdatei steuert drei Übersetzungsmodi, sodass Sie diese je nac
 | Ihr Inhalt                                                                    | Befehl                                      |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | Quellcode verwendet `t()`                                                     | **UI-Strings** – `extract` / `translate-ui` |
-| Lokalisierte Seiten oder Dokumentations-Sites (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro usw.) | **Dokumente** – `translate-docs` |
+| Lokalisierte Seiten oder Dokumentationsseiten (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro usw.) | **Dokumente** – `translate-docs` |
 | Eigenständige, verschachtelte JSON-Locale-Dateien                             | **JSON** – `translate-json`                 |
 
 Alle drei teilen sich einen Datei-/SQLite-Cache, sodass nur neue oder geänderte Segmente (Strings oder Textblöcke) erneut an das Modell gesendet werden – Wiederholungen sind schnell und kostengünstig, unabhängig davon, welchen Anbieter Sie verwenden.
@@ -234,17 +234,17 @@ Bearbeiten Sie `ai-i18n-tools.config.json`: Setzen Sie `docs[].contentPaths` auf
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` erstellt `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/Fußzeilen-Strings. Führen Sie `sync` aus, um Seiten-Markdown und den Themenkatalog zusammen zu übersetzen – keine separate JSON-Pipeline. Siehe [VitePress-Integration](../docs/guide/vitepress-integration.md) und [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+`init -t ui-vitepress` ger Gerüste für `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/Fußzeilen-Strings. Führen Sie `sync` aus, um Seiten-Markdown und den Themenkatalog zusammen zu übersetzen – keine separate JSON-Pipeline. Siehe [VitePress-Integration](../docs/guide/integrations/vitepress.md) und [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra` erstellt `docsOutput.style: "nextra"`. `translate-docs` sammelt und übersetzt automatisch `_meta.ts`-Seitenleistenbeschriftungen; setzen Sie `docs[].nextraDictionaryPath`, um auch das Themenwörterbuchmodul (z. B. `app/_dictionaries/en.ts`) zu übersetzen – alles im selben `sync`-Lauf, keine JSON-Sidecars. Siehe [Nextra-Integration](../docs/guide/nextra-integration.md) und [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
+`init -t ui-nextra` gerüstet `docsOutput.style: "nextra"`. `translate-docs` sammelt und übersetzt automatisch `_meta.ts`-Seitenleistenbeschriftungen; setzen Sie `docs[].nextraDictionaryPath`, um auch das Themenwörterbuchmodul (z. B. `app/_dictionaries/en.ts`) zu übersetzen – alles im selben `sync`-Lauf, keine JSON-Sidecars. Siehe [Nextra-Integration](../docs/guide/integrations/nextra.md) und [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs` erstellt `docsOutput.style: "fumadocs"` mit dem Punkt-Parser (Standard) oder dem Verzeichnis-Parser für Nextra-ähnliche Locale-Ordner. `translate-docs` sammelt und übersetzt automatisch `meta.json`-Seitenleistenbeschriftungen; setzen Sie `docsOutput.fumadocsUiCatalog`, um auch UI-Überschreibungen in `lib/layout.shared.ts` zu übersetzen – alles im selben `sync`-Lauf, keine JSON-Sidecars. Siehe [Fumadocs-Integration](../docs/guide/fumadocs-integration.md) und [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
+`init -t ui-fumadocs` gerüstet `docsOutput.style: "fumadocs"` mit dem Punkt-Parser (Standard) oder dem Verzeichnis-Parser für Nextra-ähnliche Locale-Ordner. `translate-docs` sammelt und übersetzt automatisch `meta.json`-Seitenleistenbeschriftungen; setzen Sie `docsOutput.fumadocsUiCatalog`, um auch UI-Überschreibungen in `lib/layout.shared.ts` zu übersetzen – alles im selben `sync`-Lauf, keine JSON-Sidecars. Siehe [Fumadocs-Integration](../docs/guide/integrations/fumadocs.md) und [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (reines Astro & Starlight)
@@ -332,30 +332,23 @@ ai-i18n-tools help [command]
 
 Für reine HTML-Anwendungen versehen Sie Elemente mit bloßen `data-i18n` / `data-i18n-title` / `data-i18n-placeholder`-Markierungen (der Quelltext wird aus dem eigenen textContent / title / placeholder des Elements entnommen und einmal geschrieben); `mark-html` fügt sie für Sie ein und `extract` erfasst sie dann in `strings.json`. Siehe [HTML zur Übersetzung markieren](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation).
 
-Vollständige Listen der Befehlsflags finden Sie in der [CLI-Referenz](../docs/reference/cli-commands.md). Führen Sie `ai-i18n-tools <command> --help` aus, um den integrierten Verwendungstext anzuzeigen.
+Vollständige Flag-Listen pro Befehl finden Sie in der [CLI-Referenz](../docs/reference/cli-commands/). Führen Sie `ai-i18n-tools <command> --help` aus, um den integrierten Nutzungstext anzuzeigen.
 
-Globale Optionen: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), `-P` / `--provider <name>` (überschreibt den aktiven LLM-Anbieter; muss unter `providers` konfiguriert werden), `-L` / `--ui-lang <code>` (Sprache für die UI/Protokolle des Tools), `-V` / `--version` und `-h` / `--help` – bei jedem Befehl akzeptiert. `-w` / `--write-logs [path]` leitet die Konsolenausgabe in eine Protokolldatei um (Standard: unter dem Übersetzungs-Cache-Verzeichnis), wirkt sich aber nur auf die Übersetzungs- und Synchronisierungsbefehle aus (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Mehrere Befehle akzeptieren `-l` / `--locale <codes>` (durch Kommas getrennte BCP-47), um die Ziel-Locales zu begrenzen; `proofread-ui` verwendet eine einzelne Quell-Locale. Eine Übersichtstabelle der Befehle finden Sie unter [CLI-Referenz](../docs/reference/cli-commands.md).
+Globale Optionen: `-c <config>` (Standard: `ai-i18n-tools.config.json`), `-v` (ausführlich), `-P` / `--provider <name>` (überschreibt den aktiven LLM-Anbieter; muss unter `providers` konfiguriert werden), `-L` / `--ui-lang <code>` (Sprache für die Benutzeroberfläche/Protokolle des Tools), `-V` / `--version` und `-h` / `--help` – bei jedem Befehl akzeptiert. `-w` / `--write-logs [path]` leitet die Konsolenausgabe in eine Protokolldatei um (Standard: im Verzeichnis des Übersetzungs-Caches), wirkt sich aber nur auf die Übersetzungs- und Synchronisierungsbefehle aus (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Mehrere Befehle akzeptieren `-l` / `--locale <codes>` (kommagetrennte BCP-47), um die Ziellokale zu begrenzen; `proofread-ui` verwendet ein einzelnes Quelllokal. Eine Befehlsübersicht finden Sie in der [CLI-Referenz](../docs/reference/cli-commands/).
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### UI-Sprache des Tools (Protokolle, Hilfe, Dashboard)
 
-Das Tool lokalisiert seine eigene CLI-Hilfe, häufig verwendete Protokoll-/Zusammenfassungsnachrichten und das Translation Dashboard. Das UI-Locale wird aus den folgenden Quellen ermittelt, wobei die höchste Priorität zuerst gilt:
-
-1. `-L` / `--ui-lang <code>` globale Flagge (z. B. `-L pt-BR`).
-2. `AI_I18N_LANG` Umgebungsvariable (z. B. `export AI_I18N_LANG=es`).
-3. Der `uiLanguage` Konfigurationsschlüssel in `ai-i18n-tools.config.json` (BCP-47-String).
-4. Das Host-Betriebssystem-Locale (über `Intl.DateTimeFormat().resolvedOptions().locale`).
-
-Die angeforderte Locale wird exakt oder durch die nächstgelegene Variante mit den ausgelieferten UI-Sprachen abgeglichen (z. B. wird `pt-PT` zu `pt-BR` und `en-US` zu `en-GB` aufgelöst); wenn nichts übereinstimmt, wird auf die Quell-Locale (`en-GB`) zurückgegriffen. Wenn eine UI-Sprache explizit angefordert wird (über das Flag, die Umgebungsvariable oder `uiLanguage`), aber kein ausgeliefertes Bundle übereinstimmt, gibt die CLI eine einmalige Warnung aus, dass die Standard-Locale verwendet wird; eine nur vom Host-Betriebssystem abgeleitete Locale warnt nie. Dies ist unabhängig von den `sourceLocale` / `targetLocales` Ihres Projekts. Ausgelieferte UI-Sprachen: `en-GB` (Quelle) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` und `zh-Hant`. Keine Konfiguration erforderlich – standardmäßig folgt das Tool der Locale Ihres Betriebssystems. Details finden Sie unter [Tool-UI-Sprache](../docs/reference/environment-variables.md#tool-ui-language).
+Das Tool lokalisiert seine eigene CLI-Hilfe, Protokollzusammenfassungen und das Übersetzungs-Dashboard unabhängig von den von Ihnen übersetzten Gebietsschemas. Standardmäßig folgt es dem Gebietsschema Ihres Betriebssystems; überschreiben Sie dies mit `-L pt-BR`, `export AI_I18N_LANG=es` oder `"uiLanguage"` in der Konfiguration. Siehe [Tool-UI-Sprache](../docs/guide/tool-ui-language.md) für Gebietsschema-Auflösung, ausgelieferte Sprachen und Dashboard-Verhalten.
 
 ---
 
 <a id="documentation"></a>
 ## Dokumentation
 
-- [Dokumentations-Website](https://wsj-br.github.io/ai-i18n-tools/) – vollständige VitePress-Anleitung (9 Locales auf GitHub Pages).
-- [Schnellstart](../docs/guide/quick-start.md) – Einrichtung für UI-Strings, Dokumente und JSON (UI, Dokumente/`.astro`, JSON-Bundles, VitePress, Nextra, Fumadocs, Astro Starlight und reines Astro).
-- [Anleitung für Locale-Assets](../docs/guide/images-and-screenshots/) – Screenshots und illustrierte SVGs in übersetzten Dokumenten (flacher Link-Umschreiber, Screenshot-Skripte).
+- [Dokumentationsseite](https://wsj-br.github.io/ai-i18n-tools/) – VitePress-Leitfaden (9 Sprachen auf GitHub Pages); schlanker Einstiegspunkt mit Links zum vollständigen Leitfaden.
+- [Schnellstart](../docs/guide/quick-start.md) – Einrichtung für UI-Strings, Dokumente und JSON (UI, docs/`.astro`, JSON-Bundles, VitePress, Nextra, Fumadocs, Astro Starlight und einfaches Astro).
+- [Leitfaden für Lokalisierungs-Assets](../docs/guide/images-and-screenshots/) – Screenshots und illustrierte SVGs in übersetzten Dokumenten (flacher Link-Rewriter, Screenshot-Skripte).
 - [Architektur](../docs/reference/architecture.md) – Architektur, Interna, programmatische API und Erweiterungspunkte.
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) – **für Apps, die das Paket verwenden:** Integrationsaufforderungen für nachgelagerte Projekte (in die Agentenregeln Ihres Repositorys kopieren).
 - Wartungshandbuch für **dieses** Repository: `AGENT.md` (Regeln und Workflows; nur Klonen; nicht auf npm). Pipeline-Referenz: `docs/reference/`. Lokale Entwicklung und Veröffentlichung: `dev/DEVEL.md`.

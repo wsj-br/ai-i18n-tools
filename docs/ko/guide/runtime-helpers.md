@@ -38,7 +38,7 @@ makeLoadLocale(
 
 일반적인 앱 진입점으로 `setupKeyAsDefaultT`를 사용하세요(키 자르기 + 복수형 `wrapT` + 선택적 `translate-ui` `{sourceLocale}.json`). 애플리케이션 설정을 위해 `wrapI18nWithKeyTrim`만 호출하는 것은 **사용 중단됨**입니다.
 
-`generate-ui-languages` 이후에도 키가 `targetLocales`와 정렬되도록 `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`로 `localeLoaders`을(를) 빌드합니다. `docs/guide/ui-strings/i18next-runtime.md`(런타임 연결), `examples/nextjs-app/`, `examples/console-app/` 및 `examples/astro-website/`(i18next 없는 사용자 지정 `makeT`)을(를) 참조하십시오.
+`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)`로 `localeLoaders`를 빌드하여 `generate-ui-languages` 이후에도 키가 `targetLocales`와 정렬된 상태를 유지하도록 합니다. 자세한 내용은 [런타임 연결](/guide/ui-strings/i18next-runtime), [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/), [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/), [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (i18next 없이 커스텀 `makeT`)을 참조하세요.
 
 <a id="display-helpers"></a>
 ### 표시 도우미

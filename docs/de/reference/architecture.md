@@ -63,13 +63,13 @@ Alles, was für die programmatische Nutzung vorgesehen ist, wird aus `src/index.
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Verwendet `i18next-scanner` von `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in JS/TS-Dateien zu finden. Für `.astro`-Quellen (wenn in `ui.uiExtractor.extensions` aufgelistet) analysiert `ui-string-babel.ts` Frontmatter und Template-`{expression}`-Blöcke mit `@babel/parser` und wendet dieselben `funcNames`-Regeln an. Funktionsnamen und Dateierweiterungen sind über `ui.uiExtractor` konfigurierbar (`ui.reactExtractor` ist ein unterstützter Alias). `extract` **führt auch Nicht-Scanner-Eingaben in denselben Katalog zusammen:** das Projekt `package.json` `description`, wenn `includePackageDescription` aktiviert ist (Standard), und jedes `englishName` aus `ui-languages.json`, wenn `includeUiLanguageEnglishNames` auf `true` steht und `uiLanguagesPath` gesetzt ist (Zeichenketten, die bereits im Quelltext vorhanden sind, haben Vorrang). Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5-Hashs** der bereinigten Quellzeichenkette – diese werden die Schlüssel in `strings.json`.
+Verwendet die `i18next-scanner` `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in JS/TS-Dateien zu finden. Für `.astro`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) parst `ui-string-babel.ts` Frontmatter- und Template-`{expression}`-Blöcke mit `@babel/parser` und wendet dieselben `funcNames`-Regeln an. Funktionsnamen und Dateierweiterungen können über `ui.uiExtractor` konfiguriert werden (`ui.reactExtractor` ist ein unterstützter Alias). `extract` **führt auch Nicht-Scanner-Eingaben in denselben Katalog zusammen:** die Projekt-`package.json` `description`, wenn `includePackageDescription` aktiviert ist (Standard), und jede `englishName` aus dem gebündelten UI-Sprach-Masterkatalog (erstellt aus `sourceLocale` + `targetLocales`), wenn `includeUiLanguageEnglishNames` `true` ist (bereits in der Quelle gefundene Zeichenfolgen behalten Vorrang; `languagesManifestPath` wird nicht gelesen). `extract` generiert auch `ui-languages.json` unter `languagesManifestPath` neu. Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der gekürzten Quellzeichenfolge – diese werden zu den Schlüsseln in `strings.json`.
 
 Für `.html` / `.htm`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) leitet `extract` die Datei stattdessen durch `html-i18n-marks.ts`, das Markerattribute `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` scannt (konfigurierbar über `ui.uiExtractor.htmlI18nAttributes`). Ein einfacher Marker bezieht seinen Quelltext aus dem eigenen `textContent` / `title` / `placeholder` des Elements; ein gewerteter Marker (`data-i18n="Key"`) verwendet den Wert. Dasselbe Modul treibt den `mark-html`-Befehl an, der einfache Marker automatisch einfügt. HTML-Dateien erreichen niemals die Babel / i18next-scanner-Durchläufe.
 
-Einfache Astro SSG-Sites können i18next überspringen: Laden Sie flache `{locale}.json` zur Build-Zeit und lösen Sie `t('English')` nach Quelltextschlüssel auf (siehe `examples/astro-website/src/i18n/t.ts` und [UI-Strings – Astro-Website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
+Einfache Astro-SSG-Websites können i18next überspringen: Laden Sie flache `{locale}.json` zur Build-Zeit und lösen Sie `t('English')` durch Quelltext-Schlüssel auf (siehe `examples/astro-website/src/i18n/t.ts` und [UI-Strings — Astro-Website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
 
-Einfache HTML-Apps folgen demselben Katalogmodell mit Marker-Attributen anstelle von `t()`-Aufrufen – siehe [Markieren von HTML zur Übersetzung](/guide/ui-strings/plain-html#marking-html-for-translation).
+Einfache HTML-Apps folgen dem gleichen Katalogmodell mit Marker-Attributen anstelle von `t()`-Aufrufen — siehe [Markieren von HTML für die Übersetzung](/guide/ui-strings/plain-html#marking-html-for-translation).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@ Der Master-Katalog hat folgende Struktur:
 }
 ```
 
-`models` (optional) – pro Sprache, welches Modell die Übersetzung nach dem letzten erfolgreichen `translate-ui`-Lauf für diese Sprache erstellt hat (oder `user-edited`, wenn der Text aus dem Übersetzungs-Dashboard gespeichert wurde). `locations` (optional) – wo `extract` die Zeichenkette gefunden hat (Scanner + Paketbeschreibungszeile; `englishName`-Zeichenketten nur im Manifest können `locations` weglassen).
+`models` (optional) – pro Gebietsschema, welches Modell diese Übersetzung nach dem letzten erfolgreichen `translate-ui`-Lauf für dieses Gebietsschema erstellt hat (oder `user-edited`, wenn der Text vom Übersetzungs-Dashboard gespeichert wurde). `locations` (optional) – wo `extract` die Zeichenfolge gefunden hat (Scanner + Paketbeschreibungszeile; gebündelte Master-`englishName`-Zeichenfolgen können `locations` weglassen).
 
-`extract` fügt neue Schlüssel hinzu und behält vorhandene `translated`-/`models`-Daten für Schlüssel bei, die weiterhin im Scan vorhanden sind (Scanner-Literale, optionale Beschreibung, optionales Manifest-`englishName`). `translate-ui` ergänzt fehlende `translated`-Einträge, aktualisiert `models` für die Sprachen, die es übersetzt, und schreibt flache Sprachdateien.
+`extract` fügt neue Schlüssel hinzu und bewahrt vorhandene `translated` / `models`-Daten für Schlüssel, die noch im Scan vorhanden sind (Scanner-Literale, optionale Beschreibung, optionaler gebündelter Master-`englishName`). `translate-ui` füllt fehlende `translated`-Einträge, aktualisiert `models` für die Gebietsschemata, die es übersetzt, und schreibt flache Gebietsschema-Dateien.
 
-`ui-languages.json` **Manifest** – JSON-Array aus `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
+`ui-languages.json` **Manifest** – JSON-Array von `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, Referenz `englishName`, `"ltr"` oder `"rtl"`). Verwenden Sie `generate-ui-languages` oder `extract`, um eine Projektdatei aus `sourceLocale` + `targetLocales` und dem gebündelten Master-`data/ui-languages-complete.json` zu erstellen.
 
 <a id="flat-locale-files"></a>
 ### Flache Lokalisierungsdateien
@@ -144,10 +144,10 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen über den Que
 
 Alle Extraktoren erweitern `BaseExtractor` und implementieren `extract(content, filepath): Segment[]`.
 
-- `MarkdownExtractor` – teilt Markdown in typisierte Segmente auf: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML-Frontmatter wird als **nicht übersetzbar** klassifiziert (`slug`, `id` und andere Routing-Schlüssel bleiben stabil). Top-Level-`export ...`-Blöcke (z. B. React-Komponentendefinitionen) werden als nicht übersetzbare `other`-Segmente neben der bestehenden `import ...`-Behandlung klassifiziert. Mehrzeilige Blöcke, die mit einem großen JSX-Tag beginnen (z. B. ein `<Tabs>`-Block), werden als übersetzbare Absätze klassifiziert. Nicht übersetzbare Segmente (Codeblöcke, rohes HTML) werden unverändert beibehalten.
-- `AstroTemplateExtractor` – Parsen und Ersetzen für `.astro`-Marketingseiten (`translate-docs` über `translateAstroFile` in `doc-translate.ts`). Extrahiert benutzerseitige HTML-Textknoten und übersetzbare Attribute (`alt`, `title`, `aria-label`, `placeholder`) sowie String-Literale innerhalb von Template-`{expression}`-Blöcken, wenn sie benutzerseitig sind. Überspringt Frontmatter-TypeScript, `<script>`, `<style>`, geschützte Attribut-/Schlüsselwerte und Literale innerhalb von `t('…')`. Die Wiederzusammenstellung passt relative Importe an, wenn die Ausgabepfade tiefer sind (z. B. `src/pages/de/index.astro`). Siehe [Astro-Website-Seiten](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
-- `JsonExtractor` – extrahiert String-Werte aus Docusaurus-JSON-Label-Dateien (Docusaurus-UI-Kataloge, nicht MDX-Body).
-- `SvgExtractor` – extrahiert `<text>`, `<title>` und `<desc>`-Inhalte aus SVG (wird von `translate-svg` für Dateien unter `config.svg` verwendet, nicht von `translate-docs`).
+- `MarkdownExtractor` - teilt Markdown in typisierte Segmente auf: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML-Frontmatter wird als **nicht übersetzbar** klassifiziert (`slug`, `id` und andere Routing-Schlüssel bleiben stabil). Top-Level-`export ...`-Blöcke (z. B. React-Komponenten-Definitionen) werden als nicht übersetzbare `other`-Segmente neben bestehender `import ...`-Verarbeitung klassifiziert. Mehrzeilige Blöcke, die mit einem großen JSX-Tag beginnen (z. B. ein `<Tabs>`-Block), werden als übersetzbare Absätze klassifiziert. Nicht übersetzbare Segmente (Code-Blöcke, rohe HTML) werden wörtlich beibehalten.
+- `AstroTemplateExtractor` - Parse-and-Replace für `.astro`-Marketingseiten (`translate-docs` über `translateAstroFile` in `doc-translate.ts`). Extrahiert benutzerseitige HTML-Textknoten und übersetzbare Attribute (`alt`, `title`, `aria-label`, `placeholder`), sowie Zeichenfolgenliterale innerhalb von Template-`{expression}`-Blöcken, wenn benutzerseitig. Überspringt Frontmatter-TypeScript, `<script>`, `<style>`, geschützte Attribut-/Schlüsselwerte und Literale innerhalb von `t('…')`. Die Wiederzusammensetzung passt relative Imports an, wenn die Ausgabepfade tiefer sind (z. B. `src/pages/de/index.astro`). Siehe [Astro-Website-Seiten](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `JsonExtractor` - extrahiert Zeichenfolgenwerte aus Docusaurus-JSON-Label-Dateien (Docusaurus-UI-Kataloge, nicht MDX-Körper).
+- `SvgExtractor` - extrahiert `<text>`, `<title>` und `<desc>`-Inhalte aus SVG (verwendet von `translate-svg` für Dateien unter `config.svg`, nicht von `translate-docs`).
 - `html-i18n-marks.ts` – ein fokussierter HTML-Tag-Scanner, der von `extract` für `.html` / `.htm`-Quellen und vom `mark-html`-Befehl verwendet wird. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` lesen `data-i18n*`-Markerattribute (einfacher Marker → Element `textContent` / `title` / `placeholder`; gewerteter Marker → der Wert), und `markHtmlContent` fügt einfache Marker in Leaf-Text- / Titel- / Platzhalterelemente ein (idempotent, beachtet `data-i18n-ignore`, überspringt Code-ähnliche und gemischte Inhaltselemente). Der gemeinsame `normalizeI18nText`-Helfer hält Build-Zeit-Schlüssel identisch mit der Browser-Laufzeit.
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -215,7 +215,7 @@ Der Befehl `translate-docs` verwendet auch die **Dateiverfolgung**, sodass unver
 <a id="flat-link-rewriting"></a>
 ### Umsetzung flacher Links
 
-Wenn `docsOutput.style === "flat"`, werden übersetzte Markdown-Dateien mit Gebietssuffixen neben der Quelle platziert. Relative Links zwischen Seiten werden umgeschrieben, sodass `[Guide](./guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Gesteuert durch `rewriteRelativeLinks` (automatisch aktiviert für den flachen Stil ohne benutzerdefiniertes `pathTemplate`). Derselbe Durchlauf stellt nicht-Markdown-Asset-URLs ein Tiefenpräfix pro Datei voran, bevor `postProcessing.regexAdjustments` ausgeführt wird – siehe [Flacher Link-Rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
+Wenn `docsOutput.style === "flat"`, werden übersetzte Markdown-Dateien neben der Quelle mit Lokalisierungssuffixen platziert. Relative Links zwischen Seiten werden so umgeschrieben, dass `[Guide](./guide.md)` in `readme.de.md` auf `guide.de.md` verweist. Kontrolliert durch `rewriteRelativeLinks` (automatisch aktiviert für flachen Stil ohne benutzerdefiniertes `pathTemplate`). Der gleiche Durchlauf fügt vor `postProcessing.regexAdjustments` einen pro Datei-Präfix für nicht-Markdown-Asset-URLs hinzu — siehe [Flacher Link-Umschreiber](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -255,10 +255,10 @@ Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/op
 
 `loadI18nConfigFromFile(configPath, cwd)`-Pipeline:
 
-1. Lese und analysiere `ai-i18n-tools.config.json` (JSON).
+1. `ai-i18n-tools.config.json` (JSON) lesen und parsen.
 2. `mergeWithDefaults` – tiefes Zusammenführen mit `defaultI18nConfigPartial` und Zusammenführen aller `docs[].sourceFiles`-Einträge in `contentPaths`.
-3. `expandTargetLocalesFileReferenceInRawInput` – falls `targetLocales` ein Dateipfad ist, lade das Manifest und erweitere es zu Lokalisierungscodes; setze `uiLanguagesPath`.
-4. `expandDocumentationTargetLocalesInRawInput` – ebenso für jeden `docs[].targetLocales`-Eintrag.
+3. `expandTargetLocalesFileReferenceInRawInput` – `targetLocales` in ein Array umwandeln und pfadähnliche Einträge ablehnen (müssen BCP-47-Codes sein, kein Pfad zu `ui-languages.json`); `languagesManifestPath` ist standardmäßig `{ui.flatOutputDir}/ui-languages.json` während `mergeWithDefaults`.
+4. `expandDocumentationTargetLocalesInRawInput` – dasselbe für jeden `docs[].targetLocales`-Eintrag.
 5. `expandJsonTargetLocalesInRawInput` – dasselbe für jeden `json[].targetLocales`-Eintrag.
 6. `parseI18nConfig` – Zod-Validierung + `validateI18nBusinessRules`.
 7. `applyProviderOverrideToRawInput` – wenn `-P` / `--provider` über die CLI übergeben wird.

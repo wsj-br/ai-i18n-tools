@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### 도구 UI 언어
 
-CLI는 번역하는 로케일과 별개로 자체 도움말 텍스트, 로그 요약 및 번역 대시보드를 현지화합니다. 기본적으로 OS 로케일을 따릅니다. 구성에서 `-L pt-BR`, `export AI_I18N_LANG=es` 또는 `"uiLanguage"`로 재정의할 수 있습니다. [도구 UI 언어](/reference/environment-variables#tool-ui-language)를 참조하세요.
+CLI는 번역하는 로케일과 무관하게 자체 도움말 텍스트, 로그 요약 및 번역 대시보드를 현지화합니다. 기본적으로 OS 로케일을 따릅니다. config에서 `-L pt-BR`, `export AI_I18N_LANG=es` 또는 `"uiLanguage"`로 재정의할 수 있습니다. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.

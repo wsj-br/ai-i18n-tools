@@ -68,7 +68,7 @@ Package ko sthaaneeya roop se install karne ke baad, aap scripts mein CLI comman
 }
 ```
 
-**Salah:** `-L <code>` pass karein ya `AI_I18N_LANG` set karein yadi aap CLI output aur dashboard ko kisi anya bhasha mein chahte hain — dekhein [Tool UI language](/reference/environment-variables#tool-ui-language).
+**Salah:** Yadi aap CLI output aur dashboard ko kisi anya bhasha mein chahte hain, to `-L <code>` pass karein ya `AI_I18N_LANG` set karein — [Tool UI bhasha](/guide/tool-ui-language) dekhein.
 
 <a id="combined-sync"></a>
 ## Sanyukt sync

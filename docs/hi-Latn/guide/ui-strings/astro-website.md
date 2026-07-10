@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro website
 
-Static Astro marketing ya app sites (plain Astro, Starlight nahi) ke liye, [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath combine karein. [Astro integration](/guide/astro-integration) bhi dekhein.
+Static Astro marketing ya app sites (plain Astro, Starlight nahi) ke liye, [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath combine karein. [Astro integration](/guide/integrations/astro) bhi dekhein.
 
 Reference implementation [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) hai (iska [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) bhi dekhein): English `/` par, nau target locales `/{locale}/` par (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-Udaharan mein sahayak helpers: labels, direction, aur BCP-47 codes ke liye `src/i18n/utils.ts`, `src/i18n/locale.ts`, aur `ui-languages.json`. `targetLocales` badalne ke baad `generate-ui-languages` chalaen (vikalp roop se `ui.uiLanguagesPath` set karen taaki manifest aapke helpers ke bagal mein rahe, jaise `src/i18n/ui-languages.json`). `MainLayout.astro` `resolveUiLanguage(Astro.currentLocale)` se `<html lang>` aur `<html dir>` set karta hai; `LanguagePicker.astro` `astro:i18n` se `getRelativeLocaleUrl` ka upyog karta hai.
+Udaaharan mein sahayak helpers: labels, direction, aur BCP-47 codes ke liye `src/i18n/utils.ts`, `src/i18n/locale.ts`, aur `ui-languages.json`. `targetLocales` badalne ke baad `generate-ui-languages` chalaayein (vikalpik roop se `languagesManifestPath` set karein taaki manifest aapke helpers ke bagal mein rahe, jaise `src/i18n/ui-languages.json`). `MainLayout.astro` `resolveUiLanguage(Astro.currentLocale)` se `<html lang>` aur `<html dir>` set karta hai; `LanguagePicker.astro` `astro:i18n` se `getRelativeLocaleUrl` ka upyog karta hai.
 
 <a id="pages-parse-and-replace"></a>
 ## Pages (parse-and-replace)

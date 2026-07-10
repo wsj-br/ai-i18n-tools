@@ -2,7 +2,11 @@ import fs from "fs";
 import path from "path";
 import { minimatch } from "minimatch";
 import chalk from "chalk";
-import type { I18nDocTranslateConfig, JsonKeyPolicyConfig, TranslationFailureInsert } from "../core/types.js";
+import type {
+  I18nDocTranslateConfig,
+  JsonKeyPolicyConfig,
+  TranslationFailureInsert,
+} from "../core/types.js";
 import { fumadocsMetaFileTrackingKey } from "../core/doc-file-tracking.js";
 import { matchesDocsOutputStylePreset } from "../core/docs-output-normalize.js";
 import { isFumadocsDotLocaleSuffixedMeta } from "../core/fumadocs-dot-source-filter.js";
@@ -18,7 +22,12 @@ import {
   type TranslateRunOptions,
   type TranslateTotals,
 } from "./doc-translate.js";
-import { hashFileContent, resolveTranslatedOutputPath, translatedOutputIsCurrent, writeAtomicUtf8 } from "./helpers.js";
+import {
+  hashFileContent,
+  resolveTranslatedOutputPath,
+  translatedOutputIsCurrent,
+  writeAtomicUtf8,
+} from "./helpers.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
 import { AsyncMutex } from "../utils/concurrency.js";
 import { t } from "../i18n/index.js";
@@ -150,9 +159,7 @@ export async function translateFumadocsMetaFiles(
     ) {
       if (opts.verbose) {
         console.log(
-          chalk.gray(
-            t("⏭️  {{locale}} {{path}} (fumadocs-meta, unchanged)", { locale, path: rel })
-          )
+          chalk.gray(t("⏭️  {{locale}} {{path}} (fumadocs-meta, unchanged)", { locale, path: rel }))
         );
       }
       totals.filesSkipped += 1;
@@ -289,15 +296,7 @@ export async function translateFumadocsMetaFiles(
             if (entry?.modelUsed === undefined) {
               continue;
             }
-            cache.setSegment(
-              s.hash,
-              locale,
-              s.content,
-              entry.text,
-              entry.modelUsed,
-              rel,
-              null
-            );
+            cache.setSegment(s.hash, locale, s.content, entry.text, entry.modelUsed, rel, null);
           }
         });
       }

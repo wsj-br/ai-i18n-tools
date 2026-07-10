@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Langue de l'interface utilisateur de l'outil
 
-L'interface de ligne de commande (CLI) localise son propre texte d'aide, ses résumés de journaux et son tableau de bord de traduction indépendamment des paramètres régionaux que vous traduisez. Par défaut, elle suit les paramètres régionaux de votre système d'exploitation. Remplacez-les par `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` dans la configuration. Voir [Langue de l'interface utilisateur de l'outil](/reference/environment-variables#tool-ui-language).
+L'interface de ligne de commande (CLI) localise son propre texte d'aide, les résumés de journaux et le tableau de bord de traduction indépendamment des paramètres régionaux que vous traduisez. Par défaut, elle suit les paramètres régionaux de votre système d'exploitation. Vous pouvez les remplacer par `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` dans la configuration. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).

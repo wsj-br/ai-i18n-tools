@@ -4,7 +4,7 @@ Minimal [VitePress](https://vitepress.dev/) site translated by [ai-i18n-tools](h
 
 English source pages live at `docs/`. Translated copies are committed under `docs/pt-BR/` and `docs/zh-Hans/`. VitePress nav/sidebar labels are loaded from `docs/.vitepress/i18n/theme.{locale}.json`, bootstrapped and translated via **`docsOutput.vitepressThemeCatalog`** inside `translate-docs`.
 
-Full integration guide: [VitePress integration](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration/) on the main documentation site.
+Full integration guide: [VitePress integration](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/vitepress/) on the main documentation site.
 
 ## Locales
 
@@ -18,6 +18,7 @@ Full integration guide: [VitePress integration](https://wsj-br.github.io/ai-i18n
 
 - Node.js ≥ 22.16
 - pnpm ≥ 11
+- `ai-i18n-tools` ^1.8.0 (devDependency — used by `docs/.vitepress/config.mts` for locale-prefixed nav/sidebar links)
 - OpenRouter API key (only when re-running translation)
 
 ## Installation

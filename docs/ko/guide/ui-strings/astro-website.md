@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro 웹사이트
 
-정적 Astro 마케팅 또는 앱 사이트(일반 Astro, Starlight 아님)의 경우 [Astro 내장 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합합니다. [Astro 통합](/guide/astro-integration)도 참조하세요.
+정적 Astro 마케팅 또는 앱 사이트(Starlight가 아닌 일반 Astro)의 경우, [Astro 기본 제공 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합하세요. [Astro 통합](/guide/integrations/astro)도 참조하세요.
 
 참조 구현은 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)입니다([README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)도 참조). 영어는 `/`에 있고, 9개의 대상 로케일은 `/{locale}/`에 있습니다(`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-예제의 지원 헬퍼: 레이블, 방향, BCP-47 코드용 `src/i18n/utils.ts`, `src/i18n/locale.ts`, `ui-languages.json`. `targetLocales`를 변경한 후 `generate-ui-languages`을 실행하세요(`ui.uiLanguagesPath`를 설정하여 매니페스트가 헬퍼 옆에 위치하도록 할 수 있음, 예: `src/i18n/ui-languages.json`). `resolveUiLanguage(Astro.currentLocale)`에서 `<html lang>`과 `<html dir>`를 설정하는 `MainLayout.astro`; `astro:i18n`에서 `getRelativeLocaleUrl`를 사용하는 `LanguagePicker.astro`.
+예제의 지원 헬퍼: 레이블, 방향, BCP-47 코드를 위한 `src/i18n/utils.ts`, `src/i18n/locale.ts`, `ui-languages.json`. `targetLocales`를 변경한 후 `generate-ui-languages`을 실행하세요 (선택적으로 `languagesManifestPath`를 설정하여 매니페스트가 헬퍼 옆에 위치하도록 할 수 있습니다(예: `src/i18n/ui-languages.json`)). `MainLayout.astro`은 `resolveUiLanguage(Astro.currentLocale)`에서 `<html lang>` 및 `<html dir>`를 설정합니다; `LanguagePicker.astro`은 `astro:i18n`에서 `getRelativeLocaleUrl`를 사용합니다.
 
 <a id="pages-parse-and-replace"></a>
 ## 페이지(구문 분석 및 바꾸기)

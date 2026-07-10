@@ -79,7 +79,7 @@ function LanguageSelect({
 ]
 ```
 
-資訊清單由 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和捆綁的主目錄產生。它會寫入至 `uiLanguagesPath`（必要）。如果您在設定中變更地區設定，請再次執行 `generate-ui-languages` 以重新整理檔案。
+清單由 `generate-ui-languages` 或 `extract` 從 `sourceLocale` + `targetLocales` 與隨附的主目錄產生。它會寫入至 `languagesManifestPath`（省略時預設為 `{ui.flatOutputDir}/ui-languages.json`）。如果您在設定中變更了語言環境，請再次執行 `generate-ui-languages` 或 `extract` 以重新整理該檔案。
 
 <a id="rtl-languages"></a>
 ## RTL 語言

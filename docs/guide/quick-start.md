@@ -68,7 +68,7 @@ With the package installed locally, you can use the CLI commands directly in scr
 }
 ```
 
-**Tip:** Pass `-L <code>` or set `AI_I18N_LANG` if you want CLI output and the dashboard in another language — see [Tool UI language](/reference/environment-variables#tool-ui-language).
+**Tip:** Pass `-L <code>` or set `AI_I18N_LANG` if you want CLI output and the dashboard in another language — see [Tool UI language](/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Combined sync

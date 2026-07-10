@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (ロケールファイルから) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 変更なし（リポジトリパスには完全なURLを使用） |
 
-`README.md` → `docs/index.md`を同期するプロジェクトの場合、`README.md`で`LICENSE`、`examples/`、およびVitePressツリー外のその他のファイルに完全なGitHub URLを使用します。[VitePress統合 — ドキュメントのホームページとしてのREADME](/guide/vitepress-integration#readme-as-homepage)を参照してください。
+`README.md` → `docs/index.md` を同期するプロジェクトでは、VitePressツリー外の `LICENSE`、`examples/`、およびその他のファイルの `README.md` において完全なGitHub URLを使用してください。[VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage) を参照してください。
 
-フラットリライターとVitePressノーマライザーは、`docs[]`ブロックごとに相互に排他的です。`regexAdjustments`の前に実行されるのはどちらか一方のみです。[VitePress統合 — リンク規則](/guide/vitepress-integration#link-conventions)を参照してください。
+フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions) を参照してください。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra リンク正規化機能 (`style: "nextra"`)
 
-`docsOutput.rewriteNextraLinks` が `true` の場合 (`style` が `"nextra"` の場合のデフォルト)、セグメント再構築後に別の正規化機能が実行されます。これにより、`content/en/…` と相対 `.mdx` パスがロケールに依存しないルート (`/guide/…`) に書き換えられます。[Nextra 統合 — リンク規則](/guide/nextra-integration#link-conventions) を参照してください。
+`docsOutput.rewriteNextraLinks` が `true` の場合（`style` が `"nextra"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/en/…` と相対 `.mdx` パスをロケール中立のルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions) を参照してください。
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs リンク正規化機能 (`style: "fumadocs"`)
 
-`docsOutput.rewriteFumadocsLinks` が `true` の場合 (`style` が `"fumadocs"` の場合のデフォルト)、セグメント再構築後に別の正規化機能が実行されます。これにより、`content/docs/…` と相対 `.mdx` パスがロケールに依存しないルート (`/docs/…`) に書き換えられます。[Fumadocs 統合 — リンク規則](/guide/fumadocs-integration#link-conventions) を参照してください。
+`docsOutput.rewriteFumadocsLinks` が `true` の場合（`style` が `"fumadocs"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/docs/…` と相対 `.mdx` パスをロケール中立のルート（`/docs/…`）に書き換えます。[Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions) を参照してください。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### ファイルごとの深さ接頭辞と`flatPreserveRelativeDir`

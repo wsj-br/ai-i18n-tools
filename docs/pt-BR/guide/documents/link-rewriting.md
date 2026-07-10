@@ -18,11 +18,11 @@ Qual reescrevedor é executado depende de `docsOutput.style`:
 
 `pathTemplate` personalizado desabilita o reescrevedor plano, a menos que você defina `rewriteRelativeLinks: true` explicitamente. Consulte [Layouts de saída](/guide/documents/output-layouts) e [Links de âncora](/guide/documents/anchor-links) para tratamento de `#anchor` entre páginas.
 
-Para regras de autoria específicas do VitePress, consulte [Integração VitePress — Convenções de link](/guide/vitepress-integration#link-conventions).
+Para regras de autoria específicas do VitePress, consulte [Integração VitePress — Convenções de link](/guide/integrations/vitepress#link-conventions).
 
-Para regras de autoria específicas do Nextra, consulte [Integração Nextra — Convenções de links](/guide/nextra-integration#link-conventions).
+Para regras de autoria específicas do Nextra, consulte [Integração Nextra — Convenções de link](/guide/integrations/nextra#link-conventions).
 
-Para regras de autoria específicas do Fumadocs, consulte [Integração Fumadocs — Convenções de links](/guide/fumadocs-integration#link-conventions).
+Para regras de autoria específicas do Fumadocs, consulte [Integração Fumadocs — Convenções de link](/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

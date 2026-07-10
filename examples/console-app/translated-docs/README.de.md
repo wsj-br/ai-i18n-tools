@@ -1,7 +1,7 @@
 ---
-translation_last_updated: '2026-07-02T22:49:00.278Z'
-source_file_mtime: '2026-07-02T22:42:46.979Z'
-source_file_hash: c84bd1299682e0741d9912e75f8cb7c256abbd066e338fd3c45274b524bbdb38
+translation_last_updated: '2026-07-10T17:11:30.924Z'
+source_file_mtime: '2026-07-09T16:56:13.750Z'
+source_file_hash: dcf4013f15bc8b51e6c8c55f7963ed55c9f1ce31a17b3dfd87ba1ff877e62c94
 translation_language: de
 source_file_path: README.md
 translation_models:
@@ -25,15 +25,17 @@ Dieses Beispiel zeigt, wie `ai-i18n-tools` zur Internationalisierung einer Node.
 
 ### Probieren Sie dieses Beispiel eigenständig aus
 
+Kopieren Sie nur diesen Beispielordner und installieren Sie `ai-i18n-tools` über npm:
+
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
 ```
 
-### Monorepo-Mitwirkende
+### Aus dem vollständigen ai-i18n-tools-Repository
 
-Führen Sie `pnpm install` aus dem **Repository-Stammverzeichnis** aus. Der Workspace-[`overrides`](../../pnpm-workspace.yaml)-Eintrag (`ai-i18n-tools: workspace:*`) erzwingt, dass `ai-i18n-tools` auf die lokale Workspace-Kopie verweist, auch wenn dieses Beispiel `"ai-i18n-tools": "^1.7.2"` deklariert. Ein separater Verknüpfungsschritt ist nicht erforderlich – bauen Sie die Bibliothek neu (`pnpm run build` im Repository-Stamm), sobald Sie Quelldateien ändern, und das Beispiel übernimmt automatisch die aktualisierte `dist/`.
+Verwenden Sie dies, wenn Sie das **gesamte** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)-Repository geklont haben (nicht nur diesen Ordner mit degit). Führen Sie `pnpm install` aus dem **Repository-Stammverzeichnis** aus. Der Workspace-[`overrides`](../../pnpm-workspace.yaml)-Eintrag (`ai-i18n-tools: workspace:*`) zwingt `ai-i18n-tools` zur lokalen Workspace-Kopie, auch wenn dieses Beispiel `"ai-i18n-tools": "^1.7.2"` deklariert. Ein separater Verknüpfungsschritt ist nicht erforderlich – kompilieren Sie die Bibliothek neu (`pnpm run build` im Repository-Stamm), sobald Sie Quelldateien ändern, und das Beispiel verwendet automatisch die aktualisierte `dist/`.
 
 ```bash
 # From the repository root
@@ -42,6 +44,8 @@ pnpm run build
 ```
 
 ## Verwendung
+
+Führen Sie die folgenden Befehle aus dem Stammverzeichnis dieses Beispiels aus. Nach `npx degit …` befinden Sie sich bereits dort (`cd console-app`). Aus dem vollständigen [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)-Repository verwenden Sie stattdessen `cd examples/console-app`.
 
 Führe die Anwendung auf Englisch aus (Standard):
 

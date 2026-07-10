@@ -18,11 +18,11 @@ Welcher Umschreiber ausgeführt wird, hängt von `docsOutput.style` ab:
 
 Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei denn, Sie legen `rewriteRelativeLinks: true` explizit fest. Siehe [Ausgabe-Layouts](/guide/documents/output-layouts) und [Anker-Links](/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
 
-Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/guide/vitepress-integration#link-conventions).
+Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/guide/integrations/vitepress#link-conventions).
 
-Für Nextra-spezifische Authoring-Regeln siehe [Nextra-Integration – Link-Konventionen](/guide/nextra-integration#link-conventions).
+Für Nextra-spezifische Authoring-Regeln siehe [Nextra-Integration – Link-Konventionen](/guide/integrations/nextra#link-conventions).
 
-Für Fumadocs-spezifische Authoring-Regeln siehe [Fumadocs-Integration – Link-Konventionen](/guide/fumadocs-integration#link-conventions).
+Für Fumadocs-spezifische Authoring-Regeln siehe [Fumadocs-Integration – Link-Konventionen](/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

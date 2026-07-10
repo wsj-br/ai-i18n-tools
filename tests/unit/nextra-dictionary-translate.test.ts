@@ -25,10 +25,7 @@ describe("nextra dictionary config", () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextra-dict-"));
     const dictPath = path.join(tmpDir, "app/_dictionaries/en.ts");
     fs.mkdirSync(path.dirname(dictPath), { recursive: true });
-    fs.writeFileSync(
-      dictPath,
-      `export default { siteTitle: "Demo" };\n`
-    );
+    fs.writeFileSync(dictPath, `export default { siteTitle: "Demo" };\n`);
     expect(fs.existsSync(dictPath)).toBe(true);
   });
 });

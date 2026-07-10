@@ -121,7 +121,10 @@ describe("matchesDocsOutputStylePreset", () => {
   });
 
   it("matches via stylePreset after normalization rewrote style to doc-system", () => {
-    const normalized = normalizeDocsOutputStyle({ style: "nextra", flatPreserveRelativeDir: false });
+    const normalized = normalizeDocsOutputStyle({
+      style: "nextra",
+      flatPreserveRelativeDir: false,
+    });
     expect(matchesDocsOutputStylePreset(normalized, "nextra")).toBe(true);
     expect(matchesDocsOutputStylePreset(normalized, "vitepress")).toBe(false);
   });

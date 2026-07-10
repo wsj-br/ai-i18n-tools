@@ -79,7 +79,7 @@ O manifesto `ui-languages.json` é uma matriz JSON de entradas <code>"{ code, la
 ]
 ```
 
-O manifesto é gerado por `generate-ui-languages` a partir de `sourceLocale` + `targetLocales` e do catálogo mestre empacotado. Ele é gravado em `uiLanguagesPath` (obrigatório). Se você alterar as localidades na configuração, execute `generate-ui-languages` novamente para atualizar o arquivo.
+O manifesto é gerado por `generate-ui-languages` ou `extract` a partir de `sourceLocale` + `targetLocales` e do catálogo mestre empacotado. Ele é gravado em `languagesManifestPath` (o padrão é `{ui.flatOutputDir}/ui-languages.json` quando omitido). Se você alterar os locais na configuração, execute `generate-ui-languages` ou `extract` novamente para atualizar o arquivo.
 
 <a id="rtl-languages"></a>
 ## Idiomas RTL

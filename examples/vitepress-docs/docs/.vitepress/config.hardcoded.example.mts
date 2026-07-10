@@ -27,6 +27,7 @@ export default defineConfig({
     outline: {
       label: "On this page",
     },
+    langMenuLabel: "Change language",
     search: {
       provider: "local",
       options: {

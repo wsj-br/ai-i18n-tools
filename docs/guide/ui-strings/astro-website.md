@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro website
 
-For static Astro marketing or app sites (plain Astro, not Starlight), combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. See also [Astro integration](/guide/astro-integration).
+For static Astro marketing or app sites (plain Astro, not Starlight), combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. See also [Astro integration](/guide/integrations/astro).
 
 The reference implementation is [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (see also its [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)): English at `/`, nine target locales at `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-Supporting helpers in the example: `src/i18n/utils.ts`, `src/i18n/locale.ts`, and `ui-languages.json` for labels, direction, and BCP-47 codes. Run `generate-ui-languages` after changing `targetLocales` (optionally set `ui.uiLanguagesPath` so the manifest lives next to your helpers, e.g. `src/i18n/ui-languages.json`). `MainLayout.astro` sets `<html lang>` and `<html dir>` from `resolveUiLanguage(Astro.currentLocale)`; `LanguagePicker.astro` uses `getRelativeLocaleUrl` from `astro:i18n`.
+Supporting helpers in the example: `src/i18n/utils.ts`, `src/i18n/locale.ts`, and `ui-languages.json` for labels, direction, and BCP-47 codes. Run `generate-ui-languages` after changing `targetLocales` (optionally set `languagesManifestPath` so the manifest lives next to your helpers, e.g. `src/i18n/ui-languages.json`). `MainLayout.astro` sets `<html lang>` and `<html dir>` from `resolveUiLanguage(Astro.currentLocale)`; `LanguagePicker.astro` uses `getRelativeLocaleUrl` from `astro:i18n`.
 
 <a id="pages-parse-and-replace"></a>
 ## Pages (parse-and-replace)

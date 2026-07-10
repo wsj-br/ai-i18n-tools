@@ -37,14 +37,15 @@ Read `docs/ai-i18n-tools-context.md` before modifying source, tests, examples, o
 
 | Path | Role |
 |------|------|
-| `README.md` | Canonical landing copy; synced into `docs/index.md` via `scripts/sync-readme-to-docs.mjs` |
+| `README.md` | Full GitHub/npm landing (self-contained quick start, provider table, CLI list) |
+| `docs/index.md` | Slim VitePress docs homepage — independent from README; links into `/guide/` and `/reference/` |
 | `docs/` | VitePress documentation site (English source + `docs/<locale>/` translations; GitHub Pages on release) |
 | `docs/ai-i18n-tools-context.md` | Consumer integration guide (shipped on npm under `docs/`) — required reading before code changes |
 | `docs/reference/` | Canonical reference (architecture, CLI, config, programmatic API, env vars) |
 | `dev/DEVEL.md` | Local dev setup, examples, testing, publishing |
 | `translated-docs/` | Flat README translations from the first `docs[]` block in root config |
 
-When changing English documentation, edit source under `docs/` (or `README.md` for the homepage) and run `pnpm i18n:sync` to regenerate locale trees and theme JSON — do not manually translate pages.
+When changing English documentation, edit source under `docs/` (or `README.md` for the GitHub landing) and run `pnpm i18n:sync` to regenerate locale trees and theme JSON — do not manually translate pages. `README.md` and `docs/index.md` are maintained independently; update each according to its audience when shared facts change.
 
 ### VitePress `{{…}}` placeholders (i18next syntax in docs)
 
@@ -73,7 +74,7 @@ When editing English documentation:
 | Topic | Path |
 |------|------|
 | Architecture, data flows, extension points | `docs/reference/architecture.md` |
-| CLI commands and flags | `docs/reference/cli-commands.md` |
+| CLI commands and flags | `docs/reference/cli-commands/` |
 | Config schema | `docs/reference/configuration.md` |
 | Programmatic API | `docs/reference/programmatic-api.md` |
 | Environment variables | `docs/reference/environment-variables.md` |
@@ -95,8 +96,8 @@ pnpm lint:fix         # auto-fix ESLint issues
 pnpm format           # prettier --write src/ tests/
 pnpm typecheck        # tsc --noEmit (src + tests tsconfigs)
 pnpm i18n:self        # regenerate the tool's own UI bundles (src/i18n/locales)
-pnpm i18n:sync        # sync README → docs/index.md, then translate docs + theme JSON
-pnpm docs:build       # build VitePress site (runs sync-readme + escape-vue-braces first)
+pnpm i18n:sync        # translate docs (including docs/index.md) + theme JSON
+pnpm docs:build       # build VitePress site (runs escape-vue-braces first)
 pnpm update-tocs # refresh doctoc TOCs in README.md and dev/*.md
 pnpm clean && pnpm build   # full rebuild from scratch
 ```
@@ -104,6 +105,10 @@ pnpm clean && pnpm build   # full rebuild from scratch
 Root `i18n:*` scripts invoke `node bin/ai-i18n-tools.mjs` so they work without a global CLI on `PATH`.
 
 Run `pnpm test` and `pnpm lint` after every behavioral change. When you change user-facing CLI/log/dashboard strings (wrapped in `t()` or `data-i18n*` markers), run `pnpm i18n:self` so `src/i18n/locales/*.json` stay in sync; `pnpm build` then ships them to `dist/i18n/locales`. The CLI entry is `bin/ai-i18n-tools.mjs` (compiled to `dist/cli/index.js`).
+
+If you need to run ai-i18n-tools (or `pnpm i18n:*` commands) from a subdirectory that does not contain a .env file with the API key, load the .env file from the root of the repository in the agent shell. 
+
+If you need to copy, move or remove file (cp, mv, rm) in the agent shell, use the \ before the command to skip the alias expansion or use the full path to the command.
 
 ---
 

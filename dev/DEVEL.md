@@ -218,7 +218,7 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 | `pnpm clean`           | Remove the `dist/` directory                                                                          |
 | `pnpm clean:workspace` | Remove install/build artifacts across the monorepo (`scripts/clean-workspace.sh`)                     |
 | `pnpm clean-temp`      | List temp `*.log` / `cache.db.backup*.sqlite` files; delete after confirm, or pass `-f` for no prompt |
-| `pnpm pre-release`     | Full release gate: `i18n:self`, format, lint, clean, build, test, docs build, example site builds     |
+| `pnpm pre-release`     | Full release gate via `scripts/pre-release.sh` (see [Starting a release](#starting-a-release))                          |
 
 
 
@@ -228,12 +228,12 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 
 | Command                 | Description                                                            |
 | ----------------------- | ---------------------------------------------------------------------- |
-| `pnpm docs:dev`         | Sync README → `docs/index.md`, escape Vue braces, start VitePress dev  |
+| `pnpm docs:dev`         | Escape Vue braces, start VitePress dev (`--host`; open `/ai-i18n-tools/` URL) |
 | `pnpm docs:build`       | Build the VitePress site to `docs/.vitepress/dist`                     |
 | `pnpm docs:preview`     | Preview the built docs site                                            |
 | `pnpm docs:publish`     | Trigger the **Deploy Docs** GitHub Actions workflow (see below)        |
 | `pnpm update-tocs`      | Regenerate doctoc TOCs in root `*.md` and `dev/*.md` (heading changes) |
-| `pnpm docs:sync` | Copy `README.md` → `docs/index.md` only                                |
+| `pnpm docs:sync`        | `translate-docs` for `docs/index.md` only |
 
 
 The docs site deploys to GitHub Pages on release via `.github/workflows/docs.yml` (separate from the npm tarball). See [Publishing documentation to GitHub Pages](#publishing-documentation-to-github-pages) for setup, `pnpm docs:publish`, and the pre-publish checklist.
@@ -241,21 +241,19 @@ The docs site deploys to GitHub Pages on release via `.github/workflows/docs.yml
 ### In-repo translation
 
 
-| Command                     | Description                                                                                               |
-| --------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `pnpm i18n:self`            | Regenerate the tool's own UI bundles (`src/i18n/locales/`) via `sync-ui`                                  |
-| `pnpm i18n:sync`            | Sync README → `docs/index.md`, then `sync` (docs + theme JSON)                                            |
-| `pnpm i18n:update-headings` | Run `write-heading-ids` — insert or refresh HTML anchor lines before ATX headings in configured doc paths |
-| `pnpm i18n:translate:ui`    | Run `translate-ui` against the root config                                                                |
-| `pnpm i18n:translate:svg`   | Run `translate-svg`                                                                                       |
-| `pnpm i18n:translate:docs`  | Run `translate-docs`                                                                                      |
-| `pnpm i18n:status`          | Run `status`                                                                                              |
-| `pnpm i18n:dashboard`       | Run `dashboard`                                                                                           |
-| `pnpm i18n:cleanup`         | Run `cleanup`                                                                                             |
-| `pnpm update-all`           | Build, then `cleanup` on the root, `console-app`, `nextjs-app`, and `astro-docs`                          |
+| Command                      | Description                                                                                               |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `pnpm i18n:self`             | Regenerate the tool's own UI bundles (`src/i18n/locales/`) via `sync-ui`                                  |
+| `pnpm i18n:sync`             | `sync --path docs/index.md` (docs landing + theme JSON; README and index are independent)               |
+| `pnpm i18n:translate:sync`   | Run full `sync` against the root config (extract → translate-ui/svg/docs/json as configured)                |
+| `pnpm i18n:update-headings`  | Run `write-heading-ids` — insert or refresh HTML anchor lines before ATX headings in configured doc paths |
+| `pnpm i18n:status`           | Run `status`                                                                                              |
+| `pnpm i18n:dashboard`        | Run `dashboard`                                                                                           |
+| `pnpm i18n:cleanup`          | Run `cleanup`                                                                                             |
+| `pnpm update-all`            | Build, then `cleanup` on the repo root and every directory under `examples/` (`scripts/update-all.sh`)    |
 
 
-Run `pnpm i18n:self` after changing user-facing CLI, log, or dashboard strings (`t()` or `data-i18n*` markers). Run `pnpm i18n:update-headings` after adding, renaming, or removing headings in English docs under configured `contentPaths`, then `pnpm update-tocs` for `README.md` / `dev/*.md` TOCs. Run `pnpm i18n:sync` after changing English documentation under `docs/` or `README.md`.
+Run `pnpm i18n:self` after changing user-facing CLI, log, or dashboard strings (`t()` or `data-i18n*` markers). Run `pnpm i18n:update-headings` after adding, renaming, or removing headings in English docs under configured `contentPaths`, then `pnpm update-tocs` for `README.md` / `dev/*.md` TOCs. Run `pnpm i18n:sync` after changing English content under `docs/` (including `docs/index.md`); run `translate-docs` on `README.md` separately when the GitHub landing changes. Prefer `pnpm i18n:translate:sync` (or `ai-i18n-tools sync`) for the full translation pipeline; use individual CLI subcommands (`translate-ui`, `translate-docs`, …) only when you need a single step in isolation.
 
 ### Release
 
@@ -410,18 +408,18 @@ GitHub builds the **remote** ref — push your branch before running if your cha
 
 | Command             | Purpose                                                                                                                                      |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm docs:dev`     | Sync `README.md` → `docs/index.md`, escape Vue braces, start VitePress dev server                                                            |
+| `pnpm docs:dev`     | Escape Vue braces, start VitePress dev server (`--host`; open `/ai-i18n-tools/` URL)                     |
 | `pnpm docs:build`   | Production build to `docs/.vitepress/dist` (same command CI uses)                                                                            |
 | `pnpm docs:preview` | Serve the built output locally before publishing                                                                                             |
 | `pnpm docs:publish` | Trigger GitHub Pages deployment via the **Deploy Docs** workflow (see [How deployment is triggered](#how-deployment-is-triggered))           |
 | `pnpm update-tocs`  | Refresh doctoc table-of-contents blocks in `README.md` and other root `*.md` / `dev/*.md` files that contain `<!-- START doctoc -->` markers |
 
 
-After changing English content under `docs/` or `README.md`, run `pnpm i18n:sync` so locale trees and theme JSON stay in sync before you build or release. After adding or removing headings in `README.md` or `dev/*.md`, run `pnpm update-tocs` so the generated TOC stays accurate.
+After changing English content under `docs/` (including `docs/index.md`), run `pnpm i18n:sync` so locale trees and theme JSON stay in sync before you build or release. `README.md` and `docs/index.md` are independent — update and translate each separately. After adding or removing headings in `README.md` or `dev/*.md`, run `pnpm update-tocs` so the generated TOC stays accurate.
 
 ### Pre-publish checklist (docs)
 
-- [ ] `pnpm i18n:sync` completed successfully (if English docs or `README.md` changed)
+- [ ] `pnpm i18n:sync` completed successfully (if English docs under `docs/` changed)
 - [ ] `pnpm docs:build` succeeds locally (included in `pnpm pre-release`)
 - [ ] Optional: `pnpm docs:preview` and spot-check routes and locale switcher
 - [ ] Changes are pushed to the branch you will deploy (`pnpm docs:publish` uses the remote ref; default is the current branch, or pass `-- --ref=main`)
@@ -435,6 +433,8 @@ Project Pages are served at `https://<user>.github.io/<repo>/`. VitePress must u
 ```ts
 base: "/ai-i18n-tools/",
 ```
+
+For local dev, open the URL VitePress prints (e.g. `http://localhost:5173/ai-i18n-tools/` — include the `base` prefix and trailing slash). Paths like `/reference/...` without that prefix show a blank page in dev; `docs:preview` still works because it serves pre-rendered HTML. `pnpm docs:dev` passes `--host` so the dev server is reachable over SSH/port forwarding (not only IPv6 `::1`).
 
 If the repository is renamed or you move to a custom domain, update `base`, `head` favicon paths, and any hard-coded `wsj-br.github.io/ai-i18n-tools` links in `README.md` / docs.
 
@@ -488,7 +488,16 @@ pnpm update-all
 pnpm pre-release
 ```
 
-`pre-release` runs `pnpm i18n:self`, format, lint, clean, build, tests, `pnpm docs:build`, and example site builds (`examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, `examples/vitepress-docs`). Resolve any failures locally; CI applies the same checks before npm publish.
+`pre-release` (`scripts/pre-release.sh`) runs, in order:
+
+1. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
+2. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
+3. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
+4. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
+5. `pnpm docs:build`
+6. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/nextjs-app`, `examples/nextra-docs`, and `examples/vitepress-docs`
+
+It does **not** run `examples/nextjs-app/docs-site` (nested Docusaurus site), or `examples/test-markdown` (build invokes live translation and needs API keys). Resolve any failures locally; CI applies the same checks before npm publish.
 
 ### Pre-release checklist
 

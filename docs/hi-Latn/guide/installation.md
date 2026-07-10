@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Tool UI bhasha
 
-CLI apni madad text, log summaries, aur Translation Dashboard ko aapke dwara anuvad kiye gaye locales se svatantra roop se sthanikrit karta hai. By default yeh aapke OS locale ka palan karta hai. Ise config mein `-L pt-BR`, `export AI_I18N_LANG=es`, ya `"uiLanguage"` se override karein. [Tool UI bhasha](/reference/environment-variables#tool-ui-language) dekhein.
+CLI apne help text, log summaries, aur Translation Dashboard ko aapke dwara translate kiye gaye locales se svatantra roop se localize karta hai. Default roop se yah aapke OS locale ka palan karta hai. Ise config mein `-L pt-BR`, `export AI_I18N_LANG=es`, ya `"uiLanguage"` ke saath override karein. [Tool UI bhasha](/guide/tool-ui-language) dekhein.

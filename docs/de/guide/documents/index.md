@@ -5,17 +5,17 @@ Primär für **Markdown-, MDX- und `.astro`-Dokumentation** konzipiert, die übe
 
 Setzen Sie auf Docusaurus-Sites auch `docusaurusCatalogDir` auf Ihren `write-translations`-Katalogordner (z. B. `docs-site/i18n/en`). Dann enthält `translate-docs` auch Shell-JSON – Navigationsleiste, Fußzeile und Theme-Strings.
 
-Auf [VitePress](/guide/vitepress-integration)-Sites verwenden Seiteninhalte dieselbe `docs[]`-Pipeline. Navigations-, Seitenleisten- und Fußzeilenbeschriftungen befinden sich in `docsOutput.vitepressThemeCatalog` – `translate-docs` startet den englischen Katalog und übersetzt ihn zusammen mit den Seiten, ohne separate Pipeline.
+Auf [VitePress](/guide/integrations/vitepress)-Sites verwenden Seitenkörper dieselbe `docs[]`-Pipeline. Navigations-, Seitenleisten- und Fußzeilenbeschriftungen befinden sich in `docsOutput.vitepressThemeCatalog` – `translate-docs` startet den englischen Katalog und übersetzt ihn zusammen mit den Seiten, ohne separate Pipeline.
 
-Auf [Nextra](/guide/nextra-integration)-Sites verwenden Seiteninhalte dieselbe `docs[]`-Pipeline mit `docsOutput.style: "nextra"`. `_meta.ts`-Seitenleistenbeschriftungen werden automatisch von `translate-docs` gesammelt und übersetzt; Theme-Wörterbuch-Strings werden über `docs[].nextraDictionaryPath` in derselben Pipeline übersetzt.
+Auf [Nextra](/guide/integrations/nextra)-Sites verwenden Seitenkörper dieselbe `docs[]`-Pipeline mit `docsOutput.style: "nextra"`. `_meta.ts`-Seitenleistenbeschriftungen werden automatisch von `translate-docs` gesammelt und übersetzt; Theme-Wörterbuchzeichenfolgen werden über `docs[].nextraDictionaryPath` in derselben Pipeline übersetzt.
 
-Auf [Fumadocs](/guide/fumadocs-integration)-Websites verwenden Seitenkörper `docsOutput.style: "fumadocs"` mit `fumadocsParser` `"dot"` (Standard) oder `"dir"`. `meta.json`-Beschriftungen für Seitenleisten werden automatisch gesammelt; UI-Überschreibungen werden über `docsOutput.fumadocsUiCatalog` übersetzt.
+Auf [Fumadocs](/guide/integrations/fumadocs)-Sites verwenden Seitenkörper `docsOutput.style: "fumadocs"` mit `fumadocsParser` `"dot"` (Standard) oder `"dir"`. `meta.json`-Seitenleistenbeschriftungen werden automatisch gesammelt; UI-Überschreibungen werden über `docsOutput.fumadocsUiCatalog` übersetzt.
 
 Für PNG und andere Rasterbilder, die in Markdown eingebettet sind, siehe [Bilder & Screenshots](/guide/images-and-screenshots/). `translate-docs` übersetzt nur den Alternativtext; es kopiert keine Rasterdateien.
 
 Für einen optionalen **Sprachumschalter**-Block in README oder Docs setzen Sie `docsOutput.style` auf `"flat"` – siehe [Sprachumschalter](/guide/documents/language-switcher).
 
-SVG-Dateien werden über [`translate-svg`](/reference/cli-commands) übersetzt, wenn `features.translateSVG` aktiviert ist – nicht über `docs[]` / `contentPaths`.
+SVG-Dateien werden über [`translate-svg`](/reference/cli-commands/content#translate-svg) übersetzt, wenn `features.translateSVG` aktiviert ist – nicht über `docs[]` / `contentPaths`.
 
 Beliebige verschachtelte UI-JSON-Bundles, die nicht mit den Shell-/Theme-Strings eines Dokumentations-Frameworks zusammenhängen, gehören in die [JSON](/guide/json)-Pipeline, nicht in `docs[]`.
 
@@ -30,9 +30,9 @@ Beliebige verschachtelte UI-JSON-Bundles, die nicht mit den Shell-/Theme-Strings
 | Ihr Setup | Beginnen Sie hier |
 | --- | --- |
 | Docusaurus-Site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` – [Schritt 1](#step-1-initialise-for-documentation) |
-| VitePress-Site | `init -t ui-vitepress` + `vitepressThemeCatalog` für das Theme – [VitePress-Integration](/guide/vitepress-integration) |
-| Nextra-Site | `init -t ui-nextra` + `nextraDictionaryPath` für das Wörterbuch (Seitenleisten-`_meta.ts` ist automatisch) – [Nextra-Integration](/guide/nextra-integration) |
-| Fumadocs-Website | `init -t ui-fumadocs` + `fumadocsUiCatalog` für die Benutzeroberfläche (Seitenleisten-`meta.json` ist automatisch) — [Fumadocs-Integration](/guide/fumadocs-integration) |
+| VitePress-Site | `init -t ui-vitepress` + `vitepressThemeCatalog` für Theme — [VitePress-Integration](/guide/integrations/vitepress) |
+| Nextra-Site | `init -t ui-nextra` + `nextraDictionaryPath` für Wörterbuch (Seitenleiste `_meta.ts` ist automatisch) — [Nextra-Integration](/guide/integrations/nextra) |
+| Fumadocs-Site | `init -t ui-fumadocs` + `fumadocsUiCatalog` für UI (Seitenleiste `meta.json` ist automatisch) — [Fumadocs-Integration](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` – [Schritt 1](#step-1-initialise-for-documentation) |
 | Flat-Dokumente (README, Changelogs usw.) | `docsOutput.style = "flat"` – [Ausgabelayouts](/guide/documents/output-layouts), optionaler [Sprachumschalter](/guide/documents/language-switcher) |
 | Wo übersetzte Dateien landen | [Ausgabe-Layouts](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ Für VitePress-Dokumentationsseiten:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Legen Sie `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/Fußzeilen-Strings fest – siehe [VitePress-Integration](/guide/vitepress-integration).
+Legen Sie `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/Fußzeilenzeichenfolgen fest – siehe [VitePress-Integration](/guide/integrations/vitepress).
 
 Für Nextra-Dokumentationsseiten:
 
@@ -68,7 +68,7 @@ Für Nextra-Dokumentationsseiten:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-Setzen Sie `docs[].nextraDictionaryPath` für Themenwörterbuchzeichenfolgen — siehe [Nextra-Integration](/guide/nextra-integration). Sidebar-`_meta.ts`-Beschriftungen werden automatisch gesammelt.
+Legen Sie `docs[].nextraDictionaryPath` für Theme-Wörterbuchzeichenfolgen fest – siehe [Nextra-Integration](/guide/integrations/nextra). Seitenleisten-`_meta.ts`-Beschriftungen werden automatisch gesammelt.
 
 Für Fumadocs-Dokumentationsseiten:
 
@@ -76,7 +76,7 @@ Für Fumadocs-Dokumentationsseiten:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-Setzen Sie `docsOutput.fumadocsUiCatalog` für Benutzeroberflächenüberschreibungen — siehe [Fumadocs-Integration](/guide/fumadocs-integration). Sidebar-`meta.json`-Beschriftungen werden automatisch gesammelt.
+Legen Sie `docsOutput.fumadocsUiCatalog` für UI-Überschreibungen fest – siehe [Fumadocs-Integration](/guide/integrations/fumadocs). Seitenleisten-`meta.json`-Beschriftungen werden automatisch gesammelt.
 
 Für einfache Astro-Website-Oberflächen (ohne Starlight):
 

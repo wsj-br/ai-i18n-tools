@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 The default listen port is **8675**. If that port is unavailable, the server tries the next port (up to 1000 attempts) and logs the port it chose. The deprecated alias `editor` still works but prints a warning — prefer `dashboard`.
 
-The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. See [Tool UI language](/reference/environment-variables#tool-ui-language).
+The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. See [Tool UI language](/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

@@ -18,11 +18,11 @@
 
 自訂 `pathTemplate` 會停用平面重寫器，除非您明確設定 `rewriteRelativeLinks: true`。請參閱[輸出版面配置](/guide/documents/output-layouts)和[錨點連結](/guide/documents/anchor-links)以了解跨頁 `#anchor` 處理。
 
-有關 VitePress 特定的撰寫規則，請參閱[VitePress 整合 — 連結慣例](/guide/vitepress-integration#link-conventions)。
+如需 VitePress 專屬的撰寫規則，請參閱 [VitePress 整合 — 連結慣例](/guide/integrations/vitepress#link-conventions)。
 
-如需 Nextra 專屬的撰寫規則，請參閱 [Nextra 整合 — 連結慣例](/guide/nextra-integration#link-conventions)。
+如需 Nextra 專屬的撰寫規則，請參閱 [Nextra 整合 — 連結慣例](/guide/integrations/nextra#link-conventions)。
 
-如需 Fumadocs 專屬的撰寫規則，請參閱 [Fumadocs 整合 — 連結慣例](/guide/fumadocs-integration#link-conventions)。
+如需 Fumadocs 專屬的撰寫規則，請參閱 [Fumadocs 整合 — 連結慣例](/guide/integrations/fumadocs#link-conventions)。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

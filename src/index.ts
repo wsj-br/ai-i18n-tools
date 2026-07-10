@@ -102,6 +102,8 @@ export {
   parseI18nConfig,
   applyEnvOverrides,
   augmentConfigWithUiLanguagesMaster,
+  applyDefaultLanguagesManifestPathToRawInput,
+  /** @deprecated Use {@link applyDefaultLanguagesManifestPathToRawInput} */
   applyDefaultUiLanguagesPathToRawInput,
   loadI18nConfigFromFile,
   defaultI18nConfigPartial,
@@ -218,9 +220,14 @@ export {
 
 export {
   normalizeVitepressDocLinks,
+  normalizeVitepressFrontmatterLinks,
   normalizeOneVitepressLink,
+  applyVitepressLocaleRoutePrefix,
+  prefixVitepressThemeNavLinks,
+  prefixVitepressThemeConfigLinks,
   docsPathToVitepressRoute,
   type VitepressLinkNormalizeContext,
+  type VitepressThemeNavItem,
 } from "./processors/vitepress-link-normalize.js";
 
 export {
@@ -291,6 +298,8 @@ export {
   getDocumentationTargetLocaleCodes,
   resolveLocalesForDocumentation,
   resolveLocalesForSvg,
+  resolveLanguagesManifestAbsPath,
+  /** @deprecated Use {@link resolveLanguagesManifestAbsPath} */
   resolveUiLanguagesAbsPath,
   loadUiLanguageEntries,
   mergeUiLanguageDisplayNames,

@@ -63,13 +63,13 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 來尋找 JS/TS 檔案中的 `t("literal")` 和 `i18n.t("literal")` 呼叫。對於 `.astro` 來源（當列於 `ui.uiExtractor.extensions` 中時），`ui-string-babel.ts` 會使用 `@babel/parser` 解析 frontmatter 和 template 中的 `{expression}` 區塊，並套用相同的 `funcNames` 規則。函式名稱和檔案副檔名可透過 `ui.uiExtractor` 進行設定（`ui.reactExtractor` 是支援的別名）。`extract` **也會將非掃描器的輸入合併至同一個目錄中：** 當啟用 `includePackageDescription` 時（預設值），會納入專案的 `package.json` `description`；當 `includeUiLanguageEnglishNames` 為 `true` 且設定 `uiLanguagesPath` 時，則會納入來自 `ui-languages.json` 的每一個 `englishName`（原始碼中已找到的字串具有較高優先順序）。區段雜湊值為修剪後原始字串的 **MD5 前 8 個十六進位字元** — 這些將成為 `strings.json` 中的鍵值。
+使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 來尋找 JS/TS 檔案中的 `t("literal")` 與 `i18n.t("literal")` 呼叫。對於 `.astro` 原始碼（當列於 `ui.uiExtractor.extensions` 時），`ui-string-babel.ts` 會剖析 frontmatter 與範本 `{expression}` 區塊（使用 `@babel/parser`），並套用相同的 `funcNames` 規則。函式名稱與副檔名可透過 `ui.uiExtractor` 設定（`ui.reactExtractor` 為支援的別名）。`extract` **也會將非掃描器的輸入合併至同一目錄：** 當啟用 `includePackageDescription` 時（預設）的專案 `package.json` `description`，以及當 `includeUiLanguageEnglishNames` 為 `true` 時，來自內建 ui-languages 主目錄（由 `sourceLocale` + `targetLocales` 建置）的每個 `englishName`（已在原始碼中找到的字串優先保留；不會讀取 `languagesManifestPath`）。`extract` 亦會在 `languagesManifestPath` 重新產生 `ui-languages.json`。區段雜湊為已修剪原始字串之 **MD5 前 8 個十六進位字元** — 這些會成為 `strings.json` 中的索引鍵。
 
 對於 `.html` / `.htm` 來源（當列於 `ui.uiExtractor.extensions` 時），`extract` 會改為透過 `html-i18n-marks.ts` 來路由檔案，該檔案會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記屬性（可透過 `ui.uiExtractor.htmlI18nAttributes` 設定）。純標記會從元素的自身 `textContent` / `title` / `placeholder` 獲取來源文字；有值的標記（`data-i18n="Key"`）則使用該值。相同的模組也支援 `mark-html` 命令，該命令會自動插入純標記。HTML 檔案永遠不會到達 Babel / i18next-scanner 的處理階段。
 
-純 Astro SSG 網站可以跳過 i18next：在建置時載入平面 `{locale}.json`，並透過原始文字鍵解析 `t('English')` (請參閱 `examples/astro-website/src/i18n/t.ts` 和 [UI 字串 — Astro 網站](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight))。
+純 Astro SSG 網站可以略過 i18next：在建置時載入扁平 `{locale}.json`，並按源文字鍵解析 `t('English')`（參見 `examples/astro-website/src/i18n/t.ts` 與 [UI 字串 — Astro 網站](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
 
-純 HTML 應用程式遵循相同的目錄模型，但使用標記屬性而非 `t()` 呼叫 — 請參閱[標記 HTML 以進行翻譯](/guide/ui-strings/plain-html#marking-html-for-translation)。
+純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫 — 參見[標記 HTML 以供翻譯](/guide/ui-strings/plain-html#marking-html-for-translation)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@
 }
 ```
 
-`models` (選用) — 依據地區設定，指出哪個模型在該地區設定的上次成功 `translate-ui` 執行後產生了該翻譯 (或若文字是從翻譯儀表板儲存的，則為 `user-edited`)。 `models` (選用) — `extract` 找到該字串的位置 (掃描器 + 套件描述行；僅限資訊清單的 `englishName` 字串可能會省略 `locations`)。
+`models`（選用）— 每個語系中，該語系上次成功執行 `translate-ui` 後產生該翻譯的模型（若文字是從翻譯儀表板儲存的則為 `user-edited`）。`locations`（選用）— `extract` 找到該字串的位置（掃描器 + 套件描述行；內建主目錄 `englishName` 字串可省略 `locations`）。
 
-`extract` 會新增金鑰並保留掃描中仍存在的金鑰的現有 `translated` / `models` 資料 (掃描器字面值、選用描述、選用資訊清單 `englishName`)。 `translate-ui` 會填補遺失的 `translated` 項目，更新其翻譯的地區設定的 `models`，並寫入扁平化的地區設定檔案。
+`extract` 會新增索引鍵，並為掃描中仍存在的索引鍵（掃描器字面值、選用描述、選用內建主目錄 `englishName`）保留既有的 `translated` / `models` 資料。`translate-ui` 會填入缺失的 `translated` 項目、更新其翻譯之語系的 `models`，並寫入扁平的語系檔案。
 
-`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列 (BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`)。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 和內嵌的主 `data/ui-languages-complete.json` 建置專案檔案。
+`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` 的 JSON 陣列（BCP-47 `code`、UI `label`、參考 `englishName`、`"ltr"` 或 `"rtl"`）。使用 `generate-ui-languages` 或 `extract` 從 `sourceLocale` + `targetLocales` 與內建主目錄 `data/ui-languages-complete.json` 建置專案檔。
 
 <a id="flat-locale-files"></a>
 ### 扁平化地區設定檔案
@@ -144,10 +144,10 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 所有提取器都會擴充 `BaseExtractor` 並實作 `extract(content, filepath): Segment[]`。
 
-- `MarkdownExtractor` - 將 markdown 分割成類型化區段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML 前置內容被歸類為 **不可翻譯** (`slug`、`id` 和其他路由鍵保持穩定)。頂層 `export ...` 區塊 (例如 React 元件定義) 與現有的 `import ...` 處理一起被歸類為不可翻譯的 `other` 區段。以大寫 JSX 標籤開頭的多行區塊 (例如 `<Tabs>` 區塊) 被歸類為可翻譯的段落。不可翻譯的區段 (程式碼區塊、原始 HTML) 會逐字保留。
-- `AstroTemplateExtractor` - 用於 `.astro` 行銷頁面 (透過 `doc-translate.ts` 中的 `translateAstroFile` 的 `translate-docs`) 的解析和替換。擷取使用者可見的 HTML 文字節點和可翻譯屬性 (`alt`、`title`、`aria-label`、`placeholder`)，以及當使用者可見時，範本 `{expression}` 區塊內的字串常值。跳過前置內容 TypeScript、`<script>`、`<style>`、受保護的屬性/鍵值以及 `t('…')` 內的常值。當輸出路徑更深時 (例如 `src/pages/de/index.astro`)，重新組裝會調整相對匯入。請參閱[Astro 網站頁面](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
-- `JsonExtractor` - 從 Docusaurus JSON 標籤檔案 (Docusaurus UI 目錄，而非 MDX 主體) 中擷取字串值。
-- `SvgExtractor` - 從 SVG 中擷取 `<text>`、`<title>` 和 `<desc>` 內容 (由 `translate-svg` 用於 `config.svg` 下的檔案，而非由 `translate-docs` 使用)。
+- `MarkdownExtractor` - 將 markdown 分割為具型別的段落：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被歸類為 **不可翻譯**（`slug`、`id` 及其他路由鍵保持穩定）。頂層 `export ...` 區塊（例如 React 元件定義）與既有的 `import ...` 處理一同被歸類為不可翻譯的 `other` 段落。以大寫 JSX 標籤起始的多行區塊（例如 `<Tabs>` 區塊）被歸類為可翻譯段落。不可翻譯的段落（程式碼區塊、原始 HTML）會原樣保留。
+- `AstroTemplateExtractor` - 針對 `.astro` 行銷頁面的解析與替換（透過 `doc-translate.ts` 中的 `translateAstroFile` 使用 `translate-docs`）。提取面向使用者的 HTML 文字節點與可翻譯屬性（`alt`、`title`、`aria-label`、`placeholder`），以及範本 `{expression}` 區塊內面向使用者時的字串字面量。略過 frontmatter TypeScript、`<script>`、`<style>`、受保護的屬性/鍵值，以及 `t('…')` 內的字面量。重組時會在輸出路徑較深時調整相對匯入（例如 `src/pages/de/index.astro`）。參見 [Astro 網站頁面](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
+- `JsonExtractor` - 從 Docusaurus JSON 標籤檔案提取字串值（Docusaurus UI 目錄，非 MDX 本文）。
+- `SvgExtractor` - 從 SVG 提取 `<text>`、`<title>` 及 `<desc>` 內容（由 `translate-svg` 用於 `config.svg` 下的檔案，而非由 `translate-docs` 使用）。
 - `html-i18n-marks.ts` - 一個專注的 HTML 標記掃描器，由 `extract` 用於 `.html` / `.htm` 來源，並由 `mark-html` 命令使用。`collectHtmlI18nStrings` / `collectHtmlI18nLocations` 讀取 `data-i18n*` 標記屬性（純標記 → 元素 `textContent` / `title` / `placeholder`；有值標記 → 該值），而 `markHtmlContent` 會將純標記插入到葉面文字 / 標題 / 預留位置元素中（結果相同，尊重 `data-i18n-ignore`，並略過類似程式碼和混合內容的元素）。共用的 `normalizeI18nText` 輔助工具可確保建置時的索引鍵與瀏覽器執行階段的索引鍵相同。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -215,7 +215,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 <a id="flat-link-rewriting"></a>
 ### 平面連結重寫
 
-當 `docsOutput.style === "flat"` 時，翻譯後的 Markdown 檔案會與來源檔案一起放置，並帶有地區設定後綴。頁面之間的相對連結會被重寫，以便 `[Guide](./guide.md)` 在 `readme.de.md` 中指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（對於沒有自訂 `pathTemplate` 的平面樣式會自動啟用）。在 `postProcessing.regexAdjustments` 執行之前，相同的傳遞會為非 Markdown 資產 URL 預置每個檔案的深度前綴 — 請參閱 [平面連結重寫器](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
+當 `docsOutput.style === "flat"` 時，翻譯後的 markdown 檔案會與源檔案並排放置，並帶有語系後綴。頁面之間的相對連結會被改寫，使 `readme.de.md` 中的 `[Guide](./guide.md)` 指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（扁平樣式且無自訂 `pathTemplate` 時自動啟用）。同一遍次會在 `postProcessing.regexAdjustments` 執行前，為非 markdown 資源 URL 加上按檔案深度的前綴 — 參見[扁平連結改寫器](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 
@@ -255,9 +255,9 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 `loadI18nConfigFromFile(configPath, cwd)` 管道：
 
-1. 讀取並解析 `ai-i18n-tools.config.json`（JSON）。
-2. `mergeWithDefaults` — 與 `defaultI18nConfigPartial` 深度合併，並將任何 `docs[].sourceFiles` 項目合併到 `contentPaths` 中。
-3. `expandTargetLocalesFileReferenceInRawInput` — 如果 `targetLocales` 是檔案路徑，則載入資訊清單並展開為地區代碼；設定 `uiLanguagesPath`。
+1. 讀取並剖析 `ai-i18n-tools.config.json`（JSON）。
+2. `mergeWithDefaults` — 與 `defaultI18nConfigPartial` 深度合併，並將任何 `docs[].sourceFiles` 項目合併至 `contentPaths`。
+3. `expandTargetLocalesFileReferenceInRawInput` — 將 `targetLocales` 強制轉換為陣列，並拒絕路徑狀項目（必須為 BCP-47 代碼，而非通往 `ui-languages.json` 的路徑）；在 `mergeWithDefaults` 期間，`languagesManifestPath` 預設為 `{ui.flatOutputDir}/ui-languages.json`。
 4. `expandDocumentationTargetLocalesInRawInput` — 對每個 `docs[].targetLocales` 項目執行相同操作。
 5. `expandJsonTargetLocalesInRawInput` - 每個 `json[].targetLocales` 條目都相同。
 6. `parseI18nConfig` - Zod 驗證 + `validateI18nBusinessRules`。

@@ -15,16 +15,6 @@
   "batchConcurrency": 4,
   "batchSize": 20,
   "maxBatchChars": 4096,
-  "openrouter": {
-    "baseUrl": "https://openrouter.ai/api/v1",
-    "translationModels": [
-      "openai/gpt-4o-mini",
-      "anthropic/claude-3-haiku",
-      "google/gemini-3-flash-preview"
-    ],
-    "maxTokens": 8192,
-    "temperature": 0.2
-  },
   "features": {
     "translateUIStrings": true,
     "translateDocs": true,
@@ -34,13 +24,13 @@
     "userGlossary": "glossary-user.csv"
   },
   "cacheDir": ".translation-cache",
+  "languagesManifestPath": "src/i18n/ui-languages.json",
   "ui": {
     "sourceRoots": [
       "src/"
     ],
     "stringsJson": "src/i18n/strings.json",
     "flatOutputDir": "public/locales",
-    "uiLanguagesPath": "src/i18n/ui-languages.json",
     "uiExtractor": {
       "extensions": [
         ".js",
@@ -69,5 +59,17 @@
       },
       "addFrontmatter": false
     }
-  ]
+  ],
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "openai/gpt-4o-mini",
+        "anthropic/claude-3-haiku",
+        "google/gemini-3-flash-preview"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter"
 }

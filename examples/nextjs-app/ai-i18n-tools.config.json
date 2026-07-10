@@ -29,6 +29,7 @@
     "flatOutputDir": "public/locales/"
   },
   "cacheDir": ".translation-cache",
+  "languagesManifestPath": "locales/ui-languages.json",
   "docs": [
     {
       "description": "Docusaurus docs and JSON UI strings under docs-site",

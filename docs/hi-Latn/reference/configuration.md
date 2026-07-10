@@ -18,18 +18,21 @@ Translate karne ke liye BCP-47 locale codes ka array (jaise `["de", "fr", "es", 
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (vaikalpik)
 
-Tool ki apni UI bhasha ke liye BCP-47 code (CLI help, logs/summaries, aur Translation Dashboard). Yah `sourceLocale` / `targetLocales` se swatantra hai, aur `-L` / `--ui-lang` flag aur `AI_I18N_LANG` environment variable dwara override kiya jata hai. Agnyat man (values) source locale (`en-GB`) mein sahaj roop se degrade hote hain — koi sakht validation nahi hai. [Tool UI language](/reference/environment-variables#tool-ui-language) dekhen.
+Tool ke apne UI bhasha ke liye BCP-47 code (CLI help, logs/summaries, aur Translation Dashboard). Yah `sourceLocale` / `targetLocales` se swatantra hai, aur `-L` / `--ui-lang` flag aur `AI_I18N_LANG` environment variable dwara override kiya jata hai. Anjaan values source locale (`en-GB`) mein gracefully degrade ho jate hain — koi strict validation nahi hai. Dekhen [Tool UI language](/guide/tool-ui-language).
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath` (optional)
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath` (vikalpik)
 
-Display names, locale filtering, aur language-list post-processing ke liye upyog kiye gaye `ui-languages.json` manifest ka path. Jab chhod diya jata hai, toh CLI manifest ko `ui.flatOutputDir/ui-languages.json` par khojta hai.
+Root-level vikalpik string (`ui` ke andar nested nahi). Path jahan `extract` aur `generate-ui-languages` `ui-languages.json` manifest likhte hain, aur jahan CLI display names aur language-list post-processing ke liye ise padhta hai. Jab chhod diya jata hai, to config load par `ui.flatOutputDir/ui-languages.json` par default hota hai.
 
 Iska upyog tab karein jab:
 
-- Manifest `ui.flatOutputDir` ke bahar rehta hai aur aapko CLI ko is par explicitly point karne ki zaroorat hai.
-- Aap [language switcher post-processing](#language-switcher-languagelistblock) (`languageListBlock`) chahte hain ki manifest se locale labels banaye.
-- `extract` ko manifest se `englishName` entries ko `strings.json` mein merge karna chahiye (`ui.reactExtractor.includeUiLanguageEnglishNames: true` ki zaroorat hai).
+- Manifest ko `ui.flatOutputDir` ke bahar hona chahiye (jaise ki `src/i18n/` ke tahat app helpers ke bagal mein).
+- Aap chahte hain ki [language switcher post-processing](#language-switcher-languagelistblock) (`languageListBlock`) project manifest se locale labels banaye na ki sirf bundled master catalog se.
+
+`includeUiLanguageEnglishNames` is file ko **nahi** padhta hai — yeh bundled master catalog ka upyog karta hai (neeche `ui.uiExtractor` dekhen).
+
+**Legacy:** root-level `uiLanguagesPath` abhi bhi config file load karte samay swikar kiya jata hai aur swatah `languagesManifestPath` mein rewrite ho jata hai.
 
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
@@ -180,7 +183,7 @@ SVG files ka `translate-svg` ke saath **anuvad karen** jab `features.translateSV
   Us vaikalpik vivaran extraction ke liye upyog kiye jane wale `package.json` file ka custom path.
 - `uiExtractor.includeUiLanguageEnglishNames` (ya legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
-Jab `true` (default `false`), `extract` bhi bundled ui-languages master catalog (`sourceLocale` + `targetLocales` se nirmit) se har `englishName` ko `strings.json` mein jodta hai jab vah source scan se pahle se maujood na ho (saman hash keys). `uiLanguagesPath` nahi padhta hai.
+Jab `true` (default `false`), `extract` har `englishName` ko bundled ui-languages master catalog se (`sourceLocale` + `targetLocales` se bana) `strings.json` mein bhi jodta hai jab source scan se pehle se maujood na ho (same hash keys). `languagesManifestPath` nahi padhta hai.
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -269,21 +272,21 @@ Jab `true`, built-in output layouts (`nested`, `flat`, `doc-system` bina `pathTe
 - `docsOutput.flatPreserveRelativeDir`
 Jab `docsOutput.style = "flat"`, source subdirectories ko banaye rakhen taki saman basename wali files takrayen nahi. Default `false`.
 - `docsOutput.rewriteRelativeLinks`
-Anuvaadan ke baad sambandhit linkon ko punah likhein (svayam-prabhavit jab `docsOutput.style = "flat"` aur koi vishisht `pathTemplate` nahin hota).
+Anuvaad ke baad saapeksh linkon ko phir se likhen (jab `docsOutput.style = "flat"` aur koi custom `pathTemplate` na ho to swatah saksham ho jaata hai).
 - `docsOutput.linkRewriteDocsRoot`
-Repo root jo flat-link rewrite prefixes ka ganana karte samay upyog kiya jata hai. Aamtaur par isey `"."` ke roop mein chhod dein, jab tak ki aapke anuvaadit docs kisi alag project root ke niche nahin hain.
+Flat-link rewrite prefixes ki ganna karte samay upyog kiya gaya repo root. Aam taur par ise `"."` ke roop mein chhod den jab tak ki aapke anuvaadit dastavez ek alag project root ke tahat na hon.
 - `docsOutput.rewriteVitepressLinks`
-Jab `true`, to anuvaadan ke baad VitePress link normalizer chalayein. Default roop se `docsOutput.style` `"vitepress"` hota hai jab saksham hota hai. Iska upyog karein kisi bhi `doc-system` layout ke saath jahan sthaniya folder Angrezi ke bagal mein `docsRoot` par baithe hain. README-shaili `docs/guide/…` pathon ko site routes (`/guide/…`) aur sthaniya-sambandhit `../guide/…` linkon mein punah likhta hai. Repo fileon ke liye jo VitePress tree (`LICENSE`, `examples/`) ke bahar hain, Angrezi strot mein poore URL ka upyog karein — [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage) dekhain.
+Jab `true` ho, to anuvaad ke baad VitePress link normalizer chalaen. Jab `docsOutput.style` `"vitepress"` ho to swatah saksham ho jaata hai. Kisi bhi `doc-system` layout ke saath upyog karen jahan locale folder `docsRoot` ke niche English ke bagal mein baithe hon. README-style `docs/guide/…` paths ko site routes (`/guide/…`) aur locale-relative `../guide/…` links mein phir se likhta hai. VitePress tree ke bahar repo files (`LICENSE`, `examples/`) ke links ke liye, English source mein poore URLs ka upyog karen — dekhen [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-Jab `true`, to anuvaadan ke baad Nextra link normalizer chalayein. Default roop se `docsOutput.style` `"nextra"` hota hai jab saksham hota hai. `content/en/…` aur sambandhit `.mdx` pathon ko sthaniya-tatparja site routes (`/guide/…`) mein punah likhta hai Next.js `i18n` ke liye. [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions) dekhain.
+Jab `true` ho, to anuvaad ke baad Nextra link normalizer chalaen. Jab `docsOutput.style` `"nextra"` ho to swatah saksham ho jaata hai. Next.js `i18n` ke liye `content/en/…` aur saapeksh `.mdx` paths ko locale-neutral site routes (`/guide/…`) mein phir se likhta hai. Dekhen [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (default) ya `"dir"`. Dot angrezi sroton ke bagal mein `stem.{locale}.mdx` likhta hai; dir Nextra jaise locale folder likhta hai. [Fumadocs integration — Page layout](/guide/fumadocs-integration#page-layout) dekhein.
+`"dot"` (default) ya `"dir"`. Dot English sources ke bagal mein `stem.{locale}.mdx` likhta hai; dir Nextra jaise locale folder likhta hai. Dekhen [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
-Jab `true` ho, anuvad ke baad Fumadocs link normalizer chalayein. Jab `docsOutput.style` `"fumadocs"` ho to default roop se saksham hota hai. Content path aur relative `.mdx` links ko `/docs/…` routes mein rewrite karta hai.
+Jab `true` ho, to anuvaad ke baad Fumadocs link normalizer chalaen. Jab `docsOutput.style` `"fumadocs"` ho to swatah saksham ho jaata hai. Content paths aur saapeksh `.mdx` links ko `/docs/…` routes mein phir se likhta hai.
 - `docsOutput.fumadocsUiCatalog`
-Vaishayik. Fumadocs UI override catalog bootstrap + `translate-docs` ke andar anuvad. Fields: `sourcePath` (jaise `lib/layout.shared.ts`), `catalogPath` (generated English JSON), vaishayik `outputPathTemplate` (default: `ui.{locale}.json` `catalogPath` ke bagal mein).
+Vaishayik. Fumadocs UI override catalog bootstrap + `translate-docs` ke andar anuvaad. Fields: `sourcePath` (jaise `lib/layout.shared.ts`), `catalogPath` (generated English JSON), vaishayik `outputPathTemplate` (default: `ui.{locale}.json` `catalogPath` ke bagal mein).
 - `docs[].fumadocsMetaGlob`
-`meta.json` collection ke liye vaishayik glob(s) jab `docsOutput.style` `"fumadocs"` ho. Default: `docsOutput.docsRoot` ke neeche recursive `meta.json`.
+Jab `docsOutput.style` `"fumadocs"` ho to `meta.json` collection ke liye vaishayik glob(s). Default: `docsOutput.docsRoot` ke niche recursive `meta.json`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Property names jinke string values Fumadocs `meta.json` mein anuvadit hote hain (default: `title`, `description`).
 - `docsOutput.vitepressThemeCatalog`
@@ -292,12 +295,12 @@ Vaishayik. VitePress theme/nav/sidebar catalog bootstrap + `translate-docs` ke a
 **Post-processing**
 
 - `docsOutput.postProcessing`
-Anuvaadit **markdown body** par vaikalpik transforms (YAML keys aur non-prose front matter values surakshit rakhe jaate hain). Segment reassembly aur link rewriting (flat ya VitePress) ke baad, aur `addFrontmatter` se pehle chalta hai.
+anuvadit **markdown body** par vikalpik transforms (YAML keys aur non-prose front matter values surakshit rakhe jate hain). Segment reassembly aur link rewriting (flat ya VitePress) ke baad, aur `addFrontmatter` se pehle chalta hai.
 - `docsOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }` ki kramabaddh soochi. `search` ek regex pattern hai (plain string flag `g` ka upyog karta hai, ya `/pattern/flags`). `replace` placeholders jaise `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` ko support karta hai.
+`{ "description"?, "search", "replace" }` ki kramabaddh suchi. `search` ek regex pattern hai (plain string flag `g`, ya `/pattern/flags` ka upyog karta hai). `replace` placeholders jaise ki `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}` ka samarthan karta hai.
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — source aur anuvaadit markdown mein ek bounded "doosri bhashaon mein padhen" link row ko phir se banata hai. Jab `label: "local"` ho to endonym labels ke liye `uiLanguagesPath` (ya `ui.flatOutputDir/ui-languages.json` par ek manifest) ki avashyakta hoti hai.
+`{ "start", "end", "separator", "label"? }` — source aur anuvadit markdown mein ek bounded "read in other languages" link row ko phir se banata hai. Jab `label: "local"` ho to endonym labels ke liye `languagesManifestPath` (ya `ui.flatOutputDir/ui-languages.json` par ek manifest) ki avashyakta hoti hai.
 
 **Behaviour aur metadata**
 

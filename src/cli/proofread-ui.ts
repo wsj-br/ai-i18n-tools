@@ -8,10 +8,7 @@ import path from "path";
 import chalk from "chalk";
 import type { I18nConfig, StringsJsonEntry } from "../core/types.js";
 import { LlmClient } from "../api/llm-client.js";
-import {
-  englishLanguageNameForLocale,
-  normalizeLocale,
-} from "../core/config.js";
+import { englishLanguageNameForLocale, normalizeLocale } from "../core/config.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filter.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
@@ -44,7 +41,10 @@ export function extractUiPlaceholderTokens(original: string): string[] {
 }
 
 /** Returns true if every placeholder token from `original` appears unchanged in `suggested`. */
-export function proofreadSuggestionPreservesPlaceholders(original: string, suggested: string): boolean {
+export function proofreadSuggestionPreservesPlaceholders(
+  original: string,
+  suggested: string
+): boolean {
   for (const t of extractUiPlaceholderTokens(original)) {
     if (!suggested.includes(t)) {
       return false;
@@ -327,7 +327,10 @@ export async function runProofreadUI(
   if (!fs.existsSync(cacheDir)) {
     fs.mkdirSync(cacheDir, { recursive: true });
   }
-  const logFilePath = path.join(cacheDir, `proofread-ui-results_${isoTimestampForProofreadLog()}.log`);
+  const logFilePath = path.join(
+    cacheDir,
+    `proofread-ui-results_${isoTimestampForProofreadLog()}.log`
+  );
 
   if (units.length === 0) {
     const report: ProofreadUIReport = {

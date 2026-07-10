@@ -16,4 +16,4 @@ This example shows the **`vitepress`** output preset: English source pages live 
 
 ## Next steps
 
-Read [Getting started](./guide/getting-started.md) and compare with the full write-up on the [main documentation site](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration/).
+Read [Getting started](./guide/getting-started.md) and compare with the full write-up on the [main documentation site](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/vitepress/).

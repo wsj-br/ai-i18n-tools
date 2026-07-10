@@ -63,13 +63,13 @@ Tudo o que se destina ao uso programático é reexportado de `src/index.ts` ([AP
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Utiliza o `i18next-scanner` do `Parser.parseFuncFromString` para localizar chamadas `t("literal")` e `i18n.t("literal")` em arquivos JS/TS. Para fontes `.astro` (quando listadas em `ui.uiExtractor.extensions`), o `ui-string-babel.ts` analisa o frontmatter e blocos de modelo `{expression}` com `@babel/parser` e aplica as mesmas regras de `funcNames`. Nomes de funções e extensões de arquivos são configuráveis por meio de `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas não provenientes do scanner no mesmo catálogo:** o `package.json` do projeto `description` quando `includePackageDescription` está habilitado (padrão), e cada `englishName` de `ui-languages.json` quando `includeUiLanguageEnglishNames` é `true` e `uiLanguagesPath` está definido (strings já encontradas no código-fonte têm precedência). Os hashes dos segmentos são os **primeiros 8 caracteres hexadecimais do MD5** da string-fonte recortada — esses tornam-se as chaves em `strings.json`.
+Usa `i18next-scanner`'s `Parser.parseFuncFromString` para encontrar chamadas `t("literal")` e `i18n.t("literal")` em arquivos JS/TS. Para fontes `.astro` (quando listadas em `ui.uiExtractor.extensions`), `ui-string-babel.ts` analisa blocos de frontmatter e template `{expression}` com `@babel/parser` e aplica as mesmas regras `funcNames`. Os nomes de funções e extensões de arquivo são configuráveis via `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas não-scanner no mesmo catálogo:** o projeto `package.json` `description` quando `includePackageDescription` está habilitado (padrão), e cada `englishName` do catálogo master ui-languages embutido (construído a partir de `sourceLocale` + `targetLocales`) quando `includeUiLanguageEnglishNames` é `true` (strings já encontradas na fonte mantêm precedência; não lê `languagesManifestPath`). `extract` também regenera `ui-languages.json` em `languagesManifestPath`. Os hashes de segmento são **MD5 dos 8 primeiros caracteres hex** da string de origem trimada — esses se tornam as chaves em `strings.json`.
 
 Para fontes `.html` / `.htm` (quando listadas em `ui.uiExtractor.extensions`), `extract` em vez disso roteia o arquivo através de `html-i18n-marks.ts`, que escaneia atributos de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` (configurável via `ui.uiExtractor.htmlI18nAttributes`). Um marcador simples obtém seu texto de origem do próprio `textContent` / `title` / `placeholder` do elemento; um marcador com valor (`data-i18n="Key"`) usa o valor. O mesmo módulo alimenta o comando `mark-html`, que insere os marcadores simples automaticamente. Arquivos HTML nunca chegam às etapas do Babel / i18next-scanner.
 
-Sites Astro SSG simples podem pular o i18next: carregar `{locale}.json` plano no tempo de compilação e resolver `t('English')` pela chave do texto de origem (consulte `examples/astro-website/src/i18n/t.ts` e [Strings da UI — site Astro](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
+Sites Astro SSG simples podem pular o i18next: carregar `{locale}.json` plano no tempo de compilação e resolver `t('English')` por chave de texto-fonte (veja `examples/astro-website/src/i18n/t.ts` e [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
 
-Aplicativos HTML simples seguem o mesmo modelo de catálogo com atributos de marcador em vez de chamadas `t()` — consulte [Marcação de HTML para tradução](/guide/ui-strings/plain-html#marking-html-for-translation).
+Aplicativos HTML simples seguem o mesmo modelo de catálogo com atributos de marcador em vez de chamadas `t()` — veja [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@ O catálogo mestre tem a seguinte estrutura:
 }
 ```
 
-`models` (opcional) — por localidade, qual modelo produziu essa tradução após a última execução bem-sucedida do `translate-ui` para essa localidade (ou `user-edited` se o texto foi salvo no Painel de Tradução). `locations` (opcional) — onde o `extract` encontrou a string (scanner + linha de descrição do pacote; strings somente de manifesto `englishName` podem omitir `locations`).
+`models` (opcional) — por locale, qual modelo produziu essa tradução após a última execução bem-sucedida de `translate-ui` para esse locale (ou `user-edited` se o texto foi salvo do Translation Dashboard). `locations` (opcional) — onde `extract` encontrou a string (scanner + linha de descrição do pacote; strings `englishName` embutidas-master podem omitir `locations`).
 
-`extract` adiciona novas chaves e preserva os dados existentes de `translated` / `models` para chaves ainda presentes na varredura (literais do scanner, descrição opcional, `englishName` opcional do manifesto). `translate-ui` preenche entradas `translated` ausentes, atualiza `models` para localidades que traduz e grava arquivos de localidade planos.
+`extract` adiciona novas chaves e preserva os dados existentes `translated` / `models` para chaves ainda presentes na varredura (literais do scanner, descrição opcional, `englishName` embutida-master opcional). `translate-ui` preenche entradas `translated` faltantes, atualiza `models` para os locales que traduz, e escreve arquivos de locale planos.
 
-`ui-languages.json` **manifesto** — array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, referência `englishName`, `"ltr"` ou `"rtl"`). Use `generate-ui-languages` para construir um arquivo de projeto a partir do `sourceLocale` + `targetLocales` e do `data/ui-languages-complete.json` mestre embutido.
+`ui-languages.json` **manifesto** — array JSON de `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, referência `englishName`, `"ltr"` ou `"rtl"`). Use `generate-ui-languages` ou `extract` para construir um arquivo de projeto a partir de `sourceLocale` + `targetLocales` e do master `data/ui-languages-complete.json` embutido.
 
 <a id="flat-locale-files"></a>
 ### Arquivos de localidade planos
@@ -145,8 +145,8 @@ O `LlmClient.translateUIBatch` tenta cada modelo em ordem, recorrendo ao próxim
 Todos os extratores estendem `BaseExtractor` e implementam `extract(content, filepath): Segment[]`.
 
 - `MarkdownExtractor` - divide o markdown em segmentos tipados: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. O frontmatter YAML é classificado como **não traduzível** (`slug`, `id` e outras chaves de roteamento permanecem estáveis). Blocos `export ...` de nível superior (por exemplo, definições de componentes React) são classificados como segmentos `other` não traduzíveis, juntamente com o tratamento `import ...` existente. Blocos de várias linhas que começam com uma tag JSX maiúscula (por exemplo, um bloco `<Tabs>`) são classificados como parágrafos traduzíveis. Segmentos não traduzíveis (blocos de código, HTML bruto) são preservados literalmente.
-- `AstroTemplateExtractor` - análise e substituição para páginas de marketing `.astro` (`translate-docs` via `translateAstroFile` em `doc-translate.ts`). Extrai nós de texto HTML visíveis para o usuário e atributos traduzíveis (`alt`, `title`, `aria-label`, `placeholder`), além de literais de string dentro de blocos de modelo `{expression}` quando visíveis para o usuário. Ignora TypeScript de frontmatter, `<script>`, `<style>`, valores de atributos/chaves protegidos e literais dentro de `t('…')`. A remontagem ajusta as importações relativas quando os caminhos de saída são mais profundos (por exemplo, `src/pages/de/index.astro`). Consulte [Páginas do site Astro](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
-- `JsonExtractor` - extrai valores de string de arquivos de rótulos JSON do Docusaurus (catálogos de UI do Docusaurus, não corpo MDX).
+- `AstroTemplateExtractor` - análise e substituição para páginas de marketing `.astro` (`translate-docs` via `translateAstroFile` em `doc-translate.ts`). Extrai nós de texto HTML visíveis para o usuário e atributos traduzíveis (`alt`, `title`, `aria-label`, `placeholder`), além de literais de string dentro de blocos de `{expression}` de modelo quando visíveis para o usuário. Ignora TypeScript de frontmatter, `<script>`, `<style>`, valores de atributo/chave protegidos e literais dentro de `t('…')`. A remontagem ajusta as importações relativas quando os caminhos de saída são mais profundos (por exemplo, `src/pages/de/index.astro`). Veja [Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `JsonExtractor` - extrai valores de string de arquivos de rótulo JSON do Docusaurus (catálogos de UI do Docusaurus, não corpo MDX).
 - `SvgExtractor` - extrai conteúdo `<text>`, `<title>` e `<desc>` de SVG (usado por `translate-svg` para arquivos em `config.svg`, não por `translate-docs`).
 - `html-i18n-marks.ts` - um scanner focado de tags HTML usado por `extract` para fontes `.html` / `.htm` e pelo comando `mark-html`. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` leem atributos de marcador `data-i18n*` (marcador simples → `textContent` / `title` / `placeholder` do elemento; marcador com valor → o valor), e `markHtmlContent` insere marcadores simples em texto folha / título / elementos de placeholder (idempotente, respeita `data-i18n-ignore`, pula elementos parecidos com código e de conteúdo misto). O helper compartilhado `normalizeI18nText` mantém as chaves de tempo de compilação idênticas ao runtime do navegador.
 
@@ -215,7 +215,7 @@ O comando `translate-docs` também usa **rastreamento de arquivos** para que fon
 <a id="flat-link-rewriting"></a>
 ### Reescrita plana de links
 
-Quando `docsOutput.style === "flat"`, os arquivos markdown traduzidos são colocados ao lado da fonte com sufixos de localidade. Links relativos entre páginas são reescritos para que `[Guide](./guide.md)` em `readme.de.md` aponte para `guide.de.md`. Controlado por `rewriteRelativeLinks` (ativado automaticamente para estilo plano sem um `pathTemplate` personalizado). A mesma passagem adiciona um prefixo de profundidade por arquivo a URLs de ativos não markdown antes que `postProcessing.regexAdjustments` seja executado — consulte [Reescritor de link plano](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
+Quando `docsOutput.style === "flat"`, os arquivos markdown traduzidos são colocados ao lado da fonte com sufixos de localidade. Links relativos entre páginas são reescritos para que `[Guide](./guide.md)` em `readme.de.md` aponte para `guide.de.md`. Controlado por `rewriteRelativeLinks` (ativado automaticamente para estilo plano sem um `pathTemplate` personalizado). A mesma passagem adiciona um prefixo de profundidade por arquivo a URLs de ativos não-markdown antes que `postProcessing.regexAdjustments` seja executado — veja [Flat link rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -255,10 +255,10 @@ Cliente de chat independente de provedor construído sobre o Vercel AI SDK (`ai`
 
 Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 
-1. Ler e analisar `ai-i18n-tools.config.json` (JSON).
-2. `mergeWithDefaults` - mesclar profundamente com `defaultI18nConfigPartial`, e mesclar quaisquer entradas `docs[].sourceFiles` em `contentPaths`.
-3. `expandTargetLocalesFileReferenceInRawInput` - se `targetLocales` for um caminho de arquivo, carregar o manifesto e expandir para códigos de localidade; definir `uiLanguagesPath`.
-4. `expandDocumentationTargetLocalesInRawInput` - o mesmo para cada entrada `docs[].targetLocales`.
+1. Leia e analise `ai-i18n-tools.config.json` (JSON).
+2. `mergeWithDefaults` - mescla profunda com `defaultI18nConfigPartial`, e mescla quaisquer entradas `docs[].sourceFiles` em `contentPaths`.
+3. `expandTargetLocalesFileReferenceInRawInput` - coerce `targetLocales` para um array e rejeite entradas semelhantes a caminhos (devem ser códigos BCP-47, não um caminho para `ui-languages.json`); `languagesManifestPath` é padrão para `{ui.flatOutputDir}/ui-languages.json` durante `mergeWithDefaults`.
+4. `expandDocumentationTargetLocalesInRawInput` - mesmo para cada entrada `docs[].targetLocales`.
 5. `expandJsonTargetLocalesInRawInput` - o mesmo para cada entrada `json[].targetLocales`.
 6. `parseI18nConfig` - validação Zod + `validateI18nBusinessRules`.
 7. `applyProviderOverrideToRawInput` - quando `-P` / `--provider` é passado na CLI.

@@ -5,17 +5,17 @@
 
 在 Docusaurus 網站上，也將 `docusaurusCatalogDir` 設定為您的 `write-translations` 目錄資料夾（例如 `docs-site/i18n/en`）。然後 `translate-docs` 也會包含 shell JSON — 導覽列、頁腳和主題字串。
 
-在 [VitePress](/guide/vitepress-integration) 網站上，頁面主體使用相同的 `docs[]` 管線。導覽列、側邊欄與頁尾標籤位於 `docsOutput.vitepressThemeCatalog` — `translate-docs` 會初始化英文目錄並將其與頁面一同翻譯，無需單獨的管線。
+在 [VitePress](/guide/integrations/vitepress) 網站上，頁面主體使用相同的 `docs[]` 管線。導覽列、側邊欄與頁尾標籤位於 `docsOutput.vitepressThemeCatalog` —— `translate-docs` 會初始化英文目錄並將其與頁面一起翻譯，無需單獨的管線。
 
-在 [Nextra](/guide/nextra-integration) 網站上，頁面主體使用與 `docsOutput.style: "nextra"` 相同的 `docs[]` 管線。`_meta.ts` 側邊欄標籤由 `translate-docs` 自動收集並翻譯；主題字典字串透過同一管線中的 `docs[].nextraDictionaryPath` 進行翻譯。
+在 [Nextra](/guide/integrations/nextra) 網站上，頁面主體使用與 `docsOutput.style: "nextra"` 相同的 `docs[]` 管線。`_meta.ts` 側邊欄標籤由 `translate-docs` 自動收集並翻譯；主題字典字串透過 `docs[].nextraDictionaryPath` 在相同管線中翻譯。
 
-在 [Fumadocs](/guide/fumadocs-integration) 網站上，頁面主體使用 `docsOutput.style: "fumadocs"` 搭配 `fumadocsParser` `"dot"`（預設）或 `"dir"`。`meta.json` 側邊欄標籤會自動收集；UI 覆寫透過 `docsOutput.fumadocsUiCatalog` 進行翻譯。
+在 [Fumadocs](/guide/integrations/fumadocs) 網站上，頁面主體使用 `docsOutput.style: "fumadocs"` 搭配 `fumadocsParser` `"dot"`（預設）或 `"dir"`。`meta.json` 側邊欄標籤會自動收集；UI 覆寫透過 `docsOutput.fumadocsUiCatalog` 翻譯。
 
 對於嵌入在 Markdown 中的 PNG 和其他點陣圖影像，請參閱[影像與螢幕截圖](/guide/images-and-screenshots/)。`translate-docs` 僅翻譯替代文字；它不複製點陣圖檔案。
 
 對於 README 或文件中可選的**語言切換器**區塊，請將 `docsOutput.style` 設定為 `"flat"` — 請參閱[語言切換器](/guide/documents/language-switcher)。
 
-當啟用 `features.translateSVG` 時，SVG 檔案透過 [`translate-svg`](/reference/cli-commands) 翻譯 — 而不是透過 `docs[]` / `contentPaths`。
+當啟用 `features.translateSVG` 時，SVG 檔案會透過 [`translate-svg`](/reference/cli-commands/content#translate-svg) 進行翻譯 — 而非透過 `docs[]` / `contentPaths`。
 
 與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/guide/json) 管線，而非 `docs[]`。
 
@@ -30,9 +30,9 @@
 | 您的設定 | 從這裡開始 |
 | --- | --- |
 | Docusaurus 網站 | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [步驟 1](#step-1-initialise-for-documentation) |
-| VitePress 網站 | 用於主題的 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 整合](/guide/vitepress-integration) |
-| Nextra 網站 | 用於字典的 `init -t ui-nextra` + `nextraDictionaryPath`（側邊欄 `_meta.ts` 為自動）— [Nextra 整合](/guide/nextra-integration) |
-| Fumadocs 網站 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用於 UI（側邊欄 `meta.json` 為自動）— [Fumadocs 整合](/guide/fumadocs-integration) |
+| VitePress 網站 | `init -t ui-vitepress` + `vitepressThemeCatalog` 用於主題 —— [VitePress 整合](/guide/integrations/vitepress) |
+| Nextra 網站 | `init -t ui-nextra` + `nextraDictionaryPath` 用於字典（側邊欄 `_meta.ts` 為自動） —— [Nextra 整合](/guide/integrations/nextra) |
+| Fumadocs 網站 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用於 UI（側邊欄 `meta.json` 為自動） —— [Fumadocs 整合](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [步驟 1](#step-1-initialise-for-documentation) |
 | 平面文件（README、變更日誌等） | `docsOutput.style = "flat"` — [輸出佈局](/guide/documents/output-layouts)，可選的[語言切換器](/guide/documents/language-switcher) |
 | 翻譯檔案的存放位置 | [輸出佈局](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-為導覽列/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` — 請參閱 [VitePress 整合](/guide/vitepress-integration)。
+為導覽列/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` —— 請參閱 [VitePress 整合](/guide/integrations/vitepress)。
 
 對於 Nextra 文件網站：
 
@@ -68,7 +68,7 @@ npx ai-i18n-tools init -t ui-vitepress
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-設定 `docs[].nextraDictionaryPath` 以用於主題字典字串 — 請參閱 [Nextra 整合](/guide/nextra-integration)。側邊欄 `_meta.ts` 標籤會自動收集。
+為主題字典字串設定 `docs[].nextraDictionaryPath` —— 請參閱 [Nextra 整合](/guide/integrations/nextra)。側邊欄 `_meta.ts` 標籤會自動收集。
 
 對於 Fumadocs 文件網站：
 
@@ -76,7 +76,7 @@ npx ai-i18n-tools init -t ui-nextra
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-設定 `docsOutput.fumadocsUiCatalog` 以用於 UI 覆寫 — 請參閱 [Fumadocs 整合](/guide/fumadocs-integration)。側邊欄 `meta.json` 標籤會自動收集。
+為 UI 覆寫設定 `docsOutput.fumadocsUiCatalog` —— 請參閱 [Fumadocs 整合](/guide/integrations/fumadocs)。側邊欄 `meta.json` 標籤會自動收集。
 
 適用於純 Astro 網站 UI（無 Starlight）：
 

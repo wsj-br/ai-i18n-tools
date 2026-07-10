@@ -5,17 +5,17 @@ Mukhya roop se **markdown, MDX, aur `.astro` documentation** ke liye design kiya
 
 Docusaurus sites par, `docusaurusCatalogDir` ko apne `write-translations` catalog folder (jaise `docs-site/i18n/en`) par bhi set karein. Phir `translate-docs` mein shell JSON bhi shamil hai — navbar, footer, aur theme strings.
 
-[VitePress](/guide/vitepress-integration) sites par, page bodies wahi `docs[]` pipeline use karte hain. Nav, sidebar, aur footer labels `docsOutput.vitepressThemeCatalog` mein hote hain — `translate-docs` English catalog ko bootstrap karta hai aur pages ke saath translate karta hai, koi alag pipeline nahi.
+[VitePress](/guide/integrations/vitepress) sites par, page bodies wahi `docs[]` pipeline use karte hain. Nav, sidebar, aur footer labels `docsOutput.vitepressThemeCatalog` mein hote hain — `translate-docs` English catalog ko bootstrap karta hai aur pages ke saath translate karta hai, koi alag pipeline nahi.
 
-[Nextra](/guide/nextra-integration) site par, page bodies `docs[]` pipeline ka upyog `docsOutput.style: "nextra"` ke saath karte hain. `_meta.ts` sidebar labels ko `translate-docs` dwara automatically collect aur translate kiya jaata hai; theme dictionary strings ko usi pipeline mein `docs[].nextraDictionaryPath` ke madhyam se translate kiya jaata hai.
+[Nextra](/guide/integrations/nextra) sites par, page bodies mein `docs[]` pipeline ka upyog `docsOutput.style: "nextra"` ke saath hota hai. `_meta.ts` sidebar labels ko `translate-docs` dwara swachalit roop se ikattha aur anuvad kiya jata hai; theme dictionary strings ka anuvad usi pipeline mein `docs[].nextraDictionaryPath` ke madhyam se hota hai.
 
-Fumadocs ([Fumadocs](/guide/fumadocs-integration)) par maiN page bodies mein `docsOutput.style: "fumadocs"` ka upyog `fumadocsParser` `"dot"` (default) ya `"dir"` ke saath kiya jaata hai. `meta.json` sidebar labels swachaalit roop se ikatthe kiye jaate hain; UI overrides `docsOutput.fumadocsUiCatalog` ke maadhyam se anuvaadit hote hain.
+[Fumadocs](/guide/integrations/fumadocs) sites par, page bodies `docsOutput.style: "fumadocs"` ka upyog karte hain, jismein `fumadocsParser` `"dot"` (default) ya `"dir"` hota hai. `meta.json` sidebar labels apne aap collect kiye jaate hain; UI overrides `docsOutput.fumadocsUiCatalog` ke madhyam se translate hote hain.
 
 Markdown mein embedded PNG aur anya raster images ke liye, [Images & Screenshots](/guide/images-and-screenshots/) dekhein. `translate-docs` kewal alt text ka anuvad karta hai; yeh raster files ko copy nahi karta hai.
 
 README ya docs mein ek optional **language switcher** block ke liye, `docsOutput.style` ko `"flat"` par set karein — [Language switcher](/guide/documents/language-switcher) dekhein.
 
-SVG files ka anuvad [`translate-svg`](/reference/cli-commands) ke madhyam se kiya jata hai jab `features.translateSVG` enable hota hai — `docs[]` / `contentPaths` ke madhyam se nahi.
+SVG files ko [`translate-svg`](/reference/cli-commands/content#translate-svg) ke madhyam se translate kiya jaata hai jab `features.translateSVG` enable hota hai — `docs[]` / `contentPaths` ke madhyam se nahi.
 
 Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strings se unrelated hain, unhe [JSON](/guide/json) pipeline mein hona chahiye, na ki `docs[]` mein.
 
@@ -30,9 +30,9 @@ Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strin
 | Aapka setup | Yahan se shuru karein |
 | --- | --- |
 | Docusaurus site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Step 1](#step-1-initialise-for-documentation) |
-| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` theme ke liye — [VitePress integration](/guide/vitepress-integration) |
-| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` dictionary ke liye (sidebar `_meta.ts` automatic hai) — [Nextra integration](/guide/nextra-integration) |
-| Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` UI ke liye (sidebar `meta.json` swachaalit hai) — [Fumadocs integration](/guide/fumadocs-integration) |
+| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` theme ke liye — [VitePress integration](/guide/integrations/vitepress) |
+| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` dictionary ke liye (sidebar `_meta.ts` automatic hai) — [Nextra integration](/guide/integrations/nextra) |
+| Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` UI ke liye (sidebar `meta.json` automatic hai) — [Fumadocs integration](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Step 1](#step-1-initialise-for-documentation) |
 | Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
 | Jahan anuvadit files aati hain | [Output layouts](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ VitePress documentation sites ke lie:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Nav/sidebar/footer strings ke liye `docsOutput.vitepressThemeCatalog` set karein — [VitePress integration](/guide/vitepress-integration) dekhein.
+Nav/sidebar/footer strings ke liye `docsOutput.vitepressThemeCatalog` set karein — [VitePress integration](/guide/integrations/vitepress) dekhein.
 
 Nextra documentation sites ke liye:
 
@@ -68,7 +68,7 @@ Nextra documentation sites ke liye:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-Theme dictionary strings ke liye `docs[].nextraDictionaryPath` set karein — [Nextra integration](/guide/nextra-integration) dekhein. Sidebar `_meta.ts` labels apne aap collect ho jaate hain.
+Theme dictionary strings ke liye `docs[].nextraDictionaryPath` set karein — [Nextra integration](/guide/integrations/nextra) dekhein. Sidebar `_meta.ts` labels automatically collect kiye jate hain.
 
 Fumadocs documentation sites ke liye:
 
@@ -76,7 +76,7 @@ Fumadocs documentation sites ke liye:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-UI overrides ke liye `docsOutput.fumadocsUiCatalog` set karein — [Fumadocs integration](/guide/fumadocs-integration) dekhein. Sidebar `meta.json` labels apne aap collect ho jaate hain.
+UI overrides ke liye `docsOutput.fumadocsUiCatalog` set karein — [Fumadocs integration](/guide/integrations/fumadocs) dekhein. Sidebar `meta.json` labels automatically collect kiye jate hain.
 
 Plain Astro website UI ke liye (koi Starlight nahi):
 

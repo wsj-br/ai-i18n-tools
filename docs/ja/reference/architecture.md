@@ -63,13 +63,13 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-`i18next-scanner`の`Parser.parseFuncFromString`を使用して、JS/TSファイル内の`t("literal")`および`i18n.t("literal")`呼び出しを検出します。`.astro`ソース（`ui.uiExtractor.extensions`に記載されている場合）については、`ui-string-babel.ts`がfrontmatterとテンプレート内の`{expression}`ブロックを`@babel/parser`で解析し、同じ`funcNames`ルールを適用します。関数名およびファイル拡張子は`ui.uiExtractor`で設定可能で、`ui.reactExtractor`はサポートされているエイリアスです。`extract`は**スキャナー以外の入力も同じカタログに統合します。**プロジェクトの`package.json` `description`（`includePackageDescription`が有効の場合、デフォルトで有効）および`includeUiLanguageEnglishNames`が`true`かつ`uiLanguagesPath`が設定されている場合の`ui-languages.json`からの各`englishName`（ソース内で既に見つかった文字列が優先されます）。セグメントのハッシュは、トリム済みのソース文字列の**MD5の最初の8桁の16進数**であり、これが`strings.json`内のキーとなります。
+JS/TSファイル内の`t("literal")`および`i18n.t("literal")`呼び出しを見つけるために、`i18next-scanner`の`Parser.parseFuncFromString`を使用します。`.astro`ソース（`ui.uiExtractor.extensions`にリストされている場合）について、`ui-string-babel.ts`はフロントマターとテンプレート`{expression}`ブロックを`@babel/parser`で解析し、同じ`funcNames`ルールを適用します。関数名とファイル拡張子は`ui.uiExtractor`で設定可能です（`ui.reactExtractor`はサポートされているエイリアスです）。`extract` **また、非スキャナー入力を同じカタログにマージします：** `includePackageDescription`が有効な場合（デフォルト）のプロジェクト`package.json` `description`、および`includeUiLanguageEnglishNames`が`true`の場合のバンドルされたui-languagesマスターカタログ（`sourceLocale` + `targetLocales`から構築）からの各`englishName`（ソースで既に見つかった文字列が優先されます；`languagesManifestPath`は読み取りません）。`extract`は`languagesManifestPath`で`ui-languages.json`も再生成します。セグメントハッシュは、トリムされたソース文字列の**MD5の最初の8文字の16進数**です。これらは`strings.json`のキーになります。
 
 `.html` / `.htm` ソース（`ui.uiExtractor.extensions`にリストされている場合）の場合、`extract`はファイルを`html-i18n-marks.ts`経由でルーティングし、`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカー属性（`ui.uiExtractor.htmlI18nAttributes`で設定可能）をスキャンします。ベアマーカーは要素自身の`textContent` / `title` / `placeholder`からソーステキストを取得します。値を持つマーカー（`data-i18n="Key"`）は値を使用します。同じモジュールが`mark-html`コマンドにも使用されており、ベアマーカーを自動的に挿入します。HTMLファイルはBabel / i18next-scannerのパスには到達しません。
 
-プレーンな Astro SSG サイトは i18next をスキップできます。ビルド時にフラットな `{locale}.json` をロードし、ソーステキストキーで `t('English')` を解決します (`examples/astro-website/src/i18n/t.ts` および [UI 文字列 — Astro ウェブサイト](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) を参照)。
+プレーンなAstro SSGサイトではi18nextをスキップし、ビルド時にフラットな`{locale}.json`を読み込み、ソーステキストキーで`t('English')`を解決できます（`examples/astro-website/src/i18n/t.ts`および[UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)を参照してください）。
 
-プレーンな HTML アプリは、`t()` 呼び出しの代わりにマーカー属性を使用して同じカタログモデルに従います — [翻訳用の HTML のマーク付け](/guide/ui-strings/plain-html#marking-html-for-translation) を参照してください。
+プレーンなHTMLアプリは、`t()`呼び出しの代わりにマーカー属性を使用して同じカタログモデルに従います — [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation)を参照してください。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@
 }
 ```
 
-`models`（任意）— 各ロケールごとに、そのロケールで最後に成功した`translate-ui`実行後にどのモデルが翻訳を生成したか（または翻訳ダッシュボードからテキストが保存された場合は`user-edited`）。`locations`（任意）— `extract`が文字列をどこで発見したか（スキャナー＋パッケージの説明行。マニフェスト専用の`englishName`文字列は`locations`を省略する場合あり）。
+`models` (オプション) — ロケールごとに、そのロケールの最後に成功した`translate-ui`実行後にどのモデルがその翻訳を生成したか（または、テキストが翻訳ダッシュボードから保存された場合は`user-edited`）。`locations` (オプション) — `extract`が文字列を見つけた場所（スキャナー + パッケージの説明行；バンドルされたマスター`englishName`文字列は`locations`を省略する場合があります）。
 
-`extract` は新しいキーを追加し、スキャンに引き続き存在するキーについては既存の `translated` / `models` データを保持します（スキャナーリテラル、オプションの説明、オプションのマニフェスト `englishName`）。`translate-ui` は欠落している `translated` エントリを補完し、翻訳対象のロケールの `models` を更新し、フラットロケールファイルを書き出します。
+`extract`は新しいキーを追加し、スキャンにまだ存在するキー（スキャナーリテラル、オプションの説明、オプションのバンドルされたマスター`englishName`）の既存の`translated` / `models`データを保持します。`translate-ui`は欠落している`translated`エントリを埋め、翻訳するロケールの`models`を更新し、フラットなロケールファイルを書き込みます。
 
-`ui-languages.json` **マニフェスト** — `{ code, label, englishName, direction }`（BCP-47 `code`、UI `label`、リファレンス `englishName`、`"ltr"` または `"rtl"`）のJSON配列。`generate-ui-languages` を使用して、`sourceLocale` と `targetLocales`、およびバンドルされたマスター `data/ui-languages-complete.json` からプロジェクトファイルを作成します。
+`ui-languages.json` **マニフェスト** — `{ code, label, englishName, direction }`のJSON配列（BCP-47 `code`、UI `label`、参照`englishName`、`"ltr"`または`"rtl"`）。`sourceLocale` + `targetLocales`およびバンドルされたマスター`data/ui-languages-complete.json`からプロジェクトファイルを構築するには、`generate-ui-languages`または`extract`を使用します。
 
 <a id="flat-locale-files"></a>
 ### フラットなロケールファイル
@@ -144,10 +144,10 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 
 すべてのエクストラクターは `BaseExtractor` を継承し、`extract(content, filepath): Segment[]` を実装しています。
 
-- `MarkdownExtractor` - Markdown を型付きセグメントに分割します: `frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML フロントマターは**翻訳不可**として分類されます (`slug`、`id`、およびその他のルーティングキーは安定しています)。トップレベルの `export ...` ブロック (例: React コンポーネント定義) は、既存の `import ...` 処理と並んで、翻訳不可の `other` セグメントとして分類されます。大文字の JSX タグで始まる複数行ブロック (例: `<Tabs>` ブロック) は、翻訳可能な段落として分類されます。翻訳不可のセグメント (コードブロック、生 HTML) はそのまま保持されます。
-- `AstroTemplateExtractor` - `.astro` マーケティングページ (`doc-translate.ts` の `translateAstroFile` 経由の `translate-docs`) の解析と置換を行います。ユーザー向けの HTML テキストノードと翻訳可能な属性 (`alt`、`title`、`aria-label`、`placeholder`)、およびユーザー向けのテンプレート `{expression}` ブロック内の文字列リテラルを抽出します。フロントマターの TypeScript、`<script>`、`<style>`、保護された属性/キー値、および `t('…')` 内のリテラルはスキップします。出力パスが深くなる場合 (例: `src/pages/de/index.astro`)、再構成によって相対インポートが調整されます。[Astro ウェブサイトのページ](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) を参照してください。
-- `JsonExtractor` - Docusaurus JSON ラベルファイル (Docusaurus UI カタログ、MDX 本文ではない) から文字列値を抽出します。
-- `SvgExtractor` - SVG から `<text>`、`<title>`、および `<desc>` コンテンツを抽出します (`translate-svg` が `config.svg` 以下のファイルに使用し、`translate-docs` は使用しません)。
+- `MarkdownExtractor` - Markdownを型付きセグメントに分割します：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAMLフロントマターは**non-translatable**に分類されます（`slug`、`id`、およびその他のルーティングキーは安定します）。トップレベルの`export ...`ブロック（例：Reactコンポーネント定義）は、既存の`import ...`処理とともに、翻訳不可の`other`セグメントとして分類されます。大文字のJSXタグで始まる複数行ブロック（例：`<Tabs>`ブロック）は、翻訳可能な段落として分類されます。翻訳不可のセグメント（コードブロック、生のHTML）はそのまま保持されます。
+- `AstroTemplateExtractor` - `.astro`マーケティングページ用の解析と置換（`doc-translate.ts`内の`translateAstroFile`経由の`translate-docs`）。ユーザー向けのHTMLテキストノードと翻訳可能な属性（`alt`、`title`、`aria-label`、`placeholder`）、およびユーザー向けの場合のテンプレート`{expression}`ブロック内の文字列リテラルを抽出します。フロントマターのTypeScript、`<script>`、`<style>`、保護された属性/キー値、および`t('…')`内のリテラルをスキップします。出力パスが深い場合、再構成時に相対インポートを調整します（例：`src/pages/de/index.astro`）。[Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照してください。
+- `JsonExtractor` - Docusaurus JSONラベルファイルから文字列値を抽出します（MDX本文ではなくDocusaurus UIカタログ）。
+- `SvgExtractor` - SVGから`<text>`、`<title>`、および`<desc>`コンテンツを抽出します（`config.svg`下のファイルに対して`translate-svg`で使用され、`translate-docs`では使用されません）。
 - `html-i18n-marks.ts` - `extract`が`.html` / `.htm`ソースに使用し、`mark-html`コマンドによって使用される、集中型のHTMLタグスキャナー。`collectHtmlI18nStrings` / `collectHtmlI18nLocations`は`data-i18n*`マーカー属性（ベアマーカー → 要素の`textContent` / `title` / `placeholder`、値を持つマーカー → 値）を読み取り、`markHtmlContent`はベアマーカーをリーフテキスト/タイトル/プレースホルダー要素に挿入します（冪等性があり、`data-i18n-ignore`を尊重し、コードのような要素や混合コンテンツ要素はスキップします）。共有の`normalizeI18nText`ヘルパーは、ビルド時のキーをブラウザランタイムと同じにします。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -215,7 +215,7 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 <a id="flat-link-rewriting"></a>
 ### フラットリンクの書き換え
 
-`docsOutput.style === "flat"`の場合、翻訳されたMarkdownファイルは、ロケールサフィックスを付けてソースの横に配置されます。ページ間の相対リンクは、`readme.de.md`内の`[Guide](./guide.md)`が`guide.de.md`を指すように書き換えられます。これは`rewriteRelativeLinks`によって制御されます（カスタム`pathTemplate`なしのフラットスタイルでは自動的に有効になります）。同じパスで、`postProcessing.regexAdjustments`が実行される前に、Markdown以外の資産URLにファイルごとの深さプレフィックスが追加されます。詳細については、[フラットリンク書き換え](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)を参照してください。
+`docsOutput.style === "flat"`の場合、翻訳されたMarkdownファイルは、ロケールサフィックス付きでソースと並んで配置されます。ページ間の相対リンクは、`readme.de.md`内の`[Guide](./guide.md)`が`guide.de.md`を指すように書き換えられます。`rewriteRelativeLinks`によって制御されます（カスタム`pathTemplate`のないフラットスタイルでは自動的に有効になります）。同じパスは、`postProcessing.regexAdjustments`が実行される前に、Markdown以外のアセットURLにファイルごとの深さのプレフィックスを付加します — [Flat link rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)を参照してください。
 
 ---
 
@@ -255,10 +255,10 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 
 `loadI18nConfigFromFile(configPath, cwd)`パイプライン：
 
-1. `ai-i18n-tools.config.json` を読み込み、解析する（JSON）。
-2. `mergeWithDefaults` — `defaultI18nConfigPartial` と深くマージし、`docs[].sourceFiles` エントリを `contentPaths` に統合する。
-3. `expandTargetLocalesFileReferenceInRawInput` — `targetLocales` がファイルパスの場合、マニフェストを読み込み、ロケールコードに展開し、`uiLanguagesPath` を設定する。
-4. `expandDocumentationTargetLocalesInRawInput` — 各 `docs[].targetLocales` エントリについて同様に処理。
+1. `ai-i18n-tools.config.json` (JSON) を読み取って解析します。
+2. `mergeWithDefaults` - `defaultI18nConfigPartial`とディープマージし、`docs[].sourceFiles`エントリを`contentPaths`にマージします。
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`を配列に強制変換し、パスのようなエントリを拒否します（`ui-languages.json`へのパスではなく、BCP-47コードである必要があります）；`languagesManifestPath`は`mergeWithDefaults`中に`{ui.flatOutputDir}/ui-languages.json`にデフォルト設定されます。
+4. `expandDocumentationTargetLocalesInRawInput` - 各`docs[].targetLocales`エントリについても同様です。
 5. `expandJsonTargetLocalesInRawInput` - 各 `json[].targetLocales` エントリで同じです。
 6. `parseI18nConfig` - Zod 検証 + `validateI18nBusinessRules`。
 7. `applyProviderOverrideToRawInput` - CLI で `-P` / `--provider` が渡された場合。

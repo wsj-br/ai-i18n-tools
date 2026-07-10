@@ -70,4 +70,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Tool UI language
 
-The CLI localizes its own help text, log summaries, and Translation Dashboard independently of the locales you translate. By default it follows your OS locale. Override with `-L pt-BR`, `export AI_I18N_LANG=es`, or `"uiLanguage"` in config. See [Tool UI language](/reference/environment-variables#tool-ui-language).
+The CLI localizes its own help text, log summaries, and Translation Dashboard independently of the locales you translate. By default it follows your OS locale. Override with `-L pt-BR`, `export AI_I18N_LANG=es`, or `"uiLanguage"` in config. See [Tool UI language](/guide/tool-ui-language).

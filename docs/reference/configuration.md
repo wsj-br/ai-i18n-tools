@@ -18,18 +18,21 @@ Array of BCP-47 locale codes to translate to (e.g. `["de", "fr", "es", "pt-BR"]`
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (optional)
 
-BCP-47 code for the tool's own UI language (CLI help, logs/summaries, and the Translation Dashboard). It is independent of `sourceLocale` / `targetLocales`, and is overridden by the `-L` / `--ui-lang` flag and the `AI_I18N_LANG` environment variable. Unknown values degrade gracefully to the source locale (`en-GB`) — there is no strict validation. See [Tool UI language](/reference/environment-variables#tool-ui-language).
+BCP-47 code for the tool's own UI language (CLI help, logs/summaries, and the Translation Dashboard). It is independent of `sourceLocale` / `targetLocales`, and is overridden by the `-L` / `--ui-lang` flag and the `AI_I18N_LANG` environment variable. Unknown values degrade gracefully to the source locale (`en-GB`) — there is no strict validation. See [Tool UI language](/guide/tool-ui-language).
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath` (optional)
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath` (optional)
 
-Path to the `ui-languages.json` manifest used for display names, locale filtering, and language-list post-processing. When omitted, the CLI looks for the manifest at `ui.flatOutputDir/ui-languages.json`.
+Root-level optional string (not nested under `ui`). Path where `extract` and `generate-ui-languages` write the `ui-languages.json` manifest, and where the CLI reads it for display names and language-list post-processing. When omitted, defaults to `ui.flatOutputDir/ui-languages.json` at config load.
 
 Use this when:
 
-- The manifest lives outside `ui.flatOutputDir` and you need to point the CLI at it explicitly.
-- You want [language switcher post-processing](#language-switcher-languagelistblock) (`languageListBlock`) to build locale labels from the manifest.
-- `extract` should merge `englishName` entries from the manifest into `strings.json` (requires `ui.reactExtractor.includeUiLanguageEnglishNames: true`).
+- The manifest should live outside `ui.flatOutputDir` (for example next to app helpers under `src/i18n/`).
+- You want [language switcher post-processing](#language-switcher-languagelistblock) (`languageListBlock`) to build locale labels from the project manifest rather than only the bundled master catalog.
+
+`includeUiLanguageEnglishNames` does **not** read this file — it uses the bundled master catalog (see `ui.uiExtractor` below).
+
+**Legacy:** root-level `uiLanguagesPath` is still accepted when loading a config file and is rewritten automatically to `languagesManifestPath`.
 
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
@@ -182,7 +185,7 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
   Custom path to the `package.json` file used for that optional description extraction.
 - `uiExtractor.includeUiLanguageEnglishNames` (or legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
-  When `true` (default `false`), `extract` also adds each `englishName` from the bundled ui-languages master catalog (built from `sourceLocale` + `targetLocales`) to `strings.json` when not already present from the source scan (same hash keys). Does not read `uiLanguagesPath`.
+  When `true` (default `false`), `extract` also adds each `englishName` from the bundled ui-languages master catalog (built from `sourceLocale` + `targetLocales`) to `strings.json` when not already present from the source scan (same hash keys). Does not read `languagesManifestPath`.
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -277,11 +280,11 @@ Rewrite relative links after translation (auto-enabled when `docsOutput.style = 
 - `docsOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `docsOutput.rewriteVitepressLinks`
-When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/vitepress-integration#readme-as-homepage).
+When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside English sources; dir writes locale folders like Nextra. See [Fumadocs integration — Page layout](/guide/fumadocs-integration#page-layout).
+`"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside English sources; dir writes locale folders like Nextra. See [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 When `true`, run the Fumadocs link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"fumadocs"`. Rewrites content paths and relative `.mdx` links to `/docs/…` routes.
 - `docsOutput.fumadocsUiCatalog`
@@ -301,7 +304,7 @@ Optional transforms on the translated **markdown body** (YAML keys and non-prose
 Ordered list of `{ "description"?, "search", "replace" }`. `search` is a regex pattern (plain string uses flag `g`, or `/pattern/flags`). `replace` supports placeholders such as `${translatedLocale}`, `${sourceLocale}`, `${sourceFullPath}`, `${translatedFullPath}`, `${sourceFilename}`, `${translatedFilename}`, `${sourceBasedir}`, `${translatedBasedir}`.
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — regenerates a bounded "read in other languages" link row in source and translated markdown. Requires `uiLanguagesPath` (or a manifest at `ui.flatOutputDir/ui-languages.json`) for endonym labels when `label: "local"`.
+`{ "start", "end", "separator", "label"? }` — regenerates a bounded "read in other languages" link row in source and translated markdown. Requires `languagesManifestPath` (or a manifest at `ui.flatOutputDir/ui-languages.json`) for endonym labels when `label: "local"`.
 
 **Behaviour and metadata**
 

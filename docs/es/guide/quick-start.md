@@ -68,7 +68,7 @@ Con el paquete instalado localmente, puedes usar los comandos CLI directamente e
 }
 ```
 
-**Sugerencia:** Pase `-L <code>` o establezca `AI_I18N_LANG` si desea la salida de la CLI y el panel de control en otro idioma; consulte [Idioma de la interfaz de usuario de la herramienta](/reference/environment-variables#tool-ui-language).
+**Consejo:** Pasa `-L <code>` o establece `AI_I18N_LANG` si quieres la salida de la CLI y el panel de control en otro idioma. Consulta [Idioma de la interfaz de usuario de la herramienta](/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Sincronización combinada

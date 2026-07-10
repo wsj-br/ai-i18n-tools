@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
+import { prefixVitepressThemeConfigLinks } from "ai-i18n-tools";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,8 +24,10 @@ function loadTheme(localeFile: string): ThemeCatalog {
   return JSON.parse(fs.readFileSync(p, "utf8")) as ThemeCatalog;
 }
 
-function themeConfigFor(t: ThemeCatalog) {
-  return {
+function themeConfigFor(t: ThemeCatalog, localeCode: string | null = null) {
+  const localeRoutePrefix = localeCode ? `/${localeCode}` : null;
+  return prefixVitepressThemeConfigLinks(
+    {
     nav: [{ text: t.nav.guide, link: "/guide/getting-started" }],
     sidebar: [
       {
@@ -43,13 +46,16 @@ function themeConfigFor(t: ThemeCatalog) {
     outline: {
       label: t.outline.label,
     },
+    langMenuLabel: t.langMenuLabel,
     search: {
       provider: "local" as const,
       options: {
         placeholder: t.search.placeholder,
       },
     },
-  };
+    },
+    localeRoutePrefix
+  );
 }
 
 const enTheme = loadTheme("theme.en.json");
@@ -79,7 +85,7 @@ for (const code of TARGET_LOCALES) {
     link: `/${code}/`,
     title: theme.site.title,
     description: theme.site.description,
-    themeConfig: themeConfigFor(theme),
+    themeConfig: themeConfigFor(theme, code),
   };
 }
 
@@ -88,4 +94,14 @@ export default defineConfig({
   description: enTheme.site.description,
   ignoreDeadLinks: [/\.\.\/ai-i18n-tools\.config\.json$/, /^http:\/\/localhost/],
   locales,
+  vite: {
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (warning.message.includes("/* #__PURE__ */")) return;
+          warn(warning);
+        },
+      },
+    },
+  },
 });

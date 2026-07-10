@@ -21,15 +21,17 @@ captura de pantalla
 
 ### Prueba este ejemplo por separado
 
+Copia solo esta carpeta de ejemplo e instala `ai-i18n-tools` desde npm:
+
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app
 cd nextjs-app
 pnpm install
 ```
 
-### Colaboradores del monorepositorio
+### Desde el repositorio completo de ai-i18n-tools
 
-Desde la raíz del repositorio, ejecute:
+Usa esto cuando hayas clonado todo el repositorio de **[ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)** (no solo esta carpeta con degit). Desde la raíz del repositorio, ejecuta:
 
 ```bash
 pnpm install
@@ -37,17 +39,13 @@ pnpm install
 
 La entrada del espacio de trabajo [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) fuerza a `ai-i18n-tools` a usar la copia local del espacio de trabajo aunque este ejemplo declare `"ai-i18n-tools": "^1.7.2"`. No se necesita ningún paso adicional de compilación o enlace: después de cambiar las fuentes de la biblioteca, ejecuta `pnpm run build` en la raíz del repositorio y el ejemplo cargará automáticamente la versión actualizada de `dist/`.
 
-**Directorio de trabajo:** Ejecute la aplicación Next.js y todos los comandos de `pnpm run i18n:*` desde `examples/nextjs-app` (donde reside `ai-i18n-tools.config.json`), o pase `--config` / establezca el directorio de trabajo para que la CLI resuelva esa configuración.
+**Directorio de trabajo:** Ejecuta la aplicación Next.js y todos los comandos de `pnpm run i18n:*` desde el directorio raíz de este ejemplo (después de degit ya estás en `nextjs-app/`; desde el monorepositorio usa `examples/nextjs-app/`, donde se encuentra `ai-i18n-tools.config.json`), o pasa `--config` / establece el directorio de trabajo para que la CLI resuelva esa configuración.
 
 ## Uso
 
+Ejecuta los comandos siguientes desde el directorio raíz de este ejemplo. Después de `npx degit …` ya estás allí (`cd nextjs-app`). Desde el repositorio completo de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), usa `cd examples/nextjs-app` en su lugar.
+
 ### Aplicación Next.js (puerto 3030)
-
-Desde la raíz del repositorio después de `pnpm install`:
-
-```bash
-cd examples/nextjs-app
-```
 
 Servidor de desarrollo:
 
@@ -79,8 +77,9 @@ La página de inicio también muestra una demostración SVG en la parte inferior
 
 ### Sitio de documentación (puerto 3040)
 
+Desde la carpeta anidada `docs-site/` (después de degit: `cd docs-site`; desde el monorepositorio: `cd examples/nextjs-app/docs-site`):
+
 ```bash
-cd examples/nextjs-app/docs-site
 pnpm install
 pnpm build
 pnpm start
@@ -142,12 +141,12 @@ ai-i18n-tools sync
 
 Los pasos se ejecutan en orden:
 
-1. ``ai-i18n-tools extract`` — extrae las cadenas de la interfaz y actualiza `locales/strings.json`.
-2. ``ai-i18n-tools translate-ui`` — genera JSON plano por idioma en `public/locales/` a partir de `locales/strings.json`.
-3. ``ai-i18n-tools translate-svg`` — traduce los archivos SVG de `images/` a `public/assets/` cuando `features.translateSVG` es verdadero y el bloque `svg` está definido en `ai-i18n-tools.config.json` (este ejemplo usa nombres planos: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — traduce el **contenido de las páginas** de Docusaurus (markdown/MDX en `docs-site/docs/`) a `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, y cuando `features.translateJSON` y `jsonSource` están definidos, también traduce el **JSON de shell** desde `docs-site/i18n/en/` (según `documentations[]` en `ai-i18n-tools.config.json`; véase el flujo de trabajo 2 en `docs/GETTING_STARTED.md` en la raíz del repositorio).
+1. ``ai-i18n-tools extract`` — extrae las cadenas de interfaz y actualiza `locales/strings.json`.
+2. ``ai-i18n-tools translate-ui`` — escribe JSON plano de idioma bajo `public/locales/` a partir de `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — traduce archivos SVG desde `images/` a `public/assets/` cuando `features.translateSVG` es verdadero y el bloque `svg` está configurado en `ai-i18n-tools.config.json` (este ejemplo usa nombres planos: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — traduce el **contenido de las páginas** de Docusaurus (markdown/MDX bajo `docs-site/docs/`) a `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`, y cuando `features.translateJSON` y `jsonSource` están configurados, también traduce el **JSON de shell** desde `docs-site/i18n/en/` (según `documentations[]` en `ai-i18n-tools.config.json`; consulta [Documents](..//guide/documents/) en el sitio de documentación).
 
-Puede ejecutar cualquier paso individualmente (por ejemplo, `ai-i18n-tools translate-svg`) cuando solo hayan cambiado las fuentes de ese flujo de trabajo.
+Puedes ejecutar cualquier paso individualmente (por ejemplo, `ai-i18n-tools translate-svg`) cuando solo hayan cambiado las fuentes de ese tipo de traducción.
 
 Si los registros muestran muchos saltos y pocas escrituras, la herramienta está reutilizando salidas existentes y la caché SQLite en `.translation-cache/`. Para forzar la re-traducción, pase `--force` o `--force-update` en el comando correspondiente donde esté soportado, o ejecute `pnpm run i18n:clean` (elimina solo `.translation-cache/` en esta carpeta) y traduzca nuevamente.
 

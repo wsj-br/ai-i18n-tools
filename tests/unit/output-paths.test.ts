@@ -8,6 +8,8 @@ import {
   shouldRewriteNextraLinks,
   shouldRewriteVitepressLinks,
   toPosix,
+  vitepressLinkNormalizeContext,
+  vitepressLocaleRoutePrefix,
 } from "../../src/core/output-paths.js";
 
 function cfg(over: Record<string, unknown> = {}) {
@@ -279,6 +281,21 @@ describe("output-paths", () => {
     expect(toPosix(out)).toBe("/proj/docs/pt-BR/index.md");
   });
 
+  it("vitepressLocaleRoutePrefix is set for locale output and null for root English paths", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["docs/index.md"],
+          outputDir: "docs",
+          docsOutput: { style: "vitepress", docsRoot: "docs" },
+        },
+      ],
+    });
+    expect(vitepressLocaleRoutePrefix(c, cwd, "pt-BR", "docs/index.md")).toBe("/pt-BR");
+    const ctx = vitepressLinkNormalizeContext(c, "docs/index.md", "pt-BR", cwd);
+    expect(ctx.localeRoutePrefix).toBe("/pt-BR");
+  });
+
   it("vitepress with localePathLowercase true lowercases locale folder", () => {
     const c = cfg({
       docs: [
@@ -333,6 +350,26 @@ describe("output-paths", () => {
       "markdown"
     );
     expect(toPosix(out)).toBe("/proj/content/pt-BR/guide/getting-started.mdx");
+  });
+
+  it("nextra json artifacts strip docsRoot like markdown (_meta.ts)", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["content/en"],
+          outputDir: "content",
+          docsOutput: { style: "nextra", docsRoot: "content/en" },
+        },
+      ],
+    });
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt-BR",
+      "content/en/guide/_meta.ts",
+      "json"
+    );
+    expect(toPosix(out)).toBe("/proj/content/pt-BR/guide/_meta.ts");
   });
 
   it("nextra preserves BCP-47 locale folder casing by default", () => {
@@ -444,7 +481,13 @@ describe("output-paths", () => {
         },
       ],
     });
-    const out = resolveDocumentationOutputPath(c, cwd, "pt", "content/docs/guide/start.mdx", "markdown");
+    const out = resolveDocumentationOutputPath(
+      c,
+      cwd,
+      "pt",
+      "content/docs/guide/start.mdx",
+      "markdown"
+    );
     expect(toPosix(out)).toBe("/proj/content/docs/guide/start.pt.mdx");
   });
 

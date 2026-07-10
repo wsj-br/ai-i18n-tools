@@ -100,9 +100,9 @@ Jab `translateJson` chalu hota hai, to `status` ek `json[]` section print karta 
 |-----------|-----|
 | JS/TS/Astro mein `t("…")` / `i18n.t("…")` mein UI strings | [UI strings](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, `json[]` **nahi** |
-| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **na karein** `json[]` ka upyog — [VitePress integration](/guide/vitepress-integration) dekhein |
-| Nextra `_meta.ts` labels aur theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` jab `style: "nextra"`, optional `nextraDictionaryPath`); **na karein** `json[]` ka upyog — [Nextra integration](/guide/nextra-integration) dekhein |
-| Fumadocs `meta.json` lebel aur UI override catalog | Dastavez — `translate-docs` (auto `meta.json` jab `style: "fumadocs"`, vaikalpik `fumadocsUiCatalog`); **nahin** upyog karein `json[]` — dekhein [Fumadocs integration](/guide/fumadocs-integration) |
+| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **na karein** `json[]` ka upyog — dekhein [VitePress integration](/guide/integrations/vitepress) |
+| Nextra `_meta.ts` labels aur theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` jab `style: "nextra"`, optional `nextraDictionaryPath`); **na karein** `json[]` ka upyog — dekhein [Nextra integration](/guide/integrations/nextra) |
+| Fumadocs `meta.json` labels aur UI overrides catalog | Documents — `translate-docs` (auto `meta.json` jab `style: "fumadocs"`, optional `fumadocsUiCatalog`); **na karein** `json[]` ka upyog — dekhein [Fumadocs integration](/guide/integrations/fumadocs) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>` ke saath illustrated `.svg` files | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (vaikalpik; teen mukhya pipelines mein se ek nahin) |
 

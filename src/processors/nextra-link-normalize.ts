@@ -19,8 +19,7 @@ function stripMdExtension(path: string): string {
 /** Map a docs-root-relative path to a Nextra site route (`/guide/...`). */
 export function docsPathToNextraRoute(docsRoot: string, subpath: string): string {
   const posix = toPosix(subpath);
-  const wantsTrailingSlash =
-    posix.endsWith("/") || /\/index(?:\.mdx?)?$/iu.test(posix);
+  const wantsTrailingSlash = posix.endsWith("/") || /\/index(?:\.mdx?)?$/iu.test(posix);
 
   const root = stripTrailingSlash(toPosix(docsRoot));
   let clean = stripMdExtension(stripTrailingSlash(posix));
@@ -65,10 +64,7 @@ function resolveRelativePath(fromDir: string, target: string): string {
  * Normalize one markdown URL for Nextra doc-system output.
  * Returns the original href when no rule applies.
  */
-export function normalizeOneNextraLink(
-  href: string,
-  ctx: NextraLinkNormalizeContext
-): string {
+export function normalizeOneNextraLink(href: string, ctx: NextraLinkNormalizeContext): string {
   const trimmed = href.trim();
   if (!trimmed) return trimmed;
   if (trimmed.startsWith("#")) return trimmed;
@@ -137,10 +133,7 @@ function rewriteUrlsInMarkdown(body: string, ctx: NextraLinkNormalizeContext): s
 }
 
 /** Rewrite markdown link targets for Nextra doc-system / nextra layout output. */
-export function normalizeNextraDocLinks(
-  body: string,
-  ctx: NextraLinkNormalizeContext
-): string {
+export function normalizeNextraDocLinks(body: string, ctx: NextraLinkNormalizeContext): string {
   return rewriteUrlsInMarkdown(body, {
     ...ctx,
     relPath: toPosix(ctx.relPath),

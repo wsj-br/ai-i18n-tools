@@ -26,6 +26,8 @@ export default tseslint.config(
       "examples/**/.astro/**",
       // External reference snapshots from other projects (temporary context only; deps may be missing).
       "references/**",
+      // Fixture sources read at runtime by tests; not part of the typed test project.
+      "tests/fixtures/**",
     ],
   },
   eslint.configs.recommended,

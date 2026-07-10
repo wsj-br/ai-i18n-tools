@@ -13,7 +13,7 @@
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "devDependencies": {
-    "ai-i18n-tools": "^1.7.2",
+    "ai-i18n-tools": "^1.8.0",
     "vitepress": "^2.0.0-alpha.17"
   },
   "engines": {

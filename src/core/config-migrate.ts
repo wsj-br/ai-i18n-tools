@@ -145,6 +145,18 @@ export function preprocessLegacyConfigInput(raw: unknown): unknown {
 
   migrateOpenrouterBlock(o);
 
+  if (o.uiLanguagesPath !== undefined && o.languagesManifestPath !== undefined) {
+    if (!stableJsonEqual(o.uiLanguagesPath, o.languagesManifestPath)) {
+      throw new ConfigValidationError(
+        'Config cannot set both "uiLanguagesPath" and "languagesManifestPath" with different values; use "languagesManifestPath" only.'
+      );
+    }
+    delete o.uiLanguagesPath;
+  } else if (o.uiLanguagesPath !== undefined && o.languagesManifestPath === undefined) {
+    o.languagesManifestPath = o.uiLanguagesPath;
+    delete o.uiLanguagesPath;
+  }
+
   return o;
 }
 
@@ -161,6 +173,9 @@ export function rawConfigHasLegacyKeys(json: unknown): boolean {
     return true;
   }
   if (Object.prototype.hasOwnProperty.call(o, "openrouter")) {
+    return true;
+  }
+  if (Object.prototype.hasOwnProperty.call(o, "uiLanguagesPath")) {
     return true;
   }
   const f = o.features;
@@ -214,6 +229,9 @@ export function maybeRewriteConfigFile(configPath: string, rawJson: unknown): Co
   }
   if (o.openrouter !== undefined) {
     messages.push('openrouter → providers.openrouter (+ provider: "openrouter")');
+  }
+  if (o.uiLanguagesPath !== undefined) {
+    messages.push("uiLanguagesPath → languagesManifestPath");
   }
   const f = o.features as Record<string, unknown> | undefined;
   if (f?.translateMarkdown !== undefined) {

@@ -100,9 +100,9 @@ When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, 
 |-----------|-----|
 | UI strings in `t("…")` / `i18n.t("…")` in JS/TS/Astro | [UI strings](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, **not** `json[]` |
-| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **do not** use `json[]` — see [VitePress integration](/guide/vitepress-integration) |
-| Nextra `_meta.ts` labels and theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` when `style: "nextra"`, optional `nextraDictionaryPath`); **do not** use `json[]` — see [Nextra integration](/guide/nextra-integration) |
-| Fumadocs `meta.json` labels and UI overrides catalog | Documents — `translate-docs` (auto `meta.json` when `style: "fumadocs"`, optional `fumadocsUiCatalog`); **do not** use `json[]` — see [Fumadocs integration](/guide/fumadocs-integration) |
+| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **do not** use `json[]` — see [VitePress integration](/guide/integrations/vitepress) |
+| Nextra `_meta.ts` labels and theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` when `style: "nextra"`, optional `nextraDictionaryPath`); **do not** use `json[]` — see [Nextra integration](/guide/integrations/nextra) |
+| Fumadocs `meta.json` labels and UI overrides catalog | Documents — `translate-docs` (auto `meta.json` when `style: "fumadocs"`, optional `fumadocsUiCatalog`); **do not** use `json[]` — see [Fumadocs integration](/guide/integrations/fumadocs) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
 | Illustrated `.svg` files with `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (optional; not one of the three main pipelines) |
 

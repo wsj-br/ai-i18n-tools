@@ -4,7 +4,11 @@ import chalk from "chalk";
 import type { I18nConfig } from "../core/types.js";
 import { t } from "../i18n/index.js";
 import { LlmClient } from "../api/llm-client.js";
-import { normalizeLocale, resolveAllConfiguredModelIds, resolveTranslationModels } from "../core/config.js";
+import {
+  normalizeLocale,
+  resolveAllConfiguredModelIds,
+  resolveTranslationModels,
+} from "../core/config.js";
 import { resolveActiveProvider, resolveProviderSettings } from "../core/llm-providers.js";
 import { getDocumentationTargetLocaleCodes } from "../core/ui-languages.js";
 import { renderTable } from "../utils/table.js";
@@ -98,9 +102,7 @@ export async function runBenchModels(
     return { exitCode: 1 };
   }
 
-  const overrideModels = (opts.models ?? [])
-    .map((m) => m.trim())
-    .filter((m) => m.length > 0);
+  const overrideModels = (opts.models ?? []).map((m) => m.trim()).filter((m) => m.length > 0);
   const translationModels = resolveTranslationModels(config);
   if (overrideModels.length === 0 && translationModels.length === 0) {
     console.error(
@@ -113,8 +115,7 @@ export async function runBenchModels(
     return { exitCode: 1 };
   }
 
-  const models =
-    overrideModels.length > 0 ? overrideModels : resolveAllConfiguredModelIds(config);
+  const models = overrideModels.length > 0 ? overrideModels : resolveAllConfiguredModelIds(config);
   if (models.length === 0) {
     console.error(
       chalk.red(
@@ -130,9 +131,7 @@ export async function runBenchModels(
   if (opts.text !== undefined && opts.text.trim().length > 0) {
     sampleText = opts.text;
   } else if (opts.file !== undefined && opts.file.trim().length > 0) {
-    const filePath = path.isAbsolute(opts.file)
-      ? opts.file
-      : path.resolve(projectRoot, opts.file);
+    const filePath = path.isAbsolute(opts.file) ? opts.file : path.resolve(projectRoot, opts.file);
     try {
       sampleText = fs.readFileSync(filePath, "utf8");
     } catch (e) {
@@ -183,9 +182,7 @@ export async function runBenchModels(
   }
 
   const effectiveConfig: I18nConfig =
-    sourceLocale === normalizeLocale(config.sourceLocale)
-      ? config
-      : { ...config, sourceLocale };
+    sourceLocale === normalizeLocale(config.sourceLocale) ? config : { ...config, sourceLocale };
 
   console.log(
     chalk.bold(
@@ -275,13 +272,7 @@ export async function runBenchModels(
   const totalCost = costKnownRows.reduce((acc, r) => acc + (r.costUsd ?? 0), 0);
   const someCostUnknown = okRows.some((r) => r.costUsd === undefined);
 
-  const headers = [
-    t("Model"),
-    t("Input"),
-    t("Output"),
-    t("Time"),
-    t("Cost (USD)"),
-  ];
+  const headers = [t("Model"), t("Input"), t("Output"), t("Time"), t("Cost (USD)")];
   const tableRows: string[][] = rows.map((r) =>
     r.ok
       ? [
@@ -318,7 +309,9 @@ export async function runBenchModels(
   if (someCostUnknown) {
     console.log(
       chalk.gray(
-        t("Note: cost is reported only by providers that return it (e.g. OpenRouter); shown as — otherwise.")
+        t(
+          "Note: cost is reported only by providers that return it (e.g. OpenRouter); shown as — otherwise."
+        )
       )
     );
     console.log();

@@ -9,11 +9,11 @@
 
 **별칭**(동일한 레이아웃 엔진, 사전 설정된 `localeSubpath`):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath`는 기본적으로 `docusaurus-plugin-content-docs/current`로 설정됩니다(Docusaurus i18n 플러그인 레이아웃).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath`는 기본적으로 `""`로 설정됩니다(`{outputDir}/{locale}/` 바로 아래에 번역된 페이지가 있으며, 영어 콘텐츠가 루트에 있고 `outputDir`이 `docsRoot`과 같을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치합니다).
-- `docsOutput.style = "vitepress"` — `doc-system`과 동일한 레이아웃이며 `localeSubpath`이 비어 있습니다. BCP-47 로케일 폴더 이름은 유지됩니다(`localePathLowercase`는 기본적으로 `false`으로 설정됩니다). [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
-- `docsOutput.style = "nextra"` — `doc-system`와 동일한 레이아웃이며 `localeSubpath`이 비어 있습니다. 영어 소스는 로케일 폴더(예: `content/en/`) 아래에 있습니다. [Nextra 통합](/guide/nextra-integration)을 참조하세요.
-- `docsOutput.style = "fumadocs"` — 비어 있는 `localeSubpath`를 제외하고 `doc-system`과 동일한 레이아웃입니다. 영어 소스는 점 접미사 파일(기본값) 또는 `fumadocsParser`가 `"dir"`일 때 로케일 폴더를 사용합니다. [Fumadocs 통합](/guide/fumadocs-integration)을 참조하세요.
+- `docsOutput.style = "docusaurus"` — `localeSubpath`의 기본값은 `docusaurus-plugin-content-docs/current`입니다 (Docusaurus i18n 플러그인 레이아웃).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`입니다 (번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치하며, 영어가 콘텐츠 루트에 있고 `outputDir`이 `docsRoot`일 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치합니다).
+- `docsOutput.style = "vitepress"` — `doc-system`과 동일한 레이아웃이지만 `localeSubpath`가 비어 있습니다; BCP-47 로케일 폴더 이름이 유지됩니다 (`localePathLowercase`의 기본값은 `false`). [VitePress 통합](/guide/integrations/vitepress)을 참조하세요.
+- `docsOutput.style = "nextra"` — `doc-system`과 동일한 레이아웃이지만 `localeSubpath`가 비어 있습니다; 영어 소스가 로케일 폴더 아래에 있습니다 (예: `content/en/`). [Nextra 통합](/guide/integrations/nextra)을 참조하세요.
+- `docsOutput.style = "fumadocs"` — `doc-system`과 동일한 레이아웃이지만 `localeSubpath`가 비어 있습니다; 영어 소스는 점 접미사 파일(기본값)을 사용하거나 `fumadocsParser`이 `"dir"`일 때 로케일 폴더를 사용합니다. [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하세요.
 
 Docusaurus 사전 설정(기본 문서 페이지):
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight는 여러 로케일의 UI 문자열을 제공하며, 필요 시 선택적 사용자 지정 UI 재정의는 별도의 `docs[]` 블록에서 `src/content/i18n/en.json`과 `jsonPathTemplate: "{outputDir}/{locale}.json"`을 사용합니다.
 
-VitePress 탐색/사이드바/바닥글 문자열은 마크다운에 없습니다. `docsOutput.vitepressThemeCatalog`을 구성하고 **`translate-docs`** 내에서 번역하세요. [VitePress 통합](/guide/vitepress-integration)을 참조하세요.
+VitePress 내비게이션/사이드바/푸터 문자열은 마크다운에 없습니다 — `docsOutput.vitepressThemeCatalog`를 구성하고 **`translate-docs`** 내에서 번역하세요. [VitePress 통합](/guide/integrations/vitepress)을 참조하세요.
 
-Nextra 테마 사전(`.ts`) 및 `_meta.ts` 사이드바 레이블은 마크다운에 없습니다. `style: "nextra"`일 때 `docs[].nextraDictionaryPath` 및 자동 `_meta` 컬렉션을 모두 **`translate-docs`** 내에서 사용하세요. [Nextra 통합](/guide/nextra-integration)을 참조하세요.
+Nextra 테마 사전(`.ts`)과 `_meta.ts` 사이드바 라벨은 마크다운에 없습니다 — `style: "nextra"`일 때 `docs[].nextraDictionaryPath`와 자동 `_meta` 수집을 사용하며, 모두 **`translate-docs`** 내에서 진행됩니다. [Nextra 통합](/guide/integrations/nextra)을 참조하세요.
 
-Fumadocs UI 재정의(`lib/layout.shared.ts`) 및 `meta.json` 사이드바 레이블은 마크다운에 없습니다. **`translate-docs`** 내에서 `style: "fumadocs"`일 때 `docsOutput.fumadocsUiCatalog` 및 자동 `meta.json` 컬렉션을 사용합니다. [Fumadocs 통합](/guide/fumadocs-integration)을 참조하세요.
+Fumadocs UI 오버라이드(`lib/layout.shared.ts`)와 `meta.json` 사이드바 라벨은 마크다운에 없습니다 — `style: "fumadocs"`일 때 `docsOutput.fumadocsUiCatalog`와 자동 `meta.json` 수집을 사용하며, 모두 **`translate-docs`** 내에서 진행됩니다. [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하세요.
 
 `docsOutput.style = "flat"` — 로케일 접미사가 붙거나 하위 디렉터리에 소스 옆에 번역된 파일을 배치함. `docsOutput.style = "flat"`일 경우 페이지 간 상대 링크가 자동으로 다시 작성됨(`rewriteRelativeLinks: false` 또는 사용자 지정 `pathTemplate`이 설정된 경우 제외).
 

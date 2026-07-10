@@ -846,7 +846,10 @@ export class LlmClient {
         continue;
       }
       try {
-        const { slots, lengthWarning } = parseProofreadUIBatchResponse(result.content, texts.length);
+        const { slots, lengthWarning } = parseProofreadUIBatchResponse(
+          result.content,
+          texts.length
+        );
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           slots,

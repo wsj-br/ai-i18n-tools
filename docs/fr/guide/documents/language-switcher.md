@@ -55,7 +55,7 @@ Si un fichier ne contient aucun bloc correspondant, l’interface en ligne de co
 <a id="4-label-manifest"></a>
 ## 4. Manifeste d’étiquettes
 
-Pour les étiquettes endonymes (`label: "local"`), générez ou maintenez `ui-languages.json` via `generate-ui-languages` (nécessite [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional)). La configuration de ce référentiel, qui ne concerne que la documentation, n’a pas de pipeline d’interface utilisateur, de sorte que les étiquettes proviennent du catalogue principal fourni pour `sourceLocale` + `targetLocales`.
+Pour les libellés d'endonyme (`label: "local"`), générer ou maintenir `ui-languages.json` via `generate-ui-languages` (écrit dans [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), qui par défaut est `{ui.flatOutputDir}/ui-languages.json`). La configuration docs-only de ce référentiel n'a pas de pipeline d'interface utilisateur et pas de manifeste de projet sur disque, les libellés proviennent donc du catalogue maître regroupé pour `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Exemples dans ce référentiel

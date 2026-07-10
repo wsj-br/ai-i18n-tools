@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (로케일 파일에서) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 변경 없음(리포지토리 경로에는 전체 URL 사용) |
 
-`README.md` → `docs/index.md`을 동기화하는 프로젝트의 경우, `README.md`에 `LICENSE`, `examples/` 및 VitePress 트리 외부의 다른 파일에 대한 전체 GitHub URL을 사용하세요. [VitePress 통합 — README를 문서 홈페이지로 사용](/guide/vitepress-integration#readme-as-homepage)을 참조하세요.
+`README.md` → `docs/index.md`로 동기화하는 프로젝트의 경우, VitePress 트리 외부의 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에서 전체 GitHub URL을 사용하세요. [VitePress 통합 — README를 문서 홈페이지로 사용](/guide/integrations/vitepress#readme-as-homepage)을 참조하세요.
 
-플랫 재작성기와 VitePress 정규화기는 `docs[]` 블록당 상호 배타적입니다. `regexAdjustments` 전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/guide/vitepress-integration#link-conventions)을 참조하십시오.
+플랫 리라이터와 VitePress 노멀라이저는 `docs[]` 블록마다 상호 배타적이며, `regexAdjustments` 이전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/guide/integrations/vitepress#link-conventions)을 참조하세요.
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 링크 정규화 도구 (`style: "nextra"`)
 
-`docsOutput.rewriteNextraLinks`가 `true`일 때 (`style`가 `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이 도구는 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하십시오.
+`docsOutput.rewriteNextraLinks`이(가) `true`인 경우(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/en/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하세요.
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs 링크 정규화 도구 (`style: "fumadocs"`)
 
-`docsOutput.rewriteFumadocsLinks`가 `true`일 때 (`style`가 `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이 도구는 `content/docs/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/guide/fumadocs-integration#link-conventions)을 참조하십시오.
+`docsOutput.rewriteFumadocsLinks`이(가) `true`인 경우(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/docs/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/guide/integrations/fumadocs#link-conventions)을 참조하세요.
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir`과 함께 사용하는 파일별 깊이 접두사

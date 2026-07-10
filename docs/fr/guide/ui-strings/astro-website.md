@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Site web Astro
 
-Pour les sites marketing ou d'applications Astro statiques (Astro simple, pas Starlight), combinez le [routage i18n intégré d'Astro](https://docs.astro.build/en/guides/internationalization/) avec ai-i18n-tools. Voir aussi l'[intégration Astro](/guide/astro-integration).
+Pour les sites marketing ou les applications Astro statiques (Astro simple, pas Starlight), combinez le [routage i18n intégré d'Astro](https://docs.astro.build/en/guides/internationalization/) avec ai-i18n-tools. Voir aussi l'[intégration Astro](/guide/integrations/astro).
 
 L'implémentation de référence est [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (voir aussi son [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)) : l'anglais à `/`, neuf locales cibles à `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-Les utilitaires d'assistance dans l'exemple : `src/i18n/utils.ts`, `src/i18n/locale.ts` et `ui-languages.json` pour les libellés, la direction et les codes BCP-47. Exécutez `generate-ui-languages` après avoir modifié `targetLocales` (vous pouvez éventuellement définir `ui.uiLanguagesPath` pour que le manifeste soit placé à côté de vos utilitaires, par exemple `src/i18n/ui-languages.json`). `MainLayout.astro` définit `<html lang>` et `<html dir>` à partir de `resolveUiLanguage(Astro.currentLocale)` ; `LanguagePicker.astro` utilise `getRelativeLocaleUrl` provenant de `astro:i18n`.
+Prise en charge des assistants dans l'exemple : `src/i18n/utils.ts`, `src/i18n/locale.ts` et `ui-languages.json` pour les étiquettes, la direction et les codes BCP-47. Exécutez `generate-ui-languages` après avoir modifié `targetLocales` (définissez éventuellement `languagesManifestPath` pour que le manifeste se trouve à côté de vos assistants, par exemple `src/i18n/ui-languages.json`). `MainLayout.astro` définit `<html lang>` et `<html dir>` à partir de `resolveUiLanguage(Astro.currentLocale)` ; `LanguagePicker.astro` utilise `getRelativeLocaleUrl` à partir de `astro:i18n`.
 
 <a id="pages-parse-and-replace"></a>
 ## Pages (analyse et remplacement)

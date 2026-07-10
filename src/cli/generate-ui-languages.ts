@@ -41,9 +41,11 @@ export function runGenerateUiLanguages(
   cwd: string,
   options: { masterPath: string; dryRun: boolean }
 ): GenerateUiLanguagesResult {
-  const uiPath = config.uiLanguagesPath?.trim();
+  const uiPath = config.languagesManifestPath?.trim();
   if (!uiPath) {
-    throw new Error(t("uiLanguagesPath must be set in config (output path for ui-languages.json)"));
+    throw new Error(
+      t("languagesManifestPath must be set in config (output path for ui-languages.json)")
+    );
   }
 
   const master = loadUiLanguagesMaster(path.resolve(options.masterPath));

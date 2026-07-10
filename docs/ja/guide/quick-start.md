@@ -68,7 +68,7 @@ npx ai-i18n-tools status
 }
 ```
 
-**ヒント:** CLI出力とダッシュボードを別の言語で表示したい場合は、`-L <code>`を渡すか、`AI_I18N_LANG`を設定します — [ツールUI言語](/reference/environment-variables#tool-ui-language)を参照してください。
+**ヒント:** CLI出力やダッシュボードを別の言語で表示したい場合は、`-L <code>` を渡すか `AI_I18N_LANG` を設定してください — [ツールUIの言語](/guide/tool-ui-language) を参照してください。
 
 <a id="combined-sync"></a>
 ## 結合された同期

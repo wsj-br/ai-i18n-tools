@@ -55,7 +55,7 @@ Agar kisi file mein koi matching block nahi hai, to CLI ek warning log karta hai
 <a id="4-label-manifest"></a>
 ## 4. Label manifest
 
-Endonym labels (`label: "local"`) ke liye, `ui-languages.json` ko `generate-ui-languages` ke madhyam se generate ya maintain karen ([`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional) ki avashyakta hai). Is repo ki docs-only config mein koi UI pipeline nahi hai, isliye labels `sourceLocale` + `targetLocales` ke liye bundled master catalog se aate hain.
+Endonym labels (`label: "local"`) ke liye, `generate-ui-languages` ke madhyam se `ui-languages.json` generate ya maintain karein (jo [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional) par likha gaya hai, jiska default `{ui.flatOutputDir}/ui-languages.json` hai). Is repo ke docs-only config mein koi UI pipeline aur disk par koi project manifest nahi hai, isliye labels `sourceLocale` + `targetLocales` ke liye bundled master catalog se aate hain.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Is repository mein udaharan

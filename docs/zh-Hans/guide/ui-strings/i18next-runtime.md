@@ -13,7 +13,7 @@ import { initReactI18next } from 'react-i18next';
 import aiI18n from 'ai-i18n-tools/runtime';
 
 // Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
-import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import uiLanguages from './locales/ui-languages.json'; // `languagesManifestPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
 import stringsJson from './locales/strings.json'; // `ui.stringsJson`
 import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
 
@@ -54,7 +54,7 @@ export default i18n;
 
 **保持三个值对齐：** `sourceLocale` 在 `ai-i18n-tools.config.json` 中，`SOURCE_LOCALE` 在此文件中，以及扁平化 JSON `translate-ui` 在您的扁平化输出目录（通常是 `public/locales/`）下写入为 `{sourceLocale}.json`。在静态 `import` 中使用相同的基本名称（上面的示例：`en-GB` → `en-GB.json`）。`sourcePluralFlatBundle` 中的 `lng` 字段必须等于 `SOURCE_LOCALE`。静态 ES `import` 路径不能使用变量；如果您更改源语言环境，请同时更新 `SOURCE_LOCALE` 和导入路径。或者，使用动态 `import(\` 加载该文件。/public/locales/${SOURCE_LOCALE}.json\`)`、`fetch` 或 `readFileSync`，以便路径从 `SOURCE_LOCALE` 构建。
 
-该代码段使用 `./locales/…` 和 `./public/locales/…`，就好像 `i18n` 位于这些文件夹旁边一样。如果您的文件位于 `src/`（典型情况）下，请使用 `../locales/…` 和 `../public/locales/…`，以便导入解析到与 `ui.stringsJson`、`uiLanguagesPath` 和 `ui.flatOutputDir` 相同的路径。
+该代码片段使用 `./locales/…` 和 `./public/locales/…`，就好像 `i18n` 与这些文件夹位于同级目录。如果你的文件位于 `src/` 下（典型情况），请使用 `../locales/…` 和 `../public/locales/…`，以便导入解析到与 `ui.stringsJson`、`languagesManifestPath` 和 `ui.flatOutputDir` 相同的路径。
 
 在 React 渲染之前导入 `i18n.js`（例如，在入口点的顶部）。当用户更改语言时，调用 `await loadLocale(code)` 然后调用 `await i18n.changeLanguage(code)`。
 

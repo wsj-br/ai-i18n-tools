@@ -4,7 +4,7 @@ Minimal [Nextra](https://nextra.site/) 4 site translated by [ai-i18n-tools](http
 
 English source pages live under `content/en/`. Translated copies are committed under `content/pt-BR/` and `content/zh-Hans/`. Theme strings live in `app/_dictionaries/en.ts`; sidebar labels are inline in `content/en/**/_meta.ts`. Both are translated via **`translate-docs`** (no `json[]` sidecars).
 
-Full integration guide: [Nextra integration](https://wsj-br.github.io/ai-i18n-tools/guide/nextra-integration/) on the main documentation site.
+Full integration guide: [Nextra integration](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/nextra/) on the main documentation site.
 
 ## Locales
 

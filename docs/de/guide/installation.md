@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Tool-UI-Sprache
 
-Die CLI lokalisiert ihre eigene Hilfetexte, Protokollzusammenfassungen und das Übersetzungs-Dashboard unabhängig von den von Ihnen übersetzten Gebietsschemas. Standardmäßig folgt sie dem Gebietsschema Ihres Betriebssystems. Überschreiben Sie dies mit `-L pt-BR`, `export AI_I18N_LANG=es` oder `"uiLanguage"` in der Konfiguration. Siehe [Tool-UI-Sprache](/reference/environment-variables#tool-ui-language).
+Die CLI lokalisiert ihre eigenen Hilfetexte, Protokollzusammenfassungen und das Übersetzungs-Dashboard unabhängig von den von Ihnen übersetzten Gebietsschemas. Standardmäßig folgt sie dem Gebietsschema Ihres Betriebssystems. Überschreiben Sie dies mit `-L pt-BR`, `export AI_I18N_LANG=es` oder `"uiLanguage"` in der Konfiguration. Siehe [Tool-UI-Sprache](/guide/tool-ui-language).

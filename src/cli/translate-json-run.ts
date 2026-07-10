@@ -21,10 +21,7 @@ import {
   type TranslateRunOptions,
   type TranslateTotals,
 } from "./doc-translate.js";
-import {
-  mergeTranslateTotals,
-  printTranslationRunSummary,
-} from "./translate-summary.js";
+import { mergeTranslateTotals, printTranslationRunSummary } from "./translate-summary.js";
 import {
   bindRunInterruptScope,
   interruptErrorFromSignal,
@@ -186,38 +183,32 @@ export async function translateNestedJsonFile(
     segmentIndicesInDoc.push(i);
   }
 
-  const {
-    map,
-    inTok,
-    outTok,
-    cost,
-    segmentValidationFailures,
-    individualSegmentTranslations,
-  } = await translateSegmentsBatched(
-    toBatch,
-    placeholderById,
-    new Map(),
-    locale,
-    glossary,
-    client,
-    opts.dryRun,
-    opts.verbose,
-    config.batchSize ?? 20,
-    config.maxBatchChars ?? 4096,
-    "json",
-    opts.batchConcurrency ?? config.batchConcurrency ?? 4,
-    translatePromptFormatToResponseFormat(opts.promptFormat),
-    {
-      relativePath: relSourcePath,
-      totalSegments: segments.length,
-      segmentIndicesInDoc,
-    },
-    undefined,
-    undefined,
-    { filepath: relSourcePath },
-    undefined,
-    opts.abortSignal
-  );
+  const { map, inTok, outTok, cost, segmentValidationFailures, individualSegmentTranslations } =
+    await translateSegmentsBatched(
+      toBatch,
+      placeholderById,
+      new Map(),
+      locale,
+      glossary,
+      client,
+      opts.dryRun,
+      opts.verbose,
+      config.batchSize ?? 20,
+      config.maxBatchChars ?? 4096,
+      "json",
+      opts.batchConcurrency ?? config.batchConcurrency ?? 4,
+      translatePromptFormatToResponseFormat(opts.promptFormat),
+      {
+        relativePath: relSourcePath,
+        totalSegments: segments.length,
+        segmentIndicesInDoc,
+      },
+      undefined,
+      undefined,
+      { filepath: relSourcePath },
+      undefined,
+      opts.abortSignal
+    );
 
   for (const [h, tr] of map) {
     translations.set(h, tr);
@@ -226,7 +217,8 @@ export async function translateNestedJsonFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segmentValidationFailures;
+  totals.segmentValidationFailures =
+    (totals.segmentValidationFailures ?? 0) + segmentValidationFailures;
   totals.individualSegmentTranslations =
     (totals.individualSegmentTranslations ?? 0) + individualSegmentTranslations;
   totals.segmentsCached = segmentsCached;

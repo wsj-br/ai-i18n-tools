@@ -98,7 +98,7 @@ Anule el texto de muestra, las configuraciones regionales o la lista de modelos:
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Detalles del comando: [Referencia de la CLI](/reference/cli-commands).
+Detalles del comando: [referencia de la CLI](/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Múltiples proveedores

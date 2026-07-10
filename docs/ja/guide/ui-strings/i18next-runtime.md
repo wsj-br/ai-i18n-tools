@@ -13,7 +13,7 @@ import { initReactI18next } from 'react-i18next';
 import aiI18n from 'ai-i18n-tools/runtime';
 
 // Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
-import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import uiLanguages from './locales/ui-languages.json'; // `languagesManifestPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
 import stringsJson from './locales/strings.json'; // `ui.stringsJson`
 import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
 
@@ -54,7 +54,7 @@ export default i18n;
 
 **3つの値を一致させてください：** `ai-i18n-tools.config.json` 内の `sourceLocale`、このファイル内の `SOURCE_LOCALE`、およびフラット出力ディレクトリ（通常は `public/locales/`）の下に `translate-ui` が作成する複数形対応のフラットJSON `{sourceLocale}.json`。静的 `import` 内でも同じベースネームを使用してください（上記の例：`en-GB` → `en-GB.json`）。`sourcePluralFlatBundle` 内の `lng` フィールドは `SOURCE_LOCALE` と等しくなければなりません。静的なES `import` のパスには変数を使用できません。ソースロケールを変更する場合は、`SOURCE_LOCALE` とインポートパスを同時に更新してください。あるいは、動的な `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`、`fetch`、または `readFileSync` を使ってファイルを読み込み、パスを `SOURCE_LOCALE` から構築する方法もあります。
 
-このスニペットでは、`i18n` がこれらのフォルダの隣にあるかのように `./locales/…` と `./public/locales/…` を使用しています。ファイルが `src/` の下にある場合（一般的なケース）、インポートが `ui.stringsJson`、`uiLanguagesPath`、`ui.flatOutputDir` と同じパスに解決されるように `../locales/…` と `../public/locales/…` を使用してください。
+このスニペットでは、`i18n` がそれらのフォルダーと同じ階層にあるかのように `./locales/…` と `./public/locales/…` が使用されます。ファイルが `src/` の配下にある場合（典型的なケース）、`ui.stringsJson`、`languagesManifestPath`、`ui.flatOutputDir` と同じパスにインポートが解決されるように、`../locales/…` と `../public/locales/…` を使用してください。
 
 React がレンダリングされる前に `i18n.js` をインポートします (例: エントリ ポイントの先頭)。ユーザーが言語を変更した場合は、`await loadLocale(code)` を呼び出し、次に `await i18n.changeLanguage(code)` を呼び出します。
 

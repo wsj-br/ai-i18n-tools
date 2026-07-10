@@ -38,7 +38,7 @@ makeLoadLocale(
 
 Use `setupKeyAsDefaultT` as the usual app entry point (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Calling `wrapI18nWithKeyTrim` alone is **deprecated** for application wiring.
 
-Build `localeLoaders` with `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` so keys stay aligned with `targetLocales` after `generate-ui-languages`. See `docs/guide/ui-strings/i18next-runtime.md` (runtime wiring), `examples/nextjs-app/`, `examples/console-app/`, and `examples/astro-website/` (custom `makeT` without i18next).
+Build `localeLoaders` with `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` so keys stay aligned with `targetLocales` after `generate-ui-languages`. See [Runtime wiring](/guide/ui-strings/i18next-runtime), [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/), [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/), and [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (custom `makeT` without i18next).
 
 <a id="display-helpers"></a>
 ### Display helpers

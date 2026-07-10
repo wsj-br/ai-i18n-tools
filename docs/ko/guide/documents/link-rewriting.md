@@ -18,11 +18,11 @@
 
 사용자 지정 `pathTemplate`는 `rewriteRelativeLinks: true`을 명시적으로 설정하지 않는 한 플랫 재작성기를 비활성화합니다. 페이지 간 `#anchor` 처리에 대해서는 [출력 레이아웃](/guide/documents/output-layouts) 및 [앵커 링크](/guide/documents/anchor-links)를 참조하세요.
 
-VitePress별 작성 규칙은 [VitePress 통합 — 링크 규칙](/guide/vitepress-integration#link-conventions)을 참조하세요.
+VitePress 전용 작성 규칙은 [VitePress 통합 — 링크 규칙](/guide/integrations/vitepress#link-conventions)을 참조하세요.
 
-Nextra별 작성 규칙은 [Nextra 통합 — 링크 규칙](/guide/nextra-integration#link-conventions)을 참조하세요.
+Nextra 전용 작성 규칙은 [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하세요.
 
-Fumadocs별 작성 규칙은 [Fumadocs 통합 — 링크 규칙](/guide/fumadocs-integration#link-conventions)을 참조하세요.
+Fumadocs 전용 작성 규칙은 [Fumadocs 통합 — 링크 규칙](/guide/integrations/fumadocs#link-conventions)을 참조하세요.
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

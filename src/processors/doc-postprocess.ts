@@ -16,7 +16,7 @@ import {
   resolveBundledUiLanguagesCompletePath,
 } from "../core/ui-languages-catalog.js";
 import { normalizeManifestLocaleKey } from "../core/locale-utils.js";
-import { loadUiLanguageEntries, resolveUiLanguagesAbsPath } from "../core/ui-languages.js";
+import { loadUiLanguageEntries, resolveLanguagesManifestAbsPath } from "../core/ui-languages.js";
 
 const ADJUSTMENT_PLACEHOLDER_RE = /\$\{([a-zA-Z][a-zA-Z0-9_]*)\}/g;
 
@@ -161,7 +161,7 @@ export function buildLanguageSwitcherRows(
   cwd: string
 ): Array<{ code: string; label: string }> {
   const labelStyle = config.doc.docsOutput.postProcessing?.languageListBlock?.label ?? "local";
-  const abs = resolveUiLanguagesAbsPath(config as unknown as I18nConfig, cwd);
+  const abs = resolveLanguagesManifestAbsPath(config as unknown as I18nConfig, cwd);
   if (abs && fs.existsSync(abs)) {
     const entries = loadUiLanguageEntries(abs);
     return entries.map((e) => ({

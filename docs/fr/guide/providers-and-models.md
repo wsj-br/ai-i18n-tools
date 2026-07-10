@@ -98,7 +98,7 @@ Remplacez le texte de l'échantillon, les locales ou la liste de modèles :
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Détails de la commande : [Référence CLI](/reference/cli-commands).
+Détails de la commande : [Référence CLI](/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Plusieurs fournisseurs

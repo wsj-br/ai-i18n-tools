@@ -21,15 +21,17 @@
 
 ### جرّب هذا المثال بشكل منفصل
 
+انسخ هذا المجلد المثال فقط وقم بتثبيت `ai-i18n-tools` من npm:
+
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app
 cd nextjs-app
 pnpm install
 ```
 
-### مساهمو المستودع الموحّد (Monorepo)
+### من مستودع ai-i18n-tools الكامل
 
-من الجذر الخاص بالمستودع، قم بتشغيل:
+استخدم هذا عندما تقوم بنسخ المستودع **الكامل** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) (وليس فقط هذا المجلد باستخدام degit). من جذر المستودع، قم بتشغيل:
 
 ```bash
 pnpm install
@@ -37,17 +39,13 @@ pnpm install
 
 إدخال المساحة العاملة [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) يُجبر `ai-i18n-tools` على استخدام النسخة المحلية من المساحة العاملة، حتى وإن كان هذا المثال يعلن عن `"ai-i18n-tools": "^1.7.2"`. لا حاجة لخطوة بناء أو ربط منفصلة — بعد تعديل مصادر المكتبة، قم بتشغيل `pnpm run build` في الجذر الخاص بالمستودع وسيتم تلقائيًا التقاط النسخة المحدّثة من `dist/` بواسطة المثال.
 
-**دليل العمل:** قم بتشغيل تطبيق Next.js وجميع أوامر `pnpm run i18n:*` من `examples/nextjs-app` (حيث يوجد `ai-i18n-tools.config.json`)، أو قم بتمرير `--config` / تعيين دليل العمل بحيث يمكن للأداة سطر الأوامر (CLI) تحديد هذا الإعداد.
+**دليل العمل:** قم بتشغيل تطبيق Next.js وجميع أوامر `pnpm run i18n:*` من دليل الجذر الخاص بهذا المثال (بعد degit تكون بالفعل في `nextjs-app/`؛ من المستودع الموحّد استخدم `examples/nextjs-app/`، حيث يوجد `ai-i18n-tools.config.json`)، أو قم بتمرير `--config` / تعيين دليل العمل بحيث يقوم واجهة سطر الأوامر (CLI) بحل هذا التكوين.
 
 ## الاستخدام
 
+قم بتشغيل الأوامر أدناه من دليل الجذر الخاص بهذا المثال. بعد `npx degit …` تكون بالفعل في هذا الموقع (`cd nextjs-app`). من المستودع الكامل [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)، استخدم بدلاً من ذلك `cd examples/nextjs-app`.
+
 ### تطبيق Next.js (المنفذ 3030)
-
-من جذر المستودع بعد `pnpm install`:
-
-```bash
-cd examples/nextjs-app
-```
 
 خادم التطوير:
 
@@ -79,8 +77,9 @@ pnpm start
 
 ### موقع التوثيق (المنفذ 3040)
 
+من المجلد المتداخل `docs-site/` (بعد degit: `cd docs-site`؛ من المستودع الموحّد: `cd examples/nextjs-app/docs-site`):
+
 ```bash
-cd examples/nextjs-app/docs-site
 pnpm install
 pnpm build
 pnpm start
@@ -142,12 +141,12 @@ ai-i18n-tools sync
 
 الخطوات تُنفّذ بالترتيب:
 
-1. ``ai-i18n-tools extract`` — يستخرج سلاسل واجهة المستخدم ويحدّث `locales/strings.json`.
-2. ``ai-i18n-tools translate-ui`` — يُولّد ملفات JSON مسطّحة حسب اللغة ضمن `public/locales/` من `locales/strings.json`.
-3. ``ai-i18n-tools translate-svg`` — يترجم ملفات SVG من `images/` إلى `public/assets/` عندما تكون قيمة `features.translateSVG` صحيحة ويكون كتلة `svg` مضبوطة في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطّحة: `translation_demo_svg.<locale>.svg`).
-4. ``ai-i18n-tools translate-docs`` — يترجم محتوى **الصفحة** في Docusaurus (ملفات markdown/MDX ضمن `docs-site/docs/`) إلى `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`، وعند تعيين `features.translateJSON` و `jsonSource`، يترجم أيضًا **ملفات JSON للواجهة** من `docs-site/i18n/en/` (حسب `documentations[]` في `ai-i18n-tools.config.json`؛ انظر سير العمل 2 في `docs/GETTING_STARTED.md` في جذر المستودع).
+1. ``ai-i18n-tools extract`` — يستخرج سلاسل الواجهة ويحدّث `locales/strings.json`.
+2. ``ai-i18n-tools translate-ui`` — يكتب ملفات JSON للغات مسطحة ضمن `public/locales/` من `locales/strings.json`.
+3. ``ai-i18n-tools translate-svg`` — يترجم ملفات SVG من `images/` إلى `public/assets/` عندما تكون قيمة `features.translateSVG` صحيحة ويكون كتلة `svg` مضبوطة في `ai-i18n-tools.config.json` (يستخدم هذا المثال أسماء مسطحة: `translation_demo_svg.<locale>.svg`).
+4. ``ai-i18n-tools translate-docs`` — يترجم محتوى **الصفحة** في Docusaurus (ملفات markdown/MDX ضمن `docs-site/docs/`) إلى `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`، وعند تعيين `features.translateJSON` و `jsonSource`، يترجم أيضًا ملفات **JSON للواجهة** من `docs-site/i18n/en/` (وفقًا لـ `documentations[]` في `ai-i18n-tools.config.json`؛ انظر [الوثائق](..//guide/documents/) في موقع الوثائق).
 
-يمكنك تشغيل أي خطوة بشكل منفصل (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بذلك المسار.
+يمكنك تشغيل أي خطوة بشكل منفصل (مثلاً `ai-i18n-tools translate-svg`) عندما تتغير فقط المصادر الخاصة بنوع الترجمة هذا.
 
 إذا أظهرت السجلات تخطيًا كثيرًا وكتابة قليلة، فإن الأداة تعيد استخدام المخرجات الحالية والذاكرة المؤقتة SQLite في `.translation-cache/`. لإجبار إعادة الترجمة، مرر `--force` أو `--force-update` في الأمر المناسب عند دعم ذلك، أو قم بتشغيل `pnpm run i18n:clean` (يحذف فقط `.translation-cache/` في هذا المجلد) ثم قم بالترجمة مجددًا.
 

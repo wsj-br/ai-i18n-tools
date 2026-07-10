@@ -242,17 +242,17 @@ Edit `ai-i18n-tools.config.json`: set `docs[].contentPaths` to markdown, MDX, an
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` scaffolds `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings. Run `sync` to translate page markdown and the theme catalog together — no separate JSON pipeline. See [VitePress integration](docs/guide/vitepress-integration.md) and [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+`init -t ui-vitepress` scaffolds `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings. Run `sync` to translate page markdown and the theme catalog together — no separate JSON pipeline. See [VitePress integration](docs/guide/integrations/vitepress.md) and [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra` scaffolds `docsOutput.style: "nextra"`. `translate-docs` automatically collects and translates `_meta.ts` sidebar labels; set `docs[].nextraDictionaryPath` to also translate the theme dictionary module (e.g. `app/_dictionaries/en.ts`) — all in the same `sync` run, no JSON sidecars. See [Nextra integration](docs/guide/nextra-integration.md) and [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
+`init -t ui-nextra` scaffolds `docsOutput.style: "nextra"`. `translate-docs` automatically collects and translates `_meta.ts` sidebar labels; set `docs[].nextraDictionaryPath` to also translate the theme dictionary module (e.g. `app/_dictionaries/en.ts`) — all in the same `sync` run, no JSON sidecars. See [Nextra integration](docs/guide/integrations/nextra.md) and [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs` scaffolds `docsOutput.style: "fumadocs"` with the dot parser (default) or dir parser for Nextra-style locale folders. `translate-docs` automatically collects and translates `meta.json` sidebar labels; set `docsOutput.fumadocsUiCatalog` to also translate UI overrides in `lib/layout.shared.ts` — all in the same `sync` run, no JSON sidecars. See [Fumadocs integration](docs/guide/fumadocs-integration.md) and [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
+`init -t ui-fumadocs` scaffolds `docsOutput.style: "fumadocs"` with the dot parser (default) or dir parser for Nextra-style locale folders. `translate-docs` automatically collects and translates `meta.json` sidebar labels; set `docsOutput.fumadocsUiCatalog` to also translate UI overrides in `lib/layout.shared.ts` — all in the same `sync` run, no JSON sidecars. See [Fumadocs integration](docs/guide/integrations/fumadocs.md) and [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
@@ -341,28 +341,21 @@ ai-i18n-tools help [command]
 
 For plain HTML apps, annotate elements with bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers (the source text is taken from the element's own textContent / title / placeholder, written once); `mark-html` inserts them for you and `extract` then captures them into `strings.json`. See [Marking HTML for translation](docs/guide/ui-strings/plain-html.md#marking-html-for-translation).
 
-Complete per-command flag lists are in [CLI reference](docs/reference/cli-commands.md). Run `ai-i18n-tools <command> --help` for built-in usage text.
+Complete per-command flag lists are in [CLI reference](docs/reference/cli-commands/). Run `ai-i18n-tools <command> --help` for built-in usage text.
 
-Global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (override the active LLM provider; must be configured under `providers`), `-L` / `--ui-lang <code>` (language for the tool's own UI/logs), `-V` / `--version`, and `-h` / `--help` — accepted on every command. `-w` / `--write-logs [path]` tees console output to a log file (default: under the translation cache directory), but only takes effect on the translation and sync commands (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `proofread-ui` uses a single source locale. See [CLI reference](docs/reference/cli-commands.md) for the command overview table.
+Global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (override the active LLM provider; must be configured under `providers`), `-L` / `--ui-lang <code>` (language for the tool's own UI/logs), `-V` / `--version`, and `-h` / `--help` — accepted on every command. `-w` / `--write-logs [path]` tees console output to a log file (default: under the translation cache directory), but only takes effect on the translation and sync commands (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Several commands accept `-l` / `--locale <codes>` (comma-separated BCP-47) to limit target locales; `proofread-ui` uses a single source locale. See [CLI reference](docs/reference/cli-commands/) for the command overview.
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### Tool UI language (logs, help, dashboard)
 
-The tool localizes its own CLI help, high-traffic log/summary messages, and the Translation Dashboard. The UI locale is resolved from these sources, highest priority first:
-
-1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`).
-2. `AI_I18N_LANG` environment variable (e.g. `export AI_I18N_LANG=es`).
-3. The `uiLanguage` config key in `ai-i18n-tools.config.json` (BCP-47 string).
-4. The host OS locale (via `Intl.DateTimeFormat().resolvedOptions().locale`).
-
-The requested locale is matched against the shipped UI languages exactly or by closest variation (for example `pt-PT` resolves to `pt-BR`, and `en-US` resolves to `en-GB`); when nothing matches it falls back to the source locale (`en-GB`). When a UI language is requested explicitly (via the flag, env var, or `uiLanguage`) but no shipped bundle matches, the CLI prints a one-time warning that the default locale will be used; a locale inferred only from the host OS never warns. This is independent of your project's `sourceLocale` / `targetLocales`. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, and `zh-Hant`. No configuration required — by default the tool follows your OS locale. See [Tool UI language](docs/reference/environment-variables.md#tool-ui-language) for details.
+The tool localizes its own CLI help, log summaries, and Translation Dashboard independently of the locales you translate. By default it follows your OS locale; override with `-L pt-BR`, `export AI_I18N_LANG=es`, or `"uiLanguage"` in config. See [Tool UI language](docs/guide/tool-ui-language.md) for locale resolution, shipped languages, and dashboard behaviour.
 
 ---
 
 <a id="documentation"></a>
 ## Documentation
 
-- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — full VitePress guide (9 locales on GitHub Pages).
+- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — VitePress guide (9 locales on GitHub Pages); slim entry point with links into the full guide.
 - [Quick start](docs/guide/quick-start.md) — setup for UI strings, documents, and JSON (UI, docs/`.astro`, JSON bundles, VitePress, Nextra, Fumadocs, Astro Starlight and plain Astro).
 - [Locale assets guide](docs/guide/images-and-screenshots/) - screenshots and illustrated SVGs in translated docs (flat link rewriter, screenshot scripts).
 - [Architecture](docs/reference/architecture.md) - architecture, internals, programmatic API, and extension points.

@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 默认监听端口是 **8675**。如果该端口不可用，服务器将尝试下一个端口（最多尝试 1000 次）并记录所选端口。已弃用的别名 `editor` 仍然可用，但会显示警告 — 请优先使用 `dashboard`。
 
-仪表板 UI 使用与 CLI 相同的区域设置解析：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/reference/environment-variables#tool-ui-language)。
+仪表板 UI 使用与 CLI 相同的区域设置解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/guide/tool-ui-language)。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

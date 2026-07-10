@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (来自本地化文件) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 未更改（对仓库路径使用完整 URL） |
 
-对于将 `README.md` 同步到 `docs/index.md` 的项目，请在 `README.md` 中使用完整的 GitHub URL，用于 `LICENSE`、`examples/` 以及 VitePress 树之外的其他文件。请参阅[VitePress 集成 — README 作为文档主页](/guide/vitepress-integration#readme-as-homepage)。
+对于同步 `README.md` → `docs/index.md` 的项目，请在 `README.md` 中为 `LICENSE`、`examples/` 以及 VitePress 目录树之外的其他文件使用完整的 GitHub URL。请参阅 [VitePress 集成 — 将 README 作为文档主页](/guide/integrations/vitepress#readme-as-homepage)。
 
-平面重写器和 VitePress 规范化器在每个 `docs[]` 块中是互斥的 — 在 `regexAdjustments` 之前只有一个运行。请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
+扁平重写器和 VitePress 规范化器在每个 `docs[]` 块中互斥——在 `regexAdjustments` 之前仅运行其中一个。请参阅 [VitePress 集成 — 链接约定](/guide/integrations/vitepress#link-conventions)。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 链接规范化器 (`style: "nextra"`)
 
-当 `docsOutput.rewriteNextraLinks` 为 `true`（`style` 为 `"nextra"` 时的默认值）时，在片段重组后会运行一个单独的规范化器。它会将 `content/en/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/guide/nextra-integration#link-conventions)。
+当 `docsOutput.rewriteNextraLinks` 为 `true` 时（当 `style` 为 `"nextra"` 时的默认值），在片段重组后会运行一个单独的规范化器。它将 `content/en/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/guide/integrations/nextra#link-conventions)。
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs 链接规范化器 (`style: "fumadocs"`)
 
-当 `docsOutput.rewriteFumadocsLinks` 为 `true`（`style` 为 `"fumadocs"` 时的默认值）时，在片段重组后会运行一个单独的规范化器。它会将 `content/docs/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/docs/…`)。请参阅 [Fumadocs 集成 — 链接约定](/guide/fumadocs-integration#link-conventions)。
+当 `docsOutput.rewriteFumadocsLinks` 为 `true` 时（当 `style` 为 `"fumadocs"` 时的默认值），在片段重组后会运行一个单独的规范化器。它将 `content/docs/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/docs/…`)。请参阅 [Fumadocs 集成 — 链接约定](/guide/integrations/fumadocs#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 使用 `flatPreserveRelativeDir` 进行逐文件深度前缀

@@ -18,11 +18,11 @@
 
 自定义 `pathTemplate` 会禁用平面重写器，除非您明确设置 `rewriteRelativeLinks: true`。有关跨页面 `#anchor` 处理，请参阅[输出布局](/guide/documents/output-layouts)和[锚点链接](/guide/documents/anchor-links)。
 
-有关 VitePress 特定的编写规则，请参阅[VitePress 集成 — 链接约定](/guide/vitepress-integration#link-conventions)。
+有关 VitePress 特定的编写规则，请参阅 [VitePress 集成 — 链接约定](/guide/integrations/vitepress#link-conventions)。
 
-有关 Nextra 特定的编写规则，请参阅 [Nextra 集成 — 链接约定](/guide/nextra-integration#link-conventions)。
+有关 Nextra 特定的编写规则，请参阅 [Nextra 集成 — 链接约定](/guide/integrations/nextra#link-conventions)。
 
-有关 Fumadocs 特定的编写规则，请参阅 [Fumadocs 集成 — 链接约定](/guide/fumadocs-integration#link-conventions)。
+有关 Fumadocs 特定的编写规则，请参阅 [Fumadocs 集成 — 链接约定](/guide/integrations/fumadocs#link-conventions)。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

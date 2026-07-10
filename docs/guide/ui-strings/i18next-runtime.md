@@ -13,7 +13,7 @@ import { initReactI18next } from 'react-i18next';
 import aiI18n from 'ai-i18n-tools/runtime';
 
 // Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
-import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import uiLanguages from './locales/ui-languages.json'; // `languagesManifestPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
 import stringsJson from './locales/strings.json'; // `ui.stringsJson`
 import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
 
@@ -54,7 +54,7 @@ export default i18n;
 
 **Keep three values aligned:** `sourceLocale` in `ai-i18n-tools.config.json`, `SOURCE_LOCALE` in this file, and the plural flat JSON `translate-ui` writes as `{sourceLocale}.json` under your flat output dir (often `public/locales/`). Use that same basename in the static `import` (example above: `en-GB` → `en-GB.json`). The `lng` field in `sourcePluralFlatBundle` must equal `SOURCE_LOCALE`. Static ES `import` paths cannot use variables; if you change the source locale, update `SOURCE_LOCALE` and the import path together. Alternatively, load that file with a dynamic `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, or `readFileSync` so the path is built from `SOURCE_LOCALE`.
 
-The snippet uses `./locales/…` and `./public/locales/…` as if `i18n` sits beside those folders. If your file is under `src/` (typical), use `../locales/…` and `../public/locales/…` so imports resolve to the same paths as `ui.stringsJson`, `uiLanguagesPath`, and `ui.flatOutputDir`.
+The snippet uses `./locales/…` and `./public/locales/…` as if `i18n` sits beside those folders. If your file is under `src/` (typical), use `../locales/…` and `../public/locales/…` so imports resolve to the same paths as `ui.stringsJson`, `languagesManifestPath`, and `ui.flatOutputDir`.
 
 Import `i18n.js` before React renders (e.g. at the top of your entry point). When the user changes language, call `await loadLocale(code)` then `await i18n.changeLanguage(code)`.
 

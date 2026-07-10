@@ -43,21 +43,21 @@
     "direction": "ltr"
   },
   {
-    "code": "zh-CN",
-    "label": "中文 (中国大陆)",
-    "englishName": "Chinese (CN)",
+    "code": "zh-Hans",
+    "label": "简体中文",
+    "englishName": "Chinese (Simplified)",
     "direction": "ltr"
   },
   {
-    "code": "zh-TW",
-    "label": "中文 (台灣)",
-    "englishName": "Chinese (TW)",
+    "code": "zh-Hant",
+    "label": "繁體中文",
+    "englishName": "Chinese (Traditional)",
     "direction": "ltr"
   },
   {
     "code": "pt-BR",
     "label": "Português (Brasil)",
-    "englishName": "Portuguese (BR)",
+    "englishName": "Portuguese (Brazil)",
     "direction": "ltr"
   }
 ]

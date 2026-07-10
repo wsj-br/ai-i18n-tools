@@ -151,13 +151,16 @@ export async function translateTsObjectLiteralFile(
 
   console.log(
     chalk.yellow(
-      t("📄 {{locale}} {{path}} ({{label}}): {{count}} segment(s) ({{translatable}} translatable)", {
-        locale,
-        path: relPathFromCwd,
-        label: contentTypeLabel,
-        count: segments.length,
-        translatable: translatable.length,
-      })
+      t(
+        "📄 {{locale}} {{path}} ({{label}}): {{count}} segment(s) ({{translatable}} translatable)",
+        {
+          locale,
+          path: relPathFromCwd,
+          label: contentTypeLabel,
+          count: segments.length,
+          translatable: translatable.length,
+        }
+      )
     )
   );
 
@@ -219,38 +222,32 @@ export async function translateTsObjectLiteralFile(
   const maxBatchChars = config.maxBatchChars ?? 4096;
   const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
 
-  const {
-    map,
-    inTok,
-    outTok,
-    cost,
-    segmentValidationFailures,
-    individualSegmentTranslations,
-  } = await translateSegmentsBatched(
-    toBatch,
-    placeholderById,
-    new Map(),
-    locale,
-    glossary,
-    client,
-    opts.dryRun,
-    opts.verbose,
-    batchSize,
-    maxBatchChars,
-    "json",
-    batchConcurrency,
-    translatePromptFormatToResponseFormat(opts.promptFormat),
-    {
-      relativePath: relPathFromCwd,
-      totalSegments: segments.length,
-      segmentIndicesInDoc,
-    },
-    undefined,
-    failureTracker,
-    { filepath: relPathFromCwd },
-    undefined,
-    opts.abortSignal
-  );
+  const { map, inTok, outTok, cost, segmentValidationFailures, individualSegmentTranslations } =
+    await translateSegmentsBatched(
+      toBatch,
+      placeholderById,
+      new Map(),
+      locale,
+      glossary,
+      client,
+      opts.dryRun,
+      opts.verbose,
+      batchSize,
+      maxBatchChars,
+      "json",
+      batchConcurrency,
+      translatePromptFormatToResponseFormat(opts.promptFormat),
+      {
+        relativePath: relPathFromCwd,
+        totalSegments: segments.length,
+        segmentIndicesInDoc,
+      },
+      undefined,
+      failureTracker,
+      { filepath: relPathFromCwd },
+      undefined,
+      opts.abortSignal
+    );
 
   for (const [h, tr] of map) {
     translations.set(h, tr);
@@ -258,7 +255,8 @@ export async function translateTsObjectLiteralFile(
   totals.inputTokens += inTok;
   totals.outputTokens += outTok;
   totals.costUsd = (totals.costUsd ?? 0) + cost;
-  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segmentValidationFailures;
+  totals.segmentValidationFailures =
+    (totals.segmentValidationFailures ?? 0) + segmentValidationFailures;
   totals.individualSegmentTranslations =
     (totals.individualSegmentTranslations ?? 0) + individualSegmentTranslations;
 

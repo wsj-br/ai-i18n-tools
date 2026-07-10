@@ -13,6 +13,18 @@ const TRANSLATABLE_KEYS = new Set([
   "next",
 ]);
 
+/** Top-level VitePress default-theme `themeConfig` string keys (see vitepress.dev/reference/default-theme-config). */
+export const VITEPRESS_THEME_CONFIG_STRING_KEYS = new Set([
+  "langMenuLabel",
+  "darkModeSwitchLabel",
+  "darkModeSwitchTitle",
+  "lightModeSwitchTitle",
+  "sidebarMenuLabel",
+  "returnToTopLabel",
+  "skipToContentLabel",
+  "siteTitle",
+]);
+
 export type ThemeCatalog = Record<string, unknown>;
 
 function isAstNode(x: unknown): x is Node {
@@ -76,6 +88,19 @@ function setNested(obj: ThemeCatalog, dotPath: string, value: string): void {
   cur[parts[parts.length - 1]!] = value;
 }
 
+function isTranslatableThemeKey(keyName: string, prefix: string): boolean {
+  if (TRANSLATABLE_KEYS.has(keyName)) {
+    return true;
+  }
+  if (!prefix && (keyName === "title" || keyName === "description")) {
+    return true;
+  }
+  if (prefix === "themeConfig" && VITEPRESS_THEME_CONFIG_STRING_KEYS.has(keyName)) {
+    return true;
+  }
+  return false;
+}
+
 function collectThemeStrings(
   obj: ObjectExpression,
   prefix: string,
@@ -118,7 +143,7 @@ function collectThemeStrings(
       continue;
     }
 
-    if (TRANSLATABLE_KEYS.has(keyName) || (!prefix && (keyName === "title" || keyName === "description"))) {
+    if (isTranslatableThemeKey(keyName, prefix)) {
       out.set(dotPath, value);
     }
   }
@@ -172,10 +197,7 @@ export function extractVitepressThemeCatalog(content: string, filepath: string):
   return catalog;
 }
 
-export function mergeThemeCatalogs(
-  existing: ThemeCatalog,
-  extracted: ThemeCatalog
-): ThemeCatalog {
+export function mergeThemeCatalogs(existing: ThemeCatalog, extracted: ThemeCatalog): ThemeCatalog {
   if (Object.keys(extracted).length === 0) {
     return existing;
   }

@@ -79,7 +79,7 @@ function LanguageSelect({
 ]
 ```
 
-Manifest `generate-ui-languages` dwara `sourceLocale` + `targetLocales` aur bundled master catalog se generate kiya jata hai. Ise `uiLanguagesPath` (aavashyak) mein likha jata hai. Yadi aap config mein locales badalte hain, to file ko refresh karne ke liye `generate-ui-languages` ko phir se chalayein.
+Manifest `generate-ui-languages` ya `extract` dwara `sourceLocale` + `targetLocales` aur bundled master catalog se generate kiya jata hai. Ise `languagesManifestPath` mein likha jata hai (jab chhod diya jata hai to `{ui.flatOutputDir}/ui-languages.json` par default hota hai). Yadi aap config mein locales badalte hain, to file ko refresh karne ke liye phir se `generate-ui-languages` ya `extract` chalayen.
 
 <a id="rtl-languages"></a>
 ## RTL bhashayein

@@ -79,7 +79,7 @@ Das `ui-languages.json`-Manifest ist ein JSON-Array von <code>"{ code, label, en
 ]
 ```
 
-Das Manifest wird von `generate-ui-languages` aus `sourceLocale` + `targetLocales` und dem gebündelten Masterkatalog generiert. Es wird in `uiLanguagesPath` geschrieben (erforderlich). Wenn Sie die Gebietsschemas in der Konfiguration ändern, führen Sie `generate-ui-languages` erneut aus, um die Datei zu aktualisieren.
+Das Manifest wird von `generate-ui-languages` oder `extract` aus `sourceLocale` + `targetLocales` und dem gebündelten Masterkatalog generiert. Es wird in `languagesManifestPath` geschrieben (standardmäßig `{ui.flatOutputDir}/ui-languages.json`, wenn weggelassen). Wenn Sie die Gebietsschemas in der Konfiguration ändern, führen Sie `generate-ui-languages` oder `extract` erneut aus, um die Datei zu aktualisieren.
 
 <a id="rtl-languages"></a>
 ## RTL-Sprachen

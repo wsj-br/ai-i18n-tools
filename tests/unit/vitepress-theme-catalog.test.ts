@@ -32,4 +32,23 @@ export default defineConfig({
     const existing = { site: { title: "Existing" } };
     expect(mergeThemeCatalogs(existing, {})).toEqual(existing);
   });
+
+  it("extracts top-level VitePress themeConfig i18n keys such as langMenuLabel", () => {
+    const src = `import { defineConfig } from "vitepress";
+export default defineConfig({
+  themeConfig: {
+    langMenuLabel: "Change language",
+    darkModeSwitchTitle: "Switch to dark theme",
+    nav: [{ text: "Guide", link: "/guide/" }],
+  },
+});`;
+    const catalog = extractVitepressThemeCatalog(src, "config.mts");
+    expect(catalog).toMatchObject({
+      themeConfig: {
+        langMenuLabel: "Change language",
+        darkModeSwitchTitle: "Switch to dark theme",
+        nav: { "0": { text: "Guide" } },
+      },
+    });
+  });
 });

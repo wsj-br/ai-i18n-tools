@@ -444,7 +444,10 @@ export function parseProofreadUIBatchResponse(
     );
   }
   if (!Array.isArray(parsed)) {
-    throw new ProofreadUIJsonParseError("proofread-ui batch: response is not a JSON array", content);
+    throw new ProofreadUIJsonParseError(
+      "proofread-ui batch: response is not a JSON array",
+      content
+    );
   }
 
   let lengthWarning: string | null = null;

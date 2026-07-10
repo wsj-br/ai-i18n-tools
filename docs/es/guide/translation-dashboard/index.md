@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 El puerto de escucha predeterminado es **8675**. Si ese puerto no está disponible, el servidor intenta el siguiente puerto (hasta 1000 intentos) y registra el puerto que eligió. El alias obsoleto `editor` aún funciona, pero muestra una advertencia; se recomienda usar `dashboard`.
 
-La interfaz de usuario del panel de control utiliza la misma resolución de configuración regional que la CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuración `uiLanguage` → configuración regional del sistema operativo. Consulte [Idioma de la interfaz de usuario de la herramienta](/reference/environment-variables#tool-ui-language).
+La interfaz de usuario del panel de control utiliza la misma resolución de configuración regional que la CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuración `uiLanguage` → configuración regional del SO. Consulte [Idioma de la interfaz de usuario de la herramienta](/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

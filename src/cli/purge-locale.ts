@@ -142,7 +142,11 @@ function collectTranslatedDocOutputs(
   return [...found];
 }
 
-function flatLocaleFilePath(config: I18nConfig, projectRoot: string, locale: string): string | null {
+function flatLocaleFilePath(
+  config: I18nConfig,
+  projectRoot: string,
+  locale: string
+): string | null {
   const flatDir = config.ui?.flatOutputDir?.trim();
   if (!flatDir) {
     return null;

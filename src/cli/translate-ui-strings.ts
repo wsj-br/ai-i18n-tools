@@ -24,12 +24,14 @@ import {
   requiredCldrPluralForms,
 } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
-import { timestamp, formatElapsedMmSs, printTranslationModelSummary, localeModelRowsForRun } from "./format.js";
-import type { TranslateTotals } from "./doc-translate.js";
 import {
-  printTranslationRunSummary,
-  UI_STRING_SUMMARY_LABELS,
-} from "./translate-summary.js";
+  timestamp,
+  formatElapsedMmSs,
+  printTranslationModelSummary,
+  localeModelRowsForRun,
+} from "./format.js";
+import type { TranslateTotals } from "./doc-translate.js";
+import { printTranslationRunSummary, UI_STRING_SUMMARY_LABELS } from "./translate-summary.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import {
   bindRunInterruptScope,
@@ -43,7 +45,11 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
-import { safeResolveActiveProvider, localeModelsMapForProvider, uiModelsForProvider } from "../core/llm-providers.js";
+import {
+  safeResolveActiveProvider,
+  localeModelsMapForProvider,
+  uiModelsForProvider,
+} from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
 const UI_CHUNK = 50;
 
@@ -207,16 +213,23 @@ function printTranslateUiRunSummary(
   wallElapsedMs: number,
   outcome: "success" | "interrupted"
 ): void {
-  printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
-    success: t("✅ UI translation complete!"),
-    interrupted: t(
-      "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
-    ),
-  }, {
-    labels: UI_STRING_SUMMARY_LABELS,
-    showQualityMetrics: false,
-    allFromCacheCostNote: "   Total cost:            $0.0000 (all strings from cache)",
-  });
+  printTranslationRunSummary(
+    opts,
+    sum,
+    wallElapsedMs,
+    outcome,
+    {
+      success: t("✅ UI translation complete!"),
+      interrupted: t(
+        "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+      ),
+    },
+    {
+      labels: UI_STRING_SUMMARY_LABELS,
+      showQualityMetrics: false,
+      allFromCacheCostNote: "   Total cost:            $0.0000 (all strings from cache)",
+    }
+  );
 }
 
 async function runTranslateUIBody(

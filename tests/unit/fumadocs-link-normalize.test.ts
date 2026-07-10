@@ -16,9 +16,9 @@ function ctx(over: Partial<FumadocsLinkNormalizeContext> = {}): FumadocsLinkNorm
 
 describe("docsPathToFumadocsRoute", () => {
   it("maps content-root paths to /docs routes", () => {
-    expect(
-      docsPathToFumadocsRoute("content/docs", "content/docs/guide/getting-started.mdx")
-    ).toBe("/docs/guide/getting-started");
+    expect(docsPathToFumadocsRoute("content/docs", "content/docs/guide/getting-started.mdx")).toBe(
+      "/docs/guide/getting-started"
+    );
     expect(docsPathToFumadocsRoute("content/docs/en", "content/docs/en/guide/foo.mdx")).toBe(
       "/docs/guide/foo"
     );

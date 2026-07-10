@@ -79,7 +79,7 @@ function LanguageSelect({
 ]
 ```
 
-マニフェストは、`sourceLocale` + `targetLocales` とバンドルされたマスターカタログから `generate-ui-languages` によって生成されます。これは `uiLanguagesPath` に書き込まれます（必須）。設定でロケールを変更した場合は、`generate-ui-languages` を再度実行してファイルを更新してください。
+マニフェストは、`sourceLocale` + `targetLocales` とバンドルされたマスターカタログから `generate-ui-languages` または `extract` によって生成されます。`languagesManifestPath` に書き込まれます（省略した場合のデフォルトは `{ui.flatOutputDir}/ui-languages.json` です）。設定でロケールを変更した場合は、ファイルを更新するために再度 `generate-ui-languages` または `extract` を実行してください。
 
 <a id="rtl-languages"></a>
 ## RTL言語

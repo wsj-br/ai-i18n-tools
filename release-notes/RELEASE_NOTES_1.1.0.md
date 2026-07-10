@@ -27,7 +27,7 @@ For the authoritative per-change list, see [`dev/CHANGELOG.md`](https://github.c
 
 ### UI languages
 
-- **`generate-ui-languages`** CLI — builds `ui-languages.json`; requires `uiLanguagesPath` in config; warns and uses `TODO` for locales missing from the master file.
+- **`generate-ui-languages`** CLI — builds `ui-languages.json`; requires `languagesManifestPath` in config; warns and uses `TODO` for locales missing from the master file.
 - **`data/ui-languages-complete.json`** — IANA-derived master list (BCP-47-style codes such as `de-DE`, `pt-BR`, plus bare ISO 639 rows); rebuild via `pnpm run build:ui-languages-master`.
 - **`extract`** — optional `ui.reactExtractor.includeUiLanguageEnglishNames` to pull `englishName` from `ui-languages.json` into `strings.json`.
 

@@ -13,7 +13,7 @@ import { initReactI18next } from 'react-i18next';
 import aiI18n from 'ai-i18n-tools/runtime';
 
 // Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
-import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import uiLanguages from './locales/ui-languages.json'; // `languagesManifestPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
 import stringsJson from './locales/strings.json'; // `ui.stringsJson`
 import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
 
@@ -54,7 +54,7 @@ export default i18n;
 
 **Teen values ko align rakhein:** `ai-i18n-tools.config.json` mein `sourceLocale`, is file mein `SOURCE_LOCALE`, aur plural flat JSON `translate-ui` jo `{sourceLocale}.json` ke roop mein aapke flat output dir (aksar `public/locales/`) ke neeche likhta hai. Usi basename ka upyog static `import` mein karein (upar diya gaya udaharan: `en-GB` → `en-GB.json`). `sourcePluralFlatBundle` mein `lng` field `SOURCE_LOCALE` ke barabar hona chahiye. Static ES `import` paths variables ka upyog nahi kar sakte; agar aap source locale badalte hain, to `SOURCE_LOCALE` aur import path ko ek saath update karein. Vikalp roop se, us file ko dynamic `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, ya `readFileSync` ke saath load karein taaki path `SOURCE_LOCALE` se banaya ja sake.
 
-Snippet `./locales/…` aur `./public/locales/…` ka upyog karta hai jaise ki `i18n` un folders ke bagal mein baitha ho. Agar aapki file `src/` (aam taur par) ke neeche hai, to `../locales/…` aur `../public/locales/…` ka upyog karein taaki imports wahi paths par resolve hon jo `ui.stringsJson`, `uiLanguagesPath`, aur `ui.flatOutputDir` hain.
+Yah snippet `./locales/…` aur `./public/locales/…` ka upyog karta hai jaise ki `i18n` un folderon ke saath baitha ho. Yadi aapka file `src/` ke niche hai (samanya), to `../locales/…` aur `../public/locales/…` ka upyog karein taaki imports `ui.stringsJson`, `languagesManifestPath`, aur `ui.flatOutputDir` ke saman path par suljh jaayein.
 
 React render hone se pehle `i18n.js` ko import karein (jaise ki aapke entry point ke top par). Jab user bhasha badalta hai, to `await loadLocale(code)` aur phir `await i18n.changeLanguage(code)` ko call karein.
 

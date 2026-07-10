@@ -8,6 +8,37 @@ import {
 } from "../../src/extractors/frontmatter-fields.js";
 
 describe("frontmatter-fields", () => {
+  it("collects VitePress home hero and feature fields", () => {
+    const data = {
+      layout: "home",
+      hero: {
+        name: "ai-i18n-tools",
+        text: "Translate apps and docs with any LLM",
+        tagline: "No lock-in.",
+        actions: [
+          { theme: "brand", text: "Get started", link: "/guide/quick-start" },
+          { theme: "alt", text: "GitHub", link: "https://github.com/wsj-br/ai-i18n-tools" },
+        ],
+      },
+      features: [
+        { icon: "🌐", title: "UI strings", details: "Extract t() calls." },
+        { icon: "📄", title: "Documents", details: "Translate Markdown pages." },
+      ],
+    };
+    const fields = collectTranslatableFrontmatterFields(data);
+    expect(fields.map((f) => f.path)).toEqual([
+      "hero.name",
+      "hero.text",
+      "hero.tagline",
+      "hero.actions.0.text",
+      "hero.actions.1.text",
+      "features.0.title",
+      "features.0.details",
+      "features.1.title",
+      "features.1.details",
+    ]);
+  });
+
   it("collects Starlight and Docusaurus prose fields", () => {
     const data = {
       title: "Quick Start",

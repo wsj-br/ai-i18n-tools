@@ -58,9 +58,7 @@ export function collectNextraMetaFiles(
     if (!fs.existsSync(absRoot)) {
       return [];
     }
-    walkForMetaFiles(absRoot, projectRoot, out, (_rel, filename) =>
-      META_FILENAMES.has(filename)
-    );
+    walkForMetaFiles(absRoot, projectRoot, out, (_rel, filename) => META_FILENAMES.has(filename));
   }
   out.sort();
   return out;

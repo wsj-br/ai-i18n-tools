@@ -25,7 +25,9 @@ describe("extractTsObjectLiteralStrings (meta)", () => {
   skipType: { type: "page", title: "Visible" },
 };`;
     const { segments } = extractTsObjectLiteralStrings(src, "_meta.ts", "meta");
-    expect(segments.map((s) => s.jsonKey).sort()).toEqual(["external.title", "skipType.title"].sort());
+    expect(segments.map((s) => s.jsonKey).sort()).toEqual(
+      ["external.title", "skipType.title"].sort()
+    );
   });
 
   it("extracts all string leaves for dictionary policy", () => {

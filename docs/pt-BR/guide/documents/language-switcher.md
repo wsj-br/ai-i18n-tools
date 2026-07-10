@@ -55,7 +55,7 @@ Se um arquivo não tiver um bloco correspondente, a CLI registra um aviso (quand
 <a id="4-label-manifest"></a>
 ## 4. Manifesto de rótulos
 
-Para rótulos endonímicos (`label: "local"`), gere ou mantenha `ui-languages.json` via `generate-ui-languages` (requer [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional)). A configuração somente de documentos deste repositório não possui pipeline de UI, então os rótulos vêm do catálogo mestre empacotado para `sourceLocale` + `targetLocales`.
+Para rótulos de endônimo (`label: "local"`), gere ou mantenha `ui-languages.json` via `generate-ui-languages` (escrito em [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), que é padrão para `{ui.flatOutputDir}/ui-languages.json`). A configuração docs-only deste repositório não tem pipeline de UI e não tem manifesto de projeto no disco, então os rótulos vêm do catálogo mestre embutido para `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Exemplos neste repositório

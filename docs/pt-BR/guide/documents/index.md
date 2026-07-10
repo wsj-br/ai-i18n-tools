@@ -5,17 +5,17 @@ Projetado principalmente para **documentação em markdown, MDX e `.astro`** ger
 
 Em sites Docusaurus, defina também `docusaurusCatalogDir` para sua pasta de catálogo `write-translations` (por exemplo, `docs-site/i18n/en`). Então `translate-docs` inclui JSON de shell também — navbar, rodapé e strings de tema.
 
-Em sites [VitePress](/guide/vitepress-integration), os corpos das páginas usam o mesmo pipeline `docs[]`. Os rótulos de navegação, barra lateral e rodapé ficam em `docsOutput.vitepressThemeCatalog` — `translate-docs` inicializa o catálogo em inglês e o traduz junto com as páginas, sem um pipeline separado.
+Em sites [VitePress](/guide/integrations/vitepress), os corpos das páginas usam o mesmo pipeline `docs[]`. Os rótulos de navegação, barra lateral e rodapé ficam em `docsOutput.vitepressThemeCatalog` — `translate-docs` inicializa o catálogo em inglês e o traduz junto com as páginas, sem um pipeline separado.
 
-Em sites [Nextra](/guide/nextra-integration), os corpos das páginas usam o mesmo pipeline `docs[]` com `docsOutput.style: "nextra"`. Os rótulos da barra lateral `_meta.ts` são coletados e traduzidos automaticamente por `translate-docs`; as strings do dicionário do tema são traduzidas via `docs[].nextraDictionaryPath` no mesmo pipeline.
+Em sites [Nextra](/guide/integrations/nextra), os corpos das páginas usam o mesmo pipeline `docs[]` com `docsOutput.style: "nextra"`. Os rótulos da barra lateral `_meta.ts` são coletados e traduzidos automaticamente por `translate-docs`; as strings do dicionário do tema são traduzidas via `docs[].nextraDictionaryPath` no mesmo pipeline.
 
-Nos sites [Fumadocs](/guide/fumadocs-integration), os corpos das páginas usam `docsOutput.style: "fumadocs"` com `fumadocsParser` `"dot"` (padrão) ou `"dir"`. Os rótulos da barra lateral `meta.json` são coletados automaticamente; as substituições da UI são traduzidas via `docsOutput.fumadocsUiCatalog`.
+Em sites [Fumadocs](/guide/integrations/fumadocs), os corpos das páginas usam `docsOutput.style: "fumadocs"` com `fumadocsParser` `"dot"` (padrão) ou `"dir"`. Os rótulos da barra lateral `meta.json` são coletados automaticamente; as substituições de UI são traduzidas via `docsOutput.fumadocsUiCatalog`.
 
 Para PNG e outras imagens raster incorporadas em markdown, consulte [Imagens e Capturas de Tela](/guide/images-and-screenshots/). `translate-docs` traduz apenas o texto alternativo; ele não copia arquivos raster.
 
 Para um bloco opcional de **troca de idioma** no README ou na documentação, defina `docsOutput.style` como `"flat"` — consulte [Troca de idioma](/guide/documents/language-switcher).
 
-Arquivos SVG são traduzidos via [`translate-svg`](/reference/cli-commands) quando `features.translateSVG` está habilitado — não através de `docs[]` / `contentPaths`.
+Arquivos SVG são traduzidos via [`translate-svg`](/reference/cli-commands/content#translate-svg) quando `features.translateSVG` está habilitado — não através de `docs[]` / `contentPaths`.
 
 Pacotes JSON de UI aninhados arbitrários não relacionados às strings de shell/tema de um framework de documentação pertencem ao pipeline [JSON](/guide/json), não ao `docs[]`.
 
@@ -30,9 +30,9 @@ O `translate-docs` e a etapa de documentação do `sync` resolvem modelos **por 
 | Sua configuração | Comece aqui |
 | --- | --- |
 | Site Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Passo 1](#step-1-initialise-for-documentation) |
-| Site VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` para tema — [Integração VitePress](/guide/vitepress-integration) |
-| Site Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para dicionário (barra lateral `_meta.ts` é automática) — [Integração Nextra](/guide/nextra-integration) |
-| Site Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para UI (a `meta.json` da barra lateral é automática) — [Integração Fumadocs](/guide/fumadocs-integration) |
+| Site VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` para o tema — [integração VitePress](/guide/integrations/vitepress) |
+| Site Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para o dicionário (barra lateral `_meta.ts` é automática) — [integração Nextra](/guide/integrations/nextra) |
+| Site Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para a UI (barra lateral `meta.json` é automática) — [integração Fumadocs](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Passo 1](#step-1-initialise-for-documentation) |
 | Documentos simples (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Layouts de saída](/guide/documents/output-layouts), [seletor de idioma](/guide/documents/language-switcher) opcional |
 | Onde os arquivos traduzidos são salvos | [Layouts de saída](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ Para sites de documentação VitePress:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Defina `docsOutput.vitepressThemeCatalog` para strings de navegação/barra lateral/rodapé — veja [Integração VitePress](/guide/vitepress-integration).
+Defina `docsOutput.vitepressThemeCatalog` para strings de navegação/barra lateral/rodapé — veja [integração VitePress](/guide/integrations/vitepress).
 
 Para sites de documentação Nextra:
 
@@ -68,7 +68,7 @@ Para sites de documentação Nextra:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-Defina `docs[].nextraDictionaryPath` para strings do dicionário de temas — consulte [Integração Nextra](/guide/nextra-integration). Os rótulos da barra lateral `_meta.ts` são coletados automaticamente.
+Defina `docs[].nextraDictionaryPath` para strings do dicionário do tema — veja [integração Nextra](/guide/integrations/nextra). Os rótulos da barra lateral `_meta.ts` são coletados automaticamente.
 
 Para sites de documentação Fumadocs:
 
@@ -76,7 +76,7 @@ Para sites de documentação Fumadocs:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-Defina `docsOutput.fumadocsUiCatalog` para substituições de UI — consulte [Integração Fumadocs](/guide/fumadocs-integration). Os rótulos da barra lateral `meta.json` são coletados automaticamente.
+Defina `docsOutput.fumadocsUiCatalog` para substituições de UI — veja [integração Fumadocs](/guide/integrations/fumadocs). Os rótulos da barra lateral `meta.json` são coletados automaticamente.
 
 Para interface de site Astro simples (sem Starlight):
 

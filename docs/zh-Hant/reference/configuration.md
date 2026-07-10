@@ -18,18 +18,21 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (選用)
 
-工具本身 UI 語言（CLI 說明、日誌/摘要和翻譯儀表板）的 BCP-47 代碼。它獨立於 `sourceLocale` / `targetLocales`，並被 `-L` / `--ui-lang` 旗標和 `AI_I18N_LANG` 環境變數覆寫。未知值會優雅地降級為來源語言環境 (`en-GB`) — 沒有嚴格的驗證。請參閱[工具 UI 語言](/reference/environment-variables#tool-ui-language)。
+工具自身介面語言（CLI 說明、日誌/摘要，以及翻譯儀表板）的 BCP-47 代碼。它獨立於 `sourceLocale` / `targetLocales`，並會被 `-L` / `--ui-lang` 旗標與 `AI_I18N_LANG` 環境變數覆寫。未知值會優雅降級為來源地區設定（`en-GB`）——沒有嚴格的驗證。請參閱[工具介面語言](/guide/tool-ui-language)。
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath`（可选）
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath`（選用）
 
-用于显示名称、区域设置过滤和语言列表后处理的 `ui-languages.json` manifest 的路径。如果省略，CLI 会在 `ui.flatOutputDir/ui-languages.json` 查找 manifest。
+根層級選用字串（未巢狀於 `ui` 之下）。`extract` 與 `generate-ui-languages` 寫入 `ui-languages.json` 資訊清單的路徑，CLI 亦從此路徑讀取以取得顯示名稱及進行語言列表後處理。省略時，預設為 `ui.flatOutputDir/ui-languages.json`，於設定載入時生效。
 
 在以下情况下使用此选项：
 
-- manifest 位于 `ui.flatOutputDir` 之外，您需要显式地将 CLI 指向它。
-- 您希望 [语言切换器后处理](#language-switcher-languagelistblock)（`languageListBlock`）从 manifest 构建区域设置标签。
-- `extract` 应将 manifest 中的 `englishName` 条目合并到 `strings.json` 中（需要 `ui.reactExtractor.includeUiLanguageEnglishNames: true`）。
+- 資訊清單應置於 `ui.flatOutputDir` 之外（例如放在 `src/i18n/` 下的應用程式輔助程式旁）。
+- 您希望[語言切換器後處理](#language-switcher-languagelistblock)（`languageListBlock`）從專案資訊清單建構地區標籤，而非僅使用內建的主目錄。
+
+`includeUiLanguageEnglishNames` **不會**讀取此檔案——它使用內建的主目錄（詳見下文 `ui.uiExtractor`）。
+
+**舊版：** 載入設定檔時仍接受根層級的 `uiLanguagesPath`，並自動改寫為 `languagesManifestPath`。
 
 <a id="concurrency-optional"></a>
 ### `concurrency`（可选）
@@ -180,7 +183,7 @@
   用於該可選描述提取的 `package.json` 檔案的自訂路徑。
 - `uiExtractor.includeUiLanguageEnglishNames`（或舊版 `reactExtractor.includeUiLanguageEnglishNames`）
 
-當 `true` (預設 `false`) 時，`extract` 也會將捆綁的 UI 語言主目錄（由 `sourceLocale` + `targetLocales` 建立）中的每個 `englishName` 添加到 `strings.json`，如果來源掃描中尚未存在（相同的雜湊鍵）。不讀取 `uiLanguagesPath`。
+當 `true`（預設 `false`）時，`extract` 亦會將內建 ui-languages 主目錄（由 `sourceLocale` + `targetLocales` 建構）中的每個 `englishName` 加入 `strings.json`，前提是來源掃描中尚未存在該項（使用相同雜湊鍵）。不會讀取 `languagesManifestPath`。
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -273,17 +276,17 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 - `docsOutput.linkRewriteDocsRoot`
 計算扁平連結重寫前綴時使用的儲存庫根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常保持為 `"."`。
 - `docsOutput.rewriteVitepressLinks`
-當 `true` 時，在翻譯後執行 VitePress 連結正規化工具。當 `docsOutput.style` 為 `"vitepress"` 時預設啟用。適用於任何地區資料夾與英文並列於 `docsRoot` 下的 `doc-system` 版面配置。將 README 風格的 `docs/guide/…` 路徑重寫為網站路由（`/guide/…`）及地區相對 `../guide/…` 連結。對於指向 VitePress 樹狀結構外儲存庫檔案的連結（`LICENSE`、`examples/`），請在英文來源中使用完整 URL — 請參閱 [VitePress 整合 — README 作為文件首頁](/guide/vitepress-integration#readme-as-homepage)。
+當 `true` 時，在翻譯後執行 VitePress 連結正規化工具。當 `docsOutput.style` 為 `"vitepress"` 時預設為啟用。與任何將語系資料夾置於英文旁的 `docsRoot` 下的 `doc-system` 佈局搭配使用。將 README 風格的 `docs/guide/…` 路徑重寫為網站路由 (`/guide/…`) 和語系相對的 `../guide/…` 連結。對於指向 VitePress 樹狀結構外儲存庫檔案的連結 (`LICENSE`, `examples/`)，請在英文原始碼中使用完整 URL — 請參閱 [VitePress 整合 — 以 README 作為文件首頁](/guide/integrations/vitepress#readme-as-homepage)。
 - `docsOutput.rewriteNextraLinks`
-當 `true` 時，在翻譯後執行 Nextra 連結正規化工具。當 `docsOutput.style` 為 `"nextra"` 時預設啟用。將 `content/en/…` 及相對 `.mdx` 路徑重寫為地區中立的網站路由（`/guide/…`），供 Next.js `i18n` 使用。請參閱 [Nextra 整合 — 連結慣例](/guide/nextra-integration#link-conventions)。
+當 `true` 時，在翻譯後執行 Nextra 連結正規化工具。當 `docsOutput.style` 為 `"nextra"` 時預設為啟用。為 Next.js `i18n` 將 `content/en/…` 和相對 `.mdx` 路徑重寫為語系中立的網站路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"`（預設）或 `"dir"`。dot 會在英文來源旁寫入 `stem.{locale}.mdx`；dir 會寫入類似 Nextra 的語系資料夾。請參閱 [Fumadocs 整合 — 頁面佈局](/guide/fumadocs-integration#page-layout)。
+`"dot"` (預設) 或 `"dir"`。Dot 會將 `stem.{locale}.mdx` 寫在英文原始碼旁；dir 會寫入類似 Nextra 的語系資料夾。請參閱 [Fumadocs 整合 — 頁面佈局](/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
-當 `true` 時，在翻譯後執行 Fumadocs 連結規範化器。當 `docsOutput.style` 為 `"fumadocs"` 時預設為啟用。將內容路徑與相對 `.mdx` 連結重寫為 `/docs/…` 路由。
+當 `true` 時，在翻譯後執行 Fumadocs 連結正規化工具。當 `docsOutput.style` 為 `"fumadocs"` 時預設為啟用。將內容路徑和相對 `.mdx` 連結重寫為 `/docs/…` 路由。
 - `docsOutput.fumadocsUiCatalog`
-選填。在 `translate-docs` 內的 Fumadocs UI 覆寫目錄啟動程序 + 翻譯。欄位：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英文 JSON）、選填的 `outputPathTemplate`（預設：在 `catalogPath` 旁的 `ui.{locale}.json`）。
+選用。在 `translate-docs` 內進行 Fumadocs UI 覆寫目錄啟動程序 + 翻譯。欄位：`sourcePath` (例如 `lib/layout.shared.ts`)、`catalogPath` (生成的英文 JSON)、選用的 `outputPathTemplate` (預設：`ui.{locale}.json` 位於 `catalogPath` 旁)。
 - `docs[].fumadocsMetaGlob`
-當 `docsOutput.style` 為 `"fumadocs"` 時，用於 `meta.json` 收集的選填 glob。預設：在 `docsOutput.docsRoot` 下的遞迴 `meta.json`。
+當 `docsOutput.style` 為 `"fumadocs"` 時，用於 `meta.json` 集合的選用 glob。預設：在 `docsOutput.docsRoot` 下遞迴 `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 在 Fumadocs `meta.json` 中其字串值被翻譯的屬性名稱（預設：`title`、`description`）。
 - `docsOutput.vitepressThemeCatalog`
@@ -292,12 +295,12 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 **後處理**
 
 - `docsOutput.postProcessing`
-翻譯後的 **markdown 主體**的選用轉換（YAML 鍵和非散文前置內容值會保留）。在區段重新組裝和連結重寫（扁平或 VitePress）之後，以及在 `addFrontmatter` 之前執行。
+對已翻譯的**markdown 內文**進行選用轉換（YAML 鍵與非散文式 front matter 值會保留）。於段落重組與連結改寫（平面或 VitePress）之後、`addFrontmatter` 之前執行。
 - `docsOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }` 的有序列表。`search` 是一個正規表示式模式（純字串使用旗標 `g`，或 `/pattern/flags`）。`replace` 支援諸如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}` 等佔位符。
+`{ "description"?, "search", "replace" }` 的有序列表。`search` 為正規表示式模式（純字串使用旗標 `g`，或 `/pattern/flags`）。`replace` 支援預留位置，例如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`。
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — 在原始和翻譯的 markdown 中重新產生有界限的「以其他語言閱讀」連結行。當 `label: "local"` 時，需要 `uiLanguagesPath`（或位於 `ui.flatOutputDir/ui-languages.json` 的清單）來獲取內生名稱標籤。
+`{ "start", "end", "separator", "label"? }` —— 在來源與已翻譯的 markdown 中重新產生有界的「以其他語言閱讀」連結列。當 `label: "local"` 時，需要 `languagesManifestPath`（或位於 `ui.flatOutputDir/ui-languages.json` 的資訊清單）以提供內名標籤。
 
 **行為與中繼資料**
 

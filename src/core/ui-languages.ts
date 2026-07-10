@@ -55,7 +55,7 @@ export function assertTargetLocalesAreLocaleCodes(
     if (looksLikeUiLanguagesFileRef(t)) {
       throw new ConfigValidationError(
         `${fieldLabel} must list BCP-47 locale codes only, not a path to a JSON file. ` +
-          "Set `uiLanguagesPath` for where `ui-languages.json` is written; run `extract` to regenerate it."
+          "Set `languagesManifestPath` for where `ui-languages.json` is written; run `extract` to regenerate it."
       );
     }
   }
@@ -245,13 +245,16 @@ export function resolveLocalesForSvg(
   return base;
 }
 
-export function resolveUiLanguagesAbsPath(config: I18nConfig, cwd: string): string | null {
-  const p = config.uiLanguagesPath?.trim();
+export function resolveLanguagesManifestAbsPath(config: I18nConfig, cwd: string): string | null {
+  const p = config.languagesManifestPath?.trim();
   if (!p) {
     return null;
   }
   return path.isAbsolute(p) ? p : path.join(cwd, p);
 }
+
+/** @deprecated Use {@link resolveLanguagesManifestAbsPath} */
+export const resolveUiLanguagesAbsPath = resolveLanguagesManifestAbsPath;
 
 export function loadUiLanguageEntries(absPath: string): UiLanguageEntry[] {
   const raw = fs.readFileSync(absPath, "utf8");

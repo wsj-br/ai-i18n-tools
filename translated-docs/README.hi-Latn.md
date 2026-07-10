@@ -19,7 +19,7 @@ Ek config file teen anuvad modes ko chalati hai, isliye aap apni content structu
 
 **SVG** assets ko apna alag path milta hai: `features.translateSVG`, top-level `svg` block, aur `translate-svg`—na ki `docs[].contentPaths`.
 
-**Main kiska upyog karoon?**
+**Mujhe kaun sa upyog karna chahiye?**
 
 | Aapki content                                                                 | Command                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
@@ -182,7 +182,7 @@ Ek single document par `-P` ke saath providers ko switch karne ke hands-on demo 
 ---
 
 <a id="quick-start"></a>
-## Turant shuru karein
+## Quick start
 
 <a id="ui-strings"></a>
 ### UI strings
@@ -234,17 +234,17 @@ npx ai-i18n-tools status
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` nav/sidebar/footer strings ke liye `docsOutput.style: "vitepress"` aur `docsOutput.vitepressThemeCatalog` ko scaffold karta hai. Page markdown aur theme catalog ko ek saath translate karne ke liye `sync` chalayein — koi alag JSON pipeline nahi. [VitePress integration](../docs/guide/vitepress-integration.md) aur [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) dekhein.
+`init -t ui-vitepress` nav/sidebar/footer strings ke liye `docsOutput.style: "vitepress"` plus `docsOutput.vitepressThemeCatalog` ko scaffold karta hai. Page markdown aur theme catalog ko ek saath translate karne ke liye `sync` chalaayein — koi alag JSON pipeline nahi. [VitePress integration](../docs/guide/integrations/vitepress.md) aur [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) dekhein.
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra` `docsOutput.style: "nextra"` ko scaffold karta hai. `translate-docs` automatically `_meta.ts` sidebar labels ko collect aur translate karta hai; theme dictionary module (jaise `app/_dictionaries/en.ts`) ko bhi translate karne ke liye `docs[].nextraDictionaryPath` set karein — sab ek hi `sync` run mein, bina JSON sidecars ke. [Nextra integration](../docs/guide/nextra-integration.md) aur [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) dekhein.
+`init -t ui-nextra` `docsOutput.style: "nextra"` ko scaffold karta hai. `translate-docs` automatically `_meta.ts` sidebar labels ko collect aur translate karta hai; theme dictionary module (jaise `app/_dictionaries/en.ts`) ko bhi translate karne ke liye `docs[].nextraDictionaryPath` set karein — sab ek hi `sync` run mein, bina JSON sidecars ke. [Nextra integration](../docs/guide/integrations/nextra.md) aur [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) dekhein.
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs` Nextra-style locale folders ke liye dot parser (default) ya dir parser ke saath `docsOutput.style: "fumadocs"` ko scaffold karta hai. `translate-docs` automatically `meta.json` sidebar labels ko collect aur translate karta hai; `docsOutput.fumadocsUiCatalog` ko set karein taaki `lib/layout.shared.ts` mein UI overrides ko bhi translate kiya ja sake — sabhi ek hi `sync` run mein, bina JSON sidecars ke. Dekhein [Fumadocs integration](../docs/guide/fumadocs-integration.md) aur [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
+`init -t ui-fumadocs` Nextra-style locale folders ke liye dot parser (default) ya dir parser ke saath `docsOutput.style: "fumadocs"` ko scaffold karta hai. `translate-docs` automatically `meta.json` sidebar labels ko collect aur translate karta hai; `lib/layout.shared.ts` mein UI overrides ko bhi translate karne ke liye `docsOutput.fumadocsUiCatalog` set karein — sab ek hi `sync` run mein, bina JSON sidecars ke. [Fumadocs integration](../docs/guide/integrations/fumadocs.md) aur [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) dekhein.
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (plain Astro & Starlight)
@@ -332,30 +332,23 @@ ai-i18n-tools help [command]
 
 Plain HTML apps ke liye, elements ko bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers ke saath annotate karein (source text element ke apne textContent / title / placeholder se liya gaya hai, ek baar likha gaya); `mark-html` unhein aapke liye insert karta hai aur `extract` phir unhein `strings.json` mein capture karta hai. [Marking HTML for translation](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation) dekhein.
 
-Prati-command flag lists [CLI reference](../docs/reference/cli-commands.md) mein hain. Built-in usage text ke liye `ai-i18n-tools <command> --help` chalayein.
+Prati command flag list [CLI reference](../docs/reference/cli-commands/) mein hain. Built-in upyog text ke liye `ai-i18n-tools <command> --help` chalaayein.
 
-Global options: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karein; `providers` ke तहत configure kiya jaana chahiye), `-L` / `--ui-lang <code>` (tool ke apne UI/logs ke liye bhasha), `-V` / `--version`, aur `-h` / `--help` — har command par swikar kiya jaata hai. `-w` / `--write-logs [path]` console output ko ek log file mein tees karta hai (default: translation cache directory ke तहत), lekin kewal translation aur sync commands (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`) par prabhavi hota hai. Kai commands `-l` / `--locale <codes>` (comma-separated BCP-47) ko target locales ko seemit karne ke liye swikar karte hain; `proofread-ui` ek single source locale ka upyog karta hai. Command overview table ke liye [CLI reference](../docs/reference/cli-commands.md) dekhein.
+Global vikalp: `-c <config>` (default: `ai-i18n-tools.config.json`), `-v` (verbose), `-P` / `--provider <name>` (active LLM provider ko override karta hai; `providers` ke tahat configure kiya jaana chahiye), `-L` / `--ui-lang <code>` (tool ke apne UI/logs ke liye bhasha), `-V` / `--version`, aur `-h` / `--help` — har command par swikrit. `-w` / `--write-logs [path]` console output ko ek log file mein tees karta hai (default: translation cache directory ke tahat), lekin keval translation aur sync commands (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`) par prabhavi hota hai. Kai commands `-l` / `--locale <codes>` (comma-separated BCP-47) ko target locales ko seemit karne ke liye swikrit karte hain; `proofread-ui` ek single source locale ka upyog karta hai. Command overview ke liye [CLI reference](../docs/reference/cli-commands/) dekhein.
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### Tool UI bhasha (logs, help, dashboard)
 
-Tool apne CLI help, high-traffic log/summary messages, aur Translation Dashboard ko localize karta hai. UI locale in sources se resolve hota hai, sabse highest priority pehle:
-
-1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`).
-2. `AI_I18N_LANG` environment variable (e.g. `export AI_I18N_LANG=es`).
-3. `ai-i18n-tools.config.json` mein `uiLanguage` config key (BCP-47 string).
-4. Host OS locale (`Intl.DateTimeFormat().resolvedOptions().locale` ke through).
-
-Anurodhit locale shipped UI languages se theek-theek ya sabse nikat variation se milta hai (udharan ke liye `pt-PT` `pt-BR` mein resolve hota hai, aur `en-US` `en-GB` mein resolve hota hai); jab kuch bhi match nahi karta hai to yeh source locale (`en-GB`) par wapas aa jaata hai. Jab ek UI language ko spasht roop se anurodhit kiya jaata hai (flag, env var, ya `uiLanguage` ke madhyam se) lekin koi shipped bundle match nahi karta hai, to CLI ek baar ki chetavani print karta hai ki default locale ka upyog kiya jaayega; host OS se anumanit locale kabhi chetavani nahi deta hai. Yeh aapke project ke `sourceLocale` / `targetLocales` se swatantra hai. Shipped UI languages: `en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, aur `zh-Hant`. Koi configuration ki zaroorat nahi hai — default roop se tool aapke OS locale ka palan karta hai. Vistrit jaankari ke liye [Tool UI language](../docs/reference/environment-variables.md#tool-ui-language) dekhein.
+Yeh tool apni CLI help, log summaries, aur Translation Dashboard ko aapke translate kiye gaye locales se alag localize karta hai. Default roop se yeh aapke OS locale ko follow karta hai; isse config mein `-L pt-BR`, `export AI_I18N_LANG=es`, ya `"uiLanguage"` ke saath override karein. Locale resolution, shipped languages, aur dashboard behaviour ke liye [Tool UI language](../docs/guide/tool-ui-language.md) dekhein.
 
 ---
 
 <a id="documentation"></a>
 ## Documentation
 
-- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — poori VitePress guide (GitHub Pages par 9 locales).
+- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — VitePress guide (GitHub Pages par 9 locales); poori guide ke links ke saath slim entry point.
 - [Quick start](../docs/guide/quick-start.md) — UI strings, documents, aur JSON ke liye setup (UI, docs/`.astro`, JSON bundles, VitePress, Nextra, Fumadocs, Astro Starlight aur plain Astro).
-- [Locale assets guide](../docs/guide/images-and-screenshots/) - translated docs mein screenshots aur illustrated SVGs (flat link rewriter, screenshot scripts).
+- [Locale assets guide](../docs/guide/images-and-screenshots/) - anuvaadit docs mein screenshots aur illustrated SVGs (flat link rewriter, screenshot scripts).
 - [Architecture](../docs/reference/architecture.md) - architecture, internals, programmatic API, aur extension points.
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **un apps ke liye jo package ka upyog karte hain:** downstream projects ke liye integration prompts (apne repo ke agent rules mein copy karein).
 - **Is** repository ke liye maintainer guide: `AGENT.md` (rules aur workflows; sirf clone karein; npm par nahi). Pipeline reference: `docs/reference/`. Local dev aur publishing: `dev/DEVEL.md`.

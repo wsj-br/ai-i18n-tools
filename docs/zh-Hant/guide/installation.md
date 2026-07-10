@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### 工具使用者介面語言
 
-CLI 會獨立於您翻譯的地區設定，將其自身的說明文字、日誌摘要和翻譯儀表板本地化。預設情況下，它會遵循您的作業系統地區設定。在設定中，使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 覆寫。請參閱[工具使用者介面語言](/reference/environment-variables#tool-ui-language)。
+CLI 會將其自身的說明文字、日誌摘要與翻譯儀表板進行本地化，這與您所翻譯的地區設定無關。預設情況下，它會遵循您的作業系統地區設定。請在設定中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 進行覆寫。請參閱[工具介面語言](/guide/tool-ui-language)。

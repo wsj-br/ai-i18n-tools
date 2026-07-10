@@ -17,6 +17,11 @@ import {
   validateI18nBusinessRules,
   writeInitConfigFile,
 } from "../../src/core/config.js";
+import {
+  maybeRewriteConfigFile,
+  preprocessLegacyConfigInput,
+  rawConfigHasLegacyKeys,
+} from "../../src/core/config-migrate.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 import type { I18nConfig } from "../../src/core/types.js";
 
@@ -83,12 +88,15 @@ describe("resolveTranslationModelsForLocale", () => {
         ],
       },
     },
-  } as const;
+  };
 
   it("merges locale + ui + translation for UI tasks", () => {
-    expect(
-      resolveTranslationModelsForLocale(providerConfig, "pt-BR", { ui: true })
-    ).toEqual(["l1", "t1", "u1", "t2"]);
+    expect(resolveTranslationModelsForLocale(providerConfig, "pt-BR", { ui: true })).toEqual([
+      "l1",
+      "t1",
+      "u1",
+      "t2",
+    ]);
   });
 
   it("merges locale + translation only for non-UI tasks", () => {
@@ -478,7 +486,7 @@ describe("parseI18nConfig", () => {
     expect(c.docs[0].targetLocales).toEqual(["de", "fr"]);
   });
 
-  it("rejects translateUIStrings with empty targetLocales when uiLanguagesPath is unset", () => {
+  it("rejects translateUIStrings with empty targetLocales when languagesManifestPath is unset", () => {
     expect(() =>
       parseI18nConfig(
         mergeWithDefaults({
@@ -508,7 +516,7 @@ describe("parseI18nConfig", () => {
           docs: [{ contentPaths: [], outputDir: "./out" }],
           ui: uiDefaults,
           targetLocales: [],
-          uiLanguagesPath: "src/renderer/locales/ui-languages.json",
+          languagesManifestPath: "src/renderer/locales/ui-languages.json",
           openrouter: {
             baseUrl: "https://openrouter.ai/api/v1",
             translationModels: ["m"],
@@ -1089,5 +1097,53 @@ describe("parseI18nConfig astro protectAttributes / protectKeys", () => {
     );
     expect(c.docs[0]?.protectAttributes).toEqual(["variant", "size"]);
     expect(c.docs[0]?.protectKeys).toEqual(["slug", "code"]);
+  });
+});
+
+describe("languagesManifestPath migration", () => {
+  it("preprocessLegacyConfigInput maps uiLanguagesPath to languagesManifestPath", () => {
+    const out = preprocessLegacyConfigInput({
+      uiLanguagesPath: "locales/ui-languages.json",
+      sourceLocale: "en",
+    }) as Record<string, unknown>;
+    expect(out.languagesManifestPath).toBe("locales/ui-languages.json");
+    expect(out.uiLanguagesPath).toBeUndefined();
+  });
+
+  it("preprocessLegacyConfigInput rejects conflicting uiLanguagesPath and languagesManifestPath", () => {
+    expect(() =>
+      preprocessLegacyConfigInput({
+        uiLanguagesPath: "a/ui-languages.json",
+        languagesManifestPath: "b/ui-languages.json",
+      })
+    ).toThrow(ConfigValidationError);
+  });
+
+  it("rawConfigHasLegacyKeys detects uiLanguagesPath", () => {
+    expect(rawConfigHasLegacyKeys({ uiLanguagesPath: "locales/ui-languages.json" })).toBe(true);
+    expect(rawConfigHasLegacyKeys({ languagesManifestPath: "locales/ui-languages.json" })).toBe(
+      false
+    );
+  });
+
+  it("maybeRewriteConfigFile rewrites uiLanguagesPath on disk", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cfg-"));
+    const cfgPath = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      cfgPath,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        uiLanguagesPath: "locales/ui-languages.json",
+        ui: { flatOutputDir: "locales" },
+      }),
+      "utf8"
+    );
+    const result = maybeRewriteConfigFile(cfgPath, JSON.parse(fs.readFileSync(cfgPath, "utf8")));
+    expect(result.rewritten).toBe(true);
+    const onDisk = JSON.parse(fs.readFileSync(cfgPath, "utf8")) as Record<string, unknown>;
+    expect(onDisk.languagesManifestPath).toBe("locales/ui-languages.json");
+    expect(onDisk.uiLanguagesPath).toBeUndefined();
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

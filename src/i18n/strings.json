@@ -57,7 +57,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3045
+        "line": 3051
       }
     ]
   },
@@ -88,7 +88,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2277
+        "line": 2283
       }
     ]
   },
@@ -119,7 +119,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 590
+        "line": 593
       }
     ]
   },
@@ -150,7 +150,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 406
+        "line": 409
       }
     ]
   },
@@ -212,7 +212,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 415
+        "line": 418
       }
     ]
   },
@@ -274,7 +274,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 703
+        "line": 709
       }
     ]
   },
@@ -336,7 +336,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 262
+        "line": 254
       }
     ]
   },
@@ -367,7 +367,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2141
+        "line": 2147
       }
     ]
   },
@@ -398,7 +398,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 96
+        "line": 100
       },
       {
         "file": "src/cli/check-models.ts",
@@ -437,11 +437,11 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 108
+        "line": 110
       },
       {
         "file": "src/cli/bench-models.ts",
-        "line": 121
+        "line": 122
       },
       {
         "file": "src/cli/check-models.ts",
@@ -476,7 +476,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 141
+        "line": 140
       }
     ]
   },
@@ -507,7 +507,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 153
+        "line": 152
       }
     ]
   },
@@ -538,7 +538,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 175
+        "line": 174
       }
     ]
   },
@@ -569,7 +569,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 192
+        "line": 189
       }
     ]
   },
@@ -600,7 +600,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 209
+        "line": 206
       }
     ]
   },
@@ -631,7 +631,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 241
+        "line": 238
       }
     ]
   },
@@ -662,7 +662,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 253
+        "line": 250
       }
     ]
   },
@@ -693,23 +693,23 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 279
+        "line": 275
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2479
+        "line": 2485
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2540
+        "line": 2546
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2600
+        "line": 2606
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2661
+        "line": 2667
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -768,7 +768,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 280
+        "line": 275
       }
     ]
   },
@@ -799,7 +799,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 281
+        "line": 275
       }
     ]
   },
@@ -830,7 +830,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 282
+        "line": 275
       }
     ]
   },
@@ -861,7 +861,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 283
+        "line": 275
       }
     ]
   },
@@ -892,7 +892,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 294
+        "line": 285
       }
     ]
   },
@@ -923,7 +923,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 298
+        "line": 289
       }
     ]
   },
@@ -954,7 +954,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 321
+        "line": 312
       }
     ]
   },
@@ -985,7 +985,7 @@
     "locations": [
       {
         "file": "src/cli/bench-models.ts",
-        "line": 328
+        "line": 321
       }
     ]
   },
@@ -1679,11 +1679,11 @@
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1496
+        "line": 1488
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1509
+        "line": 1501
       }
     ]
   },
@@ -1776,7 +1776,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 353
+        "line": 345
       }
     ]
   },
@@ -1807,7 +1807,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 433
+        "line": 425
       }
     ]
   },
@@ -1838,7 +1838,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 499
+        "line": 491
       }
     ]
   },
@@ -1869,7 +1869,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 599
+        "line": 591
       }
     ]
   },
@@ -1900,7 +1900,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1119
+        "line": 1111
       }
     ]
   },
@@ -1931,7 +1931,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1150
+        "line": 1142
       }
     ]
   },
@@ -1962,7 +1962,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1161
+        "line": 1153
       }
     ]
   },
@@ -1993,11 +1993,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1207
+        "line": 1199
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1571
+        "line": 1563
       }
     ]
   },
@@ -2028,7 +2028,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1520
+        "line": 1512
       }
     ]
   },
@@ -2059,7 +2059,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1538
+        "line": 1530
       }
     ]
   },
@@ -2090,7 +2090,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1694
+        "line": 1686
       }
     ]
   },
@@ -2121,19 +2121,19 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1749
+        "line": 1741
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2126
+        "line": 2118
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2467
+        "line": 2459
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2713
+        "line": 2705
       }
     ]
   },
@@ -2164,11 +2164,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1774
+        "line": 1766
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2151
+        "line": 2143
       }
     ]
   },
@@ -2199,7 +2199,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1795
+        "line": 1787
       }
     ]
   },
@@ -2230,11 +2230,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1864
+        "line": 1856
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2241
+        "line": 2233
       }
     ]
   },
@@ -2265,7 +2265,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2176
+        "line": 2168
       }
     ]
   },
@@ -2296,7 +2296,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2492
+        "line": 2484
       }
     ]
   },
@@ -2327,7 +2327,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2511
+        "line": 2503
       }
     ]
   },
@@ -2358,7 +2358,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2738
+        "line": 2730
       }
     ]
   },
@@ -2389,7 +2389,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2782
+        "line": 2774
       }
     ]
   },
@@ -2420,7 +2420,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2983
+        "line": 2975
       }
     ]
   },
@@ -2451,7 +2451,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3005
+        "line": 2997
       }
     ]
   },
@@ -2482,7 +2482,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3006
+        "line": 2998
       }
     ]
   },
@@ -2513,7 +2513,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3009
+        "line": 3001
       }
     ]
   },
@@ -2544,7 +2544,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3086
+        "line": 3078
       }
     ]
   },
@@ -2575,7 +2575,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3091
+        "line": 3083
       }
     ]
   },
@@ -2606,15 +2606,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3110
+        "line": 3102
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 142
+        "line": 144
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 359
+        "line": 372
       }
     ]
   },
@@ -2645,7 +2645,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3112
+        "line": 3104
       }
     ]
   },
@@ -2676,15 +2676,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3115
+        "line": 3107
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 147
+        "line": 149
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 362
+        "line": 375
       }
     ]
   },
@@ -2715,15 +2715,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3118
+        "line": 3110
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 150
+        "line": 152
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 371
+        "line": 384
       }
     ]
   },
@@ -2754,11 +2754,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3132
+        "line": 3124
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 160
+        "line": 162
       }
     ]
   },
@@ -2789,7 +2789,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3134
+        "line": 3126
       }
     ]
   },
@@ -2820,11 +2820,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3137
+        "line": 3129
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 162
+        "line": 164
       }
     ]
   },
@@ -2855,7 +2855,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3140
+        "line": 3132
       }
     ]
   },
@@ -2886,38 +2886,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3143
-      }
-    ]
-  },
-  "b69ba95e": {
-    "source": "{{locale}}: Markdown emphasis placeholders is \"on\". Override with docs[].emphasisPlaceholders or CLI flags)",
-    "translated": {
-      "es": "{{locale}}: Los marcadores de posición de énfasis en Markdown están activados. Anular con docs[].emphasisPlaceholders o flags de CLI)",
-      "fr": "{{locale}} : Les espaces réservés d'emphase Markdown sont « activés ». Remplacer avec docs[].emphasisPlaceholders ou les options CLI)",
-      "hi-Latn": "{{locale}}: Markdown emphasis placeholders \"on\" hai. docs[].emphasisPlaceholders ya CLI flags se override karein)",
-      "ja": "{{locale}}: Markdown 強調プレースホルダーが「オン」になっています。docs[].emphasisPlaceholders または CLI フラグで上書きできます)",
-      "de": "{{locale}}: Platzhalter für Markdown-Hervorhebungen ist \"ein\". Überschreiben mit docs[].emphasisPlaceholders oder CLI-Flags)",
-      "pt-BR": "{{locale}}: Marcadores de ênfase Markdown está \"ativado\". Substitua com docs[].emphasisPlaceholders ou flags da CLI)",
-      "zh-Hant": "{{locale}}：Markdown 強調預留位置已設為「開啟」。可透過 docs[].emphasisPlaceholders 或 CLI 旗標覆寫）",
-      "ko": "{{locale}}: 마크다운 강조 플레이스홀더가 \"켜짐\" 상태입니다. docs[].emphasisPlaceholders 또는 CLI 플래그로 재정의하세요)",
-      "zh-Hans": "{{locale}}：Markdown 强调占位符已“开启”。使用 docs[].emphasisPlaceholders 或 CLI 标志覆盖）"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "openai/gpt-5.5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "z-ai/glm-5"
-    },
-    "locations": [
-      {
-        "file": "src/cli/doc-translate.ts",
-        "line": 3243
+        "line": 3135
       }
     ]
   },
@@ -2948,15 +2917,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3485
+        "line": 3467
       },
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 282
+        "line": 284
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 778
+        "line": 791
       }
     ]
   },
@@ -2987,7 +2956,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3533
+        "line": 3515
       }
     ]
   },
@@ -3669,7 +3638,7 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-meta-translate.ts",
-        "line": 154
+        "line": 162
       }
     ]
   },
@@ -3700,7 +3669,7 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-meta-translate.ts",
-        "line": 168
+        "line": 175
       }
     ]
   },
@@ -3731,7 +3700,7 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-ui-catalog.ts",
-        "line": 126
+        "line": 130
       }
     ]
   },
@@ -3762,7 +3731,7 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-ui-catalog.ts",
-        "line": 148
+        "line": 152
       }
     ]
   },
@@ -3793,7 +3762,7 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-ui-catalog.ts",
-        "line": 214
+        "line": 217
       }
     ]
   },
@@ -3824,38 +3793,38 @@
     "locations": [
       {
         "file": "src/cli/fumadocs-ui-catalog.ts",
-        "line": 231
+        "line": 234
       }
     ]
   },
-  "fed7b56f": {
-    "source": "uiLanguagesPath must be set in config (output path for ui-languages.json)",
+  "b24dd4b3": {
+    "source": "languagesManifestPath must be set in config (output path for ui-languages.json)",
     "translated": {
-      "fr": "uiLanguagesPath doit être défini dans la configuration (chemin de sortie pour ui-languages.json)",
-      "es": "uiLanguagesPath debe estar definido en la configuración (ruta de salida para ui-languages.json)",
-      "hi-Latn": "uiLanguagesPath config mein set hona chahiye (ui-languages.json ke liye output path)",
-      "ja": "設定でuiLanguagesPathを指定してください（ui-languages.jsonの出力パス）",
-      "de": "uiLanguagesPath muss in der Konfiguration festgelegt sein (Ausgabepfad für ui-languages.json)",
-      "pt-BR": "uiLanguagesPath deve ser definido na configuração (caminho de saída para ui-languages.json)",
-      "zh-Hant": "必須在設定中指定 uiLanguagesPath（ui-languages.json 的輸出路徑）",
-      "ko": "uiLanguagesPath는 config에 설정되어야 합니다 (ui-languages.json의 출력 경로)",
-      "zh-Hans": "必须在配置中设置 uiLanguagesPath（ui-languages.json 的输出路径）"
+      "fr": "languagesManifestPath doit être défini dans la configuration (chemin de sortie pour ui-languages.json)",
+      "de": "languagesManifestPath muss in der Konfiguration festgelegt sein (Ausgabepfad für ui-languages.json)",
+      "hi-Latn": "config mein languagesManifestPath set hona chahiye (ui-languages.json ke output path ke liye)",
+      "es": "languagesManifestPath debe estar definido en la configuración (ruta de salida de ui-languages.json)",
+      "ja": "設定で languagesManifestPath を指定する必要があります (ui-languages.json の出力パス)",
+      "pt-BR": "languagesManifestPath deve ser definido na configuração (caminho de saída para ui-languages.json)",
+      "zh-Hant": "languagesManifestPath 必須在設定中設定（ui-languages.json 的輸出路徑）",
+      "ko": "config에 languagesManifestPath를 설정해야 합니다 (ui-languages.json의 출력 경로)",
+      "zh-Hans": "必须在配置中设置 languagesManifestPath（ui-languages.json 的输出路径）"
     },
     "models": {
       "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
       "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "ja": "z-ai/glm-5.2",
       "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest"
+      "zh-Hant": "z-ai/glm-5.2",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hans": "z-ai/glm-5.2"
     },
     "locations": [
       {
         "file": "src/cli/generate-ui-languages.ts",
-        "line": 46
+        "line": 47
       }
     ]
   },
@@ -3886,7 +3855,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 107
+        "line": 108
       }
     ]
   },
@@ -3917,7 +3886,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 150
+        "line": 151
       }
     ]
   },
@@ -3948,7 +3917,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 284
+        "line": 285
       }
     ]
   },
@@ -3979,7 +3948,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 314
+        "line": 315
       }
     ]
   },
@@ -4010,7 +3979,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 341
+        "line": 342
       }
     ]
   },
@@ -4041,7 +4010,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 361
+        "line": 362
       }
     ]
   },
@@ -4072,7 +4041,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 372
+        "line": 373
       }
     ]
   },
@@ -4103,7 +4072,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 380
+        "line": 381
       }
     ]
   },
@@ -4134,7 +4103,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 381
+        "line": 382
       }
     ]
   },
@@ -4165,7 +4134,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 421
+        "line": 422
       }
     ]
   },
@@ -4196,7 +4165,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 449
+        "line": 450
       }
     ]
   },
@@ -4227,7 +4196,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 456
+        "line": 457
       }
     ]
   },
@@ -4258,7 +4227,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 457
+        "line": 458
       }
     ]
   },
@@ -4289,7 +4258,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 458
+        "line": 459
       }
     ]
   },
@@ -4320,7 +4289,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 461
+        "line": 462
       }
     ]
   },
@@ -4351,7 +4320,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 467
+        "line": 468
       }
     ]
   },
@@ -4382,7 +4351,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 471
+        "line": 472
       }
     ]
   },
@@ -4413,7 +4382,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 477
+        "line": 478
       }
     ]
   },
@@ -4444,7 +4413,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 486
+        "line": 487
       }
     ]
   },
@@ -4475,7 +4444,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 494
+        "line": 495
       }
     ]
   },
@@ -4506,7 +4475,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 512
+        "line": 513
       }
     ]
   },
@@ -4537,7 +4506,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 528
+        "line": 529
       }
     ]
   },
@@ -4568,7 +4537,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 536
+        "line": 537
       }
     ]
   },
@@ -4599,7 +4568,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 542
+        "line": 543
       }
     ]
   },
@@ -4630,7 +4599,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 544
+        "line": 547
       }
     ]
   },
@@ -4661,7 +4630,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 545
+        "line": 548
       }
     ]
   },
@@ -4692,7 +4661,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 546
+        "line": 549
       }
     ]
   },
@@ -4723,7 +4692,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 549
+        "line": 552
       }
     ]
   },
@@ -4754,7 +4723,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 576
+        "line": 579
       }
     ]
   },
@@ -4785,7 +4754,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 586
+        "line": 589
       }
     ]
   },
@@ -4816,7 +4785,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 597
+        "line": 600
       }
     ]
   },
@@ -4847,7 +4816,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 606
+        "line": 609
       }
     ]
   },
@@ -4878,7 +4847,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 607
+        "line": 610
       }
     ]
   },
@@ -4909,7 +4878,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 613
+        "line": 616
       }
     ]
   },
@@ -4940,7 +4909,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 629
+        "line": 632
       }
     ]
   },
@@ -4971,7 +4940,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 637
+        "line": 640
       }
     ]
   },
@@ -5002,7 +4971,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 646
+        "line": 652
       }
     ]
   },
@@ -5033,7 +5002,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 654
+        "line": 660
       }
     ]
   },
@@ -5064,7 +5033,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 660
+        "line": 666
       }
     ]
   },
@@ -5095,27 +5064,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 662
+        "line": 668
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1158
+        "line": 1164
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1423
+        "line": 1429
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1489
+        "line": 1495
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1787
+        "line": 1793
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1893
+        "line": 1899
       }
     ]
   },
@@ -5146,7 +5115,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 664
+        "line": 670
       }
     ]
   },
@@ -5177,7 +5146,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 665
+        "line": 671
       }
     ]
   },
@@ -5208,7 +5177,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 666
+        "line": 672
       }
     ]
   },
@@ -5239,7 +5208,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 667
+        "line": 673
       }
     ]
   },
@@ -5270,7 +5239,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 668
+        "line": 674
       }
     ]
   },
@@ -5301,31 +5270,31 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 690
+        "line": 696
       },
       {
         "file": "src/cli/index.ts",
-        "line": 730
+        "line": 736
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1115
+        "line": 1121
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1286
+        "line": 1292
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1452
+        "line": 1458
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1540
+        "line": 1546
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1985
+        "line": 1991
       }
     ]
   },
@@ -5356,7 +5325,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 711
+        "line": 717
       }
     ]
   },
@@ -5387,7 +5356,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 736
+        "line": 742
       }
     ]
   },
@@ -5418,7 +5387,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 753
+        "line": 759
       }
     ]
   },
@@ -5449,7 +5418,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 762
+        "line": 768
       }
     ]
   },
@@ -5480,7 +5449,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 774
+        "line": 780
       }
     ]
   },
@@ -5511,15 +5480,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 785
+        "line": 791
       },
       {
         "file": "src/cli/index.ts",
-        "line": 990
+        "line": 996
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1672
+        "line": 1678
       }
     ]
   },
@@ -5550,7 +5519,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 796
+        "line": 802
       }
     ]
   },
@@ -5581,7 +5550,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 806
+        "line": 812
       }
     ]
   },
@@ -5612,7 +5581,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 810
+        "line": 816
       }
     ]
   },
@@ -5643,7 +5612,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 811
+        "line": 817
       }
     ]
   },
@@ -5674,7 +5643,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 825
+        "line": 831
       }
     ]
   },
@@ -5705,7 +5674,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 830
+        "line": 836
       }
     ]
   },
@@ -5736,7 +5705,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 838
+        "line": 844
       }
     ]
   },
@@ -5767,7 +5736,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 849
+        "line": 855
       }
     ]
   },
@@ -5798,7 +5767,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 930
+        "line": 936
       }
     ]
   },
@@ -5829,7 +5798,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1001
+        "line": 1007
       }
     ]
   },
@@ -5860,7 +5829,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1025
+        "line": 1031
       }
     ]
   },
@@ -5891,7 +5860,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1044
+        "line": 1050
       }
     ]
   },
@@ -5922,7 +5891,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1130
+        "line": 1136
       }
     ]
   },
@@ -5953,7 +5922,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1144
+        "line": 1150
       }
     ]
   },
@@ -5984,7 +5953,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1150
+        "line": 1156
       }
     ]
   },
@@ -6015,11 +5984,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1156
+        "line": 1162
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1487
+        "line": 1493
       }
     ]
   },
@@ -6050,19 +6019,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1159
+        "line": 1165
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1424
+        "line": 1430
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1490
+        "line": 1496
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1582
+        "line": 1588
       }
     ]
   },
@@ -6093,11 +6062,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1162
+        "line": 1168
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1493
+        "line": 1499
       }
     ]
   },
@@ -6128,11 +6097,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1169
+        "line": 1175
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1500
+        "line": 1506
       }
     ]
   },
@@ -6163,7 +6132,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1174
+        "line": 1180
       }
     ]
   },
@@ -6194,7 +6163,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1175
+        "line": 1181
       }
     ]
   },
@@ -6225,7 +6194,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1177
+        "line": 1183
       }
     ]
   },
@@ -6256,7 +6225,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1178
+        "line": 1184
       }
     ]
   },
@@ -6287,11 +6256,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1179
+        "line": 1185
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1506
+        "line": 1512
       }
     ]
   },
@@ -6322,15 +6291,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1182
+        "line": 1188
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1434
+        "line": 1440
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1509
+        "line": 1515
       }
     ]
   },
@@ -6361,7 +6330,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1186
+        "line": 1192
       }
     ]
   },
@@ -6392,7 +6361,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1191
+        "line": 1197
       }
     ]
   },
@@ -6423,7 +6392,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1198
+        "line": 1204
       }
     ]
   },
@@ -6454,11 +6423,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1205
+        "line": 1211
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1941
+        "line": 1947
       }
     ]
   },
@@ -6489,15 +6458,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1223
+        "line": 1229
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1521
+        "line": 1527
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1961
+        "line": 1967
       }
     ]
   },
@@ -6528,11 +6497,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1225
+        "line": 1231
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1523
+        "line": 1529
       }
     ]
   },
@@ -6563,11 +6532,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1227
+        "line": 1233
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1525
+        "line": 1531
       }
     ]
   },
@@ -6598,7 +6567,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1239
+        "line": 1245
       }
     ]
   },
@@ -6629,7 +6598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1240
+        "line": 1246
       }
     ]
   },
@@ -6660,7 +6629,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1241
+        "line": 1247
       }
     ]
   },
@@ -6691,7 +6660,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1242
+        "line": 1248
       }
     ]
   },
@@ -6722,7 +6691,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1261
+        "line": 1267
       }
     ]
   },
@@ -6753,7 +6722,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1263
+        "line": 1269
       }
     ]
   },
@@ -6784,7 +6753,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1274
+        "line": 1280
       }
     ]
   },
@@ -6815,7 +6784,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1274
+        "line": 1280
       }
     ]
   },
@@ -6846,7 +6815,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1352
+        "line": 1358
       }
     ]
   },
@@ -6877,7 +6846,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1378
+        "line": 1384
       }
     ]
   },
@@ -6908,7 +6877,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1390
+        "line": 1396
       }
     ]
   },
@@ -6939,7 +6908,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1398
+        "line": 1404
       }
     ]
   },
@@ -6970,7 +6939,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1407
+        "line": 1413
       }
     ]
   },
@@ -7001,7 +6970,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1413
+        "line": 1419
       }
     ]
   },
@@ -7032,7 +7001,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1419
+        "line": 1425
       }
     ]
   },
@@ -7063,7 +7032,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1425
+        "line": 1431
       }
     ]
   },
@@ -7094,7 +7063,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1428
+        "line": 1434
       }
     ]
   },
@@ -7125,7 +7094,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1431
+        "line": 1437
       }
     ]
   },
@@ -7156,7 +7125,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1438
+        "line": 1444
       }
     ]
   },
@@ -7187,7 +7156,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1465
+        "line": 1471
       }
     ]
   },
@@ -7218,7 +7187,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1475
+        "line": 1481
       }
     ]
   },
@@ -7249,7 +7218,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1481
+        "line": 1487
       }
     ]
   },
@@ -7280,7 +7249,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1505
+        "line": 1511
       }
     ]
   },
@@ -7311,7 +7280,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1547
+        "line": 1553
       }
     ]
   },
@@ -7342,7 +7311,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1558
+        "line": 1564
       }
     ]
   },
@@ -7373,7 +7342,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1566
+        "line": 1572
       }
     ]
   },
@@ -7404,7 +7373,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1574
+        "line": 1580
       }
     ]
   },
@@ -7435,15 +7404,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1580
+        "line": 1586
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1645
+        "line": 1651
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1829
+        "line": 1835
       }
     ]
   },
@@ -7474,7 +7443,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1583
+        "line": 1589
       }
     ]
   },
@@ -7505,7 +7474,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1584
+        "line": 1590
       }
     ]
   },
@@ -7536,7 +7505,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1598
+        "line": 1604
       }
     ]
   },
@@ -7567,7 +7536,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1623
+        "line": 1629
       }
     ]
   },
@@ -7598,7 +7567,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1631
+        "line": 1637
       }
     ]
   },
@@ -7629,7 +7598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1639
+        "line": 1645
       }
     ]
   },
@@ -7660,11 +7629,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1647
+        "line": 1653
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1894
+        "line": 1900
       }
     ]
   },
@@ -7695,7 +7664,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1648
+        "line": 1654
       }
     ]
   },
@@ -7726,7 +7695,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1649
+        "line": 1655
       }
     ]
   },
@@ -7757,7 +7726,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1664
+        "line": 1670
       }
     ]
   },
@@ -7788,7 +7757,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1683
+        "line": 1689
       }
     ]
   },
@@ -7819,7 +7788,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1711
+        "line": 1717
       }
     ]
   },
@@ -7850,7 +7819,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1719
+        "line": 1725
       }
     ]
   },
@@ -7881,7 +7850,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1727
+        "line": 1733
       }
     ]
   },
@@ -7912,7 +7881,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1731
+        "line": 1737
       }
     ]
   },
@@ -7943,7 +7912,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1732
+        "line": 1738
       }
     ]
   },
@@ -7974,7 +7943,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1733
+        "line": 1739
       }
     ]
   },
@@ -8005,7 +7974,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1734
+        "line": 1740
       }
     ]
   },
@@ -8036,7 +8005,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1735
+        "line": 1741
       }
     ]
   },
@@ -8067,11 +8036,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1761
+        "line": 1767
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1767
+        "line": 1773
       }
     ]
   },
@@ -8102,7 +8071,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1777
+        "line": 1783
       }
     ]
   },
@@ -8133,7 +8102,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1783
+        "line": 1789
       }
     ]
   },
@@ -8164,7 +8133,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1788
+        "line": 1794
       }
     ]
   },
@@ -8195,7 +8164,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1789
+        "line": 1795
       }
     ]
   },
@@ -8226,7 +8195,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1813
+        "line": 1819
       }
     ]
   },
@@ -8257,7 +8226,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1823
+        "line": 1829
       }
     ]
   },
@@ -8288,7 +8257,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1833
+        "line": 1839
       }
     ]
   },
@@ -8319,7 +8288,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1837
+        "line": 1843
       }
     ]
   },
@@ -8350,7 +8319,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1840
+        "line": 1846
       }
     ]
   },
@@ -8381,7 +8350,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1861
+        "line": 1867
       }
     ]
   },
@@ -8412,7 +8381,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1871
+        "line": 1877
       }
     ]
   },
@@ -8443,7 +8412,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1879
+        "line": 1885
       }
     ]
   },
@@ -8474,7 +8443,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1885
+        "line": 1891
       }
     ]
   },
@@ -8505,7 +8474,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1891
+        "line": 1897
       }
     ]
   },
@@ -8536,7 +8505,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1897
+        "line": 1903
       }
     ]
   },
@@ -8567,7 +8536,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1902
+        "line": 1908
       }
     ]
   },
@@ -8598,7 +8567,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1905
+        "line": 1911
       }
     ]
   },
@@ -8629,7 +8598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1908
+        "line": 1914
       }
     ]
   },
@@ -8660,7 +8629,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1913
+        "line": 1919
       }
     ]
   },
@@ -8691,7 +8660,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1916
+        "line": 1922
       }
     ]
   },
@@ -8722,7 +8691,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1919
+        "line": 1925
       }
     ]
   },
@@ -8753,7 +8722,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1923
+        "line": 1929
       }
     ]
   },
@@ -8784,7 +8753,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1927
+        "line": 1933
       }
     ]
   },
@@ -8815,7 +8784,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1934
+        "line": 1940
       }
     ]
   },
@@ -8846,7 +8815,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1963
+        "line": 1969
       }
     ]
   },
@@ -8877,7 +8846,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1965
+        "line": 1971
       }
     ]
   },
@@ -8908,7 +8877,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2012
+        "line": 2018
       }
     ]
   },
@@ -8939,7 +8908,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2025
+        "line": 2031
       }
     ]
   },
@@ -8970,7 +8939,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2028
+        "line": 2034
       }
     ]
   },
@@ -9001,11 +8970,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2032
+        "line": 2038
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2380
+        "line": 2386
       }
     ]
   },
@@ -9036,7 +9005,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2051
+        "line": 2057
       }
     ]
   },
@@ -9067,15 +9036,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2100
+        "line": 2106
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2350
+        "line": 2356
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2428
+        "line": 2434
       }
     ]
   },
@@ -9106,7 +9075,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2131
+        "line": 2137
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9169,7 +9138,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2132
+        "line": 2138
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9208,7 +9177,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2133
+        "line": 2139
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9243,15 +9212,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2134
+        "line": 2140
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2524
+        "line": 2530
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2647
+        "line": 2653
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9290,7 +9259,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2202
+        "line": 2208
       }
     ]
   },
@@ -9321,7 +9290,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2204
+        "line": 2210
       }
     ]
   },
@@ -9352,7 +9321,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2205
+        "line": 2211
       }
     ]
   },
@@ -9383,7 +9352,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2209
+        "line": 2215
       }
     ]
   },
@@ -9414,11 +9383,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2211
+        "line": 2217
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2279
+        "line": 2285
       }
     ]
   },
@@ -9449,11 +9418,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2213
+        "line": 2219
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2281
+        "line": 2287
       }
     ]
   },
@@ -9484,11 +9453,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2215
+        "line": 2221
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2283
+        "line": 2289
       }
     ]
   },
@@ -9519,11 +9488,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2217
+        "line": 2223
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2285
+        "line": 2291
       }
     ]
   },
@@ -9554,11 +9523,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2219
+        "line": 2225
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2287
+        "line": 2293
       }
     ]
   },
@@ -9589,7 +9558,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2370
+        "line": 2376
       }
     ]
   },
@@ -9620,7 +9589,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2376
+        "line": 2382
       }
     ]
   },
@@ -9651,7 +9620,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2452
+        "line": 2458
       }
     ]
   },
@@ -9682,7 +9651,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2456
+        "line": 2462
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9717,7 +9686,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2460
+        "line": 2466
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9752,7 +9721,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2469
+        "line": 2475
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9787,7 +9756,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2470
+        "line": 2476
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9822,7 +9791,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2480
+        "line": 2486
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9857,11 +9826,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2481
+        "line": 2487
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2602
+        "line": 2608
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9900,11 +9869,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2504
+        "line": 2510
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2625
+        "line": 2631
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9943,19 +9912,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2573
+        "line": 2579
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2576
+        "line": 2582
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2694
+        "line": 2700
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2697
+        "line": 2703
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9990,11 +9959,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2574
+        "line": 2580
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2695
+        "line": 2701
       }
     ]
   },
@@ -10025,7 +9994,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2581
+        "line": 2587
       }
     ]
   },
@@ -10056,7 +10025,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2586
+        "line": 2592
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10091,7 +10060,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2587
+        "line": 2593
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10134,7 +10103,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2588
+        "line": 2594
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10177,7 +10146,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2589
+        "line": 2595
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10212,7 +10181,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2590
+        "line": 2596
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10247,7 +10216,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2591
+        "line": 2597
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10282,7 +10251,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2592
+        "line": 2598
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10317,7 +10286,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2601
+        "line": 2607
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10356,7 +10325,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2707
+        "line": 2713
       }
     ]
   },
@@ -10387,7 +10356,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2711
+        "line": 2717
       }
     ]
   },
@@ -10418,7 +10387,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2714
+        "line": 2720
       }
     ]
   },
@@ -10449,11 +10418,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2720
+        "line": 2726
       },
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 220
+        "line": 224
       }
     ]
   },
@@ -10484,7 +10453,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2742
+        "line": 2748
       }
     ]
   },
@@ -10515,7 +10484,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2752
+        "line": 2758
       }
     ]
   },
@@ -10546,7 +10515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2778
+        "line": 2784
       }
     ]
   },
@@ -10577,7 +10546,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2782
+        "line": 2788
       }
     ]
   },
@@ -10608,7 +10577,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2797
+        "line": 2803
       }
     ]
   },
@@ -10639,7 +10608,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2814
+        "line": 2820
       }
     ]
   },
@@ -10670,7 +10639,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2824
+        "line": 2830
       }
     ]
   },
@@ -10701,7 +10670,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2834
+        "line": 2840
       }
     ]
   },
@@ -10732,7 +10701,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2838
+        "line": 2844
       }
     ]
   },
@@ -10763,7 +10732,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2839
+        "line": 2845
       }
     ]
   },
@@ -10794,7 +10763,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2840
+        "line": 2846
       }
     ]
   },
@@ -10825,7 +10794,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2853
+        "line": 2859
       }
     ]
   },
@@ -10856,7 +10825,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2859
+        "line": 2865
       }
     ]
   },
@@ -10887,7 +10856,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2863
+        "line": 2869
       }
     ]
   },
@@ -10918,7 +10887,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2864
+        "line": 2870
       }
     ]
   },
@@ -10949,7 +10918,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2865
+        "line": 2871
       }
     ]
   },
@@ -10980,7 +10949,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2868
+        "line": 2874
       }
     ]
   },
@@ -11011,7 +10980,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2873
+        "line": 2879
       }
     ]
   },
@@ -11042,7 +11011,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2893
+        "line": 2899
       }
     ]
   },
@@ -11073,7 +11042,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2948
+        "line": 2954
       }
     ]
   },
@@ -11104,7 +11073,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2973
+        "line": 2979
       }
     ]
   },
@@ -11135,7 +11104,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2991
+        "line": 2997
       }
     ]
   },
@@ -11166,7 +11135,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2995
+        "line": 3001
       }
     ]
   },
@@ -11197,7 +11166,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3007
+        "line": 3013
       }
     ]
   },
@@ -11228,7 +11197,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3009
+        "line": 3015
       }
     ]
   },
@@ -11259,7 +11228,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3020
+        "line": 3026
       }
     ]
   },
@@ -11290,11 +11259,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3024
+        "line": 3030
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3031
+        "line": 3037
       }
     ]
   },
@@ -11325,11 +11294,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3025
+        "line": 3031
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3032
+        "line": 3038
       }
     ]
   },
@@ -11360,7 +11329,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3030
+        "line": 3036
       }
     ]
   },
@@ -11391,7 +11360,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3035
+        "line": 3041
       }
     ]
   },
@@ -11422,7 +11391,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3043
+        "line": 3049
       }
     ]
   },
@@ -11453,7 +11422,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3046
+        "line": 3052
       }
     ]
   },
@@ -11484,7 +11453,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3054
+        "line": 3060
       }
     ]
   },
@@ -11515,7 +11484,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3069
+        "line": 3075
       }
     ]
   },
@@ -11546,7 +11515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3073
+        "line": 3079
       }
     ]
   },
@@ -11577,7 +11546,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3083
+        "line": 3089
       }
     ]
   },
@@ -11608,7 +11577,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3094
+        "line": 3100
       }
     ]
   },
@@ -11639,7 +11608,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3097
+        "line": 3103
       }
     ]
   },
@@ -11670,7 +11639,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3107
+        "line": 3113
       }
     ]
   },
@@ -11701,7 +11670,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3111
+        "line": 3117
       },
       {
         "file": "src/cli/write-heading-ids.ts",
@@ -12550,7 +12519,7 @@
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 239
+        "line": 252
       }
     ]
   },
@@ -12581,7 +12550,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 345
+        "line": 348
       }
     ]
   },
@@ -12612,7 +12581,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 349
+        "line": 352
       }
     ]
   },
@@ -12643,11 +12612,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 352
+        "line": 355
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 426
+        "line": 429
       }
     ]
   },
@@ -12678,7 +12647,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 364
+        "line": 367
       }
     ]
   },
@@ -12709,7 +12678,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 448
+        "line": 451
       }
     ]
   },
@@ -12740,11 +12709,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 496
+        "line": 499
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 560
+        "line": 563
       }
     ]
   },
@@ -12775,7 +12744,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 548
+        "line": 551
       }
     ]
   },
@@ -12806,7 +12775,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 570
+        "line": 573
       }
     ]
   },
@@ -12837,7 +12806,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 629
+        "line": 632
       }
     ]
   },
@@ -12868,7 +12837,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 648
+        "line": 651
       }
     ]
   },
@@ -12899,7 +12868,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 648
+        "line": 651
       }
     ]
   },
@@ -12930,7 +12899,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 652
+        "line": 655
       }
     ]
   },
@@ -12961,7 +12930,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 664
+        "line": 667
       }
     ]
   },
@@ -12992,7 +12961,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 677
+        "line": 680
       }
     ]
   },
@@ -13023,7 +12992,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 691
+        "line": 694
       }
     ]
   },
@@ -13054,7 +13023,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 705
+        "line": 708
       }
     ]
   },
@@ -13085,7 +13054,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 712
+        "line": 715
       }
     ]
   },
@@ -13116,7 +13085,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 196
+        "line": 200
       }
     ]
   },
@@ -13147,7 +13116,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 214
+        "line": 218
       }
     ]
   },
@@ -13178,7 +13147,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 251
+        "line": 255
       }
     ]
   },
@@ -13209,7 +13178,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 258
+        "line": 262
       }
     ]
   },
@@ -13240,7 +13209,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 282
+        "line": 286
       }
     ]
   },
@@ -13271,7 +13240,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 287
+        "line": 291
       }
     ]
   },
@@ -13302,7 +13271,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 294
+        "line": 298
       }
     ]
   },
@@ -13333,7 +13302,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 301
+        "line": 305
       }
     ]
   },
@@ -13364,7 +13333,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 315
+        "line": 319
       }
     ]
   },
@@ -13395,7 +13364,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 327
+        "line": 331
       }
     ]
   },
@@ -13426,7 +13395,7 @@
     "locations": [
       {
         "file": "src/cli/purge-locale.ts",
-        "line": 345
+        "line": 349
       }
     ]
   },
@@ -13457,7 +13426,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 122
+        "line": 119
       }
     ]
   },
@@ -13488,7 +13457,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 141
+        "line": 138
       }
     ]
   },
@@ -13519,7 +13488,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 280
+        "line": 272
       }
     ]
   },
@@ -13550,7 +13519,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 288
+        "line": 280
       }
     ]
   },
@@ -13581,7 +13550,7 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 319
+        "line": 311
       }
     ]
   },
@@ -13612,11 +13581,11 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 348
+        "line": 340
       },
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 356
+        "line": 348
       }
     ]
   },
@@ -13647,11 +13616,11 @@
     "locations": [
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 349
+        "line": 341
       },
       {
         "file": "src/cli/translate-json-run.ts",
-        "line": 357
+        "line": 349
       }
     ]
   },
@@ -13682,7 +13651,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 94
+        "line": 86
       }
     ]
   },
@@ -13713,7 +13682,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 95
+        "line": 87
       }
     ]
   },
@@ -13744,7 +13713,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 107
+        "line": 99
       }
     ]
   },
@@ -13775,7 +13744,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 112
+        "line": 104
       }
     ]
   },
@@ -13806,7 +13775,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 117
+        "line": 109
       }
     ]
   },
@@ -13837,7 +13806,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 121
+        "line": 113
       }
     ]
   },
@@ -13868,7 +13837,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 126
+        "line": 118
       }
     ]
   },
@@ -13899,7 +13868,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 128
+        "line": 120
       }
     ]
   },
@@ -13930,7 +13899,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 134
+        "line": 126
       }
     ]
   },
@@ -13961,7 +13930,7 @@
     "locations": [
       {
         "file": "src/cli/translate-summary.ts",
-        "line": 136
+        "line": 128
       }
     ]
   },
@@ -13992,7 +13961,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 48
+        "line": 53
       }
     ]
   },
@@ -14023,7 +13992,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 83
+        "line": 88
       }
     ]
   },
@@ -14054,7 +14023,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 84
+        "line": 89
       }
     ]
   },
@@ -14085,7 +14054,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 125
+        "line": 130
       }
     ]
   },
@@ -14116,7 +14085,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 144
+        "line": 146
       }
     ]
   },
@@ -14147,7 +14116,7 @@
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
-        "line": 240
+        "line": 242
       }
     ]
   },
@@ -14178,7 +14147,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 70
+        "line": 76
       }
     ]
   },
@@ -14209,7 +14178,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 72
+        "line": 78
       }
     ]
   },
@@ -14240,7 +14209,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 191
+        "line": 197
       }
     ]
   },
@@ -14271,7 +14240,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 211
+        "line": 222
       }
     ]
   },
@@ -14302,7 +14271,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 212
+        "line": 223
       }
     ]
   },
@@ -14333,7 +14302,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 230
+        "line": 243
       }
     ]
   },
@@ -14364,7 +14333,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 251
+        "line": 264
       }
     ]
   },
@@ -14395,7 +14364,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 309
+        "line": 322
       }
     ]
   },
@@ -14426,7 +14395,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 313
+        "line": 326
       }
     ]
   },
@@ -14457,7 +14426,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 339
+        "line": 352
       }
     ]
   },
@@ -14488,7 +14457,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 356
+        "line": 369
       }
     ]
   },
@@ -14519,7 +14488,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 357
+        "line": 370
       }
     ]
   },
@@ -14550,7 +14519,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 360
+        "line": 373
       }
     ]
   },
@@ -14581,7 +14550,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 366
+        "line": 379
       }
     ]
   },
@@ -14612,7 +14581,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 367
+        "line": 380
       }
     ]
   },
@@ -14643,11 +14612,11 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 396
+        "line": 409
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 491
+        "line": 504
       }
     ]
   },
@@ -14678,7 +14647,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 403
+        "line": 416
       }
     ]
   },
@@ -14709,7 +14678,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 440
+        "line": 453
       }
     ]
   },
@@ -14740,7 +14709,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 476
+        "line": 489
       }
     ]
   },
@@ -14771,7 +14740,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 525
+        "line": 538
       }
     ]
   },
@@ -14802,7 +14771,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 543
+        "line": 556
       }
     ]
   },
@@ -14833,7 +14802,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 577
+        "line": 590
       }
     ]
   },
@@ -14864,7 +14833,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 588
+        "line": 601
       }
     ]
   },
@@ -14895,7 +14864,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 623
+        "line": 636
       }
     ]
   },
@@ -14926,7 +14895,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 648
+        "line": 661
       }
     ]
   },
@@ -14957,7 +14926,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 667
+        "line": 680
       }
     ]
   },
@@ -14988,7 +14957,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 710
+        "line": 723
       }
     ]
   },
@@ -15019,7 +14988,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 764
+        "line": 777
       }
     ]
   },
@@ -15050,11 +15019,11 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 794
+        "line": 807
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 824
+        "line": 837
       }
     ]
   },
@@ -15085,7 +15054,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 806
+        "line": 819
       }
     ]
   },
@@ -15116,7 +15085,69 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 838
+        "line": 851
+      }
+    ]
+  },
+  "f0840c7b": {
+    "source": "⚠️  VitePress theme catalog key \"{{key}}\" in {{catalogPath}} is not referenced in {{configPath}} (wire it in themeConfigFor or remove it).",
+    "translated": {
+      "hi-Latn": "⚠️  VitePress theme catalog key \"{{key}}\" in {{catalogPath}} ko {{configPath}} mein reference nahi kiya gaya hai (ise themeConfigFor mein wire karein ya hata dein).",
+      "fr": "⚠️  La clé de catalogue de thème VitePress « {{key}} » dans {{catalogPath}} n'est référencée dans aucune {{configPath}} (associez-la dans themeConfigFor ou supprimez-la).",
+      "de": "⚠️  VitePress-Theme-Katalogschlüssel \"{{key}}\" in {{catalogPath}} wird in {{configPath}} nicht referenziert (in themeConfigFor einbinden oder entfernen).",
+      "es": "⚠️  La clave de catálogo de tema de VitePress \"{{key}}\" en {{catalogPath}} no está referenciada en {{configPath}} (agrégala en themeConfigFor o elimínala).",
+      "ja": "⚠️  {{catalogPath}} の VitePress テーマカタログキー \"{{key}}\" は {{configPath}} で参照されていません（themeConfigFor で接続するか、削除してください）。",
+      "pt-BR": "⚠️  A chave de catálogo de tema do VitePress \"{{key}}\" em {{catalogPath}} não está referenciada em {{configPath}} (vincule-a em themeConfigFor ou remova-a).",
+      "ko": "⚠️  {{catalogPath}}의 VitePress 테마 카탈로그 키 \"{{key}}\"가 {{configPath}}에서 참조되지 않습니다 (themeConfigFor에 연결하거나 제거하세요).",
+      "zh-Hans": "⚠️  VitePress 主题目录键 \"{{key}}\" 在 {{catalogPath}} 中未被 {{configPath}} 引用（请在 themeConfigFor 中接入或移除它）。",
+      "zh-Hant": "⚠️  VitePress 主題目錄鍵 \"{{key}}\" 在 {{catalogPath}} 中未被 {{configPath}} 引用（請在 themeConfigFor 中將其接入或移除）。"
+    },
+    "models": {
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "ja": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hans": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    },
+    "locations": [
+      {
+        "file": "src/cli/vitepress-catalog-usage.ts",
+        "line": 191
+      }
+    ]
+  },
+  "67fe94cd": {
+    "source": "📄 Wrote VitePress scaffold: {{path}}",
+    "translated": {
+      "hi-Latn": "📄 VitePress scaffold likha gaya: {{path}}",
+      "fr": "📄 Ossature VitePress créée : {{path}}",
+      "de": "📄 VitePress-Gerüst geschrieben: {{path}}",
+      "es": "📄 Se generó el andamiaje de VitePress: {{path}}",
+      "ja": "📄 VitePress スキャフォールドを書き込みました: {{path}}",
+      "pt-BR": "📄 Estrutura do VitePress gravada: {{path}}",
+      "ko": "📄 VitePress 스캐폴드 작성됨: {{path}}",
+      "zh-Hans": "📄 已写入 VitePress 脚手架：{{path}}",
+      "zh-Hant": "📄 已寫入 VitePress 腳手架：{{path}}"
+    },
+    "models": {
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "ja": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hans": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    },
+    "locations": [
+      {
+        "file": "src/cli/vitepress-init-scaffold.ts",
+        "line": 172
       }
     ]
   },
@@ -15147,7 +15178,7 @@
     "locations": [
       {
         "file": "src/cli/vitepress-theme-catalog.ts",
-        "line": 126
+        "line": 131
       }
     ]
   },
@@ -15178,7 +15209,7 @@
     "locations": [
       {
         "file": "src/cli/vitepress-theme-catalog.ts",
-        "line": 148
+        "line": 157
       }
     ]
   },
@@ -15209,7 +15240,7 @@
     "locations": [
       {
         "file": "src/cli/vitepress-theme-catalog.ts",
-        "line": 214
+        "line": 225
       }
     ]
   },
@@ -15240,7 +15271,7 @@
     "locations": [
       {
         "file": "src/cli/vitepress-theme-catalog.ts",
-        "line": 231
+        "line": 242
       }
     ]
   },

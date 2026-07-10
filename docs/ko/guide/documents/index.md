@@ -5,17 +5,17 @@
 
 Docusaurus 사이트에서는 `docusaurusCatalogDir`를 `write-translations` 카탈로그 폴더(예: `docs-site/i18n/en`)로 설정하십시오. 그러면 `translate-docs`에 셸 JSON도 포함됩니다(내비게이션 바, 푸터, 테마 문자열).
 
-[VitePress](/guide/vitepress-integration) 사이트에서 페이지 본문은 동일한 `docs[]` 파이프라인을 사용합니다. 탐색, 사이드바 및 바닥글 레이블은 `docsOutput.vitepressThemeCatalog`에 있으며, `translate-docs`는 영어 카탈로그를 부트스트랩하고 페이지와 함께 번역하며 별도의 파이프라인은 없습니다.
+[VitePress](/guide/integrations/vitepress) 사이트에서는 페이지 본문이 동일한 `docs[]` 파이프라인을 사용합니다. 탐색, 사이드바 및 푸터 레이블은 `docsOutput.vitepressThemeCatalog`에 있습니다 — `translate-docs`는 영어 카탈로그를 부트스트랩하고 페이지와 함께 번역하므로 별도의 파이프라인이 필요하지 않습니다.
 
-[Nextra](/guide/nextra-integration) 사이트에서 페이지 본문은 `docsOutput.style: "nextra"`과 함께 동일한 `docs[]` 파이프라인을 사용합니다. `_meta.ts` 사이드바 레이블은 `translate-docs`에 의해 자동으로 수집 및 번역됩니다. 테마 사전 문자열은 동일한 파이프라인에서 `docs[].nextraDictionaryPath`를 통해 번역됩니다.
+[Nextra](/guide/integrations/nextra) 사이트에서는 페이지 본문이 `docsOutput.style: "nextra"`과(와) 함께 동일한 `docs[]` 파이프라인을 사용합니다. `_meta.ts` 사이드바 레이블은 `translate-docs`에 의해 자동으로 수집 및 번역되며, 테마 사전 문자열은 동일한 파이프라인에서 `docs[].nextraDictionaryPath`를 통해 번역됩니다.
 
-[Fumadocs](/guide/fumadocs-integration) 사이트의 페이지 본문은 `docsOutput.style: "fumadocs"`와 함께 `fumadocsParser` `"dot"`(기본값) 또는 `"dir"`을 사용합니다. `meta.json` 사이드바 레이블은 자동으로 수집되며, UI 오버라이드는 `docsOutput.fumadocsUiCatalog`를 통해 번역됩니다.
+[Fumadocs](/guide/integrations/fumadocs) 사이트에서는 페이지 본문이 `fumadocsParser` `"dot"`(기본값) 또는 `"dir"`과(와) 함께 `docsOutput.style: "fumadocs"`를 사용합니다. `meta.json` 사이드바 레이블은 자동으로 수집되며, UI 재정의는 `docsOutput.fumadocsUiCatalog`를 통해 번역됩니다.
 
 마크다운에 포함된 PNG 및 기타 래스터 이미지에 대해서는 [이미지 및 스크린샷](/guide/images-and-screenshots/)을 참조하십시오. `translate-docs`는 alt 텍스트만 번역하며 래스터 파일을 복사하지 않습니다.
 
 README 또는 문서에 선택적 **언어 전환기** 블록을 추가하려면 `docsOutput.style`를 `"flat"`로 설정하십시오. [언어 전환기](/guide/documents/language-switcher)를 참조하십시오.
 
-SVG 파일은 `features.translateSVG`이 활성화된 경우 [`translate-svg`](/reference/cli-commands)를 통해 번역되며, `docs[]` / `contentPaths`를 통하지 않습니다.
+SVG 파일은 `features.translateSVG`이(가) 활성화된 경우 [`translate-svg`](/reference/cli-commands/content#translate-svg)를 통해 번역됩니다 — `docs[]` / `contentPaths`를 통하지 않습니다.
 
 문서 프레임워크의 셸/테마 문자열과 관련 없는 임의의 중첩된 UI JSON 번들은 `docs[]`이 아닌 [JSON](/guide/json) 파이프라인에 속합니다.
 
@@ -30,9 +30,9 @@ SVG 파일은 `features.translateSVG`이 활성화된 경우 [`translate-svg`](/
 | 설정 | 여기에서 시작 |
 | --- | --- |
 | Docusaurus 사이트 | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [1단계](#step-1-initialise-for-documentation) |
-| VitePress 사이트 | 테마용 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 통합](/guide/vitepress-integration) |
-| Nextra 사이트 | 사전용 `init -t ui-nextra` + `nextraDictionaryPath` (사이드바 `_meta.ts`는 자동) — [Nextra 통합](/guide/nextra-integration) |
-| Fumadocs 사이트 | `init -t ui-fumadocs` + `fumadocsUiCatalog`를 사용한 UI(사이드바 `meta.json`는 자동임) — [Fumadocs 통합](/guide/fumadocs-integration) |
+| VitePress 사이트 | 테마용 `init -t ui-vitepress` + `vitepressThemeCatalog` — [VitePress 통합](/guide/integrations/vitepress) |
+| Nextra 사이트 | 사전용 `init -t ui-nextra` + `nextraDictionaryPath` (사이드바 `_meta.ts`는 자동) — [Nextra 통합](/guide/integrations/nextra) |
+| Fumadocs 사이트 | UI용 `init -t ui-fumadocs` + `fumadocsUiCatalog` (사이드바 `meta.json`는 자동) — [Fumadocs 통합](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [1단계](#step-1-initialise-for-documentation) |
 | 플랫 문서(README, 변경 로그 등) | `docsOutput.style = "flat"` — [출력 레이아웃](/guide/documents/output-layouts), 선택적 [언어 전환기](/guide/documents/language-switcher) |
 | 번역된 파일이 저장되는 위치 | [출력 레이아웃](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ VitePress 문서 사이트의 경우:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-탐색/사이드바/바닥글 문자열에 대해 `docsOutput.vitepressThemeCatalog`을(를) 설정합니다. [VitePress 통합](/guide/vitepress-integration)을(를) 참조하십시오.
+탐색/사이드바/푸터 문자열에 대해 `docsOutput.vitepressThemeCatalog`를 설정하세요 — [VitePress 통합](/guide/integrations/vitepress)을 참조하세요.
 
 Nextra 문서 사이트의 경우:
 
@@ -68,7 +68,7 @@ Nextra 문서 사이트의 경우:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-테마 사전 문자열에 대해 `docs[].nextraDictionaryPath`을(를) 설정합니다. [Nextra 통합](/guide/nextra-integration)을(를) 참조하세요. 사이드바 `_meta.ts` 레이블은 자동으로 수집됩니다.
+테마 사전 문자열에 대해 `docs[].nextraDictionaryPath`를 설정하세요 — [Nextra 통합](/guide/integrations/nextra)을 참조하세요. 사이드바 `_meta.ts` 레이블은 자동으로 수집됩니다.
 
 Fumadocs 문서 사이트의 경우:
 
@@ -76,7 +76,7 @@ Fumadocs 문서 사이트의 경우:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`을(를) 설정합니다. [Fumadocs 통합](/guide/fumadocs-integration)을(를) 참조하세요. 사이드바 `meta.json` 레이블은 자동으로 수집됩니다.
+UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`를 설정하세요 — [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하세요. 사이드바 `meta.json` 레이블은 자동으로 수집됩니다.
 
 일반 Astro 웹사이트 UI(스타라이트 없음)의 경우:
 

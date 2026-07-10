@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "LLM を使用して JavaScript/TypeScript アプリケーションとドキュメントサイトを国際化するための CLI およびツールキット。"
+    "description": "LLMを使用してJavaScript/TypeScriptアプリケーションやドキュメントサイトを国際化するためのCLIおよびツールキット。"
   },
   "nav": {
     "guide": "ガイド",
@@ -11,13 +11,25 @@
   },
   "sidebar": {
     "guide": "ガイド",
-    "introduction": "はじめに",
-    "whatIs": "ai-i18n-tools とは？",
+    "whatIs": "ai-i18n-toolsとは？",
     "installation": "インストール",
     "quickStart": "クイックスタート",
-    "translationTypes": "翻訳タイプ",
+    "toolUiLanguage": "ツールUIの言語",
+    "translationTypes": "翻訳の種類",
     "uiStrings": "UI文字列",
+    "overview": "概要",
+    "uiStringsPlainHtml": "プレーンHTMLアプリ",
+    "uiStringsAstroWebsite": "Astroウェブサイト",
+    "uiStringsWireI18next": "i18nextの連携",
+    "uiStringsTCallsAndPlurals": "t()呼び出しと複数形",
+    "uiStringsLanguageSwitcher": "言語スイッチャーとRTL",
     "documents": "ドキュメント",
+    "documentsOutputLayouts": "出力レイアウト",
+    "documentsAnchorLinks": "アンカーリンク",
+    "documentsLinkRewriting": "リンクの書き換え",
+    "documentsLanguageSwitcher": "言語切り替え",
+    "documentsCliOptions": "CLIオプション",
+    "documentsTroubleshooting": "トラブルシューティング",
     "json": "JSON",
     "integrations": "統合",
     "astro": "Astro",
@@ -26,21 +38,43 @@
     "nextra": "Nextra",
     "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "画像とスクリーンショット",
-    "svgTranslation": "SVG の翻訳",
-    "providers": "LLM プロバイダー",
+    "imagesSharedImage": "共有画像",
+    "imagesPerLocaleFolder": "ロケールごとのフォルダ",
+    "imagesColocatedScreenshots": "コロケーションされたスクリーンショット",
+    "imagesLinkRewriting": "リンクの書き換え",
+    "imagesTroubleshooting": "トラブルシューティング",
+    "svgTranslation": "SVG翻訳",
+    "svgWebAppFlat": "Webアプリ (フラットSVG)",
+    "svgColocated": "コロケーションSVG",
+    "svgTroubleshooting": "トラブルシューティング",
+    "providers": "LLMプロバイダー",
     "runtimeHelpers": "ランタイムヘルパー",
     "dashboard": "翻訳ダッシュボード",
+    "dashboardDocumentationCache": "ドキュメントキャッシュ",
+    "dashboardUiStringsAndPlurals": "UI文字列と複数形",
+    "dashboardGlossary": "用語集",
+    "dashboardFailures": "失敗",
+    "dashboardMarkdownIssues": "Markdownの問題",
+    "dashboardStatistics": "統計",
     "reference": "リファレンス",
     "configuration": "設定",
-    "cli": "CLI コマンド",
+    "cli": "CLIコマンド",
+    "cliOverview": "概要",
+    "cliSetup": "セットアップ",
+    "cliModels": "モデルとカタログ",
+    "cliUiStrings": "UI文字列",
+    "cliDocuments": "ドキュメント",
+    "cliContent": "その他のコンテンツ",
+    "cliWorkflows": "ワークフローとステータス",
+    "cliMaintenance": "キャッシュとメンテナンス",
+    "cliTools": "ツール",
     "architecture": "アーキテクチャ",
-    "programmaticApi": "プログラム API",
+    "programmaticApi": "プログラマティックAPI",
     "environment": "環境変数",
-    "examples": "例",
-    "examplesOverview": "概要"
+    "examples": "例"
   },
   "footer": {
-    "message": "MIT ライセンスでリリースされています。",
+    "message": "MITライセンスの下で公開されています。",
     "copyright": "Copyright © Waldemar Scudeller Jr."
   },
   "docFooter": {
@@ -48,7 +82,7 @@
     "next": "次へ"
   },
   "outline": {
-    "label": "このページで"
+    "label": "このページの内容"
   },
   "langMenuLabel": "言語",
   "search": {

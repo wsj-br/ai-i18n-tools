@@ -182,7 +182,7 @@ Para una demostración práctica de cómo cambiar de proveedor con `-P` en un so
 ---
 
 <a id="quick-start"></a>
-## Comienzo rápido
+## Inicio rápido
 
 <a id="ui-strings"></a>
 ### Cadenas de interfaz de usuario
@@ -234,17 +234,17 @@ Edite `ai-i18n-tools.config.json`: establezca `docs[].contentPaths` en fuentes m
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` genera `docsOutput.style: "vitepress"` más `docsOutput.vitepressThemeCatalog` para cadenas de navegación/barra lateral/pie de página. Ejecute `sync` para traducir el markdown de la página y el catálogo de temas juntos, sin una canalización JSON separada. Consulte [Integración de VitePress](../docs/guide/vitepress-integration.md) y [ejemplos/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
+`init -t ui-vitepress` genera `docsOutput.style: "vitepress"` más `docsOutput.vitepressThemeCatalog` para cadenas de navegación/barra lateral/pie de página. Ejecute `sync` para traducir el markdown de la página y el catálogo de temas juntos, sin una canalización JSON separada. Consulte [Integración de VitePress](../docs/guide/integrations/vitepress.md) y [ejemplos/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra` genera `docsOutput.style: "nextra"`. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral de `_meta.ts`; establezca `docs[].nextraDictionaryPath` para traducir también el módulo de diccionario de temas (por ejemplo, `app/_dictionaries/en.ts`) — todo en la misma ejecución de `sync`, sin archivos JSON auxiliares. Consulte [Integración de Nextra](../docs/guide/nextra-integration.md) y [ejemplos/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
+`init -t ui-nextra` genera `docsOutput.style: "nextra"`. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral de `_meta.ts`; configure `docs[].nextraDictionaryPath` para traducir también el módulo de diccionario de temas (por ejemplo, `app/_dictionaries/en.ts`), todo en la misma ejecución de `sync`, sin archivos JSON complementarios. Consulte [Integración de Nextra](../docs/guide/integrations/nextra.md) y [ejemplos/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs` genera `docsOutput.style: "fumadocs"` con el analizador de puntos (predeterminado) o el analizador de directorios para carpetas de idioma estilo Nextra. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral `meta.json`; establezca `docsOutput.fumadocsUiCatalog` para traducir también las anulaciones de la interfaz de usuario en `lib/layout.shared.ts` — todo en la misma ejecución `sync`, sin archivos JSON auxiliares. Consulte [Integración de Fumadocs](../docs/guide/fumadocs-integration.md) y [ejemplos/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
+`init -t ui-fumadocs` genera `docsOutput.style: "fumadocs"` con el analizador de puntos (predeterminado) o el analizador de directorios para carpetas de configuración regional estilo Nextra. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral de `meta.json`; configure `docsOutput.fumadocsUiCatalog` para traducir también las anulaciones de la interfaz de usuario en `lib/layout.shared.ts`, todo en la misma ejecución de `sync`, sin archivos JSON complementarios. Consulte [Integración de Fumadocs](../docs/guide/integrations/fumadocs.md) y [ejemplos/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (Astro plano y Starlight)
@@ -332,30 +332,23 @@ ai-i18n-tools help [command]
 
 Para aplicaciones HTML simples, anote los elementos con marcadores simples `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` (el texto fuente se toma del propio textContent / title / placeholder del elemento, escrito una vez); `mark-html` los inserta por usted y `extract` luego los captura en `strings.json`. Consulte [Marcado de HTML para traducción](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation).
 
-Las listas completas de indicadores por comando se encuentran en [Referencia de la CLI](../docs/reference/cli-commands.md). Ejecute `ai-i18n-tools <command> --help` para obtener el texto de uso incorporado.
+Las listas completas de indicadores por comando se encuentran en la [referencia de la CLI](../docs/reference/cli-commands/). Ejecute `ai-i18n-tools <command> --help` para obtener el texto de uso integrado.
 
-Opciones globales: `-c <config>` (predeterminado: `ai-i18n-tools.config.json`), `-v` (detallado), `-P` / `--provider <name>` (anula el proveedor de LLM activo; debe configurarse en `providers`), `-L` / `--ui-lang <code>` (idioma para la interfaz de usuario/registros de la herramienta), `-V` / `--version` y `-h` / `--help` — aceptadas en cada comando. `-w` / `--write-logs [path]` envía la salida de la consola a un archivo de registro (predeterminado: en el directorio de caché de traducción), pero solo tiene efecto en los comandos de traducción y sincronización (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Varios comandos aceptan `-l` / `--locale <codes>` (BCP-47 separado por comas) para limitar las configuraciones regionales de destino; `proofread-ui` usa una única configuración regional de origen. Consulte [Referencia de la CLI](../docs/reference/cli-commands.md) para ver la tabla de resumen de comandos.
+Opciones globales: `-c <config>` (predeterminado: `ai-i18n-tools.config.json`), `-v` (detallado), `-P` / `--provider <name>` (anula el proveedor de LLM activo; debe configurarse en `providers`), `-L` / `--ui-lang <code>` (idioma para la interfaz de usuario/registros de la herramienta), `-V` / `--version` y `-h` / `--help` — aceptadas en cada comando. `-w` / `--write-logs [path]` envía la salida de la consola a un archivo de registro (predeterminado: en el directorio de caché de traducción), pero solo tiene efecto en los comandos de traducción y sincronización (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Varios comandos aceptan `-l` / `--locale <codes>` (BCP-47 separado por comas) para limitar las configuraciones regionales de destino; `proofread-ui` usa una única configuración regional de origen. Consulte la [referencia de la CLI](../docs/reference/cli-commands/) para obtener una descripción general de los comandos.
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### Idioma de la interfaz de usuario de la herramienta (registros, ayuda, panel de control)
 
-La herramienta localiza su propia ayuda de CLI, mensajes de registro/resumen de alto tráfico y el panel de traducción. La locale de la interfaz de usuario se resuelve a partir de estas fuentes, con la máxima prioridad primero:
-
-1. Indicador global `-L` / `--ui-lang <code>` (por ejemplo, `-L pt-BR`).
-2. Variable de entorno `AI_I18N_LANG` (por ejemplo, `export AI_I18N_LANG=es`).
-3. La clave de configuración `uiLanguage` en `ai-i18n-tools.config.json` (cadena BCP-47).
-4. La locale del sistema operativo anfitrión (a través de `Intl.DateTimeFormat().resolvedOptions().locale`).
-
-La configuración regional solicitada se compara con los idiomas de la interfaz de usuario enviados exactamente o por la variación más cercana (por ejemplo, `pt-PT` se resuelve en `pt-BR` y `en-US` se resuelve en `en-GB`); cuando nada coincide, se recurre a la configuración regional de origen (`en-GB`). Cuando se solicita explícitamente un idioma de la interfaz de usuario (a través del indicador, la variable de entorno o `uiLanguage`) pero ningún paquete enviado coincide, la CLI imprime una advertencia única de que se utilizará la configuración regional predeterminada; una configuración regional inferida solo del sistema operativo host nunca advierte. Esto es independiente de la `sourceLocale` / `targetLocales` de su proyecto. Idiomas de la interfaz de usuario enviados: `en-GB` (origen) más `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` y `zh-Hant`. No se requiere configuración: de forma predeterminada, la herramienta sigue la configuración regional de su sistema operativo. Consulte [Idioma de la interfaz de usuario de la herramienta](../docs/reference/environment-variables.md#tool-ui-language) para obtener más detalles.
+La herramienta localiza su propia ayuda de CLI, resúmenes de registro y el Panel de traducción independientemente de las configuraciones regionales que traduzca. De forma predeterminada, sigue la configuración regional de su sistema operativo; anule con `-L pt-BR`, `export AI_I18N_LANG=es` o `"uiLanguage"` en la configuración. Consulte [Idioma de la interfaz de usuario de la herramienta](../docs/guide/tool-ui-language.md) para ver la resolución de la configuración regional, los idiomas enviados y el comportamiento del panel.
 
 ---
 
 <a id="documentation"></a>
 ## Documentación
 
-- [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — guía completa de VitePress (9 idiomas en GitHub Pages).
-- [Inicio rápido](../docs/guide/quick-start.md) — configuración para cadenas de interfaz de usuario, documentos y JSON (UI, documentos/`.astro`, paquetes JSON, VitePress, Nextra, Fumadocs, Astro Starlight y Astro simple).
-- [Guía de recursos de idioma](../docs/guide/images-and-screenshots/) - capturas de pantalla y SVG ilustrados en documentos traducidos (reescritor de enlaces planos, scripts de capturas de pantalla).
+- [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — Guía de VitePress (9 configuraciones regionales en GitHub Pages); punto de entrada reducido con enlaces a la guía completa.
+- [Inicio rápido](../docs/guide/quick-start.md) — configuración para cadenas de interfaz de usuario, documentos y JSON (interfaz de usuario, documentos/`.astro`, paquetes JSON, VitePress, Nextra, Fumadocs, Astro Starlight y Astro sin formato).
+- [Guía de recursos de configuración regional](../docs/guide/images-and-screenshots/) - capturas de pantalla y SVG ilustrados en documentos traducidos (reescritor de enlaces planos, scripts de captura de pantalla).
 - [Arquitectura](../docs/reference/architecture.md) - arquitectura, componentes internos, API programática y puntos de extensión.
 - [Contexto del agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **para aplicaciones que usan el paquete:** indicaciones de integración para proyectos posteriores (copiar en las reglas del agente de su repositorio).
 - Guía del mantenedor para **este** repositorio: `AGENT.md` (reglas y flujos de trabajo; solo clonar; no en npm). Referencia de la canalización: `docs/reference/`. Desarrollo local y publicación: `dev/DEVEL.md`.

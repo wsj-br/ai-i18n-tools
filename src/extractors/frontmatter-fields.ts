@@ -18,9 +18,13 @@ export const DEFAULT_TRANSLATABLE_FRONTMATTER_PATHS: readonly string[] = [
   "pagination_label",
   "keywords",
   "hero.title",
+  "hero.name",
+  "hero.text",
   "hero.tagline",
   "hero.image.alt",
   "hero.actions.text",
+  "features.title",
+  "features.details",
   "prev",
   "prev.label",
   "next",
@@ -119,6 +123,8 @@ export function collectTranslatableFrontmatterFields(
 
   if (isRecord(data.hero)) {
     pushField(fields, "hero.title", data.hero.title, allowed);
+    pushField(fields, "hero.name", data.hero.name, allowed);
+    pushField(fields, "hero.text", data.hero.text, allowed);
     pushField(fields, "hero.tagline", data.hero.tagline, allowed);
     collectHeroImageAlt(data, fields, allowed);
 
@@ -127,6 +133,18 @@ export function collectTranslatableFrontmatterFields(
         const action = data.hero.actions[i];
         if (isRecord(action)) {
           pushField(fields, `hero.actions.${i}.text`, action.text, allowed);
+        }
+      }
+    }
+  }
+
+  if (allowPath("features.title", allowed) && Array.isArray(data.features)) {
+    for (let i = 0; i < data.features.length; i++) {
+      const feature = data.features[i];
+      if (isRecord(feature)) {
+        pushField(fields, `features.${i}.title`, feature.title, allowed);
+        if (allowPath("features.details", allowed)) {
+          pushField(fields, `features.${i}.details`, feature.details, allowed);
         }
       }
     }

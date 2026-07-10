@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 기본 수신 포트는 **8675**입니다. 해당 포트를 사용할 수 없는 경우, 서버는 다음 포트를 시도하며(최대 1000회 시도), 선택한 포트를 로그에 기록합니다. 더 이상 사용되지 않는 별칭 `editor`은 여전히 작동하지만 경고를 출력합니다. 대신 `dashboard`을 사용하는 것이 좋습니다.
 
-대시보드 UI는 CLI와 동일한 로케일 확인을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → 구성 `uiLanguage` → OS 로케일. [도구 UI 언어](/reference/environment-variables#tool-ui-language)를 참조하십시오.
+대시보드 UI는 CLI와 동일한 로케일 결정 방식을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS 로케일. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

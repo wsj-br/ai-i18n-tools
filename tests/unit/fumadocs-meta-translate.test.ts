@@ -27,7 +27,11 @@ describe("collectFumadocsMetaFiles", () => {
       doc: {
         contentPaths: ["content/docs"],
         outputDir: "content/docs",
-        docsOutput: { style: "fumadocs" as const, docsRoot: "content/docs", fumadocsParser: "dot" as const },
+        docsOutput: {
+          style: "fumadocs" as const,
+          docsRoot: "content/docs",
+          fumadocsParser: "dot" as const,
+        },
       },
       features: { translateDocs: true },
       targetLocales: ["pt"],

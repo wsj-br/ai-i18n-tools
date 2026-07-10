@@ -25,10 +25,7 @@ import {
   printTranslationModelSummary,
   localeModelRowsForRun,
 } from "./format.js";
-import {
-  mergeTranslateTotals,
-  printTranslationRunSummary,
-} from "./translate-summary.js";
+import { mergeTranslateTotals, printTranslationRunSummary } from "./translate-summary.js";
 import { TranslationCache } from "../core/cache.js";
 import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
 import {
@@ -47,10 +44,7 @@ import {
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
-import {
-  dedupeOrderedModelIds,
-  resolveTranslationModelsForLocale,
-} from "../core/config.js";
+import { dedupeOrderedModelIds, resolveTranslationModelsForLocale } from "../core/config.js";
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
@@ -60,10 +54,21 @@ import {
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
-import { shouldRewriteFlatMarkdownLinks, shouldRewriteFumadocsLinks, shouldRewriteNextraLinks, shouldRewriteVitepressLinks, fumadocsLinkNormalizeContext, nextraLinkNormalizeContext, vitepressLinkNormalizeContext } from "../core/output-paths.js";
+import {
+  shouldRewriteFlatMarkdownLinks,
+  shouldRewriteFumadocsLinks,
+  shouldRewriteNextraLinks,
+  shouldRewriteVitepressLinks,
+  fumadocsLinkNormalizeContext,
+  nextraLinkNormalizeContext,
+  vitepressLinkNormalizeContext,
+} from "../core/output-paths.js";
 import { normalizeFumadocsDocLinks } from "../processors/fumadocs-link-normalize.js";
 import { normalizeNextraDocLinks } from "../processors/nextra-link-normalize.js";
-import { normalizeVitepressDocLinks } from "../processors/vitepress-link-normalize.js";
+import {
+  normalizeVitepressDocLinks,
+  normalizeVitepressFrontmatterLinks,
+} from "../processors/vitepress-link-normalize.js";
 import {
   applyMarkdownLanguageListPostProcessing,
   applyMarkdownPostProcessing,
@@ -99,27 +104,17 @@ import {
   throwIfAbortSignal,
 } from "../utils/run-interrupt.js";
 import { FileContentCache } from "./file-content-cache.js";
-import {
-  collectNextraMetaFiles,
-  translateNextraMetaFiles,
-} from "./nextra-meta-translate.js";
+import { collectNextraMetaFiles, translateNextraMetaFiles } from "./nextra-meta-translate.js";
 import { translateNextraDictionary } from "./nextra-dictionary-translate.js";
 import {
   bootstrapVitepressThemeCatalog,
   runVitepressThemeShell,
 } from "./vitepress-theme-catalog.js";
-import {
-  collectFumadocsMetaFiles,
-  translateFumadocsMetaFiles,
-} from "./fumadocs-meta-translate.js";
-import {
-  bootstrapFumadocsUiCatalog,
-  runFumadocsUiShell,
-} from "./fumadocs-ui-catalog.js";
+import { collectFumadocsMetaFiles, translateFumadocsMetaFiles } from "./fumadocs-meta-translate.js";
+import { bootstrapFumadocsUiCatalog, runFumadocsUiShell } from "./fumadocs-ui-catalog.js";
 import {
   describeEmphasisPlaceholdersPolicy,
   resolveMarkdownEmphasisPlaceholders,
-  usesAutomaticEmphasisPlaceholdersForLocale,
 } from "../core/markdown-emphasis-defaults.js";
 import {
   collectMalformedAdmonitionRows,
@@ -1985,11 +1980,15 @@ export async function translateMarkdownFile(
     output = matterStringify(newBody, parsed.data);
   } else if (shouldRewriteVitepressLinks(config)) {
     const parsed = matter(output);
-    const newBody = normalizeVitepressDocLinks(
-      parsed.content,
-      vitepressLinkNormalizeContext(config, normalizeMarkdownRelPath(relPath))
+    const vpCtx = vitepressLinkNormalizeContext(
+      config,
+      normalizeMarkdownRelPath(relPath),
+      locale,
+      opts.cwd
     );
-    output = matterStringify(newBody, parsed.data);
+    parsed.content = normalizeVitepressDocLinks(parsed.content, vpCtx);
+    normalizeVitepressFrontmatterLinks(parsed.data as Record<string, unknown>, vpCtx);
+    output = matterStringify(parsed.content, parsed.data);
   } else if (shouldRewriteNextraLinks(config)) {
     const parsed = matter(output);
     const newBody = normalizeNextraDocLinks(
@@ -3237,16 +3236,6 @@ export async function runTranslate(
       }
 
       if (shouldRunMarkdown(opts, config)) {
-        if (usesAutomaticEmphasisPlaceholdersForLocale(locale, config.doc, config, runOpts)) {
-          console.log(
-            chalk.gray(
-              t(
-                '   {{locale}}: Markdown emphasis placeholders is "on". Override with docs[].emphasisPlaceholders or CLI flags)',
-                { locale }
-              )
-            )
-          );
-        }
         const markdownFilesToProcess = files.markdown.filter((rel) =>
           matchesPathFilter(rel, opts.pathFilter)
         );

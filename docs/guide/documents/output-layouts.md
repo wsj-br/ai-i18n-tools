@@ -11,9 +11,9 @@
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""` (translated pages directly under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`).
-- `docsOutput.style = "vitepress"` — same layout as `doc-system` with empty `localeSubpath`; BCP-47 locale folder names are preserved (`localePathLowercase` defaults to `false`). See [VitePress integration](/guide/vitepress-integration).
-- `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; English source lives under a locale folder (e.g. `content/en/`). See [Nextra integration](/guide/nextra-integration).
-- `docsOutput.style = "fumadocs"` — same layout as `doc-system` with empty `localeSubpath`; English source uses dot-suffix files (default) or a locale folder when `fumadocsParser` is `"dir"`. See [Fumadocs integration](/guide/fumadocs-integration).
+- `docsOutput.style = "vitepress"` — same layout as `doc-system` with empty `localeSubpath`; BCP-47 locale folder names are preserved (`localePathLowercase` defaults to `false`). See [VitePress integration](/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; English source lives under a locale folder (e.g. `content/en/`). See [Nextra integration](/guide/integrations/nextra).
+- `docsOutput.style = "fumadocs"` — same layout as `doc-system` with empty `localeSubpath`; English source uses dot-suffix files (default) or a locale folder when `fumadocsParser` is `"dir"`. See [Fumadocs integration](/guide/integrations/fumadocs).
 
 Docusaurus preset (primary documentation pages):
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight ships UI strings for many locales; optional custom UI overrides use `src/content/i18n/en.json` with `jsonPathTemplate: "{outputDir}/{locale}.json"` in a separate `docs[]` block when needed.
 
-VitePress nav/sidebar/footer strings are not in markdown — configure `docsOutput.vitepressThemeCatalog` and translate inside **`translate-docs`**. See [VitePress integration](/guide/vitepress-integration).
+VitePress nav/sidebar/footer strings are not in markdown — configure `docsOutput.vitepressThemeCatalog` and translate inside **`translate-docs`**. See [VitePress integration](/guide/integrations/vitepress).
 
-Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdown — use `docs[].nextraDictionaryPath` and automatic `_meta` collection when `style: "nextra"`, all inside **`translate-docs`**. See [Nextra integration](/guide/nextra-integration).
+Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdown — use `docs[].nextraDictionaryPath` and automatic `_meta` collection when `style: "nextra"`, all inside **`translate-docs`**. See [Nextra integration](/guide/integrations/nextra).
 
-Fumadocs UI overrides (`lib/layout.shared.ts`) and `meta.json` sidebar labels are not in markdown — use `docsOutput.fumadocsUiCatalog` and automatic `meta.json` collection when `style: "fumadocs"`, all inside **`translate-docs`**. See [Fumadocs integration](/guide/fumadocs-integration).
+Fumadocs UI overrides (`lib/layout.shared.ts`) and `meta.json` sidebar labels are not in markdown — use `docsOutput.fumadocsUiCatalog` and automatic `meta.json` collection when `style: "fumadocs"`, all inside **`translate-docs`**. See [Fumadocs integration](/guide/integrations/fumadocs).
 
 `docsOutput.style = "flat"` — places translated files next to the source with a locale suffix, or in a subdirectory. Relative links between pages are rewritten automatically when `docsOutput.style = "flat"` (unless `rewriteRelativeLinks: false` or a custom `pathTemplate` is set).
 

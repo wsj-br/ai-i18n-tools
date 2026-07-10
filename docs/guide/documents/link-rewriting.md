@@ -18,11 +18,11 @@ Which rewriter runs depends on `docsOutput.style`:
 
 Custom `pathTemplate` disables the flat rewriter unless you set `rewriteRelativeLinks: true` explicitly. See [Output layouts](/guide/documents/output-layouts) and [Anchor links](/guide/documents/anchor-links) for cross-page `#anchor` handling.
 
-For VitePress-specific authoring rules, see [VitePress integration — Link conventions](/guide/vitepress-integration#link-conventions).
+For VitePress-specific authoring rules, see [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
 
-For Nextra-specific authoring rules, see [Nextra integration — Link conventions](/guide/nextra-integration#link-conventions).
+For Nextra-specific authoring rules, see [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 
-For Fumadocs-specific authoring rules, see [Fumadocs integration — Link conventions](/guide/fumadocs-integration#link-conventions).
+For Fumadocs-specific authoring rules, see [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

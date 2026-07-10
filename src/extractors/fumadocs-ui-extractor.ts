@@ -56,7 +56,6 @@ function looksLikeUrl(value: string): boolean {
   return /^https?:\/\//i.test(value) || value.startsWith("/");
 }
 
-
 function collectFlatStringMap(obj: ObjectExpression, out: Map<string, string>): void {
   for (const prop of obj.properties) {
     if (prop.type === "SpreadElement") {

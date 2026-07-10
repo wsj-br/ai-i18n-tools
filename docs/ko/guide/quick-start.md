@@ -68,7 +68,7 @@ npx ai-i18n-tools status
 }
 ```
 
-**팁:** CLI 출력 및 대시보드를 다른 언어로 보려면 `-L <code>`를 전달하거나 `AI_I18N_LANG`를 설정하세요([도구 UI 언어](/reference/environment-variables#tool-ui-language) 참조).
+**팁:** CLI 출력과 대시보드를 다른 언어로 표시하려면 `-L <code>`를 전달하거나 `AI_I18N_LANG`를 설정하세요 — [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
 
 <a id="combined-sync"></a>
 ## 결합된 동기화

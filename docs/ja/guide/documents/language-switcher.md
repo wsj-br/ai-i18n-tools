@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. ラベルマニフェスト
 
-内名ラベル (`label: "local"`) の場合、`ui-languages.json` を `generate-ui-languages` 経由で生成または維持します ([`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional) が必要)。このリポジトリのドキュメントのみの設定には UI パイプラインがないため、ラベルは `sourceLocale` + `targetLocales` のバンドルされたマスターカタログから取得されます。
+内名ラベル（`label: "local"`）については、`generate-ui-languages` を介して `ui-languages.json` を生成または維持します（[`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional) に書き込まれ、デフォルトは `{ui.flatOutputDir}/ui-languages.json` です）。このリポジトリのドキュメント専用設定にはUIパイプラインがなく、ディスク上にプロジェクトマニフェストも存在しないため、ラベルは `sourceLocale` + `targetLocales` のバンドルされたマスターカタログから取得されます。
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. このリポジトリの例

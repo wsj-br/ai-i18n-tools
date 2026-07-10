@@ -5,7 +5,7 @@
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
-**使用您选择的 AI 模型翻译您的应用程序和文档：无锁定，无需重写。**
+**使用你选择的 AI 模型翻译你的应用和文档：无锁定，无需重写。**
 
 `ai-i18n-tools` 是一个 CLI 工具和工具包，用于国际化 JavaScript/TypeScript 应用和文档站点——包括 Docusaurus、Astro、Starlight、VitePress、Nextra、Fumadocs 以及纯 Markdown/MDX——借助大语言模型完成。
 
@@ -19,12 +19,12 @@
 
 **SVG** 资产有自己的路径：`features.translateSVG`、顶级 `svg` 块和 `translate-svg`——而不是 `docs[].contentPaths`。
 
-**我应该使用哪一个？**
+**我该使用哪个？**
 
 | 您的内容                                                                  | 命令                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | 源代码使用 `t()`                                                        | **UI 字符串** — `extract` / `translate-ui` |
-| 本地化页面或文档站点（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 等） | **文档** — `translate-docs`            |
+| 本地化页面或文档站点（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 等） | **文档** — `translate-docs` |
 | 独立、嵌套的 JSON 区域设置文件                                          | **JSON** — `translate-json`                 |
 
 所有这三种都共享一个文件/SQLite 缓存，因此只有新的或更改的段（字符串或文本块）才会被重新发送到模型——无论您使用哪个提供商，重新运行都快速且便宜。
@@ -182,7 +182,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ---
 
 <a id="quick-start"></a>
-## 快速入门
+## 快速开始
 
 <a id="ui-strings"></a>
 ### UI 字符串
@@ -234,17 +234,17 @@ npx ai-i18n-tools status
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress` 会搭建 `docsOutput.style: "vitepress"` 以及用于导航/侧边栏/页脚字符串的 `docsOutput.vitepressThemeCatalog`。运行 `sync` 即可同时翻译页面 Markdown 和主题目录——无需单独的 JSON 流程。参见 [VitePress 集成](../docs/guide/vitepress-integration.md) 和 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)。
+`init -t ui-vitepress` 会搭建 `docsOutput.style: "vitepress"` 以及用于导航/侧边栏/页脚字符串的 `docsOutput.vitepressThemeCatalog`。运行 `sync` 可同时翻译页面 Markdown 和主题目录 —— 无需单独的 JSON 流水线。参见 [VitePress 集成](../docs/guide/integrations/vitepress.md) 和 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)。
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra` 会搭建 `docsOutput.style: "nextra"`。`translate-docs` 会自动收集并翻译 `_meta.ts` 侧边栏标签；设置 `docs[].nextraDictionaryPath` 可同时翻译主题字典模块（例如 `app/_dictionaries/en.ts`）——全部在同一次 `sync` 运行中完成，无需 JSON 附属文件。参见 [Nextra 集成](../docs/guide/nextra-integration.md) 和 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)。
+`init -t ui-nextra` 会搭建 `docsOutput.style: "nextra"`。`translate-docs` 会自动收集并翻译 `_meta.ts` 侧边栏标签；设置 `docs[].nextraDictionaryPath` 可同时翻译主题字典模块（例如 `app/_dictionaries/en.ts`）—— 所有这些都在同一次 `sync` 运行中完成，无需 JSON 附属文件。参见 [Nextra 集成](../docs/guide/integrations/nextra.md) 和 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)。
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs` 使用点解析器（默认）或目录解析器为 Nextra 风格的语言区域文件夹搭建 `docsOutput.style: "fumadocs"`。`translate-docs` 会自动收集并翻译 `meta.json` 侧边栏标签；设置 `docsOutput.fumadocsUiCatalog` 可同时翻译 `lib/layout.shared.ts` 中的 UI 覆盖项——全部在同一次 `sync` 运行中完成，无需 JSON 附属文件。参见 [Fumadocs 集成](../docs/guide/fumadocs-integration.md) 和 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)。
+`init -t ui-fumadocs` 会使用点解析器（默认）或用于 Nextra 风格语言环境文件夹的目录解析器来搭建 `docsOutput.style: "fumadocs"`。`translate-docs` 会自动收集并翻译 `meta.json` 侧边栏标签；设置 `docsOutput.fumadocsUiCatalog` 可同时翻译 `lib/layout.shared.ts` 中的 UI 覆盖项 —— 所有这些都在同一次 `sync` 运行中完成，无需 JSON 附属文件。参见 [Fumadocs 集成](../docs/guide/integrations/fumadocs.md) 和 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)。
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro（纯 Astro 和 Starlight）
@@ -332,31 +332,24 @@ ai-i18n-tools help [command]
 
 对于纯 HTML 应用程序，使用裸 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记注释元素（源文本取自元素自身的 textContent / title / placeholder，只写入一次）；`mark-html` 为您插入它们，然后 `extract` 将它们捕获到 `strings.json` 中。请参阅 [标记 HTML 以进行翻译](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation)。
 
-完整的每命令标志列表在[CLI 参考](../docs/reference/cli-commands.md)中。运行 `ai-i18n-tools <command> --help` 以获取内置用法文本。
+完整的各命令标志列表见[CLI 参考](../docs/reference/cli-commands/)。运行 `ai-i18n-tools <command> --help` 查看内置用法文本。
 
-全局选项：`-c <config>`（默认值：`ai-i18n-tools.config.json`）、`-v`（详细）、`-P` / `--provider <name>`（覆盖活动的 LLM 提供商；必须在 `providers` 下配置）、`-L` / `--ui-lang <code>`（工具自身 UI/日志的语言）、`-V` / `--version`，以及 `-h` / `--help` — 在每个命令上都接受。`-w` / `--write-logs [path]` 将控制台输出复制到日志文件（默认：在翻译缓存目录下），但仅在翻译和同步命令（`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、`cleanup`）上生效。几个命令接受 `-l` / `--locale <codes>`（逗号分隔的 BCP-47）以限制目标语言环境；`proofread-ui` 使用单个源语言环境。请参阅 [CLI 参考](../docs/reference/cli-commands.md) 以获取命令概述表。
+全局选项：`-c <config>`（默认：`ai-i18n-tools.config.json`）、`-v`（详细）、`-P` / `--provider <name>`（覆盖当前活跃的 LLM 提供商；必须在 `providers` 下配置）、`-L` / `--ui-lang <code>`（工具自身界面/日志的语言）、`-V` / `--version`，以及 `-h` / `--help` — 适用于所有命令。`-w` / `--write-logs [path]` 将控制台输出同时写入日志文件（默认：位于翻译缓存目录下），但仅在翻译和同步命令（`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、`cleanup`）上生效。部分命令接受 `-l` / `--locale <codes>`（逗号分隔的 BCP-47）以限制目标区域设置；`proofread-ui` 使用单一源区域设置。命令概览请参见 [CLI 参考](../docs/reference/cli-commands/)。
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### 工具 UI 语言（日志、帮助、仪表板）
 
-该工具会本地化其自身的 CLI 帮助、高流量日志/摘要消息以及翻译仪表板。UI 区域设置从以下来源解析，优先级最高：
-
-1. `-L` / `--ui-lang <code>` 全局标志（例如 `-L pt-BR`）。
-2. `AI_I18N_LANG` 环境变量（例如 `export AI_I18N_LANG=es`）。
-3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 配置键（BCP-47 字符串）。
-4. 主机操作系统区域设置（通过 `Intl.DateTimeFormat().resolvedOptions().locale`）。
-
-请求的语言环境与已发布的 UI 语言完全匹配或通过最接近的变体匹配（例如 `pt-PT` 解析为 `pt-BR`，`en-US` 解析为 `en-GB`）；当没有任何匹配时，它会回退到源语言环境（`en-GB`）。当通过标志、环境变量或 `uiLanguage` 明确请求 UI 语言但没有匹配的已发布捆绑包时，CLI 会打印一次性警告，指出将使用默认语言环境；仅从主机操作系统推断的语言环境从不发出警告。这与您项目的 `sourceLocale` / `targetLocales` 无关。已发布的 UI 语言：`en-GB`（源）加上 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。无需配置 — 默认情况下，工具遵循您的操作系统语言环境。有关详细信息，请参阅 [工具 UI 语言](../docs/reference/environment-variables.md#tool-ui-language)。
+该工具独立于您翻译的语言环境，对其自身的 CLI 帮助、日志摘要和翻译仪表板进行本地化。默认情况下，它遵循您的操作系统语言环境；在配置中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 进行覆盖。有关语言环境解析、内置语言和仪表板行为，请参阅[工具 UI 语言](../docs/guide/tool-ui-language.md)。
 
 ---
 
 <a id="documentation"></a>
 ## 文档
 
-- [文档站点](https://wsj-br.github.io/ai-i18n-tools/) — 完整的 VitePress 指南（GitHub Pages 上的 9 个语言区域）。
+- [文档站点](https://wsj-br.github.io/ai-i18n-tools/) — VitePress 指南（GitHub Pages 上有 9 种语言）；精简的入口，包含指向完整指南的链接。
 - [快速开始](../docs/guide/quick-start.md) — UI 字符串、文档和 JSON 的设置（UI、docs/`.astro`、JSON 包、VitePress、Nextra、Fumadocs、Astro Starlight 和纯 Astro）。
-- [语言区域资源指南](../docs/guide/images-and-screenshots/) — 翻译文档中的截图和带插图的 SVG（扁平链接重写器、截图脚本）。
-- [架构](../docs/reference/architecture.md) — 架构、内部实现、编程式 API 和扩展点。
+- [本地化资源指南](../docs/guide/images-and-screenshots/) - 翻译文档中的截图和带插图的 SVG（扁平链接重写器、截图脚本）。
+- [架构](../docs/reference/architecture.md) - 架构、内部原理、编程式 API 和扩展点。
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **对于使用该包的应用：** 面向下游项目的集成提示（复制到你的仓库的代理规则中）。
 - **本**仓库的维护者指南：`AGENT.md`（规则与工作流；仅限克隆；不在 npm 上）。流水线参考：`docs/reference/`。本地开发与发布：`dev/DEVEL.md`。
 

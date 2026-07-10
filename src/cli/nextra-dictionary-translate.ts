@@ -94,7 +94,8 @@ export async function translateNextraDictionary(
   totals.outputTokens += fileTotals.outputTokens ?? 0;
   totals.costUsd = (totals.costUsd ?? 0) + (fileTotals.costUsd ?? 0);
   totals.segmentsCached = (totals.segmentsCached ?? 0) + (fileTotals.segmentsCached ?? 0);
-  totals.segmentsTranslated = (totals.segmentsTranslated ?? 0) + (fileTotals.segmentsTranslated ?? 0);
+  totals.segmentsTranslated =
+    (totals.segmentsTranslated ?? 0) + (fileTotals.segmentsTranslated ?? 0);
   totals.segmentValidationFailures =
     (totals.segmentValidationFailures ?? 0) + (fileTotals.segmentValidationFailures ?? 0);
   totals.individualSegmentTranslations =

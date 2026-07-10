@@ -78,17 +78,9 @@ export function printTranslationRunSummary(
   if (outcome === "success") {
     console.log(chalk.bold.green(`\n${titles.success}\n`));
   } else if (outcome === "interrupted") {
-    console.log(
-      chalk.bold.yellow(
-        `\n${titles.interrupted}\n`
-      )
-    );
+    console.log(chalk.bold.yellow(`\n${titles.interrupted}\n`));
   } else {
-    console.log(
-      chalk.bold.yellow(
-        `\n${titles.failure ?? titles.interrupted}\n`
-      )
-    );
+    console.log(chalk.bold.yellow(`\n${titles.failure ?? titles.interrupted}\n`));
   }
 
   console.log(chalk.bold(t("📊 Summary:")));

@@ -38,7 +38,7 @@ makeLoadLocale(
 
 通常のアプリケーションエントリポイントとして `setupKeyAsDefaultT` を使用してください（キーのトリミング＋複数形 `wrapT`＋オプションの `translate-ui` `{sourceLocale}.json`）。アプリケーションの配線において、単独で `wrapI18nWithKeyTrim` を呼び出すことは**非推奨**です。
 
-`generate-ui-languages` の後もキーが `targetLocales` と揃うように、`localeLoaders` を `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` でビルドします。`docs/guide/ui-strings/i18next-runtime.md` (ランタイム配線)、`examples/nextjs-app/`、`examples/console-app/`、および `examples/astro-website/` (i18next を使用しないカスタム `makeT`) を参照してください。
+`makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` を使用して `localeLoaders` をビルドし、`generate-ui-languages` の後もキーが `targetLocales` と整合した状態を保つようにします。[ランタイムのワイヤリング](/guide/ui-strings/i18next-runtime)、[nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)、[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/)、[astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (i18next を使用しないカスタム `makeT`) を参照してください。
 
 <a id="display-helpers"></a>
 ### 表示ヘルパー

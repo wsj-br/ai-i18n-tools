@@ -215,8 +215,7 @@ export class TranslationCache {
       WHERE source_hash = ? AND locale = ?
     `);
     const row = selectStmt.get(sourceHash, locale) as
-      | { translated_text: string; model: string | null }
-      | undefined;
+      { translated_text: string; model: string | null } | undefined;
     if (!row) {
       return null;
     }
@@ -499,8 +498,7 @@ export class TranslationCache {
     fileTracking: number;
     failures: number;
   } {
-    const count = (sql: string): number =>
-      (this.db.prepare(sql).get(locale) as { c: number }).c;
+    const count = (sql: string): number => (this.db.prepare(sql).get(locale) as { c: number }).c;
     return {
       translations: count("SELECT COUNT(*) as c FROM translations WHERE locale = ?"),
       fileTracking: count("SELECT COUNT(*) as c FROM file_tracking WHERE locale = ?"),
@@ -1372,8 +1370,7 @@ export class TranslationCache {
       WHERE filepath = ? AND locale = ?
     `);
     const row = stmt.get(filepath, locale) as
-      | { source_hash: string; last_translated: string | null }
-      | undefined;
+      { source_hash: string; last_translated: string | null } | undefined;
     if (!row) {
       return null;
     }

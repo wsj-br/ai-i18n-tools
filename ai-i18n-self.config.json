@@ -43,6 +43,6 @@
       "includePackageDescription": false
     }
   },
-  "uiLanguagesPath": "src/i18n/locales/ui-languages.json",
+  "languagesManifestPath": "src/i18n/locales/ui-languages.json",
   "docs": []
 }

@@ -68,7 +68,7 @@ Une fois le package installé localement, vous pouvez utiliser directement les c
 }
 ```
 
-**Conseil :** Passez `-L <code>` ou définissez `AI_I18N_LANG` si vous souhaitez la sortie CLI et le tableau de bord dans une autre langue — voir [Langue de l'interface utilisateur de l'outil](/reference/environment-variables#tool-ui-language).
+**Conseil :** Transmettez `-L <code>` ou définissez `AI_I18N_LANG` si vous souhaitez que la sortie CLI et le tableau de bord soient dans une autre langue — consultez [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Synchronisation combinée

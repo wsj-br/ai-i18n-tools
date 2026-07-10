@@ -5,7 +5,7 @@
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
-**선택한 AI 모델을 사용하여 앱과 문서를 번역하세요. 종속성이나 다시 작성할 필요가 없습니다.**
+**원하는 AI 모델을 사용하여 앱과 문서를 번역하세요: 종속성 없음, 재작성 없음.**
 
 `ai-i18n-tools`는 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs, 일반 Markdown/MDX를 포함한 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다.
 
@@ -19,12 +19,12 @@
 
 **SVG** 자산은 자체 경로를 가집니다. `features.translateSVG`, 최상위 `svg` 블록 및 `translate-svg`이며, `docs[].contentPaths`는 아닙니다.
 
-**어떤 것을 사용해야 하나요?**
+**어떤 것을 사용해야 할까요?**
 
 | 귀하의 콘텐츠                                                                  | 명령                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------|
 | 소스 코드는 `t()`를 사용합니다                                                        | **UI 문자열** — `extract` / `translate-ui` |
-| 현지화된 페이지 또는 문서 사이트(VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 등) | **문서** — `translate-docs` |
+| 현지화된 페이지 또는 문서 사이트 (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 등) | **문서** — `translate-docs` |
 | 독립형, 중첩 JSON 로케일 파일                                          | **JSON** — `translate-json`                 |
 
 세 가지 모두 파일/SQLite 캐시를 공유하므로 새롭거나 변경된 세그먼트(문자열 또는 텍스트 청크)만 모델로 다시 전송됩니다. 어떤 공급자를 사용하든 재실행은 빠르고 저렴합니다.
@@ -234,17 +234,17 @@ npx ai-i18n-tools status
 <a id="vitepress"></a>
 ### VitePress
 
-`init -t ui-vitepress`는 탐색/사이드바/바닥글 문자열을 위해 `docsOutput.style: "vitepress"`과 `docsOutput.vitepressThemeCatalog`를 스캐폴드합니다. `sync`를 실행하여 페이지 마크다운과 테마 카탈로그를 함께 번역합니다. 별도의 JSON 파이프라인은 없습니다. [VitePress 통합](../docs/guide/vitepress-integration.md) 및 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)를 참조하십시오.
+`init -t ui-vitepress`는 nav/sidebar/footer 문자열을 위한 `docsOutput.style: "vitepress"`와 `docsOutput.vitepressThemeCatalog`를 스캐폴드합니다. `sync`를 실행하여 페이지 마크다운과 테마 카탈로그를 함께 번역하세요. 별도의 JSON 파이프라인이 필요 없습니다. [VitePress 통합](../docs/guide/integrations/vitepress.md) 및 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)을 참조하세요.
 
 <a id="nextra"></a>
 ### Nextra
 
-`init -t ui-nextra`는 `docsOutput.style: "nextra"`을 스캐폴드합니다. `translate-docs`는 `_meta.ts` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docs[].nextraDictionaryPath`를 설정하여 테마 사전 모듈(예: `app/_dictionaries/en.ts`)도 번역합니다. 이 모든 작업은 동일한 `sync` 실행에서 이루어지며 JSON 사이드카는 없습니다. [Nextra 통합](../docs/guide/nextra-integration.md) 및 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)를 참조하십시오.
+`init -t ui-nextra`는 `docsOutput.style: "nextra"`를 스캐폴드합니다. `translate-docs`는 `_meta.ts` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docs[].nextraDictionaryPath`를 설정하여 테마 사전 모듈(예: `app/_dictionaries/en.ts`)도 번역하세요. 모두 동일한 `sync` 실행 내에서 이루어지며, JSON 사이드카는 필요 없습니다. [Nextra 통합](../docs/guide/integrations/nextra.md) 및 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)을 참조하세요.
 
 <a id="fumadocs"></a>
 ### Fumadocs
 
-`init -t ui-fumadocs`는 Nextra 스타일 로케일 폴더에 대해 점 파서(기본값) 또는 디렉토리 파서로 `docsOutput.style: "fumadocs"`을 스캐폴드합니다. `translate-docs`는 `meta.json` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docsOutput.fumadocsUiCatalog`를 설정하여 `lib/layout.shared.ts`의 UI 재정의도 번역할 수 있습니다. — 이 모든 작업은 동일한 `sync` 실행에서 JSON 사이드카 없이 수행됩니다. [Fumadocs 통합](../docs/guide/fumadocs-integration.md) 및 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)를 참조하십시오.
+`init -t ui-fumadocs`는 dot 파서(기본값) 또는 Nextra 스타일 로케일 폴더용 dir 파서를 사용하여 `docsOutput.style: "fumadocs"`를 스캐폴드합니다. `translate-docs`는 `meta.json` 사이드바 레이블을 자동으로 수집하고 번역합니다. `docsOutput.fumadocsUiCatalog`를 설정하여 `lib/layout.shared.ts`의 UI 재정의도 번역하세요. 모두 동일한 `sync` 실행 내에서 이루어지며, JSON 사이드카는 필요 없습니다. [Fumadocs 통합](../docs/guide/integrations/fumadocs.md) 및 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)을 참조하세요.
 
 <a id="astro-plain-astro--starlight"></a>
 ### Astro (순수 Astro 및 Starlight)
@@ -332,31 +332,24 @@ ai-i18n-tools help [command]
 
 일반 HTML 앱의 경우, 일반 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커로 요소를 주석 처리합니다(소스 텍스트는 요소 자체의 textContent / title / placeholder에서 한 번 작성됨). `mark-html`가 이를 삽입하고 `extract`가 이를 `strings.json`로 캡처합니다. [번역을 위한 HTML 마킹](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation)을 참조하십시오.
 
-명령별 전체 플래그 목록은 [CLI 참조](../docs/reference/cli-commands.md)에 있습니다. 내장 사용법 텍스트는 `ai-i18n-tools <command> --help`를 실행하십시오.
+명령별 플래그 전체 목록은 [CLI 참조](../docs/reference/cli-commands/)에서 확인할 수 있습니다. 내장 사용법 텍스트를 보려면 `ai-i18n-tools <command> --help`을(를) 실행하세요.
 
-전역 옵션: `-c <config>`(기본값: `ai-i18n-tools.config.json`), `-v`(자세한 정보), `-P` / `--provider <name>`(활성 LLM 공급자 재정의, `providers` 아래에 구성해야 함), `-L` / `--ui-lang <code>`(도구 자체 UI/로그 언어), `-V` / `--version`, `-h` / `--help` — 모든 명령에서 허용됩니다. `-w` / `--write-logs [path]`는 콘솔 출력을 로그 파일로 보냅니다(기본값: 번역 캐시 디렉터리 아래). 그러나 번역 및 동기화 명령(`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`)에서만 적용됩니다. 여러 명령은 대상 로케일을 제한하기 위해 `-l` / `--locale <codes>`(쉼표로 구분된 BCP-47)를 허용합니다. `proofread-ui`는 단일 소스 로케일을 사용합니다. 명령 개요 표는 [CLI 참조](../docs/reference/cli-commands.md)를 참조하십시오.
+전역 옵션: `-c <config>` (기본값: `ai-i18n-tools.config.json`), `-v` (상세 출력), `-P` / `--provider <name>` (활성 LLM 제공자 재정의, `providers` 아래에 구성되어야 함), `-L` / `--ui-lang <code>` (도구 자체 UI/로그 언어), `-V` / `--version`, `-h` / `--help` — 모든 명령에서 사용 가능합니다. `-w` / `--write-logs [path]`은(는) 콘솔 출력을 로그 파일로 틼(tee)합니다(기본값: 번역 캐시 디렉터리 아래). 단, 번역 및 동기화 명령(`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`)에서만 적용됩니다. 일부 명령은 대상 로케일을 제한하기 위해 `-l` / `--locale <codes>`(쉼표로 구분된 BCP-47)를 지원합니다. `proofread-ui`은(는) 단일 소스 로케일을 사용합니다. 명령 개요는 [CLI 참조](../docs/reference/cli-commands/)를 참조하세요.
 
 <a id="tool-ui-language-logs-help-dashboard"></a>
 ### 도구 UI 언어(로그, 도움말, 대시보드)
 
-이 도구는 자체 CLI 도움말, 트래픽이 많은 로그/요약 메시지 및 번역 대시보드를 지역화합니다. UI 로캘은 다음 소스에서 가장 높은 우선순위부터 확인됩니다.
-
-1. `-L` / `--ui-lang <code>` 전역 플래그(예: `-L pt-BR`).
-2. `AI_I18N_LANG` 환경 변수(예: `export AI_I18N_LANG=es`).
-3. `ai-i18n-tools.config.json`의 `uiLanguage` 구성 키(BCP-47 문자열).
-4. 호스트 OS 로캘(`Intl.DateTimeFormat().resolvedOptions().locale` 경유).
-
-요청된 로케일은 제공된 UI 언어와 정확히 일치하거나 가장 가까운 변형으로 일치합니다(예: `pt-PT`는 `pt-BR`로, `en-US`는 `en-GB`로 확인됨). 일치하는 것이 없으면 소스 로케일(`en-GB`)로 폴백됩니다. UI 언어가 명시적으로 요청되었지만(플래그, 환경 변수 또는 `uiLanguage`를 통해) 제공된 번들과 일치하는 것이 없으면 CLI는 기본 로케일이 사용될 것이라는 일회성 경고를 출력합니다. 호스트 OS에서만 추론된 로케일은 경고를 표시하지 않습니다. 이는 프로젝트의 `sourceLocale` / `targetLocales`와는 무관합니다. 제공된 UI 언어: `en-GB`(소스) 및 `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, `zh-Hant`. 구성이 필요하지 않습니다. 기본적으로 도구는 OS 로케일을 따릅니다. 자세한 내용은 [도구 UI 언어](../docs/reference/environment-variables.md#tool-ui-language)를 참조하십시오.
+이 도구는 번역하는 로케일과 관계없이 자체 CLI 도움말, 로그 요약 및 번역 대시보드를 현지화합니다. 기본적으로 OS 로케일을 따르며, config에서 `-L pt-BR`, `export AI_I18N_LANG=es` 또는 `"uiLanguage"`로 재정의할 수 있습니다. 로케일 결정, 제공되는 언어 및 대시보드 동작에 대해서는 [도구 UI 언어](../docs/guide/tool-ui-language.md)를 참조하세요.
 
 ---
 
 <a id="documentation"></a>
 ## 문서
 
-- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — 전체 VitePress 가이드(GitHub Pages의 9개 로케일).
+- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — VitePress 가이드(GitHub Pages에서 9개 로케일 지원); 전체 가이드로 연결되는 간결한 진입점.
 - [빠른 시작](../docs/guide/quick-start.md) — UI 문자열, 문서 및 JSON 설정(UI, docs/`.astro`, JSON 번들, VitePress, Nextra, Fumadocs, Astro Starlight 및 일반 Astro).
-- [로케일 자산 가이드](../docs/guide/images-and-screenshots/) - 번역된 문서의 스크린샷 및 그림 SVG(플랫 링크 재작성기, 스크린샷 스크립트).
-- [아키텍처](../docs/reference/architecture.md) - 아키텍처, 내부, 프로그래밍 API 및 확장 지점.
+- [로케일 에셋 가이드](../docs/guide/images-and-screenshots/) - 번역된 문서의 스크린샷 및 일러스트 SVG(플랫 링크 재작성기, 스크린샷 스크립트).
+- [아키텍처](../docs/reference/architecture.md) - 아키텍처, 내부 구조, 프로그래밍 API 및 확장 포인트.
 - [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - 패키지를 사용하는 앱을 위한 **통합 프롬프트:** 다운스트림 프로젝트용 (리포지토리의 에이전트 규칙에 복사).
 - **이** 리포지토리를 위한 관리자 가이드: `AGENT.md` (규칙 및 워크플로; 클론 전용; npm에 없음). 파이프라인 참조: `docs/reference/`. 로컬 개발 및 게시: `dev/DEVEL.md`.
 

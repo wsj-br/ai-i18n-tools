@@ -18,11 +18,11 @@ Le réécriveur qui s'exécute dépend de `docsOutput.style` :
 
 Un `pathTemplate` personnalisé désactive le réécriveur plat, sauf si vous définissez `rewriteRelativeLinks: true` explicitement. Voir [Dispositions de sortie](/guide/documents/output-layouts) et [Liens d'ancrage](/guide/documents/anchor-links) pour la gestion des `#anchor` inter-pages.
 
-Pour les règles de rédaction spécifiques à VitePress, voir [Intégration VitePress — Conventions de liens](/guide/vitepress-integration#link-conventions).
+Pour les règles de création spécifiques à VitePress, consultez [Intégration de VitePress — Conventions de liens](/guide/integrations/vitepress#link-conventions).
 
-Pour les règles de rédaction spécifiques à Nextra, consultez [Intégration Nextra — Conventions de liens](/guide/nextra-integration#link-conventions).
+Pour les règles de création spécifiques à Nextra, consultez [Intégration de Nextra — Conventions de liens](/guide/integrations/nextra#link-conventions).
 
-Pour les règles de rédaction spécifiques à Fumadocs, consultez [Intégration Fumadocs — Conventions de liens](/guide/fumadocs-integration#link-conventions).
+Pour les règles de création spécifiques à Fumadocs, consultez [Intégration de Fumadocs — Conventions de liens](/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "使用 LLM 对 JavaScript/TypeScript 应用程序和文档站点进行国际化的 CLI 和工具包。"
+    "description": "用于使用 LLM 对 JavaScript/TypeScript 应用和文档站点进行国际化的 CLI 工具包。"
   },
   "nav": {
     "guide": "指南",
@@ -11,13 +11,25 @@
   },
   "sidebar": {
     "guide": "指南",
-    "introduction": "简介",
     "whatIs": "什么是 ai-i18n-tools？",
     "installation": "安装",
-    "quickStart": "快速入门",
+    "quickStart": "快速开始",
+    "toolUiLanguage": "工具界面语言",
     "translationTypes": "翻译类型",
     "uiStrings": "UI 字符串",
+    "overview": "概览",
+    "uiStringsPlainHtml": "纯 HTML 应用",
+    "uiStringsAstroWebsite": "Astro 网站",
+    "uiStringsWireI18next": "连接 i18next",
+    "uiStringsTCallsAndPlurals": "t() 调用和复数形式",
+    "uiStringsLanguageSwitcher": "语言切换器和 RTL",
     "documents": "文档",
+    "documentsOutputLayouts": "输出布局",
+    "documentsAnchorLinks": "锚点链接",
+    "documentsLinkRewriting": "链接重写",
+    "documentsLanguageSwitcher": "语言切换器",
+    "documentsCliOptions": "CLI 选项",
+    "documentsTroubleshooting": "故障排除",
     "json": "JSON",
     "integrations": "集成",
     "astro": "Astro",
@@ -25,22 +37,44 @@
     "vitepress": "VitePress",
     "nextra": "Nextra",
     "fumadocs": "Fumadocs",
-    "imagesAndScreenshots": "图片和屏幕截图",
+    "imagesAndScreenshots": "图片与截图",
+    "imagesSharedImage": "共享图片",
+    "imagesPerLocaleFolder": "各语言区域文件夹",
+    "imagesColocatedScreenshots": "同目录截图",
+    "imagesLinkRewriting": "链接重写",
+    "imagesTroubleshooting": "故障排除",
     "svgTranslation": "SVG 翻译",
+    "svgWebAppFlat": "Web 应用（扁平 SVG）",
+    "svgColocated": "共置 SVG",
+    "svgTroubleshooting": "故障排除",
     "providers": "LLM 提供商",
-    "runtimeHelpers": "运行时助手",
+    "runtimeHelpers": "运行时辅助程序",
     "dashboard": "翻译仪表板",
+    "dashboardDocumentationCache": "文档缓存",
+    "dashboardUiStringsAndPlurals": "UI 字符串与复数",
+    "dashboardGlossary": "术语表",
+    "dashboardFailures": "失败",
+    "dashboardMarkdownIssues": "Markdown 问题",
+    "dashboardStatistics": "统计",
     "reference": "参考",
     "configuration": "配置",
     "cli": "CLI 命令",
+    "cliOverview": "概述",
+    "cliSetup": "设置",
+    "cliModels": "模型与目录",
+    "cliUiStrings": "UI 字符串",
+    "cliDocuments": "文档",
+    "cliContent": "其他内容",
+    "cliWorkflows": "工作流与状态",
+    "cliMaintenance": "缓存与维护",
+    "cliTools": "工具",
     "architecture": "架构",
-    "programmaticApi": "编程 API",
+    "programmaticApi": "编程式 API",
     "environment": "环境变量",
-    "examples": "示例",
-    "examplesOverview": "概述"
+    "examples": "示例"
   },
   "footer": {
-    "message": "根据 MIT 许可证发布。",
+    "message": "基于 MIT 许可证发布。",
     "copyright": "版权所有 © Waldemar Scudeller Jr."
   },
   "docFooter": {
@@ -48,7 +82,7 @@
     "next": "下一页"
   },
   "outline": {
-    "label": "在此页面上"
+    "label": "本页内容"
   },
   "langMenuLabel": "语言",
   "search": {

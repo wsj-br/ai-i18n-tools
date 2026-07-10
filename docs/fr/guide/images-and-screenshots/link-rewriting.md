@@ -34,19 +34,19 @@ Réécritures typiques :
 | `../guide/foo.md` (à partir d'un fichier de locale) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | inchangé (utiliser des URL complètes pour les chemins de dépôt) |
 
-Pour les projets qui synchronisent `README.md` → `docs/index.md`, utilisez des URL GitHub complètes dans `README.md` pour `LICENSE`, `examples/` et d'autres fichiers en dehors de l'arborescence VitePress. Voir [Intégration de VitePress — README comme page d'accueil de la documentation](/guide/vitepress-integration#readme-as-homepage).
+Pour les projets qui synchronisent `README.md` → `docs/index.md`, utilisez des URL GitHub complètes dans `README.md` pour `LICENSE`, `examples/` et d'autres fichiers en dehors de l'arborescence VitePress. Voir [Intégration VitePress — README comme page d'accueil de la documentation](/guide/integrations/vitepress#readme-as-homepage).
 
-Le réécriveur plat et le normaliseur VitePress s'excluent mutuellement par bloc `docs[]` — un seul s'exécute avant `regexAdjustments`. Voir [Intégration VitePress — Conventions de liens](/guide/vitepress-integration#link-conventions).
+Le réécriveur plat et le normaliseur VitePress s'excluent mutuellement par bloc `docs[]` — un seul s'exécute avant `regexAdjustments`. Voir [Intégration VitePress — Conventions de liens](/guide/integrations/vitepress#link-conventions).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Normaliseur de liens Nextra (`style: "nextra"`)
 
-Lorsque `docsOutput.rewriteNextraLinks` est `true` (par défaut quand `style` est `"nextra"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/en/…` et les chemins `.mdx` relatifs en routes neutres vis-à-vis des locales (`/guide/…`). Voir [Intégration Nextra — Conventions de liens](/guide/nextra-integration#link-conventions).
+Lorsque `docsOutput.rewriteNextraLinks` est `true` (par défaut lorsque `style` est `"nextra"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/en/…` et les chemins relatifs `.mdx` vers des routes neutres en termes de locale (`/guide/…`). Voir [Intégration Nextra — Conventions de liens](/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Normaliseur de liens Fumadocs (`style: "fumadocs"`)
 
-Lorsque `docsOutput.rewriteFumadocsLinks` est `true` (par défaut quand `style` est `"fumadocs"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/docs/…` et les chemins `.mdx` relatifs en routes neutres vis-à-vis des locales (`/docs/…`). Voir [Intégration Fumadocs — Conventions de liens](/guide/fumadocs-integration#link-conventions).
+Lorsque `docsOutput.rewriteFumadocsLinks` est `true` (par défaut lorsque `style` est `"fumadocs"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/docs/…` et les chemins relatifs `.mdx` vers des routes neutres en termes de locale (`/docs/…`). Voir [Intégration Fumadocs — Conventions de liens](/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Préfixe de profondeur par fichier avec `flatPreserveRelativeDir`

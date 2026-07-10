@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "用於使用大型語言模型 (LLM) 將 JavaScript/TypeScript 應用程式和文件網站國際化的 CLI 和工具包。"
+    "description": "使用 LLM 將 JavaScript/TypeScript 應用程式與文件網站國際化的 CLI 與工具包。"
   },
   "nav": {
     "guide": "指南",
@@ -11,13 +11,25 @@
   },
   "sidebar": {
     "guide": "指南",
-    "introduction": "簡介",
     "whatIs": "什麼是 ai-i18n-tools？",
     "installation": "安裝",
     "quickStart": "快速入門",
+    "toolUiLanguage": "工具 UI 語言",
     "translationTypes": "翻譯類型",
     "uiStrings": "UI 字串",
+    "overview": "概覽",
+    "uiStringsPlainHtml": "純 HTML 應用程式",
+    "uiStringsAstroWebsite": "Astro 網站",
+    "uiStringsWireI18next": "連接 i18next",
+    "uiStringsTCallsAndPlurals": "t() 呼叫與複數",
+    "uiStringsLanguageSwitcher": "語言切換器與 RTL",
     "documents": "文件",
+    "documentsOutputLayouts": "輸出佈局",
+    "documentsAnchorLinks": "錨點連結",
+    "documentsLinkRewriting": "連結重寫",
+    "documentsLanguageSwitcher": "語言切換器",
+    "documentsCliOptions": "CLI 選項",
+    "documentsTroubleshooting": "疑難排解",
     "json": "JSON",
     "integrations": "整合",
     "astro": "Astro",
@@ -25,30 +37,52 @@
     "vitepress": "VitePress",
     "nextra": "Nextra",
     "fumadocs": "Fumadocs",
-    "imagesAndScreenshots": "圖片與螢幕截圖",
+    "imagesAndScreenshots": "圖片與截圖",
+    "imagesSharedImage": "共享圖片",
+    "imagesPerLocaleFolder": "各語系資料夾",
+    "imagesColocatedScreenshots": "共置截圖",
+    "imagesLinkRewriting": "連結重寫",
+    "imagesTroubleshooting": "疑難排解",
     "svgTranslation": "SVG 翻譯",
-    "providers": "LLM 供應商",
+    "svgWebAppFlat": "網頁應用程式（平面 SVG）",
+    "svgColocated": "共置 SVG",
+    "svgTroubleshooting": "疑難排解",
+    "providers": "LLM 提供者",
     "runtimeHelpers": "執行階段輔助程式",
     "dashboard": "翻譯儀表板",
+    "dashboardDocumentationCache": "文件快取",
+    "dashboardUiStringsAndPlurals": "UI 字串與複數形式",
+    "dashboardGlossary": "詞彙表",
+    "dashboardFailures": "失敗",
+    "dashboardMarkdownIssues": "Markdown 問題",
+    "dashboardStatistics": "統計資料",
     "reference": "參考",
-    "configuration": "組態",
-    "cli": "CLI 命令",
+    "configuration": "設定",
+    "cli": "CLI 指令",
+    "cliOverview": "概覽",
+    "cliSetup": "安裝設定",
+    "cliModels": "模型與目錄",
+    "cliUiStrings": "UI 字串",
+    "cliDocuments": "文件",
+    "cliContent": "其他內容",
+    "cliWorkflows": "工作流程與狀態",
+    "cliMaintenance": "快取與維護",
+    "cliTools": "工具",
     "architecture": "架構",
     "programmaticApi": "程式化 API",
     "environment": "環境變數",
-    "examples": "範例",
-    "examplesOverview": "概觀"
+    "examples": "範例"
   },
   "footer": {
-    "message": "根據 MIT 授權條款發佈。",
-    "copyright": "版權所有 © Waldemar Scudeller Jr."
+    "message": "以 MIT 授權發布。",
+    "copyright": "Copyright © Waldemar Scudeller Jr."
   },
   "docFooter": {
-    "prev": "上一個",
-    "next": "下一個"
+    "prev": "上一頁",
+    "next": "下一頁"
   },
   "outline": {
-    "label": "在此頁面上"
+    "label": "本頁內容"
   },
   "langMenuLabel": "語言",
   "search": {

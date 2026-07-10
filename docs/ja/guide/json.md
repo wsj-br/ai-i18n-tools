@@ -100,9 +100,9 @@ npx ai-i18n-tools status
 |-----------|-----|
 | JS/TS/Astro の `t("…")` / `i18n.t("…")` の UI 文字列 | [UI 文字列](/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations`カタログ (`{ "key": { "message": "…", "description": "…" } }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs`、`json[]`は**使用しません** |
-| VitePress テーマ/ナビゲーション/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **使用しない** `json[]` — [VitePress 統合](/guide/vitepress-integration) を参照 |
-| Nextra `_meta.ts` ラベルとテーマ辞書 `.ts` | ドキュメント — `translate-docs` (`style: "nextra"` の場合は自動 `_meta`、オプションの `nextraDictionaryPath`); **使用しない** `json[]` — [Nextra 統合](/guide/nextra-integration) を参照 |
-| Fumadocs `meta.json` ラベルと UI オーバーライドカタログ | ドキュメント — `translate-docs` (`style: "fumadocs"` の場合は自動 `meta.json`、オプションの `fumadocsUiCatalog`); **使用しないでください** `json[]` — [Fumadocs 統合](/guide/fumadocs-integration) を参照してください |
+| VitePress テーマ/ナビ/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; `json[]`を**使用しないで**ください — [VitePress インテグレーション](/guide/integrations/vitepress)を参照 |
+| Nextra `_meta.ts` ラベルおよびテーマ辞書 `.ts` | ドキュメント — `translate-docs`（`style: "nextra"`時に`_meta`を自動、オプションで`nextraDictionaryPath`）; `json[]`を**使用しないで**ください — [Nextra インテグレーション](/guide/integrations/nextra)を参照 |
+| Fumadocs `meta.json` ラベルおよび UI オーバーライドカタログ | ドキュメント — `translate-docs`（`style: "fumadocs"`時に`meta.json`を自動、オプションで`fumadocsUiCatalog`）; `json[]`を**使用しないで**ください — [Fumadocs インテグレーション](/guide/integrations/fumadocs)を参照 |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
 | `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 

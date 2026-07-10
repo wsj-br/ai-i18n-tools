@@ -55,7 +55,7 @@ Wenn eine Datei keinen passenden Block enthält, protokolliert die CLI eine Warn
 <a id="4-label-manifest"></a>
 ## 4. Label-Manifest
 
-Für Endonym-Labels (`label: "local"`) generieren oder pflegen Sie `ui-languages.json` über `generate-ui-languages` (erfordert [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional)). Die reine Dokumentationskonfiguration dieses Repositories hat keine UI-Pipeline, daher stammen die Labels aus dem gebündelten Masterkatalog für `sourceLocale` + `targetLocales`.
+Für Endonym-Labels (`label: "local"`) generieren oder pflegen Sie `ui-languages.json` über `generate-ui-languages` (geschrieben in [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), das standardmäßig auf `{ui.flatOutputDir}/ui-languages.json` festgelegt ist). Die Dokumenten-Konfiguration dieses Repositorys hat keine UI-Pipeline und keine Projektmanifest-Datei auf der Festplatte, sodass die Labels aus dem mitgelieferten Masterkatalog für `sourceLocale` + `targetLocales` stammen.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Beispiele in diesem Repository

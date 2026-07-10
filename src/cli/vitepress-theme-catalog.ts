@@ -1,7 +1,11 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import type { I18nDocTranslateConfig, JsonKeyPolicyConfig, TranslationFailureInsert } from "../core/types.js";
+import type {
+  I18nDocTranslateConfig,
+  JsonKeyPolicyConfig,
+  TranslationFailureInsert,
+} from "../core/types.js";
 import { vitepressThemeFileTrackingKey } from "../core/doc-file-tracking.js";
 import { matchesDocsOutputStylePreset } from "../core/docs-output-normalize.js";
 import { localePathPlaceholders } from "../core/locale-utils.js";
@@ -25,6 +29,7 @@ import {
 import { hashFileContent, translatedOutputIsCurrent, writeAtomicUtf8 } from "./helpers.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
 import { AsyncMutex } from "../utils/concurrency.js";
+import { warnUnusedVitepressCatalogKeys } from "./vitepress-catalog-usage.js";
 import { t } from "../i18n/index.js";
 
 type ProtectState = ReturnType<typeof protectSegmentForTranslation>["state"];
@@ -126,6 +131,9 @@ export function bootstrapVitepressThemeCatalog(
         chalk.gray(t("⏭️  VitePress theme catalog unchanged: {{path}}", { path: catalogRel }))
       );
     }
+    if (catalogExists) {
+      warnUnusedVitepressCatalogKeys(catalogAbs, configAbs, catalogRel, configRel, opts);
+    }
     return { catalogRelPath: catalogRel, updated: false };
   }
 
@@ -135,6 +143,7 @@ export function bootstrapVitepressThemeCatalog(
         `VitePress theme catalog could not be bootstrapped from ${configRel} and ${catalogRel} does not exist`
       );
     }
+    warnUnusedVitepressCatalogKeys(catalogAbs, configAbs, catalogRel, configRel, opts);
     return { catalogRelPath: catalogRel, updated: false };
   }
 
@@ -148,6 +157,8 @@ export function bootstrapVitepressThemeCatalog(
       chalk.cyan(t("📦 VitePress theme catalog bootstrapped: {{path}}", { path: catalogRel }))
     );
   }
+
+  warnUnusedVitepressCatalogKeys(catalogAbs, configAbs, catalogRel, configRel, opts);
 
   return { catalogRelPath: catalogRel, updated: true };
 }

@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. 레이블 매니페스트
 
-내부 레이블(`label: "local"`)의 경우 `generate-ui-languages`를 통해 `ui-languages.json`을 생성하거나 유지 관리합니다([`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional) 필요). 이 저장소의 문서 전용 구성에는 UI 파이프라인이 없으므로 레이블은 `sourceLocale` + `targetLocales`의 번들 마스터 카탈로그에서 가져옵니다.
+고유명 레이블(`label: "local"`)의 경우, `generate-ui-languages`를 통해 `ui-languages.json`을(를) 생성하거나 유지합니다 ([`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional)에 기록되며 기본값은 `{ui.flatOutputDir}/ui-languages.json`임). 이 저장소의 문서 전용 구성에는 UI 파이프라인이 없고 디스크에 프로젝트 매니페스트가 없으므로, 레이블은 `sourceLocale` + `targetLocales`에 대한 번들 마스터 카탈로그에서 가져옵니다.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. 이 저장소의 예시

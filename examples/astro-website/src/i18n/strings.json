@@ -10,7 +10,9 @@
       "ar": "أداة النص الذكية – ترجمة، إعادة كتابة وتحويل",
       "zh-CN": "AI文本工具 – 翻译、重写与转换",
       "pt-BR": "Ferramenta de Texto AI – Traduzir, Reescrever & Transformar",
-      "zh-TW": "AI 文字工具 – 翻譯、重寫與轉換"
+      "zh-TW": "AI 文字工具 – 翻譯、重寫與轉換",
+      "zh-Hans": "AI文本工具 – 翻译、重写与转换",
+      "zh-Hant": "AI 文字工具 – 翻譯、重寫與轉換"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -21,7 +23,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -41,7 +45,9 @@
       "ar": "أداة نص ذكية مدعومة بالذكاء الاصطناعي: ترجمة، إعادة كتابة، وتحويل النص باستخدام عدة مزودي ذكاء اصطناعي. متاحة كتطبيق سطح مكتب وتطبيق ويب مستضاف ذاتيًا عبر Docker.",
       "zh-CN": "AI驱动的文本工具：使用多个AI提供商翻译、重写和转换文本。可作为桌面应用程序和自托管的Docker网络应用程序使用。",
       "pt-BR": "Ferramenta de texto com IA: traduza, reescreva e transforme texto usando múltiplos provedores de IA. Disponível como aplicativo de desktop e aplicativo web Docker auto-hospedado.",
-      "zh-TW": "AI 驅動的文字工具：使用多個 AI 提供者翻譯、重寫和轉換文字。可作為桌面應用程式和自我託管的 Docker 網頁應用程式使用。"
+      "zh-TW": "AI 驅動的文字工具：使用多個 AI 提供者翻譯、重寫和轉換文字。可作為桌面應用程式和自我託管的 Docker 網頁應用程式使用。",
+      "zh-Hans": "基于AI的文本工具：使用多个AI提供商翻译、重写和转换文本。可作为桌面应用程序和自托管的Docker网络应用。",
+      "zh-Hant": "AI 驅動的文字工具：使用多個 AI 提供者翻譯、重寫和轉換文字。可作為桌面應用程式和自我託管的 Docker 網頁應用程式使用。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -52,7 +58,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -72,7 +80,9 @@
       "ar": "الميزات",
       "zh-CN": "功能",
       "pt-BR": "Recursos",
-      "zh-TW": "功能"
+      "zh-TW": "功能",
+      "zh-Hans": "功能",
+      "zh-Hant": "功能"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -83,7 +93,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -103,7 +115,9 @@
       "ar": "المزودون",
       "zh-CN": "提供商",
       "pt-BR": "Provedores",
-      "zh-TW": "提供者"
+      "zh-TW": "提供者",
+      "zh-Hans": "提供商",
+      "zh-Hant": "提供者"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -114,7 +128,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -134,7 +150,9 @@
       "ar": "لقطات الشاشة",
       "zh-CN": "截图",
       "pt-BR": "Capturas de Tela",
-      "zh-TW": "截圖"
+      "zh-TW": "截圖",
+      "zh-Hans": "截图",
+      "zh-Hant": "截圖"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -145,7 +163,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -165,7 +185,9 @@
       "ar": "تثبيت",
       "zh-CN": "安装",
       "pt-BR": "Instalar",
-      "zh-TW": "安裝"
+      "zh-TW": "安裝",
+      "zh-Hans": "安装",
+      "zh-Hant": "安裝"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -176,7 +198,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -196,7 +220,9 @@
       "ar": "GitHub",
       "zh-CN": "GitHub",
       "pt-BR": "GitHub",
-      "zh-TW": "GitHub"
+      "zh-TW": "GitHub",
+      "zh-Hans": "GitHub",
+      "zh-Hant": "GitHub"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -207,7 +233,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -227,7 +255,9 @@
       "ar": "تنزيل",
       "zh-CN": "下载",
       "pt-BR": "Baixar",
-      "zh-TW": "下載"
+      "zh-TW": "下載",
+      "zh-Hans": "下载",
+      "zh-Hant": "下載"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -238,7 +268,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -258,7 +290,9 @@
       "ar": "الإصدار 1.3.2 · مفتوح المصدر · Apache 2.0",
       "zh-CN": "版本 1.3.2 · 开源 · Apache 2.0",
       "pt-BR": "Versão 1.3.2 · Código Aberto · Apache 2.0",
-      "zh-TW": "版本 1.3.2 · 開源 · Apache 2.0"
+      "zh-TW": "版本 1.3.2 · 開源 · Apache 2.0",
+      "zh-Hans": "版本 1.3.2 · 开源 · Apache 2.0",
+      "zh-Hant": "版本 1.3.2 · 開源 · Apache 2.0"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -269,7 +303,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -289,7 +325,9 @@
       "ar": "ترجمة. إعادة كتابة.<br/>تحويل.",
       "zh-CN": "翻译。重写。<br/>转换。",
       "pt-BR": "Traduzir. Reescrever.<br/>Transformar.",
-      "zh-TW": "翻譯。重寫。<br/>轉換。"
+      "zh-TW": "翻譯。重寫。<br/>轉換。",
+      "zh-Hans": "翻译。重写。<br/>转换。",
+      "zh-Hant": "翻譯。重寫。<br/>轉換。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -300,7 +338,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -320,7 +360,9 @@
       "ar": "أداة النص المدعومة بالذكاء الاصطناعي التي تتحدث كل لغة وتفكر بأي أسلوب. تطبيق واحد. تسعة مزودي ذكاء اصطناعي. إمكانيات لا حصر لها.",
       "zh-CN": "这款AI驱动的文本工具支持所有语言，并能以任何风格思考。一个应用程序。九个AI提供商。无限可能。",
       "pt-BR": "A ferramenta de texto com IA que fala todas as línguas e pensa em qualquer estilo. Um aplicativo. Nove provedores de IA. Possibilidades infinitas.",
-      "zh-TW": "這款 AI 驅動的文字工具能說所有語言，並以任何風格思考。一個應用程式，九個 AI 提供者，無限的可能性。"
+      "zh-TW": "這款 AI 驅動的文字工具能說所有語言，並以任何風格思考。一個應用程式，九個 AI 提供者，無限的可能性。",
+      "zh-Hans": "这个支持多种语言并能以任何风格思考的AI文本工具。一个应用程序。九个AI提供商。无限可能。",
+      "zh-Hant": "這款 AI 驅動的文字工具能夠使用任何語言並以任何風格思考。一個應用程式。九個 AI 提供者。無限的可能性。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -331,7 +373,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -351,7 +395,9 @@
       "ar": "يعمل كتطبيق سطح مكتب أصلي على Windows وLinux، أو كتطبيق ويب مستضاف ذاتيًا عبر Docker. بياناتك تبقى لك — دائمًا.",
       "zh-CN": "作为Windows和Linux的本地桌面应用程序运行，或作为自托管的Docker网络应用程序。您的数据始终属于您。",
       "pt-BR": "Funciona como um aplicativo de desktop nativo no Windows e Linux, ou como um aplicativo web Docker auto-hospedado. Seus dados permanecem seus — sempre.",
-      "zh-TW": "作為 Windows 和 Linux 的原生桌面應用程式運行，或作為自我託管的 Docker 網頁應用程式。您的數據始終屬於您。"
+      "zh-TW": "作為 Windows 和 Linux 的原生桌面應用程式運行，或作為自我託管的 Docker 網頁應用程式。您的數據始終屬於您。",
+      "zh-Hans": "作为Windows和Linux的本地桌面应用程序运行，或作为自托管的Docker网络应用。您的数据始终属于您。",
+      "zh-Hant": "作為 Windows 和 Linux 的原生桌面應用程式運行，或作為自我託管的 Docker 網頁應用程式使用。您的數據始終屬於您。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -362,7 +408,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -382,7 +430,9 @@
       "ar": "ابدأ مجانًا",
       "zh-CN": "免费开始",
       "pt-BR": "Comece Grátis",
-      "zh-TW": "免費開始"
+      "zh-TW": "免費開始",
+      "zh-Hans": "免费开始",
+      "zh-Hant": "免費開始"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -393,7 +443,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -413,7 +465,9 @@
       "ar": "شاهدها في العمل",
       "zh-CN": "查看实际效果",
       "pt-BR": "Veja em ação",
-      "zh-TW": "查看實際操作"
+      "zh-TW": "查看實際操作",
+      "zh-Hans": "查看实际效果",
+      "zh-Hant": "查看實際效果"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -424,7 +478,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -448,7 +504,9 @@
       "ar": "عرض على GitHub",
       "zh-CN": "在GitHub上查看",
       "pt-BR": "Ver no GitHub",
-      "zh-TW": "在 GitHub 上查看"
+      "zh-TW": "在 GitHub 上查看",
+      "zh-Hans": "在GitHub上查看",
+      "zh-Hant": "在 GitHub 上查看"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -459,7 +517,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -479,7 +539,9 @@
       "ar": "Transrewrt – أداة ترجمة وإعادة كتابة النصوص بالذكاء الاصطناعي",
       "zh-CN": "Transrewrt – AI文本翻译和重写工具",
       "pt-BR": "Transrewrt – Ferramenta de tradução e reescrita de texto com IA",
-      "zh-TW": "Transrewrt – AI 文字翻譯和重寫工具"
+      "zh-TW": "Transrewrt – AI 文字翻譯和重寫工具",
+      "zh-Hans": "Transrewrt – AI文本翻译和重写工具",
+      "zh-Hant": "Transrewrt – AI 文字翻譯和重寫工具"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -490,7 +552,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -510,7 +574,9 @@
       "ar": "كل ما تحتاجه<br/>لإتقان النصوص باستخدام الذكاء الاصطناعي",
       "zh-CN": "您掌握AI文本所需的一切<br/>",
       "pt-BR": "Tudo que você precisa<br/>para dominar texto com IA",
-      "zh-TW": "您需要的一切<br/>以 AI 精通文字"
+      "zh-TW": "您需要的一切<br/>以 AI 精通文字",
+      "zh-Hans": "您掌握AI文本所需的一切<br/>",
+      "zh-Hant": "您需要的一切<br/>以掌握 AI 文字"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -521,7 +587,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -541,7 +609,9 @@
       "ar": "أربعة أوضاع قوية، واجهة سلسة واحدة. سواء كنت بحاجة إلى ترجمة سريعة أو تحويل نص عميق، Transrewrt يغطي احتياجاتك.",
       "zh-CN": "四种强大的模式，一个无缝的界面。无论您需要快速翻译还是深度文本转换，Transrewrt都能满足您的需求。",
       "pt-BR": "Quatro modos poderosos, uma interface contínua. Se você precisa de uma tradução rápida ou de uma transformação profunda de texto, Transrewrt tem o que você precisa.",
-      "zh-TW": "四種強大的模式，一個無縫的介面。無論您需要快速翻譯還是深入的文字轉換，Transrewrt 都能滿足您的需求。"
+      "zh-TW": "四種強大的模式，一個無縫的介面。無論您需要快速翻譯還是深入的文字轉換，Transrewrt 都能滿足您的需求。",
+      "zh-Hans": "四种强大的模式，一个无缝的界面。无论您需要快速翻译还是深度文本转换，Transrewrt都能满足您的需求。",
+      "zh-Hant": "四種強大的模式，一個無縫的介面。無論您需要快速翻譯還是深入的文字轉換，Transrewrt 都能滿足您的需求。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -552,7 +622,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -572,7 +644,9 @@
       "ar": "ترجمة",
       "zh-CN": "翻译",
       "pt-BR": "Traduzir",
-      "zh-TW": "翻譯"
+      "zh-TW": "翻譯",
+      "zh-Hans": "翻译",
+      "zh-Hant": "翻譯"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -583,7 +657,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -627,6 +703,14 @@
         "line": 13
       },
       {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 13
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
+        "line": 13
+      },
+      {
         "file": "src/pages/zh-tw/index.astro",
         "line": 13
       }
@@ -643,7 +727,9 @@
       "ar": "بين عشرات اللغات مع الكشف التلقائي عن المصدر",
       "zh-CN": "在数十种语言之间自动检测源语言",
       "pt-BR": "Entre dezenas de idiomas com detecção automática de origem",
-      "zh-TW": "在數十種語言之間自動檢測來源"
+      "zh-TW": "在數十種語言之間自動檢測來源",
+      "zh-Hans": "在数十种语言之间自动检测源语言",
+      "zh-Hant": "在數十種語言之間自動檢測來源"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -654,7 +740,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -674,7 +762,9 @@
       "ar": "إعادة كتابة",
       "zh-CN": "重写",
       "pt-BR": "Reescrever",
-      "zh-TW": "重寫"
+      "zh-TW": "重寫",
+      "zh-Hans": "重写",
+      "zh-Hant": "重寫"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -685,7 +775,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -705,7 +797,9 @@
       "ar": "تحسين الوضوح، تصحيح القواعد، وتغيير الأسلوب بدقة الذكاء الاصطناعي",
       "zh-CN": "提高清晰度，修正语法，并以AI精确改变风格",
       "pt-BR": "Melhore a clareza, corrija a gramática e mude o estilo com precisão de IA",
-      "zh-TW": "以 AI 精準改善清晰度、修正語法和改變風格"
+      "zh-TW": "以 AI 精準改善清晰度、修正語法和改變風格",
+      "zh-Hans": "提高清晰度，修正语法，并以AI精确改变风格",
+      "zh-Hant": "以 AI 精準度提高清晰度、修正語法和改變風格"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -716,7 +810,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -736,7 +832,9 @@
       "ar": "تحويل",
       "zh-CN": "转换",
       "pt-BR": "Transformar",
-      "zh-TW": "轉換"
+      "zh-TW": "轉換",
+      "zh-Hans": "转换",
+      "zh-Hant": "轉換"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -747,7 +845,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -791,6 +891,14 @@
         "line": 14
       },
       {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 14
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
+        "line": 14
+      },
+      {
         "file": "src/pages/zh-tw/index.astro",
         "line": 14
       }
@@ -807,7 +915,9 @@
       "ar": "مطالبات ذكاء اصطناعي مخصصة لتحويلات نصية غير محدودة",
       "zh-CN": "自定义AI提示以进行无限文本转换",
       "pt-BR": "Prompts de IA personalizados para transformações de texto ilimitadas",
-      "zh-TW": "自定義 AI 提示以進行無限的文字轉換"
+      "zh-TW": "自定義 AI 提示以進行無限的文字轉換",
+      "zh-Hans": "自定义AI提示以实现无限文本转换",
+      "zh-Hant": "自定義 AI 提示以進行無限的文字轉換"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -818,7 +928,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -838,7 +950,9 @@
       "ar": "السجل واللوحة",
       "zh-CN": "历史记录与仪表板",
       "pt-BR": "Histórico & Painel",
-      "zh-TW": "歷史與儀表板"
+      "zh-TW": "歷史與儀表板",
+      "zh-Hans": "历史记录与仪表板",
+      "zh-Hant": "歷史與儀表板"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -849,7 +963,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -869,7 +985,9 @@
       "ar": "مسار تدقيق كامل، تتبع التكاليف وتحليلات الاستخدام",
       "zh-CN": "完整的审计跟踪、成本跟踪和使用分析",
       "pt-BR": "Rastreamento completo de auditoria, controle de custos e análises de uso",
-      "zh-TW": "完整的審計記錄、成本追蹤和使用分析"
+      "zh-TW": "完整的審計記錄、成本追蹤和使用分析",
+      "zh-Hans": "完整的审计跟踪、成本跟踪和使用分析",
+      "zh-Hant": "完整的審計追蹤、成本追蹤和使用分析"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -880,7 +998,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -900,7 +1020,9 @@
       "ar": "يعمل مع كل<br/>مزودي الذكاء الاصطناعي الرئيسيين",
       "zh-CN": "与每个<br/>主要AI提供商兼容",
       "pt-BR": "Funciona com todos os<br/>principais provedores de IA",
-      "zh-TW": "與每個<br/>主要 AI 提供者兼容"
+      "zh-TW": "與每個<br/>主要 AI 提供者兼容",
+      "zh-Hans": "与每个<br/>主要AI提供商兼容",
+      "zh-Hant": "與每個<br/>主要 AI 提供者兼容"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -911,7 +1033,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -931,7 +1055,9 @@
       "ar": "قم بتوصيل مفاتيح API الحالية الخاصة بك وابدأ على الفور. قم بالتبديل بين المزودين حسب المهمة. استخدم <strong class=\"text-violet-300\">OpenRouter أو Ollama مجانًا</strong> — لا حاجة لبطاقة ائتمان.",
       "zh-CN": "插入您现有的API密钥并立即开始。每个任务切换提供商。使用 <strong class=\"text-violet-300\">OpenRouter或Ollama免费</strong> — 无需信用卡。",
       "pt-BR": "Conecte suas chaves de API existentes e comece imediatamente. Troque de provedores por tarefa. Use <strong class=\"text-violet-300\">OpenRouter ou Ollama gratuitamente</strong> — sem necessidade de cartão de crédito.",
-      "zh-TW": "插入您現有的 API 金鑰並立即開始。每個任務可切換提供者。使用 <strong class=\"text-violet-300\">OpenRouter 或 Ollama 免費</strong> — 無需信用卡。"
+      "zh-TW": "插入您現有的 API 金鑰並立即開始。每個任務可切換提供者。使用 <strong class=\"text-violet-300\">OpenRouter 或 Ollama 免費</strong> — 無需信用卡。",
+      "zh-Hans": "插入您现有的API密钥并立即开始。按任务切换提供商。使用 <strong class=\"text-violet-300\">OpenRouter或Ollama免费</strong> — 无需信用卡。",
+      "zh-Hant": "插入您現有的 API 金鑰並立即開始。每個任務可以切換提供者。使用 <strong class=\"text-violet-300\">OpenRouter 或 Ollama 免費</strong> — 無需信用卡。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -942,7 +1068,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -962,7 +1090,9 @@
       "ar": "مجاني",
       "zh-CN": "免费",
       "pt-BR": "Grátis",
-      "zh-TW": "免費"
+      "zh-TW": "免費",
+      "zh-Hans": "免费",
+      "zh-Hant": "免費"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -973,7 +1103,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -993,7 +1125,9 @@
       "ar": "واجهة نظيفة وبديهية لكل من المبتدئين والمستخدمين المحترفين.",
       "zh-CN": "一个干净、直观的界面，适合新手和高级用户。",
       "pt-BR": "Uma interface limpa e intuitiva para iniciantes e usuários avançados.",
-      "zh-TW": "一個乾淨、直觀的介面，適合新手和高級用戶。"
+      "zh-TW": "一個乾淨、直觀的介面，適合新手和高級用戶。",
+      "zh-Hans": "一个干净、直观的界面，适合新手和高级用户。",
+      "zh-Hant": "一個乾淨、直觀的介面，適合新手和高級用戶。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1004,7 +1138,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1024,7 +1160,9 @@
       "ar": "اختر طريقة النشر",
       "zh-CN": "选择您的部署方式",
       "pt-BR": "Escolha sua implantação",
-      "zh-TW": "選擇您的部署方式"
+      "zh-TW": "選擇您的部署方式",
+      "zh-Hans": "选择您的部署方式",
+      "zh-Hant": "選擇您的部署方式"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1035,7 +1173,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1055,7 +1195,9 @@
       "ar": "قم بتشغيل Transrewrt بالطريقة التي تريدها بالضبط — تطبيق سطح مكتب أصلي أو خدمة ويب مستضافة ذاتيًا. كلا الخيارين يدعمان جميع مزودي الذكاء الاصطناعي.",
       "zh-CN": "按您想要的方式运行Transrewrt — 本地桌面应用程序或自托管网络服务。两种选项均支持所有AI提供商。",
       "pt-BR": "Execute Transrewrt exatamente como você deseja — aplicativo de desktop nativo ou serviço web auto-hospedado. Ambas as opções suportam todos os provedores de IA.",
-      "zh-TW": "以您想要的方式運行 Transrewrt — 原生桌面應用程式或自我託管的網頁服務。兩種選擇均支持所有 AI 提供者。"
+      "zh-TW": "以您想要的方式運行 Transrewrt — 原生桌面應用程式或自我託管的網頁服務。兩種選擇均支持所有 AI 提供者。",
+      "zh-Hans": "按您想要的方式运行Transrewrt — 本地桌面应用程序或自托管网络服务。两种选项均支持所有AI提供商。",
+      "zh-Hant": "以您想要的方式運行 Transrewrt — 原生桌面應用程式或自我託管的網頁服務。兩種選擇均支持所有 AI 提供者。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1066,7 +1208,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1086,7 +1230,9 @@
       "ar": "المنتج",
       "zh-CN": "产品",
       "pt-BR": "Produto",
-      "zh-TW": "產品"
+      "zh-TW": "產品",
+      "zh-Hans": "产品",
+      "zh-Hant": "產品"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1097,7 +1243,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1117,7 +1265,9 @@
       "ar": "الموارد",
       "zh-CN": "资源",
       "pt-BR": "Recursos",
-      "zh-TW": "資源"
+      "zh-TW": "資源",
+      "zh-Hans": "资源",
+      "zh-Hant": "資源"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1128,7 +1278,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1148,7 +1300,9 @@
       "ar": "© 2025 Transrewrt. تم إصداره بموجب <a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">رخصة Apache 2.0</a>.",
       "zh-CN": "© 2025 Transrewrt。根据<a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Apache 2.0许可证</a>发布。",
       "pt-BR": "© 2025 Transrewrt. Lançado sob a <a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Licença Apache 2.0</a>.",
-      "zh-TW": "© 2025 Transrewrt。根據 <a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Apache 2.0 許可證</a> 發布。"
+      "zh-TW": "© 2025 Transrewrt。根據 <a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Apache 2.0 許可證</a> 發布。",
+      "zh-Hans": "© 2025 Transrewrt。根据<a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Apache 2.0许可证</a>发布。",
+      "zh-Hant": "© 2025 Transrewrt。根據 <a href=\"https://github.com/wsj-br/Transrewrt/blob/main/LICENSE\" class=\"text-slate-400 hover:text-white transition-colors\">Apache 2.0 許可證</a> 發行。"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1159,7 +1313,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1179,7 +1335,9 @@
       "ar": "بُني باستخدام Astro",
       "zh-CN": "使用Astro构建",
       "pt-BR": "Construído com Astro",
-      "zh-TW": "使用 Astro 建構"
+      "zh-TW": "使用 Astro 建構",
+      "zh-Hans": "使用Astro构建",
+      "zh-Hant": "使用 Astro 構建"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1190,7 +1348,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1210,7 +1370,9 @@
       "ar": "v1.3.2 الأحدث",
       "zh-CN": "v1.3.2 最新",
       "pt-BR": "v1.3.2 Última",
-      "zh-TW": "v1.3.2 最新版"
+      "zh-TW": "v1.3.2 最新版",
+      "zh-Hans": "v1.3.2 最新",
+      "zh-Hant": "v1.3.2 最新版"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1221,7 +1383,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1241,7 +1405,9 @@
       "ar": "اللوحة",
       "zh-CN": "仪表板",
       "pt-BR": "Painel",
-      "zh-TW": "儀表板"
+      "zh-TW": "儀表板",
+      "zh-Hans": "仪表板",
+      "zh-Hant": "儀表板"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1252,7 +1418,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1289,6 +1457,14 @@
       },
       {
         "file": "src/pages/zh-cn/index.astro",
+        "line": 15
+      },
+      {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 15
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
         "line": 15
       },
       {
@@ -1308,7 +1484,9 @@
       "ar": "السجل",
       "zh-CN": "历史记录",
       "pt-BR": "Histórico",
-      "zh-TW": "歷史"
+      "zh-TW": "歷史",
+      "zh-Hans": "历史",
+      "zh-Hant": "歷史"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1319,7 +1497,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1356,6 +1536,14 @@
       },
       {
         "file": "src/pages/zh-cn/index.astro",
+        "line": 16
+      },
+      {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 16
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
         "line": 16
       },
       {
@@ -1375,7 +1563,9 @@
       "ar": "النماذج",
       "zh-CN": "模型",
       "pt-BR": "Modelos",
-      "zh-TW": "模型"
+      "zh-TW": "模型",
+      "zh-Hans": "模型",
+      "zh-Hant": "模型"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1386,7 +1576,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1423,6 +1615,14 @@
       },
       {
         "file": "src/pages/zh-cn/index.astro",
+        "line": 17
+      },
+      {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 17
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
         "line": 17
       },
       {
@@ -1442,7 +1642,9 @@
       "ar": "اللغات",
       "zh-CN": "语言",
       "pt-BR": "Idiomas",
-      "zh-TW": "語言"
+      "zh-TW": "語言",
+      "zh-Hans": "语言",
+      "zh-Hant": "語言"
     },
     "models": {
       "fr": "openai/gpt-4o-mini",
@@ -1453,7 +1655,9 @@
       "ar": "openai/gpt-4o-mini",
       "zh-CN": "openai/gpt-4o-mini",
       "pt-BR": "openai/gpt-4o-mini",
-      "zh-TW": "openai/gpt-4o-mini"
+      "zh-TW": "openai/gpt-4o-mini",
+      "zh-Hans": "openai/gpt-4o-mini",
+      "zh-Hant": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -1490,6 +1694,14 @@
       },
       {
         "file": "src/pages/zh-cn/index.astro",
+        "line": 18
+      },
+      {
+        "file": "src/pages/zh-hans/index.astro",
+        "line": 18
+      },
+      {
+        "file": "src/pages/zh-hant/index.astro",
         "line": 18
       },
       {

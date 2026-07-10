@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro 網站
 
-對於靜態 Astro 行銷或應用程式網站（純 Astro，非 Starlight），請將 [Astro 內建的 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合使用。另請參閱 [Astro 整合](/guide/astro-integration)。
+對於靜態 Astro 行銷或應用程式網站（純 Astro，非 Starlight），請將 [Astro 內建 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合使用。另請參閱 [Astro 整合](/guide/integrations/astro)。
 
 參考實作是 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)（另請參閱其 [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md))：英文位於 `/`，九個目標語系位於 `/{locale}/` (`de`、`fr`、`es`、`ar`、`ja`、`ko`、`zh-cn`、`zh-tw`、`pt-br`)。
 
@@ -53,7 +53,7 @@ const flat = await loadFlatBundle(Astro.currentLocale);
 const t = useTranslations(locale, makeT(flat));
 ```
 
-範例中的支援輔助程式：`src/i18n/utils.ts`、`src/i18n/locale.ts` 和 `ui-languages.json`，用於標籤、方向和 BCP-47 代碼。在變更 `targetLocales` 後執行 `generate-ui-languages`（可選地設定 `ui.uiLanguagesPath`，以便 manifest 位於您的輔助程式旁邊，例如 `src/i18n/ui-languages.json`）。`MainLayout.astro` 從 `resolveUiLanguage(Astro.currentLocale)` 設定 `<html lang>` 和 `<html dir>`；`LanguagePicker.astro` 使用 `astro:i18n` 中的 `getRelativeLocaleUrl`。
+範例中的支援輔助函式：`src/i18n/utils.ts`、`src/i18n/locale.ts` 與 `ui-languages.json` 用於標籤、方向與 BCP-47 代碼。變更 `targetLocales` 後執行 `generate-ui-languages`（可選擇設定 `languagesManifestPath`，讓資訊清單與您的輔助函式放在一起，例如 `src/i18n/ui-languages.json`）。`MainLayout.astro` 會從 `resolveUiLanguage(Astro.currentLocale)` 設定 `<html lang>` 與 `<html dir>`；`LanguagePicker.astro` 會使用來自 `astro:i18n` 的 `getRelativeLocaleUrl`。
 
 <a id="pages-parse-and-replace"></a>
 ## 頁面（解析並取代）

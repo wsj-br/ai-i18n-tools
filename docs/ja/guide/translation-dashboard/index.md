@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 デフォルトのリッスンポートは **8675** です。そのポートが使用できない場合、サーバーは次のポートを試行します（最大1000回の試行）し、使用したポートをログに出力します。非推奨のエイリアス `editor` は引き続き機能しますが警告を出力します。代わりに `dashboard` を使用してください。
 
-ダッシュボードUIは、CLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/reference/environment-variables#tool-ui-language)を参照してください。
+ダッシュボードUIはCLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/guide/tool-ui-language)を参照してください。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

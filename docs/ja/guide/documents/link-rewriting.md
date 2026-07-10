@@ -18,11 +18,11 @@
 
 カスタム `pathTemplate` は、`rewriteRelativeLinks: true` を明示的に設定しない限り、フラットリライターを無効にします。ページ間の `#anchor` の処理については、「[出力レイアウト](/guide/documents/output-layouts)」と「[アンカーリンク](/guide/documents/anchor-links)」を参照してください。
 
-VitePress 固有のオーサリングルールについては、「[VitePress 統合 — リンク規則](/guide/vitepress-integration#link-conventions)」を参照してください。
+VitePress固有の執筆ルールについては、[VitePress 統合 — リンク規約](/guide/integrations/vitepress#link-conventions)を参照してください。
 
-Nextra 固有のオーサリング規則については、「[Nextra 統合 — リンク規則](/guide/nextra-integration#link-conventions)」を参照してください。
+Nextra固有の執筆ルールについては、[Nextra 統合 — リンク規約](/guide/integrations/nextra#link-conventions)を参照してください。
 
-Fumadocs 固有のオーサリング規則については、「[Fumadocs 統合 — リンク規則](/guide/fumadocs-integration#link-conventions)」を参照してください。
+Fumadocs固有の執筆ルールについては、[Fumadocs 統合 — リンク規約](/guide/integrations/fumadocs#link-conventions)を参照してください。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`

@@ -63,13 +63,13 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-`i18next-scanner`의 `Parser.parseFuncFromString`을 사용하여 JS/TS 파일에서 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `.astro` 소스의 경우(`ui.uiExtractor.extensions`에 나열된 경우), `ui-string-babel.ts`은 frontmatter와 템플릿 `{expression}` 블록을 `@babel/parser`로 구문 분석하고 동일한 `funcNames` 규칙을 적용합니다. 함수 이름과 파일 확장자는 `ui.uiExtractor`을 통해 구성할 수 있으며, `ui.reactExtractor`은 지원되는 별칭입니다. `extract` **또한 스캐너가 아닌 입력을 동일한 카탈로그에 병합합니다.** `includePackageDescription`가 활성화된 경우(기본값) 프로젝트 `package.json` `description`와, `includeUiLanguageEnglishNames`이 `true`이고 `uiLanguagesPath`이 설정된 경우 `ui-languages.json`의 각 `englishName`을 병합합니다(소스에서 이미 발견된 문자열이 우선 적용됨). 세그먼트 해시는 소스 문자열을 잘라낸 후의 **MD5 첫 8자리 16진수**이며, 이는 `strings.json`의 키가 됩니다.
+`i18next-scanner`의 `Parser.parseFuncFromString`를 사용하여 JS/TS 파일에서 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `.astro` 소스(`ui.uiExtractor.extensions`에 나열된 경우)의 경우, `ui-string-babel.ts`는 `@babel/parser`로 프론트매터 및 템플릿 `{expression}` 블록을 파싱하고 동일한 `funcNames` 규칙을 적용합니다. 함수 이름과 파일 확장자는 `ui.uiExtractor`을 통해 구성할 수 있습니다(`ui.reactExtractor`는 지원되는 별칭입니다). `extract` **또한 비 스캐너 입력을 동일한 카탈로그로 병합합니다:** `includePackageDescription`가 활성화된 경우(기본값) 프로젝트 `package.json` `description`, 그리고 `includeUiLanguageEnglishNames`가 `true`일 때 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로 구축됨)의 각 `englishName` (소스에서 이미 찾은 문자열이 우선합니다; `languagesManifestPath`를 읽지 않습니다). `extract`는 또한 `languagesManifestPath`에서 `ui-languages.json`를 재생성합니다. 세그먼트 해시는 잘라낸 소스 문자열의 **MD5 첫 8자리 16진수 문자**이며 — 이는 `strings.json`의 키가 됩니다.
 
 `.html` / `.htm` 소스(`ui.uiExtractor.extensions`에 나열된 경우)에 대해, `extract`은 대신 파일을 `html-i18n-marks.ts`로 라우팅하여 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커 속성( `ui.uiExtractor.htmlI18nAttributes`을 통해 구성 가능)을 스캔한다. 빈 마커는 해당 요소의 자신의 `textContent` / `title` / `placeholder`에서 소스 텍스트를 가져온다. 값이 있는 마커(`data-i18n="Key"`)는 값을 사용한다. 동일한 모듈이 자동으로 빈 마커를 삽입하는 `mark-html` 명령을 구동한다. HTML 파일은 바벨 / i18next-스캐너 패스를 통과하지 않는다.
 
-일반 Astro SSG 사이트는 i18next를 건너뛸 수 있습니다. 빌드 시점에 플랫 `{locale}.json`을 로드하고 소스 텍스트 키로 `t('English')`을 해결합니다 (`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) 참조).
+순수 Astro SSG 사이트는 i18next를 생략할 수 있습니다: 빌드 시점에 플랫 `{locale}.json`을(를) 로드하고 소스 텍스트 키로 `t('English')`을(를) 해석합니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) 참조).
 
-일반 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다. [번역을 위한 HTML 마킹](/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하십시오.
+순수 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다 — [번역을 위한 HTML 마킹](/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요.
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@
 }
 ```
 
-`models` (선택 사항) — 각 로케일별로 마지막으로 성공한 `translate-ui` 실행 후 어떤 모델이 번역을 생성했는지를 나타냅니다(또는 텍스트가 번역 대시보드에서 저장된 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 어디에서 찾았는지를 나타냅니다(스캐너 + 패키지 설명 라인; 매니페스트 전용 `englishName` 문자열은 `locations`을 생략할 수 있음).
+`models` (선택 사항) — 로케일별로, 해당 로케일의 마지막 성공적인 `translate-ui` 실행 후 해당 번역을 생성한 모델입니다(또는 텍스트가 번역 대시보드에서 저장된 경우 `user-edited`). `locations` (선택 사항) — `extract`가 문자열을 찾은 위치입니다(스캐너 + 패키지 설명 줄; 번들된 마스터 `englishName` 문자열은 `locations`를 생략할 수 있음).
 
-`extract`은 새 키를 추가하고 스캔에 여전히 존재하는 키에 대해 기존 `translated` / `models` 데이터를 보존합니다 (스캐너 리터럴, 선택 설명, 선택 매니페스트 `englishName`). `translate-ui`는 누락된 `translated` 항목을 채우고, 번역하는 로케일에 대해 `models`을 업데이트하며, 평면화된 로케일 파일을 작성합니다.
+`extract`는 새 키를 추가하고 스캔에 여전히 존재하는 키(스캐너 리터럴, 선택적 설명, 선택적 번들된 마스터 `englishName`)에 대한 기존 `translated` / `models` 데이터를 보존합니다. `translate-ui`는 누락된 `translated` 항목을 채우고, 번역하는 로케일의 `models`를 업데이트하며, 플랫 로케일 파일을 작성합니다.
 
-`ui-languages.json` **매니페스트** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, 참조 `englishName`, `"ltr"` 또는 `"rtl"`)의 JSON 배열입니다. `generate-ui-languages`을 사용하여 `sourceLocale` + `targetLocales` 및 번들된 마스터 `data/ui-languages-complete.json`에서 프로젝트 파일을 생성합니다.
+`ui-languages.json` **매니페스트** — `{ code, label, englishName, direction }`의 JSON 배열(BCP-47 `code`, UI `label`, 참조 `englishName`, `"ltr"` 또는 `"rtl"`). `generate-ui-languages` 또는 `extract`를 사용하여 `sourceLocale` + `targetLocales` 및 번들된 마스터 `data/ui-languages-complete.json`에서 프로젝트 파일을 빌드합니다.
 
 <a id="flat-locale-files"></a>
 ### 단일화된 로케일 파일
@@ -144,11 +144,10 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 
 모든 추출기는 `BaseExtractor`를 확장하고 `extract(content, filepath): Segment[]`를 구현합니다.
 
-- `MarkdownExtractor` - 마크다운을 유형화된 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML 프런트매터는 **번역 불가능**으로 분류됩니다 (`slug`, `id` 및 기타 라우팅 키는 안정적으로 유지됩니다). 최상위 `export ...` 블록 (예: React 구성 요소 정의)은 기존 `import ...` 처리와 함께 번역 불가능한 `other` 세그먼트로 분류됩니다. 대문자 JSX 태그로 시작하는 여러 줄 블록 (예: `<Tabs>` 블록)은 번역 가능한 단락으로 분류됩니다. 번역 불가능한 세그먼트 (코드 블록, 원시 HTML)는 그대로 유지됩니다.
-- `AstroTemplateExtractor` - `.astro` 마케팅 페이지에 대한 구문 분석 및 교체 (`doc-translate.ts`의 `translateAstroFile`를 통한 `translate-docs`). 사용자에게 보이는 HTML 텍스트 노드와 번역 가능한 속성 (`alt`, `title`, `aria-label`, `placeholder`)을 추출하고, 사용자에게 보이는 경우 템플릿 `{expression}` 블록 내의 문자열 리터럴도 추출합니다. 프런트매터 TypeScript, `<script>`, `<style>`, 보호된 속성/키 값, `t('…')` 내의 리터럴은 건너뜁니다. 재조립은 출력 경로가 더 깊을 때 상대 가져오기를 조정합니다 (예: `src/pages/de/index.astro`). [Astro 웹사이트 페이지](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)를 참조하십시오.
-- `JsonExtractor` - Docusaurus JSON 레이블 파일 (MDX 본문이 아닌 Docusaurus UI 카탈로그)에서 문자열 값을 추출합니다.
-- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다 (`translate-docs`이 아닌 `config.svg` 아래의 파일에 대해 `translate-svg`에서 사용됨).
-
+- `MarkdownExtractor` - 마크다운을 타입화된 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter는 **번역 불가**로 분류됩니다(`slug`, `id` 및 기타 라우팅 키는 안정적으로 유지됨). 최상위 `export ...` 블록(예: React 컴포넌트 정의)은 기존 `import ...` 처리와 함께 번역 불가능한 `other` 세그먼트로 분류됩니다. 대문자 JSX 태그로 시작하는 여러 줄 블록(예: `<Tabs>` 블록)은 번역 가능한 단락으로 분류됩니다. 번역 불가능한 세그먼트(코드 블록, 원시 HTML)는 있는 그대로 보존됩니다.
+- `AstroTemplateExtractor` - `.astro` 마케팅 페이지를 위한 파싱 및 교체(`doc-translate.ts`의 `translateAstroFile`를 통한 `translate-docs`). 사용자 대상 HTML 텍스트 노드 및 번역 가능한 속성(`alt`, `title`, `aria-label`, `placeholder`)과 사용자 대상일 때 템플릿 `{expression}` 블록 내부의 문자열 리터럴을 추출합니다. frontmatter TypeScript, `<script>`, `<style>`, 보호된 속성/키 값 및 `t('…')` 내부의 리터럴을 건너뜁니다. 재조립 과정에서는 출력 경로가 더 깊을 때 상대 임포트를 조정합니다(예: `src/pages/de/index.astro`). [Astro 웹사이트 페이지](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)를 참조하세요.
+- `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다(MDX 본문이 아닌 Docusaurus UI 카탈로그).
+- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`translate-docs`이(가) 아닌 `config.svg` 아래의 파일에 대해 `translate-svg`에서 사용됨).
 - `html-i18n-marks.ts` - `extract`에서 `.html` / `.htm` 소스용으로, 그리고 `mark-html` 명령에서 사용하는 집중형 HTML 태그 스캐너입니다. `collectHtmlI18nStrings` / `collectHtmlI18nLocations`는 `data-i18n*` 마커 속성을 읽습니다(일반 마커 → 요소 `textContent` / `title` / `placeholder`; 값이 있는 마커 → 값). `markHtmlContent`은 일반 마커를 리프 텍스트 / 제목 / 플레이스홀더 요소에 삽입합니다(멱등성, `data-i18n-ignore` 존중, 코드와 유사하거나 혼합 콘텐츠인 요소는 건너뜁니다). 공유되는 `normalizeI18nText` 도우미는 빌드 시간 키를 브라우저 런타임과 동일하게 유지합니다.
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -216,7 +215,7 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 <a id="flat-link-rewriting"></a>
 ### 단일 링크 재작성
 
-`docsOutput.style === "flat"`일 때 번역된 마크다운 파일은 로케일 접미사와 함께 원본 옆에 배치됩니다. 페이지 간의 상대 링크는 `readme.de.md`의 `[Guide](./guide.md)`이 `guide.de.md`을 가리키도록 다시 작성됩니다. `rewriteRelativeLinks`에 의해 제어됩니다(사용자 지정 `pathTemplate`가 없는 플랫 스타일에 대해 자동 활성화됨). 동일한 패스는 `postProcessing.regexAdjustments`가 실행되기 전에 마크다운이 아닌 자산 URL에 파일당 깊이 접두사를 추가합니다. [플랫 링크 재작성기](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)를 참조하십시오.
+`docsOutput.style === "flat"`인 경우, 번역된 마크다운 파일은 로케일 접미사와 함께 소스 옆에 배치됩니다. 페이지 간의 상대 링크는 `readme.de.md`의 `[Guide](./guide.md)`이(가) `guide.de.md`을(를) 가리키도록 다시 작성됩니다. `rewriteRelativeLinks`에 의해 제어됩니다(사용자 정의 `pathTemplate` 없이 플랫 스타일에 대해 자동 활성화됨). 동일한 패스는 `postProcessing.regexAdjustments`이(가) 실행되기 전에 마크다운이 아닌 에셋 URL에 파일별 깊이 접두사를 추가합니다 — [플랫 링크 재작성기](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)를 참조하세요.
 
 ---
 
@@ -256,10 +255,10 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 
 `loadI18nConfigFromFile(configPath, cwd)` 파이프라인:
 
-1. `ai-i18n-tools.config.json` 읽고 파싱 (JSON).
-2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합, `docs[].sourceFiles` 항목들을 `contentPaths`에 병합.
-3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`이 파일 경로인 경우 매니페스트를 로드하고 로케일 코드로 확장; `uiLanguagesPath` 설정.
-4. `expandDocumentationTargetLocalesInRawInput` - 각 `docs[].targetLocales` 항목에 대해 동일하게 수행.
+1. `ai-i18n-tools.config.json`(JSON)를 읽고 파싱합니다.
+2. `mergeWithDefaults` - `defaultI18nConfigPartial`와 깊은 병합을 수행하고, 모든 `docs[].sourceFiles` 항목을 `contentPaths`로 병합합니다.
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales`를 배열로 강제 변환하고 경로와 유사한 항목을 거부합니다(`ui-languages.json` 경로가 아닌 BCP-47 코드여야 함); `mergeWithDefaults` 동안 `languagesManifestPath`의 기본값은 `{ui.flatOutputDir}/ui-languages.json`입니다.
+4. `expandDocumentationTargetLocalesInRawInput` - 각 `docs[].targetLocales` 항목에 대해 동일하게 적용합니다.
 5. `expandJsonTargetLocalesInRawInput` - 각 `json[].targetLocales` 항목에 대해 동일합니다.
 6. `parseI18nConfig` - Zod 유효성 검사 + `validateI18nBusinessRules`.
 7. `applyProviderOverrideToRawInput` - `-P` / `--provider`가 CLI에 전달될 때.

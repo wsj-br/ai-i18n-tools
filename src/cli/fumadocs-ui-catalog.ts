@@ -1,7 +1,11 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import type { I18nDocTranslateConfig, JsonKeyPolicyConfig, TranslationFailureInsert } from "../core/types.js";
+import type {
+  I18nDocTranslateConfig,
+  JsonKeyPolicyConfig,
+  TranslationFailureInsert,
+} from "../core/types.js";
 import { fumadocsUiFileTrackingKey } from "../core/doc-file-tracking.js";
 import { matchesDocsOutputStylePreset } from "../core/docs-output-normalize.js";
 import { localePathPlaceholders } from "../core/locale-utils.js";
@@ -185,8 +189,7 @@ export async function translateFumadocsUiCatalog(
   const content = fs.readFileSync(catalogAbs, "utf8");
   const fileHash = hashFileContent(content);
   const sourceFileMtime = fs.statSync(catalogAbs).mtime.toISOString();
-  const template =
-    catalogCfg.outputPathTemplate?.trim() || defaultUiOutputTemplate(catalogRelPath);
+  const template = catalogCfg.outputPathTemplate?.trim() || defaultUiOutputTemplate(catalogRelPath);
   const outPath = expandUiOutputPath(template, projectRoot, locale, catalogRelPath);
   const blockIdx = opts.documentationBlockIndex ?? 0;
   const fileTrackingKey = fumadocsUiFileTrackingKey(blockIdx, catalogRelPath);

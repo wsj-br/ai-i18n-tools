@@ -5,17 +5,17 @@ Diseñado principalmente para **documentación de markdown, MDX y `.astro`** ges
 
 En los sitios de Docusaurus, también configure `docusaurusCatalogDir` en su carpeta de catálogo de `write-translations` (por ejemplo, `docs-site/i18n/en`). Entonces `translate-docs` también incluye JSON de shell — cadenas de la barra de navegación, el pie de página y el tema.
 
-En los sitios de [VitePress](/guide/vitepress-integration), los cuerpos de las páginas utilizan la misma canalización `docs[]`. Las etiquetas de navegación, barra lateral y pie de página se encuentran en `docsOutput.vitepressThemeCatalog`; `translate-docs` arranca el catálogo en inglés y lo traduce junto con las páginas, sin una canalización separada.
+En los sitios de [VitePress](/guide/integrations/vitepress), los cuerpos de las páginas utilizan la misma canalización `docs[]`. Las etiquetas de navegación, barra lateral y pie de página se encuentran en `docsOutput.vitepressThemeCatalog` — `translate-docs` arranca el catálogo en inglés y lo traduce junto con las páginas, sin una canalización separada.
 
-En los sitios de [Nextra](/guide/nextra-integration), los cuerpos de las páginas utilizan la misma canalización `docs[]` con `docsOutput.style: "nextra"`. Las etiquetas de la barra lateral de `_meta.ts` son recopiladas y traducidas automáticamente por `translate-docs`; las cadenas del diccionario del tema se traducen a través de `docs[].nextraDictionaryPath` en la misma canalización.
+En los sitios de [Nextra](/guide/integrations/nextra), los cuerpos de las páginas utilizan la misma canalización `docs[]` con `docsOutput.style: "nextra"`. Las etiquetas de la barra lateral de `_meta.ts` son recopiladas y traducidas automáticamente por `translate-docs`; las cadenas del diccionario del tema se traducen a través de `docs[].nextraDictionaryPath` en la misma canalización.
 
-En los sitios de [Fumadocs](/guide/fumadocs-integration), los cuerpos de las páginas usan `docsOutput.style: "fumadocs"` con `fumadocsParser` `"dot"` (predeterminado) o `"dir"`. Las etiquetas de la barra lateral de `meta.json` se recopilan automáticamente; las anulaciones de la interfaz de usuario se traducen a través de `docsOutput.fumadocsUiCatalog`.
+En los sitios de [Fumadocs](/guide/integrations/fumadocs), los cuerpos de las páginas utilizan `docsOutput.style: "fumadocs"` con `fumadocsParser` `"dot"` (predeterminado) o `"dir"`. Las etiquetas de la barra lateral de `meta.json` se recopilan automáticamente; las anulaciones de la interfaz de usuario se traducen a través de `docsOutput.fumadocsUiCatalog`.
 
 Para imágenes PNG y otras imágenes rasterizadas incrustadas en markdown, consulte [Imágenes y capturas de pantalla](/guide/images-and-screenshots/). `translate-docs` solo traduce el texto alternativo; no copia archivos rasterizados.
 
 Para un bloque opcional de **selector de idioma** en README o documentos, configure `docsOutput.style` en `"flat"` — consulte [Selector de idioma](/guide/documents/language-switcher).
 
-Los archivos SVG se traducen a través de [`translate-svg`](/reference/cli-commands) cuando `features.translateSVG` está habilitado — no a través de `docs[]` / `contentPaths`.
+Los archivos SVG se traducen a través de [`translate-svg`](/reference/cli-commands/content#translate-svg) cuando `features.translateSVG` está habilitado, no a través de `docs[]` / `contentPaths`.
 
 Los paquetes JSON de interfaz de usuario anidados arbitrarios no relacionados con las cadenas de shell/tema de un framework de documentación pertenecen a la canalización [JSON](/guide/json), no a `docs[]`.
 
@@ -30,9 +30,9 @@ Los paquetes JSON de interfaz de usuario anidados arbitrarios no relacionados co
 | Su configuración | Empiece aquí |
 | --- | --- |
 | Sitio de Docusaurus | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Paso 1](#step-1-initialise-for-documentation) |
-| Sitio de VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` para el tema — [Integración de VitePress](/guide/vitepress-integration) |
-| Sitio de Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para el diccionario (la barra lateral `_meta.ts` es automática) — [Integración de Nextra](/guide/nextra-integration) |
-| Sitio de Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para la interfaz de usuario (la `meta.json` de la barra lateral es automática) — [Integración de Fumadocs](/guide/fumadocs-integration) |
+| Sitio de VitePress | `init -t ui-vitepress` + `vitepressThemeCatalog` para el tema — [Integración de VitePress](/guide/integrations/vitepress) |
+| Sitio de Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para el diccionario (la barra lateral `_meta.ts` es automática) — [Integración de Nextra](/guide/integrations/nextra) |
+| Sitio de Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para la interfaz de usuario (la barra lateral `meta.json` es automática) — [Integración de Fumadocs](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Paso 1](#step-1-initialise-for-documentation) |
 | Documentos planos (README, registros de cambios, etc.) | `docsOutput.style = "flat"` — [Diseños de salida](/guide/documents/output-layouts), [selector de idioma](/guide/documents/language-switcher) opcional |
 | Dónde aterrizan los archivos traducidos | [Diseños de salida](/guide/documents/output-layouts) |
@@ -60,7 +60,7 @@ Para sitios de documentación de VitePress:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Establezca `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/barra lateral/pie de página — consulte [Integración de VitePress](/guide/vitepress-integration).
+Establezca `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/barra lateral/pie de página — consulte [Integración de VitePress](/guide/integrations/vitepress).
 
 Para sitios de documentación de Nextra:
 
@@ -68,7 +68,7 @@ Para sitios de documentación de Nextra:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-Establezca `docs[].nextraDictionaryPath` para las cadenas del diccionario de temas; consulte [Integración de Nextra](/guide/nextra-integration). Las etiquetas `_meta.ts` de la barra lateral se recopilan automáticamente.
+Establezca `docs[].nextraDictionaryPath` para las cadenas del diccionario del tema — consulte [Integración de Nextra](/guide/integrations/nextra). Las etiquetas de la barra lateral `_meta.ts` se recopilan automáticamente.
 
 Para sitios de documentación de Fumadocs:
 
@@ -76,7 +76,7 @@ Para sitios de documentación de Fumadocs:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-Establezca `docsOutput.fumadocsUiCatalog` para las anulaciones de la interfaz de usuario; consulte [Integración de Fumadocs](/guide/fumadocs-integration). Las etiquetas `meta.json` de la barra lateral se recopilan automáticamente.
+Establezca `docsOutput.fumadocsUiCatalog` para las anulaciones de la interfaz de usuario — consulte [Integración de Fumadocs](/guide/integrations/fumadocs). Las etiquetas de la barra lateral `meta.json` se recopilan automáticamente.
 
 Para la interfaz de un sitio web Astro plano (sin Starlight):
 

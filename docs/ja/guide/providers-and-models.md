@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-コマンドの詳細: [CLI リファレンス](/reference/cli-commands)。
+コマンドの詳細: [CLI リファレンス](/reference/cli-commands/)。
 
 <a id="multiple-providers"></a>
 ### 複数のプロバイダー

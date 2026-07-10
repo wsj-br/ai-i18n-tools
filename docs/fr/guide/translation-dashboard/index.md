@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Le port d'écoute par défaut est **8675**. Si ce port est indisponible, le serveur essaie le port suivant (jusqu'à 1000 tentatives) et enregistre dans les journaux le port choisi. L'alias obsolète `editor` fonctionne encore mais affiche un avertissement — privilégiez `dashboard`.
 
-L'interface utilisateur du tableau de bord utilise la même résolution de paramètres régionaux que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → paramètres régionaux du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/reference/environment-variables#tool-ui-language).
+L'interface utilisateur du tableau de bord utilise la même résolution de localisation que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → localisation du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

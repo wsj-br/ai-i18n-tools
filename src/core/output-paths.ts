@@ -103,13 +103,23 @@ function resolveByStyle(
   const docsRootPosix = toPosix(path.normalize(docsRootRaw)).replace(/\/$/, "");
 
   if (kind !== "markdown") {
-    return path.join(outBase, localeSeg, relPath);
+    const usesStyleLayout =
+      mo.style === "nested" ||
+      mo.style === "doc-system" ||
+      mo.style === "docusaurus" ||
+      mo.style === "astro-starlight" ||
+      mo.style === "vitepress" ||
+      mo.style === "nextra" ||
+      mo.style === "fumadocs";
+    if (!usesStyleLayout) {
+      return path.join(outBase, localeSeg, relPath);
+    }
+    // JSON artifacts under doc-system presets share the same folder layout as markdown.
   }
 
-  if (isFumadocsDotParser(mo)) {
+  if (isFumadocsDotParser(mo) && kind === "markdown") {
     let relForDot = posixRel;
-    const underDocsRoot =
-      posixRel === docsRootPosix || posixRel.startsWith(`${docsRootPosix}/`);
+    const underDocsRoot = posixRel === docsRootPosix || posixRel.startsWith(`${docsRootPosix}/`);
     if (underDocsRoot) {
       relForDot = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
     }
@@ -258,15 +268,35 @@ export function shouldRewriteFumadocsLinks(config: I18nDocTranslateConfig): bool
   return matchesDocsOutputStylePreset(mo, "fumadocs");
 }
 
+/** Derive VitePress locale route prefix when translated output lives under `{outputDir}/{locale}/…`. */
+export function vitepressLocaleRoutePrefix(
+  config: I18nDocTranslateConfig,
+  cwd: string,
+  locale: string,
+  relPath: string
+): string | null {
+  const mo = config.doc.docsOutput;
+  const localeSeg = effectiveLocaleForPath(locale, mo.localePathLowercase ?? false);
+  const outAbs = resolveDocumentationOutputPath(config, cwd, locale, relPath, "markdown");
+  const outRel = toPosix(path.relative(path.resolve(cwd, config.doc.outputDir), outAbs));
+  if (outRel === localeSeg || outRel.startsWith(`${localeSeg}/`)) {
+    return `/${localeSeg}`;
+  }
+  return null;
+}
+
 /** Build context for VitePress link normalization from a doc translate config. */
 export function vitepressLinkNormalizeContext(
   config: I18nDocTranslateConfig,
-  relPath: string
+  relPath: string,
+  locale: string,
+  cwd: string
 ): VitepressLinkNormalizeContext {
   const mo = config.doc.docsOutput;
   return {
     relPath,
     docsRoot: mo.docsRoot?.trim() || "docs",
+    localeRoutePrefix: vitepressLocaleRoutePrefix(config, cwd, locale, relPath),
   };
 }
 

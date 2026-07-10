@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 預設的監聽埠是 **8675**。如果該埠無法使用，伺服器會嘗試下一個埠（最多嘗試 1000 次）並記錄所選的埠。已棄用的別名 `editor` 仍然可用，但會顯示警告 — 請優先使用 `dashboard`。
 
-儀表板 UI 使用與 CLI 相同的地區設定解析：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區設定。請參閱[工具 UI 語言](/reference/environment-variables#tool-ui-language)。
+儀表板 UI 使用與 CLI 相同的地區解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區。請參閱[工具 UI 語言](/guide/tool-ui-language)。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

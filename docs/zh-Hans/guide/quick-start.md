@@ -68,7 +68,7 @@ npx ai-i18n-tools status
 }
 ```
 
-**提示：** 如果您希望 CLI 输出和仪表板使用其他语言，请传递 `-L <code>` 或设置 `AI_I18N_LANG` — 请参阅 [工具 UI 语言](/reference/environment-variables#tool-ui-language)。
+**提示：** 如果希望 CLI 输出和仪表板使用其他语言，请传递 `-L <code>` 或设置 `AI_I18N_LANG` — 参见[工具 UI 语言](/guide/tool-ui-language)。
 
 <a id="combined-sync"></a>
 ## 组合同步

@@ -55,7 +55,7 @@ Si un archivo no tiene un bloque coincidente, la CLI registra una advertencia (c
 <a id="4-label-manifest"></a>
 ## 4. Manifiesto de etiquetas
 
-Para etiquetas endónimas (`label: "local"`), genere o mantenga `ui-languages.json` a través de `generate-ui-languages` (requiere [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional)). La configuración de solo documentos de este repositorio no tiene una canalización de interfaz de usuario, por lo que las etiquetas provienen del catálogo maestro incluido para `sourceLocale` + `targetLocales`.
+Para las etiquetas endónimas (`label: "local"`), genere o mantenga `ui-languages.json` a través de `generate-ui-languages` (escrito en [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), que por defecto es `{ui.flatOutputDir}/ui-languages.json`). La configuración de solo documentos de este repositorio no tiene una canalización de interfaz de usuario ni un manifiesto de proyecto en el disco, por lo que las etiquetas provienen del catálogo maestro incluido para `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Ejemplos en este repositorio

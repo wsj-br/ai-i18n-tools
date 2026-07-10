@@ -1,3 +1,3 @@
 export default {
-  "getting-started": "Primeiros passos",
+  "getting-started": "Introdução",
 };

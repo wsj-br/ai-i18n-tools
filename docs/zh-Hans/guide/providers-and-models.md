@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-命令详情：[CLI参考](/reference/cli-commands)。
+命令详情：[CLI 参考](/reference/cli-commands/)。
 
 <a id="multiple-providers"></a>
 ### 多个提供商

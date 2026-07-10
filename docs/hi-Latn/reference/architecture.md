@@ -63,13 +63,13 @@ Sab kuch jo programmatic upyog ke liye hai, `src/index.ts` se punah-niryaat kiya
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-JS/TS files mein `t("literal")` aur `i18n.t("literal")` calls dhoondhne ke liye `i18next-scanner` ke `Parser.parseFuncFromString` ka upyog karta hai. `.astro` sources ke liye (jab `ui.uiExtractor.extensions` mein soochi-baddh ho), `ui-string-babel.ts` frontmatter aur template `{expression}` blocks ko `@babel/parser` ke saath parse karta hai aur wahi `funcNames` rules lagu karta hai. Function names aur file extensions `ui.uiExtractor` ke madhyam se configurable hain (`ui.reactExtractor` ek samarthit alias hai). `extract` **non-scanner inputs ko bhi usi catalog mein merge karta hai:** project `package.json` `description` jab `includePackageDescription` enabled ho (default), aur har `englishName` `ui-languages.json` se jab `includeUiLanguageEnglishNames` `true` ho aur `uiLanguagesPath` set ho (source mein pehle se mili strings ko prathamikta milti hai). Segment hashes trimmed source string ke **MD5 ke pehle 8 hex chars** hote hain — ye `strings.json` mein keys ban jaate hain.
+JS/TS files mein `i18next-scanner` ke `Parser.parseFuncFromString` ka upyog karke `t("literal")` aur `i18n.t("literal")` calls dhundhta hai. `.astro` sources ke liye (jab `ui.uiExtractor.extensions` mein soochi mein ho), `ui-string-babel.ts` frontmatter aur template `{expression}` blocks ko `@babel/parser` ke saath parse karta hai aur wahi `funcNames` rules lagoo karta hai. Function names aur file extensions `ui.uiExtractor` ke madhyam se configurable hain (`ui.reactExtractor` ek samarthit alias hai). `extract` **non-scanner inputs ko bhi usi catalog mein merge karta hai:** project `package.json` `description` jab `includePackageDescription` enabled hota hai (default), aur bundled ui-languages master catalog se har `englishName` (`sourceLocale` + `targetLocales` se bana) jab `includeUiLanguageEnglishNames` `true` hota hai (source mein pehle se mili strings ko prathamikta milti hai; `languagesManifestPath` nahi padhta hai). `extract` `ui-languages.json` ko `languagesManifestPath` par bhi regenerate karta hai. Segment hashes trimmed source string ke **MD5 ke pehle 8 hex chars** hote hain — ye `strings.json` mein keys ban jaate hain.
 
 `.html` / `.htm` sources ke liye (jab `ui.uiExtractor.extensions` mein list kiya gaya ho), `extract` file ko `html-i18n-marks.ts` ke through route karta hai, jo `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker attributes ko scan karta hai (`ui.uiExtractor.htmlI18nAttributes` ke through configurable). Ek nanga marker apne source text ko element ke khud ke `textContent` / `title` / `placeholder` se leta hai; ek valued marker (`data-i18n="Key"`) value ka upyog karta hai. Yahi module `mark-html` command ko power karta hai, jo nange markers ko automatically insert karta hai. HTML files kabhi bhi Babel / i18next-scanner passes tak nahi pahunchti hain.
 
-Plain Astro SSG sites can skip i18next: load flat `{locale}.json` at build time and resolve `t('English')` by source-text key (see `examples/astro-website/src/i18n/t.ts` and [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
+Saade Astro SSG site i18next ko chhod sakte hain: build time par flat `{locale}.json` load karein aur source-text key dwara `t('English')` ko resolve karein (`examples/astro-website/src/i18n/t.ts` aur [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) dekhein).
 
-Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation).
+Saade HTML apps marker attributes ke saath wahi catalog model follow karte hain, `t()` calls ke bajaye — [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation) dekhein.
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -93,11 +93,11 @@ Master catalog ka roop hai:
 }
 ```
 
-`models` (vaikalpik) — prati sthaan ke anusaar, kis model ne us anuvaad ko us sthaan ke liye antim safal `translate-ui` run ke baad utpann kiya (ya yadi text Translation Dashboard se save kiya gaya tha to `user-edited`). `locations` (vaikalpik) — jahaan `extract` ko string mili (scanner + package description line; manifest-only `englishName` strings `locations` ko chhod sakte hain).
+`models` (optional) — har locale ke liye, kis model ne us translation ko us locale ke liye pichhle safal `translate-ui` run ke baad banaya (ya `user-edited` agar text Translation Dashboard se save kiya gaya tha). `locations` (optional) — jahan `extract` ne string dhoondi (scanner + package description line; bundled-master `englishName` strings mein `locations` chhod sakte hain).
 
-`extract` nayi keys jodta hai aur scan mein abhi bhi maujood keys ke liye maujooda `translated` / `models` data ko surakshit rakhta hai (scanner literals, vaikalpik description, vaikalpik manifest `englishName`). `translate-ui` ghumshuda `translated` entries ko bharta hai, un sthano ke liye `models` ko update karta hai jinhe yeh anuvaad karta hai, aur flat locale files likhta hai.
+`extract` nayi keys jodta hai aur scan mein abhi bhi maujood keys ke liye maujooda `translated` / `models` data ko surakshit rakhta hai (scanner literals, optional description, optional bundled-master `englishName`). `translate-ui` missing `translated` entries ko bharta hai, jin locales ka anuvad karta hai unke liye `models` ko update karta hai, aur flat locale files likhta hai.
 
-`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` ya `"rtl"`) ka JSON array. `generate-ui-languages` ka upyog `sourceLocale` + `targetLocales` aur bundled master `data/ui-languages-complete.json` se ek project file banane ke liye karein.
+`ui-languages.json` **manifest** — `{ code, label, englishName, direction }` (BCP-47 `code`, UI `label`, reference `englishName`, `"ltr"` ya `"rtl"`) ka JSON array. `sourceLocale` + `targetLocales` aur bundled master `data/ui-languages-complete.json` se project file banane ke liye `generate-ui-languages` ya `extract` ka upyog karein.
 
 <a id="flat-locale-files"></a>
 ### Flat locale files
@@ -144,10 +144,10 @@ i18next inhein resource bundles ke roop mein load karta hai aur source string (k
 
 Sabhi extractors `BaseExtractor` ka vistar karte hain aur `extract(content, filepath): Segment[]` ko lagu karte hain.
 
-- `MarkdownExtractor` - markdown ko typed segments mein split karta hai: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter ko **non-translatable** classify kiya gaya hai (`slug`, `id`, aur anya routing keys stable rahte hain). Top-level `export ...` blocks (jaise React component definitions) ko existing `import ...` handling ke saath non-translatable `other` segments ke roop mein classify kiya gaya hai. Capital JSX tag se shuru hone wale multi-line blocks (jaise ek `<Tabs>` block) ko translatable paragraphs ke roop mein classify kiya gaya hai. Non-translatable segments (code blocks, raw HTML) ko jyon ka tyon rakha gaya hai.
-- `AstroTemplateExtractor` - `.astro` marketing pages ke liye parse-and-replace (`translate-docs` via `translateAstroFile` in `doc-translate.ts`). User-facing HTML text nodes aur translatable attributes (`alt`, `title`, `aria-label`, `placeholder`) ko extract karta hai, saath hi template `{expression}` blocks ke andar string literals ko bhi jab user-facing ho. Frontmatter TypeScript, `<script>`, `<style>`, protected attribute/key values, aur `t('…')` ke andar literals ko skip karta hai. Reassembly relative imports ko adjust karta hai jab output paths deeper hote hain (jaise `src/pages/de/index.astro`). Dekhen [Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
-- `JsonExtractor` - Docusaurus JSON label files (Docusaurus UI catalogs, not MDX body) se string values ko extract karta hai.
-- `SvgExtractor` - SVG se `<text>`, `<title>`, aur `<desc>` content ko extract karta hai (`translate-svg` dwara `config.svg` ke andar files ke liye upyog kiya jata hai, `translate-docs` dwara nahi).
+- `MarkdownExtractor` - markdown ko typed segments mein baantta hai: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter ko **non-translatable** ke roop mein classify kiya gaya hai (`slug`, `id`, aur anya routing keys stable rehte hain). Top-level `export ...` blocks (jaise React component definitions) ko existing `import ...` handling ke saath non-translatable `other` segments ke roop mein classify kiya gaya hai. Capital JSX tag se shuru hone wale multi-line blocks (jaise ki `<Tabs>` block) ko translatable paragraphs ke roop mein classify kiya gaya hai. Non-translatable segments (code blocks, raw HTML) ko jyon ka tyon rakha gaya hai.
+- `AstroTemplateExtractor` - `.astro` marketing pages ke liye parse-and-replace (`translate-docs` via `translateAstroFile` in `doc-translate.ts`). User-facing HTML text nodes aur translatable attributes (`alt`, `title`, `aria-label`, `placeholder`) ko extract karta hai, saath hi template `{expression}` blocks ke andar string literals ko bhi jab user-facing ho. Frontmatter TypeScript, `<script>`, `<style>`, protected attribute/key values, aur `t('…')` ke andar literals ko chhod deta hai. Reassembly relative imports ko adjust karta hai jab output paths gehre hote hain (jaise `src/pages/de/index.astro`). [Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) dekhein.
+- `JsonExtractor` - Docusaurus JSON label files se string values extract karta hai (Docusaurus UI catalogs, MDX body nahi).
+- `SvgExtractor` - SVG se `<text>`, `<title>`, aur `<desc>` content extract karta hai (`translate-svg` dwara `config.svg` ke antargat files ke liye upyog kiya jata hai, `translate-docs` dwara nahi).
 - `html-i18n-marks.ts` - ek focused HTML tag scanner jise `extract` `.html` / `.htm` sources ke liye aur `mark-html` command dwara istemal kiya jata hai. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` `data-i18n*` marker attributes ko read karte hain (nanga marker → element `textContent` / `title` / `placeholder`; valued marker → value), aur `markHtmlContent` nange markers ko leaf text / title / placeholder elements mein insert karta hai (idempotent, `data-i18n-ignore` ko maan'ya karta hai, code-like aur mixed-content elements ko skip karta hai). Shared `normalizeI18nText` helper build-time keys ko browser runtime ke saman rakhta hai.
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -215,7 +215,7 @@ Har ek run par, segments ko hash × locale dwara dekha jata hai. Kewal cache mis
 <a id="flat-link-rewriting"></a>
 ### Flat link rewriting
 
-Jab `docsOutput.style === "flat"`, anuvadit markdown files locale suffixes ke saath source ke bagal mein rakhe jaate hain. Pages ke beech relative links ko phir se likha jata hai taki `readme.de.md` mein `[Guide](./guide.md)` `guide.de.md` ki or ishara kare. `rewriteRelativeLinks` dwara niyantrit (custom `pathTemplate` ke bina flat style ke liye auto-enabled). Wahi pass `postProcessing.regexAdjustments` chalne se pehle non-markdown asset URLs mein per-file depth prefix jodta hai — [Flat link rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhein.
+Jab `docsOutput.style === "flat"`, anuvadit markdown files locale suffixes ke saath source ke bagal mein rakhe jaate hain. Pages ke beech relative links ko phir se likha jaata hai taaki `readme.de.md` mein `[Guide](./guide.md)` `guide.de.md` ko point kare. `rewriteRelativeLinks` dwara niyantrit (custom `pathTemplate` ke bina flat style ke liye auto-enabled). Wahi pass `postProcessing.regexAdjustments` chalne se pehle non-markdown asset URLs mein per-file depth prefix jodta hai — [Flat link rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhein.
 
 ---
 
@@ -255,10 +255,10 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) par bana provider-agnostic ch
 
 `loadI18nConfigFromFile(configPath, cwd)` pipeline:
 
-1. `ai-i18n-tools.config.json` (JSON) padhen aur parse karen.
-2. `mergeWithDefaults` - `defaultI18nConfigPartial` ke saath deep-merge karen, aur kisi bhi `docs[].sourceFiles` entries ko `contentPaths` mein merge karen.
-3. `expandTargetLocalesFileReferenceInRawInput` - yadi `targetLocales` ek file path hai, to manifest load karen aur locale codes mein expand karen; `uiLanguagesPath` set karen.
-4. `expandDocumentationTargetLocalesInRawInput` - har `docs[].targetLocales` entry ke liye yahi karen.
+1. `ai-i18n-tools.config.json` (JSON) padhein aur parse karein.
+2. `mergeWithDefaults` - `defaultI18nConfigPartial` ke saath deep-merge karein, aur kisi bhi `docs[].sourceFiles` entries ko `contentPaths` mein merge karein.
+3. `expandTargetLocalesFileReferenceInRawInput` - `targetLocales` ko ek array mein coerce karein aur path-like entries ko reject karein (BCP-47 codes hone chahiye, na ki `ui-languages.json` ka path); `mergeWithDefaults` ke dauran `languagesManifestPath` default roop se `{ui.flatOutputDir}/ui-languages.json` hota hai.
+4. `expandDocumentationTargetLocalesInRawInput` - har `docs[].targetLocales` entry ke liye wahi.
 5. `expandJsonTargetLocalesInRawInput` - har `json[].targetLocales` entry ke liye saman.
 6. `parseI18nConfig` - Zod validation + `validateI18nBusinessRules`.
 7. `applyProviderOverrideToRawInput` - jab CLI par `-P` / `--provider` pass kiya jata hai.

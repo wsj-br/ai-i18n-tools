@@ -68,7 +68,7 @@ Wenn das Paket lokal installiert ist, können Sie die CLI-Befehle direkt in Skri
 }
 ```
 
-**Tipp:** Übergeben Sie `-L <code>` oder setzen Sie `AI_I18N_LANG`, wenn Sie die CLI-Ausgabe und das Dashboard in einer anderen Sprache wünschen – siehe [Tool-UI-Sprache](/reference/environment-variables#tool-ui-language).
+**Tipp:** Übergeben Sie `-L <code>` oder legen Sie `AI_I18N_LANG` fest, wenn Sie die CLI-Ausgabe und das Dashboard in einer anderen Sprache wünschen – siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Kombinierte Synchronisierung

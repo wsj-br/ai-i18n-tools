@@ -18,18 +18,21 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (可选)
 
-工具自身 UI 语言的 BCP-47 代码（CLI 帮助、日志/摘要和翻译仪表板）。它独立于 `sourceLocale` / `targetLocales`，并被 `-L` / `--ui-lang` 标志和 `AI_I18N_LANG` 环境变量覆盖。未知值会优雅地降级到源语言环境 (`en-GB`) — 没有严格的验证。请参阅 [工具 UI 语言](/reference/environment-variables#tool-ui-language)。
+工具自身 UI 语言（CLI 帮助、日志/摘要和翻译仪表板）的 BCP-47 代码。它独立于 `sourceLocale` / `targetLocales`，并会被 `-L` / `--ui-lang` 标志和 `AI_I18N_LANG` 环境变量覆盖。未知值会平滑降级到源区域设置（`en-GB`）——没有严格的验证。参见[工具 UI 语言](/guide/tool-ui-language)。
 
-<a id="uilanguagespath-optional"></a>
-### `uiLanguagesPath`（可选）
+<a id="languagesmanifestpath-optional"></a>
+### `languagesManifestPath`（可选）
 
-用于显示名称、区域设置筛选和语言列表后处理的 `ui-languages.json` 清单的路径。如果省略，CLI 会在 `ui.flatOutputDir/ui-languages.json` 查找清单。
+根级可选字符串（未嵌套在 `ui` 下）。`extract` 和 `generate-ui-languages` 写入 `ui-languages.json` 清单的路径，CLI 从中读取该清单以获取显示名称和语言列表后处理。省略时，在配置加载时默认为 `ui.flatOutputDir/ui-languages.json`。
 
 在以下情况下使用：
 
-- 清单位于 `ui.flatOutputDir` 之外，您需要显式地将 CLI 指向它。
-- 您希望 [语言切换器后处理](#language-switcher-languagelistblock)（`languageListBlock`）从清单构建区域设置标签。
-- `extract` 应将清单中的 `englishName` 条目合并到 `strings.json` 中（需要 `ui.reactExtractor.includeUiLanguageEnglishNames: true`）。
+- 清单应位于 `ui.flatOutputDir` 之外（例如 `src/i18n/` 下的应用辅助文件旁边）。
+- 你希望 [语言切换器后处理](#language-switcher-languagelistblock)（`languageListBlock`）从项目清单构建区域设置标签，而不仅仅依赖内置的主目录。
+
+`includeUiLanguageEnglishNames` **不** 读取此文件 — 它使用内置的主目录（参见下文的 `ui.uiExtractor`）。
+
+**遗留：** 加载配置文件时仍接受根级 `uiLanguagesPath`，并自动重写为 `languagesManifestPath`。
 
 <a id="concurrency-optional"></a>
 ### `concurrency`（可选）
@@ -180,7 +183,7 @@
   用于可选描述提取的`package.json`文件的自定义路径。
 - `uiExtractor.includeUiLanguageEnglishNames`（或旧版`reactExtractor.includeUiLanguageEnglishNames`）
 
-当 `true`（默认 `false`）时，`extract` 还会将捆绑的 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`（如果源扫描中尚未存在，哈希键相同）。不读取 `uiLanguagesPath`。
+当 `true`（默认 `false`）时，`extract` 还会将内置 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json` 中（前提是源扫描中尚不存在，使用相同的哈希键）。不读取 `languagesManifestPath`。
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -273,17 +276,17 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 - `docsOutput.linkRewriteDocsRoot`
 计算扁平链接重写前缀时使用的仓库根目录。通常保留为 `"."`，除非你的翻译文档位于不同的项目根目录下。
 - `docsOutput.rewriteVitepressLinks`
-当为 `true` 时，在翻译后运行 VitePress 链接规范化器。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何区域设置文件夹与英文并列位于 `docsRoot` 下的 `doc-system` 布局。将 README 风格的 `docs/guide/…` 路径重写为站点路由 (`/guide/…`) 和区域设置相对的 `../guide/…` 链接。对于指向 VitePress 树之外的仓库文件的链接 (`LICENSE`, `examples/`)，请在英文源中使用完整 URL —— 参见 [VitePress 集成 —— README 作为文档主页](/guide/vitepress-integration#readme-as-homepage)。
+当 `true` 时，在翻译后运行 VitePress 链接规范化器。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何 `doc-system` 布局，其中语言文件夹与英语并排位于 `docsRoot` 下。将 README 风格的 `docs/guide/…` 路径重写为站点路由（`/guide/…`）和语言相对的 `../guide/…` 链接。对于指向 VitePress 目录树之外的仓库文件的链接（`LICENSE`、`examples/`），请在英语源文件中使用完整 URL —— 参见 [VitePress 集成 —— README 作为文档主页](/guide/integrations/vitepress#readme-as-homepage)。
 - `docsOutput.rewriteNextraLinks`
-当为 `true` 时，在翻译后运行 Nextra 链接规范化器。当 `docsOutput.style` 为 `"nextra"` 时默认启用。为 Next.js `i18n` 将 `content/en/…` 和相对 `.mdx` 路径重写为区域设置中立的站点路由 (`/guide/…`)。参见 [Nextra 集成 —— 链接约定](/guide/nextra-integration#link-conventions)。
+当 `true` 时，在翻译后运行 Nextra 链接规范化器。当 `docsOutput.style` 为 `"nextra"` 时默认启用。将 `content/en/…` 和相对 `.mdx` 路径重写为语言中立的站点路由（`/guide/…`），适用于 Next.js `i18n`。参见 [Nextra 集成 —— 链接约定](/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"`（默认）或 `"dir"`。dot 将 `stem.{locale}.mdx` 写入英文源文件旁边；dir 写入类似 Nextra 的区域设置文件夹。参见 [Fumadocs 集成 — 页面布局](/guide/fumadocs-integration#page-layout)。
+`"dot"`（默认）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入英语源文件旁边；dir 写入类似 Nextra 的语言文件夹。参见 [Fumadocs 集成 —— 页面布局](/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
 当 `true` 时，在翻译后运行 Fumadocs 链接规范化器。当 `docsOutput.style` 为 `"fumadocs"` 时默认启用。将内容路径和相对 `.mdx` 链接重写为 `/docs/…` 路由。
 - `docsOutput.fumadocsUiCatalog`
-可选。在 `translate-docs` 内进行 Fumadocs UI 覆盖目录引导 + 翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英文 JSON）、可选的 `outputPathTemplate`（默认：`ui.{locale}.json`，位于 `catalogPath` 旁边）。
+可选。Fumadocs UI 覆盖目录引导 + 在 `translate-docs` 内翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英语 JSON）、可选的 `outputPathTemplate`（默认值：`ui.{locale}.json`，位于 `catalogPath` 旁边）。
 - `docs[].fumadocsMetaGlob`
-当 `docsOutput.style` 为 `"fumadocs"` 时用于 `meta.json` 集合的可选 glob。默认：在 `docsOutput.docsRoot` 下递归 `meta.json`。
+当 `docsOutput.style` 为 `"fumadocs"` 时，用于 `meta.json` 集合的可选 glob。默认值：`docsOutput.docsRoot` 下的递归 `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 在 Fumadocs `meta.json` 中其字符串值会被翻译的属性名称（默认：`title`、`description`）。
 - `docsOutput.vitepressThemeCatalog`
@@ -292,12 +295,12 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 **后处理**
 
 - `docsOutput.postProcessing`
-对翻译后的 **markdown 正文**进行可选转换（YAML 键和非散文前置元数据值保留）。在段落重组和链接重写（平面或 VitePress）之后、`addFrontmatter` 之前运行。
+对翻译后的 **markdown 正文** 进行可选转换（YAML 键和非正文 front matter 值会被保留）。在片段重组和链接重写（flat 或 VitePress）之后、`addFrontmatter` 之前运行。
 - `docsOutput.postProcessing.regexAdjustments`
-`{ "description"?, "search", "replace" }` 的有序列表。`search` 是一个正则表达式模式（纯字符串使用标志 `g` 或 `/pattern/flags`）。`replace` 支持占位符，例如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`。
+`{ "description"?, "search", "replace" }` 的有序列表。`search` 是正则表达式模式（纯字符串使用标志 `g`，或 `/pattern/flags`）。`replace` 支持占位符，例如 `${translatedLocale}`、`${sourceLocale}`、`${sourceFullPath}`、`${translatedFullPath}`、`${sourceFilename}`、`${translatedFilename}`、`${sourceBasedir}`、`${translatedBasedir}`。
 <a id="language-switcher-languagelistblock"></a>
 - `docsOutput.postProcessing.languageListBlock`
-`{ "start", "end", "separator", "label"? }` — 在源和翻译的 markdown 中重新生成有界“以其他语言阅读”链接行。当 `label: "local"` 时，需要 `uiLanguagesPath`（或 `ui.flatOutputDir/ui-languages.json` 处的清单）来获取内名标签。
+`{ "start", "end", "separator", "label"? }` — 在源文件和翻译后的 markdown 中重新生成有界的“用其他语言阅读”链接行。当 `label: "local"` 时，需要 `languagesManifestPath`（或位于 `ui.flatOutputDir/ui-languages.json` 的清单）来提供内名标签。
 
 **行为和元数据**
 

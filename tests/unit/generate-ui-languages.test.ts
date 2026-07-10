@@ -43,7 +43,7 @@ describe("generate-ui-languages", () => {
         mergeWithDefaults({
           sourceLocale: "en-GB",
           targetLocales: ["de", "xx-YY"],
-          uiLanguagesPath: outRel,
+          languagesManifestPath: outRel,
           features: {
             translateUIStrings: false,
             translateDocs: false,

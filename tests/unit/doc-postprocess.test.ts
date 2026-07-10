@@ -384,7 +384,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          uiLanguagesPath: "ui-languages.json",
+          languagesManifestPath: "ui-languages.json",
           docs: [
             {
               contentPaths: ["a.md"],
@@ -433,7 +433,7 @@ Hello FOO\n<!--LL--><!--/LL-->\n`;
         mergeWithDefaults({
           sourceLocale: "en",
           cacheDir: ".translation-cache",
-          uiLanguagesPath: "ui-languages.json",
+          languagesManifestPath: "ui-languages.json",
           docs: [
             {
               contentPaths: ["a.md"],

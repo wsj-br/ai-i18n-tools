@@ -27,7 +27,12 @@ import {
   isRunInterruptedError,
   interruptErrorFromSignal,
 } from "../utils/run-interrupt.js";
-import { formatElapsedMmSs, printModelsTryInOrder, printTranslationModelSummary, localeModelRowsForRun } from "./format.js";
+import {
+  formatElapsedMmSs,
+  printModelsTryInOrder,
+  printTranslationModelSummary,
+  localeModelRowsForRun,
+} from "./format.js";
 import { printTranslationRunSummary } from "./translate-summary.js";
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
@@ -133,10 +138,7 @@ async function runTranslateSvgBody(
     provider: displayProvider,
     localeModels:
       displayProvider !== undefined
-        ? localeModelRowsForRun(
-            localeModelsMapForProvider(config, displayProvider),
-            locales
-          )
+        ? localeModelRowsForRun(localeModelsMapForProvider(config, displayProvider), locales)
         : undefined,
   });
   console.log(chalk.cyan(`${t("Glossary terms:")} `) + chalk.magenta(`${glossary.size}`));

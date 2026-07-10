@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Default listen port **8675** hai. Agar vah port unavailable hai, to server agla port try karta hai (1000 attempts tak) aur us port ko log karta hai jise usne chuna. Deprecated alias `editor` abhi bhi kaam karta hai lekin ek warning print karta hai — `dashboard` ko prefer karein.
 
-Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. [Tool UI language](/reference/environment-variables#tool-ui-language) dekhein.
+Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. [Tool UI bhasha](/guide/tool-ui-language) dekhen.
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

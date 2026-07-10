@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Der Standard-Listen-Port ist **8675**. Falls dieser Port nicht verfügbar ist, versucht der Server den nächsten Port (bis zu 1000 Versuche) und protokolliert den gewählten Port. Der veraltete Alias `editor` funktioniert weiterhin, gibt aber eine Warnung aus – bevorzugen Sie `dashboard`.
 
-Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → OS-Gebietsschema. Siehe [Tool-UI-Sprache](/reference/environment-variables#tool-ui-language).
+Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → Betriebssystem-Gebietsschema. Siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 

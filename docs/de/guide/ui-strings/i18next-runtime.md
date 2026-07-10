@@ -13,7 +13,7 @@ import { initReactI18next } from 'react-i18next';
 import aiI18n from 'ai-i18n-tools/runtime';
 
 // Project locale files — paths must match `ui` in ai-i18n-tools.config.json (paths there are relative to the project root).
-import uiLanguages from './locales/ui-languages.json'; // `ui.uiLanguagesPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
+import uiLanguages from './locales/ui-languages.json'; // `languagesManifestPath` (defaults to `{ui.flatOutputDir}/ui-languages.json`)
 import stringsJson from './locales/strings.json'; // `ui.stringsJson`
 import sourcePluralFlat from './public/locales/en-GB.json'; // `{ui.flatOutputDir}/{SOURCE_LOCALE}.json` from translate-ui
 
@@ -54,7 +54,7 @@ export default i18n;
 
 **Drei Werte synchron halten:** `sourceLocale` in `ai-i18n-tools.config.json`, `SOURCE_LOCALE` in dieser Datei und der Plural-flache JSON-Name `translate-ui`, den als `{sourceLocale}.json` unter Ihrem flachen Ausgabeverzeichnis schreibt (häufig `public/locales/`). Verwenden Sie denselben Basisnamen in der statischen `import` (Beispiel oben: `en-GB` → `en-GB.json`). Das `lng`-Feld in `sourcePluralFlatBundle` muss `SOURCE_LOCALE` entsprechen. Statische ES `import`-Pfade können keine Variablen verwenden; wenn Sie die Quelllokalisierung ändern, aktualisieren Sie `SOURCE_LOCALE` und den Importpfad gemeinsam. Alternativ laden Sie die Datei mit einem dynamischen `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` oder `readFileSync`, sodass der Pfad aus `SOURCE_LOCALE` gebildet wird.
 
-Der Codeausschnitt verwendet `./locales/…` und `./public/locales/…`, als läge `i18n` neben diesen Ordnern. Wenn Ihre Datei unter `src/` liegt (typisch), verwenden Sie `../locales/…` und `../public/locales/…`, damit die Importe auf dieselben Pfade wie `ui.stringsJson`, `uiLanguagesPath` und `ui.flatOutputDir` aufgelöst werden.
+Der Snippet verwendet `./locales/…` und `./public/locales/…`, als ob `i18n` neben diesen Ordnern liegt. Wenn sich Ihre Datei unter `src/` (typisch) befindet, verwenden Sie `../locales/…` und `../public/locales/…`, damit Importe zu denselben Pfaden wie `ui.stringsJson`, `languagesManifestPath` und `ui.flatOutputDir` aufgelöst werden.
 
 Importieren Sie `i18n.js`, bevor React gerendert wird (z. B. am Anfang Ihres Einstiegspunkts). Wenn der Benutzer die Sprache ändert, rufen Sie `await loadLocale(code)` und dann `await i18n.changeLanguage(code)` auf.
 

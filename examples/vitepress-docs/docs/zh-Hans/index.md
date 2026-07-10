@@ -18,4 +18,4 @@ description: 最小演示将英语文档翻译为葡萄牙语（巴西）和简�
 
 ## 下一步
 
-阅读 [入门指南](./guide/getting-started.md) 并与 [主文档网站](https://wsj-br.github.io/ai-i18n-tools/guide/vitepress-integration/) 上的完整写作进行比较。
+阅读 [入门指南](./guide/getting-started.md) 并与 [主文档网站](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/vitepress/) 上的完整写作进行比较。

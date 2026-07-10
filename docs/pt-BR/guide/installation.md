@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Idioma da interface do usuário da ferramenta
 
-A CLI localiza seu próprio texto de ajuda, resumos de log e Painel de Tradução independentemente dos idiomas que você traduz. Por padrão, ela segue o idioma do seu sistema operacional. Substitua com `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` na configuração. Consulte [Idioma da interface do usuário da ferramenta](/reference/environment-variables#tool-ui-language).
+A CLI localiza seu próprio texto de ajuda, resumos de log e o Painel de Tradução independentemente das localidades que você traduz. Por padrão, ela segue a localidade do seu sistema operacional. Substitua com `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` na configuração. Consulte [Idioma da interface do usuário da ferramenta](/guide/tool-ui-language).

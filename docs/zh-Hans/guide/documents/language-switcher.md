@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. 标签清单
 
-对于内名标签 (`label: "local"`)，通过 `generate-ui-languages` 生成或维护 `ui-languages.json`（需要 [`uiLanguagesPath`](/reference/configuration#uilanguagespath-optional))。此存储库的仅文档配置没有 UI 管道，因此标签来自 `sourceLocale` + `targetLocales` 的捆绑主目录。
+对于内名标签（`label: "local"`），通过 `generate-ui-languages` 生成或维护 `ui-languages.json`（写入 [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional)，默认为 `{ui.flatOutputDir}/ui-languages.json`）。此仓库的仅文档配置没有 UI 流水线，磁盘上也没有项目清单，因此标签来自 `sourceLocale` + `targetLocales` 的内置主目录。
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. 此存储库中的示例

@@ -9,11 +9,11 @@
 
 **別名**（相同的佈局引擎，預設 `localeSubpath`）：
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` 預設為 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 外掛佈局）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` 預設為 `""`（翻譯後的頁面直接置於 `{outputDir}/{locale}/` 之下，當英文內容位於內容根目錄且 `outputDir` 等於 `docsRoot` 時，與 [Starlight](https://starlight.astro.build/guides/i18n/) 相符）。
-- `docsOutput.style = "vitepress"` — 佈局與 `doc-system` 相同但 `localeSubpath` 為空；保留 BCP-47 語系資料夾名稱（`localePathLowercase` 預設為 `false`）。請參閱 [VitePress 整合](/guide/vitepress-integration)。
-- `docsOutput.style = "nextra"` — 佈局與 `doc-system` 相同但 `localeSubpath` 為空；英文來源置於語系資料夾下（例如 `content/en/`）。請參閱 [Nextra 整合](/guide/nextra-integration)。
-- `docsOutput.style = "fumadocs"` — 與 `doc-system` 相同的版面配置，但 `localeSubpath` 為空；英文來源使用點後綴檔案（預設），或當 `fumadocsParser` 為 `"dir"` 時使用語言資料夾。請參閱 [Fumadocs 整合](/guide/fumadocs-integration)。
+- `docsOutput.style = "docusaurus"` — `localeSubpath` 預設為 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 外掛版面配置）。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` 預設為 `""`（翻譯頁面直接位於 `{outputDir}/{locale}/` 之下，當英文位於內容根目錄且 `outputDir` 等於 `docsRoot` 時，與 [Starlight](https://starlight.astro.build/guides/i18n/) 相符）。
+- `docsOutput.style = "vitepress"` — 版面配置與 `doc-system` 相同，但 `localeSubpath` 為空；保留 BCP-47 語系資料夾名稱（`localePathLowercase` 預設為 `false`）。請參閱 [VitePress 整合](/guide/integrations/vitepress)。
+- `docsOutput.style = "nextra"` — 版面配置與 `doc-system` 相同，但 `localeSubpath` 為空；英文原始檔位於語系資料夾下（例如 `content/en/`）。請參閱 [Nextra 整合](/guide/integrations/nextra)。
+- `docsOutput.style = "fumadocs"` — 版面配置與 `doc-system` 相同，但 `localeSubpath` 為空；英文原始檔使用點後綴檔案（預設）或當 `fumadocsParser` 為 `"dir"` 時使用語系資料夾。請參閱 [Fumadocs 整合](/guide/integrations/fumadocs)。
 
 Docusaurus 預設（主要文件頁面）：
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight 為許多地區提供 UI 字串；選擇性的自訂 UI 覆蓋使用 `src/content/i18n/en.json` 和 `jsonPathTemplate: "{outputDir}/{locale}.json"` 在單獨的 `docs[]` 區塊中，如果需要的話。
 
-VitePress 的導覽列/側邊欄/頁尾字串不在 markdown 中——請設定 `docsOutput.vitepressThemeCatalog` 並在 **`translate-docs`** 內進行翻譯。請參閱 [VitePress 整合](/guide/vitepress-integration)。
+VitePress 導覽/側邊欄/頁尾字串不在 markdown 中 — 請設定 `docsOutput.vitepressThemeCatalog` 並在 **`translate-docs`** 內翻譯。請參閱 [VitePress 整合](/guide/integrations/vitepress)。
 
-Nextra 主題字典（`.ts`）與 `_meta.ts` 側邊欄標籤不在 markdown 中——請使用 `docs[].nextraDictionaryPath` 並在 `style: "nextra"` 時自動收集 `_meta`，全部在 **`translate-docs`** 內完成。請參閱 [Nextra 整合](/guide/nextra-integration)。
+Nextra 主題字典 (`.ts`) 與 `_meta.ts` 側邊欄標籤不在 markdown 中 — 請使用 `docs[].nextraDictionaryPath` 並在 `style: "nextra"` 時自動收集 `_meta`，全都在 **`translate-docs`** 內。請參閱 [Nextra 整合](/guide/integrations/nextra)。
 
-Fumadocs UI 覆寫（`lib/layout.shared.ts`）和 `meta.json` 側邊欄標籤不在 markdown 中 — 當 `style: "fumadocs"` 時使用 `docsOutput.fumadocsUiCatalog` 和自動 `meta.json` 集合，全部在 **`translate-docs`** 內。請參閱 [Fumadocs 整合](/guide/fumadocs-integration)。
+Fumadocs UI 覆寫 (`lib/layout.shared.ts`) 與 `meta.json` 側邊欄標籤不在 markdown 中 — 請使用 `docsOutput.fumadocsUiCatalog` 並在 `style: "fumadocs"` 時自動收集 `meta.json`，全都在 **`translate-docs`** 內。請參閱 [Fumadocs 整合](/guide/integrations/fumadocs)。
 
 `docsOutput.style = "flat"` — 將翻譯後的檔案放置在來源旁邊，並帶有地區後綴，或放在子目錄中。當 `docsOutput.style = "flat"` 時（除非設定了 `rewriteRelativeLinks: false` 或自訂的 `pathTemplate`），頁面之間的相對連結會自動重寫。
 
