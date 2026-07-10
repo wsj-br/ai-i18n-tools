@@ -10,7 +10,7 @@ Traduce JSON anidado por `json[]` (requiere `features.translateJson`). Caché SQ
 
 **Opciones clave:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**Ver también:** [JSON](/guide/json)
+**Ver también:** [JSON](/es/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@ Traduce archivos SVG configurados en `config.svg` (separado de los documentos). 
 
 **Opciones clave:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**Ver también:** [Traducción de SVG](/guide/svg-translation/)
+**Ver también:** [Traducción de SVG](/es/guide/svg-translation/)

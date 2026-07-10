@@ -28,7 +28,7 @@ Preset provider keys ko kewal `translationModels` ki aavashyakta hoti hai — ba
 
 Kisi bhi **non-preset** key ke liye, config mein `baseUrl` aur `apiKeyEnv` ko spasht roop se set karen.
 
-Apne environment ya `.env` file mein active provider ki API key set karen. CLI working directory se `.env` ko swatah load karta hai bina shell mein pahle se set kiye gaye variables ko override kiye. Dekhen [Environment variables](/reference/environment-variables).
+Apne environment ya `.env` file mein active provider ki API key set karen. CLI working directory se `.env` ko swatah load karta hai bina shell mein pahle se set kiye gaye variables ko override kiye. Dekhen [Environment variables](/hi-Latn/reference/environment-variables).
 
 <a id="model-fallback-chain"></a>
 ### Model fallback chain
@@ -44,7 +44,7 @@ Apne environment ya `.env` file mein active provider ki API key set karen. CLI w
 
 Optional `providers.<active>.uiModels` ek UI-only list hai jo kisi bhi matching per-locale override ke baad aur global `translationModels` chain se pehle try ki jaati hai. Optional `providers.<active>.localeModels` ek BCP-47 locale ko models se map karta hai jo har pipeline mein us locale ke liye **sabse pehle** try kiye jaate hain (`pt-br` `pt-BR` se match karta hai). Jab koi `localeModels` entry match nahi karti, toh sirf pipeline-specific tiers apply hote hain.
 
-Alag-alag providers aur models ki cost, speed, aur quality languages mein alag-alag hoti hai. `npx ai-i18n-tools init` se default list ko ek shuruaati point maanein — jab koi locale consistently kharab results deta hai, toh ise badhaayein, ya us locale ke liye ek `localeModels` entry jodein. Poore defaults aur rationale: [Configuration — `provider` aur `providers`](/reference/configuration#provider-and-providers).
+Alag-alag providers aur models ki cost, speed, aur quality languages mein alag-alag hoti hai. `npx ai-i18n-tools init` se default list ko ek shuruaati point maanein — jab koi locale consistently kharab results deta hai, toh ise badhaayein, ya us locale ke liye ek `localeModels` entry jodein. Poore defaults aur rationale: [Configuration — `provider` aur `providers`](/hi-Latn/reference/configuration#provider-and-providers).
 
 Udaaharan minimal config (OpenRouter):
 
@@ -98,7 +98,7 @@ Sample text, locales, ya model list ko override karen:
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Command details: [CLI reference](/reference/cli-commands/).
+Command details: [CLI reference](/hi-Latn/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Multiple providers
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Har provider block apni khud ki `translationModels`, optional `uiModels` aur `localeModels`, `maxTokens`, `temperature`, aur `requestTimeoutMs` define kar sakta hai. Ek legacy top-level `openrouter` block abhi bhi accept kiya jaata hai aur load hone par `providers.openrouter` mein auto-migrate ho jaata hai.
 
-Ek hi document par chaar providers ke saath chalne wala udaharan: [`examples/multi-provider`](/examples#multi-provider).
+Ek hi document par chaar providers ke saath chalne wala udaharan: [`examples/multi-provider`](/hi-Latn/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Aage ka sandarbh
 
-- [Configuration — `provider` aur `providers`](/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, OpenRouter-specific vyavahar.
-- [Architecture — LLM client](/reference/architecture) — kaise model fallback, batching, aur cost reporting aantarik roop se kaam karte hain.
-- [Environment variables](/reference/environment-variables) — API-key env vars aur base-URL overrides.
+- [Configuration — `provider` aur `providers`](/hi-Latn/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, OpenRouter-specific vyavahar.
+- [Architecture — LLM client](/hi-Latn/reference/architecture) — kaise model fallback, batching, aur cost reporting aantarik roop se kaam karte hain.
+- [Environment variables](/hi-Latn/reference/environment-variables) — API-key env vars aur base-URL overrides.

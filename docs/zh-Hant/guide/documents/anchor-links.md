@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 由於 `id` 在原始檔中是固定的，因此所有地區設定檔中的 `#tls-configuration` 錨點都相同；只有標題 **文字** 和連結 **標籤** 會被翻譯。
 
-如果翻譯後連結仍然失效，請參閱[疑難排解](/guide/documents/troubleshooting)。
+如果翻譯後連結仍然失效，請參閱[疑難排解](/zh-Hant/guide/documents/troubleshooting)。

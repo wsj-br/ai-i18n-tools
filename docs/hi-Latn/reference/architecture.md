@@ -32,10 +32,10 @@ Har pipeline ek hi mukhya loop ka paalan karti hai: **segment nikalein → synta
 | | `src/api/` | `LlmClient` — provider-agnostic chat client (Vercel AI SDK) with model fallback |
 | | `src/glossary/` | Glossary loading aur term hints for prompts |
 | | `src/utils/` | Logger, hashing, ignore parser, display-width tables, `.env` loader |
-| **Your app runtime** | `src/runtime/` | i18next helpers aur display utilities — `'ai-i18n-tools/runtime'` ke roop mein export kiye gaye ([Runtime helpers](/guide/runtime-helpers)) |
+| **Your app runtime** | `src/runtime/` | i18next helpers aur display utilities — `'ai-i18n-tools/runtime'` ke roop mein export kiye gaye ([Runtime helpers](/hi-Latn/guide/runtime-helpers)) |
 | **Tool UI** *(dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Is package ke swayan CLI aur Translation Dashboard ko localize karta hai — aapke project content se alag ([Self-localization](#self-localization-tool-ui)) |
 
-Sab kuch jo programmatic upyog ke liye hai, `src/index.ts` se punah-niryaat kiya gaya hai ([Programmatic API](/reference/programmatic-api)).
+Sab kuch jo programmatic upyog ke liye hai, `src/index.ts` se punah-niryaat kiya gaya hai ([Programmatic API](/hi-Latn/reference/programmatic-api)).
 
 <a id="pipeline-summaries"></a>
 ### Pipeline summaries
@@ -67,9 +67,9 @@ JS/TS files mein `i18next-scanner` ke `Parser.parseFuncFromString` ka upyog kark
 
 `.html` / `.htm` sources ke liye (jab `ui.uiExtractor.extensions` mein list kiya gaya ho), `extract` file ko `html-i18n-marks.ts` ke through route karta hai, jo `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker attributes ko scan karta hai (`ui.uiExtractor.htmlI18nAttributes` ke through configurable). Ek nanga marker apne source text ko element ke khud ke `textContent` / `title` / `placeholder` se leta hai; ek valued marker (`data-i18n="Key"`) value ka upyog karta hai. Yahi module `mark-html` command ko power karta hai, jo nange markers ko automatically insert karta hai. HTML files kabhi bhi Babel / i18next-scanner passes tak nahi pahunchti hain.
 
-Saade Astro SSG site i18next ko chhod sakte hain: build time par flat `{locale}.json` load karein aur source-text key dwara `t('English')` ko resolve karein (`examples/astro-website/src/i18n/t.ts` aur [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) dekhein).
+Saade Astro SSG site i18next ko chhod sakte hain: build time par flat `{locale}.json` load karein aur source-text key dwara `t('English')` ko resolve karein (`examples/astro-website/src/i18n/t.ts` aur [UI strings — Astro website](/hi-Latn/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) dekhein).
 
-Saade HTML apps marker attributes ke saath wahi catalog model follow karte hain, `t()` calls ke bajaye — [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation) dekhein.
+Saade HTML apps marker attributes ke saath wahi catalog model follow karte hain, `t()` calls ke bajaye — [Marking HTML for translation](/hi-Latn/guide/ui-strings/plain-html#marking-html-for-translation) dekhein.
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -122,7 +122,7 @@ i18next inhein resource bundles ke roop mein load karta hai aur source string (k
 - Strings ka ek JSON array bhejte hain aur badle mein translations ka ek JSON array anurodh karte hain.
 - Uplabdh hone par glossary hints shamil karte hain.
 
-`LlmClient.translateUIBatch` har model ko kram mein prayas karta hai, parse ya network error par wapas aata hai. CLI `localeModels`, vaikalpik `uiModels`, aur `translationModels` (dekhen [Providers and models](/guide/providers-and-models#model-fallback-chain)) se har target locale ke liye us suchi ka nirmaan karta hai.
+`LlmClient.translateUIBatch` har model ko kram mein prayas karta hai, parse ya network error par wapas aata hai. CLI `localeModels`, vaikalpik `uiModels`, aur `translationModels` (dekhen [Providers and models](/hi-Latn/guide/providers-and-models#model-fallback-chain)) se har target locale ke liye us suchi ka nirmaan karta hai.
 
 ---
 
@@ -145,7 +145,7 @@ i18next inhein resource bundles ke roop mein load karta hai aur source string (k
 Sabhi extractors `BaseExtractor` ka vistar karte hain aur `extract(content, filepath): Segment[]` ko lagu karte hain.
 
 - `MarkdownExtractor` - markdown ko typed segments mein baantta hai: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter ko **non-translatable** ke roop mein classify kiya gaya hai (`slug`, `id`, aur anya routing keys stable rehte hain). Top-level `export ...` blocks (jaise React component definitions) ko existing `import ...` handling ke saath non-translatable `other` segments ke roop mein classify kiya gaya hai. Capital JSX tag se shuru hone wale multi-line blocks (jaise ki `<Tabs>` block) ko translatable paragraphs ke roop mein classify kiya gaya hai. Non-translatable segments (code blocks, raw HTML) ko jyon ka tyon rakha gaya hai.
-- `AstroTemplateExtractor` - `.astro` marketing pages ke liye parse-and-replace (`translate-docs` via `translateAstroFile` in `doc-translate.ts`). User-facing HTML text nodes aur translatable attributes (`alt`, `title`, `aria-label`, `placeholder`) ko extract karta hai, saath hi template `{expression}` blocks ke andar string literals ko bhi jab user-facing ho. Frontmatter TypeScript, `<script>`, `<style>`, protected attribute/key values, aur `t('…')` ke andar literals ko chhod deta hai. Reassembly relative imports ko adjust karta hai jab output paths gehre hote hain (jaise `src/pages/de/index.astro`). [Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) dekhein.
+- `AstroTemplateExtractor` - `.astro` marketing pages ke liye parse-and-replace (`translate-docs` via `translateAstroFile` in `doc-translate.ts`). User-facing HTML text nodes aur translatable attributes (`alt`, `title`, `aria-label`, `placeholder`) ko extract karta hai, saath hi template `{expression}` blocks ke andar string literals ko bhi jab user-facing ho. Frontmatter TypeScript, `<script>`, `<style>`, protected attribute/key values, aur `t('…')` ke andar literals ko chhod deta hai. Reassembly relative imports ko adjust karta hai jab output paths gehre hote hain (jaise `src/pages/de/index.astro`). [Astro website pages](/hi-Latn/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) dekhein.
 - `JsonExtractor` - Docusaurus JSON label files se string values extract karta hai (Docusaurus UI catalogs, MDX body nahi).
 - `SvgExtractor` - SVG se `<text>`, `<title>`, aur `<desc>` content extract karta hai (`translate-svg` dwara `config.svg` ke antargat files ke liye upyog kiya jata hai, `translate-docs` dwara nahi).
 - `html-i18n-marks.ts` - ek focused HTML tag scanner jise `extract` `.html` / `.htm` sources ke liye aur `mark-html` command dwara istemal kiya jata hai. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` `data-i18n*` marker attributes ko read karte hain (nanga marker → element `textContent` / `title` / `placeholder`; valued marker → value), aur `markHtmlContent` nange markers ko leaf text / title / placeholder elements mein insert karta hai (idempotent, `data-i18n-ignore` ko maan'ya karta hai, code-like aur mixed-content elements ko skip karta hai). Shared `normalizeI18nText` helper build-time keys ko browser runtime ke saman rakhta hai.
@@ -187,7 +187,7 @@ Translation se pehle, sensitive syntax ko opaque tokens se badal diya jaata hai 
 6. **Inline code spans** (`` `code` ``) aur **bold-wrapped inline code** (`**`code`**`) - preserve kiye jaate hain.
 7. **Markdown emphasis** (optional, CJK/RTL locales ke liye auto-enabled) - emphasis delimiters masked.
 
-Astro templates aur MDX JSX ke liye shared attribute/key protection `src/processors/expression-attribute-protection.ts` mein lagu kiya gaya hai aur `docs[].protectAttributes` aur `docs[].protectKeys` dwara har block ke liye chalaya jata hai ([protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys) dekhen).
+Astro templates aur MDX JSX ke liye shared attribute/key protection `src/processors/expression-attribute-protection.ts` mein lagu kiya gaya hai aur `docs[].protectAttributes` aur `docs[].protectKeys` dwara har block ke liye chalaya jata hai ([protectAttributes / protectKeys](/hi-Latn/reference/configuration#protectattributes-protectkeys) dekhen).
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
@@ -196,9 +196,9 @@ SQLite database (`node:sqlite` ke madhyam se) `(source_hash, locale)` dwara keye
 
 Har ek run par, segments ko hash × locale dwara dekha jata hai. Kewal cache misses LLM par jate hain. Translation ke baad, `last_hit_at` ko current translate scope mein segment rows ke liye reset kiya jata hai jo hit nahi hue the. Doc translation ke dauran safal cache hits us segment ke liye stale `translation_failures` rows ko saaf karte hain. `cleanup` pahle `sync --force-update` chalata hai, phir stale segment rows (null `last_hit_at` / empty filepath) ko hatata hai, `file_tracking` keys ko hata deta hai jab resolved source path disk par gayab hota hai (`doc-block:…`, `json-block:…`, `svg-files:…`, aadi), un translation rows ko hatata hai jinka metadata filepath ek gayab file ki or ishara karta hai, orphaned `translation_failures` rows ko hatata hai, aur orphaned `markdown_source_issues` rows ko hatata hai jinka resolved source path disk par gayab hai; yeh `cache.db` ka backup nahi leta jab tak ki `--backup <path>` pass na kiya jaye, jo pahle us path par ek backup likhta hai.
 
-`translate-docs` command **file tracking** ka bhi upyog karta hai taki maujooda, up-to-date outputs ke saath aparivartit sources poore kaam ko chhod saken. `--force-update` segment cache ka upyog karte hue file processing ko phir se chalata hai; `--force` file tracking ko saaf karta hai aur API translation ke liye segment cache reads ko bypass karta hai. Jab har configured model ek markdown segment par AST validation mein fail ho jata hai, to `translate-docs` segment ko dheere-dheere split kar sakta hai aur chhote hisson ko phir se prayas kar sakta hai (`docs[].segmentSplitting.qualityRetrySplit`, default on). Poori flag table ke liye [Documents — cache behaviour and flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) dekhen.
+`translate-docs` command **file tracking** ka bhi upyog karta hai taki maujooda, up-to-date outputs ke saath aparivartit sources poore kaam ko chhod saken. `--force-update` segment cache ka upyog karte hue file processing ko phir se chalata hai; `--force` file tracking ko saaf karta hai aur API translation ke liye segment cache reads ko bypass karta hai. Jab har configured model ek markdown segment par AST validation mein fail ho jata hai, to `translate-docs` segment ko dheere-dheere split kar sakta hai aur chhote hisson ko phir se prayas kar sakta hai (`docs[].segmentSplitting.qualityRetrySplit`, default on). Poori flag table ke liye [Documents — cache behaviour and flags](/hi-Latn/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) dekhen.
 
-**Batch prompt format:** `translate-docs --prompt-format` keval `LlmClient.translateDocumentBatch` ke liye XML (`<seg>` / `<t>`) ya JSON array/object shapes ka chayan karta hai; extraction, placeholders, aur validation aparivartit rahte hain. [Batch prompt format](/guide/documents/cli-options#batch-prompt-format) dekhen.
+**Batch prompt format:** `translate-docs --prompt-format` keval `LlmClient.translateDocumentBatch` ke liye XML (`<seg>` / `<t>`) ya JSON array/object shapes ka chayan karta hai; extraction, placeholders, aur validation aparivartit rahte hain. [Batch prompt format](/hi-Latn/guide/documents/cli-options#batch-prompt-format) dekhen.
 
 <a id="output-path-resolution"></a>
 ### Output path resolution
@@ -215,7 +215,7 @@ Har ek run par, segments ko hash × locale dwara dekha jata hai. Kewal cache mis
 <a id="flat-link-rewriting"></a>
 ### Flat link rewriting
 
-Jab `docsOutput.style === "flat"`, anuvadit markdown files locale suffixes ke saath source ke bagal mein rakhe jaate hain. Pages ke beech relative links ko phir se likha jaata hai taaki `readme.de.md` mein `[Guide](./guide.md)` `guide.de.md` ko point kare. `rewriteRelativeLinks` dwara niyantrit (custom `pathTemplate` ke bina flat style ke liye auto-enabled). Wahi pass `postProcessing.regexAdjustments` chalne se pehle non-markdown asset URLs mein per-file depth prefix jodta hai — [Flat link rewriter](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhein.
+Jab `docsOutput.style === "flat"`, anuvadit markdown files locale suffixes ke saath source ke bagal mein rakhe jaate hain. Pages ke beech relative links ko phir se likha jaata hai taaki `readme.de.md` mein `[Guide](./guide.md)` `guide.de.md` ko point kare. `rewriteRelativeLinks` dwara niyantrit (custom `pathTemplate` ke bina flat style ke liye auto-enabled). Wahi pass `postProcessing.regexAdjustments` chalne se pehle non-markdown asset URLs mein per-file depth prefix jodta hai — [Flat link rewriter](/hi-Latn/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhein.
 
 ---
 
@@ -266,7 +266,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) par bana provider-agnostic ch
 9. `augmentConfigWithUiLanguagesMaster` - bundled master catalog se manifest display names attach karein.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - jab lagu ho to master catalog ke khilaf locale codes ko validate karein.
 
-`init` `initConfigTemplates` se starter configs likhta hai: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; `docs[]` ko `.astro` page anuvaad ke liye jodein), `ui-json-bundles` (JSON `json[]` only). [Quick start — Initialise](/guide/quick-start#step-1-initialise) dekhein.
+`init` `initConfigTemplates` se starter configs likhta hai: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; `docs[]` ko `.astro` page anuvaad ke liye jodein), `ui-json-bundles` (JSON `json[]` only). [Quick start — Initialise](/hi-Latn/guide/quick-start#step-1-initialise) dekhein.
 
 <a id="logger"></a>
 ### Logger

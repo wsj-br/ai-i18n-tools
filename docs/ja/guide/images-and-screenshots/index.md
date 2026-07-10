@@ -33,7 +33,7 @@ images/screenshots/en-GB/settings.png
 
 汎用的な `[^/]+` 正規表現は、任意のロケールフォルダー名に一致します。ソースロケール (例: `screenshots/en-GB/`) をハードコードしないでください。`sourceLocale` が変更された場合に機能しなくなります。
 
-ロケールサブディレクトリ (`images/screenshots/translate.png`) を省略したパスから開始した場合、[ロケールごとのフォルダー](/guide/images-and-screenshots/per-locale-folder) の書き換えが機能する前に、ツリー全体を再構築する必要があります。
+ロケールサブディレクトリ (`images/screenshots/translate.png`) を省略したパスから開始した場合、[ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder) の書き換えが機能する前に、ツリー全体を再構築する必要があります。
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### ドキュメントシステムサイト（`docsOutput.style = "doc-system"`）
@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docs[].docsOutput.docsRoot` を英語のソースルート (例: `"docs"` または `"src/content/docs"`) に設定します。`style: "doc-system"` を直接設定する場合は、`localeSubpath` もサイトが `{locale}/` と翻訳されたファイルの間に使用するパスセグメントに設定する必要があります。エイリアス `"docusaurus"`、`"astro-starlight"`、および `"vitepress"` は、デフォルトの `localeSubpath` 値を持つプリセットの `doc-system` レイアウトです ([出力レイアウト](/guide/documents/output-layouts) を参照)。
+`docs[].docsOutput.docsRoot` を英語のソースルート (例: `"docs"` または `"src/content/docs"`) に設定します。`style: "doc-system"` を直接設定する場合は、`localeSubpath` もサイトが `{locale}/` と翻訳されたファイルの間に使用するパスセグメントに設定する必要があります。エイリアス `"docusaurus"`、`"astro-starlight"`、および `"vitepress"` は、デフォルトの `localeSubpath` 値を持つプリセットの `doc-system` レイアウトです ([出力レイアウト](/ja/guide/documents/output-layouts) を参照)。
 
 | プリセットエイリアス | デフォルト `localeSubpath` | 例の出力 |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ images/screenshots/en-GB/settings.png
 
 ソースのMarkdownでは、すべてのアセットを安定した相対パス `../assets/name.ext` で参照してください。ドキュメントアセットには絶対パスの `/img/` や `/assets/` URL を決して使用しないでください。これらのURLは英語版ソース（`static/` から配信）と翻訳ロケール（翻訳ドキュメントと同じ場所に配置）で異なるため、それらを橋渡しするために `regexAdjustments` ルールを強制的に使用しなければならなくなります。
 
-後で i18n を追加すると、スクリーンショットスクリプトは `getScreenshotDir` 分割を採用し ([コロケーションされたスクリーンショット](/guide/images-and-screenshots/colocated-screenshots) を参照)、`translate-svg` は `pathTemplate` を使用します。正規表現の調整は必要ありません。
+後で i18n を追加すると、スクリーンショットスクリプトは `getScreenshotDir` 分割を採用し ([コロケーションされたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots) を参照)、`translate-svg` は `pathTemplate` を使用します。正規表現の調整は必要ありません。
 
 > **注記:** `resolve.symlinks = false` 内の `next.config.ts` は、Next.jsアプリケーションのwebpackビルドにおけるシンボリックリンク解決を無効にするだけです。Docusaurusドキュメントサイトのビルド（別個のwebpackインスタンスを使用）には影響しません。
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG レイアウトについては、[SVG 翻訳](/guide/svg-translation/) ガイドで説明しています。
+SVG レイアウトについては、[SVG 翻訳](/ja/guide/svg-translation/) ガイドで説明しています。
 
 | レイアウト | アセットの種類 | サイトの種類 | ツールメカニズム |
 |---|---|---|---|
-| [共有画像](/guide/images-and-screenshots/shared-image) | ラスタ (共有) | `docsOutput.style = "flat"` ドキュメント | ファイルごとのリンク書き換え。通常は正規表現なし |
-| [ロケールごとのフォルダー](/guide/images-and-screenshots/per-locale-folder) | ラスタ (ロケールごと) | `"flat"` または `"doc-system"` (`"docusaurus"`、`"astro-starlight"` を含む) | `regexAdjustments` ロケールセグメントスワップ |
-| [コロケーションされたスクリーンショット](/guide/images-and-screenshots/colocated-screenshots) | ラスタ (コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | スクリーンショットスクリプトがファイルを配置。正規表現なし |
-| [Web アプリ SVG](/guide/svg-translation/translated-svg-web-app) | SVG (翻訳済み) | Web アプリ | `translate-svg` と `svg.style = "flat"` |
-| [コロケーションされた SVG](/guide/svg-translation/translated-svg-colocated) | SVG (翻訳済み、コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | `translate-svg` と `svg.style = "nested"` + `pathTemplate` |
+| [共有画像](/ja/guide/images-and-screenshots/shared-image) | ラスタ (共有) | `docsOutput.style = "flat"` ドキュメント | ファイルごとのリンク書き換え。通常は正規表現なし |
+| [ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder) | ラスタ (ロケールごと) | `"flat"` または `"doc-system"` (`"docusaurus"`、`"astro-starlight"` を含む) | `regexAdjustments` ロケールセグメントスワップ |
+| [コロケーションされたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots) | ラスタ (コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | スクリーンショットスクリプトがファイルを配置。正規表現なし |
+| [Web アプリ SVG](/ja/guide/svg-translation/translated-svg-web-app) | SVG (翻訳済み) | Web アプリ | `translate-svg` と `svg.style = "flat"` |
+| [コロケーションされた SVG](/ja/guide/svg-translation/translated-svg-colocated) | SVG (翻訳済み、コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | `translate-svg` と `svg.style = "nested"` + `pathTemplate` |

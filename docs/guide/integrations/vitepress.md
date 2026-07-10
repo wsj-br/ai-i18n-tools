@@ -144,7 +144,7 @@ Do **not** put framework shell/theme strings in `json[]` — that pipeline is fo
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — English sources at `docs/`, committed `pt-BR` and `zh-Hans` page trees, plus `theme.pt-BR.json` / `theme.zh-Hans.json`. Run `pnpm run docs:dev` on port 3060.
 
-<a id="readme-as-the-docs-homepage"></a>
+<a id="readme-and-the-docs-homepage"></a>
 ## README and the docs homepage
 
 Downstream projects sometimes copy `README.md` into the VitePress site as `docs/index.md` (via a build script or manual sync). That pattern shares one file between GitHub and the documentation site, but link rules differ:
@@ -194,7 +194,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 English root sources under `docs/` keep **locale-neutral** site routes (`/guide/…`). Files written to `docs/<locale>/…` get the locale prefix on internal content routes automatically — including **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Shared public assets such as `/logo.svg` and `/translation-dashboard.png` stay unprefixed on every locale.
 
-<a id="theme-nav-sidebar-links"></a>
+<a id="theme-navsidebar-links"></a>
 ### Theme nav/sidebar links
 
 `translate-docs` does **not** rewrite links in `.vitepress/config.mts`. Navbar and sidebar `link` values are authored once in TypeScript and must be prefixed per locale at config build time.

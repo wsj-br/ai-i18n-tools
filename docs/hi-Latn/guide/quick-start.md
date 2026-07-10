@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Turant shuru karein
 
-Default `init` template (`ui-markdown`) kewal **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, aur `ui-fumadocs` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme strings ke liye `docsOutput.vitepressThemeCatalog` ko bhi scaffold karta hai, `ui-nextra` Nextra theme dictionary ke liye `docs[].nextraDictionaryPath` ko scaffold karta hai (sidebar `_meta.ts` automatically collect kiya jata hai), aur `ui-fumadocs` Fumadocs UI overrides ke liye `docsOutput.fumadocsUiCatalog` ko scaffold karta hai (sidebar `meta.json` automatically collect kiya jata hai). `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction ko scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain to ek `docs[]` block (dekhen [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) add karen. Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek command chahte hain jo aapki config ke anusaar extract, UI translation, optional SVG file translation, aur documentation translation ko run karta hai, to `sync` ka upyog karen.
+Default `init` template (`ui-markdown`) kewal **UI** extraction aur translation ko enable karta hai. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, aur `ui-fumadocs` templates **document** translation (`translate-docs`) ko enable karte hain; `ui-vitepress` VitePress theme strings ke liye `docsOutput.vitepressThemeCatalog` ko bhi scaffold karta hai, `ui-nextra` Nextra theme dictionary ke liye `docs[].nextraDictionaryPath` ko scaffold karta hai (sidebar `_meta.ts` automatically collect kiya jata hai), aur `ui-fumadocs` Fumadocs UI overrides ke liye `docsOutput.fumadocsUiCatalog` ko scaffold karta hai (sidebar `meta.json` automatically collect kiya jata hai). `ui-astro-website` template plain Astro apps (jismein `.astro` files shamil hain) ke liye **UI** extraction ko scaffold karta hai; jab aap `.astro` page HTML ke liye `translate-docs` bhi chahte hain to ek `docs[]` block (dekhen [Astro website pages (parse-and-replace)](/hi-Latn/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) add karen. Reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **dono** pipelines ka upyog karta hai. Jab aap ek command chahte hain jo aapki config ke anusaar extract, UI translation, optional SVG file translation, aur documentation translation ko run karta hai, to `sync` ka upyog karen.
 
 <a id="runnable-examples"></a>
 ### Chalne yogya udaharan
 
-Nau (9) runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/examples) catalog dekhen (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, Fumadocs docs, multi-provider comparison, markdown stress test).
+Nau (9) runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke antargat hain. [Examples](/hi-Latn/examples) catalog dekhen (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, Fumadocs docs, multi-provider comparison, markdown stress test).
 
 **Ek udaharan ko alag se chalaen** (poore monorepo ko clone kiye bina):
 
@@ -68,7 +68,7 @@ Package ko sthaaneeya roop se install karne ke baad, aap scripts mein CLI comman
 }
 ```
 
-**Salah:** Yadi aap CLI output aur dashboard ko kisi anya bhasha mein chahte hain, to `-L <code>` pass karein ya `AI_I18N_LANG` set karein — [Tool UI bhasha](/guide/tool-ui-language) dekhein.
+**Salah:** Yadi aap CLI output aur dashboard ko kisi anya bhasha mein chahte hain, to `-L <code>` pass karein ya `AI_I18N_LANG` set karein — [Tool UI bhasha](/hi-Latn/guide/tool-ui-language) dekhein.
 
 <a id="combined-sync"></a>
 ## Sanyukt sync

@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # Câbler i18next à l'exécution
 
-Créez votre fichier de configuration i18n à l'aide des assistants exportés par `'ai-i18n-tools/runtime'`. Pour les signatures d'API, consultez [Assistants d'exécution](/guide/runtime-helpers).
+Créez votre fichier de configuration i18n à l'aide des assistants exportés par `'ai-i18n-tools/runtime'`. Pour les signatures d'API, consultez [Assistants d'exécution](/fr/guide/runtime-helpers).
 
 <details>
 <summary>Exemple complet d'initialisation i18n (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ Pour les paquets JSON situés sous `public/` (configuration Next.js typique), r�
 
 Pour les interfaces CLI Node sans emballeur, utilisez `readFileSync` dans une petite fonction d'assistance qui lit et analyse le fichier JSON pour chaque code.
 
-Utilisez `setupKeyAsDefaultT` comme point d'entrée habituel de l'application (key-trim + pluriel `wrapT` + `translate-ui` `{sourceLocale}.json` facultatif). L'appel de `wrapI18nWithKeyTrim` seul est **déprécié** pour le câblage d'applications — voir [Assistants d'exécution](/guide/runtime-helpers).
+Utilisez `setupKeyAsDefaultT` comme point d'entrée habituel de l'application (key-trim + pluriel `wrapT` + `translate-ui` `{sourceLocale}.json` facultatif). L'appel de `wrapI18nWithKeyTrim` seul est **déprécié** pour le câblage d'applications — voir [Assistants d'exécution](/fr/guide/runtime-helpers).

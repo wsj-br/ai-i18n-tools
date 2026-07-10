@@ -10,7 +10,7 @@ Traduire les JSON imbriqués par `json[]` (requiert `features.translateJson`). C
 
 **Options clés :** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**Voir également :** [JSON](/guide/json)
+**Voir également :** [JSON](/fr/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@ Traduire les fichiers SVG configurés dans `config.svg` (séparés des docs). N�
 
 **Options clés :** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**Voir également :** [Traduction SVG](/guide/svg-translation/)
+**Voir également :** [Traduction SVG](/fr/guide/svg-translation/)

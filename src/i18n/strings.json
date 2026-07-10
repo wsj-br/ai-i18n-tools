@@ -1679,11 +1679,11 @@
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1488
+        "line": 1491
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1501
+        "line": 1504
       }
     ]
   },
@@ -1776,7 +1776,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 345
+        "line": 348
       }
     ]
   },
@@ -1807,7 +1807,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 425
+        "line": 428
       }
     ]
   },
@@ -1838,7 +1838,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 491
+        "line": 494
       }
     ]
   },
@@ -1869,7 +1869,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 591
+        "line": 594
       }
     ]
   },
@@ -1900,7 +1900,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1111
+        "line": 1114
       }
     ]
   },
@@ -1931,7 +1931,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1142
+        "line": 1145
       }
     ]
   },
@@ -1962,7 +1962,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1153
+        "line": 1156
       }
     ]
   },
@@ -1993,11 +1993,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1199
+        "line": 1202
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1563
+        "line": 1566
       }
     ]
   },
@@ -2028,7 +2028,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1512
+        "line": 1515
       }
     ]
   },
@@ -2059,7 +2059,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1530
+        "line": 1533
       }
     ]
   },
@@ -2090,7 +2090,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1686
+        "line": 1689
       }
     ]
   },
@@ -2121,19 +2121,19 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1741
+        "line": 1744
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2118
+        "line": 2125
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2459
+        "line": 2466
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2705
+        "line": 2712
       }
     ]
   },
@@ -2164,11 +2164,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1766
+        "line": 1769
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2143
+        "line": 2150
       }
     ]
   },
@@ -2199,7 +2199,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1787
+        "line": 1790
       }
     ]
   },
@@ -2230,11 +2230,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1856
+        "line": 1859
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2233
+        "line": 2240
       }
     ]
   },
@@ -2265,7 +2265,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2168
+        "line": 2175
       }
     ]
   },
@@ -2296,7 +2296,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2484
+        "line": 2491
       }
     ]
   },
@@ -2327,7 +2327,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2503
+        "line": 2510
       }
     ]
   },
@@ -2358,7 +2358,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2730
+        "line": 2737
       }
     ]
   },
@@ -2389,7 +2389,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2774
+        "line": 2781
       }
     ]
   },
@@ -2420,7 +2420,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2975
+        "line": 2982
       }
     ]
   },
@@ -2451,7 +2451,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2997
+        "line": 3004
       }
     ]
   },
@@ -2482,7 +2482,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2998
+        "line": 3005
       }
     ]
   },
@@ -2513,7 +2513,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3001
+        "line": 3008
       }
     ]
   },
@@ -2544,7 +2544,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3078
+        "line": 3085
       }
     ]
   },
@@ -2575,7 +2575,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3083
+        "line": 3090
       }
     ]
   },
@@ -2606,7 +2606,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3102
+        "line": 3109
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2645,7 +2645,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3104
+        "line": 3111
       }
     ]
   },
@@ -2676,7 +2676,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3107
+        "line": 3114
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2715,7 +2715,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3110
+        "line": 3117
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2754,7 +2754,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3124
+        "line": 3131
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2789,7 +2789,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3126
+        "line": 3133
       }
     ]
   },
@@ -2820,7 +2820,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3129
+        "line": 3136
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2855,7 +2855,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3132
+        "line": 3139
       }
     ]
   },
@@ -2886,7 +2886,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3135
+        "line": 3142
       }
     ]
   },
@@ -2917,7 +2917,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3467
+        "line": 3474
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2956,7 +2956,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3515
+        "line": 3522
       }
     ]
   },
@@ -15147,7 +15147,7 @@
     "locations": [
       {
         "file": "src/cli/vitepress-init-scaffold.ts",
-        "line": 172
+        "line": 177
       }
     ]
   },

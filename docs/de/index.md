@@ -70,6 +70,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## Schnellinstallation
 
 Das veröffentlichte Paket ist **nur ESM**. Node.js `>=22.16.0` ist erforderlich.
@@ -83,6 +84,7 @@ npx ai-i18n-tools sync
 
 Siehe [Installation](/de/guide/installation) für Details zum CLI-Aufruf und [Schnellstart](/de/guide/quick-start) für Gerüstvorlagen.
 
+<a id="which-pipeline-should-i-use"></a>
 ## Welche Pipeline soll ich verwenden?
 
 | Ihr Inhalt | Befehl |
@@ -93,6 +95,7 @@ Siehe [Installation](/de/guide/installation) für Details zum CLI-Aufruf und [Sc
 
 SVG-Illustrationen verwenden einen separaten `translate-svg`-Pfad – nicht `docs[].contentPaths`. Einen vollständigen Vergleich finden Sie unter [Was ist ai-i18n-tools?](/de/guide/what-is-ai-i18n-tools).
 
+<a id="explore-the-documentation"></a>
 ## Dokumentation erkunden
 
 - [**Leitfaden**](/de/guide/what-is-ai-i18n-tools) – Übersetzungsmodi, Installation, Schnellstart und Framework-Integrationen

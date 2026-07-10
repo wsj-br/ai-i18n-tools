@@ -34,4 +34,4 @@
 
 **主要選項：** `--max-columns`
 
-**另請參閱：** [儀表板統計資料](/guide/translation-dashboard/statistics)
+**另請參閱：** [儀表板統計資料](/zh-Hant/guide/translation-dashboard/statistics)

@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Default listen port **8675** hai. Agar vah port unavailable hai, to server agla port try karta hai (1000 attempts tak) aur us port ko log karta hai jise usne chuna. Deprecated alias `editor` abhi bhi kaam karta hai lekin ek warning print karta hai — `dashboard` ko prefer karein.
 
-Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. [Tool UI bhasha](/guide/tool-ui-language) dekhen.
+Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. [Tool UI bhasha](/hi-Latn/guide/tool-ui-language) dekhen.
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / 
 
 | Main chahta hoon… | Tab | Guide |
 | --- | --- | --- |
-| Doc segments ko theek karein jo translation mein fail ho gaye | **Failures** | [Failures](/guide/translation-dashboard/failures) |
-| Translate karne se pehle source markdown ko theek karein | **Markdown issues** | [Markdown issues](/guide/translation-dashboard/markdown-issues) |
-| Cached doc translation ko override karein | **Documentation** | [Documentation cache](/guide/translation-dashboard/documentation-cache) |
-| Ek UI label ko theek karein | **UI strings** | [UI strings & plurals](/guide/translation-dashboard/ui-strings) |
-| Ek plural form ko theek karein (`one`, `other`, …) | **UI plurals** | [UI strings & plurals](/guide/translation-dashboard/ui-strings) |
-| UI translation ke liye terminology lock karein | **Glossary** | [Glossary](/guide/translation-dashboard/glossary) |
-| Cache coverage aur model usage dekhein | **Statistics** | [Statistics](/guide/translation-dashboard/statistics) |
+| Doc segments ko theek karein jo translation mein fail ho gaye | **Failures** | [Failures](/hi-Latn/guide/translation-dashboard/failures) |
+| Translate karne se pehle source markdown ko theek karein | **Markdown issues** | [Markdown issues](/hi-Latn/guide/translation-dashboard/markdown-issues) |
+| Cached doc translation ko override karein | **Documentation** | [Documentation cache](/hi-Latn/guide/translation-dashboard/documentation-cache) |
+| Ek UI label ko theek karein | **UI strings** | [UI strings & plurals](/hi-Latn/guide/translation-dashboard/ui-strings) |
+| Ek plural form ko theek karein (`one`, `other`, …) | **UI plurals** | [UI strings & plurals](/hi-Latn/guide/translation-dashboard/ui-strings) |
+| UI translation ke liye terminology lock karein | **Glossary** | [Glossary](/hi-Latn/guide/translation-dashboard/glossary) |
+| Cache coverage aur model usage dekhein | **Statistics** | [Statistics](/hi-Latn/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## Edit karne ke baad

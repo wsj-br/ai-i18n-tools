@@ -144,8 +144,8 @@ Do **不** 将框架 shell/主题字符串放在 `json[]` 中 —— 该管道�
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — 英文源文件位于 `docs/`，已提交 `pt-BR` 和 `zh-Hans` 页面树，以及 `theme.pt-BR.json` / `theme.zh-Hans.json`。在端口 3060 上运行 `pnpm run docs:dev`。
 
-<a id="readme-as-the-docs-homepage"></a>
-## README 和文档首页
+<a id="readme-and-the-docs-homepage"></a>
+## README 与文档主页
 
 下游项目有时会将 `README.md` 作为 `docs/index.md` 复制到 VitePress 站点中（通过构建脚本或手动同步）。该模式在 GitHub 和文档站点之间共享一个文件，但链接规则不同：
 
@@ -194,7 +194,7 @@ VitePress 从内容根目录提供英文页面，并从 `docs/<locale>/…` 提�
 
 `docs/` 下的英文根源保留 **与区域设置无关的** 站点路由（`/guide/…`）。写入到 `docs/<locale>/…` 的文件会自动在内部内容路由上获得区域设置前缀——包括 **首页布局 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。共享的公共资源（例如 `/logo.svg` 和 `/translation-dashboard.png`）在每个区域设置上均保持不带前缀。
 
-<a id="theme-nav-sidebar-links"></a>
+<a id="theme-navsidebar-links"></a>
 ### 主题导航/侧边栏链接
 
 `translate-docs` **不会** 重写 `.vitepress/config.mts` 中的链接。导航栏和侧边栏的 `link` 值在 TypeScript 中编写一次，必须在配置构建时按语言环境添加前缀。
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 与 **`link`** 一起为 **`activeMatch`** 添加前缀，以便导航高亮在语言环境路由上正常工作（`/pt-BR/guide/` 而非 `/guide/`）。外部 URL 和共享公共资产保持不变。
+
+在 VitePress 项目中将 `ai-i18n-tools` 添加为 **devDependency**（参见 `examples/vitepress-docs/package.json`），以便 `config.mts` 能够导入 `prefixVitepressThemeConfigLinks`。主 ai-i18n-tools 文档站点直接从 `src/processors/…` 导入，因为它在 monorepo 检出中进行了内部试用；独立副本（degit）应使用 npm 包。
 
 **编写规则**
 

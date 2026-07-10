@@ -3,7 +3,7 @@
 
 Utilisez `init -t ui-docusaurus` et `docsOutput.style: "docusaurus"` pour les sites de documentation [Docusaurus](https://docusaurus.io/). Le préréglage génère un bloc `docs[]` avec `docusaurusCatalogDir` afin que `translate-docs` puisse traduire à la fois le markdown de la page et le JSON de l'interface Docusaurus en une seule commande.
 
-Voir aussi [Documents](/guide/documents/), la démo exécutable [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (application Next.js plus `docs-site/` imbriqué) et [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) pour une présentation ciblée de Docusaurus uniquement.
+Voir aussi [Documents](/fr/guide/documents/), la démo exécutable [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (application Next.js plus `docs-site/` imbriqué) et [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) pour une présentation ciblée de Docusaurus uniquement.
 
 <a id="quick-start"></a>
 ## Démarrage rapide
@@ -29,7 +29,7 @@ docs-site/docs/guide/quick-start.md
   →  docs-site/i18n/fr/docusaurus-plugin-content-docs/current/guide/quick-start.md
 ```
 
-Configurez un bloc `docs[]` :
+Configurez un bloc `docs[]` :
 
 ```json
 {
@@ -81,19 +81,19 @@ Lorsque `docusaurusCatalogDir` est défini et `features.translateDocs` est activ
 Ne placez pas le JSON de l'interface Docusaurus dans `json[]` ; utilisez plutôt `docs[].docusaurusCatalogDir` avec Documents.
 
 <a id="framework-shell-translation"></a>
-## Traduction de l'interface du framework
+## Traduction du shell du framework
 
-| Framework | Chaînes de l'interface / du thème | Pipeline |
+| Framework | Chaînes de shell / thème | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Étiquettes de la barre latérale `_meta.ts` | Documents — auto lorsque `style: "nextra"` + `translate-docs` |
+| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Étiquettes de barre latérale `_meta.ts` | Documents — auto quand `style: "nextra"` + `translate-docs` |
 | Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | étiquettes de barre latérale `meta.json` | Documents — auto lorsque `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | catalogue de remplacements d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline d'interface supplémentaire | Documents — `translate-docs` (pages uniquement) |
+| Fumadocs | Étiquettes de barre latérale `meta.json` | Documents — auto quand `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catalogue de surcharges d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses locales) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
 
-Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés. Voir [intégration VitePress](/guide/integrations/vitepress), [intégration Nextra](/guide/integrations/nextra) et [intégration Fumadocs](/guide/integrations/fumadocs) pour les autres modèles de framework.
+Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés. Voir [intégration VitePress](/fr/guide/integrations/vitepress), [intégration Nextra](/fr/guide/integrations/nextra) et [intégration Fumadocs](/fr/guide/integrations/fumadocs) pour les autres modèles de framework.
 
 <a id="example-project"></a>
 ## Exemple de projet

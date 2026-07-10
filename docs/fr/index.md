@@ -68,6 +68,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## Installation rapide
 
 Le package publié est **ESM uniquement**. Node.js `>=22.16.0` est requis.
@@ -81,6 +82,7 @@ npx ai-i18n-tools sync
 
 Consultez [Installation](/fr/guide/installation) pour les détails d'invocation de la CLI et [Démarrage rapide](/fr/guide/quick-start) pour les modèles de squelette.
 
+<a id="which-pipeline-should-i-use"></a>
 ## Quel pipeline dois-je utiliser ?
 
 | Votre contenu | Commande |
@@ -91,6 +93,7 @@ Consultez [Installation](/fr/guide/installation) pour les détails d'invocation 
 
 Les illustrations SVG utilisent un chemin `translate-svg` distinct — pas `docs[].contentPaths`. Voir [Qu'est-ce que ai-i18n-tools ?](/fr/guide/what-is-ai-i18n-tools) pour une comparaison complète.
 
+<a id="explore-the-documentation"></a>
 ## Explorer la documentation
 
 - [**Guide**](/fr/guide/what-is-ai-i18n-tools) — modes de traduction, installation, démarrage rapide et intégrations de frameworks

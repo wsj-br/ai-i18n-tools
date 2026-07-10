@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro website
 
-Static Astro marketing ya app sites (plain Astro, Starlight nahi) ke liye, [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath combine karein. [Astro integration](/guide/integrations/astro) bhi dekhein.
+Static Astro marketing ya app sites (plain Astro, Starlight nahi) ke liye, [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) ko ai-i18n-tools ke saath combine karein. [Astro integration](/hi-Latn/guide/integrations/astro) bhi dekhein.
 
 Reference implementation [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) hai (iska [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) bhi dekhein): English `/` par, nau target locales `/{locale}/` par (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -60,7 +60,7 @@ Udaaharan mein sahayak helpers: labels, direction, aur BCP-47 codes ke liye `src
 
 `.astro` files mein hardcoded HTML wale marketing pages ke liye, `translate-docs` ko text nodes aur attributes (`alt`, `title`, `aria-label`, `placeholder`) nikalne den, unhe document cache ke saath translate karen, aur aapke pages tree ke neeche locale-specific copies likhen. Aapko adhikansh visible copy ke liye `t()` ki **aavashyakta nahi** hai.
 
-Structural attribute aur key values default roop se translate **nahi** hote hain: built-in protection JSX/HTML attributes jaise `class`, `id`, `style`, `src`, `href`, `data-*`, aur adhiktar `aria-*`, plus object keys jaise `class`, `key`, aur `id` template `{expression}` blocks ke andar cover karta hai. Jab aap custom attributes (jaise Tailwind `variant` ya CMS `slug` fields) ka upyog karte hain, toh un lists ko extend karne ke liye `docs[].protectAttributes` aur `docs[].protectKeys` ka upyog karein. Yahi options markdown translation ke dauran MDX JSX par lagu hote hain ([protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys) dekhein).
+Structural attribute aur key values default roop se translate **nahi** hote hain: built-in protection JSX/HTML attributes jaise `class`, `id`, `style`, `src`, `href`, `data-*`, aur adhiktar `aria-*`, plus object keys jaise `class`, `key`, aur `id` template `{expression}` blocks ke andar cover karta hai. Jab aap custom attributes (jaise Tailwind `variant` ya CMS `slug` fields) ka upyog karte hain, toh un lists ko extend karne ke liye `docs[].protectAttributes` aur `docs[].protectKeys` ka upyog karein. Yahi options markdown translation ke dauran MDX JSX par lagu hote hain ([protectAttributes / protectKeys](/hi-Latn/reference/configuration#protectattributes-protectkeys) dekhein).
 
 `features.translateDocs` enable karen aur ek `docs[]` block joden, udharan ke liye:
 

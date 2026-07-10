@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Der Standard-Listen-Port ist **8675**. Falls dieser Port nicht verfügbar ist, versucht der Server den nächsten Port (bis zu 1000 Versuche) und protokolliert den gewählten Port. Der veraltete Alias `editor` funktioniert weiterhin, gibt aber eine Warnung aus – bevorzugen Sie `dashboard`.
 
-Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → Betriebssystem-Gebietsschema. Siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language).
+Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → Betriebssystem-Gebietsschema. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wi
 
 | Ich möchte… | Tab | Anleitung |
 | --- | --- | --- |
-| Dokumentationssegmente reparieren, die bei der Übersetzung fehlgeschlagen sind | **Fehler** | [Fehler](/guide/translation-dashboard/failures) |
-| Quell-Markdown vor der Übersetzung reparieren | **Markdown-Probleme** | [Markdown-Probleme](/guide/translation-dashboard/markdown-issues) |
-| Eine zwischengespeicherte Dokumentationsübersetzung überschreiben | **Dokumentation** | [Dokumentations-Cache](/guide/translation-dashboard/documentation-cache) |
-| Eine UI-Beschriftung korrigieren | **UI-Strings** | [UI-Strings & Plurale](/guide/translation-dashboard/ui-strings) |
-| Eine Pluralform korrigieren (`one`, `other`, …) | **UI-Plurale** | [UI-Strings & Plurale](/guide/translation-dashboard/ui-strings) |
-| Terminologie für die UI-Übersetzung sperren | **Glossar** | [Glossar](/guide/translation-dashboard/glossary) |
-| Cache-Abdeckung und Modellnutzung anzeigen | **Statistiken** | [Statistiken](/guide/translation-dashboard/statistics) |
+| Dokumentationssegmente reparieren, die bei der Übersetzung fehlgeschlagen sind | **Fehler** | [Fehler](/de/guide/translation-dashboard/failures) |
+| Quell-Markdown vor der Übersetzung reparieren | **Markdown-Probleme** | [Markdown-Probleme](/de/guide/translation-dashboard/markdown-issues) |
+| Eine zwischengespeicherte Dokumentationsübersetzung überschreiben | **Dokumentation** | [Dokumentations-Cache](/de/guide/translation-dashboard/documentation-cache) |
+| Eine UI-Beschriftung korrigieren | **UI-Strings** | [UI-Strings & Plurale](/de/guide/translation-dashboard/ui-strings) |
+| Eine Pluralform korrigieren (`one`, `other`, …) | **UI-Plurale** | [UI-Strings & Plurale](/de/guide/translation-dashboard/ui-strings) |
+| Terminologie für die UI-Übersetzung sperren | **Glossar** | [Glossar](/de/guide/translation-dashboard/glossary) |
+| Cache-Abdeckung und Modellnutzung anzeigen | **Statistiken** | [Statistiken](/de/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## Nach der Bearbeitung

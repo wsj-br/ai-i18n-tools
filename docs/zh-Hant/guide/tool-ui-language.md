@@ -31,6 +31,6 @@ UI 語言環境會從以下來源解析，按優先級由高至低排列：
 <a id="related"></a>
 ## 相關內容
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — 環境變數覆寫
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — 設定鍵覆寫
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — CLI 旗標覆寫（最高優先級）
+- [`AI_I18N_LANG`](/zh-Hant/reference/environment-variables) — 環境變數覆寫
+- [`uiLanguage`](/zh-Hant/reference/configuration#uilanguage-optional) — 設定鍵覆寫
+- [`-L` / `--ui-lang`](/zh-Hant/reference/cli-commands/) — CLI 旗標覆寫（最高優先級）

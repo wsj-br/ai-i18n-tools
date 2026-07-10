@@ -8,7 +8,7 @@
 
 验证每个已配置的模型 ID 是否在当前提供商的 `GET /models` 列表中（成员资格与 `expiration_date`）。需要该提供商的 API 密钥（对于 Ollama 等免密钥提供商则无需）。当任何已配置的 ID 缺失或过期时以非零状态退出，并遵循提供商的 `requestTimeoutMs`。当提供商返回定价信息时（例如 OpenRouter），还会显示每 100 万 token 的提示/补全 USD 价格。
 
-**另请参阅：** [LLM 提供商](/guide/providers-and-models)
+**另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **主要选项：** `-P` / `--provider`
 
-**另请参阅：** [LLM 提供商](/guide/providers-and-models)
+**另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)
 
 ---
 

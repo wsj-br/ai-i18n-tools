@@ -1,7 +1,7 @@
 <a id="examples"></a>
 # 예시
 
-GitHub의 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있는 실행 가능한 프로젝트 — 각각 고유한 구성, 커밋된 로케일 출력 및 README를 포함합니다. API 키 없이 번역된 파일을 탐색할 수 있습니다. 번역을 다시 실행하려면 공급자 키가 필요합니다([공급자 및 모델](/guide/providers-and-models)).
+GitHub의 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있는 실행 가능한 프로젝트 — 각각 고유한 구성, 커밋된 로케일 출력 및 README를 포함합니다. API 키 없이 번역된 파일을 탐색할 수 있습니다. 번역을 다시 실행하려면 공급자 키가 필요합니다([공급자 및 모델](/ko/guide/providers-and-models)).
 
 <a id="run-standalone-npx-degit"></a>
 ## 독립 실행 (`npx degit`)

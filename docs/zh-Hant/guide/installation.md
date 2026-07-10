@@ -54,7 +54,7 @@ ai-i18n-tools sync
 
 在 Linux、macOS 和 WSL 上，登錄檔安裝會自動為 CLI 指令碼設定可執行位元。在 Windows 上，套件管理器會產生 `.cmd` 和 `.ps1` 代理程式，明確叫用 Node。
 
-設定您的提供者 API 金鑰（顯示為 OpenRouter；請使用與您啟用中的提供者相符的環境變數 — 請參閱[預設表](/guide/providers-and-models#built-in-providers)）：
+設定您的提供者 API 金鑰（顯示為 OpenRouter；請使用與您啟用中的提供者相符的環境變數 — 請參閱[預設表](/zh-Hant/guide/providers-and-models#built-in-providers)）：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### 工具使用者介面語言
 
-CLI 會將其自身的說明文字、日誌摘要與翻譯儀表板進行本地化，這與您所翻譯的地區設定無關。預設情況下，它會遵循您的作業系統地區設定。請在設定中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 進行覆寫。請參閱[工具介面語言](/guide/tool-ui-language)。
+CLI 會將其自身的說明文字、日誌摘要與翻譯儀表板進行本地化，這與您所翻譯的地區設定無關。預設情況下，它會遵循您的作業系統地區設定。請在設定中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 進行覆寫。請參閱[工具介面語言](/zh-Hant/guide/tool-ui-language)。

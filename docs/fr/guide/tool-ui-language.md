@@ -31,6 +31,6 @@ Le tableau de bord de traduction lit les paramètres régionaux résolus, le sen
 <a id="related"></a>
 ## Liens connexes
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — remplacement de la variable d'environnement
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — remplacement de la clé de configuration
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — remplacement de l'indicateur CLI (priorité la plus élevée)
+- [`AI_I18N_LANG`](/fr/reference/environment-variables) — remplacement de la variable d'environnement
+- [`uiLanguage`](/fr/reference/configuration#uilanguage-optional) — remplacement de la clé de configuration
+- [`-L` / `--ui-lang`](/fr/reference/cli-commands/) — remplacement de l'indicateur CLI (priorité la plus élevée)

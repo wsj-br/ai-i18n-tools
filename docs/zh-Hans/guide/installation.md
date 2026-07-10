@@ -54,7 +54,7 @@ ai-i18n-tools sync
 
 在 Linux、macOS 和 WSL 上，注册表安装会自动为 CLI 脚本设置可执行位。在 Windows 上，包管理器会生成 `.cmd` 和 `.ps1` 包装器，它们会显式调用 Node。
 
-设置您的提供商 API 密钥（此处显示 OpenRouter；请使用与您的活动提供商匹配的环境变量 — 请参阅[预设表](/guide/providers-and-models#built-in-providers)）：
+设置您的提供商 API 密钥（此处显示 OpenRouter；请使用与您的活动提供商匹配的环境变量 — 请参阅[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### 工具 UI 语言
 
-CLI 会独立于你翻译的区域设置，对其自身的帮助文本、日志摘要和翻译仪表板进行本地化。默认情况下，它遵循你的操作系统区域设置。在配置中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 进行覆盖。请参阅[工具界面语言](/guide/tool-ui-language)。
+CLI 会独立于你翻译的区域设置，对其自身的帮助文本、日志摘要和翻译仪表板进行本地化。默认情况下，它遵循你的操作系统区域设置。在配置中使用 `-L pt-BR`、`export AI_I18N_LANG=es` 或 `"uiLanguage"` 进行覆盖。请参阅[工具界面语言](/zh-Hans/guide/tool-ui-language)。

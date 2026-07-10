@@ -8,7 +8,7 @@
 
 `t("…")` / `i18n.t("…")` literals se `strings.json` ko update karein, optional `package.json` description, aur optional bundled-master `englishName` entries jab `includeUiLanguageEnglishNames` enable ho (dekhein `ui.uiExtractor`; `languagesManifestPath` nahi padhta). `languagesManifestPath` par `ui-languages.json` ko bhi regenerate karta hai. Jab `ui.uiExtractor.extensions` mein `.html` / `.htm` list kiye jaate hain, to HTML se `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker strings bhi capture karta hai. Non-empty `ui.sourceRoots` ki zaroorat hai. LLM ko call nahi karta.
 
-**Yeh bhi dekhein:** [UI strings overview](/guide/ui-strings/), [Plain HTML apps](/guide/ui-strings/plain-html)
+**Yeh bhi dekhein:** [UI strings overview](/hi-Latn/guide/ui-strings/), [Plain HTML apps](/hi-Latn/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@ HTML mein bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers
 
 **Mukhya vikalp:** `--write`
 
-**Yeh bhi dekhein:** [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation)
+**Yeh bhi dekhein:** [Marking HTML for translation](/hi-Latn/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

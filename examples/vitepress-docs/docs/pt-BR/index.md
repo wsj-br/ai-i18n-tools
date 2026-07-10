@@ -20,4 +20,4 @@ Este exemplo mostra o preset de saída **`vitepress`**: páginas de origem em in
 
 ## Próximos passos
 
-Leia [Introdução](./guide/getting-started.md) e compare com a descrição completa no [site principal da documentação](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/vitepress/).
+Leia [Introdução](./guide/getting-started.md) e compare com a documentação completa no [site principal de documentação](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/VitePress/).

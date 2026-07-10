@@ -74,6 +74,6 @@ extract 命令会解析 **第二个参数**（当它是一个纯粹的对象字�
 
 **扁平化语言环境 JSON：** 非复数行保持 **源句子 → 翻译**。复数行将输出为 `<groupId>_original`（等于 `source`，供参考）和 `<groupId>_<form>`（针对每个后缀），以便 i18next 原生解析复数。`translate-ui` 还会写入 `{sourceLocale}.json`，其中 **仅包含**复数扁平化键（加载此捆绑包以获取源语言，以便带后缀的键可以解析；纯字符串仍使用键作为默认值）。对于每个目标语言环境，输出的后缀键与该语言环境的 `Intl.PluralRules` 匹配（`requiredCldrPluralForms`）：如果 `strings.json` 省略了某个类别，因为它在压缩后与其他类别匹配（例如，阿拉伯语 `many` 与 `other` 相同），`translate-ui` 仍会通过从备用同级字符串复制来写入每个必需的后缀，以确保运行时查找永远不会错过键。
 
-运行时 (`ai-i18n-tools/runtime`): **调用** `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle })` — 它运行 `wrapI18nWithKeyTrim`，注册可选的 `translate-ui` `{sourceLocale}.json` 复数包，然后使用 `buildPluralIndexFromStringsJson(stringsJson)` `wrapT`。`wrapT` 剥离 `plurals` / `zeroDigit`，在需要时将键重写为组 ID，并转发 `count`（可选：如果存在单个非 <code v-pre>{{count}}</code> 占位符，则从该数字选项复制 `count`）。请参阅 [Wire i18next](/guide/ui-strings/i18next-runtime) 和 [Runtime helpers](/guide/runtime-helpers)。
+运行时 (`ai-i18n-tools/runtime`): **调用** `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle })` — 它运行 `wrapI18nWithKeyTrim`，注册可选的 `translate-ui` `{sourceLocale}.json` 复数包，然后使用 `buildPluralIndexFromStringsJson(stringsJson)` `wrapT`。`wrapT` 剥离 `plurals` / `zeroDigit`，在需要时将键重写为组 ID，并转发 `count`（可选：如果存在单个非 <code v-pre>{{count}}</code> 占位符，则从该数字选项复制 `count`）。请参阅 [Wire i18next](/zh-Hans/guide/ui-strings/i18next-runtime) 和 [Runtime helpers](/zh-Hans/guide/runtime-helpers)。
 
 **旧环境：** `Intl.PluralRules` 是工具和保持行为一致所必需的；如果您的目标是旧版浏览器，请进行 polyfill。

@@ -54,6 +54,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## 快速安装
 
 发布的包为**仅 ESM**。需要 Node.js `>=22.16.0`。
@@ -67,6 +68,7 @@ npx ai-i18n-tools sync
 
 有关 CLI 调用详情，请参阅[安装](/zh-Hans/guide/installation)；有关脚手架模板，请参阅[快速开始](/zh-Hans/guide/quick-start)。
 
+<a id="which-pipeline-should-i-use"></a>
 ## 我应该使用哪个流水线？
 
 | 你的内容 | 命令 |
@@ -77,6 +79,7 @@ npx ai-i18n-tools sync
 
 SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPaths`。有关完整比较，请参阅[什么是 ai-i18n-tools？](/zh-Hans/guide/what-is-ai-i18n-tools)。
 
+<a id="explore-the-documentation"></a>
 ## 探索文档
 
 - [**指南**](/zh-Hans/guide/what-is-ai-i18n-tools) — 翻译模式、安装、快速入门和框架集成

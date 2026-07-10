@@ -8,7 +8,7 @@ Yeh pipeline **nahin** chalta hai `extract` — yahaan koi `strings.json` catalo
 <a id="per-locale-model-overrides"></a>
 ### Pratyaik sthanik model override
 
-`translate-json` **pratyek target locale** ke liye models ko resolve karta hai: jab configure kiya jaata hai to pehle `localeModels(locale)`, phir `translationModels`. Iska upyog nested JSON bundles ke liye karein jahaan kuch locales ko samarpit models se laabh hota hai — udaaharan ke liye `zh-Hans` / `zh-Hant` theme files. [Providers aur models](/guide/providers-and-models#model-fallback-chain) dekhein.
+`translate-json` **pratyek target locale** ke liye models ko resolve karta hai: jab configure kiya jaata hai to pehle `localeModels(locale)`, phir `translationModels`. Iska upyog nested JSON bundles ke liye karein jahaan kuch locales ko samarpit models se laabh hota hai — udaaharan ke liye `zh-Hans` / `zh-Hant` theme files. [Providers aur models](/hi-Latn/guide/providers-and-models#model-fallback-chain) dekhein.
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Step 1: Nested JSON ke liye initialise karein
@@ -98,12 +98,12 @@ Jab `translateJson` chalu hota hai, to `status` ek `json[]` section print karta 
 
 | Sthiti | Upyog Karen |
 |-----------|-----|
-| JS/TS/Astro mein `t("…")` / `i18n.t("…")` mein UI strings | [UI strings](/guide/ui-strings/) — `extract` + `translate-ui` |
+| JS/TS/Astro mein `t("…")` / `i18n.t("…")` mein UI strings | [UI strings](/hi-Latn/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` catalog (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, `json[]` **nahi** |
-| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **na karein** `json[]` ka upyog — dekhein [VitePress integration](/guide/integrations/vitepress) |
-| Nextra `_meta.ts` labels aur theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` jab `style: "nextra"`, optional `nextraDictionaryPath`); **na karein** `json[]` ka upyog — dekhein [Nextra integration](/guide/integrations/nextra) |
-| Fumadocs `meta.json` labels aur UI overrides catalog | Documents — `translate-docs` (auto `meta.json` jab `style: "fumadocs"`, optional `fumadocsUiCatalog`); **na karein** `json[]` ka upyog — dekhein [Fumadocs integration](/guide/integrations/fumadocs) |
+| VitePress theme/nav/sidebar strings | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **na karein** `json[]` ka upyog — dekhein [VitePress integration](/hi-Latn/guide/integrations/vitepress) |
+| Nextra `_meta.ts` labels aur theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` jab `style: "nextra"`, optional `nextraDictionaryPath`); **na karein** `json[]` ka upyog — dekhein [Nextra integration](/hi-Latn/guide/integrations/nextra) |
+| Fumadocs `meta.json` labels aur UI overrides catalog | Documents — `translate-docs` (auto `meta.json` jab `style: "fumadocs"`, optional `fumadocsUiCatalog`); **na karein** `json[]` ka upyog — dekhein [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
-| `<text>` / `<title>` / `<desc>` ke saath illustrated `.svg` files | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (vaikalpik; teen mukhya pipelines mein se ek nahin) |
+| `<text>` / `<title>` / `<desc>` ke saath illustrated `.svg` files | `features.translateSVG` + [`svg`](/hi-Latn/reference/configuration#svg) + `translate-svg` (vaikalpik; teen mukhya pipelines mein se ek nahin) |
 
-Field reference: [`json`](#json) [Configuration reference](/reference/configuration#json) mein. Cleanup ke liye cache keys `file_tracking` mein `json-block:{blockIndex}:{projectRelPath}` ka upyog karte hain.
+Field reference: [`json`](#json) [Configuration reference](/hi-Latn/reference/configuration#json) mein. Cleanup ke liye cache keys `file_tracking` mein `json-block:{blockIndex}:{projectRelPath}` ka upyog karte hain.

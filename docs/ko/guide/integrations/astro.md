@@ -3,7 +3,7 @@
 
 ai-i18n-tools를 [Astro](https://astro.build/)와 함께 두 가지 일반적인 설정에서 사용하세요. **Astro Starlight** 문서 사이트와 **일반 Astro** 마케팅 또는 앱 사이트입니다. 둘 다 페이지 콘텐츠에 Documents(`translate-docs`)를 사용합니다. 일반 Astro 사이트는 종종 프런트매터 및 공유 데이터의 `t()` 문자열에 UI 문자열(`extract` / `translate-ui`)을 결합합니다.
 
-다음 항목도 참조하세요. [UI 문자열](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [문서](/guide/documents/), 아래의 실행 가능한 예시.
+다음 항목도 참조하세요. [UI 문자열](/ko/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [문서](/ko/guide/documents/), 아래의 실행 가능한 예시.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -30,7 +30,7 @@ src/content/docs/quick-start.md     →  src/content/docs/de/quick-start.md
 src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ```
 
-하나의 `docs[]` 블록을 구성합니다.
+하나의 `docs[]` 블록을 구성하세요:
 
 ```json
 {
@@ -45,7 +45,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 `contentPaths`를 영어 `.md` / `.mdx` 파일 및 디렉터리를 가리키도록 합니다. `docsRoot`를 Starlight가 콘텐츠 루트로 사용하는 동일한 폴더로 설정합니다.
 
-Starlight UI 재정의는 필요한 경우 별도의 `docs[]` 블록에서 `src/content/i18n/en.json`와 `jsonPathTemplate`를 사용할 수 있습니다. [문서 — 문서화를 위한 초기화](/guide/documents/#step-1-initialise-for-documentation)를 참조하세요.
+Starlight UI 재정의는 필요한 경우 별도의 `docs[]` 블록에서 `src/content/i18n/en.json`와 `jsonPathTemplate`를 사용할 수 있습니다. [문서 — 문서화를 위한 초기화](/ko/guide/documents/#step-1-initialise-for-documentation)를 참조하세요.
 
 <a id="framework-shell-translation"></a>
 ### 프레임워크 셸 번역
@@ -56,11 +56,11 @@ Starlight는 많은 로케일에 대해 자체 내장 UI 문자열(탐색 레이
 |-----------|----------------------|----------|
 | Astro Starlight | 내장 UI 문자열(다양한 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
 | Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 라벨 + 테마 사전 `.ts` | 문서 — [Nextra 통합](/guide/integrations/nextra) 참조 |
-| Fumadocs | `meta.json` 사이드바 라벨 + UI 오버라이드 카탈로그 | 문서 — [Fumadocs 통합](/guide/integrations/fumadocs) 참조 |
+| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 라벨 + 테마 사전 `.ts` | 문서 — [Nextra 통합](/ko/guide/integrations/nextra) 참조 |
+| Fumadocs | `meta.json` 사이드바 라벨 + UI 오버라이드 카탈로그 | 문서 — [Fumadocs 통합](/ko/guide/integrations/fumadocs) 참조 |
 
-다른 프레임워크 패턴은 [Docusaurus 통합](/guide/integrations/docusaurus), [VitePress 통합](/guide/integrations/vitepress), [Nextra 통합](/guide/integrations/nextra), [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하세요.
+다른 프레임워크 패턴은 [Docusaurus 통합](/ko/guide/integrations/docusaurus), [VitePress 통합](/ko/guide/integrations/vitepress), [Nextra 통합](/ko/guide/integrations/nextra), [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하세요.
 
 <a id="example-project"></a>
 ### 예제 프로젝트

@@ -12,7 +12,7 @@
 
 `-j`：最大並行語言環境；`-b`：每個檔案的最大並行批次 API 呼叫。`--prompt-format`：批次傳輸格式 (`xml` | `json-array` | `json-object`)。
 
-**另請參閱：** [快取行為與 `translate-docs` 旗標](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [批次提示格式](/guide/documents/cli-options#batch-prompt-format)
+**另請參閱：** [快取行為與 `translate-docs` 旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [批次提示格式](/zh-Hant/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@
 
 `--slug-style`：`github`（預設；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。使用 `pymdown`，可選 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。
 
-**另請參閱：** [錨點連結](/guide/documents/anchor-links)
+**另請參閱：** [錨點連結](/zh-Hant/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@
 
 **主要選項：** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 
-**另請參閱：** [Markdown 問題](/guide/translation-dashboard/markdown-issues)
+**另請參閱：** [Markdown 問題](/zh-Hant/guide/translation-dashboard/markdown-issues)

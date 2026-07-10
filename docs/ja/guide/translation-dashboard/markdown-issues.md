@@ -8,7 +8,7 @@
 <a id="when-to-use-it"></a>
 ## 使用するタイミング
 
-このタブは、トークンを消費する前に**ソース Markdown** を修正したい場合、特に [失敗](/guide/translation-dashboard/failures) タブで品質チェックが構造に関する失敗を繰り返す場合に使用します。
+このタブは、トークンを消費する前に**ソース Markdown** を修正したい場合、特に [失敗](/ja/guide/translation-dashboard/failures) タブで品質チェックが構造に関する失敗を繰り返す場合に使用します。
 
 <a id="how-to-use-the-tab"></a>
 ## タブの使用方法
@@ -39,4 +39,4 @@
 | 閉じられていないインライン コード | バックティック スパンが開いているが閉じられていない |
 | `STRONG_OUTSIDE_LINK` | 太字マーカーが Markdown リンクを囲んでいます。太字をリンク テキスト内に移動してください |
 
-以下も参照してください: [複雑な Markdown と品質チェックの失敗](/guide/documents/#complex-markdown-and-failed-quality-checks)。
+以下も参照してください: [複雑な Markdown と品質チェックの失敗](/ja/guide/documents/#complex-markdown-and-failed-quality-checks)。

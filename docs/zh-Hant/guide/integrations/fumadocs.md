@@ -3,10 +3,10 @@
 
 在 Next.js App Router 上的 [Fumadocs](https://www.fumadocs.dev/) 4 文件網站使用 `init -t ui-fumadocs` 與 `docsOutput.style: "fumadocs"`。此預設為 `doc-system` 的別名，帶有空白的 `localeSubpath` 並保留 BCP-47 或短地區代碼（`localePathLowercase` 預設為 `false`）。
 
-另請參閱[文件](/guide/documents/)及可執行的 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 範例（dot 解析器，連接埠 3080）。
+另請參閱[文件](/zh-Hant/guide/documents/)及可執行的 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 範例（dot 解析器，連接埠 3080）。
 
 <a id="quick-start"></a>
-## 快速入門
+## 快速開始
 
 ```bash
 npx ai-i18n-tools init -t ui-fumadocs
@@ -18,7 +18,7 @@ pnpm run build       # Next.js build (project-specific script)
 當您要在單次 `sync` 執行中翻譯頁面內容、`meta.json` 側邊欄標籤及 Fumadocs UI 覆寫時，請啟用 `features.translateDocs`。
 
 <a id="page-layout"></a>
-## 頁面佈局
+## 頁面版面
 
 Fumadocs 透過 `docsOutput.fumadocsParser` 支援兩種 i18n 內容佈局。**dot** 解析器為預設值（Fumadocs 內建及如 [SWR](https://github.com/vercel/swr-site) 等正式網站所使用）。
 
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-請參閱 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 中的 `ai-i18n-tools.config.dir.example.json` 以取得可複製貼上的目錄設定。心智模型與 [Nextra 整合](/guide/integrations/nextra#page-layout) 相符。
+請參閱 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 中的 `ai-i18n-tools.config.dir.example.json` 以取得可複製貼上的目錄設定。心智模型與 [Nextra 整合](/zh-Hant/guide/integrations/nextra#page-layout) 相符。
 
 <a id="sidebar-metajson"></a>
 ## 側邊欄（`meta.json`）
@@ -127,21 +127,21 @@ Fumadocs 版面配置的介面元素（搜尋預留位置、地區顯示名稱�
 | 框架 | 殼層 / 主題字串 | 管線 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 目錄 | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 側邊欄標籤 | 文件——自動時 `style: "nextra"` + `translate-docs` |
-| Nextra | 主題字典 `.ts` | 文件——`docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動處理 |
+| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 | 文件 — 當 `style: "nextra"` + `translate-docs` 時自動 |
+| Nextra | 主題字典 `.ts` | 文件 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動 |
 | Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 內建 UI 字串（多種語系）；無額外外殼管線 | 文件 — `translate-docs`（僅限頁面） |
+| Astro Starlight | 內建 UI 字串（多語系）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
 
-請**勿**將框架 shell/主題字串放入 `json[]` 中 — 該管線適用於無關的應用程式語言包。請參閱 [Docusaurus 整合](/guide/integrations/docusaurus)、[VitePress 整合](/guide/integrations/vitepress) 與 [Nextra 整合](/guide/integrations/nextra) 以了解其他框架模式。
+請**勿**將框架 shell/主題字串放入 `json[]` 中 — 該管線適用於無關的應用程式語言包。請參閱 [Docusaurus 整合](/zh-Hant/guide/integrations/docusaurus)、[VitePress 整合](/zh-Hant/guide/integrations/vitepress) 與 [Nextra 整合](/zh-Hant/guide/integrations/nextra) 以了解其他框架模式。
 
 <a id="link-conventions"></a>
 ## 連結慣例
 
 Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-started`、`/pt/docs/getting-started`）。**頁內連結應保持語言中立**（`/docs/getting-started`），以便自動套用當前語言前綴。
 
-啟用內建的正規化器，讓 `translate-docs` 自動修復每個翻譯檔案中的連結：
+啟用內建正規化器，讓 `translate-docs` 自動修正每個翻譯檔案中的連結：
 
 ```json
 "docsOutput": {
@@ -157,7 +157,7 @@ Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-st
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/zh-Hant/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 不變（完整 URL） |
 
 **撰寫規則**
@@ -166,7 +166,7 @@ Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-st
 - 內容樹之外的儲存庫檔案：使用**完整 URL**。
 - 請**勿**手動編輯帶語言後綴副本（`*.pt.mdx`）或 `content/{locale}/` 樹中的連結 — 請使用 `sync` / `translate-docs` 重新產生。
 
-另請參閱 [文件 — 連結改寫](/guide/documents/link-rewriting) 與 [設定 — `docsOutput`](/reference/configuration#docsoutput)。
+另請參閱 [文件 — 連結改寫](/zh-Hant/guide/documents/link-rewriting) 與 [設定 — `docsOutput`](/zh-Hant/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## 地區設定代碼
@@ -186,8 +186,8 @@ Fumadocs 專案可在 `source.config.ts` 中定義多個 `defineDocs` 區塊（�
 <a id="cross-references"></a>
 ## 交叉參照
 
-- [設定 — `docsOutput`](/reference/configuration#docsoutput)
-- [輸出佈局](/guide/documents/output-layouts)
-- [Docusaurus 整合](/guide/integrations/docusaurus)
-- [Nextra 整合](/guide/integrations/nextra) (目錄解析器心智模型)
-- [VitePress 整合](/guide/integrations/vitepress) (UI 目錄啟動模式)
+- [設定 — `docsOutput`](/zh-Hant/reference/configuration#docsoutput)
+- [輸出佈局](/zh-Hant/guide/documents/output-layouts)
+- [Docusaurus 整合](/zh-Hant/guide/integrations/docusaurus)
+- [Nextra 整合](/zh-Hant/guide/integrations/nextra) (目錄解析器心智模型)
+- [VitePress 整合](/zh-Hant/guide/integrations/vitepress) (UI 目錄啟動模式)

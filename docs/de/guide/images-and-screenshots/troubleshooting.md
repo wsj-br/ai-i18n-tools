@@ -2,7 +2,7 @@
 # Häufige Fehler und Fehlerbehebung
 
 **Kein Gebietsschema-Verzeichnis in Screenshot-Pfaden**
-`images/screenshots/screenshot.png` – kann Gebietsschema-Varianten nicht unterscheiden und nicht umgeschrieben werden. Restrukturieren Sie zu `images/screenshots/<locale>/screenshot.png`, bevor Sie das Umschreiben von [Ordnern pro Gebietsschema](/guide/images-and-screenshots/per-locale-folder) verwenden.
+`images/screenshots/screenshot.png` – kann Gebietsschema-Varianten nicht unterscheiden und nicht umgeschrieben werden. Restrukturieren Sie zu `images/screenshots/<locale>/screenshot.png`, bevor Sie das Umschreiben von [Ordnern pro Gebietsschema](/de/guide/images-and-screenshots/per-locale-folder) verwenden.
 
 **Im Regex hartkodiertes Quell-Gebietsschema**
 `"search": "screenshots/en-GB/"` — bricht stillschweigend, wenn sich `sourceLocale` ändert. Verwenden Sie stattdessen `"search": "screenshots/[^/]+/"`.

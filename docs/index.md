@@ -1,12 +1,16 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites using LLMs.
-
+description: >-
+  CLI and toolkit for internationalizing JavaScript/TypeScript applications and
+  documentation sites using LLMs.
 hero:
   name: ai-i18n-tools
   text: Translate apps & docs with any LLM
-  tagline: One config file, three translation modes, and the provider you choose — OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or any OpenAI-compatible API. Switch models per project or per locale without rewriting your codebase.
+  tagline: >-
+    One config file, three translation modes, and the provider you choose —
+    OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or any OpenAI-compatible API.
+    Switch models per project or per locale without rewriting your codebase.
   image:
     src: /logo.svg
     alt: ai-i18n-tools logo
@@ -20,26 +24,37 @@ hero:
     - theme: alt
       text: npm package
       link: https://www.npmjs.com/package/ai-i18n-tools
-
 features:
   - icon: 🌐
     title: UI strings
-    details: Extract t() calls from JS, TS, and Astro. Generate flat per-locale JSON for i18next or static SSG lookup.
+    details: >-
+      Extract t() calls from JS, TS, and Astro. Generate flat per-locale JSON
+      for i18next or static SSG lookup.
   - icon: 📄
     title: Documents
-    details: Translate Markdown, MDX, and Astro pages for VitePress, Starlight, Docusaurus, Nextra, Fumadocs, and plain static sites.
+    details: >-
+      Translate Markdown, MDX, and Astro pages for VitePress, Starlight,
+      Docusaurus, Nextra, Fumadocs, and plain static sites.
   - icon: 📦
     title: JSON bundles
-    details: Nested locale JSON when UI copy lives outside source t() calls — theme labels, catalogs, and app overrides.
+    details: >-
+      Nested locale JSON when UI copy lives outside source t() calls — theme
+      labels, catalogs, and app overrides.
   - icon: 🔄
     title: Smart caching
-    details: Shared SQLite cache across every pipeline. Only new or changed segments are sent to the model on reruns.
+    details: >-
+      Shared SQLite cache across every pipeline. Only new or changed segments
+      are sent to the model on reruns.
   - icon: 🔌
     title: Provider-agnostic
-    details: Built-in presets for major LLM APIs plus custom OpenAI-compatible endpoints. Override the active provider with -P.
+    details: >-
+      Built-in presets for major LLM APIs plus custom OpenAI-compatible
+      endpoints. Override the active provider with -P.
   - icon: ⚡
     title: One sync command
-    details: Run extract, translate-ui, translate-svg, translate-docs, and translate-json in the right order from a single config.
+    details: >-
+      Run extract, translate-ui, translate-svg, translate-docs, and
+      translate-json in the right order from a single config.
 ---
 
 <div class="home-badges">
@@ -48,6 +63,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## Quick install
 
 The published package is **ESM-only**. Node.js `>=22.16.0` required.
@@ -61,6 +77,7 @@ npx ai-i18n-tools sync
 
 See [Installation](/guide/installation) for CLI invocation details and [Quick start](/guide/quick-start) for scaffold templates.
 
+<a id="which-pipeline-should-i-use"></a>
 ## Which pipeline should I use?
 
 | Your content | Command |
@@ -71,6 +88,7 @@ See [Installation](/guide/installation) for CLI invocation details and [Quick st
 
 SVG illustrations use a separate `translate-svg` path — not `docs[].contentPaths`. See [What is ai-i18n-tools?](/guide/what-is-ai-i18n-tools) for a full comparison.
 
+<a id="explore-the-documentation"></a>
 ## Explore the documentation
 
 - [**Guide**](/guide/what-is-ai-i18n-tools) — translation modes, installation, quick start, and framework integrations

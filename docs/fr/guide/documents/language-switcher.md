@@ -5,7 +5,7 @@ Utilisez `docsOutput.postProcessing.languageListBlock` lorsque les fichiers Mark
 
 Ce référentiel l’utilise pour [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (sortie à plat sous `translated-docs/`). Après `translate-docs`, chaque copie traduite reçoit un bloc actualisé ; par exemple, [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) renvoie aux fichiers de paramètres régionaux frères sous `translated-docs/` et à la source anglaise à la racine du référentiel.
 
-Nécessite `docsOutput.style = "flat"` (ou une autre disposition où les fichiers de paramètres régionaux frères sont accessibles par chemin relatif). Voir [Dispositions de sortie](/guide/documents/output-layouts).
+Nécessite `docsOutput.style = "flat"` (ou une autre disposition où les fichiers de paramètres régionaux frères sont accessibles par chemin relatif). Voir [Dispositions de sortie](/fr/guide/documents/output-layouts).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Marquer le bloc dans le Markdown source
@@ -14,7 +14,7 @@ Encadrez le sélecteur dans du code HTML (ou toute autre ligne) délimité par l
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/fr/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 Le texte du lien initial est uniquement un espace réservé. `translate-docs` remplace entièrement la portion depuis la première ligne contenant `start` jusqu’à la première ligne ultérieure contenant `end` (les marqueurs situés à l’intérieur de blocs de code délimités sont ignorés, afin que les exemples de configuration dans le même fichier ne soient pas pris en compte).
@@ -55,7 +55,7 @@ Si un fichier ne contient aucun bloc correspondant, l’interface en ligne de co
 <a id="4-label-manifest"></a>
 ## 4. Manifeste d’étiquettes
 
-Pour les libellés d'endonyme (`label: "local"`), générer ou maintenir `ui-languages.json` via `generate-ui-languages` (écrit dans [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), qui par défaut est `{ui.flatOutputDir}/ui-languages.json`). La configuration docs-only de ce référentiel n'a pas de pipeline d'interface utilisateur et pas de manifeste de projet sur disque, les libellés proviennent donc du catalogue maître regroupé pour `sourceLocale` + `targetLocales`.
+Pour les libellés d'endonyme (`label: "local"`), générer ou maintenir `ui-languages.json` via `generate-ui-languages` (écrit dans [`languagesManifestPath`](/fr/reference/configuration#languagesmanifestpath-optional), qui par défaut est `{ui.flatOutputDir}/ui-languages.json`). La configuration docs-only de ce référentiel n'a pas de pipeline d'interface utilisateur et pas de manifeste de projet sur disque, les libellés proviennent donc du catalogue maître regroupé pour `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Exemples dans ce référentiel

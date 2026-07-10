@@ -8,7 +8,7 @@
 
 Valida cada ID de modelo configurado em relação à lista `GET /models` do provedor ativo (associação e `expiration_date`). Requer a chave de API desse provedor (nenhuma para provedores sem chave, como o Ollama). Sai com código de erro diferente de zero quando qualquer ID configurado está ausente ou expirado, e respeita o `requestTimeoutMs` do provedor. Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra USD por 1M de tokens para prompt/conclusão.
 
-**Ver também:** [Provedores LLM](/guide/providers-and-models)
+**Ver também:** [Provedores LLM](/pt-BR/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Lista todos os modelos que o provedor ativo anuncia através de sua lista `GET /
 
 **Opções principais:** `-P` / `--provider`
 
-**Ver também:** [Provedores LLM](/guide/providers-and-models)
+**Ver também:** [Provedores LLM](/pt-BR/guide/providers-and-models)
 
 ---
 

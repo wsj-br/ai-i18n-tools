@@ -15,7 +15,7 @@
 <a id="why-source-edits-matter"></a>
 ## 源编辑为何重要
 
-密集的内联标记（**粗体**与 `` `code` `` 混合、嵌套强调、包含许多跨度的长句）使得模型更难返回仍通过结构检查的翻译。具有**多个记录失败**的段落通常通过**重写或拆分**源（或将示例移到围栏代码块中）比通过对未更改的文本重新运行翻译更能得到改进。这与[复杂的 Markdown 和失败的质量检查](/guide/documents/#complex-markdown-and-failed-quality-checks)一致。
+密集的内联标记（**粗体**与 `` `code` `` 混合、嵌套强调、包含许多跨度的长句）使得模型更难返回仍通过结构检查的翻译。具有**多个记录失败**的段落通常通过**重写或拆分**源（或将示例移到围栏代码块中）比通过对未更改的文本重新运行翻译更能得到改进。这与[复杂的 Markdown 和失败的质量检查](/zh-Hans/guide/documents/#complex-markdown-and-failed-quality-checks)一致。
 
 <a id="how-to-use-the-tab"></a>
 ## 如何使用此选项卡
@@ -28,7 +28,7 @@
 6. 🔗 链接控件将文件/行提示记录到运行 `ai-i18n-tools dashboard` 的**终端**。
 7. 修复项目中的**源文件**，然后再次运行 `translate-docs` 或 `sync`。如果列表在成功运行后看起来**过时**，请运行 `ai-i18n-tools sync --force-update` 并重新加载仪表板。
 
-对于与 UI 配合使用的基于文件的调试，请使用 `translate-docs --debug-failed` 在重试期间将 `FAILED-TRANSLATION` 详细信息写入 `cacheDir` 下 — 请参阅[缓存行为和 `translate-docs` 标志](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+对于与 UI 配合使用的基于文件的调试，请使用 `translate-docs --debug-failed` 在重试期间将 `FAILED-TRANSLATION` 详细信息写入 `cacheDir` 下 — 请参阅[缓存行为和 `translate-docs` 标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失败与 Markdown 问题
@@ -39,4 +39,4 @@
 | 典型原因 | 错误的模型输出、验证错误 | 不成对的强调、未闭合的代码跨度、链接外的粗体 |
 | 修复 | 编辑源并重新翻译 | 修复源 Markdown，然后重新翻译 |
 
-有关翻译前静态检查，请参阅[Markdown 问题](/guide/translation-dashboard/markdown-issues)。
+有关翻译前静态检查，请参阅[Markdown 问题](/zh-Hans/guide/translation-dashboard/markdown-issues)。

@@ -144,7 +144,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — Fontes em inglês em `docs/`, `pt-BR` e `zh-Hans` árvores de páginas commitadas, mais `theme.pt-BR.json` / `theme.zh-Hans.json`. Execute `pnpm run docs:dev` na porta 3060.
 
-<a id="readme-as-the-docs-homepage"></a>
+<a id="readme-and-the-docs-homepage"></a>
 ## README e a página inicial da documentação
 
 Projetos downstream às vezes copiam `README.md` para o site VitePress como `docs/index.md` (via um script de build ou sincronização manual). Esse padrão compartilha um arquivo entre o GitHub e o site de documentação, mas as regras de link diferem:
@@ -194,7 +194,7 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 
 As fontes raiz em inglês em `docs/` mantêm rotas de site **neutras em relação à localidade** (`/guide/…`). Os arquivos gravados em `docs/<locale>/…` recebem o prefixo de localidade nas rotas de conteúdo interno automaticamente — incluindo **frontmatter de layout inicial** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Ativos públicos compartilhados, como `/logo.svg` e `/translation-dashboard.png`, permanecem sem prefixo em todas as localidades.
 
-<a id="theme-nav-sidebar-links"></a>
+<a id="theme-navsidebar-links"></a>
 ### Links de navegação/barra lateral do tema
 
 `translate-docs` **não** reescreve links em `.vitepress/config.mts`. Os valores `link` da barra de navegação e da barra lateral são criados uma vez em TypeScript e devem ser prefixados por localidade no momento da construção da configuração.
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 Prefixe **`activeMatch`** junto com **`link`** para que o destaque da navegação funcione nas rotas de localidade (`/pt-BR/guide/` e não `/guide/`). URLs externas e ativos públicos compartilhados permanecem inalterados.
+
+Adicione `ai-i18n-tools` como uma **devDependency** no projeto VitePress (consulte `examples/vitepress-docs/package.json`) para que `config.mts` possa importar `prefixVitepressThemeConfigLinks`. O site de documentação principal do ai-i18n-tools importa diretamente de `src/processors/…` porque ele usa o checkout do monorepo; cópias autônomas (degit) devem usar o pacote npm.
 
 **Regras de autoria**
 

@@ -10,7 +10,7 @@ Lance le tableau de bord de traduction (interface utilisateur web locale pour le
 
 **Options clés :** `-p` / `--port`, `--no-open`
 
-**Voir aussi :** [Tableau de bord de traduction](/guide/translation-dashboard/)
+**Voir aussi :** [Tableau de bord de traduction](/fr/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@ Lance le tableau de bord de traduction (interface utilisateur web locale pour le
 
 `-o` : remplace le chemin de sortie (par défaut : `glossary.userGlossary` de la configuration, ou `glossary-user.csv`).
 
-**Voir aussi :** [Glossaire du tableau de bord](/guide/translation-dashboard/glossary)
+**Voir aussi :** [Glossaire du tableau de bord](/fr/guide/translation-dashboard/glossary)
 
 ---
 

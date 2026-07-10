@@ -16,13 +16,13 @@ Kaun sa rewriter chalta hai, yeh `docsOutput.style` par nirbhar karta hai:
 | `"fumadocs"` | Fumadocs link normalizer (`rewriteFumadocsLinks`, default roop se chalu) | `content/docs/…` aur relative `.mdx` paths → locale-neutral routes (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Koi nahi | Source URLs `postProcessing` tak bina badle rehte hain |
 
-Custom `pathTemplate` flat rewriter ko disable kar deta hai jab tak aap `rewriteRelativeLinks: true` ko spasht roop se set na karen. Cross-page `#anchor` handling ke liye [Output layouts](/guide/documents/output-layouts) aur [Anchor links](/guide/documents/anchor-links) dekhen.
+Custom `pathTemplate` flat rewriter ko disable kar deta hai jab tak aap `rewriteRelativeLinks: true` ko spasht roop se set na karen. Cross-page `#anchor` handling ke liye [Output layouts](/hi-Latn/guide/documents/output-layouts) aur [Anchor links](/hi-Latn/guide/documents/anchor-links) dekhen.
 
-VitePress-vishisht lekhak niyamom ke liye, dekhen [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
+VitePress-vishisht lekhak niyamom ke liye, dekhen [VitePress integration — Link conventions](/hi-Latn/guide/integrations/vitepress#link-conventions).
 
-Nextra-vishisht lekhak niyamom ke liye, dekhen [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
+Nextra-vishisht lekhak niyamom ke liye, dekhen [Nextra integration — Link conventions](/hi-Latn/guide/integrations/nextra#link-conventions).
 
-Fumadocs-vishisht lekhak niyamom ke liye, dekhen [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
+Fumadocs-vishisht lekhak niyamom ke liye, dekhen [Fumadocs integration — Link conventions](/hi-Latn/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ Locale segment ko match karne ke liye `search` patterns likhen **jo pehle se hi 
 
 `doc-system` layouts ke liye, flat rewriter nahi chalta hai. `regexAdjustments` source markdown se original URL dekhta hai (aam taur par `/img/screenshots/en-GB/foo.png` jaisa ek absolute path).
 
-Depth-prefix behaviour aur `flatPreserveRelativeDir` ke liye [The flat link rewriter and two-step flow](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhen.
+Depth-prefix behaviour aur `flatPreserveRelativeDir` ke liye [The flat link rewriter and two-step flow](/hi-Latn/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) dekhen.
 
 <a id="replace-placeholders"></a>
 ### `replace` placeholders
@@ -93,7 +93,7 @@ Assets ko shuru se hi locale-coded subdirectory ke under store karein aur segmen
 
 Apne source locale (`en-GB`) ko hardcode karne ke bajaye `[^/]+` ka upyog karein taaki rule tab bhi kaam kare jab `sourceLocale` badalta hai.
 
-Poori jaankari: [Images & Screenshots — Per-locale folder](/guide/images-and-screenshots/per-locale-folder).
+Poori jaankari: [Images & Screenshots — Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder).
 
 <a id="doc-system-static-urls"></a>
 ### Doc-system static URLs
@@ -112,7 +112,7 @@ Docusaurus, Starlight, ya anya `doc-system` sites ke liye jo shared static tree 
 }
 ```
 
-Jab aapka generator iska samarthan karta hai to source markdown mein colocated relative paths (`../assets/name.png`) ko prefer karein — tab kisi `regexAdjustments` bridge ki zaroorat nahi hoti. Layout choices ke liye [Images & Screenshots](/guide/images-and-screenshots/) dekhein.
+Jab aapka generator iska samarthan karta hai to source markdown mein colocated relative paths (`../assets/name.png`) ko prefer karein — tab kisi `regexAdjustments` bridge ki zaroorat nahi hoti. Layout choices ke liye [Images & Screenshots](/hi-Latn/guide/images-and-screenshots/) dekhein.
 
 <a id="when-regex-is-not-needed"></a>
 ### Jab regex ki zaroorat nahi hoti
@@ -156,14 +156,14 @@ Prati README jismein har locale ke liye screenshots aur ek optional language-swi
 
 </details>
 
-Field reference: [Configuration — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`).
+Field reference: [Configuration — `docs`](/hi-Latn/reference/configuration#docs) (`docsOutput.postProcessing`).
 
 <a id="troubleshooting"></a>
 ## Troubleshooting
 
 | Lakshan | Sambhavit karan | Kya check karein |
 | --- | --- | --- |
-| Anuvadit page 404s ek image ya static asset par | Aapke URL layout ke liye `regexAdjustments` gayab ya galat | [Images & Screenshots — Troubleshooting](/guide/images-and-screenshots/troubleshooting) |
-| Link sahi file kholta hai lekin galat `#section` | Anchor slug drift, URL rewriting nahi | [Anchor links](/guide/documents/anchor-links) |
+| Anuvadit page 404s ek image ya static asset par | Aapke URL layout ke liye `regexAdjustments` gayab ya galat | [Images & Screenshots — Troubleshooting](/hi-Latn/guide/images-and-screenshots/troubleshooting) |
+| Link sahi file kholta hai lekin galat `#section` | Anchor slug drift, URL rewriting nahi | [Anchor links](/hi-Latn/guide/documents/anchor-links) |
 | `regexAdjustments` rule ka flat layout par koi asar nahi | `search` pre-rewriter URL ki ummeed karta hai lekin flat layout ne pehle hi depth prefix jod diya hai | Prefixed path ke andar segment ko match karein ([two-step flow](#two-step-flow-with-flat-layout) dekhein) |
 | Invalid regex runtime par skip ho gaya | Galat `search` pattern | CLI rule `description` ke saath warn karta hai; sample anuvadit output ke khilaf patterns ka test karein |

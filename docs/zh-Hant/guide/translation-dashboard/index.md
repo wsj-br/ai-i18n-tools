@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 預設的監聽埠是 **8675**。如果該埠無法使用，伺服器會嘗試下一個埠（最多嘗試 1000 次）並記錄所選的埠。已棄用的別名 `editor` 仍然可用，但會顯示警告 — 請優先使用 `dashboard`。
 
-儀表板 UI 使用與 CLI 相同的地區解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區。請參閱[工具 UI 語言](/guide/tool-ui-language)。
+儀表板 UI 使用與 CLI 相同的地區解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區。請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ ai-i18n-tools dashboard
 
 | 我想… | 分頁 | 指南 |
 | --- | --- | --- |
-| 修正翻譯失敗的文件區段 | **失敗** | [失敗](/guide/translation-dashboard/failures) |
-| 在翻譯前修正來源 Markdown | **Markdown 問題** | [Markdown 問題](/guide/translation-dashboard/markdown-issues) |
-| 覆寫快取的文件翻譯 | **文件** | [文件快取](/guide/translation-dashboard/documentation-cache) |
-| 修正 UI 標籤 | **UI 字串** | [UI 字串與複數](/guide/translation-dashboard/ui-strings) |
-| 修正複數形式 (`one`、`other`、…) | **UI 複數** | [UI 字串與複數](/guide/translation-dashboard/ui-strings) |
-| 鎖定 UI 翻譯的術語 | **詞彙表** | [詞彙表](/guide/translation-dashboard/glossary) |
-| 查看快取覆蓋率和模型使用情況 | **統計資料** | [統計資料](/guide/translation-dashboard/statistics) |
+| 修正翻譯失敗的文件區段 | **失敗** | [失敗](/zh-Hant/guide/translation-dashboard/failures) |
+| 在翻譯前修正來源 Markdown | **Markdown 問題** | [Markdown 問題](/zh-Hant/guide/translation-dashboard/markdown-issues) |
+| 覆寫快取的文件翻譯 | **文件** | [文件快取](/zh-Hant/guide/translation-dashboard/documentation-cache) |
+| 修正 UI 標籤 | **UI 字串** | [UI 字串與複數](/zh-Hant/guide/translation-dashboard/ui-strings) |
+| 修正複數形式 (`one`、`other`、…) | **UI 複數** | [UI 字串與複數](/zh-Hant/guide/translation-dashboard/ui-strings) |
+| 鎖定 UI 翻譯的術語 | **詞彙表** | [詞彙表](/zh-Hant/guide/translation-dashboard/glossary) |
+| 查看快取覆蓋率和模型使用情況 | **統計資料** | [統計資料](/zh-Hant/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## 編輯後

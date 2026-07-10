@@ -10,7 +10,7 @@ Nested JSON ko `json[]` ke anusaar anuvaadit karein (jismein `features.translate
 
 **Mukhya vikalp:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**Dekhein bhi:** [JSON](/guide/json)
+**Dekhein bhi:** [JSON](/hi-Latn/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@ Nested JSON ko `json[]` ke anusaar anuvaadit karein (jismein `features.translate
 
 **Mukhya vikalp:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**Dekhein bhi:** [SVG anuvaad](/guide/svg-translation/)
+**Dekhein bhi:** [SVG anuvaad](/hi-Latn/guide/svg-translation/)

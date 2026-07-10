@@ -2,7 +2,7 @@
 # よくある間違いとトラブルシューティング
 
 **スクリーンショットパスにロケールディレクトリがありません**
-`images/screenshots/screenshot.png` — ロケールのバリアントを区別できず、書き換えできません。[ロケールごとのフォルダー](/guide/images-and-screenshots/per-locale-folder) の書き換えを使用する前に、`images/screenshots/<locale>/screenshot.png` に再構築してください。
+`images/screenshots/screenshot.png` — ロケールのバリアントを区別できず、書き換えできません。[ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder) の書き換えを使用する前に、`images/screenshots/<locale>/screenshot.png` に再構築してください。
 
 **正規表現にハードコードされたソースロケール**
 `"search": "screenshots/en-GB/"` — `sourceLocale`が変更されると、エラーなしに失敗します。代わりに`"search": "screenshots/[^/]+/"`を使用してください。

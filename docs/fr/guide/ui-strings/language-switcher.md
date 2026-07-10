@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## Interface utilisateur du sélecteur de langue
 
-Utilisez le manifeste `ui-languages.json` pour créer un sélecteur de langue. `ai-i18n-tools` exporte deux assistants d'affichage — consultez [Assistants d'exécution → Assistants d'affichage](/guide/runtime-helpers#display-helpers) pour les signatures.
+Utilisez le manifeste `ui-languages.json` pour créer un sélecteur de langue. `ai-i18n-tools` exporte deux assistants d'affichage — consultez [Assistants d'exécution → Assistants d'affichage](/fr/guide/runtime-helpers#display-helpers) pour les signatures.
 
 <details>
 <summary>Exemple de composant LanguageSelect (React)</summary>
@@ -84,7 +84,7 @@ Le manifeste est généré par `generate-ui-languages` ou `extract` à partir de
 <a id="rtl-languages"></a>
 ## Langues RTL
 
-`ai-i18n-tools` exporte `getTextDirection(lng)` et `applyDirection(lng)` — consultez [Assistants d'exécution → Assistants RTL](/guide/runtime-helpers#rtl-helpers).
+`ai-i18n-tools` exporte `getTextDirection(lng)` et `applyDirection(lng)` — consultez [Assistants d'exécution → Assistants RTL](/fr/guide/runtime-helpers#rtl-helpers).
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` définit `document.documentElement.dir` (navigateur) ou est une opération nulle (Node.js). Passez un argument `element` facultatif pour cibler un élément spécifique. Connectez-le dans votre amorçage i18n — [Connecter i18next](/guide/ui-strings/i18next-runtime).
+`applyDirection` définit `document.documentElement.dir` (navigateur) ou est une opération nulle (Node.js). Passez un argument `element` facultatif pour cibler un élément spécifique. Connectez-le dans votre amorçage i18n — [Connecter i18next](/fr/guide/ui-strings/i18next-runtime).
 
 Pour les chaînes pouvant contenir des flèches `→`, inversez-les dans les mises en page RTL :
 

@@ -6,12 +6,12 @@ ai-i18n-tools est un outil en ligne de commande et une boîte à outils qui vous
 <a id="translation-modes"></a>
 ## Modes de traduction
 
-- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` (et les marqueurs similaires) du code source JS/TS et écrit des fichiers JSON plats par locale pour i18next ou une recherche statique. Commandes : `extract`, `translate-ui`. Guide : [Chaînes d'interface utilisateur](/guide/ui-strings/).
-- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths`. Fonctionne avec VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro et d'autres sites de documentation statiques. Commande : `translate-docs`. Guide : [Documents](/guide/documents/).
-- **JSON** — Traduit les bundles de locales JSON imbriqués (libellés de thème, remplacements i18n, copie d'application non présente dans la source) définis dans `json[]` de niveau supérieur. Commande : `translate-json`. Guide : [JSON](/guide/json).
-- **SVG** — Traduit le texte visible dans les illustrations SVG (`<text>`, `<title>`, `<desc>`) et écrit un fichier de sortie par locale. Séparé de la traduction de documents — `translate-docs` ne modifie pas les ressources SVG. Commande : `translate-svg`. Guide : [Traduction SVG](/guide/svg-translation/).
+- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` (et les marqueurs similaires) du code source JS/TS et écrit des fichiers JSON plats par locale pour i18next ou une recherche statique. Commandes : `extract`, `translate-ui`. Guide : [Chaînes d'interface utilisateur](/fr/guide/ui-strings/).
+- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths`. Fonctionne avec VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro et d'autres sites de documentation statiques. Commande : `translate-docs`. Guide : [Documents](/fr/guide/documents/).
+- **JSON** — Traduit les bundles de locales JSON imbriqués (libellés de thème, remplacements i18n, copie d'application non présente dans la source) définis dans `json[]` de niveau supérieur. Commande : `translate-json`. Guide : [JSON](/fr/guide/json).
+- **SVG** — Traduit le texte visible dans les illustrations SVG (`<text>`, `<title>`, `<desc>`) et écrit un fichier de sortie par locale. Séparé de la traduction de documents — `translate-docs` ne modifie pas les ressources SVG. Commande : `translate-svg`. Guide : [Traduction SVG](/fr/guide/svg-translation/).
 
-Les quatre modes utilisent le [fournisseur LLM](/guide/providers-and-models) actif, partagent le même fichier de configuration et réutilisent un cache SQLite afin que les réexécutions n'envoient que le texte nouveau ou modifié au modèle.
+Les quatre modes utilisent le [fournisseur LLM](/fr/guide/providers-and-models) actif, partagent le même fichier de configuration et réutilisent un cache SQLite afin que les réexécutions n'envoient que le texte nouveau ou modifié au modèle.
 
 <a id="which-should-i-use"></a>
 ## Lequel dois-je utiliser ?
@@ -23,30 +23,30 @@ Les quatre modes utilisent le [fournisseur LLM](/guide/providers-and-models) act
 | Fichiers de langue JSON imbriqués autonomes | JSON | `translate-json` |
 | Diagrammes ou illustrations avec des étiquettes en SVG | SVG | `translate-svg` |
 
-De nombreux projets combinent les modes — par exemple, les chaînes d'interface utilisateur et les documents pour un site VitePress, ou les documents et le SVG pour des guides illustrés. Consultez [Démarrage rapide](/guide/quick-start) pour les modèles de squelette et [Configuration](/reference/configuration) pour le schéma de configuration complet.
+De nombreux projets combinent les modes — par exemple, les chaînes d'interface utilisateur et les documents pour un site VitePress, ou les documents et le SVG pour des guides illustrés. Consultez [Démarrage rapide](/fr/guide/quick-start) pour les modèles de squelette et [Configuration](/fr/reference/configuration) pour le schéma de configuration complet.
 
 <a id="examples"></a>
 ## Exemples
 
-Le dépôt contient des exemples de projets exécutables sous `examples/` — chacun avec sa propre configuration, ses sorties de langue validées et son fichier README. Vous pouvez explorer les fichiers traduits sans clé API ; la réexécution de la traduction nécessite une clé de fournisseur (voir [Fournisseurs et modèles](/guide/providers-and-models)).
+Le dépôt contient des exemples de projets exécutables sous `examples/` — chacun avec sa propre configuration, ses sorties de langue validées et son fichier README. Vous pouvez explorer les fichiers traduits sans clé API ; la réexécution de la traduction nécessite une clé de fournisseur (voir [Fournisseurs et modèles](/fr/guide/providers-and-models)).
 
 | Exemple | Ce qu'il montre |
 | --- | --- |
-| [console-app](/examples#console-app) | Plus petite application de bout en bout : chaînes d'interface utilisateur `t()` et traduction du README |
-| [nextjs-app](/examples#nextjs-app) | Interface utilisateur Next.js, pluriels, SVG, site de documentation Docusaurus, tableau de bord |
-| [astro-website](/examples#astro-website) | Site marketing Astro : traduction HTML pleine page et chaînes `t()` |
-| [astro-docs](/examples#astro-docs) | Site de documentation Astro Starlight |
-| [vitepress-docs](/examples#vitepress-docs) | Documentation VitePress et catalogue de thèmes |
-| [nextra-docs](/examples#nextra-docs) | Documentation Nextra, plus les libellés de la barre latérale `_meta.ts` et le dictionnaire de thèmes |
-| [fumadocs-docs](/examples#fumadocs-docs) | Documentation Fumadocs plus les libellés de la barre latérale `meta.json` et le catalogue d'interface utilisateur |
-| [multi-provider](/examples#multi-provider) | Comparer les fournisseurs LLM sur le même document |
-| [test-markdown](/examples#test-markdown) | Tests de stress du pipeline Markdown (CJK, Devanagari, cas limites) |
+| [console-app](/fr/examples#console-app) | Plus petite application de bout en bout : chaînes d'interface utilisateur `t()` et traduction du README |
+| [nextjs-app](/fr/examples#nextjs-app) | Interface utilisateur Next.js, pluriels, SVG, site de documentation Docusaurus, tableau de bord |
+| [astro-website](/fr/examples#astro-website) | Site marketing Astro : traduction HTML pleine page et chaînes `t()` |
+| [astro-docs](/fr/examples#astro-docs) | Site de documentation Astro Starlight |
+| [vitepress-docs](/fr/examples#vitepress-docs) | Documentation VitePress et catalogue de thèmes |
+| [nextra-docs](/fr/examples#nextra-docs) | Documentation Nextra, plus les libellés de la barre latérale `_meta.ts` et le dictionnaire de thèmes |
+| [fumadocs-docs](/fr/examples#fumadocs-docs) | Documentation Fumadocs plus les libellés de la barre latérale `meta.json` et le catalogue d'interface utilisateur |
+| [multi-provider](/fr/examples#multi-provider) | Comparer les fournisseurs LLM sur le même document |
+| [test-markdown](/fr/examples#test-markdown) | Tests de stress du pipeline Markdown (CJK, Devanagari, cas limites) |
 
-Voir [Exemples](/examples) pour les commandes de copie `npx degit` et un guide de choix.
+Voir [Exemples](/fr/examples) pour les commandes de copie `npx degit` et un guide de choix.
 
 <a id="next-steps"></a>
 ## Prochaines étapes
 
-1. [Installation](/guide/installation) — installez le package et définissez votre clé API de fournisseur.
-2. [Démarrage rapide](/guide/quick-start) — créez une configuration et exécutez votre première traduction.
-3. [Fournisseurs et modèles](/guide/providers-and-models) — choisissez un fournisseur, une chaîne de secours de modèle et une substitution `-P`.
+1. [Installation](/fr/guide/installation) — installez le package et définissez votre clé API de fournisseur.
+2. [Démarrage rapide](/fr/guide/quick-start) — créez une configuration et exécutez votre première traduction.
+3. [Fournisseurs et modèles](/fr/guide/providers-and-models) — choisissez un fournisseur, une chaîne de secours de modèle et une substitution `-P`.

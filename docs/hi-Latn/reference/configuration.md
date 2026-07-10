@@ -18,7 +18,7 @@ Translate karne ke liye BCP-47 locale codes ka array (jaise `["de", "fr", "es", 
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (vaikalpik)
 
-Tool ke apne UI bhasha ke liye BCP-47 code (CLI help, logs/summaries, aur Translation Dashboard). Yah `sourceLocale` / `targetLocales` se swatantra hai, aur `-L` / `--ui-lang` flag aur `AI_I18N_LANG` environment variable dwara override kiya jata hai. Anjaan values source locale (`en-GB`) mein gracefully degrade ho jate hain — koi strict validation nahi hai. Dekhen [Tool UI language](/guide/tool-ui-language).
+Tool ke apne UI bhasha ke liye BCP-47 code (CLI help, logs/summaries, aur Translation Dashboard). Yah `sourceLocale` / `targetLocales` se swatantra hai, aur `-L` / `--ui-lang` flag aur `AI_I18N_LANG` environment variable dwara override kiya jata hai. Anjaan values source locale (`en-GB`) mein gracefully degrade ho jate hain — koi strict validation nahi hai. Dekhen [Tool UI language](/hi-Latn/guide/tool-ui-language).
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (vikalpik)
@@ -276,11 +276,11 @@ Anuvaad ke baad saapeksh linkon ko phir se likhen (jab `docsOutput.style = "flat
 - `docsOutput.linkRewriteDocsRoot`
 Flat-link rewrite prefixes ki ganna karte samay upyog kiya gaya repo root. Aam taur par ise `"."` ke roop mein chhod den jab tak ki aapke anuvaadit dastavez ek alag project root ke tahat na hon.
 - `docsOutput.rewriteVitepressLinks`
-Jab `true` ho, to anuvaad ke baad VitePress link normalizer chalaen. Jab `docsOutput.style` `"vitepress"` ho to swatah saksham ho jaata hai. Kisi bhi `doc-system` layout ke saath upyog karen jahan locale folder `docsRoot` ke niche English ke bagal mein baithe hon. README-style `docs/guide/…` paths ko site routes (`/guide/…`) aur locale-relative `../guide/…` links mein phir se likhta hai. VitePress tree ke bahar repo files (`LICENSE`, `examples/`) ke links ke liye, English source mein poore URLs ka upyog karen — dekhen [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
+Jab `true` ho, to anuvaad ke baad VitePress link normalizer chalaen. Jab `docsOutput.style` `"vitepress"` ho to swatah saksham ho jaata hai. Kisi bhi `doc-system` layout ke saath upyog karen jahan locale folder `docsRoot` ke niche English ke bagal mein baithe hon. README-style `docs/guide/…` paths ko site routes (`/guide/…`) aur locale-relative `../guide/…` links mein phir se likhta hai. VitePress tree ke bahar repo files (`LICENSE`, `examples/`) ke links ke liye, English source mein poore URLs ka upyog karen — dekhen [VitePress integration — README as the docs homepage](/hi-Latn/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-Jab `true` ho, to anuvaad ke baad Nextra link normalizer chalaen. Jab `docsOutput.style` `"nextra"` ho to swatah saksham ho jaata hai. Next.js `i18n` ke liye `content/en/…` aur saapeksh `.mdx` paths ko locale-neutral site routes (`/guide/…`) mein phir se likhta hai. Dekhen [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
+Jab `true` ho, to anuvaad ke baad Nextra link normalizer chalaen. Jab `docsOutput.style` `"nextra"` ho to swatah saksham ho jaata hai. Next.js `i18n` ke liye `content/en/…` aur saapeksh `.mdx` paths ko locale-neutral site routes (`/guide/…`) mein phir se likhta hai. Dekhen [Nextra integration — Link conventions](/hi-Latn/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (default) ya `"dir"`. Dot English sources ke bagal mein `stem.{locale}.mdx` likhta hai; dir Nextra jaise locale folder likhta hai. Dekhen [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
+`"dot"` (default) ya `"dir"`. Dot English sources ke bagal mein `stem.{locale}.mdx` likhta hai; dir Nextra jaise locale folder likhta hai. Dekhen [Fumadocs integration — Page layout](/hi-Latn/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 Jab `true` ho, to anuvaad ke baad Fumadocs link normalizer chalaen. Jab `docsOutput.style` `"fumadocs"` ho to swatah saksham ho jaata hai. Content paths aur saapeksh `.mdx` links ko `/docs/…` routes mein phir se likhta hai.
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ Udaaharan: `"protectKeys": ["slug", "code"]` `{ slug: 'getting-started', title: 
 <a id="json"></a>
 ### `json`
 
-Nested JSON translation pipelines ka top-level array. Sirf tab upyog kiya jaata hai jab `features.translateJson` true ho (`translate-json` ya `sync` ka JSON stage). [JSON](/guide/json) dekhein.
+Nested JSON translation pipelines ka top-level array. Sirf tab upyog kiya jaata hai jab `features.translateJson` true ho (`translate-json` ya `sync` ka JSON stage). [JSON](/hi-Latn/guide/json) dekhein.
 
 | Field | Vivaran |
 |-------|-------------|

@@ -29,7 +29,7 @@
 
 항목의 `models[locale]`이(가) `user-edited`(으)로 설정되어 있습니다. 일반 `sync` 또는 `translate-ui`을(를) 실행하여 플랫 로케일 파일(`de.json` 등)을 새로 고치십시오. **절대** `--force`을(를) 사용하지 마십시오. 모든 항목을 다시 번역하여 수동 수정을 덮어쓸 수 있습니다.
 
-`glossary.autoAddUserEditedToGlossary`가 `true`(기본값)인 경우 다음 `translate-ui` 또는 `sync`는 사용자 용어집 CSV에 편집 내용을 자동으로 추가할 수 있습니다. [구성](/reference/configuration#glossary)을 참조하십시오.
+`glossary.autoAddUserEditedToGlossary`가 `true`(기본값)인 경우 다음 `translate-ui` 또는 `sync`는 사용자 용어집 CSV에 편집 내용을 자동으로 추가할 수 있습니다. [구성](/ko/reference/configuration#glossary)을 참조하십시오.
 
 <a id="delete"></a>
 ### 삭제

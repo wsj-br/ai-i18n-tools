@@ -8,12 +8,12 @@ Diseñado para cualquier proyecto JS/TS que use i18next: aplicaciones React, Nex
 
 | Tu aplicación | Leer siguiente |
 | --- | --- |
-| React / Next.js / Node + i18next | [Conectar i18next](/guide/ui-strings/i18next-runtime) (Paso 4) |
-| HTML plano (sin `t()` en el marcado) | [Aplicaciones HTML planas](/guide/ui-strings/plain-html) |
-| Sitio de marketing de Astro (híbrido) | [Sitio web de Astro](/guide/ui-strings/astro-website) |
-| Reglas de `t()`, interpolación, plurales | [Llamadas a t() y plurales](/guide/ui-strings/t-calls-and-plurals) |
-| Selector de idioma / RTL | [Selector de idioma y RTL](/guide/ui-strings/language-switcher) |
-| Firmas de API en tiempo de ejecución | [Ayudantes en tiempo de ejecución](/guide/runtime-helpers) |
+| React / Next.js / Node + i18next | [Conectar i18next](/es/guide/ui-strings/i18next-runtime) (Paso 4) |
+| HTML plano (sin `t()` en el marcado) | [Aplicaciones HTML planas](/es/guide/ui-strings/plain-html) |
+| Sitio de marketing de Astro (híbrido) | [Sitio web de Astro](/es/guide/ui-strings/astro-website) |
+| Reglas de `t()`, interpolación, plurales | [Llamadas a t() y plurales](/es/guide/ui-strings/t-calls-and-plurals) |
+| Selector de idioma / RTL | [Selector de idioma y RTL](/es/guide/ui-strings/language-switcher) |
+| Firmas de API en tiempo de ejecución | [Ayudantes en tiempo de ejecución](/es/guide/runtime-helpers) |
 
 <a id="step-1-initialise"></a>
 ## Paso 1: Inicializar
@@ -29,7 +29,7 @@ Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown`. Edítal
 - `ui.sourceRoots` - directorios o patrones glob para escanear llamadas a `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - ubicación donde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
 - `ui.flatOutputDir`: dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
-- `providers.<active>.uiModels` (opcional): lista de modelos solo de interfaz de usuario ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada coincidente de `localeModels`, antes de `translationModels`). Consulta [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain).
+- `providers.<active>.uiModels` (opcional): lista de modelos solo de interfaz de usuario ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada coincidente de `localeModels`, antes de `translationModels`). Consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Paso 2: Extraer cadenas
@@ -40,7 +40,7 @@ npx ai-i18n-tools extract
 
 Analiza todos los archivos JS/TS dentro de `ui.sourceRoots` en busca de llamadas a `t("literal")` y `i18n.t("literal")`. Escribe (o combina en) `ui.stringsJson`.
 
-El escáner es configurable: añade nombres de funciones personalizadas a través de `ui.uiExtractor.funcNames` (o el legado `ui.reactExtractor.funcNames`). Para páginas y componentes de Astro, añade `.astro` a `ui.uiExtractor.extensions`. Para HTML plano, consulta [Aplicaciones HTML planas](/guide/ui-strings/plain-html).
+El escáner es configurable: añade nombres de funciones personalizadas a través de `ui.uiExtractor.funcNames` (o el legado `ui.reactExtractor.funcNames`). Para páginas y componentes de Astro, añade `.astro` a `ui.uiExtractor.extensions`. Para HTML plano, consulta [Aplicaciones HTML planas](/es/guide/ui-strings/plain-html).
 
 <a id="step-3-translate-ui-strings"></a>
 ## Paso 3: Traducir cadenas de la interfaz de usuario
@@ -49,7 +49,7 @@ El escáner es configurable: añade nombres de funciones personalizadas a travé
 npx ai-i18n-tools translate-ui
 ```
 
-Lee `strings.json`, envía lotes al proveedor de LLM activo para cada configuración regional de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. La selección del modelo utiliza la cadena de la interfaz de usuario: `localeModels(locale)` → `uiModels` → `translationModels` (consulta [Proveedores y modelos](/guide/providers-and-models#model-fallback-chain)).
+Lee `strings.json`, envía lotes al proveedor de LLM activo para cada configuración regional de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. La selección del modelo utiliza la cadena de la interfaz de usuario: `localeModels(locale)` → `uiModels` → `translationModels` (consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain)).
 
 <a id="per-locale-model-overrides"></a>
 ### Anulaciones de modelo por configuración regional
@@ -60,7 +60,7 @@ Para cada entrada, `translate-ui` almacena el **ID de modelo del proveedor activ
 
 > **Nota:** Las ediciones del Panel a las cadenas de la interfaz de usuario se encuentran en `strings.json`, no en la caché de documentación de SQLite. Ejecuta `sync` o `translate-ui` (sin bandera especial) para reescribir los archivos de idioma planos del catálogo; `--force-update` **no** se reenvía al paso de la interfaz de usuario. Evita `--force` en los comandos de la interfaz de usuario después de ediciones manuales: vuelve a traducir cada entrada y puede sobrescribir tus filas de `user-edited`.
 
-Luego, conecta i18next en tiempo de ejecución — [Conectar i18next](/guide/ui-strings/i18next-runtime).
+Luego, conecta i18next en tiempo de ejecución — [Conectar i18next](/es/guide/ui-strings/i18next-runtime).
 
 <a id="exporting-to-xliff-20-optional"></a>
 ## Exportar a XLIFF 2.0 (opcional)

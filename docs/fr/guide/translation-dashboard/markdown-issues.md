@@ -8,7 +8,7 @@ Ce n'est **pas** la même chose que les **Échecs**, qui enregistrent la sortie 
 <a id="when-to-use-it"></a>
 ## Quand l'utiliser
 
-Utilisez cet onglet lorsque vous souhaitez corriger le **markdown source** avant de dépenser des jetons — en particulier lorsque les contrôles de qualité continuent d'échouer sur la structure dans l'onglet [Échecs](/guide/translation-dashboard/failures).
+Utilisez cet onglet lorsque vous souhaitez corriger le **markdown source** avant de dépenser des jetons — en particulier lorsque les contrôles de qualité continuent d'échouer sur la structure dans l'onglet [Échecs](/fr/guide/translation-dashboard/failures).
 
 <a id="how-to-use-the-tab"></a>
 ## Comment utiliser l'onglet
@@ -39,4 +39,4 @@ Corrigez le fichier source, puis relancez la traduction.
 | Code en ligne non fermé | Étendue d'apostrophes inversées ouverte mais non fermée |
 | `STRONG_OUTSIDE_LINK` | Les marqueurs gras enveloppent un lien markdown — déplacez le gras à l'intérieur du texte du lien |
 
-Voir aussi [Markdown complexe et échecs des contrôles de qualité](/guide/documents/#complex-markdown-and-failed-quality-checks).
+Voir aussi [Markdown complexe et échecs des contrôles de qualité](/fr/guide/documents/#complex-markdown-and-failed-quality-checks).

@@ -74,14 +74,17 @@ describe("normalizeOneVitepressLink", () => {
   });
 
   it("prefixes content routes for locale output", () => {
-    expect(normalizeOneVitepressLink("/guide/quick-start", ctx({ localeRoutePrefix: "/pt-BR" }))).toBe(
-      "/pt-BR/guide/quick-start"
-    );
+    expect(
+      normalizeOneVitepressLink("/guide/quick-start", ctx({ localeRoutePrefix: "/pt-BR" }))
+    ).toBe("/pt-BR/guide/quick-start");
     expect(normalizeOneVitepressLink("/logo.svg", ctx({ localeRoutePrefix: "/pt-BR" }))).toBe(
       "/logo.svg"
     );
     expect(
-      normalizeOneVitepressLink("https://github.com/wsj-br/ai-i18n-tools", ctx({ localeRoutePrefix: "/pt-BR" }))
+      normalizeOneVitepressLink(
+        "https://github.com/wsj-br/ai-i18n-tools",
+        ctx({ localeRoutePrefix: "/pt-BR" })
+      )
     ).toBe("https://github.com/wsj-br/ai-i18n-tools");
   });
 

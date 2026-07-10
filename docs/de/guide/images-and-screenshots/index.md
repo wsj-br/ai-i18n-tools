@@ -33,7 +33,7 @@ Wenn Sie später i18n hinzufügen, schreibt Ihr `take-screenshots`-Skript für j
 
 Der generische `[^/]+`-Regex stimmt mit jedem Namen eines Gebietsschema-Ordners überein – codieren Sie Ihr Quellgebietsschema (z. B. `screenshots/en-GB/`) nicht fest, da dies zu Problemen führt, wenn sich `sourceLocale` jemals ändert.
 
-Wenn Sie mit Pfaden beginnen, die das Unterverzeichnis des Gebietsschemas (`images/screenshots/translate.png`) weglassen, müssen Sie den gesamten Baum umstrukturieren, bevor die Umschreibung [pro Gebietsschema-Ordner](/guide/images-and-screenshots/per-locale-folder) funktionieren kann.
+Wenn Sie mit Pfaden beginnen, die das Unterverzeichnis des Gebietsschemas (`images/screenshots/translate.png`) weglassen, müssen Sie den gesamten Baum umstrukturieren, bevor die Umschreibung [pro Gebietsschema-Ordner](/de/guide/images-and-screenshots/per-locale-folder) funktionieren kann.
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### Doc-System-Websites (`docsOutput.style = "doc-system"`)
@@ -44,7 +44,7 @@ Verwenden Sie dies für statische Dokumentationsseiten, die übersetzte Seiten i
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Setzen Sie `docs[].docsOutput.docsRoot` auf Ihr englisches Quellverzeichnis (z. B. `"docs"` oder `"src/content/docs"`). Wenn Sie `style: "doc-system"` direkt festlegen, müssen Sie auch `localeSubpath` auf das Pfadsegment setzen, das Ihre Website zwischen `{locale}/` und der übersetzten Datei verwendet. Die Aliase `"docusaurus"`, `"astro-starlight"` und `"vitepress"` sind voreingestellte `doc-system`-Layouts mit Standardwerten für `localeSubpath` (siehe [Ausgabelayouts](/guide/documents/output-layouts)).
+Setzen Sie `docs[].docsOutput.docsRoot` auf Ihr englisches Quellverzeichnis (z. B. `"docs"` oder `"src/content/docs"`). Wenn Sie `style: "doc-system"` direkt festlegen, müssen Sie auch `localeSubpath` auf das Pfadsegment setzen, das Ihre Website zwischen `{locale}/` und der übersetzten Datei verwendet. Die Aliase `"docusaurus"`, `"astro-starlight"` und `"vitepress"` sind voreingestellte `doc-system`-Layouts mit Standardwerten für `localeSubpath` (siehe [Ausgabelayouts](/de/guide/documents/output-layouts)).
 
 | Voreingestellter Alias | Standard-`localeSubpath` | Beispiel-Ausgabe |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ Zwei Gewohnheiten beim Projektaufbau vermeiden später alle Regex-Brückenschlä
 
 Verweisen Sie in den Quell-Markdown-Dateien auf jedes Asset mit dem stabilen relativen Pfad `../assets/name.ext`. Verwenden Sie niemals absolute `/img/`- oder `/assets/`-URLs für Dokumentations-Assets – diese URLs unterscheiden sich zwischen der englischen Quelle (ausgeliefert von `static/`) und den übersetzten Sprachversionen (lokal mit den übersetzten Dokumenten abgelegt), was eine `regexAdjustments`-Regel erfordert, um sie zu verbinden.
 
-Wenn Sie später i18n hinzufügen, übernimmt das Screenshot-Skript die `getScreenshotDir`-Aufteilung (siehe [Kollokierte Screenshots](/guide/images-and-screenshots/colocated-screenshots)) und `translate-svg` verwendet ein `pathTemplate`. Es sind keine Regex-Anpassungen erforderlich.
+Wenn Sie später i18n hinzufügen, übernimmt das Screenshot-Skript die `getScreenshotDir`-Aufteilung (siehe [Kollokierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots)) und `translate-svg` verwendet ein `pathTemplate`. Es sind keine Regex-Anpassungen erforderlich.
 
 > **Hinweis:** `resolve.symlinks = false` in einem `next.config.ts` deaktiviert die Auflösung symbolischer Links nur für den Next.js-Anwendungs-Webpack-Build. Es hat keine Auswirkungen auf den Docusaurus-Dokumentationsseiten-Build, der eine separate Webpack-Instanz verwendet.
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG-Layouts werden im Leitfaden [SVG-Übersetzung](/guide/svg-translation/) behandelt.
+SVG-Layouts werden im Leitfaden [SVG-Übersetzung](/de/guide/svg-translation/) behandelt.
 
 | Layout | Asset-Typ | Site-Typ | Tool-Mechanismus |
 |---|---|---|---|
-| [Geteiltes Bild](/guide/images-and-screenshots/shared-image) | Raster (geteilt) | `docsOutput.style = "flat"`-Dokumente | Pro-Datei-Link-Umschreiber; normalerweise kein Regex |
-| [Pro Gebietsschema-Ordner](/guide/images-and-screenshots/per-locale-folder) | Raster (pro Gebietsschema) | `"flat"` oder `"doc-system"` (inkl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` Gebietsschema-Segmenttausch |
-| [Kollokierte Screenshots](/guide/images-and-screenshots/colocated-screenshots) | Raster (kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | Screenshot-Skript platziert Dateien; kein Regex |
-| [Web-App-SVG](/guide/svg-translation/translated-svg-web-app) | SVG (übersetzt) | Web-App | `translate-svg` mit `svg.style = "flat"` |
-| [Kollokiertes SVG](/guide/svg-translation/translated-svg-colocated) | SVG (übersetzt, kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | `translate-svg` mit `svg.style = "nested"` + `pathTemplate` |
+| [Geteiltes Bild](/de/guide/images-and-screenshots/shared-image) | Raster (geteilt) | `docsOutput.style = "flat"`-Dokumente | Pro-Datei-Link-Umschreiber; normalerweise kein Regex |
+| [Pro Gebietsschema-Ordner](/de/guide/images-and-screenshots/per-locale-folder) | Raster (pro Gebietsschema) | `"flat"` oder `"doc-system"` (inkl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` Gebietsschema-Segmenttausch |
+| [Kollokierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots) | Raster (kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | Screenshot-Skript platziert Dateien; kein Regex |
+| [Web-App-SVG](/de/guide/svg-translation/translated-svg-web-app) | SVG (übersetzt) | Web-App | `translate-svg` mit `svg.style = "flat"` |
+| [Kollokiertes SVG](/de/guide/svg-translation/translated-svg-colocated) | SVG (übersetzt, kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | `translate-svg` mit `svg.style = "nested"` + `pathTemplate` |

@@ -51,6 +51,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## クイックインストール
 
 公開されているパッケージは**ESM専用**です。Node.js `>=22.16.0` が必要です。
@@ -64,7 +65,8 @@ npx ai-i18n-tools sync
 
 CLIの呼び出しの詳細については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
 
-## どのパイプラインを使用すべきか？
+<a id="which-pipeline-should-i-use"></a>
+## どのパイプラインを使用すべきですか？
 
 | コンテンツ | コマンド |
 | --- | --- |
@@ -74,6 +76,7 @@ CLIの呼び出しの詳細については[インストール](/ja/guide/install
 
 SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パスを使用します。完全な比較については[ai-i18n-toolsとは？](/ja/guide/what-is-ai-i18n-tools)を参照してください。
 
+<a id="explore-the-documentation"></a>
 ## ドキュメントを探索する
 
 - [**ガイド**](/ja/guide/what-is-ai-i18n-tools) — 翻訳モード、インストール、クイックスタート、フレームワークの統合

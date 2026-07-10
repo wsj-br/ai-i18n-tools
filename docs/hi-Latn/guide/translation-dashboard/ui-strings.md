@@ -29,7 +29,7 @@ In tabs ka upyog tab karein jab `translate-ui` ya `sync` ke baad kisi UI label y
 
 Entry ka `models[locale]` `user-edited` par set hai. Flat locale files (`de.json`, aadi) ko refresh karne ke liye plain `sync` ya `translate-ui` chalayein. `--force` ka upyog **na** karein — yeh har entry ko phir se translate karta hai aur manual fixes ko overwrite kar sakta hai.
 
-Jab `glossary.autoAddUserEditedToGlossary` `true` (default) hota hai, toh agla `translate-ui` ya `sync` aapke edit ko user glossary CSV mein automatically jod sakta hai — [Configuration](/reference/configuration#glossary) dekhein.
+Jab `glossary.autoAddUserEditedToGlossary` `true` (default) hota hai, toh agla `translate-ui` ya `sync` aapke edit ko user glossary CSV mein automatically jod sakta hai — [Configuration](/hi-Latn/reference/configuration#glossary) dekhein.
 
 <a id="delete"></a>
 ### Delete karein

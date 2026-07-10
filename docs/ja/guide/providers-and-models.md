@@ -28,7 +28,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 **プリセット以外**のキーについては、`baseUrl` と `apiKeyEnv` を設定で明示的に設定します。
 
-アクティブなプロバイダーの API キーを環境または `.env` ファイルに設定します。CLI は、シェルですでに設定されている変数を上書きすることなく、作業ディレクトリから `.env` を自動的にロードします。[環境変数](/reference/environment-variables) を参照してください。
+アクティブなプロバイダーの API キーを環境または `.env` ファイルに設定します。CLI は、シェルですでに設定されている変数を上書きすることなく、作業ディレクトリから `.env` を自動的にロードします。[環境変数](/ja/reference/environment-variables) を参照してください。
 
 <a id="model-fallback-chain"></a>
 ### モデルフォールバックチェーン
@@ -44,7 +44,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 オプションの `providers.<active>.uiModels` は、ロケールごとのオーバーライドが一致した後、グローバルな `translationModels` チェーンの前に試行される UI 専用のリストです。オプションの `providers.<active>.localeModels` は、BCP-47 ロケールを、すべてのパイプラインでそのロケールに対して**最初に**試行されるモデルにマッピングします (`pt-br` は `pt-BR` と一致します)。`localeModels` エントリが一致しない場合、パイプライン固有の階層のみが適用されます。
 
-プロバイダーとモデルは、言語によってコスト、速度、品質が異なります。`npx ai-i18n-tools init` のデフォルトリストを出発点として扱い、ロケールで一貫して結果が悪い場合は拡張するか、そのロケールに `localeModels` エントリを追加してください。完全なデフォルトと根拠: [設定 — `provider` と `providers`](/reference/configuration#provider-and-providers)。
+プロバイダーとモデルは、言語によってコスト、速度、品質が異なります。`npx ai-i18n-tools init` のデフォルトリストを出発点として扱い、ロケールで一貫して結果が悪い場合は拡張するか、そのロケールに `localeModels` エントリを追加してください。完全なデフォルトと根拠: [設定 — `provider` と `providers`](/ja/reference/configuration#provider-and-providers)。
 
 最小構成の例 (OpenRouter):
 
@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-コマンドの詳細: [CLI リファレンス](/reference/cli-commands/)。
+コマンドの詳細: [CLI リファレンス](/ja/reference/cli-commands/)。
 
 <a id="multiple-providers"></a>
 ### 複数のプロバイダー
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 各プロバイダーブロックは、独自の `translationModels`、オプションの `uiModels` と `localeModels`、`maxTokens`、`temperature`、および `requestTimeoutMs` を定義できます。レガシーのトップレベル `openrouter` ブロックは引き続き受け入れられ、ロード時に `providers.openrouter` に自動移行されます。
 
-同じドキュメントに4つのプロバイダーがある実行可能な例: [`examples/multi-provider`](/examples#multi-provider)。
+同じドキュメントに4つのプロバイダーがある実行可能な例: [`examples/multi-provider`](/ja/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### その他の参考資料
 
-- [設定 — `provider` と `providers`](/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、OpenRouter 固有の動作。
-- [アーキテクチャ — LLM クライアント](/reference/architecture) — モデルのフォールバック、バッチ処理、コストレポートが内部でどのように機能するか。
-- [環境変数](/reference/environment-variables) — API キーの環境変数とベース URL のオーバーライド。
+- [設定 — `provider` と `providers`](/ja/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、OpenRouter 固有の動作。
+- [アーキテクチャ — LLM クライアント](/ja/reference/architecture) — モデルのフォールバック、バッチ処理、コストレポートが内部でどのように機能するか。
+- [環境変数](/ja/reference/environment-variables) — API キーの環境変数とベース URL のオーバーライド。

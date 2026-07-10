@@ -10,7 +10,7 @@
 
 **主なオプション:** `-p` / `--port`, `--no-open`
 
-**関連項目:** [翻訳ダッシュボード](/guide/translation-dashboard/)
+**関連項目:** [翻訳ダッシュボード](/ja/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@
 
 `-o`: 出力パスを上書きします（デフォルト: 設定からの`glossary.userGlossary`、または`glossary-user.csv`）。
 
-**関連項目:** [ダッシュボード用語集](/guide/translation-dashboard/glossary)
+**関連項目:** [ダッシュボード用語集](/ja/guide/translation-dashboard/glossary)
 
 ---
 

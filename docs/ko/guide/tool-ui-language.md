@@ -31,6 +31,6 @@ UI 로케일은 다음 소스에서 결정되며, 우선순위가 높은 순서�
 <a id="related"></a>
 ## 관련 항목
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — 환경 변수 재정의
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — 설정 키 재정의
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — CLI 플래그 재정의 (최우선)
+- [`AI_I18N_LANG`](/ko/reference/environment-variables) — 환경 변수 재정의
+- [`uiLanguage`](/ko/reference/configuration#uilanguage-optional) — 설정 키 재정의
+- [`-L` / `--ui-lang`](/ko/reference/cli-commands/) — CLI 플래그 재정의 (최우선)

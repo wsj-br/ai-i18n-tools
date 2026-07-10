@@ -28,7 +28,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 對於任何**非預設**鍵，請在設定中明確設定 `baseUrl` 和 `apiKeyEnv`。
 
-在您的環境或 `.env` 檔案中設定活動供應商的 API 鍵。CLI 會自動從工作目錄載入 `.env`，而不會覆寫 shell 中已設定的變數。請參閱[環境變數](/reference/environment-variables)。
+在您的環境或 `.env` 檔案中設定活動供應商的 API 鍵。CLI 會自動從工作目錄載入 `.env`，而不會覆寫 shell 中已設定的變數。請參閱[環境變數](/zh-Hant/reference/environment-variables)。
 
 <a id="model-fallback-chain"></a>
 ### 模型備用鏈
@@ -44,7 +44,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 可選的 `providers.<active>.uiModels` 是一個僅限 UI 的清單，在任何匹配的本地化覆蓋和全局 `translationModels` 鏈之前嘗試。可選的 `providers.<active>.localeModels` 將 BCP-47 本地化映射到每個管道中為該本地化**首先**嘗試的模型（`pt-br` 匹配 `pt-BR`）。當沒有 `localeModels` 項目匹配時，僅應用管道特定的層次。
 
-不同的提供者和模型在不同語言中的成本、速度和質量各不相同。將 `npx ai-i18n-tools init` 的默認清單視為起點——當某個本地化始終產生不良結果時擴展它，或為該本地化添加 `localeModels` 項目。默認值和理由：[配置 — `provider` 和 `providers`](/reference/configuration#provider-and-providers)。
+不同的提供者和模型在不同語言中的成本、速度和質量各不相同。將 `npx ai-i18n-tools init` 的默認清單視為起點——當某個本地化始終產生不良結果時擴展它，或為該本地化添加 `localeModels` 項目。默認值和理由：[配置 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers)。
 
 最小設定範例 (OpenRouter)：
 
@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-指令詳情：[CLI 參考](/reference/cli-commands/)。
+指令詳情：[CLI 參考](/zh-Hant/reference/cli-commands/)。
 
 <a id="multiple-providers"></a>
 ### 多個供應商
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每個提供者塊可以定義自己的 `translationModels`，可選的 `uiModels` 和 `localeModels`，`maxTokens`，`temperature` 和 `requestTimeoutMs`。仍然接受遺留的頂層 `openrouter` 塊，並在加載時自動遷移到 `providers.openrouter`。
 
-在同一文件中包含四個提供者的可執行範例：[`examples/multi-provider`](/examples#multi-provider)。
+在同一文件中包含四個提供者的可執行範例：[`examples/multi-provider`](/zh-Hant/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### 延伸參考
 
-- [組態 — `provider` 和 `providers`](/reference/configuration#provider-and-providers) — 預設表格、自訂端點、請求逾時、OpenRouter 特定行為。
-- [架構 — LLM 用戶端](/reference/architecture) — 模型回退、批次處理和成本報告的內部運作方式。
-- [環境變數](/reference/environment-variables) — API 密鑰環境變數和基礎 URL 覆寫。
+- [組態 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers) — 預設表格、自訂端點、請求逾時、OpenRouter 特定行為。
+- [架構 — LLM 用戶端](/zh-Hant/reference/architecture) — 模型回退、批次處理和成本報告的內部運作方式。
+- [環境變數](/zh-Hant/reference/environment-variables) — API 密鑰環境變數和基礎 URL 覆寫。

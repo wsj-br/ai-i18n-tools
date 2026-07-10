@@ -34,19 +34,19 @@ Reescritas típicas:
 | `../guide/foo.md` (de um arquivo de localidade) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | inalterado (use URLs completas para caminhos de repositório) |
 
-Para projetos que sincronizam `README.md` → `docs/index.md`, use URLs completas do GitHub em `README.md` para `LICENSE`, `examples/` e outros arquivos fora da árvore do VitePress. Consulte [Integração VitePress — README como a página inicial da documentação](/guide/integrations/vitepress#readme-as-homepage).
+Para projetos que sincronizam `README.md` → `docs/index.md`, use URLs completas do GitHub em `README.md` para `LICENSE`, `examples/` e outros arquivos fora da árvore do VitePress. Consulte [Integração VitePress — README como a página inicial da documentação](/pt-BR/guide/integrations/vitepress#readme-as-homepage).
 
-O reescritor "flat" e o normalizador VitePress são mutuamente exclusivos por bloco `docs[]` — apenas um é executado antes de `regexAdjustments`. Consulte [Integração VitePress — Convenções de link](/guide/integrations/vitepress#link-conventions).
+O reescritor "flat" e o normalizador VitePress são mutuamente exclusivos por bloco `docs[]` — apenas um é executado antes de `regexAdjustments`. Consulte [Integração VitePress — Convenções de link](/pt-BR/guide/integrations/vitepress#link-conventions).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Normalizador de links do Nextra (`style: "nextra"`)
 
-Quando `docsOutput.rewriteNextraLinks` é `true` (padrão quando `style` é `"nextra"`), um normalizador separado é executado após a remontagem do segmento. Ele reescreve `content/en/…` e caminhos `.mdx` relativos para rotas neutras em relação ao local (`/guide/…`). Consulte [Integração Nextra — Convenções de link](/guide/integrations/nextra#link-conventions).
+Quando `docsOutput.rewriteNextraLinks` é `true` (padrão quando `style` é `"nextra"`), um normalizador separado é executado após a remontagem do segmento. Ele reescreve `content/en/…` e caminhos `.mdx` relativos para rotas neutras em relação ao local (`/guide/…`). Consulte [Integração Nextra — Convenções de link](/pt-BR/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Normalizador de links do Fumadocs (`style: "fumadocs"`)
 
-Quando `docsOutput.rewriteFumadocsLinks` é `true` (padrão quando `style` é `"fumadocs"`), um normalizador separado é executado após a remontagem do segmento. Ele reescreve `content/docs/…` e caminhos `.mdx` relativos para rotas neutras em relação ao local (`/docs/…`). Consulte [Integração Fumadocs — Convenções de link](/guide/integrations/fumadocs#link-conventions).
+Quando `docsOutput.rewriteFumadocsLinks` é `true` (padrão quando `style` é `"fumadocs"`), um normalizador separado é executado após a remontagem do segmento. Ele reescreve `content/docs/…` e caminhos `.mdx` relativos para rotas neutras em relação ao local (`/docs/…`). Consulte [Integração Fumadocs — Convenções de link](/pt-BR/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Prefixo de profundidade por arquivo com `flatPreserveRelativeDir`
@@ -90,12 +90,12 @@ As regras são executadas no **corpo** do markdown traduzido após a remontagem 
 }
 ```
 
-Use `[^/]+` em vez de codificar sua localidade de origem (`en-GB`) para que a regra sobreviva a uma alteração de `sourceLocale`. O espaço reservado mais comum é `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` e variáveis de caminho também estão disponíveis — consulte [Documentos — Reescrevendo links](/guide/documents/link-rewriting#replace-placeholders).
+Use `[^/]+` em vez de codificar sua localidade de origem (`en-GB`) para que a regra sobreviva a uma alteração de `sourceLocale`. O espaço reservado mais comum é `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` e variáveis de caminho também estão disponíveis — consulte [Documentos — Reescrevendo links](/pt-BR/guide/documents/link-rewriting#replace-placeholders).
 
-Exemplos específicos de layout (plano, sistema de documentos, Docusaurus, Starlight): [Pasta por localidade](/guide/images-and-screenshots/per-locale-folder). Regras gerais de links entre páginas: [Documentos — Reescrevendo links](/guide/documents/link-rewriting). Referência de campo: [Configuração — `docs`](/reference/configuration#docs).
+Exemplos específicos de layout (plano, sistema de documentos, Docusaurus, Starlight): [Pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder). Regras gerais de links entre páginas: [Documentos — Reescrevendo links](/pt-BR/guide/documents/link-rewriting). Referência de campo: [Configuração — `docs`](/pt-BR/reference/configuration#docs).
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-Consulte [Erros comuns e solução de problemas](/guide/images-and-screenshots/troubleshooting) para regexes de localidade codificadas, diretórios de captura de tela ausentes e ponte `/img/` do Docusaurus.
+Consulte [Erros comuns e solução de problemas](/pt-BR/guide/images-and-screenshots/troubleshooting) para regexes de localidade codificadas, diretórios de captura de tela ausentes e ponte `/img/` do Docusaurus.

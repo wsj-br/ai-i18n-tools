@@ -3,7 +3,7 @@
 
 Utilisez ai-i18n-tools avec [Astro](https://astro.build/) dans deux configurations courantes : les sites de documentation **Astro Starlight** et les sites marketing ou d'applications **Astro simples**. Les deux utilisent des documents (`translate-docs`) pour le contenu des pages ; les sites Astro simples combinent souvent cela avec des chaînes d'interface utilisateur (`extract` / `translate-ui`) pour les chaînes `t()` dans le frontmatter et les données partagées.
 
-Voir aussi [Chaînes d'interface utilisateur](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documents](/guide/documents/) et les exemples exécutables ci-dessous.
+Voir aussi [Chaînes d'interface utilisateur](/fr/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documents](/fr/guide/documents/) et les exemples exécutables ci-dessous.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -30,7 +30,7 @@ src/content/docs/quick-start.md     →  src/content/docs/de/quick-start.md
 src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ```
 
-Configurez un bloc `docs[]` :
+Configurez un bloc `docs[]` :
 
 ```json
 {
@@ -45,7 +45,7 @@ Configurez un bloc `docs[]` :
 
 Pointez `contentPaths` vers vos fichiers et répertoires `.md` / `.mdx` anglais. Définissez `docsRoot` sur le même dossier que Starlight utilise comme racine de contenu.
 
-Les remplacements d'interface utilisateur de Starlight peuvent utiliser `src/content/i18n/en.json` avec `jsonPathTemplate` dans un bloc `docs[]` séparé si nécessaire — voir [Documents — initialiser pour la documentation](/guide/documents/#step-1-initialise-for-documentation).
+Les remplacements d'interface utilisateur de Starlight peuvent utiliser `src/content/i18n/en.json` avec `jsonPathTemplate` dans un bloc `docs[]` séparé si nécessaire — voir [Documents — initialiser pour la documentation](/fr/guide/documents/#step-1-initialise-for-documentation).
 
 <a id="framework-shell-translation"></a>
 ### Traduction du shell du framework
@@ -56,11 +56,11 @@ Starlight fournit ses propres chaînes d'interface utilisateur intégrées pour 
 |-----------|----------------------|----------|
 | Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
 | Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` étiquettes de barre latérale + dictionnaire de thème `.ts` | Documents — voir [Intégration Nextra](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` étiquettes de barre latérale + catalogue de remplacements d'interface utilisateur | Documents — voir [Intégration Fumadocs](/guide/integrations/fumadocs) |
+| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` étiquettes de barre latérale + dictionnaire de thème `.ts` | Documents — voir [Intégration Nextra](/fr/guide/integrations/nextra) |
+| Fumadocs | `meta.json` étiquettes de barre latérale + catalogue de remplacements d'interface utilisateur | Documents — voir [Intégration Fumadocs](/fr/guide/integrations/fumadocs) |
 
-Voir [Intégration Docusaurus](/guide/integrations/docusaurus), [Intégration VitePress](/guide/integrations/vitepress), [Intégration Nextra](/guide/integrations/nextra) et [Intégration Fumadocs](/guide/integrations/fumadocs) pour les autres modèles de framework.
+Voir [Intégration Docusaurus](/fr/guide/integrations/docusaurus), [Intégration VitePress](/fr/guide/integrations/vitepress), [Intégration Nextra](/fr/guide/integrations/nextra) et [Intégration Fumadocs](/fr/guide/integrations/fumadocs) pour les autres modèles de framework.
 
 <a id="example-project"></a>
 ### Exemple de projet

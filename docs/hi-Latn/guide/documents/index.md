@@ -5,24 +5,24 @@ Mukhya roop se **markdown, MDX, aur `.astro` documentation** ke liye design kiya
 
 Docusaurus sites par, `docusaurusCatalogDir` ko apne `write-translations` catalog folder (jaise `docs-site/i18n/en`) par bhi set karein. Phir `translate-docs` mein shell JSON bhi shamil hai — navbar, footer, aur theme strings.
 
-[VitePress](/guide/integrations/vitepress) sites par, page bodies wahi `docs[]` pipeline use karte hain. Nav, sidebar, aur footer labels `docsOutput.vitepressThemeCatalog` mein hote hain — `translate-docs` English catalog ko bootstrap karta hai aur pages ke saath translate karta hai, koi alag pipeline nahi.
+[VitePress](/hi-Latn/guide/integrations/vitepress) sites par, page bodies wahi `docs[]` pipeline use karte hain. Nav, sidebar, aur footer labels `docsOutput.vitepressThemeCatalog` mein hote hain — `translate-docs` English catalog ko bootstrap karta hai aur pages ke saath translate karta hai, koi alag pipeline nahi.
 
-[Nextra](/guide/integrations/nextra) sites par, page bodies mein `docs[]` pipeline ka upyog `docsOutput.style: "nextra"` ke saath hota hai. `_meta.ts` sidebar labels ko `translate-docs` dwara swachalit roop se ikattha aur anuvad kiya jata hai; theme dictionary strings ka anuvad usi pipeline mein `docs[].nextraDictionaryPath` ke madhyam se hota hai.
+[Nextra](/hi-Latn/guide/integrations/nextra) sites par, page bodies mein `docs[]` pipeline ka upyog `docsOutput.style: "nextra"` ke saath hota hai. `_meta.ts` sidebar labels ko `translate-docs` dwara swachalit roop se ikattha aur anuvad kiya jata hai; theme dictionary strings ka anuvad usi pipeline mein `docs[].nextraDictionaryPath` ke madhyam se hota hai.
 
-[Fumadocs](/guide/integrations/fumadocs) sites par, page bodies `docsOutput.style: "fumadocs"` ka upyog karte hain, jismein `fumadocsParser` `"dot"` (default) ya `"dir"` hota hai. `meta.json` sidebar labels apne aap collect kiye jaate hain; UI overrides `docsOutput.fumadocsUiCatalog` ke madhyam se translate hote hain.
+[Fumadocs](/hi-Latn/guide/integrations/fumadocs) sites par, page bodies `docsOutput.style: "fumadocs"` ka upyog karte hain, jismein `fumadocsParser` `"dot"` (default) ya `"dir"` hota hai. `meta.json` sidebar labels apne aap collect kiye jaate hain; UI overrides `docsOutput.fumadocsUiCatalog` ke madhyam se translate hote hain.
 
-Markdown mein embedded PNG aur anya raster images ke liye, [Images & Screenshots](/guide/images-and-screenshots/) dekhein. `translate-docs` kewal alt text ka anuvad karta hai; yeh raster files ko copy nahi karta hai.
+Markdown mein embedded PNG aur anya raster images ke liye, [Images & Screenshots](/hi-Latn/guide/images-and-screenshots/) dekhein. `translate-docs` kewal alt text ka anuvad karta hai; yeh raster files ko copy nahi karta hai.
 
-README ya docs mein ek optional **language switcher** block ke liye, `docsOutput.style` ko `"flat"` par set karein — [Language switcher](/guide/documents/language-switcher) dekhein.
+README ya docs mein ek optional **language switcher** block ke liye, `docsOutput.style` ko `"flat"` par set karein — [Language switcher](/hi-Latn/guide/documents/language-switcher) dekhein.
 
-SVG files ko [`translate-svg`](/reference/cli-commands/content#translate-svg) ke madhyam se translate kiya jaata hai jab `features.translateSVG` enable hota hai — `docs[]` / `contentPaths` ke madhyam se nahi.
+SVG files ko [`translate-svg`](/hi-Latn/reference/cli-commands/content#translate-svg) ke madhyam se translate kiya jaata hai jab `features.translateSVG` enable hota hai — `docs[]` / `contentPaths` ke madhyam se nahi.
 
-Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strings se unrelated hain, unhe [JSON](/guide/json) pipeline mein hona chahiye, na ki `docs[]` mein.
+Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strings se unrelated hain, unhe [JSON](/hi-Latn/guide/json) pipeline mein hona chahiye, na ki `docs[]` mein.
 
 <a id="per-locale-model-overrides"></a>
 ### Pratyaik sthanik model override
 
-`translate-docs` aur `sync` ke docs step model ko **pratyaik target locale ke liye** resolve karte hain: `localeModels(locale)` pahle jab configure kiya jata hai, phir provider ki global `translationModels` chain. Iska upyog tab karein jab kisi vishesh bhasha ko aapki default fallback list se alag model ki avashyakta ho — udaharan ke liye, `pt-BR` documentation ke liye Gemini ko prefer karna jab global chain Portuguese ke saath mushkil me ho. [Providers aur models](/guide/providers-and-models#model-fallback-chain) aur [Configuration — `localeModels`](/reference/configuration#provider-and-providers) dekhein.
+`translate-docs` aur `sync` ke docs step model ko **pratyaik target locale ke liye** resolve karte hain: `localeModels(locale)` pahle jab configure kiya jata hai, phir provider ki global `translationModels` chain. Iska upyog tab karein jab kisi vishesh bhasha ko aapki default fallback list se alag model ki avashyakta ho — udaharan ke liye, `pt-BR` documentation ke liye Gemini ko prefer karna jab global chain Portuguese ke saath mushkil me ho. [Providers aur models](/hi-Latn/guide/providers-and-models#model-fallback-chain) aur [Configuration — `localeModels`](/hi-Latn/reference/configuration#provider-and-providers) dekhein.
 
 <a id="which-guide-to-read"></a>
 ## Kaun sa guide padhein
@@ -30,16 +30,16 @@ Arbitrary nested UI JSON bundles jo documentation framework ke shell/theme strin
 | Aapka setup | Yahan se shuru karein |
 | --- | --- |
 | Docusaurus site | `init -t ui-docusaurus`, `docsOutput.style = "docusaurus"` — [Step 1](#step-1-initialise-for-documentation) |
-| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` theme ke liye — [VitePress integration](/guide/integrations/vitepress) |
-| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` dictionary ke liye (sidebar `_meta.ts` automatic hai) — [Nextra integration](/guide/integrations/nextra) |
-| Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` UI ke liye (sidebar `meta.json` automatic hai) — [Fumadocs integration](/guide/integrations/fumadocs) |
+| VitePress site | `init -t ui-vitepress` + `vitepressThemeCatalog` theme ke liye — [VitePress integration](/hi-Latn/guide/integrations/vitepress) |
+| Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` dictionary ke liye (sidebar `_meta.ts` automatic hai) — [Nextra integration](/hi-Latn/guide/integrations/nextra) |
+| Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` UI ke liye (sidebar `meta.json` automatic hai) — [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Step 1](#step-1-initialise-for-documentation) |
-| Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
-| Jahan anuvadit files aati hain | [Output layouts](/guide/documents/output-layouts) |
-| Cross-page `#anchor` links | [Anchor links](/guide/documents/anchor-links) |
-| Link aur asset URL rewriting (`regexAdjustments`) | [Link rewriting](/guide/documents/link-rewriting) |
-| Docs mein screenshots | [Images & Screenshots](/guide/images-and-screenshots/) |
-| `translate-docs` flags aur cache | [CLI options](/guide/documents/cli-options) |
+| Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` — [Output layouts](/hi-Latn/guide/documents/output-layouts), optional [language switcher](/hi-Latn/guide/documents/language-switcher) |
+| Jahan anuvadit files aati hain | [Output layouts](/hi-Latn/guide/documents/output-layouts) |
+| Cross-page `#anchor` links | [Anchor links](/hi-Latn/guide/documents/anchor-links) |
+| Link aur asset URL rewriting (`regexAdjustments`) | [Link rewriting](/hi-Latn/guide/documents/link-rewriting) |
+| Docs mein screenshots | [Images & Screenshots](/hi-Latn/guide/images-and-screenshots/) |
+| `translate-docs` flags aur cache | [CLI options](/hi-Latn/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>
 ## Step 1: Documentation ke liye initialise karein
@@ -60,7 +60,7 @@ VitePress documentation sites ke lie:
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-Nav/sidebar/footer strings ke liye `docsOutput.vitepressThemeCatalog` set karein — [VitePress integration](/guide/integrations/vitepress) dekhein.
+Nav/sidebar/footer strings ke liye `docsOutput.vitepressThemeCatalog` set karein — [VitePress integration](/hi-Latn/guide/integrations/vitepress) dekhein.
 
 Nextra documentation sites ke liye:
 
@@ -68,7 +68,7 @@ Nextra documentation sites ke liye:
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-Theme dictionary strings ke liye `docs[].nextraDictionaryPath` set karein — [Nextra integration](/guide/integrations/nextra) dekhein. Sidebar `_meta.ts` labels automatically collect kiye jate hain.
+Theme dictionary strings ke liye `docs[].nextraDictionaryPath` set karein — [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhein. Sidebar `_meta.ts` labels automatically collect kiye jate hain.
 
 Fumadocs documentation sites ke liye:
 
@@ -76,7 +76,7 @@ Fumadocs documentation sites ke liye:
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-UI overrides ke liye `docsOutput.fumadocsUiCatalog` set karein — [Fumadocs integration](/guide/integrations/fumadocs) dekhein. Sidebar `meta.json` labels automatically collect kiye jate hain.
+UI overrides ke liye `docsOutput.fumadocsUiCatalog` set karein — [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhein. Sidebar `meta.json` labels automatically collect kiye jate hain.
 
 Plain Astro website UI ke liye (koi Starlight nahi):
 
@@ -84,7 +84,7 @@ Plain Astro website UI ke liye (koi Starlight nahi):
 npx ai-i18n-tools init -t ui-astro-website
 ```
 
-Vah template kewal UI extraction ko enable karta hai. Page HTML anuvad ke liye, `features.translateDocs` bhi set karein aur ek `docs[]` block jodein (dekhein [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) config dono pipelines ko ek saath dikhata hai.
+Vah template kewal UI extraction ko enable karta hai. Page HTML anuvad ke liye, `features.translateDocs` bhi set karein aur ek `docs[]` block jodein (dekhein [Astro website pages (parse-and-replace)](/hi-Latn/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) config dono pipelines ko ek saath dikhata hai.
 
 Generate kiye gaye `ai-i18n-tools.config.json` ko edit karein:
 
@@ -95,7 +95,7 @@ Generate kiye gaye `ai-i18n-tools.config.json` ko edit karein:
 - `docs[].description` - vikalpik chhota note maintainer ke liye. Jab yah set kiya jaata hai, toh yah `translate-docs` headline mein aur `status` section headers mein dikhaai deta hai.
 - `docs[].contentPaths` - markdown/MDX/`.astro` sources (aur vikalpik `docusaurusCatalogDir` Docusaurus shell JSON ke liye).
 - `docs[].outputDir` - anuvaadit output root us block ke liye.
-- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (dekhie [Output layouts](/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (dekhie [Output layouts](/hi-Latn/guide/documents/output-layouts)).
 
 **Primary vs supplementary:** Localised pages ke liye `contentPaths` par dhyaan den. Jab aapko `write-translations` se Docusaurus shell JSON ki bhi zaroorat ho to `docusaurusCatalogDir` set karen. Yadi aap kewal pages translate karte hain to `docusaurusCatalogDir` ko chhod den.
 
@@ -120,7 +120,7 @@ Yah jaanchne ke liye ki kya translate karna hai:
 npx ai-i18n-tools status
 ```
 
-Flags, cache behavior, aur batch prompt format ke liye, [CLI options](/guide/documents/cli-options) dekhen.
+Flags, cache behavior, aur batch prompt format ke liye, [CLI options](/hi-Latn/guide/documents/cli-options) dekhen.
 
 <a id="complex-markdown-and-failed-quality-checks"></a>
 ## Complex Markdown aur asafal quality checks
@@ -131,4 +131,4 @@ Flags, cache behavior, aur batch prompt format ke liye, [CLI options](/guide/doc
 
 Jab har configured model ek hi segment par `AST mismatch` ke saath fail ho jaata hai, to `translate-docs` us segment ko automatically chhote parts mein split kar sakta hai (pahle list midpoint, phir single list items ya chhote paragraph chunks), har part ko pahle model se retry kar sakta hai, aur original segment cache key ke tahat result ko phir se jod sakta hai. Yah default roop se on hai (`segmentSplitting.qualityRetrySplit`); model exhaustion ke baad rukne ke liye ise `false` par set karen. Jab yah fallback chalta hai to run summary `Quality split retries` report karta hai.
 
-Yeh dekhne ke liye ki **kaun se segments asafal rahe**, kitni baar, aur store kiye gaye **quality / error messages**, Translation Dashboard ke **Failures** tab ka upyog karen ([Translation Dashboard → Failures](/guide/translation-dashboard/failures#failures-document-translation)).
+Yeh dekhne ke liye ki **kaun se segments asafal rahe**, kitni baar, aur store kiye gaye **quality / error messages**, Translation Dashboard ke **Failures** tab ka upyog karen ([Translation Dashboard → Failures](/hi-Latn/guide/translation-dashboard/failures#failures-document-translation)).

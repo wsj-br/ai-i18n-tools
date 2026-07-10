@@ -16,13 +16,13 @@ Welcher Umschreiber ausgeführt wird, hängt von `docsOutput.style` ab:
 | `"fumadocs"` | Fumadocs-Link-Normalisierer (`rewriteFumadocsLinks`, standardmäßig aktiviert) | `content/docs/…` und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Keine | Quell-URLs werden bis `postProcessing` unverändert durchgereicht |
 
-Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei denn, Sie legen `rewriteRelativeLinks: true` explizit fest. Siehe [Ausgabe-Layouts](/guide/documents/output-layouts) und [Anker-Links](/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
+Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei denn, Sie legen `rewriteRelativeLinks: true` explizit fest. Siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts) und [Anker-Links](/de/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
 
-Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/guide/integrations/vitepress#link-conventions).
+Für VitePress-spezifische Authoring-Regeln siehe [VitePress-Integration – Link-Konventionen](/de/guide/integrations/vitepress#link-conventions).
 
-Für Nextra-spezifische Authoring-Regeln siehe [Nextra-Integration – Link-Konventionen](/guide/integrations/nextra#link-conventions).
+Für Nextra-spezifische Authoring-Regeln siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 
-Für Fumadocs-spezifische Authoring-Regeln siehe [Fumadocs-Integration – Link-Konventionen](/guide/integrations/fumadocs#link-conventions).
+Für Fumadocs-spezifische Authoring-Regeln siehe [Fumadocs-Integration – Link-Konventionen](/de/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ Schreiben Sie `search`-Muster, um das Gebietsschema-Segment **innerhalb der bere
 
 Für `doc-system`-Layouts wird der flache Umschreiber nicht ausgeführt. `regexAdjustments` sieht die ursprüngliche URL aus dem Quell-Markdown (typischerweise ein absoluter Pfad wie `/img/screenshots/en-GB/foo.png`).
 
-Siehe [Der flache Link-Umschreiber und der zweistufige Ablauf](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) für das Tiefenpräfix-Verhalten und `flatPreserveRelativeDir`.
+Siehe [Der flache Link-Umschreiber und der zweistufige Ablauf](/de/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) für das Tiefenpräfix-Verhalten und `flatPreserveRelativeDir`.
 
 <a id="replace-placeholders"></a>
 ### `replace`-Platzhalter
@@ -93,7 +93,7 @@ Speichern Sie Assets von Anfang an in einem nach Gebietsschema kodierten Unterve
 
 Verwenden Sie `[^/]+` anstatt Ihr Quell-Gebietsschema (`en-GB`) fest zu kodieren, damit die Regel auch dann funktioniert, wenn sich `sourceLocale` ändert.
 
-Vollständige Anleitung: [Bilder & Screenshots — Ordner pro Gebietsschema](/guide/images-and-screenshots/per-locale-folder).
+Vollständige Anleitung: [Bilder & Screenshots — Ordner pro Gebietsschema](/de/guide/images-and-screenshots/per-locale-folder).
 
 <a id="doc-system-static-urls"></a>
 ### Statische URLs von Dokumentationssystemen
@@ -112,7 +112,7 @@ Für Docusaurus, Starlight oder andere `doc-system`-Sites, die Screenshots von e
 }
 ```
 
-Bevorzugen Sie kollokierte relative Pfade (`../assets/name.png`) in der Quell-Markdown, wenn Ihr Generator dies unterstützt – dann ist keine `regexAdjustments`-Brücke erforderlich. Siehe [Bilder & Screenshots](/guide/images-and-screenshots/) für Layout-Optionen.
+Bevorzugen Sie kollokierte relative Pfade (`../assets/name.png`) in der Quell-Markdown, wenn Ihr Generator dies unterstützt – dann ist keine `regexAdjustments`-Brücke erforderlich. Siehe [Bilder & Screenshots](/de/guide/images-and-screenshots/) für Layout-Optionen.
 
 <a id="when-regex-is-not-needed"></a>
 ### Wann Regex nicht benötigt wird
@@ -156,14 +156,14 @@ Flaches README mit Screenshots pro Gebietsschema und einem optionalen Sprachumsc
 
 </details>
 
-Feldreferenz: [Konfiguration – `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`).
+Feldreferenz: [Konfiguration – `docs`](/de/reference/configuration#docs) (`docsOutput.postProcessing`).
 
 <a id="troubleshooting"></a>
 ## Fehlerbehebung
 
 | Symptom | Wahrscheinliche Ursache | Was zu überprüfen ist |
 | --- | --- | --- |
-| Übersetzte Seite 404s bei einem Bild oder statischen Asset | Fehlendes oder falsches `regexAdjustments` für Ihr URL-Layout | [Bilder & Screenshots – Fehlerbehebung](/guide/images-and-screenshots/troubleshooting) |
-| Link öffnet die richtige Datei, aber falsches `#section` | Anker-Slug-Drift, keine URL-Umschreibung | [Anker-Links](/guide/documents/anchor-links) |
+| Übersetzte Seite 404s bei einem Bild oder statischen Asset | Fehlendes oder falsches `regexAdjustments` für Ihr URL-Layout | [Bilder & Screenshots – Fehlerbehebung](/de/guide/images-and-screenshots/troubleshooting) |
+| Link öffnet die richtige Datei, aber falsches `#section` | Anker-Slug-Drift, keine URL-Umschreibung | [Anker-Links](/de/guide/documents/anchor-links) |
 | `regexAdjustments`-Regel hat keine Auswirkung auf das flache Layout | `search` erwartet die URL vor dem Umschreiben, aber das flache Layout hat bereits ein Tiefenpräfix hinzugefügt | Gleichen Sie das Segment innerhalb des präfigierten Pfads ab (siehe [zweistufiger Ablauf](#two-step-flow-with-flat-layout)) |
 | Ungültiger Regex zur Laufzeit übersprungen | Fehlerhaftes `search`-Muster | CLI warnt mit der Regel `description`; testen Sie Muster anhand der übersetzten Beispielausgabe |

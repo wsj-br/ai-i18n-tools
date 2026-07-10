@@ -34,4 +34,4 @@
 
 **主要选项：** `--max-columns`
 
-**另请参阅：** [仪表板统计信息](/guide/translation-dashboard/statistics)
+**另请参阅：** [仪表板统计信息](/zh-Hans/guide/translation-dashboard/statistics)

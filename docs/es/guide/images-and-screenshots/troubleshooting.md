@@ -2,7 +2,7 @@
 # Errores comunes y solución de problemas
 
 **No hay directorio de configuración regional en las rutas de las capturas de pantalla**
-`images/screenshots/screenshot.png` — no se pueden distinguir las variantes de configuración regional y no se puede reescribir. Reestructure a `images/screenshots/<locale>/screenshot.png` antes de usar la reescritura [de la carpeta por configuración regional](/guide/images-and-screenshots/per-locale-folder).
+`images/screenshots/screenshot.png` — no se pueden distinguir las variantes de configuración regional y no se puede reescribir. Reestructure a `images/screenshots/<locale>/screenshot.png` antes de usar la reescritura [de la carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder).
 
 **Configuración regional fuente codificada en la expresión regular**
 `"search": "screenshots/en-GB/"` — falla silenciosamente si cambia `sourceLocale`. Use `"search": "screenshots/[^/]+/"` en su lugar.

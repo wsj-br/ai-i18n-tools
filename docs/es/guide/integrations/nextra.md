@@ -3,10 +3,10 @@
 
 Utilice `init -t ui-nextra` y `docsOutput.style: "nextra"` para sitios de documentación de [Nextra](https://nextra.site/) 4 en Next.js App Router. El preajuste es un alias para `doc-system` con un `localeSubpath` vacío y los nombres de carpeta de configuración regional BCP-47 conservados (`localePathLowercase` por defecto es `false`, por lo que las carpetas permanecen `pt-BR`, `zh-Hans`, etc.).
 
-Consulte también [Documentos](/guide/documents/) y la demostración ejecutable [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
+Consulte también [Documentos](/es/guide/documents/) y la demostración ejecutable [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
 
 <a id="quick-start"></a>
-## Comienzo rápido
+## Inicio rápido
 
 ```bash
 npx ai-i18n-tools init -t ui-nextra
@@ -92,17 +92,17 @@ Opcional: anule la recopilación con `docs[].nextraMetaGlob` o restrinja los nom
 <a id="framework-shell-translation"></a>
 ## Traducción del shell del framework
 
-| Marco | Cadenas del shell / tema | Pipeline |
+| Framework | Cadenas de shell / tema | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de temas/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Etiquetas de la barra lateral de `_meta.ts` | Documentos — automático cuando `style: "nextra"` + `translate-docs` |
-| Nextra | Diccionario de temas `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Etiquetas de barra lateral de `meta.json` | Documentos — auto cuando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de anulaciones de interfaz de usuario | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
+| VitePress | Catálogo de tema/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Etiquetas de barra lateral `_meta.ts` | Documentos — automático cuando `style: "nextra"` + `translate-docs` |
+| Nextra | Diccionario de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Etiquetas de barra lateral `meta.json` | Documentos — automático cuando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de anulaciones de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Cadenas de UI integradas (muchas configuraciones regionales); sin pipeline de shell adicional | Documentos — `translate-docs` (solo páginas) |
 
-**No** ponga cadenas de shell/tema de framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [integración de Docusaurus](/guide/integrations/docusaurus), [integración de VitePress](/guide/integrations/vitepress) e [integración de Fumadocs](/guide/integrations/fumadocs) para ver los otros patrones de framework.
+**No** ponga cadenas de shell/tema de framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte [integración de Docusaurus](/es/guide/integrations/docusaurus), [integración de VitePress](/es/guide/integrations/vitepress) e [integración de Fumadocs](/es/guide/integrations/fumadocs) para ver los otros patrones de framework.
 
 <a id="example-project"></a>
 ## Proyecto de ejemplo
@@ -161,8 +161,8 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 
 | Autor en fuente inglesa | Después del normalizador |
 |--------------------------|------------------|
-| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
+| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/es/guide/getting-started)` |
+| `[Guide](/es/guide/getting-started.mdx)` | `[Guide](/es/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | sin cambios (URL completa) |
 
 **Reglas de autoría**
@@ -190,4 +190,4 @@ export const config = {
 
 Esto no funciona con las exportaciones estáticas de `output: 'export'`. Consulte [Documentación de Nextra i18n](https://nextra.site/docs/guide/i18n).
 
-Consulte también [Configuración — `docsOutput`](/reference/configuration#docsoutput) y [Diseños de salida](/guide/documents/output-layouts).
+Consulte también [Configuración — `docsOutput`](/es/reference/configuration#docsoutput) y [Diseños de salida](/es/guide/documents/output-layouts).

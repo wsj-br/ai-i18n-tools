@@ -16,13 +16,13 @@ Le réécriveur qui s'exécute dépend de `docsOutput.style` :
 | `"fumadocs"` | Normaliseur de liens Fumadocs (`rewriteFumadocsLinks`, activé par défaut) | Chemins `content/docs/…` et `.mdx` relatifs → routes indépendantes de la locale (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Aucun | Les URL source passent inchangées jusqu'à `postProcessing` |
 
-Un `pathTemplate` personnalisé désactive le réécriveur plat, sauf si vous définissez `rewriteRelativeLinks: true` explicitement. Voir [Dispositions de sortie](/guide/documents/output-layouts) et [Liens d'ancrage](/guide/documents/anchor-links) pour la gestion des `#anchor` inter-pages.
+Un `pathTemplate` personnalisé désactive le réécriveur plat, sauf si vous définissez `rewriteRelativeLinks: true` explicitement. Voir [Dispositions de sortie](/fr/guide/documents/output-layouts) et [Liens d'ancrage](/fr/guide/documents/anchor-links) pour la gestion des `#anchor` inter-pages.
 
-Pour les règles de création spécifiques à VitePress, consultez [Intégration de VitePress — Conventions de liens](/guide/integrations/vitepress#link-conventions).
+Pour les règles de création spécifiques à VitePress, consultez [Intégration de VitePress — Conventions de liens](/fr/guide/integrations/vitepress#link-conventions).
 
-Pour les règles de création spécifiques à Nextra, consultez [Intégration de Nextra — Conventions de liens](/guide/integrations/nextra#link-conventions).
+Pour les règles de création spécifiques à Nextra, consultez [Intégration de Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
 
-Pour les règles de création spécifiques à Fumadocs, consultez [Intégration de Fumadocs — Conventions de liens](/guide/integrations/fumadocs#link-conventions).
+Pour les règles de création spécifiques à Fumadocs, consultez [Intégration de Fumadocs — Conventions de liens](/fr/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ Exemple avec `outputDir: "translated-docs/"` et une source `README.md` située �
 
 Pour les dispositions `doc-system`, le réécriveur plat ne s'exécute pas. `regexAdjustments` voit l'URL originale du Markdown source (généralement un chemin absolu comme `/img/screenshots/en-GB/foo.png`).
 
-Voir [Le réécriveur de liens plats et le flux en deux étapes](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) pour le comportement du préfixe de profondeur et `flatPreserveRelativeDir`.
+Voir [Le réécriveur de liens plats et le flux en deux étapes](/fr/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) pour le comportement du préfixe de profondeur et `flatPreserveRelativeDir`.
 
 <a id="replace-placeholders"></a>
 ### Espaces réservés `replace`
@@ -93,7 +93,7 @@ Stockez les actifs dans un sous-répertoire codé par paramètres régionaux dè
 
 Utilisez `[^/]+` plutôt que de coder en dur vos paramètres régionaux source (`en-GB`) afin que la règle fonctionne toujours si `sourceLocale` change.
 
-Procédure complète : [Images et captures d'écran — Dossier par paramètres régionaux](/guide/images-and-screenshots/per-locale-folder).
+Procédure complète : [Images et captures d'écran — Dossier par paramètres régionaux](/fr/guide/images-and-screenshots/per-locale-folder).
 
 <a id="doc-system-static-urls"></a>
 ### URL statiques du système de documentation
@@ -112,7 +112,7 @@ Pour Docusaurus, Starlight ou d'autres sites `doc-system` qui diffusent des capt
 }
 ```
 
-Préférez les chemins relatifs colocalisés (`../assets/name.png`) dans le markdown source lorsque votre générateur le prend en charge — alors aucun pont `regexAdjustments` n'est nécessaire. Voir [Images et captures d'écran](/guide/images-and-screenshots/) pour les choix de mise en page.
+Préférez les chemins relatifs colocalisés (`../assets/name.png`) dans le markdown source lorsque votre générateur le prend en charge — alors aucun pont `regexAdjustments` n'est nécessaire. Voir [Images et captures d'écran](/fr/guide/images-and-screenshots/) pour les choix de mise en page.
 
 <a id="when-regex-is-not-needed"></a>
 ### Quand les expressions régulières ne sont pas nécessaires
@@ -156,14 +156,14 @@ README plat avec captures d'écran par langue et un bloc de sélection de langue
 
 </details>
 
-Référence de champ : [Configuration — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`).
+Référence de champ : [Configuration — `docs`](/fr/reference/configuration#docs) (`docsOutput.postProcessing`).
 
 <a id="troubleshooting"></a>
 ## Dépannage
 
 | Symptôme | Cause probable | Que vérifier |
 | --- | --- | --- |
-| La page traduite renvoie une erreur 404 sur une image ou un actif statique | `regexAdjustments` manquant ou incorrect pour votre structure d'URL | [Images et captures d'écran — Dépannage](/guide/images-and-screenshots/troubleshooting) |
-| Le lien ouvre le bon fichier mais le mauvais `#section` | Dérive du slug d'ancre, pas de réécriture d'URL | [Liens d'ancrage](/guide/documents/anchor-links) |
+| La page traduite renvoie une erreur 404 sur une image ou un actif statique | `regexAdjustments` manquant ou incorrect pour votre structure d'URL | [Images et captures d'écran — Dépannage](/fr/guide/images-and-screenshots/troubleshooting) |
+| Le lien ouvre le bon fichier mais le mauvais `#section` | Dérive du slug d'ancre, pas de réécriture d'URL | [Liens d'ancrage](/fr/guide/documents/anchor-links) |
 | La règle `regexAdjustments` n'a aucun effet sur la mise en page plate | `search` attend l'URL avant la réécriture, mais la mise en page plate a déjà ajouté un préfixe de profondeur | Faites correspondre le segment à l'intérieur du chemin préfixé (voir [flux en deux étapes](#two-step-flow-with-flat-layout)) |
 | Regex invalide ignorée à l'exécution | Modèle `search` mal formé | La CLI avertit avec la règle `description` ; testez les modèles par rapport à la sortie traduite d'exemple |

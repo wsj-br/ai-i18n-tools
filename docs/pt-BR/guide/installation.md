@@ -54,7 +54,7 @@ Com [**direnv**](https://direnv.net/), adicione `PATH_add node_modules/.bin` a u
 
 No Linux, macOS e WSL, as instalações do registro definem automaticamente o bit executável no script CLI. No Windows, os gerenciadores de pacotes geram `.cmd` e `.ps1` shims que invocam o Node explicitamente.
 
-Defina sua chave de API do provedor (OpenRouter mostrado; use a variável de ambiente que corresponde ao seu provedor ativo — consulte a [tabela de predefinições](/guide/providers-and-models#built-in-providers)):
+Defina sua chave de API do provedor (OpenRouter mostrado; use a variável de ambiente que corresponde ao seu provedor ativo — consulte a [tabela de predefinições](/pt-BR/guide/providers-and-models#built-in-providers)):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Idioma da interface do usuário da ferramenta
 
-A CLI localiza seu próprio texto de ajuda, resumos de log e o Painel de Tradução independentemente das localidades que você traduz. Por padrão, ela segue a localidade do seu sistema operacional. Substitua com `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` na configuração. Consulte [Idioma da interface do usuário da ferramenta](/guide/tool-ui-language).
+A CLI localiza seu próprio texto de ajuda, resumos de log e o Painel de Tradução independentemente das localidades que você traduz. Por padrão, ela segue a localidade do seu sistema operacional. Substitua com `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` na configuração. Consulte [Idioma da interface do usuário da ferramenta](/pt-BR/guide/tool-ui-language).

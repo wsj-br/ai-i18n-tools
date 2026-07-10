@@ -18,7 +18,7 @@
 2. それらのIDを指すようにアンカーリンクを設定します — たとえば、`[setup](guide.md#first-run)` の `#first-run` は英語のタイトルから推論されたスラッグではなく、対象となる見出しの上にあるアンカー行と一致する必要があります。
 3. `translate-docs`（または `sync --force-update`）を再実行して、すべてのロケールのコピーに更新されたアンカー行が含まれるようにします。
 
-変更をプレビューするには、まず`--dry-run`で`write-heading-ids`を使用します。完全なパターンについては、[アンカーリンク](/guide/documents/anchor-links)を参照してください。
+変更をプレビューするには、まず`--dry-run`で`write-heading-ids`を使用します。完全なパターンについては、[アンカーリンク](/ja/guide/documents/anchor-links)を参照してください。
 
 <a id="image-or-asset-links-404-in-translated-docs"></a>
 ## 翻訳されたドキュメントで画像またはアセットのリンクが404になる
@@ -27,6 +27,6 @@ Markdown リンクまたは `![alt](url)` は英語では機能しますが、�
 
 **修正方法**
 
-1. アセットのレイアウトが `docsOutput.style` (フラット vs ドキュメントシステム) と一致していることを確認します。[リンクの書き換え](/guide/documents/link-rewriting) および [画像とスクリーンショット](/guide/images-and-screenshots/) を参照してください。
+1. アセットのレイアウトが `docsOutput.style` (フラット vs ドキュメントシステム) と一致していることを確認します。[リンクの書き換え](/ja/guide/documents/link-rewriting) および [画像とスクリーンショット](/ja/guide/images-and-screenshots/) を参照してください。
 2. ロケールセグメントを交換したり、絶対 `/img/…` パスをブリッジしたりするために、`docsOutput.postProcessing.regexAdjustments` を追加または調整します。フラットレイアウトの場合、フラットリンクの書き換えは **前に** `regexAdjustments` が実行されることを覚えておいてください。すでにプレフィックスが付けられた URL に対してパターンを照合します。
 3. 書き換えられた markdown が参照するパスにロケール固有のアセットファイルが存在することを確認します (`translate-docs` は URL を書き換えますが、ラスターファイルをコピーしません)。

@@ -5,7 +5,7 @@ Jab anuvadit markdown files mein **"Doosri bhashaon mein padhen"** links ki ek r
 
 Yah repository [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (`translated-docs/` ke tahat flat output) ke liye iska upyog karti hai. `translate-docs` ke baad, har anuvadit copy ko ek naya block milta hai; udaharan ke liye [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) `translated-docs/` ke tahat sibling locale files aur repo root par English source se link karta hai.
 
-`docsOutput.style = "flat"` (ya koi anya layout jahan sibling locale files ko relative path se address kiya ja sake) ki avashyakta hai. [Output layouts](/guide/documents/output-layouts) dekhen.
+`docsOutput.style = "flat"` (ya koi anya layout jahan sibling locale files ko relative path se address kiya ja sake) ki avashyakta hai. [Output layouts](/hi-Latn/guide/documents/output-layouts) dekhen.
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Source markdown mein block ko mark karen
@@ -14,7 +14,7 @@ Switcher ko HTML (ya kisi bhi lines) mein `start` aur `end` substring markers dw
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/hi-Latn/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 Shuruaati link text sirf ek placeholder hai. `translate-docs` poore slice ko badal deta hai pehli line se jismein `start` hai, pehli baad ki line tak jismein `end` hai (fenced code blocks ke andar ke markers ko ignore kiya jaata hai taaki ek hi file mein config examples match na karein).
@@ -55,7 +55,7 @@ Agar kisi file mein koi matching block nahi hai, to CLI ek warning log karta hai
 <a id="4-label-manifest"></a>
 ## 4. Label manifest
 
-Endonym labels (`label: "local"`) ke liye, `generate-ui-languages` ke madhyam se `ui-languages.json` generate ya maintain karein (jo [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional) par likha gaya hai, jiska default `{ui.flatOutputDir}/ui-languages.json` hai). Is repo ke docs-only config mein koi UI pipeline aur disk par koi project manifest nahi hai, isliye labels `sourceLocale` + `targetLocales` ke liye bundled master catalog se aate hain.
+Endonym labels (`label: "local"`) ke liye, `generate-ui-languages` ke madhyam se `ui-languages.json` generate ya maintain karein (jo [`languagesManifestPath`](/hi-Latn/reference/configuration#languagesmanifestpath-optional) par likha gaya hai, jiska default `{ui.flatOutputDir}/ui-languages.json` hai). Is repo ke docs-only config mein koi UI pipeline aur disk par koi project manifest nahi hai, isliye labels `sourceLocale` + `targetLocales` ke liye bundled master catalog se aate hain.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Is repository mein udaharan

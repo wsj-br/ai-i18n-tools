@@ -29,7 +29,7 @@ Liste les entrées non plurielles de `strings.json` — une ligne par identifian
 
 Le `models[locale]` de l'entrée est défini sur `user-edited`. Exécutez `sync` ou `translate-ui` pour actualiser les fichiers de locale plats (`de.json`, etc.). N'utilisez **pas** `--force` — il retraduit chaque entrée et peut écraser les corrections manuelles.
 
-Lorsque `glossary.autoAddUserEditedToGlossary` est `true` (par défaut), le prochain `translate-ui` ou `sync` peut ajouter automatiquement votre modification au fichier CSV du glossaire utilisateur — voir [Configuration](/reference/configuration#glossary).
+Lorsque `glossary.autoAddUserEditedToGlossary` est `true` (par défaut), le prochain `translate-ui` ou `sync` peut ajouter automatiquement votre modification au fichier CSV du glossaire utilisateur — voir [Configuration](/fr/reference/configuration#glossary).
 
 <a id="delete"></a>
 ### Supprimer

@@ -3,7 +3,7 @@
 
 `init -t ui-docusaurus` 및 `docsOutput.style: "docusaurus"`을(를) [Docusaurus](https://docusaurus.io/) 문서 사이트에 사용합니다. 이 사전 설정은 `docusaurusCatalogDir`이(가) 있는 `docs[]` 블록을 스캐폴드하여 `translate-docs`이(가) 페이지 마크다운과 Docusaurus 셸 JSON을 한 번의 명령으로 번역할 수 있도록 합니다.
 
-다음 항목도 참조하세요. [문서](/guide/documents/), 실행 가능한 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 데모(Next.js 앱 및 중첩된 `docs-site/`), 그리고 Docusaurus 전용 연습을 위한 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site).
+다음 항목도 참조하세요. [문서](/ko/guide/documents/), 실행 가능한 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 데모(Next.js 앱 및 중첩된 `docs-site/`), 그리고 Docusaurus 전용 연습을 위한 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site).
 
 <a id="quick-start"></a>
 ## 빠른 시작
@@ -29,7 +29,7 @@ docs-site/docs/guide/quick-start.md
   →  docs-site/i18n/fr/docusaurus-plugin-content-docs/current/guide/quick-start.md
 ```
 
-하나의 `docs[]` 블록을 구성합니다.
+하나의 `docs[]` 블록을 구성하세요:
 
 ```json
 {
@@ -85,17 +85,17 @@ Docusaurus 셸 JSON을 `json[]`에 넣지 마십시오. 대신 Documents와 함�
 
 | 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
 |-----------|----------------------|----------|
-| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 레이블 | 문서 — `style: "nextra"` + `translate-docs`일 때 자동 |
+| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
 | Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 레이블 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
+| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
 | Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
+| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
 
-프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마십시오** — 이 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴에 대해서는 [VitePress 통합](/guide/integrations/vitepress), [Nextra 통합](/guide/integrations/nextra), [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하십시오.
+프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마십시오** — 이 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴에 대해서는 [VitePress 통합](/ko/guide/integrations/vitepress), [Nextra 통합](/ko/guide/integrations/nextra), [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하십시오.
 
 <a id="example-project"></a>
-## 예제 프로젝트
+## 예시 프로젝트
 
 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — `docs/`의 영어 소스, `i18n/<locale>/docusaurus-plugin-content-docs/current/` 아래의 커밋된 번역, 그리고 번역된 셸 JSON. 개발을 위해 포트 3040에서 `pnpm start`을(를) 실행합니다. 개발 모드에서 단일 로케일을 미리 보려면 `pnpm run start:fr`(및 유사한)을(를) 사용합니다.

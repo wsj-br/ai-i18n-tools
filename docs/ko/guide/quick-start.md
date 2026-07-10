@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # 빠른 시작
 
-기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만 활성화합니다. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. `ui-vitepress`은 VitePress 테마 문자열용 `docsOutput.vitepressThemeCatalog`도 스캐폴드하고, `ui-nextra`은 Nextra 테마 사전용 `docs[].nextraDictionaryPath`을 스캐폴드하며(사이드바 `_meta.ts`는 자동으로 수집됨), `ui-fumadocs`은 Fumadocs UI 재정의용 `docsOutput.fumadocsUiCatalog`를 스캐폴드합니다(사이드바 `meta.json`는 자동으로 수집됨). `ui-astro-website` 템플릿은 일반 Astro 앱(포함 `.astro` 파일)용 **UI** 추출을 스캐폴드합니다. `.astro` 페이지 HTML용 `translate-docs`도 원하는 경우 `docs[]` 블록([Astro 웹사이트 페이지(구문 분석 및 대체)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) 참조)을 추가하세요. 참조 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)는 **두** 파이프라인을 모두 사용합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 실행하는 단일 명령을 원할 경우 `sync`를 사용하세요.
+기본 `init` 템플릿(`ui-markdown`)은 **UI** 추출 및 번역만 활성화합니다. `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs` 템플릿은 **문서** 번역(`translate-docs`)을 활성화합니다. `ui-vitepress`은 VitePress 테마 문자열용 `docsOutput.vitepressThemeCatalog`도 스캐폴드하고, `ui-nextra`은 Nextra 테마 사전용 `docs[].nextraDictionaryPath`을 스캐폴드하며(사이드바 `_meta.ts`는 자동으로 수집됨), `ui-fumadocs`은 Fumadocs UI 재정의용 `docsOutput.fumadocsUiCatalog`를 스캐폴드합니다(사이드바 `meta.json`는 자동으로 수집됨). `ui-astro-website` 템플릿은 일반 Astro 앱(포함 `.astro` 파일)용 **UI** 추출을 스캐폴드합니다. `.astro` 페이지 HTML용 `translate-docs`도 원하는 경우 `docs[]` 블록([Astro 웹사이트 페이지(구문 분석 및 대체)](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) 참조)을 추가하세요. 참조 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)는 **두** 파이프라인을 모두 사용합니다. 구성에 따라 추출, UI 번역, 선택적 SVG 파일 번역 및 문서 번역을 실행하는 단일 명령을 원할 경우 `sync`를 사용하세요.
 
 <a id="runnable-examples"></a>
 ### 실행 가능한 예시
 
-실행 가능한 9개의 프로젝트와 픽스처는 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있습니다. [예시](/examples) 카탈로그(콘솔 앱, Next.js + Docusaurus, Astro 웹사이트, Astro Starlight 문서, VitePress 문서, Nextra 문서, Fumadocs 문서, 다중 공급자 비교, 마크다운 스트레스 테스트)를 참조하세요.
+실행 가능한 9개의 프로젝트와 픽스처는 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)에 있습니다. [예시](/ko/examples) 카탈로그(콘솔 앱, Next.js + Docusaurus, Astro 웹사이트, Astro Starlight 문서, VitePress 문서, Nextra 문서, Fumadocs 문서, 다중 공급자 비교, 마크다운 스트레스 테스트)를 참조하세요.
 
 **하나의 예시를 독립적으로 실행합니다** (전체 모노레포를 복제하지 않고):
 
@@ -68,7 +68,7 @@ npx ai-i18n-tools status
 }
 ```
 
-**팁:** CLI 출력과 대시보드를 다른 언어로 표시하려면 `-L <code>`를 전달하거나 `AI_I18N_LANG`를 설정하세요 — [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
+**팁:** CLI 출력과 대시보드를 다른 언어로 표시하려면 `-L <code>`를 전달하거나 `AI_I18N_LANG`를 설정하세요 — [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
 <a id="combined-sync"></a>
 ## 결합된 동기화

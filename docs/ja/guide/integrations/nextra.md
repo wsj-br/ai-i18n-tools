@@ -3,7 +3,7 @@
 
 Next.js App Router 上の [Nextra](https://nextra.site/) 4 ドキュメントサイトには、`init -t ui-nextra` と `docsOutput.style: "nextra"` を使用します。このプリセットは、空の `doc-system` と BCP-47 ロケールフォルダー名が保持された `localeSubpath` のエイリアスです (`localePathLowercase` はデフォルトで `false` になるため、フォルダーは `pt-BR`、`zh-Hans` などになります)。
 
-[ドキュメント](/guide/documents/) と、実行可能な [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) デモも参照してください。
+[ドキュメント](/ja/guide/documents/) と、実行可能な [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) デモも参照してください。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -27,7 +27,7 @@ content/en/index.mdx              →  content/pt-BR/index.mdx
 content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started.mdx
 ```
 
-1つの`docs[]`ブロックを設定します。
+`docs[]` ブロックを1つ設定します：
 
 ```json
 {
@@ -92,17 +92,17 @@ JSON サイドカー (`i18n/meta.en.json`) や、翻訳された JSON をイン�
 <a id="framework-shell-translation"></a>
 ## フレームワークシェルの翻訳
 
-| フレームワーク | シェル/テーマ文字列 | パイプライン |
+| フレームワーク | シェル / テーマ文字列 | パイプライン |
 |-----------|----------------------|----------|
-| Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の場合に自動 |
+| Docusaurus | `write-translations` カタログ (`{ message, description }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
 | Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の場合は自動 |
-| Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
+| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
+| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
 
-`json[]`にフレームワークのシェル/テーマ文字列を入れ**ない**でください—あのパイプラインは関連のないアプリロケールバンドル用です。他のフレームワークパターンについては、[Docusaurus 連携](/guide/integrations/docusaurus)、[VitePress 連携](/guide/integrations/vitepress)、[Fumadocs 連携](/guide/integrations/fumadocs)を参照してください。
+`json[]`にフレームワークのシェル/テーマ文字列を入れ**ない**でください—あのパイプラインは関連のないアプリロケールバンドル用です。他のフレームワークパターンについては、[Docusaurus 連携](/ja/guide/integrations/docusaurus)、[VitePress 連携](/ja/guide/integrations/vitepress)、[Fumadocs 連携](/ja/guide/integrations/fumadocs)を参照してください。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト
@@ -143,11 +143,11 @@ After editing: run extract, translate-ui (or sync), verify en + one target local
 ```
 
 <a id="link-conventions"></a>
-## リンクの慣例
+## リンクの表記規則
 
 Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-started`) を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールに依存しないようにするべきです** (`/guide/getting-started`)。そうすることで、Next.js がアクティブなロケールを自動的にプレフィックスできます。
 
-組み込みのノーマライザーを有効にすると、`translate-docs` がすべての翻訳ファイル内のリンクを自動的に修正します。
+組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳ファイルのリンクを自動的に修正します:
 
 ```json
 "docsOutput": {
@@ -161,11 +161,11 @@ Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-st
 
 | 英語ソースで作成 | 正規化後 |
 |--------------------------|------------------|
-| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
+| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/ja/guide/getting-started)` |
+| `[Guide](/ja/guide/getting-started.mdx)` | `[Guide](/ja/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 変更なし (完全な URL) |
 
-**作成ルール**
+**執筆ルール**
 
 - ページ間のドキュメントリンク: 英語の MDX では **ロケールに依存しないサイトルート** (`/guide/…`) を使用するか、`content/en/…` / 相対 `.mdx` パスを使用し、`sync` の間に正規化ツールで書き換えさせます。
 - コンテンツツリー外のリポジトリファイル: **完全な URL** を使用します。
@@ -190,4 +190,4 @@ export const config = {
 
 これは `output: 'export'` 静的エクスポートでは機能しません。[Nextra i18n ドキュメント](https://nextra.site/docs/guide/i18n) を参照してください。
 
-[設定 — `docsOutput`](/reference/configuration#docsoutput) および [出力レイアウト](/guide/documents/output-layouts) も参照してください。
+[設定 — `docsOutput`](/ja/reference/configuration#docsoutput) および [出力レイアウト](/ja/guide/documents/output-layouts) も参照してください。

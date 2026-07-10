@@ -2,7 +2,7 @@
 # 일반적인 실수 및 문제 해결
 
 **스크린샷 경로에 로케일 디렉터리가 없습니다.**
-`images/screenshots/screenshot.png` — 로케일 변형을 구분할 수 없으며 다시 작성할 수 없습니다. [로케일별 폴더](/guide/images-and-screenshots/per-locale-folder) 다시 작성 기능을 사용하기 전에 `images/screenshots/<locale>/screenshot.png`로 재구성하세요.
+`images/screenshots/screenshot.png` — 로케일 변형을 구분할 수 없으며 다시 작성할 수 없습니다. [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder) 다시 작성 기능을 사용하기 전에 `images/screenshots/<locale>/screenshot.png`로 재구성하세요.
 
 **정규식에 하드코딩된 소스 로케일**
 `"search": "screenshots/en-GB/"` — `sourceLocale`이 변경되면 조용히 오류가 발생합니다. 대신 `"search": "screenshots/[^/]+/"`를 사용하세요.

@@ -8,7 +8,7 @@ C'est le seul pipeline qui émet des fichiers SVG **binaires** spécifiques à l
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
 
-`translate-svg` résout les modèles **par paramètre régional cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Chaque exécution SVG de paramètre régional utilise sa propre chaîne de secours — utile lorsque les étiquettes de diagramme dans les paramètres régionaux CJK nécessitent un modèle adapté au script (par exemple `ja`). Voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain).
+`translate-svg` résout les modèles **par paramètre régional cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Chaque exécution SVG de paramètre régional utilise sa propre chaîne de secours — utile lorsque les étiquettes de diagramme dans les paramètres régionaux CJK nécessitent un modèle adapté au script (par exemple `ja`). Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
 
 La traduction SVG utilise le même cache SQLite que `translate-docs` et `translate-json` (`cacheDir`). Les segments de texte déjà traduits sont servis à partir du cache ; seul le texte source nouveau ou modifié est envoyé au LLM.
 
@@ -24,7 +24,7 @@ Utilisez `translate-svg` lorsque :
 N'utilisez **pas** `translate-svg` pour :
 
 - Les SVG décoratifs sans texte traduisible (icônes, logos, arrière-plans).
-- Les captures d'écran raster (PNG, JPEG, WebP) — celles-ci sont gérées via [Images et captures d'écran](/guide/images-and-screenshots/).
+- Les captures d'écran raster (PNG, JPEG, WebP) — celles-ci sont gérées via [Images et captures d'écran](/fr/guide/images-and-screenshots/).
 - Le texte intégré dans les données de chemin au lieu des éléments `<text>` — l'extracteur ne peut pas lire les contours de chemin.
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ Pour les applications web, activez `forceLowercase: true` lorsque votre concepti
 
 | Disposition | `svg.style` | Idéal pour | Guide enfant |
 |--------|-------------|----------|-------------|
-| **Plat (application web)** | `"flat"` | Next.js, Vite et d'autres applications qui intègrent des SVG par nom de fichier codé par locale | [Application web (SVG plat)](/guide/svg-translation/translated-svg-web-app) |
-| **Co-localisé (système de documentation)** | `"nested"` + `pathTemplate` | Docusaurus et d'autres sites de système de documentation où les ressources traduites se trouvent à côté des pages traduites | [SVG co-localisé](/guide/svg-translation/translated-svg-colocated) |
+| **Plat (application web)** | `"flat"` | Next.js, Vite et d'autres applications qui intègrent des SVG par nom de fichier codé par locale | [Application web (SVG plat)](/fr/guide/svg-translation/translated-svg-web-app) |
+| **Co-localisé (système de documentation)** | `"nested"` + `pathTemplate` | Docusaurus et d'autres sites de système de documentation où les ressources traduites se trouvent à côté des pages traduites | [SVG co-localisé](/fr/guide/svg-translation/translated-svg-colocated) |
 
 La **disposition plate** écrit des fichiers comme `public/assets/diagram.de.svg` à côté de `diagram.en-GB.svg`. Votre application les référence avec un suffixe de locale :
 
@@ -56,7 +56,7 @@ La **disposition plate** écrit des fichiers comme `public/assets/diagram.de.svg
 
 La **disposition co-localisée** écrit le SVG de chaque locale dans l'arborescence de contenu de cette locale (par exemple `i18n/de/.../assets/diagram.svg`). Le markdown source et traduit utilise le même chemin relatif (`../assets/diagram.svg`) — aucune règle `regexAdjustments` n'est nécessaire.
 
-Consultez le [guide de décision Images et captures d'écran](/guide/images-and-screenshots/#decision-guide) pour savoir comment les dispositions SVG s'intègrent aux stratégies de captures d'écran raster.
+Consultez le [guide de décision Images et captures d'écran](/fr/guide/images-and-screenshots/#decision-guide) pour savoir comment les dispositions SVG s'intègrent aux stratégies de captures d'écran raster.
 
 <a id="step-1-enable-and-configure"></a>
 ### Étape 1 : Activer et configurer
@@ -84,7 +84,7 @@ Champs clés `svg` :
 - `pathTemplate` — chemin de sortie personnalisé facultatif avec les espaces réservés `{outputDir}`, `{locale}`, `{llocale}`, `{basename}`, `{stem}` et d'autres (requis pour les mises en page de système de documentation colocalisées).
 - `forceLowercase` — texte traduit en minuscules lors du réassemblage.
 
-Référence complète du champ : [Configuration — `svg`](/reference/configuration#svg).
+Référence complète du champ : [Configuration — `svg`](/fr/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
 ### Étape 2 : Traduire
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### Dépannage
 
-Les problèmes SVG courants — répertoires source/sortie mixtes, URL statiques absolues sur Docusaurus et erreurs de mise en page de chemin — sont traités dans [Dépannage SVG](/guide/svg-translation/troubleshooting). Pour les ressources raster et la réécriture de liens, voir [Dépannage des images et captures d'écran](/guide/images-and-screenshots/troubleshooting).
+Les problèmes SVG courants — répertoires source/sortie mixtes, URL statiques absolues sur Docusaurus et erreurs de mise en page de chemin — sont traités dans [Dépannage SVG](/fr/guide/svg-translation/troubleshooting). Pour les ressources raster et la réécriture de liens, voir [Dépannage des images et captures d'écran](/fr/guide/images-and-screenshots/troubleshooting).

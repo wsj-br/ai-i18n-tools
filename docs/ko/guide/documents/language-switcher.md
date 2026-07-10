@@ -5,7 +5,7 @@
 
 이 저장소는 [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)(`translated-docs/` 아래의 플랫 출력)에 이를 사용합니다. `translate-docs` 후, 각 번역된 사본은 새로 고쳐진 블록을 얻습니다. 예를 들어 [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md)는 `translated-docs/` 아래의 형제 로케일 파일과 저장소 루트의 영어 소스로 다시 연결됩니다.
 
-`docsOutput.style = "flat"`(또는 형제 로케일 파일을 상대 경로로 주소 지정할 수 있는 다른 레이아웃)가 필요합니다. [출력 레이아웃](/guide/documents/output-layouts)을 참조하십시오.
+`docsOutput.style = "flat"`(또는 형제 로케일 파일을 상대 경로로 주소 지정할 수 있는 다른 레이아웃)가 필요합니다. [출력 레이아웃](/ko/guide/documents/output-layouts)을 참조하십시오.
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. 소스 마크다운에서 블록 표시
@@ -14,7 +14,7 @@
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/ko/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 초기 링크 텍스트는 단지 자리표시자일 뿐입니다. `translate-docs`은 `start`을 포함한 첫 번째 라인부터 이후에 등장하는 `end`를 포함한 첫 번째 라인까지의 전체 구간을 대체합니다 (코드 블록 안의 마커는 무시되므로 동일 파일 내 구성 예제는 대상에서 제외됨).
@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. 레이블 매니페스트
 
-고유명 레이블(`label: "local"`)의 경우, `generate-ui-languages`를 통해 `ui-languages.json`을(를) 생성하거나 유지합니다 ([`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional)에 기록되며 기본값은 `{ui.flatOutputDir}/ui-languages.json`임). 이 저장소의 문서 전용 구성에는 UI 파이프라인이 없고 디스크에 프로젝트 매니페스트가 없으므로, 레이블은 `sourceLocale` + `targetLocales`에 대한 번들 마스터 카탈로그에서 가져옵니다.
+고유명 레이블(`label: "local"`)의 경우, `generate-ui-languages`를 통해 `ui-languages.json`을(를) 생성하거나 유지합니다 ([`languagesManifestPath`](/ko/reference/configuration#languagesmanifestpath-optional)에 기록되며 기본값은 `{ui.flatOutputDir}/ui-languages.json`임). 이 저장소의 문서 전용 구성에는 UI 파이프라인이 없고 디스크에 프로젝트 매니페스트가 없으므로, 레이블은 `sourceLocale` + `targetLocales`에 대한 번들 마스터 카탈로그에서 가져옵니다.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. 이 저장소의 예시

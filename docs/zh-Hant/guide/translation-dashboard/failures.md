@@ -15,7 +15,7 @@
 <a id="why-source-edits-matter"></a>
 ## 為什麼來源編輯很重要
 
-密集的內聯標記（**粗體**與`` `code` ``混合、巢狀強調、帶有許多跨度的長句）使得模型更難返回仍能通過結構檢查的翻譯。具有**多個記錄失敗**的區段通常透過**重寫或拆分**來源（或將範例移至圍欄程式碼區塊）比在未更改的文字上重新執行翻譯更能改善。這與[複雜的 Markdown 和失敗的品質檢查](/guide/documents/#complex-markdown-and-failed-quality-checks)一致。
+密集的內聯標記（**粗體**與`` `code` ``混合、巢狀強調、帶有許多跨度的長句）使得模型更難返回仍能通過結構檢查的翻譯。具有**多個記錄失敗**的區段通常透過**重寫或拆分**來源（或將範例移至圍欄程式碼區塊）比在未更改的文字上重新執行翻譯更能改善。這與[複雜的 Markdown 和失敗的品質檢查](/zh-Hant/guide/documents/#complex-markdown-and-failed-quality-checks)一致。
 
 <a id="how-to-use-the-tab"></a>
 ## 如何使用此分頁
@@ -28,7 +28,7 @@
 6. 🔗 連結控制項會將檔案/行提示記錄到正在執行 `ai-i18n-tools dashboard` 的**終端機**。
 7. 修正您專案中的**來源檔案**，然後再次執行 `translate-docs` 或 `sync`。如果成功執行後列表看起來**過時**，請執行 `ai-i18n-tools sync --force-update` 並重新載入儀表板。
 
-為了在 UI 旁邊進行基於檔案的偵錯，請在重試期間使用 `translate-docs --debug-failed` 將 `FAILED-TRANSLATION` 詳細資訊寫入 `cacheDir` 下方——請參閱[快取行為和 `translate-docs` 旗標](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+為了在 UI 旁邊進行基於檔案的偵錯，請在重試期間使用 `translate-docs --debug-failed` 將 `FAILED-TRANSLATION` 詳細資訊寫入 `cacheDir` 下方——請參閱[快取行為和 `translate-docs` 旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失敗與 Markdown 問題
@@ -39,4 +39,4 @@
 | 典型原因 | 錯誤的模型輸出、驗證錯誤 | 不成對的強調、未閉合的程式碼跨度、連結外部的粗體 |
 | 修正 | 編輯來源並重新翻譯 | 修正來源 Markdown，然後重新翻譯 |
 
-請參閱[Markdown 問題](/guide/translation-dashboard/markdown-issues)以了解翻譯前的靜態檢查。
+請參閱[Markdown 問題](/zh-Hant/guide/translation-dashboard/markdown-issues)以了解翻譯前的靜態檢查。

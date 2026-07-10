@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro ウェブサイト
 
-静的な Astro のマーケティングサイトまたはアプリサイト (Starlight ではなく、プレーンな Astro) では、[Astro の組み込み i18n ルーティング](https://docs.astro.build/en/guides/internationalization/) と ai-i18n-tools を組み合わせます。[Astro インテグレーション](/guide/integrations/astro) も参照してください。
+静的な Astro のマーケティングサイトまたはアプリサイト (Starlight ではなく、プレーンな Astro) では、[Astro の組み込み i18n ルーティング](https://docs.astro.build/en/guides/internationalization/) と ai-i18n-tools を組み合わせます。[Astro インテグレーション](/ja/guide/integrations/astro) も参照してください。
 
 リファレンス実装は [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) です（その [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) も参照）。英語は `/`、9 つのターゲットロケールは `/{locale}/`（`de`、`fr`、`es`、`ar`、`ja`、`ko`、`zh-cn`、`zh-tw`、`pt-br`）です。
 
@@ -60,7 +60,7 @@ const t = useTranslations(locale, makeT(flat));
 
 `.astro` ファイル内のハードコードされた HTML を含むマーケティングページでは、`translate-docs` にテキストノードおよび属性（`alt`、`title`、`aria-label`、`placeholder`）の抽出をさせ、ドキュメントキャッシュで翻訳し、ページツリー内にロケール固有のコピーを書き出します。ほとんどの表示用コピーでは、`t()` は**不要**です。
 
-構造的な属性とキーの値は、デフォルトでは**翻訳されません**。組み込みの保護機能は、`class`、`id`、`style`、`src`、`href`、`data-*`、およびほとんどの `aria-*` などの JSX/HTML 属性、さらにテンプレートの `{expression}` ブロック内の `class`、`key`、`id` などのオブジェクトキーをカバーします。カスタム属性（例: Tailwind の `variant` または CMS の `slug` フィールド）を使用する場合は、`docs[].protectAttributes` と `docs[].protectKeys` を使用してこれらのリストを拡張します。同じオプションは、マークダウン翻訳中の MDX JSX にも適用されます（[protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys) を参照）。
+構造的な属性とキーの値は、デフォルトでは**翻訳されません**。組み込みの保護機能は、`class`、`id`、`style`、`src`、`href`、`data-*`、およびほとんどの `aria-*` などの JSX/HTML 属性、さらにテンプレートの `{expression}` ブロック内の `class`、`key`、`id` などのオブジェクトキーをカバーします。カスタム属性（例: Tailwind の `variant` または CMS の `slug` フィールド）を使用する場合は、`docs[].protectAttributes` と `docs[].protectKeys` を使用してこれらのリストを拡張します。同じオプションは、マークダウン翻訳中の MDX JSX にも適用されます（[protectAttributes / protectKeys](/ja/reference/configuration#protectattributes-protectkeys) を参照）。
 
 `features.translateDocs`を有効化し、`docs[]`ブロックを追加します。例：
 

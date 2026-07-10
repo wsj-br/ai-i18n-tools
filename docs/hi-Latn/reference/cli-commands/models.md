@@ -8,7 +8,7 @@
 
 Pratyek konfigure kiye gaye model id ko sakriya provider ke `GET /models` suchi (sadasyata aur `expiration_date`) ke viruddh pramanit karein. Ismein provider ki API key ki avashyakta hoti hai (Ollama jaise keyless providers ke liye koi API key nahin). Yadi koi bhi konfigure kiya gaya id gayab hai ya samay se pare, to yah shunya se alag exit code dega aur provider ke `requestTimeoutMs` ka samman karega. Yadi provider mulya (jaise OpenRouter) pradan karta hai, to yah prompt/completion ke liye USD per 1M tokens bhi dikhata hai.
 
-**Aur dekhein:** [LLM providers](/guide/providers-and-models)
+**Aur dekhein:** [LLM providers](/hi-Latn/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Sakriya provider dwara apni `GET /models` suchi ke madhyam se pracharit pratyek 
 
 **Mukhya vikalp:** `-P` / `--provider`
 
-**Aur dekhein:** [LLM providers](/guide/providers-and-models)
+**Aur dekhein:** [LLM providers](/hi-Latn/guide/providers-and-models)
 
 ---
 

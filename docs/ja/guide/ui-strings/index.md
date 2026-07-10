@@ -8,12 +8,12 @@ i18next を使用するあらゆる JS/TS プロジェクト向けに設計さ�
 
 | あなたのアプリ | 次を読む |
 | --- | --- |
-| React / Next.js / Node + i18next | [i18nextを接続する](/guide/ui-strings/i18next-runtime) (ステップ4) |
-| プレーンHTML (マークアップに`t()`なし) | [プレーンHTMLアプリ](/guide/ui-strings/plain-html) |
-| Astroマーケティングサイト (ハイブリッド) | [Astroウェブサイト](/guide/ui-strings/astro-website) |
-| `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/guide/ui-strings/t-calls-and-plurals) |
-| 言語ピッカー / RTL | [言語スイッチャーとRTL](/guide/ui-strings/language-switcher) |
-| ランタイムAPIシグネチャ | [ランタイムヘルパー](/guide/runtime-helpers) |
+| React / Next.js / Node + i18next | [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime) (ステップ4) |
+| プレーンHTML (マークアップに`t()`なし) | [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html) |
+| Astroマーケティングサイト (ハイブリッド) | [Astroウェブサイト](/ja/guide/ui-strings/astro-website) |
+| `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/ja/guide/ui-strings/t-calls-and-plurals) |
+| 言語ピッカー / RTL | [言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher) |
+| ランタイムAPIシグネチャ | [ランタイムヘルパー](/ja/guide/runtime-helpers) |
 
 <a id="step-1-initialise"></a>
 ## ステップ1: 初期化
@@ -29,7 +29,7 @@ npx ai-i18n-tools init
 - `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン（例：`["src/"]`, `["src/**/*.ts"]`）。
 - `ui.stringsJson` - マスターカタログを書き込む場所（例：`"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - `de.json`、`pt-BR.json`などを記述する場所（例: `"src/locales/"`）。
-- `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および`proofread-ui`（一致する`localeModels`エントリの後、`translationModels`の前）のための、UI専用モデルの順序付きリスト。詳細については、「[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)」を参照してください。
+- `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および`proofread-ui`（一致する`localeModels`エントリの後、`translationModels`の前）のための、UI専用モデルの順序付きリスト。詳細については、「[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)」を参照してください。
 
 <a id="step-2-extract-strings"></a>
 ## ステップ2: 文字列を抽出する
@@ -40,7 +40,7 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` 配下のすべての JS/TS ファイルをスキャンし、`t("literal")` および `i18n.t("literal")` 呼び出しを検出して `ui.stringsJson` に書き込み（またはマージ）します。
 
-スキャナーは設定可能です。`ui.uiExtractor.funcNames` (またはレガシー`ui.reactExtractor.funcNames`) を介してカスタム関数名を追加します。Astroページとコンポーネントの場合、`ui.uiExtractor.extensions`に`.astro`を追加します。プレーンHTMLについては、[プレーンHTMLアプリ](/guide/ui-strings/plain-html)を参照してください。
+スキャナーは設定可能です。`ui.uiExtractor.funcNames` (またはレガシー`ui.reactExtractor.funcNames`) を介してカスタム関数名を追加します。Astroページとコンポーネントの場合、`ui.uiExtractor.extensions`に`.astro`を追加します。プレーンHTMLについては、[プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)を参照してください。
 
 <a id="step-3-translate-ui-strings"></a>
 ## ステップ3: UI文字列を翻訳する
@@ -49,7 +49,7 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json`を読み取り、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデル選択にはUIチェーンが使用されます: `localeModels(locale)` → `uiModels` → `translationModels`（「[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)」を参照）。
+`strings.json`を読み取り、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデル選択にはUIチェーンが使用されます: `localeModels(locale)` → `uiModels` → `translationModels`（「[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)」を参照）。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
@@ -60,7 +60,7 @@ npx ai-i18n-tools translate-ui
 
 > **注:** UI文字列に対するダッシュボードの編集は、SQLiteドキュメントキャッシュではなく、`strings.json`に保存されます。カタログからフラットロケールファイルを書き換えるには、プレーンな`sync`または`translate-ui` (特別なフラグなし) を実行します。`--force-update`はUIステップに転送**されません**。手動編集後にUIコマンドで`--force`を使用しないでください。すべてのエントリが再翻訳され、`user-edited`行が上書きされる可能性があります。
 
-次に、実行時にi18nextを接続します — [i18nextを接続する](/guide/ui-strings/i18next-runtime)。
+次に、実行時にi18nextを接続します — [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime)。
 
 <a id="exporting-to-xliff-20-optional"></a>
 ## XLIFF 2.0へのエクスポート (オプション)

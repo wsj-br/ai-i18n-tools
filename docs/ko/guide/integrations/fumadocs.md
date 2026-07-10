@@ -3,7 +3,7 @@
 
 Next.js App Router에서 [Fumadocs](https://www.fumadocs.dev/) 4 문서 사이트를 위한 `init -t ui-fumadocs`와 `docsOutput.style: "fumadocs"`를 사용합니다. 프리셋은 빈 `localeSubpath`과 BCP-47 또는 짧은 로케일 코드가 보존된 `doc-system`의 별칭입니다 (`localePathLowercase`는 `false`가 기본값입니다).
 
-[Documents](/guide/documents/)와 실행 가능한 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 데모(점 구문 분석기, 포트 3080)를 참조하십시오.
+[Documents](/ko/guide/documents/)와 실행 가능한 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 데모(점 구문 분석기, 포트 3080)를 참조하십시오.
 
 <a id="quick-start"></a>
 ## 빠른 시작
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-복사해서 사용할 수 있는 dir 설정은 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)의 `ai-i18n-tools.config.dir.example.json`를 참조하세요. 멘탈 모델은 [Nextra 통합](/guide/integrations/nextra#page-layout)과 일치합니다.
+복사해서 사용할 수 있는 dir 설정은 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)의 `ai-i18n-tools.config.dir.example.json`를 참조하세요. 멘탈 모델은 [Nextra 통합](/ko/guide/integrations/nextra#page-layout)과 일치합니다.
 
 <a id="sidebar-metajson"></a>
 ## 사이드바(`meta.json`)
@@ -127,21 +127,21 @@ Fumadocs 레이아웃 크롬(검색 플레이스 홀더, 로케일 표시 이름
 | 프레임워크 | 셸/테마 문자열 | 파이프라인 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 카탈로그 | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 레이블 | 문서 — `style: "nextra"` + `translate-docs`일 때 자동 |
+| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
 | Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 레이블 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
+| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
 | Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
+| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
 
-프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마세요** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/guide/integrations/docusaurus), [VitePress 통합](/guide/integrations/vitepress), [Nextra 통합](/guide/integrations/nextra)을 참조하세요.
+프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마세요** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/ko/guide/integrations/docusaurus), [VitePress 통합](/ko/guide/integrations/vitepress), [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요.
 
 <a id="link-conventions"></a>
 ## 링크 규칙
 
 Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-started`)를 통해 로케일 접두사가 붙은 경로를 제공합니다. 활성 로케일 접두사가 자동으로 적용되도록 **페이지 내 링크는 로케일 중립적이어야 합니다**(`/docs/getting-started`).
 
-내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 합니다.
+내장 노멀라이저를 활성화하여 `translate-docs`가 모든 번역 파일의 링크를 자동으로 수정하도록 하세요:
 
 ```json
 "docsOutput": {
@@ -157,7 +157,7 @@ Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-star
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/ko/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 변경 없음 (전체 URL) |
 
 **작성 규칙**
@@ -166,7 +166,7 @@ Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-star
 - 콘텐츠 트리 외부의 저장소 파일: **전체 URL**을 사용합니다.
 - 로케일 접미사가 붙은 복사본(`*.pt.mdx`) 또는 `content/{locale}/` 트리에서 링크를 수동으로 편집**하지 마십시오**. `sync` / `translate-docs`로 다시 생성하십시오.
 
-참조: [문서 — 링크 재작성](/guide/documents/link-rewriting) 및 [구성 — `docsOutput`](/reference/configuration#docsoutput).
+참조: [문서 — 링크 재작성](/ko/guide/documents/link-rewriting) 및 [구성 — `docsOutput`](/ko/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## 로케일 코드
@@ -179,15 +179,15 @@ Fumadocs 앱 **정확히** `ai-i18n-tools.config.json`의 `targetLocales`를 `de
 Fumadocs 프로젝트는 `source.config.ts`(문서, 블로그, 예제)에 여러 `defineDocs` 블록을 정의할 수 있습니다. 각 컬렉션에 대해 `docs[]` 블록을 추가하고, 각 블록에自己的 `contentPaths`, `outputDir`, `docsRoot`를 지정합니다.
 
 <a id="example-project"></a>
-## 예제 프로젝트
+## 예시 프로젝트
 
 [예제/Fumadocs 문서](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) — `content/docs/`의 영어 MDX, `pt` 및 `zh` 점 접미사 페이지, `meta.json`, `lib/i18n/ui.{locale}.json` 커밋. `pnpm run dev`를 포트 **3080**에서 실행합니다.
 
 <a id="cross-references"></a>
 ## 크로스 참조
 
-- [설정 — `docsOutput`](/reference/configuration#docsoutput)
-- [출력 레이아웃](/guide/documents/output-layouts)
-- [Docusaurus 통합](/guide/integrations/docusaurus)
-- [Nextra 통합](/guide/integrations/nextra) (dir 파서 멘탈 모델)
-- [VitePress 통합](/guide/integrations/vitepress) (UI 카탈로그 부트스트랩 패턴)
+- [설정 — `docsOutput`](/ko/reference/configuration#docsoutput)
+- [출력 레이아웃](/ko/guide/documents/output-layouts)
+- [Docusaurus 통합](/ko/guide/integrations/docusaurus)
+- [Nextra 통합](/ko/guide/integrations/nextra) (dir 파서 멘탈 모델)
+- [VitePress 통합](/ko/guide/integrations/vitepress) (UI 카탈로그 부트스트랩 패턴)

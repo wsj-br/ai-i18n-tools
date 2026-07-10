@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Démarrage rapide
 
-Le modèle `init` (`ui-markdown`) par défaut n’active que l’extraction et la traduction de l’**interface utilisateur**. Les modèles `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` et `ui-fumadocs` activent la traduction de **documents** (`translate-docs`) ; `ui-vitepress` échafaude également `docsOutput.vitepressThemeCatalog` pour les chaînes de thème VitePress, `ui-nextra` échafaude `docs[].nextraDictionaryPath` pour le dictionnaire de thème Nextra (la `_meta.ts` de la barre latérale est collectée automatiquement), et `ui-fumadocs` échafaude `docsOutput.fumadocsUiCatalog` pour les remplacements d’interface utilisateur Fumadocs (la `meta.json` de la barre latérale est collectée automatiquement). Le modèle `ui-astro-website` échafaude l’extraction de l’**interface utilisateur** pour les applications Astro simples (y compris les fichiers `.astro`) ; ajoutez un bloc `docs[]` (voir [Pages de site web Astro (analyse et remplacement)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) lorsque vous souhaitez également `translate-docs` pour le HTML de la page `.astro`. La référence [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) utilise **les deux** pipelines. Utilisez `sync` lorsque vous souhaitez une commande qui exécute l’extraction, la traduction de l’interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation en fonction de votre configuration.
+Le modèle `init` (`ui-markdown`) par défaut n’active que l’extraction et la traduction de l’**interface utilisateur**. Les modèles `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` et `ui-fumadocs` activent la traduction de **documents** (`translate-docs`) ; `ui-vitepress` échafaude également `docsOutput.vitepressThemeCatalog` pour les chaînes de thème VitePress, `ui-nextra` échafaude `docs[].nextraDictionaryPath` pour le dictionnaire de thème Nextra (la `_meta.ts` de la barre latérale est collectée automatiquement), et `ui-fumadocs` échafaude `docsOutput.fumadocsUiCatalog` pour les remplacements d’interface utilisateur Fumadocs (la `meta.json` de la barre latérale est collectée automatiquement). Le modèle `ui-astro-website` échafaude l’extraction de l’**interface utilisateur** pour les applications Astro simples (y compris les fichiers `.astro`) ; ajoutez un bloc `docs[]` (voir [Pages de site web Astro (analyse et remplacement)](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) lorsque vous souhaitez également `translate-docs` pour le HTML de la page `.astro`. La référence [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) utilise **les deux** pipelines. Utilisez `sync` lorsque vous souhaitez une commande qui exécute l’extraction, la traduction de l’interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation en fonction de votre configuration.
 
 <a id="runnable-examples"></a>
 ### Exemples exécutables
 
-Neuf projets et fixtures exécutables se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/examples) (application console, Next.js + Docusaurus, site web Astro, documentation Astro Starlight, documentation VitePress, documentation Nextra, documentation Fumadocs, comparaison multi-fournisseurs, test de contrainte Markdown).
+Neuf projets et fixtures exécutables se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/fr/examples) (application console, Next.js + Docusaurus, site web Astro, documentation Astro Starlight, documentation VitePress, documentation Nextra, documentation Fumadocs, comparaison multi-fournisseurs, test de contrainte Markdown).
 
 **Exécuter un exemple de manière autonome** (sans cloner l'ensemble du monorepo) :
 
@@ -68,7 +68,7 @@ Une fois le package installé localement, vous pouvez utiliser directement les c
 }
 ```
 
-**Conseil :** Transmettez `-L <code>` ou définissez `AI_I18N_LANG` si vous souhaitez que la sortie CLI et le tableau de bord soient dans une autre langue — consultez [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
+**Conseil :** Transmettez `-L <code>` ou définissez `AI_I18N_LANG` si vous souhaitez que la sortie CLI et le tableau de bord soient dans une autre langue — consultez [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Synchronisation combinée

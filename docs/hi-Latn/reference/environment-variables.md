@@ -7,7 +7,7 @@
 | Other provider keys    | Har provider apni key env var padhta hai: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama ko kisi ki zaroorat nahi). `providers.<name>.apiKeyEnv` ke saath har provider ke liye override karein. |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` ko override karein (sirf tab jab vah provider configure kiya gaya ho). |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` ko override karein (sirf tab jab vah provider configure kiya gaya ho). |
-| `AI_I18N_LANG`         | Tool ke apne UI (CLI help, logs, dashboard) ke liye bhasha. `-L` / `--ui-lang` dwara override kiya gaya; config `uiLanguage` ko override karta hai. [Tool UI bhasha](/guide/tool-ui-language) dekhen. |
+| `AI_I18N_LANG`         | Tool ke apne UI (CLI help, logs, dashboard) ke liye bhasha. `-L` / `--ui-lang` dwara override kiya gaya; config `uiLanguage` ko override karta hai. [Tool UI bhasha](/hi-Latn/guide/tool-ui-language) dekhen. |
 | `I18N_SOURCE_LOCALE`   | Runtime par `sourceLocale` ko override karein.                        |
 | `I18N_TARGET_LOCALES`  | `targetLocales` ko override karne ke liye comma-separated locale codes.  |
 | `I18N_LOG_LEVEL` | Logger level (`debug`, `info`, `warn`, `error`). Anjaan values (jismein `silent` bhi shaamil hai) `info` par wapas aa jaate hain. |

@@ -21,7 +21,7 @@ All documentation-framework integrations share the same `docs[]` block model des
 
 Do **not** put framework shell or theme strings in `json[]` — that pipeline is for unrelated application locale bundles. Each integration page explains which catalog paths and CLI flags cover nav, sidebar, and theme labels for that framework.
 
-<a id="examples"></a>
+<a id="runnable-examples"></a>
 ## Runnable examples
 
 | Framework | Example repo |

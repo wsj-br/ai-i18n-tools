@@ -29,7 +29,7 @@ Enumera las entradas no plurales de `strings.json`: una fila por ID de cadena y 
 
 El `models[locale]` de la entrada se establece en `user-edited`. Ejecute `sync` o `translate-ui` sin formato para actualizar los archivos de configuración regional planos (`de.json`, etc.). **No** utilice `--force`, ya que vuelve a traducir cada entrada y puede sobrescribir las correcciones manuales.
 
-Cuando `glossary.autoAddUserEditedToGlossary` es `true` (predeterminado), el siguiente `translate-ui` o `sync` puede añadir su edición al CSV del glosario de usuario automáticamente; consulte [Configuración](/reference/configuration#glossary).
+Cuando `glossary.autoAddUserEditedToGlossary` es `true` (predeterminado), el siguiente `translate-ui` o `sync` puede añadir su edición al CSV del glosario de usuario automáticamente; consulte [Configuración](/es/reference/configuration#glossary).
 
 <a id="delete"></a>
 ### Eliminar

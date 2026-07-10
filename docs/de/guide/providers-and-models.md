@@ -28,7 +28,7 @@ Voreingestellte Anbieterschlüssel benötigen nur `translationModels` – Basis-
 
 Für jeden **nicht voreingestellten** Schlüssel legen Sie `baseUrl` und `apiKeyEnv` explizit in der Konfiguration fest.
 
-Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der Datei `.env` fest. Die CLI lädt `.env` automatisch aus dem Arbeitsverzeichnis, ohne bereits in der Shell festgelegte Variablen zu überschreiben. Siehe [Umgebungsvariablen](/reference/environment-variables).
+Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der Datei `.env` fest. Die CLI lädt `.env` automatisch aus dem Arbeitsverzeichnis, ohne bereits in der Shell festgelegte Variablen zu überschreiben. Siehe [Umgebungsvariablen](/de/reference/environment-variables).
 
 <a id="model-fallback-chain"></a>
 ### Modell-Fallback-Kette
@@ -44,7 +44,7 @@ Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der
 
 Die optionale `providers.<active>.uiModels` ist eine reine UI-Liste, die nach jeder passenden pro-lokalen Überschreibung und vor der globalen `translationModels`-Kette versucht wird. Die optionale `providers.<active>.localeModels` ordnet einem BCP-47-Gebietsschema Modelle zu, die **zuerst** für dieses Gebietsschema in jeder Pipeline versucht werden (`pt-br` entspricht `pt-BR`). Wenn kein `localeModels`-Eintrag übereinstimmt, gelten nur die pipelinespezifischen Stufen.
 
-Verschiedene Anbieter und Modelle variieren in Kosten, Geschwindigkeit und Qualität über Sprachen hinweg. Betrachten Sie die Standardliste von `npx ai-i18n-tools init` als Ausgangspunkt – erweitern Sie sie, wenn ein Gebietsschema durchweg schlechte Ergebnisse liefert, oder fügen Sie einen `localeModels`-Eintrag für dieses Gebietsschema hinzu. Vollständige Standardwerte und Begründung: [Konfiguration – `provider` und `providers`](/reference/configuration#provider-and-providers).
+Verschiedene Anbieter und Modelle variieren in Kosten, Geschwindigkeit und Qualität über Sprachen hinweg. Betrachten Sie die Standardliste von `npx ai-i18n-tools init` als Ausgangspunkt – erweitern Sie sie, wenn ein Gebietsschema durchweg schlechte Ergebnisse liefert, oder fügen Sie einen `localeModels`-Eintrag für dieses Gebietsschema hinzu. Vollständige Standardwerte und Begründung: [Konfiguration – `provider` und `providers`](/de/reference/configuration#provider-and-providers).
 
 Beispiel für eine minimale Konfiguration (OpenRouter):
 
@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Befehlsdetails: [CLI-Referenz](/reference/cli-commands/).
+Befehlsdetails: [CLI-Referenz](/de/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Mehrere Anbieter
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Jeder Anbieterblock kann seine eigenen `translationModels`, optionalen `uiModels` und `localeModels`, `maxTokens`, `temperature` und `requestTimeoutMs` definieren. Ein veralteter Top-Level-Block `openrouter` wird weiterhin akzeptiert und beim Laden automatisch zu `providers.openrouter` migriert.
 
-Ausführbares Beispiel mit vier Anbietern im selben Dokument: [`examples/multi-provider`](/examples#multi-provider).
+Ausführbares Beispiel mit vier Anbietern im selben Dokument: [`examples/multi-provider`](/de/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Weitere Referenzen
 
-- [Konfiguration – `provider` und `providers`](/reference/configuration#provider-and-providers) – voreingestellte Tabelle, benutzerdefinierte Endpunkte, Anforderungs-Timeouts, OpenRouter-spezifisches Verhalten.
-- [Architektur – LLM-Client](/reference/architecture) – wie Modell-Fallback, Batching und Kostenberichterstattung intern funktionieren.
-- [Umgebungsvariablen](/reference/environment-variables) – API-Schlüssel-Umgebungsvariablen und Basis-URL-Überschreibungen.
+- [Konfiguration – `provider` und `providers`](/de/reference/configuration#provider-and-providers) – voreingestellte Tabelle, benutzerdefinierte Endpunkte, Anforderungs-Timeouts, OpenRouter-spezifisches Verhalten.
+- [Architektur – LLM-Client](/de/reference/architecture) – wie Modell-Fallback, Batching und Kostenberichterstattung intern funktionieren.
+- [Umgebungsvariablen](/de/reference/environment-variables) – API-Schlüssel-Umgebungsvariablen und Basis-URL-Überschreibungen.

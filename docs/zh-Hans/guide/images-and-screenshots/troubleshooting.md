@@ -2,7 +2,7 @@
 # 常见错误和故障排除
 
 **屏幕截图路径中没有区域设置目录**
-`images/screenshots/screenshot.png` — 无法区分区域设置变体，也无法重写。在使用[按区域设置文件夹](/guide/images-and-screenshots/per-locale-folder)重写之前，请重构为`images/screenshots/<locale>/screenshot.png`。
+`images/screenshots/screenshot.png` — 无法区分区域设置变体，也无法重写。在使用[按区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)重写之前，请重构为`images/screenshots/<locale>/screenshot.png`。
 
 **正则表达式中硬编码了源区域设置**
 如果 `sourceLocale` 发生更改，`"search": "screenshots/en-GB/"` 将会静默失败。请改用 `"search": "screenshots/[^/]+/"`。

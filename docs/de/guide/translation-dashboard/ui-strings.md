@@ -29,7 +29,7 @@ Listet nicht-plurale Einträge aus `strings.json` auf – eine Zeile pro String-
 
 Der `models[locale]`-Eintrag wird auf `user-edited` gesetzt. Führen Sie einfaches `sync` oder `translate-ui` aus, um flache Gebietsschema-Dateien (`de.json` usw.) zu aktualisieren. Verwenden Sie **nicht** `--force` – es übersetzt jeden Eintrag neu und kann manuelle Korrekturen überschreiben.
 
-Wenn `glossary.autoAddUserEditedToGlossary` auf `true` (Standard) eingestellt ist, kann das nächste `translate-ui` oder `sync` Ihre Bearbeitung automatisch an die Benutzer-Glossar-CSV-Datei anhängen – siehe [Konfiguration](/reference/configuration#glossary).
+Wenn `glossary.autoAddUserEditedToGlossary` auf `true` (Standard) eingestellt ist, kann das nächste `translate-ui` oder `sync` Ihre Bearbeitung automatisch an die Benutzer-Glossar-CSV-Datei anhängen – siehe [Konfiguration](/de/reference/configuration#glossary).
 
 <a id="delete"></a>
 ### Löschen

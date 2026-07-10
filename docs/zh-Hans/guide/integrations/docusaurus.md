@@ -3,10 +3,10 @@
 
 将 `init -t ui-docusaurus` 和 `docsOutput.style: "docusaurus"` 用于 [Docusaurus](https://docusaurus.io/) 文档站点。预设会使用 `docusaurusCatalogDir` 脚手架一个 `docs[]` 块，以便 `translate-docs` 可以通过一个命令翻译页面 Markdown 和 Docusaurus shell JSON。
 
-另请参阅[文档](/guide/documents/)、可运行的 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 演示（Next.js 应用程序加上嵌套的 `docs-site/`），以及 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) 以获取专注于 Docusaurus 的演练。
+另请参阅[文档](/zh-Hans/guide/documents/)、可运行的 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 演示（Next.js 应用程序加上嵌套的 `docs-site/`），以及 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) 以获取专注于 Docusaurus 的演练。
 
 <a id="quick-start"></a>
-## 快速入门
+## 快速开始
 
 ```bash
 npx ai-i18n-tools init -t ui-docusaurus
@@ -83,17 +83,17 @@ Docusaurus 导航栏、页脚、搜索占位符以及其他主题/插件标签�
 <a id="framework-shell-translation"></a>
 ## 框架外壳翻译
 
-| 框架 | Shell / 主题字符串 | 管道 |
+| 框架 | 外壳/主题字符串 | 管道 |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 目录 (`{ message, description }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动翻译 |
+| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动 |
 | Nextra | 主题字典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动生成 |
+| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动 |
 | Fumadocs | UI 覆盖目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 内置 UI 字符串（多语言）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
+| Astro Starlight | 内置 UI 字符串（多语言支持）；无额外外壳管道 | 文档 — `translate-docs`（仅页面） |
 
-请**不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于无关的应用语言包。有关其他框架模式，请参阅 [VitePress 集成](/guide/integrations/vitepress)、[Nextra 集成](/guide/integrations/nextra) 和 [Fumadocs 集成](/guide/integrations/fumadocs)。
+请**不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于无关的应用语言包。有关其他框架模式，请参阅 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)、[Nextra 集成](/zh-Hans/guide/integrations/nextra) 和 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs)。
 
 <a id="example-project"></a>
 ## 示例项目

@@ -28,7 +28,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 **사전 설정이 아닌** 키의 경우, 구성에서 `baseUrl` 및 `apiKeyEnv`을 명시적으로 설정합니다.
 
-활성 공급자의 API 키를 환경 또는 `.env` 파일에 설정합니다. CLI는 셸에 이미 설정된 변수를 재정의하지 않고 작업 디렉터리에서 `.env`을 자동으로 로드합니다. [환경 변수](/reference/environment-variables)를 참조하세요.
+활성 공급자의 API 키를 환경 또는 `.env` 파일에 설정합니다. CLI는 셸에 이미 설정된 변수를 재정의하지 않고 작업 디렉터리에서 `.env`을 자동으로 로드합니다. [환경 변수](/ko/reference/environment-variables)를 참조하세요.
 
 <a id="model-fallback-chain"></a>
 ### 모델 대체 체인
@@ -44,7 +44,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 선택 사항인 `providers.<active>.uiModels`는 UI 전용 목록으로, 일치하는 로케일별 재정의 다음에, 그리고 전역 `translationModels` 체인 이전에 시도됩니다. 선택 사항인 `providers.<active>.localeModels`는 BCP-47 로케일을 모든 파이프라인에서 해당 로케일에 대해 **먼저** 시도되는 모델에 매핑합니다 (`pt-br`는 `pt-BR`와 일치). `localeModels` 항목이 일치하지 않으면 파이프라인별 계층만 적용됩니다.
 
-다양한 제공업체와 모델은 언어에 따라 비용, 속도 및 품질이 다릅니다. `npx ai-i18n-tools init`의 기본 목록을 시작점으로 간주하고, 로케일에서 일관되게 좋지 않은 결과가 나오면 확장하거나 해당 로케일에 대한 `localeModels` 항목을 추가하세요. 전체 기본값 및 근거: [구성 — `provider` 및 `providers`](/reference/configuration#provider-and-providers).
+다양한 제공업체와 모델은 언어에 따라 비용, 속도 및 품질이 다릅니다. `npx ai-i18n-tools init`의 기본 목록을 시작점으로 간주하고, 로케일에서 일관되게 좋지 않은 결과가 나오면 확장하거나 해당 로케일에 대한 `localeModels` 항목을 추가하세요. 전체 기본값 및 근거: [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers).
 
 최소 구성 예시 (OpenRouter):
 
@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-명령 세부 정보: [CLI 참조](/reference/cli-commands/).
+명령 세부 정보: [CLI 참조](/ko/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### 여러 공급자
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 각 제공업체 블록은 자체 `translationModels`, 선택 사항인 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeoutMs`를 정의할 수 있습니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`로 자동 마이그레이션됩니다.
 
-동일한 문서에 4개의 공급자가 있는 실행 가능한 예시: [`examples/multi-provider`](/examples#multi-provider).
+동일한 문서에 4개의 공급자가 있는 실행 가능한 예시: [`examples/multi-provider`](/ko/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### 추가 참조
 
-- [구성 — `provider` 및 `providers`](/reference/configuration#provider-and-providers) — 사전 설정 테이블, 사용자 지정 엔드포인트, 요청 시간 초과, OpenRouter 관련 동작.
-- [아키텍처 — LLM 클라이언트](/reference/architecture) — 모델 대체, 배치 및 비용 보고가 내부적으로 작동하는 방식.
-- [환경 변수](/reference/environment-variables) — API 키 환경 변수 및 기본 URL 재정의.
+- [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers) — 사전 설정 테이블, 사용자 지정 엔드포인트, 요청 시간 초과, OpenRouter 관련 동작.
+- [아키텍처 — LLM 클라이언트](/ko/reference/architecture) — 모델 대체, 배치 및 비용 보고가 내부적으로 작동하는 방식.
+- [환경 변수](/ko/reference/environment-variables) — API 키 환경 변수 및 기본 URL 재정의.

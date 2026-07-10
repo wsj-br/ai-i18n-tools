@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## Bhasha badalne wala UI
 
-Bhasha chunne wale ko banane ke liye `ui-languages.json` manifest ka upyog karein. `ai-i18n-tools` do display helpers export karta hai — signatures ke liye [Runtime helpers → Display helpers](/guide/runtime-helpers#display-helpers) dekhein.
+Bhasha chunne wale ko banane ke liye `ui-languages.json` manifest ka upyog karein. `ai-i18n-tools` do display helpers export karta hai — signatures ke liye [Runtime helpers → Display helpers](/hi-Latn/guide/runtime-helpers#display-helpers) dekhein.
 
 <details>
 <summary>Udaharan BhashaSelect component (React)</summary>
@@ -84,7 +84,7 @@ Manifest `generate-ui-languages` ya `extract` dwara `sourceLocale` + `targetLoca
 <a id="rtl-languages"></a>
 ## RTL bhashayein
 
-`ai-i18n-tools` `getTextDirection(lng)` aur `applyDirection(lng)` export karta hai — [Runtime helpers → RTL helpers](/guide/runtime-helpers#rtl-helpers) dekhein.
+`ai-i18n-tools` `getTextDirection(lng)` aur `applyDirection(lng)` export karta hai — [Runtime helpers → RTL helpers](/hi-Latn/guide/runtime-helpers#rtl-helpers) dekhein.
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` `document.documentElement.dir` (browser) set karta hai ya no-op (Node.js) hai. Ek vishisht element ko target karne ke liye ek optional `element` argument pass karein. Ise apne i18n bootstrap mein wire karein — [Wire i18next](/guide/ui-strings/i18next-runtime).
+`applyDirection` `document.documentElement.dir` (browser) set karta hai ya no-op (Node.js) hai. Ek vishisht element ko target karne ke liye ek optional `element` argument pass karein. Ise apne i18n bootstrap mein wire karein — [Wire i18next](/hi-Latn/guide/ui-strings/i18next-runtime).
 
 Strings ke liye jinmein `→` arrows ho sakte hain, RTL layouts ke liye unhein flip karein:
 

@@ -8,7 +8,7 @@ Diese Pipeline führt **kein** `extract` aus – es gibt keinen `strings.json`-K
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
 
-`translate-json` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Verwenden Sie dies für verschachtelte JSON-Bundles, bei denen bestimmte Lokale von dedizierten Modellen profitieren – zum Beispiel `zh-Hans`- / `zh-Hant`-Themendateien. Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain).
+`translate-json` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Verwenden Sie dies für verschachtelte JSON-Bundles, bei denen bestimmte Lokale von dedizierten Modellen profitieren – zum Beispiel `zh-Hans`- / `zh-Hant`-Themendateien. Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Schritt 1: Initialisierung für verschachtelte JSON-Dateien
@@ -98,12 +98,12 @@ Wenn `translateJson` aktiviert ist, gibt `status` einen `json[]`-Abschnitt aus (
 
 | Situation | Verwendung |
 |-----------|-------------|
-| UI-Zeichenfolgen in `t("…")` / `i18n.t("…")` in JS/TS/Astro | [UI-Zeichenfolgen](/guide/ui-strings/) — `extract` + `translate-ui` |
+| UI-Zeichenfolgen in `t("…")` / `i18n.t("…")` in JS/TS/Astro | [UI-Zeichenfolgen](/de/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations`-Katalog (`{ "key": { "message": "…", "description": "…" } }`) | Dokumente — `docs[].docusaurusCatalogDir` + `translate-docs`, **nicht** `json[]` |
-| VitePress-Themen/Navigation/Seitenleisten-Zeichenfolgen | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **verwenden Sie nicht** `json[]` — siehe [VitePress-Integration](/guide/integrations/vitepress) |
-| Nextra-`_meta.ts`-Beschriftungen und Themenwörterbuch `.ts` | Dokumente — `translate-docs` (automatisch `_meta` wenn `style: "nextra"`, optional `nextraDictionaryPath`); **verwenden Sie nicht** `json[]` — siehe [Nextra-Integration](/guide/integrations/nextra) |
-| Fumadocs-`meta.json`-Beschriftungen und UI-Überschreibungskatalog | Dokumente — `translate-docs` (automatisch `meta.json` wenn `style: "fumadocs"`, optional `fumadocsUiCatalog`); **verwenden Sie nicht** `json[]` — siehe [Fumadocs-Integration](/guide/integrations/fumadocs) |
+| VitePress-Themen/Navigation/Seitenleisten-Zeichenfolgen | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **verwenden Sie nicht** `json[]` — siehe [VitePress-Integration](/de/guide/integrations/vitepress) |
+| Nextra-`_meta.ts`-Beschriftungen und Themenwörterbuch `.ts` | Dokumente — `translate-docs` (automatisch `_meta` wenn `style: "nextra"`, optional `nextraDictionaryPath`); **verwenden Sie nicht** `json[]` — siehe [Nextra-Integration](/de/guide/integrations/nextra) |
+| Fumadocs-`meta.json`-Beschriftungen und UI-Überschreibungskatalog | Dokumente — `translate-docs` (automatisch `meta.json` wenn `style: "fumadocs"`, optional `fumadocsUiCatalog`); **verwenden Sie nicht** `json[]` — siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs) |
 | Eigenständige verschachtelte Locale JSON (ZenBrowser-ähnliche `translation.json`-Bäume) | JSON — `json[]` + `translate-json` |
-| Illustrierte `.svg`-Dateien mit `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (optional; keine der drei Haupt-Pipelines) |
+| Illustrierte `.svg`-Dateien mit `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/de/reference/configuration#svg) + `translate-svg` (optional; keine der drei Haupt-Pipelines) |
 
-Feldreferenz: [`json`](#json) in [Konfigurationsreferenz](/reference/configuration#json). Cache-Schlüssel für die Bereinigung verwenden `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.
+Feldreferenz: [`json`](#json) in [Konfigurationsreferenz](/de/reference/configuration#json). Cache-Schlüssel für die Bereinigung verwenden `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.

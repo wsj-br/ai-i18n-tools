@@ -124,7 +124,7 @@ ai-i18n-tools help [command]
 | `-c` / `--config <path>`     | Jeder Befehl | Pfad zur Konfigurationsdatei (Standard: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | Jeder Befehl | Ausführliche Protokollierung.                                                                          |
 | `-P` / `--provider <name>`   | Jeder Befehl | Aktiver LLM-Anbieter für diesen Lauf; überschreibt den Konfigurationsschlüssel `provider`. Muss unter `providers` konfiguriert werden. |
-| `-L` / `--ui-lang <code>` | Jeder Befehl | Sprache für die eigene Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen, Dashboard); Quelle mit höchster Priorität. Siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language). |
+| `-L` / `--ui-lang <code>` | Jeder Befehl | Sprache für die eigene Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen, Dashboard); Quelle mit höchster Priorität. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Ausgewählte Befehle | Konsolenausgabe in eine `.log`-Datei umleiten (Standardpfad: unter dem Stammverzeichnis `cacheDir`). Nur für `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` und `cleanup` verdrahtet. |
 
 <a id="per-command-help"></a>

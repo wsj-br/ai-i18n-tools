@@ -18,7 +18,7 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (可选)
 
-工具自身 UI 语言（CLI 帮助、日志/摘要和翻译仪表板）的 BCP-47 代码。它独立于 `sourceLocale` / `targetLocales`，并会被 `-L` / `--ui-lang` 标志和 `AI_I18N_LANG` 环境变量覆盖。未知值会平滑降级到源区域设置（`en-GB`）——没有严格的验证。参见[工具 UI 语言](/guide/tool-ui-language)。
+工具自身 UI 语言（CLI 帮助、日志/摘要和翻译仪表板）的 BCP-47 代码。它独立于 `sourceLocale` / `targetLocales`，并会被 `-L` / `--ui-lang` 标志和 `AI_I18N_LANG` 环境变量覆盖。未知值会平滑降级到源区域设置（`en-GB`）——没有严格的验证。参见[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath`（可选）
@@ -276,11 +276,11 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 - `docsOutput.linkRewriteDocsRoot`
 计算扁平链接重写前缀时使用的仓库根目录。通常保留为 `"."`，除非你的翻译文档位于不同的项目根目录下。
 - `docsOutput.rewriteVitepressLinks`
-当 `true` 时，在翻译后运行 VitePress 链接规范化器。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何 `doc-system` 布局，其中语言文件夹与英语并排位于 `docsRoot` 下。将 README 风格的 `docs/guide/…` 路径重写为站点路由（`/guide/…`）和语言相对的 `../guide/…` 链接。对于指向 VitePress 目录树之外的仓库文件的链接（`LICENSE`、`examples/`），请在英语源文件中使用完整 URL —— 参见 [VitePress 集成 —— README 作为文档主页](/guide/integrations/vitepress#readme-as-homepage)。
+当 `true` 时，在翻译后运行 VitePress 链接规范化器。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何 `doc-system` 布局，其中语言文件夹与英语并排位于 `docsRoot` 下。将 README 风格的 `docs/guide/…` 路径重写为站点路由（`/guide/…`）和语言相对的 `../guide/…` 链接。对于指向 VitePress 目录树之外的仓库文件的链接（`LICENSE`、`examples/`），请在英语源文件中使用完整 URL —— 参见 [VitePress 集成 —— README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-as-homepage)。
 - `docsOutput.rewriteNextraLinks`
-当 `true` 时，在翻译后运行 Nextra 链接规范化器。当 `docsOutput.style` 为 `"nextra"` 时默认启用。将 `content/en/…` 和相对 `.mdx` 路径重写为语言中立的站点路由（`/guide/…`），适用于 Next.js `i18n`。参见 [Nextra 集成 —— 链接约定](/guide/integrations/nextra#link-conventions)。
+当 `true` 时，在翻译后运行 Nextra 链接规范化器。当 `docsOutput.style` 为 `"nextra"` 时默认启用。将 `content/en/…` 和相对 `.mdx` 路径重写为语言中立的站点路由（`/guide/…`），适用于 Next.js `i18n`。参见 [Nextra 集成 —— 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"`（默认）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入英语源文件旁边；dir 写入类似 Nextra 的语言文件夹。参见 [Fumadocs 集成 —— 页面布局](/guide/integrations/fumadocs#page-layout)。
+`"dot"`（默认）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入英语源文件旁边；dir 写入类似 Nextra 的语言文件夹。参见 [Fumadocs 集成 —— 页面布局](/zh-Hans/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
 当 `true` 时，在翻译后运行 Fumadocs 链接规范化器。当 `docsOutput.style` 为 `"fumadocs"` 时默认启用。将内容路径和相对 `.mdx` 链接重写为 `/docs/…` 路由。
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ BCP-47 代码的可选数组，被视为 RTL 以用于强调占位符默认值�
 <a id="json"></a>
 ### `json`
 
-嵌套 JSON 翻译管道的顶级数组。仅当 `features.translateJson` 为 true 时使用（`translate-json` 或 `sync` 的 JSON 阶段）。请参阅 [JSON](/guide/json)。
+嵌套 JSON 翻译管道的顶级数组。仅当 `features.translateJson` 为 true 时使用（`translate-json` 或 `sync` 的 JSON 阶段）。请参阅 [JSON](/zh-Hans/guide/json)。
 
 | 字段 | 描述 |
 |-------|-------------|

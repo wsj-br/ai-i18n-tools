@@ -38,7 +38,7 @@ makeLoadLocale(
 
 將 `setupKeyAsDefaultT` 作為常用的應用程式進入點（鍵修剪 + plural `wrapT` + 可選的 `translate-ui` `{sourceLocale}.json`）。單獨呼叫 `wrapI18nWithKeyTrim` 是應用程式連接的**已棄用**。
 
-使用 `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` 建構 `localeLoaders`，讓鍵在 `generate-ui-languages` 之後仍與 `targetLocales` 保持對齊。請參閱[執行階段連線](/guide/ui-strings/i18next-runtime)、[nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)、[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/) 與 [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)（不使用 i18next 的自訂 `makeT`）。
+使用 `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` 建構 `localeLoaders`，讓鍵在 `generate-ui-languages` 之後仍與 `targetLocales` 保持對齊。請參閱[執行階段連線](/zh-Hant/guide/ui-strings/i18next-runtime)、[nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)、[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/) 與 [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)（不使用 i18next 的自訂 `makeT`）。
 
 <a id="display-helpers"></a>
 ### 顯示輔助程式

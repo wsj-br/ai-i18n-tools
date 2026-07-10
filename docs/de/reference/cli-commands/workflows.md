@@ -34,4 +34,4 @@ Gibt Dokumentations-Cache- und `strings.json`-Statistiken aus (dieselben Aggrega
 
 **Wichtige Optionen:** `--max-columns`
 
-**Siehe auch:** [Dashboard-Statistiken](/guide/translation-dashboard/statistics)
+**Siehe auch:** [Dashboard-Statistiken](/de/guide/translation-dashboard/statistics)

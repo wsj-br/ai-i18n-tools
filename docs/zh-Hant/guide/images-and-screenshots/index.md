@@ -33,7 +33,7 @@ images/screenshots/en-GB/settings.png
 
 通用 `[^/]+` 正規表達式會比對任何地區設定資料夾名稱 — 請勿硬式編碼您的來源地區設定 (例如 `screenshots/en-GB/`)，因為如果 `sourceLocale` 變更，這會導致錯誤。
 
-如果您從省略地區設定子目錄 (`images/screenshots/translate.png`) 的路徑開始，則需要先重組整個樹狀結構，然後 [每個地區設定資料夾](/guide/images-and-screenshots/per-locale-folder) 的重寫才能運作。
+如果您從省略地區設定子目錄 (`images/screenshots/translate.png`) 的路徑開始，則需要先重組整個樹狀結構，然後 [每個地區設定資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder) 的重寫才能運作。
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### 文件系統網站（`docsOutput.style = "doc-system"`）
@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-將 `docs[].docsOutput.docsRoot` 設定為您的英文來源根目錄 (例如 `"docs"` 或 `"src/content/docs"`)。當您直接設定 `style: "doc-system"` 時，您還必須將 `localeSubpath` 設定為您的網站用於 `{locale}/` 和翻譯檔案之間的路徑區段。別名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是預設的 `doc-system` 版面配置，具有預設的 `localeSubpath` 值 (請參閱 [輸出版面配置](/guide/documents/output-layouts))。
+將 `docs[].docsOutput.docsRoot` 設定為您的英文來源根目錄 (例如 `"docs"` 或 `"src/content/docs"`)。當您直接設定 `style: "doc-system"` 時，您還必須將 `localeSubpath` 設定為您的網站用於 `{locale}/` 和翻譯檔案之間的路徑區段。別名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是預設的 `doc-system` 版面配置，具有預設的 `localeSubpath` 值 (請參閱 [輸出版面配置](/zh-Hant/guide/documents/output-layouts))。
 
 | 預設別名 | 預設 `localeSubpath` | 範例輸出 |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ images/screenshots/en-GB/settings.png
 
 在原始 Markdown 中引用資源時，一律使用穩定的相對路徑 `../assets/name.ext`。切勿對文件資源使用絕對路徑 `/img/` 或 `/assets/` 的 URL —— 因為這些 URL 在英文原始檔（由 `static/` 提供服務）與翻譯語系（與翻譯文件共置）之間會有所不同，這將迫使您必須撰寫 `regexAdjustments` 規則來橋接。
 
-當您稍後新增 i18n 時，螢幕截圖指令碼會採用 `getScreenshotDir` 分割 (請參閱 [並置螢幕截圖](/guide/images-and-screenshots/colocated-screenshots))，而 `translate-svg` 會使用 `pathTemplate`。無需調整正規表達式。
+當您稍後新增 i18n 時，螢幕截圖指令碼會採用 `getScreenshotDir` 分割 (請參閱 [並置螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots))，而 `translate-svg` 會使用 `pathTemplate`。無需調整正規表達式。
 
 > **注意：** `resolve.symlinks = false` 在 `next.config.ts` 中僅會停用 Next.js 應用程式的 webpack 建置對符號連結的解析。這不會影響使用獨立 webpack 實例的 Docusaurus 文件站台建置。
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG 版面配置涵蓋在 [SVG 翻譯](/guide/svg-translation/) 指南中。
+SVG 版面配置涵蓋在 [SVG 翻譯](/zh-Hant/guide/svg-translation/) 指南中。
 
 | 版面配置 | 資產類型 | 網站類型 | 工具機制 |
 |--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [共用影像](/guide/images-and-screenshots/shared-image) | 點陣圖 (共用) | `docsOutput.style = "flat"` 文件 | 每檔案連結重寫器；通常沒有正規表達式 |
-| [每個地區設定資料夾](/guide/images-and-screenshots/per-locale-folder) | 點陣圖 (每個地區設定) | `"flat"` 或 `"doc-system"` (包括 `"docusaurus"`、`"astro-starlight"`) | `regexAdjustments` 地區設定區段交換 |
-| [並置螢幕截圖](/guide/images-and-screenshots/colocated-screenshots) | 點陣圖 (並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | 螢幕截圖指令碼放置檔案；沒有正規表達式 |
-| [Web 應用程式 SVG](/guide/svg-translation/translated-svg-web-app) | SVG (已翻譯) | Web 應用程式 | `translate-svg` 與 `svg.style = "flat"` |
-| [並置 SVG](/guide/svg-translation/translated-svg-colocated) | SVG (已翻譯，並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | `translate-svg` 與 `svg.style = "nested"` + `pathTemplate` |
+| [共用影像](/zh-Hant/guide/images-and-screenshots/shared-image) | 點陣圖 (共用) | `docsOutput.style = "flat"` 文件 | 每檔案連結重寫器；通常沒有正規表達式 |
+| [每個地區設定資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder) | 點陣圖 (每個地區設定) | `"flat"` 或 `"doc-system"` (包括 `"docusaurus"`、`"astro-starlight"`) | `regexAdjustments` 地區設定區段交換 |
+| [並置螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots) | 點陣圖 (並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | 螢幕截圖指令碼放置檔案；沒有正規表達式 |
+| [Web 應用程式 SVG](/zh-Hant/guide/svg-translation/translated-svg-web-app) | SVG (已翻譯) | Web 應用程式 | `translate-svg` 與 `svg.style = "flat"` |
+| [並置 SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated) | SVG (已翻譯，並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | `translate-svg` 與 `svg.style = "nested"` + `pathTemplate` |

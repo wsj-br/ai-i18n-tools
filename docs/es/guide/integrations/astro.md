@@ -3,7 +3,7 @@
 
 Utilice ai-i18n-tools con [Astro](https://astro.build/) en dos configuraciones comunes: sitios de documentación de **Astro Starlight** y sitios de marketing o aplicaciones de **Astro simple**. Ambos utilizan Documentos (`translate-docs`) para el contenido de la página; los sitios de Astro simple a menudo combinan eso con cadenas de interfaz de usuario (`extract` / `translate-ui`) para cadenas `t()` en el frontmatter y datos compartidos.
 
-Véase también [cadenas de interfaz de usuario](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documentos](/guide/documents/) y los ejemplos ejecutables a continuación.
+Véase también [cadenas de interfaz de usuario](/es/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documentos](/es/guide/documents/) y los ejemplos ejecutables a continuación.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -45,7 +45,7 @@ Configure un bloque `docs[]`:
 
 Apunte `contentPaths` a sus archivos y directorios `.md` / `.mdx` en inglés. Establezca `docsRoot` en la misma carpeta que Starlight usa como raíz de contenido.
 
-Las anulaciones de la interfaz de usuario de Starlight pueden usar `src/content/i18n/en.json` con `jsonPathTemplate` en un bloque `docs[]` separado cuando sea necesario; consulte [Documentos — inicializar para la documentación](/guide/documents/#step-1-initialise-for-documentation).
+Las anulaciones de la interfaz de usuario de Starlight pueden usar `src/content/i18n/en.json` con `jsonPathTemplate` en un bloque `docs[]` separado cuando sea necesario; consulte [Documentos — inicializar para la documentación](/es/guide/documents/#step-1-initialise-for-documentation).
 
 <a id="framework-shell-translation"></a>
 ### Traducción del shell del framework
@@ -56,11 +56,11 @@ Starlight incluye sus propias cadenas de interfaz de usuario integradas para muc
 |-----------|----------------------|----------|
 | Astro Starlight | Cadenas de interfaz de usuario integradas (muchas configuraciones regionales); sin canalización de shell adicional | Documentos — `translate-docs` (solo páginas) |
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de temas/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` etiquetas de la barra lateral + diccionario de temas `.ts` | Documentos — ver [integración de Nextra](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` etiquetas de la barra lateral + catálogo de anulaciones de la interfaz de usuario | Documentos — ver [integración de Fumadocs](/guide/integrations/fumadocs) |
+| VitePress | Catálogo de tema/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` etiquetas de la barra lateral + diccionario de temas `.ts` | Documentos — ver [integración de Nextra](/es/guide/integrations/nextra) |
+| Fumadocs | `meta.json` etiquetas de la barra lateral + catálogo de anulaciones de la interfaz de usuario | Documentos — ver [integración de Fumadocs](/es/guide/integrations/fumadocs) |
 
-Consulte [integración de Docusaurus](/guide/integrations/docusaurus), [integración de VitePress](/guide/integrations/vitepress), [integración de Nextra](/guide/integrations/nextra) e [integración de Fumadocs](/guide/integrations/fumadocs) para ver los otros patrones de framework.
+Consulte [integración de Docusaurus](/es/guide/integrations/docusaurus), [integración de VitePress](/es/guide/integrations/vitepress), [integración de Nextra](/es/guide/integrations/nextra) e [integración de Fumadocs](/es/guide/integrations/fumadocs) para ver los otros patrones de framework.
 
 <a id="example-project"></a>
 ### Proyecto de ejemplo

@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Site Astro
 
-Para sites de marketing ou aplicativos Astro estáticos (Astro puro, não Starlight), combine [o roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. Consulte também [a integração do Astro](/guide/integrations/astro).
+Para sites de marketing ou aplicativos Astro estáticos (Astro puro, não Starlight), combine [o roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. Consulte também [a integração do Astro](/pt-BR/guide/integrations/astro).
 
 A implementação de referência é [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (veja também seu [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)): inglês em `/`, nove localidades de destino em `/{locale}/` (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -60,7 +60,7 @@ Helpers de suporte no exemplo: `src/i18n/utils.ts`, `src/i18n/locale.ts` e `ui-l
 
 Para páginas de marketing com HTML embutido em arquivos `.astro`, permita que `translate-docs` extraia nós de texto e atributos (`alt`, `title`, `aria-label`, `placeholder`), traduza-os com o cache de documento e grave cópias específicas por localidade na sua árvore de páginas. Você **não** precisa de `t()` para a maioria dos textos visíveis.
 
-Os valores de atributos estruturais e chaves **não** são traduzidos por padrão: a proteção integrada cobre atributos JSX/HTML como `class`, `id`, `style`, `src`, `href`, `data-*` e a maioria dos `aria-*`, além de chaves de objeto como `class`, `key` e `id` dentro de blocos de modelo `{expression}`. Use `docs[].protectAttributes` e `docs[].protectKeys` para estender essas listas quando você usar atributos personalizados (por exemplo, `variant` do Tailwind ou campos `slug` do CMS). As mesmas opções se aplicam ao JSX MDX durante a tradução de markdown (veja [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)).
+Os valores de atributos estruturais e chaves **não** são traduzidos por padrão: a proteção integrada cobre atributos JSX/HTML como `class`, `id`, `style`, `src`, `href`, `data-*` e a maioria dos `aria-*`, além de chaves de objeto como `class`, `key` e `id` dentro de blocos de modelo `{expression}`. Use `docs[].protectAttributes` e `docs[].protectKeys` para estender essas listas quando você usar atributos personalizados (por exemplo, `variant` do Tailwind ou campos `slug` do CMS). As mesmas opções se aplicam ao JSX MDX durante a tradução de markdown (veja [protectAttributes / protectKeys](/pt-BR/reference/configuration#protectattributes-protectkeys)).
 
 Habilite `features.translateDocs` e adicione um bloco `docs[]`, por exemplo:
 

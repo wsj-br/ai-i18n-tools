@@ -12,7 +12,7 @@
 
 `-j`: 최대 병렬 로케일; `-b`: 파일당 최대 병렬 배치 API 호출. `--prompt-format`: 배치 와이어 형식(`xml` | `json-array` | `json-object`).
 
-**참고 항목:** [캐시 동작 및 `translate-docs` 플래그](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [배치 프롬프트 형식](/guide/documents/cli-options#batch-prompt-format)
+**참고 항목:** [캐시 동작 및 `translate-docs` 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [배치 프롬프트 형식](/ko/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@
 
 `--slug-style`: `github`(기본값; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. `pymdown` 사용 시, 선택적 `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
 
-**참고 항목:** [앵커 링크](/guide/documents/anchor-links)
+**참고 항목:** [앵커 링크](/ko/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@
 
 **주요 옵션:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 
-**참고 항목:** [마크다운 문제](/guide/translation-dashboard/markdown-issues)
+**참고 항목:** [마크다운 문제](/ko/guide/translation-dashboard/markdown-issues)

@@ -28,7 +28,7 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 对于任何**非预设**键，请在配置中明确设置`baseUrl`和`apiKeyEnv`。
 
-在您的环境或`.env`文件中设置活动提供商的API密钥。CLI会自动从工作目录加载`.env`，而不会覆盖shell中已设置的变量。请参阅[环境变量](/reference/environment-variables)。
+在您的环境或`.env`文件中设置活动提供商的API密钥。CLI会自动从工作目录加载`.env`，而不会覆盖shell中已设置的变量。请参阅[环境变量](/zh-Hans/reference/environment-variables)。
 
 <a id="model-fallback-chain"></a>
 ### 模型回退链
@@ -44,7 +44,7 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 可选的 `providers.<active>.uiModels` 是一个仅在 UI 中使用的列表，在任何匹配的每种语言覆盖项之后和全局 `translationModels` 链之前尝试。可选的 `providers.<active>.localeModels` 将 BCP-47 语言环境映射到每个管道中为该语言环境**首先**尝试的模型（`pt-br` 匹配 `pt-BR`）。当没有 `localeModels` 条目匹配时，仅应用特定管道的层级。
 
-不同的提供商和模型在不同语言的成本、速度和质量上有所不同。将 `npx ai-i18n-tools init` 提供的默认列表视为起点——当某个语言环境始终产生较差结果时，扩展该列表，或为该语言环境添加一个 `localeModels` 条目。完整的默认值和理由：[配置 — `provider` 和 `providers`](/reference/configuration#provider-and-providers)。
+不同的提供商和模型在不同语言的成本、速度和质量上有所不同。将 `npx ai-i18n-tools init` 提供的默认列表视为起点——当某个语言环境始终产生较差结果时，扩展该列表，或为该语言环境添加一个 `localeModels` 条目。完整的默认值和理由：[配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers)。
 
 最小配置示例 (OpenRouter)：
 
@@ -98,7 +98,7 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-命令详情：[CLI 参考](/reference/cli-commands/)。
+命令详情：[CLI 参考](/zh-Hans/reference/cli-commands/)。
 
 <a id="multiple-providers"></a>
 ### 多个提供商
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每个提供商块可以定义自己的 `translationModels`，可选的 `uiModels` 和 `localeModels`，`maxTokens`，`temperature` 和 `requestTimeoutMs`。仍然接受旧版顶级 `openrouter` 块，并在加载时自动迁移到 `providers.openrouter`。
 
-在同一文档中使用四个提供程序的运行示例：[`examples/multi-provider`](/examples#multi-provider)。
+在同一文档中使用四个提供程序的运行示例：[`examples/multi-provider`](/zh-Hans/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### 更多参考
 
-- [配置 — `provider` 和 `providers`](/reference/configuration#provider-and-providers) — 预设表、自定义端点、请求超时、OpenRouter 特定行为。
-- [架构 — LLM 客户端](/reference/architecture) — 模型回退、批处理和成本报告在内部如何工作。
-- [环境变量](/reference/environment-variables) — API 密钥环境变量和基本 URL 覆盖。
+- [配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers) — 预设表、自定义端点、请求超时、OpenRouter 特定行为。
+- [架构 — LLM 客户端](/zh-Hans/reference/architecture) — 模型回退、批处理和成本报告在内部如何工作。
+- [环境变量](/zh-Hans/reference/environment-variables) — API 密钥环境变量和基本 URL 覆盖。

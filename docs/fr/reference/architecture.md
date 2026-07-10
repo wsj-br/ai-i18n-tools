@@ -32,10 +32,10 @@ Chaque pipeline suit la même boucle principale : **extraire les segments → pr
 | | `src/api/` | `LlmClient` — client de chat agnostique du fournisseur (Vercel AI SDK) avec repli de modèle |
 | | `src/glossary/` | Chargement du glossaire et suggestions de termes pour les invites |
 | | `src/utils/` | Logger, hachage, analyseur d'ignorance, tables de largeur d'affichage, chargeur `.env` |
-| **Runtime de votre application** | `src/runtime/` | Assistants i18next et utilitaires d'affichage — exportés sous le nom de `'ai-i18n-tools/runtime'` ([Assistants d'exécution](/guide/runtime-helpers)) |
+| **Runtime de votre application** | `src/runtime/` | Assistants i18next et utilitaires d'affichage — exportés sous le nom de `'ai-i18n-tools/runtime'` ([Assistants d'exécution](/fr/guide/runtime-helpers)) |
 | **Interface utilisateur de l'outil** *(dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Localise la CLI et le tableau de bord de traduction de ce package — séparé du contenu de votre projet ([Auto-localisation](#self-localization-tool-ui)) |
 
-Tout ce qui est destiné à un usage programmatique est réexporté depuis `src/index.ts` ([API programmatique](/reference/programmatic-api)).
+Tout ce qui est destiné à un usage programmatique est réexporté depuis `src/index.ts` ([API programmatique](/fr/reference/programmatic-api)).
 
 <a id="pipeline-summaries"></a>
 ### Résumés des pipelines
@@ -67,9 +67,9 @@ Utilise le `i18next-scanner` de `Parser.parseFuncFromString` pour trouver les ap
 
 Pour les sources `.html` / `.htm` (lorsqu'elles sont listées dans `ui.uiExtractor.extensions`), `extract` achemine le fichier via `html-i18n-marks.ts`, qui analyse les attributs de marqueur `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` (configurables via `ui.uiExtractor.htmlI18nAttributes`). Un marqueur nu tire son texte source du `textContent` / `title` / `placeholder` de l'élément ; un marqueur valorisé (`data-i18n="Key"`) utilise la valeur. Le même module alimente la commande `mark-html`, qui insère automatiquement les marqueurs nus. Les fichiers HTML n'atteignent jamais les passes Babel / i18next-scanner.
 
-Les sites SSG Astro simples peuvent ignorer i18next : chargez des `{locale}.json` plats au moment de la construction et résolvez les `t('English')` par clé de texte source (voir `examples/astro-website/src/i18n/t.ts` et [Chaînes d’interface utilisateur — site web Astro](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
+Les sites SSG Astro simples peuvent ignorer i18next : chargez des `{locale}.json` plats au moment de la construction et résolvez les `t('English')` par clé de texte source (voir `examples/astro-website/src/i18n/t.ts` et [Chaînes d’interface utilisateur — site web Astro](/fr/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
 
-Les applications HTML simples suivent le même modèle de catalogue avec des attributs de marqueur au lieu d’appels `t()` — voir [Marquage HTML pour la traduction](/guide/ui-strings/plain-html#marking-html-for-translation).
+Les applications HTML simples suivent le même modèle de catalogue avec des attributs de marqueur au lieu d’appels `t()` — voir [Marquage HTML pour la traduction](/fr/guide/ui-strings/plain-html#marking-html-for-translation).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -122,7 +122,7 @@ i18next charge ces fichiers comme des bundles de ressources et recherche les tra
 - Envoyer un tableau JSON de chaînes et demander en retour un tableau JSON de traductions.
 - Inclure des indices de glossaire quand disponibles.
 
-`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre, en se rabattant sur les erreurs d'analyse ou de réseau. La CLI construit cette liste par locale cible à partir de `localeModels`, de `uiModels` facultatifs et de `translationModels` (voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre, en se rabattant sur les erreurs d'analyse ou de réseau. La CLI construit cette liste par locale cible à partir de `localeModels`, de `uiModels` facultatifs et de `translationModels` (voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -145,7 +145,7 @@ i18next charge ces fichiers comme des bundles de ressources et recherche les tra
 Tous les extracteurs étendent `BaseExtractor` et implémentent `extract(content, filepath): Segment[]`.
 
 - `MarkdownExtractor` - divise le markdown en segments typés : `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. Le frontmatter YAML est classé comme **non traduisible** (`slug`, `id` et les autres clés de routage restent stables). Les blocs `export ...` de niveau supérieur (par exemple, les définitions de composants React) sont classés comme segments `other` non traduisibles, parallèlement à la gestion `import ...` existante. Les blocs multilignes commençant par une balise JSX majuscule (par exemple, un bloc `<Tabs>`) sont classés comme paragraphes traduisibles. Les segments non traduisibles (blocs de code, HTML brut) sont conservés tels quels.
-- `AstroTemplateExtractor` - analyse et remplace pour les pages marketing `.astro` (`translate-docs` via `translateAstroFile` dans `doc-translate.ts`). Extrait les nœuds de texte HTML visibles par l’utilisateur et les attributs traduisibles (`alt`, `title`, `aria-label`, `placeholder`), ainsi que les littéraux de chaîne à l’intérieur des blocs de modèle `{expression}` lorsqu’ils sont visibles par l’utilisateur. Ignore le TypeScript de frontmatter, `<script>`, `<style>`, les valeurs d’attribut/clé protégées et les littéraux à l’intérieur de `t('…')`. Le réassemblage ajuste les importations relatives lorsque les chemins de sortie sont plus profonds (par exemple, `src/pages/de/index.astro`). Voir [Pages du site web Astro](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `AstroTemplateExtractor` - analyse et remplace pour les pages marketing `.astro` (`translate-docs` via `translateAstroFile` dans `doc-translate.ts`). Extrait les nœuds de texte HTML visibles par l’utilisateur et les attributs traduisibles (`alt`, `title`, `aria-label`, `placeholder`), ainsi que les littéraux de chaîne à l’intérieur des blocs de modèle `{expression}` lorsqu’ils sont visibles par l’utilisateur. Ignore le TypeScript de frontmatter, `<script>`, `<style>`, les valeurs d’attribut/clé protégées et les littéraux à l’intérieur de `t('…')`. Le réassemblage ajuste les importations relatives lorsque les chemins de sortie sont plus profonds (par exemple, `src/pages/de/index.astro`). Voir [Pages du site web Astro](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
 - `JsonExtractor` - extrait les valeurs de chaîne des fichiers d’étiquettes JSON de Docusaurus (catalogues d’interface utilisateur de Docusaurus, pas le corps MDX).
 - `SvgExtractor` - extrait le contenu `<text>`, `<title>` et `<desc>` du SVG (utilisé par `translate-svg` pour les fichiers sous `config.svg`, pas par `translate-docs`).
 - `html-i18n-marks.ts` - un analyseur de balises HTML ciblé utilisé par `extract` pour les sources `.html` / `.htm` et par la commande `mark-html`. `collectHtmlI18nStrings` / `collectHtmlI18nLocations` lisent les attributs de marqueur `data-i18n*` (marqueur nu → `textContent` / `title` / `placeholder` de l'élément ; marqueur valorisé → la valeur), et `markHtmlContent` insère les marqueurs nus dans les éléments de texte feuille / titre / placeholder (idempotent, respecte `data-i18n-ignore`, ignore les éléments de type code et à contenu mixte). L'utilitaire partagé `normalizeI18nText` maintient les clés de build identiques à celles du runtime du navigateur.
@@ -187,7 +187,7 @@ Avant la traduction, la syntaxe sensible est remplacée par des jetons opaques a
 6. **Portées de code en ligne** (`` `code` ``) et **code en ligne en gras** (`**`code`**`) - conservés tels quels.
 7. **Mise en emphase en markdown** (facultatif, activé automatiquement pour les paramètres régionaux CJK/RTL) - les délimiteurs d'emphase sont masqués.
 
-La protection partagée des attributs/clés pour les modèles Astro et MDX JSX est implémentée dans `src/processors/expression-attribute-protection.ts` et pilotée par bloc par `docs[].protectAttributes` et `docs[].protectKeys` (voir [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)).
+La protection partagée des attributs/clés pour les modèles Astro et MDX JSX est implémentée dans `src/processors/expression-attribute-protection.ts` et pilotée par bloc par `docs[].protectAttributes` et `docs[].protectKeys` (voir [protectAttributes / protectKeys](/fr/reference/configuration#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
 ### Cache (`TranslationCache`)
@@ -196,9 +196,9 @@ Une base de données SQLite (via `node:sqlite`) stocke des lignes indexées par 
 
 À chaque exécution, les segments sont recherchés par hachage × paramètres régionaux. Seules les erreurs de cache sont transmises au LLM. Après la traduction, `last_hit_at` est réinitialisé pour les lignes de segment dans la portée de traduction actuelle qui n'ont pas été atteintes. Les succès de cache lors de la traduction de documents effacent les lignes `translation_failures` obsolètes pour ce segment. `cleanup` exécute d'abord `sync --force-update`, puis supprime les lignes de segment obsolètes (`last_hit_at` nul / chemin de fichier vide), élague les clés `file_tracking` lorsque le chemin source résolu est manquant sur le disque (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), supprime les lignes de traduction dont le chemin de fichier de métadonnées pointe vers un fichier manquant, élague les lignes `translation_failures` orphelines et élague les lignes `markdown_source_issues` orphelines dont le chemin source résolu est manquant sur le disque ; il ne sauvegarde pas `cache.db` à moins que `--backup <path>` ne soit passé, ce qui écrit d'abord une sauvegarde à ce chemin.
 
-La commande `translate-docs` utilise également le **suivi de fichiers** afin que les sources inchangées avec des sorties existantes et à jour puissent ignorer complètement le travail. `--force-update` relance le traitement des fichiers tout en utilisant le cache de segments ; `--force` efface le suivi des fichiers et contourne les lectures du cache de segments pour la traduction d'API. Lorsque chaque modèle configuré échoue à la validation AST sur un segment markdown, `translate-docs` peut progressivement diviser le segment et réessayer des parties plus petites (`docs[].segmentSplitting.qualityRetrySplit`, activé par défaut). Voir [Documents — comportement du cache et drapeaux](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) pour le tableau complet des drapeaux.
+La commande `translate-docs` utilise également le **suivi de fichiers** afin que les sources inchangées avec des sorties existantes et à jour puissent ignorer complètement le travail. `--force-update` relance le traitement des fichiers tout en utilisant le cache de segments ; `--force` efface le suivi des fichiers et contourne les lectures du cache de segments pour la traduction d'API. Lorsque chaque modèle configuré échoue à la validation AST sur un segment markdown, `translate-docs` peut progressivement diviser le segment et réessayer des parties plus petites (`docs[].segmentSplitting.qualityRetrySplit`, activé par défaut). Voir [Documents — comportement du cache et drapeaux](/fr/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) pour le tableau complet des drapeaux.
 
-**Format d'invite de lot :** `translate-docs --prompt-format` sélectionne les formes XML (`<seg>` / `<t>`) ou tableau/objet JSON pour `LlmClient.translateDocumentBatch` uniquement ; l'extraction, les espaces réservés et la validation restent inchangés. Voir [Format d'invite de lot](/guide/documents/cli-options#batch-prompt-format).
+**Format d'invite de lot :** `translate-docs --prompt-format` sélectionne les formes XML (`<seg>` / `<t>`) ou tableau/objet JSON pour `LlmClient.translateDocumentBatch` uniquement ; l'extraction, les espaces réservés et la validation restent inchangés. Voir [Format d'invite de lot](/fr/guide/documents/cli-options#batch-prompt-format).
 
 <a id="output-path-resolution"></a>
 ### Résolution du chemin de sortie
@@ -215,7 +215,7 @@ La commande `translate-docs` utilise également le **suivi de fichiers** afin qu
 <a id="flat-link-rewriting"></a>
 ### Réécriture des liens plats
 
-Lorsque `docsOutput.style === "flat"`, les fichiers markdown traduits sont placés à côté de la source avec des suffixes de paramètres régionaux. Les liens relatifs entre les pages sont réécrits de sorte que `[Guide](./guide.md)` dans `readme.de.md` pointe vers `guide.de.md`. Contrôlé par `rewriteRelativeLinks` (activé automatiquement pour le style plat sans `pathTemplate` personnalisé). Le même passage ajoute un préfixe de profondeur par fichier aux URL d’actifs non-markdown avant l’exécution de `postProcessing.regexAdjustments` — voir [Réécriture de liens plats](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
+Lorsque `docsOutput.style === "flat"`, les fichiers markdown traduits sont placés à côté de la source avec des suffixes de paramètres régionaux. Les liens relatifs entre les pages sont réécrits de sorte que `[Guide](./guide.md)` dans `readme.de.md` pointe vers `guide.de.md`. Contrôlé par `rewriteRelativeLinks` (activé automatiquement pour le style plat sans `pathTemplate` personnalisé). Le même passage ajoute un préfixe de profondeur par fichier aux URL d’actifs non-markdown avant l’exécution de `postProcessing.regexAdjustments` — voir [Réécriture de liens plats](/fr/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow).
 
 ---
 
@@ -266,7 +266,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)` :
 9. `augmentConfigWithUiLanguagesMaster` - attacher les noms d'affichage du manifeste à partir du catalogue principal fourni.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - valider les codes de locale par rapport au catalogue principal, le cas échéant.
 
-`init` écrit des configurations de démarrage à partir de `initConfigTemplates` : `ui-markdown` (UI + Markdown d'application facultatif), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentation VitePress + `vitepressThemeCatalog`), `ui-nextra` (documentation Nextra + `nextraDictionaryPath`), `ui-astro-website` (UI Astro simple ; ajouter `docs[]` pour la traduction de pages `.astro`), `ui-json-bundles` (`json[]` JSON uniquement). Voir [Démarrage rapide — Initialiser](/guide/quick-start#step-1-initialise).
+`init` écrit des configurations de démarrage à partir de `initConfigTemplates` : `ui-markdown` (UI + Markdown d'application facultatif), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (documentation VitePress + `vitepressThemeCatalog`), `ui-nextra` (documentation Nextra + `nextraDictionaryPath`), `ui-astro-website` (UI Astro simple ; ajouter `docs[]` pour la traduction de pages `.astro`), `ui-json-bundles` (`json[]` JSON uniquement). Voir [Démarrage rapide — Initialiser](/fr/guide/quick-start#step-1-initialise).
 
 <a id="logger"></a>
 ### Journalisation (Logger)

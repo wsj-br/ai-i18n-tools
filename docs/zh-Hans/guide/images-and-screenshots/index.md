@@ -33,7 +33,7 @@ images/screenshots/en-GB/settings.png
 
 通用 `[^/]+` 正则表达式匹配任何区域设置文件夹名称 — 不要硬编码您的源区域设置（例如 `screenshots/en-GB/`），因为如果 `sourceLocale` 发生更改，这会破坏。
 
-如果您从省略区域设置子目录 (`images/screenshots/translate.png`) 的路径开始，则需要先重组整个树，然后才能进行[按区域设置文件夹](/guide/images-and-screenshots/per-locale-folder)重写。
+如果您从省略区域设置子目录 (`images/screenshots/translate.png`) 的路径开始，则需要先重组整个树，然后才能进行[按区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)重写。
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### 文档系统站点（`docsOutput.style = "doc-system"`）
@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-将 `docs[].docsOutput.docsRoot` 设置为您的英文源根目录（例如 `"docs"` 或 `"src/content/docs"`）。当您直接设置 `style: "doc-system"` 时，您还必须将 `localeSubpath` 设置为您的站点在 `{locale}/` 和翻译文件之间使用的路径段。别名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是预设的 `doc-system` 布局，具有默认的 `localeSubpath` 值（请参阅[输出布局](/guide/documents/output-layouts)）。
+将 `docs[].docsOutput.docsRoot` 设置为您的英文源根目录（例如 `"docs"` 或 `"src/content/docs"`）。当您直接设置 `style: "doc-system"` 时，您还必须将 `localeSubpath` 设置为您的站点在 `{locale}/` 和翻译文件之间使用的路径段。别名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是预设的 `doc-system` 布局，具有默认的 `localeSubpath` 值（请参阅[输出布局](/zh-Hans/guide/documents/output-layouts)）。
 
 | 预设别名 | 默认 `localeSubpath` | 示例输出 |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ images/screenshots/en-GB/settings.png
 
 在源 Markdown 文件中引用资源时，始终使用稳定的相对路径 `../assets/name.ext`。切勿使用绝对路径 `/img/` 或 `/assets/` URL —— 这些 URL 在英文源文档（从 `static/` 提供服务）和翻译语言版本（与翻译文档共置）之间会不同，从而迫使你必须使用 `regexAdjustments` 规则来桥接路径。
 
-当您稍后添加 i18n 时，屏幕截图脚本采用 `getScreenshotDir` 分割（请参阅[并置屏幕截图](/guide/images-and-screenshots/colocated-screenshots)），并且 `translate-svg` 使用 `pathTemplate`。无需调整正则表达式。
+当您稍后添加 i18n 时，屏幕截图脚本采用 `getScreenshotDir` 分割（请参阅[并置屏幕截图](/zh-Hans/guide/images-and-screenshots/colocated-screenshots)），并且 `translate-svg` 使用 `pathTemplate`。无需调整正则表达式。
 
 > **注意：** `resolve.symlinks = false` 中的 `next.config.ts` 仅对 Next.js 应用的 webpack 构建禁用符号链接解析。它不会影响 Docusaurus 文档站点的构建，因为后者使用的是独立的 webpack 实例。
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG 布局在[SVG 翻译](/guide/svg-translation/)指南中介绍。
+SVG 布局在[SVG 翻译](/zh-Hans/guide/svg-translation/)指南中介绍。
 
 | 布局 | 资产类型 | 站点类型 | 工具机制 |
 |--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [共享图像](/guide/images-and-screenshots/shared-image) | 栅格（共享） | `docsOutput.style = "flat"` 文档 | 按文件链接重写器；通常没有正则表达式 |
-| [按区域设置文件夹](/guide/images-and-screenshots/per-locale-folder) | 栅格（按区域设置） | `"flat"` 或 `"doc-system"`（包括 `"docusaurus"`、`"astro-starlight"`） | `regexAdjustments` 区域设置段交换 |
-| [并置屏幕截图](/guide/images-and-screenshots/colocated-screenshots) | 栅格（并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | 屏幕截图脚本放置文件；没有正则表达式 |
-| [Web 应用程序 SVG](/guide/svg-translation/translated-svg-web-app) | SVG（已翻译） | Web 应用程序 | `translate-svg` 与 `svg.style = "flat"` |
-| [并置 SVG](/guide/svg-translation/translated-svg-colocated) | SVG（已翻译，并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | `translate-svg` 与 `svg.style = "nested"` + `pathTemplate` |
+| [共享图像](/zh-Hans/guide/images-and-screenshots/shared-image) | 栅格（共享） | `docsOutput.style = "flat"` 文档 | 按文件链接重写器；通常没有正则表达式 |
+| [按区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder) | 栅格（按区域设置） | `"flat"` 或 `"doc-system"`（包括 `"docusaurus"`、`"astro-starlight"`） | `regexAdjustments` 区域设置段交换 |
+| [并置屏幕截图](/zh-Hans/guide/images-and-screenshots/colocated-screenshots) | 栅格（并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | 屏幕截图脚本放置文件；没有正则表达式 |
+| [Web 应用程序 SVG](/zh-Hans/guide/svg-translation/translated-svg-web-app) | SVG（已翻译） | Web 应用程序 | `translate-svg` 与 `svg.style = "flat"` |
+| [并置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated) | SVG（已翻译，并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | `translate-svg` 与 `svg.style = "nested"` + `pathTemplate` |

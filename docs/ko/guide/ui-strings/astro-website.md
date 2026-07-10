@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro 웹사이트
 
-정적 Astro 마케팅 또는 앱 사이트(Starlight가 아닌 일반 Astro)의 경우, [Astro 기본 제공 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합하세요. [Astro 통합](/guide/integrations/astro)도 참조하세요.
+정적 Astro 마케팅 또는 앱 사이트(Starlight가 아닌 일반 Astro)의 경우, [Astro 기본 제공 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합하세요. [Astro 통합](/ko/guide/integrations/astro)도 참조하세요.
 
 참조 구현은 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)입니다([README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)도 참조). 영어는 `/`에 있고, 9개의 대상 로케일은 `/{locale}/`에 있습니다(`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`).
 
@@ -60,7 +60,7 @@ const t = useTranslations(locale, makeT(flat));
 
 `.astro` 파일에 하드코딩된 HTML이 포함된 마케팅 페이지의 경우, `translate-docs`이 텍스트 노드 및 속성(`alt`, `title`, `aria-label`, `placeholder`)을 추출하고 문서 캐시로 번역한 후 페이지 트리 아래에 로케일별 사본을 작성하도록 하세요. 대부분의 가시적 텍스트에는 `t()`이 **필요하지 않습니다**.
 
-구조적 속성 및 키 값은 기본적으로 **번역되지 않습니다**. 내장 보호 기능은 `class`, `id`, `style`, `src`, `href`, `data-*`와 대부분의 `aria-*`와 같은 JSX/HTML 속성, 그리고 템플릿 `{expression}` 블록 내의 `class`, `key`, `id`와 같은 객체 키를 보호합니다. 사용자 지정 속성(예: Tailwind `variant` 또는 CMS `slug` 필드)을 사용하는 경우 `docs[].protectAttributes` 및 `docs[].protectKeys`를 사용하여 해당 목록을 확장합니다. 동일한 옵션이 마크다운 번역 중 MDX JSX에 적용됩니다([protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys) 참조).
+구조적 속성 및 키 값은 기본적으로 **번역되지 않습니다**. 내장 보호 기능은 `class`, `id`, `style`, `src`, `href`, `data-*`와 대부분의 `aria-*`와 같은 JSX/HTML 속성, 그리고 템플릿 `{expression}` 블록 내의 `class`, `key`, `id`와 같은 객체 키를 보호합니다. 사용자 지정 속성(예: Tailwind `variant` 또는 CMS `slug` 필드)을 사용하는 경우 `docs[].protectAttributes` 및 `docs[].protectKeys`를 사용하여 해당 목록을 확장합니다. 동일한 옵션이 마크다운 번역 중 MDX JSX에 적용됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
 `features.translateDocs`를 활성화하고 `docs[]` 블록을 추가하십시오. 예를 들면:
 

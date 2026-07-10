@@ -8,7 +8,7 @@
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
 
-`translate-svg` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。每個地區的 SVG 運行使用其自己的回退鏈 — 在 CJK 地區的圖表標籤需要腳本調優的模型時非常有用（例如 `ja`）。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)。
+`translate-svg` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。每個地區的 SVG 運行使用其自己的回退鏈 — 在 CJK 地區的圖表標籤需要腳本調優的模型時非常有用（例如 `ja`）。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
 
 SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的 SQLite 快取。已翻譯的文字區段會從快取中提供；只有新的或變更的來源文字才會傳送至 LLM。
 
@@ -24,7 +24,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 請**勿**將 `translate-svg` 用於：
 
 - 沒有可翻譯文字的裝飾性 SVG（圖示、標誌、背景）。
-- 點陣圖螢幕截圖 (PNG、JPEG、WebP) — 這些透過 [圖片和螢幕截圖](/guide/images-and-screenshots/) 處理。
+- 點陣圖螢幕截圖 (PNG、JPEG、WebP) — 這些透過 [圖片和螢幕截圖](/zh-Hant/guide/images-and-screenshots/) 處理。
 - 嵌入路徑資料而非 `<text>` 元素的文字 — 提取器無法讀取路徑輪廓。
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 
 | 版面配置 | `svg.style` | 最適合 | 子指南 |
 |--------|-------------|----------|-------------|
-| **平面 (Web 應用程式)** | `"flat"` | Next.js、Vite 和其他透過語言環境編碼檔案名稱嵌入 SVG 的應用程式 | [Web 應用程式 (平面 SVG)](/guide/svg-translation/translated-svg-web-app) |
-| **並置 (文件系統)** | `"nested"` + `pathTemplate` | Docusaurus 和其他文件系統網站，其中翻譯的資產與翻譯的頁面並置 | [並置 SVG](/guide/svg-translation/translated-svg-colocated) |
+| **平面 (Web 應用程式)** | `"flat"` | Next.js、Vite 和其他透過語言環境編碼檔案名稱嵌入 SVG 的應用程式 | [Web 應用程式 (平面 SVG)](/zh-Hant/guide/svg-translation/translated-svg-web-app) |
+| **並置 (文件系統)** | `"nested"` + `pathTemplate` | Docusaurus 和其他文件系統網站，其中翻譯的資產與翻譯的頁面並置 | [並置 SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated) |
 
 **平面版面配置**將檔案（例如 `public/assets/diagram.de.svg`）寫入 `diagram.en-GB.svg` 旁邊。您的應用程式會使用語言環境後綴來參考它們：
 
@@ -56,7 +56,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 
 **並置版面配置**將每個語言環境的 SVG 寫入該語言環境的內容樹（例如 `i18n/de/.../assets/diagram.svg`）。來源和翻譯的 Markdown 使用相同的相對路徑 (`../assets/diagram.svg`) — 不需要 `regexAdjustments` 規則。
 
-請參閱 [圖片和螢幕截圖決策指南](/guide/images-and-screenshots/#decision-guide)，了解 SVG 版面配置如何與點陣圖螢幕截圖策略配合。
+請參閱 [圖片和螢幕截圖決策指南](/zh-Hant/guide/images-and-screenshots/#decision-guide)，了解 SVG 版面配置如何與點陣圖螢幕截圖策略配合。
 
 <a id="step-1-enable-and-configure"></a>
 ### 步驟 1：啟用和設定
@@ -84,7 +84,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 - `pathTemplate` — 可選的自訂輸出路徑，帶有佔位符 `{outputDir}`、`{locale}`、`{llocale}`、`{basename}`、`{stem}` 和其他（協同定位文件系統佈局所需）。
 - `forceLowercase` — 重新組裝時的翻譯文字為小寫。
 
-完整欄位參考：[設定 — `svg`](/reference/configuration#svg)。
+完整欄位參考：[設定 — `svg`](/zh-Hant/reference/configuration#svg)。
 
 <a id="step-2-translate"></a>
 ### 步驟 2：翻譯
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### 疑難排解
 
-常見的 SVG 問題 — 混合的來源/輸出目錄、Docusaurus 上的絕對靜態 URL 以及路徑佈局錯誤 — 在[SVG 疑難排解](/guide/svg-translation/troubleshooting)中有所涵蓋。對於點陣圖資產和連結重寫，請參閱[圖片和螢幕截圖疑難排解](/guide/images-and-screenshots/troubleshooting)。
+常見的 SVG 問題 — 混合的來源/輸出目錄、Docusaurus 上的絕對靜態 URL 以及路徑佈局錯誤 — 在[SVG 疑難排解](/zh-Hant/guide/svg-translation/troubleshooting)中有所涵蓋。對於點陣圖資產和連結重寫，請參閱[圖片和螢幕截圖疑難排解](/zh-Hant/guide/images-and-screenshots/troubleshooting)。

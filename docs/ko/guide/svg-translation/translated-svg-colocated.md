@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # 공동 배치된 번역 SVG (문서 시스템)
 
-번역된 SVG 일러스트레이션이 각 로케일의 콘텐츠 디렉터리에 있는 번역된 문서와 함께 표시되어야 하는 문서 시스템 사이트에 사용합니다. [공동 배치된 스크린샷](/guide/images-and-screenshots/colocated-screenshots)과 동일한 위치입니다. Docusaurus 사전 설정이 주요 예시입니다.
+번역된 SVG 일러스트레이션이 각 로케일의 콘텐츠 디렉터리에 있는 번역된 문서와 함께 표시되어야 하는 문서 시스템 사이트에 사용합니다. [공동 배치된 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots)과 동일한 위치입니다. Docusaurus 사전 설정이 주요 예시입니다.
 
 <a id="config"></a>
 ### 구성
@@ -60,7 +60,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 | `{extension}`            | 점(.)을 포함한 확장자                                |
 | `{relativeToSourceRoot}` | 가장 가까운 `sourcePath` 루트로부터의 상대 경로       |
 
-[SVG 구성 테이블](/reference/configuration#svg)에서 전체 참조를 확인하세요.
+[SVG 구성 테이블](/ko/reference/configuration#svg)에서 전체 참조를 확인하세요.
 
 <a id="implementation-example"></a>
 ### 구현 예시

@@ -3,10 +3,10 @@
 
 將 `init -t ui-docusaurus` 和 `docsOutput.style: "docusaurus"` 用於 [Docusaurus](https://docusaurus.io/) 文件網站。預設會使用 `docs[]` 區塊和 `docusaurusCatalogDir`，以便 `translate-docs` 可以透過一個指令翻譯頁面 Markdown 和 Docusaurus Shell JSON。
 
-另請參閱[文件](/guide/documents/)、可執行的[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)示範（Next.js 應用程式加上巢狀`docs-site/`），以及[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)以取得專注於 Docusaurus 的逐步解說。
+另請參閱[文件](/zh-Hant/guide/documents/)、可執行的[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)示範（Next.js 應用程式加上巢狀`docs-site/`），以及[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)以取得專注於 Docusaurus 的逐步解說。
 
 <a id="quick-start"></a>
-## 快速入門
+## 快速開始
 
 ```bash
 npx ai-i18n-tools init -t ui-docusaurus
@@ -18,7 +18,7 @@ cd docs-site && pnpm build   # Docusaurus build (project-specific script)
 當您同時翻譯文件頁面和網站外觀（導覽列、頁尾、主題字串）時，請啟用 `features.translateDocs` 並設定 `docs[].docusaurusCatalogDir`。當您升級 `@docusaurus/*` 或變更導覽列/頁尾/主題標籤時，請在您的 Docusaurus 專案中執行 `docusaurus write-translations` — 然後重新執行 `translate-docs` 或 `sync`，以便將 Shell JSON 翻譯成每個地區設定資料夾。
 
 <a id="page-layout"></a>
-## 頁面佈局
+## 頁面版面
 
 英文 Markdown 和 MDX 位於您的 Docusaurus `docs/` 資料夾下（例如 `docs-site/docs/`）。翻譯後的副本會寫入每個地區設定的外掛程式內容樹中：
 
@@ -29,7 +29,7 @@ docs-site/docs/guide/quick-start.md
   →  docs-site/i18n/fr/docusaurus-plugin-content-docs/current/guide/quick-start.md
 ```
 
-配置一個 `docs[]` 區塊：
+設定一個 `docs[]` 區塊：
 
 ```json
 {
@@ -83,17 +83,17 @@ Docusaurus 導覽列、頁尾、搜尋佔位符以及其他主題/外掛程式�
 <a id="framework-shell-translation"></a>
 ## 框架外殼翻譯
 
-| 框架 | Shell / 主題字串 | 管道 |
+| 框架 | 外殼/主題字串 | 管線 |
 |-----------|----------------------|----------|
-| Docusaurus | `write-translations` 目錄 (`{ message, description }`) | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 側邊欄標籤 | 文件——自動時 `style: "nextra"` + `translate-docs` |
-| Nextra | 主題字典 `.ts` | 文件——`docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動處理 |
+| Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 | 文件 — 當 `style: "nextra"` + `translate-docs` 時自動 |
+| Nextra | 主題字典 `.ts` | 文件 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動 |
 | Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 內建 UI 字串（多種語系）；無額外外殼管線 | 文件 — `translate-docs`（僅限頁面） |
+| Astro Starlight | 內建 UI 字串（多語系）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
 
-請**勿**將框架外殼/主題字串放入 `json[]` — 該管線用於無關的應用程式語言包。請參閱 [VitePress 整合](/guide/integrations/vitepress)、[Nextra 整合](/guide/integrations/nextra) 與 [Fumadocs 整合](/guide/integrations/fumadocs) 以了解其他框架模式。
+請**勿**將框架外殼/主題字串放入 `json[]` — 該管線用於無關的應用程式語言包。請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)、[Nextra 整合](/zh-Hant/guide/integrations/nextra) 與 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) 以了解其他框架模式。
 
 <a id="example-project"></a>
 ## 範例專案

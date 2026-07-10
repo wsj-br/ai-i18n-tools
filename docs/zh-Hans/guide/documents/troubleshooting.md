@@ -18,7 +18,7 @@
 2. 将锚点链接指向这些 ID — 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 匹配目标标题上方的锚点行，而不是仅从英文标题推断出的 slug。
 3. 重新运行 `translate-docs`（或 `sync --force-update`），以便每个区域设置副本都包含更新的锚点行。
 
-首先在 `write-heading-ids` 上使用 `--dry-run` 预览更改。有关完整模式，请参阅[锚点链接](/guide/documents/anchor-links)。
+首先在 `write-heading-ids` 上使用 `--dry-run` 预览更改。有关完整模式，请参阅[锚点链接](/zh-Hans/guide/documents/anchor-links)。
 
 <a id="image-or-asset-links-404-in-translated-docs"></a>
 ## 翻译文档中的图片或资产链接 404
@@ -27,6 +27,6 @@ Markdown 链接或 `![alt](url)` 在英文版中有效，但在翻译版本中�
 
 **修复**
 
-1. 确认您的资产布局与您的 `docsOutput.style` 匹配（扁平式与文档系统）。请参阅[链接重写](/guide/documents/link-rewriting)和[图片与截图](/guide/images-and-screenshots/)。
+1. 确认您的资产布局与您的 `docsOutput.style` 匹配（扁平式与文档系统）。请参阅[链接重写](/zh-Hans/guide/documents/link-rewriting)和[图片与截图](/zh-Hans/guide/images-and-screenshots/)。
 2. 添加或调整 `docsOutput.postProcessing.regexAdjustments` 以交换区域设置段或桥接绝对 `/img/…` 路径。对于扁平式布局，请记住扁平链接重写器在 **之前** 运行 `regexAdjustments` — 根据已添加前缀的 URL 匹配模式。
 3. 确保区域设置特定的资产文件存在于重写后的 markdown 引用的路径中（`translate-docs` 重写 URL 但不复制栅格文件）。

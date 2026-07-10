@@ -3,7 +3,7 @@
 
 ai-i18n-toolsを[Astro](https://astro.build/)で利用するには、一般的な2つのセットアップがあります。**Astro Starlight**ドキュメントサイトと、**プレーンなAstro**マーケティングサイトまたはアプリサイトです。どちらもページコンテンツにはDocuments (`translate-docs`)を使用します。プレーンなAstroサイトでは、フロントマターや共有データ内の`t()`文字列にUI文字列 (`extract` / `translate-ui`)を組み合わせて使用することがよくあります。
 
-[UI文字列](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[ドキュメント](/guide/documents/)、および以下の実行可能な例も参照してください。
+[UI文字列](/ja/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[ドキュメント](/ja/guide/documents/)、および以下の実行可能な例も参照してください。
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -30,7 +30,7 @@ src/content/docs/quick-start.md     →  src/content/docs/de/quick-start.md
 src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ```
 
-1つの`docs[]`ブロックを設定します。
+`docs[]` ブロックを1つ設定します：
 
 ```json
 {
@@ -45,7 +45,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 `contentPaths`を英語の`.md` / `.mdx`ファイルとディレクトリに指定します。`docsRoot`をStarlightがコンテンツルートとして使用するのと同じフォルダに設定します。
 
-Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます。詳細については、[ドキュメント — ドキュメントの初期化](/guide/documents/#step-1-initialise-for-documentation)を参照してください。
+Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます。詳細については、[ドキュメント — ドキュメントの初期化](/ja/guide/documents/#step-1-initialise-for-documentation)を参照してください。
 
 <a id="framework-shell-translation"></a>
 ### フレームワークシェルの翻訳
@@ -56,11 +56,11 @@ Starlightは、多くのロケール（ナビゲーションラベル、検索�
 |-----------|----------------------|----------|
 | Astro Starlight | 組み込みUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
 | Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル + テーマ辞書 `.ts` | ドキュメント — [Nextra 連携](/guide/integrations/nextra) を参照 |
-| Fumadocs | `meta.json` サイドバーラベル + UI オーバーライドカタログ | ドキュメント — [Fumadocs 連携](/guide/integrations/fumadocs) を参照 |
+| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` サイドバーラベル + テーマ辞書 `.ts` | ドキュメント — [Nextra 連携](/ja/guide/integrations/nextra) を参照 |
+| Fumadocs | `meta.json` サイドバーラベル + UI オーバーライドカタログ | ドキュメント — [Fumadocs 連携](/ja/guide/integrations/fumadocs) を参照 |
 
-他のフレームワークのパターンについては、[Docusaurus 連携](/guide/integrations/docusaurus)、[VitePress 連携](/guide/integrations/vitepress)、[Nextra 連携](/guide/integrations/nextra)、および [Fumadocs 連携](/guide/integrations/fumadocs) を参照してください。
+他のフレームワークのパターンについては、[Docusaurus 連携](/ja/guide/integrations/docusaurus)、[VitePress 連携](/ja/guide/integrations/vitepress)、[Nextra 連携](/ja/guide/integrations/nextra)、および [Fumadocs 連携](/ja/guide/integrations/fumadocs) を参照してください。
 
 <a id="example-project"></a>
 ### プロジェクト例

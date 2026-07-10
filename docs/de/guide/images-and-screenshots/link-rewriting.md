@@ -34,19 +34,19 @@ Typische Rewrites:
 | `../guide/foo.md` (aus einer lokalen Datei) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | unverändert (verwenden Sie vollständige URLs für Repo-Pfade) |
 
-Für Projekte, die `README.md` → `docs/index.md` synchronisieren, verwenden Sie vollständige GitHub-URLs in `README.md` für `LICENSE`, `examples/` und andere Dateien außerhalb des VitePress-Baums. Siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/integrations/vitepress#readme-as-homepage).
+Für Projekte, die `README.md` → `docs/index.md` synchronisieren, verwenden Sie vollständige GitHub-URLs in `README.md` für `LICENSE`, `examples/` und andere Dateien außerhalb des VitePress-Baums. Siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-as-homepage).
 
-Der Flat Rewriter und der VitePress Normalizer schließen sich pro `docs[]`-Block gegenseitig aus – nur einer läuft vor `regexAdjustments`. Siehe [VitePress-Integration – Link-Konventionen](/guide/integrations/vitepress#link-conventions).
+Der Flat Rewriter und der VitePress Normalizer schließen sich pro `docs[]`-Block gegenseitig aus – nur einer läuft vor `regexAdjustments`. Siehe [VitePress-Integration – Link-Konventionen](/de/guide/integrations/vitepress#link-conventions).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra-Link-Normalisierer (`style: "nextra"`)
 
-Wenn `docsOutput.rewriteNextraLinks` `true` ist (Standard, wenn `style` `"nextra"` ist), läuft ein separater Normalizer nach der Segmentwiederherstellung. Er schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/guide/…`). Siehe [Nextra-Integration – Link-Konventionen](/guide/integrations/nextra#link-conventions).
+Wenn `docsOutput.rewriteNextraLinks` `true` ist (Standard, wenn `style` `"nextra"` ist), läuft ein separater Normalizer nach der Segmentwiederherstellung. Er schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/guide/…`). Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs-Link-Normalisierer (`style: "fumadocs"`)
 
-Wenn `docsOutput.rewriteFumadocsLinks` `true` ist (Standard, wenn `style` `"fumadocs"` ist), läuft ein separater Normalizer nach der Segmentwiederherstellung. Er schreibt `content/docs/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/docs/…`). Siehe [Fumadocs-Integration – Link-Konventionen](/guide/integrations/fumadocs#link-conventions).
+Wenn `docsOutput.rewriteFumadocsLinks` `true` ist (Standard, wenn `style` `"fumadocs"` ist), läuft ein separater Normalizer nach der Segmentwiederherstellung. Er schreibt `content/docs/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Routen um (`/docs/…`). Siehe [Fumadocs-Integration – Link-Konventionen](/de/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Tiefenpräfix pro Datei mit `flatPreserveRelativeDir`
@@ -90,12 +90,12 @@ Regeln werden auf den übersetzten Markdown-**Body** angewendet, nachdem die Seg
 }
 ```
 
-Verwenden Sie `[^/]+` anstelle der Festcodierung Ihres Quellgebietsschemas (`en-GB`), damit die Regel eine `sourceLocale`-Änderung übersteht. Der häufigste Platzhalter ist `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` und Pfadvariablen sind ebenfalls verfügbar – siehe [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting#replace-placeholders).
+Verwenden Sie `[^/]+` anstelle der Festcodierung Ihres Quellgebietsschemas (`en-GB`), damit die Regel eine `sourceLocale`-Änderung übersteht. Der häufigste Platzhalter ist `${translatedLocale}`; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` und Pfadvariablen sind ebenfalls verfügbar – siehe [Dokumente – Link-Umschreibung](/de/guide/documents/link-rewriting#replace-placeholders).
 
-Layout-spezifische Beispiele (flat, Doc-System, Docusaurus, Starlight): [Pro-Gebietsschema-Ordner](/guide/images-and-screenshots/per-locale-folder). Allgemeine seitenübergreifende Linkregeln: [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting). Feldreferenz: [Konfiguration – `docs`](/reference/configuration#docs).
+Layout-spezifische Beispiele (flat, Doc-System, Docusaurus, Starlight): [Pro-Gebietsschema-Ordner](/de/guide/images-and-screenshots/per-locale-folder). Allgemeine seitenübergreifende Linkregeln: [Dokumente – Link-Umschreibung](/de/guide/documents/link-rewriting). Feldreferenz: [Konfiguration – `docs`](/de/reference/configuration#docs).
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-Siehe [Häufige Fehler und Fehlerbehebung](/guide/images-and-screenshots/troubleshooting) für festcodierte Gebietsschema-Regexes, fehlende Screenshot-Verzeichnisse und Docusaurus `/img/`-Bridging.
+Siehe [Häufige Fehler und Fehlerbehebung](/de/guide/images-and-screenshots/troubleshooting) für festcodierte Gebietsschema-Regexes, fehlende Screenshot-Verzeichnisse und Docusaurus `/img/`-Bridging.

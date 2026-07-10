@@ -8,7 +8,7 @@ Esto **no** es lo mismo que **Fallos**, que registra la salida del modelo por co
 <a id="when-to-use-it"></a>
 ## Cuándo usarlo
 
-Utilice esta pestaña cuando desee corregir el **Markdown de origen** antes de gastar tokens, especialmente cuando las comprobaciones de calidad sigan fallando en la estructura en la pestaña [Fallos](/guide/translation-dashboard/failures).
+Utilice esta pestaña cuando desee corregir el **Markdown de origen** antes de gastar tokens, especialmente cuando las comprobaciones de calidad sigan fallando en la estructura en la pestaña [Fallos](/es/guide/translation-dashboard/failures).
 
 <a id="how-to-use-the-tab"></a>
 ## Cómo usar la pestaña
@@ -39,4 +39,4 @@ Corrija el archivo de origen y luego vuelva a ejecutar la traducción.
 | Código en línea sin cerrar | Tramo de comillas invertidas abierto pero no cerrado |
 | `STRONG_OUTSIDE_LINK` | Los marcadores en negrita envuelven un enlace Markdown; mueva la negrita dentro del texto del enlace |
 
-Consulte también [Markdown complejo y comprobaciones de calidad fallidas](/guide/documents/#complex-markdown-and-failed-quality-checks).
+Consulte también [Markdown complejo y comprobaciones de calidad fallidas](/es/guide/documents/#complex-markdown-and-failed-quality-checks).

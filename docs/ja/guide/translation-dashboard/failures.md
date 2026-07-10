@@ -15,7 +15,7 @@
 <a id="why-source-edits-matter"></a>
 ## ソース編集が重要な理由
 
-密なインラインマークアップ (`` `code` ``と混在する**太字**、ネストされた強調、多くのスパンを持つ長い文) は、モデルが構造チェックに合格する翻訳を返すことを困難にします。**複数の記録された失敗**を持つセグメントは、未変更のテキストで翻訳を再実行するよりも、ソースを**書き換えたり分割したり** (または例をフェンスで囲まれたコードブロックに移動したり) することで改善されることがよくあります。これは、[複雑なMarkdownと失敗した品質チェック](/guide/documents/#complex-markdown-and-failed-quality-checks) と一致しています。
+密なインラインマークアップ (`` `code` ``と混在する**太字**、ネストされた強調、多くのスパンを持つ長い文) は、モデルが構造チェックに合格する翻訳を返すことを困難にします。**複数の記録された失敗**を持つセグメントは、未変更のテキストで翻訳を再実行するよりも、ソースを**書き換えたり分割したり** (または例をフェンスで囲まれたコードブロックに移動したり) することで改善されることがよくあります。これは、[複雑なMarkdownと失敗した品質チェック](/ja/guide/documents/#complex-markdown-and-failed-quality-checks) と一致しています。
 
 <a id="how-to-use-the-tab"></a>
 ## タブの使用方法
@@ -28,7 +28,7 @@
 6. 🔗リンクコントロールは、`ai-i18n-tools dashboard`が実行されている**ターミナル**にファイル/行ヒントをログに記録します。
 7. プロジェクトの**ソースファイル**を修正し、`translate-docs`または`sync`を再度実行します。成功した実行後にリストが**古く見える**場合は、`ai-i18n-tools sync --force-update`を実行してダッシュボードを再読み込みします。
 
-UIと並行してファイルベースのデバッグを行うには、再試行中に`cacheDir`の下に`FAILED-TRANSLATION`の詳細を書き込むために`translate-docs --debug-failed`を使用します。[キャッシュの動作と`translate-docs`フラグ](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) を参照してください。
+UIと並行してファイルベースのデバッグを行うには、再試行中に`cacheDir`の下に`FAILED-TRANSLATION`の詳細を書き込むために`translate-docs --debug-failed`を使用します。[キャッシュの動作と`translate-docs`フラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) を参照してください。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失敗とMarkdownの問題
@@ -39,4 +39,4 @@ UIと並行してファイルベースのデバッグを行うには、再試行
 | 典型的な原因 | 不適切なモデル出力、検証エラー | ペアになっていない強調、閉じられていないコードスパン、リンク外の太字 |
 | 修正 | ソースを編集して再翻訳 | ソースMarkdownを修正してから再翻訳 |
 
-翻訳前の静的チェックについては、[Markdownの問題](/guide/translation-dashboard/markdown-issues) を参照してください。
+翻訳前の静的チェックについては、[Markdownの問題](/ja/guide/translation-dashboard/markdown-issues) を参照してください。

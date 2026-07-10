@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 Der `#tls-configuration`-Anker ist in allen Sprachversionen identisch, da die `id` in der Quelle festgelegt ist; nur der Überschrifts**text** und die Link**bezeichnung** werden übersetzt.
 
-Wenn Links nach der Übersetzung immer noch fehlschlagen, siehe [Fehlerbehebung](/guide/documents/troubleshooting).
+Wenn Links nach der Übersetzung immer noch fehlschlagen, siehe [Fehlerbehebung](/de/guide/documents/troubleshooting).

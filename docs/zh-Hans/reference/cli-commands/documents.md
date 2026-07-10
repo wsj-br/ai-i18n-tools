@@ -12,7 +12,7 @@
 
 `-j`：最大并行语言数；`-b`：每个文件的最大并行批量 API 调用数。`--prompt-format`：批量传输格式（`xml` | `json-array` | `json-object`）。
 
-**另请参阅：** [缓存行为与 `translate-docs` 标志](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)、[批量提示格式](/guide/documents/cli-options#batch-prompt-format)
+**另请参阅：** [缓存行为与 `translate-docs` 标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)、[批量提示格式](/zh-Hans/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@
 
 `--slug-style`：`github`（默认；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。使用 `pymdown` 时，可选 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。
 
-**另请参阅：** [锚点链接](/guide/documents/anchor-links)
+**另请参阅：** [锚点链接](/zh-Hans/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@
 
 **主要选项：** `-p` / `--path`、`-f` / `--file`、`--json`、`--no-cache`
 
-**另请参阅：** [Markdown 问题](/guide/translation-dashboard/markdown-issues)
+**另请参阅：** [Markdown 问题](/zh-Hans/guide/translation-dashboard/markdown-issues)

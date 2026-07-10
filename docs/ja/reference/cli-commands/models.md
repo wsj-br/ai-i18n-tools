@@ -8,7 +8,7 @@
 
 設定された各モデルIDを、アクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。そのプロバイダーのAPIキーが必要です（Ollamaのようなキー不要のプロバイダーでは不要）。設定されたIDのいずれかが欠落しているか期限切れの場合、非ゼロで終了し、プロバイダーの`requestTimeoutMs`を尊重します。プロバイダーが価格を返す場合（例: OpenRouter）、プロンプト/補完の100万トークンあたりのUSDも表示します。
 
-**関連項目:** [LLMプロバイダー](/guide/providers-and-models)
+**関連項目:** [LLMプロバイダー](/ja/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **主なオプション:** `-P` / `--provider`
 
-**関連項目:** [LLMプロバイダー](/guide/providers-and-models)
+**関連項目:** [LLMプロバイダー](/ja/guide/providers-and-models)
 
 ---
 

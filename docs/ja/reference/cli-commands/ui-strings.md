@@ -8,7 +8,7 @@
 
 `includeUiLanguageEnglishNames`が有効な場合、`t("…")` / `i18n.t("…")`リテラル、オプションの`package.json`説明、およびオプションのバンドルされたマスター`englishName`エントリから`strings.json`を更新します（`ui.uiExtractor`を参照、`languagesManifestPath`は読み取りません）。また、`languagesManifestPath`で`ui-languages.json`を再生成します。`.html` / `.htm`が`ui.uiExtractor.extensions`にリストされている場合、HTMLから`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカー文字列もキャプチャします。空でない`ui.sourceRoots`が必要です。LLMは呼び出しません。
 
-**関連項目:** [UI文字列の概要](/guide/ui-strings/), [プレーンHTMLアプリ](/guide/ui-strings/plain-html)
+**関連項目:** [UI文字列の概要](/ja/guide/ui-strings/), [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **主なオプション:** `--write`
 
-**関連項目:** [翻訳用のHTMLのマーキング](/guide/ui-strings/plain-html#marking-html-for-translation)
+**関連項目:** [翻訳用のHTMLのマーキング](/ja/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

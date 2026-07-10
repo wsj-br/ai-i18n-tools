@@ -10,7 +10,7 @@
 
 **主要選項：** `-p` / `--port`, `--no-open`
 
-**另請參閱：** [翻譯儀表板](/guide/translation-dashboard/)
+**另請參閱：** [翻譯儀表板](/zh-Hant/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@
 
 `-o`：覆寫輸出路徑（預設：來自設定的 `glossary.userGlossary`，或 `glossary-user.csv`）。
 
-**另請參閱：** [儀表板詞彙表](/guide/translation-dashboard/glossary)
+**另請參閱：** [儀表板詞彙表](/zh-Hant/guide/translation-dashboard/glossary)
 
 ---
 

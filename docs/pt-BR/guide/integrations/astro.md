@@ -3,7 +3,7 @@
 
 Use ai-i18n-tools com [Astro](https://astro.build/) em duas configurações comuns: sites de documentação **Astro Starlight** e sites de marketing ou aplicativos **Astro simples**. Ambos usam Documentos (`translate-docs`) para o conteúdo da página; sites Astro simples geralmente combinam isso com strings de UI (`extract` / `translate-ui`) para strings `t()` em frontmatter e dados compartilhados.
 
-Consulte também [strings da UI](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documentos](/guide/documents/) e os exemplos executáveis abaixo.
+Consulte também [strings da UI](/pt-BR/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documentos](/pt-BR/guide/documents/) e os exemplos executáveis abaixo.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -45,7 +45,7 @@ Configure um bloco `docs[]`:
 
 Aponte `contentPaths` para seus arquivos e diretórios `.md` / `.mdx` em inglês. Defina `docsRoot` para a mesma pasta que o Starlight usa como sua raiz de conteúdo.
 
-As substituições da UI do Starlight podem usar `src/content/i18n/en.json` com `jsonPathTemplate` em um bloco `docs[]` separado quando necessário — consulte [Documentos — inicializar para documentação](/guide/documents/#step-1-initialise-for-documentation).
+As substituições da UI do Starlight podem usar `src/content/i18n/en.json` com `jsonPathTemplate` em um bloco `docs[]` separado quando necessário — consulte [Documentos — inicializar para documentação](/pt-BR/guide/documents/#step-1-initialise-for-documentation).
 
 <a id="framework-shell-translation"></a>
 ### Tradução do shell do framework
@@ -57,10 +57,10 @@ O Starlight fornece suas próprias strings de UI integradas para muitos idiomas 
 | Astro Starlight | Strings de UI integradas (muitos idiomas); nenhum pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` rótulos da barra lateral + dicionário de tema `.ts` | Documentos — consulte [Integração Nextra](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` rótulos da barra lateral + catálogo de substituições de UI | Documentos — consulte [Integração Fumadocs](/guide/integrations/fumadocs) |
+| Nextra | `_meta.ts` rótulos da barra lateral + dicionário de tema `.ts` | Documentos — consulte [Integração Nextra](/pt-BR/guide/integrations/nextra) |
+| Fumadocs | `meta.json` rótulos da barra lateral + catálogo de substituições de UI | Documentos — consulte [Integração Fumadocs](/pt-BR/guide/integrations/fumadocs) |
 
-Consulte [integração Docusaurus](/guide/integrations/docusaurus), [integração VitePress](/guide/integrations/vitepress), [integração Nextra](/guide/integrations/nextra) e [integração Fumadocs](/guide/integrations/fumadocs) para os outros padrões de framework.
+Consulte [integração Docusaurus](/pt-BR/guide/integrations/docusaurus), [integração VitePress](/pt-BR/guide/integrations/vitepress), [integração Nextra](/pt-BR/guide/integrations/nextra) e [integração Fumadocs](/pt-BR/guide/integrations/fumadocs) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ### Projeto de exemplo

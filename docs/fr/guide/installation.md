@@ -54,7 +54,7 @@ Avec [**direnv**](https://direnv.net/), ajoutez `PATH_add node_modules/.bin` à 
 
 Sous Linux, macOS et WSL, les installations depuis le registre définissent automatiquement le bit d'exécution sur le script CLI. Sous Windows, les gestionnaires de paquets génèrent des shim `.cmd` et `.ps1` qui invoquent explicitement Node.
 
-Définissez votre clé API de fournisseur (OpenRouter est affiché ; utilisez la variable d'environnement qui correspond à votre fournisseur actif — voir le [tableau des préréglages](/guide/providers-and-models#built-in-providers)) :
+Définissez votre clé API de fournisseur (OpenRouter est affiché ; utilisez la variable d'environnement qui correspond à votre fournisseur actif — voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Langue de l'interface utilisateur de l'outil
 
-L'interface de ligne de commande (CLI) localise son propre texte d'aide, les résumés de journaux et le tableau de bord de traduction indépendamment des paramètres régionaux que vous traduisez. Par défaut, elle suit les paramètres régionaux de votre système d'exploitation. Vous pouvez les remplacer par `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` dans la configuration. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
+L'interface de ligne de commande (CLI) localise son propre texte d'aide, les résumés de journaux et le tableau de bord de traduction indépendamment des paramètres régionaux que vous traduisez. Par défaut, elle suit les paramètres régionaux de votre système d'exploitation. Vous pouvez les remplacer par `-L pt-BR`, `export AI_I18N_LANG=es` ou `"uiLanguage"` dans la configuration. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).

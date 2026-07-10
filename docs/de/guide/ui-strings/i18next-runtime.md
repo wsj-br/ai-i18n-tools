@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # i18next zur Laufzeit verdrahten
 
-Erstellen Sie Ihre i18n-Setup-Datei mit den von `'ai-i18n-tools/runtime'` exportierten Hilfsprogrammen. API-Signaturen finden Sie unter [Laufzeit-Hilfsprogramme](/guide/runtime-helpers).
+Erstellen Sie Ihre i18n-Setup-Datei mit den von `'ai-i18n-tools/runtime'` exportierten Hilfsprogrammen. API-Signaturen finden Sie unter [Laufzeit-Hilfsprogramme](/de/guide/runtime-helpers).
 
 <details>
 <summary>Vollständiges i18n-Bootstrap-Beispiel (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ Für JSON-Bundles unter `public/` (die typische Next.js-Setup-Konfiguration) ruf
 
 Für Node.js-CLIs ohne Bundler verwenden Sie `readFileSync` innerhalb eines kleinen Hilfsprogramms, das die JSON-Datei für jeden Code liest und analysiert.
 
-Verwenden Sie `setupKeyAsDefaultT` als üblichen App-Einstiegspunkt (Schlüsselkürzung + Plural `wrapT` + optionaler `translate-ui` `{sourceLocale}.json`). Der alleinige Aufruf von `wrapI18nWithKeyTrim` ist für die Anwendungsverdrahtung **veraltet** – siehe [Laufzeit-Hilfsprogramme](/guide/runtime-helpers).
+Verwenden Sie `setupKeyAsDefaultT` als üblichen App-Einstiegspunkt (Schlüsselkürzung + Plural `wrapT` + optionaler `translate-ui` `{sourceLocale}.json`). Der alleinige Aufruf von `wrapI18nWithKeyTrim` ist für die Anwendungsverdrahtung **veraltet** – siehe [Laufzeit-Hilfsprogramme](/de/guide/runtime-helpers).

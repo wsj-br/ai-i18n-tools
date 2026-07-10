@@ -144,8 +144,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — `docs/`의 영어 소스, 커밋된 `pt-BR` 및 `zh-Hans` 페이지 트리, 그리고 `theme.pt-BR.json` / `theme.zh-Hans.json`. 포트 3060에서 `pnpm run docs:dev` 실행.
 
-<a id="readme-as-the-docs-homepage"></a>
-## README와 문서 홈페이지
+<a id="readme-and-the-docs-homepage"></a>
+## README 및 문서 홈페이지
 
 다운스트림 프로젝트에서는 때때로 `README.md`를 빌드 스크립트나 수동 동기화를 통해 VitePress 사이트의 `docs/index.md`로 복사합니다. 이 패턴은 GitHub와 문서 사이트 간에 하나의 파일을 공유하지만, 링크 규칙이 다릅니다:
 
@@ -194,8 +194,8 @@ VitePress는 콘텐츠 루트에서 영어 페이지를 제공하고 `docs/<loca
 
 `docs/` 아래의 영어 루트 소스는 **로케일 중립적** 사이트 라우트를 유지합니다 (`/guide/…`). `docs/<locale>/…`에 작성된 파일은 내부 콘텐츠 라우트에 로케일 접두사를 자동으로 가져옵니다 — **홈 레이아웃 프론트매터** 포함 (`hero.actions[].link`, `features[].link`, `prev`/`next`). `/logo.svg` 및 `/translation-dashboard.png`과 같은 공유 공개 에셋은 모든 로케일에서 접두사 없이 유지됩니다.
 
-<a id="theme-nav-sidebar-links"></a>
-### 테마 nav/sidebar 링크
+<a id="theme-navsidebar-links"></a>
+### 테마 탐색/사이드바 링크
 
 `translate-docs`는 `.vitepress/config.mts`의 링크를 재작성하지 **않습니다**. Navbar 및 sidebar `link` 값은 TypeScript에서 한 번 작성되며, 구성 빌드 시 로케일별로 접두사를 지정해야 합니다.
 
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 로케일 라우트에서 nav 하이라이팅이 작동하도록 **`link`** 와 함께 **`activeMatch`** 에 접두사를 지정하세요(`/guide/`이(가) 아닌 `/pt-BR/guide/`). 외부 URL 및 공유 퍼블릭 에셋은 변경되지 않습니다.
+
+VitePress 프로젝트에 `ai-i18n-tools`을(를) **devDependency**로 추가하세요(`examples/vitepress-docs/package.json` 참조). 이를 통해 `config.mts`가 `prefixVitepressThemeConfigLinks`을(를) 임포트할 수 있습니다. 기본 ai-i18n-tools 문서 사이트는 모노레포 체크아웃을 자체적으로 사용(dogfood)하므로 `src/processors/…`에서 직접 임포트합니다. 독립 복사본(degit)은 npm 패키지를 사용해야 합니다.
 
 **작성 규칙**
 

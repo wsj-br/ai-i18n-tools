@@ -54,7 +54,7 @@ ai-i18n-tools sync
 
 Linux, macOS, aur WSL par, registry installs CLI script par executable bit ko swatah set karte hain. Windows par, package managers `.cmd` aur `.ps1` shims generate karte hain jo Node ko spasht roop se invoke karte hain.
 
-Apna provider API key set karein (OpenRouter dikhaya gaya hai; uss env var ka upyog karein jo aapke active provider se mel khata hai — [preset table](/guide/providers-and-models#built-in-providers) dekhein):
+Apna provider API key set karein (OpenRouter dikhaya gaya hai; uss env var ka upyog karein jo aapke active provider se mel khata hai — [preset table](/hi-Latn/guide/providers-and-models#built-in-providers) dekhein):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Tool UI bhasha
 
-CLI apne help text, log summaries, aur Translation Dashboard ko aapke dwara translate kiye gaye locales se svatantra roop se localize karta hai. Default roop se yah aapke OS locale ka palan karta hai. Ise config mein `-L pt-BR`, `export AI_I18N_LANG=es`, ya `"uiLanguage"` ke saath override karein. [Tool UI bhasha](/guide/tool-ui-language) dekhein.
+CLI apne help text, log summaries, aur Translation Dashboard ko aapke dwara translate kiye gaye locales se svatantra roop se localize karta hai. Default roop se yah aapke OS locale ka palan karta hai. Ise config mein `-L pt-BR`, `export AI_I18N_LANG=es`, ya `"uiLanguage"` ke saath override karein. [Tool UI bhasha](/hi-Latn/guide/tool-ui-language) dekhein.

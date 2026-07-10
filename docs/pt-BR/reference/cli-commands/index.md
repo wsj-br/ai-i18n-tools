@@ -124,7 +124,7 @@ ai-i18n-tools help [command]
 | `-c` / `--config <path>`     | Todos os comandos | Caminho do arquivo de configuração (padrão: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | Todos os comandos | Registro detalhado (verbose logging).                                                                          |
 | `-P` / `--provider <name>`   | Todo comando | Provedor de LLM ativo para esta execução; substitui a chave `provider` da configuração. Deve ser configurado em `providers`. |
-| `-L` / `--ui-lang <code>` | Todos os comandos | Idioma da própria interface do usuário da ferramenta (ajuda da CLI, logs/resumos, painel); fonte de maior prioridade. Consulte [Idioma da interface do usuário da ferramenta](/guide/tool-ui-language). |
+| `-L` / `--ui-lang <code>` | Todos os comandos | Idioma da própria interface do usuário da ferramenta (ajuda da CLI, logs/resumos, painel); fonte de maior prioridade. Consulte [Idioma da interface do usuário da ferramenta](/pt-BR/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Comandos selecionados | Redireciona a saída do console para um arquivo `.log` (caminho padrão: sob a raiz `cacheDir`). Conectado apenas para `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` e `cleanup`. |
 
 <a id="per-command-help"></a>

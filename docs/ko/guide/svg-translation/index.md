@@ -8,7 +8,7 @@
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
 
-`translate-svg`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`이 먼저 구성되면 `translationModels`가 사용됩니다. 각 로캘의 SVG 실행에는 자체 폴백 체인이 있습니다. CJK 로캘에서 다이어그램 레이블이 스크립트에 맞춘 모델이 필요한 경우(예: `ja`) 유용합니다. 자세한 내용은 [공급자 및 모델](/guide/providers-and-models#model-fallback-chain)을 참조하십시오.
+`translate-svg`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`이 먼저 구성되면 `translationModels`가 사용됩니다. 각 로캘의 SVG 실행에는 자체 폴백 체인이 있습니다. CJK 로캘에서 다이어그램 레이블이 스크립트에 맞춘 모델이 필요한 경우(예: `ja`) 유용합니다. 자세한 내용은 [공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하십시오.
 
 SVG 번역은 `translate-docs` 및 `translate-json` (`cacheDir`)과 동일한 SQLite 캐시를 사용합니다. 이미 번역된 텍스트 세그먼트는 캐시에서 제공되며, 새롭거나 변경된 소스 텍스트만 LLM으로 전송됩니다.
 
@@ -24,7 +24,7 @@ SVG 번역은 `translate-docs` 및 `translate-json` (`cacheDir`)과 동일한 SQ
 다음과 같은 경우 `translate-svg`을 **사용하지 마십시오**.
 
 - 번역 가능한 텍스트가 없는 장식용 SVG(아이콘, 로고, 배경).
-- 래스터 스크린샷(PNG, JPEG, WebP) — 이들은 [이미지 및 스크린샷](/guide/images-and-screenshots/)을 통해 처리됩니다.
+- 래스터 스크린샷(PNG, JPEG, WebP) — 이들은 [이미지 및 스크린샷](/ko/guide/images-and-screenshots/)을 통해 처리됩니다.
 - `<text>` 요소 대신 경로 데이터에 포함된 텍스트 — 추출기가 경로 윤곽선을 읽을 수 없습니다.
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ SVG는 레이블이 처음부터 실제 텍스트 요소일 때 가장 쉽게 �
 
 | 레이아웃 | `svg.style` | 가장 적합한 경우 | 하위 가이드 |
 |--------|-------------|----------|-------------|
-| **플랫 (웹 앱)** | `"flat"` | Next.js, Vite 및 로케일 코딩된 파일 이름으로 SVG를 포함하는 기타 앱 | [웹 앱 (플랫 SVG)](/guide/svg-translation/translated-svg-web-app) |
-| **코로케이션 (문서 시스템)** | `"nested"` + `pathTemplate` | Docusaurus 및 번역된 자산이 번역된 페이지 옆에 있는 기타 문서 시스템 사이트 | [코로케이션 SVG](/guide/svg-translation/translated-svg-colocated) |
+| **플랫 (웹 앱)** | `"flat"` | Next.js, Vite 및 로케일 코딩된 파일 이름으로 SVG를 포함하는 기타 앱 | [웹 앱 (플랫 SVG)](/ko/guide/svg-translation/translated-svg-web-app) |
+| **코로케이션 (문서 시스템)** | `"nested"` + `pathTemplate` | Docusaurus 및 번역된 자산이 번역된 페이지 옆에 있는 기타 문서 시스템 사이트 | [코로케이션 SVG](/ko/guide/svg-translation/translated-svg-colocated) |
 
 **플랫 레이아웃**은 `public/assets/diagram.de.svg`와 같은 파일을 `diagram.en-GB.svg` 옆에 작성합니다. 앱은 로케일 접미사를 사용하여 참조합니다.
 
@@ -56,7 +56,7 @@ SVG는 레이블이 처음부터 실제 텍스트 요소일 때 가장 쉽게 �
 
 **코로케이션 레이아웃**은 각 로케일의 SVG를 해당 로케일의 콘텐츠 트리(예: `i18n/de/.../assets/diagram.svg`)에 작성합니다. 소스 및 번역된 마크다운은 동일한 상대 경로(`../assets/diagram.svg`)를 사용합니다. `regexAdjustments` 규칙은 필요하지 않습니다.
 
-SVG 레이아웃이 래스터 스크린샷 전략과 어떻게 조화를 이루는지에 대한 자세한 내용은 [이미지 및 스크린샷 결정 가이드](/guide/images-and-screenshots/#decision-guide)를 참조하십시오.
+SVG 레이아웃이 래스터 스크린샷 전략과 어떻게 조화를 이루는지에 대한 자세한 내용은 [이미지 및 스크린샷 결정 가이드](/ko/guide/images-and-screenshots/#decision-guide)를 참조하십시오.
 
 <a id="step-1-enable-and-configure"></a>
 ### 1단계: 활성화 및 구성
@@ -84,7 +84,7 @@ SVG 레이아웃이 래스터 스크린샷 전략과 어떻게 조화를 이루�
 - `pathTemplate` — 자리 표시자 `{outputDir}`, `{locale}`, `{llocale}`, `{basename}`, `{stem}` 등이 있는 선택적 사용자 지정 출력 경로(공동 배치된 문서 시스템 레이아웃에 필요).
 - `forceLowercase` — 재조립 시 소문자로 번역된 텍스트입니다.
 
-전체 필드 참조: [구성 — `svg`](/reference/configuration#svg).
+전체 필드 참조: [구성 — `svg`](/ko/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
 ### 2단계: 번역
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### 문제 해결
 
-일반적인 SVG 문제(혼합 소스/출력 디렉터리, Docusaurus의 절대 정적 URL, 경로 레이아웃 오류)는 [SVG 문제 해결](/guide/svg-translation/troubleshooting)에 설명되어 있습니다. 래스터 자산 및 링크 다시 쓰기에 대해서는 [이미지 및 스크린샷 문제 해결](/guide/images-and-screenshots/troubleshooting)을 참조하십시오.
+일반적인 SVG 문제(혼합 소스/출력 디렉터리, Docusaurus의 절대 정적 URL, 경로 레이아웃 오류)는 [SVG 문제 해결](/ko/guide/svg-translation/troubleshooting)에 설명되어 있습니다. 래스터 자산 및 링크 다시 쓰기에 대해서는 [이미지 및 스크린샷 문제 해결](/ko/guide/images-and-screenshots/troubleshooting)을 참조하십시오.

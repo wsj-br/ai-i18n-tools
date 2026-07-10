@@ -124,7 +124,7 @@ ai-i18n-tools help [command]
 | `-c` / `--config <path>`     | 모든 명령어 | 구성 파일 경로(기본값: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | 모든 명령어 | 자세한 로그 기록.                                                                          |
 | `-P` / `--provider <name>`   | 모든 명령 | 이 실행의 활성 LLM 제공자이며, 구성 `provider` 키를 재정의합니다. `providers` 아래에 구성해야 합니다. |
-| `-L` / `--ui-lang <code>`    | 모든 명령어 | 도구 자체 UI(CLI 도움말, 로그/요약, 대시보드)의 언어; 최우선 소스. [도구 UI 언어](/guide/tool-ui-language)를 참조하십시오. |
+| `-L` / `--ui-lang <code>`    | 모든 명령어 | 도구 자체 UI(CLI 도움말, 로그/요약, 대시보드)의 언어; 최우선 소스. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하십시오. |
 | `-w` / `--write-logs [path]` | 선택한 명령 | 콘솔 출력을 `.log` 파일로 보냅니다(기본 경로: 루트 `cacheDir` 아래). `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` 및 `cleanup`에만 연결됩니다. |
 
 <a id="per-command-help"></a>

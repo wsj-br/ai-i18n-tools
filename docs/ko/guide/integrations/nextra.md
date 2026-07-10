@@ -3,7 +3,7 @@
 
 Next.js App Router에서 [Nextra](https://nextra.site/) 4 문서 사이트에 `init -t ui-nextra` 및 `docsOutput.style: "nextra"`을 사용하세요. 이 사전 설정은 빈 `localeSubpath` 및 BCP-47 로케일 폴더 이름이 보존된 `doc-system`의 별칭입니다(`localePathLowercase`는 기본적으로 `false`이므로 폴더는 `pt-BR`, `zh-Hans` 등으로 유지됩니다).
 
-[문서](/guide/documents/) 및 실행 가능한 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 데모도 참조하세요.
+[문서](/ko/guide/documents/) 및 실행 가능한 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 데모도 참조하세요.
 
 <a id="quick-start"></a>
 ## 빠른 시작
@@ -27,7 +27,7 @@ content/en/index.mdx              →  content/pt-BR/index.mdx
 content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started.mdx
 ```
 
-하나의 `docs[]` 블록을 구성합니다.
+하나의 `docs[]` 블록을 구성하세요:
 
 ```json
 {
@@ -94,18 +94,18 @@ JSON 사이드카(`i18n/meta.en.json`) 또는 번역된 JSON을 가져오는 얇
 
 | 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
 |-----------|----------------------|----------|
-| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/탐색/사이드바 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 레이블 | 문서 — `style: "nextra"` + `translate-docs`일 때 자동 |
+| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
 | Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 레이블 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
+| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
 | Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열(다국어); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지 전용) |
+| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
 
-`json[]`에 프레임워크 셸/테마 문자열을 넣지 **마십시오** — 이 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/guide/integrations/docusaurus), [VitePress 통합](/guide/integrations/vitepress), [Fumadocs 통합](/guide/integrations/fumadocs)을 참조하십시오.
+`json[]`에 프레임워크 셸/테마 문자열을 넣지 **마십시오** — 이 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/ko/guide/integrations/docusaurus), [VitePress 통합](/ko/guide/integrations/vitepress), [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하십시오.
 
 <a id="example-project"></a>
-## 예제 프로젝트
+## 예시 프로젝트
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — 영어 소스는 `content/en/`에 있으며, `pt-BR` 및 `zh-Hans` 페이지 트리, 인라인 `_meta.ts` 파일, `app/_dictionaries/{locale}.ts`가 커밋되었습니다. 포트 3070에서 `pnpm run dev`를 실행합니다.
 
@@ -147,7 +147,7 @@ After editing: run extract, translate-ui (or sync), verify en + one target local
 
 Nextra는 Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`)를 통해 로케일 접두사가 붙은 경로를 제공합니다. **페이지 내 링크는 로케일 중립을 유지해야 합니다** (`/guide/getting-started`). 그래야 Next.js가 활성 로케일을 자동으로 접두사로 붙일 수 있습니다.
 
-내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 합니다.
+내장 노멀라이저를 활성화하여 `translate-docs`가 모든 번역 파일의 링크를 자동으로 수정하도록 하세요:
 
 ```json
 "docsOutput": {
@@ -161,8 +161,8 @@ Nextra는 Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-starte
 
 | 영어 원본으로 작성 | 정규화 후 |
 |--------------------------|------------------|
-| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
+| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/ko/guide/getting-started)` |
+| `[Guide](/ko/guide/getting-started.mdx)` | `[Guide](/ko/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 변경 없음 (전체 URL) |
 
 **작성 규칙**
@@ -190,4 +190,4 @@ export const config = {
 
 이것은 `output: 'export'` 정적 내보내기와 함께 작동하지 않습니다. [Nextra i18n 문서](https://nextra.site/docs/guide/i18n)를 참조하십시오.
 
-[구성 — `docsOutput`](/reference/configuration#docsoutput) 및 [출력 레이아웃](/guide/documents/output-layouts)도 참조하십시오.
+[구성 — `docsOutput`](/ko/reference/configuration#docsoutput) 및 [출력 레이아웃](/ko/guide/documents/output-layouts)도 참조하십시오.

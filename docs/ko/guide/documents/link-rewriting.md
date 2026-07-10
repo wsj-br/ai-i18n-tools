@@ -16,13 +16,13 @@
 | `"fumadocs"` | Fumadocs 링크 정규화 도구(`rewriteFumadocsLinks`, 기본적으로 켜짐) | `content/docs/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로(`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | 없음 | `postProcessing`까지 소스 URL은 변경되지 않고 통과 |
 
-사용자 지정 `pathTemplate`는 `rewriteRelativeLinks: true`을 명시적으로 설정하지 않는 한 플랫 재작성기를 비활성화합니다. 페이지 간 `#anchor` 처리에 대해서는 [출력 레이아웃](/guide/documents/output-layouts) 및 [앵커 링크](/guide/documents/anchor-links)를 참조하세요.
+사용자 지정 `pathTemplate`는 `rewriteRelativeLinks: true`을 명시적으로 설정하지 않는 한 플랫 재작성기를 비활성화합니다. 페이지 간 `#anchor` 처리에 대해서는 [출력 레이아웃](/ko/guide/documents/output-layouts) 및 [앵커 링크](/ko/guide/documents/anchor-links)를 참조하세요.
 
-VitePress 전용 작성 규칙은 [VitePress 통합 — 링크 규칙](/guide/integrations/vitepress#link-conventions)을 참조하세요.
+VitePress 전용 작성 규칙은 [VitePress 통합 — 링크 규칙](/ko/guide/integrations/vitepress#link-conventions)을 참조하세요.
 
-Nextra 전용 작성 규칙은 [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하세요.
+Nextra 전용 작성 규칙은 [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 
-Fumadocs 전용 작성 규칙은 [Fumadocs 통합 — 링크 규칙](/guide/integrations/fumadocs#link-conventions)을 참조하세요.
+Fumadocs 전용 작성 규칙은 [Fumadocs 통합 — 링크 규칙](/ko/guide/integrations/fumadocs#link-conventions)을 참조하세요.
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 `doc-system` 레이아웃의 경우 플랫 재작성기가 실행되지 않습니다. `regexAdjustments`은 소스 마크다운의 원래 URL (일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로)을 봅니다.
 
-깊이 접두사 동작 및 `flatPreserveRelativeDir`에 대해서는 [플랫 링크 재작성기 및 2단계 흐름](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)을 참조하세요.
+깊이 접두사 동작 및 `flatPreserveRelativeDir`에 대해서는 [플랫 링크 재작성기 및 2단계 흐름](/ko/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)을 참조하세요.
 
 <a id="replace-placeholders"></a>
 ### `replace` 자리 표시자
@@ -93,7 +93,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 소스 로케일(`en-GB`)을 하드코딩하는 대신 `[^/]+`를 사용하면 `sourceLocale`가 변경되어도 규칙이 계속 작동합니다.
 
-전체 연습: [이미지 및 스크린샷 — 로케일별 폴더](/guide/images-and-screenshots/per-locale-folder).
+전체 연습: [이미지 및 스크린샷 — 로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder).
 
 <a id="doc-system-static-urls"></a>
 ### 문서 시스템 정적 URL
@@ -112,7 +112,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 }
 ```
 
-생성기가 지원하는 경우 소스 마크다운에서 공동 배치된 상대 경로(`../assets/name.png`)를 선호합니다. 그러면 `regexAdjustments` 브리지가 필요하지 않습니다. 레이아웃 선택에 대해서는 [이미지 및 스크린샷](/guide/images-and-screenshots/)을 참조하십시오.
+생성기가 지원하는 경우 소스 마크다운에서 공동 배치된 상대 경로(`../assets/name.png`)를 선호합니다. 그러면 `regexAdjustments` 브리지가 필요하지 않습니다. 레이아웃 선택에 대해서는 [이미지 및 스크린샷](/ko/guide/images-and-screenshots/)을 참조하십시오.
 
 <a id="when-regex-is-not-needed"></a>
 ### 정규식이 필요 없는 경우
@@ -156,14 +156,14 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 </details>
 
-필드 참조: [구성 — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`).
+필드 참조: [구성 — `docs`](/ko/reference/configuration#docs) (`docsOutput.postProcessing`).
 
 <a id="troubleshooting"></a>
 ## 문제 해결
 
 | 증상 | 예상 원인 | 확인할 사항 |
 | --- | --- | --- |
-| 번역된 페이지가 이미지 또는 정적 자산에서 404 오류 발생 | URL 레이아웃에 대한 `regexAdjustments` 누락 또는 잘못됨 | [이미지 및 스크린샷 — 문제 해결](/guide/images-and-screenshots/troubleshooting) |
-| 링크가 올바른 파일을 열지만 잘못된 `#section` | 앵커 슬러그 드리프트, URL 재작성 아님 | [앵커 링크](/guide/documents/anchor-links) |
+| 번역된 페이지가 이미지 또는 정적 자산에서 404 오류 발생 | URL 레이아웃에 대한 `regexAdjustments` 누락 또는 잘못됨 | [이미지 및 스크린샷 — 문제 해결](/ko/guide/images-and-screenshots/troubleshooting) |
+| 링크가 올바른 파일을 열지만 잘못된 `#section` | 앵커 슬러그 드리프트, URL 재작성 아님 | [앵커 링크](/ko/guide/documents/anchor-links) |
 | `regexAdjustments` 규칙이 플랫 레이아웃에 영향을 미치지 않음 | `search`은 재작성 전 URL을 예상하지만 플랫 레이아웃은 이미 깊이 접두사를 추가함 | 접두사가 붙은 경로 내의 세그먼트와 일치시킴([두 단계 흐름](#two-step-flow-with-flat-layout) 참조) |
 | 런타임에 잘못된 정규식 건너뜀 | 잘못된 `search` 패턴 | CLI는 `description` 규칙으로 경고함; 샘플 번역된 출력에 대해 패턴 테스트 |

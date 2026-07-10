@@ -8,7 +8,7 @@ Dies ist die einzige Pipeline, die sprachspezifische **binäre** SVG-Dateien aus
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
 
-`translate-svg` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Jeder SVG-Lauf eines Gebietsschemas verwendet seine eigene Fallback-Kette – nützlich, wenn Diagrammbeschriftungen in CJK-Gebietsschemas ein skriptoptimiertes Modell benötigen (z. B. `ja`). Siehe [Anbieter und Modelle](/guide/providers-and-models#model-fallback-chain).
+`translate-svg` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Jeder SVG-Lauf eines Gebietsschemas verwendet seine eigene Fallback-Kette – nützlich, wenn Diagrammbeschriftungen in CJK-Gebietsschemas ein skriptoptimiertes Modell benötigen (z. B. `ja`). Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
 
 Die SVG-Übersetzung verwendet denselben SQLite-Cache wie `translate-docs` und `translate-json` (`cacheDir`). Bereits übersetzte Textsegmente werden aus dem Cache bereitgestellt; nur neuer oder geänderter Quelltext wird an das LLM gesendet.
 
@@ -24,7 +24,7 @@ Verwenden Sie `translate-svg`, wenn:
 Verwenden Sie `translate-svg` **nicht** für:
 
 - Dekorative SVGs ohne übersetzbaren Text (Symbole, Logos, Hintergründe).
-- Raster-Screenshots (PNG, JPEG, WebP) – diese werden über [Bilder und Screenshots](/guide/images-and-screenshots/) verarbeitet.
+- Raster-Screenshots (PNG, JPEG, WebP) – diese werden über [Bilder und Screenshots](/de/guide/images-and-screenshots/) verarbeitet.
 - Text, der in Pfaddaten statt in `<text>`-Elemente eingebettet ist – der Extraktor kann Pfadkonturen nicht lesen.
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ Für Web-Apps aktivieren Sie `forceLowercase: true`, wenn Ihr Design ausschließ
 
 | Layout | `svg.style` | Am besten für | Unteranleitung |
 |--------|-------------|----------|-------------|
-| **Flat (Web-App)** | `"flat"` | Next.js, Vite und andere Apps, die SVGs nach gebietsschemacodiertem Dateinamen einbetten | [Web-App (flaches SVG)](/guide/svg-translation/translated-svg-web-app) |
-| **Colocated (Dokumentationssystem)** | `"nested"` + `pathTemplate` | Docusaurus und andere Dokumentationssystem-Sites, bei denen übersetzte Assets neben übersetzten Seiten liegen | [Colocated SVG](/guide/svg-translation/translated-svg-colocated) |
+| **Flat (Web-App)** | `"flat"` | Next.js, Vite und andere Apps, die SVGs nach gebietsschemacodiertem Dateinamen einbetten | [Web-App (flaches SVG)](/de/guide/svg-translation/translated-svg-web-app) |
+| **Colocated (Dokumentationssystem)** | `"nested"` + `pathTemplate` | Docusaurus und andere Dokumentationssystem-Sites, bei denen übersetzte Assets neben übersetzten Seiten liegen | [Colocated SVG](/de/guide/svg-translation/translated-svg-colocated) |
 
 Das **flache Layout** schreibt Dateien wie `public/assets/diagram.de.svg` neben `diagram.en-GB.svg`. Ihre App referenziert sie mit einem Gebietsschema-Suffix:
 
@@ -56,7 +56,7 @@ Das **flache Layout** schreibt Dateien wie `public/assets/diagram.de.svg` neben 
 
 Das **Colocated-Layout** schreibt die SVG jedes Gebietsschemas in den Inhaltsbaum dieses Gebietsschemas (z. B. `i18n/de/.../assets/diagram.svg`). Quell- und übersetztes Markdown verwenden denselben relativen Pfad (`../assets/diagram.svg`) – es ist keine `regexAdjustments`-Regel erforderlich.
 
-Siehe den [Entscheidungsleitfaden für Bilder und Screenshots](/guide/images-and-screenshots/#decision-guide), um zu erfahren, wie SVG-Layouts zu Raster-Screenshot-Strategien passen.
+Siehe den [Entscheidungsleitfaden für Bilder und Screenshots](/de/guide/images-and-screenshots/#decision-guide), um zu erfahren, wie SVG-Layouts zu Raster-Screenshot-Strategien passen.
 
 <a id="step-1-enable-and-configure"></a>
 ### Schritt 1: Aktivieren und konfigurieren
@@ -84,7 +84,7 @@ Wichtige `svg`-Felder:
 - `pathTemplate` – optionaler benutzerdefinierter Ausgabepfad mit Platzhaltern `{outputDir}`, `{locale}`, `{llocale}`, `{basename}`, `{stem}` und anderen (erforderlich für kollokierte Doc-System-Layouts).
 - `forceLowercase` – übersetzter Text in Kleinbuchstaben bei der Wiederzusammenstellung.
 
-Vollständige Feldreferenz: [Konfiguration – `svg`](/reference/configuration#svg).
+Vollständige Feldreferenz: [Konfiguration – `svg`](/de/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
 ### Schritt 2: Übersetzen
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### Problembehandlung
 
-Häufige SVG-Probleme – gemischte Quell-/Ausgabeverzeichnisse, absolute statische URLs auf Docusaurus und Fehler im Pfadlayout – werden unter [SVG-Fehlerbehebung](/guide/svg-translation/troubleshooting) behandelt. Für Raster-Assets und Link-Rewriting siehe [Fehlerbehebung bei Bildern und Screenshots](/guide/images-and-screenshots/troubleshooting).
+Häufige SVG-Probleme – gemischte Quell-/Ausgabeverzeichnisse, absolute statische URLs auf Docusaurus und Fehler im Pfadlayout – werden unter [SVG-Fehlerbehebung](/de/guide/svg-translation/troubleshooting) behandelt. Für Raster-Assets und Link-Rewriting siehe [Fehlerbehebung bei Bildern und Screenshots](/de/guide/images-and-screenshots/troubleshooting).

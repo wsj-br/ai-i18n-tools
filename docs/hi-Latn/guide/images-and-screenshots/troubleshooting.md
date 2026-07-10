@@ -2,7 +2,7 @@
 # Saamaany galatiyaan aur samasya nivaaran
 
 **Screenshot paths mein koi locale directory nahi hai**
-`images/screenshots/screenshot.png` — locale variants ko alag nahi kar sakta aur rewrite nahi kiya ja sakta. [per-locale folder](/guide/images-and-screenshots/per-locale-folder) rewriting ka upyog karne se pehle `images/screenshots/<locale>/screenshot.png` mein punargathit karein.
+`images/screenshots/screenshot.png` — locale variants ko alag nahi kar sakta aur rewrite nahi kiya ja sakta. [per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) rewriting ka upyog karne se pehle `images/screenshots/<locale>/screenshot.png` mein punargathit karein.
 
 **Regex mein hardcoded source locale**
 `"search": "screenshots/en-GB/"` — agar `sourceLocale` badalta hai to chupchap toot jaata hai. Iske bajaye `"search": "screenshots/[^/]+/"` ka upyog karein.

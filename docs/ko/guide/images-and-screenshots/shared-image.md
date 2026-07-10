@@ -12,4 +12,4 @@
 <a id="implementation-example"></a>
 ### 구현 예시
 
-이 저장소의 자체 문서는 공유 이미지의 절대 URL 변형을 사용합니다. [번역 대시보드 가이드](/guide/translation-dashboard/)는 스크린샷을 `![Translation Dashboard](/translation-dashboard.png)`로 참조합니다. 이는 [`docs/public/translation-dashboard.png`](https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png)에서 제공되는 절대 사이트 루트 경로입니다. URL이 모든 로케일에서 동일하므로 `postProcessing.regexAdjustments` 규칙이 필요하지 않습니다. 대시보드 UI가 변경되면 [`scripts/screenshot-translation-dashboard.sh`](https://github.com/wsj-br/ai-i18n-tools/tree/main/scripts/screenshot-translation-dashboard.sh)로 PNG를 새로 고치세요.
+이 저장소의 자체 문서는 공유 이미지의 절대 URL 변형을 사용합니다. [번역 대시보드 가이드](/ko/guide/translation-dashboard/)는 스크린샷을 `![Translation Dashboard](/translation-dashboard.png)`로 참조합니다. 이는 [`docs/public/translation-dashboard.png`](https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png)에서 제공되는 절대 사이트 루트 경로입니다. URL이 모든 로케일에서 동일하므로 `postProcessing.regexAdjustments` 규칙이 필요하지 않습니다. 대시보드 UI가 변경되면 [`scripts/screenshot-translation-dashboard.sh`](https://github.com/wsj-br/ai-i18n-tools/tree/main/scripts/screenshot-translation-dashboard.sh)로 PNG를 새로 고치세요.

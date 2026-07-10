@@ -34,19 +34,19 @@ Aam rewrites:
 | `../guide/foo.md` (ek locale file se) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | aparivartit (repo paths ke liye poore URLs ka upyog karen) |
 
-Un projects ke liye jo `README.md` → `docs/index.md` sync karte hain, `README.md` mein poore GitHub URLs ka upyog karein `LICENSE`, `examples/`, aur VitePress tree ke bahar ki anya files ke liye. Dekhein [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
+Un projects ke liye jo `README.md` → `docs/index.md` sync karte hain, `README.md` mein poore GitHub URLs ka upyog karein `LICENSE`, `examples/`, aur VitePress tree ke bahar ki anya files ke liye. Dekhein [VitePress integration — README as the docs homepage](/hi-Latn/guide/integrations/vitepress#readme-as-homepage).
 
-Flat rewriter aur VitePress normalizer `docs[]` block ke hisaab se mutually exclusive hain — `regexAdjustments` se pehle sirf ek chalta hai. Dekhein [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
+Flat rewriter aur VitePress normalizer `docs[]` block ke hisaab se mutually exclusive hain — `regexAdjustments` se pehle sirf ek chalta hai. Dekhein [VitePress integration — Link conventions](/hi-Latn/guide/integrations/vitepress#link-conventions).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra link normalizer (`style: "nextra"`)
 
-Jab `docsOutput.rewriteNextraLinks` `true` ho (default jab `style` `"nextra"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/en/…` aur relative `.mdx` paths ko locale-neutral routes (`/guide/…`) mein rewrite karta hai. Dekhein [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
+Jab `docsOutput.rewriteNextraLinks` `true` ho (default jab `style` `"nextra"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/en/…` aur relative `.mdx` paths ko locale-neutral routes (`/guide/…`) mein rewrite karta hai. Dekhein [Nextra integration — Link conventions](/hi-Latn/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs link normalizer (`style: "fumadocs"`)
 
-Jab `docsOutput.rewriteFumadocsLinks` `true` ho (default jab `style` `"fumadocs"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/docs/…` aur relative `.mdx` paths ko locale-neutral routes (`/docs/…`) mein rewrite karta hai. Dekhein [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
+Jab `docsOutput.rewriteFumadocsLinks` `true` ho (default jab `style` `"fumadocs"` ho), to segment reassembly ke baad ek alag normalizer chalta hai. Yah `content/docs/…` aur relative `.mdx` paths ko locale-neutral routes (`/docs/…`) mein rewrite karta hai. Dekhein [Fumadocs integration — Link conventions](/hi-Latn/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir` ke saath prati-file depth prefix
@@ -90,12 +90,12 @@ Rules translated markdown **body** par segment reassembly aur built-in link rewr
 }
 ```
 
-Apne source locale (`en-GB`) ko hardcode karne ke bajaye `[^/]+` ka upyog karen taki rule `sourceLocale` badalne par bhi bana rahe. Sabse aam placeholder `${translatedLocale}` hai; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}`, aur path variables bhi uplabdh hain — [Documents — Link rewriting](/guide/documents/link-rewriting#replace-placeholders) dekhen.
+Apne source locale (`en-GB`) ko hardcode karne ke bajaye `[^/]+` ka upyog karen taki rule `sourceLocale` badalne par bhi bana rahe. Sabse aam placeholder `${translatedLocale}` hai; `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}`, aur path variables bhi uplabdh hain — [Documents — Link rewriting](/hi-Latn/guide/documents/link-rewriting#replace-placeholders) dekhen.
 
-Layout-specific examples (flat, doc-system, Docusaurus, Starlight): [Per-locale folder](/guide/images-and-screenshots/per-locale-folder). General cross-page link rules: [Documents — Link rewriting](/guide/documents/link-rewriting). Field reference: [Configuration — `docs`](/reference/configuration#docs).
+Layout-specific examples (flat, doc-system, Docusaurus, Starlight): [Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder). General cross-page link rules: [Documents — Link rewriting](/hi-Latn/guide/documents/link-rewriting). Field reference: [Configuration — `docs`](/hi-Latn/reference/configuration#docs).
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-Hardcoded locale regexes, missing screenshot directories, aur Docusaurus `/img/` bridging ke liye [Common mistakes and troubleshooting](/guide/images-and-screenshots/troubleshooting) dekhen.
+Hardcoded locale regexes, missing screenshot directories, aur Docusaurus `/img/` bridging ke liye [Common mistakes and troubleshooting](/hi-Latn/guide/images-and-screenshots/troubleshooting) dekhen.

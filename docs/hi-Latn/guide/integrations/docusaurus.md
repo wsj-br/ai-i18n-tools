@@ -3,10 +3,10 @@
 
 Docusaurus [Docusaurus](https://docusaurus.io/) documentation sites ke liye `init -t ui-docusaurus` aur `docsOutput.style: "docusaurus"` ka upyog karein. Preset `docs[]` block ko `docusaurusCatalogDir` ke saath scaffold karta hai taaki `translate-docs` page markdown aur Docusaurus shell JSON dono ko ek hi command mein translate kar sake.
 
-Isko bhi dekhen [Documents](/guide/documents/), chalne yogya [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) demo (Next.js app aur nested `docs-site/`), aur [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) ek focused Docusaurus-only walkthrough ke liye.
+Isko bhi dekhen [Documents](/hi-Latn/guide/documents/), chalne yogya [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) demo (Next.js app aur nested `docs-site/`), aur [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) ek focused Docusaurus-only walkthrough ke liye.
 
 <a id="quick-start"></a>
-## Turant shuru karein
+## Quick start
 
 ```bash
 npx ai-i18n-tools init -t ui-docusaurus
@@ -29,7 +29,7 @@ docs-site/docs/guide/quick-start.md
   →  docs-site/i18n/fr/docusaurus-plugin-content-docs/current/guide/quick-start.md
 ```
 
-Ek `docs[]` block configure karein:
+Ek `docs[]` block ko configure karein:
 
 ```json
 {
@@ -81,7 +81,7 @@ Jab `docusaurusCatalogDir` set hota hai aur `features.translateDocs` enable hota
 Docusaurus shell JSON ko `json[]` mein na rakhein; iske bajaye Documents ke saath `docs[].docusaurusCatalogDir` ka upyog karein.
 
 <a id="framework-shell-translation"></a>
-## Framework shell anuvaad
+## Framework shell translation
 
 | Framework | Shell / theme strings | Pipeline |
 |-----------|----------------------|----------|
@@ -91,9 +91,9 @@ Docusaurus shell JSON ko `json[]` mein na rakhein; iske bajaye Documents ke saat
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
+| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
 
-Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [VitePress integration](/guide/integrations/vitepress), [Nextra integration](/guide/integrations/nextra), aur [Fumadocs integration](/guide/integrations/fumadocs) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [VitePress integration](/hi-Latn/guide/integrations/vitepress), [Nextra integration](/hi-Latn/guide/integrations/nextra), aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhein.
 
 <a id="example-project"></a>
 ## Example project

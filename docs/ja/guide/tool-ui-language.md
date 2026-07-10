@@ -31,6 +31,6 @@ UIのロケールは、以下のソースから優先度の高い順に解決さ
 <a id="related"></a>
 ## 関連項目
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — 環境変数による上書き
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — 設定キーによる上書き
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — CLIフラグによる上書き (最優先)
+- [`AI_I18N_LANG`](/ja/reference/environment-variables) — 環境変数による上書き
+- [`uiLanguage`](/ja/reference/configuration#uilanguage-optional) — 設定キーによる上書き
+- [`-L` / `--ui-lang`](/ja/reference/cli-commands/) — CLIフラグによる上書き (最優先)

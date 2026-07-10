@@ -54,7 +54,7 @@ Fügen Sie mit [**direnv**](https://direnv.net/) `PATH_add node_modules/.bin` zu
 
 Unter Linux, macOS und WSL setzen Registry-Installationen automatisch das Ausführbar-Bit für das CLI-Skript. Unter Windows erzeugen Paketmanager `.cmd`- und `.ps1`-Shims, die Node explizit aufrufen.
 
-Legen Sie Ihren Provider-API-Schlüssel fest (OpenRouter wird angezeigt; verwenden Sie die Umgebungsvariable, die Ihrem aktiven Provider entspricht – siehe die [Voreinstellungstabelle](/guide/providers-and-models#built-in-providers)):
+Legen Sie Ihren Provider-API-Schlüssel fest (OpenRouter wird angezeigt; verwenden Sie die Umgebungsvariable, die Ihrem aktiven Provider entspricht – siehe die [Voreinstellungstabelle](/de/guide/providers-and-models#built-in-providers)):
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### Tool-UI-Sprache
 
-Die CLI lokalisiert ihre eigenen Hilfetexte, Protokollzusammenfassungen und das Übersetzungs-Dashboard unabhängig von den von Ihnen übersetzten Gebietsschemas. Standardmäßig folgt sie dem Gebietsschema Ihres Betriebssystems. Überschreiben Sie dies mit `-L pt-BR`, `export AI_I18N_LANG=es` oder `"uiLanguage"` in der Konfiguration. Siehe [Tool-UI-Sprache](/guide/tool-ui-language).
+Die CLI lokalisiert ihre eigenen Hilfetexte, Protokollzusammenfassungen und das Übersetzungs-Dashboard unabhängig von den von Ihnen übersetzten Gebietsschemas. Standardmäßig folgt sie dem Gebietsschema Ihres Betriebssystems. Überschreiben Sie dies mit `-L pt-BR`, `export AI_I18N_LANG=es` oder `"uiLanguage"` in der Konfiguration. Siehe [Tool-UI-Sprache](/de/guide/tool-ui-language).

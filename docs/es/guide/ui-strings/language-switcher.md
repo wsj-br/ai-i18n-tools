@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## Interfaz de usuario del selector de idioma
 
-Utilice el manifiesto `ui-languages.json` para crear un selector de idioma. `ai-i18n-tools` exporta dos ayudantes de visualización; consulte [Ayudantes de tiempo de ejecución → Ayudantes de visualización](/guide/runtime-helpers#display-helpers) para ver las firmas.
+Utilice el manifiesto `ui-languages.json` para crear un selector de idioma. `ai-i18n-tools` exporta dos ayudantes de visualización; consulte [Ayudantes de tiempo de ejecución → Ayudantes de visualización](/es/guide/runtime-helpers#display-helpers) para ver las firmas.
 
 <details>
 <summary>Componente LanguageSelect de ejemplo (React)</summary>
@@ -84,7 +84,7 @@ El manifiesto es generado por `generate-ui-languages` o `extract` a partir de `s
 <a id="rtl-languages"></a>
 ## Idiomas RTL
 
-`ai-i18n-tools` exporta `getTextDirection(lng)` y `applyDirection(lng)`; consulte [Ayudantes de tiempo de ejecución → Ayudantes RTL](/guide/runtime-helpers#rtl-helpers).
+`ai-i18n-tools` exporta `getTextDirection(lng)` y `applyDirection(lng)`; consulte [Ayudantes de tiempo de ejecución → Ayudantes RTL](/es/guide/runtime-helpers#rtl-helpers).
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` establece `document.documentElement.dir` (navegador) o es una operación nula (Node.js). Pase un argumento opcional `element` para apuntar a un elemento específico. Conéctelo en su arranque de i18n — [Conectar i18next](/guide/ui-strings/i18next-runtime).
+`applyDirection` establece `document.documentElement.dir` (navegador) o es una operación nula (Node.js). Pase un argumento opcional `element` para apuntar a un elemento específico. Conéctelo en su arranque de i18n — [Conectar i18next](/es/guide/ui-strings/i18next-runtime).
 
 Para cadenas que puedan contener flechas `→`, inviértalas en diseños RTL:
 

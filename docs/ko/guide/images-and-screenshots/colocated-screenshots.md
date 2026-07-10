@@ -66,7 +66,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-프로젝트에서 번역된 SVG도 사용하는 경우, [동일 위치 SVG 번역](/guide/svg-translation/translated-svg-colocated)이 이를 처리하며 추가 정규식 없이 PNG와 함께 `current/assets/`에 배치됩니다.
+프로젝트에서 번역된 SVG도 사용하는 경우, [동일 위치 SVG 번역](/ko/guide/svg-translation/translated-svg-colocated)이 이를 처리하며 추가 정규식 없이 PNG와 함께 `current/assets/`에 배치됩니다.
 
 <a id="prerequisites"></a>
 ### 전제 조건
@@ -78,4 +78,4 @@ function getScreenshotDir(locale) {
 <a id="implementation-example"></a>
 ### 구현 예시
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)의 `getScreenshotDir(locale)`; 영어 문서는 동일 위치 PNG(예: `../assets/screen-dashboard-summary.png`이 있는 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md))를 참조합니다. 동일 프로젝트의 동일 위치 SVG는 동일한 `current/assets/` 디렉터리에 배치됩니다. — [동일 위치 SVG](/guide/svg-translation/translated-svg-colocated)를 참조하세요.
+[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)의 `getScreenshotDir(locale)`; 영어 문서는 동일 위치 PNG(예: `../assets/screen-dashboard-summary.png`이 있는 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md))를 참조합니다. 동일 프로젝트의 동일 위치 SVG는 동일한 `current/assets/` 디렉터리에 배치됩니다. — [동일 위치 SVG](/ko/guide/svg-translation/translated-svg-colocated)를 참조하세요.

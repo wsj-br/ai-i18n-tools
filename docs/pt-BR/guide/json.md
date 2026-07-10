@@ -8,7 +8,7 @@ Este pipeline **não** executa `extract` — não há catálogo `strings.json`. 
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
 
-O `translate-json` resolve modelos **por localidade de destino**: primeiro `localeModels(locale)` quando configurado, depois `translationModels`. Use isso para pacotes JSON aninhados onde determinadas localidades se beneficiam de modelos dedicados — por exemplo, arquivos de tema `zh-Hans` / `zh-Hant`. Consulte [Provedores e modelos](/guide/providers-and-models#model-fallback-chain).
+O `translate-json` resolve modelos **por localidade de destino**: primeiro `localeModels(locale)` quando configurado, depois `translationModels`. Use isso para pacotes JSON aninhados onde determinadas localidades se beneficiam de modelos dedicados — por exemplo, arquivos de tema `zh-Hans` / `zh-Hant`. Consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Etapa 1: Inicializar para JSON aninhado
@@ -98,12 +98,12 @@ Quando `translateJson` está ativado, `status` imprime uma seção `json[]` (✓
 
 | Situação | Uso |
 |-----------|-----|
-| Strings da UI em `t("…")` / `i18n.t("…")` em JS/TS/Astro | [Strings da UI](/guide/ui-strings/) — `extract` + `translate-ui` |
+| Strings da UI em `t("…")` / `i18n.t("…")` em JS/TS/Astro | [Strings da UI](/pt-BR/guide/ui-strings/) — `extract` + `translate-ui` |
 | Catálogo Docusaurus `write-translations` (`{ "key": { "message": "…", "description": "…" } }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs`, **não** `json[]` |
-| Strings de tema/navegação/barra lateral do VitePress | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **não** use `json[]` — consulte [integração VitePress](/guide/integrations/vitepress) |
-| Rótulos `_meta.ts` do Nextra e dicionário de tema `.ts` | Documentos — `translate-docs` (`_meta` automático quando `style: "nextra"`, `nextraDictionaryPath` opcional); **não** use `json[]` — consulte [integração Nextra](/guide/integrations/nextra) |
-| Rótulos `meta.json` do Fumadocs e catálogo de substituições de IU | Documentos — `translate-docs` (`meta.json` automático quando `style: "fumadocs"`, `fumadocsUiCatalog` opcional); **não** use `json[]` — consulte [integração Fumadocs](/guide/integrations/fumadocs) |
+| Strings de tema/navegação/barra lateral do VitePress | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **não** use `json[]` — consulte [integração VitePress](/pt-BR/guide/integrations/vitepress) |
+| Rótulos `_meta.ts` do Nextra e dicionário de tema `.ts` | Documentos — `translate-docs` (`_meta` automático quando `style: "nextra"`, `nextraDictionaryPath` opcional); **não** use `json[]` — consulte [integração Nextra](/pt-BR/guide/integrations/nextra) |
+| Rótulos `meta.json` do Fumadocs e catálogo de substituições de IU | Documentos — `translate-docs` (`meta.json` automático quando `style: "fumadocs"`, `fumadocsUiCatalog` opcional); **não** use `json[]` — consulte [integração Fumadocs](/pt-BR/guide/integrations/fumadocs) |
 | JSON de localidade aninhada autônoma (árvores `translation.json` estilo ZenBrowser) | JSON — `json[]` + `translate-json` |
-| Arquivos `.svg` ilustrados com `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (opcional; não é um dos três pipelines principais) |
+| Arquivos `.svg` ilustrados com `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/pt-BR/reference/configuration#svg) + `translate-svg` (opcional; não é um dos três pipelines principais) |
 
-Referência de campo: [`json`](#json) em [Referência de configuração](/reference/configuration#json). As chaves de cache para limpeza usam `json-block:{blockIndex}:{projectRelPath}` em `file_tracking`.
+Referência de campo: [`json`](#json) em [Referência de configuração](/pt-BR/reference/configuration#json). As chaves de cache para limpeza usam `json-block:{blockIndex}:{projectRelPath}` em `file_tracking`.

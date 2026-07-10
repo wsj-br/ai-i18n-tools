@@ -7,7 +7,7 @@
 | Clés d'autres fournisseurs    | Chaque fournisseur lit sa propre variable d'environnement de clé : `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama n'en a pas besoin). Remplacez par fournisseur avec `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Remplace `providers.openrouter.baseUrl` (uniquement lorsque ce fournisseur est configuré). |
 | `OLLAMA_BASE_URL`      | Remplace `providers.ollama.baseUrl` (uniquement lorsque ce fournisseur est configuré). |
-| `AI_I18N_LANG`         | Langue de l'interface utilisateur de l'outil (aide CLI, journaux, tableau de bord). Remplacée par `-L` / `--ui-lang` ; remplace la configuration `uiLanguage`. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language). |
+| `AI_I18N_LANG`         | Langue de l'interface utilisateur de l'outil (aide CLI, journaux, tableau de bord). Remplacée par `-L` / `--ui-lang` ; remplace la configuration `uiLanguage`. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language). |
 | `I18N_SOURCE_LOCALE`    | Remplacer `sourceLocale` au moment de l'exécution.                        |
 | `I18N_TARGET_LOCALES`   | Codes de langue séparés par des virgules pour remplacer `targetLocales`.  |
 | `I18N_LOG_LEVEL` | Niveau du journal (`debug`, `info`, `warn`, `error`). Les valeurs inconnues (y compris `silent`) sont remplacées par `info`. |

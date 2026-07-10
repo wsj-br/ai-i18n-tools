@@ -117,10 +117,7 @@ export function applyVitepressLocaleRoutePrefix(
   return `${prefix}${path}${fragment}`;
 }
 
-function normalizeOneVitepressLinkCore(
-  href: string,
-  ctx: VitepressLinkNormalizeContext
-): string {
+function normalizeOneVitepressLinkCore(href: string, ctx: VitepressLinkNormalizeContext): string {
   const trimmed = href.trim();
   if (!trimmed) return trimmed;
   if (trimmed.startsWith("#")) return trimmed;
@@ -354,10 +351,7 @@ export function prefixVitepressThemeNavLinks<T extends VitepressThemeNavItem>(
 /** Prefix nav and sidebar link targets in a VitePress themeConfig fragment. */
 export function prefixVitepressThemeConfigLinks<
   T extends { nav?: readonly VitepressThemeNavItem[]; sidebar?: readonly VitepressThemeNavItem[] },
->(
-  themeConfig: T,
-  localeRoutePrefix: string | null | undefined
-): T {
+>(themeConfig: T, localeRoutePrefix: string | null | undefined): T {
   if (!localeRoutePrefix) {
     return themeConfig;
   }

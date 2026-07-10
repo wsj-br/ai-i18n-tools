@@ -28,7 +28,7 @@ As chaves de provedor predefinidas precisam apenas de `translationModels` — UR
 
 Para qualquer chave **não predefinida**, defina `baseUrl` e `apiKeyEnv` explicitamente na configuração.
 
-Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI carrega automaticamente `.env` do diretório de trabalho sem substituir variáveis já definidas no shell. Consulte [Variáveis de ambiente](/reference/environment-variables).
+Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI carrega automaticamente `.env` do diretório de trabalho sem substituir variáveis já definidas no shell. Consulte [Variáveis de ambiente](/pt-BR/reference/environment-variables).
 
 <a id="model-fallback-chain"></a>
 ### Cadeia de fallback de modelo
@@ -44,7 +44,7 @@ Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI
 
 O `providers.<active>.uiModels` opcional é uma lista exclusiva da UI tentada após qualquer substituição por localidade e antes da cadeia global `translationModels`. O `providers.<active>.localeModels` opcional mapeia uma localidade BCP-47 para modelos tentados **primeiro** para essa localidade em cada pipeline (`pt-br` corresponde a `pt-BR`). Quando nenhuma entrada de `localeModels` corresponde, apenas as camadas específicas do pipeline se aplicam.
 
-Diferentes provedores e modelos variam em custo, velocidade e qualidade entre os idiomas. Trate a lista padrão de `npx ai-i18n-tools init` como um ponto de partida — expanda-a quando uma localidade produzir resultados consistentemente ruins ou adicione uma entrada de `localeModels` para essa localidade. Padrões completos e justificativa: [Configuração — `provider` e `providers`](/reference/configuration#provider-and-providers).
+Diferentes provedores e modelos variam em custo, velocidade e qualidade entre os idiomas. Trate a lista padrão de `npx ai-i18n-tools init` como um ponto de partida — expanda-a quando uma localidade produzir resultados consistentemente ruins ou adicione uma entrada de `localeModels` para essa localidade. Padrões completos e justificativa: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
 
 Exemplo de configuração mínima (OpenRouter):
 
@@ -98,7 +98,7 @@ Substitua o texto de exemplo, os locais ou a lista de modelos:
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Detalhes do comando: [referência da CLI](/reference/cli-commands/).
+Detalhes do comando: [referência da CLI](/pt-BR/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Vários provedores
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Cada bloco de provedor pode definir seu próprio `translationModels`, `uiModels` e `localeModels` opcionais, `maxTokens`, `temperature` e `requestTimeoutMs`. Um bloco `openrouter` legado de nível superior ainda é aceito e migrado automaticamente para `providers.openrouter` ao carregar.
 
-Exemplo executável com quatro provedores no mesmo documento: [`examples/multi-provider`](/examples#multi-provider).
+Exemplo executável com quatro provedores no mesmo documento: [`examples/multi-provider`](/pt-BR/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Referência adicional
 
-- [Configuração — `provider` e `providers`](/reference/configuration#provider-and-providers) — tabela predefinida, endpoints personalizados, tempos limite de solicitação, comportamento específico do OpenRouter.
-- [Arquitetura — cliente LLM](/reference/architecture) — como o fallback do modelo, o agrupamento e o relatório de custos funcionam internamente.
-- [Variáveis de ambiente](/reference/environment-variables) — variáveis de ambiente de chave de API e substituições de URL base.
+- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela predefinida, endpoints personalizados, tempos limite de solicitação, comportamento específico do OpenRouter.
+- [Arquitetura — cliente LLM](/pt-BR/reference/architecture) — como o fallback do modelo, o agrupamento e o relatório de custos funcionam internamente.
+- [Variáveis de ambiente](/pt-BR/reference/environment-variables) — variáveis de ambiente de chave de API e substituições de URL base.

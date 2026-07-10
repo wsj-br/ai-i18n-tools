@@ -8,7 +8,7 @@
 
 활성 프로바이더의 `GET /models` 목록(멤버십 및 `expiration_date`)에 대해 구성된 각 모델 ID를 검증합니다. 해당 프로바이더의 API 키가 필요합니다(Ollama와 같은 키가 필요 없는 프로바이더의 경우 없음). 구성된 ID 중 누락되거나 만료된 것이 있으면 0이 아닌 값으로 종료되며, 프로바이더의 `requestTimeoutMs`를 준수합니다. 프로바이더가 가격을 반환하는 경우(예: OpenRouter), 프롬프트/컴플리션당 1M 토큰당 USD도 표시합니다.
 
-**참고:** [LLM 프로바이더](/guide/providers-and-models)
+**참고:** [LLM 프로바이더](/ko/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **주요 옵션:** `-P` / `--provider`
 
-**참고:** [LLM 프로바이더](/guide/providers-and-models)
+**참고:** [LLM 프로바이더](/ko/guide/providers-and-models)
 
 ---
 

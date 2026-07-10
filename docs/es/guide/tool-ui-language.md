@@ -31,6 +31,6 @@ El Panel de traducción lee la configuración regional resuelta, la dirección d
 <a id="related"></a>
 ## Relacionado
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — anulación de la variable de entorno
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — anulación de la clave de configuración
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — anulación de la bandera de la CLI (la más alta prioridad)
+- [`AI_I18N_LANG`](/es/reference/environment-variables) — anulación de la variable de entorno
+- [`uiLanguage`](/es/reference/configuration#uilanguage-optional) — anulación de la clave de configuración
+- [`-L` / `--ui-lang`](/es/reference/cli-commands/) — anulación de la bandera de la CLI (la más alta prioridad)

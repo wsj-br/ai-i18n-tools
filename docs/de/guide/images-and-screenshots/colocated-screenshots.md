@@ -66,7 +66,7 @@ Keine `regexAdjustments`-Regel erforderlich für Rasterdateien. `translate-docs`
 }
 ```
 
-Wenn das Projekt auch übersetzte SVGs verwendet, übernimmt die [kollokierte SVG-Übersetzung](/guide/svg-translation/translated-svg-colocated) diese, und sie landen zusammen mit den PNGs in `current/assets/` ohne zusätzlichen Regex.
+Wenn das Projekt auch übersetzte SVGs verwendet, übernimmt die [kollokierte SVG-Übersetzung](/de/guide/svg-translation/translated-svg-colocated) diese, und sie landen zusammen mit den PNGs in `current/assets/` ohne zusätzlichen Regex.
 
 <a id="prerequisites"></a>
 ### Voraussetzungen
@@ -78,4 +78,4 @@ Wenn das Projekt auch übersetzte SVGs verwendet, übernimmt die [kollokierte SV
 <a id="implementation-example"></a>
 ### Implementierungsbeispiel
 
-[duplistatus](https://github.com/wsj-br/duplistatus) – `getScreenshotDir(locale)` in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); englische Dokumente verweisen auf kollokierte PNGs (z. B. [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) mit `../assets/screen-dashboard-summary.png`). Kollokierte SVGs aus demselben Projekt landen in denselben `current/assets/`-Verzeichnissen – siehe [Kollokiertes SVG](/guide/svg-translation/translated-svg-colocated).
+[duplistatus](https://github.com/wsj-br/duplistatus) – `getScreenshotDir(locale)` in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); englische Dokumente verweisen auf kollokierte PNGs (z. B. [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) mit `../assets/screen-dashboard-summary.png`). Kollokierte SVGs aus demselben Projekt landen in denselben `current/assets/`-Verzeichnissen – siehe [Kollokiertes SVG](/de/guide/svg-translation/translated-svg-colocated).

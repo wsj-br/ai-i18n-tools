@@ -144,8 +144,8 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — `docs/` に英語ソース、コミットされた `pt-BR` と `zh-Hans` のページツリー、および `theme.pt-BR.json` / `theme.zh-Hans.json`。ポート 3060 で `pnpm run docs:dev` を実行。
 
-<a id="readme-as-the-docs-homepage"></a>
-## README とドキュメントホームページ
+<a id="readme-and-the-docs-homepage"></a>
+## READMEとドキュメントのホームページ
 
 下流のプロジェクトでは、`README.md` をビルドスクリプトまたは手動同期で VitePress サイトの `docs/index.md` としてコピーすることがあります。このパターンは GitHub とドキュメントサイトで1つのファイルを共有しますが、リンクのルールが異なります:
 
@@ -194,7 +194,7 @@ VitePressはコンテンツルートから英語ページを提供し、ロケ�
 
 英語のルートソースは `docs/` で **ロケール中立** サイトルート（`/guide/…`）を維持します。`docs/<locale>/…` に書き込まれたファイルは、内部コンテンツルートにロケールプレフィックスが自動的に付与されます — **ホームレイアウトフロントマター**（`hero.actions[].link`、`features[].link`、`prev`/`next`）を含みます。`/logo.svg` や `/translation-dashboard.png` のような共有パブリックアセットは、すべてのロケールでプレフィックスなしのままです。
 
-<a id="theme-nav-sidebar-links"></a>
+<a id="theme-navsidebar-links"></a>
 ### テーマのナビゲーション/サイドバーのリンク
 
 `translate-docs`は`.vitepress/config.mts`内のリンクを書き換え**ません**。ナビゲーションバーとサイドバーの`link`値はTypeScriptで一度作成され、設定のビルド時にロケールごとにプレフィックスを付ける必要があります。
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 **`link`** とともに **`activeMatch`** にプレフィックスを付けることで、ロケールルート上でナビゲーションのハイライトが機能するようにします（`/guide/`ではなく`/pt-BR/guide/`）。外部URLおよび共有の公開アセットはそのまま維持されます。
+
+VitePressプロジェクトの**devDependency**として`ai-i18n-tools`を追加し（`examples/vitepress-docs/package.json`を参照）、`config.mts`が`prefixVitepressThemeConfigLinks`をインポートできるようにします。メインのai-i18n-toolsドキュメントサイトは、モノレポのチェックアウトをドッグフーディングしているため、`src/processors/…`から直接インポートします。スタンドアロンのコピー（degit）ではnpmパッケージを使用する必要があります。
 
 **執筆ルール**
 

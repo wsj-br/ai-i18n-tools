@@ -66,7 +66,7 @@ No se necesita ninguna regla `regexAdjustments` para archivos raster. `translate
 }
 ```
 
-Si el proyecto también utiliza SVG traducidos, la [traducción de SVG colocados](/guide/svg-translation/translated-svg-colocated) los gestiona y se ubican junto a los PNG en `current/assets/` sin expresiones regulares adicionales.
+Si el proyecto también utiliza SVG traducidos, la [traducción de SVG colocados](/es/guide/svg-translation/translated-svg-colocated) los gestiona y se ubican junto a los PNG en `current/assets/` sin expresiones regulares adicionales.
 
 <a id="prerequisites"></a>
 ### Requisitos previos
@@ -78,4 +78,4 @@ Si el proyecto también utiliza SVG traducidos, la [traducción de SVG colocados
 <a id="implementation-example"></a>
 ### Ejemplo de implementación
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` en [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); la documentación en inglés hace referencia a los PNG colocados (por ejemplo, [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) con `../assets/screen-dashboard-summary.png`). Los SVG colocados del mismo proyecto se ubican en los mismos directorios `current/assets/` — consulte [SVG colocado](/guide/svg-translation/translated-svg-colocated).
+[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` en [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); la documentación en inglés hace referencia a los PNG colocados (por ejemplo, [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) con `../assets/screen-dashboard-summary.png`). Los SVG colocados del mismo proyecto se ubican en los mismos directorios `current/assets/` — consulte [SVG colocado](/es/guide/svg-translation/translated-svg-colocated).

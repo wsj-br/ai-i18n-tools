@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # Runtime par i18next ko wire karein
 
-`'ai-i18n-tools/runtime'` dwara export kiye gaye helpers ka upyog karke apni i18n setup file banayein. API signatures ke liye, [Runtime helpers](/guide/runtime-helpers) dekhein.
+`'ai-i18n-tools/runtime'` dwara export kiye gaye helpers ka upyog karke apni i18n setup file banayein. API signatures ke liye, [Runtime helpers](/hi-Latn/guide/runtime-helpers) dekhein.
 
 <details>
 <summary>Pura i18n bootstrap udaharan (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ Named imports (`import { defaultI18nInitOptions, … } from 'ai-i18n-tools/runti
 
 Bundler ke bina Node CLIs ke liye, har code ke liye JSON file ko padhne aur parse karne wale ek chhote helper ke andar `readFileSync` ka upyog karein.
 
-`setupKeyAsDefaultT` ka upyog aam app entry point ke roop mein karein (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Application wiring ke liye akele `wrapI18nWithKeyTrim` ko call karna **deprecated** hai — [Runtime helpers](/guide/runtime-helpers) dekhein.
+`setupKeyAsDefaultT` ka upyog aam app entry point ke roop mein karein (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Application wiring ke liye akele `wrapI18nWithKeyTrim` ko call karna **deprecated** hai — [Runtime helpers](/hi-Latn/guide/runtime-helpers) dekhein.

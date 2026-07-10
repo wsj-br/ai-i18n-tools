@@ -3,10 +3,10 @@
 
 Use `init -t ui-fumadocs` e `docsOutput.style: "fumadocs"` para sites de documentação [Fumadocs](https://www.fumadocs.dev/) 4 no Next.js App Router. O preset é um alias para `doc-system` com um `localeSubpath` vazio e códigos de localidade BCP-47 ou curtos preservados (`localePathLowercase` assume `false` por padrão).
 
-Consulte também [Documentos](/guide/documents/) e a demonstração executável [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (dot parser, porta 3080).
+Consulte também [Documentos](/pt-BR/guide/documents/) e a demonstração executável [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (dot parser, porta 3080).
 
 <a id="quick-start"></a>
-## Primeiros passos
+## Início rápido
 
 ```bash
 npx ai-i18n-tools init -t ui-fumadocs
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-Consulte `ai-i18n-tools.config.dir.example.json` em [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) para uma configuração de diretório de copiar e colar. O modelo mental corresponde à [integração Nextra](/guide/integrations/nextra#page-layout).
+Consulte `ai-i18n-tools.config.dir.example.json` em [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) para uma configuração de diretório de copiar e colar. O modelo mental corresponde à [integração Nextra](/pt-BR/guide/integrations/nextra#page-layout).
 
 <a id="sidebar-metajson"></a>
 ## Barra lateral (`meta.json`)
@@ -130,11 +130,11 @@ Locais padrão podem ser cobertos por presets `@fumadocs/language/*` sem custo d
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
 | Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Rótulos de barra lateral `meta.json` | Documentos — auto quando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
+| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Strings de UI integradas (muitas localidades); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativo não relacionados. Consulte [integração Docusaurus](/guide/integrations/docusaurus), [integração VitePress](/guide/integrations/vitepress) e [integração Nextra](/guide/integrations/nextra) para os outros padrões de framework.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativo não relacionados. Consulte [integração Docusaurus](/pt-BR/guide/integrations/docusaurus), [integração VitePress](/pt-BR/guide/integrations/vitepress) e [integração Nextra](/pt-BR/guide/integrations/nextra) para os outros padrões de framework.
 
 <a id="link-conventions"></a>
 ## Convenções de link
@@ -157,7 +157,7 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/pt-BR/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | inalterado (URL completa) |
 
 **Regras de autoria**
@@ -166,7 +166,7 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 - Arquivos de repositório fora da árvore de conteúdo: use **URLs completas**.
 - Não edite **manualmente** links em cópias com sufixo de local (`*.pt.mdx`) ou árvores `content/{locale}/` — regenere com `sync` / `translate-docs`.
 
-Veja também [Documentos — reescrita de links](/guide/documents/link-rewriting) e [Configuração — `docsOutput`](/reference/configuration#docsoutput).
+Veja também [Documentos — reescrita de links](/pt-BR/guide/documents/link-rewriting) e [Configuração — `docsOutput`](/pt-BR/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Códigos de locale
@@ -186,8 +186,8 @@ Projetos Fumadocs podem definir vários blocos `defineDocs` em `source.config.ts
 <a id="cross-references"></a>
 ## Referências cruzadas
 
-- [Configuração — `docsOutput`](/reference/configuration#docsoutput)
-- [Layouts de saída](/guide/documents/output-layouts)
-- [Integração Docusaurus](/guide/integrations/docusaurus)
-- [Integração Nextra](/guide/integrations/nextra) (modelo mental do analisador de diretório)
-- [Integração VitePress](/guide/integrations/vitepress) (padrão de inicialização do catálogo de UI)
+- [Configuração — `docsOutput`](/pt-BR/reference/configuration#docsoutput)
+- [Layouts de saída](/pt-BR/guide/documents/output-layouts)
+- [Integração Docusaurus](/pt-BR/guide/integrations/docusaurus)
+- [Integração Nextra](/pt-BR/guide/integrations/nextra) (modelo mental do analisador de diretório)
+- [Integração VitePress](/pt-BR/guide/integrations/vitepress) (padrão de inicialização do catálogo de UI)

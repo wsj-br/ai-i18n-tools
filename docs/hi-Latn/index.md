@@ -66,6 +66,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## Turant install karein
 
 Publish kiya gaya package **ESM-only** hai. Node.js `>=22.16.0` zaroori hai.
@@ -79,6 +80,7 @@ npx ai-i18n-tools sync
 
 CLI invocation details ke liye [Installation](/hi-Latn/guide/installation) dekhein aur scaffold templates ke liye [Quick start](/hi-Latn/guide/quick-start) dekhein.
 
+<a id="which-pipeline-should-i-use"></a>
 ## Mujhe kaun si pipeline ka upyog karna chahiye?
 
 | Aapka content | Command |
@@ -89,7 +91,8 @@ CLI invocation details ke liye [Installation](/hi-Latn/guide/installation) dekhe
 
 SVG illustrations ek alag `translate-svg` path ka upyog karti hain — `docs[].contentPaths` ka nahi. Poori tulna ke liye [What is ai-i18n-tools?](/hi-Latn/guide/what-is-ai-i18n-tools) dekhein.
 
-## Documentation explore karein
+<a id="explore-the-documentation"></a>
+## Documentation dekhein
 
 - [**Guide**](/hi-Latn/guide/what-is-ai-i18n-tools) — translation modes, installation, quick start, aur framework integrations
 - [**Integrations**](/hi-Latn/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, aur Astro

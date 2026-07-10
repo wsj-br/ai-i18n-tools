@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## 言語スイッチャーUI
 
-言語セレクターを構築するには、`ui-languages.json` マニフェストを使用します。`ai-i18n-tools` は2つの表示ヘルパーをエクスポートします。署名については、[ランタイムヘルパー → 表示ヘルパー](/guide/runtime-helpers#display-helpers) を参照してください。
+言語セレクターを構築するには、`ui-languages.json` マニフェストを使用します。`ai-i18n-tools` は2つの表示ヘルパーをエクスポートします。署名については、[ランタイムヘルパー → 表示ヘルパー](/ja/guide/runtime-helpers#display-helpers) を参照してください。
 
 <details>
 <summary>LanguageSelectコンポーネントの例 (React)</summary>
@@ -84,7 +84,7 @@ function LanguageSelect({
 <a id="rtl-languages"></a>
 ## RTL言語
 
-`ai-i18n-tools` は `getTextDirection(lng)` と `applyDirection(lng)` をエクスポートします。詳細については、[ランタイムヘルパー → RTLヘルパー](/guide/runtime-helpers#rtl-helpers) を参照してください。
+`ai-i18n-tools` は `getTextDirection(lng)` と `applyDirection(lng)` をエクスポートします。詳細については、[ランタイムヘルパー → RTLヘルパー](/ja/guide/runtime-helpers#rtl-helpers) を参照してください。
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` は `document.documentElement.dir` を設定します（ブラウザの場合）。または、何もしません（Node.jsの場合）。特定の要素をターゲットにするには、オプションの `element` 引数を渡します。i18nブートストラップでこれを接続します — [i18nextを接続する](/guide/ui-strings/i18next-runtime)。
+`applyDirection` は `document.documentElement.dir` を設定します（ブラウザの場合）。または、何もしません（Node.jsの場合）。特定の要素をターゲットにするには、オプションの `element` 引数を渡します。i18nブートストラップでこれを接続します — [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime)。
 
 `→`矢印を含む可能性のある文字列については、RTLレイアウト用に反転します。
 

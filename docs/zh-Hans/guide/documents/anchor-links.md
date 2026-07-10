@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 由于`id`在源文件中是固定的，因此所有区域设置中的`#tls-configuration`锚点都相同；只有标题**文本**和链接**标签**被翻译。
 
-如果翻译后链接仍然失效，请参阅[故障排除](/guide/documents/troubleshooting)。
+如果翻译后链接仍然失效，请参阅[故障排除](/zh-Hans/guide/documents/troubleshooting)。

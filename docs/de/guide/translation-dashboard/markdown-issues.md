@@ -8,7 +8,7 @@ Dies ist **nicht** dasselbe wie **Fehler**, die die Modellausgabe pro Gebietssch
 <a id="when-to-use-it"></a>
 ## Wann es verwendet werden sollte
 
-Verwenden Sie diese Registerkarte, wenn Sie den **Quell-Markdown** korrigieren möchten, bevor Sie Tokens ausgeben – insbesondere wenn Qualitätsprüfungen aufgrund der Struktur in der Registerkarte [Fehler](/guide/translation-dashboard/failures) immer wieder fehlschlagen.
+Verwenden Sie diese Registerkarte, wenn Sie den **Quell-Markdown** korrigieren möchten, bevor Sie Tokens ausgeben – insbesondere wenn Qualitätsprüfungen aufgrund der Struktur in der Registerkarte [Fehler](/de/guide/translation-dashboard/failures) immer wieder fehlschlagen.
 
 <a id="how-to-use-the-tab"></a>
 ## So verwenden Sie den Tab
@@ -39,4 +39,4 @@ Korrigieren Sie die Quelldatei und führen Sie dann die Übersetzung erneut aus.
 | Ungeschlossener Inline-Code | Backtick-Bereich geöffnet, aber nicht geschlossen |
 | `STRONG_OUTSIDE_LINK` | Fett-Marker umschließen einen Markdown-Link – Fett innerhalb des Linktextes verschieben |
 
-Siehe auch [Komplexer Markdown und fehlgeschlagene Qualitätsprüfungen](/guide/documents/#complex-markdown-and-failed-quality-checks).
+Siehe auch [Komplexer Markdown und fehlgeschlagene Qualitätsprüfungen](/de/guide/documents/#complex-markdown-and-failed-quality-checks).

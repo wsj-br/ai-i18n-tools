@@ -8,7 +8,7 @@ UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**�
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-`translate-json`はモデルを**ターゲットロケール**ごとに解決します: `localeModels(locale)`は最初に構成されたときに、次に`translationModels`。ネストされたJSONバンドルの特定のロケールに専用のモデルが必要な場合にこれを使用します。たとえば、`zh-Hans` / `zh-Hant`テーマファイル。詳しくは、[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain)を参照してください。
+`translate-json`はモデルを**ターゲットロケール**ごとに解決します: `localeModels(locale)`は最初に構成されたときに、次に`translationModels`。ネストされたJSONバンドルの特定のロケールに専用のモデルが必要な場合にこれを使用します。たとえば、`zh-Hans` / `zh-Hant`テーマファイル。詳しくは、[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照してください。
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### ステップ 1: ネストされたJSON向けに初期化
@@ -98,12 +98,12 @@ npx ai-i18n-tools status
 
 | 状況 | 使用法 |
 |-----------|-----|
-| JS/TS/Astro の `t("…")` / `i18n.t("…")` の UI 文字列 | [UI 文字列](/guide/ui-strings/) — `extract` + `translate-ui` |
+| JS/TS/Astro の `t("…")` / `i18n.t("…")` の UI 文字列 | [UI 文字列](/ja/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations`カタログ (`{ "key": { "message": "…", "description": "…" } }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs`、`json[]`は**使用しません** |
-| VitePress テーマ/ナビ/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; `json[]`を**使用しないで**ください — [VitePress インテグレーション](/guide/integrations/vitepress)を参照 |
-| Nextra `_meta.ts` ラベルおよびテーマ辞書 `.ts` | ドキュメント — `translate-docs`（`style: "nextra"`時に`_meta`を自動、オプションで`nextraDictionaryPath`）; `json[]`を**使用しないで**ください — [Nextra インテグレーション](/guide/integrations/nextra)を参照 |
-| Fumadocs `meta.json` ラベルおよび UI オーバーライドカタログ | ドキュメント — `translate-docs`（`style: "fumadocs"`時に`meta.json`を自動、オプションで`fumadocsUiCatalog`）; `json[]`を**使用しないで**ください — [Fumadocs インテグレーション](/guide/integrations/fumadocs)を参照 |
+| VitePress テーマ/ナビ/サイドバー文字列 | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs`; `json[]`を**使用しないで**ください — [VitePress インテグレーション](/ja/guide/integrations/vitepress)を参照 |
+| Nextra `_meta.ts` ラベルおよびテーマ辞書 `.ts` | ドキュメント — `translate-docs`（`style: "nextra"`時に`_meta`を自動、オプションで`nextraDictionaryPath`）; `json[]`を**使用しないで**ください — [Nextra インテグレーション](/ja/guide/integrations/nextra)を参照 |
+| Fumadocs `meta.json` ラベルおよび UI オーバーライドカタログ | ドキュメント — `translate-docs`（`style: "fumadocs"`時に`meta.json`を自動、オプションで`fumadocsUiCatalog`）; `json[]`を**使用しないで**ください — [Fumadocs インテグレーション](/ja/guide/integrations/fumadocs)を参照 |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
-| `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
+| `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/ja/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 
-フィールドリファレンス: [設定リファレンス](/reference/configuration#json)の[`json`](#json)。クリーンアップのキャッシュキーは`file_tracking`で`json-block:{blockIndex}:{projectRelPath}`を使用します。
+フィールドリファレンス: [設定リファレンス](/ja/reference/configuration#json)の[`json`](#json)。クリーンアップのキャッシュキーは`file_tracking`で`json-block:{blockIndex}:{projectRelPath}`を使用します。

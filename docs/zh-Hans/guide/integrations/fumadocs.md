@@ -3,10 +3,10 @@
 
 在 Next.js App Router 上的 [Fumadocs](https://www.fumadocs.dev/) 4 文档站点中使用 `init -t ui-fumadocs` 和 `docsOutput.style: "fumadocs"`。该预设是 `doc-system` 的别名，带有空的 `localeSubpath` 并保留 BCP-47 或短区域设置代码（`localePathLowercase` 默认为 `false`）。
 
-另请参阅[文档](/guide/documents/)和可运行的 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 演示（dot 解析器，端口 3080）。
+另请参阅[文档](/zh-Hans/guide/documents/)和可运行的 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 演示（dot 解析器，端口 3080）。
 
 <a id="quick-start"></a>
-## 快速入门
+## 快速开始
 
 ```bash
 npx ai-i18n-tools init -t ui-fumadocs
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-有关可直接复制粘贴的目录配置，请参见 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 中的 `ai-i18n-tools.config.dir.example.json`。心智模型与 [Nextra 集成](/guide/integrations/nextra#page-layout) 一致。
+有关可直接复制粘贴的目录配置，请参见 [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) 中的 `ai-i18n-tools.config.dir.example.json`。心智模型与 [Nextra 集成](/zh-Hans/guide/integrations/nextra#page-layout) 一致。
 
 <a id="sidebar-metajson"></a>
 ## 侧边栏 (`meta.json`)
@@ -128,13 +128,13 @@ Fumadocs 布局外壳（搜索占位符、区域设置显示名称以及 `lib/la
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` 目录 | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动翻译 |
+| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动 |
 | Nextra | 主题字典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动生成 |
+| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动 |
 | Fumadocs | UI 覆盖目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 内置 UI 字符串（多语言）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
+| Astro Starlight | 内置 UI 字符串（多语言支持）；无额外外壳管道 | 文档 — `translate-docs`（仅页面） |
 
-请**不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于无关的应用程序语言包。有关其他框架模式，请参见 [Docusaurus 集成](/guide/integrations/docusaurus)、[VitePress 集成](/guide/integrations/vitepress) 和 [Nextra 集成](/guide/integrations/nextra)。
+请**不要**将框架外壳/主题字符串放入 `json[]` —— 该流水线用于无关的应用程序语言包。有关其他框架模式，请参见 [Docusaurus 集成](/zh-Hans/guide/integrations/docusaurus)、[VitePress 集成](/zh-Hans/guide/integrations/vitepress) 和 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。
 
 <a id="link-conventions"></a>
 ## 链接约定
@@ -157,16 +157,16 @@ Fumadocs 通过 Next.js 中间件（`/docs/getting-started`、`/pt/docs/getting-
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/zh-Hans/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 不变（完整 URL） |
 
-**创作规则**
+**编写规则**
 
 - 跨页面文档链接：在英文 MDX 中使用**语言中立的站点路由**（`/docs/…`），或使用 `content/docs/…` / 相对 `.mdx` 路径，并让规范化器在 `sync` 期间重写它们。
 - 内容树之外的仓库文件：使用**完整 URL**。
 - 请**不要**手动编辑带语言后缀副本（`*.pt.mdx`）或 `content/{locale}/` 树中的链接——请使用 `sync` / `translate-docs` 重新生成。
 
-另请参阅 [文档——链接重写](/guide/documents/link-rewriting) 和 [配置——`docsOutput`](/reference/configuration#docsoutput)。
+另请参阅 [文档——链接重写](/zh-Hans/guide/documents/link-rewriting) 和 [配置——`docsOutput`](/zh-Hans/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## 区域设置代码
@@ -186,8 +186,8 @@ Fumadocs 项目可在 `source.config.ts` 中定义多个 `defineDocs` 块（文�
 <a id="cross-references"></a>
 ## 交叉引用
 
-- [配置 — `docsOutput`](/reference/configuration#docsoutput)
-- [输出布局](/guide/documents/output-layouts)
-- [Docusaurus 集成](/guide/integrations/docusaurus)
-- [Nextra 集成](/guide/integrations/nextra)（目录解析器心智模型）
-- [VitePress 集成](/guide/integrations/vitepress)（UI 目录引导模式）
+- [配置 — `docsOutput`](/zh-Hans/reference/configuration#docsoutput)
+- [输出布局](/zh-Hans/guide/documents/output-layouts)
+- [Docusaurus 集成](/zh-Hans/guide/integrations/docusaurus)
+- [Nextra 集成](/zh-Hans/guide/integrations/nextra)（目录解析器心智模型）
+- [VitePress 集成](/zh-Hans/guide/integrations/vitepress)（UI 目录引导模式）

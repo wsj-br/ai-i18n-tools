@@ -18,7 +18,7 @@ Tableau de codes de langue BCP-47 vers lesquels traduire (par exemple, `["de", "
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (facultatif)
 
-Code BCP-47 pour la langue de l'interface utilisateur de l'outil (aide CLI, journaux/résumés et tableau de bord de traduction). Il est indépendant de `sourceLocale` / `targetLocales` et est remplacé par l'indicateur `-L` / `--ui-lang` et la variable d'environnement `AI_I18N_LANG`. Les valeurs inconnues sont rétrogradées en douceur vers les paramètres régionaux source (`en-GB`) — il n'y a pas de validation stricte. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
+Code BCP-47 pour la langue de l'interface utilisateur de l'outil (aide CLI, journaux/résumés et tableau de bord de traduction). Il est indépendant de `sourceLocale` / `targetLocales` et est remplacé par l'indicateur `-L` / `--ui-lang` et la variable d'environnement `AI_I18N_LANG`. Les valeurs inconnues sont rétrogradées en douceur vers les paramètres régionaux source (`en-GB`) — il n'y a pas de validation stricte. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (facultatif)
@@ -276,11 +276,11 @@ Réécrire les liens relatifs après la traduction (activé automatiquement lors
 - `docsOutput.linkRewriteDocsRoot`
 Racine du dépôt utilisée lors du calcul des préfixes de réécriture de liens plats. Laissez généralement cette valeur à `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
 - `docsOutput.rewriteVitepressLinks`
-Lorsque `true`, exécutez le normalisateur de liens VitePress après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"vitepress"`. À utiliser avec toute disposition `doc-system` où les dossiers de locale se trouvent à côté de l'anglais sous `docsRoot`. Réécrit les chemins `docs/guide/…` de style README vers les routes du site (`/guide/…`) et les liens `../guide/…` relatifs à la locale. Pour les liens vers des fichiers de dépôt en dehors de l'arborescence VitePress (`LICENSE`, `examples/`), utilisez des URL complètes dans la source anglaise — voir [Intégration VitePress — README comme page d'accueil des documents](/guide/integrations/vitepress#readme-as-homepage).
+Lorsque `true`, exécutez le normalisateur de liens VitePress après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"vitepress"`. À utiliser avec toute disposition `doc-system` où les dossiers de locale se trouvent à côté de l'anglais sous `docsRoot`. Réécrit les chemins `docs/guide/…` de style README vers les routes du site (`/guide/…`) et les liens `../guide/…` relatifs à la locale. Pour les liens vers des fichiers de dépôt en dehors de l'arborescence VitePress (`LICENSE`, `examples/`), utilisez des URL complètes dans la source anglaise — voir [Intégration VitePress — README comme page d'accueil des documents](/fr/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-Lorsque `true`, exécutez le normalisateur de liens Nextra après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"nextra"`. Réécrit les chemins `content/en/…` et les chemins `.mdx` relatifs vers des routes de site neutres en locale (`/guide/…`) pour Next.js `i18n`. Voir [Intégration Nextra — Conventions de liens](/guide/integrations/nextra#link-conventions).
+Lorsque `true`, exécutez le normalisateur de liens Nextra après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"nextra"`. Réécrit les chemins `content/en/…` et les chemins `.mdx` relatifs vers des routes de site neutres en locale (`/guide/…`) pour Next.js `i18n`. Voir [Intégration Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (par défaut) ou `"dir"`. Dot écrit `stem.{locale}.mdx` à côté des sources anglaises ; dir écrit les dossiers de locale comme Nextra. Voir [Intégration Fumadocs — Disposition de la page](/guide/integrations/fumadocs#page-layout).
+`"dot"` (par défaut) ou `"dir"`. Dot écrit `stem.{locale}.mdx` à côté des sources anglaises ; dir écrit les dossiers de locale comme Nextra. Voir [Intégration Fumadocs — Disposition de la page](/fr/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 Lorsque `true`, exécutez le normalisateur de liens Fumadocs après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"fumadocs"`. Réécrit les chemins de contenu et les liens `.mdx` relatifs vers les routes `/docs/…`.
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ Exemple : `"protectKeys": ["slug", "code"]` ignore `{ slug: 'getting-started', t
 <a id="json"></a>
 ### `json`
 
-Tableau de premier niveau de pipelines de traduction JSON imbriqués. Utilisé uniquement lorsque `features.translateJson` est vrai (`translate-json` ou l'étape JSON de `sync`). Voir [JSON](/guide/json).
+Tableau de premier niveau de pipelines de traduction JSON imbriqués. Utilisé uniquement lorsque `features.translateJson` est vrai (`translate-json` ou l'étape JSON de `sync`). Voir [JSON](/fr/guide/json).
 
 | Champ | Description |
 |-------|-------------|

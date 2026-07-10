@@ -1,12 +1,12 @@
 <a id="quick-start"></a>
 # Schnellstart
 
-Die Standardvorlage `init` (`ui-markdown`) ermöglicht nur die Extraktion und Übersetzung der **Benutzeroberfläche**. Die Vorlagen `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` und `ui-fumadocs` ermöglichen die **Dokumentenübersetzung** (`translate-docs`); `ui-vitepress` erstellt auch `docsOutput.vitepressThemeCatalog` für VitePress-Themenzeichenfolgen, `ui-nextra` erstellt `docs[].nextraDictionaryPath` für das Nextra-Themenwörterbuch (Seitenleisten-`_meta.ts` wird automatisch gesammelt) und `ui-fumadocs` erstellt `docsOutput.fumadocsUiCatalog` für Fumadocs-UI-Überschreibungen (Seitenleisten-`meta.json` wird automatisch gesammelt). Die Vorlage `ui-astro-website` erstellt die **UI**-Extraktion für einfache Astro-Apps (einschließlich `.astro`-Dateien); fügen Sie einen `docs[]`-Block hinzu (siehe [Astro-Webseiten (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)), wenn Sie auch `translate-docs` für `.astro`-Seiten-HTML wünschen. Die Referenz [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) verwendet **beide** Pipelines. Verwenden Sie `sync`, wenn Sie einen Befehl wünschen, der die Extraktion, UI-Übersetzung, optionale SVG-Dateiübersetzung und Dokumentationsübersetzung gemäß Ihrer Konfiguration ausführt.
+Die Standardvorlage `init` (`ui-markdown`) ermöglicht nur die Extraktion und Übersetzung der **Benutzeroberfläche**. Die Vorlagen `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` und `ui-fumadocs` ermöglichen die **Dokumentenübersetzung** (`translate-docs`); `ui-vitepress` erstellt auch `docsOutput.vitepressThemeCatalog` für VitePress-Themenzeichenfolgen, `ui-nextra` erstellt `docs[].nextraDictionaryPath` für das Nextra-Themenwörterbuch (Seitenleisten-`_meta.ts` wird automatisch gesammelt) und `ui-fumadocs` erstellt `docsOutput.fumadocsUiCatalog` für Fumadocs-UI-Überschreibungen (Seitenleisten-`meta.json` wird automatisch gesammelt). Die Vorlage `ui-astro-website` erstellt die **UI**-Extraktion für einfache Astro-Apps (einschließlich `.astro`-Dateien); fügen Sie einen `docs[]`-Block hinzu (siehe [Astro-Webseiten (parse-and-replace)](/de/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)), wenn Sie auch `translate-docs` für `.astro`-Seiten-HTML wünschen. Die Referenz [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) verwendet **beide** Pipelines. Verwenden Sie `sync`, wenn Sie einen Befehl wünschen, der die Extraktion, UI-Übersetzung, optionale SVG-Dateiübersetzung und Dokumentationsübersetzung gemäß Ihrer Konfiguration ausführt.
 
 <a id="runnable-examples"></a>
 ### Ausführbare Beispiele
 
-Neun ausführbare Projekte und Fixtures befinden sich unter [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Siehe den [Beispielkatalog](/examples) (Konsolen-App, Next.js + Docusaurus, Astro-Website, Astro Starlight-Dokumente, VitePress-Dokumente, Nextra-Dokumente, Fumadocs-Dokumente, Multi-Provider-Vergleich, Markdown-Stresstest).
+Neun ausführbare Projekte und Fixtures befinden sich unter [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Siehe den [Beispielkatalog](/de/examples) (Konsolen-App, Next.js + Docusaurus, Astro-Website, Astro Starlight-Dokumente, VitePress-Dokumente, Nextra-Dokumente, Fumadocs-Dokumente, Multi-Provider-Vergleich, Markdown-Stresstest).
 
 **Ein Beispiel eigenständig ausführen** (ohne das gesamte Monorepo zu klonen):
 
@@ -68,7 +68,7 @@ Wenn das Paket lokal installiert ist, können Sie die CLI-Befehle direkt in Skri
 }
 ```
 
-**Tipp:** Übergeben Sie `-L <code>` oder legen Sie `AI_I18N_LANG` fest, wenn Sie die CLI-Ausgabe und das Dashboard in einer anderen Sprache wünschen – siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language).
+**Tipp:** Übergeben Sie `-L <code>` oder legen Sie `AI_I18N_LANG` fest, wenn Sie die CLI-Ausgabe und das Dashboard in einer anderen Sprache wünschen – siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 ## Kombinierte Synchronisierung

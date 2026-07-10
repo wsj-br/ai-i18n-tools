@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 Le port d'écoute par défaut est **8675**. Si ce port est indisponible, le serveur essaie le port suivant (jusqu'à 1000 tentatives) et enregistre dans les journaux le port choisi. L'alias obsolète `editor` fonctionne encore mais affiche un avertissement — privilégiez `dashboard`.
 
-L'interface utilisateur du tableau de bord utilise la même résolution de localisation que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → localisation du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/guide/tool-ui-language).
+L'interface utilisateur du tableau de bord utilise la même résolution de localisation que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → localisation du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ L'interface utilisateur du tableau de bord utilise la même résolution de local
 
 | Je veux… | Onglet | Guide |
 | --- | --- | --- |
-| Corriger les segments de document qui n'ont pas été traduits | **Échecs** | [Échecs](/guide/translation-dashboard/failures) |
-| Corriger le Markdown source avant de traduire | **Problèmes Markdown** | [Problèmes Markdown](/guide/translation-dashboard/markdown-issues) |
-| Annuler une traduction de document mise en cache | **Documentation** | [Cache de documentation](/guide/translation-dashboard/documentation-cache) |
-| Corriger une étiquette d'interface utilisateur | **Chaînes d'interface utilisateur** | [Chaînes et pluriels d'interface utilisateur](/guide/translation-dashboard/ui-strings) |
-| Corriger une forme plurielle (`one`, `other`, …) | **Pluriels d'interface utilisateur** | [Chaînes et pluriels d'interface utilisateur](/guide/translation-dashboard/ui-strings) |
-| Verrouiller la terminologie pour la traduction de l'interface utilisateur | **Glossaire** | [Glossaire](/guide/translation-dashboard/glossary) |
-| Voir la couverture du cache et l'utilisation du modèle | **Statistiques** | [Statistiques](/guide/translation-dashboard/statistics) |
+| Corriger les segments de document qui n'ont pas été traduits | **Échecs** | [Échecs](/fr/guide/translation-dashboard/failures) |
+| Corriger le Markdown source avant de traduire | **Problèmes Markdown** | [Problèmes Markdown](/fr/guide/translation-dashboard/markdown-issues) |
+| Annuler une traduction de document mise en cache | **Documentation** | [Cache de documentation](/fr/guide/translation-dashboard/documentation-cache) |
+| Corriger une étiquette d'interface utilisateur | **Chaînes d'interface utilisateur** | [Chaînes et pluriels d'interface utilisateur](/fr/guide/translation-dashboard/ui-strings) |
+| Corriger une forme plurielle (`one`, `other`, …) | **Pluriels d'interface utilisateur** | [Chaînes et pluriels d'interface utilisateur](/fr/guide/translation-dashboard/ui-strings) |
+| Verrouiller la terminologie pour la traduction de l'interface utilisateur | **Glossaire** | [Glossaire](/fr/guide/translation-dashboard/glossary) |
+| Voir la couverture du cache et l'utilisation du modèle | **Statistiques** | [Statistiques](/fr/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## Après avoir modifié

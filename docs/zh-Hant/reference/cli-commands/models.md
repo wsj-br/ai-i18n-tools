@@ -8,7 +8,7 @@
 
 根據作用中提供者的 `GET /models` 清單（成員資格與 `expiration_date`）驗證每個已設定的模型 ID。需要該提供者的 API 金鑰（Ollama 等無金鑰提供者則不需要）。當任何已設定的 ID 缺失或過期時，會以非零狀態結束，並遵守提供者的 `requestTimeoutMs`。當提供者回傳定價（例如 OpenRouter）時，也會顯示每 1M 權杖的提示/完成 USD 成本。
 
-**另請參閱：** [LLM 提供者](/guide/providers-and-models)
+**另請參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **關鍵選項：** `-P` / `--provider`
 
-**另請參閱：** [LLM 提供者](/guide/providers-and-models)
+**另請參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)
 
 ---
 

@@ -3,7 +3,7 @@
 
 Utilisez `init -t ui-fumadocs` et `docsOutput.style: "fumadocs"` pour les sites de documentation [Fumadocs](https://www.fumadocs.dev/) 4 sur Next.js App Router. Le préréglage est un alias pour `doc-system` avec un `localeSubpath` vide et des codes de paramètres régionaux BCP-47 ou courts conservés (`localePathLowercase` est par défaut `false`).
 
-Voir aussi [Documents](/guide/documents/) et la démo exécutable [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (analyseur de points, port 3080).
+Voir aussi [Documents](/fr/guide/documents/) et la démo exécutable [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (analyseur de points, port 3080).
 
 <a id="quick-start"></a>
 ## Démarrage rapide
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-Voir `ai-i18n-tools.config.dir.example.json` dans [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) pour une configuration de répertoire par copier-coller. Le modèle mental correspond à l'[intégration Nextra](/guide/integrations/nextra#page-layout).
+Voir `ai-i18n-tools.config.dir.example.json` dans [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) pour une configuration de répertoire par copier-coller. Le modèle mental correspond à l'[intégration Nextra](/fr/guide/integrations/nextra#page-layout).
 
 <a id="sidebar-metajson"></a>
 ## Barre latérale (`meta.json`)
@@ -122,26 +122,26 @@ Les paramètres régionaux standard peuvent être couverts par les préréglages
 **N'utilisez pas** `json[]` pour les chaînes d'interface utilisateur Fumadocs — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés.
 
 <a id="framework-shell-translation"></a>
-## Traduction de l'interface du framework
+## Traduction du shell du framework
 
 | Framework | Chaînes de shell / thème | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | catalogue `write-translations` | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Étiquettes de la barre latérale `_meta.ts` | Documents — auto lorsque `style: "nextra"` + `translate-docs` |
+| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Étiquettes de barre latérale `_meta.ts` | Documents — auto quand `style: "nextra"` + `translate-docs` |
 | Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | étiquettes de barre latérale `meta.json` | Documents — auto lorsque `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | catalogue de remplacements d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses langues) ; pas de pipeline d'interface supplémentaire | Documents — `translate-docs` (pages uniquement) |
+| Fumadocs | Étiquettes de barre latérale `meta.json` | Documents — auto quand `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catalogue de surcharges d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses locales) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
 
-Ne mettez **pas** les chaînes de l'interface/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de locales d'applications non liés. Voir [intégration Docusaurus](/guide/integrations/docusaurus), [intégration VitePress](/guide/integrations/vitepress) et [intégration Nextra](/guide/integrations/nextra) pour les autres modèles de framework.
+Ne mettez **pas** les chaînes de l'interface/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de locales d'applications non liés. Voir [intégration Docusaurus](/fr/guide/integrations/docusaurus), [intégration VitePress](/fr/guide/integrations/vitepress) et [intégration Nextra](/fr/guide/integrations/nextra) pour les autres modèles de framework.
 
 <a id="link-conventions"></a>
 ## Conventions de lien
 
 Fumadocs sert des routes préfixées par les paramètres régionaux via le middleware Next.js (`/docs/getting-started`, `/pt/docs/getting-started`). **Les liens dans la page doivent rester neutres par rapport aux paramètres régionaux** (`/docs/getting-started`) afin que le préfixe des paramètres régionaux actifs soit appliqué automatiquement.
 
-Activez le normaliseur intégré pour que `translate-docs` corrige automatiquement les liens dans chaque fichier traduit :
+Activez le normaliseur intégré pour que `translate-docs` corrige automatiquement les liens dans chaque fichier traduit :
 
 ```json
 "docsOutput": {
@@ -157,7 +157,7 @@ Activez le normaliseur intégré pour que `translate-docs` corrige automatiqueme
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/fr/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | inchangé (URL complète) |
 
 **Règles de rédaction**
@@ -166,7 +166,7 @@ Activez le normaliseur intégré pour que `translate-docs` corrige automatiqueme
 - Fichiers de dépôt en dehors de l'arborescence de contenu : utilisez des **URL complètes**.
 - Ne modifiez **pas** manuellement les liens dans les copies suffixées par les paramètres régionaux (`*.pt.mdx`) ou les arborescences `content/{locale}/` — régénérez avec `sync` / `translate-docs`.
 
-Voir aussi [Documents — réécriture de liens](/guide/documents/link-rewriting) et [Configuration — `docsOutput`](/reference/configuration#docsoutput).
+Voir aussi [Documents — réécriture de liens](/fr/guide/documents/link-rewriting) et [Configuration — `docsOutput`](/fr/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Codes de paramètres régionaux
@@ -186,8 +186,8 @@ Les projets Fumadocs peuvent définir plusieurs blocs `defineDocs` dans `source.
 <a id="cross-references"></a>
 ## Références croisées
 
-- [Configuration — `docsOutput`](/reference/configuration#docsoutput)
-- [Dispositions de sortie](/guide/documents/output-layouts)
-- [Intégration Docusaurus](/guide/integrations/docusaurus)
-- [Intégration Nextra](/guide/integrations/nextra) (modèle mental de l'analyseur de répertoires)
-- [Intégration VitePress](/guide/integrations/vitepress) (modèle de démarrage du catalogue d'interface utilisateur)
+- [Configuration — `docsOutput`](/fr/reference/configuration#docsoutput)
+- [Dispositions de sortie](/fr/guide/documents/output-layouts)
+- [Intégration Docusaurus](/fr/guide/integrations/docusaurus)
+- [Intégration Nextra](/fr/guide/integrations/nextra) (modèle mental de l'analyseur de répertoires)
+- [Intégration VitePress](/fr/guide/integrations/vitepress) (modèle de démarrage du catalogue d'interface utilisateur)

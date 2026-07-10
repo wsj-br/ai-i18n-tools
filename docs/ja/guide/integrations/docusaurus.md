@@ -3,7 +3,7 @@
 
 [Docusaurus](https://docusaurus.io/) ドキュメント サイトでは、`init -t ui-docusaurus` と `docsOutput.style: "docusaurus"` を使用します。プリセットは、`docs[]` ブロックを `docusaurusCatalogDir` で作成し、`translate-docs` でページの Markdown と Docusaurus シェルの JSON を 1 つのコマンドで翻訳できるようにします。
 
-以下も参照してください: [ドキュメント](/guide/documents/)、実行可能な [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) デモ (Next.js アプリとネストされた `docs-site/`)、および Docusaurus のみに焦点を当てたチュートリアルについては [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)。
+以下も参照してください: [ドキュメント](/ja/guide/documents/)、実行可能な [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) デモ (Next.js アプリとネストされた `docs-site/`)、および Docusaurus のみに焦点を当てたチュートリアルについては [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -29,7 +29,7 @@ docs-site/docs/guide/quick-start.md
   →  docs-site/i18n/fr/docusaurus-plugin-content-docs/current/guide/quick-start.md
 ```
 
-1つの`docs[]`ブロックを設定します。
+`docs[]` ブロックを1つ設定します：
 
 ```json
 {
@@ -83,17 +83,17 @@ DocusaurusシェルJSONを`json[]`に配置しないでください。代わり�
 <a id="framework-shell-translation"></a>
 ## フレームワークシェルの翻訳
 
-| フレームワーク | シェル/テーマ文字列 | パイプライン |
+| フレームワーク | シェル / テーマ文字列 | パイプライン |
 |-----------|----------------------|----------|
-| Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の場合に自動 |
+| Docusaurus | `write-translations` カタログ (`{ message, description }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
 | Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の場合は自動 |
-| Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
+| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
+| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
 
-フレームワークのシェル/テーマ文字列は`json[]`に**入れないでください** — このパイプラインは無関係なアプリのロケールバンドル向けです。他のフレームワークのパターンについては、[VitePressの統合](/guide/integrations/vitepress)、[Nextraの統合](/guide/integrations/nextra)、[Fumadocsの統合](/guide/integrations/fumadocs)を参照してください。
+フレームワークのシェル/テーマ文字列は`json[]`に**入れないでください** — このパイプラインは無関係なアプリのロケールバンドル向けです。他のフレームワークのパターンについては、[VitePressの統合](/ja/guide/integrations/vitepress)、[Nextraの統合](/ja/guide/integrations/nextra)、[Fumadocsの統合](/ja/guide/integrations/fumadocs)を参照してください。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

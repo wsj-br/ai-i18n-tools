@@ -38,7 +38,7 @@ makeLoadLocale(
 
 Use `setupKeyAsDefaultT` como ponto de entrada habitual do aplicativo (chave recortada + plural `wrapT` + opcional `translate-ui` `{sourceLocale}.json`). Chamar apenas `wrapI18nWithKeyTrim` é **obsoleto** para configuração de aplicativos.
 
-Crie `localeLoaders` com `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` para que as chaves permaneçam alinhadas com `targetLocales` após `generate-ui-languages`. Consulte [Runtime wiring](/guide/ui-strings/i18next-runtime), [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/), [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/) e [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (`makeT` personalizado sem i18next).
+Crie `localeLoaders` com `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, …)` para que as chaves permaneçam alinhadas com `targetLocales` após `generate-ui-languages`. Consulte [Runtime wiring](/pt-BR/guide/ui-strings/i18next-runtime), [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/), [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/) e [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (`makeT` personalizado sem i18next).
 
 <a id="display-helpers"></a>
 ### Auxiliares de exibição

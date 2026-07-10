@@ -8,7 +8,7 @@
 <a id="when-to-use-it"></a>
 ## 何时使用
 
-当您想在花费令牌之前修复**源 markdown**时，请使用此选项卡——尤其是在 [失败](/guide/translation-dashboard/failures) 选项卡中质量检查因结构问题而持续失败时。
+当您想在花费令牌之前修复**源 markdown**时，请使用此选项卡——尤其是在 [失败](/zh-Hans/guide/translation-dashboard/failures) 选项卡中质量检查因结构问题而持续失败时。
 
 <a id="how-to-use-the-tab"></a>
 ## 如何使用此选项卡
@@ -39,4 +39,4 @@
 | 未关闭的内联代码 | 反引号跨度已打开但未关闭 |
 | `STRONG_OUTSIDE_LINK` | 粗体标记包装了一个 markdown 链接——将粗体移到链接文本内 |
 
-另请参阅 [复杂的 Markdown 和失败的质量检查](/guide/documents/#complex-markdown-and-failed-quality-checks)。
+另请参阅 [复杂的 Markdown 和失败的质量检查](/zh-Hans/guide/documents/#complex-markdown-and-failed-quality-checks)。

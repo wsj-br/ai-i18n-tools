@@ -8,7 +8,7 @@
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
 
-`translate-json` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。在嵌套的 JSON 包中使用此功能，某些地區可以從專用模型中受益——例如 `zh-Hans` / `zh-Hant` 主題文件。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)。
+`translate-json` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。在嵌套的 JSON 包中使用此功能，某些地區可以從專用模型中受益——例如 `zh-Hans` / `zh-Hant` 主題文件。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### 步驟 1：初始化巢狀 JSON
@@ -98,12 +98,12 @@ npx ai-i18n-tools status
 
 | 情況 | 用途 |
 |-----------|-----|
-| JS/TS/Astro 中的 UI 字串位於 `t("…")` / `i18n.t("…")` | [UI 字串](/guide/ui-strings/) — `extract` + `translate-ui` |
+| JS/TS/Astro 中的 UI 字串位於 `t("…")` / `i18n.t("…")` | [UI 字串](/zh-Hant/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` 目錄 (`{ "key": { "message": "…", "description": "…" } }`) | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs`，**不是** `json[]` |
-| VitePress 主題/導航/側邊欄字串 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs`；**請勿**使用 `json[]` — 請參閱 [VitePress 整合](/guide/integrations/vitepress) |
-| Nextra `_meta.ts` 標籤與主題字典 `.ts` | 文件 — `translate-docs`（當 `style: "nextra"` 時自動 `_meta`，可選 `nextraDictionaryPath`）；**請勿**使用 `json[]` — 請參閱 [Nextra 整合](/guide/integrations/nextra) |
-| Fumadocs `meta.json` 標籤與 UI 覆寫目錄 | 文件 — `translate-docs`（當 `style: "fumadocs"` 時自動 `meta.json`，可選 `fumadocsUiCatalog`）；**請勿**使用 `json[]` — 請參閱 [Fumadocs 整合](/guide/integrations/fumadocs) |
+| VitePress 主題/導航/側邊欄字串 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs`；**請勿**使用 `json[]` — 請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress) |
+| Nextra `_meta.ts` 標籤與主題字典 `.ts` | 文件 — `translate-docs`（當 `style: "nextra"` 時自動 `_meta`，可選 `nextraDictionaryPath`）；**請勿**使用 `json[]` — 請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra) |
+| Fumadocs `meta.json` 標籤與 UI 覆寫目錄 | 文件 — `translate-docs`（當 `style: "fumadocs"` 時自動 `meta.json`，可選 `fumadocsUiCatalog`）；**請勿**使用 `json[]` — 請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
 | 獨立的巢狀地區設定 JSON (ZenBrowser 樣式 `translation.json` 樹) | JSON — `json[]` + `translate-json` |
-| 附有 `<text>` / `<title>` / `<desc>` 的圖解 `.svg` 檔案 | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (選用；非三個主要管道之一) |
+| 附有 `<text>` / `<title>` / `<desc>` 的圖解 `.svg` 檔案 | `features.translateSVG` + [`svg`](/zh-Hant/reference/configuration#svg) + `translate-svg` (選用；非三個主要管道之一) |
 
-欄位參考：[設定參考](/reference/configuration#json) 中的 [`json`](#json)。用於清理的快取鍵在 `file_tracking` 中使用 `json-block:{blockIndex}:{projectRelPath}`。
+欄位參考：[設定參考](/zh-Hant/reference/configuration#json) 中的 [`json`](#json)。用於清理的快取鍵在 `file_tracking` 中使用 `json-block:{blockIndex}:{projectRelPath}`。

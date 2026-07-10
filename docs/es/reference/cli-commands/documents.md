@@ -12,7 +12,7 @@ Traduce markdown, MDX, `.astro`, JSON de catálogo opcional de Docusaurus (`docu
 
 `-j`: número máximo de configuraciones regionales paralelas; `-b`: número máximo de llamadas a la API por lotes paralelas por archivo. `--prompt-format`: formato de conexión por lotes (`xml` | `json-array` | `json-object`).
 
-**Véase también:** [Comportamiento de la caché y banderas `translate-docs`](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Formato de solicitud por lotes](/guide/documents/cli-options#batch-prompt-format)
+**Véase también:** [Comportamiento de la caché y banderas `translate-docs`](/es/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Formato de solicitud por lotes](/es/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@ Requiere al menos un bloque `docs[]`. Recopila `.md` / `.mdx` bajo el `contentPa
 
 `--slug-style`: `github` (predeterminado; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. Con `pymdown`, `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode` opcionales.
 
-**Véase también:** [Enlaces de anclaje](/guide/documents/anchor-links)
+**Véase también:** [Enlaces de anclaje](/es/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@ Imprime líneas `relativePath:line: [ISSUE_CODE] message` en stderr; código de 
 
 **Opciones clave:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 
-**Véase también:** [Problemas de Markdown](/guide/translation-dashboard/markdown-issues)
+**Véase también:** [Problemas de Markdown](/es/guide/translation-dashboard/markdown-issues)

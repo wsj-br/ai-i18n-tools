@@ -8,7 +8,7 @@ Este é o único pipeline que emite arquivos SVG **binários** específicos da l
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
 
-O `translate-svg` resolve modelos **por localidade de destino**: primeiro o `localeModels(locale)`, quando configurado, e depois o `translationModels`. A execução de cada SVG por localidade utiliza sua própria cadeia de fallback — útil quando rótulos de diagramas em localidades CJK precisam de um modelo ajustado para o script (por exemplo, `ja`). Consulte [Provedores e modelos](/guide/providers-and-models#model-fallback-chain).
+O `translate-svg` resolve modelos **por localidade de destino**: primeiro o `localeModels(locale)`, quando configurado, e depois o `translationModels`. A execução de cada SVG por localidade utiliza sua própria cadeia de fallback — útil quando rótulos de diagramas em localidades CJK precisam de um modelo ajustado para o script (por exemplo, `ja`). Consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain).
 
 A tradução SVG usa o mesmo cache SQLite que `translate-docs` e `translate-json` (`cacheDir`). Segmentos de texto já traduzidos são servidos do cache; apenas texto de origem novo ou alterado é enviado para o LLM.
 
@@ -24,7 +24,7 @@ Use `translate-svg` quando:
 **Não** use `translate-svg` para:
 
 - SVGs decorativos sem texto traduzível (ícones, logotipos, planos de fundo).
-- Capturas de tela raster (PNG, JPEG, WebP) — estas são tratadas por meio de [Imagens e capturas de tela](/guide/images-and-screenshots/).
+- Capturas de tela raster (PNG, JPEG, WebP) — estas são tratadas por meio de [Imagens e capturas de tela](/pt-BR/guide/images-and-screenshots/).
 - Texto incorporado em dados de caminho em vez de elementos `<text>` — o extrator não consegue ler contornos de caminho.
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ Para aplicativos da web, ative `forceLowercase: true` quando seu design usar ró
 
 | Layout | `svg.style` | Melhor para | Guia filho |
 |--------|-------------|----------|-------------|
-| **Plano (aplicativo web)** | `"flat"` | Next.js, Vite e outros aplicativos que incorporam SVGs por nome de arquivo codificado por localidade | [Aplicativo web (SVG plano)](/guide/svg-translation/translated-svg-web-app) |
-| **Colocado (sistema de documentação)** | `"nested"` + `pathTemplate` | Docusaurus e outros sites de sistema de documentação onde os ativos traduzidos ficam ao lado das páginas traduzidas | [SVG colocado](/guide/svg-translation/translated-svg-colocated) |
+| **Plano (aplicativo web)** | `"flat"` | Next.js, Vite e outros aplicativos que incorporam SVGs por nome de arquivo codificado por localidade | [Aplicativo web (SVG plano)](/pt-BR/guide/svg-translation/translated-svg-web-app) |
+| **Colocado (sistema de documentação)** | `"nested"` + `pathTemplate` | Docusaurus e outros sites de sistema de documentação onde os ativos traduzidos ficam ao lado das páginas traduzidas | [SVG colocado](/pt-BR/guide/svg-translation/translated-svg-colocated) |
 
 O **layout plano** grava arquivos como `public/assets/diagram.de.svg` ao lado de `diagram.en-GB.svg`. Seu aplicativo os referencia com um sufixo de localidade:
 
@@ -56,7 +56,7 @@ O **layout plano** grava arquivos como `public/assets/diagram.de.svg` ao lado de
 
 O **layout colocado** grava o SVG de cada localidade na árvore de conteúdo dessa localidade (por exemplo, `i18n/de/.../assets/diagram.svg`). O markdown de origem e traduzido usa o mesmo caminho relativo (`../assets/diagram.svg`) — nenhuma regra `regexAdjustments` é necessária.
 
-Consulte o [guia de decisão de Imagens e capturas de tela](/guide/images-and-screenshots/#decision-guide) para saber como os layouts SVG se encaixam nas estratégias de captura de tela raster.
+Consulte o [guia de decisão de Imagens e capturas de tela](/pt-BR/guide/images-and-screenshots/#decision-guide) para saber como os layouts SVG se encaixam nas estratégias de captura de tela raster.
 
 <a id="step-1-enable-and-configure"></a>
 ### Etapa 1: Habilitar e configurar
@@ -84,7 +84,7 @@ Campos-chave `svg`:
 - `pathTemplate` — caminho de saída personalizado opcional com placeholders `{outputDir}`, `{locale}`, `{llocale}`, `{basename}`, `{stem}` e outros (necessário para layouts de sistema de documentos colocados).
 - `forceLowercase` — texto traduzido em letras minúsculas na remontagem.
 
-Referência completa do campo: [Configuração — `svg`](/reference/configuration#svg).
+Referência completa do campo: [Configuração — `svg`](/pt-BR/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
 ### Passo 2: Traduzir
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### Solução de problemas
 
-Problemas comuns de SVG — diretórios de origem/saída mistos, URLs estáticas absolutas no Docusaurus e erros de layout de caminho — são abordados em [Solução de problemas de SVG](/guide/svg-translation/troubleshooting). Para ativos raster e reescrita de links, consulte [Solução de problemas de imagens e capturas de tela](/guide/images-and-screenshots/troubleshooting).
+Problemas comuns de SVG — diretórios de origem/saída mistos, URLs estáticas absolutas no Docusaurus e erros de layout de caminho — são abordados em [Solução de problemas de SVG](/pt-BR/guide/svg-translation/troubleshooting). Para ativos raster e reescrita de links, consulte [Solução de problemas de imagens e capturas de tela](/pt-BR/guide/images-and-screenshots/troubleshooting).

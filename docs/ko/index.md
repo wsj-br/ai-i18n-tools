@@ -56,6 +56,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## 빠른 설치
 
 게시된 패키지는 **ESM 전용**입니다. Node.js `>=22.16.0`이(가) 필요합니다.
@@ -69,7 +70,8 @@ npx ai-i18n-tools sync
 
 CLI 호출 세부 정보는 [설치](/ko/guide/installation)를, 스캐폴드 템플릿은 [빠른 시작](/ko/guide/quick-start)을 참조하세요.
 
-## 어떤 파이프라인을 사용해야 할까요?
+<a id="which-pipeline-should-i-use"></a>
+## 어떤 파이프라인을 사용해야 하나요?
 
 | 콘텐츠 | 명령 |
 | --- | --- |
@@ -79,7 +81,8 @@ CLI 호출 세부 정보는 [설치](/ko/guide/installation)를, 스캐폴드 �
 
 SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다 — `docs[].contentPaths`이(가) 아닙니다. 전체 비교는 [ai-i18n-tools란?](/ko/guide/what-is-ai-i18n-tools)을 참조하세요.
 
-## 문서 탐색
+<a id="explore-the-documentation"></a>
+## 문서 살펴보기
 
 - [**가이드**](/ko/guide/what-is-ai-i18n-tools) — 번역 모드, 설치, 빠른 시작 및 프레임워크 통합
 - [**통합**](/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus 및 Astro

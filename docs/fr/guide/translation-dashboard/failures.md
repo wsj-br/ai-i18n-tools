@@ -15,7 +15,7 @@ Il vous aide à répondre à : *quel segment source a échoué, pour quelle loca
 <a id="why-source-edits-matter"></a>
 ## Pourquoi les éditions de source sont importantes
 
-La mise en page dense avec des balises intégrées (**bold** mélangé avec `` `code` ``, emphase imbriquée, longues phrases avec de nombreuses étendues) rend plus difficile pour les modèles de retourner des traductions qui passent toujours les vérifications structurelles. Les segments avec **plusieurs échecs enregistrés** s'améliorent généralement plus en **réécrivant ou en divisant** la source (ou en déplaçant les exemples dans des blocs de code avec clôture) que en réexécutant la traduction sur du texte inchangé. Cela correspond à [Markdown complexe et vérifications de qualité échouées](/guide/documents/#complex-markdown-and-failed-quality-checks).
+La mise en page dense avec des balises intégrées (**bold** mélangé avec `` `code` ``, emphase imbriquée, longues phrases avec de nombreuses étendues) rend plus difficile pour les modèles de retourner des traductions qui passent toujours les vérifications structurelles. Les segments avec **plusieurs échecs enregistrés** s'améliorent généralement plus en **réécrivant ou en divisant** la source (ou en déplaçant les exemples dans des blocs de code avec clôture) que en réexécutant la traduction sur du texte inchangé. Cela correspond à [Markdown complexe et vérifications de qualité échouées](/fr/guide/documents/#complex-markdown-and-failed-quality-checks).
 
 <a id="how-to-use-the-tab"></a>
 ## Comment utiliser l'onglet
@@ -28,7 +28,7 @@ La mise en page dense avec des balises intégrées (**bold** mélangé avec `` `
 6. Le contrôle de lien 🔗 enregistre les indices de fichier/ligne dans le **terminal** où `ai-i18n-tools dashboard` s'exécute.
 7. Corrigez le **fichier source** dans votre projet, puis exécutez `translate-docs` ou `sync` à nouveau. Si la liste semble **obsolète** après une exécution réussie, exécutez `ai-i18n-tools sync --force-update` et rechargez le tableau de bord.
 
-Pour le débogage basé sur les fichiers en plus de l'interface utilisateur, utilisez `translate-docs --debug-failed` pour écrire `FAILED-TRANSLATION` détail sous `cacheDir` pendant les réessais — voir [Comportement du cache et drapeaux `translate-docs`](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+Pour le débogage basé sur les fichiers en plus de l'interface utilisateur, utilisez `translate-docs --debug-failed` pour écrire `FAILED-TRANSLATION` détail sous `cacheDir` pendant les réessais — voir [Comportement du cache et drapeaux `translate-docs`](/fr/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Échecs vs Problèmes de Markdown
@@ -39,4 +39,4 @@ Pour le débogage basé sur les fichiers en plus de l'interface utilisateur, uti
 | Cause typique | Mauvaise sortie de modèle, erreurs de validation | Émphasis non apparié, étendues de code non fermées, gras en dehors des liens |
 | Correction | Éditez la source et rétraduisez | Corrigez la mise en page Markdown source, puis rétraduisez |
 
-Voir [Problèmes de Markdown](/guide/translation-dashboard/markdown-issues) pour les vérifications statiques pré-traduction.
+Voir [Problèmes de Markdown](/fr/guide/translation-dashboard/markdown-issues) pour les vérifications statiques pré-traduction.

@@ -8,12 +8,12 @@ Kisi bhi JS/TS project ke liye design kiya gaya hai jo i18next ka upyog karta ha
 
 | Aap | Agla padhen |
 | --- | --- |
-| React / Next.js / Node + i18next | [Wire i18next](/guide/ui-strings/i18next-runtime) (Step 4) |
-| Plain HTML (markup mein koi `t()` nahi) | [Plain HTML apps](/guide/ui-strings/plain-html) |
-| Astro marketing site (hybrid) | [Astro website](/guide/ui-strings/astro-website) |
-| `t()` rules, interpolation, plurals | [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals) |
-| Language picker / RTL | [Language switcher & RTL](/guide/ui-strings/language-switcher) |
-| Runtime API signatures | [Runtime helpers](/guide/runtime-helpers) |
+| React / Next.js / Node + i18next | [Wire i18next](/hi-Latn/guide/ui-strings/i18next-runtime) (Step 4) |
+| Plain HTML (markup mein koi `t()` nahi) | [Plain HTML apps](/hi-Latn/guide/ui-strings/plain-html) |
+| Astro marketing site (hybrid) | [Astro website](/hi-Latn/guide/ui-strings/astro-website) |
+| `t()` rules, interpolation, plurals | [t() calls & plurals](/hi-Latn/guide/ui-strings/t-calls-and-plurals) |
+| Language picker / RTL | [Language switcher & RTL](/hi-Latn/guide/ui-strings/language-switcher) |
+| Runtime API signatures | [Runtime helpers](/hi-Latn/guide/runtime-helpers) |
 
 <a id="step-1-initialise"></a>
 ## Step 1: Initialise (Shuru karen)
@@ -29,7 +29,7 @@ Yeh `ai-i18n-tools.config.json` ko `ui-markdown` template ke saath likhta hai. I
 - `ui.sourceRoots` - `t("…")` calls ke liye scan karne ke liye directories ya glob patterns (jaise `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - master catalog kahan likhna hai (jaise `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - jahaan `de.json`, `pt-BR.json`, aadi likhna hai (jaise `"src/locales/"`).
-- `providers.<active>.uiModels` (vaikalpik) - `translate-ui`, bahuvachan utpatti, aur `proofread-ui` ke liye kramabaddh UI-only model soochi (kisi bhi milte-julte `localeModels` entry ke baad, `translationModels` se pehle). [Providers and models](/guide/providers-and-models#model-fallback-chain) dekhen.
+- `providers.<active>.uiModels` (vaikalpik) - `translate-ui`, bahuvachan utpatti, aur `proofread-ui` ke liye kramabaddh UI-only model soochi (kisi bhi milte-julte `localeModels` entry ke baad, `translationModels` se pehle). [Providers and models](/hi-Latn/guide/providers-and-models#model-fallback-chain) dekhen.
 
 <a id="step-2-extract-strings"></a>
 ## Step 2: Strings nikalen
@@ -40,7 +40,7 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` ke antargat sabhi JS/TS files ko `t("literal")` aur `i18n.t("literal")` calls ke liye scan karta hai. `ui.stringsJson` mein likhta hai (ya merge karta hai).
 
-Scanner configurable hai: `ui.uiExtractor.funcNames` (ya legacy `ui.reactExtractor.funcNames`) ke madhyam se custom function names joden. Astro pages aur components ke liye, `ui.uiExtractor.extensions` mein `.astro` joden. Plain HTML ke liye, [Plain HTML apps](/guide/ui-strings/plain-html) dekhen.
+Scanner configurable hai: `ui.uiExtractor.funcNames` (ya legacy `ui.reactExtractor.funcNames`) ke madhyam se custom function names joden. Astro pages aur components ke liye, `ui.uiExtractor.extensions` mein `.astro` joden. Plain HTML ke liye, [Plain HTML apps](/hi-Latn/guide/ui-strings/plain-html) dekhen.
 
 <a id="step-3-translate-ui-strings"></a>
 ## Step 3: UI strings ka anuvad karen
@@ -49,7 +49,7 @@ Scanner configurable hai: `ui.uiExtractor.funcNames` (ya legacy `ui.reactExtract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json` padhta hai, har target locale ke liye active LLM provider ko batches bhejta hai, flat JSON files (`de.json`, `fr.json`, aadi) ko `ui.flatOutputDir` mein likhta hai. Model selection UI chain ka upyog karta hai: `localeModels(locale)` → `uiModels` → `translationModels` ([Providers and models](/guide/providers-and-models#model-fallback-chain) dekhen).
+`strings.json` padhta hai, har target locale ke liye active LLM provider ko batches bhejta hai, flat JSON files (`de.json`, `fr.json`, aadi) ko `ui.flatOutputDir` mein likhta hai. Model selection UI chain ka upyog karta hai: `localeModels(locale)` → `uiModels` → `translationModels` ([Providers and models](/hi-Latn/guide/providers-and-models#model-fallback-chain) dekhen).
 
 <a id="per-locale-model-overrides"></a>
 ### Pratyaik sthanik model override
@@ -60,7 +60,7 @@ Har entry ke liye, `translate-ui` ek optional `models` object mein **active prov
 
 > **Note:** UI strings mein Dashboard edits `strings.json` mein rahte hain, na ki SQLite documentation cache mein. Catalog se flat locale files ko rewrite karne ke liye plain `sync` ya `translate-ui` (koi special flag nahi) chalayen — `--force-update` UI step par **forward nahi** kiya jata hai. Manual edits ke baad UI commands par `--force` se bachen: yah har entry ka phir se anuvad karta hai aur aapki `user-edited` rows ko overwrite kar sakta hai.
 
-Phir runtime par i18next ko wire karen — [Wire i18next](/guide/ui-strings/i18next-runtime).
+Phir runtime par i18next ko wire karen — [Wire i18next](/hi-Latn/guide/ui-strings/i18next-runtime).
 
 <a id="exporting-to-xliff-20-optional"></a>
 ## XLIFF 2.0 mein export karna (optional)

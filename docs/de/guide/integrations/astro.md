@@ -3,7 +3,7 @@
 
 Verwenden Sie ai-i18n-tools mit [Astro](https://astro.build/) in zwei gängigen Setups: **Astro Starlight** Dokumentationsseiten und **reinen Astro** Marketing- oder App-Seiten. Beide verwenden Dokumente (`translate-docs`) für den Seiteninhalt; reine Astro-Seiten kombinieren dies oft mit UI-Strings (`extract` / `translate-ui`) für `t()`-Strings in Frontmatter und gemeinsamen Daten.
 
-Siehe auch [UI-Strings](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Dokumente](/guide/documents/) und die unten stehenden ausführbaren Beispiele.
+Siehe auch [UI-Strings](/de/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Dokumente](/de/guide/documents/) und die unten stehenden ausführbaren Beispiele.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -45,7 +45,7 @@ Konfigurieren Sie einen `docs[]`-Block:
 
 Verweisen Sie `contentPaths` auf Ihre englischen `.md` / `.mdx`-Dateien und -Verzeichnisse. Setzen Sie `docsRoot` auf denselben Ordner, den Starlight als Inhaltsstamm verwendet.
 
-Starlight UI-Overrides können bei Bedarf `src/content/i18n/en.json` mit `jsonPathTemplate` in einem separaten `docs[]`-Block verwenden – siehe [Dokumente – Initialisierung für die Dokumentation](/guide/documents/#step-1-initialise-for-documentation).
+Starlight UI-Overrides können bei Bedarf `src/content/i18n/en.json` mit `jsonPathTemplate` in einem separaten `docs[]`-Block verwenden – siehe [Dokumente – Initialisierung für die Dokumentation](/de/guide/documents/#step-1-initialise-for-documentation).
 
 <a id="framework-shell-translation"></a>
 ### Framework-Shell-Übersetzung
@@ -56,11 +56,11 @@ Starlight liefert eigene integrierte UI-Strings für viele Sprachen (Navigations
 |-----------|----------------------|----------|
 | Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
 | Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente – `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleistenkatalog | Dokumente – `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` Seitenleistenbeschriftungen + Theme-Wörterbuch `.ts` | Dokumente – siehe [Nextra-Integration](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` Seitenleistenbeschriftungen + UI-Überschreibungskatalog | Dokumente – siehe [Fumadocs-Integration](/guide/integrations/fumadocs) |
+| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` Seitenleistenbeschriftungen + Theme-Wörterbuch `.ts` | Dokumente – siehe [Nextra-Integration](/de/guide/integrations/nextra) |
+| Fumadocs | `meta.json` Seitenleistenbeschriftungen + UI-Überschreibungskatalog | Dokumente – siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs) |
 
-Siehe [Docusaurus-Integration](/guide/integrations/docusaurus), [VitePress-Integration](/guide/integrations/vitepress), [Nextra-Integration](/guide/integrations/nextra) und [Fumadocs-Integration](/guide/integrations/fumadocs) für die anderen Framework-Muster.
+Siehe [Docusaurus-Integration](/de/guide/integrations/docusaurus), [VitePress-Integration](/de/guide/integrations/vitepress), [Nextra-Integration](/de/guide/integrations/nextra) und [Fumadocs-Integration](/de/guide/integrations/fumadocs) für die anderen Framework-Muster.
 
 <a id="example-project"></a>
 ### Beispielprojekt

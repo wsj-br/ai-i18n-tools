@@ -15,7 +15,7 @@ Ela ajuda você a responder: *qual segmento de origem falhou, para qual local e 
 <a id="why-source-edits-matter"></a>
 ## Por que as edições de origem importam
 
-Marcação inline densa (**negrito** misturado com `` `code` ``, ênfase aninhada, frases longas com muitos spans) torna mais difícil para os modelos retornarem traduções que ainda passem nas verificações estruturais. Segmentos com **múltiplas falhas registradas** geralmente melhoram mais com a **reescrita ou divisão** da origem (ou movendo exemplos para blocos de código cercados) do que com a reexecução da tradução em texto inalterado. Isso se alinha com [Markdown complexo e verificações de qualidade falhas](/guide/documents/#complex-markdown-and-failed-quality-checks).
+Marcação inline densa (**negrito** misturado com `` `code` ``, ênfase aninhada, frases longas com muitos spans) torna mais difícil para os modelos retornarem traduções que ainda passem nas verificações estruturais. Segmentos com **múltiplas falhas registradas** geralmente melhoram mais com a **reescrita ou divisão** da origem (ou movendo exemplos para blocos de código cercados) do que com a reexecução da tradução em texto inalterado. Isso se alinha com [Markdown complexo e verificações de qualidade falhas](/pt-BR/guide/documents/#complex-markdown-and-failed-quality-checks).
 
 <a id="how-to-use-the-tab"></a>
 ## Como usar a aba
@@ -28,7 +28,7 @@ Marcação inline densa (**negrito** misturado com `` `code` ``, ênfase aninhad
 6. O controle de link 🔗 registra dicas de arquivo/linha no **terminal** onde `ai-i18n-tools dashboard` está sendo executado.
 7. Corrija o **arquivo de origem** em seu projeto e execute `translate-docs` ou `sync` novamente. Se a lista parecer **desatualizada** após uma execução bem-sucedida, execute `ai-i18n-tools sync --force-update` e recarregue o painel.
 
-Para depuração baseada em arquivo junto com a interface do usuário, use `translate-docs --debug-failed` para gravar detalhes de `FAILED-TRANSLATION` em `cacheDir` durante as tentativas — consulte [Comportamento do cache e sinalizadores `translate-docs`](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+Para depuração baseada em arquivo junto com a interface do usuário, use `translate-docs --debug-failed` para gravar detalhes de `FAILED-TRANSLATION` em `cacheDir` durante as tentativas — consulte [Comportamento do cache e sinalizadores `translate-docs`](/pt-BR/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Falhas vs. Problemas de Markdown
@@ -39,4 +39,4 @@ Para depuração baseada em arquivo junto com a interface do usuário, use `tran
 | Causa típica | Saída de modelo ruim, erros de validação | Ênfase não pareada, spans de código não fechados, negrito fora dos links |
 | Correção | Edite a origem e re-traduza | Corrija o markdown de origem e re-traduza |
 
-Consulte [Problemas de Markdown](/guide/translation-dashboard/markdown-issues) para verificações estáticas pré-tradução.
+Consulte [Problemas de Markdown](/pt-BR/guide/translation-dashboard/markdown-issues) para verificações estáticas pré-tradução.

@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # SVG traduzido e colocalizado (sistema de documentação)
 
-Use para sites de sistema de documentação onde ilustrações SVG traduzidas devem aparecer junto com documentos traduzidos no diretório de conteúdo de cada localidade — o mesmo local das [capturas de tela colocalizadas](/guide/images-and-screenshots/colocated-screenshots). O preset Docusaurus é o principal exemplo.
+Use para sites de sistema de documentação onde ilustrações SVG traduzidas devem aparecer junto com documentos traduzidos no diretório de conteúdo de cada localidade — o mesmo local das [capturas de tela colocalizadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots). O preset Docusaurus é o principal exemplo.
 
 <a id="config"></a>
 ### Configuração
@@ -60,7 +60,7 @@ Recomendado: armazenar os SVGs de origem em `documentation/static/assets/` ao la
 | `{extension}` | Extensão incluindo o ponto |
 | `{relativeToSourceRoot}` | Caminho relativo da raiz `sourcePath` mais próxima |
 
-Referência completa na [tabela de configuração svg](/reference/configuration#svg).
+Referência completa na [tabela de configuração svg](/pt-BR/reference/configuration#svg).
 
 <a id="implementation-example"></a>
 ### Exemplo de implementação

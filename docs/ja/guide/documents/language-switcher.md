@@ -5,7 +5,7 @@
 
 このリポジトリでは、[README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (`translated-docs/` の下のフラット出力) に使用しています。`translate-docs` の後、翻訳された各コピーは更新されたブロックを取得します。たとえば、[translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) は、`translated-docs/` の下の兄弟ロケールファイルと、リポジトリルートの英語ソースにリンクします。
 
-`docsOutput.style = "flat"` (または兄弟ロケールファイルが相対パスでアドレス指定できる別のレイアウト) が必要です。[出力レイアウト](/guide/documents/output-layouts) を参照してください。
+`docsOutput.style = "flat"` (または兄弟ロケールファイルが相対パスでアドレス指定できる別のレイアウト) が必要です。[出力レイアウト](/ja/guide/documents/output-layouts) を参照してください。
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. ソースマークダウンでブロックをマークする
@@ -14,7 +14,7 @@
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/ja/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 初期のリンクテキストはプレースホルダーです。`translate-docs` は、最初に `start` を含む行から、その後に現れる最初の `end` を含む行までを完全に置き換えます（コードブロック内のマーカーは無視されるため、同じファイル内の設定例などが対象になることはありません）。
@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. ラベルマニフェスト
 
-内名ラベル（`label: "local"`）については、`generate-ui-languages` を介して `ui-languages.json` を生成または維持します（[`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional) に書き込まれ、デフォルトは `{ui.flatOutputDir}/ui-languages.json` です）。このリポジトリのドキュメント専用設定にはUIパイプラインがなく、ディスク上にプロジェクトマニフェストも存在しないため、ラベルは `sourceLocale` + `targetLocales` のバンドルされたマスターカタログから取得されます。
+内名ラベル（`label: "local"`）については、`generate-ui-languages` を介して `ui-languages.json` を生成または維持します（[`languagesManifestPath`](/ja/reference/configuration#languagesmanifestpath-optional) に書き込まれ、デフォルトは `{ui.flatOutputDir}/ui-languages.json` です）。このリポジトリのドキュメント専用設定にはUIパイプラインがなく、ディスク上にプロジェクトマニフェストも存在しないため、ラベルは `sourceLocale` + `targetLocales` のバンドルされたマスターカタログから取得されます。
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. このリポジトリの例

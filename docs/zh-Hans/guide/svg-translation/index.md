@@ -8,7 +8,7 @@
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
 
-`translate-svg` 解析模型 **按目标区域设置**：`localeModels(locale)` 配置后优先使用，然后是 `translationModels`。每个区域设置的 SVG 运行使用自己的回退链——当 CJK 区域设置中的图表标签需要脚本调整的模型时（例如 `ja`），这非常有用。参见 [提供程序和模型](/guide/providers-and-models#model-fallback-chain)。
+`translate-svg` 解析模型 **按目标区域设置**：`localeModels(locale)` 配置后优先使用，然后是 `translationModels`。每个区域设置的 SVG 运行使用自己的回退链——当 CJK 区域设置中的图表标签需要脚本调整的模型时（例如 `ja`），这非常有用。参见 [提供程序和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。
 
 SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的 SQLite 缓存。已翻译的文本段从缓存中提供；只有新的或更改的源文本才会发送到 LLM。
 
@@ -24,7 +24,7 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 **不**使用 `translate-svg` 来进行：
 
 - 没有可翻译文本的装饰性 SVG（图标、徽标、背景）。
-- 栅格截图（PNG、JPEG、WebP）——这些通过[图像和截图](/guide/images-and-screenshots/)处理。
+- 栅格截图（PNG、JPEG、WebP）——这些通过[图像和截图](/zh-Hans/guide/images-and-screenshots/)处理。
 - 嵌入到路径数据而不是 `<text>` 元素中的文本——提取器无法读取路径轮廓。
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 
 | 布局 | `svg.style` | 最适合 | 子指南 |
 |--------|-------------|----------|-------------|
-| **扁平（Web 应用程序）** | `"flat"` | Next.js、Vite 和其他通过语言环境编码文件名嵌入 SVG 的应用程序 | [Web 应用程序（扁平 SVG）](/guide/svg-translation/translated-svg-web-app) |
-| **并置（文档系统）** | `"nested"` + `pathTemplate` | Docusaurus 和其他文档系统站点，其中翻译资产与翻译页面并置 | [并置 SVG](/guide/svg-translation/translated-svg-colocated) |
+| **扁平（Web 应用程序）** | `"flat"` | Next.js、Vite 和其他通过语言环境编码文件名嵌入 SVG 的应用程序 | [Web 应用程序（扁平 SVG）](/zh-Hans/guide/svg-translation/translated-svg-web-app) |
+| **并置（文档系统）** | `"nested"` + `pathTemplate` | Docusaurus 和其他文档系统站点，其中翻译资产与翻译页面并置 | [并置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated) |
 
 **扁平布局** 将文件（例如 `public/assets/diagram.de.svg`）写入 `diagram.en-GB.svg` 旁边。您的应用程序使用语言环境后缀引用它们：
 
@@ -56,7 +56,7 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 
 **并置布局** 将每个语言环境的 SVG 写入该语言环境的内容树（例如 `i18n/de/.../assets/diagram.svg`）。源 Markdown 和翻译后的 Markdown 使用相同的相对路径 (`../assets/diagram.svg`)——不需要 `regexAdjustments` 规则。
 
-有关 SVG 布局如何与栅格截图策略配合使用的信息，请参阅[图像和截图决策指南](/guide/images-and-screenshots/#decision-guide)。
+有关 SVG 布局如何与栅格截图策略配合使用的信息，请参阅[图像和截图决策指南](/zh-Hans/guide/images-and-screenshots/#decision-guide)。
 
 <a id="step-1-enable-and-configure"></a>
 ### 步骤 1：启用和配置
@@ -84,7 +84,7 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 - `pathTemplate` — 可选的自定义输出路径，带有占位符 `{outputDir}`、`{locale}`、`{llocale}`、`{basename}`、`{stem}` 等（对于并置文档系统布局是必需的）。
 - `forceLowercase` — 重组时的小写翻译文本。
 
-完整字段参考：[配置 — `svg`](/reference/configuration#svg)。
+完整字段参考：[配置 — `svg`](/zh-Hans/reference/configuration#svg)。
 
 <a id="step-2-translate"></a>
 ### 步骤 2：翻译
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### 故障排除
 
-常见的 SVG 问题——混合源/输出目录、Docusaurus 上的绝对静态 URL 以及路径布局错误——在 [SVG 故障排除](/guide/svg-translation/troubleshooting) 中有介绍。有关栅格资产和链接重写，请参阅 [图像和屏幕截图故障排除](/guide/images-and-screenshots/troubleshooting)。
+常见的 SVG 问题——混合源/输出目录、Docusaurus 上的绝对静态 URL 以及路径布局错误——在 [SVG 故障排除](/zh-Hans/guide/svg-translation/troubleshooting) 中有介绍。有关栅格资产和链接重写，请参阅 [图像和屏幕截图故障排除](/zh-Hans/guide/images-and-screenshots/troubleshooting)。

@@ -3,7 +3,7 @@
 
 Verwenden Sie `init -t ui-fumadocs` und `docsOutput.style: "fumadocs"` für [Fumadocs](https://www.fumadocs.dev/) 4 Dokumentationsseiten auf Next.js App Router. Das Preset ist ein Alias für `doc-system` mit einem leeren `localeSubpath` und beibehaltenen BCP-47- oder kurzen Gebietsschema-Codes (`localePathLowercase` ist standardmäßig `false`).
 
-Siehe auch [Dokumente](/guide/documents/) und die ausführbare Demo [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (Dot-Parser, Port 3080).
+Siehe auch [Dokumente](/de/guide/documents/) und die ausführbare Demo [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) (Dot-Parser, Port 3080).
 
 <a id="quick-start"></a>
 ## Schnellstart
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-Siehe `ai-i18n-tools.config.dir.example.json` in [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) für eine Copy-Paste-Dir-Konfiguration. Das mentale Modell entspricht der [Nextra-Integration](/guide/integrations/nextra#page-layout).
+Siehe `ai-i18n-tools.config.dir.example.json` in [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) für eine Copy-Paste-Dir-Konfiguration. Das mentale Modell entspricht der [Nextra-Integration](/de/guide/integrations/nextra#page-layout).
 
 <a id="sidebar-metajson"></a>
 ## Seitenleiste (`meta.json`)
@@ -127,14 +127,14 @@ Verwenden Sie **nicht** `json[]` für Fumadocs-UI-Strings – diese Pipeline ist
 | Framework | Shell-/Theme-Strings | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations`-Katalog | Dokumente – `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleistenkatalog | Dokumente – `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "nextra"` + `translate-docs` |
-| Nextra | Theme-Wörterbuch `.ts` | Dokumente – `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI-Überschreibungskatalog | Dokumente – `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
+| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "nextra"` + `translate-docs` |
+| Nextra | Theme-Wörterbuch `.ts` | Dokumente — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI-Überschreibungs-Katalog | Dokumente — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Eingebaute UI-Strings (viele Gebietsschemata); keine zusätzliche Shell-Pipeline | Dokumente — `translate-docs` (nur Seiten) |
 
-Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/guide/integrations/docusaurus), [VitePress-Integration](/guide/integrations/vitepress) und [Nextra-Integration](/guide/integrations/nextra) für die anderen Framework-Muster.
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/de/guide/integrations/docusaurus), [VitePress-Integration](/de/guide/integrations/vitepress) und [Nextra-Integration](/de/guide/integrations/nextra) für die anderen Framework-Muster.
 
 <a id="link-conventions"></a>
 ## Link-Konventionen
@@ -157,7 +157,7 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/de/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | unverändert (vollständige URL) |
 
 **Regeln für die Erstellung**
@@ -166,7 +166,7 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 - Repository-Dateien außerhalb des Inhaltsbaums: Verwenden Sie **vollständige URLs**.
 - Bearbeiten Sie Links in sprachsuffixierten Kopien (`*.pt.mdx`) oder `content/{locale}/`-Bäumen **nicht** manuell – generieren Sie sie mit `sync` / `translate-docs` neu.
 
-Siehe auch [Dokumente – Link-Umschreibung](/guide/documents/link-rewriting) und [Konfiguration – `docsOutput`](/reference/configuration#docsoutput).
+Siehe auch [Dokumente – Link-Umschreibung](/de/guide/documents/link-rewriting) und [Konfiguration – `docsOutput`](/de/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Gebietsschema-Codes
@@ -186,8 +186,8 @@ Fumadocs-Projekte können mehrere `defineDocs`-Blöcke in `source.config.ts` def
 <a id="cross-references"></a>
 ## Querverweise
 
-- [Konfiguration – `docsOutput`](/reference/configuration#docsoutput)
-- [Ausgabelayouts](/guide/documents/output-layouts)
-- [Docusaurus-Integration](/guide/integrations/docusaurus)
-- [Nextra-Integration](/guide/integrations/nextra) (mentales Modell des Dir-Parsers)
-- [VitePress-Integration](/guide/integrations/vitepress) (UI-Katalog-Bootstrap-Muster)
+- [Konfiguration – `docsOutput`](/de/reference/configuration#docsoutput)
+- [Ausgabelayouts](/de/guide/documents/output-layouts)
+- [Docusaurus-Integration](/de/guide/integrations/docusaurus)
+- [Nextra-Integration](/de/guide/integrations/nextra) (mentales Modell des Dir-Parsers)
+- [VitePress-Integration](/de/guide/integrations/vitepress) (UI-Katalog-Bootstrap-Muster)

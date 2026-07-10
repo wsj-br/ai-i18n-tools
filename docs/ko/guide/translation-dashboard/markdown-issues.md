@@ -8,7 +8,7 @@
 <a id="when-to-use-it"></a>
 ## 언제 사용하는가
 
-이 탭을 사용하여 **소스 마크다운**을 수정하고자 할 때 특히 [실패](/guide/translation-dashboard/failures) 탭에서 구조에 대한 품질 검사가 계속 실패하는 경우에 사용합니다.
+이 탭을 사용하여 **소스 마크다운**을 수정하고자 할 때 특히 [실패](/ko/guide/translation-dashboard/failures) 탭에서 구조에 대한 품질 검사가 계속 실패하는 경우에 사용합니다.
 
 <a id="how-to-use-the-tab"></a>
 ## 사용 방법
@@ -39,4 +39,4 @@
 | 닫히지 않은 인라인 코드 | 백틱 범위가 열렸지만 닫히지 않음 |
 | `STRONG_OUTSIDE_LINK` | 볼드 마커가 마크다운 링크를 감쌉니다. 링크 텍스트 내부로 볼드를 이동합니다 |
 
-[복잡한 마크다운 및 실패한 품질 검사](/guide/documents/#complex-markdown-and-failed-quality-checks)도 참조하십시오.
+[복잡한 마크다운 및 실패한 품질 검사](/ko/guide/documents/#complex-markdown-and-failed-quality-checks)도 참조하십시오.

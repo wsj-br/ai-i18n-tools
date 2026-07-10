@@ -10,7 +10,7 @@
 
 **关键选项：** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**另请参阅：** [JSON](/guide/json)
+**另请参阅：** [JSON](/zh-Hans/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@
 
 **关键选项：** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**另请参阅：** [SVG 翻译](/guide/svg-translation/)
+**另请参阅：** [SVG 翻译](/zh-Hans/guide/svg-translation/)

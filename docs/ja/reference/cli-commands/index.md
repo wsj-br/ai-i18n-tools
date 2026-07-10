@@ -124,7 +124,7 @@ ai-i18n-tools help [command]
 | `-c` / `--config <path>`     | すべてのコマンド | 設定ファイルのパス（デフォルト: `ai-i18n-tools.config.json`）。                                  |
 | `-v` / `--verbose`           | すべてのコマンド | 詳細ログ出力。                                                                          |
 | `-P` / `--provider <name>`   | すべてのコマンド | この実行のアクティブな LLM プロバイダー。設定の `provider` キーをオーバーライドします。`providers` の下で設定する必要があります。 |
-| `-L` / `--ui-lang <code>`    | すべてのコマンド | ツール独自のUI（CLIヘルプ、ログ/サマリー、ダッシュボード）の言語。最優先ソース。[ツールUI言語](/guide/tool-ui-language)を参照してください。 |
+| `-L` / `--ui-lang <code>`    | すべてのコマンド | ツール独自のUI（CLIヘルプ、ログ/サマリー、ダッシュボード）の言語。最優先ソース。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。 |
 | `-w` / `--write-logs [path]` | 選択されたコマンド | コンソール出力を `.log` ファイルにティーします (デフォルトパス: ルート `cacheDir` の下)。`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、および `cleanup` のみで機能します。 |
 
 <a id="per-command-help"></a>

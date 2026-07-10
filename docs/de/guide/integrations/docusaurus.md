@@ -3,7 +3,7 @@
 
 Verwenden Sie `init -t ui-docusaurus` und `docsOutput.style: "docusaurus"` für [Docusaurus](https://docusaurus.io/)-Dokumentationsseiten. Das Preset erstellt einen `docs[]`-Block mit `docusaurusCatalogDir`, sodass `translate-docs` sowohl Seiten-Markdown als auch Docusaurus-Shell-JSON in einem Befehl übersetzen kann.
 
-Siehe auch [Dokumente](/guide/documents/), die ausführbare Demo [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (Next.js-App plus verschachteltes `docs-site/`) und [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) für eine fokussierte Docusaurus-only-Anleitung.
+Siehe auch [Dokumente](/de/guide/documents/), die ausführbare Demo [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (Next.js-App plus verschachteltes `docs-site/`) und [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) für eine fokussierte Docusaurus-only-Anleitung.
 
 <a id="quick-start"></a>
 ## Schnellstart
@@ -86,14 +86,14 @@ Legen Sie Docusaurus-Shell-JSON nicht in `json[]` ab; verwenden Sie stattdessen 
 | Framework | Shell / Theme-Strings | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleistenkatalog | Dokumente – `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "nextra"` + `translate-docs` |
-| Nextra | Theme-Wörterbuch `.ts` | Dokumente – `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente – automatisch, wenn `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI-Überschreibungskatalog | Dokumente – `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
+| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "nextra"` + `translate-docs` |
+| Nextra | Theme-Wörterbuch `.ts` | Dokumente — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI-Überschreibungs-Katalog | Dokumente — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Eingebaute UI-Strings (viele Gebietsschemata); keine zusätzliche Shell-Pipeline | Dokumente — `translate-docs` (nur Seiten) |
 
-Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [VitePress-Integration](/guide/integrations/vitepress), [Nextra-Integration](/guide/integrations/nextra) und [Fumadocs-Integration](/guide/integrations/fumadocs) für die anderen Framework-Muster.
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [VitePress-Integration](/de/guide/integrations/vitepress), [Nextra-Integration](/de/guide/integrations/nextra) und [Fumadocs-Integration](/de/guide/integrations/fumadocs) für die anderen Framework-Muster.
 
 <a id="example-project"></a>
 ## Beispielprojekt

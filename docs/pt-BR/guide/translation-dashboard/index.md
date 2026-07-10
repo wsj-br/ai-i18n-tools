@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 A porta de escuta padrão é **8675**. Se essa porta estiver indisponível, o servidor tenta a próxima porta (até 1000 tentativas) e registra a porta escolhida. O alias obsoleto `editor` ainda funciona, mas exibe um aviso — prefira usar `dashboard`.
 
-A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da interface da ferramenta](/guide/tool-ui-language).
+A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da interface da ferramenta](/pt-BR/guide/tool-ui-language).
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 
 | Eu quero… | Aba | Guia |
 | --- | --- | --- |
-| Corrigir segmentos de documentos que falharam na tradução | **Falhas** | [Falhas](/guide/translation-dashboard/failures) |
-| Corrigir o markdown de origem antes de traduzir | **Problemas de Markdown** | [Problemas de Markdown](/guide/translation-dashboard/markdown-issues) |
-| Substituir uma tradução de documento em cache | **Documentação** | [Cache de documentação](/guide/translation-dashboard/documentation-cache) |
-| Corrigir um rótulo da UI | **Strings da UI** | [Strings e plurais da UI](/guide/translation-dashboard/ui-strings) |
-| Corrigir uma forma plural (`one`, `other`, …) | **Plurais da UI** | [Strings e plurais da UI](/guide/translation-dashboard/ui-strings) |
-| Bloquear terminologia para tradução da UI | **Glossário** | [Glossário](/guide/translation-dashboard/glossary) |
-| Ver cobertura de cache e uso do modelo | **Estatísticas** | [Estatísticas](/guide/translation-dashboard/statistics) |
+| Corrigir segmentos de documentos que falharam na tradução | **Falhas** | [Falhas](/pt-BR/guide/translation-dashboard/failures) |
+| Corrigir o markdown de origem antes de traduzir | **Problemas de Markdown** | [Problemas de Markdown](/pt-BR/guide/translation-dashboard/markdown-issues) |
+| Substituir uma tradução de documento em cache | **Documentação** | [Cache de documentação](/pt-BR/guide/translation-dashboard/documentation-cache) |
+| Corrigir um rótulo da UI | **Strings da UI** | [Strings e plurais da UI](/pt-BR/guide/translation-dashboard/ui-strings) |
+| Corrigir uma forma plural (`one`, `other`, …) | **Plurais da UI** | [Strings e plurais da UI](/pt-BR/guide/translation-dashboard/ui-strings) |
+| Bloquear terminologia para tradução da UI | **Glossário** | [Glossário](/pt-BR/guide/translation-dashboard/glossary) |
+| Ver cobertura de cache e uso do modelo | **Estatísticas** | [Estatísticas](/pt-BR/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## Depois de editar

@@ -7,7 +7,7 @@
 | Andere Anbieter-Schlüssel    | Jeder Anbieter liest seine eigene Schlüssel-Umgebungsvariable: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama benötigt keinen). Überschreiben pro Anbieter mit `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Überschreibt `providers.openrouter.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
 | `OLLAMA_BASE_URL`      | Überschreibt `providers.ollama.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
-| `AI_I18N_LANG`         | Sprache für die Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle, Dashboard). Wird durch `-L` / `--ui-lang` überschrieben; überschreibt die Konfiguration `uiLanguage`. Siehe [Sprache der Tool-Benutzeroberfläche](/guide/tool-ui-language). |
+| `AI_I18N_LANG`         | Sprache für die Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle, Dashboard). Wird durch `-L` / `--ui-lang` überschrieben; überschreibt die Konfiguration `uiLanguage`. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |
 | `I18N_SOURCE_LOCALE`    | Überschreibt `sourceLocale` zur Laufzeit.                        |
 | `I18N_TARGET_LOCALES`   | Durch Komma getrennte Gebietsschemacodes zur Überschreibung von `targetLocales`.  |
 | `I18N_LOG_LEVEL` | Logger-Level (`debug`, `info`, `warn`, `error`). Unbekannte Werte (einschließlich `silent`) fallen auf `info` zurück. |

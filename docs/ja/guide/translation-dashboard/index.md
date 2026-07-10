@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 デフォルトのリッスンポートは **8675** です。そのポートが使用できない場合、サーバーは次のポートを試行します（最大1000回の試行）し、使用したポートをログに出力します。非推奨のエイリアス `editor` は引き続き機能しますが警告を出力します。代わりに `dashboard` を使用してください。
 
-ダッシュボードUIはCLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/guide/tool-ui-language)を参照してください。
+ダッシュボードUIはCLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ ai-i18n-tools dashboard
 
 | 実行したいこと | タブ | ガイド |
 | --- | --- | --- |
-| 翻訳に失敗したドキュメントセグメントを修正する | **失敗** | [失敗](/guide/translation-dashboard/failures) |
-| 翻訳する前にソースMarkdownを修正する | **Markdownの問題** | [Markdownの問題](/guide/translation-dashboard/markdown-issues) |
-| キャッシュされたドキュメント翻訳を上書きする | **ドキュメント** | [ドキュメントキャッシュ](/guide/translation-dashboard/documentation-cache) |
-| UIラベルを修正する | **UI文字列** | [UI文字列と複数形](/guide/translation-dashboard/ui-strings) |
-| 複数形を修正する (`one`、`other`、…) | **UI複数形** | [UI文字列と複数形](/guide/translation-dashboard/ui-strings) |
-| UI翻訳の用語をロックする | **用語集** | [用語集](/guide/translation-dashboard/glossary) |
-| キャッシュのカバレッジとモデルの使用状況を確認する | **統計** | [統計](/guide/translation-dashboard/statistics) |
+| 翻訳に失敗したドキュメントセグメントを修正する | **失敗** | [失敗](/ja/guide/translation-dashboard/failures) |
+| 翻訳する前にソースMarkdownを修正する | **Markdownの問題** | [Markdownの問題](/ja/guide/translation-dashboard/markdown-issues) |
+| キャッシュされたドキュメント翻訳を上書きする | **ドキュメント** | [ドキュメントキャッシュ](/ja/guide/translation-dashboard/documentation-cache) |
+| UIラベルを修正する | **UI文字列** | [UI文字列と複数形](/ja/guide/translation-dashboard/ui-strings) |
+| 複数形を修正する (`one`、`other`、…) | **UI複数形** | [UI文字列と複数形](/ja/guide/translation-dashboard/ui-strings) |
+| UI翻訳の用語をロックする | **用語集** | [用語集](/ja/guide/translation-dashboard/glossary) |
+| キャッシュのカバレッジとモデルの使用状況を確認する | **統計** | [統計](/ja/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## 編集後

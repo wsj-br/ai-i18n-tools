@@ -8,7 +8,7 @@ UI 복사본을 소스에서 `t("…")` 대신 **로케일별 중첩 JSON 파일
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
 
-`translate-json`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`가 먼저 구성되면 `translationModels`를 사용합니다. 중첩된 JSON 번들을 위한 전용 모델이 특정 로캘에서 이점을 제공하는 경우에 이 방법을 사용하십시오. 예를 들어 `zh-Hans` / `zh-Hant` 테마 파일을 참조하십시오. [공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 참조.
+`translate-json`는 대상 로캘**마다 모델을 해결합니다**: `localeModels(locale)`가 먼저 구성되면 `translationModels`를 사용합니다. 중첩된 JSON 번들을 위한 전용 모델이 특정 로캘에서 이점을 제공하는 경우에 이 방법을 사용하십시오. 예를 들어 `zh-Hans` / `zh-Hant` 테마 파일을 참조하십시오. [공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조.
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### 1단계: 중첩된 JSON 초기화
@@ -98,12 +98,12 @@ npx ai-i18n-tools status
 
 | 상황 | 사용 |
 |-----------|-----|
-| JS/TS/Astro의 `t("…")` / `i18n.t("…")`에 있는 UI 문자열 | [UI 문자열](/guide/ui-strings/) — `extract` + `translate-ui` |
+| JS/TS/Astro의 `t("…")` / `i18n.t("…")`에 있는 UI 문자열 | [UI 문자열](/ko/guide/ui-strings/) — `extract` + `translate-ui` |
 | Docusaurus `write-translations` 카탈로그 (`{ "key": { "message": "…", "description": "…" } }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs`, **아님** `json[]` |
-| VitePress 테마/네비게이션/사이드바 문자열 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs`; `json[]`를 **사용하지 마세요** — [VitePress 통합](/guide/integrations/vitepress) 참조 |
-| Nextra `_meta.ts` 라벨 및 테마 사전 `.ts` | 문서 — `translate-docs` (`style: "nextra"`일 때 자동 `_meta`, 선택적 `nextraDictionaryPath`); `json[]`를 **사용하지 마세요** — [Nextra 통합](/guide/integrations/nextra) 참조 |
-| Fumadocs `meta.json` 라벨 및 UI 오버라이드 카탈로그 | 문서 — `translate-docs` (`style: "fumadocs"`일 때 자동 `meta.json`, 선택적 `fumadocsUiCatalog`); `json[]`를 **사용하지 마세요** — [Fumadocs 통합](/guide/integrations/fumadocs) 참조 |
+| VitePress 테마/네비게이션/사이드바 문자열 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs`; `json[]`를 **사용하지 마세요** — [VitePress 통합](/ko/guide/integrations/vitepress) 참조 |
+| Nextra `_meta.ts` 라벨 및 테마 사전 `.ts` | 문서 — `translate-docs` (`style: "nextra"`일 때 자동 `_meta`, 선택적 `nextraDictionaryPath`); `json[]`를 **사용하지 마세요** — [Nextra 통합](/ko/guide/integrations/nextra) 참조 |
+| Fumadocs `meta.json` 라벨 및 UI 오버라이드 카탈로그 | 문서 — `translate-docs` (`style: "fumadocs"`일 때 자동 `meta.json`, 선택적 `fumadocsUiCatalog`); `json[]`를 **사용하지 마세요** — [Fumadocs 통합](/ko/guide/integrations/fumadocs) 참조 |
 | 독립형 중첩 로케일 JSON (ZenBrowser 스타일 `translation.json` 트리) | JSON — `json[]` + `translate-json` |
-| `<text>` / `<title>` / `<desc>`가 포함된 그림 `.svg` 파일 | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (선택 사항, 세 가지 주요 파이프라인 중 하나가 아님) |
+| `<text>` / `<title>` / `<desc>`가 포함된 그림 `.svg` 파일 | `features.translateSVG` + [`svg`](/ko/reference/configuration#svg) + `translate-svg` (선택 사항, 세 가지 주요 파이프라인 중 하나가 아님) |
 
-필드 참조: [구성 참조](/reference/configuration#json)의 [`json`](#json). 정리를 위한 캐시 키는 `file_tracking`에서 `json-block:{blockIndex}:{projectRelPath}`을 사용합니다.
+필드 참조: [구성 참조](/ko/reference/configuration#json)의 [`json`](#json). 정리를 위한 캐시 키는 `file_tracking`에서 `json-block:{blockIndex}:{projectRelPath}`을 사용합니다.

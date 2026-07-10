@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # 並置翻譯的 SVG (文件系統)
 
-用於文件系統網站，翻譯後的SVG插圖必須與翻譯後的文件一起出現在每個地區設定的內容目錄中 — 与 [同位置的螢幕截圖](/guide/images-and-screenshots/colocated-screenshots) 相同。Docusaurus 預設設定是主要範例。
+用於文件系統網站，翻譯後的SVG插圖必須與翻譯後的文件一起出現在每個地區設定的內容目錄中 — 与 [同位置的螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots) 相同。Docusaurus 預設設定是主要範例。
 
 <a id="config"></a>
 ### 設定
@@ -60,7 +60,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 | `{extension}`            | 副檔名（含點字）                                     |
 | `{relativeToSourceRoot}` | 相對於最近的 `sourcePath` 根目錄的相對路徑 |
 
-在[SVG 配置表](/reference/configuration#svg)中查看完整參考。
+在[SVG 配置表](/zh-Hant/reference/configuration#svg)中查看完整參考。
 
 <a id="implementation-example"></a>
 ### 實作範例

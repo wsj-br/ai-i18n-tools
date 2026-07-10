@@ -8,12 +8,12 @@
 
 | 您的應用程式 | 接下來閱讀 |
 | --- | --- |
-| React / Next.js / Node + i18next | [連接 i18next](/guide/ui-strings/i18next-runtime) (步驟 4) |
-| 純 HTML (標記中沒有 `t()`) | [純 HTML 應用程式](/guide/ui-strings/plain-html) |
-| Astro 行銷網站 (混合) | [Astro 網站](/guide/ui-strings/astro-website) |
-| `t()` 規則、插值、複數 | [t() 呼叫與複數](/guide/ui-strings/t-calls-and-plurals) |
-| 語言選擇器 / RTL | [語言切換器與 RTL](/guide/ui-strings/language-switcher) |
-| 執行時 API 簽章 | [執行時輔助函數](/guide/runtime-helpers) |
+| React / Next.js / Node + i18next | [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) (步驟 4) |
+| 純 HTML (標記中沒有 `t()`) | [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html) |
+| Astro 行銷網站 (混合) | [Astro 網站](/zh-Hant/guide/ui-strings/astro-website) |
+| `t()` 規則、插值、複數 | [t() 呼叫與複數](/zh-Hant/guide/ui-strings/t-calls-and-plurals) |
+| 語言選擇器 / RTL | [語言切換器與 RTL](/zh-Hant/guide/ui-strings/language-switcher) |
+| 執行時 API 簽章 | [執行時輔助函數](/zh-Hant/guide/runtime-helpers) |
 
 <a id="step-1-initialise"></a>
 ## 步驟 1：初始化
@@ -29,7 +29,7 @@ npx ai-i18n-tools init
 - `ui.sourceRoots` - 要掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
 - `ui.stringsJson` - 要寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - 用於寫入 `de.json`、`pt-BR.json` 等（例如 `"src/locales/"`）。
-- `providers.<active>.uiModels`（可選）- `translate-ui` 的僅 UI 模型列表，用於多數生成和 `proofread-ui`（在任何匹配的 `localeModels` 項目之後，`translationModels` 之前）。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)。
+- `providers.<active>.uiModels`（可選）- `translate-ui` 的僅 UI 模型列表，用於多數生成和 `proofread-ui`（在任何匹配的 `localeModels` 項目之後，`translationModels` 之前）。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
 
 <a id="step-2-extract-strings"></a>
 ## 步驟 2：提取字串
@@ -40,7 +40,7 @@ npx ai-i18n-tools extract
 
 掃描 `ui.sourceRoots` 下的所有 JS/TS 檔案，尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。寫入（或合併到）`ui.stringsJson`。
 
-掃描器可配置：透過 `ui.uiExtractor.funcNames` (或舊版 `ui.reactExtractor.funcNames`) 新增自訂函數名稱。對於 Astro 頁面和元件，將 `.astro` 新增至 `ui.uiExtractor.extensions`。對於純 HTML，請參閱[純 HTML 應用程式](/guide/ui-strings/plain-html)。
+掃描器可配置：透過 `ui.uiExtractor.funcNames` (或舊版 `ui.reactExtractor.funcNames`) 新增自訂函數名稱。對於 Astro 頁面和元件，將 `.astro` 新增至 `ui.uiExtractor.extensions`。對於純 HTML，請參閱[純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)。
 
 <a id="step-3-translate-ui-strings"></a>
 ## 步驟 3：翻譯 UI 字串
@@ -49,7 +49,7 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-讀取 `strings.json`，將批次發送到每個目標區域設置的活躍 LLM 提供者，將扁平的 JSON 文件（`de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)）。
+讀取 `strings.json`，將批次發送到每個目標區域設置的活躍 LLM 提供者，將扁平的 JSON 文件（`de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
@@ -60,7 +60,7 @@ npx ai-i18n-tools translate-ui
 
 > **注意：** 儀表板對 UI 字串的編輯儲存在 `strings.json` 中，而不是 SQLite 文件快取中。執行純 `sync` 或 `translate-ui`（無特殊標誌）以從目錄重寫平面語言環境檔案 — `--force-update` **不會**轉發到 UI 步驟。手動編輯後避免在 UI 命令上使用 `--force`：它會重新翻譯每個條目並可能覆蓋您的 `user-edited` 行。
 
-然後在執行時連接 i18next — [連接 i18next](/guide/ui-strings/i18next-runtime)。
+然後在執行時連接 i18next — [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime)。
 
 <a id="exporting-to-xliff-20-optional"></a>
 ## 匯出為 XLIFF 2.0 (可選)

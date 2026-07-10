@@ -18,7 +18,7 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage`（オプション）
 
-ツール自身のUI言語（CLIヘルプ、ログ/サマリー、および翻訳ダッシュボード）のBCP-47コード。`sourceLocale` / `targetLocales`とは独立しており、`-L` / `--ui-lang`フラグおよび`AI_I18N_LANG`環境変数によって上書きされます。不明な値はソースロケール（`en-GB`）に適切にフォールバックします — 厳密な検証は行われません。[ツールUI言語](/guide/tool-ui-language)を参照してください。
+ツール自身のUI言語（CLIヘルプ、ログ/サマリー、および翻訳ダッシュボード）のBCP-47コード。`sourceLocale` / `targetLocales`とは独立しており、`-L` / `--ui-lang`フラグおよび`AI_I18N_LANG`環境変数によって上書きされます。不明な値はソースロケール（`en-GB`）に適切にフォールバックします — 厳密な検証は行われません。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (オプション)
@@ -276,11 +276,11 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 - `docsOutput.linkRewriteDocsRoot`
 フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルートに存在しない限り、通常は`"."`のままにしてください。
 - `docsOutput.rewriteVitepressLinks`
-`true`の場合、翻訳後にVitePressリンクノーマライザーを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。ロケールフォルダが`docsRoot`の下の英語と並んで配置されている任意の`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）およびロケール相対`../guide/…`リンクに書き換えます。VitePressツリー外のリポジトリファイルへのリンク（`LICENSE`、`examples/`）については、英語のソースで完全なURLを使用してください — [VitePressの統合 — READMEをドキュメントのホームページとして使用する](/guide/integrations/vitepress#readme-as-homepage) を参照してください。
+`true`の場合、翻訳後にVitePressリンクノーマライザーを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。ロケールフォルダが`docsRoot`の下の英語と並んで配置されている任意の`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）およびロケール相対`../guide/…`リンクに書き換えます。VitePressツリー外のリポジトリファイルへのリンク（`LICENSE`、`examples/`）については、英語のソースで完全なURLを使用してください — [VitePressの統合 — READMEをドキュメントのホームページとして使用する](/ja/guide/integrations/vitepress#readme-as-homepage) を参照してください。
 - `docsOutput.rewriteNextraLinks`
-`true`の場合、翻訳後にNextraリンクノーマライザーを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`向けに、`content/en/…`および相対`.mdx`パスをロケールに依存しないサイトルート（`/guide/…`）に書き換えます。[Nextraの統合 — リンクの規約](/guide/integrations/nextra#link-conventions) を参照してください。
+`true`の場合、翻訳後にNextraリンクノーマライザーを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`向けに、`content/en/…`および相対`.mdx`パスをロケールに依存しないサイトルート（`/guide/…`）に書き換えます。[Nextraの統合 — リンクの規約](/ja/guide/integrations/nextra#link-conventions) を参照してください。
 - `docsOutput.fumadocsParser`
-`"dot"`（デフォルト）または`"dir"`。dotは英語ソースの隣に`stem.{locale}.mdx`を書き込みます。dirはNextraのようにロケールフォルダを書き込みます。[Fumadocsの統合 — ページレイアウト](/guide/integrations/fumadocs#page-layout) を参照してください。
+`"dot"`（デフォルト）または`"dir"`。dotは英語ソースの隣に`stem.{locale}.mdx`を書き込みます。dirはNextraのようにロケールフォルダを書き込みます。[Fumadocsの統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout) を参照してください。
 - `docsOutput.rewriteFumadocsLinks`
 `true`の場合、翻訳後にFumadocsリンクノーマライザーを実行します。`docsOutput.style`が`"fumadocs"`の場合、デフォルトで有効になります。コンテンツパスと相対`.mdx`リンクを`/docs/…`ルートに書き換えます。
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフ
 <a id="json"></a>
 ### `json`
 
-ネストされた JSON 翻訳パイプラインのトップレベル配列。`features.translateJson` が true の場合（`translate-json` または `sync` の JSON ステージ）にのみ使用されます。[JSON](/guide/json) を参照してください。
+ネストされた JSON 翻訳パイプラインのトップレベル配列。`features.translateJson` が true の場合（`translate-json` または `sync` の JSON ステージ）にのみ使用されます。[JSON](/ja/guide/json) を参照してください。
 
 | フィールド | 説明 |
 |-------|-------------|

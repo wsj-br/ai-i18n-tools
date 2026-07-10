@@ -3,7 +3,7 @@
 
 ai-i18n-tools ko [Astro](https://astro.build/) ke saath do common setups mein use karein: **Astro Starlight** documentation sites aur **plain Astro** marketing ya app sites. Dono page content ke liye Documents (`translate-docs`) ka use karte hain; plain Astro sites aksar frontmatter aur shared data mein `t()` strings ke liye UI strings (`extract` / `translate-ui`) ke saath combine karte hain.
 
-Ise bhi dekhen [UI strings](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documents](/guide/documents/), aur neeche diye gaye chalne yogya udaharan.
+Ise bhi dekhen [UI strings](/hi-Latn/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documents](/hi-Latn/guide/documents/), aur neeche diye gaye chalne yogya udaharan.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -30,7 +30,7 @@ src/content/docs/quick-start.md     →  src/content/docs/de/quick-start.md
 src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ```
 
-Ek `docs[]` block configure karein:
+Ek `docs[]` block ko configure karein:
 
 ```json
 {
@@ -45,7 +45,7 @@ Ek `docs[]` block configure karein:
 
 `contentPaths` ko apni English `.md` / `.mdx` files aur directories par point karein. `docsRoot` ko usi folder par set karein jise Starlight apne content root ke roop mein use karta hai.
 
-Starlight UI overrides ko zaroorat padne par ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain — dekhen [Documents — documentation ke liye initialise karen](/guide/documents/#step-1-initialise-for-documentation).
+Starlight UI overrides ko zaroorat padne par ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain — dekhen [Documents — documentation ke liye initialise karen](/hi-Latn/guide/documents/#step-1-initialise-for-documentation).
 
 <a id="framework-shell-translation"></a>
 ### Framework shell anuvaad
@@ -57,10 +57,10 @@ Starlight kai locales ke liye apni khud ki built-in UI string bhejta hai (nav la
 | Astro Starlight | Built-in UI strings (kai locales); koi atirikt shell pipeline nahi | Documents — `translate-docs` (keval page) |
 | Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels + theme dictionary `.ts` | Documents — dekhen [Nextra integration](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — dekhen [Fumadocs integration](/guide/integrations/fumadocs) |
+| Nextra | `_meta.ts` sidebar labels + theme dictionary `.ts` | Documents — dekhen [Nextra integration](/hi-Latn/guide/integrations/nextra) |
+| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — dekhen [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) |
 
-Dusre framework patterns ke liye [Docusaurus integration](/guide/integrations/docusaurus), [VitePress integration](/guide/integrations/vitepress), [Nextra integration](/guide/integrations/nextra), aur [Fumadocs integration](/guide/integrations/fumadocs) dekhen.
+Dusre framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus), [VitePress integration](/hi-Latn/guide/integrations/vitepress), [Nextra integration](/hi-Latn/guide/integrations/nextra), aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhen.
 
 <a id="example-project"></a>
 ### Example project

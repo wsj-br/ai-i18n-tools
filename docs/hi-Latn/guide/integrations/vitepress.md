@@ -144,7 +144,7 @@ Framework shell/theme strings ko `json[]` mein **na** rakhein — vah pipeline a
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — English sources `docs/` par, committed `pt-BR` aur `zh-Hans` page trees, plus `theme.pt-BR.json` / `theme.zh-Hans.json`. Port 3060 par `pnpm run docs:dev` chalayein.
 
-<a id="readme-as-the-docs-homepage"></a>
+<a id="readme-and-the-docs-homepage"></a>
 ## README aur docs homepage
 
 Downstream projects kabhi-kabhi `README.md` ko VitePress site mein `docs/index.md` ke roop mein copy karte hain (ek build script ya manual sync ke madhyam se). Vah pattern GitHub aur documentation site ke beech ek file share karta hai, lekin link rules alag hain:
@@ -194,7 +194,7 @@ Built-in normalizer ko enable karein taaki `translate-docs` har translated file 
 
 `docs/` ke tahat Angrezi root srot **locale-neutral** site routes (`/guide/…`) rakhte hain. `docs/<locale>/…` mein likhi gayi files ko internal content routes par locale prefix swatah mil jata hai — jismein **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`) shamil hai. `/logo.svg` aur `/translation-dashboard.png` jaise sajha public assets har locale par unprefixed rahte hain.
 
-<a id="theme-nav-sidebar-links"></a>
+<a id="theme-navsidebar-links"></a>
 ### Theme nav/sidebar links
 
 `translate-docs` `.vitepress/config.mts` mein links ko **nahi** likhta hai. Navbar aur sidebar `link` values TypeScript mein ek baar likhi jaati hain aur config build time par har locale ke liye prefix ki jaani chahiye.
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 Locale routes par nav highlighting kaam karne ke liye **`activeMatch`** ke saath **`link`** prefix karein (`/pt-BR/guide/` na ki `/guide/`). Baahari URLs aur shared public assets mein koi badlav nahi hoga.
+
+VitePress project mein `ai-i18n-tools` ko ek **devDependency** ke roop mein jodein (`examples/vitepress-docs/package.json` dekhein) taaki `config.mts`, `prefixVitepressThemeConfigLinks` ko import kar sake. Mukhya ai-i18n-tools documentation site seedhe `src/processors/…` se import karti hai kyunki yeh monorepo checkout ko dogfood karti hai; standalone copies (degit) ko npm package ka upyog karna chahiye.
 
 **Authoring rules**
 

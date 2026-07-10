@@ -34,4 +34,4 @@
 
 **主なオプション:** `--max-columns`
 
-**関連項目:** [ダッシュボードの統計](/guide/translation-dashboard/statistics)
+**関連項目:** [ダッシュボードの統計](/ja/guide/translation-dashboard/statistics)

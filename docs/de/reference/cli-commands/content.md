@@ -10,7 +10,7 @@
 
 **Wichtige Optionen:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**Siehe auch:** [JSON](/guide/json)
+**Siehe auch:** [JSON](/de/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@
 
 **Wichtige Optionen:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**Siehe auch:** [SVG-Übersetzung](/guide/svg-translation/)
+**Siehe auch:** [SVG-Übersetzung](/de/guide/svg-translation/)

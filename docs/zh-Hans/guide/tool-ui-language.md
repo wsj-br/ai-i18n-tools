@@ -31,6 +31,6 @@ UI 区域设置从以下来源解析，优先级从高到低：
 <a id="related"></a>
 ## 相关内容
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — 环境变量覆盖
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — 配置键覆盖
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — CLI 标志覆盖（最高优先级）
+- [`AI_I18N_LANG`](/zh-Hans/reference/environment-variables) — 环境变量覆盖
+- [`uiLanguage`](/zh-Hans/reference/configuration#uilanguage-optional) — 配置键覆盖
+- [`-L` / `--ui-lang`](/zh-Hans/reference/cli-commands/) — CLI 标志覆盖（最高优先级）

@@ -10,7 +10,7 @@ Inicia o Painel de Tradução (interface de usuário web local para segmentos de
 
 **Opções principais:** `-p` / `--port`, `--no-open`
 
-**Ver também:** [Painel de Tradução](/guide/translation-dashboard/)
+**Ver também:** [Painel de Tradução](/pt-BR/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@ Escreve um modelo `glossary-user.csv` vazio. Recusa-se a sobrescrever um arquivo
 
 `-o`: substitui o caminho de saída (padrão: `glossary.userGlossary` da configuração, ou `glossary-user.csv`).
 
-**Ver também:** [Glossário do Painel](/guide/translation-dashboard/glossary)
+**Ver também:** [Glossário do Painel](/pt-BR/guide/translation-dashboard/glossary)
 
 ---
 

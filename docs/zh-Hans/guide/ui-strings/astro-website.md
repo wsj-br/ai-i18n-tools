@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # Astro 网站
 
-对于静态的 Astro 营销或应用站点（纯 Astro，而非 Starlight），请将 [Astro 内置 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 与 ai-i18n-tools 结合使用。另请参阅 [Astro 集成](/guide/integrations/astro)。
+对于静态的 Astro 营销或应用站点（纯 Astro，而非 Starlight），请将 [Astro 内置 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 与 ai-i18n-tools 结合使用。另请参阅 [Astro 集成](/zh-Hans/guide/integrations/astro)。
 
 参考实现是 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)（另请参阅其 [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md)）：英文在 `/`，九个目标语言环境在 `/{locale}/`（`de`、`fr`、`es`、`ar`、`ja`、`ko`、`zh-cn`、`zh-tw`、`pt-br`）。
 
@@ -60,7 +60,7 @@ const t = useTranslations(locale, makeT(flat));
 
 对于在 `.astro` 文件中具有硬编码 HTML 的营销页面，让 `translate-docs` 提取文本节点和属性（`alt`、`title`、`aria-label`、`placeholder`），使用文档缓存翻译它们，并在您的页面树下写入特定语言的副本。对于大多数可见文本，您**不需要** `t()`。
 
-结构属性和键值默认**不**翻译：内置保护涵盖 JSX/HTML 属性，例如 `class`、`id`、`style`、`src`、`href`、`data-*` 和大多数 `aria-*`，以及模板 `{expression}` 块内的对象键，例如 `class`、`key` 和 `id`。当您使用自定义属性（例如 Tailwind `variant` 或 CMS `slug` 字段）时，使用 `docs[].protectAttributes` 和 `docs[].protectKeys` 扩展这些列表。相同的选项适用于 Markdown 翻译期间的 MDX JSX（请参阅 [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)）。
+结构属性和键值默认**不**翻译：内置保护涵盖 JSX/HTML 属性，例如 `class`、`id`、`style`、`src`、`href`、`data-*` 和大多数 `aria-*`，以及模板 `{expression}` 块内的对象键，例如 `class`、`key` 和 `id`。当您使用自定义属性（例如 Tailwind `variant` 或 CMS `slug` 字段）时，使用 `docs[].protectAttributes` 和 `docs[].protectKeys` 扩展这些列表。相同的选项适用于 Markdown 翻译期间的 MDX JSX（请参阅 [protectAttributes / protectKeys](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
 启用 `features.translateDocs` 并添加一个 `docs[]` 块，例如：
 

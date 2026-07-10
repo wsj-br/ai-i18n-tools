@@ -10,7 +10,7 @@
 
 **주요 옵션:** `-p` / `--port`, `--no-open`
 
-**참고:** [번역 대시보드](/guide/translation-dashboard/)
+**참고:** [번역 대시보드](/ko/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@
 
 `-o`: 출력 경로를 재정의합니다(기본값: 설정의 `glossary.userGlossary`, 또는 `glossary-user.csv`).
 
-**참고:** [대시보드 용어집](/guide/translation-dashboard/glossary)
+**참고:** [대시보드 용어집](/ko/guide/translation-dashboard/glossary)
 
 ---
 

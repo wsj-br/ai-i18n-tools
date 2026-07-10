@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (ロケールファイルから) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 変更なし（リポジトリパスには完全なURLを使用） |
 
-`README.md` → `docs/index.md` を同期するプロジェクトでは、VitePressツリー外の `LICENSE`、`examples/`、およびその他のファイルの `README.md` において完全なGitHub URLを使用してください。[VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage) を参照してください。
+`README.md` → `docs/index.md` を同期するプロジェクトでは、VitePressツリー外の `LICENSE`、`examples/`、およびその他のファイルの `README.md` において完全なGitHub URLを使用してください。[VitePress integration — README as the docs homepage](/ja/guide/integrations/vitepress#readme-as-homepage) を参照してください。
 
-フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions) を参照してください。
+フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/ja/guide/integrations/vitepress#link-conventions) を参照してください。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra リンク正規化機能 (`style: "nextra"`)
 
-`docsOutput.rewriteNextraLinks` が `true` の場合（`style` が `"nextra"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/en/…` と相対 `.mdx` パスをロケール中立のルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions) を参照してください。
+`docsOutput.rewriteNextraLinks` が `true` の場合（`style` が `"nextra"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/en/…` と相対 `.mdx` パスをロケール中立のルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/ja/guide/integrations/nextra#link-conventions) を参照してください。
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs リンク正規化機能 (`style: "fumadocs"`)
 
-`docsOutput.rewriteFumadocsLinks` が `true` の場合（`style` が `"fumadocs"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/docs/…` と相対 `.mdx` パスをロケール中立のルート（`/docs/…`）に書き換えます。[Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions) を参照してください。
+`docsOutput.rewriteFumadocsLinks` が `true` の場合（`style` が `"fumadocs"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/docs/…` と相対 `.mdx` パスをロケール中立のルート（`/docs/…`）に書き換えます。[Fumadocs integration — Link conventions](/ja/guide/integrations/fumadocs#link-conventions) を参照してください。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### ファイルごとの深さ接頭辞と`flatPreserveRelativeDir`
@@ -90,12 +90,12 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 }
 ```
 
-ソースロケール（`en-GB`）をハードコーディングする代わりに`[^/]+`を使用すると、ルールが`sourceLocale`の変更後も機能します。最も一般的なプレースホルダーは`${translatedLocale}`です。`${sourceLocale}`、`${sourceFilename}`、`${translatedFilename}`、およびパス変数も利用できます。[ドキュメント — リンクの書き換え](/guide/documents/link-rewriting#replace-placeholders)を参照してください。
+ソースロケール（`en-GB`）をハードコーディングする代わりに`[^/]+`を使用すると、ルールが`sourceLocale`の変更後も機能します。最も一般的なプレースホルダーは`${translatedLocale}`です。`${sourceLocale}`、`${sourceFilename}`、`${translatedFilename}`、およびパス変数も利用できます。[ドキュメント — リンクの書き換え](/ja/guide/documents/link-rewriting#replace-placeholders)を参照してください。
 
-レイアウト固有の例（フラット、ドキュメントシステム、Docusaurus、Starlight）: [ロケールごとのフォルダ](/guide/images-and-screenshots/per-locale-folder)。一般的なページ間リンクルール: [ドキュメント — リンクの書き換え](/guide/documents/link-rewriting)。フィールドリファレンス: [設定 — `docs`](/reference/configuration#docs)。
+レイアウト固有の例（フラット、ドキュメントシステム、Docusaurus、Starlight）: [ロケールごとのフォルダ](/ja/guide/images-and-screenshots/per-locale-folder)。一般的なページ間リンクルール: [ドキュメント — リンクの書き換え](/ja/guide/documents/link-rewriting)。フィールドリファレンス: [設定 — `docs`](/ja/reference/configuration#docs)。
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-ハードコードされたロケール正規表現、不足しているスクリーンショットディレクトリ、およびDocusaurusの`/img/`ブリッジについては、[よくある間違いとトラブルシューティング](/guide/images-and-screenshots/troubleshooting)を参照してください。
+ハードコードされたロケール正規表現、不足しているスクリーンショットディレクトリ、およびDocusaurusの`/img/`ブリッジについては、[よくある間違いとトラブルシューティング](/ja/guide/images-and-screenshots/troubleshooting)を参照してください。

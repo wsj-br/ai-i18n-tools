@@ -3,10 +3,10 @@
 
 Next.js App Router par [Nextra](https://nextra.site/) 4 documentation sites ke liye `init -t ui-nextra` aur `docsOutput.style: "nextra"` ka upyog karein. Yeh preset ek alias hai `doc-system` ke liye jismein ek khaali `localeSubpath` aur BCP-47 locale folder ke naam surakshit rakhe gaye hain (`localePathLowercase` default roop se `false` hota hai, isliye folders `pt-BR`, `zh-Hans`, aadi bane rahte hain).
 
-[Documents](/guide/documents/) aur chalne yogya [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) demo bhi dekhein.
+[Documents](/hi-Latn/guide/documents/) aur chalne yogya [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) demo bhi dekhein.
 
 <a id="quick-start"></a>
-## Turant shuru karein
+## Quick start
 
 ```bash
 npx ai-i18n-tools init -t ui-nextra
@@ -27,7 +27,7 @@ content/en/index.mdx              →  content/pt-BR/index.mdx
 content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started.mdx
 ```
 
-Ek `docs[]` block configure karein:
+Ek `docs[]` block ko configure karein:
 
 ```json
 {
@@ -90,7 +90,7 @@ Vikalpik: `docs[].nextraMetaGlob` ke saath collection ko override karein ya `doc
 JSON sidecars (`i18n/meta.en.json`) ya patli `_meta.ts` files jo anuvadit JSON import karti hain, unhe haath se **na likhein** — jab English badalta hai, tab `sync` / `translate-docs` ke saath locale `_meta` files ko regenerate karein.
 
 <a id="framework-shell-translation"></a>
-## Framework shell anuvaad
+## Framework shell translation
 
 | Framework | Shell / theme strings | Pipeline |
 |-----------|----------------------|----------|
@@ -100,9 +100,9 @@ JSON sidecars (`i18n/meta.en.json`) ya patli `_meta.ts` files jo anuvadit JSON i
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
+| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
 
-Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/guide/integrations/docusaurus), [VitePress integration](/guide/integrations/vitepress), aur [Fumadocs integration](/guide/integrations/fumadocs) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus), [VitePress integration](/hi-Latn/guide/integrations/vitepress), aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhein.
 
 <a id="example-project"></a>
 ## Example project
@@ -147,7 +147,7 @@ After editing: run extract, translate-ui (or sync), verify en + one target local
 
 Nextra Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`) ke madhyam se locale-prefixed routes serve karta hai. **In-page links locale-neutral rahne chahiye** (`/guide/getting-started`) taki Next.js active locale ko svachalit roop se prefix kar sake.
 
-Built-in normalizer ko enable karein taaki `translate-docs` har translated file mein links ko automatically theek kar de:
+Built-in normalizer ko enable karein taaki `translate-docs` har translated file mein links ko automatically theek kar sake:
 
 ```json
 "docsOutput": {
@@ -161,8 +161,8 @@ Built-in normalizer ko enable karein taaki `translate-docs` har translated file 
 
 | Angrezi srot mein lekhak | Normalizer ke baad |
 |--------------------------|------------------|
-| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
+| `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/hi-Latn/guide/getting-started)` |
+| `[Guide](/hi-Latn/guide/getting-started.mdx)` | `[Guide](/hi-Latn/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | aparivartit (poora URL) |
 
 **Authoring rules**
@@ -190,4 +190,4 @@ export const config = {
 
 Yah `output: 'export'` static exports ke saath kaam nahin karta hai. [Nextra i18n docs](https://nextra.site/docs/guide/i18n) dekhen.
 
-[Configuration — `docsOutput`](/reference/configuration#docsoutput) aur [Output layouts](/guide/documents/output-layouts) bhi dekhen.
+[Configuration — `docsOutput`](/hi-Latn/reference/configuration#docsoutput) aur [Output layouts](/hi-Latn/guide/documents/output-layouts) bhi dekhen.

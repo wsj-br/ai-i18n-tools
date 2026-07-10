@@ -8,7 +8,7 @@
 
 Überprüfen Sie jede konfigurierte Modell-ID gegen die `GET /models`-Liste des aktiven Anbieters (Mitgliedschaft und `expiration_date`). Erfordert den API-Schlüssel des Anbieters (keinen für schlüssellose Anbieter wie Ollama). Beendet mit einem von Null verschiedenen Exit-Status, wenn eine konfigurierte ID fehlt oder abgelaufen ist, und berücksichtigt die `requestTimeoutMs` des Anbieters. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), zeigt er auch den USD-Preis pro 1 Mio. Token für Prompt/Ausführung an.
 
-**Siehe auch:** [LLM-Provider](/guide/providers-and-models)
+**Siehe auch:** [LLM-Provider](/de/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Listet alle Modelle auf, die der aktive Provider über seine `GET /models`-Liste
 
 **Schlüsseloptionen:** `-P` / `--provider`
 
-**Siehe auch:** [LLM-Provider](/guide/providers-and-models)
+**Siehe auch:** [LLM-Provider](/de/guide/providers-and-models)
 
 ---
 

@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # 在執行階段連接 i18next
 
-使用由 `'ai-i18n-tools/runtime'` 匯出的輔助程式來建立您的 i18n 設定檔。如需 API 簽章，請參閱[執行階段輔助程式](/guide/runtime-helpers)。
+使用由 `'ai-i18n-tools/runtime'` 匯出的輔助程式來建立您的 i18n 設定檔。如需 API 簽章，請參閱[執行階段輔助程式](/zh-Hant/guide/runtime-helpers)。
 
 <details>
 <summary>完整的 i18n 啟動範例 (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ export default i18n;
 
 對於沒有捆綁器的 Node CLI，請在一個小型輔助程式中使用 `readFileSync`，該程式會為每個程式碼讀取並剖析 JSON 檔案。
 
-使用 `setupKeyAsDefaultT` 作為常見的應用程式進入點（鍵值修剪 + 複數 `wrapT` + 可選的 `translate-ui` `{sourceLocale}.json`）。單獨呼叫 `wrapI18nWithKeyTrim` 已**棄用**用於應用程式連接 — 請參閱[執行階段輔助程式](/guide/runtime-helpers)。
+使用 `setupKeyAsDefaultT` 作為常見的應用程式進入點（鍵值修剪 + 複數 `wrapT` + 可選的 `translate-ui` `{sourceLocale}.json`）。單獨呼叫 `wrapI18nWithKeyTrim` 已**棄用**用於應用程式連接 — 請參閱[執行階段輔助程式](/zh-Hant/guide/runtime-helpers)。

@@ -6,12 +6,12 @@ ai-i18n-tools ist ein Befehlszeilentool und Toolkit, das Ihnen hilft, Ihre App u
 <a id="translation-modes"></a>
 ## Übersetzungsmodi
 
-- **UI-Strings** – Extrahieren Sie `t("…")`-Aufrufe (und ähnliche Marker) aus JS/TS-Quellen und schreiben Sie flache, pro-Locale-JSON-Dateien für i18next oder statische Nachschlagevorgänge. Befehle: `extract`, `translate-ui`. Anleitung: [UI-Strings](/guide/ui-strings/).
-- **Dokumente** – Übersetzen Sie Markdown-, MDX- und `.astro`-Seiten, die in `docs[].contentPaths` aufgeführt sind. Funktioniert mit VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro und anderen statischen Dokumentationsseiten. Befehl: `translate-docs`. Anleitung: [Dokumente](/guide/documents/).
-- **JSON** – Übersetzen Sie verschachtelte JSON-Locale-Bundles (Themenbezeichnungen, i18n-Überschreibungen, App-Texte, die nicht im Quellcode enthalten sind), die in der obersten Ebene `json[]` definiert sind. Befehl: `translate-json`. Anleitung: [JSON](/guide/json).
-- **SVG** – Übersetzen Sie sichtbaren Text in SVG-Illustrationen (`<text>`, `<title>`, `<desc>`) und schreiben Sie eine Ausgabedatei pro Locale. Getrennt von der Dokumentenübersetzung – `translate-docs` ändert keine SVG-Assets. Befehl: `translate-svg`. Anleitung: [SVG-Übersetzung](/guide/svg-translation/).
+- **UI-Strings** – Extrahieren Sie `t("…")`-Aufrufe (und ähnliche Marker) aus JS/TS-Quellen und schreiben Sie flache, pro-Locale-JSON-Dateien für i18next oder statische Nachschlagevorgänge. Befehle: `extract`, `translate-ui`. Anleitung: [UI-Strings](/de/guide/ui-strings/).
+- **Dokumente** – Übersetzen Sie Markdown-, MDX- und `.astro`-Seiten, die in `docs[].contentPaths` aufgeführt sind. Funktioniert mit VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro und anderen statischen Dokumentationsseiten. Befehl: `translate-docs`. Anleitung: [Dokumente](/de/guide/documents/).
+- **JSON** – Übersetzen Sie verschachtelte JSON-Locale-Bundles (Themenbezeichnungen, i18n-Überschreibungen, App-Texte, die nicht im Quellcode enthalten sind), die in der obersten Ebene `json[]` definiert sind. Befehl: `translate-json`. Anleitung: [JSON](/de/guide/json).
+- **SVG** – Übersetzen Sie sichtbaren Text in SVG-Illustrationen (`<text>`, `<title>`, `<desc>`) und schreiben Sie eine Ausgabedatei pro Locale. Getrennt von der Dokumentenübersetzung – `translate-docs` ändert keine SVG-Assets. Befehl: `translate-svg`. Anleitung: [SVG-Übersetzung](/de/guide/svg-translation/).
 
-Alle vier Modi verwenden den aktiven [LLM-Anbieter](/guide/providers-and-models), teilen sich dieselbe Konfigurationsdatei und verwenden einen SQLite-Cache wieder, sodass bei erneuten Ausführungen nur neuer oder geänderter Text an das Modell gesendet wird.
+Alle vier Modi verwenden den aktiven [LLM-Anbieter](/de/guide/providers-and-models), teilen sich dieselbe Konfigurationsdatei und verwenden einen SQLite-Cache wieder, sodass bei erneuten Ausführungen nur neuer oder geänderter Text an das Modell gesendet wird.
 
 <a id="which-should-i-use"></a>
 ## Welchen soll ich verwenden?
@@ -23,30 +23,30 @@ Alle vier Modi verwenden den aktiven [LLM-Anbieter](/guide/providers-and-models)
 | Eigenständige verschachtelte JSON-Gebietsschemadateien | JSON | `translate-json` |
 | Diagramme oder Illustrationen mit Beschriftungen in SVG | SVG | `translate-svg` |
 
-Viele Projekte kombinieren Modi – zum Beispiel UI-Strings plus Dokumente für eine VitePress-Site oder Dokumente plus SVG für illustrierte Anleitungen. Siehe [Schnellstart](/guide/quick-start) für Gerüstvorlagen und [Konfiguration](/reference/configuration) für das vollständige Konfigurationsschema.
+Viele Projekte kombinieren Modi – zum Beispiel UI-Strings plus Dokumente für eine VitePress-Site oder Dokumente plus SVG für illustrierte Anleitungen. Siehe [Schnellstart](/de/guide/quick-start) für Gerüstvorlagen und [Konfiguration](/de/reference/configuration) für das vollständige Konfigurationsschema.
 
 <a id="examples"></a>
 ## Beispiele
 
-Das Repository enthält ausführbare Beispielprojekte unter `examples/` – jedes mit eigener Konfiguration, festgeschriebenen Gebietsschema-Ausgaben und README. Sie können übersetzte Dateien ohne API-Schlüssel erkunden; für die erneute Ausführung der Übersetzung ist ein Anbieterschlüssel erforderlich (siehe [Anbieter und Modelle](/guide/providers-and-models)).
+Das Repository enthält ausführbare Beispielprojekte unter `examples/` – jedes mit eigener Konfiguration, festgeschriebenen Gebietsschema-Ausgaben und README. Sie können übersetzte Dateien ohne API-Schlüssel erkunden; für die erneute Ausführung der Übersetzung ist ein Anbieterschlüssel erforderlich (siehe [Anbieter und Modelle](/de/guide/providers-and-models)).
 
 | Beispiel | Was es zeigt |
 | --- | --- |
-| [console-app](/examples#console-app) | Kleinste End-to-End-App: `t()` UI-Strings plus README-Übersetzung |
-| [nextjs-app](/examples#nextjs-app) | Next.js UI, Pluralformen, SVG, Docusaurus-Dokumentationsseite, Dashboard |
-| [astro-website](/examples#astro-website) | Astro-Marketingseite: vollständige HTML-Übersetzung plus `t()`-Strings |
-| [astro-docs](/examples#astro-docs) | Astro Starlight-Dokumentationsseite |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress-Dokumente plus Themenkatalog |
-| [nextra-docs](/examples#nextra-docs) | Nextra-Dokumente plus `_meta.ts`-Seitenleistenbeschriftungen und Themenwörterbuch |
-| [fumadocs-docs](/examples#fumadocs-docs) | Fumadocs-Dokumente plus `meta.json`-Seitenleistenbeschriftungen und UI-Katalog |
-| [multi-provider](/examples#multi-provider) | LLM-Anbieter für dasselbe Dokument vergleichen |
-| [test-markdown](/examples#test-markdown) | Markdown-Pipeline-Stresstests (CJK, Devanagari, Grenzfälle) |
+| [console-app](/de/examples#console-app) | Kleinste End-to-End-App: `t()` UI-Strings plus README-Übersetzung |
+| [nextjs-app](/de/examples#nextjs-app) | Next.js UI, Pluralformen, SVG, Docusaurus-Dokumentationsseite, Dashboard |
+| [astro-website](/de/examples#astro-website) | Astro-Marketingseite: vollständige HTML-Übersetzung plus `t()`-Strings |
+| [astro-docs](/de/examples#astro-docs) | Astro Starlight-Dokumentationsseite |
+| [vitepress-docs](/de/examples#vitepress-docs) | VitePress-Dokumente plus Themenkatalog |
+| [nextra-docs](/de/examples#nextra-docs) | Nextra-Dokumente plus `_meta.ts`-Seitenleistenbeschriftungen und Themenwörterbuch |
+| [fumadocs-docs](/de/examples#fumadocs-docs) | Fumadocs-Dokumente plus `meta.json`-Seitenleistenbeschriftungen und UI-Katalog |
+| [multi-provider](/de/examples#multi-provider) | LLM-Anbieter für dasselbe Dokument vergleichen |
+| [test-markdown](/de/examples#test-markdown) | Markdown-Pipeline-Stresstests (CJK, Devanagari, Grenzfälle) |
 
-Siehe [Beispiele](/examples) für `npx degit`-Kopierbefehle und eine Auswahlhilfe.
+Siehe [Beispiele](/de/examples) für `npx degit`-Kopierbefehle und eine Auswahlhilfe.
 
 <a id="next-steps"></a>
 ## Nächste Schritte
 
-1. [Installation](/guide/installation) – Installieren Sie das Paket und legen Sie Ihren API-Schlüssel für den Anbieter fest.
-2. [Schnellstart](/guide/quick-start) – Erstellen Sie eine Konfiguration und führen Sie Ihre erste Übersetzung aus.
-3. [Anbieter und Modelle](/guide/providers-and-models) – Wählen Sie einen Anbieter, eine Modell-Fallback-Kette und eine `-P`-Überschreibung.
+1. [Installation](/de/guide/installation) – Installieren Sie das Paket und legen Sie Ihren API-Schlüssel für den Anbieter fest.
+2. [Schnellstart](/de/guide/quick-start) – Erstellen Sie eine Konfiguration und führen Sie Ihre erste Übersetzung aus.
+3. [Anbieter und Modelle](/de/guide/providers-and-models) – Wählen Sie einen Anbieter, eine Modell-Fallback-Kette und eine `-P`-Überschreibung.

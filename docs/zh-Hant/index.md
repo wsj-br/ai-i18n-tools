@@ -54,6 +54,7 @@ features:
 
 </div>
 
+<a id="quick-install"></a>
 ## 快速安裝
 
 發布的套件為 **僅限 ESM**。需要 Node.js `>=22.16.0`。
@@ -67,6 +68,7 @@ npx ai-i18n-tools sync
 
 關於 CLI 呼叫詳情請參閱[安裝](/zh-Hant/guide/installation)，關於腳手架範本請參閱[快速入門](/zh-Hant/guide/quick-start)。
 
+<a id="which-pipeline-should-i-use"></a>
 ## 我應該使用哪個管線？
 
 | 您的內容 | 指令 |
@@ -77,6 +79,7 @@ npx ai-i18n-tools sync
 
 SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths`。如需完整比較，請參閱[什麼是 ai-i18n-tools？](/zh-Hant/guide/what-is-ai-i18n-tools)。
 
+<a id="explore-the-documentation"></a>
 ## 探索文件
 
 - [**指南**](/zh-Hant/guide/what-is-ai-i18n-tools) — 翻譯模式、安裝、快速入門與框架整合

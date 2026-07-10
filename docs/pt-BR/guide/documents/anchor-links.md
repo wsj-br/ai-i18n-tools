@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 A âncora `#tls-configuration` é a mesma em todas as localidades porque o `id` é fixo na fonte; apenas o **texto** do título e o **rótulo** do link são traduzidos.
 
-Se os links ainda falharem após a tradução, consulte [Solução de problemas](/guide/documents/troubleshooting).
+Se os links ainda falharem após a tradução, consulte [Solução de problemas](/pt-BR/guide/documents/troubleshooting).

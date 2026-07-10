@@ -66,7 +66,7 @@ Raster files ke liye `regexAdjustments` niyam ki aavashyakta nahin hai. `transla
 }
 ```
 
-Yadi project anuvadit SVGs ka bhi upyog karta hai, to [colocated SVG translation](/guide/svg-translation/translated-svg-colocated) unhein handle karta hai aur ve bina kisi atirikt regex ke `current/assets/` mein PNGs ke saath aate hain.
+Yadi project anuvadit SVGs ka bhi upyog karta hai, to [colocated SVG translation](/hi-Latn/guide/svg-translation/translated-svg-colocated) unhein handle karta hai aur ve bina kisi atirikt regex ke `current/assets/` mein PNGs ke saath aate hain.
 
 <a id="prerequisites"></a>
 ### Puraane Sait ke liye Aavashyakataayein
@@ -78,4 +78,4 @@ Yadi project anuvadit SVGs ka bhi upyog karta hai, to [colocated SVG translation
 <a id="implementation-example"></a>
 ### Karyavanayan udaharan
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) mein; Angrezi docs colocated PNGs ka sandarbh dete hain (jaise `../assets/screen-dashboard-summary.png` ke saath [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md)). Ek hi project se colocated SVGs usi `current/assets/` directories mein aate hain — [Colocated SVG](/guide/svg-translation/translated-svg-colocated) dekhein.
+[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) mein; Angrezi docs colocated PNGs ka sandarbh dete hain (jaise `../assets/screen-dashboard-summary.png` ke saath [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md)). Ek hi project se colocated SVGs usi `current/assets/` directories mein aate hain — [Colocated SVG](/hi-Latn/guide/svg-translation/translated-svg-colocated) dekhein.

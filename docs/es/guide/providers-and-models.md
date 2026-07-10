@@ -28,7 +28,7 @@ Las claves de proveedor preestablecidas solo necesitan `translationModels`: la U
 
 Para cualquier clave **no preestablecida**, configure `baseUrl` y `apiKeyEnv` explícitamente en la configuración.
 
-Establezca la clave de API del proveedor activo en su entorno o en el archivo `.env`. La CLI carga automáticamente `.env` desde el directorio de trabajo sin anular las variables ya establecidas en el shell. Consulte [Variables de entorno](/reference/environment-variables).
+Establezca la clave de API del proveedor activo en su entorno o en el archivo `.env`. La CLI carga automáticamente `.env` desde el directorio de trabajo sin anular las variables ya establecidas en el shell. Consulte [Variables de entorno](/es/reference/environment-variables).
 
 <a id="model-fallback-chain"></a>
 ### Cadena de reserva de modelos
@@ -44,7 +44,7 @@ Establezca la clave de API del proveedor activo en su entorno o en el archivo `.
 
 La `providers.<active>.uiModels` opcional es una lista solo de UI que se prueba después de cualquier anulación por configuración regional coincidente y antes de la cadena global `translationModels`. La `providers.<active>.localeModels` opcional asigna una configuración regional BCP-47 a los modelos que se prueban **primero** para esa configuración regional en cada canalización (`pt-br` coincide con `pt-BR`). Cuando ninguna entrada `localeModels` coincide, solo se aplican los niveles específicos de la canalización.
 
-Los diferentes proveedores y modelos varían en costo, velocidad y calidad entre idiomas. Trate la lista predeterminada de `npx ai-i18n-tools init` como un punto de partida: amplíela cuando una configuración regional produzca resultados consistentemente deficientes, o agregue una entrada `localeModels` para esa configuración regional. Valores predeterminados completos y justificación: [Configuración — `provider` y `providers`](/reference/configuration#provider-and-providers).
+Los diferentes proveedores y modelos varían en costo, velocidad y calidad entre idiomas. Trate la lista predeterminada de `npx ai-i18n-tools init` como un punto de partida: amplíela cuando una configuración regional produzca resultados consistentemente deficientes, o agregue una entrada `localeModels` para esa configuración regional. Valores predeterminados completos y justificación: [Configuración — `provider` y `providers`](/es/reference/configuration#provider-and-providers).
 
 Ejemplo de configuración mínima (OpenRouter):
 
@@ -98,7 +98,7 @@ Anule el texto de muestra, las configuraciones regionales o la lista de modelos:
 npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
 ```
 
-Detalles del comando: [referencia de la CLI](/reference/cli-commands/).
+Detalles del comando: [referencia de la CLI](/es/reference/cli-commands/).
 
 <a id="multiple-providers"></a>
 ### Múltiples proveedores
@@ -112,11 +112,11 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Cada bloque de proveedor puede definir su propio `translationModels`, `uiModels` y `localeModels` opcionales, `maxTokens`, `temperature` y `requestTimeoutMs`. Todavía se acepta un bloque `openrouter` de nivel superior heredado y se migra automáticamente a `providers.openrouter` al cargarse.
 
-Ejemplo ejecutable con cuatro proveedores en el mismo documento: [`examples/multi-provider`](/examples#multi-provider).
+Ejemplo ejecutable con cuatro proveedores en el mismo documento: [`examples/multi-provider`](/es/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Referencia adicional
 
-- [Configuración — `provider` y `providers`](/reference/configuration#provider-and-providers) — tabla preestablecida, puntos finales personalizados, tiempos de espera de solicitud, comportamiento específico de OpenRouter.
-- [Arquitectura — Cliente LLM](/reference/architecture) — cómo funcionan internamente la reserva de modelos, el procesamiento por lotes y la notificación de costos.
-- [Variables de entorno](/reference/environment-variables) — variables de entorno de clave API y anulaciones de URL base.
+- [Configuración — `provider` y `providers`](/es/reference/configuration#provider-and-providers) — tabla preestablecida, puntos finales personalizados, tiempos de espera de solicitud, comportamiento específico de OpenRouter.
+- [Arquitectura — Cliente LLM](/es/reference/architecture) — cómo funcionan internamente la reserva de modelos, el procesamiento por lotes y la notificación de costos.
+- [Variables de entorno](/es/reference/environment-variables) — variables de entorno de clave API y anulaciones de URL base.

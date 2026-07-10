@@ -10,7 +10,7 @@
 
 **주요 옵션:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**참고 항목:** [JSON](/guide/json)
+**참고 항목:** [JSON](/ko/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@
 
 **주요 옵션:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**참고 항목:** [SVG 번역](/guide/svg-translation/)
+**참고 항목:** [SVG 번역](/ko/guide/svg-translation/)

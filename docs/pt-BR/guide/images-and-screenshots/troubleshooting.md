@@ -2,7 +2,7 @@
 # Erros comuns e solução de problemas
 
 **Nenhum diretório de localidade nos caminhos das capturas de tela**
-`images/screenshots/screenshot.png` — não é possível distinguir variantes de localidade e não pode ser reescrito. Reestruture para `images/screenshots/<locale>/screenshot.png` antes de usar a reescrita [de pasta por localidade](/guide/images-and-screenshots/per-locale-folder).
+`images/screenshots/screenshot.png` — não é possível distinguir variantes de localidade e não pode ser reescrito. Reestruture para `images/screenshots/<locale>/screenshot.png` antes de usar a reescrita [de pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder).
 
 **Localidade de origem codificada diretamente na expressão regular**
 `"search": "screenshots/en-GB/"` — falha silenciosamente se `sourceLocale` mudar. Use `"search": "screenshots/[^/]+/"` em vez disso.

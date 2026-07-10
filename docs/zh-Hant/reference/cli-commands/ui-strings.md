@@ -8,7 +8,7 @@
 
 從 `t("…")` / `i18n.t("…")` 字面值、可選的 `package.json` 描述，以及當啟用 `includeUiLanguageEnglishNames` 時的可選隨附主檔 `englishName` 項目更新 `strings.json`（請參閱 `ui.uiExtractor`；不會讀取 `languagesManifestPath`）。同時會在 `languagesManifestPath` 重新產生 `ui-languages.json`。當 `.html` / `.htm` 列於 `ui.uiExtractor.extensions` 時，也會從 HTML 擷取 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記字串。需要非空白的 `ui.sourceRoots`。不會呼叫 LLM。
 
-**另請參閱：** [UI 字串概觀](/guide/ui-strings/), [純 HTML 應用程式](/guide/ui-strings/plain-html)
+**另請參閱：** [UI 字串概觀](/zh-Hant/guide/ui-strings/), [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **關鍵選項：** `--write`
 
-**另請參閱：** [標記 HTML 以供翻譯](/guide/ui-strings/plain-html#marking-html-for-translation)
+**另請參閱：** [標記 HTML 以供翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

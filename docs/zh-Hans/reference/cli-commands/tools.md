@@ -10,7 +10,7 @@
 
 **主要选项：** `-p` / `--port`, `--no-open`
 
-**另请参阅：** [翻译仪表板](/guide/translation-dashboard/)
+**另请参阅：** [翻译仪表板](/zh-Hans/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@
 
 `-o`：覆盖输出路径（默认值：来自配置的 `glossary.userGlossary`，或 `glossary-user.csv`）。
 
-**另请参阅：** [仪表板术语表](/guide/translation-dashboard/glossary)
+**另请参阅：** [仪表板术语表](/zh-Hans/guide/translation-dashboard/glossary)
 
 ---
 

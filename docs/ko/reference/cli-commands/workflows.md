@@ -34,4 +34,4 @@
 
 **주요 옵션:** `--max-columns`
 
-**참고:** [대시보드 통계](/guide/translation-dashboard/statistics)
+**참고:** [대시보드 통계](/ko/guide/translation-dashboard/statistics)

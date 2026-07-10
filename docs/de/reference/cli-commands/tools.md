@@ -10,7 +10,7 @@ Startet das Übersetzungs-Dashboard (lokale Weboberfläche für Cache-Segmente, 
 
 **Wichtige Optionen:** `-p` / `--port`, `--no-open`
 
-**Siehe auch:** [Übersetzungs-Dashboard](/guide/translation-dashboard/)
+**Siehe auch:** [Übersetzungs-Dashboard](/de/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@ Schreibt eine leere `glossary-user.csv`-Vorlage. Verweigert das Überschreiben e
 
 `-o`: Überschreibt den Ausgabepfad (Standard: `glossary.userGlossary` aus der Konfiguration oder `glossary-user.csv`).
 
-**Siehe auch:** [Dashboard-Glossar](/guide/translation-dashboard/glossary)
+**Siehe auch:** [Dashboard-Glossar](/de/guide/translation-dashboard/glossary)
 
 ---
 

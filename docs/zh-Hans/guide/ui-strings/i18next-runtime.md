@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # 在运行时连接 i18next
 
-使用 `'ai-i18n-tools/runtime'` 导出的辅助函数创建您的 i18n 设置文件。有关 API 签名，请参阅[运行时辅助函数](/guide/runtime-helpers)。
+使用 `'ai-i18n-tools/runtime'` 导出的辅助函数创建您的 i18n 设置文件。有关 API 签名，请参阅[运行时辅助函数](/zh-Hans/guide/runtime-helpers)。
 
 <details>
 <summary>完整的 i18n 引导示例 (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ export default i18n;
 
 对于没有打包器的 Node CLI，请在小的辅助函数中使用 `readFileSync`，该函数为每个代码读取和解析 JSON 文件。
 
-使用 `setupKeyAsDefaultT` 作为常规应用程序入口点（键修剪 + 复数 `wrapT` + 可选 `translate-ui` `{sourceLocale}.json`）。单独调用 `wrapI18nWithKeyTrim` 进行应用程序连接已**弃用** — 请参阅[运行时辅助函数](/guide/runtime-helpers)。
+使用 `setupKeyAsDefaultT` 作为常规应用程序入口点（键修剪 + 复数 `wrapT` + 可选 `translate-ui` `{sourceLocale}.json`）。单独调用 `wrapI18nWithKeyTrim` 进行应用程序连接已**弃用** — 请参阅[运行时辅助函数](/zh-Hans/guide/runtime-helpers)。

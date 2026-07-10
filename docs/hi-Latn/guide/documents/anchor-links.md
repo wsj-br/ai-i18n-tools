@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 Yeh `#tls-configuration` anchor sabhi locales mein same hai kyunki `id` source mein fixed hai; keval heading **text** aur link **label** ko translate kiya jata hai.
 
-Yadi anuvad ke baad bhi links kaam nahi karte hain, to [Troubleshooting](/guide/documents/troubleshooting) dekhein.
+Yadi anuvad ke baad bhi links kaam nahi karte hain, to [Troubleshooting](/hi-Latn/guide/documents/troubleshooting) dekhein.

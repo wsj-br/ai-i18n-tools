@@ -10,7 +10,7 @@ Iniciar el panel de control de traducción (interfaz web local para segmentos de
 
 **Opciones clave:** `-p` / `--port`, `--no-open`
 
-**Ver también:** [Panel de control de traducción](/guide/translation-dashboard/)
+**Ver también:** [Panel de control de traducción](/es/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@ Escribir una plantilla `glossary-user.csv` vacía. Se niega a sobrescribir un ar
 
 `-o`: anular la ruta de salida (predeterminada: `glossary.userGlossary` desde la configuración, o `glossary-user.csv`).
 
-**Ver también:** [Glosario del panel de control](/guide/translation-dashboard/glossary)
+**Ver también:** [Glosario del panel de control](/es/guide/translation-dashboard/glossary)
 
 ---
 

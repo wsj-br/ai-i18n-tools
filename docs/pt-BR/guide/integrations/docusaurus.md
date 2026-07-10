@@ -3,10 +3,10 @@
 
 Use `init -t ui-docusaurus` e `docsOutput.style: "docusaurus"` para sites de documentação [Docusaurus](https://docusaurus.io/). O preset estrutura um bloco `docs[]` com `docusaurusCatalogDir` para que `translate-docs` possa traduzir tanto o markdown da página quanto o JSON shell do Docusaurus em um único comando.
 
-Consulte também [Documentos](/guide/documents/), a demonstração executável [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (aplicativo Next.js mais `docs-site/` aninhado) e [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) para um passo a passo focado apenas no Docusaurus.
+Consulte também [Documentos](/pt-BR/guide/documents/), a demonstração executável [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (aplicativo Next.js mais `docs-site/` aninhado) e [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) para um passo a passo focado apenas no Docusaurus.
 
 <a id="quick-start"></a>
-## Primeiros passos
+## Início rápido
 
 ```bash
 npx ai-i18n-tools init -t ui-docusaurus
@@ -83,17 +83,17 @@ Não coloque o JSON shell do Docusaurus em `json[]`; use `docs[].docusaurusCatal
 <a id="framework-shell-translation"></a>
 ## Tradução do shell do framework
 
-| Framework | Strings Shell / tema | Pipeline |
+| Framework | Strings do shell / tema | Pipeline |
 |-----------|----------------------|----------|
 | Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
 | Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
 | Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Rótulos de barra lateral `meta.json` | Documentos — auto quando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de sobrescritas de interface do usuário | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Strings de UI integradas (muitos idiomas); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
+| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Strings de UI integradas (muitas localidades); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
 
-**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração VitePress](/guide/integrations/vitepress), [integração Nextra](/guide/integrations/nextra) e [integração Fumadocs](/guide/integrations/fumadocs) para os outros padrões de framework.
+**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração VitePress](/pt-BR/guide/integrations/vitepress), [integração Nextra](/pt-BR/guide/integrations/nextra) e [integração Fumadocs](/pt-BR/guide/integrations/fumadocs) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo

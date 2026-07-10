@@ -8,7 +8,7 @@
 <a id="when-to-use-it"></a>
 ## 何時使用
 
-當您想在花費權杖之前修復**原始 Markdown** 時，請使用此分頁 — 特別是當品質檢查在「[失敗](/guide/translation-dashboard/failures)」分頁中持續因結構問題而失敗時。
+當您想在花費權杖之前修復**原始 Markdown** 時，請使用此分頁 — 特別是當品質檢查在「[失敗](/zh-Hant/guide/translation-dashboard/failures)」分頁中持續因結構問題而失敗時。
 
 <a id="how-to-use-the-tab"></a>
 ## 如何使用此分頁
@@ -39,4 +39,4 @@
 | 未關閉的內嵌程式碼 | 反引號範圍已開啟但未關閉 |
 | `STRONG_OUTSIDE_LINK` | 粗體標記包裹了 markdown 連結 — 將粗體移至連結文字內部 |
 
-另請參閱[複雜的 Markdown 和失敗的品質檢查](/guide/documents/#complex-markdown-and-failed-quality-checks)。
+另請參閱[複雜的 Markdown 和失敗的品質檢查](/zh-Hant/guide/documents/#complex-markdown-and-failed-quality-checks)。

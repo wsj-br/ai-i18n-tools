@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 L'ancre `#tls-configuration` est identique dans toutes les langues car le `id` est fixé dans la source ; seuls le **texte** du titre et l'**étiquette** du lien sont traduits.
 
-Si les liens ne fonctionnent toujours pas après la traduction, consultez [Dépannage](/guide/documents/troubleshooting).
+Si les liens ne fonctionnent toujours pas après la traduction, consultez [Dépannage](/fr/guide/documents/troubleshooting).

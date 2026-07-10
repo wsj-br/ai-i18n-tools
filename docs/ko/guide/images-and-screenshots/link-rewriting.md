@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (로케일 파일에서) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 변경 없음(리포지토리 경로에는 전체 URL 사용) |
 
-`README.md` → `docs/index.md`로 동기화하는 프로젝트의 경우, VitePress 트리 외부의 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에서 전체 GitHub URL을 사용하세요. [VitePress 통합 — README를 문서 홈페이지로 사용](/guide/integrations/vitepress#readme-as-homepage)을 참조하세요.
+`README.md` → `docs/index.md`로 동기화하는 프로젝트의 경우, VitePress 트리 외부의 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에서 전체 GitHub URL을 사용하세요. [VitePress 통합 — README를 문서 홈페이지로 사용](/ko/guide/integrations/vitepress#readme-as-homepage)을 참조하세요.
 
-플랫 리라이터와 VitePress 노멀라이저는 `docs[]` 블록마다 상호 배타적이며, `regexAdjustments` 이전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/guide/integrations/vitepress#link-conventions)을 참조하세요.
+플랫 리라이터와 VitePress 노멀라이저는 `docs[]` 블록마다 상호 배타적이며, `regexAdjustments` 이전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/ko/guide/integrations/vitepress#link-conventions)을 참조하세요.
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 링크 정규화 도구 (`style: "nextra"`)
 
-`docsOutput.rewriteNextraLinks`이(가) `true`인 경우(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/en/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하세요.
+`docsOutput.rewriteNextraLinks`이(가) `true`인 경우(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/en/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs 링크 정규화 도구 (`style: "fumadocs"`)
 
-`docsOutput.rewriteFumadocsLinks`이(가) `true`인 경우(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/docs/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/guide/integrations/fumadocs#link-conventions)을 참조하세요.
+`docsOutput.rewriteFumadocsLinks`이(가) `true`인 경우(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/docs/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/ko/guide/integrations/fumadocs#link-conventions)을 참조하세요.
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir`과 함께 사용하는 파일별 깊이 접두사
@@ -90,12 +90,12 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 }
 ```
 
-소스 로케일(`en-GB`)을 하드코딩하는 대신 `[^/]+`를 사용하여 규칙이 `sourceLocale` 변경 후에도 유지되도록 하십시오. 가장 일반적인 자리 표시자는 `${translatedLocale}`입니다. `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` 및 경로 변수도 사용할 수 있습니다. [문서 — 링크 재작성](/guide/documents/link-rewriting#replace-placeholders)을 참조하십시오.
+소스 로케일(`en-GB`)을 하드코딩하는 대신 `[^/]+`를 사용하여 규칙이 `sourceLocale` 변경 후에도 유지되도록 하십시오. 가장 일반적인 자리 표시자는 `${translatedLocale}`입니다. `${sourceLocale}`, `${sourceFilename}`, `${translatedFilename}` 및 경로 변수도 사용할 수 있습니다. [문서 — 링크 재작성](/ko/guide/documents/link-rewriting#replace-placeholders)을 참조하십시오.
 
-레이아웃별 예시(플랫, 문서 시스템, Docusaurus, Starlight): [로케일별 폴더](/guide/images-and-screenshots/per-locale-folder). 일반적인 페이지 간 링크 규칙: [문서 — 링크 재작성](/guide/documents/link-rewriting). 필드 참조: [구성 — `docs`](/reference/configuration#docs).
+레이아웃별 예시(플랫, 문서 시스템, Docusaurus, Starlight): [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder). 일반적인 페이지 간 링크 규칙: [문서 — 링크 재작성](/ko/guide/documents/link-rewriting). 필드 참조: [구성 — `docs`](/ko/reference/configuration#docs).
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-하드코딩된 로케일 정규식, 누락된 스크린샷 디렉터리 및 Docusaurus `/img/` 브리징에 대해서는 [일반적인 실수 및 문제 해결](/guide/images-and-screenshots/troubleshooting)을 참조하십시오.
+하드코딩된 로케일 정규식, 누락된 스크린샷 디렉터리 및 Docusaurus `/img/` 브리징에 대해서는 [일반적인 실수 및 문제 해결](/ko/guide/images-and-screenshots/troubleshooting)을 참조하십시오.

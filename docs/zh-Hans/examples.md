@@ -1,7 +1,7 @@
 <a id="examples"></a>
 # 示例
 
-GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下的可运行项目 — 每个项目都有自己的配置、已提交的区域设置输出和 README。您可以在没有 API 密钥的情况下浏览翻译文件；重新运行翻译需要提供商密钥（[提供商和模型](/guide/providers-and-models)）。
+GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下的可运行项目 — 每个项目都有自己的配置、已提交的区域设置输出和 README。您可以在没有 API 密钥的情况下浏览翻译文件；重新运行翻译需要提供商密钥（[提供商和模型](/zh-Hans/guide/providers-and-models)）。
 
 <a id="run-standalone-npx-degit"></a>
 ## 独立运行 (`npx degit`)

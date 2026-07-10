@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # Colocated translated SVG (doc-system)
 
-Doc-system sites ke liye upyog karein jahan anuvadit SVG illustrations har locale ki content directory mein anuvadit docs ke saath dikhne chahiye — [colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) ke samaan location par. Docusaurus preset mukhya udaharan hai.
+Doc-system sites ke liye upyog karein jahan anuvadit SVG illustrations har locale ki content directory mein anuvadit docs ke saath dikhne chahiye — [colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) ke samaan location par. Docusaurus preset mukhya udaharan hai.
 
 <a id="config"></a>
 ### Config
@@ -60,7 +60,7 @@ Anushansit: srot SVG ko `documentation/static/assets/` mein en-GB PNG ke saath s
 | `{extension}`            | Bindu sahit ekstension                                |
 | `{relativeToSourceRoot}` | Nikatatam `sourcePath` root se saapeksh path       |
 
-[svg configuration table](/reference/configuration#svg) mein poora reference.
+[svg configuration table](/hi-Latn/reference/configuration#svg) mein poora reference.
 
 <a id="implementation-example"></a>
 ### Karyavanayan udaharan

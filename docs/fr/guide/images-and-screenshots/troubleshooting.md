@@ -2,7 +2,7 @@
 # Erreurs courantes et dépannage
 
 **Pas de répertoire de paramètres régionaux dans les chemins de capture d'écran**
-`images/screenshots/screenshot.png` — impossible de distinguer les variantes de paramètres régionaux et de les réécrire. Restructurez en `images/screenshots/<locale>/screenshot.png` avant d'utiliser la réécriture [de dossiers par paramètres régionaux](/guide/images-and-screenshots/per-locale-folder).
+`images/screenshots/screenshot.png` — impossible de distinguer les variantes de paramètres régionaux et de les réécrire. Restructurez en `images/screenshots/<locale>/screenshot.png` avant d'utiliser la réécriture [de dossiers par paramètres régionaux](/fr/guide/images-and-screenshots/per-locale-folder).
 
 **Langue source en dur dans les expressions régulières**
 `"search": "screenshots/en-GB/"` — échoue silencieusement si `sourceLocale` change. Utiliser plutôt `"search": "screenshots/[^/]+/"`.

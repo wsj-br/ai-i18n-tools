@@ -1,7 +1,7 @@
 <a id="examples"></a>
 # 例
 
-GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にある実行可能なプロジェクト — それぞれに独自の構成、コミットされたロケール出力、および README があります。API キーなしで翻訳済みファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です（[プロバイダーとモデル](/guide/providers-and-models)）。
+GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) にある実行可能なプロジェクト — それぞれに独自の構成、コミットされたロケール出力、および README があります。API キーなしで翻訳済みファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です（[プロバイダーとモデル](/ja/guide/providers-and-models)）。
 
 <a id="run-standalone-npx-degit"></a>
 ## スタンドアロンで実行 (`npx degit`)

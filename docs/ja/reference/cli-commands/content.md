@@ -10,7 +10,7 @@
 
 **主なオプション:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
 
-**関連項目:** [JSON](/guide/json)
+**関連項目:** [JSON](/ja/guide/json)
 
 ---
 
@@ -23,4 +23,4 @@
 
 **主なオプション:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
 
-**関連項目:** [SVG翻訳](/guide/svg-translation/)
+**関連項目:** [SVG翻訳](/ja/guide/svg-translation/)

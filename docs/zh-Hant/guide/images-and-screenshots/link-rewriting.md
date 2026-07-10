@@ -34,19 +34,19 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 | `../guide/foo.md` (來自本地化檔案) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 不變（儲存庫路徑使用完整 URL） |
 
-對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 樹狀結構外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — README 作為文件首頁](/guide/integrations/vitepress#readme-as-homepage)。
+對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 樹狀結構外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-as-homepage)。
 
-扁平化重寫器與 VitePress 正規化工具在每個 `docs[]` 區塊中互斥 — 在 `regexAdjustments` 之前僅會執行其中一個。請參閱 [VitePress 整合 — 連結慣例](/guide/integrations/vitepress#link-conventions)。
+扁平化重寫器與 VitePress 正規化工具在每個 `docs[]` 區塊中互斥 — 在 `regexAdjustments` 之前僅會執行其中一個。請參閱 [VitePress 整合 — 連結慣例](/zh-Hant/guide/integrations/vitepress#link-conventions)。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 連結正規化器 (`style: "nextra"`)
 
-當 `docsOutput.rewriteNextraLinks` 為 `true`（預設為 `style` 是 `"nextra"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/guide/integrations/nextra#link-conventions)。
+當 `docsOutput.rewriteNextraLinks` 為 `true`（預設為 `style` 是 `"nextra"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 
 <a id="fumadocs-link-normalizer-style-fumadocs"></a>
 ### Fumadocs 連結正規化器 (`style: "fumadocs"`)
 
-當 `docsOutput.rewriteFumadocsLinks` 為 `true`（預設為 `style` 是 `"fumadocs"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/guide/integrations/fumadocs#link-conventions)。
+當 `docsOutput.rewriteFumadocsLinks` 為 `true`（預設為 `style` 是 `"fumadocs"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/zh-Hant/guide/integrations/fumadocs#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 針對檔案的深度前綴（使用 `flatPreserveRelativeDir`）
@@ -90,12 +90,12 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 }
 ```
 
-使用 `[^/]+` 而不是硬編碼您的來源地區設定 (`en-GB`)，這樣規則在 `sourceLocale` 變更後仍然有效。最常見的佔位符是 `${translatedLocale}`；`${sourceLocale}`、`${sourceFilename}`、`${translatedFilename}` 和路徑變數也可用 — 請參閱 [文件 — 連結重寫](/guide/documents/link-rewriting#replace-placeholders)。
+使用 `[^/]+` 而不是硬編碼您的來源地區設定 (`en-GB`)，這樣規則在 `sourceLocale` 變更後仍然有效。最常見的佔位符是 `${translatedLocale}`；`${sourceLocale}`、`${sourceFilename}`、`${translatedFilename}` 和路徑變數也可用 — 請參閱 [文件 — 連結重寫](/zh-Hant/guide/documents/link-rewriting#replace-placeholders)。
 
-特定於佈局的範例（平面、文件系統、Docusaurus、Starlight）：[每個地區設定的資料夾](/guide/images-and-screenshots/per-locale-folder)。一般跨頁面連結規則：[文件 — 連結重寫](/guide/documents/link-rewriting)。欄位參考：[配置 — `docs`](/reference/configuration#docs)。
+特定於佈局的範例（平面、文件系統、Docusaurus、Starlight）：[每個地區設定的資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)。一般跨頁面連結規則：[文件 — 連結重寫](/zh-Hant/guide/documents/link-rewriting)。欄位參考：[配置 — `docs`](/zh-Hant/reference/configuration#docs)。
 
 ---
 
 <a id="common-mistakes-and-troubleshooting"></a>
 
-請參閱 [常見錯誤和疑難排解](/guide/images-and-screenshots/troubleshooting)，了解硬編碼的地區設定正規表示式、遺失的螢幕截圖目錄以及 Docusaurus `/img/` 橋接。
+請參閱 [常見錯誤和疑難排解](/zh-Hant/guide/images-and-screenshots/troubleshooting)，了解硬編碼的地區設定正規表示式、遺失的螢幕截圖目錄以及 Docusaurus `/img/` 橋接。

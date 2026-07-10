@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## UI do seletor de idioma
 
-Use o manifesto `ui-languages.json` para construir um seletor de idioma. `ai-i18n-tools` exporta dois auxiliares de exibição — consulte [Auxiliares de tempo de execução → Auxiliares de exibição](/guide/runtime-helpers#display-helpers) para assinaturas.
+Use o manifesto `ui-languages.json` para construir um seletor de idioma. `ai-i18n-tools` exporta dois auxiliares de exibição — consulte [Auxiliares de tempo de execução → Auxiliares de exibição](/pt-BR/guide/runtime-helpers#display-helpers) para assinaturas.
 
 <details>
 <summary>Componente LanguageSelect de exemplo (React)</summary>
@@ -84,7 +84,7 @@ O manifesto é gerado por `generate-ui-languages` ou `extract` a partir de `sour
 <a id="rtl-languages"></a>
 ## Idiomas RTL
 
-`ai-i18n-tools` exporta `getTextDirection(lng)` e `applyDirection(lng)` — consulte [Auxiliares de tempo de execução → Auxiliares RTL](/guide/runtime-helpers#rtl-helpers).
+`ai-i18n-tools` exporta `getTextDirection(lng)` e `applyDirection(lng)` — consulte [Auxiliares de tempo de execução → Auxiliares RTL](/pt-BR/guide/runtime-helpers#rtl-helpers).
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` define `document.documentElement.dir` (navegador) ou é uma operação nula (Node.js). Passe um argumento `element` opcional para direcionar um elemento específico. Conecte-o em seu bootstrap i18n — [Conectar i18next](/guide/ui-strings/i18next-runtime).
+`applyDirection` define `document.documentElement.dir` (navegador) ou é uma operação nula (Node.js). Passe um argumento `element` opcional para direcionar um elemento específico. Conecte-o em seu bootstrap i18n — [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime).
 
 Para strings que podem conter setas `→`, inverta-as para layouts RTL:
 

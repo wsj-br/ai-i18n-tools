@@ -31,6 +31,6 @@ O Painel de Tradução lê a localidade resolvida, a direção do layout e o pac
 <a id="related"></a>
 ## Relacionado
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — substituição de variável de ambiente
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — substituição de chave de configuração
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — substituição de flag da CLI (prioridade mais alta)
+- [`AI_I18N_LANG`](/pt-BR/reference/environment-variables) — substituição de variável de ambiente
+- [`uiLanguage`](/pt-BR/reference/configuration#uilanguage-optional) — substituição de chave de configuração
+- [`-L` / `--ui-lang`](/pt-BR/reference/cli-commands/) — substituição de flag da CLI (prioridade mais alta)

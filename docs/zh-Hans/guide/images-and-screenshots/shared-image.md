@@ -12,4 +12,4 @@
 <a id="implementation-example"></a>
 ### 实现示例
 
-此存储库自己的文档使用共享图像的绝对 URL 变体：[翻译仪表板指南](/guide/translation-dashboard/) 将其屏幕截图引用为 `![Translation Dashboard](/translation-dashboard.png)` — 一个从 [`docs/public/translation-dashboard.png`](https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png) 提供的绝对站点根路径。由于每个区域设置的 URL 都相同，因此不需要 `postProcessing.regexAdjustments` 规则；当仪表板 UI 更改时，使用 [`scripts/screenshot-translation-dashboard.sh`](https://github.com/wsj-br/ai-i18n-tools/tree/main/scripts/screenshot-translation-dashboard.sh) 刷新 PNG。
+此存储库自己的文档使用共享图像的绝对 URL 变体：[翻译仪表板指南](/zh-Hans/guide/translation-dashboard/) 将其屏幕截图引用为 `![Translation Dashboard](/translation-dashboard.png)` — 一个从 [`docs/public/translation-dashboard.png`](https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png) 提供的绝对站点根路径。由于每个区域设置的 URL 都相同，因此不需要 `postProcessing.regexAdjustments` 规则；当仪表板 UI 更改时，使用 [`scripts/screenshot-translation-dashboard.sh`](https://github.com/wsj-br/ai-i18n-tools/tree/main/scripts/screenshot-translation-dashboard.sh) 刷新 PNG。

@@ -15,7 +15,7 @@
 <a id="why-source-edits-matter"></a>
 ## 소스 편집이 중요한 이유
 
-.Dense 인라인 마크업 (**굵은** 기호가 `` `code` ``와 섞여 있거나, 강조가 중첩되거나, 여러 스팬이 있는 긴 문장)으로 인해 모델이 구조적 검사를 통과하는 번역을 반환하기가 더 어려워집니다. **여러 번 기록된 실패**가 있는 세그먼트는 일반적으로 번역을 다시 실행하는 것보다 소스를 **재작성하거나 분할**하거나(또는 예제를 코드 블록으로 이동하는 것보다) 더 많은 개선이 있습니다. 이는 [복잡한 마크다운과 실패한 품질 검사](/guide/documents/#complex-markdown-and-failed-quality-checks)와 일치합니다.
+.Dense 인라인 마크업 (**굵은** 기호가 `` `code` ``와 섞여 있거나, 강조가 중첩되거나, 여러 스팬이 있는 긴 문장)으로 인해 모델이 구조적 검사를 통과하는 번역을 반환하기가 더 어려워집니다. **여러 번 기록된 실패**가 있는 세그먼트는 일반적으로 번역을 다시 실행하는 것보다 소스를 **재작성하거나 분할**하거나(또는 예제를 코드 블록으로 이동하는 것보다) 더 많은 개선이 있습니다. 이는 [복잡한 마크다운과 실패한 품질 검사](/ko/guide/documents/#complex-markdown-and-failed-quality-checks)와 일치합니다.
 
 <a id="how-to-use-the-tab"></a>
 ## 사용 방법
@@ -28,7 +28,7 @@
 6. 🔗 링크 제어는 **터미널**에서 `ai-i18n-tools dashboard`이 실행 중인 파일/줄 힌트를 기록합니다.
 7. 프로젝트의 **소스 파일**을 수정한 다음 `translate-docs` 또는 `sync`를 다시 실행하세요. 성공적인 실행 후 목록이 **최신이 아닌 것**으로 보인다면 `ai-i18n-tools sync --force-update`을 실행하고 대시보드를 다시 로드하세요.
 
-UI와 함께 파일 기반 디버깅을 위해 `translate-docs --debug-failed`를 사용하여 `FAILED-TRANSLATION` 세부 정보를 `cacheDir`에서 재시도 중에 작성합니다. [캐시 동작 및 `translate-docs` 플래그](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하십시오.
+UI와 함께 파일 기반 디버깅을 위해 `translate-docs --debug-failed`를 사용하여 `FAILED-TRANSLATION` 세부 정보를 `cacheDir`에서 재시도 중에 작성합니다. [캐시 동작 및 `translate-docs` 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하십시오.
 
 <a id="failures-vs-markdown-issues"></a>
 ## 실패 vs 마크다운 문제
@@ -39,4 +39,4 @@ UI와 함께 파일 기반 디버깅을 위해 `translate-docs --debug-failed`�
 | 일반적인 원인 | 모델 출력이 나쁨, 유효성 검사 오류 | 일치하지 않는 강조, 닫히지 않은 코드 범위, 링크 외부의 볼드 |
 | 수정 | 소스를 수정하고 다시 번역 | 소스 마크다운을 수정한 다음 다시 번역 |
 
-[마크다운 문제](/guide/translation-dashboard/markdown-issues)를 참조하여 사전 번역 정적 확인을 수행하십시오.
+[마크다운 문제](/ko/guide/translation-dashboard/markdown-issues)를 참조하여 사전 번역 정적 확인을 수행하십시오.

@@ -66,7 +66,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-如果项目还使用已翻译的 SVG，[并置 SVG 翻译](/guide/svg-translation/translated-svg-colocated) 会处理它们，并且它们会与 PNG 一起放置在 `current/assets/` 中，无需额外的正则表达式。
+如果项目还使用已翻译的 SVG，[并置 SVG 翻译](/zh-Hans/guide/svg-translation/translated-svg-colocated) 会处理它们，并且它们会与 PNG 一起放置在 `current/assets/` 中，无需额外的正则表达式。
 
 <a id="prerequisites"></a>
 ### 先决条件
@@ -78,4 +78,4 @@ function getScreenshotDir(locale) {
 <a id="implementation-example"></a>
 ### 实现示例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 中的 `getScreenshotDir(locale)`；英文文档引用并置 PNG（例如 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) 和 `../assets/screen-dashboard-summary.png`）。来自同一项目的并置 SVG 放置在相同的 `current/assets/` 目录中 — 请参阅 [并置 SVG](/guide/svg-translation/translated-svg-colocated)。
+[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 中的 `getScreenshotDir(locale)`；英文文档引用并置 PNG（例如 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) 和 `../assets/screen-dashboard-summary.png`）。来自同一项目的并置 SVG 放置在相同的 `current/assets/` 目录中 — 请参阅 [并置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated)。

@@ -5,7 +5,7 @@ Utilice `docsOutput.postProcessing.languageListBlock` cuando los archivos markdo
 
 Este repositorio lo utiliza para [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (salida plana bajo `translated-docs/`). Después de `translate-docs`, cada copia traducida obtiene un bloque actualizado; por ejemplo, [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) enlaza a archivos de configuración regional hermanos bajo `translated-docs/` y de vuelta a la fuente en inglés en la raíz del repositorio.
 
-Requiere `docsOutput.style = "flat"` (u otro diseño donde los archivos de configuración regional hermanos sean direccionables por ruta relativa). Consulte [Diseños de salida](/guide/documents/output-layouts).
+Requiere `docsOutput.style = "flat"` (u otro diseño donde los archivos de configuración regional hermanos sean direccionables por ruta relativa). Consulte [Diseños de salida](/es/guide/documents/output-layouts).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Marque el bloque en el markdown de origen
@@ -14,7 +14,7 @@ Envuelva el selector en HTML (o cualquier línea) delimitado por los marcadores 
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/es/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 El texto inicial del enlace es solo un marcador de posición. `translate-docs` reemplaza toda la sección desde la primera línea que contiene `start` hasta la primera línea posterior que contiene `end` (los marcadores dentro de bloques de código delimitados se ignoran, por lo que los ejemplos de configuración en el mismo archivo no coinciden).
@@ -55,7 +55,7 @@ Si un archivo no tiene un bloque coincidente, la CLI registra una advertencia (c
 <a id="4-label-manifest"></a>
 ## 4. Manifiesto de etiquetas
 
-Para las etiquetas endónimas (`label: "local"`), genere o mantenga `ui-languages.json` a través de `generate-ui-languages` (escrito en [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional), que por defecto es `{ui.flatOutputDir}/ui-languages.json`). La configuración de solo documentos de este repositorio no tiene una canalización de interfaz de usuario ni un manifiesto de proyecto en el disco, por lo que las etiquetas provienen del catálogo maestro incluido para `sourceLocale` + `targetLocales`.
+Para las etiquetas endónimas (`label: "local"`), genere o mantenga `ui-languages.json` a través de `generate-ui-languages` (escrito en [`languagesManifestPath`](/es/reference/configuration#languagesmanifestpath-optional), que por defecto es `{ui.flatOutputDir}/ui-languages.json`). La configuración de solo documentos de este repositorio no tiene una canalización de interfaz de usuario ni un manifiesto de proyecto en el disco, por lo que las etiquetas provienen del catálogo maestro incluido para `sourceLocale` + `targetLocales`.
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. Ejemplos en este repositorio

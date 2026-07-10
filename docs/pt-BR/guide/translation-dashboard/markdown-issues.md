@@ -8,7 +8,7 @@ Isso **não** é o mesmo que **Falhas**, que registra a saída do modelo por loc
 <a id="when-to-use-it"></a>
 ## Quando usar
 
-Use esta aba quando quiser corrigir o **markdown de origem** antes de gastar tokens — especialmente quando as verificações de qualidade continuam falhando na estrutura na aba [Falhas](/guide/translation-dashboard/failures).
+Use esta aba quando quiser corrigir o **markdown de origem** antes de gastar tokens — especialmente quando as verificações de qualidade continuam falhando na estrutura na aba [Falhas](/pt-BR/guide/translation-dashboard/failures).
 
 <a id="how-to-use-the-tab"></a>
 ## Como usar a aba
@@ -39,4 +39,4 @@ Corrija o arquivo de origem e, em seguida, execute a tradução novamente.
 | Código inline não fechado | Trecho de crase aberto, mas não fechado |
 | `STRONG_OUTSIDE_LINK` | Marcadores em negrito envolvem um link markdown — mova o negrito para dentro do texto do link |
 
-Veja também [Markdown complexo e verificações de qualidade falhas](/guide/documents/#complex-markdown-and-failed-quality-checks).
+Veja também [Markdown complexo e verificações de qualidade falhas](/pt-BR/guide/documents/#complex-markdown-and-failed-quality-checks).

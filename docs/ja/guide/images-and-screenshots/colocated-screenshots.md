@@ -66,7 +66,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-プロジェクトで翻訳されたSVGも使用されている場合、[併置SVG翻訳](/guide/svg-translation/translated-svg-colocated)がそれらを処理し、追加の正規表現なしでPNGとともに`current/assets/`に配置されます。
+プロジェクトで翻訳されたSVGも使用されている場合、[併置SVG翻訳](/ja/guide/svg-translation/translated-svg-colocated)がそれらを処理し、追加の正規表現なしでPNGとともに`current/assets/`に配置されます。
 
 <a id="prerequisites"></a>
 ### 前提条件
@@ -78,4 +78,4 @@ function getScreenshotDir(locale) {
 <a id="implementation-example"></a>
 ### 実装例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)の`getScreenshotDir(locale)`。英語のドキュメントでは、併置されたPNG（例: `../assets/screen-dashboard-summary.png`を含む[dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md)）を参照しています。同じプロジェクトの併置されたSVGは、同じ`current/assets/`ディレクトリに配置されます — [併置SVG](/guide/svg-translation/translated-svg-colocated)を参照してください。
+[duplistatus](https://github.com/wsj-br/duplistatus) — [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)の`getScreenshotDir(locale)`。英語のドキュメントでは、併置されたPNG（例: `../assets/screen-dashboard-summary.png`を含む[dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md)）を参照しています。同じプロジェクトの併置されたSVGは、同じ`current/assets/`ディレクトリに配置されます — [併置SVG](/ja/guide/svg-translation/translated-svg-colocated)を参照してください。

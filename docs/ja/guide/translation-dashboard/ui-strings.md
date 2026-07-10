@@ -29,7 +29,7 @@
 
 エントリの`models[locale]`は`user-edited`に設定されます。プレーンな`sync`または`translate-ui`を実行して、フラットなロケールファイル（`de.json`など）を更新します。`--force`は使用**しないでください**。すべてのエントリを再翻訳し、手動での修正を上書きする可能性があります。
 
-`glossary.autoAddUserEditedToGlossary`が`true`（デフォルト）の場合、次の`translate-ui`または`sync`で、編集内容がユーザー用語集CSVに自動的に追加されることがあります。詳細については、[設定](/reference/configuration#glossary)を参照してください。
+`glossary.autoAddUserEditedToGlossary`が`true`（デフォルト）の場合、次の`translate-ui`または`sync`で、編集内容がユーザー用語集CSVに自動的に追加されることがあります。詳細については、[設定](/ja/reference/configuration#glossary)を参照してください。
 
 <a id="delete"></a>
 ### 削除

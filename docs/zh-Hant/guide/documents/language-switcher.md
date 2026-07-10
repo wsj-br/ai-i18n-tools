@@ -5,7 +5,7 @@
 
 此儲存庫將其用於 [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (在 `translated-docs/` 下的平面輸出)。在 `translate-docs` 之後，每個翻譯副本都會獲得一個刷新的區塊；例如 [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) 連結到 `translated-docs/` 下的同級地區設定檔案，並返回到儲存庫根目錄的英文來源。
 
-需要 `docsOutput.style = "flat"` (或另一個可以透過相對路徑定址同級地區設定檔案的佈局)。請參閱 [輸出佈局](/guide/documents/output-layouts)。
+需要 `docsOutput.style = "flat"` (或另一個可以透過相對路徑定址同級地區設定檔案的佈局)。請參閱 [輸出佈局](/zh-Hant/guide/documents/output-layouts)。
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. 在來源 Markdown 中標記區塊
@@ -14,7 +14,7 @@
 
 ```markdown
 <small>**Read in other languages:** </small>
-<small id="lang-list">[English (GB)](/) · [Deutsch](./README.de.md) · …</small>
+<small id="lang-list">[English (GB)](/zh-Hant/) · [Deutsch](./README.de.md) · …</small>
 ```
 
 初始連結文字僅為預留位置。`translate-docs` 會替換從包含 `start` 的第一行到包含 `end` 的第一行之後的整個片段（圍起來的程式碼區塊內的標記會被忽略，因此同一檔案中的設定範例不會匹配）。
@@ -55,7 +55,7 @@
 <a id="4-label-manifest"></a>
 ## 4. 標籤清單
 
-對於內名標籤 (`label: "local"`)，透過 `generate-ui-languages` 生成或維護 `ui-languages.json`（寫入至 [`languagesManifestPath`](/reference/configuration#languagesmanifestpath-optional)，預設為 `{ui.flatOutputDir}/ui-languages.json`）。此儲存庫的僅文件設定沒有 UI 管線，且磁碟上沒有專案資訊清單，因此標籤來自 `sourceLocale` + `targetLocales` 的內建主目錄。
+對於內名標籤 (`label: "local"`)，透過 `generate-ui-languages` 生成或維護 `ui-languages.json`（寫入至 [`languagesManifestPath`](/zh-Hant/reference/configuration#languagesmanifestpath-optional)，預設為 `{ui.flatOutputDir}/ui-languages.json`）。此儲存庫的僅文件設定沒有 UI 管線，且磁碟上沒有專案資訊清單，因此標籤來自 `sourceLocale` + `targetLocales` 的內建主目錄。
 
 <a id="5-examples-in-this-repository"></a>
 ## 5. 此儲存庫中的範例

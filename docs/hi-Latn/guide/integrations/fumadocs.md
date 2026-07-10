@@ -3,10 +3,10 @@
 
 Use `init -t ui-fumadocs` aur `docsOutput.style: "fumadocs"` for [Fumadocs](https://www.fumadocs.dev/) 4 documentation sites on Next.js App Router. The preset is an alias for `doc-system` with an empty `localeSubpath` and BCP-47 or short locale codes preserved (`localePathLowercase` defaults to `false`).
 
-See also [Documents](/guide/documents/) aur runnable [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) demo (dot parser, port 3080).
+See also [Documents](/hi-Latn/guide/documents/) aur runnable [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) demo (dot parser, port 3080).
 
 <a id="quick-start"></a>
-## Turant shuru karein
+## Quick start
 
 ```bash
 npx ai-i18n-tools init -t ui-fumadocs
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-Copy-paste dir config ke liye [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) mein `ai-i18n-tools.config.dir.example.json` dekhein. Mental model [Nextra integration](/guide/integrations/nextra#page-layout) se mel khata hai.
+Copy-paste dir config ke liye [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) mein `ai-i18n-tools.config.dir.example.json` dekhein. Mental model [Nextra integration](/hi-Latn/guide/integrations/nextra#page-layout) se mel khata hai.
 
 <a id="sidebar-metajson"></a>
 ## Sidebar (`meta.json`)
@@ -122,7 +122,7 @@ Standard locales ko `@fumadocs/language/*` presets bina LLM cost ke cover kiya j
 Fumadocs UI strings ke liye `json[]` ka upyog **na karein** — vah pipeline asambandhit app locale bundles ke liye hai.
 
 <a id="framework-shell-translation"></a>
-## Framework shell anuvaad
+## Framework shell translation
 
 | Framework | Shell / theme strings | Pipeline |
 |-----------|----------------------|----------|
@@ -132,16 +132,16 @@ Fumadocs UI strings ke liye `json[]` ka upyog **na karein** — vah pipeline asa
 | Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
 | Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
 | Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai sthaaneeya bhashaen); koi atirikt shell pipeline nahin | Dastavez — `translate-docs` (keval prishth) |
+| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
 
-Framework shell/theme strings ko `json[]` mein **na** daalein — woh pipeline unrelated app locale bundles ke liye hai. Doosre framework patterns ke liye [Docusaurus integration](/guide/integrations/docusaurus), [VitePress integration](/guide/integrations/vitepress), aur [Nextra integration](/guide/integrations/nextra) dekhein.
+Framework shell/theme strings ko `json[]` mein **na** daalein — woh pipeline unrelated app locale bundles ke liye hai. Doosre framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus), [VitePress integration](/hi-Latn/guide/integrations/vitepress), aur [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhein.
 
 <a id="link-conventions"></a>
 ## Link conventions
 
 Fumadocs Next.js middleware (`/docs/getting-started`, `/pt/docs/getting-started`) ke madhyam se locale-prefixed routes serve karta hai. **In-page links ko locale-neutral rehna chahiye** (`/docs/getting-started`) taki active locale prefix apne aap apply ho jaye.
 
-Built-in normalizer ko enable karein taaki `translate-docs` har translated file mein links ko automatically theek kar de:
+Built-in normalizer ko enable karein taaki `translate-docs` har translated file mein links ko automatically theek kar sake:
 
 ```json
 "docsOutput": {
@@ -157,7 +157,7 @@ Built-in normalizer ko enable karein taaki `translate-docs` har translated file 
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/hi-Latn/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | aparivartit (poora URL) |
 
 **Authoring rules**
@@ -166,7 +166,7 @@ Built-in normalizer ko enable karein taaki `translate-docs` har translated file 
 - Content tree ke bahar repo files: **full URLs** ka upyog karein.
 - Locale-suffixed copies (`*.pt.mdx`) ya `content/{locale}/` trees mein links ko haath se edit **na** karein — `sync` / `translate-docs` ke saath regenerate karein.
 
-[Documents — link rewriting](/guide/documents/link-rewriting) aur [Configuration — `docsOutput`](/reference/configuration#docsoutput) bhi dekhein.
+[Documents — link rewriting](/hi-Latn/guide/documents/link-rewriting) aur [Configuration — `docsOutput`](/hi-Latn/reference/configuration#docsoutput) bhi dekhein.
 
 <a id="locale-codes"></a>
 ## Locale codes
@@ -186,8 +186,8 @@ Fumadocs projects `source.config.ts` mein kai `defineDocs` blocks define kar sak
 <a id="cross-references"></a>
 ## Cross-references
 
-- [Configuration — `docsOutput`](/reference/configuration#docsoutput)
-- [Output layouts](/guide/documents/output-layouts)
-- [Docusaurus integration](/guide/integrations/docusaurus)
-- [Nextra integration](/guide/integrations/nextra) (dir parser mental model)
-- [VitePress integration](/guide/integrations/vitepress) (UI catalog bootstrap pattern)
+- [Configuration — `docsOutput`](/hi-Latn/reference/configuration#docsoutput)
+- [Output layouts](/hi-Latn/guide/documents/output-layouts)
+- [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus)
+- [Nextra integration](/hi-Latn/guide/integrations/nextra) (dir parser mental model)
+- [VitePress integration](/hi-Latn/guide/integrations/vitepress) (UI catalog bootstrap pattern)

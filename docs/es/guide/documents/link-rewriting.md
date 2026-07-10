@@ -16,13 +16,13 @@ El reescritor que se ejecuta depende de `docsOutput.style`:
 | `"fumadocs"` | Normalizador de enlaces de Fumadocs (`rewriteFumadocsLinks`, activado por defecto) | Rutas `content/docs/…` y `.mdx` relativas → rutas neutrales respecto al idioma (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Ninguno | Las URL de origen pasan sin cambios hasta `postProcessing` |
 
-`pathTemplate` personalizado desactiva el reescritor plano a menos que establezca `rewriteRelativeLinks: true` explícitamente. Consulte [Diseños de salida](/guide/documents/output-layouts) y [Enlaces de anclaje](/guide/documents/anchor-links) para el manejo de `#anchor` entre páginas.
+`pathTemplate` personalizado desactiva el reescritor plano a menos que establezca `rewriteRelativeLinks: true` explícitamente. Consulte [Diseños de salida](/es/guide/documents/output-layouts) y [Enlaces de anclaje](/es/guide/documents/anchor-links) para el manejo de `#anchor` entre páginas.
 
-Para las reglas de autoría específicas de VitePress, consulte [Integración de VitePress — Convenciones de enlaces](/guide/integrations/vitepress#link-conventions).
+Para las reglas de autoría específicas de VitePress, consulte [Integración de VitePress — Convenciones de enlaces](/es/guide/integrations/vitepress#link-conventions).
 
-Para las reglas de autoría específicas de Nextra, consulte [Integración de Nextra — Convenciones de enlaces](/guide/integrations/nextra#link-conventions).
+Para las reglas de autoría específicas de Nextra, consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
 
-Para las reglas de autoría específicas de Fumadocs, consulte [Integración de Fumadocs — Convenciones de enlaces](/guide/integrations/fumadocs#link-conventions).
+Para las reglas de autoría específicas de Fumadocs, consulte [Integración de Fumadocs — Convenciones de enlaces](/es/guide/integrations/fumadocs#link-conventions).
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ Escriba patrones `search` para que coincidan con el segmento de configuración r
 
 Para los diseños `doc-system`, el reescritor plano no se ejecuta. `regexAdjustments` ve la URL original del markdown de origen (normalmente una ruta absoluta como `/img/screenshots/en-GB/foo.png`).
 
-Consulte [El reescritor de enlaces planos y el flujo de dos pasos](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) para conocer el comportamiento del prefijo de profundidad y `flatPreserveRelativeDir`.
+Consulte [El reescritor de enlaces planos y el flujo de dos pasos](/es/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow) para conocer el comportamiento del prefijo de profundidad y `flatPreserveRelativeDir`.
 
 <a id="replace-placeholders"></a>
 ### Marcadores de posición `replace`
@@ -93,7 +93,7 @@ Almacene los activos en un subdirectorio codificado por configuración regional 
 
 Use `[^/]+` en lugar de codificar su configuración regional de origen (`en-GB`) para que la regla siga funcionando si `sourceLocale` cambia.
 
-Tutorial completo: [Imágenes y capturas de pantalla — Carpeta por configuración regional](/guide/images-and-screenshots/per-locale-folder).
+Tutorial completo: [Imágenes y capturas de pantalla — Carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder).
 
 <a id="doc-system-static-urls"></a>
 ### URL estáticas del sistema de documentos
@@ -112,7 +112,7 @@ Para Docusaurus, Starlight u otros sitios `doc-system` que sirven capturas de pa
 }
 ```
 
-Prefiera las rutas relativas (`../assets/name.png`) ubicadas en el markdown de origen cuando su generador lo admita; entonces no se necesita ningún puente `regexAdjustments`. Consulte [Imágenes y capturas de pantalla](/guide/images-and-screenshots/) para conocer las opciones de diseño.
+Prefiera las rutas relativas (`../assets/name.png`) ubicadas en el markdown de origen cuando su generador lo admita; entonces no se necesita ningún puente `regexAdjustments`. Consulte [Imágenes y capturas de pantalla](/es/guide/images-and-screenshots/) para conocer las opciones de diseño.
 
 <a id="when-regex-is-not-needed"></a>
 ### Cuando no se necesita una expresión regular
@@ -156,14 +156,14 @@ README plano con capturas de pantalla por idioma y un bloque opcional de cambio 
 
 </details>
 
-Referencia de campo: [Configuración — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`).
+Referencia de campo: [Configuración — `docs`](/es/reference/configuration#docs) (`docsOutput.postProcessing`).
 
 <a id="troubleshooting"></a>
 ## Solución de problemas
 
 | Síntoma | Causa probable | Qué comprobar |
 | --- | --- | --- |
-| La página traducida devuelve un error 404 en una imagen o recurso estático | Falta o es incorrecto `regexAdjustments` para su diseño de URL | [Imágenes y capturas de pantalla — Solución de problemas](/guide/images-and-screenshots/troubleshooting) |
-| El enlace abre el archivo correcto pero el `#section` incorrecto | Desplazamiento del slug del ancla, no reescritura de URL | [Enlaces de ancla](/guide/documents/anchor-links) |
+| La página traducida devuelve un error 404 en una imagen o recurso estático | Falta o es incorrecto `regexAdjustments` para su diseño de URL | [Imágenes y capturas de pantalla — Solución de problemas](/es/guide/images-and-screenshots/troubleshooting) |
+| El enlace abre el archivo correcto pero el `#section` incorrecto | Desplazamiento del slug del ancla, no reescritura de URL | [Enlaces de ancla](/es/guide/documents/anchor-links) |
 | La regla `regexAdjustments` no tiene efecto en el diseño plano | `search` espera la URL previa al reescritor, pero el diseño plano ya agregó un prefijo de profundidad | Coincide con el segmento dentro de la ruta prefijada (consulta [flujo de dos pasos](#two-step-flow-with-flat-layout)) |
 | Expresión regular no válida omitida en tiempo de ejecución | Patrón `search` mal formado | La CLI advierte con la regla `description`; prueba los patrones con la salida traducida de muestra |

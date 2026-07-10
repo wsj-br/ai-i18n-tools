@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # Conectar i18next em tempo de execução
 
-Crie seu arquivo de configuração i18n usando os auxiliares exportados por `'ai-i18n-tools/runtime'`. Para assinaturas de API, consulte [Auxiliares de tempo de execução](/guide/runtime-helpers).
+Crie seu arquivo de configuração i18n usando os auxiliares exportados por `'ai-i18n-tools/runtime'`. Para assinaturas de API, consulte [Auxiliares de tempo de execução](/pt-BR/guide/runtime-helpers).
 
 <details>
 <summary>Exemplo completo de inicialização i18n (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ Para pacotes JSON em `public/` (configuração típica do Next.js), busque do se
 
 Para CLIs Node sem empacotador, use `readFileSync` dentro de um pequeno auxiliar que leia e analise o arquivo JSON para cada código.
 
-Use `setupKeyAsDefaultT` como o ponto de entrada usual do aplicativo (corte de chave + plural `wrapT` + `translate-ui` `{sourceLocale}.json` opcional). Chamar `wrapI18nWithKeyTrim` sozinho é **obsoleto** para a conexão do aplicativo — consulte [Auxiliares de tempo de execução](/guide/runtime-helpers).
+Use `setupKeyAsDefaultT` como o ponto de entrada usual do aplicativo (corte de chave + plural `wrapT` + `translate-ui` `{sourceLocale}.json` opcional). Chamar `wrapI18nWithKeyTrim` sozinho é **obsoleto** para a conexão do aplicativo — consulte [Auxiliares de tempo de execução](/pt-BR/guide/runtime-helpers).

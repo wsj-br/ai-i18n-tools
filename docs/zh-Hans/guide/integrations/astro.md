@@ -3,7 +3,7 @@
 
 ai-i18n-tools 可与 [Astro](https://astro.build/) 在两种常见设置中使用：**Astro Starlight** 文档站点和**纯 Astro** 营销或应用程序站点。两者都使用文档 (`translate-docs`) 作为页面内容；纯 Astro 站点通常将其与 UI 字符串 (`extract` / `translate-ui`) 结合用于 frontmatter 和共享数据中的 `t()` 字符串。
 
-另请参阅[UI 字符串](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[文档](/guide/documents/)以及下面的可运行示例。
+另请参阅[UI 字符串](/zh-Hans/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[文档](/zh-Hans/guide/documents/)以及下面的可运行示例。
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -45,7 +45,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 将 `contentPaths` 指向您的英文 `.md` / `.mdx` 文件和目录。将 `docsRoot` 设置为 Starlight 用作其内容根目录的相同文件夹。
 
-Starlight UI 覆盖可以在需要时在单独的 `docs[]` 块中使用 `src/content/i18n/en.json` 和 `jsonPathTemplate` — 请参阅[文档 — 初始化以获取文档](/guide/documents/#step-1-initialise-for-documentation)。
+Starlight UI 覆盖可以在需要时在单独的 `docs[]` 块中使用 `src/content/i18n/en.json` 和 `jsonPathTemplate` — 请参阅[文档 — 初始化以获取文档](/zh-Hans/guide/documents/#step-1-initialise-for-documentation)。
 
 <a id="framework-shell-translation"></a>
 ### 框架外壳翻译
@@ -57,10 +57,10 @@ Starlight 自带了许多语言环境的内置 UI 字符串（导航标签、搜
 | Astro Starlight | 内置 UI 字符串（多种语言环境）；无额外外壳流水线 | 文档 — `translate-docs`（仅页面） |
 | Docusaurus | `write-translations` 目录 (`{ message, description }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
 | VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 侧边栏标签 + 主题字典 `.ts` | 文档 — 参见 [Nextra 集成](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` 侧边栏标签 + UI 覆盖目录 | 文档 — 参见 [Fumadocs 集成](/guide/integrations/fumadocs) |
+| Nextra | `_meta.ts` 侧边栏标签 + 主题字典 `.ts` | 文档 — 参见 [Nextra 集成](/zh-Hans/guide/integrations/nextra) |
+| Fumadocs | `meta.json` 侧边栏标签 + UI 覆盖目录 | 文档 — 参见 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs) |
 
-其他框架模式请参见 [Docusaurus 集成](/guide/integrations/docusaurus)、[VitePress 集成](/guide/integrations/vitepress)、[Nextra 集成](/guide/integrations/nextra) 和 [Fumadocs 集成](/guide/integrations/fumadocs)。
+其他框架模式请参见 [Docusaurus 集成](/zh-Hans/guide/integrations/docusaurus)、[VitePress 集成](/zh-Hans/guide/integrations/vitepress)、[Nextra 集成](/zh-Hans/guide/integrations/nextra) 和 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs)。
 
 <a id="example-project"></a>
 ### 示例项目

@@ -5,24 +5,24 @@
 
 在 Docusaurus 網站上，也將 `docusaurusCatalogDir` 設定為您的 `write-translations` 目錄資料夾（例如 `docs-site/i18n/en`）。然後 `translate-docs` 也會包含 shell JSON — 導覽列、頁腳和主題字串。
 
-在 [VitePress](/guide/integrations/vitepress) 網站上，頁面主體使用相同的 `docs[]` 管線。導覽列、側邊欄與頁尾標籤位於 `docsOutput.vitepressThemeCatalog` —— `translate-docs` 會初始化英文目錄並將其與頁面一起翻譯，無需單獨的管線。
+在 [VitePress](/zh-Hant/guide/integrations/vitepress) 網站上，頁面主體使用相同的 `docs[]` 管線。導覽列、側邊欄與頁尾標籤位於 `docsOutput.vitepressThemeCatalog` —— `translate-docs` 會初始化英文目錄並將其與頁面一起翻譯，無需單獨的管線。
 
-在 [Nextra](/guide/integrations/nextra) 網站上，頁面主體使用與 `docsOutput.style: "nextra"` 相同的 `docs[]` 管線。`_meta.ts` 側邊欄標籤由 `translate-docs` 自動收集並翻譯；主題字典字串透過 `docs[].nextraDictionaryPath` 在相同管線中翻譯。
+在 [Nextra](/zh-Hant/guide/integrations/nextra) 網站上，頁面主體使用與 `docsOutput.style: "nextra"` 相同的 `docs[]` 管線。`_meta.ts` 側邊欄標籤由 `translate-docs` 自動收集並翻譯；主題字典字串透過 `docs[].nextraDictionaryPath` 在相同管線中翻譯。
 
-在 [Fumadocs](/guide/integrations/fumadocs) 網站上，頁面主體使用 `docsOutput.style: "fumadocs"` 搭配 `fumadocsParser` `"dot"`（預設）或 `"dir"`。`meta.json` 側邊欄標籤會自動收集；UI 覆寫透過 `docsOutput.fumadocsUiCatalog` 翻譯。
+在 [Fumadocs](/zh-Hant/guide/integrations/fumadocs) 網站上，頁面主體使用 `docsOutput.style: "fumadocs"` 搭配 `fumadocsParser` `"dot"`（預設）或 `"dir"`。`meta.json` 側邊欄標籤會自動收集；UI 覆寫透過 `docsOutput.fumadocsUiCatalog` 翻譯。
 
-對於嵌入在 Markdown 中的 PNG 和其他點陣圖影像，請參閱[影像與螢幕截圖](/guide/images-and-screenshots/)。`translate-docs` 僅翻譯替代文字；它不複製點陣圖檔案。
+對於嵌入在 Markdown 中的 PNG 和其他點陣圖影像，請參閱[影像與螢幕截圖](/zh-Hant/guide/images-and-screenshots/)。`translate-docs` 僅翻譯替代文字；它不複製點陣圖檔案。
 
-對於 README 或文件中可選的**語言切換器**區塊，請將 `docsOutput.style` 設定為 `"flat"` — 請參閱[語言切換器](/guide/documents/language-switcher)。
+對於 README 或文件中可選的**語言切換器**區塊，請將 `docsOutput.style` 設定為 `"flat"` — 請參閱[語言切換器](/zh-Hant/guide/documents/language-switcher)。
 
-當啟用 `features.translateSVG` 時，SVG 檔案會透過 [`translate-svg`](/reference/cli-commands/content#translate-svg) 進行翻譯 — 而非透過 `docs[]` / `contentPaths`。
+當啟用 `features.translateSVG` 時，SVG 檔案會透過 [`translate-svg`](/zh-Hant/reference/cli-commands/content#translate-svg) 進行翻譯 — 而非透過 `docs[]` / `contentPaths`。
 
-與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/guide/json) 管線，而非 `docs[]`。
+與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/zh-Hant/guide/json) 管線，而非 `docs[]`。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
 
-`translate-docs` 和 `sync` 的文檔步驟會根據目標地區 **解析模型**：首先使用配置中的 `localeModels(locale)`，然後是提供者的全球 `translationModels` 鏈。當特定語言需要與默認備選列表不同的模型時，可以使用此功能——例如，當全球鏈在處理葡萄牙語時遇到困難時，優先選擇 Gemini 進行 `pt-BR` 文檔生成。請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain) 和 [配置 — `localeModels`](/reference/configuration#provider-and-providers)。
+`translate-docs` 和 `sync` 的文檔步驟會根據目標地區 **解析模型**：首先使用配置中的 `localeModels(locale)`，然後是提供者的全球 `translationModels` 鏈。當特定語言需要與默認備選列表不同的模型時，可以使用此功能——例如，當全球鏈在處理葡萄牙語時遇到困難時，優先選擇 Gemini 進行 `pt-BR` 文檔生成。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain) 和 [配置 — `localeModels`](/zh-Hant/reference/configuration#provider-and-providers)。
 
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
@@ -30,16 +30,16 @@
 | 您的設定 | 從這裡開始 |
 | --- | --- |
 | Docusaurus 網站 | `init -t ui-docusaurus`、`docsOutput.style = "docusaurus"` — [步驟 1](#step-1-initialise-for-documentation) |
-| VitePress 網站 | `init -t ui-vitepress` + `vitepressThemeCatalog` 用於主題 —— [VitePress 整合](/guide/integrations/vitepress) |
-| Nextra 網站 | `init -t ui-nextra` + `nextraDictionaryPath` 用於字典（側邊欄 `_meta.ts` 為自動） —— [Nextra 整合](/guide/integrations/nextra) |
-| Fumadocs 網站 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用於 UI（側邊欄 `meta.json` 為自動） —— [Fumadocs 整合](/guide/integrations/fumadocs) |
+| VitePress 網站 | `init -t ui-vitepress` + `vitepressThemeCatalog` 用於主題 —— [VitePress 整合](/zh-Hant/guide/integrations/vitepress) |
+| Nextra 網站 | `init -t ui-nextra` + `nextraDictionaryPath` 用於字典（側邊欄 `_meta.ts` 為自動） —— [Nextra 整合](/zh-Hant/guide/integrations/nextra) |
+| Fumadocs 網站 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用於 UI（側邊欄 `meta.json` 為自動） —— [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [步驟 1](#step-1-initialise-for-documentation) |
-| 平面文件（README、變更日誌等） | `docsOutput.style = "flat"` — [輸出佈局](/guide/documents/output-layouts)，可選的[語言切換器](/guide/documents/language-switcher) |
-| 翻譯檔案的存放位置 | [輸出佈局](/guide/documents/output-layouts) |
-| 跨頁面 `#anchor` 連結 | [錨點連結](/guide/documents/anchor-links) |
-| 連結和資產 URL 重寫 (`regexAdjustments`) | [連結重寫](/guide/documents/link-rewriting) |
-| 文件中的螢幕截圖 | [影像與螢幕截圖](/guide/images-and-screenshots/) |
-| `translate-docs` 旗標和快取 | [CLI 選項](/guide/documents/cli-options) |
+| 平面文件（README、變更日誌等） | `docsOutput.style = "flat"` — [輸出佈局](/zh-Hant/guide/documents/output-layouts)，可選的[語言切換器](/zh-Hant/guide/documents/language-switcher) |
+| 翻譯檔案的存放位置 | [輸出佈局](/zh-Hant/guide/documents/output-layouts) |
+| 跨頁面 `#anchor` 連結 | [錨點連結](/zh-Hant/guide/documents/anchor-links) |
+| 連結和資產 URL 重寫 (`regexAdjustments`) | [連結重寫](/zh-Hant/guide/documents/link-rewriting) |
+| 文件中的螢幕截圖 | [影像與螢幕截圖](/zh-Hant/guide/images-and-screenshots/) |
+| `translate-docs` 旗標和快取 | [CLI 選項](/zh-Hant/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>
 ## 步驟 1：初始化文件
@@ -60,7 +60,7 @@ npx ai-i18n-tools init -t ui-starlight
 npx ai-i18n-tools init -t ui-vitepress
 ```
 
-為導覽列/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` —— 請參閱 [VitePress 整合](/guide/integrations/vitepress)。
+為導覽列/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` —— 請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
 
 對於 Nextra 文件網站：
 
@@ -68,7 +68,7 @@ npx ai-i18n-tools init -t ui-vitepress
 npx ai-i18n-tools init -t ui-nextra
 ```
 
-為主題字典字串設定 `docs[].nextraDictionaryPath` —— 請參閱 [Nextra 整合](/guide/integrations/nextra)。側邊欄 `_meta.ts` 標籤會自動收集。
+為主題字典字串設定 `docs[].nextraDictionaryPath` —— 請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra)。側邊欄 `_meta.ts` 標籤會自動收集。
 
 對於 Fumadocs 文件網站：
 
@@ -76,7 +76,7 @@ npx ai-i18n-tools init -t ui-nextra
 npx ai-i18n-tools init -t ui-fumadocs
 ```
 
-為 UI 覆寫設定 `docsOutput.fumadocsUiCatalog` —— 請參閱 [Fumadocs 整合](/guide/integrations/fumadocs)。側邊欄 `meta.json` 標籤會自動收集。
+為 UI 覆寫設定 `docsOutput.fumadocsUiCatalog` —— 請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。側邊欄 `meta.json` 標籤會自動收集。
 
 適用於純 Astro 網站 UI（無 Starlight）：
 
@@ -84,7 +84,7 @@ npx ai-i18n-tools init -t ui-fumadocs
 npx ai-i18n-tools init -t ui-astro-website
 ```
 
-該範本僅啟用 UI 提取。對於頁面 HTML 翻譯，還需設定 `features.translateDocs` 並新增一個 `docs[]` 區塊（請參閱 [Astro 網站頁面（解析與替換）](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 設定顯示了兩個管道。
+該範本僅啟用 UI 提取。對於頁面 HTML 翻譯，還需設定 `features.translateDocs` 並新增一個 `docs[]` 區塊（請參閱 [Astro 網站頁面（解析與替換）](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 設定顯示了兩個管道。
 
 編輯產生的 `ai-i18n-tools.config.json`：
 
@@ -95,7 +95,7 @@ npx ai-i18n-tools init -t ui-astro-website
 - `docs[].description` - 維護者的選用簡短備註。設定後，它會出現在 `translate-docs` 標題和 `status` 區段標頭中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 原始碼（以及 Docusaurus shell JSON 的選用 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 該區塊的翻譯輸出根目錄。
-- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（請參閱[輸出佈局](/guide/documents/output-layouts)）。
+- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（請參閱[輸出佈局](/zh-Hant/guide/documents/output-layouts)）。
 
 **主要與補充：** 專注於 `contentPaths` 以進行本地化頁面。當您也需要來自 `write-translations` 的 Docusaurus shell JSON 時，請設定 `docusaurusCatalogDir`。如果您只翻譯頁面，請省略 `docusaurusCatalogDir`。
 
@@ -120,7 +120,7 @@ npx ai-i18n-tools translate-docs --locale de
 npx ai-i18n-tools status
 ```
 
-有關旗標、快取行為和批次提示格式，請參閱[CLI 選項](/guide/documents/cli-options)。
+有關旗標、快取行為和批次提示格式，請參閱[CLI 選項](/zh-Hant/guide/documents/cli-options)。
 
 <a id="complex-markdown-and-failed-quality-checks"></a>
 ## 複雜的 Markdown 和失敗的品質檢查
@@ -131,4 +131,4 @@ npx ai-i18n-tools status
 
 當所有設定的模型在同一段落上都因 `AST mismatch` 失敗時，`translate-docs` 可自動將該段落拆分為更小的部分（優先從清單中點拆分，然後是單個清單項目或較短的段落片段），從第一個模型開始重試每一部分，並在原始段落的快取鍵下重新合併結果。此功能預設啟用（`segmentSplitting.qualityRetrySplit`）；設定為 `false` 可在模型全部嘗試失敗後停止。執行摘要會在啟用此備援機制時報告 `Quality split retries`。
 
-若要查看**哪些區段失敗**、失敗頻率以及儲存的**品質/錯誤訊息**，請使用翻譯儀表板的**失敗**分頁 ([翻譯儀表板 → 失敗](/guide/translation-dashboard/failures#failures-document-translation))。
+若要查看**哪些區段失敗**、失敗頻率以及儲存的**品質/錯誤訊息**，請使用翻譯儀表板的**失敗**分頁 ([翻譯儀表板 → 失敗](/zh-Hant/guide/translation-dashboard/failures#failures-document-translation))。

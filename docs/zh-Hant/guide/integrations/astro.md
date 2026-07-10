@@ -3,7 +3,7 @@
 
 ai-i18n-tools 可與 [Astro](https://astro.build/) 搭配使用，有兩種常見設定：**Astro Starlight** 文件網站和**純 Astro** 行銷或應用程式網站。兩者都使用文件 (`translate-docs`) 作為頁面內容；純 Astro 網站通常將其與 UI 字串 (`extract` / `translate-ui`) 結合，用於 frontmatter 和共享資料中的 `t()` 字串。
 
-另請參閱[使用者介面字串](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[文件](/guide/documents/)以及下面的可執行範例。
+另請參閱[使用者介面字串](/zh-Hant/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[文件](/zh-Hant/guide/documents/)以及下面的可執行範例。
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
@@ -30,7 +30,7 @@ src/content/docs/quick-start.md     →  src/content/docs/de/quick-start.md
 src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ```
 
-配置一個 `docs[]` 區塊：
+設定一個 `docs[]` 區塊：
 
 ```json
 {
@@ -45,7 +45,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 將 `contentPaths` 指向您的英文 `.md` / `.mdx` 檔案和目錄。將 `docsRoot` 設定為 Starlight 用作其內容根目錄的相同資料夾。
 
-Starlight UI 覆寫可以在需要時於獨立的 `docs[]` 區塊中使用 `src/content/i18n/en.json` 搭配 `jsonPathTemplate` — 請參閱[文件 — 初始化文件](/guide/documents/#step-1-initialise-for-documentation)。
+Starlight UI 覆寫可以在需要時於獨立的 `docs[]` 區塊中使用 `src/content/i18n/en.json` 搭配 `jsonPathTemplate` — 請參閱[文件 — 初始化文件](/zh-Hant/guide/documents/#step-1-initialise-for-documentation)。
 
 <a id="framework-shell-translation"></a>
 ### 框架外殼翻譯
@@ -56,11 +56,11 @@ Starlight 為許多地區語言內建了自身的 UI 字串（導覽標籤、搜
 |-----------|----------------------|----------|
 | Astro Starlight | 內建 UI 字串（多種地區語言）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
 | Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主題/導航/側邊欄目錄 | 文件——`docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 側邊欄標籤 + 主題字典 `.ts` | 文件 — 請見 [Nextra 整合](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` 側邊欄標籤 + UI 覆寫目錄 | 文件 — 請見 [Fumadocs 整合](/guide/integrations/fumadocs) |
+| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 + 主題字典 `.ts` | 文件 — 請見 [Nextra 整合](/zh-Hant/guide/integrations/nextra) |
+| Fumadocs | `meta.json` 側邊欄標籤 + UI 覆寫目錄 | 文件 — 請見 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
 
-其他框架模式請見 [Docusaurus 整合](/guide/integrations/docusaurus)、[VitePress 整合](/guide/integrations/vitepress)、[Nextra 整合](/guide/integrations/nextra) 與 [Fumadocs 整合](/guide/integrations/fumadocs)。
+其他框架模式請見 [Docusaurus 整合](/zh-Hant/guide/integrations/docusaurus)、[VitePress 整合](/zh-Hant/guide/integrations/vitepress)、[Nextra 整合](/zh-Hant/guide/integrations/nextra) 與 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。
 
 <a id="example-project"></a>
 ### 範例專案

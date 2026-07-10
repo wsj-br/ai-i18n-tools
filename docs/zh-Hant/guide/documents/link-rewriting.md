@@ -16,13 +16,13 @@
 | `"fumadocs"` | Fumadocs 連結正規化器（`rewriteFumadocsLinks`，預設開啟） | `content/docs/…` 與相對 `.mdx` 路徑 → 語系中性路由（`/docs/…`） |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | 無 | 來源 URL 會直接傳遞，直到 `postProcessing` |
 
-自訂 `pathTemplate` 會停用平面重寫器，除非您明確設定 `rewriteRelativeLinks: true`。請參閱[輸出版面配置](/guide/documents/output-layouts)和[錨點連結](/guide/documents/anchor-links)以了解跨頁 `#anchor` 處理。
+自訂 `pathTemplate` 會停用平面重寫器，除非您明確設定 `rewriteRelativeLinks: true`。請參閱[輸出版面配置](/zh-Hant/guide/documents/output-layouts)和[錨點連結](/zh-Hant/guide/documents/anchor-links)以了解跨頁 `#anchor` 處理。
 
-如需 VitePress 專屬的撰寫規則，請參閱 [VitePress 整合 — 連結慣例](/guide/integrations/vitepress#link-conventions)。
+如需 VitePress 專屬的撰寫規則，請參閱 [VitePress 整合 — 連結慣例](/zh-Hant/guide/integrations/vitepress#link-conventions)。
 
-如需 Nextra 專屬的撰寫規則，請參閱 [Nextra 整合 — 連結慣例](/guide/integrations/nextra#link-conventions)。
+如需 Nextra 專屬的撰寫規則，請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 
-如需 Fumadocs 專屬的撰寫規則，請參閱 [Fumadocs 整合 — 連結慣例](/guide/integrations/fumadocs#link-conventions)。
+如需 Fumadocs 專屬的撰寫規則，請參閱 [Fumadocs 整合 — 連結慣例](/zh-Hant/guide/integrations/fumadocs#link-conventions)。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 對於 `doc-system` 版面配置，平面重寫器不會執行。`regexAdjustments` 會看到來自來源 Markdown 的原始 URL (通常是像 `/img/screenshots/en-GB/foo.png` 這樣的絕對路徑)。
 
-請參閱[平面連結重寫器和兩步驟流程](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)以了解深度前綴行為和 `flatPreserveRelativeDir`。
+請參閱[平面連結重寫器和兩步驟流程](/zh-Hant/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)以了解深度前綴行為和 `flatPreserveRelativeDir`。
 
 <a id="replace-placeholders"></a>
 ### `replace` 預留位置
@@ -93,7 +93,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 使用 `[^/]+` 而不是硬編碼您的來源地區設定 (`en-GB`)，這樣即使 `sourceLocale` 變更，規則仍然有效。
 
-完整教學：[圖片與螢幕截圖 — 按地區設定的資料夾](/guide/images-and-screenshots/per-locale-folder)。
+完整教學：[圖片與螢幕截圖 — 按地區設定的資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="doc-system-static-urls"></a>
 ### 文件系統靜態 URL
@@ -112,7 +112,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 }
 ```
 
-如果您的產生器支援，請在來源 Markdown 中優先使用共置的相對路徑 (`../assets/name.png`) — 這樣就不需要 `regexAdjustments` 橋接。請參閱 [圖片與螢幕截圖](/guide/images-and-screenshots/) 以了解版面配置選項。
+如果您的產生器支援，請在來源 Markdown 中優先使用共置的相對路徑 (`../assets/name.png`) — 這樣就不需要 `regexAdjustments` 橋接。請參閱 [圖片與螢幕截圖](/zh-Hant/guide/images-and-screenshots/) 以了解版面配置選項。
 
 <a id="when-regex-is-not-needed"></a>
 ### 何時不需要正規表達式
@@ -156,14 +156,14 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 </details>
 
-欄位參考：[組態 — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`)。
+欄位參考：[組態 — `docs`](/zh-Hant/reference/configuration#docs) (`docsOutput.postProcessing`)。
 
 <a id="troubleshooting"></a>
 ## 疑難排解
 
 | 症狀 | 可能原因 | 檢查項目 |
 | --- | --- | --- |
-| 翻譯頁面在圖片或靜態資產上出現 404 錯誤 | 您的 URL 佈局缺少或錯誤的 `regexAdjustments` | [圖片與螢幕截圖 — 疑難排解](/guide/images-and-screenshots/troubleshooting) |
-| 連結開啟正確檔案但 `#section` 錯誤 | 錨點 slug 漂移，而非 URL 重寫 | [錨點連結](/guide/documents/anchor-links) |
+| 翻譯頁面在圖片或靜態資產上出現 404 錯誤 | 您的 URL 佈局缺少或錯誤的 `regexAdjustments` | [圖片與螢幕截圖 — 疑難排解](/zh-Hant/guide/images-and-screenshots/troubleshooting) |
+| 連結開啟正確檔案但 `#section` 錯誤 | 錨點 slug 漂移，而非 URL 重寫 | [錨點連結](/zh-Hant/guide/documents/anchor-links) |
 | `regexAdjustments` 規則對平面佈局無效 | `search` 預期重寫器前的 URL，但平面佈局已新增深度前綴 | 比對帶有前綴路徑內的區段（請參閱[兩步驟流程](#two-step-flow-with-flat-layout)) |
 | 執行時跳過無效的正規表示式 | 格式錯誤的 `search` 模式 | CLI 會以規則 `description` 發出警告；針對範例翻譯輸出測試模式 |

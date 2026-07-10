@@ -144,7 +144,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/) — 英文來源位於 `docs/`，已提交 `pt-BR` 與 `zh-Hans` 頁面樹，加上 `theme.pt-BR.json` / `theme.zh-Hans.json`。在連接埠 3060 執行 `pnpm run docs:dev`。
 
-<a id="readme-as-the-docs-homepage"></a>
+<a id="readme-and-the-docs-homepage"></a>
 ## README 與文件首頁
 
 下游專案有時會透過建置腳本或手動同步，將 `README.md` 複製到 VitePress 網站作為 `docs/index.md`。此模式在 GitHub 與文件網站之間共用同一個檔案，但連結規則不同：
@@ -194,8 +194,8 @@ VitePress 從內容根目錄提供英文頁面，並從 `docs/<locale>/…` 提�
 
 `docs/` 下的英文根來源保留 **地區中立** 的網站路由（`/guide/…`）。寫入 `docs/<locale>/…` 的檔案會在內部內容路由上自動取得地區前綴——包括 **首頁版面配置 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。共用公開資產（例如 `/logo.svg` 與 `/translation-dashboard.png`）在每個地區上皆保持不加上前綴。
 
-<a id="theme-nav-sidebar-links"></a>
-### 主題導覽列/側邊欄連結
+<a id="theme-navsidebar-links"></a>
+### 主題導覽/側邊欄連結
 
 `translate-docs` **不會** 重寫 `.vitepress/config.mts` 中的連結。導覽列與側邊欄的 `link` 值在 TypeScript 中只需編寫一次，並且必須在設定建置時根據各語系加上前綴。
 
@@ -226,6 +226,8 @@ themeConfig: themeConfigFor(theme, code)
 ```
 
 在 **`link`** 旁加上 **`activeMatch`** 前綴，以便導覽列高亮能在語系路由上運作（是 `/pt-BR/guide/` 而非 `/guide/`）。外部 URL 與共享的公開資源保持不變。
+
+在 VitePress 專案中將 `ai-i18n-tools` 新增為 **devDependency**（請參閱 `examples/vitepress-docs/package.json`），以便 `config.mts` 可以匯入 `prefixVitepressThemeConfigLinks`。主要的 ai-i18n-tools 文件網站直接從 `src/processors/…` 匯入，因為它使用 monorepo checkout 進行 dogfooding；獨立副本（degit）應使用 npm 套件。
 
 **撰寫規則**
 

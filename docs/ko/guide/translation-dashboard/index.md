@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 기본 수신 포트는 **8675**입니다. 해당 포트를 사용할 수 없는 경우, 서버는 다음 포트를 시도하며(최대 1000회 시도), 선택한 포트를 로그에 기록합니다. 더 이상 사용되지 않는 별칭 `editor`은 여전히 작동하지만 경고를 출력합니다. 대신 `dashboard`을 사용하는 것이 좋습니다.
 
-대시보드 UI는 CLI와 동일한 로케일 결정 방식을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS 로케일. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
+대시보드 UI는 CLI와 동일한 로케일 결정 방식을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS 로케일. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ ai-i18n-tools dashboard
 
 | 원하는 작업… | 탭 | 가이드 |
 | --- | --- | --- |
-| 번역에 실패한 문서 세그먼트 수정 | **실패** | [실패](/guide/translation-dashboard/failures) |
-| 번역하기 전에 원본 마크다운 수정 | **마크다운 문제** | [마크다운 문제](/guide/translation-dashboard/markdown-issues) |
-| 캐시된 문서 번역 재정의 | **문서** | [문서 캐시](/guide/translation-dashboard/documentation-cache) |
-| UI 레이블 수정 | **UI 문자열** | [UI 문자열 및 복수형](/guide/translation-dashboard/ui-strings) |
-| 복수형 수정 (`one`, `other`, …) | **UI 복수형** | [UI 문자열 및 복수형](/guide/translation-dashboard/ui-strings) |
-| UI 번역을 위한 용어 잠금 | **용어집** | [용어집](/guide/translation-dashboard/glossary) |
-| 캐시 적용 범위 및 모델 사용량 확인 | **통계** | [통계](/guide/translation-dashboard/statistics) |
+| 번역에 실패한 문서 세그먼트 수정 | **실패** | [실패](/ko/guide/translation-dashboard/failures) |
+| 번역하기 전에 원본 마크다운 수정 | **마크다운 문제** | [마크다운 문제](/ko/guide/translation-dashboard/markdown-issues) |
+| 캐시된 문서 번역 재정의 | **문서** | [문서 캐시](/ko/guide/translation-dashboard/documentation-cache) |
+| UI 레이블 수정 | **UI 문자열** | [UI 문자열 및 복수형](/ko/guide/translation-dashboard/ui-strings) |
+| 복수형 수정 (`one`, `other`, …) | **UI 복수형** | [UI 문자열 및 복수형](/ko/guide/translation-dashboard/ui-strings) |
+| UI 번역을 위한 용어 잠금 | **용어집** | [용어집](/ko/guide/translation-dashboard/glossary) |
+| 캐시 적용 범위 및 모델 사용량 확인 | **통계** | [통계](/ko/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## 편집 후

@@ -8,12 +8,12 @@ i18next를 사용하는 모든 JS/TS 프로젝트를 위한 것입니다: React 
 
 | 귀하의 앱 | 다음 읽기 |
 | --- | --- |
-| React / Next.js / Node + i18next | [i18next 연결](/guide/ui-strings/i18next-runtime) (4단계) |
-| 일반 HTML (마크업에 `t()` 없음) | [일반 HTML 앱](/guide/ui-strings/plain-html) |
-| Astro 마케팅 사이트 (하이브리드) | [Astro 웹사이트](/guide/ui-strings/astro-website) |
-| `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/guide/ui-strings/t-calls-and-plurals) |
-| 언어 선택기 / RTL | [언어 전환기 및 RTL](/guide/ui-strings/language-switcher) |
-| 런타임 API 서명 | [런타임 도우미](/guide/runtime-helpers) |
+| React / Next.js / Node + i18next | [i18next 연결](/ko/guide/ui-strings/i18next-runtime) (4단계) |
+| 일반 HTML (마크업에 `t()` 없음) | [일반 HTML 앱](/ko/guide/ui-strings/plain-html) |
+| Astro 마케팅 사이트 (하이브리드) | [Astro 웹사이트](/ko/guide/ui-strings/astro-website) |
+| `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/ko/guide/ui-strings/t-calls-and-plurals) |
+| 언어 선택기 / RTL | [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher) |
+| 런타임 API 서명 | [런타임 도우미](/ko/guide/runtime-helpers) |
 
 <a id="step-1-initialise"></a>
 ## 1단계: 초기화
@@ -29,7 +29,7 @@ npx ai-i18n-tools init
 - `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 glob 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - 마스터 카탈로그를 작성할 위치 (예: `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성할 위치(예: `"src/locales/"`).
-- `providers.<active>.uiModels`(선택 사항) - `translate-ui`, 복수 생성, `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다(일치하는 `localeModels` 항목 다음, `translationModels` 이전). [공급자 및 모델](/guide/providers-and-models#model-fallback-chain)을 참조하세요.
+- `providers.<active>.uiModels`(선택 사항) - `translate-ui`, 복수 생성, `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다(일치하는 `localeModels` 항목 다음, `translationModels` 이전). [공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.
 
 <a id="step-2-extract-strings"></a>
 ## 2단계: 문자열 추출
@@ -40,7 +40,7 @@ npx ai-i18n-tools extract
 
 `ui.sourceRoots` 하위의 모든 JS/TS 파일을 스캔하여 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `ui.stringsJson`에 쓰거나 병합합니다.
 
-스캐너는 구성 가능합니다. `ui.uiExtractor.funcNames`(또는 레거시 `ui.reactExtractor.funcNames`)를 통해 사용자 지정 함수 이름을 추가합니다. Astro 페이지 및 구성 요소의 경우 `.astro`를 `ui.uiExtractor.extensions`에 추가합니다. 일반 HTML의 경우 [일반 HTML 앱](/guide/ui-strings/plain-html)을 참조하십시오.
+스캐너는 구성 가능합니다. `ui.uiExtractor.funcNames`(또는 레거시 `ui.reactExtractor.funcNames`)를 통해 사용자 지정 함수 이름을 추가합니다. Astro 페이지 및 구성 요소의 경우 `.astro`를 `ui.uiExtractor.extensions`에 추가합니다. 일반 HTML의 경우 [일반 HTML 앱](/ko/guide/ui-strings/plain-html)을 참조하십시오.
 
 <a id="step-3-translate-ui-strings"></a>
 ## 3단계: UI 문자열 번역
@@ -49,7 +49,7 @@ npx ai-i18n-tools extract
 npx ai-i18n-tools translate-ui
 ```
 
-`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 공급자에게 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인 `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([공급자 및 모델](/guide/providers-and-models#model-fallback-chain) 참조).
+`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 공급자에게 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인 `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조).
 
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
@@ -60,7 +60,7 @@ npx ai-i18n-tools translate-ui
 
 > **참고:** UI 문자열에 대한 대시보드 편집은 SQLite 문서 캐시가 아닌 `strings.json`에 있습니다. 카탈로그에서 플랫 로케일 파일을 다시 작성하려면 일반 `sync` 또는 `translate-ui`(특수 플래그 없음)를 실행하십시오. `--force-update`는 UI 단계로 전달되지 **않습니다**. 수동 편집 후 UI 명령에서 `--force`를 사용하지 마십시오. 모든 항목을 다시 번역하고 `user-edited` 행을 덮어쓸 수 있습니다.
 
-그런 다음 런타임에 i18next를 연결합니다. [i18next 연결](/guide/ui-strings/i18next-runtime).
+그런 다음 런타임에 i18next를 연결합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime).
 
 <a id="exporting-to-xliff-20-optional"></a>
 ## XLIFF 2.0으로 내보내기 (선택 사항)

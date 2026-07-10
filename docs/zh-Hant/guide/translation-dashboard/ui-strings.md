@@ -29,7 +29,7 @@
 
 該項目的 `models[locale]` 設定為 `user-edited`。執行純粹的 `sync` 或 `translate-ui` 以重新整理平面地區設定檔案 (`de.json` 等)。**請勿**使用 `--force` — 它會重新翻譯每個項目並可能覆寫手動修正。
 
-當 `glossary.autoAddUserEditedToGlossary` 為 `true` (預設) 時，下一個 `translate-ui` 或 `sync` 可以自動將您的編輯附加到使用者詞彙表 CSV — 請參閱 [設定](/reference/configuration#glossary)。
+當 `glossary.autoAddUserEditedToGlossary` 為 `true` (預設) 時，下一個 `translate-ui` 或 `sync` 可以自動將您的編輯附加到使用者詞彙表 CSV — 請參閱 [設定](/zh-Hant/reference/configuration#glossary)。
 
 <a id="delete"></a>
 ### 刪除

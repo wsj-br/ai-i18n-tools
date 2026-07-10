@@ -1,7 +1,7 @@
 <a id="examples"></a>
 # Udaharan
 
-GitHub par [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke tahat chalne yogya project — har ek apni config, committed locale outputs, aur README ke saath. Aap API key ke bina anuvaadit files ko explore kar sakte hain; anuvaad ko phir se chalane ke liye ek provider key ki avashyakta hoti hai ([Providers and models](/guide/providers-and-models)).
+GitHub par [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) ke tahat chalne yogya project — har ek apni config, committed locale outputs, aur README ke saath. Aap API key ke bina anuvaadit files ko explore kar sakte hain; anuvaad ko phir se chalane ke liye ek provider key ki avashyakta hoti hai ([Providers and models](/hi-Latn/guide/providers-and-models)).
 
 <a id="run-standalone-npx-degit"></a>
 ## Standalone chalaen (`npx degit`)

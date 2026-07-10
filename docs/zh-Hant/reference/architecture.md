@@ -32,10 +32,10 @@
 | | `src/api/` | `LlmClient` — 與供應商無關的聊天用戶端 (Vercel AI SDK)，具有模型備援 |
 | | `src/glossary/` | 詞彙表載入和提示的術語提示 |
 | | `src/utils/` | 記錄器、雜湊、忽略解析器、顯示寬度表格、`.env` 載入器 |
-| **您的應用程式執行階段** | `src/runtime/` | i18next 輔助程式和顯示工具 — 匯出為 `'ai-i18n-tools/runtime'` ([執行階段輔助程式](/guide/runtime-helpers)) |
+| **您的應用程式執行階段** | `src/runtime/` | i18next 輔助程式和顯示工具 — 匯出為 `'ai-i18n-tools/runtime'` ([執行階段輔助程式](/zh-Hant/guide/runtime-helpers)) |
 | **工具 UI** *(內部測試)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此套件自己的 CLI 和翻譯儀表板 — 與您的專案內容分開 ([自我本地化](#self-localization-tool-ui)) |
 
-所有用於程式化用途的內容都從 `src/index.ts` 重新匯出 ([程式化 API](/reference/programmatic-api))。
+所有用於程式化用途的內容都從 `src/index.ts` 重新匯出 ([程式化 API](/zh-Hant/reference/programmatic-api))。
 
 <a id="pipeline-summaries"></a>
 ### 管線摘要
@@ -67,9 +67,9 @@
 
 對於 `.html` / `.htm` 來源（當列於 `ui.uiExtractor.extensions` 時），`extract` 會改為透過 `html-i18n-marks.ts` 來路由檔案，該檔案會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記屬性（可透過 `ui.uiExtractor.htmlI18nAttributes` 設定）。純標記會從元素的自身 `textContent` / `title` / `placeholder` 獲取來源文字；有值的標記（`data-i18n="Key"`）則使用該值。相同的模組也支援 `mark-html` 命令，該命令會自動插入純標記。HTML 檔案永遠不會到達 Babel / i18next-scanner 的處理階段。
 
-純 Astro SSG 網站可以略過 i18next：在建置時載入扁平 `{locale}.json`，並按源文字鍵解析 `t('English')`（參見 `examples/astro-website/src/i18n/t.ts` 與 [UI 字串 — Astro 網站](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
+純 Astro SSG 網站可以略過 i18next：在建置時載入扁平 `{locale}.json`，並按源文字鍵解析 `t('English')`（參見 `examples/astro-website/src/i18n/t.ts` 與 [UI 字串 — Astro 網站](/zh-Hant/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
 
-純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫 — 參見[標記 HTML 以供翻譯](/guide/ui-strings/plain-html#marking-html-for-translation)。
+純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫 — 參見[標記 HTML 以供翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -122,7 +122,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 - 發送字串的 JSON 陣列，並要求回傳翻譯的 JSON 陣列。
 - 在有詞彙提示時包含它們。
 
-`LlmClient.translateUIBatch` 會依序嘗試每個模型，並在發生解析或網路錯誤時回退。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標語言環境建立該清單（請參閱 [提供者和模型](/guide/providers-and-models#model-fallback-chain)）。
+`LlmClient.translateUIBatch` 會依序嘗試每個模型，並在發生解析或網路錯誤時回退。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標語言環境建立該清單（請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。
 
 ---
 
@@ -145,7 +145,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 所有提取器都會擴充 `BaseExtractor` 並實作 `extract(content, filepath): Segment[]`。
 
 - `MarkdownExtractor` - 將 markdown 分割為具型別的段落：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被歸類為 **不可翻譯**（`slug`、`id` 及其他路由鍵保持穩定）。頂層 `export ...` 區塊（例如 React 元件定義）與既有的 `import ...` 處理一同被歸類為不可翻譯的 `other` 段落。以大寫 JSX 標籤起始的多行區塊（例如 `<Tabs>` 區塊）被歸類為可翻譯段落。不可翻譯的段落（程式碼區塊、原始 HTML）會原樣保留。
-- `AstroTemplateExtractor` - 針對 `.astro` 行銷頁面的解析與替換（透過 `doc-translate.ts` 中的 `translateAstroFile` 使用 `translate-docs`）。提取面向使用者的 HTML 文字節點與可翻譯屬性（`alt`、`title`、`aria-label`、`placeholder`），以及範本 `{expression}` 區塊內面向使用者時的字串字面量。略過 frontmatter TypeScript、`<script>`、`<style>`、受保護的屬性/鍵值，以及 `t('…')` 內的字面量。重組時會在輸出路徑較深時調整相對匯入（例如 `src/pages/de/index.astro`）。參見 [Astro 網站頁面](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
+- `AstroTemplateExtractor` - 針對 `.astro` 行銷頁面的解析與替換（透過 `doc-translate.ts` 中的 `translateAstroFile` 使用 `translate-docs`）。提取面向使用者的 HTML 文字節點與可翻譯屬性（`alt`、`title`、`aria-label`、`placeholder`），以及範本 `{expression}` 區塊內面向使用者時的字串字面量。略過 frontmatter TypeScript、`<script>`、`<style>`、受保護的屬性/鍵值，以及 `t('…')` 內的字面量。重組時會在輸出路徑較深時調整相對匯入（例如 `src/pages/de/index.astro`）。參見 [Astro 網站頁面](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
 - `JsonExtractor` - 從 Docusaurus JSON 標籤檔案提取字串值（Docusaurus UI 目錄，非 MDX 本文）。
 - `SvgExtractor` - 從 SVG 提取 `<text>`、`<title>` 及 `<desc>` 內容（由 `translate-svg` 用於 `config.svg` 下的檔案，而非由 `translate-docs` 使用）。
 - `html-i18n-marks.ts` - 一個專注的 HTML 標記掃描器，由 `extract` 用於 `.html` / `.htm` 來源，並由 `mark-html` 命令使用。`collectHtmlI18nStrings` / `collectHtmlI18nLocations` 讀取 `data-i18n*` 標記屬性（純標記 → 元素 `textContent` / `title` / `placeholder`；有值標記 → 該值），而 `markHtmlContent` 會將純標記插入到葉面文字 / 標題 / 預留位置元素中（結果相同，尊重 `data-i18n-ignore`，並略過類似程式碼和混合內容的元素）。共用的 `normalizeI18nText` 輔助工具可確保建置時的索引鍵與瀏覽器執行階段的索引鍵相同。
@@ -187,7 +187,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
 7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
 
-Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)）。
+Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 
 <a id="cache-translationcache"></a>
 ### 快取（`TranslationCache`）
@@ -196,9 +196,9 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 在每次執行時，會透過雜湊 × 語言環境來查詢區段。只有快取未命中才會傳送至 LLM。翻譯後，`last_hit_at` 會針對目前翻譯範圍中未命中的區段列重設。文件翻譯期間成功的快取命中會清除該區段的過時 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，然後移除過時的區段列（空 `last_hit_at` / 空檔案路徑），在磁碟上找不到解析的來源路徑時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其中繼資料檔案路徑指向遺失檔案的翻譯列，修剪孤立的 `translation_failures` 列，並修剪其解析的來源路徑在磁碟上遺失的孤立 `markdown_source_issues` 列；除非傳遞 `--backup <path>`，否則它不會備份 `cache.db`，這會先將備份寫入該路徑。
 
-`translate-docs` 命令還使用**檔案追蹤**，因此未更改且已存在最新輸出的來源可以完全跳過工作。`--force-update` 重新執行檔案處理，同時仍使用區段快取；`--force` 清除檔案追蹤並繞過 API 翻譯的區段快取讀取。當每個配置的模型在 markdown 區段上 AST 驗證失敗時，`translate-docs` 可以逐步分割區段並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。有關完整的標誌表，請參閱 [文件 — 快取行為和標誌](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+`translate-docs` 命令還使用**檔案追蹤**，因此未更改且已存在最新輸出的來源可以完全跳過工作。`--force-update` 重新執行檔案處理，同時仍使用區段快取；`--force` 清除檔案追蹤並繞過 API 翻譯的區段快取讀取。當每個配置的模型在 markdown 區段上 AST 驗證失敗時，`translate-docs` 可以逐步分割區段並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。有關完整的標誌表，請參閱 [文件 — 快取行為和標誌](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
-**批次提示格式：** `translate-docs --prompt-format` 僅為 `LlmClient.translateDocumentBatch` 選擇 XML (`<seg>` / `<t>`) 或 JSON 陣列/物件形狀；提取、佔位符和驗證保持不變。請參閱 [批次提示格式](/guide/documents/cli-options#batch-prompt-format)。
+**批次提示格式：** `translate-docs --prompt-format` 僅為 `LlmClient.translateDocumentBatch` 選擇 XML (`<seg>` / `<t>`) 或 JSON 陣列/物件形狀；提取、佔位符和驗證保持不變。請參閱 [批次提示格式](/zh-Hant/guide/documents/cli-options#batch-prompt-format)。
 
 <a id="output-path-resolution"></a>
 ### 輸出路徑解析
@@ -215,7 +215,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 <a id="flat-link-rewriting"></a>
 ### 平面連結重寫
 
-當 `docsOutput.style === "flat"` 時，翻譯後的 markdown 檔案會與源檔案並排放置，並帶有語系後綴。頁面之間的相對連結會被改寫，使 `readme.de.md` 中的 `[Guide](./guide.md)` 指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（扁平樣式且無自訂 `pathTemplate` 時自動啟用）。同一遍次會在 `postProcessing.regexAdjustments` 執行前，為非 markdown 資源 URL 加上按檔案深度的前綴 — 參見[扁平連結改寫器](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
+當 `docsOutput.style === "flat"` 時，翻譯後的 markdown 檔案會與源檔案並排放置，並帶有語系後綴。頁面之間的相對連結會被改寫，使 `readme.de.md` 中的 `[Guide](./guide.md)` 指向 `guide.de.md`。由 `rewriteRelativeLinks` 控制（扁平樣式且無自訂 `pathTemplate` 時自動啟用）。同一遍次會在 `postProcessing.regexAdjustments` 執行前，為非 markdown 資源 URL 加上按檔案深度的前綴 — 參見[扁平連結改寫器](/zh-Hant/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
 
 ---
 
@@ -266,7 +266,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 9. `augmentConfigWithUiLanguagesMaster` - 從捆綁的主目錄中附加清單顯示名稱。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 在適用時根據主目錄驗證地區設定代碼。
 
-`init` 會從 `initConfigTemplates` 寫入入門設定：`ui-markdown`（UI + 可選的應用程式 markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文件 + `nextraDictionaryPath`）、`ui-astro-website`（純 Astro UI；加入 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）。請參閱[快速入門 — 初始化](/guide/quick-start#step-1-initialise)。
+`init` 會從 `initConfigTemplates` 寫入入門設定：`ui-markdown`（UI + 可選的應用程式 markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文件 + `nextraDictionaryPath`）、`ui-astro-website`（純 Astro UI；加入 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）。請參閱[快速入門 — 初始化](/zh-Hant/guide/quick-start#step-1-initialise)。
 
 <a id="logger"></a>
 ### 記錄器

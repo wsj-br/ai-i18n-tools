@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
   "version": "1.8.0",
-  "packageManager": "pnpm@11.10.0",
+  "packageManager": "pnpm@11.11.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -54,7 +54,7 @@
     "i18n:self": "node bin/ai-i18n-tools.mjs -c ai-i18n-self.config.json sync-ui",
     "i18n:sync": "node bin/ai-i18n-tools.mjs sync --path docs/index.md",
     "i18n:translate:sync": "node bin/ai-i18n-tools.mjs sync",
-    "i18n:update-headings": "node bin/ai-i18n-tools.mjs write-heading-ids",	
+    "i18n:update-headings": "node bin/ai-i18n-tools.mjs write-heading-ids",
     "i18n:status": "node bin/ai-i18n-tools.mjs status",
     "i18n:dashboard": "node bin/ai-i18n-tools.mjs dashboard",
     "i18n:cleanup": "node bin/ai-i18n-tools.mjs cleanup",

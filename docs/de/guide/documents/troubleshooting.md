@@ -18,7 +18,7 @@ Häufige Ursachen:
 2. Verweisen Sie Ankerlinks auf diese IDs – z. B. `[setup](guide.md#first-run)`, wobei `#first-run` mit der Ankerzeile über der Zielüberschrift übereinstimmt, nicht mit einem Slug, der allein aus dem englischen Titel abgeleitet ist.
 3. Führen Sie `translate-docs` (oder `sync --force-update`) erneut aus, sodass jede Lokalisierungskopie die aktualisierten Ankerzeilen enthält.
 
-Verwenden Sie zuerst `--dry-run` auf `write-heading-ids`, um Änderungen in der Vorschau anzuzeigen. Siehe [Ankerlinks](/guide/documents/anchor-links) für das vollständige Muster.
+Verwenden Sie zuerst `--dry-run` auf `write-heading-ids`, um Änderungen in der Vorschau anzuzeigen. Siehe [Ankerlinks](/de/guide/documents/anchor-links) für das vollständige Muster.
 
 <a id="image-or-asset-links-404-in-translated-docs"></a>
 ## Bild- oder Asset-Links 404 in übersetzten Dokumenten
@@ -27,6 +27,6 @@ Ein Markdown-Link oder `![alt](url)` funktioniert auf Englisch, gibt aber in üb
 
 **Behebung**
 
-1. Bestätigen Sie, dass Ihr Asset-Layout mit Ihrem `docsOutput.style` übereinstimmt (flach vs. Dokumentensystem). Siehe [Link-Umschreibung](/guide/documents/link-rewriting) und [Bilder & Screenshots](/guide/images-and-screenshots/).
+1. Bestätigen Sie, dass Ihr Asset-Layout mit Ihrem `docsOutput.style` übereinstimmt (flach vs. Dokumentensystem). Siehe [Link-Umschreibung](/de/guide/documents/link-rewriting) und [Bilder & Screenshots](/de/guide/images-and-screenshots/).
 2. Fügen Sie `docsOutput.postProcessing.regexAdjustments` hinzu oder passen Sie es an, um Gebietsschema-Segmente auszutauschen oder absolute `/img/…`-Pfade zu überbrücken. Bei einem flachen Layout denken Sie daran, dass der flache Link-Rewriter **vor** `regexAdjustments` ausgeführt wird – passen Sie Muster an die bereits präfixierte URL an.
 3. Stellen Sie sicher, dass sprachspezifische Asset-Dateien unter den Pfaden existieren, auf die das umgeschriebene Markdown verweist (`translate-docs` schreibt URLs um, kopiert aber keine Rasterdateien).

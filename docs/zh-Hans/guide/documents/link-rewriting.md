@@ -16,13 +16,13 @@
 | `"fumadocs"` | Fumadocs 链接规范化器（`rewriteFumadocsLinks`，默认开启） | `content/docs/…` 和相对 `.mdx` 路径 → 区域设置中立路由（`/docs/…`） |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | 无 | 源 URL 在 `postProcessing` 之前保持不变 |
 
-自定义 `pathTemplate` 会禁用平面重写器，除非您明确设置 `rewriteRelativeLinks: true`。有关跨页面 `#anchor` 处理，请参阅[输出布局](/guide/documents/output-layouts)和[锚点链接](/guide/documents/anchor-links)。
+自定义 `pathTemplate` 会禁用平面重写器，除非您明确设置 `rewriteRelativeLinks: true`。有关跨页面 `#anchor` 处理，请参阅[输出布局](/zh-Hans/guide/documents/output-layouts)和[锚点链接](/zh-Hans/guide/documents/anchor-links)。
 
-有关 VitePress 特定的编写规则，请参阅 [VitePress 集成 — 链接约定](/guide/integrations/vitepress#link-conventions)。
+有关 VitePress 特定的编写规则，请参阅 [VitePress 集成 — 链接约定](/zh-Hans/guide/integrations/vitepress#link-conventions)。
 
-有关 Nextra 特定的编写规则，请参阅 [Nextra 集成 — 链接约定](/guide/integrations/nextra#link-conventions)。
+有关 Nextra 特定的编写规则，请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
 
-有关 Fumadocs 特定的编写规则，请参阅 [Fumadocs 集成 — 链接约定](/guide/integrations/fumadocs#link-conventions)。
+有关 Fumadocs 特定的编写规则，请参阅 [Fumadocs 集成 — 链接约定](/zh-Hans/guide/integrations/fumadocs#link-conventions)。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 对于 `doc-system` 布局，平面重写器不运行。`regexAdjustments` 会看到源 Markdown 中的原始 URL（通常是像 `/img/screenshots/en-GB/foo.png` 这样的绝对路径）。
 
-有关深度前缀行为和 `flatPreserveRelativeDir`，请参阅[平面链接重写器和两步流程](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
+有关深度前缀行为和 `flatPreserveRelativeDir`，请参阅[平面链接重写器和两步流程](/zh-Hans/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)。
 
 <a id="replace-placeholders"></a>
 ### `replace` 占位符
@@ -93,7 +93,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 使用 `[^/]+` 而不是硬编码您的源区域设置 (`en-GB`)，这样如果 `sourceLocale` 发生更改，该规则仍然有效。
 
-完整演练：[图像和屏幕截图 — 按区域设置的文件夹](/guide/images-and-screenshots/per-locale-folder)。
+完整演练：[图像和屏幕截图 — 按区域设置的文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="doc-system-static-urls"></a>
 ### 文档系统静态 URL
@@ -112,7 +112,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 }
 ```
 
-如果您的生成器支持，请在源 Markdown 中优先使用并置的相对路径 (`../assets/name.png`) — 这样就不需要 `regexAdjustments` 桥接。有关布局选择，请参阅[图像和屏幕截图](/guide/images-and-screenshots/)。
+如果您的生成器支持，请在源 Markdown 中优先使用并置的相对路径 (`../assets/name.png`) — 这样就不需要 `regexAdjustments` 桥接。有关布局选择，请参阅[图像和屏幕截图](/zh-Hans/guide/images-and-screenshots/)。
 
 <a id="when-regex-is-not-needed"></a>
 ### 何时不需要正则表达式
@@ -156,14 +156,14 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 </details>
 
-字段参考：[配置 — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`)。
+字段参考：[配置 — `docs`](/zh-Hans/reference/configuration#docs) (`docsOutput.postProcessing`)。
 
 <a id="troubleshooting"></a>
 ## 故障排除
 
 | 症状 | 可能原因 | 检查内容 |
 | --- | --- | --- |
-| 翻译页面在图像或静态资产上出现 404 错误 | 您的 URL 布局缺少或错误的 `regexAdjustments` | [图像和屏幕截图 — 故障排除](/guide/images-and-screenshots/troubleshooting) |
-| 链接打开正确的文件但 `#section` 错误 | 锚点 slug 漂移，而不是 URL 重写 | [锚点链接](/guide/documents/anchor-links) |
+| 翻译页面在图像或静态资产上出现 404 错误 | 您的 URL 布局缺少或错误的 `regexAdjustments` | [图像和屏幕截图 — 故障排除](/zh-Hans/guide/images-and-screenshots/troubleshooting) |
+| 链接打开正确的文件但 `#section` 错误 | 锚点 slug 漂移，而不是 URL 重写 | [锚点链接](/zh-Hans/guide/documents/anchor-links) |
 | `regexAdjustments` 规则对扁平布局无效 | `search` 期望重写器前的 URL，但扁平布局已添加了深度前缀 | 匹配带前缀路径中的段（请参阅[两步流程](#two-step-flow-with-flat-layout)） |
 | 运行时跳过无效的正则表达式 | 格式错误的 `search` 模式 | CLI 会发出规则 `description` 警告；针对示例翻译输出测试模式 |

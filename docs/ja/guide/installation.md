@@ -54,7 +54,7 @@ ai-i18n-tools sync
 
 Linux、macOS、およびWSLでは、レジストリからのインストールによりCLIスクリプトの実行ビットが自動的に設定されます。Windowsでは、パッケージマネージャーがNodeを明示的に呼び出す`.cmd`および`.ps1`のシャムを生成します。
 
-プロバイダーのAPIキーを設定します（OpenRouterが表示されています。アクティブなプロバイダーに一致する環境変数を使用してください — [プリセットテーブル](/guide/providers-and-models#built-in-providers)を参照）。
+プロバイダーのAPIキーを設定します（OpenRouterが表示されています。アクティブなプロバイダーに一致する環境変数を使用してください — [プリセットテーブル](/ja/guide/providers-and-models#built-in-providers)を参照）。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### ツールUIの言語
 
-CLIは、翻訳対象のロケールとは独立して、独自のヘルプテキスト、ログの要約、翻訳ダッシュボードをローカライズします。デフォルトではOSのロケールに従います。設定内の`-L pt-BR`、`export AI_I18N_LANG=es`、または`"uiLanguage"`で上書きします。[ツールUI言語](/guide/tool-ui-language)を参照してください。
+CLIは、翻訳対象のロケールとは独立して、独自のヘルプテキスト、ログの要約、翻訳ダッシュボードをローカライズします。デフォルトではOSのロケールに従います。設定内の`-L pt-BR`、`export AI_I18N_LANG=es`、または`"uiLanguage"`で上書きします。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。

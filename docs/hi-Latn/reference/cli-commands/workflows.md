@@ -34,4 +34,4 @@ Documentation cache aur `strings.json` aankde (Translation Dashboard → Statist
 
 **Mukhya vikalp:** `--max-columns`
 
-**Dekhein bhi:** [Dashboard statistics](/guide/translation-dashboard/statistics)
+**Dekhein bhi:** [Dashboard statistics](/hi-Latn/guide/translation-dashboard/statistics)

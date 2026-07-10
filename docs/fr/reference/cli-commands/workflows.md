@@ -34,4 +34,4 @@ Affiche les statistiques du cache de documentation et de `strings.json` (mêmes 
 
 **Options clés :** `--max-columns`
 
-**Voir aussi :** [Statistiques du tableau de bord](/guide/translation-dashboard/statistics)
+**Voir aussi :** [Statistiques du tableau de bord](/fr/guide/translation-dashboard/statistics)

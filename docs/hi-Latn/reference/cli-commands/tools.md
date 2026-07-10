@@ -10,7 +10,7 @@ Translation Dashboard (cache segments, `strings.json`, glossary, failures, aur s
 
 **Key options:** `-p` / `--port`, `--no-open`
 
-**Yeh bhi dekhein:** [Translation Dashboard](/guide/translation-dashboard/)
+**Yeh bhi dekhein:** [Translation Dashboard](/hi-Latn/guide/translation-dashboard/)
 
 ---
 
@@ -25,7 +25,7 @@ Ek khaali `glossary-user.csv` template likhein. Existing file ko overwrite karne
 
 `-o`: output path ko override karein (default: config se `glossary.userGlossary`, ya `glossary-user.csv`).
 
-**Yeh bhi dekhein:** [Dashboard glossary](/guide/translation-dashboard/glossary)
+**Yeh bhi dekhein:** [Dashboard glossary](/hi-Latn/guide/translation-dashboard/glossary)
 
 ---
 

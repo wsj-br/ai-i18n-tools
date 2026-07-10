@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # 実行時に i18next をワイヤリングする
 
-`'ai-i18n-tools/runtime'` によってエクスポートされるヘルパーを使用して、i18n セットアップファイルを作成します。API シグネチャについては、「[ランタイムヘルパー](/guide/runtime-helpers)」を参照してください。
+`'ai-i18n-tools/runtime'` によってエクスポートされるヘルパーを使用して、i18n セットアップファイルを作成します。API シグネチャについては、「[ランタイムヘルパー](/ja/guide/runtime-helpers)」を参照してください。
 
 <details>
 <summary>i18nの完全なブートストラップ例 (src/i18n.js)</summary>
@@ -75,4 +75,4 @@ React がレンダリングされる前に `i18n.js` をインポートします
 
 バンドラのないNode CLIでは、各コードに対してJSONファイルを読み込んで解析する小さなヘルパー内で`readFileSync`を使用します。
 
-通常のアプリのエントリポイントとして `setupKeyAsDefaultT` を使用します (キーのトリミング + 複数形の `wrapT` + オプションの `translate-ui` `{sourceLocale}.json`)。アプリケーションのワイヤリングで `wrapI18nWithKeyTrim` を単独で呼び出すことは**非推奨**です。詳細については、「[ランタイムヘルパー](/guide/runtime-helpers)」を参照してください。
+通常のアプリのエントリポイントとして `setupKeyAsDefaultT` を使用します (キーのトリミング + 複数形の `wrapT` + オプションの `translate-ui` `{sourceLocale}.json`)。アプリケーションのワイヤリングで `wrapI18nWithKeyTrim` を単独で呼び出すことは**非推奨**です。詳細については、「[ランタイムヘルパー](/ja/guide/runtime-helpers)」を参照してください。

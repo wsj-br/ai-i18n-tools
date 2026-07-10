@@ -124,7 +124,7 @@ ai-i18n-tools help [command]
 | `-c` / `--config <path>` | Har command | Config file path (default: `ai-i18n-tools.config.json`). |
 | `-v` / `--verbose` | Har command | Verbose logging. |
 | `-P` / `--provider <name>` | Har command | Is run ke liye active LLM provider; config `provider` key ko override karta hai. `providers` ke tahat configure kiya jaana chahiye. |
-| `-L` / `--ui-lang <code>` | Har command | Tool ke apne UI (CLI help, logs/summaries, dashboard) ke liye bhasha; sabse uchch-prathamikta wala source. Dekhen [Tool UI bhasha](/guide/tool-ui-language). |
+| `-L` / `--ui-lang <code>` | Har command | Tool ke apne UI (CLI help, logs/summaries, dashboard) ke liye bhasha; sabse uchch-prathamikta wala source. Dekhen [Tool UI bhasha](/hi-Latn/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Chuni hui commands | Console output ko ek `.log` file mein tee karen (default path: root `cacheDir` ke neeche). Sirf `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, aur `cleanup` ke liye wired. |
 
 <a id="per-command-help"></a>

@@ -29,7 +29,7 @@
 
 条目的 `models[locale]` 设置为 `user-edited`。运行纯 `sync` 或 `translate-ui` 以刷新平面区域设置文件（`de.json` 等）。请**勿**使用 `--force` — 它会重新翻译每个条目并可能覆盖手动修复。
 
-当 `glossary.autoAddUserEditedToGlossary` 为 `true`（默认）时，下一个 `translate-ui` 或 `sync` 可以自动将您的编辑附加到用户词汇表 CSV — 请参阅[配置](/reference/configuration#glossary)。
+当 `glossary.autoAddUserEditedToGlossary` 为 `true`（默认）时，下一个 `translate-ui` 或 `sync` 可以自动将您的编辑附加到用户词汇表 CSV — 请参阅[配置](/zh-Hans/reference/configuration#glossary)。
 
 <a id="delete"></a>
 ### 删除

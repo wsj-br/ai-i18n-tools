@@ -4,7 +4,7 @@
 <a id="language-switcher-ui"></a>
 ## 语言切换器UI
 
-使用 `ui-languages.json` 清单构建语言选择器。`ai-i18n-tools` 导出两个显示帮助器 — 有关签名，请参阅 [运行时帮助器 → 显示帮助器](/guide/runtime-helpers#display-helpers)。
+使用 `ui-languages.json` 清单构建语言选择器。`ai-i18n-tools` 导出两个显示帮助器 — 有关签名，请参阅 [运行时帮助器 → 显示帮助器](/zh-Hans/guide/runtime-helpers#display-helpers)。
 
 <details>
 <summary>示例 LanguageSelect 组件（React）</summary>
@@ -84,7 +84,7 @@ function LanguageSelect({
 <a id="rtl-languages"></a>
 ## RTL 语言
 
-`ai-i18n-tools` 导出 `getTextDirection(lng)` 和 `applyDirection(lng)` — 有关签名，请参阅 [运行时帮助器 → RTL 帮助器](/guide/runtime-helpers#rtl-helpers)。
+`ai-i18n-tools` 导出 `getTextDirection(lng)` 和 `applyDirection(lng)` — 有关签名，请参阅 [运行时帮助器 → RTL 帮助器](/zh-Hans/guide/runtime-helpers#rtl-helpers)。
 
 ```js
 import { getTextDirection, applyDirection } from 'ai-i18n-tools/runtime';
@@ -95,7 +95,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` 设置 `document.documentElement.dir`（浏览器）或不执行任何操作（Node.js）。传递可选的 `element` 参数以定位特定元素。在您的 i18n 引导程序中连接它 — [连接 i18next](/guide/ui-strings/i18next-runtime)。
+`applyDirection` 设置 `document.documentElement.dir`（浏览器）或不执行任何操作（Node.js）。传递可选的 `element` 参数以定位特定元素。在您的 i18n 引导程序中连接它 — [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)。
 
 对于可能包含 `→` 箭头的字符串，请在从右到左的布局中翻转它们：
 

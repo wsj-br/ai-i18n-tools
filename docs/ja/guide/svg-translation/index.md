@@ -8,7 +8,7 @@
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-`translate-svg` は **対象ロケールごと**にモデルを解決します: 設定されている場合は最初に `localeModels(locale)`、その後 `translationModels` を使用します。各ロケールの SVG 実行では独自のフォールバックチェーンが使用されます — これは、CJK ロケールの図表ラベルにスクリプトに最適化されたモデル（例: `ja`）が必要な場合に便利です。[プロバイダーとモデル](/guide/providers-and-models#model-fallback-chain) を参照してください。
+`translate-svg` は **対象ロケールごと**にモデルを解決します: 設定されている場合は最初に `localeModels(locale)`、その後 `translationModels` を使用します。各ロケールの SVG 実行では独自のフォールバックチェーンが使用されます — これは、CJK ロケールの図表ラベルにスクリプトに最適化されたモデル（例: `ja`）が必要な場合に便利です。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。
 
 SVG翻訳は、`translate-docs`および`translate-json`と同じSQLiteキャッシュ（`cacheDir`）を使用します。すでに翻訳されたテキストセグメントはキャッシュから提供され、新規または変更されたソーステキストのみがLLMに送信されます。
 
@@ -24,7 +24,7 @@ SVG翻訳は、`translate-docs`および`translate-json`と同じSQLiteキャッ
 次の場合には`translate-svg`を**使用しないでください**。
 
 - 翻訳可能なテキストのない装飾的なSVG（アイコン、ロゴ、背景）。
-- ラスタースクリーンショット（PNG、JPEG、WebP）—これらは[画像とスクリーンショット](/guide/images-and-screenshots/)で処理されます。
+- ラスタースクリーンショット（PNG、JPEG、WebP）—これらは[画像とスクリーンショット](/ja/guide/images-and-screenshots/)で処理されます。
 - `<text>`要素ではなくパスデータに埋め込まれたテキスト—エクストラクターはパスのアウトラインを読み取ることができません。
 
 <a id="design-for-i18n-from-the-start"></a>
@@ -45,8 +45,8 @@ Webアプリの場合、デザインですべて小文字のラベルを使用�
 
 | レイアウト | `svg.style` | 最適な用途 | 子ガイド |
 |--------|-------------|----------|-------------|
-| **フラット（Webアプリ）** | `"flat"` | Next.js、Vite、およびロケールコード化されたファイル名でSVGを埋め込むその他のアプリ | [Webアプリ（フラットSVG）](/guide/svg-translation/translated-svg-web-app) |
-| **コロケーション（ドキュメントシステム）** | `"nested"` + `pathTemplate` | Docusaurusや、翻訳されたアセットが翻訳されたページの横に配置されるその他のドキュメントシステムサイト | [コロケーションSVG](/guide/svg-translation/translated-svg-colocated) |
+| **フラット（Webアプリ）** | `"flat"` | Next.js、Vite、およびロケールコード化されたファイル名でSVGを埋め込むその他のアプリ | [Webアプリ（フラットSVG）](/ja/guide/svg-translation/translated-svg-web-app) |
+| **コロケーション（ドキュメントシステム）** | `"nested"` + `pathTemplate` | Docusaurusや、翻訳されたアセットが翻訳されたページの横に配置されるその他のドキュメントシステムサイト | [コロケーションSVG](/ja/guide/svg-translation/translated-svg-colocated) |
 
 **フラットレイアウト**は、`public/assets/diagram.de.svg`のようなファイルを`diagram.en-GB.svg`の横に書き込みます。アプリはロケールサフィックスでそれらを参照します。
 
@@ -56,7 +56,7 @@ Webアプリの場合、デザインですべて小文字のラベルを使用�
 
 **コロケーションレイアウト**は、各ロケールのSVGをそのロケールのコンテンツツリーに書き込みます（例：`i18n/de/.../assets/diagram.svg`）。ソースと翻訳されたマークダウンは同じ相対パス（`../assets/diagram.svg`）を使用します。`regexAdjustments`ルールは必要ありません。
 
-SVGレイアウトがラスタースクリーンショット戦略とどのように適合するかについては、[画像とスクリーンショットの決定ガイド](/guide/images-and-screenshots/#decision-guide)を参照してください。
+SVGレイアウトがラスタースクリーンショット戦略とどのように適合するかについては、[画像とスクリーンショットの決定ガイド](/ja/guide/images-and-screenshots/#decision-guide)を参照してください。
 
 <a id="step-1-enable-and-configure"></a>
 ### ステップ1：有効化と設定
@@ -84,7 +84,7 @@ SVGレイアウトがラスタースクリーンショット戦略とどのよ�
 - `pathTemplate` — プレースホルダー`{outputDir}`、`{locale}`、`{llocale}`、`{basename}`、`{stem}`などを含むオプションのカスタム出力パス（併置されたドキュメントシステムレイアウトに必要）。
 - `forceLowercase` — 再構築時に小文字に翻訳されたテキスト。
 
-フィールドの完全なリファレンス: [設定 — `svg`](/reference/configuration#svg)。
+フィールドの完全なリファレンス: [設定 — `svg`](/ja/reference/configuration#svg)。
 
 <a id="step-2-translate"></a>
 ### ステップ2: 翻訳
@@ -110,4 +110,4 @@ npx ai-i18n-tools translate-svg --dry-run
 <a id="troubleshooting"></a>
 ### トラブルシューティング
 
-一般的なSVGの問題 — 混在するソース/出力ディレクトリ、Docusaurus上の絶対静的URL、パスレイアウトの誤り — は、[SVGトラブルシューティング](/guide/svg-translation/troubleshooting)で説明されています。ラスターアセットとリンクの書き換えについては、[画像とスクリーンショットのトラブルシューティング](/guide/images-and-screenshots/troubleshooting)を参照してください。
+一般的なSVGの問題 — 混在するソース/出力ディレクトリ、Docusaurus上の絶対静的URL、パスレイアウトの誤り — は、[SVGトラブルシューティング](/ja/guide/svg-translation/troubleshooting)で説明されています。ラスターアセットとリンクの書き換えについては、[画像とスクリーンショットのトラブルシューティング](/ja/guide/images-and-screenshots/troubleshooting)を参照してください。

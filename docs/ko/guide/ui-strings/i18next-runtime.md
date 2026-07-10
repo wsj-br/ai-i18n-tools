@@ -1,7 +1,7 @@
 <a id="wire-i18next-at-runtime"></a>
 # 런타임에 i18next 연결
 
-`'ai-i18n-tools/runtime'`에서 내보낸 헬퍼를 사용하여 i18n 설정 파일을 만듭니다. API 시그니처는 [런타임 헬퍼](/guide/runtime-helpers)를 참조하십시오.
+`'ai-i18n-tools/runtime'`에서 내보낸 헬퍼를 사용하여 i18n 설정 파일을 만듭니다. API 시그니처는 [런타임 헬퍼](/ko/guide/runtime-helpers)를 참조하십시오.
 
 <details>
 <summary>i18n 부트스트랩 전체 예제(src/i18n.js)</summary>
@@ -75,4 +75,4 @@ React가 렌더링되기 전에 `i18n.js`을(를) 가져옵니다(예: 진입점
 
 번들러가 없는 Node CLI의 경우 각 코드에 대해 JSON 파일을 읽고 구문 분석하는 작은 도우미 내에서 `readFileSync`을 사용합니다.
 
-일반적인 앱 진입점(키 트리밍 + 복수형 `wrapT` + 선택적 `translate-ui` `{sourceLocale}.json`)으로 `setupKeyAsDefaultT`를 사용합니다. 애플리케이션 연결을 위해 `wrapI18nWithKeyTrim`만 호출하는 것은 **더 이상 사용되지 않습니다**. [런타임 헬퍼](/guide/runtime-helpers)를 참조하십시오.
+일반적인 앱 진입점(키 트리밍 + 복수형 `wrapT` + 선택적 `translate-ui` `{sourceLocale}.json`)으로 `setupKeyAsDefaultT`를 사용합니다. 애플리케이션 연결을 위해 `wrapI18nWithKeyTrim`만 호출하는 것은 **더 이상 사용되지 않습니다**. [런타임 헬퍼](/ko/guide/runtime-helpers)를 참조하십시오.

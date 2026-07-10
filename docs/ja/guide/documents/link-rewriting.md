@@ -16,13 +16,13 @@
 | `"fumadocs"` | Fumadocs リンク正規化機能 (`rewriteFumadocsLinks`、デフォルトでオン) | `content/docs/…` および相対 `.mdx` パス → ロケールに依存しないルート (`/docs/…`) |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | なし | ソース URL は `postProcessing` まで変更されずに渡されます |
 
-カスタム `pathTemplate` は、`rewriteRelativeLinks: true` を明示的に設定しない限り、フラットリライターを無効にします。ページ間の `#anchor` の処理については、「[出力レイアウト](/guide/documents/output-layouts)」と「[アンカーリンク](/guide/documents/anchor-links)」を参照してください。
+カスタム `pathTemplate` は、`rewriteRelativeLinks: true` を明示的に設定しない限り、フラットリライターを無効にします。ページ間の `#anchor` の処理については、「[出力レイアウト](/ja/guide/documents/output-layouts)」と「[アンカーリンク](/ja/guide/documents/anchor-links)」を参照してください。
 
-VitePress固有の執筆ルールについては、[VitePress 統合 — リンク規約](/guide/integrations/vitepress#link-conventions)を参照してください。
+VitePress固有の執筆ルールについては、[VitePress 統合 — リンク規約](/ja/guide/integrations/vitepress#link-conventions)を参照してください。
 
-Nextra固有の執筆ルールについては、[Nextra 統合 — リンク規約](/guide/integrations/nextra#link-conventions)を参照してください。
+Nextra固有の執筆ルールについては、[Nextra 統合 — リンク規約](/ja/guide/integrations/nextra#link-conventions)を参照してください。
 
-Fumadocs固有の執筆ルールについては、[Fumadocs 統合 — リンク規約](/guide/integrations/fumadocs#link-conventions)を参照してください。
+Fumadocs固有の執筆ルールについては、[Fumadocs 統合 — リンク規約](/ja/guide/integrations/fumadocs#link-conventions)を参照してください。
 
 <a id="postprocessingregexadjustments"></a>
 ## `postProcessing.regexAdjustments`
@@ -53,7 +53,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 `doc-system` レイアウトの場合、フラットリライターは実行されません。`regexAdjustments` は、ソースマークダウンからの元の URL (通常は `/img/screenshots/en-GB/foo.png` のような絶対パス) を参照します。
 
-深さプレフィックスの動作と `flatPreserveRelativeDir` については、「[フラットリンクのリライターと 2 段階フロー](/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)」を参照してください。
+深さプレフィックスの動作と `flatPreserveRelativeDir` については、「[フラットリンクのリライターと 2 段階フロー](/ja/guide/images-and-screenshots/link-rewriting#the-flat-link-rewriter-and-two-step-flow)」を参照してください。
 
 <a id="replace-placeholders"></a>
 ### `replace` プレースホルダー
@@ -93,7 +93,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 ソースロケール (`en-GB`) をハードコーディングするのではなく、`[^/]+` を使用すると、`sourceLocale` が変更されてもルールが機能します。
 
-完全なチュートリアル: [画像とスクリーンショット — ロケールごとのフォルダー](/guide/images-and-screenshots/per-locale-folder)。
+完全なチュートリアル: [画像とスクリーンショット — ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="doc-system-static-urls"></a>
 ### ドキュメントシステムの静的 URL
@@ -112,7 +112,7 @@ Docusaurus、Starlight、または共有静的ツリーからスクリーンシ�
 }
 ```
 
-ジェネレーターがサポートしている場合は、ソースマークダウンで併置された相対パス (`../assets/name.png`) を優先してください。そうすれば、`regexAdjustments` ブリッジは必要ありません。[画像とスクリーンショット](/guide/images-and-screenshots/) でレイアウトの選択肢を参照してください。
+ジェネレーターがサポートしている場合は、ソースマークダウンで併置された相対パス (`../assets/name.png`) を優先してください。そうすれば、`regexAdjustments` ブリッジは必要ありません。[画像とスクリーンショット](/ja/guide/images-and-screenshots/) でレイアウトの選択肢を参照してください。
 
 <a id="when-regex-is-not-needed"></a>
 ### 正規表現が不要な場合
@@ -156,14 +156,14 @@ Docusaurus、Starlight、または共有静的ツリーからスクリーンシ�
 
 </details>
 
-フィールドリファレンス: [設定 — `docs`](/reference/configuration#docs) (`docsOutput.postProcessing`)。
+フィールドリファレンス: [設定 — `docs`](/ja/reference/configuration#docs) (`docsOutput.postProcessing`)。
 
 <a id="troubleshooting"></a>
 ## トラブルシューティング
 
 | 症状 | 考えられる原因 | 確認事項 |
 | --- | --- | --- |
-| 翻訳されたページで画像または静的アセットが404エラーになる | URLレイアウトの`regexAdjustments`がないか、間違っている | [画像とスクリーンショット — トラブルシューティング](/guide/images-and-screenshots/troubleshooting) |
-| リンクは正しいファイルを開くが、`#section`が間違っている | アンカースラッグのずれ、URL書き換えではない | [アンカーリンク](/guide/documents/anchor-links) |
+| 翻訳されたページで画像または静的アセットが404エラーになる | URLレイアウトの`regexAdjustments`がないか、間違っている | [画像とスクリーンショット — トラブルシューティング](/ja/guide/images-and-screenshots/troubleshooting) |
+| リンクは正しいファイルを開くが、`#section`が間違っている | アンカースラッグのずれ、URL書き換えではない | [アンカーリンク](/ja/guide/documents/anchor-links) |
 | `regexAdjustments`ルールがフラットレイアウトに影響しない | `search`は書き換え前のURLを想定しているが、フラットレイアウトはすでに深さプレフィックスを追加している | プレフィックス付きパス内のセグメントを一致させる（[2段階フロー](#two-step-flow-with-flat-layout)を参照） |
 | 実行時に無効な正規表現がスキップされる | 不正な形式の`search`パターン | CLIはルール`description`で警告します。サンプル翻訳出力に対してパターンをテストしてください |

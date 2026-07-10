@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # 同居翻訳済みSVG (doc-system)
 
-翻訳されたSVGイラストが、各ロケールのコンテンツディレクトリにある翻訳されたドキュメント（[併置されたスクリーンショット](/guide/images-and-screenshots/colocated-screenshots)と同じ場所）と一緒に表示されるドキュメントシステムサイトで使用します。Docusaurusプリセットが主な例です。
+翻訳されたSVGイラストが、各ロケールのコンテンツディレクトリにある翻訳されたドキュメント（[併置されたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots)と同じ場所）と一緒に表示されるドキュメントシステムサイトで使用します。Docusaurusプリセットが主な例です。
 
 <a id="config"></a>
 ### 設定
@@ -60,7 +60,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 | `{extension}`            | ドットを含む拡張子                                |
 | `{relativeToSourceRoot}` | 最も近い`sourcePath`ルートからの相対パス       |
 
-[SVG設定テーブル](/reference/configuration#svg)の完全なリファレンス。
+[SVG設定テーブル](/ja/reference/configuration#svg)の完全なリファレンス。
 
 <a id="implementation-example"></a>
 ### 実装例

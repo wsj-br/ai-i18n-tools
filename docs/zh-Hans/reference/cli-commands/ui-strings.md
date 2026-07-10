@@ -8,7 +8,7 @@
 
 从 `t("…")` / `i18n.t("…")` 字面量、可选的 `package.json` 描述以及可选的捆绑主 `englishName` 条目更新 `strings.json`（当启用 `includeUiLanguageEnglishNames` 时；参见 `ui.uiExtractor`；不读取 `languagesManifestPath`）。同时会在 `languagesManifestPath` 处重新生成 `ui-languages.json`。当 `.html` / `.htm` 列于 `ui.uiExtractor.extensions` 时，还会从 HTML 中捕获 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记字符串。要求 `ui.sourceRoots` 非空。不调用 LLM。
 
-**另请参阅：** [UI 字符串概览](/guide/ui-strings/)，[纯 HTML 应用](/guide/ui-strings/plain-html)
+**另请参阅：** [UI 字符串概览](/zh-Hans/guide/ui-strings/)，[纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **关键选项：** `--write`
 
-**另请参阅：** [为翻译标记 HTML](/guide/ui-strings/plain-html#marking-html-for-translation)
+**另请参阅：** [为翻译标记 HTML](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

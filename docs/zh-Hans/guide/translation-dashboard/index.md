@@ -20,7 +20,7 @@ ai-i18n-tools dashboard
 
 默认监听端口是 **8675**。如果该端口不可用，服务器将尝试下一个端口（最多尝试 1000 次）并记录所选端口。已弃用的别名 `editor` 仍然可用，但会显示警告 — 请优先使用 `dashboard`。
 
-仪表板 UI 使用与 CLI 相同的区域设置解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/guide/tool-ui-language)。
+仪表板 UI 使用与 CLI 相同的区域设置解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
 
 ![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
 
@@ -29,13 +29,13 @@ ai-i18n-tools dashboard
 
 | 我想… | 选项卡 | 指南 |
 | --- | --- | --- |
-| 修复翻译失败的文档段 | **失败** | [失败](/guide/translation-dashboard/failures) |
-| 在翻译前修复源 Markdown | **Markdown 问题** | [Markdown 问题](/guide/translation-dashboard/markdown-issues) |
-| 覆盖缓存的文档翻译 | **文档** | [文档缓存](/guide/translation-dashboard/documentation-cache) |
-| 修复 UI 标签 | **UI 字符串** | [UI 字符串和复数](/guide/translation-dashboard/ui-strings) |
-| 修复复数形式 (`one`、`other`、…) | **UI 复数** | [UI 字符串和复数](/guide/translation-dashboard/ui-strings) |
-| 锁定 UI 翻译的术语 | **词汇表** | [词汇表](/guide/translation-dashboard/glossary) |
-| 查看缓存覆盖率和模型使用情况 | **统计** | [统计](/guide/translation-dashboard/statistics) |
+| 修复翻译失败的文档段 | **失败** | [失败](/zh-Hans/guide/translation-dashboard/failures) |
+| 在翻译前修复源 Markdown | **Markdown 问题** | [Markdown 问题](/zh-Hans/guide/translation-dashboard/markdown-issues) |
+| 覆盖缓存的文档翻译 | **文档** | [文档缓存](/zh-Hans/guide/translation-dashboard/documentation-cache) |
+| 修复 UI 标签 | **UI 字符串** | [UI 字符串和复数](/zh-Hans/guide/translation-dashboard/ui-strings) |
+| 修复复数形式 (`one`、`other`、…) | **UI 复数** | [UI 字符串和复数](/zh-Hans/guide/translation-dashboard/ui-strings) |
+| 锁定 UI 翻译的术语 | **词汇表** | [词汇表](/zh-Hans/guide/translation-dashboard/glossary) |
+| 查看缓存覆盖率和模型使用情况 | **统计** | [统计](/zh-Hans/guide/translation-dashboard/statistics) |
 
 <a id="after-you-edit"></a>
 ## 编辑后

@@ -66,7 +66,7 @@ function getScreenshotDir(locale) {
 }
 ```
 
-如果專案也使用翻譯的 SVG，[並置 SVG 翻譯](/guide/svg-translation/translated-svg-colocated) 會處理它們，並且它們會與 PNG 一起放置在 `current/assets/` 中，無需額外的正規表示式。
+如果專案也使用翻譯的 SVG，[並置 SVG 翻譯](/zh-Hant/guide/svg-translation/translated-svg-colocated) 會處理它們，並且它們會與 PNG 一起放置在 `current/assets/` 中，無需額外的正規表示式。
 
 <a id="prerequisites"></a>
 ### 先決條件
@@ -78,4 +78,4 @@ function getScreenshotDir(locale) {
 <a id="implementation-example"></a>
 ### 實作範例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` 在 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 中；英文文件參考並置的 PNG（例如 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) 與 `../assets/screen-dashboard-summary.png`）。來自同一專案的並置 SVG 會放置在相同的 `current/assets/` 目錄中 — 請參閱 [並置 SVG](/guide/svg-translation/translated-svg-colocated)。
+[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` 在 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 中；英文文件參考並置的 PNG（例如 [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) 與 `../assets/screen-dashboard-summary.png`）。來自同一專案的並置 SVG 會放置在相同的 `current/assets/` 目錄中 — 請參閱 [並置 SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated)。

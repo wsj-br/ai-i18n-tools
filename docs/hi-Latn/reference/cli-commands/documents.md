@@ -12,7 +12,7 @@ Markdown, MDX, `.astro`, optional Docusaurus catalog JSON (`docusaurusCatalogDir
 
 `-j`: adhiktam samantar sthaniya bhashaen; `-b`: prati file adhiktam samantar batch API calls. `--prompt-format`: batch wire format (`xml` | `json-array` | `json-object`).
 
-**Yeh bhi dekhein:** [Cache vyavahar aur `translate-docs` flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Batch prompt format](/guide/documents/cli-options#batch-prompt-format)
+**Yeh bhi dekhein:** [Cache vyavahar aur `translate-docs` flags](/hi-Latn/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Batch prompt format](/hi-Latn/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@ Kam se kam ek `docs[]` block ki avashyakta hai. Har block ke `contentPaths` ke t
 
 `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. `pymdown` ke saath, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
 
-**Yeh bhi dekhein:** [Anchor links](/guide/documents/anchor-links)
+**Yeh bhi dekhein:** [Anchor links](/hi-Latn/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@ stderr par `relativePath:line: [ISSUE_CODE] message` lines print karta hai; yadi
 
 **Mukhya vikalp:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 
-**Yeh bhi dekhein:** [Markdown issues](/guide/translation-dashboard/markdown-issues)
+**Yeh bhi dekhein:** [Markdown issues](/hi-Latn/guide/translation-dashboard/markdown-issues)

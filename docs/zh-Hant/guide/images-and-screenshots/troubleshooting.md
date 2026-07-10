@@ -2,7 +2,7 @@
 # 常見錯誤與疑難排解
 
 **螢幕截圖路徑中沒有地區設定目錄**
-`images/screenshots/screenshot.png` — 無法區分地區設定變體，也無法重寫。在使用[每個地區設定資料夾](/guide/images-and-screenshots/per-locale-folder)重寫之前，請重組為`images/screenshots/<locale>/screenshot.png`。
+`images/screenshots/screenshot.png` — 無法區分地區設定變體，也無法重寫。在使用[每個地區設定資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)重寫之前，請重組為`images/screenshots/<locale>/screenshot.png`。
 
 **正規表達式中硬式編碼來源地區設定**
 `"search": "screenshots/en-GB/"` — 如果 `sourceLocale` 變更，將會無聲無息地中斷。請改用 `"search": "screenshots/[^/]+/"`。

@@ -33,7 +33,7 @@ images/screenshots/en-GB/settings.png
 
 일반 `[^/]+` 정규식은 모든 로케일 폴더 이름과 일치합니다. 소스 로케일(예: `screenshots/en-GB/`)을 하드코딩하지 마십시오. `sourceLocale`가 변경되면 문제가 발생합니다.
 
-로케일 하위 디렉터리(`images/screenshots/translate.png`)를 생략하는 경로로 시작하는 경우, [로케일별 폴더](/guide/images-and-screenshots/per-locale-folder) 재작성이 작동하려면 전체 트리를 재구성해야 합니다.
+로케일 하위 디렉터리(`images/screenshots/translate.png`)를 생략하는 경로로 시작하는 경우, [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder) 재작성이 작동하려면 전체 트리를 재구성해야 합니다.
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### 문서 시스템 사이트(`docsOutput.style = "doc-system"`)
@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docs[].docsOutput.docsRoot`를 영어 소스 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정합니다. `style: "doc-system"`를 직접 설정하는 경우, `localeSubpath`를 사이트에서 `{locale}/`와 번역된 파일 사이에 사용하는 경로 세그먼트로 설정해야 합니다. 별칭 `"docusaurus"`, `"astro-starlight"`, `"vitepress"`은 기본 `localeSubpath` 값이 있는 사전 설정 `doc-system` 레이아웃입니다([출력 레이아웃](/guide/documents/output-layouts) 참조).
+`docs[].docsOutput.docsRoot`를 영어 소스 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정합니다. `style: "doc-system"`를 직접 설정하는 경우, `localeSubpath`를 사이트에서 `{locale}/`와 번역된 파일 사이에 사용하는 경로 세그먼트로 설정해야 합니다. 별칭 `"docusaurus"`, `"astro-starlight"`, `"vitepress"`은 기본 `localeSubpath` 값이 있는 사전 설정 `doc-system` 레이아웃입니다([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
 
 | 사전 설정된 별칭 | 기본 `localeSubpath` | 예제 출력 |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ images/screenshots/en-GB/settings.png
 
 소스 마크다운에서는 항상 안정적인 상대 경로 `../assets/name.ext`을(를) 사용하여 자산을 참조하세요. 절대 경로 `/img/` 또는 `/assets/` URL을 문서 자산에 사용하지 마세요. 이러한 URL은 영어 원본(`static/`에서 제공됨)과 번역된 로케일(번역된 문서와 함께 제공됨) 간에 달라지며, 이로 인해 `regexAdjustments` 규칙을 사용하여 연결해야 합니다.
 
-나중에 i18n을 추가하면 스크린샷 스크립트가 `getScreenshotDir` 분할을 채택하고([동일 위치 스크린샷](/guide/images-and-screenshots/colocated-screenshots) 참조) `translate-svg`은 `pathTemplate`를 사용합니다. 정규식 조정은 필요하지 않습니다.
+나중에 i18n을 추가하면 스크린샷 스크립트가 `getScreenshotDir` 분할을 채택하고([동일 위치 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) 참조) `translate-svg`은 `pathTemplate`를 사용합니다. 정규식 조정은 필요하지 않습니다.
 
 > **참고:** `resolve.symlinks = false`을(를) `next.config.ts`에 설정하면 Next.js 애플리케이션의 webpack 빌드에서만 심볼릭 링크 해결이 비활성화됩니다. Docusaurus 문서 사이트 빌드에는 영향을 주지 않으며, 이는 별도의 webpack 인스턴스를 사용합니다.
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG 레이아웃은 [SVG 번역](/guide/svg-translation/) 가이드에 설명되어 있습니다.
+SVG 레이아웃은 [SVG 번역](/ko/guide/svg-translation/) 가이드에 설명되어 있습니다.
 
 | 레이아웃 | 자산 유형 | 사이트 유형 | 도구 메커니즘 |
 |--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [공유 이미지](/guide/images-and-screenshots/shared-image) | 래스터(공유) | `docsOutput.style = "flat"` 문서 | 파일별 링크 재작성기; 일반적으로 정규식 없음 |
-| [로케일별 폴더](/guide/images-and-screenshots/per-locale-folder) | 래스터(로케일별) | `"flat"` 또는 `"doc-system"` (`"docusaurus"`, `"astro-starlight"` 포함) | `regexAdjustments` 로케일 세그먼트 교체 |
-| [동일 위치 스크린샷](/guide/images-and-screenshots/colocated-screenshots) | 래스터(동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | 스크린샷 스크립트가 파일을 배치합니다. 정규식 없음 |
-| [웹 앱 SVG](/guide/svg-translation/translated-svg-web-app) | SVG(번역됨) | 웹 앱 | `translate-svg` 및 `svg.style = "flat"` |
-| [동일 위치 SVG](/guide/svg-translation/translated-svg-colocated) | SVG(번역됨, 동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | `translate-svg` 및 `svg.style = "nested"` + `pathTemplate` |
+| [공유 이미지](/ko/guide/images-and-screenshots/shared-image) | 래스터(공유) | `docsOutput.style = "flat"` 문서 | 파일별 링크 재작성기; 일반적으로 정규식 없음 |
+| [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder) | 래스터(로케일별) | `"flat"` 또는 `"doc-system"` (`"docusaurus"`, `"astro-starlight"` 포함) | `regexAdjustments` 로케일 세그먼트 교체 |
+| [동일 위치 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) | 래스터(동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | 스크린샷 스크립트가 파일을 배치합니다. 정규식 없음 |
+| [웹 앱 SVG](/ko/guide/svg-translation/translated-svg-web-app) | SVG(번역됨) | 웹 앱 | `translate-svg` 및 `svg.style = "flat"` |
+| [동일 위치 SVG](/ko/guide/svg-translation/translated-svg-colocated) | SVG(번역됨, 동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | `translate-svg` 및 `svg.style = "nested"` + `pathTemplate` |

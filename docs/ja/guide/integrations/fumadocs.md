@@ -3,7 +3,7 @@
 
 Next.js App Routerで[Fumadocs](https://www.fumadocs.dev/) 4のドキュメントサイトには、`init -t ui-fumadocs`と`docsOutput.style: "fumadocs"`を使用します。このプリセットは、空の`doc-system`とBCP-47または短いロケールコードが保持された`localeSubpath`のエイリアスです（`localePathLowercase`はデフォルトで`false`）。
 
-[Documents](/guide/documents/)と実行可能な[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)デモ（ドットパーサー、ポート3080）も参照してください。
+[Documents](/ja/guide/documents/)と実行可能な[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)デモ（ドットパーサー、ポート3080）も参照してください。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -70,7 +70,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-コピー＆ペースト可能なディレクトリ設定については、[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) の `ai-i18n-tools.config.dir.example.json` を参照してください。メンタルモデルは [Nextra integration](/guide/integrations/nextra#page-layout) と一致します。
+コピー＆ペースト可能なディレクトリ設定については、[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/) の `ai-i18n-tools.config.dir.example.json` を参照してください。メンタルモデルは [Nextra integration](/ja/guide/integrations/nextra#page-layout) と一致します。
 
 <a id="sidebar-metajson"></a>
 ## サイドバー (`meta.json`)
@@ -127,21 +127,21 @@ Fumadocs UI 文字列には `json[]` を**使用しないでください**。こ
 | フレームワーク | シェル / テーマ文字列 | パイプライン |
 |-----------|----------------------|----------|
 | Docusaurus | `write-translations` カタログ | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビゲーション/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の場合に自動 |
+| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
 | Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の場合は自動 |
-| Fumadocs | UI オーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みのUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
+| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
+| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
 
-フレームワークのシェル/テーマ文字列を `json[]` に **決して**入れないでください — そのパイプラインは無関係なアプリのロケールバンドル用です。他のフレームワークのパターンについては、[Docusaurus integration](/guide/integrations/docusaurus)、[VitePress integration](/guide/integrations/vitepress)、および [Nextra integration](/guide/integrations/nextra) を参照してください。
+フレームワークのシェル/テーマ文字列を `json[]` に **決して**入れないでください — そのパイプラインは無関係なアプリのロケールバンドル用です。他のフレームワークのパターンについては、[Docusaurus integration](/ja/guide/integrations/docusaurus)、[VitePress integration](/ja/guide/integrations/vitepress)、および [Nextra integration](/ja/guide/integrations/nextra) を参照してください。
 
 <a id="link-conventions"></a>
-## リンクの慣例
+## リンクの表記規則
 
 Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/getting-started`）を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールニュートラルであるべきです**（`/docs/getting-started`）。そうすることで、アクティブなロケールプレフィックスが自動的に適用されます。
 
-組み込みのノーマライザーを有効にすると、`translate-docs` がすべての翻訳ファイル内のリンクを自動的に修正します。
+組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳ファイルのリンクを自動的に修正します:
 
 ```json
 "docsOutput": {
@@ -157,16 +157,16 @@ Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/ge
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
-| `[Guide](/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
+| `[Guide](/ja/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | 変更なし (完全な URL) |
 
-**作成ルール**
+**執筆ルール**
 
 - ページ間のドキュメントリンク: 英語のMDXでは**ロケールニュートラルなサイトルート**（`/docs/…`）を使用するか、`content/docs/…` / 相対`.mdx`パスを使用して、`sync`中に正規化ツールで書き換えさせます。
 - コンテンツツリー外のリポジトリファイル: **完全なURL**を使用します。
 - ロケールサフィックス付きコピー（`*.pt.mdx`）や`content/{locale}/`ツリー内のリンクを手動で編集**しないでください**。`sync` / `translate-docs`で再生成してください。
 
-こちらも参照してください: [Documents — link rewriting](/guide/documents/link-rewriting) および [Configuration — `docsOutput`](/reference/configuration#docsoutput)。
+こちらも参照してください: [Documents — link rewriting](/ja/guide/documents/link-rewriting) および [Configuration — `docsOutput`](/ja/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## ロケールコード
@@ -186,8 +186,8 @@ Fumadocs プロジェクトでは、`source.config.ts` に複数の `defineDocs`
 <a id="cross-references"></a>
 ## 相互参照
 
-- [設定 — `docsOutput`](/reference/configuration#docsoutput)
-- [出力レイアウト](/guide/documents/output-layouts)
-- [Docusaurus integration](/guide/integrations/docusaurus)
-- [Nextra integration](/guide/integrations/nextra) (ディレクトリパーサーのメンタルモデル)
-- [VitePress integration](/guide/integrations/vitepress) (UIカタログのブートストラップパターン)
+- [設定 — `docsOutput`](/ja/reference/configuration#docsoutput)
+- [出力レイアウト](/ja/guide/documents/output-layouts)
+- [Docusaurus integration](/ja/guide/integrations/docusaurus)
+- [Nextra integration](/ja/guide/integrations/nextra) (ディレクトリパーサーのメンタルモデル)
+- [VitePress integration](/ja/guide/integrations/vitepress) (UIカタログのブートストラップパターン)

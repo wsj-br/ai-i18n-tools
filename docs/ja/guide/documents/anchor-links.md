@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 `#tls-configuration`アンカーは、`id`がソースで固定されているため、すべてのロケールで同じです。見出しの**テキスト**とリンクの**ラベル**のみが翻訳されます。
 
-翻訳後もリンクが機能しない場合は、[トラブルシューティング](/guide/documents/troubleshooting)を参照してください。
+翻訳後もリンクが機能しない場合は、[トラブルシューティング](/ja/guide/documents/troubleshooting)を参照してください。

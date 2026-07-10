@@ -18,7 +18,7 @@
 2. 將錨點連結指向這些 ID — 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 應符合目標標題上方的錨點行，而不是僅從英文標題推斷出的 slug。
 3. 重新執行 `translate-docs`（或 `sync --force-update`），以便每個地區設定的副本都包含更新的錨點行。
 
-請先在 `--dry-run` 上使用 `write-heading-ids` 預覽變更。如需完整模式，請參閱[錨點連結](/guide/documents/anchor-links)。
+請先在 `--dry-run` 上使用 `write-heading-ids` 預覽變更。如需完整模式，請參閱[錨點連結](/zh-Hant/guide/documents/anchor-links)。
 
 <a id="image-or-asset-links-404-in-translated-docs"></a>
 ## 翻譯文件中圖片或資產連結出現 404 錯誤
@@ -27,6 +27,6 @@ Markdown 連結或 `![alt](url)` 在英文版中有效，但在翻譯版本中�
 
 **修正**
 
-1. 確認您的資產佈局與您的 `docsOutput.style` 相符（扁平式與文件系統）。請參閱[連結重寫](/guide/documents/link-rewriting)和[圖片與螢幕截圖](/guide/images-and-screenshots/)。
+1. 確認您的資產佈局與您的 `docsOutput.style` 相符（扁平式與文件系統）。請參閱[連結重寫](/zh-Hant/guide/documents/link-rewriting)和[圖片與螢幕截圖](/zh-Hant/guide/images-and-screenshots/)。
 2. 新增或調整 `docsOutput.postProcessing.regexAdjustments` 以交換語系區段或橋接絕對 `/img/…` 路徑。對於扁平式佈局，請記住扁平式連結重寫器在 **之前** 執行 `regexAdjustments` — 根據已加前綴的 URL 匹配模式。
 3. 確保語系特定的資產檔案存在於重寫後的 markdown 參考路徑中（`translate-docs` 重寫 URL，但不複製點陣圖檔案）。

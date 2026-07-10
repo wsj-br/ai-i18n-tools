@@ -1,7 +1,7 @@
 <a id="examples"></a>
 # Ejemplos
 
-Proyectos ejecutables en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) en GitHub, cada uno con su propia configuración, salidas de configuración regional confirmadas y README. Puede explorar archivos traducidos sin una clave de API; la nueva ejecución de la traducción requiere una clave de proveedor ([Proveedores y modelos](/guide/providers-and-models)).
+Proyectos ejecutables en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) en GitHub, cada uno con su propia configuración, salidas de configuración regional confirmadas y README. Puede explorar archivos traducidos sin una clave de API; la nueva ejecución de la traducción requiere una clave de proveedor ([Proveedores y modelos](/es/guide/providers-and-models)).
 
 <a id="run-standalone-npx-degit"></a>
 ## Ejecutar de forma independiente (`npx degit`)

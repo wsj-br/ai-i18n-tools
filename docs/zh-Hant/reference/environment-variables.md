@@ -7,7 +7,7 @@
 | 其他提供者金鑰    | 每個提供者讀取其自己的金鑰環境變數：`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama 不需要)。可透過 `providers.<name>.apiKeyEnv` 為每個提供者覆寫。 |
 | `OPENROUTER_BASE_URL`  | 覆寫 `providers.openrouter.baseUrl`（僅當該提供者已設定時）。 |
 | `OLLAMA_BASE_URL`      | 覆寫 `providers.ollama.baseUrl`（僅當該提供者已設定時）。 |
-| `AI_I18N_LANG`         | 工具自身介面（CLI 說明、日誌、儀表板）的語言。由 `-L` / `--ui-lang` 覆寫；覆寫設定 `uiLanguage`。請參閱[工具介面語言](/guide/tool-ui-language)。 |
+| `AI_I18N_LANG`         | 工具自身介面（CLI 說明、日誌、儀表板）的語言。由 `-L` / `--ui-lang` 覆寫；覆寫設定 `uiLanguage`。請參閱[工具介面語言](/zh-Hant/guide/tool-ui-language)。 |
 | `I18N_SOURCE_LOCALE`   | 在執行階段覆寫 `sourceLocale`。                        |
 | `I18N_TARGET_LOCALES`  | 以逗號分隔的地區設定代碼，用於覆寫 `targetLocales`。  |
 | `I18N_LOG_LEVEL`       | 記錄器層級 (`debug`、`info`、`warn`、`error`)。未知值 (包括 `silent`) 會回復為 `info`。 |

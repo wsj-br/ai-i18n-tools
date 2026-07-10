@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # Kollokiertes übersetztes SVG (doc-system)
 
-Verwenden Sie dies für Doc-System-Sites, bei denen übersetzte SVG-Illustrationen zusammen mit übersetzten Dokumenten im Inhaltsverzeichnis jeder Region angezeigt werden müssen – am selben Speicherort wie [nebeneinanderliegende Screenshots](/guide/images-and-screenshots/colocated-screenshots). Das Docusaurus-Preset ist das primäre Beispiel.
+Verwenden Sie dies für Doc-System-Sites, bei denen übersetzte SVG-Illustrationen zusammen mit übersetzten Dokumenten im Inhaltsverzeichnis jeder Region angezeigt werden müssen – am selben Speicherort wie [nebeneinanderliegende Screenshots](/de/guide/images-and-screenshots/colocated-screenshots). Das Docusaurus-Preset ist das primäre Beispiel.
 
 <a id="config"></a>
 ### Konfiguration
@@ -60,7 +60,7 @@ Empfohlen: Quell-SVGs gemeinsam mit den en-GB-PNGs im `documentation/static/asse
 | `{extension}`            | Erweiterung inklusive Punkt                                |
 | `{relativeToSourceRoot}` | Relativer Pfad vom nächstgelegenen `sourcePath`-Stammverzeichnis       |
 
-Vollständige Referenz in der [SVG-Konfigurationstabelle](/reference/configuration#svg).
+Vollständige Referenz in der [SVG-Konfigurationstabelle](/de/reference/configuration#svg).
 
 <a id="implementation-example"></a>
 ### Implementierungsbeispiel

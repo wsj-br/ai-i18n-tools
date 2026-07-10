@@ -31,6 +31,6 @@ Das Übersetzungs-Dashboard liest das aufgelöste Gebietsschema, die Layout-Rich
 <a id="related"></a>
 ## Verwandt
 
-- [`AI_I18N_LANG`](/reference/environment-variables) – Überschreibung der Umgebungsvariablen
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) – Überschreibung des Konfigurationsschlüssels
-- [`-L` / `--ui-lang`](/reference/cli-commands/) – Überschreibung des CLI-Flags (höchste Priorität)
+- [`AI_I18N_LANG`](/de/reference/environment-variables) – Überschreibung der Umgebungsvariablen
+- [`uiLanguage`](/de/reference/configuration#uilanguage-optional) – Überschreibung des Konfigurationsschlüssels
+- [`-L` / `--ui-lang`](/de/reference/cli-commands/) – Überschreibung des CLI-Flags (höchste Priorität)

@@ -18,7 +18,7 @@ Array mit BCP-47-Gebietsschemaschlüsseln, in die übersetzt werden soll (z. B. 
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (optional)
 
-BCP-47-Code für die eigene UI-Sprache des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen und das Übersetzungs-Dashboard). Er ist unabhängig von `sourceLocale` / `targetLocales` und wird durch das Flag `-L` / `--ui-lang` sowie die Umgebungsvariable `AI_I18N_LANG` überschrieben. Unbekannte Werte werden ordnungsgemäß auf das Quellgebietsschema (`en-GB`) herabgestuft – es gibt keine strikte Validierung. Siehe [Tool-UI-Sprache](/guide/tool-ui-language).
+BCP-47-Code für die eigene UI-Sprache des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen und das Übersetzungs-Dashboard). Er ist unabhängig von `sourceLocale` / `targetLocales` und wird durch das Flag `-L` / `--ui-lang` sowie die Umgebungsvariable `AI_I18N_LANG` überschrieben. Unbekannte Werte werden ordnungsgemäß auf das Quellgebietsschema (`en-GB`) herabgestuft – es gibt keine strikte Validierung. Siehe [Tool-UI-Sprache](/de/guide/tool-ui-language).
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (optional)
@@ -276,11 +276,11 @@ Relative Links nach der Übersetzung neu schreiben (automatisch aktiviert, wenn 
 - `docsOutput.linkRewriteDocsRoot`
 Das Repository-Root-Verzeichnis, das beim Berechnen von Präfixen für Flat-Link-Umschreibungen verwendet wird. Dies sollte normalerweise als `"."` belassen werden, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Root-Verzeichnis.
 - `docsOutput.rewriteVitepressLinks`
-Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Gebietsschema-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und gebietsschema-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/guide/integrations/vitepress#readme-as-homepage).
+Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Gebietsschema-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und gebietsschema-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-as-homepage).
 - `docsOutput.rewriteNextraLinks`
-Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/guide/integrations/nextra#link-conventions).
+Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben englische Quellen; dir schreibt Gebietsschema-Ordner wie Nextra. Siehe [Fumadocs-Integration – Seitenlayout](/guide/integrations/fumadocs#page-layout).
+`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben englische Quellen; dir schreibt Gebietsschema-Ordner wie Nextra. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 Wenn `true`, den Fumadocs-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"fumadocs"` gesetzt ist. Schreibt Inhaltspfade und relative `.mdx`-Links in `/docs/…`-Routen um.
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ Beispiel: `"protectKeys": ["slug", "code"]` überspringt `{ slug: 'getting-start
 <a id="json"></a>
 ### `json`
 
-Top-Level-Array von verschachtelten JSON-Übersetzungspipelines. Wird nur verwendet, wenn `features.translateJson` wahr ist (`translate-json` oder die JSON-Phase von `sync`). Siehe [JSON](/guide/json).
+Top-Level-Array von verschachtelten JSON-Übersetzungspipelines. Wird nur verwendet, wenn `features.translateJson` wahr ist (`translate-json` oder die JSON-Phase von `sync`). Siehe [JSON](/de/guide/json).
 
 | Feld | Beschreibung |
 |-------|-------------|

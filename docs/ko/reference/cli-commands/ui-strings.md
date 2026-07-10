@@ -8,7 +8,7 @@
 
 `strings.json`를 `t("…")` / `i18n.t("…")` 리터럴, 선택적 `package.json` 설명, 그리고 `includeUiLanguageEnglishNames`가 활성화된 경우 선택적 번들 마스터 `englishName` 항목에서 업데이트합니다(`ui.uiExtractor` 참조; `languagesManifestPath`는 읽지 않음). 또한 `languagesManifestPath`에서 `ui-languages.json`을(를) 재생성합니다. `.html` / `.htm`이(가) `ui.uiExtractor.extensions`에 나열된 경우, HTML에서 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커 문자열도 캡처합니다. 비어 있지 않은 `ui.sourceRoots`이(가) 필요합니다. LLM을 호출하지 않습니다.
 
-**참고 항목:** [UI 문자열 개요](/guide/ui-strings/), [순수 HTML 앱](/guide/ui-strings/plain-html)
+**참고 항목:** [UI 문자열 개요](/ko/guide/ui-strings/), [순수 HTML 앱](/ko/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **주요 옵션:** `--write`
 
-**참고 항목:** [번역을 위한 HTML 마킹](/guide/ui-strings/plain-html#marking-html-for-translation)
+**참고 항목:** [번역을 위한 HTML 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

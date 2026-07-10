@@ -8,7 +8,7 @@
 
 Valida cada id de modelo configurado contra la lista `GET /models` del proveedor activo (miembros y `expiration_date`). Requiere la clave de API del proveedor (ninguna para proveedores sin clave como Ollama). Sale con un código de salida distinto de cero cuando algún id configurado esté ausente o haya expirado, y respeta las `requestTimeoutMs` del proveedor. Cuando el proveedor devuelve precios (por ejemplo, OpenRouter), también muestra el precio en USD por 1 millón de tokens para el prompt/completado.
 
-**Véase también:** [Proveedores de LLM](/guide/providers-and-models)
+**Véase también:** [Proveedores de LLM](/es/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Enumera todos los modelos que el proveedor activo anuncia a través de su lista 
 
 **Opciones clave:** `-P` / `--provider`
 
-**Véase también:** [Proveedores de LLM](/guide/providers-and-models)
+**Véase también:** [Proveedores de LLM](/es/guide/providers-and-models)
 
 ---
 

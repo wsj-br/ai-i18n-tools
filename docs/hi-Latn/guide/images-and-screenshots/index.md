@@ -33,7 +33,7 @@ Jab aap baad mein i18n jodte hain, to aapka `take-screenshots` script har locale
 
 generic `[^/]+` regex kisi bhi locale folder naam se mel khata hai — apne source locale (jaise ki `screenshots/en-GB/`) ko hardcode na karein kyuki agar `sourceLocale` kabhi badalta hai to yeh toot jaata hai.
 
-Agar aap aise paths se shuru karte hain jinmein locale subdirectory (`images/screenshots/translate.png`) nahi hai, to aapko [per-locale folder](/guide/images-and-screenshots/per-locale-folder) rewriting ke kaam karne se pehle poore tree ko restructure karna hoga.
+Agar aap aise paths se shuru karte hain jinmein locale subdirectory (`images/screenshots/translate.png`) nahi hai, to aapko [per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) rewriting ke kaam karne se pehle poore tree ko restructure karna hoga.
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### Doc-system sites (`docsOutput.style = "doc-system"`)
@@ -44,7 +44,7 @@ Static documentation sites ke liye upyog karen jo anuvadit pages ko locale-prefi
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docs[].docsOutput.docsRoot` ko apne English source root par set karein (jaise ki `"docs"` ya `"src/content/docs"`). Jab aap `style: "doc-system"` ko seedhe set karte hain, to aapko `localeSubpath` ko bhi us path segment par set karna hoga jiska upyog aapki site `{locale}/` aur translated file ke beech karti hai. aliases `"docusaurus"`, `"astro-starlight"`, aur `"vitepress"` default `localeSubpath` values ke saath preset `doc-system` layouts hain ([Output layouts](/guide/documents/output-layouts) dekhein).
+`docs[].docsOutput.docsRoot` ko apne English source root par set karein (jaise ki `"docs"` ya `"src/content/docs"`). Jab aap `style: "doc-system"` ko seedhe set karte hain, to aapko `localeSubpath` ko bhi us path segment par set karna hoga jiska upyog aapki site `{locale}/` aur translated file ke beech karti hai. aliases `"docusaurus"`, `"astro-starlight"`, aur `"vitepress"` default `localeSubpath` values ke saath preset `doc-system` layouts hain ([Output layouts](/hi-Latn/guide/documents/output-layouts) dekhein).
 
 | Preset alias | Default `localeSubpath` | Udaharan output |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ Do aadatein project setup par sabhi regex bridging ko baad mein samaapt kar deti
 
 Pratyek asset ko sthir relative path `../assets/name.ext` ke saath source markdown mein sandarbhit karein. Kabhi bhi absolute `/img/` ya `/assets/` URLs ka upyog documentation assets ke liye na karein — ve URLs English source (jo `static/` se serve hoti hai) aur anuvaadit locales (jo anuvaadit docs ke saath colocated hoti hain) ke beech alag hain, jo ek `regexAdjustments` niyam ko bridge karne ke liye majboor karta hai.
 
-Jab aap baad mein i18n jodte hain, to screenshot script `getScreenshotDir` split ko apnata hai ([Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) dekhein) aur `translate-svg` ek `pathTemplate` ka upyog karta hai. Kisi regex adjustment ki zaroorat nahi hai.
+Jab aap baad mein i18n jodte hain, to screenshot script `getScreenshotDir` split ko apnata hai ([Colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) dekhein) aur `translate-svg` ek `pathTemplate` ka upyog karta hai. Kisi regex adjustment ki zaroorat nahi hai.
 
 > **Note:** `resolve.symlinks = false` ek `next.config.ts` mein symlink resolution ko Next.js application webpack build ke liye aksham karta hai. Isse Docusaurus documentation site build par koi prabhaav nahin padta, jo alag webpack instance ka upyog karta hai.
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-SVG layouts ko [SVG translation](/guide/svg-translation/) guide mein cover kiya gaya hai.
+SVG layouts ko [SVG translation](/hi-Latn/guide/svg-translation/) guide mein cover kiya gaya hai.
 
 | Layout | Asset type | Site type | Tool mechanism |
 |--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Shared image](/guide/images-and-screenshots/shared-image) | Raster (shared) | `docsOutput.style = "flat"` docs | Per-file link rewriter; aam taur par koi regex nahi |
-| [Per-locale folder](/guide/images-and-screenshots/per-locale-folder) | Raster (per-locale) | `"flat"` ya `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` locale segment swap |
-| [Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | Screenshot script files rakhta hai; koi regex nahi |
-| [Web app SVG](/guide/svg-translation/translated-svg-web-app) | SVG (translated) | Web app | `translate-svg` with `svg.style = "flat"` |
-| [Colocated SVG](/guide/svg-translation/translated-svg-colocated) | SVG (translated, colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
+| [Shared image](/hi-Latn/guide/images-and-screenshots/shared-image) | Raster (shared) | `docsOutput.style = "flat"` docs | Per-file link rewriter; aam taur par koi regex nahi |
+| [Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) | Raster (per-locale) | `"flat"` ya `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` locale segment swap |
+| [Colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | Screenshot script files rakhta hai; koi regex nahi |
+| [Web app SVG](/hi-Latn/guide/svg-translation/translated-svg-web-app) | SVG (translated) | Web app | `translate-svg` with `svg.style = "flat"` |
+| [Colocated SVG](/hi-Latn/guide/svg-translation/translated-svg-colocated) | SVG (translated, colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |

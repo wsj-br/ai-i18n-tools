@@ -51,4 +51,4 @@ Siehe [TLS-Einrichtung](security.de.md#tls-configuration) für die Zertifikatssc
 
 `#tls-configuration` 앵커는 소스에서 `id`이 고정되어 있으므로 모든 로캘에서 동일합니다. 제목의 **텍스트**와 링크 **레이블**만 번역됩니다.
 
-번역 후에도 링크가 계속 실패하면 [문제 해결](/guide/documents/troubleshooting)을 참조하세요.
+번역 후에도 링크가 계속 실패하면 [문제 해결](/ko/guide/documents/troubleshooting)을 참조하세요.

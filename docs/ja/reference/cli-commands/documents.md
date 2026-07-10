@@ -12,7 +12,7 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 `-j`: 最大並列ロケール数。`-b`: ファイルあたりの最大並列バッチAPI呼び出し数。`--prompt-format`: バッチワイヤーフォーマット（`xml` | `json-array` | `json-object`）。
 
-**関連項目:** [キャッシュの動作と`translate-docs`フラグ](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)、[バッチプロンプトフォーマット](/guide/documents/cli-options#batch-prompt-format)
+**関連項目:** [キャッシュの動作と`translate-docs`フラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)、[バッチプロンプトフォーマット](/ja/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 `--slug-style`: `github`（デフォルト、doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。`pymdown`の場合、オプションの`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。
 
-**関連項目:** [アンカーリンク](/guide/documents/anchor-links)
+**関連項目:** [アンカーリンク](/ja/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 **主なオプション:** `-p` / `--path`、`-f` / `--file`、`--json`、`--no-cache`
 
-**関連項目:** [Markdownの問題](/guide/translation-dashboard/markdown-issues)
+**関連項目:** [Markdownの問題](/ja/guide/translation-dashboard/markdown-issues)

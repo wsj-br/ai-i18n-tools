@@ -11,9 +11,9 @@
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` はデフォルトで `docusaurus-plugin-content-docs/current`（Docusaurus i18n プラグインレイアウト）。
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` はデフォルトで `""`（翻訳済みページは `{outputDir}/{locale}/` の直下に配置され、英语がコンテンツルートのにある場合の [Starlight](https://starlight.astro.build/guides/i18n/) と一致し、`outputDir` が `docsRoot` のとき）。
-- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで `localeSubpath` は空; BCP-47 ロケールフォルダー名が保持されます（`localePathLowercase` はデフォルトで `false`）。[VitePress 統合](/guide/integrations/vitepress) を参照。
-- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはロケールフォルダーの配下にある（例：`content/en/`）。[Nextra 統合](/guide/integrations/nextra) を参照。
-- `docsOutput.style = "fumadocs"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはドット接尾辞ファイルを使用（デフォルト）または `fumadocsParser` が `"dir"` の場合はロケールフォルダーを使用。[Fumadocs 統合](/guide/integrations/fumadocs) を参照。
+- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで `localeSubpath` は空; BCP-47 ロケールフォルダー名が保持されます（`localePathLowercase` はデフォルトで `false`）。[VitePress 統合](/ja/guide/integrations/vitepress) を参照。
+- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはロケールフォルダーの配下にある（例：`content/en/`）。[Nextra 統合](/ja/guide/integrations/nextra) を参照。
+- `docsOutput.style = "fumadocs"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはドット接尾辞ファイルを使用（デフォルト）または `fumadocsParser` が `"dir"` の場合はロケールフォルダーを使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
 
 Docusaurus プリセット（主なドキュメントページ）：
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlightは多数のロケール向けUI文字列を提供しています。必要に応じて、カスタムUIの上書きには、別個の `docs[]` ブロック内で `src/content/i18n/en.json` と `jsonPathTemplate: "{outputDir}/{locale}.json"` を使用します。
 
-VitePress の nav/sidebar/footer 文字列はマークダウンではない — `docsOutput.vitepressThemeCatalog` を設定し **`translate-docs`** ないで翻訳。[VitePress 統合](/guide/integrations/vitepress) を参照。
+VitePress の nav/sidebar/footer 文字列はマークダウンではない — `docsOutput.vitepressThemeCatalog` を設定し **`translate-docs`** ないで翻訳。[VitePress 統合](/ja/guide/integrations/vitepress) を参照。
 
-Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマークダウンではない — `docs[].nextraDictionaryPath` を使用し、`style: "nextra"` の場合は自動 `_meta` コレクションをすべて **`translate-docs`** ないで使用。[Nextra 統合](/guide/integrations/nextra) を参照。
+Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマークダウンではない — `docs[].nextraDictionaryPath` を使用し、`style: "nextra"` の場合は自動 `_meta` コレクションをすべて **`translate-docs`** ないで使用。[Nextra 統合](/ja/guide/integrations/nextra) を参照。
 
-Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サイドバーラベルはマークダウンではない — `docsOutput.fumadocsUiCatalog` を使用し、`style: "fumadocs"` の場合は自動 `meta.json` コレクションをすべて **`translate-docs`** ないで使用。[Fumadocs 統合](/guide/integrations/fumadocs) を参照。
+Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サイドバーラベルはマークダウンではない — `docsOutput.fumadocsUiCatalog` を使用し、`style: "fumadocs"` の場合は自動 `meta.json` コレクションをすべて **`translate-docs`** ないで使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
 
 `docsOutput.style = "flat"` — 翻訳されたファイルをロケールサフィックス付きでソース横に、またはサブディレクトリ内に配置します。`docsOutput.style = "flat"` の場合、ページ間の相対リンクは自動的に書き換えられます（`rewriteRelativeLinks: false` またはカスタムの `pathTemplate` が設定されていない限り）。
 
@@ -71,11 +71,11 @@ Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サ
 docs/guide.md → i18n/guide.de.md
 ```
 
-フラットレイアウトでのページ間アンカーリンクについては、[アンカーリンク](/guide/documents/anchor-links)を参照してください。
+フラットレイアウトでのページ間アンカーリンクについては、[アンカーリンク](/ja/guide/documents/anchor-links)を参照してください。
 
-組み込みの相対リンク修正以外のリンクとアセットURLの書き換えについては、[リンクの書き換え](/guide/documents/link-rewriting)（`docsOutput.postProcessing.regexAdjustments`）を参照してください。
+組み込みの相対リンク修正以外のリンクとアセットURLの書き換えについては、[リンクの書き換え](/ja/guide/documents/link-rewriting)（`docsOutput.postProcessing.regexAdjustments`）を参照してください。
 
-翻訳されたページでのスクリーンショットとラスターアセットについては、[画像とスクリーンショット](/guide/images-and-screenshots/)を参照してください。
+翻訳されたページでのスクリーンショットとラスターアセットについては、[画像とスクリーンショット](/ja/guide/images-and-screenshots/)を参照してください。
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>
 ## `pathTemplate` / `jsonPathTemplate` プレースホルダー

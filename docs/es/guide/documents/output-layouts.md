@@ -11,9 +11,9 @@
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` por defecto es `docusaurus-plugin-content-docs/current` (diseño del plugin i18n de Docusaurus).
 - `docsOutput.style = "astro-starlight"` — `localeSubpath` por defecto es `""` (páginas traducidas directamente bajo `{outputDir}/{locale}/`, coincidiendo con [Starlight](https://starlight.astro.build/guides/i18n/) cuando el inglés reside en la raíz del contenido y `outputDir` es igual a `docsRoot`).
-- `docsOutput.style = "vitepress"` — mismo diseño que `doc-system` con `localeSubpath` vacío; los nombres de las carpetas de configuración regional BCP-47 se conservan (`localePathLowercase` por defecto es `false`). Consulta la [integración de VitePress](/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — mismo diseño que `doc-system` con `localeSubpath` vacío; el código fuente en inglés reside en una carpeta de configuración regional (por ejemplo, `content/en/`). Consulta la [integración de Nextra](/guide/integrations/nextra).
-- `docsOutput.style = "fumadocs"` — mismo diseño que `doc-system` con `localeSubpath` vacío; el código fuente en inglés utiliza archivos con sufijo de punto (predeterminado) o una carpeta de configuración regional cuando `fumadocsParser` es `"dir"`. Consulta la [integración de Fumadocs](/guide/integrations/fumadocs).
+- `docsOutput.style = "vitepress"` — mismo diseño que `doc-system` con `localeSubpath` vacío; los nombres de las carpetas de configuración regional BCP-47 se conservan (`localePathLowercase` por defecto es `false`). Consulta la [integración de VitePress](/es/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — mismo diseño que `doc-system` con `localeSubpath` vacío; el código fuente en inglés reside en una carpeta de configuración regional (por ejemplo, `content/en/`). Consulta la [integración de Nextra](/es/guide/integrations/nextra).
+- `docsOutput.style = "fumadocs"` — mismo diseño que `doc-system` con `localeSubpath` vacío; el código fuente en inglés utiliza archivos con sufijo de punto (predeterminado) o una carpeta de configuración regional cuando `fumadocsParser` es `"dir"`. Consulta la [integración de Fumadocs](/es/guide/integrations/fumadocs).
 
 Valor preestablecido de Docusaurus (páginas principales de documentación):
 
@@ -59,11 +59,11 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight incluye cadenas de interfaz para muchas configuraciones regionales; las sustituciones personalizadas opcionales usan `src/content/i18n/en.json` con `jsonPathTemplate: "{outputDir}/{locale}.json"` en un bloque `docs[]` separado cuando sea necesario.
 
-Las cadenas de navegación/barra lateral/pie de página de VitePress no están en markdown; configura `docsOutput.vitepressThemeCatalog` y traduce dentro de **`translate-docs`**. Consulta la [integración de VitePress](/guide/integrations/vitepress).
+Las cadenas de navegación/barra lateral/pie de página de VitePress no están en markdown; configura `docsOutput.vitepressThemeCatalog` y traduce dentro de **`translate-docs`**. Consulta la [integración de VitePress](/es/guide/integrations/vitepress).
 
-El diccionario de temas de Nextra (`.ts`) y las etiquetas de la barra lateral de `_meta.ts` no están en markdown; usa `docs[].nextraDictionaryPath` y la recopilación automática de `_meta` cuando `style: "nextra"`, todo dentro de **`translate-docs`**. Consulta la [integración de Nextra](/guide/integrations/nextra).
+El diccionario de temas de Nextra (`.ts`) y las etiquetas de la barra lateral de `_meta.ts` no están en markdown; usa `docs[].nextraDictionaryPath` y la recopilación automática de `_meta` cuando `style: "nextra"`, todo dentro de **`translate-docs`**. Consulta la [integración de Nextra](/es/guide/integrations/nextra).
 
-Las anulaciones de la interfaz de usuario de Fumadocs (`lib/layout.shared.ts`) y las etiquetas de la barra lateral de `meta.json` no están en markdown; usa `docsOutput.fumadocsUiCatalog` y la recopilación automática de `meta.json` cuando `style: "fumadocs"`, todo dentro de **`translate-docs`**. Consulta la [integración de Fumadocs](/guide/integrations/fumadocs).
+Las anulaciones de la interfaz de usuario de Fumadocs (`lib/layout.shared.ts`) y las etiquetas de la barra lateral de `meta.json` no están en markdown; usa `docsOutput.fumadocsUiCatalog` y la recopilación automática de `meta.json` cuando `style: "fumadocs"`, todo dentro de **`translate-docs`**. Consulta la [integración de Fumadocs](/es/guide/integrations/fumadocs).
 
 `docsOutput.style = "flat"` — coloca los archivos traducidos junto al origen con un sufijo de configuración regional, o en un subdirectorio. Los enlaces relativos entre páginas se reescriben automáticamente cuando `docsOutput.style = "flat"` (a menos que `rewriteRelativeLinks: false` o un `pathTemplate` personalizado esté establecido).
 
@@ -71,11 +71,11 @@ Las anulaciones de la interfaz de usuario de Fumadocs (`lib/layout.shared.ts`) y
 docs/guide.md → i18n/guide.de.md
 ```
 
-Para enlaces de anclaje entre páginas en un diseño plano, consulte [Enlaces de anclaje](/guide/documents/anchor-links).
+Para enlaces de anclaje entre páginas en un diseño plano, consulte [Enlaces de anclaje](/es/guide/documents/anchor-links).
 
-Para la reescritura de URL de enlaces y activos más allá de las correcciones de enlaces relativos integradas, consulta [Reescritura de enlaces](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
+Para la reescritura de URL de enlaces y activos más allá de las correcciones de enlaces relativos integradas, consulta [Reescritura de enlaces](/es/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 
-Para capturas de pantalla y recursos ráster en páginas traducidas, consulte [Imágenes y capturas de pantalla](/guide/images-and-screenshots/).
+Para capturas de pantalla y recursos ráster en páginas traducidas, consulte [Imágenes y capturas de pantalla](/es/guide/images-and-screenshots/).
 
 <a id="pathtemplate--jsonpathtemplate-placeholders"></a>
 ## Marcadores de posición `pathTemplate` / `jsonPathTemplate`

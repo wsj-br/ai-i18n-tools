@@ -8,7 +8,7 @@
 
 Actualiza `strings.json` a partir de literales `t("…")` / `i18n.t("…")`, descripción opcional `package.json` y entradas opcionales `englishName` de master agrupadas cuando `includeUiLanguageEnglishNames` está habilitado (consulta `ui.uiExtractor`; no lee `languagesManifestPath`). También regenera `ui-languages.json` en `languagesManifestPath`. Cuando `.html` / `.htm` se enumeran en `ui.uiExtractor.extensions`, también captura cadenas de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` de HTML. Requiere `ui.sourceRoots` no vacío. No llama a un LLM.
 
-**Consulta también:** [Descripción general de las cadenas de interfaz de usuario](/guide/ui-strings/), [Aplicaciones HTML simples](/guide/ui-strings/plain-html)
+**Consulta también:** [Descripción general de las cadenas de interfaz de usuario](/es/guide/ui-strings/), [Aplicaciones HTML simples](/es/guide/ui-strings/plain-html)
 
 ---
 
@@ -21,7 +21,7 @@ Inserta marcadores `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` sin
 
 **Opciones clave:** `--write`
 
-**Consulta también:** [Marcado de HTML para traducción](/guide/ui-strings/plain-html#marking-html-for-translation)
+**Consulta también:** [Marcado de HTML para traducción](/es/guide/ui-strings/plain-html#marking-html-for-translation)
 
 ---
 

@@ -8,7 +8,7 @@ Ce pipeline n'exécute **pas** `extract` — il n'y a pas de catalogue `strings.
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
 
-`translate-json` résout les modèles **par locale cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Utilisez ceci pour les bundles JSON imbriqués où certaines locales bénéficient de modèles dédiés — par exemple les fichiers de thème `zh-Hans` / `zh-Hant`. Voir [Fournisseurs et modèles](/guide/providers-and-models#model-fallback-chain).
+`translate-json` résout les modèles **par locale cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Utilisez ceci pour les bundles JSON imbriqués où certaines locales bénéficient de modèles dédiés — par exemple les fichiers de thème `zh-Hans` / `zh-Hant`. Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Étape 1 : Initialiser pour JSON imbriqué
@@ -98,12 +98,12 @@ Lorsque `translateJson` est activé, `status` affiche une section `json[]` (✓ 
 
 | Situation | Utilisation |
 |-----------|-------------|
-| Chaînes d'interface utilisateur dans `t("…")` / `i18n.t("…")` en JS/TS/Astro | [Chaînes d'interface utilisateur](/guide/ui-strings/) — `extract` + `translate-ui` |
+| Chaînes d'interface utilisateur dans `t("…")` / `i18n.t("…")` en JS/TS/Astro | [Chaînes d'interface utilisateur](/fr/guide/ui-strings/) — `extract` + `translate-ui` |
 | Catalogue Docusaurus `write-translations` (`{ "key": { "message": "…", "description": "…" } }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs`, **pas** `json[]` |
-| Chaînes de thème/nav/barre latérale VitePress | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **n'utilisez pas** `json[]` — voir [Intégration VitePress](/guide/integrations/vitepress) |
-| Étiquettes Nextra `_meta.ts` et dictionnaire de thème `.ts` | Documents — `translate-docs` (auto `_meta` lorsque `style: "nextra"`, facultatif `nextraDictionaryPath`); **n'utilisez pas** `json[]` — voir [Intégration Nextra](/guide/integrations/nextra) |
-| Étiquettes Fumadocs `meta.json` et catalogue de substitutions d'interface | Documents — `translate-docs` (auto `meta.json` lorsque `style: "fumadocs"`, facultatif `fumadocsUiCatalog`); **n'utilisez pas** `json[]` — voir [Intégration Fumadocs](/guide/integrations/fumadocs) |
+| Chaînes de thème/nav/barre latérale VitePress | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs`; **n'utilisez pas** `json[]` — voir [Intégration VitePress](/fr/guide/integrations/vitepress) |
+| Étiquettes Nextra `_meta.ts` et dictionnaire de thème `.ts` | Documents — `translate-docs` (auto `_meta` lorsque `style: "nextra"`, facultatif `nextraDictionaryPath`); **n'utilisez pas** `json[]` — voir [Intégration Nextra](/fr/guide/integrations/nextra) |
+| Étiquettes Fumadocs `meta.json` et catalogue de substitutions d'interface | Documents — `translate-docs` (auto `meta.json` lorsque `style: "fumadocs"`, facultatif `fumadocsUiCatalog`); **n'utilisez pas** `json[]` — voir [Intégration Fumadocs](/fr/guide/integrations/fumadocs) |
 | JSON de locale imbriquée autonome (arborescences `translation.json` de style ZenBrowser) | JSON — `json[]` + `translate-json` |
-| Fichiers `.svg` illustrés avec `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (facultatif ; pas l'un des trois pipelines principaux) |
+| Fichiers `.svg` illustrés avec `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/fr/reference/configuration#svg) + `translate-svg` (facultatif ; pas l'un des trois pipelines principaux) |
 
-Référence de champ : [`json`](#json) dans [Référence de configuration](/reference/configuration#json). Les clés de cache pour le nettoyage utilisent `json-block:{blockIndex}:{projectRelPath}` dans `file_tracking`.
+Référence de champ : [`json`](#json) dans [Référence de configuration](/fr/reference/configuration#json). Les clés de cache pour le nettoyage utilisent `json-block:{blockIndex}:{projectRelPath}` dans `file_tracking`.

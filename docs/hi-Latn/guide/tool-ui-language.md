@@ -31,6 +31,6 @@ Translation Dashboard resolve kiye gaye locale, layout direction, aur translatio
 <a id="related"></a>
 ## Sambandhit
 
-- [`AI_I18N_LANG`](/reference/environment-variables) — environment variable override
-- [`uiLanguage`](/reference/configuration#uilanguage-optional) — config key override
-- [`-L` / `--ui-lang`](/reference/cli-commands/) — CLI flag override (uchchatam prathamikta)
+- [`AI_I18N_LANG`](/hi-Latn/reference/environment-variables) — environment variable override
+- [`uiLanguage`](/hi-Latn/reference/configuration#uilanguage-optional) — config key override
+- [`-L` / `--ui-lang`](/hi-Latn/reference/cli-commands/) — CLI flag override (uchchatam prathamikta)

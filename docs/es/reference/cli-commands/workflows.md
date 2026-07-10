@@ -34,4 +34,4 @@ Imprime las estadísticas de la caché de documentación y `strings.json` (los m
 
 **Opciones clave:** `--max-columns`
 
-**Ver también:** [Estadísticas del panel](/guide/translation-dashboard/statistics)
+**Ver también:** [Estadísticas del panel](/es/guide/translation-dashboard/statistics)

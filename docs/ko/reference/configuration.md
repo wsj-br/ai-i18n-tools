@@ -18,7 +18,7 @@
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (선택 사항)
 
-도구 자체 UI 언어(CLI 도움말, 로그/요약, 번역 대시보드)의 BCP-47 코드입니다. `sourceLocale` / `targetLocales`과(와) 독립적이며, `-L` / `--ui-lang` 플래그 및 `AI_I18N_LANG` 환경 변수에 의해 재정의됩니다. 알 수 없는 값은 소스 로케일(`en-GB`)로 정상적으로 저하되며, 엄격한 유효성 검사는 수행되지 않습니다. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
+도구 자체 UI 언어(CLI 도움말, 로그/요약, 번역 대시보드)의 BCP-47 코드입니다. `sourceLocale` / `targetLocales`과(와) 독립적이며, `-L` / `--ui-lang` 플래그 및 `AI_I18N_LANG` 환경 변수에 의해 재정의됩니다. 알 수 없는 값은 소스 로케일(`en-GB`)로 정상적으로 저하되며, 엄격한 유효성 검사는 수행되지 않습니다. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (선택 사항)
@@ -276,11 +276,11 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.linkRewriteDocsRoot`
 플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두십시오.
 - `docsOutput.rewriteVitepressLinks`
-`true`일 때, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래의 영어 폴더 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용하십시오. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 영어 소스에 전체 URL을 사용하십시오 — [VitePress 통합 — 문서 홈페이지로서의 README](/guide/integrations/vitepress#readme-as-homepage)를 참조하십시오.
+`true`일 때, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래의 영어 폴더 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용하십시오. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 영어 소스에 전체 URL을 사용하십시오 — [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-as-homepage)를 참조하십시오.
 - `docsOutput.rewriteNextraLinks`
-`true`일 때, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이 `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`을 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/guide/integrations/nextra#link-conventions)을 참조하십시오.
+`true`일 때, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이 `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`을 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하십시오.
 - `docsOutput.fumadocsParser`
-`"dot"` (기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/guide/integrations/fumadocs#page-layout)을 참조하십시오.
+`"dot"` (기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하십시오.
 - `docsOutput.rewriteFumadocsLinks`
 `true`일 때, 번역 후 Fumadocs 링크 정규화기를 실행합니다. `docsOutput.style`이 `"fumadocs"`일 때 기본적으로 활성화됩니다. 콘텐츠 경로와 상대 `.mdx` 링크를 `/docs/…` 라우트로 재작성합니다.
 - `docsOutput.fumadocsUiCatalog`
@@ -366,7 +366,7 @@ Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값
 <a id="json"></a>
 ### `json`
 
-중첩된 JSON 번역 파이프라인의 최상위 배열입니다. `features.translateJson`가 true일 때만 사용됩니다(`translate-json` 또는 `sync`의 JSON 단계). [JSON](/guide/json)을 참조하세요.
+중첩된 JSON 번역 파이프라인의 최상위 배열입니다. `features.translateJson`가 true일 때만 사용됩니다(`translate-json` 또는 `sync`의 JSON 단계). [JSON](/ko/guide/json)을 참조하세요.
 
 | 필드 | 설명 |
 |-------|-------------|

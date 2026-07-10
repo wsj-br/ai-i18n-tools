@@ -66,7 +66,7 @@ Nenhuma regra `regexAdjustments` necessária para arquivos raster. `translate-do
 }
 ```
 
-Se o projeto também usa SVGs traduzidos, a [tradução de SVG colocalizada](/guide/svg-translation/translated-svg-colocated) os trata e eles são colocados junto com os PNGs em `current/assets/` sem regex adicional.
+Se o projeto também usa SVGs traduzidos, a [tradução de SVG colocalizada](/pt-BR/guide/svg-translation/translated-svg-colocated) os trata e eles são colocados junto com os PNGs em `current/assets/` sem regex adicional.
 
 <a id="prerequisites"></a>
 ### Pré-requisitos
@@ -78,4 +78,4 @@ Se o projeto também usa SVGs traduzidos, a [tradução de SVG colocalizada](/gu
 <a id="implementation-example"></a>
 ### Exemplo de implementação
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` em [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); a documentação em inglês faz referência a PNGs colocalizados (por exemplo, [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) com `../assets/screen-dashboard-summary.png`). SVGs colocalizados do mesmo projeto são colocados nos mesmos diretórios `current/assets/` — veja [SVG Colocalizado](/guide/svg-translation/translated-svg-colocated).
+[duplistatus](https://github.com/wsj-br/duplistatus) — `getScreenshotDir(locale)` em [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts); a documentação em inglês faz referência a PNGs colocalizados (por exemplo, [dashboard.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md) com `../assets/screen-dashboard-summary.png`). SVGs colocalizados do mesmo projeto são colocados nos mesmos diretórios `current/assets/` — veja [SVG Colocalizado](/pt-BR/guide/svg-translation/translated-svg-colocated).

@@ -33,7 +33,7 @@ Quando você adicionar i18n posteriormente, o seu script `take-screenshots` grav
 
 A regex genérica `[^/]+` corresponde a qualquer nome de pasta de localidade — não codifique sua localidade de origem (por exemplo, `screenshots/en-GB/`), pois isso falha se `sourceLocale` for alterado.
 
-Se você começar com caminhos que omitem o subdiretório de localidade (`images/screenshots/translate.png`), precisará reestruturar toda a árvore antes que a reescrita [pasta por localidade](/guide/images-and-screenshots/per-locale-folder) possa funcionar.
+Se você começar com caminhos que omitem o subdiretório de localidade (`images/screenshots/translate.png`), precisará reestruturar toda a árvore antes que a reescrita [pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder) possa funcionar.
 
 <a id="doc-system-sites-docsoutputstyle--doc-system"></a>
 ### Sites de sistema de documentação (`docsOutput.style = "doc-system"`)
@@ -44,7 +44,7 @@ Use para sites de documentação estática que armazenam páginas traduzidas em 
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Defina `docs[].docsOutput.docsRoot` para a raiz da sua fonte em inglês (por exemplo, `"docs"` ou `"src/content/docs"`). Ao definir `style: "doc-system"` diretamente, você também deve definir `localeSubpath` para o segmento de caminho que seu site usa entre `{locale}/` e o arquivo traduzido. Os aliases `"docusaurus"`, `"astro-starlight"` e `"vitepress"` são layouts `doc-system` predefinidos com valores `localeSubpath` padrão (consulte [Layouts de saída](/guide/documents/output-layouts)).
+Defina `docs[].docsOutput.docsRoot` para a raiz da sua fonte em inglês (por exemplo, `"docs"` ou `"src/content/docs"`). Ao definir `style: "doc-system"` diretamente, você também deve definir `localeSubpath` para o segmento de caminho que seu site usa entre `{locale}/` e o arquivo traduzido. Os aliases `"docusaurus"`, `"astro-starlight"` e `"vitepress"` são layouts `doc-system` predefinidos com valores `localeSubpath` padrão (consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts)).
 
 | Alias predefinido | `localeSubpath` padrão | Saída de exemplo |
 |--------------|-------------------------|----------------|
@@ -69,7 +69,7 @@ Dois hábitos na configuração do projeto eliminam toda a necessidade de expres
 
 Referencie cada ativo com o caminho relativo estável `../assets/name.ext` no markdown de origem. Nunca use URLs absolutas `/img/` ou `/assets/` para ativos da documentação — essas URLs diferem entre a origem em inglês (servida de `static/`) e as localidades traduzidas (co-localizadas com os documentos traduzidos), o que obriga uma regra `regexAdjustments` a fazer a ponte entre elas.
 
-Quando você adicionar i18n posteriormente, o script de captura de tela adota a divisão `getScreenshotDir` (consulte [Capturas de tela colocalizadas](/guide/images-and-screenshots/colocated-screenshots)) e `translate-svg` usa um `pathTemplate`. Não são necessários ajustes de regex.
+Quando você adicionar i18n posteriormente, o script de captura de tela adota a divisão `getScreenshotDir` (consulte [Capturas de tela colocalizadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots)) e `translate-svg` usa um `pathTemplate`. Não são necessários ajustes de regex.
 
 > **Observação:** `resolve.symlinks = false` em um `next.config.ts` desativa a resolução de symlinks apenas para a compilação webpack do aplicativo Next.js. Isso não afeta a compilação do site de documentação Docusaurus, que usa uma instância webpack separada.
 
@@ -118,12 +118,12 @@ Is the asset an SVG with translatable text or labels?
     Otherwise → Per-locale folder
 ```
 
-Os layouts SVG são abordados no guia [Tradução SVG](/guide/svg-translation/).
+Os layouts SVG são abordados no guia [Tradução SVG](/pt-BR/guide/svg-translation/).
 
 | Layout | Tipo de ativo               | Tipo de site                                                              | Mecanismo da ferramenta                                      |
 |--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Imagem compartilhada](/guide/images-and-screenshots/shared-image) | Raster (compartilhado)      | Documentos `docsOutput.style = "flat"`                                     | Reescritor de link por arquivo; geralmente sem regex         |
-| [Pasta por localidade](/guide/images-and-screenshots/per-locale-folder) | Raster (por localidade)     | `"flat"` ou `"doc-system"` (incluindo `"docusaurus"`, `"astro-starlight"`)   | Troca de segmento de localidade `regexAdjustments`                    |
-| [Capturas de tela colocalizadas](/guide/images-and-screenshots/colocated-screenshots) | Raster (colocalizado)       | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | O script de captura de tela coloca os arquivos; sem regex    |
-| [SVG de aplicativo web](/guide/svg-translation/translated-svg-web-app) | SVG (traduzido)             | Aplicativo web                                                            | `translate-svg` com `svg.style = "flat"`                                      |
-| [SVG colocalizado](/guide/svg-translation/translated-svg-colocated) | SVG (traduzido, colocalizado) | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | `translate-svg` com `svg.style = "nested"` + `pathTemplate`                          |
+| [Imagem compartilhada](/pt-BR/guide/images-and-screenshots/shared-image) | Raster (compartilhado)      | Documentos `docsOutput.style = "flat"`                                     | Reescritor de link por arquivo; geralmente sem regex         |
+| [Pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder) | Raster (por localidade)     | `"flat"` ou `"doc-system"` (incluindo `"docusaurus"`, `"astro-starlight"`)   | Troca de segmento de localidade `regexAdjustments`                    |
+| [Capturas de tela colocalizadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots) | Raster (colocalizado)       | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | O script de captura de tela coloca os arquivos; sem regex    |
+| [SVG de aplicativo web](/pt-BR/guide/svg-translation/translated-svg-web-app) | SVG (traduzido)             | Aplicativo web                                                            | `translate-svg` com `svg.style = "flat"`                                      |
+| [SVG colocalizado](/pt-BR/guide/svg-translation/translated-svg-colocated) | SVG (traduzido, colocalizado) | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | `translate-svg` com `svg.style = "nested"` + `pathTemplate`                          |

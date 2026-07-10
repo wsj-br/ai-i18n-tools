@@ -12,7 +12,7 @@
 
 `-j`: maximale parallele Lokalisierungen; `-b`: maximale parallele Batch-API-Aufrufe pro Datei. `--prompt-format`: Batch-Wire-Format (`xml` | `json-array` | `json-object`).
 
-**Siehe auch:** [Cache-Verhalten und `translate-docs`-Flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Batch-Prompt-Format](/guide/documents/cli-options#batch-prompt-format)
+**Siehe auch:** [Cache-Verhalten und `translate-docs`-Flags](/de/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags), [Batch-Prompt-Format](/de/guide/documents/cli-options#batch-prompt-format)
 
 ---
 
@@ -27,7 +27,7 @@ Erfordert mindestens einen `docs[]`-Block. Sammelt `.md` / `.mdx` unter dem `con
 
 `--slug-style`: `github` (Standard; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. Mit `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
 
-**Siehe auch:** [Anker-Links](/guide/documents/anchor-links)
+**Siehe auch:** [Anker-Links](/de/guide/documents/anchor-links)
 
 ---
 
@@ -42,4 +42,4 @@ Gibt `relativePath:line: [ISSUE_CODE] message`-Zeilen an stderr aus; Exit-Code *
 
 **Schlüsseloptionen:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 
-**Siehe auch:** [Markdown-Probleme](/guide/translation-dashboard/markdown-issues)
+**Siehe auch:** [Markdown-Probleme](/de/guide/translation-dashboard/markdown-issues)

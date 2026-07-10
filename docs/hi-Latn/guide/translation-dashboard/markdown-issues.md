@@ -8,7 +8,7 @@ Yeh **Failures** jaisa **nahi** hai, jo per-locale model output aur post-transla
 <a id="when-to-use-it"></a>
 ## Iska upyog kab karen
 
-Is tab ka upyog tab karein jab aap tokens kharch karne se pehle **source markdown** ko theek karna chahte hain — khaaskar jab quality checks [Failures](/guide/translation-dashboard/failures) tab mein structure par fail hote rehte hain.
+Is tab ka upyog tab karein jab aap tokens kharch karne se pehle **source markdown** ko theek karna chahte hain — khaaskar jab quality checks [Failures](/hi-Latn/guide/translation-dashboard/failures) tab mein structure par fail hote rehte hain.
 
 <a id="how-to-use-the-tab"></a>
 ## Tab ka upyog kaise karen
@@ -46,4 +46,4 @@ Source file ko theek karein, phir translation ko phir se chalayein.
 | `STRONG_OUTSIDE_LINK` | Bold markers ek markdown link ko wrap karte hain — bold ko link text ke andar le jayein |
 
 
-[Complex Markdown aur failed quality checks](/guide/documents/#complex-markdown-and-failed-quality-checks) bhi dekhein.
+[Complex Markdown aur failed quality checks](/hi-Latn/guide/documents/#complex-markdown-and-failed-quality-checks) bhi dekhein.

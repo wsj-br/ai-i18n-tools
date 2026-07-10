@@ -1,7 +1,7 @@
 <a id="colocated-translated-svg-doc-system"></a>
 # SVG traduit colocalisé (système de documentation)
 
-Utilisez pour les sites de systèmes de documentation où les illustrations SVG traduites doivent apparaître aux côtés de la documentation traduite dans le répertoire de contenu de chaque localisation — au même emplacement que les [captures d'écran colocatées](/guide/images-and-screenshots/colocated-screenshots). Le preset Docusaurus est l'exemple principal.
+Utilisez pour les sites de systèmes de documentation où les illustrations SVG traduites doivent apparaître aux côtés de la documentation traduite dans le répertoire de contenu de chaque localisation — au même emplacement que les [captures d'écran colocatées](/fr/guide/images-and-screenshots/colocated-screenshots). Le preset Docusaurus est l'exemple principal.
 
 <a id="config"></a>
 ### Configuration
@@ -60,7 +60,7 @@ Recommandé : stocker les SVG sources dans `documentation/static/assets/`, aux c
 | `{extension}`            | Extension incluant le point                                |
 | `{relativeToSourceRoot}` | Chemin relatif depuis la racine `sourcePath` la plus proche       |
 
-Référence complète dans le [tableau de configuration svg](/reference/configuration#svg).
+Référence complète dans le [tableau de configuration svg](/fr/reference/configuration#svg).
 
 <a id="implementation-example"></a>
 ### Exemple de mise en œuvre

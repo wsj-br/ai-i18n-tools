@@ -54,7 +54,7 @@ ai-i18n-tools sync
 
 Linux, macOS 및 WSL에서는 레지스트리 설치 시 CLI 스크립트의 실행 권한 비트가 자동으로 설정됩니다. Windows에서는 패키지 관리자가 Node.js를 명시적으로 호출하는 `.cmd` 및 `.ps1` 쉼(Shim)을 생성합니다.
 
-공급자 API 키를 설정합니다(OpenRouter가 표시됨. 활성 공급자와 일치하는 환경 변수를 사용하세요. [사전 설정 테이블](/guide/providers-and-models#built-in-providers) 참조).
+공급자 API 키를 설정합니다(OpenRouter가 표시됨. 활성 공급자와 일치하는 환경 변수를 사용하세요. [사전 설정 테이블](/ko/guide/providers-and-models#built-in-providers) 참조).
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -69,4 +69,4 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="tool-ui-language"></a>
 ### 도구 UI 언어
 
-CLI는 번역하는 로케일과 무관하게 자체 도움말 텍스트, 로그 요약 및 번역 대시보드를 현지화합니다. 기본적으로 OS 로케일을 따릅니다. config에서 `-L pt-BR`, `export AI_I18N_LANG=es` 또는 `"uiLanguage"`로 재정의할 수 있습니다. [도구 UI 언어](/guide/tool-ui-language)를 참조하세요.
+CLI는 번역하는 로케일과 무관하게 자체 도움말 텍스트, 로그 요약 및 번역 대시보드를 현지화합니다. 기본적으로 OS 로케일을 따릅니다. config에서 `-L pt-BR`, `export AI_I18N_LANG=es` 또는 `"uiLanguage"`로 재정의할 수 있습니다. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
