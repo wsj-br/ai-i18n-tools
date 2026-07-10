@@ -60,6 +60,7 @@ EXAMPLE_BUILDS=(
   examples/fumadocs-docs:build
   examples/multi-provider:build
   examples/nextjs-app:build
+  examples/nextjs-app/docs-site:build
   examples/nextra-docs:build
   examples/vitepress-docs:docs:build
 )
