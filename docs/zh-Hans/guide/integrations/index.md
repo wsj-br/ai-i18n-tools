@@ -19,6 +19,8 @@
 
 所有文档框架集成均共享 [文档](/zh-Hans/guide/documents/) 中所述的相同 `docs[]` 块模型。请将 `docsOutput.style` 设置为与你的框架相匹配（`"docusaurus"`、`"vitepress"`、`"nextra"`、`"fumadocs"` 或 `"astro-starlight"`）。有关输出文件夹布局和链接重写行为，请参见 [输出布局](/zh-Hans/guide/documents/output-layouts) 和 [链接重写](/zh-Hans/guide/documents/link-rewriting)。
 
+每个 `init -t ui-*` 模板都会搭建一个默认的 LLM 提供商区块。在 `translate-docs` 或 `sync` 之前，如有需要，请配置 `provider` / `providers` 并设置相应的 API 密钥——请参阅[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。
+
 **不要**将框架外壳或主题字符串放入 `json[]`——该管道用于无关的应用程序语言包。每个集成页面都会说明该框架中哪些目录路径和 CLI 标志涵盖导航、侧边栏和主题标签。
 
 <a id="runnable-examples"></a>
@@ -28,7 +30,7 @@
 | --- | --- |
 | Astro Starlight | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) |
 | 原生 Astro 网站 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) |
-| Docusaurus | [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) |
+| Docusaurus | [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) |
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |

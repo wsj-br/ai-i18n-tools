@@ -52,7 +52,20 @@ Avec [**direnv**](https://direnv.net/), ajoutez `PATH_add node_modules/.bin` à 
 
 **Exécution unique sans installation** — `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (télécharge le package pour cet appel ; aucune entrée dans `package.json`).
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### Monorepo ai-i18n-tools cloné
+
+Lors du développement du package ou de l'exécution des **exemples** de l'espace de travail à partir d'un clone complet de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) :
+
+- **Exemples d'espace de travail** (`examples/console-app`, `examples/nextjs-app` et les autres packages listés dans [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)) — exécutez `pnpm install` à la racine du dépôt, puis `cd examples/<name>` et utilisez `pnpm exec ai-i18n-tools …` ou les scripts `pnpm run i18n:*` de l'exemple. Les [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) de l'espace de travail lient `ai-i18n-tools` à votre copie locale.
+- **Racine du dépôt** — pnpm ne lie pas le propre `bin` du package racine dans `node_modules/.bin`, et `npx ai-i18n-tools` à la racine exécute le package **npm publié**, et non votre arborescence de travail. Utilisez plutôt `node bin/ai-i18n-tools.mjs …` ou les scripts `pnpm i18n:*` de la racine.
+- **Fixtures autonomes** (`multi-provider`, `test-markdown`) — depuis le dossier de la fixture, utilisez `node ../../bin/ai-i18n-tools.mjs …`.
+
+Exécutez `pnpm run build` à la racine du dépôt après avoir modifié la source de l'interface de ligne de commande. Consultez le [Guide de développement](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) pour les étapes de construction et les solutions de contournement facultatives pour l'installation globale.
+
 Sous Linux, macOS et WSL, les installations depuis le registre définissent automatiquement le bit d'exécution sur le script CLI. Sous Windows, les gestionnaires de paquets génèrent des shim `.cmd` et `.ps1` qui invoquent explicitement Node.
+
+Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) nécessitent une **configuration de fournisseur** dans `ai-i18n-tools.config.json` et une **clé API** pour le fournisseur actif. Exécutez `ai-i18n-tools init` pour échafauder un bloc OpenRouter par défaut ; modifiez `provider` / `providers` pour changer les préréglages ou les modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models). Ollama est le seul préréglage intégré qui ne nécessite pas de clé API.
 
 Définissez votre clé API de fournisseur (OpenRouter est affiché ; utilisez la variable d'environnement qui correspond à votre fournisseur actif — voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
 

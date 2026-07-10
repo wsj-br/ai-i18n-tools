@@ -88,14 +88,15 @@ Vah template kewal UI extraction ko enable karta hai. Page HTML anuvad ke liye, 
 
 Generate kiye gaye `ai-i18n-tools.config.json` ko edit karein:
 
-- `sourceLocale` - source bhasha (`docusaurus.config.js` mein `defaultLocale` se match hona chahiye).
+- `provider` aur `providers` — `init` default roop se OpenRouter ko scaffold karta hai; kam se kam ek provider ko configure karein aur `translate-docs` ya `sync` se pehle uski API key set karein (Ollama ko kisi key ki zaroorat nahi hai). [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) aur [LLM providers aur models](/hi-Latn/guide/providers-and-models) dekhein.
+- `sourceLocale` - source bhasha (`docusaurus.config.js` mein `defaultLocale` se mel khana chahiye).
 - `targetLocales` - BCP-47 locale codes ka array (jaise `["de", "fr", "es"]`).
 - `cacheDir` - sabhi pipelines ke liye shared SQLite cache directory (aur `--write-logs` ke liye default log directory).
-- `docs` - documentation blocks ka array. Har block mein optional `description`, `contentPaths` (string ya array; file, directory, ya glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, aadi.
-- `docs[].description` - vikalpik chhota note maintainer ke liye. Jab yah set kiya jaata hai, toh yah `translate-docs` headline mein aur `status` section headers mein dikhaai deta hai.
-- `docs[].contentPaths` - markdown/MDX/`.astro` sources (aur vikalpik `docusaurusCatalogDir` Docusaurus shell JSON ke liye).
-- `docs[].outputDir` - anuvaadit output root us block ke liye.
-- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (dekhie [Output layouts](/hi-Latn/guide/documents/output-layouts)).
+- `docs` - documentation blocks ka array. Har block mein optional `description`, `contentPaths` (string ya array; file, directory, ya glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, aadi hote hain.
+- `docs[].description` - maintainers ke liye optional chhota note. Jab set kiya jata hai, to yeh `translate-docs` headline aur `status` section headers mein dikhai deta hai.
+- `docs[].contentPaths` - markdown/MDX/`.astro` sources (aur Docusaurus shell JSON ke liye optional `docusaurusCatalogDir`).
+- `docs[].outputDir` - us block ke liye translated output root.
+- `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, ya aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([Output layouts](/hi-Latn/guide/documents/output-layouts) dekhein).
 
 **Primary vs supplementary:** Localised pages ke liye `contentPaths` par dhyaan den. Jab aapko `write-translations` se Docusaurus shell JSON ki bhi zaroorat ho to `docusaurusCatalogDir` set karen. Yadi aap kewal pages translate karte hain to `docusaurusCatalogDir` ko chhod den.
 

@@ -174,6 +174,7 @@ function guideSidebar(t: ThemeCatalog) {
         },
       ],
     },
+    { text: t.sidebar.examples, link: "/examples" },
     {
       text: t.sidebar.reference,
       items: [
@@ -198,7 +199,6 @@ function guideSidebar(t: ThemeCatalog) {
         { text: t.sidebar.environment, link: "/reference/environment-variables" },
       ],
     },
-    { text: t.sidebar.examples, link: "/examples" },
   ];
 }
 

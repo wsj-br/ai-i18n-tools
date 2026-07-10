@@ -88,14 +88,15 @@ Diese Vorlage ermöglicht nur die UI-Extraktion. Für die Übersetzung von Seite
 
 Bearbeiten Sie die generierte `ai-i18n-tools.config.json`:
 
-- `sourceLocale` – Ausgangssprache (muss mit `defaultLocale` in `docusaurus.config.js` übereinstimmen).
-- `targetLocales` – Array mit BCP-47-Sprachcodes (z. B. `["de", "fr", "es"]`).
-- `cacheDir` – gemeinsames SQLite-Cache-Verzeichnis für alle Pipelines (und standardmäßiges Protokollverzeichnis für `--write-logs`).
-- `docs` – Array mit Dokumentationsblöcken. Jeder Block hat optional `description`, `contentPaths` (Zeichenkette oder Array; Datei, Verzeichnis oder Glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` usw.
-- `docs[].description` - optionaler kurzer Hinweis für Wartungsmitarbeiter. Wenn er festgelegt ist, erscheint er in der `translate-docs`-Überschrift und in `status`-Sektionsüberschriften.
-- `docs[].contentPaths` - Markdown/MDX/`.astro`-Quellen (und optional `docusaurusCatalogDir` für Docusaurus-Shell-JSON).
-- `docs[].outputDir` - übersetzte Ausgaberoot für diesen Block.
-- `docs[].docsOutput.style` - `"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (siehe [Ausgabebereiche](/de/guide/documents/output-layouts)).
+- `provider` und `providers` – `init` gerüstet OpenRouter standardmäßig; konfigurieren Sie mindestens einen Anbieter und legen Sie dessen API-Schlüssel fest, bevor Sie `translate-docs` oder `sync` verwenden (Ollama benötigt keinen Schlüssel). Siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key) und [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
+- `sourceLocale` – Quellsprache (muss mit `defaultLocale` in `docusaurus.config.js` übereinstimmen).
+- `targetLocales` – Array von BCP-47-Gebietsschema-Codes (z. B. `["de", "fr", "es"]`).
+- `cacheDir` – Gemeinsames SQLite-Cache-Verzeichnis für alle Pipelines (und Standard-Log-Verzeichnis für `--write-logs`).
+- `docs` – Array von Dokumentationsblöcken. Jeder Block hat optionale `description`, `contentPaths` (String oder Array; Datei, Verzeichnis oder Glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` usw.
+- `docs[].description` – Optionale kurze Notiz für Wartungspersonal. Wenn festgelegt, erscheint sie in der Überschrift `translate-docs` und in den Abschnittsüberschriften `status`.
+- `docs[].contentPaths` – Markdown/MDX/`.astro`-Quellen (und optional `docusaurusCatalogDir` für Docusaurus-Shell-JSON).
+- `docs[].outputDir` – Übersetztes Ausgabe-Root für diesen Block.
+- `docs[].docsOutput.style` – `"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts)).
 
 **Primär vs. ergänzend:** Konzentrieren Sie sich auf `contentPaths` für lokalisierte Seiten. Legen Sie `docusaurusCatalogDir` fest, wenn Sie zusätzlich Docusaurus-Shell-JSON aus `write-translations` benötigen. Lassen Sie `docusaurusCatalogDir` weg, wenn Sie nur Seiten übersetzen.
 

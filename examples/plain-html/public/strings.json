@@ -1,0 +1,426 @@
+{
+  "74ee9e0a": {
+    "source": "ai-i18n-tools — Plain HTML demo",
+    "translated": {
+      "es": "ai-i18n-tools — demo HTML simple",
+      "fr": "ai-i18n-tools — démo HTML simple",
+      "pt-BR": "ai-i18n-tools — demo HTML simples"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 6
+      },
+      {
+        "file": "public/index.html",
+        "line": 13
+      }
+    ]
+  },
+  "4994a8ff": {
+    "source": "Language",
+    "translated": {
+      "es": "Idioma",
+      "fr": "Langue",
+      "pt-BR": "Idioma"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 16
+      }
+    ]
+  },
+  "38b9ec9e": {
+    "source": "Switch UI language",
+    "translated": {
+      "es": "Cambiar idioma de la interfaz",
+      "fr": "Changer la langue de l'interface",
+      "pt-BR": "Alternar idioma da interface"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 17
+      }
+    ]
+  },
+  "f3f43e30": {
+    "source": "Filters",
+    "translated": {
+      "es": "Filtros",
+      "fr": "Filtres",
+      "pt-BR": "Filtros"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 45
+      }
+    ]
+  },
+  "fd69c5cf": {
+    "source": "Results",
+    "translated": {
+      "es": "Resultados",
+      "fr": "Résultats",
+      "pt-BR": "Resultados"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 46
+      }
+    ]
+  },
+  "a4f3875d": {
+    "source": "Filter demo — static HTML with data-i18n markers, no t() calls in the markup.",
+    "translated": {
+      "es": "Demo de filtros — HTML estático con marcadores data-i18n, sin llamadas t() en el marcado.",
+      "fr": "Démo de filtres — HTML statique avec des marqueurs data-i18n, sans appels t() dans le balisage.",
+      "pt-BR": "Demo de filtros — HTML estático com marcadores data-i18n, sem chamadas t() no markup."
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 52
+      }
+    ]
+  },
+  "c5301693": {
+    "source": "Run",
+    "translated": {
+      "es": "Ejecute",
+      "fr": "Exécutez",
+      "pt-BR": "Execute"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 56
+      }
+    ]
+  },
+  "b982d4e2": {
+    "source": "to add bare markers, then",
+    "translated": {
+      "es": "para añadir marcadores simples, luego",
+      "fr": "pour ajouter des marqueurs nus, puis",
+      "pt-BR": "para adicionar marcadores simples, depois"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 57
+      }
+    ]
+  },
+  "be5d5d37": {
+    "source": "and",
+    "translated": {
+      "es": "y",
+      "fr": "et",
+      "pt-BR": "e"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 58
+      }
+    ]
+  },
+  "5058f1af": {
+    "source": ".",
+    "translated": {
+      "es": ".",
+      "fr": ".",
+      "pt-BR": "."
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 58
+      }
+    ]
+  },
+  "ea217ea1": {
+    "source": "Filter by locale",
+    "translated": {
+      "es": "Filtrar por idioma",
+      "fr": "Filtrer par langue",
+      "pt-BR": "Filtrar por idioma"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 63
+      }
+    ]
+  },
+  "261b3119": {
+    "source": "All locales",
+    "translated": {
+      "es": "Todos los idiomas",
+      "fr": "Toutes les langues",
+      "pt-BR": "Todos os idiomas"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 64
+      }
+    ]
+  },
+  "cb5480c3": {
+    "source": "Spanish",
+    "translated": {
+      "es": "Español",
+      "fr": "Espagnol",
+      "pt-BR": "Espanhol"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 65
+      }
+    ]
+  },
+  "ad225f70": {
+    "source": "French",
+    "translated": {
+      "es": "Francés",
+      "fr": "Français",
+      "pt-BR": "Francês"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 66
+      }
+    ]
+  },
+  "26d5352e": {
+    "source": "Portuguese (Brazil)",
+    "translated": {
+      "es": "Portugués (Brasil)",
+      "fr": "Portugais (Brésil)",
+      "pt-BR": "Português (Brasil)"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 67
+      }
+    ]
+  },
+  "5dd5cd66": {
+    "source": "Filter by status",
+    "translated": {
+      "es": "Filtrar por estado",
+      "fr": "Filtrer par statut",
+      "pt-BR": "Filtrar por status"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 69
+      }
+    ]
+  },
+  "881fa484": {
+    "source": "All entries",
+    "translated": {
+      "es": "Todas las entradas",
+      "fr": "Toutes les entrées",
+      "pt-BR": "Todas as entradas"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 70
+      }
+    ]
+  },
+  "4d3d769b": {
+    "source": "Active",
+    "translated": {
+      "es": "Activo",
+      "fr": "Actif",
+      "pt-BR": "Ativo"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 71
+      }
+    ]
+  },
+  "f1ac273d": {
+    "source": "Stale",
+    "translated": {
+      "es": "Obsoleto",
+      "fr": "Périmé",
+      "pt-BR": "Desatualizado"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 72
+      }
+    ]
+  },
+  "990f0b1a": {
+    "source": "Filter by filepath",
+    "translated": {
+      "es": "Filtrar por ruta de archivo",
+      "fr": "Filtrer par chemin de fichier",
+      "pt-BR": "Filtrar por caminho do arquivo"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 74
+      }
+    ]
+  },
+  "daedd894": {
+    "source": "Filename (partial)",
+    "translated": {
+      "es": "Nombre de archivo (parcial)",
+      "fr": "Nom de fichier (partiel)",
+      "pt-BR": "Nome do arquivo (parcial)"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 74
+      }
+    ]
+  },
+  "dc30bc0c": {
+    "source": "Clear",
+    "translated": {
+      "es": "Limpiar",
+      "fr": "Effacer",
+      "pt-BR": "Limpar"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 82
+      }
+    ]
+  },
+  "9639e32c": {
+    "source": "Apply",
+    "translated": {
+      "es": "Aplicar",
+      "fr": "Appliquer",
+      "pt-BR": "Aplicar"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 83
+      }
+    ]
+  },
+  "97f5fce4": {
+    "source": "Sample results — English source text is the catalog key.",
+    "translated": {
+      "es": "Resultados de ejemplo — el texto fuente en inglés es la clave del catálogo.",
+      "fr": "Résultats d'exemple — le texte source anglais est la clé du catalogue.",
+      "pt-BR": "Resultados de exemplo — o texto fonte em inglês é a chave do catálogo."
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 90
+      }
+    ]
+  },
+  "6e1da65a": {
+    "source": "Filepath",
+    "translated": {
+      "es": "Ruta de archivo",
+      "fr": "Chemin de fichier",
+      "pt-BR": "Caminho do arquivo"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 95
+      }
+    ]
+  },
+  "911f0f24": {
+    "source": "Locale",
+    "translated": {
+      "es": "Idioma",
+      "fr": "Langue",
+      "pt-BR": "Idioma"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 96
+      }
+    ]
+  },
+  "e831bffe": {
+    "source": "Source text",
+    "translated": {
+      "es": "Texto fuente",
+      "fr": "Texte source",
+      "pt-BR": "Texto fonte"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 97
+      }
+    ]
+  },
+  "d91c1c51": {
+    "source": "Translated text",
+    "translated": {
+      "es": "Texto traducido",
+      "fr": "Texte traduit",
+      "pt-BR": "Texto traduzido"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 98
+      }
+    ]
+  },
+  "ec53a8c4": {
+    "source": "Status",
+    "translated": {
+      "es": "Estado",
+      "fr": "Statut",
+      "pt-BR": "Status"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 99
+      }
+    ]
+  },
+  "2691af56": {
+    "source": "Plain HTML example — static locale bundles under public/locales/",
+    "translated": {
+      "es": "Ejemplo HTML simple — paquetes de idioma estáticos en public/locales/",
+      "fr": "Exemple HTML simple — bundles de langue statiques sous public/locales/",
+      "pt-BR": "Exemplo HTML simples — pacotes de idioma estáticos em public/locales/"
+    },
+    "locations": [
+      {
+        "file": "public/index.html",
+        "line": 131
+      }
+    ]
+  }
+}

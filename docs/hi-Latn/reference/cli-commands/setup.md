@@ -15,7 +15,7 @@ CLI version aur build timestamp print karein (root program par `-V` / `--version
 
 **Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
 
-Ek starter config file likhein (ismein `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, aur `docs[].addFrontmatter` shaamil hain).
+Ek starter config file likhen (ismein `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, aur `docs[].addFrontmatter` shamil hain). LLM ko call karne wale translation commands ke liye environment mein ya `.env` mein active provider ki API key ki zaroorat hoti hai (Ollama ko chhodkar) — [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhen.
 
 **Mukhya vikalp:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 

@@ -8,6 +8,8 @@ packages:
   - "examples/vitepress-docs"
   - "examples/nextra-docs"
   - "examples/fumadocs-docs"
+  - "examples/plain-html"
+  - "examples/docusaurus-docs"
 allowBuilds:
   sharp: true
   core-js: true

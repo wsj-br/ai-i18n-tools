@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # Fournisseurs et modèles LLM
 
-Chaque pipeline de traduction — `translate-ui`, `translate-docs`, `translate-json` et `translate-svg` — envoie du texte à un LLM via le même client agnostique du fournisseur. Vous configurez **quel point de terminaison d'API appeler** et **quels modèles essayer** une fois dans `ai-i18n-tools.config.json` ; toutes les commandes partagent cette configuration et le même cache SQLite.
+Chaque pipeline de traduction — `translate-ui`, `translate-docs`, `translate-json` et `translate-svg` — envoie du texte à un LLM via le même client indépendant du fournisseur. Avant que l'une de ces commandes ne puisse s'exécuter, configurez **au moins un fournisseur** dans `ai-i18n-tools.config.json` et définissez la **clé API** correspondante dans votre environnement ou `.env` (préréglages intégrés sauf **Ollama**). `init` écrit un bloc de démarrage `provider` / `providers` ; vous devez toujours fournir les informations d'identification pour le préréglage actif.
+
+Vous configurez **quel point de terminaison d'API appeler** et **quels modèles essayer** une seule fois dans la configuration ; toutes les commandes de traduction partagent cette configuration et le même cache SQLite.
 
 La CLI résout le fournisseur actif à partir de la clé `provider` de niveau supérieur (ou de la seule entrée dans `providers` lorsqu'un seul est configuré). Chaque bloc de fournisseur répertorie une chaîne de secours `translationModels` ordonnée ; les préréglages intégrés héritent automatiquement de `baseUrl` et de la variable d'environnement de clé API (les remplacer par fournisseur si nécessaire).
 
@@ -46,7 +48,11 @@ La liste facultative `providers.<active>.uiModels` est une liste réservée à l
 
 Les différents fournisseurs et modèles varient en coût, en vitesse et en qualité selon les langues. Considérez la liste par défaut de `npx ai-i18n-tools init` comme un point de départ — étendez-la lorsqu'une locale produit constamment de mauvais résultats, ou ajoutez une entrée `localeModels` pour cette locale. Valeurs par défaut complètes et justification : [Configuration — `provider` et `providers`](/fr/reference/configuration#provider-and-providers).
 
-Exemple de configuration minimale (OpenRouter) :
+**Chaînes d'interface utilisateur :** le `uiModels` facultatif vous permet d'acheminer le `translate-ui`, la génération au pluriel et le `proofread-ui` via des modèles premium avant la chaîne `translationModels` globale — utile car le texte de l'interface utilisateur est court mais destiné à l'utilisateur.
+
+**Paramètres régionaux asiatiques :** les entrées `localeModels` facultatives pour `ja`, `ko`, `zh-Hans` et `zh-Hant` sont d'abord essayées dans chaque pipeline ; les modèles tels que `z-ai/glm-5.2` et `minimax/minimax-m2.7` sont souvent plus performants sur les scripts CJK que les solutions de repli à usage général.
+
+Exemple de configuration (OpenRouter) :
 
 ```json
 {
@@ -54,15 +60,24 @@ Exemple de configuration minimale (OpenRouter) :
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

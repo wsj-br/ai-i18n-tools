@@ -1,0 +1,41 @@
+{
+  "name": "docusaurus-docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus build && docusaurus serve --port 3100",
+    "dev": "docusaurus start --port 3100",
+    "start:es": "docusaurus start --port 3100 --locale es",
+    "start:fr": "docusaurus start --port 3100 --locale fr",
+    "start:de": "docusaurus start --port 3100 --locale de",
+    "start:pt-BR": "docusaurus start --port 3100 --locale pt-BR",
+    "start:ar": "docusaurus start --port 3100 --locale ar",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve --port 3100",
+    "preview": "docusaurus build && docusaurus serve --port 3100",
+    "clear": "docusaurus clear",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "i18n:translate": "ai-i18n-tools translate-docs",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:cleanup": "ai-i18n-tools cleanup",
+    "i18n:dashboard": "ai-i18n-tools dashboard"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.10.2",
+    "@docusaurus/preset-classic": "^3.10.2",
+    "@mdx-js/react": "^3.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.10.2",
+    "@docusaurus/types": "^3.10.2",
+    "ai-i18n-tools": "^1.8.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

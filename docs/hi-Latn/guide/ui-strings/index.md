@@ -22,14 +22,15 @@ Kisi bhi JS/TS project ke liye design kiya gaya hai jo i18next ka upyog karta ha
 npx ai-i18n-tools init
 ```
 
-Yeh `ai-i18n-tools.config.json` ko `ui-markdown` template ke saath likhta hai. Ise set karne ke liye edit karein:
+Yah `ai-i18n-tools.config.json` ko `ui-markdown` template ke saath likhta hai (ek default `provider` / `providers` block sahit). `translate-ui` ya `sync` chalane se pahle, environment ya `.env` mein apne active provider ke liye API key set karein — Ollama ko chhodkar; [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein. Config ko edit karke set karein:
 
+- `provider` aur `providers` — kam se kam ek provider `translationModels` ke saath; yadi OpenRouter aapki pasand nahin hai to preset ya model list badlein. [LLM providers aur models](/hi-Latn/guide/providers-and-models) dekhein.
 - `sourceLocale` - aapki source bhasha ka BCP-47 code (jaise `"en-GB"`). Aapke runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`) se export kiye gaye `SOURCE_LOCALE` se **mel khana chahiye**.
-- `targetLocales` - aapki target bhashao ke liye BCP-47 codes ka array (jaise `["de", "fr", "pt-BR"]`). Is list se `ui-languages.json` manifest banane ke liye `generate-ui-languages` chalayein.
-- `ui.sourceRoots` - `t("…")` calls ke liye scan karne ke liye directories ya glob patterns (jaise `["src/"]`, `["src/**/*.ts"]`).
+- `targetLocales` - aapki target bhashaon ke liye BCP-47 codes ka array (jaise `["de", "fr", "pt-BR"]`). Is list se `ui-languages.json` manifest banane ke liye `generate-ui-languages` chalayein.
+- `ui.sourceRoots` - `t("…")` calls (jaise `["src/"]`, `["src/**/*.ts"]`) ko scan karne ke liye directories ya glob patterns.
 - `ui.stringsJson` - master catalog kahan likhna hai (jaise `"src/locales/strings.json"`).
-- `ui.flatOutputDir` - jahaan `de.json`, `pt-BR.json`, aadi likhna hai (jaise `"src/locales/"`).
-- `providers.<active>.uiModels` (vaikalpik) - `translate-ui`, bahuvachan utpatti, aur `proofread-ui` ke liye kramabaddh UI-only model soochi (kisi bhi milte-julte `localeModels` entry ke baad, `translationModels` se pehle). [Providers and models](/hi-Latn/guide/providers-and-models#model-fallback-chain) dekhen.
+- `ui.flatOutputDir` - `de.json`, `pt-BR.json`, aadi kahan likhna hai (jaise `"src/locales/"`).
+- `providers.<active>.uiModels` (optional) - `translate-ui`, plural generation, aur `proofread-ui` ke liye ordered UI-only model list (kisi bhi matching `localeModels` entry ke baad, `translationModels` se pahle). [Providers aur models](/hi-Latn/guide/providers-and-models#model-fallback-chain) dekhein.
 
 <a id="step-2-extract-strings"></a>
 ## Step 2: Strings nikalen

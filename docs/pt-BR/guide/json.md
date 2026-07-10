@@ -17,7 +17,7 @@ O `translate-json` resolve modelos **por localidade de destino**: primeiro `loca
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-Esse modelo define `features.translateJson: true`, desativa a extração da interface e a tradução de documentos, e cria um bloco `json[]` apontando para `src/i18n/en/translation.json` com saída `src/i18n/{llocale}/translation.json`. Edite `sourceLocale`, `targetLocales`, `contentPaths` e `outputPathTemplate` conforme a estrutura do seu repositório.
+Esse modelo define `features.translateJson: true`, desabilita a extração da UI e a tradução de documentos, e estrutura um único bloco `json[]` apontando para `src/i18n/en/translation.json` com saída `src/i18n/{llocale}/translation.json`. Ele também inclui um bloco padrão `provider` / `providers` — defina a chave de API correspondente (ou use o Ollama local) antes de executar `translate-json` ou `sync`; consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key). Edite `sourceLocale`, `targetLocales`, `contentPaths` e `outputPathTemplate` para o layout do seu repositório.
 
 <a id="step-2-configure-json"></a>
 ### Etapa 2: Configurar `json[]`

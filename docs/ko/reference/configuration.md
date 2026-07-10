@@ -8,6 +8,8 @@
 
 **일치해야 함** 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`과.
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@
 
 `targetLocales`은 UI 번역을 위한 기본 로캘 목록이자 문서 블록의 기본 로캘 목록입니다. `sourceLocale` + `targetLocales`에서 `ui-languages.json` 매니페스트를 생성하려면 `generate-ui-languages`을 사용하세요.
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (선택 사항)
 
 도구 자체 UI 언어(CLI 도움말, 로그/요약, 번역 대시보드)의 BCP-47 코드입니다. `sourceLocale` / `targetLocales`과(와) 독립적이며, `-L` / `--ui-lang` 플래그 및 `AI_I18N_LANG` 환경 변수에 의해 재정의됩니다. 알 수 없는 값은 소스 로케일(`en-GB`)로 정상적으로 저하되며, 엄격한 유효성 검사는 수행되지 않습니다. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (선택 사항)
@@ -34,15 +40,21 @@
 
 **레거시:** 구성 파일을 로드할 때 루트 수준의 `uiLanguagesPath`는 여전히 허용되며, 자동으로 `languagesManifestPath`로 다시 작성됩니다.
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency` (선택 사항)
 
 동시에 번역되는 최대 **대상 로캘** 수 (`translate-ui`, `translate-docs`, `translate-svg`, 및 `sync` 내 해당 단계). 생략 시 CLI는 UI 번역에 **4**, 문서 번역에 **3**를 사용합니다 (내장 기본값). 실행 시 `-j` / `--concurrency`로 재정의할 수 있습니다.
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (선택 사항)
 
 **translate-docs**, **translate-svg** 및 **translate-json**(및 `sync` 내부의 일치하는 단계): 파일당 최대 병렬 LLM **배치** 요청 수(각 배치에는 여러 세그먼트가 포함될 수 있음). 생략 시 기본값은 **4**입니다. `translate-ui`에서는 무시됩니다. `-b` / `--batch-concurrency`로 재정의합니다.
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (선택 사항)
@@ -59,10 +71,14 @@
 
 **사용 사례:** 전체 처리 시간을 줄이기 위해 캐시 적중률이 100%인 상태에서 `sync --force-update`을 실행할 때 이 값을 `2-4`으로 설정합니다. 이는 작은 파일이 많은 경우에 특히 두드러진 개선을 보입니다.
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (선택 사항)
 
 **translate-docs**, **translate-svg** 및 **translate-json**에 대한 세그먼트 배치: API 요청당 세그먼트 수 및 문자 상한. 기본값: **20** 세그먼트, **4096** 문자(생략 시).
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` 및 `providers`
@@ -127,18 +143,45 @@
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**권장 `uiModels`:** UI 문자열은 짧지만 매우 눈에 띕니다. 프리미엄 모델을 사용하면 어조, 복수형 및 일관성이 향상되는 경우가 많습니다. 선택적 `uiModels`은(는) 일치하는 `localeModels` 항목 이후, `translationModels` 이전에 시도됩니다(위의 필드 목록 참조). 예시:
+
+<details>
+<summary>UI 번역을 위한 권장 uiModels</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**아시아 언어에 대한 권장 `localeModels`:** 일본어, 한국어 및 중국어 로케일은 해당 스크립트에 맞게 조정된 모델을 사용할 때 이점이 있는 경우가 많습니다. 대상 로케일이 일치할 때 **먼저** 시도되는(`uiModels` / `translationModels` 이전) 로케일별 재정의를 추가하세요:
+
+<details>
+<summary>ja, ko, zh-Hans, zh-Hant에 대한 권장 localeModels</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@
 
 실제 번역 작업에서 구성된 모델을 비교하려면 `npx ai-i18n-tools bench-models`을(를) 실행하세요. 이 명령은 `translationModels`, `uiModels`, `localeModels`의 모든 고유 모델 ID를 각각 개별적으로(`concurrency`에 의해 제한된 병렬로) 하나의 샘플을 번역하여 벤치마킹하고, 모델별 입력/출력 토큰, 실제 시간, USD 비용을 출력하므로 모델 목록을 확정하기 전에 속도와 가격을 비교할 수 있습니다.
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@
 | `translateSVG` | — | `.svg` 파일 번역 (최상위 `svg` 블록 필요). |
 
 `features.translateSVG`이 true이고 최상위 `svg` 블록이 구성된 경우, `translate-svg`으로 SVG 파일을 **번역**합니다. `sync` 명령은 두 조건이 모두 충족될 때(단, `--no-svg`가 아닐 경우) 해당 단계를 실행합니다.
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@
 - `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
 `true`(기본값 `false`)인 경우, `extract`는 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로부터 빌드됨)의 각 `englishName`를 소스 스캔에서 이미 존재하지 않는 한(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`는 읽지 않습니다.
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ SQLite 캐시 디렉터리(모든 `docs` 블록에서 공유). 기본값 `.trans
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값
 | `keyPolicy.translateKeys` | mode가 `allowlist` 또는 `both`일 때 포함할 도트 경로 / glob 패턴. |
 | `keyPolicy.skipKeys` | 제외할 도트 경로 / glob 패턴(기본 denylist에는 `id`, `slug`, `href`, `url`, `key`, `code` 포함). |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | `pathTemplate`   | 사용자 지정 SVG 출력 경로. 사용 가능한 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | `true`인 경우, 기본 제공 `flat` / `nested` SVG 레이아웃은 소문자 로케일 세그먼트를 사용합니다. 사용자 지정 `pathTemplate` 값은 변경되지 않으며, 소문자 세그먼트가 필요한 경우 `{llocale}`을(를) 사용하십시오. |
 | `forceLowercase` | SVG 재조합 시 소문자로 변환된 텍스트입니다. 모두 소문자 레이블에 의존하는 디자인에 유용합니다.                                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

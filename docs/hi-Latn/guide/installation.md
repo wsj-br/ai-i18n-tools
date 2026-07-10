@@ -52,7 +52,20 @@ ai-i18n-tools sync
 
 **Zero-install one-off** — `npx ai-i18n-tools <cmd>` ya `pnpm dlx ai-i18n-tools <cmd>` (us invocation ke liye package download karta hai; `package.json` mein koi entry nahi).
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### Cloned ai-i18n-tools monorepo
+
+Jab aap [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) ke poore clone se package develop kar rahe hon ya workspace **examples** chala rahe hon:
+
+- **Workspace examples** (`examples/console-app`, `examples/nextjs-app`, aur [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) mein soochi-baddh anya packages) — repository root par `pnpm install` chalaen, phir `cd examples/<name>` aur `pnpm exec ai-i18n-tools …` ya example ke `pnpm run i18n:*` scripts ka upyog karen. Workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) aapke local checkout se `ai-i18n-tools` link karta hai.
+- **Repository root** — pnpm root package ke apne `bin` ko `node_modules/.bin` mein link nahi karta hai, aur root par `npx ai-i18n-tools` **published npm** package chalata hai, na ki aapki working tree. Iske bajay `node bin/ai-i18n-tools.mjs …` ya root `pnpm i18n:*` scripts ka upyog karen.
+- **Standalone fixtures** (`multi-provider`, `test-markdown`) — fixture folder se, `node ../../bin/ai-i18n-tools.mjs …` ka upyog karen.
+
+CLI source badalne ke baad repository root par `pnpm run build` chalaen. Build steps aur optional global-install workarounds ke liye [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) dekhen.
+
 Linux, macOS, aur WSL par, registry installs CLI script par executable bit ko swatah set karte hain. Windows par, package managers `.cmd` aur `.ps1` shims generate karte hain jo Node ko spasht roop se invoke karte hain.
+
+Anuvaad commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) ke liye `ai-i18n-tools.config.json` mein **provider configuration** aur active provider ke liye **ek API key** ki zaroorat hoti hai. Default OpenRouter block ko scaffold karne ke liye `ai-i18n-tools init` chalaayein; presets ya models badalne ke liye `provider` / `providers` ko edit karein — [LLM providers aur models](/hi-Latn/guide/providers-and-models) dekhein. Ollama ekmatra built-in preset hai jise kisi API key ki zaroorat nahi hoti hai.
 
 Apna provider API key set karein (OpenRouter dikhaya gaya hai; uss env var ka upyog karein jo aapke active provider se mel khata hai — [preset table](/hi-Latn/guide/providers-and-models#built-in-providers) dekhein):
 

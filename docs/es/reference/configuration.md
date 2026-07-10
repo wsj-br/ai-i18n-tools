@@ -8,6 +8,8 @@ Código BCP-47 para el idioma de origen (por ejemplo, `"en-GB"`, `"en"`, `"pt-BR
 
 **Debe coincidir** con `SOURCE_LOCALE` exportado desde su archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@ Matriz de códigos de configuración regional BCP-47 a los que traducir (por eje
 
 `targetLocales` es la lista principal de configuraciones regionales para la traducción de la interfaz de usuario y la lista predeterminada para bloques de documentación. Usa `generate-ui-languages` para generar el manifiesto `ui-languages.json` a partir de `sourceLocale` + `targetLocales`.
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (opcional)
 
 Código BCP-47 para el idioma de la interfaz de usuario de la herramienta (ayuda de la CLI, registros/resúmenes y el Panel de traducción). Es independiente de `sourceLocale` / `targetLocales` y se anula mediante el indicador `-L` / `--ui-lang` y la variable de entorno `AI_I18N_LANG`. Los valores desconocidos se degradan correctamente a la configuración regional de origen (`en-GB`); no hay una validación estricta. Consulte [Idioma de la interfaz de usuario de la herramienta](/es/guide/tool-ui-language).
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (opcional)
@@ -34,15 +40,21 @@ Utiliza esto cuando:
 
 **Heredado:** `uiLanguagesPath` de nivel raíz todavía se acepta al cargar un archivo de configuración y se reescribe automáticamente a `languagesManifestPath`.
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency` (opcional)
 
 Número máximo de **configuraciones regionales destino** traducidas simultáneamente (`translate-ui`, `translate-docs`, `translate-svg` y los pasos correspondientes dentro de `sync`). Si se omite, la CLI usa **4** para traducción de interfaz de usuario y **3** para traducción de documentación (valores predeterminados integrados). Puedes anularlo por ejecución con `-j` / `--concurrency`.
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (opcional)
 
 **translate-docs**, **translate-svg** y **translate-json** (y los pasos correspondientes dentro de `sync`): solicitudes **por lotes** máximas de LLM paralelas por archivo (cada lote puede contener muchos segmentos). El valor predeterminado es **4** cuando se omite. Ignorado por `translate-ui`. Anule con `-b` / `--batch-concurrency`.
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (opcional)
@@ -59,10 +71,14 @@ Número máximo de archivos procesados simultáneamente **dentro de una sola con
 
 **Caso de uso:** Establezca esto en `2-4` al ejecutar `sync --force-update` con aciertos del 100 % en la caché para reducir el tiempo total de procesamiento. La mejora es más notable con muchos archivos pequeños.
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (opcional)
 
 Agrupación de segmentos para **translate-docs**, **translate-svg** y **translate-json**: cuántos segmentos por solicitud de API y un límite de caracteres. Valores predeterminados: **20** segmentos, **4096** caracteres (cuando se omite).
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` y `providers`
@@ -127,18 +143,45 @@ Ejemplo `translationModels` (mismos valores predeterminados que `npx ai-i18n-too
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**`uiModels` recomendado:** Las cadenas de la interfaz de usuario son cortas pero muy visibles; un modelo premium a menudo mejora el tono, los plurales y la coherencia. El `uiModels` opcional se prueba después de cualquier entrada `localeModels` coincidente y antes de `translationModels` (consulte la lista de campos anterior). Ejemplo:
+
+<details>
+<summary>Modelos de interfaz de usuario recomendados para la traducción de la interfaz de usuario</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**`localeModels` recomendado para idiomas asiáticos:** Las configuraciones regionales de japonés, coreano y chino a menudo se benefician de modelos ajustados para esos scripts. Agregue anulaciones por configuración regional que se prueben **primero** (antes de `uiModels` / `translationModels`) cuando la configuración regional de destino coincida:
+
+<details>
+<summary>localeModels recomendados para ja, ko, zh-Hans, zh-Hant</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@ Antes de cambiar las listas de modelos, ejecute `npx ai-i18n-tools check-models`
 
 Para comparar los modelos configurados en un trabajo de traducción real, ejecute `npx ai-i18n-tools bench-models`. Evalúa cada ID de modelo único de `translationModels`, `uiModels` y `localeModels` traduciendo una muestra a través de cada uno de forma aislada (en paralelo, limitado por `concurrency`) e imprime los tokens de entrada/salida por modelo, el tiempo real y el costo en USD, para que pueda sopesar la velocidad frente al precio antes de decidirse por las listas de modelos.
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@ Para comparar los modelos configurados en un trabajo de traducción real, ejecut
 | `translateSVG`       | —        | Traducir archivos `.svg` (requiere el bloque `svg` de nivel superior).                                                                                                       |
 
 **Traduce** archivos SVG con `translate-svg` cuando `features.translateSVG` es verdadero y se configura un bloque superior `svg`. El comando `sync` ejecuta ese paso cuando ambos están establecidos (a menos que `--no-svg`).
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@ Para comparar los modelos configurados en un trabajo de traducción real, ejecut
 - `uiExtractor.includeUiLanguageEnglishNames` (o el obsoleto `reactExtractor.includeUiLanguageEnglishNames`)
 
 Cuando `true` (predeterminado `false`), `extract` también agrega cada `englishName` del catálogo maestro de ui-languages incluido (construido a partir de `sourceLocale` + `targetLocales`) a `strings.json` cuando aún no está presente en el escaneo de origen (mismas claves hash). No lee `languagesManifestPath`.
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ Directorio de caché de SQLite (compartido por todos los bloques `docs`). Predet
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ Ejemplo: `"protectKeys": ["slug", "code"]` omite `{ slug: 'getting-started', tit
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ Matriz de nivel superior de canalizaciones de traducción JSON anidadas. Se usa 
 | `keyPolicy.translateKeys` | Rutas con notación de puntos o patrones glob a incluir cuando el modo es `allowlist` o `both`. |
 | `keyPolicy.skipKeys` | Rutas con notación de puntos o patrones glob a excluir (la lista de denegación predeterminada incluye `id`, `slug`, `href`, `url`, `key`, `code`). |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 | `pathTemplate`   | Ruta de salida personalizada para SVG. Marcadores de posición: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | Cuando es `true`, los diseños integrados de SVG `flat` / `nested` usan segmentos de idioma en minúsculas. Los valores personalizados de `pathTemplate` no cambian; use `{llocale}` para segmentos en minúsculas. |
 | `forceLowercase` | Texto traducido en minúsculas durante la reensamblaje SVG. Útil para diseños que dependen de etiquetas completamente en minúsculas.                                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

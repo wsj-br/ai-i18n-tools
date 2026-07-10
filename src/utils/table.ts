@@ -13,7 +13,8 @@ function isEmojiWide(cp: number): boolean {
   return (
     (cp >= 0x1f300 && cp <= 0x1faff) || // Misc Symbols, Emoticons, Transport, Supplemental
     (cp >= 0x2600 && cp <= 0x26ff) || // Misc Symbols (☀ ☁ ⛵ …)
-    (cp >= 0x2700 && cp <= 0x27bf) || // Dingbats
+    // Dingbats (U+2700–U+27BF) omitted: most glyphs (✓ ✔ ✂ …) are 1 column; wide ones (✅ ❌)
+    // are already reported as width 2 by eastAsianWidth.
     (cp >= 0xfe00 && cp <= 0xfe0f) || // Variation selectors
     (cp >= 0x1f1e0 && cp <= 0x1f1ff) // Regional indicator letters (flag sequences)
   );

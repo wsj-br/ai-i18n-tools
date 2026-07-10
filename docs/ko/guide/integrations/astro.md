@@ -131,4 +131,4 @@ pnpm dev
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Starlight 문서 | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | 일반 Astro 마케팅 사이트 (HTML + `t()` 하이브리드) | (README 참조) |
 
-[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs)와 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)를 비교해 보세요. Starlight 대신 Docusaurus 출력 스타일의 유사한 튜토리얼 콘텐츠입니다.
+[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs)와 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs)를 비교해 보세요 — 유사한 튜토리얼 콘텐츠, Starlight 대신 Docusaurus 출력 스타일.

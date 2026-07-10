@@ -53,7 +53,20 @@ With [**direnv**](https://direnv.net/), add `PATH_add node_modules/.bin` to a `.
 
 **Zero-install one-off** — `npx ai-i18n-tools <cmd>` or `pnpm dlx ai-i18n-tools <cmd>` (downloads the package for that invocation; no entry in `package.json`).
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### Cloned ai-i18n-tools monorepo
+
+When developing the package or running workspace **examples** from a full clone of [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):
+
+- **Workspace examples** (`examples/console-app`, `examples/nextjs-app`, and the other packages listed in [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)) — run `pnpm install` at the repository root, then `cd examples/<name>` and use `pnpm exec ai-i18n-tools …` or the example's `pnpm run i18n:*` scripts. Workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) link `ai-i18n-tools` to your local checkout.
+- **Repository root** — pnpm does not link the root package's own `bin` into `node_modules/.bin`, and `npx ai-i18n-tools` at the root runs the **published npm** package, not your working tree. Use `node bin/ai-i18n-tools.mjs …` or root `pnpm i18n:*` scripts instead.
+- **Standalone fixtures** (`multi-provider`, `test-markdown`) — from the fixture folder, use `node ../../bin/ai-i18n-tools.mjs …`.
+
+Run `pnpm run build` at the repository root after changing CLI source. See the [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) for build steps and optional global-install workarounds.
+
 On Linux, macOS, and WSL, registry installs set the executable bit on the CLI script automatically. On Windows, package managers generate `.cmd` and `.ps1` shims that invoke Node explicitly.
+
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) require **provider configuration** in `ai-i18n-tools.config.json` and **an API key** for the active provider. Run `ai-i18n-tools init` to scaffold a default OpenRouter block; edit `provider` / `providers` to switch presets or models — see [LLM providers and models](/guide/providers-and-models). Ollama is the only built-in preset that needs no API key.
 
 Set your provider API key (OpenRouter shown; use the env var that matches your active provider — see the [preset table](/guide/providers-and-models#built-in-providers)):
 

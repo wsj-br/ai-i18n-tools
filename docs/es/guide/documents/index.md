@@ -88,14 +88,15 @@ Esa plantilla solo permite la extracción de la interfaz de usuario. Para la tra
 
 Edite el `ai-i18n-tools.config.json` generado:
 
+- `provider` y `providers` — `init` estructura OpenRouter por defecto; configure al menos un proveedor y establezca su clave API antes de `translate-docs` o `sync` (Ollama no necesita clave). Consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key) y [Proveedores y modelos LLM](/es/guide/providers-and-models).
 - `sourceLocale` - idioma de origen (debe coincidir con `defaultLocale` en `docusaurus.config.js`).
-- `targetLocales` - matriz de códigos de localización BCP-47 (por ejemplo, `["de", "fr", "es"]`).
-- `cacheDir` - directorio compartido de caché SQLite para todas las canalizaciones (y directorio predeterminado de registros para `--write-logs`).
-- `docs` - matriz de bloques de documentación. Cada bloque tiene `description`, `contentPaths` (cadena o matriz; archivo, directorio o patrón), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
-- `docs[].description` - nota corta opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.
-- `docs[].contentPaths` - fuentes markdown/MDX/`.astro` (y `docusaurusCatalogDir` opcional para JSON de shell de Docusaurus).
+- `targetLocales` - array de códigos de configuración regional BCP-47 (por ejemplo, `["de", "fr", "es"]`).
+- `cacheDir` - directorio de caché SQLite compartido para todas las canalizaciones (y directorio de registro predeterminado para `--write-logs`).
+- `docs` - array de bloques de documentación. Cada bloque tiene `description` opcional, `contentPaths` (cadena o array; archivo, directorio o patrón), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
+- `docs[].description` - nota breve opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.
+- `docs[].contentPaths` - fuentes de markdown/MDX/`.astro` (y `docusaurusCatalogDir` opcional para JSON de shell de Docusaurus).
 - `docs[].outputDir` - raíz de salida traducida para ese bloque.
-- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o los alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (ver [Diseños de salida](/es/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Diseños de salida](/es/guide/documents/output-layouts)).
 
 **Principal frente a suplementario:** Enfóquese en `contentPaths` para páginas localizadas. Establezca `docusaurusCatalogDir` cuando también necesite JSON del shell de Docusaurus desde `write-translations`. Omita `docusaurusCatalogDir` si solo traduce páginas.
 

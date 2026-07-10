@@ -19,6 +19,8 @@
 
 所有文件框架整合都共用 [Documents](/zh-Hant/guide/documents/) 中所述的相同 `docs[]` 區塊模型。設定 `docsOutput.style` 以符合你的框架 (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, 或 `"astro-starlight"`)。關於輸出資料夾佈局與連結重寫行為，請參閱 [Output layouts](/zh-Hant/guide/documents/output-layouts) 與 [Link rewriting](/zh-Hant/guide/documents/link-rewriting)。
 
+每個 `init -t ui-*` 範本會建立預設的 LLM 提供者區塊。在 `translate-docs` 或 `sync` 之前，如有需要請設定 `provider` / `providers` 並設定對應的 API 金鑰 — 請參閱[提供者與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
+
 請**勿**將框架殼層或主題字串放入 `json[]` —— 該管線是給無關的應用程式語言包使用的。每個整合頁面都會說明哪些目錄路徑與 CLI 旗標涵蓋了該框架的導覽、側邊欄與主題標籤。
 
 <a id="runnable-examples"></a>
@@ -28,7 +30,7 @@
 | --- | --- |
 | Astro Starlight | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) |
 | 純 Astro 網站 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) |
-| Docusaurus | [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) |
+| Docusaurus | [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) |
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |

@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 在 `docs-site/static/img/screenshots/<locale>/screenshot.png` 处提供匹配的 PNG 文件。对于与源区域设置无关的配置，请优先使用 `screenshots/[^/]+/` 而不是 `screenshots/en-GB/`。
 
-实施示例：[examples/nextjs-app/docs-site/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 和 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) 中的第一个 `docs[]` 块。
+实现示例：[examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 配合 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json)。
 
 <a id="preset---docsoutputstyle--astro-starlight"></a>
 ### 预设 - `docsOutput.style = "astro-starlight"`

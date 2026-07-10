@@ -66,7 +66,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-有关 CLI 调用详情，请参阅[安装](/zh-Hans/guide/installation)；有关脚手架模板，请参阅[快速开始](/zh-Hans/guide/quick-start)。
+有关 CLI 调用详情（包括[克隆 monorepo 开发](/zh-Hans/guide/installation#cloned-monorepo)），请参阅[安装](/zh-Hans/guide/installation)；有关脚手架模板，请参阅[快速开始](/zh-Hans/guide/quick-start)。
 
 <a id="which-pipeline-should-i-use"></a>
 ## 我应该使用哪个流水线？

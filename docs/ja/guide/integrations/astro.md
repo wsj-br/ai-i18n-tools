@@ -131,4 +131,4 @@ pnpm dev
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Starlightドキュメント | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | プレーンなAstroマーケティングサイト（HTML + `t()`ハイブリッド） | （READMEを参照） |
 
-[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs)と[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)を比較 — 同様のチュートリアルコンテンツ、StarlightではなくDocusaurusの出力スタイル。
+[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs)と[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs)を比較してください — チュートリアルの内容は似ていますが、StarlightではなくDocusaurusの出力スタイルを採用しています。

@@ -15,7 +15,7 @@ CLI 버전과 빌드 타임스탬프를 출력합니다(루트 프로그램의 `
 
 **개요:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
 
-시작용 구성 파일을 작성합니다(`concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `docs[].addFrontmatter` 포함).
+스타터 구성 파일을 작성합니다(`provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `docs[].addFrontmatter` 포함). LLM을 호출하는 번역 명령에는 환경 변수 또는 `.env`에 활성 프로바이더의 API 키가 필요합니다(Ollama 제외) — [프로바이더 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
 
 **주요 옵션:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 

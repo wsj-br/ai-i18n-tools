@@ -15,7 +15,7 @@
 
 **概要：** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
 
-写入初始配置文件（包含 `concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `docs[].addFrontmatter`）。
+编写一个入门配置文件（包含 `provider` / `providers`、`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `docs[].addFrontmatter`）。调用 LLM 的翻译命令需要在环境变量或 `.env` 中提供当前提供商的 API 密钥（Ollama 除外）——请参阅[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。
 
 **主要选项：** `-t` / `--template`、`-o` / `--output`、`--with-translate-ignore`
 

@@ -22,14 +22,15 @@
 npx ai-i18n-tools init
 ```
 
-這會寫入使用 `ui-markdown` 範本的 `ai-i18n-tools.config.json`。編輯它以設定：
+這會使用 `ui-markdown` 模板寫入 `ai-i18n-tools.config.json`（包含預設的 `provider` / `providers` 區塊）。在執行 `translate-ui` 或 `sync` 之前，請在環境變數或 `.env` 中設定您目前使用的供應商 API 金鑰 — Ollama 除外；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。編輯設定檔以設定：
 
-- `sourceLocale` - 您的來源語言 BCP-47 代碼（例如 `"en-GB"`）。**必須**與您運行時 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）中匯出的 `SOURCE_LOCALE` 相符。
-- `targetLocales` - 您的目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 以從此清單建立 `ui-languages.json` manifest。
-- `ui.sourceRoots` - 要掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
-- `ui.stringsJson` - 要寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - 用於寫入 `de.json`、`pt-BR.json` 等（例如 `"src/locales/"`）。
-- `providers.<active>.uiModels`（可選）- `translate-ui` 的僅 UI 模型列表，用於多數生成和 `proofread-ui`（在任何匹配的 `localeModels` 項目之後，`translationModels` 之前）。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
+- `provider` 與 `providers` — 至少一個具有 `translationModels` 的供應商；如果不想使用 OpenRouter，請變更預設值或模型列表。請參閱[LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
+- `sourceLocale` - 您的來源語言 BCP-47 代碼（例如 `"en-GB"`）。**必須符合**從您的執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE`。
+- `targetLocales` - 您目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 以從此列表建立 `ui-languages.json` 資訊清單。
+- `ui.sourceRoots` - 要掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`, `["src/**/*.ts"]`）。
+- `ui.stringsJson` - 寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
+- `ui.flatOutputDir` - 寫入 `de.json`, `pt-BR.json` 等的位置（例如 `"src/locales/"`）。
+- `providers.<active>.uiModels`（選用）- 用於 `translate-ui`、複數生成與 `proofread-ui` 的有序僅限 UI 模型列表（在任何相符的 `localeModels` 項目之後，`translationModels` 之前）。請參閱[供應商與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
 
 <a id="step-2-extract-strings"></a>
 ## 步驟 2：提取字串

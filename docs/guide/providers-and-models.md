@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # LLM providers and models
 
-Every translation pipeline — `translate-ui`, `translate-docs`, `translate-json`, and `translate-svg` — sends text to an LLM through the same provider-agnostic client. You configure **which API endpoint to call** and **which models to try** once in `ai-i18n-tools.config.json`; all commands share that setup and the same SQLite cache.
+Every translation pipeline — `translate-ui`, `translate-docs`, `translate-json`, and `translate-svg` — sends text to an LLM through the same provider-agnostic client. Before any of those commands can run, configure **at least one provider** in `ai-i18n-tools.config.json` and set the matching **API key** in your environment or `.env` (built-in presets except **Ollama**). `init` writes a starter `provider` / `providers` block; you still must supply credentials for the active preset.
+
+You configure **which API endpoint to call** and **which models to try** once in config; all translation commands share that setup and the same SQLite cache.
 
 The CLI resolves the active provider from the top-level `provider` key (or the sole entry in `providers` when only one is configured). Each provider block lists an ordered `translationModels` fallback chain; built-in presets inherit `baseUrl` and the API-key environment variable automatically (override them per provider when needed).
 
@@ -46,7 +48,11 @@ Optional `providers.<active>.uiModels` is a UI-only list tried after any matchin
 
 Different providers and models vary in cost, speed, and quality across languages. Treat the default list from `npx ai-i18n-tools init` as a starting point — expand it when a locale consistently produces poor results, or add a `localeModels` entry for that locale. Full defaults and rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
 
-Example minimal config (OpenRouter):
+**UI strings:** optional `uiModels` lets you route `translate-ui`, plural generation, and `proofread-ui` through premium models before the global `translationModels` chain — useful because UI copy is short but user-facing.
+
+**Asian locales:** optional `localeModels` entries for `ja`, `ko`, `zh-Hans`, and `zh-Hant` are tried first in every pipeline; models such as `z-ai/glm-5.2` and `minimax/minimax-m2.7` often perform better on CJK scripts than general-purpose fallbacks.
+
+Example config (OpenRouter):
 
 ```json
 {
@@ -54,15 +60,24 @@ Example minimal config (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

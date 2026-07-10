@@ -12,17 +12,14 @@ describe("wrapCommaSeparatedListForWidth", () => {
     // (English `"Models (try in order): "` is 23 chars).
     const prefixLength = "Models (try in order): ".length;
     const models = [
-      "qwen/qwen3-235b-a22b-2507",
+      "google/gemini-2.5-flash",
+      "meta-llama/llama-3.3-70b-instruct",
       "openai/gpt-4o-mini",
-      "deepseek/deepseek-v4-flash",
+      "google/gemma-4-26b-a4b-it",
       "anthropic/claude-3-haiku",
-      "qwen/qwen3.6-plus",
-      "anthropic/claude-3.5-haiku",
+      "z-ai/glm-5.2",
       "google/gemini-3-flash-preview",
-      "~anthropic/claude-haiku-latest",
-      "google/gemma-4-31b-it",
       "~anthropic/claude-sonnet-latest",
-      "openai/gpt-5.3-codex",
     ];
     const joined = models.join(", ");
     const parts = wrapCommaSeparatedListForWidth(

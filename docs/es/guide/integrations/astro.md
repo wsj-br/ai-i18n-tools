@@ -131,4 +131,4 @@ Resuelva `t('…')` en el **tiempo de compilación** buscando el literal de orig
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Documentación de Starlight | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | Sitio de marketing de Astro simple (HTML + híbrido `t()`) | (ver README) |
 
-Compare [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) con [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — contenido de tutorial similar, estilo de salida de Docusaurus en lugar de Starlight.
+Compare [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) con [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — contenido de tutorial similar, estilo de salida de Docusaurus en lugar de Starlight.

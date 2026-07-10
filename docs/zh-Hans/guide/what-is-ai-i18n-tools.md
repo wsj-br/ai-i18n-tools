@@ -33,7 +33,8 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 | 示例 | 显示内容 |
 | --- | --- |
 | [console-app](/zh-Hans/examples#console-app) | 最小的端到端应用程序：`t()` UI 字符串加 README 翻译 |
-| [nextjs-app](/zh-Hans/examples#nextjs-app) | Next.js UI、复数、SVG、Docusaurus 文档站点、仪表板 |
+| [nextjs-app](/zh-Hans/examples#nextjs-app) | Next.js UI、复数、SVG、嵌套的 Docusaurus 文档、扁平化 README、仪表板 |
+| [docusaurus-docs](/zh-Hans/examples#docusaurus-docs) | 独立的 Docusaurus 文档站点 |
 | [astro-website](/zh-Hans/examples#astro-website) | Astro 营销站点：全页 HTML 翻译加 `t()` 字符串 |
 | [astro-docs](/zh-Hans/examples#astro-docs) | Astro Starlight 文档站点 |
 | [vitepress 文档](/zh-Hans/examples#vitepress-docs) | VitePress 文档及主题目录 |

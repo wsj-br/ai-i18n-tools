@@ -8,6 +8,8 @@
 
 **必须匹配**从您的运行时 i18n 设置文件（`SOURCE_LOCALE` / `src/i18n.ts`）导出的 `src/i18n.js`。
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@
 
 `targetLocales` 是 UI 翻译的主要区域设置列表，也是文档块的默认区域设置列表。使用 `generate-ui-languages` 从 `ui-languages.json` + `sourceLocale` 构建 `targetLocales` 清单。
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (可选)
 
 工具自身 UI 语言（CLI 帮助、日志/摘要和翻译仪表板）的 BCP-47 代码。它独立于 `sourceLocale` / `targetLocales`，并会被 `-L` / `--ui-lang` 标志和 `AI_I18N_LANG` 环境变量覆盖。未知值会平滑降级到源区域设置（`en-GB`）——没有严格的验证。参见[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath`（可选）
@@ -34,15 +40,21 @@
 
 **遗留：** 加载配置文件时仍接受根级 `uiLanguagesPath`，并自动重写为 `languagesManifestPath`。
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency`（可选）
 
 同时翻译的最大**目标区域设置**（`translate-ui`、`translate-docs`、`translate-svg` 以及 `sync` 中的匹配步骤）。如果省略，CLI 会为 UI 翻译使用**4**，为文档翻译使用**3**（内置默认值）。可以通过 `-j` / `--concurrency` 为每次运行覆盖。
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency`（可选）
 
 **translate-docs**、**translate-svg** 和 **translate-json**（以及 `sync` 中的匹配步骤）：每个文件的最大并行 LLM **批处理**请求数（每个批处理可以包含多个段）。省略时默认为 **4**。`translate-ui` 忽略。使用 `-b` / `--batch-concurrency` 覆盖。
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency`（可选）
@@ -59,10 +71,14 @@
 
 **用例：** 当 `sync --force-update` 以 100% 缓存命中率运行时，将此值设置为 `2-4` 以减少总处理时间。当文件数量很多且较小时，效果最明显。
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars`（可选）
 
 **translate-docs**、**translate-svg** 和 **translate-json** 的段批处理：每个 API 请求的段数和字符上限。默认值：**20** 段，**4096** 字符（省略时）。
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` 和 `providers`
@@ -127,18 +143,45 @@
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**推荐的 `uiModels`：** UI 字符串简短但非常显眼——高级模型通常能改善语气、复数形式和一致性。可选的 `uiModels` 会在任何匹配的 `localeModels` 条目之后、`translationModels` 之前尝试使用（参见上方的字段列表）。示例：
+
+<details>
+<summary>用于 UI 翻译的推荐 uiModels</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**针对亚洲语言的推荐 `localeModels`：** 日语、韩语和中文区域设置通常受益于针对这些文字调优的模型。添加按区域设置的覆盖配置，当目标区域设置匹配时，会**首先**尝试这些配置（在 `uiModels` / `translationModels` 之前）：
+
+<details>
+<summary>针对 ja、ko、zh-Hans、zh-Hant 的推荐 localeModels</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@
 
 要在实际翻译工作中比较已配置的模型，请运行 `npx ai-i18n-tools bench-models`。它会对 `translationModels`、`uiModels` 和 `localeModels` 中的每个唯一模型 ID 进行基准测试，方法是分别通过每个模型独立翻译一个样本（并行执行，受 `concurrency` 限制），并打印每个模型的输入/输出 token 数、实际耗时和美元成本，以便你在最终确定模型列表之前权衡速度与价格。
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@
 | `translateSVG`       | —        | 翻译 `.svg` 文件（需要顶层的 `svg` 块）。                                                                                                       |
 
 **翻译** SVG 文件，当 `features.translateSVG` 为 true 且配置了顶层 `svg` 块时，使用 `translate-svg`。`sync` 命令在两者都设置时运行该步骤（除非设置了 `--no-svg`）。
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@
 - `uiExtractor.includeUiLanguageEnglishNames`（或旧版`reactExtractor.includeUiLanguageEnglishNames`）
 
 当 `true`（默认 `false`）时，`extract` 还会将内置 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json` 中（前提是源扫描中尚不存在，使用相同的哈希键）。不读取 `languagesManifestPath`。
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`�
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ BCP-47 代码的可选数组，被视为 RTL 以用于强调占位符默认值�
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ BCP-47 代码的可选数组，被视为 RTL 以用于强调占位符默认值�
 | `keyPolicy.translateKeys` | 模式为 `allowlist` 或 `both` 时要包含的点路径 / glob 模式。 |
 | `keyPolicy.skipKeys` | 要排除的点路径 / glob 模式（默认拒绝列表包括 `id`、`slug`、`href`、`url`、`key`、`code`）。 |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 | `pathTemplate`   | 自定义 SVG 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
 | `localePathLowercase` | 当 `true` 时，内置的 `flat` / `nested` SVG 布局使用小写区域设置段。自定义 `pathTemplate` 值保持不变；使用 `{llocale}` 来获取小写段。 |
 | `forceLowercase` | 在重新组装 SVG 时将翻译文本转换为小写。对于依赖全小写标签的设计很有用。                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

@@ -17,7 +17,7 @@ UI 복사본을 소스에서 `t("…")` 대신 **로케일별 중첩 JSON 파일
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-해당 템플릿은 `features.translateJson: true`을 설정하고, UI 추출 및 문서 번역을 비활성화하며, `src/i18n/en/translation.json`를 가리키고 출력은 `src/i18n/{llocale}/translation.json`인 단일 `json[]` 블록을 스캐폴드합니다. 저장소 구조에 맞게 `sourceLocale`, `targetLocales`, `contentPaths`, `outputPathTemplate`을 편집하세요.
+이 템플릿은 `features.translateJson: true`을(를) 설정하고, UI 추출 및 문서 번역을 비활성화하며, `src/i18n/en/translation.json`를 가리키고 출력이 `src/i18n/{llocale}/translation.json`인 단일 `json[]` 블록을 생성합니다. 또한 기본 `provider` / `providers` 블록을 포함합니다 — `translate-json` 또는 `sync`을(를) 실행하기 전에 일치하는 API 키를 설정하거나(또는 로컬 Ollama를 사용)하세요. [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하십시오. 저장소 레이아웃에 맞게 `sourceLocale`, `targetLocales`, `contentPaths`, `outputPathTemplate`을(를) 편집하십시오.
 
 <a id="step-2-configure-json"></a>
 ### 2단계: `json[]` 구성

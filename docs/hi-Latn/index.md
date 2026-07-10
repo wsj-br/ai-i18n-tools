@@ -78,7 +78,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-CLI invocation details ke liye [Installation](/hi-Latn/guide/installation) dekhein aur scaffold templates ke liye [Quick start](/hi-Latn/guide/quick-start) dekhein.
+CLI invocation details (jismein [cloned-monorepo development](/hi-Latn/guide/installation#cloned-monorepo) shaamil hai) ke liye [Installation](/hi-Latn/guide/installation) dekhein aur scaffold templates ke liye [Quick start](/hi-Latn/guide/quick-start) dekhein.
 
 <a id="which-pipeline-should-i-use"></a>
 ## Mujhe kaun si pipeline ka upyog karna chahiye?

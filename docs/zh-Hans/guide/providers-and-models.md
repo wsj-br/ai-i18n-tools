@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # LLM 提供商和模型
 
-每个翻译管道——`translate-ui`、`translate-docs`、`translate-json`和`translate-svg`——都通过同一个与提供商无关的客户端将文本发送到LLM。您在`ai-i18n-tools.config.json`中配置**要调用哪个API端点**以及**要尝试哪些模型**；所有命令都共享该设置和相同的SQLite缓存。
+每个翻译流水线 —— `translate-ui`、`translate-docs`、`translate-json` 和 `translate-svg` —— 都通过同一个与提供商无关的客户端将文本发送给 LLM。在这些命令运行之前，请在 `ai-i18n-tools.config.json` 中配置**至少一个提供商**，并在您的环境或 `.env` 中设置匹配的**API 密钥**（内置预设 **Ollama** 除外）。`init` 会写入一个初始的 `provider` / `providers` 块；您仍需为当前使用的预设提供凭据。
+
+您只需在配置中设置一次**要调用的 API 端点**和**要尝试的模型**；所有翻译命令都会共享该设置以及同一个 SQLite 缓存。
 
 CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活动提供商。每个提供商块都列出了一个有序的`translationModels`回退链；内置预设自动继承`baseUrl`和API密钥环境变量（必要时可为每个提供商覆盖它们）。
 
@@ -46,7 +48,11 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 不同的提供商和模型在不同语言的成本、速度和质量上有所不同。将 `npx ai-i18n-tools init` 提供的默认列表视为起点——当某个语言环境始终产生较差结果时，扩展该列表，或为该语言环境添加一个 `localeModels` 条目。完整的默认值和理由：[配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers)。
 
-最小配置示例 (OpenRouter)：
+**UI 字符串：** 可选的 `uiModels` 允许你在全局 `translationModels` 链之前，将 `translate-ui`、复数生成和 `proofread-ui` 路由到高级模型——这很有用，因为 UI 文案简短但面向用户。
+
+**亚洲区域设置：** 针对 `ja`、`ko`、`zh-Hans` 和 `zh-Hant` 的可选 `localeModels` 条目会在每个流水线中优先尝试；像 `z-ai/glm-5.2` 和 `minimax/minimax-m2.7` 这样的模型在 CJK 脚本上的表现通常优于通用后备模型。
+
+配置示例（OpenRouter）：
 
 ```json
 {
@@ -54,15 +60,24 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

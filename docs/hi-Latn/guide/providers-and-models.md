@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # LLM pradata aur model
 
-Har anuvaad pipeline — `translate-ui`, `translate-docs`, `translate-json`, aur `translate-svg` — ek hi provider-agnostic client ke madhyam se LLM ko text bhejta hai. Aap `ai-i18n-tools.config.json` mein ek baar **kis API endpoint ko call karna hai** aur **kin models ko try karna hai** configure karte hain; sabhi commands us setup aur usi SQLite cache ko share karte hain.
+Har ek translation pipeline — `translate-ui`, `translate-docs`, `translate-json`, aur `translate-svg` — text ko ek LLM ke through bhejta hai jo same provider-agnostic client hai. Inmein se koi bhi command chalane se pehle, **kam se kam ek provider** ko `ai-i18n-tools.config.json` mein configure karein aur matching **API key** ko aapke environment ya `.env` (built-in presets ke alawa **Ollama**) mein set karein. `init` ek starter `provider` / `providers` block likhta hai; aapko abhi bhi active preset ke liye credentials provide karni hongi.
+
+Aap config mein **kis API endpoint ko call karna hai** aur **kin models ko try karna hai** ek baar configure karte hain; sabhi translation commands us setup aur usi SQLite cache ko share karte hain.
 
 CLI top-level `provider` key se active provider ko resolve karta hai (ya `providers` mein ekmatra entry jab kewal ek configure kiya gaya ho). Har provider block ek ordered `translationModels` fallback chain ko list karta hai; built-in presets swatah `baseUrl` aur API-key environment variable ko inherit karte hain (jab aavashyak ho to unhe har provider ke liye override karen).
 
@@ -46,7 +48,11 @@ Optional `providers.<active>.uiModels` ek UI-only list hai jo kisi bhi matching 
 
 Alag-alag providers aur models ki cost, speed, aur quality languages mein alag-alag hoti hai. `npx ai-i18n-tools init` se default list ko ek shuruaati point maanein — jab koi locale consistently kharab results deta hai, toh ise badhaayein, ya us locale ke liye ek `localeModels` entry jodein. Poore defaults aur rationale: [Configuration — `provider` aur `providers`](/hi-Latn/reference/configuration#provider-and-providers).
 
-Udaaharan minimal config (OpenRouter):
+**UI strings:** vikalpik `uiModels` aapko `translate-ui`, bahuvachan utpatti, aur `proofread-ui` ko global `translationModels` chain se pahle premium model ke madhyam se route karne deta hai — upyogi hai kyuki UI copy chhota hota hai lekin upyogakarta-samne hota hai.
+
+**Asian locales:** `ja`, `ko`, `zh-Hans`, aur `zh-Hant` ke liye vikalpik `localeModels` entries ko har pipeline mein pahle prayas kiya jata hai; `z-ai/glm-5.2` aur `minimax/minimax-m2.7` jaise model aksar CJK scripts par general-purpose fallbacks se behtar pradarshan karte hain.
+
+Udaharan config (OpenRouter):
 
 ```json
 {
@@ -54,15 +60,24 @@ Udaaharan minimal config (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

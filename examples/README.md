@@ -27,6 +27,8 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [vitepress-docs](./vitepress-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` |
 | [nextra-docs](./nextra-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` |
 | [fumadocs-docs](./fumadocs-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` |
+| [docusaurus-docs](./docusaurus-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/docusaurus-docs docusaurus-docs` |
+| [plain-html](./plain-html/) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` |
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 
@@ -39,17 +41,19 @@ pnpm install
 pnpm run build
 ```
 
-Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) declare `"ai-i18n-tools": "^1.7.2"` in their `package.json`. When you install from the **monorepo root**, the workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces that dependency to the local workspace copy, so edits to the library are picked up without a manual link step. **Standalone fixtures** (`multi-provider`, `test-markdown`) use the same published semver range and install `ai-i18n-tools` into their own `node_modules`.
+Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) declare `"ai-i18n-tools": "^1.7.2"` in their `package.json`. When you install from the **monorepo root**, the workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces that dependency to the local workspace copy, so edits to the library are picked up without a manual link step. From an example folder, run `pnpm run i18n:sync` or `pnpm exec ai-i18n-tools …` — not `npx` at the repository root (that runs the published npm package). **Standalone fixtures** (`multi-provider`, `test-markdown`) use `node ../../bin/ai-i18n-tools.mjs …` from their folder. See [Installation — Cloned monorepo](https://wsj-br.github.io/ai-i18n-tools/guide/installation#cloned-monorepo) and [`dev/DEVEL.md`](../dev/DEVEL.md#running-the-cli-during-development).
 
 | Example                             | Type               | Translation types                        | Framework / runtime              |
 |-------------------------------------|--------------------|------------------------------------------|----------------------------------|
 | [console-app](./console-app/)       | Workspace app      | UI strings + flat README docs            | Node.js console (i18next)        |
 | [nextjs-app](./nextjs-app/)         | Workspace app      | UI + SVG + Docusaurus docs + flat README | Next.js + nested Docusaurus site |
+| [docusaurus-docs](./docusaurus-docs/) | Workspace app    | Docusaurus docs only (`docusaurus` preset) | Docusaurus                     |
 | [astro-website](./astro-website/)   | Workspace app      | UI + `.astro` page HTML (hybrid)         | Astro (static marketing site)    |
 | [astro-docs](./astro-docs/)         | Workspace app      | Starlight / MDX docs only                | Astro Starlight                  |
 | [vitepress-docs](./vitepress-docs/) | Workspace app      | VitePress docs only (`vitepress` preset) | VitePress                        |
 | [nextra-docs](./nextra-docs/)       | Workspace app      | Nextra 4 MDX + `_meta.ts` / dictionary `.ts` shell (`nextra` preset) | Next.js + Nextra              |
 | [fumadocs-docs](./fumadocs-docs/)   | Workspace app      | Fumadocs 4 MDX + `meta.json` / UI catalog (`fumadocs` preset, dot parser) | Next.js + Fumadocs         |
+| [plain-html](./plain-html/)         | Workspace app      | Plain HTML + `data-i18n*` markers + static locale JSON                  | Static HTML (no framework) |
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 
@@ -88,9 +92,26 @@ Minimal **Node.js console application** using i18next and `t()` for UI strings.
 - Translation dashboard (`i18n:dashboard`)
 - Locale-specific screenshot URL rewriting (config demo; PNGs not committed)
 
-**Good starting point if** you use React/Next.js, need Docusaurus integration, or want to see UI + docs + SVG in one config.
+**Good starting point if** you use React/Next.js and want UI + docs + SVG in one config.
 
 → [nextjs-app/README.md](./nextjs-app/README.md) · [docs-site/README.md](./nextjs-app/docs-site/README.md)
+
+---
+
+## [docusaurus-docs](./docusaurus-docs/)
+
+Minimal [**Docusaurus**](https://docusaurus.io/) documentation site (port **3100**) using `docsOutput.style: "docusaurus"`.
+
+**What it demonstrates**
+
+- English sources at `docs/`; committed translations under `i18n/<locale>/docusaurus-plugin-content-docs/current/`
+- Docusaurus shell JSON from `write-translations` (`i18n/en/`) translated via `docs[].docusaurusCatalogDir`
+- Same tutorial topics as [astro-docs](./astro-docs/), with Docusaurus output layout
+- `init -t ui-docusaurus` style config and `pnpm run i18n:sync` to refresh translations
+
+**Good starting point if** you document a product with Docusaurus and want committed translated markdown in the repo.
+
+→ [docusaurus-docs/README.md](./docusaurus-docs/README.md)
 
 ---
 
@@ -123,7 +144,7 @@ Multilingual **Astro Starlight** documentation site (port 3050).
 - RTL locale (`ar`) and glossary-driven translation
 - Locale-specific screenshot path rewriting in MDX (config demo; PNGs not committed)
 
-Compare with [`nextjs-app/docs-site/`](./nextjs-app/docs-site/) — same tutorial topics, Docusaurus output style instead of Starlight.
+Compare with [`docusaurus-docs/`](./docusaurus-docs/) — same tutorial topics, Docusaurus output style instead of Starlight.
 
 **Good starting point if** you document a product with Starlight and want committed translated MDX in the repo.
 
@@ -181,6 +202,23 @@ Minimal [**Fumadocs**](https://www.fumadocs.dev/) 4 documentation site (port **3
 
 ---
 
+## [plain-html](./plain-html/)
+
+**Static plain HTML** demo (port 3090) using bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers—the same pattern as the bundled Translation Dashboard, but with static `fetch('/locales/{locale}.json')` instead of a Node API.
+
+**What it demonstrates**
+
+- Marking HTML for translation without `t()` in markup
+- `mark-html`, `extract`, and `translate-ui` on `.html` sources
+- Runtime `applyStaticI18n` (aligned with `src/dashboard-app/app.js`)
+- Language picker with `?locale=pt-BR` deep links
+
+**Good starting point if** you have a legacy or static HTML app and want the smallest runnable end-to-end demo of the plain-HTML workflow.
+
+→ [plain-html/README.md](./plain-html/README.md)
+
+---
+
 ## [multi-provider](./multi-provider/)
 
 Minimal fixture for **comparing LLM providers** on the same Portuguese markdown document.
@@ -221,11 +259,13 @@ Markdown **stress-test fixture** for the document translation pipeline.
 | --- | --- |
 | Smallest working app with `t()` and README translation | [console-app](./console-app/) |
 | React / Next.js + plurals + dashboard | [nextjs-app](./nextjs-app/) |
-| Docusaurus docs + flat README + SVG assets | [nextjs-app](./nextjs-app/) |
+| Docusaurus docs site | [docusaurus-docs](./docusaurus-docs/) |
+| Next.js + Docusaurus + flat README + SVG (combined) | [nextjs-app](./nextjs-app/) |
 | Astro landing page (HTML + `t()` hybrid) | [astro-website](./astro-website/) |
 | Astro Starlight docs site | [astro-docs](./astro-docs/) |
 | VitePress docs site | [vitepress-docs](./vitepress-docs/) |
 | Nextra 4 docs site | [nextra-docs](./nextra-docs/) |
+| Plain HTML + `data-i18n*` markers | [plain-html](./plain-html/) |
 | Pick or benchmark an LLM provider | [multi-provider](./multi-provider/) |
 | Regression-test markdown / CJK translation | [test-markdown](./test-markdown/) |
 

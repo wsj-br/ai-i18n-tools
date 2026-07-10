@@ -34,8 +34,10 @@
   "providers": {
     "openrouter": {
       "translationModels": [
+        "google/gemini-2.5-flash",
         "openai/gpt-4o-mini",
-        "google/gemini-2.5-flash"
+        "z-ai/glm-5.2",
+        "~anthropic/claude-sonnet-latest"
       ],
       "maxTokens": 4096,
       "temperature": 0.2

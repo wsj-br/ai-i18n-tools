@@ -33,7 +33,8 @@ Repository `examples/` ke tahat chalne wale example projects ship karta hai — 
 | Udaharan | Yeh kya dikhata hai |
 | --- | --- |
 | [console-app](/hi-Latn/examples#console-app) | Sabse chhota end-to-end app: `t()` UI strings aur README translation |
-| [nextjs-app](/hi-Latn/examples#nextjs-app) | Next.js UI, plurals, SVG, Docusaurus docs site, dashboard |
+| [nextjs-app](/hi-Latn/examples#nextjs-app) | Next.js UI, bahuvachan, SVG, nested Docusaurus docs, flat README, dashboard |
+| [docusaurus-docs](/hi-Latn/examples#docusaurus-docs) | Standalone Docusaurus documentation site |
 | [astro-website](/hi-Latn/examples#astro-website) | Astro marketing site: full-page HTML translation aur `t()` strings |
 | [astro-docs](/hi-Latn/examples#astro-docs) | Astro Starlight documentation site |
 | [vitepress-docs](/hi-Latn/examples#vitepress-docs) | VitePress docs aur theme catalog |

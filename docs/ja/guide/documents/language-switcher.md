@@ -64,6 +64,7 @@
 |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | このパッケージ (フラットな README + VitePress サイト) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README ブロック: `docsOutput.style = "flat"`; サイト ブロック: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | フラット README + Docusaurus ドキュメント | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (2 番目のブロック: `docsOutput.style = "flat"`; 最初のブロック: `docsOutput.style = "docusaurus"`) |
+| Docusaurus ドキュメントのみ               | [examples/docusaurus-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json) (`docsOutput.style = "docusaurus"` + `docusaurusCatalogDir`) |
 | VitePress ドキュメント (最小限のデモ)      | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` の直前の行（例：`**Read in other languages:**`）は通常の翻訳対象セグメントであり、各ターゲットロケールでローカライズされます。マーカー内のリンク行は、`href` およびマニフェスト駆動のラベルを除き、そのまま再生成されます。

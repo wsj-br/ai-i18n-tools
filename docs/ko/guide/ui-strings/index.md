@@ -22,14 +22,15 @@ i18next를 사용하는 모든 JS/TS 프로젝트를 위한 것입니다: React 
 npx ai-i18n-tools init
 ```
 
-이 명령어는 `ui-markdown` 템플릿으로 `ai-i18n-tools.config.json` 파일을 생성합니다. 다음 항목을 설정하려면 파일을 편집하세요:
+이 작업은 기본 `provider` / `providers` 블록을 포함하여 `ui-markdown` 템플릿으로 `ai-i18n-tools.config.json`를 작성합니다. `translate-ui` 또는 `sync`를 실행하기 전에, 환경 변수나 `.env`에서 활성 프로바이더의 API 키를 설정하세요. 단, Ollama는 예외입니다. 자세한 내용은 [프로바이더 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요. config를 편집하여 다음을 설정하세요:
 
-- `sourceLocale` - 소스 언어 BCP-47 코드 (예: `"en-GB"`). **일치해야 합니다** `SOURCE_LOCALE` 런타임 i18n 설정 파일에서 내보낸 `src/i18n.ts` / `src/i18n.js`.
-- `targetLocales` - 대상 언어의 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). `generate-ui-languages`를 실행하여 이 목록에서 `ui-languages.json` 매니페스트를 생성합니다.
-- `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 glob 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
-- `ui.stringsJson` - 마스터 카탈로그를 작성할 위치 (예: `"src/locales/strings.json"`).
+- `provider` 및 `providers` — 최소 하나의 프로바이더에 `translationModels`가 있어야 합니다. OpenRouter를 사용하지 않으려면 프리셋이나 모델 목록을 변경하세요. [LLM 프로바이더 및 모델](/ko/guide/providers-and-models)을 참조하세요.
+- `sourceLocale` - 소스 언어의 BCP-47 코드(예: `"en-GB"`). 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`와 **반드시 일치**해야 합니다.
+- `targetLocales` - 타겟 언어의 BCP-47 코드 배열(예: `["de", "fr", "pt-BR"]`). 이 목록에서 `ui-languages.json` 매니페스트를 생성하려면 `generate-ui-languages`를 실행하세요.
+- `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉터리 또는 glob 패턴(예: `["src/"]`, `["src/**/*.ts"]`).
+- `ui.stringsJson` - 마스터 카탈로그를 작성할 위치(예: `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성할 위치(예: `"src/locales/"`).
-- `providers.<active>.uiModels`(선택 사항) - `translate-ui`, 복수 생성, `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다(일치하는 `localeModels` 항목 다음, `translationModels` 이전). [공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.
+- `providers.<active>.uiModels` (선택 사항) - `translate-ui`, 복수형 생성 및 `proofread-ui`을 위한 정렬된 UI 전용 모델 목록(일치하는 `localeModels` 항목 이후, `translationModels` 이전). [프로바이더 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.
 
 <a id="step-2-extract-strings"></a>
 ## 2단계: 문자열 추출

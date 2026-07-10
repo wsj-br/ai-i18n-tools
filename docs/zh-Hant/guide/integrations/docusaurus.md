@@ -3,7 +3,7 @@
 
 將 `init -t ui-docusaurus` 和 `docsOutput.style: "docusaurus"` 用於 [Docusaurus](https://docusaurus.io/) 文件網站。預設會使用 `docs[]` 區塊和 `docusaurusCatalogDir`，以便 `translate-docs` 可以透過一個指令翻譯頁面 Markdown 和 Docusaurus Shell JSON。
 
-另請參閱[文件](/zh-Hant/guide/documents/)、可執行的[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)示範（Next.js 應用程式加上巢狀`docs-site/`），以及[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)以取得專注於 Docusaurus 的逐步解說。
+另請參閱[文件](/zh-Hant/guide/documents/)、可執行的 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) 示範，以及 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)，以了解結合了 Next.js 應用程式、巢狀 Docusaurus 文件、扁平 README 與 SVG 資產的範例。
 
 <a id="quick-start"></a>
 ## 快速開始
@@ -12,7 +12,7 @@
 npx ai-i18n-tools init -t ui-docusaurus
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
-cd docs-site && pnpm build   # Docusaurus build (project-specific script)
+cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
 當您同時翻譯文件頁面和網站外觀（導覽列、頁尾、主題字串）時，請啟用 `features.translateDocs` 並設定 `docs[].docusaurusCatalogDir`。當您升級 `@docusaurus/*` 或變更導覽列/頁尾/主題標籤時，請在您的 Docusaurus 專案中執行 `docusaurus write-translations` — 然後重新執行 `translate-docs` 或 `sync`，以便將 Shell JSON 翻譯成每個地區設定資料夾。
@@ -98,4 +98,6 @@ Docusaurus 導覽列、頁尾、搜尋佔位符以及其他主題/外掛程式�
 <a id="example-project"></a>
 ## 範例專案
 
-[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — 英文來源位於 `docs/`，已提交的翻譯位於 `i18n/<locale>/docusaurus-plugin-content-docs/current/` 下，以及已翻譯的 Shell JSON。在連接埠 3040 上執行 `pnpm start` 進行開發；使用 `pnpm run start:fr`（及類似指令）在開發模式中預覽單一地區設定。
+[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — 英文來源位於 `docs/`，提交的翻譯位於 `i18n/<locale>/docusaurus-plugin-content-docs/current/`，以及翻譯後的 shell JSON。在連接埠 3100 上執行 `pnpm start`（建置 + 服務）以使語系下拉選單正常運作；使用 `pnpm dev` 進行僅限英文的熱重載。
+
+如需相同儲存庫佈局中的 UI 字串、SVG 翻譯與扁平 README，請參閱 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)（連接埠 3040 上的巢狀 `docs-site/`）。

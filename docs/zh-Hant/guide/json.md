@@ -17,7 +17,7 @@
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-該範本會設定 `features.translateJson: true`，停用 UI 提取和文件翻譯，並建立一個指向 `src/i18n/en/translation.json` 的單一 `json[]` 區塊，輸出為 `src/i18n/{llocale}/translation.json`。請編輯 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate` 以符合您的儲存庫佈局。
+該範本會設定 `features.translateJson: true`、停用 UI 擷取與文件翻譯，並建立一個指向 `src/i18n/en/translation.json` 且輸出為 `src/i18n/{llocale}/translation.json` 的單一 `json[]` 區塊。它也包含一個預設的 `provider` / `providers` 區塊 — 在執行 `translate-json` 或 `sync` 之前，請設定對應的 API 金鑰（或使用本機 Ollama）；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。請根據您的儲存庫結構編輯 `sourceLocale`、`targetLocales`、`contentPaths` 與 `outputPathTemplate`。
 
 <a id="step-2-configure-json"></a>
 ### 步驟 2：設定 `json[]`

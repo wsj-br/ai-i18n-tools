@@ -64,6 +64,7 @@
 |---|---|
 | 이 패키지(플랫 README + VitePress 사이트) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (README 블록: `docsOutput.style = "flat"`; 사이트 블록: `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | 플랫 README + Docusaurus 문서 | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (두 번째 블록: `docsOutput.style = "flat"`; 첫 번째 블록: `docsOutput.style = "docusaurus"`) |
+| Docusaurus 문서 전용               | [examples/docusaurus-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json) (`docsOutput.style = "docusaurus"` + `docusaurusCatalogDir`) |
 | VitePress 문서 (최소 데모) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` 바로 이전 줄(예: `**Read in other languages:**`)은 일반적인 번역 가능한 구문이며 각 대상 로케일에서 현지화되며, 마커 내부의 링크 행은 `href` 및 매니페스트 기반 레이블을 제외하고는 원본 그대로 재생성됩니다.

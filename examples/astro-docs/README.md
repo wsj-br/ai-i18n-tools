@@ -4,7 +4,7 @@ Multilingual documentation site built with [Astro Starlight](https://starlight.a
 
 English source pages live at the root of `src/content/docs/`. Translated copies are committed under `src/content/docs/<locale>/` using `markdownOutput.style: "astro-starlight"` (alias of `doc-system` with an empty locale subpath).
 
-Compare with the Docusaurus demo at `examples/nextjs-app/docs-site/` — same tutorial content, different output layout (`style: "docusaurus"`).
+Compare with [`examples/docusaurus-docs/`](../docusaurus-docs/) — same tutorial topics, Docusaurus output style instead of Starlight.
 
 ## Locales
 

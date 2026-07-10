@@ -33,7 +33,8 @@ El repositorio incluye proyectos de ejemplo ejecutables en `examples/`, cada uno
 | Ejemplo | Lo que muestra |
 | --- | --- |
 | [console-app](/es/examples#console-app) | Aplicación de extremo a extremo más pequeña: cadenas de interfaz de usuario `t()` más traducción de README |
-| [nextjs-app](/es/examples#nextjs-app) | Interfaz de usuario de Next.js, plurales, SVG, sitio de documentos de Docusaurus, panel de control |
+| [nextjs-app](/es/examples#nextjs-app) | Interfaz de usuario de Next.js, plurales, SVG, documentos anidados de Docusaurus, README plano, panel de control |
+| [docusaurus-docs](/es/examples#docusaurus-docs) | Sitio de documentación independiente de Docusaurus |
 | [astro-website](/es/examples#astro-website) | Sitio de marketing de Astro: traducción de HTML de página completa más cadenas `t()` |
 | [astro-docs](/es/examples#astro-docs) | Sitio de documentación de Astro Starlight |
 | [vitepress-docs](/es/examples#vitepress-docs) | Documentos de VitePress más catálogo de temas |

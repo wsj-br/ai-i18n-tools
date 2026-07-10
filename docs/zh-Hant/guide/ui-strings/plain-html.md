@@ -98,4 +98,6 @@ npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.
 
 此程式碼片段中標記遍歷的部分與 [`src/dashboard-app/app.js`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js) 中的 `applyStaticI18n` 完全相同。由於英文原始文字是目錄鍵，因此未翻譯的字串會自動回退為英文。
 
+如需**可執行的靜態對應版本**（無 Node 伺服器 — 使用 `fetch('/locales/{locale}.json')` 而非 `/api/ui-i18n`），請參閱 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 工作區範例。它使用相同的標記模式，並配備精簡的儀表板風格 UI；在 `pnpm dev` 之後，請於 `http://localhost:3090/?locale=pt-BR` 試用葡萄牙文（巴西）。
+
 隨附儀表板的不同之處：由於它有一個 Node 伺服器，因此它不會擷取靜態 `/locales/{locale}.json`。用戶端呼叫 `GET /api/ui-i18n`，伺服器解析活動語言環境（`--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > 主機作業系統）並傳回 `{ locale, dir, bundle }`。然後，用戶端從該回應設定 `document.documentElement` `lang`/`dir`（而不是讀取 `lang` 來選擇語言環境），然後呼叫 `applyStaticI18n`。這些套件本身不是工具的翻譯內容 — 它們是儀表板自己的 UI 字串，以 `src/i18n/locales/{locale}.json` 形式發布（在建置時複製到 `dist/i18n/locales`），並由 [`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts) 中的 `loadUiBundle` 在伺服器端讀取。儀表板的 `t()` 也支援 ```{{name}}``` 插值，這與上面最小的 `t` 不同。

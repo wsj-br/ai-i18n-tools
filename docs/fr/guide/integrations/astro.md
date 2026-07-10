@@ -131,4 +131,4 @@ Résolvez `t('…')` au **moment de la construction** en recherchant le littéra
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Documentation Starlight | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | Site marketing Astro simple (hybride HTML + `t()`) | (voir README) |
 
-Comparez [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) avec [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — contenu de tutoriel similaire, style de sortie Docusaurus au lieu de Starlight.
+Compare [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) avec [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — contenu de tutoriel similaire, style de sortie Docusaurus au lieu de Starlight.

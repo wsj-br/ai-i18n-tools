@@ -88,13 +88,14 @@ npx ai-i18n-tools init -t ui-astro-website
 
 编辑生成的 `ai-i18n-tools.config.json`：
 
+- `provider` 和 `providers` — `init` 默认搭建 OpenRouter；在 `translate-docs` 或 `sync` 之前，请至少配置一个提供商并设置其 API 密钥（Ollama 无需密钥）。参见[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)和 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
 - `sourceLocale` - 源语言（必须与 `docusaurus.config.js` 中的 `defaultLocale` 匹配）。
 - `targetLocales` - BCP-47 区域设置代码数组（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有管道的共享 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
-- `docs` - 文档块数组。每个块都有可选的 `description`、`contentPaths`（字符串或数组；文件、目录或 glob）、`outputDir`、可选的 `docusaurusCatalogDir`、`docsOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
-- `docs[].description` - 为维护者提供的可选简短说明。设置后，它会出现在 `translate-docs` 标题和 `status` 章节标题中。
+- `cacheDir` - 所有流水线共享的 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
+- `docs` - 文档块数组。每个块包含可选的 `description`、`contentPaths`（字符串或数组；文件、目录或 glob）、`outputDir`、可选的 `docusaurusCatalogDir`、`docsOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
+- `docs[].description` - 为维护者提供的可选简短说明。设置后，它会显示在 `translate-docs` 标题和 `status` 章节标题中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus shell JSON 的可选 `docusaurusCatalogDir`）。
-- `docs[].outputDir` - 该区块的翻译输出根目录。
+- `docs[].outputDir` - 该块的翻译输出根目录。
 - `docs[].docsOutput.style` - `"nested"`（默认）、`"flat"`、`"doc-system"`，或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（参见[输出布局](/zh-Hans/guide/documents/output-layouts)）。
 
 **主要与补充：** 专注于 `contentPaths` 用于本地化页面。当您还需要来自 `write-translations` 的 Docusaurus shell JSON 时，请设置 `docusaurusCatalogDir`。如果您只翻译页面，请省略 `docusaurusCatalogDir`。

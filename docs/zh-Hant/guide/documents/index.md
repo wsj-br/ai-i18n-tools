@@ -88,12 +88,13 @@ npx ai-i18n-tools init -t ui-astro-website
 
 編輯產生的 `ai-i18n-tools.config.json`：
 
+- `provider` 與 `providers` — `init` 預設以 OpenRouter 建立骨架；在 `translate-docs` 或 `sync` 之前，請至少設定一個供應商並設定其 API 金鑰（Ollama 不需要金鑰）。請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)及[LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
 - `sourceLocale` - 來源語言（必須與 `docusaurus.config.js` 中的 `defaultLocale` 相符）。
-- `targetLocales` - BCP-47 地區設定代碼陣列（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有管道的共用 SQLite 快取目錄（以及 `--write-logs` 的預設記錄目錄）。
-- `docs` - 文件區塊陣列。每個區塊都有選擇性的 `description`、`contentPaths`（字串或陣列；檔案、目錄或 glob）、`outputDir`、選擇性的 `docusaurusCatalogDir`、`docsOutput`、選擇性的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
-- `docs[].description` - 維護者的選用簡短備註。設定後，它會出現在 `translate-docs` 標題和 `status` 區段標頭中。
-- `docs[].contentPaths` - markdown/MDX/`.astro` 原始碼（以及 Docusaurus shell JSON 的選用 `docusaurusCatalogDir`）。
+- `targetLocales` - BCP-47 地區代碼陣列（例如 `["de", "fr", "es"]`）。
+- `cacheDir` - 所有管線共用的 SQLite 快取目錄（同時為 `--write-logs` 的預設日誌目錄）。
+- `docs` - 文件區塊陣列。每個區塊包含可選的 `description`、`contentPaths`（字串或陣列；檔案、目錄或萬用字元模式）、`outputDir`、可選的 `docusaurusCatalogDir`、`docsOutput`、可選的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
+- `docs[].description` - 給維護者的可選簡短備註。設定後，會顯示在 `translate-docs` 標題與 `status` 區塊標頭中。
+- `docs[].contentPaths` - markdown/MDX/`.astro` 來源（以及 Docusaurus shell JSON 的可選 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 該區塊的翻譯輸出根目錄。
 - `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（請參閱[輸出佈局](/zh-Hant/guide/documents/output-layouts)）。
 

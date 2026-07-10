@@ -14,37 +14,66 @@
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
+pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
 将 `console-app` 替换为任何示例文件夹名称。每个示例都声明了 `"ai-i18n-tools": "^1.7.2"` 并从 npm 安装 CLI。每个示例的 README 都包含相同的代码片段，其中已填充文件夹名称。
 
-**从完整的 ai-i18n-tools 存储库：** 如果您克隆了整个存储库（而不仅仅是使用 degit 的一个示例文件夹），请从存储库根目录运行 `pnpm install`；工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 条目 (`ai-i18n-tools: workspace:*`) 会自动将示例链接到您的本地检出。
+**从完整的 ai-i18n-tools 仓库** — 如果你克隆了整个仓库（而不仅仅是使用 degit 克隆了一个示例文件夹）：
 
 ```bash
+pnpm install          # repository root
+pnpm run build        # after changing CLI source
+cd examples/console-app
+pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
+# or: pnpm exec ai-i18n-tools sync
+```
+
+工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 条目 (`ai-i18n-tools: workspace:*`) 会自动将工作区示例链接到你的本地检出。独立夹具 (`multi-provider`, `test-markdown`) 不是工作区包 — 从它们的文件夹中使用 `node ../../bin/ai-i18n-tools.mjs …`。要从**仓库根目录**运行 CLI（此包自己的 docs/i18n），请使用 `pnpm i18n:sync` 或 `node bin/ai-i18n-tools.mjs …` — 参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)和[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
+
+<a id="provider-and-api-key-required-for-translation"></a>
+### 提供商和 API 密钥（翻译所需）
+
+每个调用 LLM 的命令 —— `translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 和 `sync` —— 需要**两者**：
+
+1. `ai-i18n-tools.config.json` 中**至少一个提供商**：一个包含 `translationModels` 的 `providers.<name>` 块，以及配置了多个提供商时的顶层 `provider` 键。`init` 默认脚手架使用 OpenRouter；切换预设、添加提供商或调整模型列表 —— 请参阅 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
+2. 环境或项目根目录 `.env` 文件中**匹配的 API 密钥**。每个内置预设读取一个命名的环境变量（例如 `OPENROUTER_API_KEY`）；**Ollama** 是个例外 —— 它使用本地端点且不需要密钥。请参阅[安装 —— 设置您的提供商 API 密钥](/zh-Hans/guide/installation#using-the-cli)和[预设环境变量表](/zh-Hans/guide/providers-and-models#built-in-providers)。
+
+`extract`、`status` 以及其他不调用 LLM 的命令不需要提供商或 API 密钥。
+
+<a id="core-cli-commands"></a>
+### 核心 CLI 命令
+
+在安装 `ai-i18n-tools` 后从你的**项目根目录**运行（关于 `npx`、`pnpm exec` 和 `package.json` 脚本，请参见[使用 CLI](/zh-Hans/guide/installation#using-the-cli)）。下面的示例使用直接命令名；npm 用户可以添加 `npx` 前缀，pnpm 用户可以添加 `pnpm exec` 前缀。
+
+```bash
+# Set API key for your active provider (skip for local Ollama)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+
 # UI strings (default template enables extract + translate-ui)
-npx ai-i18n-tools init
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
-# VitePress docs: npx ai-i18n-tools init -t ui-vitepress
-# Nextra docs: npx ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools translate-docs
+ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
+# VitePress docs: ai-i18n-tools init -t ui-vitepress
+# Nextra docs: ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-npx ai-i18n-tools init -t ui-json-bundles
-npx ai-i18n-tools translate-json
+ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-npx ai-i18n-tools sync
+ai-i18n-tools sync
 
 # Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-npx ai-i18n-tools status
-# npx ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools status
+# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
 <a id="recommended-packagejson-scripts"></a>
@@ -63,6 +92,7 @@ npx ai-i18n-tools status
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:translate:json": "ai-i18n-tools translate-json",
   "i18n:status": "ai-i18n-tools status",
+  "i18n:statistics": "ai-i18n-tools statistics",
   "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
 }
@@ -113,7 +143,7 @@ npx ai-i18n-tools status
 
 `glossary.uiGlossary` 将文档翻译指向与 UI 相同的 `strings.json` 目录，以保持术语一致性；`glossary.userGlossary` 添加了产品术语的 CSV 覆盖。
 
-运行 `npx ai-i18n-tools sync` 来运行一个管道：当 `features.translateUIStrings` 启用时，**提取**然后**翻译 UI**字符串；可选**翻译 SVG**（`features.translateSVG` + `svg` 块）；**翻译文档**（根据配置的 `docs[]`）；然后可选**翻译 JSON**（`features.translateUIStrings` + `json[]`）。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过部分。文档和 `json[]` 步骤接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（当 `--no-docs` 时忽略仅文档的标志；当未设置 `--no-json` 时，JSON 使用相同的缓存标志）。
+运行 `ai-i18n-tools sync` 以运行一个流水线：当启用 `features.translateUIStrings` 时，**提取**然后**翻译 UI**字符串；可选的**翻译 SVG**（`features.translateSVG` + `svg` 块）；**翻译文档**（`docs[]` 如已配置）；然后是可选的**translate-json**（`features.translateJson` + `json[]`）。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过部分步骤。文档和 `json[]` 步骤接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（当 `--no-docs` 时，仅用于文档的标志会被忽略；当未设置 `--no-json` 时，JSON 使用相同的缓存标志）。
 
 在块上使用 `docs[].targetLocales` 将该块的文件翻译成比 UI **更小的子集**（有效的文档区域设置是块之间的**并集**）：
 
@@ -189,7 +219,7 @@ npx ai-i18n-tools status
 
 <br />
 
-此功能在 `npx ai-i18n-tools sync` 中的运行方式：
+使用 `ai-i18n-tools sync` 运行的方式如下：
 
 - UI 字符串从 `src/` 中提取/翻译到 `public/locales/`。
 - 第一个文档块将 **markdown** 从 `docs-site/docs/` 翻译成 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`（本地化文档页面）。

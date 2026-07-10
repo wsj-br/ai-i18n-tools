@@ -8,6 +8,8 @@
 
 **実行時i18n設定ファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた`SOURCE_LOCALE`と一致している必要があります**。
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@
 
 `targetLocales`はUI翻訳のための主要なロケールリストであり、ドキュメントブロックのデフォルトロケールリストでもあります。`generate-ui-languages`を使用して、`sourceLocale`と`targetLocales`から`ui-languages.json`マニフェストを構築します。
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage`（オプション）
 
 ツール自身のUI言語（CLIヘルプ、ログ/サマリー、および翻訳ダッシュボード）のBCP-47コード。`sourceLocale` / `targetLocales`とは独立しており、`-L` / `--ui-lang`フラグおよび`AI_I18N_LANG`環境変数によって上書きされます。不明な値はソースロケール（`en-GB`）に適切にフォールバックします — 厳密な検証は行われません。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (オプション)
@@ -34,15 +40,21 @@
 
 **レガシー:** 設定ファイルの読み込み時にルートレベルの `uiLanguagesPath` は引き続き受け付けられ、自動的に `languagesManifestPath` に書き換えられます。
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency`（オプション）
 
 同時に翻訳される最大**ターゲットロケール数**（`translate-ui`、`translate-docs`、`translate-svg`、および`sync`内の対応するステップ）。省略された場合、CLIはUI翻訳に**4**、ドキュメント翻訳に**3**を使用します（組み込みのデフォルト）。実行ごとに`-j` / `--concurrency`で上書きできます。
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency`（オプション）
 
 **translate-docs**、**translate-svg**、および**translate-json**（と`sync`内の対応するステップ）：ファイルごとのLLM **バッチ**リクエストの最大並列数（各バッチには多数のセグメントを含めることができます）。省略した場合のデフォルトは**4**です。`translate-ui`では無視されます。`-b` / `--batch-concurrency`で上書きします。
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (オプション)
@@ -59,10 +71,14 @@
 
 **使用例:** キャッシュヒット率100%で`sync --force-update`を実行する際に、この値を`2-4`に設定して総処理時間を短縮します。この改善は、多数の小規模ファイルを処理する場合に特に顕著です。
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars`（オプション）
 
 **translate-docs**、**translate-svg**、および**translate-json**のセグメントバッチ処理：APIリクエストごとのセグメント数と文字数の上限。デフォルト：**20**セグメント、**4096**文字（省略した場合）。
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` と `providers`
@@ -127,18 +143,45 @@
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**推奨される `uiModels`:** UI文字列は短いですが非常に目立ちます。プレミアムモデルを使用すると、トーン、複数形、一貫性が向上することがよくあります。オプションの `uiModels` は、一致する `localeModels` エントリの後、かつ `translationModels` の前に試行されます（上記のフィールドリストを参照）。例:
+
+<details>
+<summary>UI翻訳に推奨されるuiModels</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**アジア言語に推奨される `localeModels`:** 日本語、韓国語、中国語のロケールは、これらのスクリプトにチューニングされたモデルを使用すると効果的であることがよくあります。ターゲットロケールが一致する場合に **最初に** （`uiModels` / `translationModels` の前に）試行されるロケールごとのオーバーライドを追加します:
+
+<details>
+<summary>ja, ko, zh-Hans, zh-Hantに推奨されるlocaleModels</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@
 
 設定されたモデルを実際の翻訳作業で比較するには、`npx ai-i18n-tools bench-models` を実行します。これは、`translationModels`、`uiModels`、および `localeModels` からの一意のモデル ID ごとに、各モデルを個別に（並行して、`concurrency` によって制限されます）1 つのサンプルを翻訳することでベンチマークを行い、モデルごとの入出力トークン、実時間、および USD コストを出力します。これにより、モデルリストを決定する前に速度と価格を比較検討できます。
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@
 | `translateSVG` | — | `.svg` ファイルを翻訳（トップレベルの `svg` ブロックが必要です）。 |
 
 `features.translateSVG` が true かつトップレベルの `svg` ブロックが設定されている場合、`translate-svg` で **SVG** ファイルを翻訳します。`sync` コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg` でない限り）。
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@
 - `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー`reactExtractor.includeUiLanguageEnglishNames`）
 
 `true`（デフォルト `false`）の場合、`extract` はバンドルされた ui-languages マスターカタログ（`sourceLocale` + `targetLocales` から構築）の各 `englishName` を、ソーススキャンから既に存在しない場合（同じハッシュキー）、`strings.json` に追加します。`languagesManifestPath` は読み取りません。
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ SQLiteキャッシュディレクトリ（すべての`docs`ブロックで共�
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフ
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフ
 | `keyPolicy.translateKeys` | モードが`allowlist`または`both`の場合に含めるドットパス／グロブ。 |
 | `keyPolicy.skipKeys` | 除外するドットパス／グロブ（デフォルトの拒否リストには`id`、`slug`、`href`、`url`、`key`、`code`が含まれます）。 |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | `pathTemplate`   | カスタムSVG出力パス。使用可能なプレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
 | `localePathLowercase` | `true` の場合、組み込みの `flat` / `nested` SVG レイアウトはロケールセグメントを小文字で使用します。カスタムの `pathTemplate` 値は変更されません。小文字のセグメントが必要な場合は `{llocale}` を使用してください。 |
 | `forceLowercase` | SVGを再構成する際にテキストを小文字に変換します。すべて小文字のラベルに依存するデザインで有用です。                                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

@@ -150,7 +150,7 @@ Igual que `"doc-system"` con `localeSubpath = "docusaurus-plugin-content-docs/cu
 
 Incluya archivos PNG coincidentes en `docs-site/static/img/screenshots/<locale>/screenshot.png`. Para configuraciones independientes de la configuración regional fuente, prefiera `screenshots/[^/]+/` frente a `screenshots/en-GB/`.
 
-Ejemplo de implementación: [examples/nextjs-app/docs-site/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) con el primer bloque `docs[]` en [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json).
+Ejemplo de implementación: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) con [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
 <a id="preset---docsoutputstyle--astro-starlight"></a>
 ### Preajuste - `docsOutput.style = "astro-starlight"`

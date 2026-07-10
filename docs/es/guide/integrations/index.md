@@ -19,6 +19,8 @@ Guías específicas de cada framework para integrar ai-i18n-tools en sitios de d
 
 Todas las integraciones de frameworks de documentación comparten el mismo modelo de bloque `docs[]` descrito en [Documentos](/es/guide/documents/). Establezca `docsOutput.style` para que coincida con su framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` o `"astro-starlight"`). Para el diseño de la carpeta de salida y el comportamiento de reescritura de enlaces, consulte [Diseños de salida](/es/guide/documents/output-layouts) y [Reescritura de enlaces](/es/guide/documents/link-rewriting).
 
+Cada plantilla `init -t ui-*` genera un bloque de proveedor de LLM predeterminado. Antes de `translate-docs` o `sync`, configure `provider` / `providers` si es necesario y establezca la clave de API correspondiente; consulte [Proveedor y clave de API](/es/guide/quick-start#provider-and-api-key).
+
 **No** coloque las cadenas de shell o tema del framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Cada página de integración explica qué rutas de catálogo y banderas de CLI cubren las etiquetas de navegación, barra lateral y tema para ese framework.
 
 <a id="runnable-examples"></a>
@@ -28,7 +30,7 @@ Todas las integraciones de frameworks de documentación comparten el mismo model
 | --- | --- |
 | Astro Starlight | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) |
 | Sitio web de Astro simple | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) |
-| Docusaurus | [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) |
+| Docusaurus | [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) |
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |

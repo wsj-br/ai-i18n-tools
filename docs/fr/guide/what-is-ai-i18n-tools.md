@@ -33,7 +33,8 @@ Le dépôt contient des exemples de projets exécutables sous `examples/` — ch
 | Exemple | Ce qu'il montre |
 | --- | --- |
 | [console-app](/fr/examples#console-app) | Plus petite application de bout en bout : chaînes d'interface utilisateur `t()` et traduction du README |
-| [nextjs-app](/fr/examples#nextjs-app) | Interface utilisateur Next.js, pluriels, SVG, site de documentation Docusaurus, tableau de bord |
+| [nextjs-app](/fr/examples#nextjs-app) | Interface utilisateur Next.js, pluriels, SVG, documentation Docusaurus imbriquée, README plat, tableau de bord |
+| [docusaurus-docs](/fr/examples#docusaurus-docs) | Site de documentation Docusaurus autonome |
 | [astro-website](/fr/examples#astro-website) | Site marketing Astro : traduction HTML pleine page et chaînes `t()` |
 | [astro-docs](/fr/examples#astro-docs) | Site de documentation Astro Starlight |
 | [vitepress-docs](/fr/examples#vitepress-docs) | Documentation VitePress et catalogue de thèmes |

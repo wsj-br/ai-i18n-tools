@@ -15,7 +15,7 @@ Gibt die CLI-Version und den Build-Zeitstempel aus (dieselbe Information wie `-V
 
 **Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
 
-Schreibt eine Starter-Konfigurationsdatei (enthält `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `docs[].addFrontmatter`).
+Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `docs[].addFrontmatter`). Übersetzungsbefehle, die ein LLM aufrufen, erfordern den API-Schlüssel des aktiven Anbieters in der Umgebung oder `.env` (Ollama ausgenommen) – siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
 
 **Wichtige Optionen:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 

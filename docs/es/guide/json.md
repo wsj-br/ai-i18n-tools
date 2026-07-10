@@ -17,7 +17,7 @@ Este pipeline **no** ejecuta `extract`; no hay un catálogo `strings.json`. Habi
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-Esa plantilla establece `features.translateJson: true`, desactiva la extracción de la interfaz de usuario y la traducción de documentos, y crea un único bloque `json[]` que apunta a `src/i18n/en/translation.json` con salida `src/i18n/{llocale}/translation.json`. Edite `sourceLocale`, `targetLocales`, `contentPaths` y `outputPathTemplate` según la estructura de su repositorio.
+Esa plantilla establece `features.translateJson: true`, desactiva la extracción de la interfaz de usuario y la traducción de documentos, y genera un único bloque `json[]` que apunta a `src/i18n/en/translation.json` con la salida `src/i18n/{llocale}/translation.json`. También incluye un bloque predeterminado `provider` / `providers`; configure la clave de API correspondiente (o use Ollama local) antes de ejecutar `translate-json` o `sync`; consulte [Proveedor y clave de API](/es/guide/quick-start#provider-and-api-key). Edite `sourceLocale`, `targetLocales`, `contentPaths` y `outputPathTemplate` para la disposición de su repositorio.
 
 <a id="step-2-configure-json"></a>
 ### Paso 2: Configurar `json[]`

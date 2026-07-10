@@ -131,4 +131,4 @@ Jab aap koi language add ya remove karte hain to teen lists ko align rakhein: `t
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Starlight documentation | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | Sadharan Astro marketing site (HTML + `t()` hybrid) | (README dekhen) |
 
-[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) ki [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) se tulna karen — saman tutorial content, Starlight ke bajaye Docusaurus output style.
+[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) ki tulna [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) se karein — samaan tutorial content, Starlight ke bajaye Docusaurus output style.

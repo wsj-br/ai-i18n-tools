@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `docs-site/static/img/screenshots/<locale>/screenshot.png` に一致するPNGファイルを配置する。ソースロケールに依存しない設定の場合は、`screenshots/en-GB/` よりも `screenshots/[^/]+/` を使用することを推奨する。
 
-実装例: [examples/nextjs-app/docs-site/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) と [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) の最初の `docs[]` ブロック。
+実装例: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) および [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json)
 
 <a id="preset---docsoutputstyle--astro-starlight"></a>
 ### プリセット - `docsOutput.style = "astro-starlight"`

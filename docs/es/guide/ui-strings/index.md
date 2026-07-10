@@ -22,14 +22,15 @@ Diseñado para cualquier proyecto JS/TS que use i18next: aplicaciones React, Nex
 npx ai-i18n-tools init
 ```
 
-Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown`. Edítalo para configurar:
+Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown` (incluyendo un bloque `provider` / `providers` predeterminado). Antes de ejecutar `translate-ui` o `sync`, configure la clave API para su proveedor activo en el entorno o `.env` —excepto Ollama; consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key). Edite la configuración para establecer:
 
-- `sourceLocale` - código BCP-47 de tu idioma fuente (por ejemplo, `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde tu archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` - matriz de códigos BCP-47 para tus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecuta `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
-- `ui.sourceRoots` - directorios o patrones glob para escanear llamadas a `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
-- `ui.stringsJson` - ubicación donde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
-- `ui.flatOutputDir`: dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
-- `providers.<active>.uiModels` (opcional): lista de modelos solo de interfaz de usuario ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada coincidente de `localeModels`, antes de `translationModels`). Consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).
+- `provider` y `providers` — al menos un proveedor con `translationModels`; cambie el preajuste o la lista de modelos si OpenRouter no es su elección. Consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
+- `sourceLocale` - su código BCP-47 de idioma de origen (por ejemplo, `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde su archivo de configuración i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
+- `targetLocales` - matriz de códigos BCP-47 para sus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecute `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
+- `ui.sourceRoots` - directorios o patrones globales para buscar llamadas a `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
+- `ui.stringsJson` - dónde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
+- `ui.flatOutputDir` - dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
+- `providers.<active>.uiModels` (opcional) - lista de modelos solo de UI ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada `localeModels` coincidente, antes de `translationModels`). Consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Paso 2: Extraer cadenas

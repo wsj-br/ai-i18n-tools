@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # LLM 공급자 및 모델
 
-모든 번역 파이프라인(`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`)은 동일한 공급자 독립적인 클라이언트를 통해 LLM으로 텍스트를 보냅니다. **호출할 API 엔드포인트**와 **시도할 모델**을 `ai-i18n-tools.config.json`에서 한 번 구성하면 모든 명령이 해당 설정과 동일한 SQLite 캐시를 공유합니다.
+모든 번역 파이프라인 — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` — 은 동일한 프로바이더 독립적 클라이언트를 통해 텍스트를 LLM으로 전송합니다. 이러한 명령을 실행하기 전에 `ai-i18n-tools.config.json`에서 **최소 한 개의 프로바이더**를 구성하고, 환경 변수 또는 `.env`에 일치하는 **API 키**를 설정해야 합니다 (**Ollama**를 제외한 내장 프리셋). `init`은(는) 시작용 `provider` / `providers` 블록을 작성하지만, 활성 프리셋에 대한 자격 증명은 직접 제공해야 합니다.
+
+구성(config)에서 **어떤 API 엔드포인트를 호출할지**와 **어떤 모델을 시도할지** 한 번만 설정하면, 모든 번역 명령이 해당 설정과 동일한 SQLite 캐시를 공유합니다.
 
 CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의 유일한 항목)에서 활성 공급자를 확인합니다. 각 공급자 블록은 정렬된 `translationModels` 대체 체인을 나열합니다. 내장된 사전 설정은 `baseUrl` 및 API 키 환경 변수를 자동으로 상속합니다(필요한 경우 공급자별로 재정의).
 
@@ -46,7 +48,11 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 다양한 제공업체와 모델은 언어에 따라 비용, 속도 및 품질이 다릅니다. `npx ai-i18n-tools init`의 기본 목록을 시작점으로 간주하고, 로케일에서 일관되게 좋지 않은 결과가 나오면 확장하거나 해당 로케일에 대한 `localeModels` 항목을 추가하세요. 전체 기본값 및 근거: [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers).
 
-최소 구성 예시 (OpenRouter):
+**UI 문자열:** 선택적 `uiModels`를 사용하면 `translate-ui`, 복수형 생성, `proofread-ui`를 전역 `translationModels` 체인 전에 프리미엄 모델로 라우팅할 수 있습니다. UI 문구는 짧지만 사용자에게 노출되므로 유용합니다.
+
+**아시아 로케일:** `ja`, `ko`, `zh-Hans`, `zh-Hant`에 대한 선택적 `localeModels` 항목이 모든 파이프라인에서 먼저 시도됩니다. `z-ai/glm-5.2` 및 `minimax/minimax-m2.7`와 같은 모델은 범용 폴백보다 CJK 스크립트에서 더 나은 성능을 발휘하는 경우가 많습니다.
+
+예시 설정(OpenRouter):
 
 ```json
 {
@@ -54,15 +60,24 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

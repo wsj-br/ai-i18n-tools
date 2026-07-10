@@ -52,7 +52,20 @@ Fügen Sie mit [**direnv**](https://direnv.net/) `PATH_add node_modules/.bin` zu
 
 **Null-Installations-Einzelbefehl** — `npx ai-i18n-tools <cmd>` oder `pnpm dlx ai-i18n-tools <cmd>` (lädt das Paket für diesen Aufruf herunter; kein Eintrag in `package.json`).
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### Geklontes ai-i18n-tools Monorepo
+
+Beim Entwickeln des Pakets oder Ausführen von Workspace-**Beispielen** aus einem vollständigen Klon von [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):
+
+- **Workspace-Beispiele** (`examples/console-app`, `examples/nextjs-app` und die anderen Pakete, die in [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) aufgeführt sind) – führen Sie `pnpm install` im Repository-Stammverzeichnis aus, dann `cd examples/<name>` und verwenden Sie `pnpm exec ai-i18n-tools …` oder die `pnpm run i18n:*`-Skripte des Beispiels. Workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) verknüpft `ai-i18n-tools` mit Ihrem lokalen Checkout.
+- **Repository-Stammverzeichnis** – pnpm verknüpft die eigenen `bin` des Stammverzeichnis-Pakets nicht mit `node_modules/.bin`, und `npx ai-i18n-tools` im Stammverzeichnis führt das **veröffentlichte npm**-Paket aus, nicht Ihren Arbeitsbaum. Verwenden Sie stattdessen `node bin/ai-i18n-tools.mjs …` oder Stammverzeichnis-`pnpm i18n:*`-Skripte.
+- **Eigenständige Fixtures** (`multi-provider`, `test-markdown`) – verwenden Sie aus dem Fixture-Ordner `node ../../bin/ai-i18n-tools.mjs …`.
+
+Führen Sie `pnpm run build` im Repository-Stammverzeichnis aus, nachdem Sie die CLI-Quelle geändert haben. Siehe den [Entwicklungsleitfaden](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) für Build-Schritte und optionale Workarounds für die globale Installation.
+
 Unter Linux, macOS und WSL setzen Registry-Installationen automatisch das Ausführbar-Bit für das CLI-Skript. Unter Windows erzeugen Paketmanager `.cmd`- und `.ps1`-Shims, die Node explizit aufrufen.
+
+Übersetzungsbefehle (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) erfordern eine **Anbieterkonfiguration** in `ai-i18n-tools.config.json` und **einen API-Schlüssel** für den aktiven Anbieter. Führen Sie `ai-i18n-tools init` aus, um einen Standard-OpenRouter-Block zu erstellen; bearbeiten Sie `provider` / `providers`, um Voreinstellungen oder Modelle zu wechseln – siehe [LLM-Anbieter und -Modelle](/de/guide/providers-and-models). Ollama ist die einzige integrierte Voreinstellung, die keinen API-Schlüssel benötigt.
 
 Legen Sie Ihren Provider-API-Schlüssel fest (OpenRouter wird angezeigt; verwenden Sie die Umgebungsvariable, die Ihrem aktiven Provider entspricht – siehe die [Voreinstellungstabelle](/de/guide/providers-and-models#built-in-providers)):
 

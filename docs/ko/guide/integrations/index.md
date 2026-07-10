@@ -19,6 +19,8 @@
 
 모든 문서 프레임워크 통합은 [문서](/ko/guide/documents/)에 설명된 것과 동일한 `docs[]` 블록 모델을 공유합니다. 프레임워크(`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` 또는 `"astro-starlight"`)에 맞게 `docsOutput.style`을 설정하세요. 출력 폴더 레이아웃 및 링크 재작성 동작에 대해서는 [출력 레이아웃](/ko/guide/documents/output-layouts) 및 [링크 재작성](/ko/guide/documents/link-rewriting)을 참조하세요.
 
+각 `init -t ui-*` 템플릿은 기본 LLM 제공자 블록을 스캐폴드합니다. `translate-docs` 또는 `sync` 전에 필요한 경우 `provider` / `providers`를 구성하고 일치하는 API 키를 설정하세요 — [제공자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
+
 `json[]`에 프레임워크 셸 또는 테마 문자열을 **넣지 마세요** — 이 파이프라인은 관련 없는 애플리케이션 로케일 번들을 위한 것입니다. 각 통합 페이지에서는 해당 프레임워크의 탐색, 사이드바 및 테마 레이블을 처리하는 카탈로그 경로와 CLI 플래그를 설명합니다.
 
 <a id="runnable-examples"></a>
@@ -28,7 +30,7 @@
 | --- | --- |
 | Astro Starlight | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) |
 | 일반 Astro 웹사이트 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) |
-| Docusaurus | [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) |
+| Docusaurus | [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) |
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |

@@ -1,0 +1,23 @@
+{
+  "name": "plain-html-example",
+  "version": "1.0.0",
+  "description": "Plain HTML example demonstrating data-i18n markers with ai-i18n-tools",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "i18n:mark-html": "ai-i18n-tools mark-html public/index.html --write",
+    "i18n:extract": "ai-i18n-tools extract",
+    "i18n:translate-ui": "ai-i18n-tools translate-ui",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:locales": "ai-i18n-tools generate-ui-languages",
+    "i18n:clean": "rm -rf .translation-cache"
+  },
+  "devDependencies": {
+    "ai-i18n-tools": "^1.7.2"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "license": "MIT"
+}

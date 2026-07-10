@@ -150,7 +150,7 @@ Har target locale ke liye usi path par matching PNG files ship karein (jaise `st
 
 Matching PNG files ko `docs-site/static/img/screenshots/<locale>/screenshot.png` par ship karein. Source-locale-agnostic configs ke liye, `screenshots/en-GB/` ke bajaye `screenshots/[^/]+/` ko prefer karein.
 
-Amal ka udaharan: [examples/nextjs-app/docs-site/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) mein pehle `docs[]` block ke saath.
+Laagu udaharan: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json) ke saath.
 
 <a id="preset---docsoutputstyle--astro-starlight"></a>
 ### Puraane Sait - `docsOutput.style = "astro-starlight"`

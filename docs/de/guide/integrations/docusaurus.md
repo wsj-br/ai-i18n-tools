@@ -3,7 +3,7 @@
 
 Verwenden Sie `init -t ui-docusaurus` und `docsOutput.style: "docusaurus"` für [Docusaurus](https://docusaurus.io/)-Dokumentationsseiten. Das Preset erstellt einen `docs[]`-Block mit `docusaurusCatalogDir`, sodass `translate-docs` sowohl Seiten-Markdown als auch Docusaurus-Shell-JSON in einem Befehl übersetzen kann.
 
-Siehe auch [Dokumente](/de/guide/documents/), die ausführbare Demo [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (Next.js-App plus verschachteltes `docs-site/`) und [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) für eine fokussierte Docusaurus-only-Anleitung.
+Siehe auch [Dokumente](/de/guide/documents/), die ausführbare Demo [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) und [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) für eine kombinierte Next.js-App mit verschachtelten Docusaurus-Dokumenten, flacher README und SVG-Assets.
 
 <a id="quick-start"></a>
 ## Schnellstart
@@ -12,7 +12,7 @@ Siehe auch [Dokumente](/de/guide/documents/), die ausführbare Demo [examples/ne
 npx ai-i18n-tools init -t ui-docusaurus
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
-cd docs-site && pnpm build   # Docusaurus build (project-specific script)
+cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
 Aktivieren Sie `features.translateDocs` und setzen Sie `docs[].docusaurusCatalogDir`, wenn Sie sowohl Dokumentationsseiten als auch die Site-Oberfläche (Navigationsleiste, Fußzeile, Theme-Strings) übersetzen. Führen Sie `docusaurus write-translations` in Ihrem Docusaurus-Projekt aus, wenn Sie `@docusaurus/*` aktualisieren oder Navigationsleisten-/Fußzeilen-/Theme-Beschriftungen ändern – und führen Sie dann `translate-docs` oder `sync` erneut aus, damit Shell-JSON in jeden Sprachordner übersetzt wird.
@@ -98,4 +98,6 @@ Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipe
 <a id="example-project"></a>
 ## Beispielprojekt
 
-[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) – Englische Quellen unter `docs/`, übertragene Übersetzungen unter `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus übersetzte Shell-JSON. Führen Sie `pnpm start` auf Port 3040 für die Entwicklung aus; verwenden Sie `pnpm run start:fr` (und ähnliches), um eine einzelne Sprache im Entwicklungsmodus vorab anzuzeigen.
+[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) – Englische Quellen unter `docs/`, festgeschriebene Übersetzungen unter `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus übersetztes Shell-JSON. Führen Sie `pnpm start` auf Port 3100 aus (Build + Serve), damit die Sprachauswahl funktioniert; verwenden Sie `pnpm dev` für den englischsprachigen Hot Reload.
+
+Für UI-Strings, SVG-Übersetzung und eine flache README im selben Repository-Layout siehe [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (verschachteltes `docs-site/` auf Port 3040).

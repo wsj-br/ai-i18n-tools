@@ -33,7 +33,8 @@ ai-i18n-tools는 선호하는 LLM 공급자를 사용하여 앱과 문서를 번
 | 예시 | 내용 |
 | --- | --- |
 | [console-app](/ko/examples#console-app) | 가장 작은 엔드투엔드 앱: `t()` UI 문자열 및 README 번역 |
-| [nextjs-app](/ko/examples#nextjs-app) | Next.js UI, 복수형, SVG, Docusaurus 문서 사이트, 대시보드 |
+| [nextjs-app](/ko/examples#nextjs-app) | Next.js UI, 복수형, SVG, 중첩 Docusaurus 문서, 플랫 README, 대시보드 |
+| [docusaurus-docs](/ko/examples#docusaurus-docs) | 독립형 Docusaurus 문서 사이트 |
 | [astro-website](/ko/examples#astro-website) | Astro 마케팅 사이트: 전체 페이지 HTML 번역 및 `t()` 문자열 |
 | [astro-docs](/ko/examples#astro-docs) | Astro Starlight 문서 사이트 |
 | [vitepress-docs](/ko/examples#vitepress-docs) | VitePress 문서 및 테마 카탈로그 |

@@ -59,6 +59,7 @@ EXAMPLE_BUILDS=(
   examples/console-app:start
   examples/fumadocs-docs:build
   examples/multi-provider:build
+  examples/docusaurus-docs:build
   examples/nextjs-app:build
   examples/nextjs-app/docs-site:build
   examples/nextra-docs:build

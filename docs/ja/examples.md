@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-代わりに [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリを**すべて**クローンした場合は、リポジトリのルートで `pnpm install` と `pnpm run build` を実行し、次に `cd examples/<name>` を実行します。
+代わりに**全体の** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリをクローンした場合は、リポジトリのルートで `pnpm install` と `pnpm run build` を実行してから、`cd examples/<name>` を実行してください。ワークスペースの例では、`pnpm exec ai-i18n-tools …` またはそれらの `pnpm run i18n:*` スクリプト経由でローカルCLIを使用します。リポジトリのルートで `npx` を実行するわけではありません（それを実行すると公開済みのnpmパッケージが実行されます）。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo) を参照してください。
 
 <a id="list-of-examples"></a>
 ## 例のリスト
@@ -25,19 +25,23 @@ pnpm install
 <a id="astro-docs"></a>
 <a id="vitepress-docs"></a>
 <a id="nextra-docs"></a>
+<a id="plain-html"></a>
 <a id="fumadocs-docs"></a>
+<a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="test-markdown"></a>
 
 | 例 | 最適な用途 | degit でコピー | 実行 |
 | --- | --- | --- | --- |
 | [**console-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) | `t()` UI 文字列 + README 翻訳を含む最小限の動作するアプリ | `npx degit wsj-br/ai-i18n-tools/examples/console-app console-app` | `pnpm start` |
-| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 複数形 + ダッシュボード。Docusaurus ドキュメント + フラット README + SVG アセット | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev` (アプリ `:3030`; ドキュメント `:3040` の場合は `cd docs-site && pnpm start`) |
+| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 複数形 + ダッシュボード; ネストされた Docusaurus ドキュメント + フラットな README + SVG アセット | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev` (アプリ `:3030`; ドキュメント用 `cd docs-site && pnpm start` `:3040`) |
+| [**docusaurus-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/README.md) | Docusaurus ドキュメントサイトのみ (`docusaurus` プリセット) | `npx degit wsj-br/ai-i18n-tools/examples/docusaurus-docs docusaurus-docs` | `pnpm start` (`:3100`; ビルド + サーブ、ロケールメニュー機能) |
 | [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro ランディングページ: フルページ HTML + `t()` ハイブリッド | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
 | [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight ドキュメントサイト | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
 | [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress ドキュメントサイト + テーマ JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 辞書 `.ts` シェル (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI カタログ (`pt`, `zh`, ドットパーサー) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
+| [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | プレーン HTML + `data-i18n*` マーカー; 静的ロケール JSON (ダッシュボード形式の UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 

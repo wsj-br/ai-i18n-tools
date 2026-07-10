@@ -8,6 +8,8 @@ Source language ke liye BCP-47 code (jaise `"en-GB"`, `"en"`, `"pt-BR"`). Is loc
 
 Aapke runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`) se export kiye gaye `SOURCE_LOCALE` se **match hona chahiye**.
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@ Translate karne ke liye BCP-47 locale codes ka array (jaise `["de", "fr", "es", 
 
 `targetLocales` UI translation ke liye primary locale list hai aur documentation blocks ke liye default locale list hai. `generate-ui-languages` ka upyog `sourceLocale` + `targetLocales` se `ui-languages.json` manifest banane ke liye karein.
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (vaikalpik)
 
 Tool ke apne UI bhasha ke liye BCP-47 code (CLI help, logs/summaries, aur Translation Dashboard). Yah `sourceLocale` / `targetLocales` se swatantra hai, aur `-L` / `--ui-lang` flag aur `AI_I18N_LANG` environment variable dwara override kiya jata hai. Anjaan values source locale (`en-GB`) mein gracefully degrade ho jate hain — koi strict validation nahi hai. Dekhen [Tool UI language](/hi-Latn/guide/tool-ui-language).
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (vikalpik)
@@ -34,15 +40,21 @@ Iska upyog tab karein jab:
 
 **Legacy:** root-level `uiLanguagesPath` abhi bhi config file load karte samay swikar kiya jata hai aur swatah `languagesManifestPath` mein rewrite ho jata hai.
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
 
 Ek saath anuvaad kiye gaye adhiktam **lakshya sthaan** (`translate-ui`, `translate-docs`, `translate-svg`, aur `sync` ke andar milte-julte steps). Yadi chhod diya jaata hai, to CLI UI anuvaad ke liye **4** aur documentation anuvaad ke liye **3** (built-in defaults) ka upyog karta hai. `-j` / `--concurrency` ke saath har run ke liye override karen.
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (vikalpik)
 
 **translate-docs**, **translate-svg**, aur **translate-json** (aur `sync` ke andar ke matching steps): har file ke liye adhiktam parallel LLM **batch** requests (har batch mein kai segments ho sakte hain). Chhodne par default **4**. `translate-ui` dwara ignore kiya gaya. `-b` / `--batch-concurrency` se override karen.
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (vikalpik)
@@ -59,10 +71,14 @@ Ek saath anuvaad kiye gaye adhiktam **lakshya sthaan** (`translate-ui`, `transla
 
 **Upyog ka mamla:** Kul processing samay ko kam karne ke liye 100% cache hits ke saath `sync --force-update` chalate samay ise `2-4` par set karen. Sudhaar kai chhoti files ke saath sabse adhik dhyan dene yogya hai.
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (vikalpik)
 
 **translate-docs**, **translate-svg**, aur **translate-json** ke liye segment batching: prati API request kitne segments, aur ek character ceiling. Defaults: **20** segments, **4096** characters (jab chhod diya jata hai).
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` aur `providers`
@@ -127,18 +143,45 @@ Udaharan `translationModels` (`npx ai-i18n-tools init` ke saman defaults):
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**Recommended `uiModels`:** UI string chhote hote hain lekin bahut dikhai dete hain — ek premium model aksar tone, plurals, aur consistency mein sudhar karta hai. Optional `uiModels` ko kisi bhi matching `localeModels` entry ke baad aur `translationModels` se pehle try kiya jata hai (upar di gayi field list dekhen). Udaharan:
+
+<details>
+<summary>UI translation ke liye recommended uiModels</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**Asian bhashaon ke liye recommended `localeModels`:** Japanese, Korean, aur Chinese locales ko aksar un scripts ke liye tune kiye gaye models se fayda hota hai. Per-locale overrides joden jinhe target locale match hone par **sabse pehle** try kiya jata hai (`uiModels` / `translationModels` se pehle):
+
+<details>
+<summary>ja, ko, zh-Hans, zh-Hant ke liye recommended localeModels</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@ Model suchiyon ko badalne se pehle, `npx ai-i18n-tools check-models` chalaen. Ki
 
 Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx ai-i18n-tools bench-models` chalayen. Yah `translationModels`, `uiModels`, aur `localeModels` se har anokhe model id ko benchmark karta hai, har ek ko alag-alag (parallel mein, `concurrency` dwara seemit) ek sample ka anuvad karke, aur prati-model input/output tokens, wall-clock samay, aur USD lagat print karta hai, taki aap model suchiyon par nirnay lene se pahle gati aur kimat ka tulnatmak adhyayan kar saken.
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@ Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx
 | `translateSVG` | — | `.svg` files ka anuvad karen (top-level `svg` block ki avashyakta hai). |
 
 SVG files ka `translate-svg` ke saath **anuvad karen** jab `features.translateSVG` true ho aur ek top-level `svg` block configure kiya gaya ho. `sync` command us step ko chalata hai jab dono set hon (jab tak `--no-svg` na ho).
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@ SVG files ka `translate-svg` ke saath **anuvad karen** jab `features.translateSV
 - `uiExtractor.includeUiLanguageEnglishNames` (ya legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
 Jab `true` (default `false`), `extract` har `englishName` ko bundled ui-languages master catalog se (`sourceLocale` + `targetLocales` se bana) `strings.json` mein bhi jodta hai jab source scan se pehle se maujood na ho (same hash keys). `languagesManifestPath` nahi padhta hai.
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ SQLite cache directory (sabhi `docs` blocks dwara saajha). Default `.translation
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ Udaaharan: `"protectKeys": ["slug", "code"]` `{ slug: 'getting-started', title: 
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ Nested JSON translation pipelines ka top-level array. Sirf tab upyog kiya jaata 
 | `keyPolicy.translateKeys` | Dot paths / globs shamil karne ke liye jab mode `allowlist` ya `both` ho. |
 | `keyPolicy.skipKeys` | Dot paths / globs ko chhodne ke liye (default denylist mein `id`, `slug`, `href`, `url`, `key`, `code` shamil hain). |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ SVG files ke liye top-level path aur layout. Anuvaad tabhi chalta hai jab `featu
 | `pathTemplate`   | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | Jab `true`, built-in `flat` / `nested` SVG layouts lowercased locale segments ka upyog karte hain. Custom `pathTemplate` values aparivartit rahte hain; lowercase segments ke liye `{llocale}` ka upyog karein. |
 | `forceLowercase` | SVG reassembly par lower-case anuvaadit text. Un designs ke liye upyogi jo all-lowercase labels par nirbhar karte hain.                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

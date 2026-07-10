@@ -5,7 +5,7 @@ description: >-
   ai-i18n-tools avec cet exemple Astro Starlight.
 sidebar:
   order: 2
-translation_last_updated: '2026-07-10T20:45:29.889Z'
+translation_last_updated: '2026-07-10T21:34:13.770Z'
 source_file_mtime: '2026-05-22T21:44:09.000Z'
 source_file_hash: 2e7e3283a7dc1df486ce3088aa4f1bec3dac1bbce14d43f8d513a52fb0cd1cd9
 translation_language: fr

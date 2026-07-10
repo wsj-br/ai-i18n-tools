@@ -33,7 +33,8 @@ The repository ships runnable example projects under `examples/` — each with i
 | Example | What it shows |
 | --- | --- |
 | [console-app](/examples#console-app) | Smallest end-to-end app: `t()` UI strings plus README translation |
-| [nextjs-app](/examples#nextjs-app) | Next.js UI, plurals, SVG, Docusaurus docs site, dashboard |
+| [nextjs-app](/examples#nextjs-app) | Next.js UI, plurals, SVG, nested Docusaurus docs, flat README, dashboard |
+| [docusaurus-docs](/examples#docusaurus-docs) | Standalone Docusaurus documentation site |
 | [astro-website](/examples#astro-website) | Astro marketing site: full-page HTML translation plus `t()` strings |
 | [astro-docs](/examples#astro-docs) | Astro Starlight documentation site |
 | [vitepress-docs](/examples#vitepress-docs) | VitePress docs plus theme catalog |

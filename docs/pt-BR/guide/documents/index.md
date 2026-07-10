@@ -88,14 +88,15 @@ Esse modelo habilita apenas a extração da UI. Para a tradução de HTML de pá
 
 Edite o `ai-i18n-tools.config.json` gerado:
 
+- `provider` e `providers` — `init` estrutura o OpenRouter por padrão; configure pelo menos um provedor e defina sua chave de API antes de `translate-docs` ou `sync` (Ollama não precisa de chave). Consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key) e [Provedores e modelos LLM](/pt-BR/guide/providers-and-models).
 - `sourceLocale` - idioma de origem (deve corresponder a `defaultLocale` em `docusaurus.config.js`).
 - `targetLocales` - array de códigos de localidade BCP-47 (por exemplo, `["de", "fr", "es"]`).
-- `cacheDir` - diretório compartilhado de cache SQLite para todos os pipelines (e diretório padrão de logs para `--write-logs`).
-- `docs` - array de blocos de documentação. Cada bloco tem `description`, `contentPaths` (string ou array; arquivo, diretório ou glob), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
-- `docs[].description` - nota curta opcional para mantenedores. Quando definida, aparece no título `translate-docs` e nos cabeçalhos da seção `status`.
+- `cacheDir` - diretório de cache SQLite compartilhado para todos os pipelines (e diretório de log padrão para `--write-logs`).
+- `docs` - array de blocos de documentação. Cada bloco tem `description` opcional, `contentPaths` (string ou array; arquivo, diretório ou glob), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
+- `docs[].description` - nota curta opcional para mantenedores. Quando definida, ela aparece no título `translate-docs` e nos cabeçalhos de seção `status`.
 - `docs[].contentPaths` - fontes markdown/MDX/`.astro` (e `docusaurusCatalogDir` opcional para JSON de shell Docusaurus).
 - `docs[].outputDir` - raiz de saída traduzida para esse bloco.
-- `docs[].docsOutput.style` - `"nested"` (padrão), `"flat"`, `"doc-system"` ou aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts)).
+- `docs[].docsOutput.style` - `"nested"` (padrão), `"flat"`, `"doc-system"`, ou aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts)).
 
 **Primário vs complementar:** Foque em `contentPaths` para páginas localizadas. Defina `docusaurusCatalogDir` quando também precisar do JSON do shell Docusaurus de `write-translations`. Omita `docusaurusCatalogDir` se estiver traduzindo apenas páginas.
 

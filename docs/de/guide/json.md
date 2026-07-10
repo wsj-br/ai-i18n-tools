@@ -17,7 +17,7 @@ Diese Pipeline führt **kein** `extract` aus – es gibt keinen `strings.json`-K
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-Diese Vorlage setzt `features.translateJson: true`, deaktiviert die UI-Extraktion und die Dokumentübersetzung und erstellt einen einzelnen `json[]`-Block, der auf `src/i18n/en/translation.json` mit der Ausgabe `src/i18n/{llocale}/translation.json` verweist. Passen Sie `sourceLocale`, `targetLocales`, `contentPaths` und `outputPathTemplate` an die Struktur Ihres Repositorys an.
+Diese Vorlage setzt `features.translateJson: true`, deaktiviert die UI-Extraktion und Dokumentübersetzung und erstellt einen einzelnen `json[]`-Block, der auf `src/i18n/en/translation.json` mit der Ausgabe `src/i18n/{llocale}/translation.json` verweist. Sie enthält auch einen Standard-`provider`- / `providers`-Block – legen Sie den passenden API-Schlüssel fest (oder verwenden Sie lokales Ollama), bevor Sie `translate-json` oder `sync` ausführen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie `sourceLocale`, `targetLocales`, `contentPaths` und `outputPathTemplate` für Ihr Repository-Layout.
 
 <a id="step-2-configure-json"></a>
 ### Schritt 2: Konfigurieren von `json[]`

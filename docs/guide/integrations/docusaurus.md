@@ -3,7 +3,7 @@
 
 Use `init -t ui-docusaurus` and `docsOutput.style: "docusaurus"` for [Docusaurus](https://docusaurus.io/) documentation sites. The preset scaffolds a `docs[]` block with `docusaurusCatalogDir` so `translate-docs` can translate both page markdown and Docusaurus shell JSON in one command.
 
-See also [Documents](/guide/documents/), the runnable [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) demo (Next.js app plus nested `docs-site/`), and [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) for a focused Docusaurus-only walkthrough.
+See also [Documents](/guide/documents/), the runnable [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) demo, and [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) for a combined Next.js app with nested Docusaurus docs, flat README, and SVG assets.
 
 <a id="quick-start"></a>
 ## Quick start
@@ -12,7 +12,7 @@ See also [Documents](/guide/documents/), the runnable [examples/nextjs-app](http
 npx ai-i18n-tools init -t ui-docusaurus
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
-cd docs-site && pnpm build   # Docusaurus build (project-specific script)
+cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
 Enable `features.translateDocs` and set `docs[].docusaurusCatalogDir` when you translate both documentation pages and site chrome (navbar, footer, theme strings). Run `docusaurus write-translations` in your Docusaurus project when you upgrade `@docusaurus/*` or change navbar/footer/theme labels — then re-run `translate-docs` or `sync` so shell JSON is translated into each locale folder.
@@ -98,4 +98,6 @@ Do **not** put framework shell/theme strings in `json[]` — that pipeline is fo
 <a id="example-project"></a>
 ## Example project
 
-[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — English sources at `docs/`, committed translations under `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus translated shell JSON. Run `pnpm start` on port 3040 for development; use `pnpm run start:fr` (and similar) to preview a single locale in dev mode.
+[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — English sources at `docs/`, committed translations under `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus translated shell JSON. Run `pnpm start` on port 3100 (build + serve) so the locale dropdown works; use `pnpm dev` for English-only hot reload.
+
+For UI strings, SVG translation, and a flat README in the same repository layout, see [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (nested `docs-site/` on port 3040).

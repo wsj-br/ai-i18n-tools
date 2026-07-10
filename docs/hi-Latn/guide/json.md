@@ -17,7 +17,7 @@ Yeh pipeline **nahin** chalta hai `extract` — yahaan koi `strings.json` catalo
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-Vah template `features.translateJson: true` set karta hai, UI extraction aur document translation ko disable karta hai, aur `src/i18n/en/translation.json` par point karte hue ek single `json[]` block ko output `src/i18n/{llocale}/translation.json` ke saath scaffold karta hai. Apne repo layout ke liye `sourceLocale`, `targetLocales`, `contentPaths`, aur `outputPathTemplate` ko edit karein.
+Vah template `features.translateJson: true` set karta hai, UI extraction aur document translation ko disable karta hai, aur `src/i18n/en/translation.json` ki taraf ishara karte hue ek single `json[]` block ko output `src/i18n/{llocale}/translation.json` ke saath scaffold karta hai. Ismein ek default `provider` / `providers` block bhi shamil hai — `translate-json` ya `sync` chalane se pehle matching API key set karein (ya local Ollama ka upyog karein); [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein. Apne repo layout ke liye `sourceLocale`, `targetLocales`, `contentPaths`, aur `outputPathTemplate` ko edit karein.
 
 <a id="step-2-configure-json"></a>
 ### Step 2: `json[]` configure karein

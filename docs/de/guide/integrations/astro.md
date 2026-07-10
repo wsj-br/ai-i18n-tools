@@ -131,4 +131,4 @@ Lösen Sie `t('…')` zur **Build-Zeit**, indem Sie das englische Quellliteral a
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Starlight-Dokumentation | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | Einfache Astro-Marketing-Website (HTML + `t()` hybrid) | (siehe README) |
 
-Vergleichen Sie [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) mit [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) – ähnlicher Tutorial-Inhalt, Docusaurus-Ausgabeformat anstelle von Starlight.
+Vergleichen Sie [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) mit [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) – ähnlicher Tutorial-Inhalt, Docusaurus-Ausgabestil anstelle von Starlight.

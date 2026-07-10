@@ -1,7 +1,9 @@
 <a id="llm-providers-and-models"></a>
 # Provedores e modelos de LLM
 
-Cada pipeline de tradução — `translate-ui`, `translate-docs`, `translate-json` e `translate-svg` — envia texto para um LLM através do mesmo cliente agnóstico de provedor. Você configura **qual endpoint de API chamar** e **quais modelos tentar** uma vez em `ai-i18n-tools.config.json`; todos os comandos compartilham essa configuração e o mesmo cache SQLite.
+Cada pipeline de tradução — `translate-ui`, `translate-docs`, `translate-json` e `translate-svg` — envia texto para um LLM através do mesmo cliente agnóstico de provedor. Antes que qualquer um desses comandos possa ser executado, configure **pelo menos um provedor** em `ai-i18n-tools.config.json` e defina a **chave de API** correspondente em seu ambiente ou `.env` (predefinições integradas, exceto **Ollama**). `init` escreve um bloco inicial `provider` / `providers`; você ainda deve fornecer credenciais para a predefinição ativa.
+
+Você configura **qual endpoint de API chamar** e **quais modelos tentar** uma vez na configuração; todos os comandos de tradução compartilham essa configuração e o mesmo cache SQLite.
 
 A CLI resolve o provedor ativo a partir da chave `provider` de nível superior (ou da única entrada em `providers` quando apenas um está configurado). Cada bloco de provedor lista uma cadeia de fallback `translationModels` ordenada; predefinições incorporadas herdam `baseUrl` e a variável de ambiente da chave de API automaticamente (substitua-as por provedor quando necessário).
 
@@ -46,7 +48,11 @@ O `providers.<active>.uiModels` opcional é uma lista exclusiva da UI tentada ap
 
 Diferentes provedores e modelos variam em custo, velocidade e qualidade entre os idiomas. Trate a lista padrão de `npx ai-i18n-tools init` como um ponto de partida — expanda-a quando uma localidade produzir resultados consistentemente ruins ou adicione uma entrada de `localeModels` para essa localidade. Padrões completos e justificativa: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
 
-Exemplo de configuração mínima (OpenRouter):
+**Strings de UI:** o `uiModels` opcional permite rotear `translate-ui`, geração plural e `proofread-ui` por meio de modelos premium antes da cadeia global de `translationModels` — útil porque o texto da UI é curto, mas voltado para o usuário.
+
+**Localidades asiáticas:** entradas opcionais de `localeModels` para `ja`, `ko`, `zh-Hans` e `zh-Hant` são tentadas primeiro em cada pipeline; modelos como `z-ai/glm-5.2` e `minimax/minimax-m2.7` geralmente têm melhor desempenho em scripts CJK do que em substitutos de uso geral.
+
+Exemplo de configuração (OpenRouter):
 
 ```json
 {
@@ -54,15 +60,24 @@ Exemplo de configuração mínima (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "qwen/qwen3-235b-a22b-2507",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
-        "deepseek/deepseek-v4-flash"
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
       ],
       "uiModels": [
-        "anthropic/claude-sonnet-latest"
+        "~anthropic/claude-sonnet-latest",
+        "z-ai/glm-5.2"
       ],
       "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
       ]
     }
   }

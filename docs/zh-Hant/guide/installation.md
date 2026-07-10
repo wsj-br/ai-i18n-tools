@@ -52,7 +52,20 @@ ai-i18n-tools sync
 
 **零安裝一次性使用** — `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（下載該次呼叫的套件；`package.json` 中沒有項目）。
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### 已複製的 ai-i18n-tools monorepo
+
+在從 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整複本開發套件或執行工作區 **examples** 時：
+
+- **工作區範例** (`examples/console-app`、`examples/nextjs-app`，以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他套件) — 在儲存庫根目錄執行 `pnpm install`，然後執行 `cd examples/<name>` 並使用 `pnpm exec ai-i18n-tools …` 或範例的 `pnpm run i18n:*` 腳本。工作區 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 會將 `ai-i18n-tools` 連結到你的本機簽出。
+- **儲存庫根目錄** — pnpm 不會將根套件自身的 `bin` 連結到 `node_modules/.bin`，而在根目錄執行 `npx ai-i18n-tools` 會執行 **已發布的 npm** 套件，而非你的工作樹。請改用 `node bin/ai-i18n-tools.mjs …` 或根目錄的 `pnpm i18n:*` 腳本。
+- **獨立測試夾具** (`multi-provider`、`test-markdown`) — 從測試夾具資料夾使用 `node ../../bin/ai-i18n-tools.mjs …`。
+
+變更 CLI 原始碼後，請在儲存庫根目錄執行 `pnpm run build`。請參閱[開發指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)以了解建置步驟與可選的全域安裝替代方案。
+
 在 Linux、macOS 和 WSL 上，登錄檔安裝會自動為 CLI 指令碼設定可執行位元。在 Windows 上，套件管理器會產生 `.cmd` 和 `.ps1` 代理程式，明確叫用 Node。
+
+翻譯指令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`）需要在 `ai-i18n-tools.config.json` 中進行 **供應商設定**，並為目前使用的供應商提供 **API 金鑰**。執行 `ai-i18n-tools init` 來產生預設的 OpenRouter 區塊；編輯 `provider` / `providers` 以切換預設值或模型 — 請參閱 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。Ollama 是唯一不需要 API 金鑰的內建預設值。
 
 設定您的提供者 API 金鑰（顯示為 OpenRouter；請使用與您啟用中的提供者相符的環境變數 — 請參閱[預設表](/zh-Hant/guide/providers-and-models#built-in-providers)）：
 

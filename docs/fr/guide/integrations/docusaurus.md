@@ -3,7 +3,7 @@
 
 Utilisez `init -t ui-docusaurus` et `docsOutput.style: "docusaurus"` pour les sites de documentation [Docusaurus](https://docusaurus.io/). Le préréglage génère un bloc `docs[]` avec `docusaurusCatalogDir` afin que `translate-docs` puisse traduire à la fois le markdown de la page et le JSON de l'interface Docusaurus en une seule commande.
 
-Voir aussi [Documents](/fr/guide/documents/), la démo exécutable [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (application Next.js plus `docs-site/` imbriqué) et [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) pour une présentation ciblée de Docusaurus uniquement.
+Voir aussi [Documents](/fr/guide/documents/), la démo exécutable [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs), et [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) pour une application Next.js combinée avec des documents Docusaurus imbriqués, un fichier README plat et des ressources SVG.
 
 <a id="quick-start"></a>
 ## Démarrage rapide
@@ -12,7 +12,7 @@ Voir aussi [Documents](/fr/guide/documents/), la démo exécutable [examples/nex
 npx ai-i18n-tools init -t ui-docusaurus
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
-cd docs-site && pnpm build   # Docusaurus build (project-specific script)
+cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
 Activez `features.translateDocs` et définissez `docs[].docusaurusCatalogDir` lorsque vous traduisez à la fois les pages de documentation et l'interface du site (barre de navigation, pied de page, chaînes de thème). Exécutez `docusaurus write-translations` dans votre projet Docusaurus lorsque vous mettez à niveau `@docusaurus/*` ou modifiez les étiquettes de la barre de navigation/pied de page/thème — puis réexécutez `translate-docs` ou `sync` afin que le JSON de l'interface soit traduit dans chaque dossier de locale.
@@ -98,4 +98,6 @@ Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce
 <a id="example-project"></a>
 ## Exemple de projet
 
-[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — Sources anglaises à `docs/`, traductions validées sous `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus le JSON de l'interface traduit. Exécutez `pnpm start` sur le port 3040 pour le développement ; utilisez `pnpm run start:fr` (et similaire) pour prévisualiser une seule locale en mode développement.
+[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — sources anglaises à `docs/`, traductions validées sous `i18n/<locale>/docusaurus-plugin-content-docs/current/`, plus JSON de shell traduit. Exécutez `pnpm start` sur le port 3100 (build + serve) pour que le menu déroulant des langues fonctionne ; utilisez `pnpm dev` pour le rechargement à chaud en anglais uniquement.
+
+Pour les chaînes d'interface utilisateur, la traduction SVG et un fichier README plat dans la même disposition de dépôt, voir [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (`docs-site/` imbriqué sur le port 3040).

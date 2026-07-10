@@ -172,6 +172,37 @@ importers:
         specifier: ^26.3.6
         version: 26.3.6(typescript@6.0.3)
 
+  examples/docusaurus-docs:
+    dependencies:
+      '@docusaurus/core':
+        specifier: ^3.10.2
+        version: 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.17)(react@19.2.7))(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@7.0.2)
+      '@docusaurus/preset-classic':
+        specifier: ^3.10.2
+        version: 3.10.2(@algolia/client-search@5.55.0)(@mdx-js/react@3.1.1(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(search-insights@2.17.3)(typescript@7.0.2)
+      '@mdx-js/react':
+        specifier: ^3.1.1
+        version: 3.1.1(@types/react@19.2.17)(react@19.2.7)
+      prism-react-renderer:
+        specifier: ^2.4.1
+        version: 2.4.1(react@19.2.7)
+      react:
+        specifier: ^19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
+    devDependencies:
+      '@docusaurus/module-type-aliases':
+        specifier: ^3.10.2
+        version: 3.10.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@docusaurus/types':
+        specifier: ^3.10.2
+        version: 3.10.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.16))(esbuild@0.28.1)(html-minifier-terser@7.2.0)(lightningcss@1.32.0)(postcss@8.5.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      ai-i18n-tools:
+        specifier: workspace:*
+        version: link:../..
+
   examples/fumadocs-docs:
     dependencies:
       fumadocs-core:
@@ -313,6 +344,12 @@ importers:
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
+
+  examples/plain-html:
+    devDependencies:
+      ai-i18n-tools:
+        specifier: workspace:*
+        version: link:../..
 
   examples/vitepress-docs:
     devDependencies:

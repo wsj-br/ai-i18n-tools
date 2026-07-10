@@ -22,8 +22,9 @@ Designed for any JS/TS project that uses i18next: React apps, Next.js (client an
 npx ai-i18n-tools init
 ```
 
-This writes `ai-i18n-tools.config.json` with the `ui-markdown` template. Edit it to set:
+This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including a default `provider` / `providers` block). Before running `translate-ui` or `sync`, set the API key for your active provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit the config to set:
 
+- `provider` and `providers` — at least one provider with `translationModels`; change the preset or model list if OpenRouter is not your choice. See [LLM providers and models](/guide/providers-and-models).
 - `sourceLocale` - your source language BCP-47 code (e.g. `"en-GB"`). **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` - array of BCP-47 codes for your target languages (e.g. `["de", "fr", "pt-BR"]`). Run `generate-ui-languages` to create the `ui-languages.json` manifest from this list.
 - `ui.sourceRoots` - directories or glob patterns to scan for `t("…")` calls (e.g. `["src/"]`, `["src/**/*.ts"]`).

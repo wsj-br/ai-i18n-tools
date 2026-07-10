@@ -14,37 +14,66 @@ Nueve proyectos y accesorios ejecutables se encuentran en [`examples/`](https://
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
+pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
 Reemplace `console-app` con cualquier nombre de carpeta de ejemplo. Cada ejemplo declara `"ai-i18n-tools": "^1.7.2"` e instala la CLI desde npm. Los READMEs por ejemplo incluyen el mismo fragmento con el nombre de la carpeta rellenado.
 
-**Desde el repositorio completo de ai-i18n-tools:** si clonó todo el repositorio (no solo una carpeta de ejemplo con degit), ejecute `pnpm install` desde la raíz del repositorio; la entrada del espacio de trabajo [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula los ejemplos a su copia local automáticamente.
+**Desde el repositorio completo de ai-i18n-tools** — si clonó todo el repositorio (no solo una carpeta de ejemplo con degit):
 
 ```bash
+pnpm install          # repository root
+pnpm run build        # after changing CLI source
+cd examples/console-app
+pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
+# or: pnpm exec ai-i18n-tools sync
+```
+
+La entrada del espacio de trabajo [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula automáticamente los ejemplos del espacio de trabajo a su copia local. Los accesorios independientes (`multi-provider`, `test-markdown`) no son paquetes de espacio de trabajo; desde su carpeta, use `node ../../bin/ai-i18n-tools.mjs …`. Para ejecutar la CLI desde la **raíz del repositorio** (la documentación/i18n de este paquete), use `pnpm i18n:sync` o `node bin/ai-i18n-tools.mjs …` — consulte [Instalación — Monorepo clonado](/es/guide/installation#cloned-monorepo) y la [Guía de desarrollo](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
+
+<a id="provider-and-api-key-required-for-translation"></a>
+### Proveedor y clave de API (necesario para la traducción)
+
+Cada comando que llama a un LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` y `sync` — necesita **ambos**:
+
+1. **Al menos un proveedor** en `ai-i18n-tools.config.json`: un bloque `providers.<name>` con `translationModels`, y una clave `provider` de nivel superior cuando se configura más de un proveedor. `init` configura OpenRouter por defecto; cambie los preajustes, añada proveedores o ajuste las listas de modelos — consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
+2. **La clave de API correspondiente** en su entorno o en un archivo `.env` en la raíz del proyecto. Cada preajuste incorporado lee una variable de entorno con nombre (por ejemplo, `OPENROUTER_API_KEY`); **Ollama** es la excepción — utiliza un punto final local y no necesita clave. Consulte [Instalación — configure su clave de API de proveedor](/es/guide/installation#using-the-cli) y la [tabla de variables de entorno preestablecidas](/es/guide/providers-and-models#built-in-providers).
+
+`extract`, `status` y otros comandos que no llaman al LLM no necesitan un proveedor o clave de API.
+
+<a id="core-cli-commands"></a>
+### Comandos principales de la CLI
+
+Ejecute desde la **raíz de su proyecto** después de instalar `ai-i18n-tools` (consulte [Uso de la CLI](/es/guide/installation#using-the-cli) para los scripts `npx`, `pnpm exec` y `package.json`). Los ejemplos a continuación usan el nombre de comando simple; los usuarios de npm pueden prefijar con `npx`, los usuarios de pnpm con `pnpm exec`.
+
+```bash
+# Set API key for your active provider (skip for local Ollama)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+
 # UI strings (default template enables extract + translate-ui)
-npx ai-i18n-tools init
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
-# VitePress docs: npx ai-i18n-tools init -t ui-vitepress
-# Nextra docs: npx ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools translate-docs
+ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
+# VitePress docs: ai-i18n-tools init -t ui-vitepress
+# Nextra docs: ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-npx ai-i18n-tools init -t ui-json-bundles
-npx ai-i18n-tools translate-json
+ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-npx ai-i18n-tools sync
+ai-i18n-tools sync
 
 # Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-npx ai-i18n-tools status
-# npx ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools status
+# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
 <a id="recommended-packagejson-scripts"></a>
@@ -63,6 +92,7 @@ Con el paquete instalado localmente, puedes usar los comandos CLI directamente e
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:translate:json": "ai-i18n-tools translate-json",
   "i18n:status": "ai-i18n-tools status",
+  "i18n:statistics": "ai-i18n-tools statistics",
   "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
 }
@@ -113,7 +143,7 @@ Habilite todas las funciones en una sola configuración para ejecutar cadenas de
 
 `glossary.uiGlossary` dirige la traducción de documentos al mismo catálogo `strings.json` que la interfaz de usuario para mantener la terminología consistente; `glossary.userGlossary` añade anulaciones CSV para términos del producto.
 
-Ejecute `npx ai-i18n-tools sync` para ejecutar una canalización: cuando `features.translateUIStrings` está habilitado, primero **extrae** y luego **traduce** las cadenas de interfaz; traducción opcional de **SVG** (bloque `features.translateSVG` + `svg`); **traducción de documentación** (según esté configurado en `docs[]`); y luego traducción opcional de **json** (`features.translateJson` + `json[]`). Omita partes con `--no-ui`, `--no-svg`, `--no-docs` o `--no-json`. Los pasos de documentación y `json[]` aceptan `--dry-run`, `-p` / `--path`, `--force` y `--force-update` (las banderas exclusivas de documentación se ignoran cuando se usa `--no-docs`; JSON utiliza las mismas banderas de caché cuando `--no-json` no está establecido).
+Ejecute `ai-i18n-tools sync` para ejecutar una canalización: cuando `features.translateUIStrings` está habilitado, **extraiga** y luego **traduzca** las cadenas de la interfaz de usuario; **traduzca SVG** opcionalmente (bloque `features.translateSVG` + `svg`); **traduzca la documentación** (`docs[]` según lo configurado); luego **traduzca-json** opcionalmente (`features.translateJson` + `json[]`). Omita partes con `--no-ui`, `--no-svg`, `--no-docs` o `--no-json`. Los pasos de documentación y `json[]` aceptan `--dry-run`, `-p` / `--path`, `--force` y `--force-update` (las banderas solo para documentación se ignoran cuando `--no-docs`; JSON usa las mismas banderas de caché cuando `--no-json` no está configurado).
 
 Use `docs[].targetLocales` en un bloque para traducir los archivos de ese bloque a un subconjunto **más pequeño** que la interfaz (los idiomas efectivos para documentación son la **unión** entre bloques):
 
@@ -189,7 +219,7 @@ Puede combinar varias canalizaciones de documentación en la misma configuració
 
 <br />
 
-Cómo se ejecuta esto con `npx ai-i18n-tools sync`:
+Cómo se ejecuta esto con `ai-i18n-tools sync`:
 
 - Las cadenas de interfaz se extraen/traducen desde `src/` hacia `public/locales/`.
 - El primer bloque de documentación traduce **markdown** desde `docs-site/docs/` hacia `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (páginas de documentación localizadas).

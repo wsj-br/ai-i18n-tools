@@ -64,6 +64,7 @@ Pour les libellés d'endonyme (`label: "local"`), générer ou maintenir `ui-lan
 |---|---|
 | Ce package (README plat + site VitePress) | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) (bloc README : `docsOutput.style = "flat"` ; bloc site : `docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 | README à plat + documents Docusaurus | [examples/nextjs-app/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (deuxième bloc : `docsOutput.style = "flat"` ; premier bloc : `docsOutput.style = "docusaurus"`) |
+| Documentation Docusaurus uniquement | [examples/docusaurus-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json) (`docsOutput.style = "docusaurus"` + `docusaurusCatalogDir`) |
 | Docs VitePress (démo minimale) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 La ligne immédiatement avant `<small id="lang-list">` (par exemple `**Read in other languages:**`) est un segment normal traduisible et est localisée dans chaque langue cible ; seule la ligne de liens à l'intérieur des marqueurs est régénérée à l'identique, à l'exception de `href` et des libellés pilotés par le manifeste.

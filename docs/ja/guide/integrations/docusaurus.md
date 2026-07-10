@@ -3,7 +3,7 @@
 
 [Docusaurus](https://docusaurus.io/) ドキュメント サイトでは、`init -t ui-docusaurus` と `docsOutput.style: "docusaurus"` を使用します。プリセットは、`docs[]` ブロックを `docusaurusCatalogDir` で作成し、`translate-docs` でページの Markdown と Docusaurus シェルの JSON を 1 つのコマンドで翻訳できるようにします。
 
-以下も参照してください: [ドキュメント](/ja/guide/documents/)、実行可能な [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) デモ (Next.js アプリとネストされた `docs-site/`)、および Docusaurus のみに焦点を当てたチュートリアルについては [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site)。
+[Documents](/ja/guide/documents/)、実行可能な [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) デモ、およびネストされたDocusaurusドキュメント、フラットなREADME、SVGアセットを組み合わせたNext.jsアプリである [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) も参照してください。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -12,7 +12,7 @@
 npx ai-i18n-tools init -t ui-docusaurus
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
-cd docs-site && pnpm build   # Docusaurus build (project-specific script)
+cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
 `features.translateDocs`を有効にし、`docs[].docusaurusCatalogDir`を設定して、ドキュメントページとサイトのクローム（ナビバー、フッター、テーマ文字列）を翻訳する場合は、Docusaurusプロジェクトで`docusaurus write-translations`を実行します。`@docusaurus/*`をアップグレードしたり、ナビバー/フッター/テーマのラベルを変更した場合は、`translate-docs`または`sync`を再実行して、シェルのJSONを各ロケールフォルダーに翻訳します。
@@ -98,4 +98,6 @@ DocusaurusシェルJSONを`json[]`に配置しないでください。代わり�
 <a id="example-project"></a>
 ## サンプルプロジェクト
 
-[examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — 英語ソースは`docs/`に、コミットされた翻訳は`i18n/<locale>/docusaurus-plugin-content-docs/current/`の下にあり、翻訳されたシェルJSONもあります。開発のために3040ポートで`pnpm start`を実行します。開発モードで単一のロケールをプレビューするには、`pnpm run start:fr`（および同様のもの）を使用します。
+[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — `docs/` に英語ソース、`i18n/<locale>/docusaurus-plugin-content-docs/current/` にコミットされた翻訳、さらに翻訳されたシェルJSONがあります。ロケールドロップダウンが機能するように、ポート3100で `pnpm start` を実行し（ビルド + サーブ）、英語のみのホットリロードには `pnpm dev` を使用してください。
+
+同じリポジトリレイアウトでのUI文字列、SVG翻訳、およびフラットなREADMEについては、[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)（ポート3040でのネストされた `docs-site/`）を参照してください。

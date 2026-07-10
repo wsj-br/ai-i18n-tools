@@ -88,12 +88,13 @@ Ce modèle n'active que l'extraction de l'interface utilisateur. Pour la traduct
 
 Modifiez le fichier `ai-i18n-tools.config.json` généré :
 
+- `provider` et `providers` — `init` échafaude OpenRouter par défaut ; configurez au moins un fournisseur et définissez sa clé API avant `translate-docs` ou `sync` (Ollama n'a pas besoin de clé). Voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key) et [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
 - `sourceLocale` - langue source (doit correspondre à `defaultLocale` dans `docusaurus.config.js`).
-- `targetLocales` - tableau de codes de langue BCP-47 (par exemple `["de", "fr", "es"]`).
+- `targetLocales` - tableau de codes de paramètres régionaux BCP-47 (par exemple `["de", "fr", "es"]`).
 - `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de journal par défaut pour `--write-logs`).
-- `docs` - tableau de blocs de documentation. Chaque bloc possède des options `description`, `contentPaths` (chaîne ou tableau ; fichier, répertoire ou motif générique), `outputDir`, `docusaurusCatalogDir` facultatif, `docsOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
+- `docs` - tableau de blocs de documentation. Chaque bloc a un `description` facultatif, `contentPaths` (chaîne ou tableau ; fichier, répertoire ou glob), `outputDir`, `docusaurusCatalogDir` facultatif, `docsOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `docs[].description` - courte note facultative pour les mainteneurs. Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` et dans les en-têtes de section `status`.
-- `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON de l'interpréteur de commandes Docusaurus).
+- `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON shell de Docusaurus).
 - `docs[].outputDir` - racine de sortie traduite pour ce bloc.
 - `docs[].docsOutput.style` - `"nested"` (par défaut), `"flat"`, `"doc-system"`, ou les alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (voir [Dispositions de sortie](/fr/guide/documents/output-layouts)).
 

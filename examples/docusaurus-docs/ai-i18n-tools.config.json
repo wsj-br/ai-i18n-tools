@@ -1,0 +1,65 @@
+{
+  "sourceLocale": "en-GB",
+  "targetLocales": [
+    "ar",
+    "es",
+    "fr",
+    "de",
+    "pt-BR"
+  ],
+  "concurrency": 4,
+  "batchConcurrency": 4,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": false,
+    "translateDocs": true,
+    "translateSVG": false
+  },
+  "glossary": {
+    "userGlossary": "glossary-user.csv",
+    "autoAddUserEditedToGlossary": true
+  },
+  "cacheDir": ".translation-cache",
+  "docs": [
+    {
+      "description": "Docusaurus docs and shell JSON catalogs",
+      "contentPaths": [
+        "docs/"
+      ],
+      "outputDir": "i18n",
+      "docusaurusCatalogDir": "i18n/en",
+      "addFrontmatter": true,
+      "docsOutput": {
+        "style": "docusaurus",
+        "docsRoot": "docs",
+        "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Per-locale screenshot folders in static assets",
+              "search": "screenshots/[^/]+/",
+              "replace": "screenshots/${translatedLocale}/"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
+        "openai/gpt-4o-mini",
+        "google/gemma-4-26b-a4b-it",
+        "anthropic/claude-3-haiku",
+        "z-ai/glm-5.2",
+        "google/gemini-3-flash-preview",
+        "~anthropic/claude-sonnet-latest"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter"
+}

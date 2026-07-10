@@ -17,7 +17,7 @@ Ce pipeline n'exécute **pas** `extract` — il n'y a pas de catalogue `strings.
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-Ce modèle définit `features.translateJson: true`, désactive l'extraction de l'interface et la traduction de documents, et met en place un bloc `json[]` pointant vers `src/i18n/en/translation.json` avec une sortie `src/i18n/{llocale}/translation.json`. Modifiez `sourceLocale`, `targetLocales`, `contentPaths` et `outputPathTemplate` selon l'organisation de votre dépôt.
+Ce modèle définit `features.translateJson: true`, désactive l'extraction de l'interface utilisateur et la traduction de documents, et échafaude un seul bloc `json[]` pointant vers `src/i18n/en/translation.json` avec la sortie `src/i18n/{llocale}/translation.json`. Il inclut également un bloc `provider` / `providers` par défaut — définissez la clé API correspondante (ou utilisez Ollama local) avant d'exécuter `translate-json` ou `sync` ; voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key). Modifiez `sourceLocale`, `targetLocales`, `contentPaths` et `outputPathTemplate` pour la disposition de votre dépôt.
 
 <a id="step-2-configure-json"></a>
 ### Étape 2 : Configurer `json[]`

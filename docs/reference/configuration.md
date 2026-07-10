@@ -8,6 +8,8 @@ BCP-47 code for the source language (e.g. `"en-GB"`, `"en"`, `"pt-BR"`). No tran
 
 **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@ Array of BCP-47 locale codes to translate to (e.g. `["de", "fr", "es", "pt-BR"]`
 
 `targetLocales` is the primary locale list for UI translation and the default locale list for documentation blocks. Use `generate-ui-languages` to build the `ui-languages.json` manifest from `sourceLocale` + `targetLocales`.
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (optional)
 
 BCP-47 code for the tool's own UI language (CLI help, logs/summaries, and the Translation Dashboard). It is independent of `sourceLocale` / `targetLocales`, and is overridden by the `-L` / `--ui-lang` flag and the `AI_I18N_LANG` environment variable. Unknown values degrade gracefully to the source locale (`en-GB`) — there is no strict validation. See [Tool UI language](/guide/tool-ui-language).
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (optional)
@@ -34,15 +40,21 @@ Use this when:
 
 **Legacy:** root-level `uiLanguagesPath` is still accepted when loading a config file and is rewritten automatically to `languagesManifestPath`.
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
 
 Maximum **target locales** translated at the same time (`translate-ui`, `translate-docs`, `translate-svg`, and the matching steps inside `sync`). If omitted, the CLI uses **4** for UI translation and **3** for documentation translation (built-in defaults). Override per run with `-j` / `--concurrency`.
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (optional)
 
 **translate-docs**, **translate-svg**, and **translate-json** (and the matching steps inside `sync`): maximum parallel LLM **batch** requests per file (each batch can contain many segments). Default **4** when omitted. Ignored by `translate-ui`. Override with `-b` / `--batch-concurrency`.
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (optional)
@@ -59,10 +71,14 @@ Maximum number of files processed concurrently **within a single locale** during
 
 **Use case:** Set this to `2-4` when running `sync --force-update` with 100% cache hits to reduce total processing time. The improvement is most noticeable with many small files.
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (optional)
 
 Segment batching for **translate-docs**, **translate-svg**, and **translate-json**: how many segments per API request, and a character ceiling. Defaults: **20** segments, **4096** characters (when omitted).
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` and `providers`
@@ -127,18 +143,45 @@ Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**Recommended `uiModels`:** UI strings are short but highly visible — a premium model often improves tone, plurals, and consistency. Optional `uiModels` is tried after any matching `localeModels` entry and before `translationModels` (see the field list above). Example:
+
+<details>
+<summary>Recommended uiModels for UI translation</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**Recommended `localeModels` for Asian languages:** Japanese, Korean, and Chinese locales often benefit from models tuned for those scripts. Add per-locale overrides that are tried **first** (before `uiModels` / `translationModels`) when the target locale matches:
+
+<details>
+<summary>Recommended localeModels for ja, ko, zh-Hans, zh-Hant</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@ Before changing model lists, run `npx ai-i18n-tools check-models`. For any provi
 
 To compare the configured models on real translation work, run `npx ai-i18n-tools bench-models`. It benchmarks every unique model id from `translationModels`, `uiModels`, and `localeModels` by translating one sample through each in isolation (in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost, so you can weigh speed against price before settling on model lists.
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -164,6 +209,8 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
 | `translateSVG`       | —        | Translate `.svg` files (requires the top-level `svg` block).                                                                                                       |
 
 **Translate** SVG files with `translate-svg` when `features.translateSVG` is true and a top-level `svg` block is configured. The `sync` command runs that step when both are set (unless `--no-svg`).
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -186,6 +233,8 @@ To compare the configured models on real translation work, run `npx ai-i18n-tool
 - `uiExtractor.includeUiLanguageEnglishNames` (or legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
   When `true` (default `false`), `extract` also adds each `englishName` from the bundled ui-languages master catalog (built from `sourceLocale` + `targetLocales`) to `strings.json` when not already present from the source scan (same hash keys). Does not read `languagesManifestPath`.
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -217,6 +266,8 @@ SQLite cache directory (shared by all `docs` blocks). Default `.translation-cach
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -367,6 +418,8 @@ Optional. Extra **object property names** whose quoted string values must not be
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -382,6 +435,8 @@ Top-level array of nested JSON translation pipelines. Used only when `features.t
 | `keyPolicy.translateKeys` | Dot paths / globs to include when mode is `allowlist` or `both`. |
 | `keyPolicy.skipKeys` | Dot paths / globs to exclude (default denylist includes `id`, `slug`, `href`, `url`, `key`, `code`). |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -395,6 +450,8 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 | `pathTemplate`   | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | When `true`, built-in `flat` / `nested` SVG layouts use lowercased locale segments. Custom `pathTemplate` values are unchanged; use `{llocale}` for lowercase segments. |
 | `forceLowercase` | Lower-case translated text on SVG reassembly. Useful for designs that rely on all-lowercase labels.                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

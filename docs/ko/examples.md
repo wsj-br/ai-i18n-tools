@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-대신 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소 **전체**를 복제한 경우, 저장소 루트에서 `pnpm install` 및 `pnpm run build`를 실행한 다음 `cd examples/<name>`를 실행합니다.
+대신 **전체** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 리포지토리를 복제했다면, 리포지토리 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 다음 `cd examples/<name>`을 실행하세요. 워크스페이스 예제는 `pnpm exec ai-i18n-tools …` 또는 자체 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하며, 리포지토리 루트에서 `npx`을 실행하지 않습니다(이는 게시된 npm 패키지를 실행함). [설치 — 복제된 모노리포](/ko/guide/installation#cloned-monorepo)를 참조하세요.
 
 <a id="list-of-examples"></a>
 ## 예시 목록
@@ -25,19 +25,23 @@ pnpm install
 <a id="astro-docs"></a>
 <a id="vitepress-docs"></a>
 <a id="nextra-docs"></a>
+<a id="plain-html"></a>
 <a id="fumadocs-docs"></a>
+<a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="test-markdown"></a>
 
 | 예시 | 가장 적합한 용도 | degit으로 복사 | 실행 |
 | --- | --- | --- | --- |
 | [**console-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) | `t()` UI 문자열 + README 번역이 포함된 가장 작은 작동 앱 | `npx degit wsj-br/ai-i18n-tools/examples/console-app console-app` | `pnpm start` |
-| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 복수형 + 대시보드; Docusaurus 문서 + 플랫 README + SVG 자산 | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev` (앱 `:3030`; 문서용 `cd docs-site && pnpm start` `:3040`) |
+| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 복수형 + 대시보드; 중첩 Docusaurus 문서 + 평면 README + SVG 에셋 | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev` (앱 `:3030`; 문서용 `cd docs-site && pnpm start` `:3040`) |
+| [**docusaurus-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/README.md) | Docusaurus 문서 사이트 전용 (`docusaurus` 프리셋) | `npx degit wsj-br/ai-i18n-tools/examples/docusaurus-docs docusaurus-docs` | `pnpm start` (`:3100`; 빌드 + 서브, 로케일 메뉴 작동) |
 | [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro 랜딩 페이지: 전체 페이지 HTML + `t()` 하이브리드 | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
 | [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight 문서 사이트 | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
 | [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress 문서 사이트 + 테마 JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 사전 `.ts` 셸 (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI 카탈로그 (`pt`, `zh`, 점 파서) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
+| [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 순수 HTML + `data-i18n*` 마커; 정적 로케일 JSON (대시보드 스타일 UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM 공급자 선택 또는 벤치마크 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 마크다운 / CJK 번역 회귀 테스트 (데바나가리, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 

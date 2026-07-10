@@ -63,7 +63,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-CLIの呼び出しの詳細については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
+CLIの呼び出しの詳細（[クローンしたモノレポでの開発](/ja/guide/installation#cloned-monorepo)を含む）については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
 
 <a id="which-pipeline-should-i-use"></a>
 ## どのパイプラインを使用すべきですか？

@@ -22,8 +22,11 @@ export default tseslint.config(
       "examples/**/.docusaurus/**",
       "examples/**/.vitepress/cache/**",
       "examples/**/docs-site/build/**",
+      "examples/**/build/**",
       "examples/**/dist/**",
       "examples/**/.astro/**",
+      // Plain HTML demo: vanilla browser/server JS outside the typed package surface.
+      "examples/plain-html/**",
       // External reference snapshots from other projects (temporary context only; deps may be missing).
       "references/**",
       // Fixture sources read at runtime by tests; not part of the typed test project.

@@ -131,4 +131,4 @@ Resolva `t('…')` no **tempo de compilação** procurando o literal da fonte em
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Documentação Starlight | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | Site de marketing Astro simples (HTML + híbrido `t()`) | (ver README) |
 
-Compare [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) com [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — conteúdo de tutorial semelhante, estilo de saída Docusaurus em vez de Starlight.
+Compare [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) com [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) — conteúdo de tutorial semelhante, estilo de saída do Docusaurus em vez de Starlight.

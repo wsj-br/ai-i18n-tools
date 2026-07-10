@@ -98,4 +98,6 @@ npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.
 
 이 스니펫의 마커 탐색 부분은 [`src/dashboard-app/app.js`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js)에서 정확히 `applyStaticI18n`입니다. 영어 원문이 카탈로그 키이므로 번역되지 않은 문자열은 자동으로 영어로 대체됩니다.
 
+Node 서버가 없는 **실행 가능한 정적 대응물**(`/api/ui-i18n` 대신 `fetch('/locales/{locale}.json')`)에 대해서는 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 워크스페이스 예제를 참조하세요. 이 예제는 동일한 마커 패턴을 사용하며 간소화된 대시보드 스타일 UI를 제공합니다; `pnpm dev` 이후에 `http://localhost:3090/?locale=pt-BR`에서 포르투갈어(브라질)를 사용해 보세요.
+
 번들 대시보드가 다른 점: Node 서버가 있기 때문에 정적 `/locales/{locale}.json`를 가져오지 않습니다. 클라이언트는 `GET /api/ui-i18n`를 호출하고, 서버는 활성 로케일(`--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS)을 확인하고 `{ locale, dir, bundle }`를 반환합니다. 그런 다음 클라이언트는 `applyStaticI18n`을 호출하기 전에 해당 응답에서 `document.documentElement` `lang`/`dir`을 설정합니다(`lang`를 읽어 로케일을 선택하는 대신). 번들 자체는 번역 대상 도구의 콘텐츠가 아닙니다. 번들은 대시보드 자체의 UI 문자열이며, `src/i18n/locales/{locale}.json`에 포함되어(`dist/i18n/locales`에 빌드 시 복사됨) [`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts)의 `loadUiBundle`에 의해 서버 측에서 읽힙니다. 대시보드의 `t()`는 위의 최소 `t`와 달리 ```{{name}}``` 보간도 지원합니다.

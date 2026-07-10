@@ -22,14 +22,15 @@ i18next を使用するあらゆる JS/TS プロジェクト向けに設計さ�
 npx ai-i18n-tools init
 ```
 
-これにより、`ui-markdown` テンプレートを使用して `ai-i18n-tools.config.json` が作成されます。以下の設定を編集してください。
+これにより、`ui-markdown` テンプレートを使用して `ai-i18n-tools.config.json` が書き込まれます（デフォルトの `provider` / `providers` ブロックを含む）。`translate-ui` または `sync` を実行する前に、環境変数または `.env` でアクティブなプロバイダーのAPIキーを設定してください（Ollamaを除く）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。設定を編集して以下を設定します：
 
-- `sourceLocale` - ソース言語のBCP-47コード（例：`"en-GB"`）。 **一致する必要があります** `SOURCE_LOCALE` あなたのランタイムi18n設定ファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされたもの。
-- `targetLocales` - 目標言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。 このリストから`ui-languages.json`マニフェストを作成するには`generate-ui-languages`を実行します。
-- `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン（例：`["src/"]`, `["src/**/*.ts"]`）。
-- `ui.stringsJson` - マスターカタログを書き込む場所（例：`"src/locales/strings.json"`）。
-- `ui.flatOutputDir` - `de.json`、`pt-BR.json`などを記述する場所（例: `"src/locales/"`）。
-- `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および`proofread-ui`（一致する`localeModels`エントリの後、`translationModels`の前）のための、UI専用モデルの順序付きリスト。詳細については、「[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)」を参照してください。
+- `provider` および `providers` — `translationModels` を持つプロバイダーが少なくとも1つ必要です。OpenRouterを使用しない場合は、プリセットまたはモデルリストを変更してください。[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+- `sourceLocale` - ソース言語のBCP-47コード（例: `"en-GB"`）。ランタイムのi18nセットアップファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた `SOURCE_LOCALE` と**一致する必要があります**。
+- `targetLocales` - ターゲット言語のBCP-47コードの配列（例: `["de", "fr", "pt-BR"]`）。このリストから `ui-languages.json` マニフェストを作成するには、`generate-ui-languages` を実行します。
+- `ui.sourceRoots` - `t("…")` 呼び出しをスキャンするディレクトリまたはglobパターン（例: `["src/"]`, `["src/**/*.ts"]`）。
+- `ui.stringsJson` - マスターカタログを書き込む場所（例: `"src/locales/strings.json"`）。
+- `ui.flatOutputDir` - `de.json`、`pt-BR.json` などを書き込む場所（例: `"src/locales/"`）。
+- `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および `proofread-ui` のための順序付きUI専用モデルリスト（一致する `localeModels` エントリの後、`translationModels` の前）。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照してください。
 
 <a id="step-2-extract-strings"></a>
 ## ステップ2: 文字列を抽出する

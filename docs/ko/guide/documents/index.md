@@ -88,14 +88,15 @@ npx ai-i18n-tools init -t ui-astro-website
 
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`과 일치해야 함).
+- `provider` 및 `providers` — `init`는 기본적으로 OpenRouter를 스캐폴드합니다. `translate-docs` 또는 `sync` 전에 최소 한 개의 프로바이더를 구성하고 API 키를 설정하세요(Ollama는 키가 필요 없음). [프로바이더 및 API 키](/ko/guide/quick-start#provider-and-api-key)와 [LLM 프로바이더 및 모델](/ko/guide/providers-and-models)을 참조하세요.
+- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`와 일치해야 함).
 - `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 파이프라인에 공유되는 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리이기도 함).
-- `docs` - 문서 블록들의 배열. 각 블록은 선택적 `description`, `contentPaths`(문자열 또는 배열; 파일, 디렉터리 또는 glob), `outputDir`, 선택적 `docusaurusCatalogDir`, `docsOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등을 포함할 수 있습니다.
-- `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모입니다. 설정된 경우, `translate-docs` 제목과 `status` 섹션 헤더에 표시됩니다.
-- `docs[].contentPaths` - 마크다운/MDX/`.astro` 소스(および 선택적 `docusaurusCatalogDir`를 사용한 Docusaurus 쉘 JSON).
-- `docs[].outputDir` - 해당 블록의 번역 출력 루트입니다.
-- `docs[].docsOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"`, 또는 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` 별칭(참조: [출력 레이아웃](/ko/guide/documents/output-layouts)).
+- `cacheDir` - 모든 파이프라인의 공유 SQLite 캐시 디렉터리(및 `--write-logs`의 기본 로그 디렉터리).
+- `docs` - 문서 블록 배열. 각 블록에는 선택적 `description`, `contentPaths`(문자열 또는 배열; 파일, 디렉터리 또는 glob), `outputDir`, 선택적 `docusaurusCatalogDir`, `docsOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등이 있습니다.
+- `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모. 설정하면 `translate-docs` 헤드라인과 `status` 섹션 헤더에 나타납니다.
+- `docs[].contentPaths` - markdown/MDX/`.astro` 소스(및 Docusaurus 셸 JSON을 위한 선택적 `docusaurusCatalogDir`).
+- `docs[].outputDir` - 해당 블록의 번역된 출력 루트.
+- `docs[].docsOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
 
 **주요 vs 보조:** 로컬화된 페이지에 대해 `contentPaths`에 집중하십시오. `docusaurusCatalogDir`을 설정하면 `write-translations`에서 Docusaurus 셸 JSON도 필요할 때입니다. 페이지만 번역하는 경우 `docusaurusCatalogDir`는 생략하십시오.
 

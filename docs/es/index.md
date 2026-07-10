@@ -80,7 +80,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-Consulte [Instalación](/es/guide/installation) para obtener detalles sobre la invocación de la CLI y [Inicio rápido](/es/guide/quick-start) para plantillas de andamios.
+Consulte [Instalación](/es/guide/installation) para obtener detalles sobre la invocación de la CLI (incluido el [desarrollo de monorepos clonados](/es/guide/installation#cloned-monorepo)) y [Inicio rápido](/es/guide/quick-start) para las plantillas de andamiaje.
 
 <a id="which-pipeline-should-i-use"></a>
 ## ¿Qué pipeline debo usar?

@@ -22,14 +22,15 @@ Entwickelt für jedes JS/TS-Projekt, das i18next verwendet: React-Anwendungen, N
 npx ai-i18n-tools init
 ```
 
-Dies schreibt `ai-i18n-tools.config.json` mit der `ui-markdown`-Vorlage. Bearbeiten Sie diese, um folgende Einstellungen vorzunehmen:
+Dies schreibt `ai-i18n-tools.config.json` mit der Vorlage `ui-markdown` (einschließlich eines Standard-Blocks `provider` / `providers`). Bevor Sie `translate-ui` oder `sync` ausführen, legen Sie den API-Schlüssel für Ihren aktiven Anbieter in der Umgebung oder `.env` fest – Ollama ausgenommen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie die Konfiguration, um Folgendes festzulegen:
 
-- `sourceLocale` - Ihr Quellsprache BCP-47-Code (z. B. `"en-GB"`). **Muss übereinstimmen** `SOURCE_LOCALE` exportiert aus Ihrer Laufzeit-i18n-Setup-Datei (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` - Array von BCP-47-Codes für Ihre Zielsprache(n) (z. B. `["de", "fr", "pt-BR"]`). Führen Sie `generate-ui-languages` aus, um das `ui-languages.json`-Manifest aus dieser Liste zu erstellen.
-- `ui.sourceRoots` - Verzeichnisse oder Glob-Muster, die nach `t("…")`-Aufrufen durchsucht werden sollen (z. B. `["src/"]`, `["src/**/*.ts"]`).
-- `ui.stringsJson` - Wo das Master-Katalog geschrieben werden soll (z. B. `"src/locales/strings.json"`).
+- `provider` und `providers` – mindestens ein Anbieter mit `translationModels`; ändern Sie die Voreinstellung oder die Modellliste, wenn OpenRouter nicht Ihre Wahl ist. Siehe [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
+- `sourceLocale` – Ihr BCP-47-Code für die Quellsprache (z. B. `"en-GB"`). **Muss übereinstimmen** mit `SOURCE_LOCALE`, exportiert aus Ihrer Laufzeit-i18n-Setup-Datei (`src/i18n.ts` / `src/i18n.js`).
+- `targetLocales` – Array von BCP-47-Codes für Ihre Zielsprachen (z. B. `["de", "fr", "pt-BR"]`). Führen Sie `generate-ui-languages` aus, um das Manifest `ui-languages.json` aus dieser Liste zu erstellen.
+- `ui.sourceRoots` – Verzeichnisse oder Glob-Muster, die nach `t("…")`-Aufrufen durchsucht werden sollen (z. B. `["src/"]`, `["src/**/*.ts"]`).
+- `ui.stringsJson` – wo der Masterkatalog geschrieben werden soll (z. B. `"src/locales/strings.json"`).
 - `ui.flatOutputDir` – wo `de.json`, `pt-BR.json` usw. geschrieben werden sollen (z. B. `"src/locales/"`).
-- `providers.<active>.uiModels` (optional) – geordnete, nur für die Benutzeroberfläche bestimmte Modellliste für `translate-ui`, Pluralgenerierung und `proofread-ui` (nach einem übereinstimmenden `localeModels`-Eintrag, vor `translationModels`). Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
+- `providers.<active>.uiModels` (optional) – geordnete Liste der nur für die Benutzeroberfläche verfügbaren Modelle für `translate-ui`, Pluralgenerierung und `proofread-ui` (nach jedem passenden `localeModels`-Eintrag, vor `translationModels`). Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
 
 <a id="step-2-extract-strings"></a>
 ## Schritt 2: Zeichenfolgen extrahieren

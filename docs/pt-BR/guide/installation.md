@@ -52,7 +52,20 @@ Com [**direnv**](https://direnv.net/), adicione `PATH_add node_modules/.bin` a u
 
 **Execução única sem instalação** — use `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (faz o download do pacote para aquela execução; sem entrada em `package.json`).
 
+<a id="cloned-ai-i18n-tools-monorepo"></a>
+### Monorepo ai-i18n-tools clonado
+
+Ao desenvolver o pacote ou executar **exemplos** de workspace a partir de um clone completo de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):
+
+- **Exemplos de workspace** (`examples/console-app`, `examples/nextjs-app` e os outros pacotes listados em [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)) — execute `pnpm install` na raiz do repositório, depois `cd examples/<name>` e use `pnpm exec ai-i18n-tools …` ou os scripts `pnpm run i18n:*` do exemplo. [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) do workspace vincula `ai-i18n-tools` ao seu checkout local.
+- **Raiz do repositório** — pnpm não vincula o próprio `bin` do pacote raiz em `node_modules/.bin`, e `npx ai-i18n-tools` na raiz executa o pacote **npm publicado**, não sua árvore de trabalho. Use `node bin/ai-i18n-tools.mjs …` ou scripts `pnpm i18n:*` da raiz em vez disso.
+- **Fixtures autônomas** (`multi-provider`, `test-markdown`) — da pasta fixture, use `node ../../bin/ai-i18n-tools.mjs …`.
+
+Execute `pnpm run build` na raiz do repositório após alterar a origem da CLI. Consulte o [Guia de Desenvolvimento](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) para etapas de construção e soluções alternativas de instalação global opcionais.
+
 No Linux, macOS e WSL, as instalações do registro definem automaticamente o bit executável no script CLI. No Windows, os gerenciadores de pacotes geram `.cmd` e `.ps1` shims que invocam o Node explicitamente.
+
+Os comandos de tradução (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) exigem **configuração do provedor** em `ai-i18n-tools.config.json` e **uma chave de API** para o provedor ativo. Execute `ai-i18n-tools init` para gerar um bloco OpenRouter padrão; edite `provider` / `providers` para alternar predefinições ou modelos — consulte [Provedores e modelos LLM](/pt-BR/guide/providers-and-models). Ollama é a única predefinição integrada que não precisa de chave de API.
 
 Defina sua chave de API do provedor (OpenRouter mostrado; use a variável de ambiente que corresponde ao seu provedor ativo — consulte a [tabela de predefinições](/pt-BR/guide/providers-and-models#built-in-providers)):
 

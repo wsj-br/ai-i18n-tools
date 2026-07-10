@@ -8,6 +8,8 @@ BCP-47-Code für die Ausgangssprache (z. B. `"en-GB"`, `"en"`, `"pt-BR"`). Fü
 
 **Muss** `SOURCE_LOCALE` entsprechen, der aus Ihrer Laufzeit-i18n-Konfigurationsdatei exportiert wird (`src/i18n.ts` / `src/i18n.js`).
 
+---
+
 <a id="targetlocales"></a>
 ### `targetLocales`
 
@@ -15,10 +17,14 @@ Array mit BCP-47-Gebietsschemaschlüsseln, in die übersetzt werden soll (z. B. 
 
 `targetLocales` ist die primäre Gebietsschema-Liste für die UI-Übersetzung und die Standard-Gebietsschema-Liste für Dokumentationsblöcke. Verwenden Sie `generate-ui-languages`, um das `ui-languages.json`-Manifest aus `sourceLocale` + `targetLocales` zu erstellen.
 
+---
+
 <a id="uilanguage-optional"></a>
 ### `uiLanguage` (optional)
 
 BCP-47-Code für die eigene UI-Sprache des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen und das Übersetzungs-Dashboard). Er ist unabhängig von `sourceLocale` / `targetLocales` und wird durch das Flag `-L` / `--ui-lang` sowie die Umgebungsvariable `AI_I18N_LANG` überschrieben. Unbekannte Werte werden ordnungsgemäß auf das Quellgebietsschema (`en-GB`) herabgestuft – es gibt keine strikte Validierung. Siehe [Tool-UI-Sprache](/de/guide/tool-ui-language).
+
+---
 
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (optional)
@@ -34,15 +40,21 @@ Verwenden Sie dies, wenn:
 
 **Legacy:** Das Stammverzeichnis `uiLanguagesPath` wird beim Laden einer Konfigurationsdatei weiterhin akzeptiert und automatisch in `languagesManifestPath` umgeschrieben.
 
+---
+
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
 
 Maximale Anzahl gleichzeitig übersetzter **Zielgebietsschemata** (`translate-ui`, `translate-docs`, `translate-svg` und die entsprechenden Schritte in `sync`). Wenn nicht angegeben, verwendet die CLI standardmäßig **4** für die UI-Übersetzung und **3** für die Dokumentationsübersetzung (integrierte Vorgaben). Kann pro Ausführung mit `-j` / `--concurrency` überschrieben werden.
 
+---
+
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (optional)
 
 **translate-docs**, **translate-svg** und **translate-json** (und die entsprechenden Schritte innerhalb von `sync`): maximale parallele LLM-**Batch**-Anfragen pro Datei (jeder Batch kann viele Segmente enthalten). Standardwert **4**, wenn weggelassen. Wird von `translate-ui` ignoriert. Überschreiben mit `-b` / `--batch-concurrency`.
+
+---
 
 <a id="fileconcurrency-optional"></a>
 ### `fileConcurrency` (optional)
@@ -59,10 +71,14 @@ Maximale Anzahl gleichzeitig verarbeiteter Dateien **innerhalb einer einzelnen S
 
 **Anwendungsfall:** Setzen Sie dies auf `2-4`, wenn Sie `sync --force-update` mit 100 % Cache-Treffern ausführen, um die Gesamtverarbeitungszeit zu verkürzen. Die Verbesserung ist besonders bei vielen kleinen Dateien deutlich spürbar.
 
+---
+
 <a id="batchsize--maxbatchchars-optional"></a>
 ### `batchSize` / `maxBatchChars` (optional)
 
 Segment-Batching für **translate-docs**, **translate-svg** und **translate-json**: wie viele Segmente pro API-Anfrage und eine Zeichenobergrenze. Standardwerte: **20** Segmente, **4096** Zeichen (wenn weggelassen).
+
+---
 
 <a id="provider-and-providers"></a>
 ### `provider` und `providers`
@@ -127,18 +143,45 @@ Beispiel `translationModels` (gleiche Standardeinstellungen wie `npx ai-i18n-too
 
 ```json
 "translationModels": [
-  "qwen/qwen3-235b-a22b-2507",
+  "google/gemini-2.5-flash",
+  "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
-  "deepseek/deepseek-v4-flash",
+  "google/gemma-4-26b-a4b-it",
   "anthropic/claude-3-haiku",
-  "qwen/qwen3.6-plus",
-  "anthropic/claude-3.5-haiku",
+  "z-ai/glm-5.2",
   "google/gemini-3-flash-preview",
-  "~anthropic/claude-haiku-latest",
-  "google/gemma-4-31b-it",
-  "~anthropic/claude-sonnet-latest",
-  "openai/gpt-5.3-codex"
+  "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
+]
+```
+
+</details>
+
+**Empfohlene `uiModels`:** UI-Strings sind kurz, aber sehr sichtbar – ein Premium-Modell verbessert oft Ton, Pluralformen und Konsistenz. Optionale `uiModels` wird nach jedem passenden `localeModels`-Eintrag und vor `translationModels` versucht (siehe die Feldliste oben). Beispiel:
+
+<details>
+<summary>Empfohlene uiModels für die UI-Übersetzung</summary>
+
+```json
+"uiModels": [
+  "~anthropic/claude-sonnet-latest",
+  "z-ai/glm-5.2"
+]
+```
+
+</details>
+
+**Empfohlene `localeModels` für asiatische Sprachen:** Japanische, koreanische und chinesische Gebietsschemata profitieren oft von Modellen, die auf diese Schriften abgestimmt sind. Fügen Sie pro Gebietsschema Überschreibungen hinzu, die **zuerst** (vor `uiModels` / `translationModels`) versucht werden, wenn das Zielgebietsschema übereinstimmt:
+
+<details>
+<summary>Empfohlene localeModels für ja, ko, zh-Hans, zh-Hant</summary>
+
+```json
+"localeModels": [
+  { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
+  { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
 ]
 ```
 
@@ -152,6 +195,8 @@ Bevor Sie Modelllisten ändern, führen Sie `npx ai-i18n-tools check-models` aus
 
 Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu vergleichen, führen Sie `npx ai-i18n-tools bench-models` aus. Es bewertet jede eindeutige Modell-ID aus `translationModels`, `uiModels` und `localeModels`, indem es eine Stichprobe durch jedes Modell isoliert (parallel, begrenzt durch `concurrency`) übersetzt und pro Modell die Eingabe-/Ausgabe-Tokens, die verstrichene Zeit und die USD-Kosten ausgibt, sodass Sie Geschwindigkeit gegen Preis abwägen können, bevor Sie sich für Modelllisten entscheiden.
 
+---
+
 <a id="features"></a>
 ### `features`
 
@@ -163,6 +208,8 @@ Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu verg
 | `translateSVG` | — | Übersetzen Sie `.svg`-Dateien (erfordert den `svg`-Block auf oberster Ebene). |
 
 **Übersetzen** Sie SVG-Dateien mit `translate-svg`, wenn `features.translateSVG` wahr ist und ein oberster `svg`-Block konfiguriert ist. Der Befehl `sync` führt diesen Schritt aus, wenn beide gesetzt sind (es sei denn, `--no-svg` ist angegeben).
+
+---
 
 <a id="ui"></a>
 ### `ui`
@@ -184,6 +231,8 @@ Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu verg
 - `uiExtractor.includeUiLanguageEnglishNames` (oder veraltet `reactExtractor.includeUiLanguageEnglishNames`)
 
 Wenn `true` (Standard `false`), fügt `extract` auch jedes `englishName` aus dem gebündelten ui-languages-Masterkatalog (erstellt aus `sourceLocale` + `targetLocales`) zu `strings.json` hinzu, wenn es nicht bereits aus dem Quellscan vorhanden ist (gleiche Hash-Schlüssel). Liest `languagesManifestPath` nicht.
+
+---
 
 <a id="cachedir"></a>
 ### `cacheDir`
@@ -213,6 +262,8 @@ SQLite-Cache-Verzeichnis (wird von allen `docs`-Blöcken gemeinsam genutzt). Sta
 *.tmp
 *.log
 ```
+
+---
 
 <a id="docs"></a>
 ### `docs`
@@ -363,6 +414,8 @@ Beispiel: `"protectKeys": ["slug", "code"]` überspringt `{ slug: 'getting-start
 
 </details>
 
+---
+
 <a id="json"></a>
 ### `json`
 
@@ -378,6 +431,8 @@ Top-Level-Array von verschachtelten JSON-Übersetzungspipelines. Wird nur verwen
 | `keyPolicy.translateKeys` | Punkt-Pfade / Muster, die eingeschlossen werden sollen, wenn der Modus `allowlist` oder `both` ist. |
 | `keyPolicy.skipKeys` | Punkt-Pfade / Muster, die ausgeschlossen werden sollen (Standard-Verweigerungsliste enthält `id`, `slug`, `href`, `url`, `key`, `code`). |
 
+---
+
 <a id="svg"></a>
 ### `svg`
 
@@ -391,6 +446,8 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 | `pathTemplate`   | Benutzerdefinierter SVG-Ausgabepfad. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | Wenn `true`, verwenden integrierte `flat` / `nested` SVG-Layouts kleingeschriebene Gebietsschema-Abschnitte. Benutzerdefinierte `pathTemplate`-Werte bleiben unverändert; verwenden Sie `{llocale}` für klein geschriebene Abschnitte. |
 | `forceLowercase` | Kleinschreibung bei der Übersetzung beim erneuten Zusammensetzen des SVG. Nützlich für Designs, die auf vollständig kleingeschriebenen Beschriftungen basieren.                                                                                                                                                                                |
+
+---
 
 <a id="glossary"></a>
 ### `glossary`

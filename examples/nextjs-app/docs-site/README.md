@@ -2,6 +2,8 @@
 
 This is a small [Docusaurus](https://docusaurus.io/) site bundled with the [Next.js example](../README.md). It mirrors the markdown files from the main repository’s `docs/` folder for convenient local reading.
 
+For a **standalone** Docusaurus-only example (degit-friendly, port 3100), see [examples/docusaurus-docs](../../docusaurus-docs/).
+
 Get the parent example with degit (includes this `docs-site/` folder):
 
 ```bash

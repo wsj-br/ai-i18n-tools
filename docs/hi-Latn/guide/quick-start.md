@@ -14,37 +14,66 @@ Nau (9) runnable projects aur fixtures [`examples/`](https://github.com/wsj-br/a
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
+pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
 `console-app` ko kisi bhi udaharan folder ke naam se badlen. Har udaharan `"ai-i18n-tools": "^1.7.2"` ghoshit karta hai aur npm se CLI install karta hai. Pratyek-udaharan READMEs mein folder ke naam ke saath wahi snippet shamil hai.
 
-**Poore ai-i18n-tools repository se:** yadi aapne poora repo clone kiya hai (sirf degit ke saath ek example folder nahi), to repository root se `pnpm install` chalayein; workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) examples ko aapke local checkout se automatically link karti hai.
+**Poore ai-i18n-tools repository se** — yadi aapne poora repo clone kiya hai (sirf degit ke saath ek example folder nahi):
 
 ```bash
+pnpm install          # repository root
+pnpm run build        # after changing CLI source
+cd examples/console-app
+pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
+# or: pnpm exec ai-i18n-tools sync
+```
+
+Workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) workspace examples ko aapke local checkout se automatically link karti hai. Standalone fixtures (`multi-provider`, `test-markdown`) workspace packages nahi hain — unke folder se `node ../../bin/ai-i18n-tools.mjs …` ka upyog karein. CLI ko **repository root** se chalane ke liye (is package ke apne docs/i18n), `pnpm i18n:sync` ya `node bin/ai-i18n-tools.mjs …` ka upyog karein — [Installation — Cloned monorepo](/hi-Latn/guide/installation#cloned-monorepo) aur [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) dekhein.
+
+<a id="provider-and-api-key-required-for-translation"></a>
+### Provider aur API key (anuvad ke liye aavashyak)
+
+Har command jo ek LLM ko call karta hai — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, aur `sync` — ko **dono** ki zaroorat hoti hai:
+
+1. `ai-i18n-tools.config.json` mein **kam se kam ek provider**: `providers.<name>` ke saath ek `translationModels` block, aur ek top-level `provider` key jab ek se adhik provider configure kiye gaye hon. `init` default roop se OpenRouter ko scaffold karta hai; presets badlen, providers joden, ya model lists ko tune karen — [LLM providers aur models](/hi-Latn/guide/providers-and-models) dekhen.
+2. Aapke environment mein ya ek project-root `.env` file mein **mel khane wali API key**. Har built-in preset ek named env var padhta hai (jaise `OPENROUTER_API_KEY`); **Ollama** ek apwaad hai — yeh ek local endpoint ka upyog karta hai aur isse kisi key ki zaroorat nahi hoti. [Installation — apna provider API key set karen](/hi-Latn/guide/installation#using-the-cli) aur [preset env-var table](/hi-Latn/guide/providers-and-models#built-in-providers) dekhen.
+
+`extract`, `status`, aur anya commands jo LLM ko call nahi karte hain, unhe provider ya API key ki zaroorat nahi hoti.
+
+<a id="core-cli-commands"></a>
+### Core CLI commands
+
+`ai-i18n-tools` install karne ke baad apne **project root** se chalayein (`npx`, `pnpm exec`, aur `package.json` scripts ke liye [Using the CLI](/hi-Latn/guide/installation#using-the-cli) dekhein). Neeche diye gaye examples mein kewal command name ka upyog kiya gaya hai; npm users `npx` se prefix kar sakte hain, pnpm users `pnpm exec` se.
+
+```bash
+# Set API key for your active provider (skip for local Ollama)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+
 # UI strings (default template enables extract + translate-ui)
-npx ai-i18n-tools init
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
-# VitePress docs: npx ai-i18n-tools init -t ui-vitepress
-# Nextra docs: npx ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools translate-docs
+ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
+# VitePress docs: ai-i18n-tools init -t ui-vitepress
+# Nextra docs: ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-npx ai-i18n-tools init -t ui-json-bundles
-npx ai-i18n-tools translate-json
+ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-npx ai-i18n-tools sync
+ai-i18n-tools sync
 
 # Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-npx ai-i18n-tools status
-# npx ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools status
+# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
 <a id="recommended-packagejson-scripts"></a>
@@ -63,6 +92,7 @@ Package ko sthaaneeya roop se install karne ke baad, aap scripts mein CLI comman
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:translate:json": "ai-i18n-tools translate-json",
   "i18n:status": "ai-i18n-tools status",
+  "i18n:statistics": "ai-i18n-tools statistics",
   "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
 }
@@ -113,7 +143,7 @@ UI strings aur documents ko ek saath chalane ke liye ek hi config mein sabhi fea
 
 `glossary.uiGlossary` document anuvaad ko UI ke samaan `strings.json` catalog par nirdeshit karta hai taaki shabdaavali sthir rahe; `glossary.userGlossary` product shabdon ke liye CSV overrides jodta hai.
 
-Ek pipeline chalane ke liye `npx ai-i18n-tools sync` chalaein: jab `features.translateUIStrings` saksham ho, to **extract** karein phir **UI strings ka anuvaad karein**; vikalpik **SVG ka anuvaad karein** (`features.translateSVG` + `svg` block); **documentation ka anuvaad karein** (jaisa ki `docs[]` mein configure kiya gaya hai); phir vikalpik **translate-json** (`features.translateJson` + `json[]`). `--no-ui`, `--no-svg`, `--no-docs`, ya `--no-json` ke saath parts ko chhodein. Docs aur `json[]` steps `--dry-run`, `-p` / `--path`, `--force`, aur `--force-update` ko swikar karte hain (docs-only flags ko tab ignore kiya jata hai jab `--no-docs`; JSON wahi cache flags ka upyog karta hai jab `--no-json` set nahi hota hai).
+Ek pipeline chalaane ke liye `ai-i18n-tools sync` chalaayein: jab `features.translateUIStrings` saksham ho, to UI string ko **extract** karein phir **translate** karein; vaiklapik **SVG translate** karein (`features.translateSVG` + `svg` block); **documentation translate** karein (`docs[]` jaisa configure kiya gaya hai); phir vaiklapik **translate-json** karein (`features.translateJson` + `json[]`). `--no-ui`, `--no-svg`, `--no-docs`, ya `--no-json` ke saath parts ko chhod dein. Docs aur `json[]` steps `--dry-run`, `-p` / `--path`, `--force`, aur `--force-update` ko swikaar karte hain (docs-only flags ko nazarandaaz kiya jaata hai jab `--no-docs`; JSON wahi cache flags ka upyog karta hai jab `--no-json` set nahi hota hai).
 
 Ek block par `docs[].targetLocales` ka upyog karein taaki us block ki files ko UI se **chote upsamuchchay** mein anuvaad kiya ja sake (prabhavi documentation locales blocks ke paar **union** hote hain):
 
@@ -189,7 +219,7 @@ Aap ek hi config mein kai documentation pipelines ko `docs` mein ek se adhik ent
 
 <br />
 
-Yah `npx ai-i18n-tools sync` ke saath kaise chalta hai:
+Yeh `ai-i18n-tools sync` ke saath kaise chalta hai:
 
 - UI strings ko `src/` se extract/translate kiya jaata hai `public/locales/` mein.
 - Pehla docs block **markdown** ko `docs-site/docs/` se `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` mein translate karta hai (localised documentation pages).

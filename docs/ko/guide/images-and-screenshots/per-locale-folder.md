@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `docs-site/static/img/screenshots/<locale>/screenshot.png`에 일치하는 PNG 파일을 제공합니다. 소스 로케일에 무관한 설정의 경우 `screenshots/en-GB/`보다 `screenshots/[^/]+/` 사용을 권장합니다.
 
-구현 예시: [examples/nextjs-app/docs-site/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/docs-site/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`)와 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json)의 첫 번째 `docs[]` 블록.
+구현 예시: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 및 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
 <a id="preset---docsoutputstyle--astro-starlight"></a>
 ### 사전 설정 - `docsOutput.style = "astro-starlight"`

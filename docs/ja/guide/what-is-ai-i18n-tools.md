@@ -33,7 +33,8 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 | 例 | 内容 |
 | --- | --- |
 | [console-app](/ja/examples#console-app) | 最小のエンドツーエンドアプリ: `t()` UI 文字列と README 翻訳 |
-| [nextjs-app](/ja/examples#nextjs-app) | Next.js UI、複数形、SVG、Docusaurus ドキュメントサイト、ダッシュボード |
+| [nextjs-app](/ja/examples#nextjs-app) | Next.js UI、複数形、SVG、ネストされたDocusaurusドキュメント、フラットなREADME、ダッシュボード |
+| [docusaurus-docs](/ja/examples#docusaurus-docs) | スタンドアロンのDocusaurusドキュメントサイト |
 | [astro-website](/ja/examples#astro-website) | Astro マーケティングサイト: 全ページ HTML 翻訳と `t()` 文字列 |
 | [astro-docs](/ja/examples#astro-docs) | Astro Starlight ドキュメントサイト |
 | [vitepress-docs](/ja/examples#vitepress-docs) | VitePressドキュメントとテーマカタログ |

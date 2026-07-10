@@ -131,4 +131,4 @@ pnpm dev
 | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) | Starlight 文档 | 3050 |
 | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) | 纯 Astro 营销网站（HTML + `t()` 混合） | （请参阅 README） |
 
-比较 [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) 和 [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) — 类似的教程内容，Docusaurus 输出样式而非 Starlight。
+将 [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) 与 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) 进行对比 —— 教程内容相似，但输出风格为 Docusaurus 而非 Starlight。

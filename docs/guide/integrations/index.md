@@ -19,6 +19,8 @@ Framework-specific guides for wiring ai-i18n-tools into documentation sites and 
 
 All documentation-framework integrations share the same `docs[]` block model described in [Documents](/guide/documents/). Set `docsOutput.style` to match your framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, or `"astro-starlight"`). For output folder layout and link rewriting behaviour, see [Output layouts](/guide/documents/output-layouts) and [Link rewriting](/guide/documents/link-rewriting).
 
+Each `init -t ui-*` template scaffolds a default LLM provider block. Before `translate-docs` or `sync`, configure `provider` / `providers` if needed and set the matching API key — see [Provider and API key](/guide/quick-start#provider-and-api-key).
+
 Do **not** put framework shell or theme strings in `json[]` — that pipeline is for unrelated application locale bundles. Each integration page explains which catalog paths and CLI flags cover nav, sidebar, and theme labels for that framework.
 
 <a id="runnable-examples"></a>
@@ -28,7 +30,7 @@ Do **not** put framework shell or theme strings in `json[]` — that pipeline is
 | --- | --- |
 | Astro Starlight | [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs) |
 | Plain Astro website | [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) |
-| Docusaurus | [examples/nextjs-app/docs-site](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/docs-site) |
+| Docusaurus | [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs) |
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |

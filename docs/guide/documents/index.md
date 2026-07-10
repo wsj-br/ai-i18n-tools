@@ -88,6 +88,7 @@ That template enables UI extraction only. For page HTML translation, also set `f
 
 Edit the generated `ai-i18n-tools.config.json`:
 
+- `provider` and `providers` — `init` scaffolds OpenRouter by default; configure at least one provider and set its API key before `translate-docs` or `sync` (Ollama needs no key). See [Provider and API key](/guide/quick-start#provider-and-api-key) and [LLM providers and models](/guide/providers-and-models).
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all pipelines (and default log directory for `--write-logs`).

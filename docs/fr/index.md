@@ -80,7 +80,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-Consultez [Installation](/fr/guide/installation) pour les détails d'invocation de la CLI et [Démarrage rapide](/fr/guide/quick-start) pour les modèles de squelette.
+Consultez [Installation](/fr/guide/installation) pour les détails d'invocation de la CLI (y compris le [développement de monorepo cloné](/fr/guide/installation#cloned-monorepo)) et [Démarrage rapide](/fr/guide/quick-start) pour les modèles de scaffold.
 
 <a id="which-pipeline-should-i-use"></a>
 ## Quel pipeline dois-je utiliser ?

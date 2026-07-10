@@ -66,7 +66,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-關於 CLI 呼叫詳情請參閱[安裝](/zh-Hant/guide/installation)，關於腳手架範本請參閱[快速入門](/zh-Hant/guide/quick-start)。
+請參閱[安裝](/zh-Hant/guide/installation)以了解 CLI 調用詳情（包括[複製的 monorepo 開發](/zh-Hant/guide/installation#cloned-monorepo)），以及[快速入門](/zh-Hant/guide/quick-start)以取得腳手架範本。
 
 <a id="which-pipeline-should-i-use"></a>
 ## 我應該使用哪個管線？

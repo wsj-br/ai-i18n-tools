@@ -17,7 +17,7 @@ UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**�
 npx ai-i18n-tools init -t ui-json-bundles
 ```
 
-このテンプレートは `features.translateJson: true` を設定し、UI抽出およびドキュメント翻訳を無効化し、`src/i18n/en/translation.json` を指し、出力先が `src/i18n/{llocale}/translation.json` である単一の `json[]` ブロックをスキャフォールドします。リポジトリのレイアウトに合わせて `sourceLocale`、`targetLocales`、`contentPaths`、`outputPathTemplate` を編集してください。
+そのテンプレートは`features.translateJson: true`を設定し、UI抽出とドキュメント翻訳を無効にし、`src/i18n/en/translation.json`を指し出力が`src/i18n/{llocale}/translation.json`となる単一の`json[]`ブロックをスキャフォールディングします。また、デフォルトの`provider` / `providers`ブロックも含まれています — `translate-json`または`sync`を実行する前に、対応するAPIキーを設定する（またはローカルのOllamaを使用する）必要があります。詳細は[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。リポジトリのレイアウトに合わせて`sourceLocale`、`targetLocales`、`contentPaths`、`outputPathTemplate`を編集してください。
 
 <a id="step-2-configure-json"></a>
 ### ステップ 2: `json[]` の設定

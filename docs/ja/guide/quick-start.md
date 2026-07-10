@@ -14,37 +14,66 @@
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
+pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
 `console-app`を任意の例のフォルダー名に置き換えます。各例は`"ai-i18n-tools": "^1.7.2"`を宣言し、npmからCLIをインストールします。例ごとのREADMEには、フォルダー名が入力された同じスニペットが含まれています。
 
-**ai-i18n-toolsリポジトリ全体から:** リポジトリ全体をクローンした場合（degitで1つの例フォルダーだけではない場合）、リポジトリのルートから`pnpm install`を実行します。ワークスペース[`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)エントリ（`ai-i18n-tools: workspace:*`）は、例をローカルチェックアウトに自動的にリンクします。
+**完全な ai-i18n-tools リポジトリから** — degit で単一のサンプルフォルダーではなくリポジトリ全体をクローンした場合:
 
 ```bash
+pnpm install          # repository root
+pnpm run build        # after changing CLI source
+cd examples/console-app
+pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
+# or: pnpm exec ai-i18n-tools sync
+```
+
+ワークスペース [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) のエントリー (`ai-i18n-tools: workspace:*`) は、ワークスペースのサンプルをローカルのチェックアウトに自動的にリンクします。スタンドアロンのフィクスチャ (`multi-provider`, `test-markdown`) はワークスペースパッケージではありません — それらのフォルダーからは `node ../../bin/ai-i18n-tools.mjs …` を使用してください。**リポジトリルート** (このパッケージ自身の docs/i18n) から CLI を実行するには、`pnpm i18n:sync` または `node bin/ai-i18n-tools.mjs …` を使用してください — [インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo) および [開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照してください。
+
+<a id="provider-and-api-key-required-for-translation"></a>
+### プロバイダーとAPIキー（翻訳に必要）
+
+LLMを呼び出すすべてのコマンド — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync` — には、以下の**両方**が必要です。
+
+1. `ai-i18n-tools.config.json`に**少なくとも1つのプロバイダー**: `translationModels`を含む`providers.<name>`ブロック、および複数のプロバイダーを設定する場合のトップレベルの`provider`キー。`init`はデフォルトでOpenRouterをスキャフォールドします。プリセットの切り替え、プロバイダーの追加、モデルリストの調整については、[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+2. 環境変数またはプロジェクトルートの`.env`ファイル内の**対応するAPIキー**。各組み込みプリセットは名前付きの環境変数を読み取ります (例: `OPENROUTER_API_KEY`)。例外は**Ollama**です。ローカルエンドポイントを使用し、キーを必要としません。[インストール — プロバイダーのAPIキーを設定する](/ja/guide/installation#using-the-cli)および[プリセットの環境変数テーブル](/ja/guide/providers-and-models#built-in-providers)を参照してください。
+
+`extract`、`status`、およびLLMを呼び出さないその他のコマンドは、プロバイダーやAPIキーを必要としません。
+
+<a id="core-cli-commands"></a>
+### コア CLI コマンド
+
+`ai-i18n-tools` をインストールした後、**プロジェクトルート**から実行してください (`npx`, `pnpm exec`, `package.json` スクリプトについては [CLI の使用](/ja/guide/installation#using-the-cli) を参照してください)。以下の例ではコマンド名をそのまま使用していますが、npm ユーザーは `npx` を、pnpm ユーザーは `pnpm exec` をプレフィックスとして付けることができます。
+
+```bash
+# Set API key for your active provider (skip for local Ollama)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+
 # UI strings (default template enables extract + translate-ui)
-npx ai-i18n-tools init
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-npx ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: npx ai-i18n-tools init -t ui-starlight
-# VitePress docs: npx ai-i18n-tools init -t ui-vitepress
-# Nextra docs: npx ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: npx ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools translate-docs
+ai-i18n-tools init -t ui-docusaurus
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
+# VitePress docs: ai-i18n-tools init -t ui-vitepress
+# Nextra docs: ai-i18n-tools init -t ui-nextra
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-npx ai-i18n-tools init -t ui-json-bundles
-npx ai-i18n-tools translate-json
+ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-npx ai-i18n-tools sync
+ai-i18n-tools sync
 
 # Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-npx ai-i18n-tools status
-# npx ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools status
+# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
 <a id="recommended-packagejson-scripts"></a>
@@ -63,6 +92,7 @@ npx ai-i18n-tools status
   "i18n:translate:docs": "ai-i18n-tools translate-docs",
   "i18n:translate:json": "ai-i18n-tools translate-json",
   "i18n:status": "ai-i18n-tools status",
+  "i18n:statistics": "ai-i18n-tools statistics",
   "i18n:dashboard": "ai-i18n-tools dashboard",
   "i18n:cleanup": "ai-i18n-tools cleanup"
 }
@@ -113,7 +143,7 @@ UI 文字列とドキュメントを一緒に実行するには、すべての�
 
 `glossary.uiGlossary` は、ドキュメント翻訳をUIと同じ `strings.json` カタログを指すようにして用語の一貫性を保ちます。`glossary.userGlossary` は製品用語のCSVオーバーライドを追加します。
 
-`npx ai-i18n-tools sync` を実行して1つのパイプラインを実行します：`features.translateUIStrings` が有効な場合、まず**抽出**し、次に**UI文字列を翻訳**します。オプションで**SVGの翻訳**（`features.translateSVG` + `svg` ブロック）を実行。次に**ドキュメントの翻訳**（設定された`docs[]`を使用）。その後、オプションで**translate-json**（`features.translateJson` + `json[]`）を実行します。`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`を使用して、特定の部分をスキップできます。ドキュメントと`json[]`のステップは、`--dry-run`、`-p` / `--path`、`--force`、`--force-update`を受け入れます（`--no-docs`が設定されている場合、ドキュメント専用のフラグは無視されます。`--no-json`が設定されていない場合、JSONは同じキャッシュフラグを使用します）。
+`ai-i18n-tools sync` を実行して1つのパイプラインを実行します: `features.translateUIStrings` が有効な場合、**extract** の後に UI 文字列を **translate** します; オプションで **translate SVG** (`features.translateSVG` + `svg` ブロック); **translate documentation** (設定に応じた `docs[]`); その後オプションで **translate-json** (`features.translateJson` + `json[]`)。`--no-ui`, `--no-svg`, `--no-docs`, または `--no-json` で一部をスキップできます。docs および `json[]` ステップは `--dry-run`, `-p` / `--path`, `--force`, `--force-update` を受け付けます (docs 専用フラグは `--no-docs` の場合は無視されます; JSON は `--no-json` が設定されていない場合、同じキャッシュフラグを使用します)。
 
 ブロックに対して`docs[].targetLocales`を使用すると、そのブロックのファイルをUIよりも**少ないロケール数**に翻訳できます（有効なドキュメントロケールはブロック間の**和集合**になります）：
 
@@ -189,7 +219,7 @@ UI 文字列とドキュメントを一緒に実行するには、すべての�
 
 <br />
 
-`npx ai-i18n-tools sync` で実行した場合の動作:
+`ai-i18n-tools sync` でこれを実行する方法:
 
 - UI文字列は `src/` から `public/locales/` へ抽出／翻訳されます。
 - 最初のドキュメントブロックは、`docs-site/docs/` から `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` へ**Markdown**を翻訳します（ローカライズされたドキュメントページ）。

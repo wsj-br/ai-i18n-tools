@@ -18,6 +18,18 @@ describe("displayWidth", () => {
   it("ignores zero-width joiners and variation selectors", () => {
     expect(displayWidth("a\u200db")).toBe(2);
   });
+
+  it("counts CLI status symbols consistently at one column", () => {
+    expect(displayWidth("✓")).toBe(1);
+    expect(displayWidth("●")).toBe(1);
+    expect(displayWidth("-")).toBe(1);
+    expect(displayWidth("?")).toBe(1);
+  });
+
+  it("counts emoji and wide dingbats at two columns", () => {
+    expect(displayWidth("📊")).toBe(2);
+    expect(displayWidth("✅")).toBe(2);
+  });
 });
 
 describe("padEndDisplay / padStartDisplay", () => {

@@ -98,4 +98,6 @@ npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.
 
 このスニペットのマーカーをたどる部分は、[`src/dashboard-app/app.js`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js) の `applyStaticI18n` とまったく同じです。英語のソーステキストはカタログキーであるため、未翻訳の文字列は自動的に英語にフォールバックされます。
 
+**実行可能な静的版**（Nodeサーバーなし — `/api/ui-i18n`の代わりに`fetch('/locales/{locale}.json')`）については、[`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)のワークスペース例を参照してください。これは同じマーカーパターンを使用し、シンプルなダッシュボードスタイルのUIを備えています。`pnpm dev`の後に`http://localhost:3090/?locale=pt-BR`でポルトガル語（ブラジル）を試してみてください。
+
 バンドルされたダッシュボードが異なる点：Nodeサーバーがあるため、静的な `/locales/{locale}.json` をフェッチしません。クライアントは `GET /api/ui-i18n` を呼び出し、サーバーはアクティブなロケール（`--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > ホストOS）を解決し、`{ locale, dir, bundle }` を返します。その後、クライアントは `lang` を読み取ってロケールを選択するのではなく、その応答から `document.documentElement` `lang`/`dir` を設定してから `applyStaticI18n` を呼び出します。バンドル自体は、ツールの翻訳対象コンテンツではありません。これらはダッシュボード自身のUI文字列であり、`src/i18n/locales/{locale}.json` に同梱され（ビルド時に `dist/i18n/locales` にコピーされます）、[`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts) の `loadUiBundle` によってサーバー側で読み取られます。ダッシュボードの `t()` は、上記の最小限の `t` とは異なり、```{{name}}``` 補間もサポートしています。

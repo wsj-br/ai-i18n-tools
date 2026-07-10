@@ -1,0 +1,47 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": [
+    "es",
+    "fr",
+    "pt-BR"
+  ],
+  "concurrency": 4,
+  "batchConcurrency": 4,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": true,
+    "translateDocs": false,
+    "translateSVG": false
+  },
+  "glossary": {
+    "userGlossary": "glossary-user.csv"
+  },
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "openai/gpt-4o-mini",
+        "anthropic/claude-3-haiku",
+        "google/gemini-3-flash-preview"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter",
+  "ui": {
+    "sourceRoots": [
+      "public"
+    ],
+    "stringsJson": "public/strings.json",
+    "flatOutputDir": "public/locales",
+    "uiExtractor": {
+      "extensions": [
+        ".html"
+      ],
+      "includePackageDescription": false
+    }
+  },
+  "cacheDir": ".translation-cache",
+  "docs": []
+}

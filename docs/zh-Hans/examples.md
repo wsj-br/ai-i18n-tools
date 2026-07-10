@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-如果您克隆了 **整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，而不是单独下载包，运行 `pnpm install` 和 `pnpm run build` 在仓库根目录，然后运行 `cd examples/<name>`。
+如果你改为克隆了 **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区示例通过 `pnpm exec ai-i18n-tools …` 或其 `pnpm run i18n:*` 脚本使用本地 CLI，而不是在仓库根目录运行 `npx`（那会运行已发布的 npm 包）。参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
 
 <a id="list-of-examples"></a>
 ## 示例列表
@@ -25,19 +25,23 @@ pnpm install
 <a id="astro-docs"></a>
 <a id="vitepress-docs"></a>
 <a id="nextra-docs"></a>
+<a id="plain-html"></a>
 <a id="fumadocs-docs"></a>
+<a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="test-markdown"></a>
 
 | 示例 | 最适合 | 使用 degit 复制 | 运行 |
 | --- | --- | --- | --- |
 | [**console-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) | 最小的工作应用程序，包含 `t()` UI 字符串 + README 翻译 | `npx degit wsj-br/ai-i18n-tools/examples/console-app console-app` | `pnpm start` |
-| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 复数 + 仪表板；Docusaurus 文档 + 扁平 README + SVG 资产 | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev`（应用程序 `:3030`；文档 `cd docs-site && pnpm start` `:3040`） |
+| [**nextjs-app**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) | React / Next.js + 复数 + 仪表板；嵌套的 Docusaurus 文档 + 扁平 README + SVG 资源 | `npx degit wsj-br/ai-i18n-tools/examples/nextjs-app nextjs-app` | `pnpm dev`（应用 `:3030`；`cd docs-site && pnpm start` 用于文档 `:3040`） |
+| [**docusaurus-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/README.md) | 仅 Docusaurus 文档站点（`docusaurus` 预设） | `npx degit wsj-br/ai-i18n-tools/examples/docusaurus-docs docusaurus-docs` | `pnpm start`（`:3100`；构建 + 服务，区域设置菜单正常工作） |
 | [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro 登录页面：全页 HTML + `t()` 混合 | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
 | [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight 文档站点 | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
 | [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress 文档站点 + 主题 JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 字典 `.ts` 外壳 (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI 目录 (`pt`, `zh`, dot 解析器) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
+| [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 纯 HTML + `data-i18n*` 标记；静态区域设置 JSON（仪表板式 UI） | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev`（`:3090`） |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | 选择或基准测试 LLM 提供商 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 回归测试 Markdown / CJK 翻译 (梵文, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 

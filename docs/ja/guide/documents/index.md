@@ -88,14 +88,15 @@ npx ai-i18n-tools init -t ui-astro-website
 
 生成された`ai-i18n-tools.config.json`を編集します。
 
-- `sourceLocale` - ソース言語（`docusaurus.config.js`内の`defaultLocale`と一致している必要があります）。
-- `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
-- `cacheDir` - すべてのパイプライン共通のSQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
-- `docs` - ドキュメントブロックの配列。各ブロックには、オプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などが含まれます。
-- `docs[].description` - メンテナー向けのオプションの短いメモ。設定すると、`translate-docs` の見出しと `status` のセクションヘッダーに表示されます。
-- `docs[].contentPaths` - Markdown/MDX/`.astro` ソース (および Docusaurus シェル JSON 用のオプションの `docusaurusCatalogDir`)。
-- `docs[].outputDir` - そのブロックの翻訳された出力ルート。
-- `docs[].docsOutput.style` - `"nested"` (デフォルト)、`"flat"`、`"doc-system"`、またはエイリアス `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([出力レイアウト](/ja/guide/documents/output-layouts) を参照)。
+- `provider`および`providers` — `init`はデフォルトでOpenRouterをスキャフォールドします。`translate-docs`または`sync`の前に、少なくとも1つのプロバイダーを設定し、そのAPIキーを設定してください（Ollamaはキー不要）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)および[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+- `sourceLocale` - ソース言語（`docusaurus.config.js`の`defaultLocale`と一致する必要があります）。
+- `targetLocales` - BCP-47ロケールコードの配列（例: `["de", "fr", "es"]`）。
+- `cacheDir` - すべてのパイプラインの共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトログディレクトリ）。
+- `docs` - ドキュメントブロックの配列。各ブロックにはオプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などがあります。
+- `docs[].description` - メンテナ向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
+- `docs[].contentPaths` - markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
+- `docs[].outputDir` - そのブロックの翻訳出力ルート。
+- `docs[].docsOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（[出力レイアウト](/ja/guide/documents/output-layouts)を参照）。
 
 **プライマリ対サプライメンタリ：** ローカライズされたページには `contentPaths` を使用してください。`write-translations` から Docusaurus シェルの JSON も必要な場合は、`docusaurusCatalogDir` を設定します。ページの翻訳のみを行う場合は、`docusaurusCatalogDir` を省略してください。
 

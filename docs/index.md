@@ -75,7 +75,7 @@ npx ai-i18n-tools init
 npx ai-i18n-tools sync
 ```
 
-See [Installation](/guide/installation) for CLI invocation details and [Quick start](/guide/quick-start) for scaffold templates.
+See [Installation](/guide/installation) for CLI invocation details (including [cloned-monorepo development](/guide/installation#cloned-monorepo)) and [Quick start](/guide/quick-start) for scaffold templates.
 
 <a id="which-pipeline-should-i-use"></a>
 ## Which pipeline should I use?

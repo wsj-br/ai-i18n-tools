@@ -98,4 +98,6 @@ npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.
 
 此代码段中标记遍历的一半与 [`applyStaticI18n`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js) 中的 `src/dashboard-app/app.js` 完全相同。由于英文源文本是目录键，因此未翻译的字符串会自动回退到英文。
 
+如需 **可运行的静态对应版本**（无 Node 服务器 —— 使用 `fetch('/locales/{locale}.json')` 而非 `/api/ui-i18n`），请参阅 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 工作区示例。它使用了相同的标记模式，并带有精简的仪表盘式 UI；在 `pnpm dev` 之后，可在 `http://localhost:3090/?locale=pt-BR` 尝试葡萄牙语（巴西）。
+
 捆绑仪表板的不同之处：因为它有一个 Node 服务器，所以它不获取静态 `/locales/{locale}.json`。客户端调用 `GET /api/ui-i18n`，服务器解析活动区域设置（`--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统）并返回 `{ locale, dir, bundle }`。然后，客户端从该响应中设置 `document.documentElement` `lang`/`dir`（而不是读取 `lang` 来选择区域设置），然后调用 `applyStaticI18n`。捆绑包本身不是该工具的翻译内容，它们是仪表板自己的 UI 字符串，随 `src/i18n/locales/{locale}.json`（在构建时复制到 `dist/i18n/locales`）一起提供，并由 [`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts) 中的 `loadUiBundle` 在服务器端读取。仪表板的 `t()` 还支持 ```{{name}}``` 插值，这与上面最小的 `t` 不同。

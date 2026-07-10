@@ -45,6 +45,7 @@ const FIRST_PARTY_PACKAGES = [
   "console-app-example",
   "nextjs-app-example",
   "nextjs-app-docs-site",
+  "docusaurus-docs",
   "astro-docs",
 ];
 const FIRST_PARTY = new Set(FIRST_PARTY_PACKAGES);
