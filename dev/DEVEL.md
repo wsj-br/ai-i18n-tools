@@ -212,7 +212,6 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 | `pnpm typecheck`       | `tsc --noEmit` for `src/` and `tests/`                                                                |
 | `pnpm lint`            | ESLint plus typecheck                                                                                 |
 | `pnpm lint:fix`        | Auto-fix ESLint issues                                                                                |
-| `pnpm lint:md`         | Markdown link check on collected doc targets                                                          |
 | `pnpm format`          | Format `src/**/*.ts` and `tests/**/*.ts` with Prettier                                                |
 | `pnpm format:check`    | Check formatting without writing                                                                      |
 | `pnpm clean`           | Remove the `dist/` directory                                                                          |
