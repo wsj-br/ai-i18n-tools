@@ -1,8 +1,6 @@
-<center>
-
-![Logotipo ai-i18n-tools](../docs/public/ai-i18n-tools_logo.png)
-
-</center>
+<p align="center">
+  <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
+</p>
 
 <a id="ai-i18n-tools"></a>
 # ai-i18n-tools

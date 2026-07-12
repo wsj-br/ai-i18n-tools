@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "packageManager": "pnpm@11.12.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",

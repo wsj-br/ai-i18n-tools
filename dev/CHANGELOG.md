@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-07-12
+
 - **Fixed**: CI — workflows enable pnpm via corepack (`corepack prepare --activate`) instead of `pnpm/action-setup`. The action's npm bootstrap could not read pnpm 11.12 lockfiles, and `standalone: true` left a broken `@pnpm/exe` shim when npm blocked install scripts on Node 24 runners (`This: not found`).
 
 ## [1.8.0] - 2026-07-12
