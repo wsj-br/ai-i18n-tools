@@ -19,11 +19,52 @@ Aquí, el destino del enlace es `setup.md`, y `#first-run` es el anclaje: deber�
 <a id="what-to-do"></a>
 ## Qué hacer
 
+<a id="docusaurus-sites-preferred"></a>
+### Sitios Docusaurus (preferido)
+
+En la documentación de [Docusaurus](/es/guide/integrations/docusaurus) (`docsOutput.style = "docusaurus"`), prefiere los ID de encabezado nativos de Docusaurus en lugar de `ai-i18n-tools write-heading-ids`:
+
+1. Agrega un ID explícito en la línea del encabezado con el sufijo `{#…}` de Docusaurus, por ejemplo, `## TLS configuration {#tls-configuration}`. Durante `translate-docs`, solo se traduce el texto visible del encabezado; el sufijo `{#tls-configuration}` se conserva en cada configuración regional.
+2. Ejecuta `docusaurus write-heading-ids` desde la raíz de tu proyecto Docusaurus (a menudo `pnpm run write-heading-ids` cuando está conectado en `package.json`) para agregar o actualizar los sufijos `{#…}` en los encabezados que carecen de ellos. Vuelve a ejecutar después de renombrar los encabezados para que los ID obsoletos coincidan con los títulos actuales.
+
+Dirige tus **enlaces de anclaje** de markdown a esos ID estables, por ejemplo, `[label](other.md#tls-configuration)`, donde el fragmento coincide con el sufijo `{#…}`, no con un slug adivinado solo a partir de palabras en inglés. Consulta [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) para ver documentos confirmados que utilizan este patrón.
+
+<a id="other-layouts-flat-starlight-vitepress-etc"></a>
+### Otros diseños (plano, Starlight, VitePress, etc.)
+
+Cuando no estés en Docusaurus, o necesites anclajes HTML en lugar de sufijos `{#…}`:
+
 1. Ejecuta `ai-i18n-tools write-heading-ids` en tu fuente `.md` / `.mdx` antes de `translate-docs` (mismo `docs[]` / `contentPaths` que de costumbre). Inserta anclajes HTML explícitos en la línea anterior a cada encabezado, de modo que los valores `id` sean compartidos por cada copia traducida. Vuelve a ejecutarlo tras renombrar encabezados para actualizar los IDs de anclaje obsoletos y que coincidan con el título actual.
 2. Apunta tus **enlaces de anclaje** en markdown a esos IDs estables, por ejemplo `[label](other.md#section-id)`, donde `section-id` coincida con el anclaje escrito por la herramienta — no una suposición basada únicamente en palabras en inglés.
 
 <a id="example"></a>
 ## Ejemplo
+
+<a id="example-docusaurus"></a>
+### Sufijo `{#…}` de Docusaurus
+
+`docs/overview.md`:
+
+```markdown
+See [TLS setup](security.md#tls-configuration) for certificate steps.
+```
+
+`docs/security.md` (fuente en inglés):
+
+```markdown
+## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+Después de `translate-docs`, el fragmento del enlace permanece `#tls-configuration` en cada configuración regional; solo cambian el texto del encabezado y la etiqueta del enlace:
+
+```markdown
+Siehe [TLS-Einrichtung](security.md#tls-configuration) für die Zertifikatsschritte.
+```
+
+<a id="html-anchors-write-heading-ids"></a>
+### Anclas HTML (`write-heading-ids`)
 
 `docs/overview.md`:
 

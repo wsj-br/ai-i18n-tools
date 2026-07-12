@@ -22,7 +22,7 @@ ai-i18n-tools dashboard
 
 仪表板 UI 使用与 CLI 相同的区域设置解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![显示文档标签页、筛选器和缓存片段行的翻译仪表板](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## 我应该使用哪个选项卡？

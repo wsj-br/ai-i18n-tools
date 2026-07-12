@@ -9,7 +9,7 @@ export function classifySegmentType(text: string): SegmentType {
     return "heading";
   }
   if (/^!\[.*\]\(.*\)/.test(t)) {
-    return "other";
+    return "image";
   }
   if (/^(?:import|export)\b/.test(t)) {
     return "other";

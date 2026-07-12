@@ -3,7 +3,7 @@
 
 | Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | API key for the `openrouter` provider (required when it is active). |
+| `OPENROUTER_API_KEY`   | API key for the `openrouter` provider (required when it is active). Default `init` preset. |
 | Other provider keys    | Each provider reads its own key env var: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama needs none). Override per provider with `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Override `providers.openrouter.baseUrl` (only when that provider is configured). |
 | `OLLAMA_BASE_URL`      | Override `providers.ollama.baseUrl` (only when that provider is configured). |

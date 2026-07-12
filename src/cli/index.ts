@@ -18,8 +18,11 @@ import http from "http";
 import { exec, execFile } from "node:child_process";
 import chalk from "chalk";
 import {
+  assertPresetInitProvider,
   DEFAULT_CONFIG_FILENAME,
+  DEFAULT_INIT_PROVIDER_KEY,
   initConfigTemplates,
+  listPresetInitProviderKeys,
   writeInitConfigFile,
   toDocTranslateConfig,
 } from "../core/config.js";
@@ -433,9 +436,9 @@ Target locales (-l / --locale):
 Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.
 
 Provider override (-P / --provider):
-  Selects the active LLM provider for this run, overriding the config "provider" key.
-  The name must be configured under "providers" (e.g. -P openai). Handy when several
-  providers are configured and you want to switch without editing the config file.`)}\n`;
+  On translation commands, selects the active LLM provider for this run, overriding the config
+  "provider" key. The name must be configured under "providers" (e.g. -P openai).
+  On init, selects which built-in preset to scaffold (default: openrouter).`)}\n`;
 
 // Load `.env` from the current working directory so provider API keys are
 // available in non-interactive shells (e.g. agent-run commands) that do not
@@ -493,7 +496,7 @@ program
   .command("check-models")
   .description(
     t(
-      "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)"
+      "Verify configured model ids against the active provider's catalog and print input/output pricing (USD per 1M tokens)"
     )
   )
   .action(async (_opts, cmd: Command) => {
@@ -614,45 +617,78 @@ program
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
-  .action((opts: { output: string; template: string; withTranslateIgnore?: boolean }) => {
-    const tpl = opts.template.toLowerCase();
-    const templateMap: Record<string, keyof typeof initConfigTemplates> = {
-      "ui-markdown": "uiMarkdown",
-      "ui-docusaurus": "uiDocusaurus",
-      "ui-starlight": "uiStarlight",
-      "ui-vitepress": "uiVitepress",
-      "ui-nextra": "uiNextra",
-      "ui-fumadocs": "uiFumadocs",
-      "ui-astro-website": "uiAstroWebsite",
-      "ui-json-bundles": "uiJsonBundles",
-    };
-    const key = templateMap[tpl];
-    if (!key) {
-      console.error(
-        t(
-          'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", or "ui-json-bundles".'
-        )
-      );
-      process.exitCode = 1;
-      return;
-    }
-    writeInitConfigFile(opts.output, key);
-    console.log(t("Wrote {{path}} ({{template}})", { path: opts.output, template: key }));
-    if (key === "uiVitepress") {
-      scaffoldVitepressInitFiles(process.cwd());
-    }
-    if (opts.withTranslateIgnore) {
-      const ignorePath = path.join(process.cwd(), ".translate-ignore");
-      if (!fs.existsSync(ignorePath)) {
-        fs.writeFileSync(
-          ignorePath,
-          ["node_modules/", ".git/", "*.min.js", "dist/", ""].join("\n"),
-          "utf8"
+  .addHelpText(
+    "after",
+    `\n${t(
+      `Examples:
+  ai-i18n-tools init [-P <provider>]
+  ai-i18n-tools init -t ui-docusaurus -P anthropic
+  ai-i18n-tools init -P openai --with-translate-ignore
+
+Built-in presets for -P / --provider:
+  {{presets}} (default: {{defaultProvider}})`,
+      {
+        presets: listPresetInitProviderKeys().join(", "),
+        defaultProvider: DEFAULT_INIT_PROVIDER_KEY,
+      }
+    )}\n`
+  )
+  .action(
+    (opts: { output: string; template: string; withTranslateIgnore?: boolean }, cmd: Command) => {
+      const { providerOverride } = withConfig(cmd);
+      const providerKey = providerOverride ?? DEFAULT_INIT_PROVIDER_KEY;
+      try {
+        assertPresetInitProvider(providerKey);
+      } catch (e) {
+        console.error(t(e instanceof Error ? e.message : String(e)));
+        process.exitCode = 1;
+        return;
+      }
+      const tpl = opts.template.toLowerCase();
+      const templateMap: Record<string, keyof typeof initConfigTemplates> = {
+        "ui-markdown": "uiMarkdown",
+        "ui-docusaurus": "uiDocusaurus",
+        "ui-starlight": "uiStarlight",
+        "ui-vitepress": "uiVitepress",
+        "ui-nextra": "uiNextra",
+        "ui-fumadocs": "uiFumadocs",
+        "ui-astro-website": "uiAstroWebsite",
+        "ui-json-bundles": "uiJsonBundles",
+      };
+      const key = templateMap[tpl];
+      if (!key) {
+        console.error(
+          t(
+            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", or "ui-json-bundles".'
+          )
         );
-        console.log(t("Wrote .translate-ignore"));
+        process.exitCode = 1;
+        return;
+      }
+      writeInitConfigFile(opts.output, key, process.cwd(), providerKey);
+      console.log(
+        t("Wrote {{path}} ({{template}}, provider: {{provider}})", {
+          path: opts.output,
+          template: key,
+          provider: providerKey,
+        })
+      );
+      if (key === "uiVitepress") {
+        scaffoldVitepressInitFiles(process.cwd());
+      }
+      if (opts.withTranslateIgnore) {
+        const ignorePath = path.join(process.cwd(), ".translate-ignore");
+        if (!fs.existsSync(ignorePath)) {
+          fs.writeFileSync(
+            ignorePath,
+            ["node_modules/", ".git/", "*.min.js", "dist/", ""].join("\n"),
+            "utf8"
+          );
+          console.log(t("Wrote .translate-ignore"));
+        }
       }
     }
-  });
+  );
 
 program
   .command("write-heading-ids")
@@ -1578,7 +1614,7 @@ program
   .command("translate-ui")
   .description(
     t(
-      "Translate UI strings (strings.json → locale JSON via OpenRouter); -l/--locale <codes> limits targets (comma-separated; optional)"
+      "Translate UI strings (strings.json → locale JSON via the active LLM provider); -l/--locale <codes> limits targets (comma-separated; optional)"
     )
   )
   .option(
@@ -1731,7 +1767,7 @@ program
   .command("proofread-ui")
   .description(
     t(
-      "Run extract (refresh strings.json), then proofread source-locale UI strings via OpenRouter; writes results log under cacheDir"
+      "Run extract (refresh strings.json), then proofread source-locale UI strings via the active LLM provider; writes results log under cacheDir"
     )
   )
   .option("-l, --locale <code>", t("BCP-47 locale to proofread (default: config sourceLocale)"))

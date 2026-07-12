@@ -14,10 +14,10 @@ UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**�
 ### ステップ 1: ネストされたJSON向けに初期化
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-そのテンプレートは`features.translateJson: true`を設定し、UI抽出とドキュメント翻訳を無効にし、`src/i18n/en/translation.json`を指し出力が`src/i18n/{llocale}/translation.json`となる単一の`json[]`ブロックをスキャフォールディングします。また、デフォルトの`provider` / `providers`ブロックも含まれています — `translate-json`または`sync`を実行する前に、対応するAPIキーを設定する（またはローカルのOllamaを使用する）必要があります。詳細は[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。リポジトリのレイアウトに合わせて`sourceLocale`、`targetLocales`、`contentPaths`、`outputPathTemplate`を編集してください。
+そのテンプレートは`features.translateJson: true`を設定し、UI抽出とドキュメント翻訳を無効にし、`src/i18n/en/translation.json`を指し出力が`src/i18n/{llocale}/translation.json`となる単一の`json[]`ブロックを作成します。また、デフォルトの`provider` / `providers`ブロック（`-P <provider>`を渡さない限り`openrouter`）も含まれています — `translate-json`または`sync`を実行する前に、対応するAPIキーを設定する（またはローカルのOllamaを使用する）必要があります。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。リポジトリのレイアウトに合わせて`sourceLocale`、`targetLocales`、`contentPaths`、`outputPathTemplate`を編集してください。
 
 <a id="step-2-configure-json"></a>
 ### ステップ 2: `json[]` の設定
@@ -72,7 +72,7 @@ npx ai-i18n-tools init -t ui-json-bundles
 ### ステップ 3: JSONバンドルの翻訳
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 オプションフラグ（`translate-docs` と同じ概念）: ターゲットのサブセット用に `-l` / `--locale`、ファイルの制限用に `-p` / `--path`、`--dry-run`、`--force`（一致するファイルのファイル追跡およびセグメントキャッシュをクリア）、`--force-update`（ファイルハッシュが一致する場合に再処理。セグメントキャッシュは引き続き適用）、`-b` / `--batch-concurrency`、`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
@@ -80,7 +80,7 @@ npx ai-i18n-tools translate-json
 JSONのみのプロジェクトは以下を実行できます:
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 UIまたはドキュメントも有効になっている場合、`sync` は **translate-docsの後にtranslate-json** を実行します（`--no-json` の場合を除く）。`--no-json` でJSONをスキップできます。
@@ -88,7 +88,7 @@ UIまたはドキュメントも有効になっている場合、`sync` は **tr
 ファイルおよびロケールごとのカバレッジを確認してください:
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 `translateJson` がオンの場合、`status` は `json[]` セクションを出力します（✓ 最新、● 古いまたは欠落）。

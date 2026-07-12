@@ -3,6 +3,8 @@
 
 `translate-docs` réécrit les URL dans le Markdown traduit afin que les liens restent fonctionnels après le déplacement des fichiers vers des chemins spécifiques à la locale. La plupart des liens inter-pages sont gérés automatiquement ; si votre site utilise une arborescence d'URL statique partagée ou des dossiers d'actifs codés par locale, ajoutez des règles `docsOutput.postProcessing.regexAdjustments`.
 
+Pour les structures de répertoires de captures d'écran, le flux d'échange de paramètres régionaux avec préfixe de profondeur plat et les exemples d'actifs spécifiques à la structure, consultez [Images et captures d'écran — Réécriture de liens](/fr/guide/images-and-screenshots/link-rewriting).
+
 <a id="built-in-rewriters"></a>
 ## Réécriveurs intégrés
 

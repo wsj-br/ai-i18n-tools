@@ -9,7 +9,7 @@
 ## 빠른 시작
 
 ```bash
-npx ai-i18n-tools init -t ui-vitepress
+ai-i18n-tools init -t ui-vitepress [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
@@ -123,21 +123,6 @@ After editing:
 
 Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
 ```
-
-<a id="framework-shell-translation"></a>
-## 프레임워크 셸 번역
-
-| 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
-| Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
-| Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
-
-프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마십시오** — 해당 파이프라인은 관련 없는 앱 로케일 번들용입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/ko/guide/integrations/docusaurus) 및 [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하십시오.
 
 <a id="example-project"></a>
 ## 예시 프로젝트

@@ -26,7 +26,7 @@ pnpm install          # repository root
 pnpm run build        # after changing CLI source
 cd examples/console-app
 pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: pnpm exec ai-i18n-tools sync
+# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
 The workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) links workspace examples to your local checkout automatically. Standalone fixtures (`multi-provider`, `test-markdown`) are not workspace packages — from their folder use `node ../../bin/ai-i18n-tools.mjs …`. To run the CLI from the **repository root** (this package's own docs/i18n), use `pnpm i18n:sync` or `node bin/ai-i18n-tools.mjs …` — see [Installation — Cloned monorepo](/guide/installation#cloned-monorepo) and the [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
@@ -36,36 +36,41 @@ The workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pn
 
 Every command that calls an LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, and `sync` — needs **both**:
 
-1. **At least one provider** in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init` scaffolds OpenRouter by default; switch presets, add providers, or tune model lists — see [LLM providers and models](/guide/providers-and-models).
-2. **The matching API key** in your environment or a project-root `.env` file. Each built-in preset reads a named env var (for example `OPENROUTER_API_KEY`); **Ollama** is the exception — it uses a local endpoint and needs no key. See [Installation — set your provider API key](/guide/installation#using-the-cli) and the [preset env-var table](/guide/providers-and-models#built-in-providers).
+1. **At least one provider** in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init` scaffolds a default provider block (`openrouter` unless you pass `-P <provider>`); switch presets, add providers, or tune model lists — see [LLM providers and models](/guide/providers-and-models).
+2. **The matching API key** in your environment or a project-root `.env` file. Each built-in preset reads a named env var from the [preset table](/guide/providers-and-models#built-in-providers) (for example `OPENROUTER_API_KEY` for the default, or `ANTHROPIC_API_KEY` when you scaffold with `-P anthropic`); **Ollama** is the exception — it uses a local endpoint and needs no key. See [Installation — set your provider API key](/guide/installation#using-the-cli).
 
 `extract`, `status`, and other commands that do not call the LLM do not need a provider or API key.
 
 <a id="core-cli-commands"></a>
 ### Core CLI commands
 
-Run from your **project root** after installing `ai-i18n-tools` (see [Using the CLI](/guide/installation#using-the-cli) for `npx`, `pnpm exec`, and `package.json` scripts). Examples below use the bare command name; npm users can prefix with `npx`, pnpm users with `pnpm exec`.
+Run from your **project root** after installing `ai-i18n-tools` and [configuring your shell for the bare command](/guide/installation#using-the-cli). Examples below use `ai-i18n-tools` directly.
 
 ```bash
-# Set API key for your active provider (skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+# Set the API key for your active provider (see preset table; skip for local Ollama)
+# Default init uses openrouter:
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Or scaffold another preset at init, e.g. anthropic:
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 # UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools init [-P <provider>]    # default: openrouter
+ai-i18n-tools init -P anthropic
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
-# VitePress docs: ai-i18n-tools init -t ui-vitepress
-# Nextra docs: ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
+# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
+# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -79,7 +84,7 @@ ai-i18n-tools status
 <a id="recommended-packagejson-scripts"></a>
 ### Recommended `package.json` scripts
 
-With the package installed locally, you can use the CLI commands directly in scripts (no `npx` needed).
+With the package installed locally, `package.json` scripts resolve `ai-i18n-tools` from `node_modules/.bin` without extra shell setup. For interactive shells, configure PATH first — see [Using the CLI](/guide/installation#using-the-cli).
 
 **Prefer** `sync` for anything that used to be “run `translate-ui`, then `translate-svg`, then `translate-docs`, then `translate-json`”: `ai-i18n-tools sync` runs **extract** (when enabled), **translate-ui**, optional **translate-svg**, **translate-docs**, then optional **translate-json**—in the right order and with shared flags—according to your config. Chaining those steps by hand is easy to get wrong (order, extract, locale flags). Use `i18n:translate:ui`, `i18n:translate:svg`, `i18n:translate:docs`, and `i18n:translate:json` only when you need a **single** step in isolation.
 

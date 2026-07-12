@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-대신 **전체** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 리포지토리를 복제했다면, 리포지토리 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 다음 `cd examples/<name>`을 실행하세요. 워크스페이스 예제는 `pnpm exec ai-i18n-tools …` 또는 자체 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하며, 리포지토리 루트에서 `npx`을 실행하지 않습니다(이는 게시된 npm 패키지를 실행함). [설치 — 복제된 모노리포](/ko/guide/installation#cloned-monorepo)를 참조하세요.
+대신 **전체** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소를 복제했다면 저장소 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 후 `cd examples/<name>`를 실행하세요. 워크스페이스 예제는 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하거나, [PATH 설정](/ko/guide/installation#using-the-cli) 후에 단순히 `ai-i18n-tools …`를 사용합니다. [설치 — 복제한 모노레포](/ko/guide/installation#cloned-monorepo)를 참조하세요.
 
 <a id="list-of-examples"></a>
 ## 예시 목록

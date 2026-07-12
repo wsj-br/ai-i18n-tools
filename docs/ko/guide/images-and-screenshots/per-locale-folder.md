@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # 로케일별 폴더 (URL 재작성)
 
-`docsOutput.style = "flat"`이 있는 README/USER-GUIDE 및 공유 정적 URL 트리에서 스크린샷을 제공하는 문서 시스템 사이트(`docsOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`)에 사용합니다.
+`docsOutput.style = "flat"`가 포함된 README/USER-GUIDE, 그리고 공유 정적 URL 트리에서 스크린샷을 제공하는 문서 시스템 사이트(`docsOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`) 및 `"vitepress"` / 기타 문서 시스템 프리셋에 사용하세요. VitePress의 링크 재작성 세부 정보: [Link rewriting — VitePress](/ko/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
 
 <a id="directory-layout"></a>
 ### 디렉터리 구조
@@ -41,9 +41,11 @@ function getScreenshotDir(locale) {
 }
 ```
 
-https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh의 [examples/nextjs-app]에 있는 스크린샷 스크립트에서 간단한 `bash` 예시를 참조하거나, [Transrewrt 프로젝트](https://github.com/wsj-br/transrewrt) 저장소의 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)에서 더 복잡한 예시를 참조하세요.
+[examples/nextjs-app의 스크린샷 스크립트](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh)에서 간단한 `bash` 예제를 확인하거나, [duplistatus](https://github.com/wsj-br/duplistatus) 프로젝트의 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)에서 더 복잡한 예제를 확인하세요 ([Transrewrt](https://github.com/wsj-br/transrewrt)에서 프로덕션 환경으로도 사용됨).
 
-> **참고:** 아래 네 개의 하위 섹션은 동일한 `regexAdjustments` 로케일 세그먼트 교환(`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`)을 공유합니다. 출력 레이아웃과 평면 링크 리라이터가 먼저 실행되는지 여부만 다릅니다. 사용자의 `docsOutput.style`에 맞는 하위 섹션으로 이동하세요.
+> **참고:** 아래의 네 하위 섹션은 동일한 `regexAdjustments` 로케일 세그먼트 교체(`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`)를 공유합니다. 출력 레이아웃과 플랫 링크 재작성기가 먼저 실행되는지 여부만 다르므로, 사용 중인 `docsOutput.style`와 일치하는 하위 섹션으로 이동하세요.
+>
+> **참고:** `regexAdjustments`는 펜스 코드 블록을 포함하여 번역된 전체 마크다운 본문에서 실행됩니다. 문서 페이지에 일치하는 경로가 포함된 구성 예제(예: `screenshots/en-GB/`)가 포함되어 있는 경우, 해당 스니펫도 번역된 출력에서 재작성됩니다. 재사용 가능한 예제에서는 일반적인 `screenshots/[^/]+/` 형식을 사용하세요.
 
 <a id="config---docsoutputstyle--flat"></a>
 ### 설정 - `docsOutput.style = "flat"`
@@ -80,7 +82,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `postProcessing` 단계는 플랫 링크 재작성기 다음에 실행됩니다. 이미 접두사가 붙은 URL 내의 모든 위치에서 로케일 세그먼트와 일치하는 `search` 정규식을 작성합니다. 정규식에 `../` 접두사를 포함할 필요는 없습니다.
 
-구현 예제(프로덕션): [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)의 스크린샷 URL(`images/screenshots/en-GB/…`), [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)의 로케일 재작성, 캡처 스크립트 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)(위의 [스크린샷 스크립트 계약](#screenshot-script-contract) 참조).
+구현 예제(프로덕션): [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)의 스크린샷 URL(`images/screenshots/en-GB/…`), [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)의 로케일 재작성, duplistatus의 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)를 기반으로 한 캡처 스크립트(위의 [스크린샷 스크립트 계약](#screenshot-script-contract) 참조).
 
 구현 예시(데모 구성): [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) — [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json)의 두 번째 `docs[]` 블록(`images/screenshots/[^/]+/` → `${translatedLocale}`); 도우미 스크립트 [screenshot-locales.sh](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh).
 
@@ -177,10 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`public/img/screenshots/<locale>/screenshot.png`에 PNG 파일을 제공합니다.
+`public/img/screenshots/<locale>/screenshot.png`에서 PNG를 제공하세요. `${translatedLocale}` 플레이스홀더는 구성 로케일 문자열(예: `pt-BR`)을 사용합니다. `astro-starlight` 프리셋은 기본적으로 로케일 **출력 경로**를 소문자로 변환하지만(`pt-br/`), `public/img/screenshots/` 아래의 정적 자산 폴더는 마크다운 URL에 작성된 로케일 세그먼트와 일치해야 합니다. 스크린샷 디렉터리는 Astro 라우트 대소문자가 아닌 `${translatedLocale}`에 맞춰 정렬하세요.
 
 구현 예시: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) 및 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).
-
----
-
-<a id="colocated-raster-doc-system"></a>

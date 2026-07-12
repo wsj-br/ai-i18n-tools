@@ -39,4 +39,6 @@ Aap `--force` ko `--force-update` ke saath combine nahi kar sakte (ve mutually e
 | `json-array` (default) | Strings ka ek JSON array, order mein har segment ke liye ek entry.               | **Saman length** (saman order) ka ek JSON array.           |
 | `json-object`          | Segment index dwara keyed ek JSON object `{"0":"…","1":"…",…}`.            | **Saman keys** aur translated values ke saath ek JSON object. |
 
+Kuch model ek format ko doosre ki tulna mein adhik vishvasniyata se follow karte hain, isliye yadi koi model aksar galat batch ya bemel segment id deta hai, to ek alag mode try karein. `json-array` default hai kyuki yah ek aam, saral format hai jise model aamtaur par achhe se handle karte hain.
+
 Run header `Batch prompt format: …` bhi print karta hai taki aap active mode ki pushti kar saken. JSON label files (`docusaurusCatalogDir`) aur SVG file batches usi setting ka upyog karte hain jab ve steps `translate-docs` (ya `sync` ke docs phase — `sync` is flag ko expose nahi karta hai; yah `json-array` par default hota hai) ke hisse ke roop mein chalte hain.

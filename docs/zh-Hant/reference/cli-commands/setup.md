@@ -13,11 +13,13 @@
 <a id="init"></a>
 ### `init`
 
-**概要：** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**概要：** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 撰寫一個入門設定檔（包含 `provider` / `providers`、`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 與 `docs[].addFrontmatter`）。呼叫 LLM 的翻譯指令需要在環境變數或 `.env` 中提供目前供應商的 API 金鑰（Ollama 除外）——請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
 
-**主要選項：** `-t` / `--template`、`-o` / `--output`、`--with-translate-ignore`
+**主要選項：** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider` 選取要搭建的 **內建預設組**（`openrouter` 表示省略時）。必須為以下其中之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`ollama`。
 
 **範本（`-t`）：**
 

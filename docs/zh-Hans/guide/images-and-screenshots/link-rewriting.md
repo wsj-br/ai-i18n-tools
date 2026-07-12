@@ -1,30 +1,36 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # 平面链接重写器和两步流
 
+阅读本页以了解截图 URL 布局和扁平化两步资源流程。有关跨页面 markdown 链接和 `replace` 占位符，请参阅[文档 — 链接重写](/zh-Hans/guide/documents/link-rewriting)。
+
 对于 `docsOutput.style = "flat"`（除非设置了 `rewriteRelativeLinks: false` 或自定义 `pathTemplate`），内置重写器会在 `postProcessing` 之前运行。它处理跨文档链接（添加区域设置后缀）并将深度前缀添加到非 Markdown 资产 URL。然后，区域设置特定的资产路径（屏幕截图、`/img/…` 桥接）由 `docsOutput.postProcessing.regexAdjustments` 重写。
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"` 时的两步流程
 
-```
-source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
-```
+1. **源 URL** — 翻译后 markdown 中的图片路径（片段重组后）
+2. **扁平链接重写器** — 添加深度前缀（`../`、`../../docs/`、…）
+3. **`regexAdjustments`** — 替换区域设置文件夹片段（`en-GB` → `${translatedLocale}`）
+4. **输出 URL** — 写入翻译文件的最终路径
 
 在仓库根目录中，使用 `outputDir: "translated-docs/"` 和源 `README.md` 的示例：
 
 1. 平面链接重写器：`images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png`（`translated-docs/` 的一个 `../`）
 2. `regexAdjustments` 规则 `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`：`../images/screenshots/de/foo.png`
 
-对于 `docsOutput.style = "doc-system"`（包括 `"docusaurus"`、`"astro-starlight"` 和 `"nested"`），平面链接重写器不运行。`regexAdjustments` 会看到翻译后的 Markdown 中的原始 URL（通常是像 `/img/screenshots/en-GB/foo.png` 这样的绝对路径）。
+对于任何非 `flat` 样式（包括 `"nested"`、`"doc-system"`，以及 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 等预设），扁平链接重写器不会运行。`regexAdjustments` 会看到翻译后 markdown 中的原始 URL（通常为类似 `/img/screenshots/en-GB/foo.png` 的绝对路径）。
+
+**Astro Starlight MDX：** Starlight 内容通常为 `.mdx`。对于这些文件，`translate-docs` 仅运行 `postProcessing.regexAdjustments` — 不运行扁平、VitePress、Nextra 或 Fumadocs 链接重写器。各区域设置的截图路径仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 规则；请参阅 [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)。
 
 <a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress 链接规范化器 (`style: "vitepress"`)
 
 当 `docsOutput.rewriteVitepressLinks` 为 `true` 时（当 `style` 为 `"vitepress"` 时的默认值），在段重组后会运行一个单独的规范化器（而不是平面重写器）。它针对 VitePress / 文档系统站点，其中英文内容位于内容根目录，而本地化内容位于同级文件夹中（`docs/de/guide/…`）。
 
-```
-source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
-```
+1. **源 href** — 翻译后 markdown 中的链接（片段重组后）
+2. **VitePress 链接规范化器** — 将文档路径重写为站点路由（`/guide/…`）
+3. **`regexAdjustments`** — 可选的截图区域设置文件夹替换（`screenshots/en-GB/` → `screenshots/de/`、…）
+4. **输出 href** — 写入翻译文件的最终 URL
 
 典型重写：
 
@@ -37,6 +43,8 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 对于同步 `README.md` → `docs/index.md` 的项目，请在 `README.md` 中为 `LICENSE`、`examples/` 以及 VitePress 目录树之外的其他文件使用完整的 GitHub URL。请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-as-homepage)。
 
 扁平重写器和 VitePress 规范化器在每个 `docs[]` 块中互斥——在 `regexAdjustments` 之前仅运行其中一个。请参阅 [VitePress 集成 — 链接约定](/zh-Hans/guide/integrations/vitepress#link-conventions)。
+
+各区域设置的截图文件夹在需要时仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 规则；请参阅[各区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra 链接规范化器 (`style: "nextra"`)

@@ -75,5 +75,3 @@ extract 命令會解析 **第二個參數**（當它是一個純物件字面量�
 **平面化語言環境 JSON：** 非複數列仍為 **來源句子 → 翻譯**。複數列會輸出為 `<groupId>_original`（等於 `source`，供參考）和 `<groupId>_<form>`，每個後綴對應一個字串，以便 i18next 原生解析複數。`translate-ui` 也會寫入 `{sourceLocale}.json`，其中 **僅包含**複數的平面化鍵（載入此捆綁包以取得來源語言，以便後綴鍵能夠解析；純字串仍使用鍵作為預設值）。對於每個目標語言環境，輸出的後綴鍵會符合該語言環境的 `Intl.PluralRules`（`requiredCldrPluralForms`）：如果 `strings.json` 省略了某個類別，因為它在壓縮後與另一個類別匹配（例如，阿拉伯語的 `many` 與 `other` 相同），`translate-ui` 仍會將每個必需的後綴寫入平面化檔案，方法是從備用同級字串複製，這樣執行階段查找就不會遺漏任何鍵。
 
 執行時 (`ai-i18n-tools/runtime`): **呼叫** `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle })` — 它會執行 `wrapI18nWithKeyTrim`，註冊可選的 `translate-ui` `{sourceLocale}.json` 複數套件，然後使用 `buildPluralIndexFromStringsJson(stringsJson)` 執行 `wrapT`。`wrapT` 會移除 `plurals` / `zeroDigit`，在需要時將鍵重寫為群組 ID，並轉發 `count` (可選：如果只有一個非 <code v-pre>{{count}}</code> 預留位置，則從該數字選項複製 `count`)。請參閱 [Wire i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 和 [Runtime helpers](/zh-Hant/guide/runtime-helpers)。
-
-**舊版環境：** `Intl.PluralRules` 是工具和一致行為所必需的；如果您的目標是極舊的瀏覽器，請進行 polyfill。

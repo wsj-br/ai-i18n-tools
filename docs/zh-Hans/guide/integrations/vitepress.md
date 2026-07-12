@@ -9,7 +9,7 @@
 ## 快速开始
 
 ```bash
-npx ai-i18n-tools init -t ui-vitepress
+ai-i18n-tools init -t ui-vitepress [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
@@ -123,21 +123,6 @@ After editing:
 
 Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
 ```
-
-<a id="framework-shell-translation"></a>
-## 框架外壳翻译
-
-| 框架 | 外壳/主题字符串 | 管道 |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` 目录 (`{ message, description }`) | 文档 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主题/导航/侧边栏目录 | 文档 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 侧边栏标签 | 文档 — 当 `style: "nextra"` + `translate-docs` 时自动 |
-| Nextra | 主题字典 `.ts` | 文档 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 侧边栏标签 | 文档 — 当 `style: "fumadocs"` + `translate-docs` 时自动 |
-| Fumadocs | UI 覆盖目录 | 文档 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 内置 UI 字符串（多语言支持）；无额外外壳管道 | 文档 — `translate-docs`（仅页面） |
-
-Do **不** 将框架 shell/主题字符串放在 `json[]` 中 —— 该管道用于无关的应用程序本地化包。请参阅 [Docusaurus 集成](/zh-Hans/guide/integrations/docusaurus) 和 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs) 以了解其他框架模式。
 
 <a id="example-project"></a>
 ## 示例项目

@@ -16,6 +16,11 @@ import {
   resolveFrontmatterFieldAllowList,
 } from "./frontmatter-fields.js";
 import { BaseExtractor } from "./base-extractor.js";
+import {
+  formatImageMarkdown,
+  hasTranslatableImageAlt,
+  parseStandaloneImageMarkdown,
+} from "./image-markdown.js";
 import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 import {
   ADMONITION_CLOSING_NOINDENT_RE,
@@ -151,6 +156,10 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
       if (segment.type === "frontmatter-field") {
+        continue;
+      }
+      if (segment.type === "image" && segment.image) {
+        parts.push(formatImageMarkdown(segment.content, segment.image.url));
         continue;
       }
       let chunk = segment.content;
@@ -315,6 +324,17 @@ export class MarkdownExtractor extends BaseExtractor {
       return { type: "other", content, translatable: false, startLine };
     }
 
+    const standaloneImage = parseStandaloneImageMarkdown(trimmed);
+    if (standaloneImage) {
+      return {
+        type: "image",
+        content: standaloneImage.alt,
+        translatable: hasTranslatableImageAlt(standaloneImage.alt),
+        image: { url: standaloneImage.url },
+        startLine,
+      };
+    }
+
     if (isSingleLine) {
       const textOnly = trimmed
         .replace(/`[^`]*`/g, "")
@@ -332,10 +352,6 @@ export class MarkdownExtractor extends BaseExtractor {
 
     if (content.match(/^#{1,6}\s/)) {
       return { type: "heading", content, translatable: true, startLine };
-    }
-
-    if (content.match(/^!\[.*\]\(.*\)$/)) {
-      return { type: "other", content, translatable: false, startLine };
     }
 
     if (MDX_TOPLEVEL_ESM_RE.test(trimmed)) {

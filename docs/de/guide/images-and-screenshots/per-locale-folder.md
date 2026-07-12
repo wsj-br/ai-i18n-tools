@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Ordner pro Gebietsschema (URL-Umschreibung)
 
-Verwenden Sie dieses Muster für README-/USER-GUIDE-Dokumente mit `docsOutput.style = "flat"` sowie für Dokumentationssysteme (`docsOutput.style = "doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"`), die Screenshots aus einem gemeinsamen statischen URL-Baum bereitstellen.
+Wird für README/USER-GUIDE mit `docsOutput.style = "flat"` und für Doc-System-Sites (`docsOutput.style = "doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"`) sowie für `"vitepress"` / andere Doc-System-Voreinstellungen verwendet, die Screenshots von einer gemeinsam genutzten statischen URL-Struktur bereitstellen. Details zur Link-Umschreibung für VitePress: [Link rewriting — VitePress](/de/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Verzeichnisstruktur
@@ -41,9 +41,11 @@ function getScreenshotDir(locale) {
 }
 ```
 
-Ein einfaches `bash`-Beispiel finden Sie im [Screenshot-Skript in examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh) oder ein komplexeres Beispiel in [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) aus dem [Transrewrt-Projekt](https://github.com/wsj-br/transrewrt)-Repository.
+Siehe ein einfaches `bash`-Beispiel im [Screenshot-Skript in examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh) oder ein komplexeres Beispiel in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) aus dem Projekt [duplistatus](https://github.com/wsj-br/duplistatus) (wird auch in der Produktion von [Transrewrt](https://github.com/wsj-br/transrewrt) verwendet).
 
-> **Hinweis:** Die vier folgenden Unterabschnitte verwenden denselben `regexAdjustments`-Tausch des Sprachsegmentes (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`). Nur die Ausgabestruktur und die Reihenfolge, ob der flache Link-Rewriter zuerst ausgeführt wird, unterscheiden sich – wechseln Sie zum Unterabschnitt, der Ihrem `docsOutput.style` entspricht.
+> **Hinweis:** Die vier Unterabschnitte unten teilen sich denselben `regexAdjustments`-Gebietsschema-Segment-Austausch (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`). Nur das Ausgabelayout und ob der Flat-Link-Rewriter zuerst ausgeführt wird, unterscheiden sich – springen Sie zu dem Unterabschnitt, der Ihrem `docsOutput.style` entspricht.
+>
+> **Hinweis:** `regexAdjustments` wird auf den gesamten übersetzten Markdown-Text angewendet, einschließlich umgrenzter Codeblöcke. Wenn eine Dokumentationsseite ein Konfigurationsbeispiel einbettet, das einen übereinstimmenden Pfad enthält (z. B. `screenshots/en-GB/`), wird dieser Schnipsel auch in der übersetzten Ausgabe umgeschrieben. Bevorzugen Sie die generische Form `screenshots/[^/]+/` in wiederverwendbaren Beispielen.
 
 <a id="config---docsoutputstyle--flat"></a>
 ### Konfiguration – `docsOutput.style = "flat"`
@@ -80,7 +82,7 @@ Ergebnis: `../images/screenshots/de/translate.png` – korrekter relativer Pfad 
 
 Der `postProcessing`-Schritt wird nach dem Flat-Link-Rewriter ausgeführt. Schreiben Sie `search`-Regexe, die das Gebietsschema-Segment überall innerhalb der bereits präfixierten URL abgleichen – es ist nicht erforderlich, das `../`-Präfix in den Regex aufzunehmen.
 
-Implementierungsbeispiel (Produktion): [Transrewrt](https://github.com/wsj-br/transrewrt) – Screenshot-URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), Sprachumschreibung in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), Aufnahmeskript [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) (siehe den [Screenshot-Skript-Vertrag](#screenshot-script-contract) oben).
+Implementierungsbeispiel (Produktion): [Transrewrt](https://github.com/wsj-br/transrewrt) – Screenshot-URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), Gebietsschema-Umschreibung in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), Erfassungsskript basierend auf [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) von duplistatus (siehe den [Screenshot-Skript-Vertrag](#screenshot-script-contract) oben).
 
 Implementierungsbeispiel (Demo-Konfiguration): [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) – zweiter `docs[]`-Block in [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (`images/screenshots/[^/]+/` → `${translatedLocale}`); Hilfsskript [screenshot-locales.sh](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh).
 
@@ -177,10 +179,6 @@ Gleich wie `"doc-system"` mit `localeSubpath: ""` – übersetzte Seiten befinde
 
 </details>
 
-Stellen Sie die PNGs unter `public/img/screenshots/<locale>/screenshot.png` bereit.
+Liefern Sie PNGs unter `public/img/screenshots/<locale>/screenshot.png`. Der Platzhalter `${translatedLocale}` verwendet Ihre Konfigurations-Gebietsschema-Zeichenfolge (z. B. `pt-BR`). Die Voreinstellung `astro-starlight` wandelt Gebietsschema-**Ausgabepfade** standardmäßig in Kleinbuchstaben um (`pt-br/`), aber statische Asset-Ordner unter `public/img/screenshots/` sollten dem Gebietsschema-Segment entsprechen, das in Markdown-URLs geschrieben wird – halten Sie Screenshot-Verzeichnisse mit `${translatedLocale}` ausgerichtet, nicht unbedingt mit der Astro-Routen-Groß-/Kleinschreibung.
 
 Implementierungsbeispiel: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) – [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) und [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).
-
----
-
-<a id="colocated-raster-doc-system"></a>

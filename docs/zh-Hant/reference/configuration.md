@@ -134,9 +134,11 @@
 
 將以下列表視為您可以擴展的**基準**：如果特定語言環境的翻譯品質不佳或不成功，請研究哪些模型能有效支援該語言或文字（參考線上資源或您的提供者文件），並將這些模型 ID 添加為進一步的替代方案。
 
+這些模型 ID 在 `-P openrouter`（預設值）時符合 `ai-i18n-tools init [-P <provider>]`。其他預設集從 `init -P <provider>` 取得原生模型 ID——請參閱[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
+
 此列表經過**測試，涵蓋了廣泛的地區**，適用於一個包含 36 個目標地區的大型文件專案；它是一個實用的預設值，但不能保證對每個地區都有良好的表現。
 
-範例 `translationModels`（與 `npx ai-i18n-tools init` 預設值相同）：
+範例 `translationModels`（與 `ai-i18n-tools init [-P <provider>]` 相同的預設值）：
 
 <details>
 <summary>預設翻譯模型備用列表</summary>
@@ -147,9 +149,9 @@
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@
 
 <br />
 
-在您的環境或 `.env` 檔案中設定活躍提供者的 API 金鑰環境變數（例如 `OPENROUTER_API_KEY`）。
+在您的環境或 `.env` 檔案中設定作用中提供者的 API 金鑰環境變數（請參閱[預設集表格](/zh-Hant/guide/providers-and-models#built-in-providers)）。
 
-在更改模型列表之前，請執行 `npx ai-i18n-tools check-models`。對於任何提供者，它會根據該提供者的即時模型列表 (`GET /models`) 驗證每個已配置的模型 ID (`translationModels`、`uiModels` 和所有 `localeModels` 條目)，報告缺失或超過 `expiration_date` 的 ID，列出有效模型，並在任何已配置 ID 無效時以非零值退出。當提供者返回定價 (例如 OpenRouter) 時，它還會顯示估計的輸入/輸出定價 (每 1M 權杖的美元價格)。
+在變更模型清單之前，執行 `ai-i18n-tools check-models`。對於任何提供者，它會根據該提供者的即時模型清單 (`GET /models`) 驗證每個已設定的模型 ID（`translationModels`、`uiModels` 及所有 `localeModels` 項目），回報缺失或已過時的 ID (`expiration_date`)，列出有效模型，並在任一已設定的 ID 無效時以非零值結束。當提供者傳回定價（例如 OpenRouter）時，它也會顯示預估的輸入/輸出定價（每百萬權杖的美元計價）。
 
-若要在實際翻譯工作上比較已設定的模型，請執行 `npx ai-i18n-tools bench-models`。它會透過獨立翻譯一個樣本（並行執行，受 `concurrency` 限制），對來自 `translationModels`、`uiModels` 與 `localeModels` 的每個唯一模型 ID 進行基準測試，並輸出每個模型的輸入/輸出權杖、實際耗時與美元成本，讓您在確定模型清單前能權衡速度與價格。
+若要比較真實翻譯工作中的已設定模型，執行 `ai-i18n-tools bench-models`。它會對 `translationModels`、`uiModels` 和 `localeModels` 中的每個唯一模型 ID 進行基準測試，方式是隔離翻譯一個範例（平行執行，受限於 `concurrency`），並輸出每模型的輸入/輸出權杖數、牆上時鐘時間和美元成本，讓您在決定模型清單前能權衡速度與價格。
 
 ---
 
@@ -461,5 +463,5 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 **產生一個空的詞彙表 CSV：**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

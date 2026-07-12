@@ -4,9 +4,9 @@ title: البدء السريع
 description: >-
   احصل على أول مستند ترجمته في أقل من خمس دقائق باستخدام ai-i18n-tools من خلال
   مشروع المثال هذا الخاص بـ Next.js.
-translation_last_updated: '2026-07-10T21:34:19.403Z'
-source_file_mtime: '2026-05-04T22:22:41.000Z'
-source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
+translation_last_updated: '2026-07-12T01:33:46.996Z'
+source_file_mtime: '2026-07-12T01:15:35.414Z'
+source_file_hash: e34ee98fed8efd780f0d40a5bd9d9d33307cb5bf12700487e6cb4054acd45660
 translation_language: ar
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -92,8 +92,8 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders in docs-site static assets",
-              "search": "screenshots/ar/",
-              "replace": "screenshots/${translatedLocale}/"
+              "search": "screenshots/ar/]+/",
+              "replace": "screenshots/ar/"
             }
           ]
         }
@@ -110,8 +110,8 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders under translated-docs",
-              "search": "images/screenshots/[^/]+/",
-              "replace": "images/screenshots/${translatedLocale}/"
+              "search": "images/screenshots/ar/]+/",
+              "replace": "images/screenshots/ar/"
             }
           ],
           "languageListBlock": {

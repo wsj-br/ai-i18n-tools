@@ -22,7 +22,7 @@ ai-i18n-tools dashboard
 
 ダッシュボードUIはCLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![フィルターとキャッシュされたセグメント行を含むドキュメントタブを表示している翻訳ダッシュボード](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## どのタブを使用すればよいですか？

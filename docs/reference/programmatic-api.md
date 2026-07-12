@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+Scaffold a config from Node.js (optional fourth argument selects the built-in preset; defaults to `openrouter`):
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 Key exports (commonly used — see `src/index.ts` for the full public surface):
 
 | Export | Description |
@@ -41,4 +49,6 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `resolveDocumentationOutputPath` | Resolve output file path for a translated document. |
 | `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries. |
 | `runTranslateUI` | Programmatic translate-UI entry point. |
+| `writeInitConfigFile` | Write a starter config JSON (`template`, optional `providerKey` defaulting to `openrouter`). |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |

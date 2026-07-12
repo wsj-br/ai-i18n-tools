@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+Node.jsから設定をスキャフォールドする (オプションの第4引数で組み込みプリセットを選択。デフォルトは`openrouter`):
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 主なエクスポート（一般的に使用されるもの — 完全な公開インターフェースについては`src/index.ts`を参照）：
 
 | エクスポート | 説明 |
@@ -41,4 +49,6 @@ console.log(
 | `resolveDocumentationOutputPath` | 翻訳済みドキュメントの出力ファイルパスを解決します。 |
 | `Glossary` / `GlossaryMatcher` | 翻訳用語集を読み込み、適用します。 |
 | `runTranslateUI` | プログラムによる翻訳UIのエントリポイントです。 |
+| `writeInitConfigFile` | スターター設定JSONを書き出す (`template`、オプションの`providerKey`はデフォルトで`openrouter`)。 |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`が使用する組み込みプリセットごとのスターター`translationModels`。 |
 | `PROVIDER_PRESETS` | 組み込みプロバイダープリセットマップ（`baseUrl`、`apiKeyEnv`）。 |

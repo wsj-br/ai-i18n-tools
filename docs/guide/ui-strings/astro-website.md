@@ -35,9 +35,9 @@ Example `package.json` scripts (from the reference project):
 Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 Set `sourceLocale` to match `i18n.defaultLocale` in `astro.config.mjs`. Write flat bundles to a directory Astro can import at build time (the template uses `public/locales/`). Resolve `t('…')` at **build time** by looking up the English source literal as the key (see `examples/astro-website/src/i18n/t.ts`; `strings.json` is the extraction cache, not the runtime bundle). You do **not** need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
@@ -79,7 +79,7 @@ Enable `features.translateDocs` and add a `docs[]` block, for example:
 }
 ```
 
-Run `npx ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). English source stays at `src/pages/index.astro`; each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
+Run `ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). English source stays at `src/pages/index.astro`; each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
 
 Inside the **template body**, string literals in `{expression}` blocks (inline arrays, object `title`/`desc` fields) are translated when they are user-facing; quoted values on protected attributes/keys, literals inside `t('…')`, `<script>`, and `<style>` are left unchanged. **Frontmatter TypeScript is not translated** by this path—keep shared frontmatter (including `t()` imports and data arrays) identical on English and locale pages, or re-run `translate-docs` after editing the English page so locale copies pick up frontmatter changes. For frontmatter-only copy, use the [UI-string pipeline](#astro-website-ui-strings-ssg) instead.
 

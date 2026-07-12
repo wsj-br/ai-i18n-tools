@@ -9,7 +9,7 @@ See also [Documents](/hi-Latn/guide/documents/) aur runnable [examples/fumadocs-
 ## Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Load per-locale JSON in `layout.shared.ts` via `loadUiCatalog(locale)` aur merge
 Standard locales ko `@fumadocs/language/*` presets bina LLM cost ke cover kiya ja sakta hai; catalog sirf English block mein **project overrides** ka anuvad karta hai.
 
 Fumadocs UI strings ke liye `json[]` ka upyog **na karein** — vah pipeline asambandhit app locale bundles ke liye hai.
-
-<a id="framework-shell-translation"></a>
-## Framework shell translation
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catalog | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
-| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
-
-Framework shell/theme strings ko `json[]` mein **na** daalein — woh pipeline unrelated app locale bundles ke liye hai. Doosre framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus), [VitePress integration](/hi-Latn/guide/integrations/vitepress), aur [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhein.
 
 <a id="link-conventions"></a>
 ## Link conventions

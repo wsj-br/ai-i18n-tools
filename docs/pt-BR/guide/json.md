@@ -14,10 +14,10 @@ O `translate-json` resolve modelos **por localidade de destino**: primeiro `loca
 ### Etapa 1: Inicializar para JSON aninhado
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-Esse modelo define `features.translateJson: true`, desabilita a extração da UI e a tradução de documentos, e estrutura um único bloco `json[]` apontando para `src/i18n/en/translation.json` com saída `src/i18n/{llocale}/translation.json`. Ele também inclui um bloco padrão `provider` / `providers` — defina a chave de API correspondente (ou use o Ollama local) antes de executar `translate-json` ou `sync`; consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key). Edite `sourceLocale`, `targetLocales`, `contentPaths` e `outputPathTemplate` para o layout do seu repositório.
+Esse modelo define `features.translateJson: true`, desabilita a extração da UI e a tradução de documentos, e estrutura um único bloco `json[]` apontando para `src/i18n/en/translation.json` com saída `src/i18n/{llocale}/translation.json`. Ele também inclui um bloco padrão `provider` / `providers` (`openrouter` a menos que você passe `-P <provider>`) — defina a chave de API correspondente (ou use o Ollama local) antes de executar `translate-json` ou `sync`; consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key). Edite `sourceLocale`, `targetLocales`, `contentPaths` e `outputPathTemplate` para o layout do seu repositório.
 
 <a id="step-2-configure-json"></a>
 ### Etapa 2: Configurar `json[]`
@@ -72,7 +72,7 @@ Os caminhos usam notação por pontos (`nav.home.label`). Um nome simples como `
 ### Etapa 3: Traduzir pacotes JSON
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 Sinalizadores opcionais (mesmas ideias do `translate-docs`): `-l` / `--locale` para um subconjunto de destinos, `-p` / `--path` para limitar arquivos, `--dry-run`, `--force` (limpa o rastreamento de arquivos e o cache de segmentos para os arquivos correspondentes), `--force-update` (reprocessa quando o hash do arquivo corresponde; o cache de segmentos ainda se aplica), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
@@ -80,7 +80,7 @@ Sinalizadores opcionais (mesmas ideias do `translate-docs`): `-l` / `--locale` p
 Projetos apenas com JSON podem executar:
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 Quando a interface ou documentos também estão habilitados, `sync` executa **translate-json após translate-docs** (a menos que `--no-json`). Pule o JSON com `--no-json`.
@@ -88,7 +88,7 @@ Quando a interface ou documentos também estão habilitados, `sync` executa **tr
 Verifique a cobertura por arquivo e localidade:
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 Quando `translateJson` está ativado, `status` imprime uma seção `json[]` (✓ atualizado, ● desatualizado ou ausente).

@@ -6,7 +6,7 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 
 ## What it is
 
-- **CLI:** `npx ai-i18n-tools <command>` (or `pnpm exec ai-i18n-tools`).
+- **CLI:** `ai-i18n-tools <command>` — configure PATH, direnv, or a global install so the bare command resolves (see [Using the CLI](/guide/installation#using-the-cli)).
 - **Runtime:** `import … from 'ai-i18n-tools/runtime'` — i18next helpers (`defaultI18nInitOptions`, `setupKeyAsDefaultT`, `makeLoadLocale`, `makeLocaleLoadersFromManifest`, `applyDirection`, language labels, plural helpers, etc.).
 - **Config:** root `ai-i18n-tools.config.json`, or `-c <path>`.
 - **Tool UI language:** the CLI help/logs and the dashboard localize themselves (separate from your project's locales). Resolution order, highest first: `-L` / `--ui-lang <code>`, the `AI_I18N_LANG` env var, the config `uiLanguage` key, then the host OS locale; unmatched values fall back to the closest shipped variation and finally to `en-GB`.
@@ -88,7 +88,7 @@ Use `getTextDirection` for layout decisions, `applyDirection` on `languageChange
 
 Each row: `code` (BCP-47), `label`, `englishName`, `direction` (`ltr` | `rtl`), and optionally `isSourceLocale` (boolean) for the source locale entry. `targetLocales` in config is a BCP-47 array. Generate with:
 
-`npx ai-i18n-tools generate-ui-languages`
+`ai-i18n-tools generate-ui-languages`
 
 Writes `ui-languages.json` to root `languagesManifestPath` if set, otherwise `{ui.flatOutputDir}/ui-languages.json`. Unknown locales get TODO placeholders and a warning; customised `label`/`englishName` may be overwritten by the bundled master list — review after generate. At runtime, `makeLoadLocale` maps should align bundle keys with `targetLocales` (omit `sourceLocale` from dynamic import maps).
 
@@ -221,7 +221,7 @@ For sites that store UI copy in nested JSON files per locale (no `t()` in compon
 - `keyPolicy.mode`: `allowlist`, `denylist`, or `both` (allowlist first, then subtract denylist). Paths use dot notation (`nav.home.label`); globs use minimatch. Bare names like `slug` match the final key segment.
 - Cache file tracking: `json-block:{blockIndex}:{projectRelPath}`.
 
-**Commands:** `npx ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
+**Commands:** `ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
 
 **vs Documents:** Docusaurus shell files (`{ "key": { "message": "…", "description": "…" } }`) belong under `docs[].docusaurusCatalogDir` and are translated by `translate-docs`, not `translate-json`.
 
@@ -261,24 +261,24 @@ Full config field reference: [Configuration](/reference/configuration).
 
 When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`.
 
-- **Scaffold config:** `npx ai-i18n-tools init`
-- **Validate model ids:** `npx ai-i18n-tools check-models` (active provider's API key; validates ids against the provider's `GET /models` list, with pricing when the provider returns it, e.g. OpenRouter)
-- **List available models:** `npx ai-i18n-tools list-models` (lists the active provider's `GET /models` catalog; use `-P` / `--provider` to inspect another configured provider)
-- **Build `ui-languages.json`:** `npx ai-i18n-tools generate-ui-languages`
-- **Refresh UI catalog:** `npx ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
-- **Translate UI:** `npx ai-i18n-tools translate-ui` (active provider's API key; runs extract first)
-- **Translate documentation:** `npx ai-i18n-tools translate-docs` — `docs[]`; Docusaurus catalog when `docusaurusCatalogDir` is set
-- **Translate nested JSON:** `npx ai-i18n-tools translate-json` — `json[]` when `translateJson` is on
-- **UI only (extract + translate):** `npx ai-i18n-tools sync-ui`
-- **Proofread source-locale UI copy (advisory):** `npx ai-i18n-tools proofread-ui` (requires `translateUIStrings`; runs extract first)
-- **Markdown static checks:** `npx ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `[text](url)` link (put bold inside the link text only). Bold around inline code is handled at translation time via emphasis placeholders — not flagged as a source issue.
-- **Status tables:** `npx ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
-- **Cache aggregates:** `npx ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
-- **Web dashboard:** `npx ai-i18n-tools dashboard`
-- **Cleanup:** `npx ai-i18n-tools cleanup` (clears the entire `markdown_source_issues` table, runs `sync --force-update`, then prunes stale cache rows; backs up SQLite only when `--backup` is set)
-- **All enabled pipelines:** `npx ai-i18n-tools sync` (`--no-ui`, `--no-svg`, `--no-json`, `--no-docs` to skip)
+- **Scaffold config:** `ai-i18n-tools init [-P <provider>]`
+- **Validate model ids:** `ai-i18n-tools check-models` (active provider's API key; validates ids against the provider's `GET /models` list, with pricing when the provider returns it, e.g. OpenRouter)
+- **List available models:** `ai-i18n-tools list-models` (lists the active provider's `GET /models` catalog; use `-P` / `--provider` to inspect another configured provider)
+- **Build `ui-languages.json`:** `ai-i18n-tools generate-ui-languages`
+- **Refresh UI catalog:** `ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
+- **Translate UI:** `ai-i18n-tools translate-ui` (active provider's API key; runs extract first)
+- **Translate documentation:** `ai-i18n-tools translate-docs` — `docs[]`; Docusaurus catalog when `docusaurusCatalogDir` is set
+- **Translate nested JSON:** `ai-i18n-tools translate-json` — `json[]` when `translateJson` is on
+- **UI only (extract + translate):** `ai-i18n-tools sync-ui`
+- **Proofread source-locale UI copy (advisory):** `ai-i18n-tools proofread-ui` (requires `translateUIStrings`; runs extract first)
+- **Markdown static checks:** `ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `[text](url)` link (put bold inside the link text only). Bold around inline code is handled at translation time via emphasis placeholders — not flagged as a source issue.
+- **Status tables:** `ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
+- **Cache aggregates:** `ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
+- **Web dashboard:** `ai-i18n-tools dashboard`
+- **Cleanup:** `ai-i18n-tools cleanup` (clears the entire `markdown_source_issues` table, runs `sync --force-update`, then prunes stale cache rows; backs up SQLite only when `--backup` is set)
+- **All enabled pipelines:** `ai-i18n-tools sync` (`--no-ui`, `--no-svg`, `--no-json`, `--no-docs` to skip)
 
-Exhaustive CLI list and global flags: [CLI commands reference](/reference/cli-commands/). Use `-c <path>` when the config file is not the default. Flags and env vars: `npx ai-i18n-tools --help` and per-command `--help`.
+Exhaustive CLI list and global flags: [CLI commands reference](/reference/cli-commands/). Use `-c <path>` when the config file is not the default. Flags and env vars: `ai-i18n-tools --help` and per-command `--help`.
 
 The `ai-i18n-tools dashboard` UI includes a **Markdown issues** tab (same `markdown_source_issues` data as `check-markdown`), separate from translation failures.
 

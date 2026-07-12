@@ -56,7 +56,9 @@ export async function filterTranslationModelsAgainstOpenRouterCatalog(
   } catch {
     console.warn(
       chalk.yellow(
-        t("[models] Could not load OpenRouter model catalog; using configured model ids unchanged.")
+        t(
+          "[models] Could not load model catalog for the active provider; using configured model ids unchanged."
+        )
       )
     );
     return { models, unknownIds: [] };
@@ -71,7 +73,7 @@ export function warnIgnoredUnknownOpenRouterModels(unknownIds: string[]): void {
   console.warn(
     chalk.yellow(
       t(
-        "[models] Ignoring {{count}} model id(s) not listed by OpenRouter (removed or unknown slug):",
+        "[models] Ignoring {{count}} model id(s) not listed by the provider (removed or unknown slug):",
         { count: unknownIds.length }
       )
     )
@@ -82,7 +84,7 @@ export function warnIgnoredUnknownOpenRouterModels(unknownIds: string[]): void {
   console.warn(
     chalk.yellow(
       t("[models] Edit {{configKey}} in your config, then run {{command}}.", {
-        configKey: "`openrouter.translationModels`",
+        configKey: "`providers.<name>.translationModels`",
         command: "`ai-i18n-tools check-models`",
       })
     )

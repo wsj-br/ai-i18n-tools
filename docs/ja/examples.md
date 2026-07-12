@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-代わりに**全体の** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリをクローンした場合は、リポジトリのルートで `pnpm install` と `pnpm run build` を実行してから、`cd examples/<name>` を実行してください。ワークスペースの例では、`pnpm exec ai-i18n-tools …` またはそれらの `pnpm run i18n:*` スクリプト経由でローカルCLIを使用します。リポジトリのルートで `npx` を実行するわけではありません（それを実行すると公開済みのnpmパッケージが実行されます）。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo) を参照してください。
+代わりに**全体の** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリをクローンした場合は、リポジトリルートで `pnpm install` と `pnpm run build` を実行し、その後 `cd examples/<name>` を実行します。ワークスペースの例では、`pnpm run i18n:*` スクリプト経由でローカルCLIを使用するか、[PATHの設定](/ja/guide/installation#using-the-cli)後に単独の `ai-i18n-tools …` を使用します。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)を参照してください。
 
 <a id="list-of-examples"></a>
 ## 例のリスト

@@ -3,6 +3,8 @@
 
 Use quando um site `doc-system` colocaliza ativos específicos do idioma ao lado do markdown traduzido — nenhuma reescrita de URL é necessária. A predefinição do Docusaurus (`docsOutput.style = "docusaurus"`) é a implementação de referência; outros geradores que usam `"doc-system"` com um `localeSubpath` personalizado seguem a mesma ideia: ativos em inglês ficam em um caminho de idioma de origem, ativos traduzidos ficam em `{outputDir}/{locale}/[localeSubpath/]assets/`.
 
+> **Por que não há exemplo no repositório:** As demonstrações do Docusaurus deste repositório ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) usam o layout [pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder) — consulte o [guia de decisão](/pt-BR/guide/images-and-screenshots/#decision-guide). O `../assets/` colocalizado é o padrão recomendado para novos projetos; [duplistatus](https://github.com/wsj-br/duplistatus) é a referência de produção completa.
+
 <a id="directory-layout"></a>
 ### Estrutura de diretórios
 

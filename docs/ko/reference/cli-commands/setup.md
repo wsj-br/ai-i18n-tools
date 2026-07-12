@@ -13,11 +13,13 @@ CLI 버전과 빌드 타임스탬프를 출력합니다(루트 프로그램의 `
 <a id="init"></a>
 ### `init`
 
-**개요:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**개요:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 스타터 구성 파일을 작성합니다(`provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, `docs[].addFrontmatter` 포함). LLM을 호출하는 번역 명령에는 환경 변수 또는 `.env`에 활성 프로바이더의 API 키가 필요합니다(Ollama 제외) — [프로바이더 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
 
-**주요 옵션:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**주요 옵션:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider`은(는) 스캐폴딩할 **기본 제공 프리셋**을 선택합니다(`openrouter` 생략 시). 다음 중 하나여야 합니다: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
 
 **템플릿(`-t`):**
 

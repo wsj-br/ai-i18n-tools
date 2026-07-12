@@ -267,4 +267,47 @@ Next para.`;
     const out = ex.reassemble(segs, new Map());
     expect(out.trim()).toContain("lang-list");
   });
+
+  it("extracts standalone image lines as image segments with alt only in content", () => {
+    const md = "![Screenshot](/img/screenshots/en-GB/foo.png)";
+    const segs = ex.extract(md, "doc.md");
+    const img = segs.find((s) => s.type === "image");
+    expect(img).toBeDefined();
+    expect(img!.content).toBe("Screenshot");
+    expect(img!.image?.url).toBe("/img/screenshots/en-GB/foo.png");
+    expect(img!.translatable).toBe(true);
+  });
+
+  it("marks empty-alt standalone images as non-translatable", () => {
+    const md = "![](/img/decorative.png)";
+    const segs = ex.extract(md, "doc.md");
+    const img = segs.find((s) => s.type === "image");
+    expect(img?.translatable).toBe(false);
+    expect(img?.content).toBe("");
+  });
+
+  it("reassembles image segments with translated alt and preserved url", () => {
+    const md = "![English alt](/img/screenshots/en-GB/foo.png)";
+    const segs = ex.extract(md, "doc.md");
+    const img = segs.find((s) => s.type === "image");
+    expect(img).toBeDefined();
+    const map = new Map([[img!.hash, "Deutscher Alt"]]);
+    const out = ex.reassemble(segs, map);
+    expect(out.trim()).toBe("![Deutscher Alt](/img/screenshots/en-GB/foo.png)");
+  });
+
+  it("keeps badge rows non-translatable", () => {
+    const md =
+      "[![npm version](https://img.shields.io/npm/v/pkg.svg)](https://www.npmjs.com/package/pkg)";
+    const segs = ex.extract(md, "README.md");
+    expect(segs.some((s) => s.translatable)).toBe(false);
+  });
+
+  it("keeps inline images inside paragraphs as paragraph segments", () => {
+    const md = "See ![Diagram alt](https://example.com/d.png) for details.";
+    const segs = ex.extract(md, "doc.md");
+    const para = segs.find((s) => s.type === "paragraph");
+    expect(para?.content).toContain("![Diagram alt]");
+    expect(segs.some((s) => s.type === "image")).toBe(false);
+  });
 });

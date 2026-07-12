@@ -2,6 +2,7 @@ import type { Heading, Root } from "mdast";
 import type { Node } from "unist";
 import { visit } from "unist-util-visit";
 import type { Segment } from "../core/types.js";
+import { imageAltTranslationErrors } from "../extractors/image-markdown.js";
 import { hasInternalPlaceholderLeak } from "./translation-placeholder-leaks.js";
 
 export interface ValidationResult {
@@ -164,6 +165,19 @@ function shouldCompareMarkdownStructure(source: Segment): boolean {
   );
 }
 
+function collectImageAltValidationErrors(
+  source: Segment,
+  translatedAlt: string,
+  hash: string,
+  segmentIndex?: number
+): string[] {
+  if (source.type !== "image") {
+    return [];
+  }
+  const loc = segmentIndex !== undefined ? ` at segment ${segmentIndex}` : "";
+  return imageAltTranslationErrors(translatedAlt).map((msg) => `${msg}${loc} (hash ${hash})`);
+}
+
 const LENGTH_RATIO_MAX = 3;
 
 /**
@@ -235,6 +249,8 @@ export async function validateTranslation(
       errors.push(`Code block modified at segment ${i} (hash ${source.hash})`);
     }
 
+    errors.push(...collectImageAltValidationErrors(source, translated.content, source.hash, i));
+
     if (shouldCompareMarkdownStructure(source)) {
       const astErrors = await compareMarkdownAST(source.content, translated.content);
       for (const msg of astErrors) {
@@ -295,6 +311,8 @@ export async function validateDocTranslatePair(
   if (source.type === "code" && source.content !== translatedText) {
     errors.push(`Code block modified (hash ${source.hash})`);
   }
+
+  errors.push(...collectImageAltValidationErrors(source, translatedText, source.hash));
 
   if (shouldCompareMarkdownStructure(source)) {
     const astErrors = await compareMarkdownAST(source.content, translatedText);

@@ -13,11 +13,13 @@ Print CLI version and build timestamp (same information as `-V` / `--version` on
 <a id="init"></a>
 ### `init`
 
-**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 Write a starter config file (includes `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, and `docs[].addFrontmatter`). Translation commands that call an LLM require the active provider's API key in the environment or `.env` (Ollama excepted) — see [Provider and API key](/guide/quick-start#provider-and-api-key).
 
-**Key options:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**Key options:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider` selects which **built-in preset** to scaffold (`openrouter` when omitted). Must be one of: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
 
 **Templates (`-t`):**
 

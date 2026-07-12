@@ -1,9 +1,9 @@
 <a id="environment-variables"></a>
 # Variáveis de ambiente
 
-| Variável               | Descrição                                                |
+| Variável               | Descrição                                                  |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | Chave de API para o provedor `openrouter` (necessária quando ele está ativo). |
+| `OPENROUTER_API_KEY`   | Chave de API para o provedor `openrouter` (obrigatório quando ativo). Predefinição `init` padrão. |
 | Outras chaves de provedor    | Cada provedor lê sua própria variável de ambiente de chave: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama não precisa de nenhuma). Substitua por provedor com `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Substitui `providers.openrouter.baseUrl` (apenas quando esse provedor está configurado). |
 | `OLLAMA_BASE_URL`      | Substitui `providers.ollama.baseUrl` (apenas quando esse provedor está configurado). |

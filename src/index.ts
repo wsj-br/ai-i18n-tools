@@ -34,6 +34,7 @@ export {
   segmentTranslationText,
   translationTextMap,
   type SvgSegmentMeta,
+  type ImageSegmentMeta,
   type TranslationResult,
   type FileTracking,
   type CacheEntry,
@@ -112,6 +113,13 @@ export {
   DEFAULT_CONFIG_FILENAME,
   initConfigTemplates,
   writeInitConfigFile,
+  DEFAULT_INIT_PROVIDER_KEY,
+  DEFAULT_INIT_MODELS_BY_PROVIDER,
+  defaultInitModelsForProvider,
+  buildInitProviderBlock,
+  applyInitProvider,
+  assertPresetInitProvider,
+  listPresetInitProviderKeys,
   toDocTranslateConfig,
 } from "./core/config.js";
 

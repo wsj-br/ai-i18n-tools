@@ -22,7 +22,7 @@ ai-i18n-tools dashboard
 
 儀表板 UI 使用與 CLI 相同的地區解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區。請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![翻譯儀表板，顯示「文件」標籤、篩選器及快取的片段列](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## 我應該使用哪個分頁？

@@ -107,23 +107,21 @@ public/img/screenshots/en-GB/screenshot.png
 <a id="decision-guide"></a>
 # 決策指南
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**此素材是否為含有可譯文字或標籤的 SVG？**
+  - **是** → [Web app SVG](/zh-Hant/guide/svg-translation/translated-svg-web-app) 或 [Colocated SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated)
+  - **否**（點陣圖截圖或裝飾性 SVG）→
+    - **文件系統網站中，素材是否與譯文檔案並置？**
+      - **是** → [Colocated screenshots](/zh-Hant/guide/images-and-screenshots/colocated-screenshots)（點陣圖）+ [Colocated SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated)（SVG）
+    - **只有一個地區需要此圖片**（無各地區變體）？
+      - **是** → [Shared image](/zh-Hant/guide/images-and-screenshots/shared-image)
+    - **否則** → [Per-locale folder](/zh-Hant/guide/images-and-screenshots/per-locale-folder)
 
 SVG 版面配置涵蓋在 [SVG 翻譯](/zh-Hant/guide/svg-translation/) 指南中。
 
-| 版面配置 | 資產類型 | 網站類型 | 工具機制 |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [共用影像](/zh-Hant/guide/images-and-screenshots/shared-image) | 點陣圖 (共用) | `docsOutput.style = "flat"` 文件 | 每檔案連結重寫器；通常沒有正規表達式 |
+| Layout                                                                       | Asset type                  | Site type                                                              | Tool mechanism                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Colocated screenshots](/zh-Hant/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated)          | `"doc-system"` 與並置素材（Docusaurus 預設集）               | 截圖腳本放置檔案；不使用正規表達式                     |
 | [每個地區設定資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder) | 點陣圖 (每個地區設定) | `"flat"` 或 `"doc-system"` (包括 `"docusaurus"`、`"astro-starlight"`) | `regexAdjustments` 地區設定區段交換 |
-| [並置螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots) | 點陣圖 (並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | 螢幕截圖指令碼放置檔案；沒有正規表達式 |
-| [Web 應用程式 SVG](/zh-Hant/guide/svg-translation/translated-svg-web-app) | SVG (已翻譯) | Web 應用程式 | `translate-svg` 與 `svg.style = "flat"` |
+| [Shared image](/zh-Hant/guide/images-and-screenshots/shared-image)                   | Raster (shared)             | `docsOutput.style = "flat"` 文件                                       | 逐檔連結重寫器；通常不使用正規表達式                     |
 | [並置 SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated) | SVG (已翻譯，並置) | 具有並置資產的 `"doc-system"` (Docusaurus 預設) | `translate-svg` 與 `svg.style = "nested"` + `pathTemplate` |
+| [Web 應用程式 SVG](/zh-Hant/guide/svg-translation/translated-svg-web-app) | SVG (已翻譯) | Web 應用程式 | `translate-svg` 與 `svg.style = "flat"` |

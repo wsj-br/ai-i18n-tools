@@ -14,7 +14,7 @@ Use `init -t ui-starlight` and `docsOutput.style: "astro-starlight"` for [Astro 
 ### Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ Point `contentPaths` at your English `.md` / `.mdx` files and directories. Set `
 
 Starlight UI overrides can use `src/content/i18n/en.json` with `jsonPathTemplate` in a separate `docs[]` block when needed — see [Documents — initialise for documentation](/guide/documents/#step-1-initialise-for-documentation).
 
-<a id="framework-shell-translation"></a>
-### Framework shell translation
-
-Starlight ships its own built-in UI strings for many locales (nav labels, search placeholder, table of contents, and so on) — there is no separate shell/theme pipeline to configure, unlike Docusaurus, VitePress, or Nextra:
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
-| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels + theme dictionary `.ts` | Documents — see [Nextra integration](/guide/integrations/nextra) |
-| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — see [Fumadocs integration](/guide/integrations/fumadocs) |
-
-See [Docusaurus integration](/guide/integrations/docusaurus), [VitePress integration](/guide/integrations/vitepress), [Nextra integration](/guide/integrations/nextra), and [Fumadocs integration](/guide/integrations/fumadocs) for the other framework patterns.
+Starlight ships built-in UI strings for many locales (nav labels, search placeholder, table of contents, and so on). There is no separate shell/theme pipeline to configure — use `translate-docs` for page content only. For other frameworks, see [Framework shell translation](/guide/integrations/#framework-shell-translation).
 
 <a id="example-project"></a>
 ### Example project
@@ -83,7 +70,7 @@ Most teams use a **hybrid** of two pipelines on the same page:
 ### Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

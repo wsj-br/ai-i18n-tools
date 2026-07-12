@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # 도구 UI 언어
 
-도구는 프로젝트의 `sourceLocale` / `targetLocales`와 독립적으로 자체 사용자 인터페이스 — CLI 도움말 텍스트, 빈번한 로그/요약/오류 메시지, 번역 대시보드 — 를 현지화합니다. 설정이 필요하지 않으며, 기본적으로 도구는 OS 로케일을 따릅니다.
+`ai-i18n-tools`는 프로젝트의 `sourceLocale` / `targetLocales`와 무관하게 자체 사용자 인터페이스 — CLI 도움말 텍스트, 빈번한 로그/요약/오류 메시지, 번역 대시보드 — 를 현지화합니다. 별도의 구성이 필요하지 않으며, 기본적으로 도구는 OS 로케일을 따릅니다.
 
 <a id="locale-resolution"></a>
 ## 로케일 결정
@@ -21,7 +21,7 @@ UI 로케일은 다음 소스에서 결정되며, 우선순위가 높은 순서�
 <a id="shipped-ui-languages"></a>
 ## 제공되는 UI 언어
 
-`en-GB` (소스) 및 `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, `zh-Hant`.
+영어(영국, 원본), 독일어, 스페인어, 프랑스어, 힌디어(로마자), 일본어, 한국어, 포르투갈어(브라질), 중국어(간체), 중국어(번체).
 
 <a id="translation-dashboard"></a>
 ## 번역 대시보드

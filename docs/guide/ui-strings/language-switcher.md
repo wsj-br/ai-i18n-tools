@@ -71,11 +71,11 @@ The `ui-languages.json` manifest is a JSON array of <code>"{ code, label, englis
 
 ```json
 [
-  { "code": "en-GB", "label": "English (UK)", "englishName": "English (UK)", "direction": "ltr" },
+  { "code": "en-GB", "label": "English (UK)",   "englishName": "English (UK)",    "direction": "ltr" },
   { "code": "pt-BR", "label": "Português (BR)", "englishName": "Portuguese (BR)", "direction": "ltr" },
-  { "code": "de",    "label": "Deutsch",        "englishName": "German", "direction": "ltr" },
-  { "code": "fr",    "label": "Français",       "englishName": "French", "direction": "ltr" },
-  { "code": "ar",    "label": "العربية",         "englishName": "Arabic", "direction": "rtl" }
+  { "code": "de",    "label": "Deutsch",        "englishName": "German",          "direction": "ltr" },
+  { "code": "fr",    "label": "Français",       "englishName": "French",          "direction": "ltr" },
+  { "code": "ar",    "label": "العربية",           "englishName": "Arabic",          "direction": "rtl" }
 ]
 ```
 

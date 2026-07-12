@@ -58,12 +58,13 @@ features:
 
 ```bash
 pnpm add ai-i18n-tools
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
-npx ai-i18n-tools init
-npx ai-i18n-tools sync
+# Set API key for your active provider — see preset table (default init: openrouter)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+ai-i18n-tools init [-P <provider>]
+ai-i18n-tools sync
 ```
 
-CLIの呼び出しの詳細（[クローンしたモノレポでの開発](/ja/guide/installation#cloned-monorepo)を含む）については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
+[単体のCLIコマンドの設定](/ja/guide/installation#using-the-cli)（[クローンしたモノレポでの開発](/ja/guide/installation#cloned-monorepo)を含む）については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
 
 <a id="which-pipeline-should-i-use"></a>
 ## どのパイプラインを使用すべきですか？

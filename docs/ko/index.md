@@ -63,12 +63,13 @@ features:
 
 ```bash
 pnpm add ai-i18n-tools
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
-npx ai-i18n-tools init
-npx ai-i18n-tools sync
+# Set API key for your active provider — see preset table (default init: openrouter)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+ai-i18n-tools init [-P <provider>]
+ai-i18n-tools sync
 ```
 
-CLI 호출 세부 정보([복제된 모노레포 개발](/ko/guide/installation#cloned-monorepo) 포함)는 [설치](/ko/guide/installation)를, 스캐폴드 템플릿은 [빠른 시작](/ko/guide/quick-start)을 참조하세요.
+[설치](/ko/guide/installation)에서 [베어 CLI 명령어 구성](/ko/guide/installation#using-the-cli) (包括 [클론된 모노레포 개발](/ko/guide/installation#cloned-monorepo)) 및 [快速 시작](/ko/guide/quick-start)에서 스캐폴드 템플릿에 대해 참조하십시오.
 
 <a id="which-pipeline-should-i-use"></a>
 ## 어떤 파이프라인을 사용해야 하나요?

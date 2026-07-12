@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-如果你改为克隆了 **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区示例通过 `pnpm exec ai-i18n-tools …` 或其 `pnpm run i18n:*` 脚本使用本地 CLI，而不是在仓库根目录运行 `npx`（那会运行已发布的 npm 包）。参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
+如果你改为克隆了**整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录下运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区示例通过其 `pnpm run i18n:*` 脚本使用本地 CLI，或者在 [PATH 设置](/zh-Hans/guide/installation#using-the-cli) 之后直接使用 `ai-i18n-tools …`。请参阅 [安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
 
 <a id="list-of-examples"></a>
 ## 示例列表

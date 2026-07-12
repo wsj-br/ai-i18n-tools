@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-Yadi aapne **poora** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository clone kiya hai, to repository root par `pnpm install` aur `pnpm run build` chalaen, phir `cd examples/<name>`. Workspace ke examples local CLI ka upyog `pnpm exec ai-i18n-tools …` ya unke `pnpm run i18n:*` scripts ke madhyam se karte hain — na ki repository root par `npx` (jo published npm package chalata hai). [Installation — Cloned monorepo](/hi-Latn/guide/installation#cloned-monorepo) dekhen.
+Yadi aapne **poora** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository clone kiya hai, to repository root par `pnpm install` aur `pnpm run build` chalaen, phir `cd examples/<name>`. Workspace ke examples local CLI ka upyog unke `pnpm run i18n:*` scripts ke madhyam se karte hain, ya [PATH setup](/hi-Latn/guide/installation#using-the-cli) ke baad nira `ai-i18n-tools …`. [Installation — Cloned monorepo](/hi-Latn/guide/installation#cloned-monorepo) dekhen.
 
 <a id="list-of-examples"></a>
 ## Udaharanon ki soochi

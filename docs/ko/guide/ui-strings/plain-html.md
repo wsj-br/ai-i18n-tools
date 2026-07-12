@@ -24,10 +24,10 @@
 
 ```bash
 # Preview (no changes written)
-npx ai-i18n-tools mark-html public/index.html
+ai-i18n-tools mark-html public/index.html
 
 # Apply the bare markers
-npx ai-i18n-tools mark-html public/index.html --write
+ai-i18n-tools mark-html public/index.html --write
 ```
 
 `mark-html`은 멱등성이며 `data-i18n-ignore`을 존중하고 코드와 유사한 요소(`code`, `pre`, `kbd`, `samp`, `var`) 또는 비어 있거나 숫자만 있는 텍스트는 마크하지 않으며 값 있는 마커를 내보내지 않습니다. 마크업 후 보고된 혼합 콘텐츠 조각을 수동으로 래핑한 다음 `.html`을 `ui.uiExtractor.extensions`에 추가하여 `extract`이 문자열을 캡처하도록 하세요:
@@ -41,63 +41,96 @@ npx ai-i18n-tools mark-html public/index.html --write
 }
 ```
 
-<a id="worked-example-localizing-a-plain-html-app-the-bundled-dashboard"></a>
-## 예시: 일반 HTML 앱 현지화 (번들 대시보드)
+<a id="worked-example-localizing-a-plain-html-app"></a>
+## 작업 예시: 일반 HTML 앱 지역화
 
-패키지 자체의 번역 대시보드(`src/dashboard-app`)는 이와 동일한 마커를 사용합니다. 이 대시보드의 `index.html`에는 다음과 같은 일반 마커가 포함됩니다.
+[`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 작업 공간 예제는 이러한 마커를 종단 간 활용하는 실행 가능한 정적 앱입니다. `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html`로 복제하고, `pnpm install`와 `pnpm dev`를 실행한 다음, 포르투갈어(브라질)를 보려면 [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR)를 여세요.
+
+해당 `public/index.html`은 다음과 같은裸 마커를 포함합니다:
 
 ```html
-<button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
-<input type="text" id="seg-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
-<button id="dashboard-close" title="Stop the dashboard server and close this window" data-i18n-title data-i18n>Close</button>
+<button type="button" id="btn-apply" data-i18n>Apply</button>
+<input
+  type="text"
+  id="filter-filename"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-title
+  data-i18n-placeholder
+/>
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers, then</span> <code>extract</code>
+  <span data-i18n>and</span> <code>translate-ui</code><span data-i18n>.</span>
+</p>
 ```
 
-`extract`는 각 영어 원본 문자열을 카탈로그(`strings.json`)에 쓰고, `translate-ui`는 영어 원본 텍스트를 키로 사용하여 로케일별로 하나의 플랫 번들을 채웁니다. 일반적인 정적 HTML 앱의 경우 `ui.flatOutputDir`를 `public/locales/`와 같은 웹에서 제공되는 디렉터리로 지정할 수 있습니다.
-
-```bash
-npx ai-i18n-tools extract        # index.html markers → strings.json
-npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.json
-```
+`ai-i18n-tools.config.json`은 `public/`에서 추출을 지정하고 정적 파일 옆에 플랫 번들을 작성합니다:
 
 ```jsonc
-// public/locales/de.json
 {
-  "Next": "Weiter",
-  "Filename (partial)": "Dateiname (teilweise)",
-  "Stop the dashboard server and close this window": "Dashboard-Server stoppen und dieses Fenster schließen",
-  "Close": "Schließen"
+  "sourceLocale": "en",
+  "targetLocales": ["es", "fr", "pt-BR"],
+  "features": { "translateUIStrings": true },
+  "ui": {
+    "sourceRoots": ["public"],
+    "stringsJson": "public/strings.json",
+    "flatOutputDir": "public/locales",
+    "uiExtractor": { "extensions": [".html"] }
+  }
 }
 ```
 
-런타임 시 활성 로캘의 번들을 로드하고 마크된 요소를 순회합니다. 키는 마커 값(있는 경우)에서 오고, 그렇지 않으면 요소 자체의 텍스트/제목/자리 표시자(추출기가 공백을 정규화하는 방식과 동일하게 정규화됨)에서 옵니다:
+`extract`은 각 영어 소스 문자열을 카탈로그(`public/strings.json`)에 작성하고, `translate-ui`는 영어 소스 텍스트를 키로 사용하여 로케일당 하나의 플랫 번들을 채웁니다:
 
-```html
-<script type="module">
-  const locale = document.documentElement.lang || "en";
-  const bundle = locale.startsWith("en")
-    ? {}
-    : await fetch(`/locales/${locale}.json`).then((r) => (r.ok ? r.json() : {}));
+```bash
+pnpm i18n:extract        # public/index.html markers → public/strings.json
+pnpm i18n:translate-ui   # strings.json → public/locales/{locale}.json
+```
 
-  const t = (key) => bundle[key] ?? key; // English source is the fallback
-  const norm = (s) => s.trim().replace(/\s+/g, " ");
+```jsonc
+// public/locales/pt-BR.json
+{
+  "Apply": "Aplicar",
+  "Filename (partial)": "Nome do arquivo (parcial)",
+  "Filter by filepath": "Filtrar por caminho do arquivo",
+  "Run": "Execute",
+  "to add bare markers, then": "para adicionar marcadores simples, depois",
+  "and": "e",
+  ".": "."
+}
+```
 
+실행 시 `public/app.js`은 로케일 메타데이터를 위해 `/locales/ui-languages.json`을 로드하고, 활성 로케일을 확인하며(`?locale=` → `localStorage` → browser → `en`), `/locales/{locale}.json`를 가져온 다음(영어의 경우 건너뜀) 마크된 요소를 순회합니다. 키는 마커 값이 있으면 거기서 가져오고, 없으면 요소 자체의 텍스트/제목/플레이스홀더에서 가져옵니다(추출기가 공백을 정규화하는 방식과 동일하게 정규화됨):
+
+```javascript
+function normalizeI18nText(s) {
+  return s.trim().replace(/\s+/g, " ");
+}
+
+function t(key) {
+  const raw = I18N.bundle[key];
+  return typeof raw === "string" && raw.length > 0 ? raw : key;
+}
+
+function applyStaticI18n() {
   document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.getAttribute("data-i18n") || norm(el.textContent || "");
+    const key = el.getAttribute("data-i18n") || normalizeI18nText(el.textContent || "");
     if (key) el.textContent = t(key);
   });
   document.querySelectorAll("[data-i18n-title]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-title") || norm(el.getAttribute("title") || "");
+    const key = el.getAttribute("data-i18n-title") || normalizeI18nText(el.getAttribute("title") || "");
     if (key) el.setAttribute("title", t(key));
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-placeholder") || norm(el.getAttribute("placeholder") || "");
+    const key =
+      el.getAttribute("data-i18n-placeholder") ||
+      normalizeI18nText(el.getAttribute("placeholder") || "");
     if (key) el.setAttribute("placeholder", t(key));
   });
-</script>
+}
 ```
 
-이 스니펫의 마커 탐색 부분은 [`src/dashboard-app/app.js`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js)에서 정확히 `applyStaticI18n`입니다. 영어 원문이 카탈로그 키이므로 번역되지 않은 문자열은 자동으로 영어로 대체됩니다.
+`normalizeI18nText`은 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts)의 `normalizeI18nText`과 동일하게 유지되어야 합니다. 영어 소스 텍스트가 카탈로그 키이므로 번역되지 않은 문자열은 자동으로 영어로 대체됩니다.
 
-Node 서버가 없는 **실행 가능한 정적 대응물**(`/api/ui-i18n` 대신 `fetch('/locales/{locale}.json')`)에 대해서는 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 워크스페이스 예제를 참조하세요. 이 예제는 동일한 마커 패턴을 사용하며 간소화된 대시보드 스타일 UI를 제공합니다; `pnpm dev` 이후에 `http://localhost:3090/?locale=pt-BR`에서 포르투갈어(브라질)를 사용해 보세요.
-
-번들 대시보드가 다른 점: Node 서버가 있기 때문에 정적 `/locales/{locale}.json`를 가져오지 않습니다. 클라이언트는 `GET /api/ui-i18n`를 호출하고, 서버는 활성 로케일(`--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS)을 확인하고 `{ locale, dir, bundle }`를 반환합니다. 그런 다음 클라이언트는 `applyStaticI18n`을 호출하기 전에 해당 응답에서 `document.documentElement` `lang`/`dir`을 설정합니다(`lang`를 읽어 로케일을 선택하는 대신). 번들 자체는 번역 대상 도구의 콘텐츠가 아닙니다. 번들은 대시보드 자체의 UI 문자열이며, `src/i18n/locales/{locale}.json`에 포함되어(`dist/i18n/locales`에 빌드 시 복사됨) [`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts)의 `loadUiBundle`에 의해 서버 측에서 읽힙니다. 대시보드의 `t()`는 위의 최소 `t`와 달리 ```{{name}}``` 보간도 지원합니다.
+번들과 함께 제공되는 [Translation Dashboard](https://github.com/wsj-br/ai-i18n-tools/tree/main/src/dashboard-app)는 HTML 마커에 동일한 `applyStaticI18n` 알고리즘을 사용하지만 정적 `/locales/{locale}.json` 파일 대신 `GET /api/ui-i18n`에서 로케일 번들을 제공합니다. 전체 워크플로, 프로젝트 레이아웃, 비교표를 보려면 예제의 [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md)를 참조하세요.

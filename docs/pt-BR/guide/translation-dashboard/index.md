@@ -22,7 +22,7 @@ A porta de escuta padrão é **8675**. Se essa porta estiver indisponível, o se
 
 A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da interface da ferramenta](/pt-BR/guide/tool-ui-language).
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![Painel de Tradução mostrando a aba Documentação com filtros e linhas de segmento em cache](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## Qual aba devo usar?

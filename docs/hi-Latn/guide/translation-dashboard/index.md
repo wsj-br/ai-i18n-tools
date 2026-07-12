@@ -22,7 +22,7 @@ Default listen port **8675** hai. Agar vah port unavailable hai, to server agla 
 
 Dashboard UI wahi locale resolution ka upyog karta hai jo CLI karta hai: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. [Tool UI bhasha](/hi-Latn/guide/tool-ui-language) dekhen.
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![Anuvaad Dashboard jisme filters aur cached segment rows ke saath Documentation tab dikhaya gaya hai](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## Mujhe kaun sa tab upyog karna chahiye?

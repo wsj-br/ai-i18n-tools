@@ -3,6 +3,8 @@
 
 `translate-docs` 重写翻译后的 Markdown 中的 URL，以便在文件移动到特定于语言环境的路径后，链接仍然能够解析。大多数跨页面链接都会自动处理；当您的站点使用共享的静态 URL 树或语言环境编码的资产文件夹时，请添加 `docsOutput.postProcessing.regexAdjustments` 规则。
 
+有关截图目录布局、扁平深度前缀 + 区域设置切换流程，以及特定于布局的资源示例，请参阅[图像与截图 — 链接重写](/zh-Hans/guide/images-and-screenshots/link-rewriting)。
+
 <a id="built-in-rewriters"></a>
 ## 内置重写器
 

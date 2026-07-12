@@ -52,9 +52,9 @@
         "meta-llama/llama-3.3-70b-instruct",
         "openai/gpt-4o-mini",
         "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
+        "~anthropic/claude-haiku-latest",
         "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
+        "google/gemini-3.5-flash",
         "~anthropic/claude-sonnet-latest"
       ],
       "maxTokens": 8192,

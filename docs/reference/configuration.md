@@ -134,9 +134,11 @@ For a runnable example that configures several providers in one config and switc
 
 Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those model ids as further alternatives.
 
+These model ids match `ai-i18n-tools init [-P <provider>]` when `-P openrouter` (the default). Other presets get native model ids from `init -P <provider>` — see [Built-in providers](/guide/providers-and-models#built-in-providers).
+
 This list was **tested for broad locale coverage** across a large documentation project with 36 target locales; it serves as a practical default, but is not guaranteed to perform well for every locale.
 
-Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
+Example `translationModels` (same defaults as `ai-i18n-tools init [-P <provider>]`):
 
 <details>
 <summary>Default translationModels fallback list</summary>
@@ -147,9 +149,9 @@ Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@ Example `translationModels` (same defaults as `npx ai-i18n-tools init`):
 
 <br />
 
-Set the active provider's API-key env var (e.g. `OPENROUTER_API_KEY`) in your environment or `.env` file.
+Set the active provider's API-key env var (see the [preset table](/guide/providers-and-models#built-in-providers)) in your environment or `.env` file.
 
-Before changing model lists, run `npx ai-i18n-tools check-models`. For any provider it verifies each configured model id (`translationModels`, `uiModels`, and all `localeModels` entries) against that provider's live model list (`GET /models`), reports ids that are missing or past `expiration_date`, lists the valid models, and exits non-zero when any configured id is invalid. When the provider returns pricing (e.g. OpenRouter) it also shows estimated input/output pricing (USD per 1M tokens).
+Before changing model lists, run `ai-i18n-tools check-models`. For any provider it verifies each configured model id (`translationModels`, `uiModels`, and all `localeModels` entries) against that provider's live model list (`GET /models`), reports ids that are missing or past `expiration_date`, lists the valid models, and exits non-zero when any configured id is invalid. When the provider returns pricing (e.g. OpenRouter) it also shows estimated input/output pricing (USD per 1M tokens).
 
-To compare the configured models on real translation work, run `npx ai-i18n-tools bench-models`. It benchmarks every unique model id from `translationModels`, `uiModels`, and `localeModels` by translating one sample through each in isolation (in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost, so you can weigh speed against price before settling on model lists.
+To compare the configured models on real translation work, run `ai-i18n-tools bench-models`. It benchmarks every unique model id from `translationModels`, `uiModels`, and `localeModels` by translating one sample through each in isolation (in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost, so you can weigh speed against price before settling on model lists.
 
 ---
 
@@ -466,5 +468,5 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 **Generate an empty glossary CSV:**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

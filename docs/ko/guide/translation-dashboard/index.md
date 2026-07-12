@@ -22,7 +22,7 @@ ai-i18n-tools dashboard
 
 대시보드 UI는 CLI와 동일한 로케일 결정 방식을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS 로케일. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![필터 및 캐시된 세그먼트 행이 있는 문서 탭을 표시하는 번역 대시보드](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## 어떤 탭을 사용해야 합니까?

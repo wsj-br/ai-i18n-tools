@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Sprache der Tool-Benutzeroberfläche
 
-Das Tool lokalisiert seine eigene Benutzeroberfläche – CLI-Hilfetexte, häufig verwendete Protokoll-/Zusammenfassungs-/Fehlermeldungen und das Übersetzungs-Dashboard – unabhängig von den `sourceLocale` / `targetLocales` Ihres Projekts. Es ist keine Konfiguration erforderlich: Standardmäßig folgt das Tool dem Gebietsschema Ihres Betriebssystems.
+Das `ai-i18n-tools` lokalisiert seine eigene Benutzeroberfläche – CLI-Hilfetexte, häufig verwendete Protokoll-/Zusammenfassungs-/Fehlermeldungen und das Übersetzungs-Dashboard – unabhängig von der `sourceLocale` / `targetLocales` Ihres Projekts. Es ist keine Konfiguration erforderlich: Standardmäßig folgt das Tool dem Gebietsschema Ihres Betriebssystems.
 
 <a id="locale-resolution"></a>
 ## Gebietsschema-Auflösung
@@ -21,7 +21,7 @@ Die angeforderte Lokale wird genau oder durch die nächste Variation (z. B. `pt-
 <a id="shipped-ui-languages"></a>
 ## Verfügbare UI-Sprachen
 
-`en-GB` (Quelle) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` und `zh-Hant`.
+Englisch (UK, Quelle), Deutsch, Spanisch, Französisch, Hindi (lateinische Schrift), Japanisch, Koreanisch, Portugiesisch (Brasilien), Chinesisch (vereinfacht), Chinesisch (traditionell).
 
 <a id="translation-dashboard"></a>
 ## Übersetzungs-Dashboard

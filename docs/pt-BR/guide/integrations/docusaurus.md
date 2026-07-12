@@ -9,7 +9,7 @@ Consulte também [Documentos](/pt-BR/guide/documents/), a demonstração execut�
 ## Início rápido
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Quando `docusaurusCatalogDir` é definido e `features.translateDocs` está habil
 - **JSON Shell** — catálogos de barra de navegação, rodapé e tema/plugin de `i18n/en/` para pastas de localidade irmãs
 
 Não coloque o JSON shell do Docusaurus em `json[]`; use `docs[].docusaurusCatalogDir` com Documentos em vez disso.
-
-<a id="framework-shell-translation"></a>
-## Tradução do shell do framework
-
-| Framework | Strings do shell / tema | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
-| Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Strings de UI integradas (muitas localidades); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
-
-**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Consulte [integração VitePress](/pt-BR/guide/integrations/vitepress), [integração Nextra](/pt-BR/guide/integrations/nextra) e [integração Fumadocs](/pt-BR/guide/integrations/fumadocs) para os outros padrões de framework.
 
 <a id="example-project"></a>
 ## Projeto de exemplo

@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Langue de l'interface utilisateur de l'outil
 
-L'outil localise sa propre interface utilisateur (texte d'aide de la CLI, messages de journal/résumé/erreur à fort trafic et tableau de bord de traduction) indépendamment de la `sourceLocale` / `targetLocales` de votre projet. Aucune configuration n'est requise : par défaut, l'outil suit les paramètres régionaux de votre système d'exploitation.
+L'`ai-i18n-tools` localise sa propre interface utilisateur (texte d'aide de la CLI, messages de journal/récapitulatifs/erreurs à fort trafic et tableau de bord de traduction) indépendamment des fichiers `sourceLocale` / `targetLocales` de votre projet. Aucune configuration n'est requise : par défaut, l'outil suit les paramètres régionaux de votre système d'exploitation.
 
 <a id="locale-resolution"></a>
 ## Résolution des paramètres régionaux
@@ -21,7 +21,7 @@ La locale demandée est comparée exactement aux langues d'interface utilisateur
 <a id="shipped-ui-languages"></a>
 ## Langues d'interface utilisateur fournies
 
-`en-GB` (source) plus `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans` et `zh-Hant`.
+Anglais (Royaume-Uni, source), allemand, espagnol, français, hindi (écriture latine), japonais, coréen, portugais (Brésil), chinois (simplifié), chinois (traditionnel).
 
 <a id="translation-dashboard"></a>
 ## Tableau de bord de traduction

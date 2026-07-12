@@ -107,23 +107,22 @@ Enable `forceLowercase: true` in the `svg` config block to avoid case-sensitivit
 <a id="decision-guide"></a>
 # Decision guide
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+
+  **Is the asset an SVG with translatable text or labels?**
+  - **Yes** → [Web app SVG](/guide/svg-translation/translated-svg-web-app) or [Colocated SVG](/guide/svg-translation/translated-svg-colocated)
+  - **No** (raster screenshot or decorative SVG) →
+    - **Doc-system site with assets colocated beside translated docs?**
+      - **Yes** → [Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) (rasters) + [Colocated SVG](/guide/svg-translation/translated-svg-colocated) (SVGs)
+    - **Only one locale needs the image** (no per-locale variants)?
+      - **Yes** → [Shared image](/guide/images-and-screenshots/shared-image)
+    - **Otherwise** → [Per-locale folder](/guide/images-and-screenshots/per-locale-folder)
 
 SVG layouts are covered in the [SVG translation](/guide/svg-translation/) guide.
 
-| Layout | Asset type                  | Site type                                                                 | Tool mechanism                                               |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Shared image](/guide/images-and-screenshots/shared-image) | Raster (shared)             | `docsOutput.style = "flat"` docs                                      | Per-file link rewriter; usually no regex                     |
-| [Per-locale folder](/guide/images-and-screenshots/per-locale-folder) | Raster (per-locale)         | `"flat"` or `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`)    | `regexAdjustments` locale segment swap                       |
-| [Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated)          | `"doc-system"` with colocated assets (Docusaurus preset)                  | Screenshot script places files; no regex                     |
-| [Web app SVG](/guide/svg-translation/translated-svg-web-app) | SVG (translated)            | Web app                                                                   | `translate-svg` with `svg.style = "flat"`                    |
-| [Colocated SVG](/guide/svg-translation/translated-svg-colocated) | SVG (translated, colocated) | `"doc-system"` with colocated assets (Docusaurus preset)                  | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
+| Layout                                                                       | Asset type                  | Site type                                                              | Tool mechanism                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated)          | `"doc-system"` with colocated assets (Docusaurus preset)               | Screenshot script places files; no regex                     |
+| [Per-locale folder](/guide/images-and-screenshots/per-locale-folder)         | Raster (per-locale)         | `"flat"` or `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` locale segment swap                       |
+| [Shared image](/guide/images-and-screenshots/shared-image)                   | Raster (shared)             | `docsOutput.style = "flat"` docs                                       | Per-file link rewriter; usually no regex                     |
+| [Colocated SVG](/guide/svg-translation/translated-svg-colocated)             | SVG (translated, colocated) | `"doc-system"` with colocated assets (Docusaurus preset)               | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
+| [Web app SVG](/guide/svg-translation/translated-svg-web-app)                 | SVG (translated)            | Web app                                                                | `translate-svg` with `svg.style = "flat"`                    |

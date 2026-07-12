@@ -73,12 +73,13 @@ Publish kiya gaya package **ESM-only** hai. Node.js `>=22.16.0` zaroori hai.
 
 ```bash
 pnpm add ai-i18n-tools
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
-npx ai-i18n-tools init
-npx ai-i18n-tools sync
+# Set API key for your active provider — see preset table (default init: openrouter)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+ai-i18n-tools init [-P <provider>]
+ai-i18n-tools sync
 ```
 
-CLI invocation details (jismein [cloned-monorepo development](/hi-Latn/guide/installation#cloned-monorepo) shaamil hai) ke liye [Installation](/hi-Latn/guide/installation) dekhein aur scaffold templates ke liye [Quick start](/hi-Latn/guide/quick-start) dekhein.
+[Installation](/hi-Latn/guide/installation) dekhen [CLI command ko configure karne](/hi-Latn/guide/installation#using-the-cli) ke liye (jismein [cloned-monorepo development](/hi-Latn/guide/installation#cloned-monorepo) shaamil hai) aur scaffold templates ke liye [Quick start](/hi-Latn/guide/quick-start) dekhen.
 
 <a id="which-pipeline-should-i-use"></a>
 ## Mujhe kaun si pipeline ka upyog karna chahiye?

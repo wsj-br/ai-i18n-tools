@@ -19,9 +19,24 @@ Framework-specific guides for wiring ai-i18n-tools into documentation sites and 
 
 All documentation-framework integrations share the same `docs[]` block model described in [Documents](/guide/documents/). Set `docsOutput.style` to match your framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, or `"astro-starlight"`). For output folder layout and link rewriting behaviour, see [Output layouts](/guide/documents/output-layouts) and [Link rewriting](/guide/documents/link-rewriting).
 
-Each `init -t ui-*` template scaffolds a default LLM provider block. Before `translate-docs` or `sync`, configure `provider` / `providers` if needed and set the matching API key — see [Provider and API key](/guide/quick-start#provider-and-api-key).
+Each `init -t ui-*` template scaffolds a default LLM provider block (`openrouter` unless you pass `-P <provider>`). Before `translate-docs` or `sync`, configure `provider` / `providers` if needed and set the matching API key — see [Provider and API key](/guide/quick-start#provider-and-api-key).
 
-Do **not** put framework shell or theme strings in `json[]` — that pipeline is for unrelated application locale bundles. Each integration page explains which catalog paths and CLI flags cover nav, sidebar, and theme labels for that framework.
+See [Framework shell translation](#framework-shell-translation) for a cross-framework comparison. Each linked guide below covers setup for that framework.
+
+<a id="framework-shell-translation"></a>
+## Framework shell translation
+
+| Framework | Shell / theme strings | Pipeline |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` sidebar labels | Documents — auto when `style: "nextra"` + `translate-docs` |
+| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` sidebar labels | Documents — auto when `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
+
+Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. Per-framework setup details are in the guides linked from [Which guide to read](#which-guide-to-read).
 
 <a id="runnable-examples"></a>
 ## Runnable examples

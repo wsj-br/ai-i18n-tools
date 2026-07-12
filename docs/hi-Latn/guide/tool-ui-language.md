@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Tool UI bhasha
 
-Tool apne user interface ko sthaniya banata hai — CLI help text, high-traffic log/summary/error messages, aur Translation Dashboard — aapke project ke `sourceLocale` / `targetLocales` se svatantra roop se. Kisi configuration ki avashyakta nahi hai: default roop se tool aapke OS locale ka palan karta hai.
+`ai-i18n-tools` apna user interface — CLI help text, high-traffic log/summary/error messages, aur Translation Dashboard — aapke project ke `sourceLocale` / `targetLocales` se alag localize karta hai. Koi configuration ki zaroorat nahi hai: default roop se tool aapke OS locale ko follow karta hai.
 
 <a id="locale-resolution"></a>
 ## Locale resolution
@@ -21,7 +21,7 @@ Anurodh kiya gaya locale shipped UI bhashaon ke khilaaf ya sabse qareebi variati
 <a id="shipped-ui-languages"></a>
 ## Shipped UI bhashayen
 
-`en-GB` (srot) aur `de`, `es`, `fr`, `hi-Latn`, `ja`, `ko`, `pt-BR`, `zh-Hans`, aur `zh-Hant`.
+Angrezi (UK, source), German, Spanish, French, Hindi (Latin script), Japanese, Korean, Portuguese (Brazil), Chinese (Simplified), Chinese (Traditional).
 
 <a id="translation-dashboard"></a>
 ## Translation Dashboard

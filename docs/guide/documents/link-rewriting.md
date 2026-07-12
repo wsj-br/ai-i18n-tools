@@ -3,6 +3,8 @@
 
 `translate-docs` rewrites URLs in translated markdown so links still resolve after files move to locale-specific paths. Most cross-page links are handled automatically; when your site uses a shared static URL tree or locale-coded asset folders, add `docsOutput.postProcessing.regexAdjustments` rules.
 
+For screenshot directory layouts, the flat depth-prefix + locale-swap flow, and layout-specific asset examples, see [Images & Screenshots — Link rewriting](/guide/images-and-screenshots/link-rewriting).
+
 <a id="built-in-rewriters"></a>
 ## Built-in rewriters
 

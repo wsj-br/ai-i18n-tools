@@ -14,10 +14,10 @@
 ### 步驟 1：初始化巢狀 JSON
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-該範本會設定 `features.translateJson: true`、停用 UI 擷取與文件翻譯，並建立一個指向 `src/i18n/en/translation.json` 且輸出為 `src/i18n/{llocale}/translation.json` 的單一 `json[]` 區塊。它也包含一個預設的 `provider` / `providers` 區塊 — 在執行 `translate-json` 或 `sync` 之前，請設定對應的 API 金鑰（或使用本機 Ollama）；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。請根據您的儲存庫結構編輯 `sourceLocale`、`targetLocales`、`contentPaths` 與 `outputPathTemplate`。
+該範本會設定 `features.translateJson: true`，停用 UI 擷取與文件翻譯，並建立一個指向 `src/i18n/en/translation.json` 且輸出為 `src/i18n/{llocale}/translation.json` 的單一 `json[]` 區塊。它還包含一個預設的 `provider` / `providers` 區塊（除非你傳入 `-P <provider>`，否則為 `openrouter`）— 在執行 `translate-json` 或 `sync` 之前，請設定對應的 API 金鑰（或使用本機 Ollama）；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。請根據你的儲存庫佈局編輯 `sourceLocale`、`targetLocales`、`contentPaths` 與 `outputPathTemplate`。
 
 <a id="step-2-configure-json"></a>
 ### 步驟 2：設定 `json[]`
@@ -72,7 +72,7 @@ npx ai-i18n-tools init -t ui-json-bundles
 ### 步驟 3：翻譯 JSON 套件
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 選用旗標（與 `translate-docs` 的概念相同）：`-l` / `--locale` 用於目標子集，`-p` / `--path` 用於限制檔案，`--dry-run`、`--force`（清除檔案追蹤和符合檔案的區段快取），`--force-update`（當檔案雜湊匹配時重新處理；區段快取仍然適用），`-b` / `--batch-concurrency`，`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
@@ -80,7 +80,7 @@ npx ai-i18n-tools translate-json
 僅限 JSON 的專案可以執行：
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 當同時啟用 UI 或文件時，`sync` 會在 translate-docs 後執行 **translate-json**（除非 `--no-json`）。使用 `--no-json` 跳過 JSON。
@@ -88,7 +88,7 @@ npx ai-i18n-tools sync --no-ui --no-svg --no-docs
 檢查每個檔案和地區設定檔的涵蓋範圍：
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 當 `translateJson` 啟用時，`status` 會列印一個 `json[]` 區塊（✓ 最新的，● 過期或遺失）。

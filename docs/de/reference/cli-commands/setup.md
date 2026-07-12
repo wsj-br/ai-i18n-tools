@@ -13,11 +13,13 @@ Gibt die CLI-Version und den Build-Zeitstempel aus (dieselbe Information wie `-V
 <a id="init"></a>
 ### `init`
 
-**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `docs[].addFrontmatter`). Übersetzungsbefehle, die ein LLM aufrufen, erfordern den API-Schlüssel des aktiven Anbieters in der Umgebung oder `.env` (Ollama ausgenommen) – siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
 
-**Wichtige Optionen:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**Wichtige Optionen:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider` wählt das **eingebaute Preset** aus, das als Gerüst dienen soll (`openrouter`, wenn weggelassen). Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
 
 **Vorlagen (`-t`):**
 

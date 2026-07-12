@@ -3,6 +3,8 @@
 
 `translate-docs` 會重寫翻譯過的 Markdown 中的 URL，以便檔案移至特定語系路徑後，連結仍能解析。大多數跨頁連結都會自動處理；當您的網站使用共用的靜態 URL 樹狀結構或語系編碼的資產資料夾時，請新增 `docsOutput.postProcessing.regexAdjustments` 規則。
 
+關於截圖目錄佈局、扁平深度前綴 + 語系切換流程，以及佈局特定的資源範例，請參閱[圖片與截圖 — 連結重寫](/zh-Hant/guide/images-and-screenshots/link-rewriting)。
+
 <a id="built-in-rewriters"></a>
 ## 內建重寫器
 

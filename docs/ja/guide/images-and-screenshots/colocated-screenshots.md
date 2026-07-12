@@ -3,6 +3,8 @@
 
 翻訳済みMarkdownファイルの横にロケール固有のアセットを配置する`doc-system`サイトで使用します。URLの書き換えは不要です。Docusaurusプリセット（`docsOutput.style = "docusaurus"`）がリファレンス実装です。`"doc-system"`とカスタム`localeSubpath`を使用する他のジェネレーターも同様の考え方を採用しています：英語のアセットはソースロケールのパスに配置され、翻訳済みアセットは`{outputDir}/{locale}/[localeSubpath/]assets/`の下に配置されます。
 
+> **リポジトリ内に例がない理由:** このリポジトリのDocusaurusデモ（[`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/)、[`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)）は代わりに[ロケールごとのフォルダ](/ja/guide/images-and-screenshots/per-locale-folder)レイアウトを使用しています。詳細は[決定ガイド](/ja/guide/images-and-screenshots/#decision-guide)を参照してください。コロケーションされた`../assets/`は推奨されるグリーンフィールドパターンであり、[duplistatus](https://github.com/wsj-br/duplistatus)は本番環境の完全な参考実装です。
+
 <a id="directory-layout"></a>
 ### ディレクトリ構成
 

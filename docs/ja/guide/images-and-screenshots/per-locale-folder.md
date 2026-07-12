@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # ロケールごとのフォルダー (URL書き換え)
 
-`docsOutput.style = "flat"`を持つREADME/USER-GUIDE、および共有された静的URLツリーからスクリーンショットを提供するドキュメントシステムサイト（`docsOutput.style = "doc-system"`またはエイリアス`"docusaurus"` / `"astro-starlight"`）に使用します。
+`docsOutput.style = "flat"` を使用する README/USER-GUIDE、および共有の静的 URL ツリーからスクリーンショットを提供するドキュメントシステムサイト（`docsOutput.style = "doc-system"` またはエイリアス `"docusaurus"` / `"astro-starlight"`）、ならびに `"vitepress"` / その他のドキュメントシステムプリセット向けに使用します。VitePress のリンク書き換えの詳細については、[Link rewriting — VitePress](/ja/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress) を参照してください。
 
 <a id="directory-layout"></a>
 ### ディレクトリ構成
@@ -41,9 +41,11 @@ function getScreenshotDir(locale) {
 }
 ```
 
-https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh の [examples/nextjs-app のスクリーンショットスクリプト] で簡単な `bash` の例を、または [Transrewrt プロジェクト](https://github.com/wsj-br/transrewrt) リポジトリの [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) でより複雑な例を参照してください。
+[examples/nextjs-app のスクリーンショットスクリプト](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh) にあるシンプルな `bash` の例、または [duplistatus](https://github.com/wsj-br/duplistatus) プロジェクトの [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) にあるより複雑な例（[Transrewrt](https://github.com/wsj-br/transrewrt) でも本番環境で使用されています）を参照してください。
 
-> **注:** 以下の4つのサブセクションでは、同じ `regexAdjustments` ロケールセグメントの入れ替え (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`) を共有しています。出力レイアウトとフラットリンクリライターを最初に実行するかどうかが異なるだけです。ご使用の `docsOutput.style` に一致するサブセクションにジャンプしてください。
+> **注意:** 以下の4つのサブセクションは、同じ `regexAdjustments` ロケールセグメントの置換（`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`）を共有します。出力レイアウトと、フラットリンクリライターが最初に実行されるかどうかのみが異なります — 該当する `docsOutput.style` に一致するサブセクションにジャンプしてください。
+>
+> **注意:** `regexAdjustments` は、フェンスされたコードブロックを含む翻訳済みの完全なマークダウン本文に対して実行されます。ドキュメントページに一致するパスを含む設定例（例: `screenshots/en-GB/`）が埋め込まれている場合、そのスニペットも翻訳出力で書き換えられます。再利用可能な例では、汎用の `screenshots/[^/]+/` 形式を優先してください。
 
 <a id="config---docsoutputstyle--flat"></a>
 ### 設定 - `docsOutput.style = "flat"`
@@ -80,7 +82,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `postProcessing`ステップは、フラットリンク書き換えの後に実行されます。すでにプレフィックスが付いているURL内のどこかにロケールセグメントと一致する`search`正規表現を記述します。正規表現に`../`プレフィックスを含める必要はありません。
 
-実装例（本番）：[Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md)内のスクリーンショットURL（`images/screenshots/en-GB/…`）、[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json)内のロケール書き換え、キャプチャスクリプト[take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)（上記の[スクリーンショットスクリプト契約](#screenshot-script-contract)を参照）。
+実装例（本番環境）: [Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) のスクリーンショット URL (`images/screenshots/en-GB/…`)、[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json) のロケール書き換え、duplistatus の [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) に基づくキャプチャスクリプト（上記の [スクリーンショットスクリプトコントラクト](#screenshot-script-contract) を参照）。
 
 実装例（デモ設定）：[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) — [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) の2番目の `docs[]` ブロック（`images/screenshots/[^/]+/` → `${translatedLocale}`）。ヘルパースクリプト [screenshot-locales.sh](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh)。
 
@@ -177,10 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`public/img/screenshots/<locale>/screenshot.png` にPNGファイルを配置する。
+`public/img/screenshots/<locale>/screenshot.png` で PNG を公開します。`${translatedLocale}` プレースホルダーは、設定のロケール文字列（例: `pt-BR`）を使用します。`astro-starlight` プリセットはデフォルトでロケールの **出力パス** を小文字にします（`pt-br/`）が、`public/img/screenshots/` 配下の静的アセットフォルダーはマークダウン URL に書き込まれたロケールセグメントと一致する必要があります — スクリーンショットディレクトリは、必ずしも Astro ルートの大文字小文字ではなく、`${translatedLocale}` に合わせて保持してください。
 
 実装例：[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) および [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`)。
-
----
-
-<a id="colocated-raster-doc-system"></a>

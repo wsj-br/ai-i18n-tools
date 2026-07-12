@@ -9,7 +9,7 @@ See also [Documents](/guide/documents/) and the runnable [examples/fumadocs-docs
 ## Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Load per-locale JSON in `layout.shared.ts` via `loadUiCatalog(locale)` and merge
 Standard locales may be covered by `@fumadocs/language/*` presets without LLM cost; the catalog translates **project overrides** in the English block only.
 
 **Do not** use `json[]` for Fumadocs UI strings — that pipeline is for unrelated app locale bundles.
-
-<a id="framework-shell-translation"></a>
-## Framework shell translation
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catalog | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels | Documents — auto when `style: "nextra"` + `translate-docs` |
-| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` sidebar labels | Documents — auto when `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
-
-Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [Docusaurus integration](/guide/integrations/docusaurus), [VitePress integration](/guide/integrations/vitepress), and [Nextra integration](/guide/integrations/nextra) for the other framework patterns.
 
 <a id="link-conventions"></a>
 ## Link conventions

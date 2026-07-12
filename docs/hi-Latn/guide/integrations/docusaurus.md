@@ -9,7 +9,7 @@ Isko bhi dekhen [Documents](/hi-Latn/guide/documents/), chalne yogya [examples/d
 ## Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Jab `docusaurusCatalogDir` set hota hai aur `features.translateDocs` enable hota
 - **Shell JSON** — `i18n/en/` se sibling locale folders mein navbar, footer, aur theme/plugin catalogues
 
 Docusaurus shell JSON ko `json[]` mein na rakhein; iske bajaye Documents ke saath `docs[].docusaurusCatalogDir` ka upyog karein.
-
-<a id="framework-shell-translation"></a>
-## Framework shell translation
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
-| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
-
-Framework shell/theme strings ko `json[]` mein **na** daalein — vah pipeline unrelated app locale bundles ke liye hai. Anya framework patterns ke liye [VitePress integration](/hi-Latn/guide/integrations/vitepress), [Nextra integration](/hi-Latn/guide/integrations/nextra), aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhein.
 
 <a id="example-project"></a>
 ## Example project

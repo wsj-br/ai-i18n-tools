@@ -18,7 +18,41 @@ ai-i18n-tools 包含自己的字符串提取器。如果您之前使用了 `i18n
 
 在您的项目中将 `ai-i18n-tools` 作为依赖项或开发依赖项安装（请参阅上面的[安装](#installation)）。该软件包声明了一个 `bin` 条目，您的包管理器会将其链接到 `node_modules/.bin/ai-i18n-tools`。该垫片（已安装软件包中的 `bin/ai-i18n-tools.mjs`）加载已编译的 CLI。
 
-**`package.json` 脚本（推荐）** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 添加到 `PATH` 的前面，因此像 `pnpm run i18n:sync` 这样的命令会调用 `ai-i18n-tools`，而无需 `npx` 或 `pnpm exec` 前缀：
+要在交互式 shell 中输入不带前缀的 `ai-i18n-tools` 命令，请配置以下选项之一。如果不进行设置，即使在本地安装后，shell 也无法找到该二进制文件。
+
+**direnv** — 在项目根目录的 `.envrc` 中添加（bash/zsh；参见 [direnv.net](https://direnv.net/)）：
+
+```bash
+PATH_add node_modules/.bin
+```
+
+执行 `direnv allow` 后，只要您 `cd` 进入该项目，就可以使用不带前缀的命令。
+
+**手动配置 PATH** — 在交互式 shell 中从项目根目录执行：
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**全局安装** — 安装一次 CLI，即可从任何目录调用它：
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+全局安装使用全局固定的版本。若要按项目固定版本，建议使用 direnv 或手动配置 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
+
+**`package.json` 脚本** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 前置到 `PATH`，因此无需更改 shell PATH 即可在脚本内使用不带前缀的命令名称：
 
 ```json
 "scripts": {
@@ -26,51 +60,32 @@ ai-i18n-tools 包含自己的字符串提取器。如果您之前使用了 `i18n
 }
 ```
 
-**交互式 shell** — 从您的项目根目录，在本地安装后：
+然后运行，例如 `pnpm run i18n:sync`。
 
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-yarn ai-i18n-tools sync       # yarn (Berry: yarn dlx ai-i18n-tools … for one-off)
-```
-
-**裸** `ai-i18n-tools` **在终端中** — 要在交互式 shell 中直接键入命令名称，请将本地 bin 目录添加到 `PATH` 的前面：
-
-```bash
-# bash/zsh — project root
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell — project root
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-使用 [**direnv**](https://direnv.net/)，将 `PATH_add node_modules/.bin` 添加到项目根目录中的 `.envrc`，以便在 `cd` 进入项目后可以使用裸命令。在不调整 `PATH` 的情况下，继续使用 `npx ai-i18n-tools …` 或 `pnpm exec ai-i18n-tools …`。
-
-**零安装一次性使用** — `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（为该次调用下载包；`package.json` 中没有条目）。
+**替代方案** — 如果您不想调整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。对于没有 `package.json` 条目且无需安装的一次性运行：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
 ### 已克隆的 ai-i18n-tools monorepo
 
 在开发该包或从 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整克隆中运行工作区 **示例** 时：
 
-- **工作区示例**（`examples/console-app`、`examples/nextjs-app` 以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他包）——在仓库根目录运行 `pnpm install`，然后运行 `cd examples/<name>` 并使用 `pnpm exec ai-i18n-tools …` 或示例的 `pnpm run i18n:*` 脚本。工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 会将 `ai-i18n-tools` 链接到你的本地检出目录。
-- **仓库根目录**——pnpm 不会将根包自身的 `bin` 链接到 `node_modules/.bin` 中，且在根目录运行 `npx ai-i18n-tools` 会执行 **已发布的 npm** 包，而非你的工作树。请改用 `node bin/ai-i18n-tools.mjs …` 或根目录的 `pnpm i18n:*` 脚本。
-- **独立测试夹具**（`multi-provider`、`test-markdown`）——在夹具文件夹中使用 `node ../../bin/ai-i18n-tools.mjs …`。
+- **工作区示例**（`examples/console-app`、`examples/nextjs-app` 以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他包）——在仓库根目录运行 `pnpm install`，然后运行 `cd examples/<name>`。使用示例的 `pnpm run i18n:*` 脚本，或者配置 PATH（参见[使用 CLI](#using-the-cli)）并直接运行 `ai-i18n-tools …`。将工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 链接 `ai-i18n-tools` 到你的本地检出目录。
+- **仓库根目录** —— pnpm 不会将根包自身的 `bin` 链接到 `node_modules/.bin` 中。请改用 `node bin/ai-i18n-tools.mjs …` 或根目录的 `pnpm i18n:*` 脚本（或者使用 shell 别名 / `pnpm add -g .` —— 参见[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)）。
+- **独立夹具**（`multi-provider`、`test-markdown`）——在夹具文件夹中，使用 `node ../../bin/ai-i18n-tools.mjs …`。
 
 更改 CLI 源码后，在仓库根目录运行 `pnpm run build`。有关构建步骤和可选的全局安装变通方案，请参阅[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
 
 在 Linux、macOS 和 WSL 上，注册表安装会自动为 CLI 脚本设置可执行位。在 Windows 上，包管理器会生成 `.cmd` 和 `.ps1` 包装器，它们会显式调用 Node。
 
-翻译命令 (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) 需要在 `ai-i18n-tools.config.json` 中进行 **提供商配置**，并为当前使用的提供商提供 **API 密钥**。运行 `ai-i18n-tools init` 以生成默认的 OpenRouter 配置块；编辑 `provider` / `providers` 以切换预设或模型 —— 参见 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。Ollama 是唯一不需要 API 密钥的内置预设。
+翻译命令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`）需要在 `ai-i18n-tools.config.json` 中进行 **提供商配置**，并为当前活动的提供商提供 **一个 API 密钥**。运行 `ai-i18n-tools init [-P <provider>]` 来生成默认的提供商块（省略时为 `openrouter`）；编辑 `provider` / `providers` 以切换预设或模型 —— 参见 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。Ollama 是唯一不需要 API 密钥的内置预设。
 
-设置您的提供商 API 密钥（此处显示 OpenRouter；请使用与您的活动提供商匹配的环境变量 — 请参阅[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）：
+设置与你的当前活动提供商相匹配的 API 密钥（参见[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）：
 
 ```bash
+# Default init (openrouter)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Example: init -P anthropic
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
 或在项目根目录中创建一个 `.env` 文件：

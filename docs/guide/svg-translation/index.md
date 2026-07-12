@@ -90,19 +90,19 @@ Full field reference: [Configuration — `svg`](/reference/configuration#svg).
 ### Step 2: Translate
 
 ```bash
-npx ai-i18n-tools translate-svg
+ai-i18n-tools translate-svg
 ```
 
 Translate a single locale:
 
 ```bash
-npx ai-i18n-tools translate-svg --locale de
+ai-i18n-tools translate-svg --locale de
 ```
 
 Preview without writing files:
 
 ```bash
-npx ai-i18n-tools translate-svg --dry-run
+ai-i18n-tools translate-svg --dry-run
 ```
 
 `sync` runs the SVG step automatically when `features.translateSVG` and `svg` are both set (skip with `--no-svg`). Shared flags include `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, and `--force` / `--force-update`.

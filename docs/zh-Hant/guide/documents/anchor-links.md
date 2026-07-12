@@ -19,11 +19,52 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="what-to-do"></a>
 ## 該怎麼做
 
+<a id="docusaurus-sites-preferred"></a>
+### Docusaurus 網站（首選）
+
+在 [Docusaurus](/zh-Hant/guide/integrations/docusaurus) 文件（`docsOutput.style = "docusaurus"`）中，請優先使用 Docusaurus 的原生標題 ID，而非 `ai-i18n-tools write-heading-ids`：
+
+1. 在標題行上使用 Docusaurus 的 `{#…}` 後綴加入明確的 id，例如 `## TLS configuration {#tls-configuration}`。在 `translate-docs` 期間，只會翻譯可見的標題文字 —— `{#tls-configuration}` 後綴在每個語言環境中都會保留。
+2. 從你的 Docusaurus 專案根目錄（通常是在 `package.json` 中設定時的 `pnpm run write-heading-ids`）執行 `docusaurus write-heading-ids`，為缺少後綴的標題新增或重新整理 `{#…}` 後綴。重新命名標題後請重新執行，讓過時的 id 符合目前的標題。
+
+將你的 markdown **錨點連結**指向這些穩定的 id，例如 `[label](other.md#tls-configuration)`，其中的片段符合 `{#…}` 後綴 —— 而非僅從英文單詞猜測的 slug。請參閱 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) 以查看使用此模式的已提交文件。
+
+<a id="other-layouts-flat-starlight-vitepress-etc"></a>
+### 其他版面配置（扁平、Starlight、VitePress 等）
+
+當你不在 Docusaurus 上，或者你需要 HTML 錨點而非 `{#…}` 後綴時：
+
 1. 在 `translate-docs` 之前，先對您的原始 `.md` / `.mdx` 執行 `ai-i18n-tools write-heading-ids`（使用與平常相同的 `docs[]` / `contentPaths`）。它會在每個標題前插入明確的 HTML 錨點，以便 `id` 值能在所有翻譯後的副本中共享。在重新命名標題後重新執行，以確保過時的錨點 ID 會更新以符合目前的標題。
 2. 將您的 markdown **錨點連結**指向這些穩定的 ID，例如 `[label](other.md#section-id)`，其中 `section-id` 應符合該工具寫入的錨點 — 而非僅憑英文單字猜測。
 
 <a id="example"></a>
 ## 範例
+
+<a id="example-docusaurus"></a>
+### Docusaurus `{#…}` 後綴
+
+`docs/overview.md`:
+
+```markdown
+See [TLS setup](security.md#tls-configuration) for certificate steps.
+```
+
+`docs/security.md`（英文來源）：
+
+```markdown
+## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+在 `translate-docs` 之後，連結片段在每個語言環境中都保持為 `#tls-configuration`；只有標題文字和連結標籤會改變：
+
+```markdown
+Siehe [TLS-Einrichtung](security.md#tls-configuration) für die Zertifikatsschritte.
+```
+
+<a id="html-anchors-write-heading-ids"></a>
+### HTML 錨點（`write-heading-ids`）
 
 `docs/overview.md`:
 

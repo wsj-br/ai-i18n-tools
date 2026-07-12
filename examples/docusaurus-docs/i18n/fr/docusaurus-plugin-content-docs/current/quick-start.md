@@ -4,9 +4,9 @@ title: Démarrage rapide
 description: >-
   Obtenez votre premier document traduit en moins de cinq minutes en utilisant
   ai-i18n-tools avec ce projet d'exemple Docusaurus.
-translation_last_updated: '2026-07-10T22:46:25.841Z'
-source_file_mtime: '2026-07-10T22:43:30.778Z'
-source_file_hash: 3ce439245e1bfdd2c280cc6ce7d3250ef27a14c7ae4756eae5f6e6b4e20a67c1
+translation_last_updated: '2026-07-12T01:33:43.882Z'
+source_file_mtime: '2026-07-10T22:50:38.005Z'
+source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: fr
 source_file_path: docs/quick-start.md
 translation_models:
@@ -137,12 +137,12 @@ Points clés à vérifier :
 ## Étape 6 — Démarrer Docusaurus {#step-6--start-docusaurus}
 
 ```bash
-pnpm run start:de
+pnpm start
 ```
 
-Ceci démarre le serveur de développement Docusaurus en allemand. Ouvrez [http://localhost:3100/de/quick-start](http://localhost:3100/de/quick-start) dans votre navigateur pour parcourir la documentation traduite.
+Ceci construit chaque locale et sert le site afin que le menu de langue de la barre de navigation fonctionne. Ouvrez [http://localhost:3100/quick-start](http://localhost:3100/quick-start), puis passez au portugais (Brésil) — par exemple [http://localhost:3100/pt-BR/feature-showcase](http://localhost:3100/pt-BR/feature-showcase).
 
-Après une construction de production (`pnpm build` puis `pnpm preview`), chaque locale est disponible sans redémarrer le serveur de développement par locale.
+Lors de l'édition des sources anglaises, `pnpm dev` permet le rechargement à chaud uniquement pour la locale par défaut ; réexécutez `pnpm start` pour rafraîchir toutes les locales après les modifications.
 
 ---
 

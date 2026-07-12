@@ -134,9 +134,11 @@ Pour un exemple exécutable qui configure plusieurs fournisseurs dans une seule 
 
 Considérez la liste ci-dessous comme une **base** que vous pouvez étendre : si la traduction pour une langue spécifique est médiocre ou infructueuse, recherchez les modèles qui prennent en charge cette langue ou ce script efficacement (référez-vous aux ressources en ligne ou à la documentation de votre fournisseur), et ajoutez ces identifiants de modèle comme alternatives supplémentaires.
 
+Ces ID de modèle correspondent à `ai-i18n-tools init [-P <provider>]` lorsque `-P openrouter` (par défaut). D'autres préréglages obtiennent des ID de modèle natifs de `init -P <provider>` — voir [Fournisseurs intégrés](/fr/guide/providers-and-models#built-in-providers).
+
 Cette liste a été **testée pour une couverture étendue des paramètres régionaux** dans un vaste projet de documentation comportant 36 paramètres régionaux cibles ; elle sert de valeur par défaut pratique, mais n'est pas garantie pour fonctionner correctement dans tous les paramètres régionaux.
 
-Exemple `translationModels` (mêmes valeurs par défaut que `npx ai-i18n-tools init`) :
+Exemple `translationModels` (mêmes valeurs par défaut que `ai-i18n-tools init [-P <provider>]`) :
 
 <details>
 <summary>Liste de secours par défaut pour translationModels</summary>
@@ -147,9 +149,9 @@ Exemple `translationModels` (mêmes valeurs par défaut que `npx ai-i18n-tools i
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@ Exemple `translationModels` (mêmes valeurs par défaut que `npx ai-i18n-tools i
 
 <br />
 
-Définissez la variable d'environnement de la clé API du fournisseur actif (par ex. `OPENROUTER_API_KEY`) dans votre environnement ou dans le fichier `.env`.
+Définissez la variable d'environnement de la clé API du fournisseur actif (voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) dans votre environnement ou votre fichier `.env`.
 
-Avant de modifier les listes de modèles, exécutez `npx ai-i18n-tools check-models`. Pour chaque fournisseur, il vérifie chaque ID de modèle configuré (`translationModels`, `uiModels` et toutes les entrées `localeModels`) par rapport à la liste de modèles en direct de ce fournisseur (`GET /models`), signale les ID manquants ou obsolètes (plus anciens que `expiration_date`), liste les modèles valides et se termine avec un code d'erreur si un ID configuré est invalide. Lorsque le fournisseur renvoie des informations de tarification (par exemple, OpenRouter), il affiche également les prix estimés d'entrée/sortie (USD par million de jetons).
+Avant de modifier les listes de modèles, exécutez `ai-i18n-tools check-models`. Pour chaque fournisseur, il vérifie chaque ID de modèle configuré (`translationModels`, `uiModels` et toutes les entrées `localeModels`) par rapport à la liste de modèles en direct de ce fournisseur (`GET /models`), signale les ID manquants ou passés `expiration_date`, liste les modèles valides et quitte avec un code d'erreur si un ID configuré est invalide. Lorsque le fournisseur renvoie des prix (par exemple OpenRouter), il affiche également les prix d'entrée/sortie estimés (USD par million de jetons).
 
-Pour comparer les modèles configurés sur un travail de traduction réel, exécutez `npx ai-i18n-tools bench-models`. Il évalue chaque ID de modèle unique à partir de `translationModels`, `uiModels` et `localeModels` en traduisant un échantillon à travers chacun d'eux de manière isolée (en parallèle, limité par `concurrency`) et affiche les jetons d'entrée/sortie par modèle, le temps réel et le coût en USD, afin que vous puissiez évaluer la vitesse par rapport au prix avant de choisir les listes de modèles.
+Pour comparer les modèles configurés sur un travail de traduction réel, exécutez `ai-i18n-tools bench-models`. Il évalue chaque ID de modèle unique de `translationModels`, `uiModels` et `localeModels` en traduisant un échantillon à travers chacun isolément (en parallèle, limité par `concurrency`) et imprime les jetons d'entrée/sortie par modèle, le temps réel et le coût en USD, afin que vous puissiez peser la vitesse par rapport au prix avant de vous décider sur les listes de modèles.
 
 ---
 
@@ -461,5 +463,5 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 **Générer un fichier CSV de glossaire vide :**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

@@ -14,7 +14,7 @@ ai-i18n-tools 可與 [Astro](https://astro.build/) 搭配使用，有兩種常�
 ### 快速入門
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 Starlight UI 覆寫可以在需要時於獨立的 `docs[]` 區塊中使用 `src/content/i18n/en.json` 搭配 `jsonPathTemplate` — 請參閱[文件 — 初始化文件](/zh-Hant/guide/documents/#step-1-initialise-for-documentation)。
 
-<a id="framework-shell-translation"></a>
-### 框架外殼翻譯
-
-Starlight 為許多地區語言內建了自身的 UI 字串（導覽標籤、搜尋預留位置、目錄等等）——與 Docusaurus、VitePress 或 Nextra 不同，不需要設定額外的外殼/主題管線：
-
-| 框架 | 外殼 / 主題字串 | 管線 |
-|-----------|----------------------|----------|
-| Astro Starlight | 內建 UI 字串（多種地區語言）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
-| Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 側邊欄標籤 + 主題字典 `.ts` | 文件 — 請見 [Nextra 整合](/zh-Hant/guide/integrations/nextra) |
-| Fumadocs | `meta.json` 側邊欄標籤 + UI 覆寫目錄 | 文件 — 請見 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
-
-其他框架模式請見 [Docusaurus 整合](/zh-Hant/guide/integrations/docusaurus)、[VitePress 整合](/zh-Hant/guide/integrations/vitepress)、[Nextra 整合](/zh-Hant/guide/integrations/nextra) 與 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。
+Starlight 內建了許多地區設定的 UI 字串（導覽標籤、搜尋預留位置、目錄等等）。沒有單獨的 shell/主題管線需要設定 — 僅將 `translate-docs` 用於頁面內容。至於其他框架，請參閱[框架 shell 翻譯](/zh-Hant/guide/integrations/#framework-shell-translation)。
 
 <a id="example-project"></a>
 ### 範例專案
@@ -83,7 +70,7 @@ Starlight 為許多地區語言內建了自身的 UI 字串（導覽標籤、搜
 ### 快速入門
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

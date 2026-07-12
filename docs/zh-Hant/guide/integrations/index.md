@@ -19,9 +19,24 @@
 
 所有文件框架整合都共用 [Documents](/zh-Hant/guide/documents/) 中所述的相同 `docs[]` 區塊模型。設定 `docsOutput.style` 以符合你的框架 (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, 或 `"astro-starlight"`)。關於輸出資料夾佈局與連結重寫行為，請參閱 [Output layouts](/zh-Hant/guide/documents/output-layouts) 與 [Link rewriting](/zh-Hant/guide/documents/link-rewriting)。
 
-每個 `init -t ui-*` 範本會建立預設的 LLM 提供者區塊。在 `translate-docs` 或 `sync` 之前，如有需要請設定 `provider` / `providers` 並設定對應的 API 金鑰 — 請參閱[提供者與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
+每個 `init -t ui-*` 範本會產生預設的 LLM 提供者區塊（除非您傳入 `-P <provider>`，否則為 `openrouter`）。在 `translate-docs` 或 `sync` 之前，如有需要請設定 `provider` / `providers` 並設定對應的 API 金鑰 — 請參閱[提供者與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
 
-請**勿**將框架殼層或主題字串放入 `json[]` —— 該管線是給無關的應用程式語言包使用的。每個整合頁面都會說明哪些目錄路徑與 CLI 旗標涵蓋了該框架的導覽、側邊欄與主題標籤。
+請參閱[框架外殼翻譯](#framework-shell-translation)以取得跨框架比較。下方每個連結的指南皆涵蓋該框架的設定。
+
+<a id="framework-shell-translation"></a>
+## 框架外殼翻譯
+
+| 框架 | 外殼/主題字串 | 管線 |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations` 目錄（`{ message, description }`） | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 側邊欄標籤 | 文件 — 當 `style: "nextra"` + `translate-docs` 時自動 |
+| Nextra | 主題字典 `.ts` | 文件 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動 |
+| Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 內建 UI 字串（多語系）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
+
+請**勿**將框架外殼/主題字串放入 `json[]` — 該管線適用於無關的應用程式語言套件。各框架的設定詳情位於從[該閱讀哪份指南](#which-guide-to-read)連結的指南中。
 
 <a id="runnable-examples"></a>
 ## 可執行範例

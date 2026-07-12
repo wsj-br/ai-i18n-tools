@@ -134,9 +134,11 @@
 
 아래 목록을 확장할 수 있는 **기준선**으로 간주하십시오. 특정 로케일에 대한 번역이 불량하거나 성공적이지 않은 경우, 해당 언어 또는 스크립트를 효과적으로 지원하는 모델을 조사하고(온라인 리소스 또는 공급자 설명서 참조) 해당 모델 ID를 추가 대안으로 추가하십시오.
 
+이러한 모델 ID는 `-P openrouter`(기본값)일 때 `ai-i18n-tools init [-P <provider>]`과 일치합니다. 다른 프리셋은 `init -P <provider>`에서 네이티브 모델 ID를 가져옵니다 — [기본 제공 프로바이더](/ko/guide/providers-and-models#built-in-providers)를 참조하세요.
+
 이 목록은 36개의 대상 로케일을 포함하는 대규모 문서 프로젝트에서 **광범위한 로케일 커버리지 테스트**를 거쳤습니다. 실용적인 기본값으로 사용되지만, 모든 로케일에서 항상 우수한 성능을 보장하지는 않습니다.
 
-예시 `translationModels` (`npx ai-i18n-tools init`과 동일한 기본값):
+예시 `translationModels`(`ai-i18n-tools init [-P <provider>]`과 동일한 기본값):
 
 <details>
 <summary>기본 translationModels 대체 목록</summary>
@@ -147,9 +149,9 @@
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@
 
 <br />
 
-활성 공급자의 API 키 환경 변수 (예: `OPENROUTER_API_KEY`)를 환경 또는 `.env` 파일에 설정하십시오.
+활성 프로바이더의 API 키 환경 변수를 환경 또는 `.env` 파일에 설정하세요([프리셋 테이블](/ko/guide/providers-and-models#built-in-providers) 참조).
 
-모델 목록을 변경하기 전에 `npx ai-i18n-tools check-models`을(를) 실행하십시오. 모든 공급자에 대해 구성된 각 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 해당 공급자의 라이브 모델 목록(`GET /models`)과 비교하여 확인하고, 누락되거나 `expiration_date`를 초과하는 ID를 보고하며, 유효한 모델을 나열하고, 구성된 ID가 유효하지 않은 경우 0이 아닌 값으로 종료합니다. 공급자가 가격 책정(예: OpenRouter)을 반환하는 경우 예상 입력/출력 가격(100만 토큰당 USD)도 표시합니다.
+모델 목록을 변경하기 전에 `ai-i18n-tools check-models`을 실행하세요. 모든 프로바이더에 대해 구성된 각 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 해당 프로바이더의 라이브 모델 목록(`GET /models`)과 대조하여 검증하고, 누락되었거나 `expiration_date`가 지난 ID를 보고하며, 유효한 모델을 나열하고, 구성된 ID가 유효하지 않으면 0이 아닌 값으로 종료합니다. 프로바이더가 가격 정보를 반환하는 경우(예: OpenRouter) 입력/출력 가격 추정치(1M 토큰당 USD)도 표시합니다.
 
-실제 번역 작업에서 구성된 모델을 비교하려면 `npx ai-i18n-tools bench-models`을(를) 실행하세요. 이 명령은 `translationModels`, `uiModels`, `localeModels`의 모든 고유 모델 ID를 각각 개별적으로(`concurrency`에 의해 제한된 병렬로) 하나의 샘플을 번역하여 벤치마킹하고, 모델별 입력/출력 토큰, 실제 시간, USD 비용을 출력하므로 모델 목록을 확정하기 전에 속도와 가격을 비교할 수 있습니다.
+구성된 모델을 실제 번역 작업과 비교하려면 `ai-i18n-tools bench-models`을 실행하세요. `translationModels`, `uiModels`, `localeModels`의 모든 고유 모델 ID를 격리로 번역하여 벤치마킹하고(동시에 실행, `concurrency` 제한) 모델당 입력/출력 토큰, 경과 시간, USD 비용을 출력하므로 모델 목록을 결정하기 전에 속도와 가격을 비교할 수 있습니다.
 
 ---
 
@@ -461,5 +463,5 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 **빈 용어집 CSV 생성:**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

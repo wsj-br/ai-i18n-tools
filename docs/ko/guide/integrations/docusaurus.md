@@ -9,7 +9,7 @@
 ## 빠른 시작
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Docusaurus 탐색 모음, 바닥글, 검색 자리 표시자 및 기타 테마/�
 - **셸 JSON** — `i18n/en/`에서 형제 로케일 폴더로 탐색 모음, 바닥글 및 테마/플러그인 카탈로그
 
 Docusaurus 셸 JSON을 `json[]`에 넣지 마십시오. 대신 Documents와 함께 `docs[].docusaurusCatalogDir`을(를) 사용하십시오.
-
-<a id="framework-shell-translation"></a>
-## 프레임워크 셸 번역
-
-| 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
-| Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
-| Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
-
-프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마십시오** — 이 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴에 대해서는 [VitePress 통합](/ko/guide/integrations/vitepress), [Nextra 통합](/ko/guide/integrations/nextra), [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하십시오.
 
 <a id="example-project"></a>
 ## 예시 프로젝트

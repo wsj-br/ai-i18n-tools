@@ -3,6 +3,8 @@
 
 Upyog karein jab ek `doc-system` site sthaaniya bhasha-vishisht assets ko anuvaadit markdown ke bagal mein sthaapit karti hai — koi URL punarlikhna aavashyak nahin hai. Docusaurus preset (`docsOutput.style = "docusaurus"`) sandarbh kaaryaanvayan hai; anya generators jo `"doc-system"` ka upyog karte hain ek vaastavik `localeSubpath` ke saath, wahi vichaar ka paalan karte hain: Angrezi assets mul-sthaaniya bhasha-maarg par aati hain, anuvaadit assets `{outputDir}/{locale}/[localeSubpath/]assets/` ke neeche aati hain.
 
+> **In-repo udaharan kyon nahin:** Is repository ke Docusaurus demos ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) iske bajaye [prati-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) layout ka upyog karte hain — [nirnay margdarshika](/hi-Latn/guide/images-and-screenshots/#decision-guide) dekhen. Colocated `../assets/` anushansit greenfield pattern hai; [duplistatus](https://github.com/wsj-br/duplistatus) poorn utpadan sandarbh hai.
+
 <a id="directory-layout"></a>
 ### Directory layout
 

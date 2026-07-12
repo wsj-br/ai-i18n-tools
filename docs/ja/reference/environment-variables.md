@@ -1,9 +1,9 @@
 <a id="environment-variables"></a>
 # 環境変数
 
-| Variable               | Description                                                |
+| 変数               | 説明                                                |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` プロバイダーのAPIキー (アクティブな場合に必要)。 |
+| `OPENROUTER_API_KEY`   | `openrouter` プロバイダーの API キー（アクティブな場合に必須）。デフォルトの `init` プリセット。 |
 | Other provider keys    | 各プロバイダーは独自のキー環境変数を読み取ります: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollamaは不要)。プロバイダーごとに `providers.<name>.apiKeyEnv` で上書きできます。 |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |

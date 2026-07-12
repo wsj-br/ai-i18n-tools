@@ -21,8 +21,8 @@
     "openrouter": {
       "translationModels": [
         "openai/gpt-4o-mini",
-        "anthropic/claude-3-haiku",
-        "google/gemini-3-flash-preview"
+        "~anthropic/claude-haiku-latest",
+        "google/gemini-3.5-flash"
       ],
       "maxTokens": 8192,
       "temperature": 0.2

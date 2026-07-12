@@ -134,9 +134,11 @@
 
 将以下列表视为您可以扩展的**基线**：如果特定语言环境的翻译质量差或不成功，请研究哪些模型能有效支持该语言或脚本（参考在线资源或您的提供商文档），并将这些模型 ID 添加为进一步的替代方案。
 
+当 `-P openrouter`（默认值）时，这些模型 ID 与 `ai-i18n-tools init [-P <provider>]` 匹配。其他预设从 `init -P <provider>` 获取原生模型 ID —— 参见[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
+
 此列表经过**测试，覆盖了广泛的区域设置**，在一个大型文档项目中覆盖了 36 个目标区域设置；它是一个实用的默认选项，但不能保证对每个区域设置都表现良好。
 
-示例 `translationModels`（与 `npx ai-i18n-tools init` 具有相同的默认值）：
+示例 `translationModels`（与 `ai-i18n-tools init [-P <provider>]` 的默认值相同）：
 
 <details>
 <summary>默认翻译模型备用列表</summary>
@@ -147,9 +149,9 @@
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@
 
 <br />
 
-在您的环境中或 `.env` 文件中设置活动提供商的 API 密钥环境变量（例如 `OPENROUTER_API_KEY`）。
+在你的环境或 `.env` 文件中设置当前提供商的 API 密钥环境变量（参见[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）。
 
-在更改模型列表之前，请运行 `npx ai-i18n-tools check-models`。对于任何提供商，它都会根据该提供商的实时模型列表 (`GET /models`) 验证每个配置的模型 ID (`translationModels`、`uiModels` 和所有 `localeModels` 条目)，报告缺失或已过时的 ID (`expiration_date`)，列出有效模型，并在任何配置的 ID 无效时以非零退出。当提供商返回定价（例如 OpenRouter）时，它还会显示估计的输入/输出定价（每百万个令牌的美元）。
+在更改模型列表之前，请运行 `ai-i18n-tools check-models`。对于任何提供商，它会根据该提供商的实时模型列表（`GET /models`）验证每个已配置的模型 ID（`translationModels`、`uiModels` 以及所有 `localeModels` 条目），报告缺失或已过 `expiration_date` 的 ID，列出有效模型，并在任何已配置的 ID 无效时以非零状态退出。当提供商返回定价信息时（例如 OpenRouter），它还会显示估算的输入/输出价格（每 100 万 token 的美元费用）。
 
-要在实际翻译工作中比较已配置的模型，请运行 `npx ai-i18n-tools bench-models`。它会对 `translationModels`、`uiModels` 和 `localeModels` 中的每个唯一模型 ID 进行基准测试，方法是分别通过每个模型独立翻译一个样本（并行执行，受 `concurrency` 限制），并打印每个模型的输入/输出 token 数、实际耗时和美元成本，以便你在最终确定模型列表之前权衡速度与价格。
+要在实际翻译任务中比较已配置的模型，请运行 `ai-i18n-tools bench-models`。它会通过将一个样本分别独立翻译（并行执行，受 `concurrency` 限制）来对 `translationModels`、`uiModels` 和 `localeModels` 中的每个唯一模型 ID 进行基准测试，并打印每个模型的输入/输出 token 数、实际耗时和美元成本，以便你在确定模型列表之前权衡速度与价格。
 
 ---
 
@@ -461,5 +463,5 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 **生成一个空的词汇表 CSV：**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

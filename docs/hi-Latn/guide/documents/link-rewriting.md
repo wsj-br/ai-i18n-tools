@@ -3,6 +3,8 @@
 
 `translate-docs` anuvaadit markdown mein URLs ko punarlekhit karta hai taaki jab files locale-specific paths par move hon, toh links abhi bhi resolve hon. Adhikansh cross-page links swatah handle ho jaate hain; jab aapki site ek shared static URL tree ya locale-coded asset folders ka upyog karti hai, toh `docsOutput.postProcessing.regexAdjustments` rules joden.
 
+Screenshot directory layouts, flat depth-prefix + locale-swap flow, aur layout-specific asset examples ke liye, [Images & Screenshots — Link rewriting](/hi-Latn/guide/images-and-screenshots/link-rewriting) dekhen.
+
 <a id="built-in-rewriters"></a>
 ## Built-in rewriters
 

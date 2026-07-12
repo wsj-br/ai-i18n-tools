@@ -107,23 +107,21 @@ public/img/screenshots/en-GB/screenshot.png
 <a id="decision-guide"></a>
 # 决策指南
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**该资产是否为带有可翻译文本或标签的SVG？**
+  - **是** → [Web 应用程序 SVG](/zh-Hans/guide/svg-translation/translated-svg-web-app) 或 [同位置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated)
+  - **否** (光栅截图或装饰性 SVG) →
+    - **文档系统站点具有与翻译文档同位置的资产？**
+      - **是** → [同位置截图](/zh-Hans/guide/images-and-screenshots/colocated-screenshots) (光栅) + [同位置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated) (SVG)
+    - **仅一个区域需要该图像** (无区域变体)？
+      - **是** → [共享图像](/zh-Hans/guide/images-and-screenshots/shared-image)
+    - **否则** → [区域文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)
 
 SVG 布局在[SVG 翻译](/zh-Hans/guide/svg-translation/)指南中介绍。
 
-| 布局 | 资产类型 | 站点类型 | 工具机制 |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [共享图像](/zh-Hans/guide/images-and-screenshots/shared-image) | 栅格（共享） | `docsOutput.style = "flat"` 文档 | 按文件链接重写器；通常没有正则表达式 |
+| 布局                                                                        | 资产类型                  | 站点类型                                                              | 工具机制                                                 |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [同位置截图](/zh-Hans/guide/images-and-screenshots/colocated-screenshots) | 光栅 (同位置)          | `"doc-system"` 同位置资产 (Docusaurus 预设)               | 截图脚本放置文件；无正则表达式                     |
 | [按区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder) | 栅格（按区域设置） | `"flat"` 或 `"doc-system"`（包括 `"docusaurus"`、`"astro-starlight"`） | `regexAdjustments` 区域设置段交换 |
-| [并置屏幕截图](/zh-Hans/guide/images-and-screenshots/colocated-screenshots) | 栅格（并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | 屏幕截图脚本放置文件；没有正则表达式 |
-| [Web 应用程序 SVG](/zh-Hans/guide/svg-translation/translated-svg-web-app) | SVG（已翻译） | Web 应用程序 | `translate-svg` 与 `svg.style = "flat"` |
+| [共享图像](/zh-Hans/guide/images-and-screenshots/shared-image)                   | 光栅 (共享)             | `docsOutput.style = "flat"` 文档                                       | 每文件链接重写；通常无正则表达式                     |
 | [并置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated) | SVG（已翻译，并置） | `"doc-system"` 与并置资产 (Docusaurus 预设) | `translate-svg` 与 `svg.style = "nested"` + `pathTemplate` |
+| [Web 应用程序 SVG](/zh-Hans/guide/svg-translation/translated-svg-web-app) | SVG（已翻译） | Web 应用程序 | `translate-svg` 与 `svg.style = "flat"` |

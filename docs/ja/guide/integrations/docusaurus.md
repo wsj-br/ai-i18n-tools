@@ -9,7 +9,7 @@
 ## クイックスタート
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Docusaurusのナビバー、フッター、検索プレースホルダー、他�
 - **シェルJSON** — `i18n/en/`から同期ロケールフォルダへのナビバー、フッター、テーマ/プラグインカタログ
 
 DocusaurusシェルJSONを`json[]`に配置しないでください。代わりに、ドキュメントで`docs[].docusaurusCatalogDir`を使用します。
-
-<a id="framework-shell-translation"></a>
-## フレームワークシェルの翻訳
-
-| フレームワーク | シェル / テーマ文字列 | パイプライン |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` カタログ (`{ message, description }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
-| Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
-| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
-
-フレームワークのシェル/テーマ文字列は`json[]`に**入れないでください** — このパイプラインは無関係なアプリのロケールバンドル向けです。他のフレームワークのパターンについては、[VitePressの統合](/ja/guide/integrations/vitepress)、[Nextraの統合](/ja/guide/integrations/nextra)、[Fumadocsの統合](/ja/guide/integrations/fumadocs)を参照してください。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

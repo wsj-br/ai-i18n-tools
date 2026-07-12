@@ -1,9 +1,9 @@
 <a id="environment-variables"></a>
 # Environment variables
 
-| Variable               | Description                                                |
-|------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` provider ke liye API key (jab yeh active ho tab zaroori). |
+| Variable | Description |
+|---|---|
+| `OPENROUTER_API_KEY` | `openrouter` provider ke liye API key (jab yah active ho to avashyak hai). Default `init` preset. |
 | Other provider keys    | Har provider apni key env var padhta hai: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama ko kisi ki zaroorat nahi). `providers.<name>.apiKeyEnv` ke saath har provider ke liye override karein. |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` ko override karein (sirf tab jab vah provider configure kiya gaya ho). |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` ko override karein (sirf tab jab vah provider configure kiya gaya ho). |

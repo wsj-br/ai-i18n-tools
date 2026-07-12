@@ -6,7 +6,7 @@ describe("classifySegmentType", () => {
     ["# heading", "heading"],
     ["## sub", "heading"],
     ["  ### spaced ", "heading"],
-    ["![alt](url)", "other"],
+    ["![alt](url)", "image"],
     ["import x from 'y'", "other"],
     ["export const X = 1", "other"],
     ["<Component />", "paragraph"],

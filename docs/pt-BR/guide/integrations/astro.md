@@ -14,7 +14,7 @@ Use `init -t ui-starlight` e `docsOutput.style: "astro-starlight"` para sites de
 ### Início rápido
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ Aponte `contentPaths` para seus arquivos e diretórios `.md` / `.mdx` em inglês
 
 As substituições da UI do Starlight podem usar `src/content/i18n/en.json` com `jsonPathTemplate` em um bloco `docs[]` separado quando necessário — consulte [Documentos — inicializar para documentação](/pt-BR/guide/documents/#step-1-initialise-for-documentation).
 
-<a id="framework-shell-translation"></a>
-### Tradução do shell do framework
-
-O Starlight fornece suas próprias strings de UI integradas para muitos idiomas (rótulos de navegação, espaço reservado de pesquisa, sumário e assim por diante) — não há um pipeline de shell/tema separado para configurar, ao contrário do Docusaurus, VitePress ou Nextra:
-
-| Framework | Strings de shell / tema | Pipeline |
-|-----------|----------------------|----------|
-| Astro Starlight | Strings de UI integradas (muitos idiomas); nenhum pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
-| Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` rótulos da barra lateral + dicionário de tema `.ts` | Documentos — consulte [Integração Nextra](/pt-BR/guide/integrations/nextra) |
-| Fumadocs | `meta.json` rótulos da barra lateral + catálogo de substituições de UI | Documentos — consulte [Integração Fumadocs](/pt-BR/guide/integrations/fumadocs) |
-
-Consulte [integração Docusaurus](/pt-BR/guide/integrations/docusaurus), [integração VitePress](/pt-BR/guide/integrations/vitepress), [integração Nextra](/pt-BR/guide/integrations/nextra) e [integração Fumadocs](/pt-BR/guide/integrations/fumadocs) para os outros padrões de framework.
+O Starlight fornece strings de UI integradas para muitos idiomas (rótulos de navegação, placeholder de pesquisa, sumário e assim por diante). Não há um pipeline separado de shell/tema para configurar — use `translate-docs` apenas para o conteúdo da página. Para outros frameworks, consulte [Tradução do shell do Framework](/pt-BR/guide/integrations/#framework-shell-translation).
 
 <a id="example-project"></a>
 ### Projeto de exemplo
@@ -83,7 +70,7 @@ A maioria das equipes usa um **híbrido** de dois pipelines na mesma página:
 ### Início rápido
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

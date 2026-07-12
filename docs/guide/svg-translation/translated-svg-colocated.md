@@ -65,7 +65,7 @@ Full reference in the [svg configuration table](/reference/configuration#svg).
 <a id="implementation-example"></a>
 ### Implementation example
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — nested `svg` block with `pathTemplate` in [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json); source SVGs listed under `documentation/static/img/` (e.g. [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/img/duplistatus_toolbar.svg)); `translate-svg` writes per-locale files into `documentation/i18n/<locale>/…/current/assets/` beside colocated PNGs; docs embed them today via `/img/duplistatus_*.svg` (e.g. [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)). See [task-locale-assets-simplification.md](https://github.com/wsj-br/duplistatus/blob/master/dev/task-locale-assets-simplification.md) for the planned move to `../assets/` paths and removal of the SVG `regexAdjustments` bridge.
+[duplistatus](https://github.com/wsj-br/duplistatus) — nested `svg` block with `pathTemplate` in [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json); source SVGs in `documentation/static/assets/` (e.g. [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)); `translate-svg` writes per-locale files into `documentation/i18n/<locale>/…/current/assets/` beside colocated PNGs; docs embed them via `../assets/` paths (e.g. [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)) with no `regexAdjustments` bridge needed.
 
 ---
 

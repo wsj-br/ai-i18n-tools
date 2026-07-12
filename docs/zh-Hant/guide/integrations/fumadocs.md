@@ -9,7 +9,7 @@
 ## 快速開始
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Fumadocs 版面配置的介面元素（搜尋預留位置、地區顯示名稱�
 標準地區設定可由 `@fumadocs/language/*` 預設集涵蓋而無需 LLM 成本；目錄僅翻譯英文區塊中的 **專案覆寫**。
 
 **請勿** 將 `json[]` 用於 Fumadocs UI 字串 — 該管線適用於不相關的應用程式地區設定套件。
-
-<a id="framework-shell-translation"></a>
-## 框架外殼翻譯
-
-| 框架 | 殼層 / 主題字串 | 管線 |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` 目錄 | 文件 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 主題/導覽/側邊欄目錄 | 文件 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 側邊欄標籤 | 文件 — 當 `style: "nextra"` + `translate-docs` 時自動 |
-| Nextra | 主題字典 `.ts` | 文件 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 側邊欄標籤 | 文件 — 當 `style: "fumadocs"` + `translate-docs` 時自動 |
-| Fumadocs | UI 覆寫目錄 | 文件 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 內建 UI 字串（多語系）；無額外外殼管線 | 文件 — `translate-docs`（僅頁面） |
-
-請**勿**將框架 shell/主題字串放入 `json[]` 中 — 該管線適用於無關的應用程式語言包。請參閱 [Docusaurus 整合](/zh-Hant/guide/integrations/docusaurus)、[VitePress 整合](/zh-Hant/guide/integrations/vitepress) 與 [Nextra 整合](/zh-Hant/guide/integrations/nextra) 以了解其他框架模式。
 
 <a id="link-conventions"></a>
 ## 連結慣例

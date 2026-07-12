@@ -14,10 +14,10 @@
 ### 步骤 1：初始化嵌套 JSON
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-该模板设置了 `features.translateJson: true`，禁用了界面提取和文档翻译，并搭建了一个指向 `src/i18n/en/translation.json`、输出为 `src/i18n/{llocale}/translation.json` 的单个 `json[]` 块。它还包含一个默认的 `provider` / `providers` 块——在运行 `translate-json` 或 `sync` 之前，请设置相应的 API 密钥（或使用本地 Ollama）；参见[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。请根据你的仓库布局编辑 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate`。
+该模板会设置 `features.translateJson: true`，禁用 UI 提取和文档翻译，并搭建一个指向 `src/i18n/en/translation.json`、输出为 `src/i18n/{llocale}/translation.json` 的单个 `json[]` 块。它还包含一个默认的 `provider` / `providers` 块（除非你传递 `-P <provider>`，否则为 `openrouter`）——在运行 `translate-json` 或 `sync` 之前，请设置相应的 API 密钥（或使用本地 Ollama）；参见[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。请根据你的仓库布局编辑 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate`。
 
 <a id="step-2-configure-json"></a>
 ### 步骤 2：配置 `json[]`
@@ -72,7 +72,7 @@ npx ai-i18n-tools init -t ui-json-bundles
 ### 步骤 3：翻译 JSON 包
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 可选标志（与 `translate-docs` 的想法相同）：`-l` / `--locale` 用于目标子集，`-p` / `--path` 用于限制文件，`--dry-run`、`--force`（清除匹配文件的文件跟踪和段缓存），`--force-update`（当文件哈希匹配时重新处理；段缓存仍然适用），`-b` / `--batch-concurrency`，`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
@@ -80,7 +80,7 @@ npx ai-i18n-tools translate-json
 仅 JSON 项目可以运行：
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 当同时启用 UI 和文档时，`sync` 会在 translate-docs 之后运行 **translate-json**（除非 `--no-json`）。使用 `--no-json` 跳过 JSON。
@@ -88,7 +88,7 @@ npx ai-i18n-tools sync --no-ui --no-svg --no-docs
 检查每个文件和区域设置的覆盖率：
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 当 `translateJson` 运行时，`status` 会打印一个 `json[]` 部分（✓ 最新，● 过时或缺失）。

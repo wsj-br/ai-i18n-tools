@@ -1,19 +1,84 @@
 <a id="output-layouts"></a>
 # Output layout
 
-`docsOutput.style` niyantrit karta hai ki translated markdown files kahan likhe jaate hain. `docs[].docsOutput.style` mein neeche diye gaye exact string values ka upyog karen (aliases preset layouts hain, alag engines nahi).
+`docsOutput.style` niyantrit karta hai ki anuvaadit markdown files kahan likhe jaate hain. Neeche diye gaye exact string values ko `docs[].docsOutput.style` mein upyog karein. Aliases preset `doc-system` layouts (ya Fumadocs dot-suffix layout) hain, alag engines nahi — config loading alias `style` values ko canonical `"doc-system"` mein rewrite kar sakta hai jabki original preset ko `stylePreset` mein surakshit rakhta hai.
 
-`docsOutput.style = "nested"` (jab omit kiya jata hai to default) — `{outputDir}/{locale}/` ke tahat source tree ko mirror karta hai (jaise `docs/guide.md` → `i18n/de/docs/guide.md`).
+Kisi bhi built-in layout ko override karne ke liye `docs[].docsOutput.pathTemplate` (markdown/MDX) ya `jsonPathTemplate` (JSON label files) set karein. Neeche [pathTemplate placeholders](#pathtemplate--jsonpathtemplate-placeholders) dekhein.
 
-`docsOutput.style = "doc-system"` — static docs sites ke liye locale-prefixed documentation tree. `docsRoot` ke tahat files `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` mein likhe jaate hain. `docsRoot` ke bahar ke paths nested layout par fallback karte hain. `docs[].docsOutput.docsRoot` ko apne English source root par set karen (jaise `"docs"` ya `"src/content/docs"`). Jab `docsOutput.style = "doc-system"`, to aapko `localeSubpath` ko explicitly set karna hoga (presets ke liye neeche ek alias ka upyog karen).
+<a id="layout-overview"></a>
+## Layout ka overview
 
-**Aliases** (saman layout engine, preset `localeSubpath`):
+| `docsOutput.style` | Engine | Aam upyog | 
+| --- | --- | --- | 
+| `"nested"` | Locale folder poore source tree ko mirror karta hai | Default; `{outputDir}/{locale}/` ke tahat generic i18n output |
+| `"flat"` | Filename mein locale suffix (optional subdirs) | README, changelogs, repo-root docs, [language switcher](/hi-Latn/guide/documents/language-switcher) |
+| `"doc-system"` | Locale folder + optional `localeSubpath` `docsRoot` ke tahat | Custom static-docs generators |
+| `"docusaurus"` | `doc-system` preset | [Docusaurus](/hi-Latn/guide/integrations/docusaurus) i18n plugin layout |
+| `"astro-starlight"` | `doc-system` preset (`localeSubpath: ""`) | [Astro Starlight](/hi-Latn/guide/integrations/astro#astro-starlight), plain Astro locale pages |
+| `"vitepress"` | `doc-system` preset (`localeSubpath: ""`) | [VitePress](/hi-Latn/guide/integrations/vitepress) locale folders English ke bagal mein |
+| `"nextra"` | `doc-system` preset (`localeSubpath: ""`) | [Nextra](/hi-Latn/guide/integrations/nextra) locale folders (`content/en/` → `content/{locale}/`) |
+| `"fumadocs"` | Dot suffix (default) ya `doc-system` jab `fumadocsParser: "dir"` | [Fumadocs](/hi-Latn/guide/integrations/fumadocs) dot ya dir content layout |
+
+<a id="nested-default"></a>
+## `nested` (default)
+
+`docsOutput.style = "nested"` (jab omit kiya gaya ho to default) — `{outputDir}/{locale}/` ke tahat source tree ko mirror karta hai.
+
+```text
+docs/guide.md  →  i18n/de/docs/guide.md
+README.md      →  i18n/de/README.md
+```
+
+`docsRoot` ke bahar ke paths (jab set ho) wahi nested shape ka upyog karte hain.
+
+<a id="flat"></a>
+## `flat`
+
+`docsOutput.style = "flat"` — anuvaadit files ko `outputDir` ke tahat filename mein locale suffix ke saath likhta hai. By default kewal basename rakha jaata hai (`{outputDir}/{stem}.{locale}{extension}`), isliye `docs/guide.md` aur `docs/other/guide.md` takraayenge jab tak aap `flatPreserveRelativeDir` ko enable nahi karte.
+
+```text
+README.md           →  translated-docs/README.de.md
+docs/guide.md       →  translated-docs/guide.de.md   (default: basename only)
+```
+
+Pages ke beech ke relative links automatically rewrite ho jaate hain jab `docsOutput.style = "flat"` (jab tak `rewriteRelativeLinks: false` ya ek custom `pathTemplate` set na ho). Cross-page `#anchor` handling ke liye [Anchor links](/hi-Latn/guide/documents/anchor-links) dekhein.
+
+<a id="flat-with-flatpreserverelativedir"></a>
+### `flat` ke saath `flatPreserveRelativeDir`
+
+`docsOutput.flatPreserveRelativeDir` ko `true` par set karein taaki source subdirectories `outputDir` ke tahat rahein. Iska upyog tab karein jab aap multiple markdown files ka anuvaad kar rahe hon jo alag-alag folders mein basenames share karte hain, ya jab flat outputs ko ek shallow tree ko mirror karna ho (jaise repo root par README plus `docs/*.md`).
+
+```text
+docs/guide.md       →  translated-docs/docs/guide.de.md
+docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
+```
+
+Flat link rewriter asset URLs ke liye depth prefixes compute karte samay per-file output path ka upyog karta hai — [Link rewriting](/hi-Latn/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir) dekhein.
+
+<a id="doc-system"></a>
+## `doc-system`
+
+`docsOutput.style = "doc-system"` — static docs site ke liye locale-prefixed documentation tree. `docsRoot` ke antargat files yahaan likhi jaati hain:
+
+```text
+{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
+```
+
+`docsRoot` ke baahar ke path [nested](#nested) layout (`{outputDir}/{locale}/{relPath}`) par wapas aa jaate hain.
+
+`docs[].docsOutput.docsRoot` ko apne English source root par set karein (jaise `"docs"`, `"src/content/docs"`, ya `"content/en"`). Jab `docsOutput.style = "doc-system"`, to aapko `localeSubpath` ko spasht roop se set karna hoga (presets ke liye neeche ek alias ka upyog karein). `localeSubpath: ""` ka upyog karein jab translated pages seedhe `{outputDir}/{locale}/` ke neeche hon (Starlight-style).
+
+`docusaurusCatalogDir` se Docusaurus shell JSON aur doc-system presets ke antargat anya JSON artifacts markdown ke samaan folder layout ka palan karte hain. `style: "flat"` ke saath, JSON label files abhi bhi nested shape ka upyog karte hain jab tak aap `jsonPathTemplate` set nahin karte.
+
+<a id="doc-system-aliases"></a>
+## Doc-system aliases
+
+**Aliases** (wahi `doc-system` engine, preset `localeSubpath` aur defaults):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` default roop se `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout) par set hota hai.
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` default roop se `""` par set hota hai (anuvadit prishth seedhe `{outputDir}/{locale}/` ke neeche, [Starlight](https://starlight.astro.build/guides/i18n/) se mel khate hain jab angrezi content root par hoti hai aur `outputDir` barabar hota hai `docsRoot` ke).
-- `docsOutput.style = "vitepress"` — `doc-system` jaisa hi layout hai jismein `localeSubpath` khaali hai; BCP-47 locale folder ke naam surakshit rakhe jaate hain (`localePathLowercase` default roop se `false` par set hota hai). [VitePress integration](/hi-Latn/guide/integrations/vitepress) dekhen.
-- `docsOutput.style = "nextra"` — `doc-system` jaisa hi layout hai jismein `localeSubpath` khaali hai; angrezi source ek locale folder ke neeche rahta hai (jaise `content/en/`). [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhen.
-- `docsOutput.style = "fumadocs"` — `doc-system` jaisa hi layout hai jismein `localeSubpath` khaali hai; angrezi source dot-suffix files (default) ya ek locale folder ka upyog karta hai jab `fumadocsParser` `"dir"` ho. [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhen.
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` default roop se `""` par set hota hai; `localePathLowercase` default roop se `true` par set hota hai. Translated pages `{outputDir}/{locale}/` ke antargat, [Starlight](https://starlight.astro.build/guides/i18n/) se mel khaate hain jab English content root par ho aur `outputDir` `docsRoot` ke barabar ho. Plain Astro locale pages ke liye bhi upyog kiya jaata hai (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — [Astro website pages](/hi-Latn/guide/ui-strings/astro-website#pages-parse-and-replace) dekhein.
+- `docsOutput.style = "vitepress"` — `doc-system` jaisa hi layout jismein `localeSubpath` khaali hai; BCP-47 locale folder names ko surakshit rakha jaata hai (`localePathLowercase` default roop se `false` par set hota hai). [VitePress integration](/hi-Latn/guide/integrations/vitepress) dekhein.
+- `docsOutput.style = "nextra"` — `doc-system` jaisa hi layout jismein `localeSubpath` khaali hai; English source ek locale folder ke antargat hota hai (jaise `content/en/`). [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhein.
 
 Docusaurus preset (primary documentation pages):
 
@@ -39,18 +104,6 @@ Nextra preset (locale folder ke neeche angrezi, targets ke liye sibling locale f
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs preset — dot parser (default; English source ke bagal mein locale suffix):
-
-```text
-content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
-```
-
-Fumadocs preset — dir parser (Nextra-style locale folders):
-
-```text
-content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
-```
-
 Optional JSON labels — `docusaurusCatalogDir` se Docusaurus shell strings (MDX body copy nahi):
 
 ```text
@@ -63,15 +116,24 @@ VitePress nav/sidebar/footer strings markdown mein nahin hain — `docsOutput.vi
 
 Nextra theme dictionary (`.ts`) aur `_meta.ts` sidebar labels markdown mein nahin hain — `docs[].nextraDictionaryPath` aur automatic `_meta` collection ka upyog karen jab `style: "nextra"` ho, sabhi **`translate-docs`** ke andar. [Nextra integration](/hi-Latn/guide/integrations/nextra) dekhen.
 
-Fumadocs UI overrides (`lib/layout.shared.ts`) aur `meta.json` sidebar labels markdown mein nahin hain — `docsOutput.fumadocsUiCatalog` aur automatic `meta.json` collection ka upyog karen jab `style: "fumadocs"` ho, sabhi **`translate-docs`** ke andar. [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhen.
+<a id="fumadocs"></a>
+## `fumadocs`
 
-`docsOutput.style = "flat"` — translated files ko source ke bagal mein locale suffix ke saath, ya ek subdirectory mein rakhta hai. Pages ke beech relative links automatically rewrite ho jaate hain jab `docsOutput.style = "flat"` (jab tak `rewriteRelativeLinks: false` ya ek custom `pathTemplate` set na ho).
+`docsOutput.style = "fumadocs"` — Fumadocs content layout via `docsOutput.fumadocsParser`:
+
+- **`"dot"` (default)** — filename mein locale suffix English sources ke bagal mein `outputDir` ke antargat (locale folder nahin). Yeh `doc-system` path shape se alag hai.
 
 ```text
-docs/guide.md → i18n/guide.de.md
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-Flat layout mein cross-page anchor links ke liye, [Anchor links](/hi-Latn/guide/documents/anchor-links) dekhen.
+- **`"dir"`** — Nextra-style locale folders; khaali `localeSubpath` ke saath wahi `doc-system` engine ka upyog karta hai.
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
+Fumadocs UI overrides (`lib/layout.shared.ts`) aur `meta.json` sidebar labels markdown mein nahin hain — `docsOutput.fumadocsUiCatalog` aur automatic `meta.json` collection ka upyog karen jab `style: "fumadocs"` ho, sabhi **`translate-docs`** ke andar. [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhen.
 
 Built-in relative-link fixes ke alawa link aur asset URL rewriting ke liye, [Link rewriting](/hi-Latn/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`) dekhein.
 
@@ -84,7 +146,7 @@ Jahan translated files likhe jaate hain, use `docs[].docsOutput.pathTemplate` (m
 
 Yadi aap ek custom `pathTemplate` ka upyog karte hain, to `rewriteRelativeLinks` default roop se `false` par set hota hai jab tak ki aap ise spasht roop se set na karein — relative link rewriting `docsOutput.style = "flat"` ke liye banaya gaya hai bina kisi custom template ke.
 
-Built-in layouts (`nested`, `flat`, `doc-system` bina custom template ke) ke liye, lowercased locale folder ya filename segments (jaise `pt-br` ki jagah `pt-BR`) likhne ke liye `docsOutput.localePathLowercase` ko `true` par set karein. `astro-starlight` alias ise default roop se `true` par set karta hai. Custom `pathTemplate` / `jsonPathTemplate` values aparivartit rehte hain — jab aapko lowercased segments ki zaroorat ho jabki `{locale}` ko BCP-47 ke roop mein rakhte hue, wahan `{llocale}` ka upyog karein.
+Built-in layouts ke liye (`nested`, `flat`, `doc-system` bina custom template ke), `docsOutput.localePathLowercase` ko `true` par set karein taaki lowercased locale folder ya filename segments likhe ja sakein (jaise `pt-br` ki jagah `pt-BR`). `astro-starlight` alias aur `doc-system` khaali `localeSubpath` ke saath config load par ise `true` par default karte hain. Custom `pathTemplate` / `jsonPathTemplate` values aparivartit rahte hain — wahaan `{llocale}` ka upyog karein jab aapko lowercase segments ki zaroorat ho jabki `{locale}` ko BCP-47 ke roop mein rakha jaaye.
 
 | Placeholder            | Bhumika                                                                                                    | Udaharan                                                         |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|

@@ -18,3 +18,6 @@ Sans le lien symbolique, les documents sources dans `docs/user-guide/` ne peuven
 
 **Le script `take-screenshots` ne capture que les paramètres régionaux source**
 La disposition des dossiers par paramètres régionaux nécessite des fichiers PNG pour chaque paramètre régional. Si le script ne capture que `en-GB`, les documents traduits auront des chemins réécrits pointant vers des fichiers manquants.
+
+**Réécriture `regexAdjustments` dans les exemples de configuration clôturés**
+`postProcessing` s'exécute sur l'intégralité du corps Markdown traduit, y compris les blocs de code clôturés. Si une page de documentation intègre un extrait de configuration qui contient un chemin correspondant (par exemple, `screenshots/en-GB/`), cet extrait est également réécrit dans la sortie traduite. Préférez la forme générique `screenshots/[^/]+/` dans les exemples réutilisables, ou acceptez que les documents traduits affichent des chemins spécifiques à la locale dans les illustrations.

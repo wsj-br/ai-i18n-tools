@@ -9,7 +9,7 @@ Next.js App Routerで[Fumadocs](https://www.fumadocs.dev/) 4のドキュメン�
 ## クイックスタート
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Fumadocsのレイアウトクローム（検索プレースホルダー、ロケ
 標準ロケールは、LLM のコストなしで `@fumadocs/language/*` プリセットでカバーできます。カタログは、英語ブロックの **プロジェクトのオーバーライド**のみを翻訳します。
 
 Fumadocs UI 文字列には `json[]` を**使用しないでください**。このパイプラインは、関連性のないアプリのロケールバンドル用です。
-
-<a id="framework-shell-translation"></a>
-## フレームワークシェルの翻訳
-
-| フレームワーク | シェル / テーマ文字列 | パイプライン |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` カタログ | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
-| Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
-| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
-
-フレームワークのシェル/テーマ文字列を `json[]` に **決して**入れないでください — そのパイプラインは無関係なアプリのロケールバンドル用です。他のフレームワークのパターンについては、[Docusaurus integration](/ja/guide/integrations/docusaurus)、[VitePress integration](/ja/guide/integrations/vitepress)、および [Nextra integration](/ja/guide/integrations/nextra) を参照してください。
 
 <a id="link-conventions"></a>
 ## リンクの表記規則

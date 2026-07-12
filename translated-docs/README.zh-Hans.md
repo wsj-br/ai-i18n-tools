@@ -78,7 +78,41 @@ pnpm add ai-i18n-tools
 
 在项目中安装软件包后，npm/pnpm/yarn 会将已发布的 bin 条目 (`bin/ai-i18n-tools.mjs`) 链接到 `node_modules/.bin/ai-i18n-tools` 中。该 shim 会从已安装的软件包加载已编译的 CLI。
 
-**`package.json` 脚本（推荐）** — npm 和 pnpm 在运行脚本时会将 `node_modules/.bin` 添加到 `PATH` 的前面，因此您可以调用裸命令名称：
+要在交互式 shell 中输入不带前缀的 `ai-i18n-tools` 命令，请配置以下选项之一。如果不进行设置，即使在本地安装后，shell 也无法找到该二进制文件。
+
+**direnv** — 在项目根目录的 `.envrc` 中添加（bash/zsh；参见 [direnv.net](https://direnv.net/)）：
+
+```bash
+PATH_add node_modules/.bin
+```
+
+执行 `direnv allow` 后，只要您 `cd` 进入该项目，就可以使用不带前缀的命令。
+
+**手动配置 PATH** — 在交互式 shell 中从项目根目录执行：
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**全局安装** — 安装一次 CLI，即可从任何目录调用它：
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+全局安装使用全局固定的版本。若要按项目固定版本，建议使用 direnv 或手动配置 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
+
+**`package.json` 脚本** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 前置到 `PATH`，因此无需更改 shell PATH 即可在脚本内使用不带前缀的命令名称：
 
 ```json
 "scripts": {
@@ -93,25 +127,11 @@ pnpm add ai-i18n-tools
 }
 ```
 
-然后运行例如 `pnpm run i18n:sync` — 无需 `npx` 前缀。
+然后运行例如 `pnpm run i18n:sync` — 脚本会解析本地二进制文件，无需额外的 shell 设置。
 
-**交互式 shell** — 从您的项目根目录（本地安装后）：
-
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-```
-
-要在 bash/zsh 中键入裸 `ai-i18n-tools` 命令，请将本地 bin 目录添加到 `PATH`（有关 PowerShell、direnv 和 Windows 的说明，请参阅[使用 CLI](../docs/guide/installation.md#using-the-cli)）：
-
-```bash
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
+**替代方案** — 如果您不想调整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。对于没有 `package.json` 条目且无需安装的一次性运行：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
 优先使用 `sync`，而不是手动链接 `extract`、`translate-ui`、`translate-svg`、`translate-docs` 和 `translate-json`——手动运行时，顺序和功能标志很容易出错。请参阅快速入门指南中的 [推荐的 `package.json` 脚本](../docs/guide/quick-start.md#recommended-packagejson-scripts)。
-
-**零安装一次性** — `npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`（仅为该调用下载软件包；`package.json` 中没有条目）。
 
 设置您的提供商 API 密钥（显示 OpenRouter；请使用与您的提供商匹配的变量）：
 
@@ -184,18 +204,20 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## 快速开始
 
+请先为不带前缀的命令配置您的 shell — 参见 [使用 CLI](#using-the-cli)。
+
 <a id="ui-strings"></a>
 ### UI 字符串
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 
 # 2. Extract UI strings to strings.json
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 
 # 3. Translate to all target locales
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 然后使用 `'ai-i18n-tools/runtime'` 中的辅助函数在您的应用程序中连接 i18next。有关完整设置，请参阅 UI 字符串指南中的 [步骤 4：在运行时连接 i18next](../docs/guide/ui-strings/i18next-runtime.md)。
@@ -207,26 +229,26 @@ npx ai-i18n-tools translate-ui
 
 ```bash
 # Docusaurus docs + optional write-translations catalog
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 
 # Astro Starlight documentation
-# npx ai-i18n-tools init -t ui-starlight
+# ai-i18n-tools init -t ui-starlight [-P <provider>]
 
 # VitePress documentation (pages + theme catalog)
-# npx ai-i18n-tools init -t ui-vitepress
+# ai-i18n-tools init -t ui-vitepress [-P <provider>]
 
 # Nextra documentation (pages + _meta.ts + theme dictionary)
-# npx ai-i18n-tools init -t ui-nextra
+# ai-i18n-tools init -t ui-nextra [-P <provider>]
 
 # Fumadocs documentation (pages + meta.json + UI catalog)
-# npx ai-i18n-tools init -t ui-fumadocs
+# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# npx ai-i18n-tools init -t ui-astro-website
+# ai-i18n-tools init -t ui-astro-website [-P <provider>]
 
-npx ai-i18n-tools translate-docs
-npx ai-i18n-tools status
-# npx ai-i18n-tools translate-docs --locale de   # single locale
+ai-i18n-tools translate-docs
+ai-i18n-tools status
+# ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
 编辑 `ai-i18n-tools.config.json`：将 `docs[].contentPaths` 设置为 markdown、MDX 和/或 `.astro` 源；`docs[].outputDir` 和 `docs[].docsOutput.style`（`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"fumadocs"`、`"flat"` 等）。完整字段参考：[文档](../docs/guide/documents/)。
@@ -268,7 +290,7 @@ npx ai-i18n-tools status
 ### 组合同步
 
 ```bash
-npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
+ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
 ```
 
 ---
@@ -306,7 +328,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract

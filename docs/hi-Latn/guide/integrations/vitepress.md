@@ -9,7 +9,7 @@ Aur dekhein [Documents](/hi-Latn/guide/documents/) aur runnable [examples/vitepr
 ## Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-vitepress
+ai-i18n-tools init -t ui-vitepress [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
@@ -123,21 +123,6 @@ After editing:
 
 Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
 ```
-
-<a id="framework-shell-translation"></a>
-## Framework shell translation
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
-| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
-
-Framework shell/theme strings ko `json[]` mein **na** rakhein — vah pipeline asambandhit app locale bundles ke liye hai. Anya framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus) aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhein.
 
 <a id="example-project"></a>
 ## Example project

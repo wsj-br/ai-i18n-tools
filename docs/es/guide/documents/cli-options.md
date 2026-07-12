@@ -39,4 +39,6 @@ No puedes combinar `--force` con `--force-update` (son mutuamente excluyentes).
 | `json-array` (por defecto) | Un array JSON de cadenas, una entrada por segmento en orden.               | Un array JSON de la **misma longitud** (mismo orden).           |
 | `json-object`          | Un objeto JSON `{"0":"…","1":"…",…}` con clave por índice de segmento.            | Un objeto JSON con las **mismas claves** y valores traducidos. |
 
+Algunos modelos siguen un formato de forma más fiable que otro, así que prueba un modo diferente si un modelo devuelve con frecuencia lotes mal formados o ID de segmento que no coinciden. `json-array` es el predeterminado porque es un formato común y sencillo que los modelos suelen manejar bien.
+
 El encabezado de ejecución también imprime `Batch prompt format: …` para que pueda confirmar el modo activo. Los archivos de etiquetas JSON (`docusaurusCatalogDir`) y los lotes de archivos SVG usan la misma configuración cuando esos pasos se ejecutan como parte de `translate-docs` (o la fase de documentos de `sync` — `sync` no expone este indicador; su valor predeterminado es `json-array`).

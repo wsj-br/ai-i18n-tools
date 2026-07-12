@@ -9,7 +9,7 @@ See also [Documents](/guide/documents/), the runnable [examples/docusaurus-docs]
 ## Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ When `docusaurusCatalogDir` is set and `features.translateDocs` is enabled, `tra
 - **Shell JSON** — navbar, footer, and theme/plugin catalogues from `i18n/en/` into sibling locale folders
 
 Do not put Docusaurus shell JSON in `json[]`; use `docs[].docusaurusCatalogDir` with Documents instead.
-
-<a id="framework-shell-translation"></a>
-## Framework shell translation
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels | Documents — auto when `style: "nextra"` + `translate-docs` |
-| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` sidebar labels | Documents — auto when `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Built-in UI strings (many locales); no additional shell pipeline | Documents — `translate-docs` (pages only) |
-
-Do **not** put framework shell/theme strings in `json[]` — that pipeline is for unrelated app locale bundles. See [VitePress integration](/guide/integrations/vitepress), [Nextra integration](/guide/integrations/nextra), and [Fumadocs integration](/guide/integrations/fumadocs) for the other framework patterns.
 
 <a id="example-project"></a>
 ## Example project

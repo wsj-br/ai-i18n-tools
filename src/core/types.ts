@@ -11,9 +11,16 @@ export type SegmentType =
   | "paragraph"
   | "code"
   | "admonition"
+  | "image"
   | "json"
   | "svg-text"
   | "other";
+
+/** Markdown image segment metadata (`content` holds alt text only). */
+export interface ImageSegmentMeta {
+  /** URL/path from the markdown image destination — never sent to the LLM. */
+  url: string;
+}
 
 /** SVG reassembly metadata (regex-extracted elements). */
 export interface SvgSegmentMeta {
@@ -35,6 +42,7 @@ export interface Segment {
   frontmatterPath?: string;
   jsonKey?: string;
   jsonDescription?: string;
+  image?: ImageSegmentMeta;
   svg?: SvgSegmentMeta;
   /** When true, `content` is the original `t()` literal; plural rows live under `strings.json` single-entry shape. */
   plurals?: boolean;

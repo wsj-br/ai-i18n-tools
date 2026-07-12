@@ -9,7 +9,7 @@
 ## クイックスタート
 
 ```bash
-npx ai-i18n-tools init -t ui-vitepress
+ai-i18n-tools init -t ui-vitepress [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
@@ -123,21 +123,6 @@ After editing:
 
 Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
 ```
-
-<a id="framework-shell-translation"></a>
-## フレームワークシェルの翻訳
-
-| フレームワーク | シェル / テーマ文字列 | パイプライン |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` カタログ (`{ message, description }`) | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル | ドキュメント — `style: "nextra"` + `translate-docs` の時に自動 |
-| Nextra | テーマ辞書 `.ts` | ドキュメント — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` サイドバーラベル | ドキュメント — `style: "fumadocs"` + `translate-docs` の時に自動 |
-| Fumadocs | UIオーバーライドカタログ | ドキュメント — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 組み込みUI文字列（多数のロケール）、追加のシェルパイプラインなし | ドキュメント — `translate-docs` （ページのみ） |
-
-フレームワークのシェル/テーマ文字列を`json[]`に入れ**ない**でください — そのパイプラインは無関係なアプリのロケールバンドル向けです。他のフレームワークのパターンについては、[Docusaurusの統合](/ja/guide/integrations/docusaurus)と[Fumadocsの統合](/ja/guide/integrations/fumadocs)を参照してください。
 
 <a id="example-project"></a>
 ## サンプルプロジェクト

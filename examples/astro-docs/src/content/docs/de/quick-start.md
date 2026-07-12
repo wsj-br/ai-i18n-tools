@@ -5,9 +5,9 @@ description: >-
   von ai-i18n-tools anhand dieses Astro-Starlight-Beispiels.
 sidebar:
   order: 2
-translation_last_updated: '2026-07-10T21:34:13.712Z'
-source_file_mtime: '2026-05-22T21:44:09.000Z'
-source_file_hash: 2e7e3283a7dc1df486ce3088aa4f1bec3dac1bbce14d43f8d513a52fb0cd1cd9
+translation_last_updated: '2026-07-12T01:33:37.863Z'
+source_file_mtime: '2026-07-12T01:15:35.414Z'
+source_file_hash: 8ad7728b78a59c53a69b14c5c5f27a1f87ccfc635bea1f6c68dd612ea8d0f31d
 translation_language: de
 source_file_path: src/content/docs/quick-start.md
 translation_models:
@@ -86,7 +86,7 @@ echo "OPENROUTER_API_KEY=sk-or-..." > .env
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders in public assets",
-              "search": "screenshots/de/",
+              "search": "screenshots/de/]+/",
               "replace": "screenshots/de/"
             }
           ]

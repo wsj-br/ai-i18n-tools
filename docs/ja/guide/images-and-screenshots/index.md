@@ -107,23 +107,21 @@ SVGソースファイルは専用のソースディレクトリ（例：`images/
 <a id="decision-guide"></a>
 # 決定ガイド
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**アセットは翻訳可能なテキストまたはラベルを含むSVGですか？**
+  - **はい** → [WebアプリSVG](/ja/guide/svg-translation/translated-svg-web-app)または[共存SVG](/ja/guide/svg-translation/translated-svg-colocated)
+  - **いいえ**（ラスターのスクリーンショットまたは装飾用SVG）→
+    - **翻訳済みドキュメントと同じ場所にアセットが配置されているドキュメントシステムサイトですか？**
+      - **はい** → [共存スクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots)（ラスター）+ [共存SVG](/ja/guide/svg-translation/translated-svg-colocated)（SVG）
+    - **1つのロケールのみが画像を必要としますか（ロケールごとのバリアントがない）？**
+      - **はい** → [共有画像](/ja/guide/images-and-screenshots/shared-image)
+    - **それ以外** → [ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder)
 
 SVG レイアウトについては、[SVG 翻訳](/ja/guide/svg-translation/) ガイドで説明しています。
 
-| レイアウト | アセットの種類 | サイトの種類 | ツールメカニズム |
-|---|---|---|---|
-| [共有画像](/ja/guide/images-and-screenshots/shared-image) | ラスタ (共有) | `docsOutput.style = "flat"` ドキュメント | ファイルごとのリンク書き換え。通常は正規表現なし |
+| レイアウト                                                                       | アセットタイプ                  | サイトタイプ                                                              | ツールメカニズム                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [共存スクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots) | ラスター（共存）          | `"doc-system"`（共存アセット付き）（Docusaurusプリセット）               | スクリーンショットスクリプトがファイルを配置；正規表現なし                     |
 | [ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder) | ラスタ (ロケールごと) | `"flat"` または `"doc-system"` (`"docusaurus"`、`"astro-starlight"` を含む) | `regexAdjustments` ロケールセグメントスワップ |
-| [コロケーションされたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots) | ラスタ (コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | スクリーンショットスクリプトがファイルを配置。正規表現なし |
-| [Web アプリ SVG](/ja/guide/svg-translation/translated-svg-web-app) | SVG (翻訳済み) | Web アプリ | `translate-svg` と `svg.style = "flat"` |
+| [共有画像](/ja/guide/images-and-screenshots/shared-image)                   | ラスター（共有）             | `docsOutput.style = "flat"` docs                                       | ファイルごとのリンクリライター；通常は正規表現なし                     |
 | [コロケーションされた SVG](/ja/guide/svg-translation/translated-svg-colocated) | SVG (翻訳済み、コロケーション) | コロケーションされたアセットを持つ `"doc-system"` (Docusaurus プリセット) | `translate-svg` と `svg.style = "nested"` + `pathTemplate` |
+| [Web アプリ SVG](/ja/guide/svg-translation/translated-svg-web-app) | SVG (翻訳済み) | Web アプリ | `translate-svg` と `svg.style = "flat"` |

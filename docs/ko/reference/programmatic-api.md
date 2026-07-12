@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+Node.js에서 구성 스캐폴딩(선택적 네 번째 인수는 내장 프리셋을 선택; 기본값은 `openrouter`):
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 주요 내보내기 (일반적으로 사용됨 — 전체 공개 표면은 `src/index.ts` 참조):
 
 | 내보내기 | 설명 |
@@ -41,4 +49,6 @@ console.log(
 | `resolveDocumentationOutputPath` | 번역된 문서의 출력 파일 경로 결정. |
 | `Glossary` / `GlossaryMatcher` | 번역 용어집 로드 및 적용. |
 | `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점. |
+| `writeInitConfigFile` | 스타터 구성 JSON 작성(`template`, 선택적 `providerKey`의 기본값은 `openrouter`). |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |
 | `PROVIDER_PRESETS` | 내장 공급자 사전 설정 맵 (`baseUrl`, `apiKeyEnv`). |

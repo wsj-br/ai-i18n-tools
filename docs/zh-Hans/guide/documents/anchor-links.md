@@ -19,11 +19,52 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="what-to-do"></a>
 ## 如何操作
 
+<a id="docusaurus-sites-preferred"></a>
+### Docusaurus 站点（首选）
+
+在 [Docusaurus](/zh-Hans/guide/integrations/docusaurus) 文档（`docsOutput.style = "docusaurus"`）上，优先使用 Docusaurus 原生的标题 ID，而不是 `ai-i18n-tools write-heading-ids`：
+
+1. 在标题行上使用 Docusaurus 的 `{#…}` 后缀添加显式 id，例如 `## TLS configuration {#tls-configuration}`。在 `translate-docs` 期间，仅翻译可见的标题文本——`{#tls-configuration}` 后缀在每个语言环境中都会保留。
+2. 从 Docusaurus 项目根目录（当通过 `package.json` 集成时通常是 `pnpm run write-heading-ids`）运行 `docusaurus write-heading-ids`，为缺少后缀的标题添加或刷新 `{#…}` 后缀。重命名标题后请重新运行，以便过时的 id 与当前标题匹配。
+
+将 markdown **锚点链接** 指向这些稳定的 id，例如 `[label](other.md#tls-configuration)`，其中片段与 `{#…}` 后缀匹配——而不是仅从英文单词猜测的 slug。请参阅 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) 了解使用此模式的已提交文档。
+
+<a id="other-layouts-flat-starlight-vitepress-etc"></a>
+### 其他布局（扁平、Starlight、VitePress 等）
+
+当您不在 Docusaurus 上，或者需要使用 HTML 锚点而非 `{#…}` 后缀时：
+
 1. 在`translate-docs`之前，先在您的源`.md` / `.mdx` 上运行`ai-i18n-tools write-heading-ids`（与平常的`docs[]` / `contentPaths`相同）。它会在每个标题前插入显式的 HTML 锚点，这样`id`值在所有翻译后的副本中都是共享的。重命名标题后请重新运行，以确保过时的锚点 ID 会刷新以匹配当前标题。
 2. 将您的 markdown **锚点链接**指向这些稳定的 ID，例如 `[label](other.md#section-id)`，其中 `section-id` 匹配工具写入的锚点 — 而不是仅凭英文单词猜测。
 
 <a id="example"></a>
 ## 示例
+
+<a id="example-docusaurus"></a>
+### Docusaurus `{#…}` 后缀
+
+`docs/overview.md`:
+
+```markdown
+See [TLS setup](security.md#tls-configuration) for certificate steps.
+```
+
+`docs/security.md`（英文源）：
+
+```markdown
+## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+在 `translate-docs` 之后，链接片段在每个语言环境中保持为 `#tls-configuration`；仅标题文本和链接标签会改变：
+
+```markdown
+Siehe [TLS-Einrichtung](security.md#tls-configuration) für die Zertifikatsschritte.
+```
+
+<a id="html-anchors-write-heading-ids"></a>
+### HTML 锚点（`write-heading-ids`）
 
 `docs/overview.md`:
 

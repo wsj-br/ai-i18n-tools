@@ -134,9 +134,11 @@ Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfigur
 
 Betrachten Sie die folgende Liste als **Grundlage**, die Sie erweitern können: Wenn die Übersetzung für ein bestimmtes Gebietsschema schlecht oder erfolglos ist, recherchieren Sie, welche Modelle diese Sprache oder Schrift effektiv unterstützen (siehe Online-Ressourcen oder die Dokumentation Ihres Anbieters), und fügen Sie diese Modell-IDs als weitere Alternativen hinzu.
 
+Diese Modell-IDs stimmen mit `ai-i18n-tools init [-P <provider>]` überein, wenn `-P openrouter` (die Standardeinstellung) verwendet wird. Andere Voreinstellungen erhalten native Modell-IDs von `init -P <provider>` – siehe [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
+
 Diese Liste wurde auf **umfassende Abdeckung verschiedener Sprachen** in einem großen Dokumentationsprojekt mit 36 Ziel-Lokalisierungen getestet; sie dient als praktischer Standard, ist jedoch nicht garantiert für jede Lokalisierung optimal.
 
-Beispiel `translationModels` (gleiche Standardeinstellungen wie `npx ai-i18n-tools init`):
+Beispiel `translationModels` (gleiche Standardwerte wie `ai-i18n-tools init [-P <provider>]`):
 
 <details>
 <summary>Standard-Übersetzungsmodell-Fallback-Liste</summary>
@@ -147,9 +149,9 @@ Beispiel `translationModels` (gleiche Standardeinstellungen wie `npx ai-i18n-too
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@ Beispiel `translationModels` (gleiche Standardeinstellungen wie `npx ai-i18n-too
 
 <br />
 
-Legen Sie die API-Schlüssel-Umgebungsvariable des aktiven Providers (z. B. `OPENROUTER_API_KEY`) in Ihrer Umgebung oder in der `.env`-Datei fest.
+Legen Sie die API-Schlüssel-Umgebungsvariable des aktiven Anbieters (siehe die [Voreinstellungstabelle](/de/guide/providers-and-models#built-in-providers)) in Ihrer Umgebung oder in der Datei `.env` fest.
 
-Bevor Sie Modelllisten ändern, führen Sie `npx ai-i18n-tools check-models` aus. Für jeden Anbieter überprüft es jede konfigurierte Modell-ID (`translationModels`, `uiModels` und alle `localeModels`-Einträge) anhand der Live-Modellliste dieses Anbieters (`GET /models`), meldet fehlende oder über `expiration_date` liegende IDs, listet die gültigen Modelle auf und beendet sich mit einem von Null verschiedenen Wert, wenn eine konfigurierte ID ungültig ist. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch geschätzte Eingabe-/Ausgabepreise (USD pro 1 Mio. Tokens) angezeigt.
+Bevor Sie Modelllisten ändern, führen Sie `ai-i18n-tools check-models` aus. Für jeden Anbieter überprüft es jede konfigurierte Modell-ID (`translationModels`, `uiModels` und alle `localeModels`-Einträge) anhand der Live-Modellliste des Anbieters (`GET /models`), meldet fehlende oder veraltete IDs (`expiration_date`), listet die gültigen Modelle auf und beendet den Vorgang mit einem Fehlercode ungleich Null, wenn eine konfigurierte ID ungültig ist. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch die geschätzten Eingabe-/Ausgabepreise (USD pro 1 Mio. Tokens) angezeigt.
 
-Um die konfigurierten Modelle bei der tatsächlichen Übersetzungsarbeit zu vergleichen, führen Sie `npx ai-i18n-tools bench-models` aus. Es bewertet jede eindeutige Modell-ID aus `translationModels`, `uiModels` und `localeModels`, indem es eine Stichprobe durch jedes Modell isoliert (parallel, begrenzt durch `concurrency`) übersetzt und pro Modell die Eingabe-/Ausgabe-Tokens, die verstrichene Zeit und die USD-Kosten ausgibt, sodass Sie Geschwindigkeit gegen Preis abwägen können, bevor Sie sich für Modelllisten entscheiden.
+Um die konfigurierten Modelle bei realen Übersetzungsarbeiten zu vergleichen, führen Sie `ai-i18n-tools bench-models` aus. Es bewertet jede eindeutige Modell-ID aus `translationModels`, `uiModels` und `localeModels`, indem es ein Beispiel isoliert (parallel, begrenzt durch `concurrency`) durch jedes Modell übersetzt und die Eingabe-/Ausgabe-Tokens pro Modell, die tatsächliche Zeit und die USD-Kosten ausgibt, sodass Sie die Geschwindigkeit gegen den Preis abwägen können, bevor Sie sich für Modelllisten entscheiden.
 
 ---
 
@@ -461,5 +463,5 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 **Ein leeres Glossar im CSV-Format generieren:**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

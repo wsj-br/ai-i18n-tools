@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-Si clonó el repositorio **completo** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) en su lugar, ejecute `pnpm install` y `pnpm run build` en la raíz del repositorio, luego `cd examples/<name>`. Los ejemplos del espacio de trabajo usan la CLI local a través de `pnpm exec ai-i18n-tools …` o sus scripts `pnpm run i18n:*`, no `npx` en la raíz del repositorio (que ejecuta el paquete npm publicado). Consulte [Instalación — Monorepo clonado](/es/guide/installation#cloned-monorepo).
+Si clonó el repositorio **completo** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), ejecute `pnpm install` y `pnpm run build` en la raíz del repositorio, luego `cd examples/<name>`. Los ejemplos del espacio de trabajo usan la CLI local a través de sus scripts `pnpm run i18n:*`, o `ai-i18n-tools …` sin formato después de la [configuración de PATH](/es/guide/installation#using-the-cli). Consulte [Instalación — Monorepo clonado](/es/guide/installation#cloned-monorepo).
 
 <a id="list-of-examples"></a>
 ## Lista de ejemplos

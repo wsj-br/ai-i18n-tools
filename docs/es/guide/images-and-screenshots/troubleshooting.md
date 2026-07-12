@@ -18,3 +18,6 @@ Sin el enlace simbólico, los documentos fuente en `docs/user-guide/` no pueden 
 
 **El script `take-screenshots` solo captura la configuración regional de origen**
 El diseño de carpetas por configuración regional requiere archivos PNG para cada configuración regional. Si el script solo captura `en-GB`, los documentos traducidos tendrán rutas reescritas que apuntan a archivos que faltan.
+
+**Reescritura de `regexAdjustments` dentro de ejemplos de configuración cercados**
+`postProcessing` se ejecuta en todo el cuerpo de Markdown traducido, incluidos los bloques de código cercados. Si una página de documentación incrusta un fragmento de configuración que contiene una ruta coincidente (por ejemplo, `screenshots/en-GB/`), ese fragmento también se reescribe en la salida traducida. Prefiera la forma genérica `screenshots/[^/]+/` en ejemplos reutilizables, o acepte que los documentos traducidos mostrarán rutas específicas de la configuración regional dentro de las ilustraciones.

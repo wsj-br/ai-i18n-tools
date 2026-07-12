@@ -13,11 +13,13 @@ CLI version aur build timestamp print karein (root program par `-V` / `--version
 <a id="init"></a>
 ### `init`
 
-**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**Saransh:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 Ek starter config file likhen (ismein `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, aur `docs[].addFrontmatter` shamil hain). LLM ko call karne wale translation commands ke liye environment mein ya `.env` mein active provider ki API key ki zaroorat hoti hai (Ollama ko chhodkar) — [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhen.
 
-**Mukhya vikalp:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**Mukhya vikalp:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider` chunata hai ki kaun sa **built-in preset** scaffold karna hai (chhodne par `openrouter`). Inmein se ek hona chahiye: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
 
 **Templates (`-t`):**
 

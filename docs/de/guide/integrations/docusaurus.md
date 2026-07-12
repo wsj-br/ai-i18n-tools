@@ -9,7 +9,7 @@ Siehe auch [Dokumente](/de/guide/documents/), die ausführbare Demo [examples/do
 ## Schnellstart
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Wenn `docusaurusCatalogDir` gesetzt und `features.translateDocs` aktiviert ist, 
 - **Shell-JSON** – Navigationsleiste, Fußzeile und Theme-/Plugin-Kataloge von `i18n/en/` in gleichgeordnete Sprachordner
 
 Legen Sie Docusaurus-Shell-JSON nicht in `json[]` ab; verwenden Sie stattdessen `docs[].docusaurusCatalogDir` mit Dokumenten.
-
-<a id="framework-shell-translation"></a>
-## Übersetzung der Framework-Shell
-
-| Framework | Shell / Theme-Strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "nextra"` + `translate-docs` |
-| Nextra | Theme-Wörterbuch `.ts` | Dokumente — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI-Überschreibungs-Katalog | Dokumente — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Eingebaute UI-Strings (viele Gebietsschemata); keine zusätzliche Shell-Pipeline | Dokumente — `translate-docs` (nur Seiten) |
-
-Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [VitePress-Integration](/de/guide/integrations/vitepress), [Nextra-Integration](/de/guide/integrations/nextra) und [Fumadocs-Integration](/de/guide/integrations/fumadocs) für die anderen Framework-Muster.
 
 <a id="example-project"></a>
 ## Beispielprojekt

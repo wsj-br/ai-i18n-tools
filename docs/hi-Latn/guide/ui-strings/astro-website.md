@@ -35,9 +35,9 @@ Udaharan `package.json` scripts (reference project se):
 `init -t ui-astro-website` ke saath UI extraction scaffold karein, phir `docs[]` block mein merge karein jab aap page HTML ka bhi anuvad karte hain ([Parse-and-replace pages](#astro-website-pages-parse-and-replace) dekhein). TypeScript modules mein `t('…')` aur `.astro` frontmatter (aur template `{expression}` blocks mein jab aap duplicated locale pages ke bajaye UI strings ko prefer karte hain) mein copy wrap karein:
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 `astro.config.mjs` mein `i18n.defaultLocale` se mel khane ke liye `sourceLocale` set karein. Flat bundles ko ek directory mein likhein jise Astro build time par import kar sake (template `public/locales/` ka upyog karta hai). Key ke roop mein English source literal ko dekhkar **build time** par `t('…')` ko resolve karein (`examples/astro-website/src/i18n/t.ts` dekhein; `strings.json` extraction cache hai, runtime bundle nahi). Aapko static site ke liye `ai-i18n-tools/runtime` ya i18next ki **aavashyakta nahi** hai jab tak aap client islands nahi jodte jo load ke baad bhasha badalte hain.
@@ -79,7 +79,7 @@ Structural attribute aur key values default roop se translate **nahi** hote hain
 }
 ```
 
-`npx ai-i18n-tools translate-docs` (ya [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) mein `pnpm i18n:translate`) chalayein. English source `src/pages/index.astro` par rehta hai; har target locale ko `src/pages/{locale}/index.astro` milta hai jismein extra directory level ke liye imports adjust kiye jaate hain (jaise `../layouts/` → `../../layouts/`).
+`ai-i18n-tools translate-docs` (ya [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) mein `pnpm i18n:translate`) chalaayein. Angrezi source `src/pages/index.astro` par rehta hai; har target locale ko `src/pages/{locale}/index.astro` milta hai jismein extra directory level ke liye imports adjust kiye jaate hain (jaise `../layouts/` → `../../layouts/`).
 
 **template body** ke andar, `{expression}` blocks (inline arrays, object `title`/`desc` fields) mein string literals ka anuvad tab kiya jaata hai jab ve user-facing hon; protected attributes/keys par quoted values, `t('…')`, `<script>`, aur `<style>` ke andar ke literals ko aparivartit chhoda jaata hai. **Frontmatter TypeScript ka anuvad is path se nahin kiya jaata hai**—shared frontmatter (jismein `t()` imports aur data arrays shaamil hain) ko English aur locale pages par ek jaisa rakhen, ya English page ko edit karne ke baad `translate-docs` ko phir se run karen taaki locale copies frontmatter changes ko pick kar saken. Sirf frontmatter copy ke liye, [UI-string pipeline](#astro-website-ui-strings-ssg) ka upyog karen.
 

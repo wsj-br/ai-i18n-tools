@@ -14,7 +14,7 @@ Ise bhi dekhen [UI strings](/hi-Latn/guide/ui-strings/astro-website#astro-websit
 ### Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ Ek `docs[]` block ko configure karein:
 
 Starlight UI overrides ko zaroorat padne par ek alag `docs[]` block mein `src/content/i18n/en.json` ke saath `jsonPathTemplate` ka upyog kar sakte hain — dekhen [Documents — documentation ke liye initialise karen](/hi-Latn/guide/documents/#step-1-initialise-for-documentation).
 
-<a id="framework-shell-translation"></a>
-### Framework shell anuvaad
-
-Starlight kai locales ke liye apni khud ki built-in UI string bhejta hai (nav label, search placeholder, vishay-suchi, aadi) — Docusaurus, VitePress, ya Nextra ke vipreet, configure karne ke liye koi alag shell/theme pipeline nahi hai:
-
-| Framework | Shell / theme strings | Pipeline |
-|-----------|----------------------|----------|
-| Astro Starlight | Built-in UI strings (kai locales); koi atirikt shell pipeline nahi | Documents — `translate-docs` (keval page) |
-| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` sidebar labels + theme dictionary `.ts` | Documents — dekhen [Nextra integration](/hi-Latn/guide/integrations/nextra) |
-| Fumadocs | `meta.json` sidebar labels + UI overrides catalog | Documents — dekhen [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) |
-
-Dusre framework patterns ke liye [Docusaurus integration](/hi-Latn/guide/integrations/docusaurus), [VitePress integration](/hi-Latn/guide/integrations/vitepress), [Nextra integration](/hi-Latn/guide/integrations/nextra), aur [Fumadocs integration](/hi-Latn/guide/integrations/fumadocs) dekhen.
+Starlight kai locales ke liye built-in UI strings (nav labels, search placeholder, table of contents, aur aise hi) ship karta hai. Configure karne ke liye koi alag shell/theme pipeline nahi hai — page content ke liye sirf `translate-docs` ka upyog karein. Anya frameworks ke liye, [Framework shell translation](/hi-Latn/guide/integrations/#framework-shell-translation) dekhein.
 
 <a id="example-project"></a>
 ### Example project
@@ -83,7 +70,7 @@ Zyadatar teams ek hi page par do pipelines ka **hybrid** use karti hain:
 ### Quick start
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

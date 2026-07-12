@@ -134,9 +134,11 @@ Para um exemplo executável que configura vários provedores em uma configuraç�
 
 Considere a lista abaixo como uma **linha de base** que você pode expandir: se a tradução para um local específico for ruim ou malsucedida, pesquise quais modelos suportam esse idioma ou script de forma eficaz (consulte recursos online ou a documentação do seu provedor) e adicione esses IDs de modelo como outras alternativas.
 
+Esses IDs de modelo correspondem a `ai-i18n-tools init [-P <provider>]` quando `-P openrouter` (o padrão). Outros presets obtêm IDs de modelo nativos de `init -P <provider>` — consulte [Provedores integrados](/pt-BR/guide/providers-and-models#built-in-providers).
+
 Esta lista foi **testada quanto à ampla cobertura de localidades** em um grande projeto de documentação com 36 localidades de destino; serve como um padrão prático, mas não há garantia de bom desempenho para todas as localidades.
 
-Exemplo de `translationModels` (mesmos padrões do `npx ai-i18n-tools init`):
+Exemplo `translationModels` (mesmos padrões que `ai-i18n-tools init [-P <provider>]`):
 
 <details>
 <summary>Lista padrão de fallback para translationModels</summary>
@@ -147,9 +149,9 @@ Exemplo de `translationModels` (mesmos padrões do `npx ai-i18n-tools init`):
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@ Exemplo de `translationModels` (mesmos padrões do `npx ai-i18n-tools init`):
 
 <br />
 
-Defina a variável de ambiente da chave de API do provedor ativo (por exemplo, `OPENROUTER_API_KEY`) em seu ambiente ou arquivo `.env`.
+Defina a variável de ambiente da chave de API do provedor ativo (consulte a [tabela de presets](/pt-BR/guide/providers-and-models#built-in-providers)) em seu ambiente ou arquivo `.env`.
 
-Antes de alterar as listas de modelos, execute `npx ai-i18n-tools check-models`. Para qualquer provedor, ele verifica cada ID de modelo configurado (`translationModels`, `uiModels` e todas as entradas de `localeModels`) em relação à lista de modelos ativos desse provedor (`GET /models`), relata IDs que estão ausentes ou após o `expiration_date`, lista os modelos válidos e encerra com código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (por exemplo, OpenRouter), ele também mostra os preços estimados de entrada/saída (USD por 1 milhão de tokens).
+Antes de alterar as listas de modelos, execute `ai-i18n-tools check-models`. Para qualquer provedor, ele verifica cada ID de modelo configurado (`translationModels`, `uiModels` e todas as entradas `localeModels`) em relação à lista de modelos ativos desse provedor (`GET /models`), relata IDs ausentes ou que excederam `expiration_date`, lista os modelos válidos e sai com um código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (por exemplo, OpenRouter), ele também mostra o preço estimado de entrada/saída (USD por 1M de tokens).
 
-Para comparar os modelos configurados em um trabalho de tradução real, execute `npx ai-i18n-tools bench-models`. Ele compara cada ID de modelo exclusivo de `translationModels`, `uiModels` e `localeModels` traduzindo uma amostra por meio de cada um isoladamente (em paralelo, limitado por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD, para que você possa pesar a velocidade em relação ao preço antes de definir as listas de modelos.
+Para comparar os modelos configurados em trabalhos de tradução reais, execute `ai-i18n-tools bench-models`. Ele compara cada ID de modelo exclusivo de `translationModels`, `uiModels` e `localeModels` traduzindo uma amostra por meio de cada um isoladamente (em paralelo, limitado por `concurrency`) e imprime tokens de entrada/saída por modelo, tempo de execução e custo em USD, para que você possa pesar a velocidade em relação ao preço antes de decidir sobre as listas de modelos.
 
 ---
 
@@ -461,5 +463,5 @@ Caminhos e estrutura de nível superior para arquivos SVG. A tradução é execu
 **Gere um arquivo CSV de glossário vazio:**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+從 Node.js 搭建設定檔（選擇性第四個引數用於指定內建預設；預設為 `openrouter`）：
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 主要匯出（常用 — 請參閱 `src/index.ts` 以取得完整的公開介面）：
 
 | 匯出 | 描述 |
@@ -41,4 +49,6 @@ console.log(
 | `resolveDocumentationOutputPath` | 解析已翻譯文件的輸出檔案路徑。 |
 | `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表。 |
 | `runTranslateUI` | 程式化翻譯 UI 的進入點。 |
+| `writeInitConfigFile` | 寫入起始設定檔 JSON（`template`，選擇性 `providerKey` 預設為 `openrouter`）。 |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |
 | `PROVIDER_PRESETS` | 內建提供者預設映射（`baseUrl`、`apiKeyEnv`）。 |

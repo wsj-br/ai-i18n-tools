@@ -57,7 +57,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3051
+        "line": 3082
       }
     ]
   },
@@ -88,7 +88,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2283
+        "line": 2314
       }
     ]
   },
@@ -119,7 +119,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 593
+        "line": 596
       }
     ]
   },
@@ -274,7 +274,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 709
+        "line": 740
       }
     ]
   },
@@ -367,7 +367,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2147
+        "line": 2178
       }
     ]
   },
@@ -697,19 +697,19 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2485
+        "line": 2516
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2546
+        "line": 2577
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2606
+        "line": 2637
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2667
+        "line": 2698
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -3855,7 +3855,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 108
+        "line": 111
       }
     ]
   },
@@ -3886,7 +3886,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 151
+        "line": 154
       }
     ]
   },
@@ -3917,7 +3917,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 285
+        "line": 288
       }
     ]
   },
@@ -3948,7 +3948,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 315
+        "line": 318
       }
     ]
   },
@@ -3979,7 +3979,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 342
+        "line": 345
       }
     ]
   },
@@ -4010,7 +4010,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 362
+        "line": 365
       }
     ]
   },
@@ -4041,7 +4041,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 373
+        "line": 376
       }
     ]
   },
@@ -4072,7 +4072,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 381
+        "line": 384
       }
     ]
   },
@@ -4103,40 +4103,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 382
+        "line": 385
       }
     ]
   },
-  "fe234d43": {
-    "source": "More detail:\n  ai-i18n-tools <command> --help          all options for that command\n  ai-i18n-tools help <command>            same output\n\nTarget locales (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, and export-ui-xliff accept\n  -l, --locale <codes> with comma-separated BCP-47 codes (e.g. de,fr,pt-BR).\n  When omitted, defaults come from config and ui-languages.json (see docs).\n\n  proofread-ui uses -l, --locale <code> for a single source locale to review.\n\nRelated globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nProvider override (-P / --provider):\n  Selects the active LLM provider for this run, overriding the config \"provider\" key.\n  The name must be configured under \"providers\" (e.g. -P openai). Handy when several\n  providers are configured and you want to switch without editing the config file.",
+  "17efd098": {
+    "source": "More detail:\n  ai-i18n-tools <command> --help          all options for that command\n  ai-i18n-tools help <command>            same output\n\nTarget locales (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, and export-ui-xliff accept\n  -l, --locale <codes> with comma-separated BCP-47 codes (e.g. de,fr,pt-BR).\n  When omitted, defaults come from config and ui-languages.json (see docs).\n\n  proofread-ui uses -l, --locale <code> for a single source locale to review.\n\nRelated globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nProvider override (-P / --provider):\n  On translation commands, selects the active LLM provider for this run, overriding the config\n  \"provider\" key. The name must be configured under \"providers\" (e.g. -P openai).\n  On init, selects which built-in preset to scaffold (default: openrouter).",
     "translated": {
-      "de": "Weitere Details:\n  ai-i18n-tools <command> --help          alle Optionen für diesen Befehl\n  ai-i18n-tools help <command>            gleiche Ausgabe\n\nZielsprachen (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui und export-ui-xliff akzeptieren\n  -l, --locale <codes> mit kommagetrennten BCP-47-Codes (z. B. de,fr,pt-BR).\n  Wenn weggelassen, werden Standardwerte aus config und ui-languages.json verwendet (siehe Dokumentation).\n\n  proofread-ui verwendet -l, --locale <code> für ein einzelnes Quell-Locale zur Überprüfung.\n\nZugehörige globale Optionen (jeder Befehl): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nAnbieter-Override (-P / --provider):\n  Wählt den aktiven LLM-Anbieter für diesen Durchlauf und überschreibt den config-Schlüssel \"provider\".\n  Der Name muss unter \"providers\" konfiguriert sein (z. B. -P openai). Praktisch, wenn mehrere\n  Anbieter konfiguriert sind und Sie wechseln möchten, ohne die Konfigurationsdatei zu bearbeiten.",
-      "es": "Más detalles:\n  ai-i18n-tools <command> --help          todas las opciones de ese comando\n  ai-i18n-tools help <command>            misma salida\n\nConfiguraciones regionales de destino (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui y export-ui-xliff aceptan\n  -l, --locale <codes> con códigos BCP-47 separados por comas (p. ej. de,fr,pt-BR).\n  Si se omite, los valores predeterminados provienen de config y ui-languages.json (ver documentación).\n\n  proofread-ui usa -l, --locale <code> para una única configuración regional de origen a revisar.\n\nGlobales relacionados (todos los comandos): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nAnulación de proveedor (-P / --provider):\n  Selecciona el proveedor LLM activo para esta ejecución, anulando la clave \"provider\" de la configuración.\n  El nombre debe estar configurado en \"providers\" (p. ej. -P openai). Útil cuando hay varios\n  proveedores configurados y deseas cambiar sin editar el archivo de configuración.",
-      "fr": "Plus de détails :\n  ai-i18n-tools <command> --help          toutes les options de cette commande\n  ai-i18n-tools help <command>            même résultat\n\nLocales cibles (-l / --locale) :\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, et export-ui-xliff acceptent\n  -l, --locale <codes> avec des codes BCP-47 séparés par des virgules (ex. de,fr,pt-BR).\n  Si omis, les valeurs par défaut proviennent de la config et de ui-languages.json (voir la doc).\n\n  proofread-ui utilise -l, --locale <code> pour une seule locale source à réviser.\n\nOptions globales associées (toutes les commandes) : -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nRemplacement du fournisseur (-P / --provider) :\n  Sélectionne le fournisseur LLM actif pour cette exécution, remplaçant la clé \"provider\" de la config.\n  Le nom doit être configuré sous \"providers\" (ex. -P openai). Pratique lorsque plusieurs\n  fournisseurs sont configurés et que vous souhaitez changer sans modifier le fichier de config.",
-      "ja": "詳細情報:\n  ai-i18n-tools <command> --help          各コマンドのすべてのオプション\n  ai-i18n-tools help <command>            同じ出力\n\nターゲットロケール (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, export-ui-xliff は\n  -l, --locale <codes> でカンマ区切りのBCP-47コードを受け付けます（例: de,fr,pt-BR）。\n  省略した場合、config と ui-languages.json のデフォルト値が使用されます（ドキュメント参照）。\n\n  proofread-ui は -l, --locale <code> で単一のソースロケールを指定してレビューします。\n\n関連するグローバルオプション（全コマンド共通）: -c/--config, -v/--verbose, -P/--provider, -w/--write-logs。\n\nプロバイダーの上書き (-P / --provider):\n  このコマンド実行で使用するLLMプロバイダーを選択し、configの \"provider\" キーを上書きします。\n  名前は \"providers\" に設定されている必要があります（例: -P openai）。複数の\n  プロバイダーが設定されており、configファイルを編集せずに切り替えたい場合に便利です。",
-      "hi-Latn": "Aur detail:\n  ai-i18n-tools <command> --help          us command ke sabhi options\n  ai-i18n-tools help <command>            same output\n\nTarget locales (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, aur export-ui-xliff accept karte hain\n  -l, --locale <codes> ke saath comma-separated BCP-47 codes (jaise de,fr,pt-BR).\n  Jab omit kiya jaye, defaults config aur ui-languages.json se aate hain (docs dekhein).\n\n  proofread-ui -l, --locale <code> use karta hai ek single source locale review karne ke liye.\n\nRelated globals (har command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nProvider override (-P / --provider):\n  Is run ke liye active LLM provider select karta hai, config \"provider\" key ko override karke.\n  Naam \"providers\" ke under configured hona chahiye (jaise -P openai). Useful jab kai\n  providers configured hain aur aap config file edit kiye bina switch karna chahte hain.",
-      "pt-BR": "Mais detalhes:\n  ai-i18n-tools <command> --help          todas as opções do comando\n  ai-i18n-tools help <command>            mesma saída\n\nLocais de destino (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui e export-ui-xliff aceitam\n  -l, --locale <codes> com códigos BCP-47 separados por vírgula (ex.: de,fr,pt-BR).\n  Quando omitido, os padrões vêm do config e de ui-languages.json (consulte a documentação).\n\n  proofread-ui usa -l, --locale <code> para um único local de origem a revisar.\n\nGlobais relacionados (todos os comandos): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nSobrescrever provedor (-P / --provider):\n  Seleciona o provedor LLM ativo para esta execução, substituindo a chave \"provider\" do config.\n  O nome deve estar configurado em \"providers\" (ex.: -P openai). Útil quando vários\n  provedores estão configurados e você quer alternar sem editar o arquivo de config.",
-      "zh-Hans": "更多详情：\n  ai-i18n-tools <command> --help          该命令的所有选项\n  ai-i18n-tools help <command>            相同输出\n\n目标语言区域（-l / --locale）：\n  translate-docs、translate-svg、translate-ui、sync、sync-ui 和 export-ui-xliff 支持\n  -l, --locale <codes>，使用逗号分隔的 BCP-47 代码（例如 de,fr,pt-BR）。\n  省略时，默认值来自 config 和 ui-languages.json（详见文档）。\n\n  proofread-ui 使用 -l, --locale <code> 指定单个要审阅的源语言区域。\n\n相关全局选项（所有命令）：-c/--config、-v/--verbose、-P/--provider、-w/--write-logs。\n\n提供商覆盖（-P / --provider）：\n  为本次运行选择活动的 LLM 提供商，覆盖配置中的 \"provider\" 键。\n  名称须在 \"providers\" 下配置（例如 -P openai）。当配置了多个提供商且\n  不想编辑配置文件时，此选项非常方便。",
-      "zh-Hant": "更多詳情：\n  ai-i18n-tools <command> --help          該指令的所有選項\n  ai-i18n-tools help <command>            相同輸出\n\n目標語言代碼（-l / --locale）：\n  translate-docs、translate-svg、translate-ui、sync、sync-ui 及 export-ui-xliff 接受\n  -l, --locale <codes>，以逗號分隔的 BCP-47 代碼（例如 de,fr,pt-BR）。\n  省略時，預設值來自 config 及 ui-languages.json（請參閱文件）。\n\n  proofread-ui 使用 -l, --locale <code> 指定單一來源語言代碼進行審閱。\n\n相關全域選項（所有指令）：-c/--config、-v/--verbose、-P/--provider、-w/--write-logs。\n\n提供者覆寫（-P / --provider）：\n  為本次執行選擇使用的 LLM 提供者，覆寫 config 中的 \"provider\" 鍵。\n  名稱必須已在 \"providers\" 下設定（例如 -P openai）。當設定了多個\n  提供者且不想編輯設定檔時，此選項非常方便。",
-      "ko": "자세한 내용:\n  ai-i18n-tools <command> --help          해당 명령의 모든 옵션\n  ai-i18n-tools help <command>            동일한 출력\n\n대상 로케일 (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, export-ui-xliff는\n  -l, --locale <codes>에 쉼표로 구분된 BCP-47 코드를 허용합니다 (예: de,fr,pt-BR).\n  생략 시 config 및 ui-languages.json의 기본값이 사용됩니다 (문서 참조).\n\n  proofread-ui는 검토할 단일 소스 로케일에 -l, --locale <code>를 사용합니다.\n\n관련 전역 옵션 (모든 명령): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\n공급자 재정의 (-P / --provider):\n  이번 실행에 사용할 LLM 공급자를 선택하며, config의 \"provider\" 키를 재정의합니다.\n  이름은 \"providers\" 아래에 구성되어 있어야 합니다 (예: -P openai). 여러 공급자가\n  구성된 경우 config 파일을 편집하지 않고 전환할 때 유용합니다."
-    },
-    "models": {
-      "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest"
+      "ja": "詳細:\n  ai-i18n-tools <command> --help          そのコマンドのすべてのオプション\n  ai-i18n-tools help <command>            同じ出力\n\nターゲットロケール (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, export-ui-xliff は\n  -l, --locale <codes> でカンマ区切りの BCP-47 コードを受け取ります (例: de,fr,pt-BR)。\n  省略時は設定および ui-languages.json からデフォルトが適用されます (ドキュメントを参照)。\n\n  proofread-ui は -l, --locale <code> でレビューする単一のソースロケールを指定します。\n\n関連するグローバルオプション (すべてのコマンド共通): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs。\n\nプロバイダーオーバーライド (-P / --provider):\n  翻訳コマンドでは、この実行で使用するアクティブな LLM プロバイダーを選択し、設定の\n  \"provider\" キーを上書きします。プロバイダー名は \"providers\" に設定されている必要があります (例: -P openai)。\n  init では、スキャフォールドする組み込みプリセットを選択します (デフォルト: openrouter)。",
+      "es": "Más detalles:\n  ai-i18n-tools <comando> --help          todas las opciones de ese comando\n  ai-i18n-tools help <comando>            mismo resultado\n\nLocales de destino (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui y export-ui-xliff aceptan\n  -l, --locale <códigos> con códigos BCP-47 separados por comas (p. ej. de,fr,pt-BR).\n  Si se omite, los valores predeterminados provienen de config y ui-languages.json (consulte la documentación).\n\n  proofread-ui usa -l, --locale <código> para un único locale de origen que revisar.\n\nOpciones globales relacionadas (todos los comandos): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nAnular proveedor (-P / --provider):\n  En los comandos de traducción, selecciona el proveedor de LLM activo para esta ejecución, sobrescribiendo la clave\n  \"provider\" de la configuración. El nombre debe estar configurado en \"providers\" (p. ej. -P openai).\n  En init, selecciona qué preajuste integrado usar como base (predeterminado: openrouter).",
+      "fr": "Plus de détails :\n  ai-i18n-tools <command> --help          toutes les options de cette commande\n  ai-i18n-tools help <command>            même résultat\n\nLocales cibles (-l / --locale) :\n  translate-docs, translate-svg, translate-ui, sync, sync-ui et export-ui-xliff acceptent\n  -l, --locale <codes> avec des codes BCP-47 séparés par des virgules (ex. de,fr,pt-BR).\n  Si omis, les valeurs par défaut proviennent de la config et de ui-languages.json (voir la doc).\n\n  proofread-ui utilise -l, --locale <code> pour une seule locale source à relire.\n\nOptions globales associées (toutes les commandes) : -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nRemplacement du fournisseur (-P / --provider) :\n  Sur les commandes de traduction, sélectionne le fournisseur LLM actif pour cette exécution, en remplaçant\n  la clé \"provider\" de la config. Le nom doit être configuré dans \"providers\" (ex. -P openai).\n  Sur init, sélectionne le préréglage intégré à générer (par défaut : openrouter).",
+      "de": "Weitere Details:\n  ai-i18n-tools <command> --help          alle Optionen für diesen Befehl\n  ai-i18n-tools help <command>            gleiche Ausgabe\n\nZielsprachen (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui und export-ui-xliff akzeptieren\n  -l, --locale <codes> mit kommagetrennten BCP-47-Codes (z. B. de,fr,pt-BR).\n  Wird das Argument weggelassen, stammen die Standardwerte aus der Konfiguration und ui-languages.json (siehe Dokumentation).\n\n  proofread-ui verwendet -l, --locale <code> für eine einzelne zu prüfende Ausgangssprache.\n\nZugehörige globale Optionen (für jeden Befehl): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nProvider-Override (-P / --provider):\n  Bei Übersetzungsbefehlen legt dies den aktiven LLM-Provider für diesen Durchlauf fest und überschreibt den Konfigurationsschlüssel\n  „provider“. Der Name muss unter „providers“ konfiguriert sein (z. B. -P openai).\n  Bei init legt dies fest, welche integrierte Vorlage erstellt wird (Standard: openrouter).",
+      "hi-Latn": "More detail:\n  ai-i18n-tools <command> --help          us command ke saare options\n  ai-i18n-tools help <command>            same output\n\nTarget locales (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, aur export-ui-xliff accept karte hain\n  -l, --locale <codes> jisme comma-separated BCP-47 codes hote hain (jaise de,fr,pt-BR).\n  Jab nahi diya jaaye, to defaults config aur ui-languages.json se aate hain (docs dekhein).\n\n  proofread-ui review ke liye single source locale ke liye -l, --locale <code> use karta hai.\n\nRelated globals (har command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nProvider override (-P / --provider):\n  Translation commands par, is run ke liye active LLM provider select karta hai, config ki\n  \"provider\" key ko override karte hue. Naam \"providers\" ke andar configured hona chahiye (jaise -P openai).\n  init par, yah select karta hai ki kaunsa built-in preset scaffold karna hai (default: openrouter).",
+      "zh-Hans": "更多详情：\n  ai-i18n-tools <command> --help          该命令的所有选项\n  ai-i18n-tools help <command>            相同的输出\n\n目标区域设置 (-l / --locale)：\n  translate-docs、translate-svg、translate-ui、sync、sync-ui 和 export-ui-xliff 接受\n  -l, --locale <codes>，使用逗号分隔的 BCP-47 代码（例如 de,fr,pt-BR）。\n  省略时，默认值来自 config 和 ui-languages.json（参见文档）。\n\n  proofread-ui 使用 -l, --locale <code> 指定要审查的单一源区域设置。\n\n相关全局选项（每个命令）：-c/--config、-v/--verbose、-P/--provider、-w/--write-logs。\n\n提供商覆盖 (-P / --provider)：\n  在翻译命令上，为本次运行选择活动的 LLM 提供商，覆盖配置中的\n  \"provider\" 键。该名称必须在 \"providers\" 下配置（例如 -P openai）。\n  在 init 时，选择要搭建的内置预设（默认：openrouter）。",
+      "pt-BR": "Mais detalhes:\n  ai-i18n-tools <command> --help          todas as opções desse comando\n  ai-i18n-tools help <command>            mesma saída\n\nLocais de destino (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui e export-ui-xliff aceitam\n  -l, --locale <codes> com códigos BCP-47 separados por vírgula (ex.: de,fr,pt-BR).\n  Quando omitido, os padrões vêm da configuração e de ui-languages.json (veja a documentação).\n\n  proofread-ui usa -l, --locale <code> para um único locale de origem a revisar.\n\nOpções globais relacionadas (todos os comandos): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\nSubstituição de provedor (-P / --provider):\n  Nos comandos de tradução, seleciona o provedor de LLM ativo para esta execução, substituindo a chave\n  \"provider\" da configuração. O nome precisa estar configurado em \"providers\" (ex.: -P openai).\n  No init, seleciona qual predefinição integrada usar como base (padrão: openrouter).",
+      "ko": "자세한 내용:\n  ai-i18n-tools <command> --help          해당 명령의 모든 옵션\n  ai-i18n-tools help <command>            동일한 출력\n\n대상 로케일 (-l / --locale):\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, export-ui-xliff는\n  -l, --locale <codes>에 쉼표로 구분된 BCP-47 코드를 사용합니다 (예: de,fr,pt-BR).\n  생략 시, config 및 ui-languages.json의 기본값이 사용됩니다 (문서 참조).\n\n  proofread-ui는 검토할 단일 소스 로케일에 대해 -l, --locale <code>를 사용합니다.\n\n관련 전역 옵션 (모든 명령): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.\n\n프로바이더 재정의 (-P / --provider):\n  번역 명령에서, 이 실행에 사용할 활성 LLM 프로바이더를 선택하며 config의\n  \"provider\" 키를 재정의합니다. 이름은 \"providers\" 아래에 구성되어야 합니다 (예: -P openai).\n  init에서는 스캐폴드할 내장 프리셋을 선택합니다 (기본값: openrouter).",
+      "zh-Hant": "更多詳情：\n  ai-i18n-tools <command> --help          該指令的所有選項\n  ai-i18n-tools help <command>            相同的輸出\n\n目標語言代碼 (-l / --locale)：\n  translate-docs, translate-svg, translate-ui, sync, sync-ui, and export-ui-xliff 接受\n  -l, --locale <codes>，使用以逗號分隔的 BCP-47 代碼（例如 de,fr,pt-BR）。\n  若省略，預設值來自 config 和 ui-languages.json（請參閱文件）。\n\n  proofread-ui 使用 -l, --locale <code> 來指定要審閱的單一來源語言代碼。\n\n相關全域選項（每個指令）：-c/--config, -v/--verbose, -P/--provider, -w/--write-logs。\n\n供應商覆寫 (-P / --provider)：\n  在翻譯指令上，選擇此次執行的活躍 LLM 供應商，覆寫 config 中的\n  \"provider\" 鍵。該名稱必須在 \"providers\" 下設定（例如 -P openai）。\n  在 init 時，選擇要建立基礎結構的內建預設集（預設：openrouter）。"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 422
+        "line": 425
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "a4eccf12": {
     "source": "Unified i18n toolkit for Node.js apps and documentation with AI translation (v{{version}})",
@@ -4165,7 +4165,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 450
+        "line": 453
       }
     ]
   },
@@ -4196,7 +4196,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 457
+        "line": 460
       }
     ]
   },
@@ -4227,7 +4227,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 458
+        "line": 461
       }
     ]
   },
@@ -4258,7 +4258,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 459
+        "line": 462
       }
     ]
   },
@@ -4289,7 +4289,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 462
+        "line": 465
       }
     ]
   },
@@ -4320,7 +4320,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 468
+        "line": 471
       }
     ]
   },
@@ -4351,7 +4351,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 472
+        "line": 475
       }
     ]
   },
@@ -4382,7 +4382,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 478
+        "line": 481
       }
     ]
   },
@@ -4413,40 +4413,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 487
+        "line": 490
       }
     ]
   },
-  "8b5ece62": {
-    "source": "Verify openrouter.translationModels against OpenRouter's catalog and print input/output pricing (USD per 1M tokens)",
+  "3a530112": {
+    "source": "Verify configured model ids against the active provider's catalog and print input/output pricing (USD per 1M tokens)",
     "translated": {
-      "fr": "Vérifier openrouter.translationModels par rapport au catalogue d'OpenRouter et afficher les tarifs d'entrée/sortie (USD par million de tokens)",
-      "es": "Verificar openrouter.translationModels con el catálogo de OpenRouter e imprimir precios de entrada/salida (USD por 1M de tokens)",
-      "hi-Latn": "openrouter.translationModels ko OpenRouter ke catalog se verify karein aur input/output pricing print karein (USD per 1M tokens)",
-      "ja": "openrouter.translationModelsをOpenRouterのカタログと照合し、入出力の料金（USD/100万トークン）を表示",
-      "de": "openrouter.translationModels gegen den OpenRouter-Katalog prüfen und Eingabe-/Ausgabepreise (USD pro 1 Mio. Token) ausgeben",
-      "pt-BR": "Verificar openrouter.translationModels no catálogo do OpenRouter e exibir preços de entrada/saída (USD por 1M de tokens)",
-      "zh-Hant": "驗證 openrouter.translationModels 是否符合 OpenRouter 目錄，並列印輸入/輸出定價（每 1M 個 token 的美元費用）",
-      "ko": "openrouter.translationModels을 OpenRouter 카탈로그와 대조하여 확인하고 입력/출력 가격(USD/1M 토큰)을 출력합니다",
-      "zh-Hans": "对照 OpenRouter 目录验证 openrouter.translationModels 并打印输入/输出定价（每 100 万 token 美元）"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest"
+      "ja": "設定されたモデル ID をアクティブなプロバイダーのカタログと照合し、入出力の価格 (1M トークンあたり USD) を表示します",
+      "es": "Verificar los ids de los modelos configurados con el catálogo del proveedor activo e imprimir los precios de entrada/salida (USD por 1M de tokens)",
+      "fr": "Vérifier les identifiants de modèles configurés par rapport au catalogue du fournisseur actif et afficher les tarifs d'entrée/sortie (USD pour 1M de tokens)",
+      "de": "Konfigurierte Modell-IDs mit dem Katalog des aktiven Providers abgleichen und Preise für Ein-/Ausgabe anzeigen (USD pro 1 Mio. Token)",
+      "hi-Latn": "Configured model ids ko active provider ke catalog se verify karein aur input/output pricing print karein (USD per 1M tokens)",
+      "zh-Hans": "根据活动提供商的目录验证已配置的模型 ID，并打印输入/输出定价（每 100 万 token 美元）",
+      "pt-BR": "Verifica os IDs de modelo configurados no catálogo do provedor ativo e exibe os preços de entrada/saída (USD por 1M tokens)",
+      "ko": "활성 프로바이더의 카탈로그에 대해 구성된 모델 ID를 검증하고 입력/출력 가격(1M 토큰당 USD)을 출력합니다",
+      "zh-Hant": "根據活躍供應商的目錄驗證已設定的模型 ID，並列印輸入/輸出定價（每 100 萬 Token 美元）"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 495
+        "line": 498
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "a1887168": {
     "source": "List the models advertised by the active provider's OpenAI-compatible `GET /models` endpoint (active provider follows the config `provider` key; override with -P/--provider). Shows input/output pricing (USD per 1M tokens) when the provider returns it",
@@ -4475,7 +4475,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 513
+        "line": 516
       }
     ]
   },
@@ -4506,7 +4506,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 529
+        "line": 532
       }
     ]
   },
@@ -4537,7 +4537,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 537
+        "line": 540
       }
     ]
   },
@@ -4568,7 +4568,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 543
+        "line": 546
       }
     ]
   },
@@ -4599,7 +4599,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 547
+        "line": 550
       }
     ]
   },
@@ -4630,7 +4630,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 548
+        "line": 551
       }
     ]
   },
@@ -4661,7 +4661,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 549
+        "line": 552
       }
     ]
   },
@@ -4692,7 +4692,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 552
+        "line": 555
       }
     ]
   },
@@ -4723,7 +4723,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 579
+        "line": 582
       }
     ]
   },
@@ -4754,7 +4754,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 589
+        "line": 592
       }
     ]
   },
@@ -4785,7 +4785,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 600
+        "line": 603
       }
     ]
   },
@@ -4816,7 +4816,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 609
+        "line": 612
       }
     ]
   },
@@ -4847,7 +4847,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 610
+        "line": 613
       }
     ]
   },
@@ -4878,9 +4878,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 616
+        "line": 619
       }
     ]
+  },
+  "0b76820b": {
+    "source": "Examples:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nBuilt-in presets for -P / --provider:\n  {{presets}} (default: {{defaultProvider}})",
+    "translated": {
+      "ja": "例:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\n-P / --provider の組み込みプリセット:\n  {{presets}} (デフォルト: {{defaultProvider}})",
+      "es": "Ejemplos:\n  ai-i18n-tools init [-P <proveedor>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nPreajustes integrados para -P / --provider:\n  {{presets}} (predeterminado: {{defaultProvider}})",
+      "fr": "Exemples :\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nPréréglages intégrés pour -P / --provider :\n  {{presets}} (par défaut : {{defaultProvider}})",
+      "de": "Beispiele:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nIntegrierte Vorlagen für -P / --provider:\n  {{presets}} (Standard: {{defaultProvider}})",
+      "hi-Latn": "Examples:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nBuilt-in presets for -P / --provider:\n  {{presets}} (default: {{defaultProvider}})",
+      "zh-Hans": "示例：\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\n-P / --provider 的内置预设：\n  {{presets}} (默认: {{defaultProvider}})",
+      "pt-BR": "Exemplos:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\nPredefinições integradas para -P / --provider:\n  {{presets}} (padrão: {{defaultProvider}})",
+      "ko": "예시:\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\n-P / --provider의 내장 프리셋:\n  {{presets}} (기본값: {{defaultProvider}})",
+      "zh-Hant": "範例：\n  ai-i18n-tools init [-P <provider>]\n  ai-i18n-tools init -t ui-docusaurus -P anthropic\n  ai-i18n-tools init -P openai --with-translate-ignore\n\n-P / --provider 的內建預設集：\n  {{presets}} (預設：{{defaultProvider}})"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 622
+      }
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "cdb2489d": {
     "source": "Template must be \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", or \"ui-json-bundles\".",
@@ -4909,40 +4940,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 632
+        "line": 657
       }
     ]
   },
-  "c9fe5849": {
-    "source": "Wrote {{path}} ({{template}})",
+  "dbda5189": {
+    "source": "Wrote {{path}} ({{template}}, provider: {{provider}})",
     "translated": {
-      "fr": "{{path}} créé ({{template}})",
-      "es": "Se escribió {{path}} ({{template}})",
-      "hi-Latn": "{{path}} likha ({{template}})",
-      "ja": "{{path}} を書き込みました ({{template}})",
-      "de": "{{path}} geschrieben ({{template}})",
-      "pt-BR": "{{path}} gravado ({{template}})",
-      "zh-Hant": "已寫入 {{path}}（{{template}}）",
-      "ko": "{{path}} 작성 완료 ({{template}})",
-      "zh-Hans": "已写入 {{path}}（{{template}}）"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest"
+      "ja": "{{path}} に書き込みました ({{template}}、プロバイダー: {{provider}})",
+      "es": "Se escribió {{path}} ({{template}}, proveedor: {{provider}})",
+      "fr": "{{path}} écrit ({{template}}, fournisseur : {{provider}})",
+      "de": "{{path}} geschrieben ({{template}}, Provider: {{provider}})",
+      "hi-Latn": "{{path}} likha gaya ({{template}}, provider: {{provider}})",
+      "zh-Hans": "已写入 {{path}} ({{template}}, 提供商: {{provider}})",
+      "pt-BR": "{{path}} gravado ({{template}}, provedor: {{provider}})",
+      "ko": "{{path}} 작성 완료 ({{template}}, 프로바이더: {{provider}})",
+      "zh-Hant": "已寫入 {{path}} ({{template}}，供應商：{{provider}})"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 640
+        "line": 666
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "f067cc87": {
     "source": "Wrote .translate-ignore",
@@ -4971,7 +5002,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 652
+        "line": 683
       }
     ]
   },
@@ -5002,7 +5033,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 660
+        "line": 691
       }
     ]
   },
@@ -5033,7 +5064,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 666
+        "line": 697
       }
     ]
   },
@@ -5064,27 +5095,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 668
+        "line": 699
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1164
+        "line": 1195
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1429
+        "line": 1460
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1495
+        "line": 1526
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1793
+        "line": 1824
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1899
+        "line": 1930
       }
     ]
   },
@@ -5115,7 +5146,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 670
+        "line": 701
       }
     ]
   },
@@ -5146,7 +5177,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 671
+        "line": 702
       }
     ]
   },
@@ -5177,7 +5208,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 672
+        "line": 703
       }
     ]
   },
@@ -5208,7 +5239,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 673
+        "line": 704
       }
     ]
   },
@@ -5239,7 +5270,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 674
+        "line": 705
       }
     ]
   },
@@ -5270,31 +5301,31 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 696
+        "line": 727
       },
       {
         "file": "src/cli/index.ts",
-        "line": 736
+        "line": 767
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1121
+        "line": 1152
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1292
+        "line": 1323
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1458
+        "line": 1489
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1546
+        "line": 1577
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1991
+        "line": 2022
       }
     ]
   },
@@ -5325,7 +5356,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 717
+        "line": 748
       }
     ]
   },
@@ -5356,7 +5387,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 742
+        "line": 773
       }
     ]
   },
@@ -5387,7 +5418,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 759
+        "line": 790
       }
     ]
   },
@@ -5418,7 +5449,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 768
+        "line": 799
       }
     ]
   },
@@ -5449,7 +5480,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 780
+        "line": 811
       }
     ]
   },
@@ -5480,15 +5511,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 791
+        "line": 822
       },
       {
         "file": "src/cli/index.ts",
-        "line": 996
+        "line": 1027
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1678
+        "line": 1709
       }
     ]
   },
@@ -5519,7 +5550,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 802
+        "line": 833
       }
     ]
   },
@@ -5550,7 +5581,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 812
+        "line": 843
       }
     ]
   },
@@ -5581,7 +5612,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 816
+        "line": 847
       }
     ]
   },
@@ -5612,7 +5643,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 817
+        "line": 848
       }
     ]
   },
@@ -5643,7 +5674,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 831
+        "line": 862
       }
     ]
   },
@@ -5674,7 +5705,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 836
+        "line": 867
       }
     ]
   },
@@ -5705,7 +5736,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 844
+        "line": 875
       }
     ]
   },
@@ -5736,7 +5767,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 855
+        "line": 886
       }
     ]
   },
@@ -5767,7 +5798,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 936
+        "line": 967
       }
     ]
   },
@@ -5798,7 +5829,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1007
+        "line": 1038
       }
     ]
   },
@@ -5829,7 +5860,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1031
+        "line": 1062
       }
     ]
   },
@@ -5860,7 +5891,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1050
+        "line": 1081
       }
     ]
   },
@@ -5891,7 +5922,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1136
+        "line": 1167
       }
     ]
   },
@@ -5922,7 +5953,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1150
+        "line": 1181
       }
     ]
   },
@@ -5953,7 +5984,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1156
+        "line": 1187
       }
     ]
   },
@@ -5984,11 +6015,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1162
+        "line": 1193
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1493
+        "line": 1524
       }
     ]
   },
@@ -6019,19 +6050,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1165
+        "line": 1196
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1430
+        "line": 1461
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1496
+        "line": 1527
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1588
+        "line": 1619
       }
     ]
   },
@@ -6062,11 +6093,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1168
+        "line": 1199
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1499
+        "line": 1530
       }
     ]
   },
@@ -6097,11 +6128,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1175
+        "line": 1206
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1506
+        "line": 1537
       }
     ]
   },
@@ -6132,7 +6163,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1180
+        "line": 1211
       }
     ]
   },
@@ -6163,7 +6194,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1181
+        "line": 1212
       }
     ]
   },
@@ -6194,7 +6225,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1183
+        "line": 1214
       }
     ]
   },
@@ -6225,7 +6256,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1184
+        "line": 1215
       }
     ]
   },
@@ -6256,11 +6287,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1185
+        "line": 1216
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1512
+        "line": 1543
       }
     ]
   },
@@ -6291,15 +6322,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1188
+        "line": 1219
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1440
+        "line": 1471
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1515
+        "line": 1546
       }
     ]
   },
@@ -6330,7 +6361,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1192
+        "line": 1223
       }
     ]
   },
@@ -6361,7 +6392,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1197
+        "line": 1228
       }
     ]
   },
@@ -6392,7 +6423,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1204
+        "line": 1235
       }
     ]
   },
@@ -6423,11 +6454,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1211
+        "line": 1242
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1947
+        "line": 1978
       }
     ]
   },
@@ -6458,15 +6489,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1229
+        "line": 1260
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1527
+        "line": 1558
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1967
+        "line": 1998
       }
     ]
   },
@@ -6497,11 +6528,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1231
+        "line": 1262
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1529
+        "line": 1560
       }
     ]
   },
@@ -6532,11 +6563,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1233
+        "line": 1264
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1531
+        "line": 1562
       }
     ]
   },
@@ -6567,7 +6598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1245
+        "line": 1276
       }
     ]
   },
@@ -6598,7 +6629,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1246
+        "line": 1277
       }
     ]
   },
@@ -6629,7 +6660,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1247
+        "line": 1278
       }
     ]
   },
@@ -6660,7 +6691,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1248
+        "line": 1279
       }
     ]
   },
@@ -6691,7 +6722,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1267
+        "line": 1298
       }
     ]
   },
@@ -6722,7 +6753,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1269
+        "line": 1300
       }
     ]
   },
@@ -6753,7 +6784,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1280
+        "line": 1311
       }
     ]
   },
@@ -6784,7 +6815,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1280
+        "line": 1311
       }
     ]
   },
@@ -6815,7 +6846,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1358
+        "line": 1389
       }
     ]
   },
@@ -6846,7 +6877,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1384
+        "line": 1415
       }
     ]
   },
@@ -6877,7 +6908,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1396
+        "line": 1427
       }
     ]
   },
@@ -6908,7 +6939,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1404
+        "line": 1435
       }
     ]
   },
@@ -6939,7 +6970,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1413
+        "line": 1444
       }
     ]
   },
@@ -6970,7 +7001,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1419
+        "line": 1450
       }
     ]
   },
@@ -7001,7 +7032,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1425
+        "line": 1456
       }
     ]
   },
@@ -7032,7 +7063,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1431
+        "line": 1462
       }
     ]
   },
@@ -7063,7 +7094,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1434
+        "line": 1465
       }
     ]
   },
@@ -7094,7 +7125,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1437
+        "line": 1468
       }
     ]
   },
@@ -7125,7 +7156,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1444
+        "line": 1475
       }
     ]
   },
@@ -7156,7 +7187,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1471
+        "line": 1502
       }
     ]
   },
@@ -7187,7 +7218,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1481
+        "line": 1512
       }
     ]
   },
@@ -7218,7 +7249,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1487
+        "line": 1518
       }
     ]
   },
@@ -7249,7 +7280,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1511
+        "line": 1542
       }
     ]
   },
@@ -7280,7 +7311,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1553
+        "line": 1584
       }
     ]
   },
@@ -7311,7 +7342,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1564
+        "line": 1595
       }
     ]
   },
@@ -7342,40 +7373,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1572
+        "line": 1603
       }
     ]
   },
-  "1b4f6888": {
-    "source": "Translate UI strings (strings.json → locale JSON via OpenRouter); -l/--locale <codes> limits targets (comma-separated; optional)",
+  "34bd3c40": {
+    "source": "Translate UI strings (strings.json → locale JSON via the active LLM provider); -l/--locale <codes> limits targets (comma-separated; optional)",
     "translated": {
-      "fr": "Traduire les chaînes d'interface (strings.json → JSON de locale via OpenRouter) ; -l/--locale <codes> limite les cibles (séparés par des virgules ; facultatif)",
-      "es": "Traducir cadenas de interfaz (strings.json → JSON de configuración regional mediante OpenRouter); -l/--locale <códigos> limita los destinos (separados por comas; opcional)",
-      "hi-Latn": "UI strings translate karo (strings.json → locale JSON via OpenRouter); -l/--locale <codes> targets limit karta hai (comma-separated; optional)",
-      "ja": "UI文字列を翻訳（strings.json → OpenRouter経由でロケールJSON）; -l/--locale <コード> でターゲットを限定（カンマ区切り、省略可）",
-      "de": "UI-Strings übersetzen (strings.json → Locale-JSON via OpenRouter); -l/--locale <Codes> schränkt Ziele ein (kommagetrennt; optional)",
-      "pt-BR": "Traduzir strings de UI (strings.json → JSON de localidade via OpenRouter); -l/--locale <códigos> limita os destinos (separados por vírgula; opcional)",
-      "zh-Hant": "翻譯 UI 字串（strings.json → 透過 OpenRouter 輸出各語系 JSON）；-l/--locale <codes> 可限定目標語系（逗號分隔；選填）",
-      "ko": "UI 문자열 번역 (strings.json → OpenRouter를 통한 로케일 JSON); -l/--locale <코드>로 대상 제한 (쉼표로 구분; 선택 사항)",
-      "zh-Hans": "翻译 UI 字符串（strings.json → 通过 OpenRouter 生成各语言 JSON）；-l/--locale <codes> 限定目标语言（逗号分隔，可选）"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest"
+      "ja": "UI 文字列を翻訳 (strings.json → アクティブな LLM プロバイダー経由でロケール JSON を生成); -l/--locale <codes> でターゲットを制限 (カンマ区切り、省略可)",
+      "es": "Traducir cadenas de la interfaz (strings.json → JSON de locale mediante el proveedor de LLM activo); -l/--locale <códigos> limita los destinos (separados por comas; opcional)",
+      "fr": "Traduire les chaînes de l'UI (strings.json → JSON de locale via le fournisseur LLM actif) ; -l/--locale <codes> limite les cibles (séparées par des virgules ; facultatif)",
+      "de": "UI-Strings übersetzen (strings.json → Sprach-JSON über den aktiven LLM-Provider); -l/--locale <codes> beschränkt die Zielsprachen (kommagetrennt; optional)",
+      "hi-Latn": "UI strings translate karein (strings.json → locale JSON, active LLM provider ke zariye); -l/--locale <codes> se targets limit karein (comma-separated; optional)",
+      "zh-Hans": "翻译 UI 字符串（strings.json → 通过活动 LLM 提供商生成区域设置 JSON）；-l/--locale <codes> 限制目标（逗号分隔；可选）",
+      "pt-BR": "Traduz as strings de UI (strings.json → JSON do locale via provedor de LLM ativo); -l/--locale <codes> limita os destinos (separados por vírgula; opcional)",
+      "ko": "UI 문자열 번역 (strings.json → 활성 LLM 프로바이더를 통해 로케일 JSON으로); -l/--locale <codes>는 대상을 제한합니다 (쉼표로 구분; 선택 사항)",
+      "zh-Hant": "翻譯 UI 字串（透過活躍 LLM 供應商將 strings.json → 語言代碼 JSON）；-l/--locale <codes> 限制目標（以逗號分隔；可選）"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1580
+        "line": 1611
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "3594bdb6": {
     "source": "Target locales (comma-separated); default: ui-languages.json or config.targetLocales",
@@ -7404,15 +7435,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1586
+        "line": 1617
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1651
+        "line": 1682
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1835
+        "line": 1866
       }
     ]
   },
@@ -7443,7 +7474,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1589
+        "line": 1620
       }
     ]
   },
@@ -7474,7 +7505,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1590
+        "line": 1621
       }
     ]
   },
@@ -7505,7 +7536,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1604
+        "line": 1635
       }
     ]
   },
@@ -7536,7 +7567,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1629
+        "line": 1660
       }
     ]
   },
@@ -7567,7 +7598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1637
+        "line": 1668
       }
     ]
   },
@@ -7598,7 +7629,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1645
+        "line": 1676
       }
     ]
   },
@@ -7629,11 +7660,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1653
+        "line": 1684
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1900
+        "line": 1931
       }
     ]
   },
@@ -7664,7 +7695,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1654
+        "line": 1685
       }
     ]
   },
@@ -7695,7 +7726,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1655
+        "line": 1686
       }
     ]
   },
@@ -7726,7 +7757,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1670
+        "line": 1701
       }
     ]
   },
@@ -7757,7 +7788,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1689
+        "line": 1720
       }
     ]
   },
@@ -7788,7 +7819,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1717
+        "line": 1748
       }
     ]
   },
@@ -7819,40 +7850,40 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1725
+        "line": 1756
       }
     ]
   },
-  "8da21220": {
-    "source": "Run extract (refresh strings.json), then proofread source-locale UI strings via OpenRouter; writes results log under cacheDir",
+  "be5fe84c": {
+    "source": "Run extract (refresh strings.json), then proofread source-locale UI strings via the active LLM provider; writes results log under cacheDir",
     "translated": {
-      "de": "Extract ausführen (strings.json aktualisieren), dann Quell-Locale-UI-Strings über OpenRouter korrekturlesen; schreibt Ergebnisprotokoll in cacheDir",
-      "es": "Ejecuta extract (actualiza strings.json) y luego revisa las cadenas de la interfaz de usuario en la configuración regional de origen mediante OpenRouter; escribe el registro de resultados en cacheDir",
-      "fr": "Exécute extract (actualise strings.json), puis révise les chaînes UI de la locale source via OpenRouter ; écrit le journal des résultats dans cacheDir",
-      "ja": "extract を実行して strings.json を更新し、OpenRouter 経由でソースロケールのUI文字列を校正します。結果ログは cacheDir に保存されます",
-      "hi-Latn": "Extract chalayein (strings.json refresh karein), phir OpenRouter ke zariye source-locale UI strings proofread karein; results log cacheDir mein likhta hai",
-      "pt-BR": "Executa extract (atualiza strings.json) e revisa strings de UI do local de origem via OpenRouter; grava o log de resultados em cacheDir",
-      "zh-Hans": "运行提取（刷新 strings.json），然后通过 OpenRouter 校对源语言区域的 UI 字符串；将结果日志写入 cacheDir",
-      "zh-Hant": "執行 extract（重新整理 strings.json），然後透過 OpenRouter 對來源語言的 UI 字串進行校對；將結果日誌寫入 cacheDir",
-      "ko": "extract 실행(strings.json 새로 고침) 후 OpenRouter를 통해 소스 로케일 UI 문자열을 교정합니다. 결과 로그는 cacheDir에 저장됩니다."
-    },
-    "models": {
-      "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest"
+      "ja": "抽出 (strings.json の更新) を実行した後、アクティブな LLM プロバイダー経由でソースロケールの UI 文字列を校正; 結果ログを cacheDir に書き込みます",
+      "es": "Ejecutar extract (actualizar strings.json) y luego revisar las cadenas de la interfaz del locale de origen mediante el proveedor de LLM activo; escribe un registro de resultados en cacheDir",
+      "fr": "Exécuter extract (actualiser strings.json), puis relire les chaînes UI de la locale source via le fournisseur LLM actif ; écrit les résultats dans un journal sous cacheDir",
+      "de": "Extraktion ausführen (strings.json aktualisieren) und anschließend UI-Strings der Ausgangssprache über den aktiven LLM-Provider prüfen; Ergebnisprotokoll wird im cacheDir gespeichert",
+      "hi-Latn": "Extract chalayein (strings.json refresh karein), phir source-locale UI strings ko active LLM provider se proofread karein; results log cacheDir ke under likha jaata hai",
+      "zh-Hans": "运行提取（刷新 strings.json），然后通过活动 LLM 提供商校对源区域设置 UI 字符串；在 cacheDir 下写入结果日志",
+      "pt-BR": "Executa o extract (atualiza o strings.json) e depois revisa as strings de UI do locale de origem via provedor de LLM ativo; grava os registros de resultado em cacheDir",
+      "ko": "추출 실행(strings.json 새로고침) 후, 활성 LLM 프로바이더를 통해 소스 로케일 UI 문자열을 교정합니다; 결과 로그는 cacheDir에 기록됩니다",
+      "zh-Hant": "執行 extract（重新整理 strings.json），然後透過活躍 LLM 供應商審閱來源語言的 UI 字串；將結果日誌寫入 cacheDir 下"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1733
+        "line": 1764
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "f23d754d": {
     "source": "BCP-47 locale to proofread (default: config sourceLocale)",
@@ -7881,7 +7912,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1737
+        "line": 1768
       }
     ]
   },
@@ -7912,7 +7943,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1738
+        "line": 1769
       }
     ]
   },
@@ -7943,7 +7974,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1739
+        "line": 1770
       }
     ]
   },
@@ -7974,7 +8005,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1740
+        "line": 1771
       }
     ]
   },
@@ -8005,7 +8036,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1741
+        "line": 1772
       }
     ]
   },
@@ -8036,11 +8067,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1767
+        "line": 1798
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1773
+        "line": 1804
       }
     ]
   },
@@ -8071,7 +8102,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1783
+        "line": 1814
       }
     ]
   },
@@ -8102,7 +8133,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1789
+        "line": 1820
       }
     ]
   },
@@ -8133,7 +8164,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1794
+        "line": 1825
       }
     ]
   },
@@ -8164,7 +8195,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1795
+        "line": 1826
       }
     ]
   },
@@ -8195,7 +8226,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1819
+        "line": 1850
       }
     ]
   },
@@ -8226,7 +8257,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1829
+        "line": 1860
       }
     ]
   },
@@ -8257,7 +8288,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1839
+        "line": 1870
       }
     ]
   },
@@ -8288,7 +8319,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1843
+        "line": 1874
       }
     ]
   },
@@ -8319,7 +8350,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1846
+        "line": 1877
       }
     ]
   },
@@ -8350,7 +8381,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1867
+        "line": 1898
       }
     ]
   },
@@ -8381,7 +8412,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1877
+        "line": 1908
       }
     ]
   },
@@ -8412,7 +8443,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1885
+        "line": 1916
       }
     ]
   },
@@ -8443,7 +8474,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1891
+        "line": 1922
       }
     ]
   },
@@ -8474,7 +8505,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1897
+        "line": 1928
       }
     ]
   },
@@ -8505,7 +8536,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1903
+        "line": 1934
       }
     ]
   },
@@ -8536,7 +8567,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1908
+        "line": 1939
       }
     ]
   },
@@ -8567,7 +8598,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1911
+        "line": 1942
       }
     ]
   },
@@ -8598,7 +8629,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1914
+        "line": 1945
       }
     ]
   },
@@ -8629,7 +8660,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1919
+        "line": 1950
       }
     ]
   },
@@ -8660,7 +8691,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1922
+        "line": 1953
       }
     ]
   },
@@ -8691,7 +8722,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1925
+        "line": 1956
       }
     ]
   },
@@ -8722,7 +8753,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1929
+        "line": 1960
       }
     ]
   },
@@ -8753,7 +8784,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1933
+        "line": 1964
       }
     ]
   },
@@ -8784,7 +8815,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1940
+        "line": 1971
       }
     ]
   },
@@ -8815,7 +8846,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1969
+        "line": 2000
       }
     ]
   },
@@ -8846,7 +8877,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1971
+        "line": 2002
       }
     ]
   },
@@ -8877,7 +8908,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2018
+        "line": 2049
       }
     ]
   },
@@ -8908,7 +8939,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2031
+        "line": 2062
       }
     ]
   },
@@ -8939,7 +8970,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2034
+        "line": 2065
       }
     ]
   },
@@ -8970,11 +9001,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2038
+        "line": 2069
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2386
+        "line": 2417
       }
     ]
   },
@@ -9005,7 +9036,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2057
+        "line": 2088
       }
     ]
   },
@@ -9036,15 +9067,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2106
+        "line": 2137
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2356
+        "line": 2387
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2434
+        "line": 2465
       }
     ]
   },
@@ -9075,7 +9106,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2137
+        "line": 2168
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9138,7 +9169,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2138
+        "line": 2169
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9177,7 +9208,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2139
+        "line": 2170
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9212,15 +9243,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2140
+        "line": 2171
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2530
+        "line": 2561
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2653
+        "line": 2684
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9259,7 +9290,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2208
+        "line": 2239
       }
     ]
   },
@@ -9290,7 +9321,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2210
+        "line": 2241
       }
     ]
   },
@@ -9321,7 +9352,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2211
+        "line": 2242
       }
     ]
   },
@@ -9352,7 +9383,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2215
+        "line": 2246
       }
     ]
   },
@@ -9383,11 +9414,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2217
+        "line": 2248
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2285
+        "line": 2316
       }
     ]
   },
@@ -9418,11 +9449,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2219
+        "line": 2250
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2287
+        "line": 2318
       }
     ]
   },
@@ -9453,11 +9484,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2221
+        "line": 2252
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2289
+        "line": 2320
       }
     ]
   },
@@ -9488,11 +9519,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2223
+        "line": 2254
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2291
+        "line": 2322
       }
     ]
   },
@@ -9523,11 +9554,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2225
+        "line": 2256
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2293
+        "line": 2324
       }
     ]
   },
@@ -9558,7 +9589,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2376
+        "line": 2407
       }
     ]
   },
@@ -9589,7 +9620,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2382
+        "line": 2413
       }
     ]
   },
@@ -9620,7 +9651,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2458
+        "line": 2489
       }
     ]
   },
@@ -9651,7 +9682,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2462
+        "line": 2493
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9686,7 +9717,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2466
+        "line": 2497
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9721,7 +9752,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2475
+        "line": 2506
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9756,7 +9787,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2476
+        "line": 2507
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9791,7 +9822,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2486
+        "line": 2517
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9826,11 +9857,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2487
+        "line": 2518
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2608
+        "line": 2639
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9869,11 +9900,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2510
+        "line": 2541
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2631
+        "line": 2662
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9912,19 +9943,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2579
+        "line": 2610
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2582
+        "line": 2613
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2700
+        "line": 2731
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2703
+        "line": 2734
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -9959,11 +9990,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2580
+        "line": 2611
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2701
+        "line": 2732
       }
     ]
   },
@@ -9994,7 +10025,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2587
+        "line": 2618
       }
     ]
   },
@@ -10025,7 +10056,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2592
+        "line": 2623
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10060,7 +10091,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2593
+        "line": 2624
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10103,7 +10134,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2594
+        "line": 2625
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10146,7 +10177,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2595
+        "line": 2626
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10181,7 +10212,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2596
+        "line": 2627
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10216,7 +10247,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2597
+        "line": 2628
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10251,7 +10282,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2598
+        "line": 2629
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10286,7 +10317,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2607
+        "line": 2638
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -10325,7 +10356,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2713
+        "line": 2744
       }
     ]
   },
@@ -10356,7 +10387,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2717
+        "line": 2748
       }
     ]
   },
@@ -10387,7 +10418,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2720
+        "line": 2751
       }
     ]
   },
@@ -10418,7 +10449,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2726
+        "line": 2757
       },
       {
         "file": "src/cli/purge-locale.ts",
@@ -10453,7 +10484,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2748
+        "line": 2779
       }
     ]
   },
@@ -10484,7 +10515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2758
+        "line": 2789
       }
     ]
   },
@@ -10515,7 +10546,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2784
+        "line": 2815
       }
     ]
   },
@@ -10546,7 +10577,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2788
+        "line": 2819
       }
     ]
   },
@@ -10577,7 +10608,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2803
+        "line": 2834
       }
     ]
   },
@@ -10608,7 +10639,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2820
+        "line": 2851
       }
     ]
   },
@@ -10639,7 +10670,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2830
+        "line": 2861
       }
     ]
   },
@@ -10670,7 +10701,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2840
+        "line": 2871
       }
     ]
   },
@@ -10701,7 +10732,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2844
+        "line": 2875
       }
     ]
   },
@@ -10732,7 +10763,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2845
+        "line": 2876
       }
     ]
   },
@@ -10763,7 +10794,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2846
+        "line": 2877
       }
     ]
   },
@@ -10794,7 +10825,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2859
+        "line": 2890
       }
     ]
   },
@@ -10825,7 +10856,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2865
+        "line": 2896
       }
     ]
   },
@@ -10856,7 +10887,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2869
+        "line": 2900
       }
     ]
   },
@@ -10887,7 +10918,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2870
+        "line": 2901
       }
     ]
   },
@@ -10918,7 +10949,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2871
+        "line": 2902
       }
     ]
   },
@@ -10949,7 +10980,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2874
+        "line": 2905
       }
     ]
   },
@@ -10980,7 +11011,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2879
+        "line": 2910
       }
     ]
   },
@@ -11011,7 +11042,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2899
+        "line": 2930
       }
     ]
   },
@@ -11042,7 +11073,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2954
+        "line": 2985
       }
     ]
   },
@@ -11073,7 +11104,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2979
+        "line": 3010
       }
     ]
   },
@@ -11104,7 +11135,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2997
+        "line": 3028
       }
     ]
   },
@@ -11135,7 +11166,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3001
+        "line": 3032
       }
     ]
   },
@@ -11166,7 +11197,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3013
+        "line": 3044
       }
     ]
   },
@@ -11197,7 +11228,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3015
+        "line": 3046
       }
     ]
   },
@@ -11228,7 +11259,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3026
+        "line": 3057
       }
     ]
   },
@@ -11259,11 +11290,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3030
+        "line": 3061
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3037
+        "line": 3068
       }
     ]
   },
@@ -11294,11 +11325,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3031
+        "line": 3062
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3038
+        "line": 3069
       }
     ]
   },
@@ -11329,7 +11360,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3036
+        "line": 3067
       }
     ]
   },
@@ -11360,7 +11391,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3041
+        "line": 3072
       }
     ]
   },
@@ -11391,7 +11422,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3049
+        "line": 3080
       }
     ]
   },
@@ -11422,7 +11453,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3052
+        "line": 3083
       }
     ]
   },
@@ -11453,7 +11484,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3060
+        "line": 3091
       }
     ]
   },
@@ -11484,7 +11515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3075
+        "line": 3106
       }
     ]
   },
@@ -11515,7 +11546,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3079
+        "line": 3110
       }
     ]
   },
@@ -11546,7 +11577,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3089
+        "line": 3120
       }
     ]
   },
@@ -11577,7 +11608,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3100
+        "line": 3131
       }
     ]
   },
@@ -11608,7 +11639,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3103
+        "line": 3134
       }
     ]
   },
@@ -11639,7 +11670,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3113
+        "line": 3144
       }
     ]
   },
@@ -11670,7 +11701,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3117
+        "line": 3148
       },
       {
         "file": "src/cli/write-heading-ids.ts",
@@ -12333,67 +12364,67 @@
       }
     ]
   },
-  "e73bd6e8": {
-    "source": "[models] Could not load OpenRouter model catalog; using configured model ids unchanged.",
+  "fa94b4da": {
+    "source": "[models] Could not load model catalog for the active provider; using configured model ids unchanged.",
     "translated": {
-      "es": "[models] No se pudo cargar el catálogo de modelos de OpenRouter; se usarán los IDs de modelo configurados sin cambios.",
-      "fr": "[models] Impossible de charger le catalogue de modèles OpenRouter ; utilisation des identifiants de modèles configurés sans modification.",
-      "hi-Latn": "[models] OpenRouter model catalog load nahi ho saka; configured model ids unchanged use ho rahe hain.",
-      "ja": "[models] OpenRouterモデルカタログを読み込めませんでした。設定済みのモデルIDをそのまま使用します。",
-      "de": "[Modelle] OpenRouter-Modellkatalog konnte nicht geladen werden; konfigurierte Modell-IDs bleiben unverändert.",
-      "pt-BR": "[models] Não foi possível carregar o catálogo de modelos do OpenRouter; usando os IDs de modelo configurados sem alteração.",
-      "zh-Hant": "[models] 無法載入 OpenRouter 模型目錄；保持使用已設定的模型 ID。",
-      "ko": "[models] OpenRouter 모델 카탈로그를 불러올 수 없습니다. 구성된 모델 ID를 그대로 사용합니다.",
-      "zh-Hans": "[模型] 无法加载 OpenRouter 模型目录；保持配置的模型 ID 不变。"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "z-ai/glm-5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "mistralai/mistral-large-2512"
+      "ja": "[models] アクティブなプロバイダーのモデルカタログを読み込めませんでした。設定されたモデル ID をそのまま使用します。",
+      "es": "[models] No se pudo cargar el catálogo de modelos del proveedor activo; se usarán los ids de modelo configurados sin cambios.",
+      "fr": "[models] Impossible de charger le catalogue de modèles du fournisseur actif ; utilisation des identifiants de modèles configurés sans modification.",
+      "de": "[models] Modellkatalog des aktiven Providers konnte nicht geladen werden; konfigurierte Modell-IDs werden unverändert verwendet.",
+      "hi-Latn": "[models] Active provider ke liye model catalog load nahi ho saka; configured model ids ko bina badlaav ke use kiya ja raha hai.",
+      "zh-Hans": "[models] 无法加载活动提供商的模型目录；按原样使用已配置的模型 ID。",
+      "pt-BR": "[models] Não foi possível carregar o catálogo de modelos do provedor ativo; usando os IDs de modelo configurados sem alterações.",
+      "ko": "[models] 활성 프로바이더의 모델 카탈로그를 불러올 수 없습니다; 구성된 모델 ID를 변경 없이 사용합니다.",
+      "zh-Hant": "[models] 無法載入活躍供應商的模型目錄；維持使用已設定的模型 ID 不變。"
     },
     "locations": [
       {
         "file": "src/cli/openrouter-catalog-model-filter.ts",
         "line": 59
       }
-    ]
-  },
-  "256b0f9c": {
-    "source": "[models] Ignoring {{count}} model id(s) not listed by OpenRouter (removed or unknown slug):",
-    "translated": {
-      "es": "[models] Se ignorarán {{count}} ID(s) de modelo no listados por OpenRouter (eliminados o slug desconocido):",
-      "fr": "[models] Ignoré {{count}} identifiant(s) de modèle non répertorié(s) par OpenRouter (supprimé ou slug inconnu) :",
-      "hi-Latn": "[models] {{count}} model id(s) ignore kiye ja rahe hain jo OpenRouter mein listed nahi hain (removed ya unknown slug):",
-      "ja": "[models] OpenRouterに登録されていない {{count}} 件のモデルID（削除済みまたは不明なスラッグ）を無視します:",
-      "de": "[Modelle] {{count}} Modell-ID(s) ignoriert, die nicht von OpenRouter aufgeführt sind (entfernt oder unbekannter Slug):",
-      "pt-BR": "[models] Ignorando {{count}} ID(s) de modelo não listado(s) pelo OpenRouter (removido ou slug desconhecido):",
-      "zh-Hant": "[models] 忽略 {{count}} 個未列於 OpenRouter 的模型 ID（已移除或未知的 slug）：",
-      "ko": "[models] OpenRouter에 등록되지 않은 {{count}}개의 모델 ID를 무시합니다(삭제되었거나 알 수 없는 슬러그):",
-      "zh-Hans": "[模型] 忽略 {{count}} 个未被 OpenRouter 列出的模型 ID（已移除或未知标识）："
-    },
+    ],
     "models": {
+      "ja": "z-ai/glm-5.2",
       "es": "~anthropic/claude-sonnet-latest",
       "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
       "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "z-ai/glm-5",
+      "zh-Hans": "z-ai/glm-5.2",
       "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "mistralai/mistral-large-2512"
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
+  },
+  "a5a76029": {
+    "source": "[models] Ignoring {{count}} model id(s) not listed by the provider (removed or unknown slug):",
+    "translated": {
+      "ja": "[models] プロバイダーにリストされていない (削除済みまたは不明なスラッグ) {{count}} 個のモデル ID を無視しています:",
+      "es": "[models] Ignorando {{count}} id(s) de modelo no incluidos por el proveedor (eliminados o slug desconocido):",
+      "fr": "[models] {{count}} identifiant(s) de modèle ignoré(s) car non répertorié(s) par le fournisseur (supprimé ou slug inconnu) :",
+      "de": "[models] {{count}} Modell-ID(s) werden ignoriert, da sie vom Provider nicht aufgeführt sind (entfernt oder unbekannter Slug):",
+      "hi-Latn": "[models] {{count}} model id(s) ignore ki ja rahi hain jo provider dwara list nahi ki gayi (removed ya unknown slug):",
+      "zh-Hans": "[models] 忽略提供商未列出的 {{count}} 个模型 ID（已移除或未知的 slug）：",
+      "pt-BR": "[models] Ignorando {{count}} ID(s) de modelo não listado(s) pelo provedor (removido(s) ou slug desconhecido):",
+      "ko": "[models] 프로바이더에 등록되지 않은 {{count}}개 모델 ID를 무시합니다 (삭제되었거나 알 수 없는 슬러그):",
+      "zh-Hant": "[models] 忽略 {{count}} 個供應商未列出的模型 ID（已移除或未知的 slug）："
     },
     "locations": [
       {
         "file": "src/cli/openrouter-catalog-model-filter.ts",
         "line": 73
       }
-    ]
+    ],
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "de": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5.2",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2"
+    }
   },
   "7122056f": {
     "source": "[models] Edit {{configKey}} in your config, then run {{command}}.",

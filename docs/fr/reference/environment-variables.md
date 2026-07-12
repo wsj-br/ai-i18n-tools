@@ -3,7 +3,7 @@
 
 | Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | Clé API pour le fournisseur `openrouter` (requise lorsqu'il est actif). |
+| `OPENROUTER_API_KEY`   | Clé API pour le fournisseur `openrouter` (requise lorsqu'il est actif). Préréglage par défaut `init`. |
 | Clés d'autres fournisseurs    | Chaque fournisseur lit sa propre variable d'environnement de clé : `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama n'en a pas besoin). Remplacez par fournisseur avec `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Remplace `providers.openrouter.baseUrl` (uniquement lorsque ce fournisseur est configuré). |
 | `OLLAMA_BASE_URL`      | Remplace `providers.ollama.baseUrl` (uniquement lorsque ce fournisseur est configuré). |

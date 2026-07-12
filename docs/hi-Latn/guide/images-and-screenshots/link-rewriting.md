@@ -1,30 +1,36 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # Flat link rewriter aur two-step flow
 
+Screenshot URL layout aur flat two-step asset flow ke liye yah page padhen. Cross-page markdown link aur `replace` placeholder ke liye, [Documents — Link rewriting](/hi-Latn/guide/documents/link-rewriting) dekhen.
+
 `docsOutput.style = "flat"` ke liye (aur jab tak `rewriteRelativeLinks: false` ya ek custom `pathTemplate` set nahi kiya jata), ek built-in rewriter `postProcessing` se pehle chalta hai. Yah cross-doc links ko handle karta hai (locale suffixes jodkar) aur non-markdown asset URLs mein ek depth prefix jodta hai. Locale-specific asset paths (screenshots, `/img/…` bridges) ko phir `docsOutput.postProcessing.regexAdjustments` dwara rewrite kiya jata hai.
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Do-charanee pravaah jab `docsOutput.style = "flat"`
 
-```
-source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
-```
+1. **Source URL** — translated markdown mein image path (segment reassembly ke baad)
+2. **Flat link rewriter** — ek depth prefix jodta hai (`../`, `../../docs/`, …)
+3. **`regexAdjustments`** — locale folder segment ko swap karta hai (`en-GB` → `${translatedLocale}`)
+4. **Output URL** — translated file mein likha gaya antim path
 
 `outputDir: "translated-docs/"` aur repo root par srot `README.md` ke saath udaaharan:
 
 1. Flat link rewriter: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (`translated-docs/` ke liye ek `../`)
 2. `regexAdjustments` rule `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-`docsOutput.style = "doc-system"` ke liye (jismein `"docusaurus"`, `"astro-starlight"`, aur `"nested"` shamil hain), flat link rewriter nahi chalta hai. `regexAdjustments` translated markdown se original URL dekhta hai (aam taur par `/img/screenshots/en-GB/foo.png` jaisa ek absolute path).
+Kisi bhi non-`flat` style ke liye (jismein `"nested"`, `"doc-system"`, aur `"docusaurus"`, `"astro-starlight"`, aur `"vitepress"` jaise preset shamil hain), flat link rewriter nahi chalta hai. `regexAdjustments` translated markdown se original URL dekhta hai (aam taur par `/img/screenshots/en-GB/foo.png` jaisa ek absolute path).
+
+**Astro Starlight MDX:** Starlight content aksar `.mdx` hota hai. Un files ke liye, `translate-docs` kewal `postProcessing.regexAdjustments` chalata hai — koi flat, VitePress, Nextra, ya Fumadocs link rewriter nahi. Prati-locale screenshot path abhi bhi wahi `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule ka upyog karte hain; [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) dekhen.
 
 <a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress link normalizer (`style: "vitepress"`)
 
 Jab `docsOutput.rewriteVitepressLinks` `true` hota hai (jab `style` `"vitepress"` ho to default), segment reassembly ke baad ek alag normalizer chalta hai (flat rewriter ke bajaye). Yah VitePress / doc-system sites ko target karta hai jahan English content root par rahti hai aur locales sibling folders (`docs/de/guide/…`) mein hote hain.
 
-```
-source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
-```
+1. **Source href** — translated markdown mein link (segment reassembly ke baad)
+2. **VitePress link normalizer** — doc paths ko site routes mein rewrite karta hai (`/guide/…`)
+3. **`regexAdjustments`** — screenshots ke liye optional locale-folder swap (`screenshots/en-GB/` → `screenshots/de/`, …)
+4. **Output href** — translated file mein likha gaya antim URL
 
 Aam rewrites:
 
@@ -37,6 +43,8 @@ Aam rewrites:
 Un projects ke liye jo `README.md` → `docs/index.md` sync karte hain, `README.md` mein poore GitHub URLs ka upyog karein `LICENSE`, `examples/`, aur VitePress tree ke bahar ki anya files ke liye. Dekhein [VitePress integration — README as the docs homepage](/hi-Latn/guide/integrations/vitepress#readme-as-homepage).
 
 Flat rewriter aur VitePress normalizer `docs[]` block ke hisaab se mutually exclusive hain — `regexAdjustments` se pehle sirf ek chalta hai. Dekhein [VitePress integration — Link conventions](/hi-Latn/guide/integrations/vitepress#link-conventions).
+
+Prati-locale screenshot folder abhi bhi zaroorat padne par wahi `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` rule ka upyog karte hain; [Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) dekhen.
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra link normalizer (`style: "nextra"`)

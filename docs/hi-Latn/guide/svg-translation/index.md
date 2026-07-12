@@ -90,19 +90,19 @@ Poora field reference: [Configuration — `svg`](/hi-Latn/reference/configuratio
 ### Charan 2: Translate karein
 
 ```bash
-npx ai-i18n-tools translate-svg
+ai-i18n-tools translate-svg
 ```
 
 Ek single locale ka anuvad karein:
 
 ```bash
-npx ai-i18n-tools translate-svg --locale de
+ai-i18n-tools translate-svg --locale de
 ```
 
 Files likhe bina preview karein:
 
 ```bash
-npx ai-i18n-tools translate-svg --dry-run
+ai-i18n-tools translate-svg --dry-run
 ```
 
 `sync` SVG step ko automatically chalata hai jab `features.translateSVG` aur `svg` dono set hote hain (`--no-svg` ke saath skip karein). Shared flags mein `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, aur `--force` / `--force-update` shamil hain.

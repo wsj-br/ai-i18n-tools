@@ -1,9 +1,9 @@
 <a id="environment-variables"></a>
 # 環境變數
 
-| 變數               | 說明                                                 |
+| 變數               | 說明                                                        |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` 提供者的 API 金鑰（在啟用時需要）。 |
+| `OPENROUTER_API_KEY`   | `openrouter` 提供者的 API 金鑰 (啟用時為必填)。預設 `init` 預設。 |
 | 其他提供者金鑰    | 每個提供者讀取其自己的金鑰環境變數：`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama 不需要)。可透過 `providers.<name>.apiKeyEnv` 為每個提供者覆寫。 |
 | `OPENROUTER_BASE_URL`  | 覆寫 `providers.openrouter.baseUrl`（僅當該提供者已設定時）。 |
 | `OLLAMA_BASE_URL`      | 覆寫 `providers.ollama.baseUrl`（僅當該提供者已設定時）。 |

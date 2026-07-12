@@ -90,19 +90,19 @@ SVG 레이아웃이 래스터 스크린샷 전략과 어떻게 조화를 이루�
 ### 2단계: 번역
 
 ```bash
-npx ai-i18n-tools translate-svg
+ai-i18n-tools translate-svg
 ```
 
 단일 로케일 번역:
 
 ```bash
-npx ai-i18n-tools translate-svg --locale de
+ai-i18n-tools translate-svg --locale de
 ```
 
 파일을 작성하지 않고 미리 보기:
 
 ```bash
-npx ai-i18n-tools translate-svg --dry-run
+ai-i18n-tools translate-svg --dry-run
 ```
 
 `sync`는 `features.translateSVG`과 `svg`가 모두 설정된 경우 SVG 단계를 자동으로 실행합니다(`--no-svg`로 건너뛸 수 있음). 공유 플래그에는 `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update`이 포함됩니다.

@@ -13,11 +13,13 @@ Exibe a versão da CLI e o carimbo de data/hora da compilação (mesmas informa�
 <a id="init"></a>
 ### `init`
 
-**Sinopse:** `ai-i18n-tools init [-t <template>] [-o <path>] [--with-translate-ignore]`
+**Sinopse:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
 Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` e `docs[].addFrontmatter`). Os comandos de tradução que chamam um LLM exigem a chave de API do provedor ativo no ambiente ou `.env` (exceto Ollama) — consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
 
-**Opções principais:** `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**Opções principais:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+
+`-P` / `--provider` seleciona qual **predefinição integrada** para scaffolding (`openrouter` quando omitido). Deve ser um dos seguintes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
 
 **Modelos (`-t`):**
 

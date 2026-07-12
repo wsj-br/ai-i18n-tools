@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+Node.js se ek config scaffold karein (optional chautha argument built-in preset ko select karta hai; default `openrouter` par hota hai):
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 Mukhya exports (aam taur par upyog kiye jaate hain — poore public surface ke liye `src/index.ts` dekhen):
 
 | Export | Vivaran |
@@ -41,4 +49,6 @@ Mukhya exports (aam taur par upyog kiye jaate hain — poore public surface ke l
 | `resolveDocumentationOutputPath` | Anuvadit dastavez ke liye output file path hal karein. |
 | `Glossary` / `GlossaryMatcher` | Anuvad shabdavaliyon ko load aur lagu karein. |
 | `runTranslateUI` | Programmatic translate-UI entry point. |
+| `writeInitConfigFile` | Ek starter config JSON likhein (`template`, optional `providerKey` jo `openrouter` par default hota hai). |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` dwara upyog kiye gaye built-in preset ke anusaar starter `translationModels`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |

@@ -107,23 +107,21 @@ Aktivieren Sie `forceLowercase: true` im `svg`-Konfigurationsblock, um Probleme 
 <a id="decision-guide"></a>
 # Entscheidungsleitfaden
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**Ist das Asset ein SVG mit übersetztem Text oder Beschriftungen?**
+  - **Ja** → [Web-App-SVG](/de/guide/svg-translation/translated-svg-web-app) oder [Kolokalisierter SVG](/de/guide/svg-translation/translated-svg-colocated)
+  - **Nein** (Rasterscreenshot oder dekoratives SVG) →
+    - **Ist die Dokumentations-Website mit Assets kolokalisiert neben den übersetzten Dokumenten?**
+      - **Ja** → [Kolokalisierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots) (Raster) + [Kolokalisierter SVG](/de/guide/svg-translation/translated-svg-colocated) (SVGs)
+    - **Nur eine Sprache benötigt das Bild** (keine sprachspezifischen Varianten)?
+      - **Ja** → [Gemeinsames Bild](/de/guide/images-and-screenshots/shared-image)
+    - **Andernfalls** → [Sprachspezifischer Ordner](/de/guide/images-and-screenshots/per-locale-folder)
 
 SVG-Layouts werden im Leitfaden [SVG-Übersetzung](/de/guide/svg-translation/) behandelt.
 
-| Layout | Asset-Typ | Site-Typ | Tool-Mechanismus |
-|---|---|---|---|
-| [Geteiltes Bild](/de/guide/images-and-screenshots/shared-image) | Raster (geteilt) | `docsOutput.style = "flat"`-Dokumente | Pro-Datei-Link-Umschreiber; normalerweise kein Regex |
+| Layout                                                                       | Asset-Typ                  | Website-Typ                                                              | Tool-Mechanism                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Kolokalisierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots) | Raster (kolokalisiert)          | `"doc-system"` mit kolokalisierten Assets (Docusaurus-Preset)               | Screenshot-Skript platziert Dateien; kein Regex                     |
 | [Pro Gebietsschema-Ordner](/de/guide/images-and-screenshots/per-locale-folder) | Raster (pro Gebietsschema) | `"flat"` oder `"doc-system"` (inkl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` Gebietsschema-Segmenttausch |
-| [Kollokierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots) | Raster (kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | Screenshot-Skript platziert Dateien; kein Regex |
-| [Web-App-SVG](/de/guide/svg-translation/translated-svg-web-app) | SVG (übersetzt) | Web-App | `translate-svg` mit `svg.style = "flat"` |
+| [Gemeinsames Bild](/de/guide/images-and-screenshots/shared-image)                   | Raster (gemeinsam)             | `docsOutput.style = "flat"`-Dokumente                                       | Per-Datei-Link-Überschreiber; in der Regel kein Regex                     |
 | [Kollokiertes SVG](/de/guide/svg-translation/translated-svg-colocated) | SVG (übersetzt, kollokiert) | `"doc-system"` mit kollokierten Assets (Docusaurus-Preset) | `translate-svg` mit `svg.style = "nested"` + `pathTemplate` |
+| [Web-App-SVG](/de/guide/svg-translation/translated-svg-web-app) | SVG (übersetzt) | Web-App | `translate-svg` mit `svg.style = "flat"` |

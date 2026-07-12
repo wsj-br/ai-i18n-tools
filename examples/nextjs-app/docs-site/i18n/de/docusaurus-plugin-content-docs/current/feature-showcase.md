@@ -4,12 +4,13 @@ title: Übersicht der Übersetzungsfunktionen
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element zeigt, das ai-i18n-tools
   übersetzen kann.
-translation_last_updated: '2026-07-10T21:34:19.254Z'
-source_file_mtime: '2026-05-04T21:42:57.000Z'
-source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
+translation_last_updated: '2026-07-12T01:33:46.978Z'
+source_file_mtime: '2026-07-12T01:15:35.404Z'
+source_file_hash: ab62a8c7eafe5b18776b41e28c22c18b609913597cf062f6774b98aeb0178084
 translation_language: de
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
+  - google/gemini-2.5-flash
   - qwen/qwen3-235b-a22b-2507
 ---
 
@@ -247,8 +248,8 @@ Der Konfigurationseintrag für diese Dokumentationsseite enthält:
 "regexAdjustments": [
   {
     "description": "Per-locale screenshot folders in docs-site static assets",
-    "search": "screenshots/de/",
-    "replace": "screenshots/${translatedLocale}/"
+    "search": "screenshots/de/]+/",
+    "replace": "screenshots/de/"
   }
 ]
 ```
@@ -261,7 +262,7 @@ Nach der Übersetzung lautet die deutsche Ausgabe:
 
 Hier ist der eigentliche Screenshot der Next.js-App – sie ist standardmäßig auf Englisch, aber wenn Sie dies in einer übersetzten Sprachversion lesen, sollte das untenstehende Bild die App in Ihrer Sprache anzeigen:
 
-![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/de/screenshot.png)
+![Die Beispiel-Next.js-App – UI-Strings und diese Seite übersetzt von ai-i18n-tools](/img/screenshots/de/screenshot.png)
 
 ---
 

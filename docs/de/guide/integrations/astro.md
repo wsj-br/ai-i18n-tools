@@ -14,7 +14,7 @@ Verwenden Sie `init -t ui-starlight` und `docsOutput.style: "astro-starlight"` f
 ### Schnellstart
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ Verweisen Sie `contentPaths` auf Ihre englischen `.md` / `.mdx`-Dateien und -Ver
 
 Starlight UI-Overrides können bei Bedarf `src/content/i18n/en.json` mit `jsonPathTemplate` in einem separaten `docs[]`-Block verwenden – siehe [Dokumente – Initialisierung für die Dokumentation](/de/guide/documents/#step-1-initialise-for-documentation).
 
-<a id="framework-shell-translation"></a>
-### Framework-Shell-Übersetzung
-
-Starlight liefert eigene integrierte UI-Strings für viele Sprachen (Navigationsbeschriftungen, Suchplatzhalter, Inhaltsverzeichnis usw.) – es gibt keine separate Shell-/Theme-Pipeline zum Konfigurieren, anders als bei Docusaurus, VitePress oder Nextra:
-
-| Framework | Shell-/Theme-Strings | Pipeline |
-|-----------|----------------------|----------|
-| Astro Starlight | Integrierte UI-Strings (viele Sprachen); keine zusätzliche Shell-Pipeline | Dokumente – `translate-docs` (nur Seiten) |
-| Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente – `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` Seitenleistenbeschriftungen + Theme-Wörterbuch `.ts` | Dokumente – siehe [Nextra-Integration](/de/guide/integrations/nextra) |
-| Fumadocs | `meta.json` Seitenleistenbeschriftungen + UI-Überschreibungskatalog | Dokumente – siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs) |
-
-Siehe [Docusaurus-Integration](/de/guide/integrations/docusaurus), [VitePress-Integration](/de/guide/integrations/vitepress), [Nextra-Integration](/de/guide/integrations/nextra) und [Fumadocs-Integration](/de/guide/integrations/fumadocs) für die anderen Framework-Muster.
+Starlight liefert integrierte UI-Strings für viele Sprachen (Navigationsbeschriftungen, Such-Platzhalter, Inhaltsverzeichnis usw.). Es gibt keine separate Shell-/Theme-Pipeline zum Konfigurieren – verwenden Sie `translate-docs` nur für Seiteninhalte. Für andere Frameworks siehe [Framework-Shell-Übersetzung](/de/guide/integrations/#framework-shell-translation).
 
 <a id="example-project"></a>
 ### Beispielprojekt
@@ -83,7 +70,7 @@ Die meisten Teams verwenden eine **Hybridlösung** aus zwei Pipelines auf dersel
 ### Schnellstart
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

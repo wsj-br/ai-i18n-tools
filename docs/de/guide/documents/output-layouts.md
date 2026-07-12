@@ -1,19 +1,84 @@
 <a id="output-layouts"></a>
 # Ausgabe-Layouts
 
-`docsOutput.style` steuert, wohin übersetzte Markdown-Dateien geschrieben werden. Verwenden Sie exakt die unten angegebenen Zeichenketten in `docs[].docsOutput.style` (Aliase sind voreingestellte Layouts, keine separaten Engines).
+`docsOutput.style` steuert, wohin übersetzte Markdown-Dateien geschrieben werden. Verwenden Sie die genauen Zeichenfolgenwerte unten in `docs[].docsOutput.style`. Aliase sind voreingestellte `doc-system`-Layouts (oder Fumadocs-Punkt-Suffix-Layout), keine separaten Engines – das Laden der Konfiguration kann Alias-`style`-Werte in kanonische `"doc-system"` umschreiben, während die ursprüngliche Voreinstellung in `stylePreset` beibehalten wird.
 
-`docsOutput.style = "nested"` (Standard, wenn weggelassen) — spiegelt die Quellstruktur unter `{outputDir}/{locale}/` wider (z. B. `docs/guide.md` → `i18n/de/docs/guide.md`).
+Setzen Sie `docs[].docsOutput.pathTemplate` (Markdown/MDX) oder `jsonPathTemplate` (JSON-Label-Dateien), um ein integriertes Layout zu überschreiben. Siehe [pathTemplate-Platzhalter](#pathtemplate--jsonpathtemplate-placeholders) unten.
 
-`docsOutput.style = "doc-system"` — sprachpräfixierte Dokumentationsstruktur für statische Dokumentationsseiten. Dateien unter `docsRoot` werden nach `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` geschrieben. Pfade außerhalb von `docsRoot` fallen auf das verschachtelte Layout zurück. Legen Sie `docs[].docsOutput.docsRoot` auf Ihren englischen Quellstamm fest (z. B. `"docs"` oder `"src/content/docs"`). Wenn `docsOutput.style = "doc-system"`, müssen Sie `localeSubpath` explizit festlegen (verwenden Sie einen Alias unten für Voreinstellungen).
+<a id="layout-overview"></a>
+## Layout-Übersicht
 
-**Aliase** (gleicher Layout-Engine, voreingestellter `localeSubpath`):
+| `docsOutput.style` | Engine | Typische Verwendung |
+| --- | --- | --- |
+| `"nested"` | Locale-Ordner spiegelt vollständigen Quellbaum wider | Standard; generische i18n-Ausgabe unter `{outputDir}/{locale}/` |
+| `"flat"` | Locale-Suffix im Dateinamen (optionale Unterverzeichnisse) | README, Changelogs, Repo-Root-Dokumente, [Sprachumschalter](/de/guide/documents/language-switcher) |
+| `"doc-system"` | Locale-Ordner + optional `localeSubpath` unter `docsRoot` | Benutzerdefinierte statische Dokumentationsgeneratoren |
+| `"docusaurus"` | `doc-system`-Voreinstellung | [Docusaurus](/de/guide/integrations/docusaurus) i18n-Plugin-Layout |
+| `"astro-starlight"` | `doc-system`-Voreinstellung (`localeSubpath: ""`) | [Astro Starlight](/de/guide/integrations/astro#astro-starlight), einfache Astro-Locale-Seiten |
+| `"vitepress"` | `doc-system`-Voreinstellung (`localeSubpath: ""`) | [VitePress](/de/guide/integrations/vitepress) Locale-Ordner neben Englisch |
+| `"nextra"` | `doc-system`-Voreinstellung (`localeSubpath: ""`) | [Nextra](/de/guide/integrations/nextra) Locale-Ordner (`content/en/` → `content/{locale}/`) |
+| `"fumadocs"` | Punkt-Suffix (Standard) oder `doc-system` wenn `fumadocsParser: "dir"` | [Fumadocs](/de/guide/integrations/fumadocs) Punkt- oder Verzeichnis-Inhaltslayout |
+
+<a id="nested-default"></a>
+## `nested` (Standard)
+
+`docsOutput.style = "nested"` (Standard, wenn weggelassen) – spiegelt den Quellbaum unter `{outputDir}/{locale}/` wider.
+
+```text
+docs/guide.md  →  i18n/de/docs/guide.md
+README.md      →  i18n/de/README.md
+```
+
+Pfade außerhalb eines `docsRoot` (wenn gesetzt) verwenden dieselbe verschachtelte Form.
+
+<a id="flat"></a>
+## `flat`
+
+`docsOutput.style = "flat"` – schreibt übersetzte Dateien unter `outputDir` mit einem Locale-Suffix im Dateinamen. Standardmäßig wird nur der Basisname beibehalten (`{outputDir}/{stem}.{locale}{extension}`), sodass `docs/guide.md` und `docs/other/guide.md` kollidieren würden, es sei denn, Sie aktivieren `flatPreserveRelativeDir`.
+
+```text
+README.md           →  translated-docs/README.de.md
+docs/guide.md       →  translated-docs/guide.de.md   (default: basename only)
+```
+
+Relative Links zwischen Seiten werden automatisch umgeschrieben, wenn `docsOutput.style = "flat"` (es sei denn, `rewriteRelativeLinks: false` oder ein benutzerdefiniertes `pathTemplate` ist gesetzt). Siehe [Anker-Links](/de/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
+
+<a id="flat-with-flatpreserverelativedir"></a>
+### `flat` mit `flatPreserveRelativeDir`
+
+Setzen Sie `docsOutput.flatPreserveRelativeDir` auf `true`, um Quell-Unterverzeichnisse unter `outputDir` beizubehalten. Verwenden Sie dies, wenn Sie mehrere Markdown-Dateien übersetzen, die Basisnamen in verschiedenen Ordnern teilen, oder wenn flache Ausgaben einen flachen Baum widerspiegeln müssen (z. B. README im Repo-Root plus `docs/*.md`).
+
+```text
+docs/guide.md       →  translated-docs/docs/guide.de.md
+docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
+```
+
+Der flache Link-Umschreiber verwendet den pro-Datei-Ausgabepfad, wenn er Tiefenpräfixe für Asset-URLs berechnet – siehe [Link-Umschreibung](/de/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir).
+
+<a id="doc-system"></a>
+## `doc-system`
+
+`docsOutput.style = "doc-system"` – lokalisierter Dokumentationsbaum für statische Dokumentationsseiten. Dateien unter `docsRoot` werden geschrieben nach:
+
+```text
+{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
+```
+
+Pfade außerhalb von `docsRoot` greifen auf das [verschachtelte](#nested) Layout (`{outputDir}/{locale}/{relPath}`) zurück.
+
+Setzen Sie `docs[].docsOutput.docsRoot` auf Ihr englisches Quellverzeichnis (z. B. `"docs"`, `"src/content/docs"` oder `"content/en"`). Wenn `docsOutput.style = "doc-system"`, müssen Sie `localeSubpath` explizit festlegen (verwenden Sie einen Alias unten für Voreinstellungen). Verwenden Sie `localeSubpath: ""`, wenn übersetzte Seiten direkt unter `{outputDir}/{locale}/` liegen (Starlight-Stil).
+
+Docusaurus-Shell-JSON aus `docusaurusCatalogDir` und andere JSON-Artefakte unter Doc-System-Voreinstellungen folgen dem gleichen Ordnerlayout wie Markdown. Mit `style: "flat"` verwenden JSON-Label-Dateien weiterhin die verschachtelte Form, es sei denn, Sie legen `jsonPathTemplate` fest.
+
+<a id="doc-system-aliases"></a>
+## Doc-System-Aliase
+
+**Aliase** (gleiche `doc-system`-Engine, voreingestelltes `localeSubpath` und Standardwerte):
 
 - `docsOutput.style = "docusaurus"` – `localeSubpath` ist standardmäßig `docusaurus-plugin-content-docs/current` (Docusaurus i18n-Plugin-Layout).
-- `docsOutput.style = "astro-starlight"` – `localeSubpath` ist standardmäßig `""` (übersetzte Seiten direkt unter `{outputDir}/{locale}/`, passend zu [Starlight](https://starlight.astro.build/guides/i18n/), wenn Englisch im Inhaltsstamm liegt und `outputDir` gleich `docsRoot` ist).
-- `docsOutput.style = "vitepress"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; BCP-47-Gebietsschema-Ordnernamen bleiben erhalten (`localePathLowercase` ist standardmäßig `false`). Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle befindet sich unter einem Gebietsschema-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/de/guide/integrations/nextra).
-- `docsOutput.style = "fumadocs"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle verwendet Dateien mit Punktsuffix (Standard) oder einen Gebietsschema-Ordner, wenn `fumadocsParser` `"dir"` ist. Siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs).
+- `docsOutput.style = "astro-starlight"` – `localeSubpath` ist standardmäßig `""`; `localePathLowercase` ist standardmäßig `true`. Übersetzte Seiten unter `{outputDir}/{locale}/`, passend zu [Starlight](https://starlight.astro.build/guides/i18n/), wenn Englisch im Inhaltsstamm liegt und `outputDir` gleich `docsRoot` ist. Wird auch für einfache Astro-Locale-Seiten verwendet (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) – siehe [Astro-Website-Seiten](/de/guide/ui-strings/astro-website#pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; BCP-47-Locale-Ordnernamen bleiben erhalten (`localePathLowercase` ist standardmäßig `false`). Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle liegt unter einem Locale-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/de/guide/integrations/nextra).
 
 Docusaurus-Voreinstellung (primäre Dokumentationsseiten):
 
@@ -39,18 +104,6 @@ Nextra-Voreinstellung (Englisch unter einem Gebietsschema-Ordner, gleichrangige 
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs-Voreinstellung – Punkt-Parser (Standard; Gebietsschema-Suffix neben englischer Quelle):
-
-```text
-content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
-```
-
-Fumadocs-Voreinstellung – Verzeichnis-Parser (Nextra-Stil Gebietsschema-Ordner):
-
-```text
-content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
-```
-
 Optionale JSON-Bezeichnungen — Docusaurus-Shell-Zeichenketten aus `docusaurusCatalogDir` (nicht MDX-Textkörper):
 
 ```text
@@ -63,15 +116,24 @@ VitePress Navigations-/Seitenleisten-/Fußzeilen-Strings sind nicht in Markdown 
 
 Nextra Theme-Wörterbuch (`.ts`) und `_meta.ts` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docs[].nextraDictionaryPath` und die automatische `_meta`-Sammlung, wenn `style: "nextra"`, alles innerhalb von **`translate-docs`**. Siehe [Nextra-Integration](/de/guide/integrations/nextra).
 
-Fumadocs UI-Überschreibungen (`lib/layout.shared.ts`) und `meta.json` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von **`translate-docs`**. Siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs).
+<a id="fumadocs"></a>
+## `fumadocs`
 
-`docsOutput.style = "flat"` — platziert übersetzte Dateien neben der Quelle mit einem Sprachsuffix oder in einem Unterverzeichnis. Relative Links zwischen Seiten werden automatisch umgeschrieben, wenn `docsOutput.style = "flat"` (es sei denn, `rewriteRelativeLinks: false` oder ein benutzerdefiniertes `pathTemplate` ist gesetzt).
+`docsOutput.style = "fumadocs"` – Fumadocs-Inhaltslayout über `docsOutput.fumadocsParser`:
+
+- **`"dot"` (Standard)** – Locale-Suffix im Dateinamen neben englischen Quellen unter `outputDir` (kein Locale-Ordner). Dies ist getrennt von der `doc-system`-Pfadform.
 
 ```text
-docs/guide.md → i18n/guide.de.md
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-Für seitenübergreifende Ankerlinks in einem flachen Layout siehe [Ankerlinks](/de/guide/documents/anchor-links).
+- **`"dir"`** – Locale-Ordner im Nextra-Stil; verwendet die gleiche `doc-system`-Engine mit leerem `localeSubpath`.
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
+Fumadocs UI-Überschreibungen (`lib/layout.shared.ts`) und `meta.json` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von **`translate-docs`**. Siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs).
 
 Informationen zum Umschreiben von Link- und Asset-URLs, die über die integrierten Korrekturen für relative Links hinausgehen, finden Sie unter [Link-Umschreibung](/de/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 
@@ -84,7 +146,7 @@ Für Screenshots und Raster-Assets auf übersetzten Seiten siehe [Bilder & Scree
 
 Wenn Sie eine benutzerdefinierte `pathTemplate` verwenden, ist `rewriteRelativeLinks` standardmäßig auf `false` gesetzt, sofern Sie ihn nicht explizit festlegen – die Umwandlung relativer Links ist für `docsOutput.style = "flat"` ohne benutzerdefinierte Vorlage konzipiert.
 
-Für integrierte Layouts (`nested`, `flat`, `doc-system` ohne benutzerdefinierte Vorlage) setzen Sie `docsOutput.localePathLowercase` auf `true`, um klein geschriebene Ordner- oder Dateinamenabschnitte zu erzeugen (z. B. `pt-br` statt `pt-BR`). Der `astro-starlight`-Alias setzt dies standardmäßig auf `true`. Benutzerdefinierte `pathTemplate` / `jsonPathTemplate`-Werte bleiben unverändert – verwenden Sie dort `{llocale}`, wenn Sie klein geschriebene Abschnitte benötigen, aber `{locale}` im BCP-47-Format beibehalten möchten.
+Für integrierte Layouts (`nested`, `flat`, `doc-system` ohne benutzerdefinierte Vorlage) setzen Sie `docsOutput.localePathLowercase` auf `true`, um kleingeschriebene Locale-Ordner- oder Dateinamen-Segmente zu schreiben (z. B. `pt-br` anstelle von `pt-BR`). Der `astro-starlight`-Alias und `doc-system` mit leerem `localeSubpath` setzen dies beim Laden der Konfiguration standardmäßig auf `true`. Benutzerdefinierte `pathTemplate` / `jsonPathTemplate`-Werte bleiben unverändert – verwenden Sie dort `{llocale}`, wenn Sie kleingeschriebene Segmente benötigen, während `{locale}` als BCP-47 beibehalten wird.
 
 | Platzhalter            | Rolle                                                                                                       | Beispiel                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|

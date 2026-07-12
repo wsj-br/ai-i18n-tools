@@ -9,7 +9,7 @@ Voir aussi [Documents](/fr/guide/documents/), la démo exécutable [examples/doc
 ## Démarrage rapide
 
 ```bash
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
@@ -79,21 +79,6 @@ Lorsque `docusaurusCatalogDir` est défini et `features.translateDocs` est activ
 - **JSON de l'interface** — catalogues de la barre de navigation, du pied de page et du thème/plugin de `i18n/en/` vers les dossiers de locale frères
 
 Ne placez pas le JSON de l'interface Docusaurus dans `json[]` ; utilisez plutôt `docs[].docusaurusCatalogDir` avec Documents.
-
-<a id="framework-shell-translation"></a>
-## Traduction du shell du framework
-
-| Framework | Chaînes de shell / thème | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Étiquettes de barre latérale `_meta.ts` | Documents — auto quand `style: "nextra"` + `translate-docs` |
-| Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Étiquettes de barre latérale `meta.json` | Documents — auto quand `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catalogue de surcharges d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses locales) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
-
-Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés. Voir [intégration VitePress](/fr/guide/integrations/vitepress), [intégration Nextra](/fr/guide/integrations/nextra) et [intégration Fumadocs](/fr/guide/integrations/fumadocs) pour les autres modèles de framework.
 
 <a id="example-project"></a>
 ## Exemple de projet

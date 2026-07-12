@@ -3,6 +3,8 @@
 
 `doc-system` 사이트가 로케일별 에셋을 번역된 마크다운 옆에 함께 배치할 때 사용합니다 — URL 재작성이 필요하지 않습니다. Docusaurus 사전 설정(`docsOutput.style = "docusaurus"`)이 참조 구현이며, `"doc-system"`와 사용자 정의 `localeSubpath`를 사용하는 다른 생성기들도 동일한 개념을 따릅니다: 영문 에셋은 소스 로케일 경로에 위치하고, 번역된 에셋은 `{outputDir}/{locale}/[localeSubpath/]assets/` 아래에 위치합니다.
 
+> **왜 저장소 내 예제가 없나요:** 이 저장소의 Docusaurus 데모([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/))는 대신 [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder) 레이아웃을 사용합니다 — [결정 가이드](/ko/guide/images-and-screenshots/#decision-guide)를 참조하세요. Colocated `../assets/`는 권장되는 그린필드 패턴이며, [duplistatus](https://github.com/wsj-br/duplistatus)는 전체 프로덕션 참조 자료입니다.
+
 <a id="directory-layout"></a>
 ### 디렉터리 구조
 

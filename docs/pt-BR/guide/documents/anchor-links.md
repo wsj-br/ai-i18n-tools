@@ -19,11 +19,52 @@ Aqui, o destino do link é `setup.md`, e `#first-run` é a âncora: deve rolar a
 <a id="what-to-do"></a>
 ## O que fazer
 
+<a id="docusaurus-sites-preferred"></a>
+### Sites Docusaurus (preferencial)
+
+Na documentação [Docusaurus](/pt-BR/guide/integrations/docusaurus) (`docsOutput.style = "docusaurus"`), prefira os IDs de cabeçalho nativos do Docusaurus em vez de `ai-i18n-tools write-heading-ids`:
+
+1. Adicione um ID explícito na linha do cabeçalho com o sufixo `{#…}` do Docusaurus, por exemplo, `## TLS configuration {#tls-configuration}`. Durante a `translate-docs`, apenas o texto visível do cabeçalho é traduzido — o sufixo `{#tls-configuration}` é preservado em todos os locais.
+2. Execute `docusaurus write-heading-ids` a partir da raiz do seu projeto Docusaurus (geralmente `pnpm run write-heading-ids` quando conectado em `package.json`) para adicionar ou atualizar os sufixos `{#…}` nos cabeçalhos que não os possuem. Execute novamente após renomear os cabeçalhos para que os IDs antigos correspondam aos títulos atuais.
+
+Aponte seus **links âncora** de markdown para esses IDs estáveis, por exemplo, `[label](other.md#tls-configuration)`, onde o fragmento corresponde ao sufixo `{#…}` — não um slug adivinhado apenas a partir de palavras em inglês. Veja [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) para documentos confirmados que usam esse padrão.
+
+<a id="other-layouts-flat-starlight-vitepress-etc"></a>
+### Outros layouts (flat, Starlight, VitePress, etc.)
+
+Quando você não está no Docusaurus, ou precisa de âncoras HTML em vez de sufixos `{#…}`:
+
 1. Execute `ai-i18n-tools write-heading-ids` no seu código-fonte `.md` / `.mdx` antes de `translate-docs` (mesmo `docs[]` / `contentPaths` de costume). Ele insere âncoras HTML explícitas na linha anterior a cada título, de modo que os valores `id` sejam compartilhados por todas as cópias traduzidas. Execute novamente após renomear títulos para que IDs de âncora obsoletos sejam atualizados e correspondam ao título atual.
 2. Aponte seus **links âncora** do markdown para esses IDs estáveis, por exemplo, `[label](other.md#section-id)`, onde `section-id` corresponde à âncora escrita pela ferramenta — não apenas uma suposição baseada em palavras em inglês.
 
 <a id="example"></a>
 ## Exemplo
+
+<a id="example-docusaurus"></a>
+### Sufixo `{#…}` do Docusaurus
+
+`docs/overview.md`:
+
+```markdown
+See [TLS setup](security.md#tls-configuration) for certificate steps.
+```
+
+`docs/security.md` (fonte em inglês):
+
+```markdown
+## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+Após `translate-docs`, o fragmento do link permanece `#tls-configuration` em todos os locais; apenas o texto do cabeçalho e o rótulo do link mudam:
+
+```markdown
+Siehe [TLS-Einrichtung](security.md#tls-configuration) für die Zertifikatsschritte.
+```
+
+<a id="html-anchors-write-heading-ids"></a>
+### Âncoras HTML (`write-heading-ids`)
 
 `docs/overview.md`:
 

@@ -22,7 +22,7 @@ Der Standard-Listen-Port ist **8675**. Falls dieser Port nicht verfügbar ist, v
 
 Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → Betriebssystem-Gebietsschema. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language).
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![Übersetzungs-Dashboard mit Registerkarte „Dokumentation“ mit Filtern und zwischengespeicherten Segmentzeilen](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## Welchen Tab soll ich verwenden?

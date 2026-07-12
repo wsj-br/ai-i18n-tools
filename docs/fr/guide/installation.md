@@ -18,7 +18,41 @@ ai-i18n-tools inclut son propre extracteur de chaînes. Si vous avez précédemm
 
 Installez `ai-i18n-tools` en tant que dépendance ou devDependency dans votre projet (voir [Installation](#installation) ci-dessus). Le package déclare une entrée `bin` que votre gestionnaire de packages lie à `node_modules/.bin/ai-i18n-tools`. Ce shim (`bin/ai-i18n-tools.mjs` à l'intérieur du package installé) charge l'interface de ligne de commande compilée.
 
-**Scripts `package.json` (recommandé)** — lorsque npm ou pnpm exécute un script, il ajoute `node_modules/.bin` à `PATH`, de sorte que des commandes comme `pnpm run i18n:sync` invoquent `ai-i18n-tools` sans préfixe `npx` ou `pnpm exec` :
+Pour taper la commande simple `ai-i18n-tools` dans un shell interactif, configurez l'une des options ci-dessous. Sans configuration, le shell ne peut pas trouver le binaire même après une installation locale.
+
+**direnv** — à ajouter à un `.envrc` à la racine du projet (bash/zsh ; voir [direnv.net](https://direnv.net/)) :
+
+```bash
+PATH_add node_modules/.bin
+```
+
+Après `direnv allow`, la commande simple est disponible chaque fois que vous `cd` dans le projet.
+
+**PATH manuel** — depuis la racine du projet dans un shell interactif :
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**Installation globale** — installez la CLI une fois et invoquez-la depuis n'importe quel répertoire :
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+Une installation globale utilise la version épinglée globalement. Pour un épinglage de version par projet, préférez direnv ou PATH manuel afin que `node_modules/.bin` se résolve en dépendance du projet.
+
+**Scripts `package.json`** — lorsque npm ou pnpm exécute un script, il ajoute `node_modules/.bin` à `PATH`, de sorte que le nom de la commande simple fonctionne dans les scripts sans modifications du PATH du shell :
 
 ```json
 "scripts": {
@@ -26,51 +60,32 @@ Installez `ai-i18n-tools` en tant que dépendance ou devDependency dans votre pr
 }
 ```
 
-**Shell interactif** — depuis la racine de votre projet, après une installation locale :
+Exécutez ensuite, par exemple, `pnpm run i18n:sync`.
 
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-yarn ai-i18n-tools sync       # yarn (Berry: yarn dlx ai-i18n-tools … for one-off)
-```
-
-**Nu** `ai-i18n-tools` **dans le terminal** — pour taper le nom de la commande directement dans un shell interactif, ajoutez le répertoire bin local à `PATH` :
-
-```bash
-# bash/zsh — project root
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell — project root
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-Avec [**direnv**](https://direnv.net/), ajoutez `PATH_add node_modules/.bin` à un `.envrc` à la racine du projet afin que la commande nue soit disponible après `cd` dans le projet. Sans ajuster `PATH`, continuez à utiliser `npx ai-i18n-tools …` ou `pnpm exec ai-i18n-tools …`.
-
-**Exécution unique sans installation** — `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (télécharge le package pour cet appel ; aucune entrée dans `package.json`).
+**Alternatives** — si vous préférez ne pas ajuster `PATH` : `npx ai-i18n-tools …` (npm) ou `pnpm exec ai-i18n-tools …` (pnpm). Pour une exécution unique sans installation et sans entrée `package.json` : `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>`.
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
 ### Monorepo ai-i18n-tools cloné
 
 Lors du développement du package ou de l'exécution des **exemples** de l'espace de travail à partir d'un clone complet de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) :
 
-- **Exemples d'espace de travail** (`examples/console-app`, `examples/nextjs-app` et les autres packages listés dans [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)) — exécutez `pnpm install` à la racine du dépôt, puis `cd examples/<name>` et utilisez `pnpm exec ai-i18n-tools …` ou les scripts `pnpm run i18n:*` de l'exemple. Les [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) de l'espace de travail lient `ai-i18n-tools` à votre copie locale.
-- **Racine du dépôt** — pnpm ne lie pas le propre `bin` du package racine dans `node_modules/.bin`, et `npx ai-i18n-tools` à la racine exécute le package **npm publié**, et non votre arborescence de travail. Utilisez plutôt `node bin/ai-i18n-tools.mjs …` ou les scripts `pnpm i18n:*` de la racine.
+- **Exemples d'espaces de travail** (`examples/console-app`, `examples/nextjs-app` et les autres paquets listés dans [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)) — exécutez `pnpm install` à la racine du dépôt, puis `cd examples/<name>`. Utilisez les scripts `pnpm run i18n:*` de l'exemple, ou configurez PATH (voir [Utilisation de la CLI](#using-the-cli)) et exécutez `ai-i18n-tools …` directement. Les liens [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) de l'espace de travail `ai-i18n-tools` vers votre copie locale.
+- **Racine du dépôt** — pnpm ne lie pas les propres `bin` du paquet racine dans `node_modules/.bin`. Utilisez plutôt `node bin/ai-i18n-tools.mjs …` ou les scripts `pnpm i18n:*` de la racine (ou un alias de shell / `pnpm add -g .` — voir [Guide de développement](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)).
 - **Fixtures autonomes** (`multi-provider`, `test-markdown`) — depuis le dossier de la fixture, utilisez `node ../../bin/ai-i18n-tools.mjs …`.
 
 Exécutez `pnpm run build` à la racine du dépôt après avoir modifié la source de l'interface de ligne de commande. Consultez le [Guide de développement](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) pour les étapes de construction et les solutions de contournement facultatives pour l'installation globale.
 
 Sous Linux, macOS et WSL, les installations depuis le registre définissent automatiquement le bit d'exécution sur le script CLI. Sous Windows, les gestionnaires de paquets génèrent des shim `.cmd` et `.ps1` qui invoquent explicitement Node.
 
-Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) nécessitent une **configuration de fournisseur** dans `ai-i18n-tools.config.json` et une **clé API** pour le fournisseur actif. Exécutez `ai-i18n-tools init` pour échafauder un bloc OpenRouter par défaut ; modifiez `provider` / `providers` pour changer les préréglages ou les modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models). Ollama est le seul préréglage intégré qui ne nécessite pas de clé API.
+Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) nécessitent une **configuration de fournisseur** dans `ai-i18n-tools.config.json` et **une clé API** pour le fournisseur actif. Exécutez `ai-i18n-tools init [-P <provider>]` pour échafauder un bloc de fournisseur par défaut (`openrouter` si omis) ; modifiez `provider` / `providers` pour changer les préréglages ou les modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models). Ollama est le seul préréglage intégré qui ne nécessite pas de clé API.
 
-Définissez votre clé API de fournisseur (OpenRouter est affiché ; utilisez la variable d'environnement qui correspond à votre fournisseur actif — voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
+Définissez la clé API qui correspond à votre fournisseur actif (voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
 
 ```bash
+# Default init (openrouter)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Example: init -P anthropic
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
 Ou créez un fichier `.env` à la racine du projet :

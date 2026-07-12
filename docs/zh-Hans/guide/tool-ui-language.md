@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # 工具 UI 语言
 
-该工具会独立于项目的 `sourceLocale` / `targetLocales` 对其自身的用户界面进行本地化——包括 CLI 帮助文本、高频日志/摘要/错误消息以及翻译仪表板。无需配置：默认情况下，该工具会遵循操作系统的区域设置。
+`ai-i18n-tools` 会独立于你项目的 `sourceLocale` / `targetLocales` 对其自身的用户界面进行本地化——包括 CLI 帮助文本、高频日志/摘要/错误消息以及翻译仪表板。无需任何配置：默认情况下，该工具会遵循你的操作系统区域设置。
 
 <a id="locale-resolution"></a>
 ## 区域设置解析
@@ -21,7 +21,7 @@ UI 区域设置从以下来源解析，优先级从高到低：
 <a id="shipped-ui-languages"></a>
 ## 内置 UI 语言
 
-`en-GB`（源语言）以及 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。
+英语（英国，源语言）、德语、西班牙语、法语、印地语（拉丁字母）、日语、韩语、葡萄牙语（巴西）、中文（简体）、中文（繁体）。
 
 <a id="translation-dashboard"></a>
 ## 翻译仪表板

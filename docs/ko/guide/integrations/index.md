@@ -19,9 +19,24 @@
 
 모든 문서 프레임워크 통합은 [문서](/ko/guide/documents/)에 설명된 것과 동일한 `docs[]` 블록 모델을 공유합니다. 프레임워크(`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` 또는 `"astro-starlight"`)에 맞게 `docsOutput.style`을 설정하세요. 출력 폴더 레이아웃 및 링크 재작성 동작에 대해서는 [출력 레이아웃](/ko/guide/documents/output-layouts) 및 [링크 재작성](/ko/guide/documents/link-rewriting)을 참조하세요.
 
-각 `init -t ui-*` 템플릿은 기본 LLM 제공자 블록을 스캐폴드합니다. `translate-docs` 또는 `sync` 전에 필요한 경우 `provider` / `providers`를 구성하고 일치하는 API 키를 설정하세요 — [제공자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
+각 `init -t ui-*` 템플릿은 기본 LLM 제공자 블록을 스캐폴드합니다 (`-P <provider>`를 전달하지 않는 한 `openrouter`). `translate-docs` 또는 `sync` 전에 필요에 따라 `provider` / `providers`를 구성하고 일치하는 API 키를 설정하세요 — [제공자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
 
-`json[]`에 프레임워크 셸 또는 테마 문자열을 **넣지 마세요** — 이 파이프라인은 관련 없는 애플리케이션 로케일 번들을 위한 것입니다. 각 통합 페이지에서는 해당 프레임워크의 탐색, 사이드바 및 테마 레이블을 처리하는 카탈로그 경로와 CLI 플래그를 설명합니다.
+프레임워크 간 비교는 [프레임워크 셸 번역](#framework-shell-translation)을 참조하세요. 아래 링크된 각 가이드는 해당 프레임워크의 설정 방법을 다룹니다.
+
+<a id="framework-shell-translation"></a>
+## 프레임워크 셸 번역
+
+| 프레임워크 | 셸 / 테마 문자열 | 파이프라인 |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations` 카탈로그 (`{ message, description }`) | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
+| Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
+| Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
+
+프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마세요** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 프레임워크별 설정 세부 정보는 [어떤 가이드를 읽어야 할지](#which-guide-to-read)에서 링크된 가이드에 나와 있습니다.
 
 <a id="runnable-examples"></a>
 ## 실행 가능한 예제

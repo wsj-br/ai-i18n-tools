@@ -18,3 +18,6 @@ Without the symlink, source docs in `docs/user-guide/` cannot reference PNGs or 
 
 **`take-screenshots` script only captures the source locale**
 Per-locale folder layout requires PNG files for every locale. If the script only captures `en-GB`, translated docs will have rewritten paths pointing to missing files.
+
+**`regexAdjustments` rewriting inside fenced config examples**
+`postProcessing` runs on the full translated markdown body, including fenced code blocks. If a doc page embeds a config snippet that contains a matching path (e.g. `screenshots/en-GB/`), that snippet is rewritten in translated output too. Prefer the generic `screenshots/[^/]+/` form in reusable examples, or accept that translated docs will show locale-specific paths inside illustrations.

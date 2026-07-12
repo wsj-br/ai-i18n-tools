@@ -4,6 +4,7 @@ import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   applyEnvOverrides,
+  assertPresetInitProvider,
   loadI18nConfigFromFile,
   mergeWithDefaults,
   normalizeLocale,
@@ -848,11 +849,60 @@ describe("writeInitConfigFile", () => {
     const out = path.join(dir, "out", "ai-i18n-tools.config.json");
     try {
       writeInitConfigFile(out, "uiMarkdown", dir);
-      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as { sourceLocale?: string };
+      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+        sourceLocale?: string;
+        provider?: string;
+        providers?: Record<string, { translationModels?: string[] }>;
+      };
       expect(raw.sourceLocale).toBe("en-GB");
+      expect(raw.provider).toBe("openrouter");
+      expect(raw.providers?.openrouter?.translationModels?.[0]).toBe("google/gemini-2.5-flash");
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it("scaffolds anthropic provider and native model ids when requested", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-"));
+    const out = path.join(dir, "ai-i18n-tools.config.json");
+    try {
+      writeInitConfigFile(out, "uiMarkdown", dir, "anthropic");
+      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+        provider?: string;
+        providers?: Record<string, { translationModels?: string[] }>;
+      };
+      expect(raw.provider).toBe("anthropic");
+      expect(raw.providers?.anthropic?.translationModels).toEqual([
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-4-6",
+      ]);
+      expect(raw.providers?.openrouter).toBeUndefined();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("applies provider override for uiDocusaurus template", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-"));
+    const out = path.join(dir, "ai-i18n-tools.config.json");
+    try {
+      writeInitConfigFile(out, "uiDocusaurus", dir, "openai");
+      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+        provider?: string;
+        providers?: Record<string, { translationModels?: string[] }>;
+        features?: { translateDocs?: boolean };
+      };
+      expect(raw.provider).toBe("openai");
+      expect(raw.providers?.openai?.translationModels).toEqual(["gpt-4o-mini", "gpt-4o"]);
+      expect(raw.features?.translateDocs).toBe(true);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects unknown init provider keys", () => {
+    expect(() => assertPresetInitProvider("notreal")).toThrow(ConfigValidationError);
+    expect(() => assertPresetInitProvider("notreal")).toThrow(/built-in preset/);
   });
 });
 

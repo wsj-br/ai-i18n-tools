@@ -4,9 +4,9 @@ title: Demonstração de Recurso de Tradução
 description: >-
   Um documento de referência que demonstra cada elemento Markdown que o
   ai-i18n-tools sabe traduzir.
-translation_last_updated: '2026-07-10T22:46:35.154Z'
-source_file_mtime: '2026-07-10T22:43:31.192Z'
-source_file_hash: cde52a5795286ffaa0127de77d3733882cadddbd7aa4626a4e01616476e73676
+translation_last_updated: '2026-07-12T01:33:44.374Z'
+source_file_mtime: '2026-07-12T01:15:35.404Z'
+source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: pt-BR
 source_file_path: docs/feature-showcase.md
 translation_models:
@@ -248,7 +248,7 @@ A entrada de configuração para este site de documentação inclui:
 "regexAdjustments": [
   {
     "description": "Per-locale screenshot folders in docs-site static assets",
-    "search": "screenshots/pt-BR/",
+    "search": "screenshots/pt-BR/]+/",
     "replace": "screenshots/pt-BR/"
   }
 ]
@@ -262,7 +262,7 @@ Após a tradução, a saída em alemão se torna:
 
 Aqui está a captura de tela real do aplicativo Next.js — ele está em inglês por padrão, mas se você estiver lendo isso em uma localidade traduzida, a imagem abaixo deve mostrar o aplicativo em seu idioma:
 
-![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/pt-BR/screenshot.png)
+![O aplicativo Next.js de exemplo — strings da interface do usuário e esta página traduzidas por ai-i18n-tools](/img/screenshots/pt-BR/screenshot.png)
 
 ---
 

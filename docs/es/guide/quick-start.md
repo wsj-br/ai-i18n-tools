@@ -26,7 +26,7 @@ pnpm install          # repository root
 pnpm run build        # after changing CLI source
 cd examples/console-app
 pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: pnpm exec ai-i18n-tools sync
+# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
 La entrada del espacio de trabajo [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula automáticamente los ejemplos del espacio de trabajo a su copia local. Los accesorios independientes (`multi-provider`, `test-markdown`) no son paquetes de espacio de trabajo; desde su carpeta, use `node ../../bin/ai-i18n-tools.mjs …`. Para ejecutar la CLI desde la **raíz del repositorio** (la documentación/i18n de este paquete), use `pnpm i18n:sync` o `node bin/ai-i18n-tools.mjs …` — consulte [Instalación — Monorepo clonado](/es/guide/installation#cloned-monorepo) y la [Guía de desarrollo](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
@@ -36,36 +36,41 @@ La entrada del espacio de trabajo [`overrides`](https://github.com/wsj-br/ai-i18
 
 Cada comando que llama a un LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` y `sync` — necesita **ambos**:
 
-1. **Al menos un proveedor** en `ai-i18n-tools.config.json`: un bloque `providers.<name>` con `translationModels`, y una clave `provider` de nivel superior cuando se configura más de un proveedor. `init` configura OpenRouter por defecto; cambie los preajustes, añada proveedores o ajuste las listas de modelos — consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
-2. **La clave de API correspondiente** en su entorno o en un archivo `.env` en la raíz del proyecto. Cada preajuste incorporado lee una variable de entorno con nombre (por ejemplo, `OPENROUTER_API_KEY`); **Ollama** es la excepción — utiliza un punto final local y no necesita clave. Consulte [Instalación — configure su clave de API de proveedor](/es/guide/installation#using-the-cli) y la [tabla de variables de entorno preestablecidas](/es/guide/providers-and-models#built-in-providers).
+1. **Al menos un proveedor** en `ai-i18n-tools.config.json`: un bloque `providers.<name>` con `translationModels`, y una clave `provider` de nivel superior cuando se configura más de un proveedor. `init` genera un bloque de proveedor predeterminado (`openrouter` a menos que pase `-P <provider>`); cambie los ajustes preestablecidos, agregue proveedores o ajuste las listas de modelos; consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
+2. **La clave API coincidente** en su entorno o en un archivo `.env` en la raíz del proyecto. Cada ajuste preestablecido integrado lee una variable de entorno con nombre de la [tabla de ajustes preestablecidos](/es/guide/providers-and-models#built-in-providers) (por ejemplo, `OPENROUTER_API_KEY` para el valor predeterminado, o `ANTHROPIC_API_KEY` cuando se genera con `-P anthropic`); **Ollama** es la excepción: utiliza un punto final local y no necesita clave. Consulte [Instalación: configure su clave API de proveedor](/es/guide/installation#using-the-cli).
 
 `extract`, `status` y otros comandos que no llaman al LLM no necesitan un proveedor o clave de API.
 
 <a id="core-cli-commands"></a>
 ### Comandos principales de la CLI
 
-Ejecute desde la **raíz de su proyecto** después de instalar `ai-i18n-tools` (consulte [Uso de la CLI](/es/guide/installation#using-the-cli) para los scripts `npx`, `pnpm exec` y `package.json`). Los ejemplos a continuación usan el nombre de comando simple; los usuarios de npm pueden prefijar con `npx`, los usuarios de pnpm con `pnpm exec`.
+Ejecute desde la **raíz de su proyecto** después de instalar `ai-i18n-tools` y [configurar su shell para el comando básico](/es/guide/installation#using-the-cli). Los ejemplos a continuación usan `ai-i18n-tools` directamente.
 
 ```bash
-# Set API key for your active provider (skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+# Set the API key for your active provider (see preset table; skip for local Ollama)
+# Default init uses openrouter:
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Or scaffold another preset at init, e.g. anthropic:
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 # UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools init [-P <provider>]    # default: openrouter
+ai-i18n-tools init -P anthropic
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
-# VitePress docs: ai-i18n-tools init -t ui-vitepress
-# Nextra docs: ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
+# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
+# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -79,7 +84,7 @@ ai-i18n-tools status
 <a id="recommended-packagejson-scripts"></a>
 ### Scripts recomendados `package.json`
 
-Con el paquete instalado localmente, puedes usar los comandos CLI directamente en scripts (no se necesita `npx`).
+Con el paquete instalado localmente, los scripts de `package.json` resuelven `ai-i18n-tools` desde `node_modules/.bin` sin configuración adicional del shell. Para shells interactivos, configure PATH primero; consulte [Uso de la CLI](/es/guide/installation#using-the-cli).
 
 **Prefiera** `sync` para cualquier cosa que antes fuera “ejecutar `translate-ui`, luego `translate-svg`, luego `translate-docs`, luego `translate-json`”: `ai-i18n-tools sync` ejecuta **extract** (cuando está habilitado), **translate-ui**, opcional **translate-svg**, **translate-docs** y opcionalmente **translate-json**—en el orden correcto y con banderas compartidas—según su configuración. Encadenar esos pasos manualmente es propenso a errores (orden, extracción, banderas de configuración regional). Use `i18n:translate:ui`, `i18n:translate:svg`, `i18n:translate:docs` y `i18n:translate:json` solo cuando necesite un **único** paso de forma aislada.
 

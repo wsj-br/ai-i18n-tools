@@ -9,7 +9,7 @@ Consulte também [Documentos](/pt-BR/guide/documents/) e a demonstração execut
 ## Início rápido
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Carregue o JSON por localidade em `layout.shared.ts` via `loadUiCatalog(locale)`
 Locais padrão podem ser cobertos por presets `@fumadocs/language/*` sem custo de LLM; o catálogo traduz **sobrescritas de projeto** no bloco em inglês apenas.
 
 **Não** use `json[]` para strings de interface do usuário Fumadocs — esse pipeline é para bundles de locale de aplicativos não relacionados.
-
-<a id="framework-shell-translation"></a>
-## Tradução do shell do framework
-
-| Framework | Strings de shell / tema | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | Catálogo `write-translations` | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
-| Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Strings de UI integradas (muitas localidades); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
-
-**Não** coloque strings de shell/tema de framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativo não relacionados. Consulte [integração Docusaurus](/pt-BR/guide/integrations/docusaurus), [integração VitePress](/pt-BR/guide/integrations/vitepress) e [integração Nextra](/pt-BR/guide/integrations/nextra) para os outros padrões de framework.
 
 <a id="link-conventions"></a>
 ## Convenções de link

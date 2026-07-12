@@ -107,23 +107,21 @@ Habilite `forceLowercase: true` no bloco de configuração `svg` para evitar inc
 <a id="decision-guide"></a>
 # Guia de decisão
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**O ativo é um SVG com texto ou rótulos translatáveis?**
+  - **Sim** → [Aplicativo web SVG](/pt-BR/guide/svg-translation/translated-svg-web-app) ou [SVG Colocado](/pt-BR/guide/svg-translation/translated-svg-colocated)
+  - **Não** (tela de raster ou SVG decorativo) →
+    - **O site do sistema de documentos tem ativos colocados ao lado dos documentos traduzidos?**
+      - **Sim** → [Capturas de tela colocadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots) (rasters) + [SVG Colocado](/pt-BR/guide/svg-translation/translated-svg-colocated) (SVGs)
+    - **Apenas uma localidade precisa da imagem** (nenhuma variante por localidade)?
+      - **Sim** → [Imagem compartilhada](/pt-BR/guide/images-and-screenshots/shared-image)
+    - **Caso contrário** → [Pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder)
 
 Os layouts SVG são abordados no guia [Tradução SVG](/pt-BR/guide/svg-translation/).
 
-| Layout | Tipo de ativo               | Tipo de site                                                              | Mecanismo da ferramenta                                      |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Imagem compartilhada](/pt-BR/guide/images-and-screenshots/shared-image) | Raster (compartilhado)      | Documentos `docsOutput.style = "flat"`                                     | Reescritor de link por arquivo; geralmente sem regex         |
+| Layout                                                                       | Tipo de ativo                  | Tipo de site                                                              | Mecanismo de ferramenta                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Capturas de tela colocadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots) | Raster (colocado)          | `"doc-system"` com ativos colocados (preset Docusaurus)               | Script de captura de tela coloca arquivos; nenhum regex                     |
 | [Pasta por localidade](/pt-BR/guide/images-and-screenshots/per-locale-folder) | Raster (por localidade)     | `"flat"` ou `"doc-system"` (incluindo `"docusaurus"`, `"astro-starlight"`)   | Troca de segmento de localidade `regexAdjustments`                    |
-| [Capturas de tela colocalizadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots) | Raster (colocalizado)       | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | O script de captura de tela coloca os arquivos; sem regex    |
-| [SVG de aplicativo web](/pt-BR/guide/svg-translation/translated-svg-web-app) | SVG (traduzido)             | Aplicativo web                                                            | `translate-svg` com `svg.style = "flat"`                                      |
+| [Imagem compartilhada](/pt-BR/guide/images-and-screenshots/shared-image)                   | Raster (compartilhado)             | `docsOutput.style = "flat"` docs                                       | Reescritor de link por arquivo; geralmente nenhum regex                     |
 | [SVG colocalizado](/pt-BR/guide/svg-translation/translated-svg-colocated) | SVG (traduzido, colocalizado) | `"doc-system"` com ativos colocalizados (preset Docusaurus)                  | `translate-svg` com `svg.style = "nested"` + `pathTemplate`                          |
+| [SVG de aplicativo web](/pt-BR/guide/svg-translation/translated-svg-web-app) | SVG (traduzido)             | Aplicativo web                                                            | `translate-svg` com `svg.style = "flat"`                                      |

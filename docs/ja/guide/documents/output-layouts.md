@@ -1,19 +1,84 @@
 <a id="output-layouts"></a>
 # 出力レイアウト
 
-`docsOutput.style` は翻訳されたmarkdownファイルの出力先を制御します。以下の文字列値を `docs[].docsOutput.style` で正確に使用してください（エイリアスは別個のエンジンではなく、あらかじめ設定されたレイアウトです）。
+`docsOutput.style`は翻訳されたMarkdownファイルの書き出し先を制御します。`docs[].docsOutput.style`には以下の正確な文字列値を使用してください。エイリアスは個別のエンジンではなく、プリセットされた`doc-system`レイアウト（またはFumadocsのドットサフィックスレイアウト）です。設定の読み込み時に、エイリアスの`style`値を正規の`"doc-system"`に書き換える場合がありますが、元のプリセットは`stylePreset`に保持されます。
 
-`docsOutput.style = "nested"`（省略時のデフォルト）— ソースツリーを `{outputDir}/{locale}/` 配下にミラーします（例：`docs/guide.md` → `i18n/de/docs/guide.md`）。
+組み込みのレイアウトを上書きするには、`docs[].docsOutput.pathTemplate`（Markdown/MDX）または`jsonPathTemplate`（JSONラベルファイル）を設定してください。以下の[pathTemplateプレースホルダー](#pathtemplate--jsonpathtemplate-placeholders)を参照してください。
 
-`docsOutput.style = "doc-system"` — 静的ドキュメントサイト向けのロケール接頭辞付きドキュメントツリー。`docsRoot` 配下のファイルは `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}` に出力されます。`docsRoot` 外のパスはネストされたレイアウトにフォールバックします。`docs[].docsOutput.docsRoot` を英語ソースのルートに設定してください（例：`"docs"` または `"src/content/docs"`）。`docsOutput.style = "doc-system"` の場合、`localeSubpath` を明示的に設定する必要があります（事前設定されたエイリアスを使用してください）。
+<a id="layout-overview"></a>
+## レイアウトの概要
 
-**エイリアス**（同じレイアウトエンジン、プリセット済み `localeSubpath`）：
+| `docsOutput.style` | エンジン | 典型的な用途 |
+| --- | --- | --- |
+| `"nested"` | ロケールフォルダーがソースツリー全体をミラーリング | デフォルト。`{outputDir}/{locale}/`配下の汎用i18n出力 |
+| `"flat"` | ファイル名にロケールサフィックス（サブディレクトリは任意） | README、変更履歴、リポジトリルートのドキュメント、[言語切り替え](/ja/guide/documents/language-switcher) |
+| `"doc-system"` | ロケールフォルダー + `docsRoot`配下の任意の`localeSubpath` | カスタム静的ドキュメントジェネレーター |
+| `"docusaurus"` | `doc-system`プリセット | [Docusaurus](/ja/guide/integrations/docusaurus) i18nプラグインレイアウト |
+| `"astro-starlight"` | `doc-system`プリセット（`localeSubpath: ""`） | [Astro Starlight](/ja/guide/integrations/astro#astro-starlight)、プレーンなAstroロケールページ |
+| `"vitepress"` | `doc-system`プリセット（`localeSubpath: ""`） | [VitePress](/ja/guide/integrations/vitepress) 英語の隣に配置されるロケールフォルダー |
+| `"nextra"` | `doc-system`プリセット（`localeSubpath: ""`） | [Nextra](/ja/guide/integrations/nextra) ロケールフォルダー（`content/en/` → `content/{locale}/`） |
+| `"fumadocs"` | ドットサフィックス（デフォルト）または`fumadocsParser: "dir"`時に`doc-system` | [Fumadocs](/ja/guide/integrations/fumadocs) ドットまたはディレクトリコンテンツレイアウト |
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` はデフォルトで `docusaurus-plugin-content-docs/current`（Docusaurus i18n プラグインレイアウト）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` はデフォルトで `""`（翻訳済みページは `{outputDir}/{locale}/` の直下に配置され、英语がコンテンツルートのにある場合の [Starlight](https://starlight.astro.build/guides/i18n/) と一致し、`outputDir` が `docsRoot` のとき）。
-- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで `localeSubpath` は空; BCP-47 ロケールフォルダー名が保持されます（`localePathLowercase` はデフォルトで `false`）。[VitePress 統合](/ja/guide/integrations/vitepress) を参照。
-- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはロケールフォルダーの配下にある（例：`content/en/`）。[Nextra 統合](/ja/guide/integrations/nextra) を参照。
-- `docsOutput.style = "fumadocs"` — `doc-system` と同じレイアウトで `localeSubpath` は空; 英语ソースはドット接尾辞ファイルを使用（デフォルト）または `fumadocsParser` が `"dir"` の場合はロケールフォルダーを使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
+<a id="nested-default"></a>
+## `nested` (既定)
+
+`docsOutput.style = "nested"`（省略時のデフォルト）— `{outputDir}/{locale}/`配下にソースツリーをミラーリングします。
+
+```text
+docs/guide.md  →  i18n/de/docs/guide.md
+README.md      →  i18n/de/README.md
+```
+
+`docsRoot`（設定時）の外部パスは同じネスト構造を使用します。
+
+<a id="flat"></a>
+## `flat`
+
+`docsOutput.style = "flat"` — 翻訳ファイルを`outputDir`配下に書き出し、ファイル名にロケールサフィックスを付加します。デフォルトではベース名のみが保持され（`{outputDir}/{stem}.{locale}{extension}`）、`flatPreserveRelativeDir`を有効にしない限り`docs/guide.md`と`docs/other/guide.md`は衝突します。
+
+```text
+README.md           →  translated-docs/README.de.md
+docs/guide.md       →  translated-docs/guide.de.md   (default: basename only)
+```
+
+`docsOutput.style = "flat"`の場合（`rewriteRelativeLinks: false`またはカスタム`pathTemplate`が設定されていない限り）、ページ間の相対リンクは自動的に書き換えられます。ページをまたぐ`#anchor`の処理については[アンカーリンク](/ja/guide/documents/anchor-links)を参照してください。
+
+<a id="flat-with-flatpreserverelativedir"></a>
+### `flat` と `flatPreserveRelativeDir`
+
+`docsOutput.flatPreserveRelativeDir`を`true`に設定すると、`outputDir`配下にソースのサブディレクトリを保持できます。異なるフォルダーに同じベース名を持つ複数のMarkdownファイルを翻訳する場合や、フラットな出力が浅いツリーをミラーリングする必要がある場合（例えばリポジトリルートのREADMEに加えて`docs/*.md`）に使用してください。
+
+```text
+docs/guide.md       →  translated-docs/docs/guide.de.md
+docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
+```
+
+フラットリンクリライターは、アセットURLの深さプレフィックスを計算する際にファイルごとの出力パスを使用します。[リンクの書き換え](/ja/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir)を参照してください。
+
+<a id="doc-system"></a>
+## `doc-system`
+
+`docsOutput.style = "doc-system"` — 静的ドキュメントサイト用のロケールプレフィックス付きドキュメントツリー。`docsRoot` の下にあるファイルは以下に書き込まれます:
+
+```text
+{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
+```
+
+`docsRoot` の外にあるパスは、[ネストされた](#nested)レイアウト (`{outputDir}/{locale}/{relPath}`) にフォールバックします。
+
+`docs[].docsOutput.docsRoot` を英語のソースルート（例: `"docs"`, `"src/content/docs"`, または `"content/en"`）に設定します。`docsOutput.style = "doc-system"` の場合、`localeSubpath` を明示的に設定する必要があります（プリセットには以下のエイリアスを使用してください）。翻訳されたページが `{outputDir}/{locale}/` の直下にある場合（Starlightスタイル）は、`localeSubpath: ""` を使用します。
+
+`docusaurusCatalogDir` からのDocusaurusシェルJSONおよびdoc-systemプリセット下のその他のJSONアーティファクトは、Markdownと同じフォルダレイアウトに従います。`style: "flat"` の場合、`jsonPathTemplate` を設定しない限り、JSONラベルファイルはネストされた形状を引き続き使用します。
+
+<a id="doc-system-aliases"></a>
+## ドキュメントシステムエイリアス
+
+**エイリアス** (同じ `doc-system` エンジン、プリセット `localeSubpath` およびデフォルト):
+
+- `docsOutput.style = "docusaurus"` — `localeSubpath` のデフォルトは `docusaurus-plugin-content-docs/current` (Docusaurus i18nプラグインレイアウト) です。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` のデフォルトは `""` です; `localePathLowercase` のデフォルトは `true` です。`{outputDir}/{locale}/` の下にある翻訳ページは、英語がコンテンツルートにあり、`outputDir` が `docsRoot` と等しい場合に [Starlight](https://starlight.astro.build/guides/i18n/) に一致します。プレーンなAstroロケールページ (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) にも使用されます — [Astroウェブサイトページ](/ja/guide/ui-strings/astro-website#pages-parse-and-replace) を参照してください。
+- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトですが、`localeSubpath` は空です; BCP-47ロケールフォルダ名が保持されます (`localePathLowercase` のデフォルトは `false` です)。[VitePress統合](/ja/guide/integrations/vitepress) を参照してください。
+- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトですが、`localeSubpath` は空です; 英語ソースはロケールフォルダの下にあります (例: `content/en/`)。[Nextra統合](/ja/guide/integrations/nextra) を参照してください。
 
 Docusaurus プリセット（主なドキュメントページ）：
 
@@ -39,18 +104,6 @@ Nextra プリセット (英語はロケールフォルダの下、ターゲッ�
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocsプリセット — ドットパーサー（デフォルト、英語ソースの横にロケールサフィックス）:
-
-```text
-content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
-```
-
-Fumadocsプリセット — ディレクトリパーサー（Nextraスタイルのロケールフォルダ）:
-
-```text
-content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
-```
-
 オプションのJSONラベル — `docusaurusCatalogDir` からのDocusaurusシェル文字列（MDX本文コピーではない）：
 
 ```text
@@ -63,15 +116,24 @@ VitePress の nav/sidebar/footer 文字列はマークダウンではない — 
 
 Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマークダウンではない — `docs[].nextraDictionaryPath` を使用し、`style: "nextra"` の場合は自動 `_meta` コレクションをすべて **`translate-docs`** ないで使用。[Nextra 統合](/ja/guide/integrations/nextra) を参照。
 
-Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サイドバーラベルはマークダウンではない — `docsOutput.fumadocsUiCatalog` を使用し、`style: "fumadocs"` の場合は自動 `meta.json` コレクションをすべて **`translate-docs`** ないで使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
+<a id="fumadocs"></a>
+## `fumadocs`
 
-`docsOutput.style = "flat"` — 翻訳されたファイルをロケールサフィックス付きでソース横に、またはサブディレクトリ内に配置します。`docsOutput.style = "flat"` の場合、ページ間の相対リンクは自動的に書き換えられます（`rewriteRelativeLinks: false` またはカスタムの `pathTemplate` が設定されていない限り）。
+`docsOutput.style = "fumadocs"` — `docsOutput.fumadocsParser` を介したFumadocsコンテンツレイアウト:
+
+- **`"dot"` (デフォルト)** — `outputDir` の下にある英語ソースの横にあるファイル名のロケールサフィックス (ロケールフォルダではありません)。これは `doc-system` パスの形状とは別のものです。
 
 ```text
-docs/guide.md → i18n/guide.de.md
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-フラットレイアウトでのページ間アンカーリンクについては、[アンカーリンク](/ja/guide/documents/anchor-links)を参照してください。
+- **`"dir"`** — Nextraスタイルのロケールフォルダ; 空の `localeSubpath` で同じ `doc-system` エンジンを使用します。
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
+Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サイドバーラベルはマークダウンではない — `docsOutput.fumadocsUiCatalog` を使用し、`style: "fumadocs"` の場合は自動 `meta.json` コレクションをすべて **`translate-docs`** ないで使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
 
 組み込みの相対リンク修正以外のリンクとアセットURLの書き換えについては、[リンクの書き換え](/ja/guide/documents/link-rewriting)（`docsOutput.postProcessing.regexAdjustments`）を参照してください。
 
@@ -84,7 +146,7 @@ docs/guide.md → i18n/guide.de.md
 
 カスタム `pathTemplate` を使用する場合、明示的に設定しない限り `rewriteRelativeLinks` はデフォルトで `false` になります — 相対リンクの再書き込みは、カスタムテンプレートなしの `docsOutput.style = "flat"` 向けに設計されています。
 
-組み込みレイアウト（`nested`、`flat`、`doc-system`、カスタムテンプレートなし）では、`docsOutput.localePathLowercase` を `true` に設定することで、ロケールのフォルダーやファイル名のセグメントを小文字で出力できます（例：`pt-BR` の代わりに `pt-br`）。`astro-starlight` エイリアスはこれをデフォルトで `true` に設定します。カスタムの `pathTemplate` / `jsonPathTemplate` 値は変更されません — BCP-47 形式の `{locale}` を維持しつつ小文字のセグメントが必要な場合は、そちらで `{llocale}` を使用してください。
+組み込みレイアウト (カスタムテンプレートなしの `nested`, `flat`, `doc-system`) の場合、`docsOutput.localePathLowercase` を `true` に設定して、小文字のロケールフォルダまたはファイル名セグメント (例: `pt-BR` の代わりに `pt-br`) を書き込みます。`astro-starlight` エイリアスと空の `localeSubpath` を持つ `doc-system` は、設定の読み込み時にこれを `true` にデフォルト設定します。カスタム `pathTemplate` / `jsonPathTemplate` 値は変更されません — `{locale}` をBCP-47として保持したまま小文字のセグメントが必要な場合は、そこで `{llocale}` を使用してください。
 
 | プレースホルダー            | 役割                                                                                                       | 例                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|

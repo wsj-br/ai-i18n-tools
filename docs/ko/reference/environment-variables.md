@@ -1,9 +1,9 @@
 <a id="environment-variables"></a>
 # 환경 변수
 
-| 변수               | 설명                                                       |
+| Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` 제공자의 API 키(해당 제공자가 활성일 때 필요). |
+| `OPENROUTER_API_KEY`   | `openrouter` 공급자의 API 키(활성화 상태일 때 필수). 기본 `init` 사전 설정. |
 | 다른 제공자 키    | 각 제공자는 자체 키 환경 변수를 읽습니다: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`(Ollama는 필요 없음). `providers.<name>.apiKeyEnv`로 제공자별로 재정의합니다. |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |

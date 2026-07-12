@@ -26,7 +26,7 @@ pnpm install          # repository root
 pnpm run build        # after changing CLI source
 cd examples/console-app
 pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: pnpm exec ai-i18n-tools sync
+# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
 워크스페이스 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 항목(`ai-i18n-tools: workspace:*`)은 워크스페이스 예제를 로컬 체크아웃에 자동으로 연결합니다. 독립형 픽스처(`multi-provider`, `test-markdown`)는 워크스페이스 패키지가 아닙니다. 해당 폴더에서 `node ../../bin/ai-i18n-tools.mjs …`를 사용하세요. **저장소 루트**에서 CLI를 실행하려면(이 패키지 자체의 docs/i18n), `pnpm i18n:sync` 또는 `node bin/ai-i18n-tools.mjs …`를 사용하세요 — [설치 — 복제된 모노레포](/ko/guide/installation#cloned-monorepo) 및 [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)를 참조하세요.
@@ -36,36 +36,41 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 
 LLM을 호출하는 모든 명령 — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync` — 에는 다음 **두 가지**가 모두 필요합니다:
 
-1. `ai-i18n-tools.config.json` 내의 **최소 한 개의 프로바이더**: `translationModels`가 포함된 `providers.<name>` 블록, 그리고 두 개 이상의 프로바이더가 구성된 경우 최상위 `provider` 키. `init`는 기본적으로 OpenRouter를 스캐폴드합니다. 프리셋을 전환하거나, 프로바이더를 추가하거나, 모델 목록을 조정하려면 [LLM 프로바이더 및 모델](/ko/guide/providers-and-models)을 참조하세요.
-2. 환경 변수 또는 프로젝트 루트의 `.env` 파일에 있는 **일치하는 API 키**. 각 빌트인 프리셋은 명명된 환경 변수(예: `OPENROUTER_API_KEY`)를 읽습니다. **Ollama**는 예외입니다 — 로컬 엔드포인트를 사용하며 키가 필요하지 않습니다. [설치 — 프로바이더 API 키 설정](/ko/guide/installation#using-the-cli) 및 [프리셋 환경 변수 테이블](/ko/guide/providers-and-models#built-in-providers)을 참조하세요.
+1. `ai-i18n-tools.config.json`에 **하나 이상의 프로바이더**: `translationModels`가 포함된 `providers.<name>` 블록, 그리고 두 개 이상의 프로바이더를 구성할 때 최상위 `provider` 키. `init`는 기본 프로바이더 블록을 스캐폴드합니다(`-P <provider>`을 전달하지 않는 한 `openrouter`). 프리셋을 전환하거나, 프로바이더를 추가하거나, 모델 목록을 조정하려면 [LLM 프로바이더 및 모델](/ko/guide/providers-and-models)을 참조하세요.
+2. 환경 변수 또는 프로젝트 루트의 `.env` 파일에 **일치하는 API 키**. 각 내장 프리셋은 [프리셋 테이블](/ko/guide/providers-and-models#built-in-providers)에 지정된 환경 변수를 읽습니다(예: 기본값의 경우 `OPENROUTER_API_KEY`, `-P anthropic`으로 스캐폴드할 때 `ANTHROPIC_API_KEY`). **Ollama**는 예외입니다 — 로컬 엔드포인트를 사용하며 키가 필요하지 않습니다. [설치 — 프로바이더 API 키 설정](/ko/guide/installation#using-the-cli)을 참조하세요.
 
 `extract`, `status` 및 LLM을 호출하지 않는 다른 명령에는 프로바이더나 API 키가 필요하지 않습니다.
 
 <a id="core-cli-commands"></a>
 ### 핵심 CLI 명령어
 
-`ai-i18n-tools` 설치 후 **프로젝트 루트**에서 실행하세요 (`npx`, `pnpm exec`, `package.json` 스크립트는 [CLI 사용](/ko/guide/installation#using-the-cli) 참조). 아래 예제는 기본 명령어 이름을 사용합니다; npm 사용자는 `npx`를 접두어로 붙일 수 있고, pnpm 사용자는 `pnpm exec`를 접두어로 붙일 수 있습니다.
+`ai-i18n-tools`을(를) 설치하고 [bare 명령어에 맞게 셸 구성](/ko/guide/installation#using-the-cli)을 마친 후 **프로젝트 루트**에서 실행하세요. 아래 예제는 `ai-i18n-tools`을(를) 직접 사용합니다.
 
 ```bash
-# Set API key for your active provider (skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+# Set the API key for your active provider (see preset table; skip for local Ollama)
+# Default init uses openrouter:
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Or scaffold another preset at init, e.g. anthropic:
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 # UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools init [-P <provider>]    # default: openrouter
+ai-i18n-tools init -P anthropic
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
-# VitePress docs: ai-i18n-tools init -t ui-vitepress
-# Nextra docs: ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
+# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
+# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -79,7 +84,7 @@ ai-i18n-tools status
 <a id="recommended-packagejson-scripts"></a>
 ### 권장 `package.json` 스크립트
 
-로컬에 패키지를 설치하면 CLI 명령을 스크립트에서 직접 사용할 수 있습니다(`npx` 필요 없음).
+패키지를 로컬에 설치하면 `package.json` 스크립트는 추가 셸 설정 없이 `node_modules/.bin`에서 `ai-i18n-tools`을(를) 해석합니다. 대화형 셸의 경우 먼저 PATH를 구성하세요 — [CLI 사용](/ko/guide/installation#using-the-cli)을 참조하세요.
 
 **선호** `sync`는 “`translate-ui` 실행 후 `translate-svg`, 그 다음 `translate-docs`, 그 다음 `translate-json`”와 같은 모든 작업에 대해: `ai-i18n-tools sync`는 **추출** (활성화된 경우), **translate-ui**, 선택적 **translate-svg**, **translate-docs**, 그 다음 선택적 **translate-json**를 실행합니다—올바른 순서와 공유 플래그에 따라 귀하의 구성에 따라. 이러한 단계를 수동으로 연결하는 것은 (순서, 추출, 로케일 플래그) 잘못될 수 있습니다. `i18n:translate:ui`, `i18n:translate:svg`, `i18n:translate:docs`, 및 `i18n:translate:json`는 단일 **단계**가 격리된 상태에서 필요할 때만 사용하십시오.
 

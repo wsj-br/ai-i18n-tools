@@ -14,10 +14,10 @@ Ce pipeline n'exécute **pas** `extract` — il n'y a pas de catalogue `strings.
 ### Étape 1 : Initialiser pour JSON imbriqué
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-Ce modèle définit `features.translateJson: true`, désactive l'extraction de l'interface utilisateur et la traduction de documents, et échafaude un seul bloc `json[]` pointant vers `src/i18n/en/translation.json` avec la sortie `src/i18n/{llocale}/translation.json`. Il inclut également un bloc `provider` / `providers` par défaut — définissez la clé API correspondante (ou utilisez Ollama local) avant d'exécuter `translate-json` ou `sync` ; voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key). Modifiez `sourceLocale`, `targetLocales`, `contentPaths` et `outputPathTemplate` pour la disposition de votre dépôt.
+Ce modèle définit `features.translateJson: true`, désactive l'extraction de l'interface utilisateur et la traduction de documents, et échafaude un seul bloc `json[]` pointant vers `src/i18n/en/translation.json` avec la sortie `src/i18n/{llocale}/translation.json`. Il inclut également un bloc `provider` / `providers` par défaut (`openrouter` sauf si vous passez `-P <provider>`) — définissez la clé API correspondante (ou utilisez Ollama local) avant d'exécuter `translate-json` ou `sync` ; voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key). Modifiez `sourceLocale`, `targetLocales`, `contentPaths` et `outputPathTemplate` pour la disposition de votre dépôt.
 
 <a id="step-2-configure-json"></a>
 ### Étape 2 : Configurer `json[]`
@@ -72,7 +72,7 @@ Les chemins utilisent la notation par points (`nav.home.label`). Un nom simple c
 ### Étape 3 : Traduire les bundles JSON
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 Options facultatives (mêmes principes que `translate-docs`) : `-l` / `--locale` pour un sous-ensemble de cibles, `-p` / `--path` pour limiter les fichiers, `--dry-run`, `--force` (efface le suivi des fichiers et le cache de segments pour les fichiers correspondants), `--force-update` (re-traite si le hachage du fichier correspond ; le cache de segments s'applique toujours), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
@@ -80,7 +80,7 @@ Options facultatives (mêmes principes que `translate-docs`) : `-l` / `--locale`
 Les projets uniquement JSON peuvent exécuter :
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 Lorsque l'interface ou la documentation sont également activées, `sync` exécute **translate-json après translate-docs** (sauf si `--no-json`). Ignorez la traduction JSON avec `--no-json`.
@@ -88,7 +88,7 @@ Lorsque l'interface ou la documentation sont également activées, `sync` exécu
 Vérifiez la couverture par fichier et par langue :
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 Lorsque `translateJson` est activé, `status` affiche une section `json[]` (✓ à jour, ● périmée ou manquante).

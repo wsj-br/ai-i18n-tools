@@ -48,7 +48,9 @@ import {
 import {
   allConfiguredModelIdsForProvider,
   dedupeOrderedModelIds,
+  isPresetProvider,
   localeModelsForProvider,
+  PROVIDER_PRESETS,
   resolveActiveProvider,
   translationModelsForProvider,
   uiModelsForProvider,
@@ -76,11 +78,71 @@ const DEFAULT_OPENROUTER_MODELS: string[] = [
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest",
 ];
+
+/** Default `translationModels` scaffolded by `init -P <provider>` for each built-in provider. */
+export const DEFAULT_INIT_MODELS_BY_PROVIDER: Readonly<Record<string, readonly string[]>> = {
+  openrouter: DEFAULT_OPENROUTER_MODELS,
+  openai: ["gpt-4o-mini", "gpt-4o"],
+  anthropic: ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"],
+  gemini: ["gemini-2.5-flash", "gemini-3.5-flash"],
+  deepseek: ["deepseek-v4-flash", "deepseek-v4-pro"],
+  groq: ["openai/gpt-oss-120b", "openai/gpt-oss-20b"],
+  mistral: ["mistral-small-latest", "mistral-large-latest"],
+  cerebras: ["gpt-oss-120b"],
+  xai: ["grok-4.5"],
+  nvidia: ["meta/llama-3.1-8b-instruct", "openai/gpt-oss-20b"],
+  alibaba: ["qwen-plus", "qwen-flash"],
+  apifun: ["gpt-4o-mini"],
+  ollama: ["llama3.2:3b", "mistral-nemo:12b"],
+} as const;
+
+export const DEFAULT_INIT_PROVIDER_KEY = "openrouter";
+
+/** Built-in preset keys accepted by `init -P` / `--provider`. */
+export function listPresetInitProviderKeys(): string[] {
+  return Object.keys(PROVIDER_PRESETS).sort();
+}
+
+/** Throws {@link ConfigValidationError} when `providerKey` is not a built-in preset. */
+export function assertPresetInitProvider(providerKey: string): void {
+  if (!isPresetProvider(providerKey)) {
+    throw new ConfigValidationError(
+      `Unknown provider "${providerKey}" for init: choose a built-in preset (${listPresetInitProviderKeys().join(", ")})`
+    );
+  }
+}
+
+/** Starter `translationModels` for `init -P <provider>`. */
+export function defaultInitModelsForProvider(providerKey: string): readonly string[] {
+  return DEFAULT_INIT_MODELS_BY_PROVIDER[providerKey] ?? DEFAULT_OPENROUTER_MODELS;
+}
+
+/** `provider` / `providers` block written by `init` for a built-in preset. */
+export function buildInitProviderBlock(
+  providerKey: string
+): Pick<RawI18nConfigInput, "provider" | "providers"> {
+  return {
+    provider: providerKey,
+    providers: {
+      [providerKey]: {
+        translationModels: [...defaultInitModelsForProvider(providerKey)],
+      },
+    },
+  };
+}
+
+/** Replace `provider` / `providers` on a scaffold template before writing init output. */
+export function applyInitProvider(
+  raw: RawI18nConfigInput,
+  providerKey: string
+): RawI18nConfigInput {
+  return { ...raw, ...buildInitProviderBlock(providerKey) };
+}
 
 /**
  * Ordered translation-model fallback chain for the active provider. Returns `[]` (rather than
@@ -554,12 +616,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["de", "fr", "es", "pt-BR"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       // UI strings: UI strings (extract runs automatically before translate)
       translateUIStrings: true,
@@ -579,7 +635,7 @@ export const initConfigTemplates = {
     },
     // Parallelism: translate-ui effective default 4; translate-docs effective default 3 when omitted.
     concurrency: 4,
-    // translate-docs: max parallel OpenRouter batch requests per file.
+    // translate-docs: max parallel LLM batch requests per file.
     batchConcurrency: 4,
     batchSize: 20,
     maxBatchChars: 4096,
@@ -601,12 +657,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr", "ja", "pt-BR"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -645,12 +695,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["ar", "es", "fr", "de", "pt-BR"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -681,7 +725,7 @@ export const initConfigTemplates = {
             regexAdjustments: [
               {
                 description: "Per-locale screenshot folders in public assets",
-                search: "screenshots/en-GB/",
+                search: "screenshots/[^/]+/",
                 replace: "screenshots/${translatedLocale}/",
               },
             ],
@@ -696,12 +740,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["de", "fr", "es", "pt-BR"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -743,12 +781,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["pt-BR", "zh-Hans"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -787,12 +819,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
     targetLocales: ["pt", "zh"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -835,12 +861,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: true,
       translateDocs: false,
@@ -873,12 +893,6 @@ export const initConfigTemplates = {
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
     targetLocales: ["de", "fr"],
-    provider: "openrouter",
-    providers: {
-      openrouter: {
-        translationModels: [...DEFAULT_OPENROUTER_MODELS],
-      },
-    },
     features: {
       translateUIStrings: false,
       translateDocs: false,
@@ -910,17 +924,19 @@ export const initConfigTemplates = {
 } as const;
 
 /**
- * Write a starter config JSON for `ai-i18n-tools init`.
+ * Write a starter config JSON for `ai-i18n-tools init [-P <provider>]`.
  * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
  */
 export function writeInitConfigFile(
   outPath: string,
   template: keyof typeof initConfigTemplates,
-  cwd = process.cwd()
+  cwd = process.cwd(),
+  providerKey = DEFAULT_INIT_PROVIDER_KEY
 ): void {
+  assertPresetInitProvider(providerKey);
   const resolved = path.isAbsolute(outPath) ? outPath : path.join(cwd, outPath);
   const raw = initConfigTemplates[template]();
-  const merged = mergeWithDefaults(raw);
+  const merged = applyInitProvider(mergeWithDefaults(raw), providerKey);
   parseI18nConfig(merged);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
   fs.writeFileSync(resolved, `${JSON.stringify(merged, null, 2)}\n`, "utf8");

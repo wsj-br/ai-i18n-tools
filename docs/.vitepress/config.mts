@@ -208,8 +208,8 @@ function themeConfigFor(t: ThemeCatalog, localeCode: string | null = null) {
     {
     nav: [
       { text: t.nav.guide, link: "/guide/what-is-ai-i18n-tools", activeMatch: "/guide/" },
-      { text: t.nav.reference, link: "/reference/configuration", activeMatch: "/reference/" },
       { text: t.nav.examples, link: "/examples", activeMatch: "/examples" },
+      { text: t.nav.reference, link: "/reference/configuration", activeMatch: "/reference/" },
       {
         text: t.nav.github,
         link: "https://github.com/wsj-br/ai-i18n-tools",

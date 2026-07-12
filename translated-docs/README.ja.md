@@ -78,7 +78,41 @@ pnpm add ai-i18n-tools
 
 プロジェクトにパッケージをインストールした後、npm/pnpm/yarn を使用して、公開された bin エントリ (`bin/ai-i18n-tools.mjs`) を `node_modules/.bin/ai-i18n-tools` にリンクします。そのシムは、インストールされたパッケージからコンパイル済みの CLI をロードします。
 
-**`package.json` スクリプト (推奨)** — npm と pnpm は、スクリプトの実行時に `node_modules/.bin` を `PATH` の前に付加するため、ベアコマンド名を呼び出すことができます。
+インタラクティブシェルで `ai-i18n-tools` コマンド単体を入力するには、以下のいずれかのオプションを設定してください。設定を行わない場合、ローカルインストール後であってもシェルはバイナリを見つけることができません。
+
+**direnv** — プロジェクトルートの `.envrc` に追加します (bash/zsh、[direnv.net](https://direnv.net/) を参照):
+
+```bash
+PATH_add node_modules/.bin
+```
+
+`direnv allow` の後、プロジェクトに `cd` すれば、いつでもコマンド単体が利用可能になります。
+
+**手動PATH** — インタラクティブシェルでプロジェクトルートから:
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**グローバルインストール** — CLIを一度インストールし、任意のディレクトリから呼び出します:
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+グローバルインストールはグローバルに固定されたバージョンを使用します。プロジェクトごとのバージョン固定には、direnv または手動PATHを使用し、`node_modules/.bin` がプロジェクトの依存関係に解決されるようにすることをお勧めします。
+
+**`package.json` スクリプト** — npm または pnpm がスクリプトを実行する際、`node_modules/.bin` を `PATH` の先頭に追加するため、シェルのPATHを変更しなくても、スクリプト内でコマンド単体名が機能します:
 
 ```json
 "scripts": {
@@ -93,25 +127,11 @@ pnpm add ai-i18n-tools
 }
 ```
 
-次に、例えば `pnpm run i18n:sync` を実行します。`npx` のプレフィックスは不要です。
+その後、例えば `pnpm run i18n:sync` を実行します — スクリプトは追加のシェル設定なしにローカルバイナリを解決します。
 
-**インタラクティブシェル** — プロジェクトのルートから (ローカルインストール後):
-
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-```
-
-bash/zshで素の`ai-i18n-tools`コマンドを入力するには、ローカルのbinディレクトリを`PATH`の前に付けます（PowerShell、direnv、Windowsの注意事項については[CLIの使用](../docs/guide/installation.md#using-the-cli)を参照）。
-
-```bash
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
+**代替手段** — `PATH` を調整したくない場合: `npx ai-i18n-tools …` (npm) または `pnpm exec ai-i18n-tools …` (pnpm)。`package.json` エントリを持たないインストール不要の一回限りの実行には: `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`。
 
 `extract`、`translate-ui`、`translate-svg`、`translate-docs`、および`translate-json`を手動で連結するよりも`sync`を使用することをお勧めします。手動で実行すると、順序と機能フラグを間違えやすいためです。クイックスタートガイドの[推奨される`package.json`スクリプト](../docs/guide/quick-start.md#recommended-packagejson-scripts)を参照してください。
-
-**ゼロインストールワンオフ** — `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>` (その呼び出しのみのパッケージをダウンロードします。`package.json` にエントリはありません)。
 
 プロバイダーのAPIキーを設定します（OpenRouterの例を示します。使用するプロバイダーに応じた対応する変数を使用してください）：
 
@@ -184,18 +204,20 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="quick-start"></a>
 ## クイックスタート
 
+まずコマンド単体用にシェルを設定してください — [CLIの使用](#using-the-cli) を参照してください。
+
 <a id="ui-strings"></a>
 ### UI文字列
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 
 # 2. Extract UI strings to strings.json
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 
 # 3. Translate to all target locales
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 次に、`'ai-i18n-tools/runtime'`のヘルパーを使用してアプリにi18nextを組み込みます。完全な設定については、UI文字列ガイドの[ステップ4：実行時にi18nextを組み込む](../docs/guide/ui-strings/i18next-runtime.md)を参照してください。
@@ -207,26 +229,26 @@ npx ai-i18n-tools translate-ui
 
 ```bash
 # Docusaurus docs + optional write-translations catalog
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 
 # Astro Starlight documentation
-# npx ai-i18n-tools init -t ui-starlight
+# ai-i18n-tools init -t ui-starlight [-P <provider>]
 
 # VitePress documentation (pages + theme catalog)
-# npx ai-i18n-tools init -t ui-vitepress
+# ai-i18n-tools init -t ui-vitepress [-P <provider>]
 
 # Nextra documentation (pages + _meta.ts + theme dictionary)
-# npx ai-i18n-tools init -t ui-nextra
+# ai-i18n-tools init -t ui-nextra [-P <provider>]
 
 # Fumadocs documentation (pages + meta.json + UI catalog)
-# npx ai-i18n-tools init -t ui-fumadocs
+# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# npx ai-i18n-tools init -t ui-astro-website
+# ai-i18n-tools init -t ui-astro-website [-P <provider>]
 
-npx ai-i18n-tools translate-docs
-npx ai-i18n-tools status
-# npx ai-i18n-tools translate-docs --locale de   # single locale
+ai-i18n-tools translate-docs
+ai-i18n-tools status
+# ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
 `ai-i18n-tools.config.json` を編集: `docs[].contentPaths` を markdown、MDX、および/または `.astro` ソースに設定します。`docs[].outputDir` および `docs[].docsOutput.style` (`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"fumadocs"`、`"flat"` など)。完全なフィールドリファレンス: [ドキュメント](../docs/guide/documents/)。
@@ -268,7 +290,7 @@ npx ai-i18n-tools status
 ### 結合同期
 
 ```bash
-npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
+ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
 ```
 
 ---
@@ -306,7 +328,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract

@@ -14,10 +14,10 @@ UI 복사본을 소스에서 `t("…")` 대신 **로케일별 중첩 JSON 파일
 ### 1단계: 중첩된 JSON 초기화
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-이 템플릿은 `features.translateJson: true`을(를) 설정하고, UI 추출 및 문서 번역을 비활성화하며, `src/i18n/en/translation.json`를 가리키고 출력이 `src/i18n/{llocale}/translation.json`인 단일 `json[]` 블록을 생성합니다. 또한 기본 `provider` / `providers` 블록을 포함합니다 — `translate-json` 또는 `sync`을(를) 실행하기 전에 일치하는 API 키를 설정하거나(또는 로컬 Ollama를 사용)하세요. [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하십시오. 저장소 레이아웃에 맞게 `sourceLocale`, `targetLocales`, `contentPaths`, `outputPathTemplate`을(를) 편집하십시오.
+이 템플릿은 `features.translateJson: true`을(를) 설정하고, UI 추출 및 문서 번역을 비활성화하며, `src/i18n/en/translation.json`를 가리키고 출력이 `src/i18n/{llocale}/translation.json`인 단일 `json[]` 블록을 스캐폴드합니다. 또한 기본 `provider` / `providers` 블록(`-P <provider>`을(를) 전달하지 않으면 `openrouter`)을 포함합니다 — `translate-json` 또는 `sync`을(를) 실행하기 전에 일치하는 API 키를 설정하거나 로컬 Ollama를 사용하세요; [제공자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요. 리포지토리 레이아웃에 맞게 `sourceLocale`, `targetLocales`, `contentPaths`, `outputPathTemplate`을(를) 편집하세요.
 
 <a id="step-2-configure-json"></a>
 ### 2단계: `json[]` 구성
@@ -72,7 +72,7 @@ npx ai-i18n-tools init -t ui-json-bundles
 ### 3단계: JSON 번들 번역
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 선택적 플래그 (`translate-docs`과 동일한 개념): `-l` / `--locale`는 대상 하위 집합에 사용, `-p` / `--path`는 파일 제한에 사용, `--dry-run`, `--force` (일치하는 파일의 파일 추적 및 세그먼트 캐시 지우기), `--force-update` (파일 해시가 일치할 때 다시 처리; 세그먼트 캐시는 여전히 적용됨), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
@@ -80,7 +80,7 @@ npx ai-i18n-tools translate-json
 JSON 전용 프로젝트는 다음을 실행할 수 있습니다:
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 UI 또는 문서도 활성화된 경우, `sync`은(는) **translate-docs 이후 translate-json**을 실행합니다 (`--no-json`이(가) 설정되지 않은 경우). `--no-json`를 사용하여 JSON을 건너뛸 수 있습니다.
@@ -88,7 +88,7 @@ UI 또는 문서도 활성화된 경우, `sync`은(는) **translate-docs 이후 
 파일 및 로케일별 커버리지를 확인하세요:
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 `translateJson`이 켜져 있을 때, `status`은 `json[]` 섹션을 출력합니다 (✓ 최신 상태, ● 오래되거나 누락됨).

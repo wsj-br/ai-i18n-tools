@@ -3,6 +3,8 @@
 
 `translate-docs`는 번역된 마크다운에서 URL을 재작성하여 파일이 로케일별 경로로 이동한 후에도 링크가 계속 확인되도록 합니다. 대부분의 페이지 간 링크는 자동으로 처리됩니다. 사이트에서 공유 정적 URL 트리 또는 로케일 코딩된 자산 폴더를 사용하는 경우 `docsOutput.postProcessing.regexAdjustments` 규칙을 추가합니다.
 
+스크린샷 디렉토리 레이아웃, 평면 깊이 접두사 + 로케일 교환 흐름, 레이아웃별 에셋 예시에 대해서는 [이미지 및 스크린샷 — 링크 재작성](/ko/guide/images-and-screenshots/link-rewriting)을 참조하십시오.
+
 <a id="built-in-rewriters"></a>
 ## 내장 재작성기
 

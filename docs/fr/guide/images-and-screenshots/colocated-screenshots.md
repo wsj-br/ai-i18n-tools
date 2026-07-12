@@ -3,6 +3,8 @@
 
 À utiliser lorsqu'un site `doc-system` place les ressources spécifiques à chaque paramètre régional à côté des fichiers markdown traduits — aucune réécriture d'URL n'est nécessaire. Le préréglage Docusaurus (`docsOutput.style = "docusaurus"`) constitue l'implémentation de référence ; d'autres générateurs utilisant `"doc-system"` avec un `localeSubpath` personnalisé suivent la même logique : les ressources anglaises se trouvent dans un chemin de paramètre régional source, les ressources traduites se trouvent sous `{outputDir}/{locale}/[localeSubpath/]assets/`.
 
+> **Pourquoi pas d'exemple dans le dépôt :** Les démos Docusaurus de ce dépôt ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) utilisent la disposition [dossier par locale](/fr/guide/images-and-screenshots/per-locale-folder) à la place — voir le [guide de décision](/fr/guide/images-and-screenshots/#decision-guide). Le `../assets/` colocalisé est le modèle recommandé pour les nouveaux projets ; [duplistatus](https://github.com/wsj-br/duplistatus) est la référence de production complète.
+
 <a id="directory-layout"></a>
 ### Organisation des répertoires
 

@@ -107,23 +107,21 @@ SVG 소스 파일은 전용 소스 디렉터리(예: `images/` 또는 `src/asset
 <a id="decision-guide"></a>
 # 결정 가이드
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**자산에 번역 가능한 텍스트 또는 레이블이 포함되어 있나요?**
+  - **예** → [웹 앱 SVG](/ko/guide/svg-translation/translated-svg-web-app) 또는 [동일한 위치에 있는 SVG](/ko/guide/svg-translation/translated-svg-colocated)
+  - **아니요** (래스터 스크린샷 또는 장식용 SVG) →
+    - **자산이 번역된 문서와 동일한 위치에 있는 문서 사이트인가요?**
+      - **예** → [동일한 위치에 있는 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) (래스터) + [동일한 위치에 있는 SVG](/ko/guide/svg-translation/translated-svg-colocated) (SVG)
+    - **이미지가 필요한 로케일이 하나뿐인가요?** (로케일별 변형 없음)
+      - **예** → [공유 이미지](/ko/guide/images-and-screenshots/shared-image)
+    - **아니요** → [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder)
 
 SVG 레이아웃은 [SVG 번역](/ko/guide/svg-translation/) 가이드에 설명되어 있습니다.
 
-| 레이아웃 | 자산 유형 | 사이트 유형 | 도구 메커니즘 |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [공유 이미지](/ko/guide/images-and-screenshots/shared-image) | 래스터(공유) | `docsOutput.style = "flat"` 문서 | 파일별 링크 재작성기; 일반적으로 정규식 없음 |
+| 레이아웃                                                                       | 자산 유형                  | 사이트 유형                                                              | 도구 메커니즘                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [동일한 위치에 있는 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) | 래스터 (동일한 위치에 있음)          | `"doc-system"`로케일별 자산이 포함된 (Docusaurus 프리셋)               | 스크린샷 스크립트를 사용하여 파일을 배치; 정규식 없음                     |
 | [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder) | 래스터(로케일별) | `"flat"` 또는 `"doc-system"` (`"docusaurus"`, `"astro-starlight"` 포함) | `regexAdjustments` 로케일 세그먼트 교체 |
-| [동일 위치 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) | 래스터(동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | 스크린샷 스크립트가 파일을 배치합니다. 정규식 없음 |
-| [웹 앱 SVG](/ko/guide/svg-translation/translated-svg-web-app) | SVG(번역됨) | 웹 앱 | `translate-svg` 및 `svg.style = "flat"` |
+| [공유 이미지](/ko/guide/images-and-screenshots/shared-image)                   | 래스터 (공유)             | `docsOutput.style = "flat"` 문서                                       | 파일별 링크 재작성; 일반적으로 정규식 없음                     |
 | [동일 위치 SVG](/ko/guide/svg-translation/translated-svg-colocated) | SVG(번역됨, 동일 위치) | 동일 위치 자산이 있는 `"doc-system"`(Docusaurus 사전 설정) | `translate-svg` 및 `svg.style = "nested"` + `pathTemplate` |
+| [웹 앱 SVG](/ko/guide/svg-translation/translated-svg-web-app) | SVG(번역됨) | 웹 앱 | `translate-svg` 및 `svg.style = "flat"` |

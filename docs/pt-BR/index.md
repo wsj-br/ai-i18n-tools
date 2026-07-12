@@ -73,12 +73,13 @@ O pacote publicado é **somente ESM**. Node.js `>=22.16.0` é necessário.
 
 ```bash
 pnpm add ai-i18n-tools
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
-npx ai-i18n-tools init
-npx ai-i18n-tools sync
+# Set API key for your active provider — see preset table (default init: openrouter)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+ai-i18n-tools init [-P <provider>]
+ai-i18n-tools sync
 ```
 
-Consulte [Instalação](/pt-BR/guide/installation) para obter detalhes sobre a invocação da CLI (incluindo [desenvolvimento de monorepo clonado](/pt-BR/guide/installation#cloned-monorepo)) e [Início rápido](/pt-BR/guide/quick-start) para modelos de scaffold.
+Consulte [Instalação](/pt-BR/guide/installation) para [configurar o comando CLI básico](/pt-BR/guide/installation#using-the-cli) (incluindo [desenvolvimento de monorepo clonado](/pt-BR/guide/installation#cloned-monorepo)) e [Início rápido](/pt-BR/guide/quick-start) para modelos de scaffold.
 
 <a id="which-pipeline-should-i-use"></a>
 ## Qual pipeline devo usar?

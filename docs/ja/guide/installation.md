@@ -18,7 +18,41 @@ ai-i18n-toolsには独自の文字列抽出機能が含まれています。以�
 
 プロジェクトに`ai-i18n-tools`を依存関係または開発依存関係としてインストールします（上記の[インストール](#installation)を参照）。このパッケージは、パッケージマネージャーが`node_modules/.bin/ai-i18n-tools`にリンクする`bin`エントリを宣言します。そのシム（インストールされたパッケージ内の`bin/ai-i18n-tools.mjs`）は、コンパイルされたCLIをロードします。
 
-**`package.json`スクリプト（推奨）** — npmまたはpnpmがスクリプトを実行すると、`PATH`の前に`node_modules/.bin`が追加されるため、`pnpm run i18n:sync`のようなコマンドは`npx`または`pnpm exec`プレフィックスなしで`ai-i18n-tools`を呼び出します。
+インタラクティブシェルで `ai-i18n-tools` コマンド単体を入力するには、以下のいずれかのオプションを設定してください。設定を行わない場合、ローカルインストール後であってもシェルはバイナリを見つけることができません。
+
+**direnv** — プロジェクトルートの `.envrc` に追加します (bash/zsh、[direnv.net](https://direnv.net/) を参照):
+
+```bash
+PATH_add node_modules/.bin
+```
+
+`direnv allow` の後、プロジェクトに `cd` すれば、いつでもコマンド単体が利用可能になります。
+
+**手動PATH** — インタラクティブシェルでプロジェクトルートから:
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**グローバルインストール** — CLIを一度インストールし、任意のディレクトリから呼び出します:
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+グローバルインストールはグローバルに固定されたバージョンを使用します。プロジェクトごとのバージョン固定には、direnv または手動PATHを使用し、`node_modules/.bin` がプロジェクトの依存関係に解決されるようにすることをお勧めします。
+
+**`package.json` スクリプト** — npm または pnpm がスクリプトを実行する際、`node_modules/.bin` を `PATH` の先頭に追加するため、シェルのPATHを変更しなくても、スクリプト内でコマンド単体名が機能します:
 
 ```json
 "scripts": {
@@ -26,51 +60,32 @@ ai-i18n-toolsには独自の文字列抽出機能が含まれています。以�
 }
 ```
 
-**インタラクティブシェル** — ローカルインストール後、プロジェクトのルートから：
+例えば `pnpm run i18n:sync` を実行します。
 
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-yarn ai-i18n-tools sync       # yarn (Berry: yarn dlx ai-i18n-tools … for one-off)
-```
-
-**ターミナルで** `ai-i18n-tools`を**直接入力** — インタラクティブシェルでコマンド名を直接入力するには、ローカルのbinディレクトリを`PATH`の前に付けます。
-
-```bash
-# bash/zsh — project root
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell — project root
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-[**direnv**](https://direnv.net/)を使用する場合は、プロジェクトルートの`.envrc`に`PATH_add node_modules/.bin`を追加して、プロジェクトに`cd`した後、ベアコマンドが利用できるようにします。`PATH`を調整せずに、`npx ai-i18n-tools …`または`pnpm exec ai-i18n-tools …`を使い続けてください。
-
-**インストール不要のワンタイム実行** — `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`（その実行のためにパッケージをダウンロード。`package.json` にエントリは追加されません）。
+**代替手段** — `PATH` を調整したくない場合: `npx ai-i18n-tools …` (npm) または `pnpm exec ai-i18n-tools …` (pnpm)。`package.json` エントリを持たないインストール不要の一回限りの実行には: `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`。
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
 ### クローンした ai-i18n-tools モノレポ
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) の完全なクローンからパッケージを開発する、またはワークスペースの**例**を実行する場合:
 
-- **ワークスペースの例** (`examples/console-app`、`examples/nextjs-app`、および [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) にリストされているその他のパッケージ) — リポジトリルートで `pnpm install` を実行した後、`cd examples/<name>` を実行し、`pnpm exec ai-i18n-tools …` または各例の `pnpm run i18n:*` スクリプトを使用します。ワークスペースの [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) は `ai-i18n-tools` をローカルのチェックアウトにリンクします。
-- **リポジトリルート** — pnpm はルートパッケージ自身の `bin` を `node_modules/.bin` にリンクしません。ルートで `npx ai-i18n-tools` を実行すると、作業ツリーではなく**公開済みの npm**パッケージが実行されます。代わりに `node bin/ai-i18n-tools.mjs …` またはルートの `pnpm i18n:*` スクリプトを使用してください。
-- **スタンドアロンのフィクスチャ** (`multi-provider`、`test-markdown`) — フィクスチャのフォルダから `node ../../bin/ai-i18n-tools.mjs …` を使用します。
+- **ワークスペースの例** (`examples/console-app`, `examples/nextjs-app`, および [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) にリストされているその他のパッケージ) — リポジトリルートで `pnpm install` を実行し、その後 `cd examples/<name>` を実行します。例の `pnpm run i18n:*` スクリプトを使用するか、PATH を設定して ([CLI の使用](#using-the-cli) を参照) 単独の `ai-i18n-tools …` を実行します。ワークスペース [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) は `ai-i18n-tools` をローカルのチェックアウトにリンクします。
+- **リポジトリルート** — pnpm はルートパッケージ自身の `bin` を `node_modules/.bin` にリンクしません。代わりに `node bin/ai-i18n-tools.mjs …` またはルートの `pnpm i18n:*` スクリプトを使用してください (またはシェルエイリアス / `pnpm add -g .` — [開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照)。
+- **スタンドアロンのフィクスチャ** (`multi-provider`, `test-markdown`) — フィクスチャフォルダから `node ../../bin/ai-i18n-tools.mjs …` を使用します。
 
 CLI ソースを変更した後、リポジトリルートで `pnpm run build` を実行します。ビルド手順やオプションのグローバルインストールの回避策については、[開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照してください。
 
 Linux、macOS、およびWSLでは、レジストリからのインストールによりCLIスクリプトの実行ビットが自動的に設定されます。Windowsでは、パッケージマネージャーがNodeを明示的に呼び出す`.cmd`および`.ps1`のシャムを生成します。
 
-翻訳コマンド (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) には、`ai-i18n-tools.config.json` での**プロバイダー設定**と、アクティブなプロバイダーの**APIキー**が必要です。デフォルトのOpenRouterブロックをスキャフォールディングするには `ai-i18n-tools init` を実行し、プリセットやモデルを切り替えるには `provider` / `providers` を編集してください ([LLMプロバイダーとモデル](/ja/guide/providers-and-models) を参照)。Ollamaは、APIキーを必要としない唯一の組み込みプリセットです。
+翻訳コマンド (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) は `ai-i18n-tools.config.json` に **プロバイダー設定** と、アクティブなプロバイダーの **API キー** が必要です。`ai-i18n-tools init [-P <provider>]` を実行してデフォルトのプロバイダーブロックをスキャフォールドします (省略時は `openrouter`); `provider` / `providers` を編集してプリセットやモデルを切り替えます — [LLM プロバイダーとモデル](/ja/guide/providers-and-models) を参照してください。Ollama は API キーが不要な唯一の組み込みプリセットです。
 
-プロバイダーのAPIキーを設定します（OpenRouterが表示されています。アクティブなプロバイダーに一致する環境変数を使用してください — [プリセットテーブル](/ja/guide/providers-and-models#built-in-providers)を参照）。
+アクティブなプロバイダーに一致する API キーを設定します ([プリセットテーブル](/ja/guide/providers-and-models#built-in-providers) を参照):
 
 ```bash
+# Default init (openrouter)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Example: init -P anthropic
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
 またはプロジェクトルートに`.env`ファイルを作成してください。

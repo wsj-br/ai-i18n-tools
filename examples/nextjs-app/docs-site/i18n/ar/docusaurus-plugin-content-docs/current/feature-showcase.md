@@ -2,12 +2,13 @@
 sidebar_position: 1
 title: عرض ميزة الترجمة
 description: مستند مرجعي يوضح كل عنصر في Markdown يمكن لـ ai-i18n-tools ترجمته.
-translation_last_updated: '2026-07-10T21:34:19.386Z'
-source_file_mtime: '2026-05-04T21:42:57.000Z'
-source_file_hash: fc1e59d495d99d93de4381fb9475734f0221307ceac660a82ac03cdc06acc320
+translation_last_updated: '2026-07-12T01:33:46.960Z'
+source_file_mtime: '2026-07-12T01:15:35.404Z'
+source_file_hash: ab62a8c7eafe5b18776b41e28c22c18b609913597cf062f6774b98aeb0178084
 translation_language: ar
 source_file_path: docs-site/docs/feature-showcase.md
 translation_models:
+  - google/gemini-2.5-flash
   - qwen/qwen3-235b-a22b-2507
 ---
 
@@ -245,8 +246,8 @@ export default config;
 "regexAdjustments": [
   {
     "description": "Per-locale screenshot folders in docs-site static assets",
-    "search": "screenshots/ar/",
-    "replace": "screenshots/${translatedLocale}/"
+    "search": "screenshots/ar/]+/",
+    "replace": "screenshots/ar/"
   }
 ]
 ```
@@ -254,12 +255,12 @@ export default config;
 بعد الترجمة، يصبح الإخراج الألماني:
 
 ```markdown
-![Die Beispiel-Next.js-App auf Deutsch](/img/screenshots/de/screenshot.png)
+![Die Beispiel-Next.js-App auf Deutsch](/img/screenshots/ar/screenshot.png)
 ```
 
 ها هي لقطة الشاشة الفعلية لتطبيق Next.js — وهي باللغة الإنجليزية افتراضيًا، ولكن إذا كنت تقرأ هذا المحتوى في موقع مترجم، فيجب أن تعرض الصورة أدناه التطبيق بلغتك:
 
-![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/ar/screenshot.png)
+![مثال تطبيق Next.js — سلاسل واجهة المستخدم وهذه الصفحة مترجمة بواسطة ai-i18n-tools](/img/screenshots/ar/screenshot.png)
 
 ---
 

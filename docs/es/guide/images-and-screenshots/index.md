@@ -107,23 +107,21 @@ Habilite `forceLowercase: true` en el bloque de configuración `svg` para evitar
 <a id="decision-guide"></a>
 # Guía de decisiones
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**¿El recurso es un SVG con texto o etiquetas traducibles!**
+  - **Sí** → [Aplicación web SVG](/es/guide/svg-translation/translated-svg-web-app) o [SVG Colocado](/es/guide/svg-translation/translated-svg-colocated)
+  - **No** (captura de pantalla de raster o SVG decorativo) →
+    - **¿El sitio del sistema de documentos tiene activos colocados junto a los documentos traducidos?**
+      - **Sí** → [Capturas de pantalla colocadas](/es/guide/images-and-screenshots/colocated-screenshots) (rasters) + [SVG Colocado](/es/guide/svg-translation/translated-svg-colocated) (SVG)
+    - **¿Solo una región necesita la imagen** (no hay variantes por región)?
+      - **Sí** → [Imagen compartida](/es/guide/images-and-screenshots/shared-image)
+    - **De lo contrario** → [Carpeta por región](/es/guide/images-and-screenshots/per-locale-folder)
 
 Los diseños SVG se tratan en la guía [Traducción de SVG](/es/guide/svg-translation/).
 
-| Diseño | Tipo de activo | Tipo de sitio | Mecanismo de herramienta |
-|---|---|---|---|
-| [Imagen compartida](/es/guide/images-and-screenshots/shared-image) | Ráster (compartido) | Documentos `docsOutput.style = "flat"` | Reescritor de enlaces por archivo; generalmente sin expresiones regulares |
+| Diseño                                                                        | Tipo de recurso                 | Tipo de sitio                                                             | Mecanismo de herramienta                                             |
+|------------------------------------------------------------------------------|-------------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Capturas de pantalla colocadas](/es/guide/images-and-screenshots/colocated-screenshots) | Raster (colocado)            | `"doc-system"` con activos colocados (preconfiguración de Docusaurus)             | El script de captura de pantalla coloca archivos; sin regex       |
 | [Carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder) | Ráster (por configuración regional) | `"flat"` o `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`) | Intercambio de segmento de configuración regional `regexAdjustments` |
-| [Capturas de pantalla intercaladas](/es/guide/images-and-screenshots/colocated-screenshots) | Ráster (intercalado) | `"doc-system"` con activos intercalados (preajuste de Docusaurus) | El script de captura de pantalla coloca los archivos; sin expresiones regulares |
-| [SVG de aplicación web](/es/guide/svg-translation/translated-svg-web-app) | SVG (traducido) | Aplicación web | `translate-svg` con `svg.style = "flat"` |
+| [Imagen compartida](/es/guide/images-and-screenshots/shared-image)                  | Raster (compartido)           | `docsOutput.style = "flat"` docs                                      | Reescritor de enlaces por archivo; generalmente sin regex          |
 | [SVG intercalado](/es/guide/svg-translation/translated-svg-colocated) | SVG (traducido, intercalado) | `"doc-system"` con activos intercalados (preajuste de Docusaurus) | `translate-svg` con `svg.style = "nested"` + `pathTemplate` |
+| [SVG de aplicación web](/es/guide/svg-translation/translated-svg-web-app) | SVG (traducido) | Aplicación web | `translate-svg` con `svg.style = "flat"` |

@@ -134,9 +134,11 @@ Ek runnable example ke liye jo ek config mein kai providers ko configure karta h
 
 Niche di gayi list ko ek **baseline** ke roop mein mane jise aap badha sakte hain: yadi kisi vishesh locale ke liye anuvad kharab ya asafal hai, to research karen ki kaun se model us bhasha ya script ko prabhavi dhang se support karte hain (online resources ya apne provider ke documentation ka sandarbh len), aur un model ids ko aur vikalpon ke roop mein joden.
 
+Ye model ID `ai-i18n-tools init [-P <provider>]` se mel khate hain jab `-P openrouter` (default) ho. Anya presets `init -P <provider>` se native model ID prapt karte hain — [Built-in providers](/hi-Latn/guide/providers-and-models#built-in-providers) dekhen.
+
 Yah suchi 36 target locales ke saath ek bade documentation project mein **vyapak locale coverage ke liye parikshit ki gayi thi**; yah ek vyavaharik default ke roop mein karya karti hai, lekin har locale ke liye achha pradarshan karne ki guarantee nahi hai.
 
-Udaharan `translationModels` (`npx ai-i18n-tools init` ke saman defaults):
+Udaharan `translationModels` (`ai-i18n-tools init [-P <provider>]` ke saman defaults):
 
 <details>
 <summary>Default translationModels fallback list</summary>
@@ -147,9 +149,9 @@ Udaharan `translationModels` (`npx ai-i18n-tools init` ke saman defaults):
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@ Udaharan `translationModels` (`npx ai-i18n-tools init` ke saman defaults):
 
 <br />
 
-Apne environment ya `.env` file mein active provider ka API-key env var (jaise `OPENROUTER_API_KEY`) set karen.
+Apne environment ya `.env` file mein active provider ka API-key env var set karen ([preset table](/hi-Latn/guide/providers-and-models#built-in-providers) dekhen).
 
-Model suchiyon ko badalne se pehle, `npx ai-i18n-tools check-models` chalaen. Kisi bhi provider ke liye yah har configured model id (`translationModels`, `uiModels`, aur sabhi `localeModels` entries) ko us provider ki live model suchi (`GET /models`) ke khilaf verify karta hai, missing ya `expiration_date` se aage ki ids ki report karta hai, vaidh models ki suchi banata hai, aur jab koi configured id invalid hoti hai to non-zero exit karta hai. Jab provider pricing return karta hai (jaise OpenRouter) to yah anumanit input/output pricing (USD prati 1M tokens) bhi dikhata hai.
+Model list badalne se pahle, `ai-i18n-tools check-models` chalayen. Kisi bhi provider ke liye, yah har configured model ID (`translationModels`, `uiModels`, aur sabhi `localeModels` entries) ko us provider ki live model list (`GET /models`) ke khilaf verify karta hai, missing ya `expiration_date` se pare IDs ki report karta hai, valid models ki list deta hai, aur jab koi configured ID invalid ho to non-zero exit karta hai. Jab provider pricing return karta hai (jaise OpenRouter) to yah anumanit input/output pricing (prati 1M tokens USD) bhi dikhata hai.
 
-Vastavik anuvad kary par configure kiye gaye models ki tulna karne ke liye, `npx ai-i18n-tools bench-models` chalayen. Yah `translationModels`, `uiModels`, aur `localeModels` se har anokhe model id ko benchmark karta hai, har ek ko alag-alag (parallel mein, `concurrency` dwara seemit) ek sample ka anuvad karke, aur prati-model input/output tokens, wall-clock samay, aur USD lagat print karta hai, taki aap model suchiyon par nirnay lene se pahle gati aur kimat ka tulnatmak adhyayan kar saken.
+Vastavik translation karya par configured models ki tulna karne ke liye, `ai-i18n-tools bench-models` chalayen. Yah `translationModels`, `uiModels`, aur `localeModels` se har unique model ID ko benchmark karta hai, har ek ke madhyam se ek sample ko alag-alag translate karke (parallel mein, `concurrency` dwara seemit) aur prati-model input/output tokens, wall-clock samay, aur USD lagat print karta hai, taki aap model list par nirnay lene se pahle gati ki tulna kimat se kar saken.
 
 ---
 
@@ -461,5 +463,5 @@ SVG files ke liye top-level path aur layout. Anuvaad tabhi chalta hai jab `featu
 **Ek khali glossary CSV generate karein:**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

@@ -90,19 +90,19 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 ### 步骤 2：翻译
 
 ```bash
-npx ai-i18n-tools translate-svg
+ai-i18n-tools translate-svg
 ```
 
 翻译单个区域设置：
 
 ```bash
-npx ai-i18n-tools translate-svg --locale de
+ai-i18n-tools translate-svg --locale de
 ```
 
 不写入文件预览：
 
 ```bash
-npx ai-i18n-tools translate-svg --dry-run
+ai-i18n-tools translate-svg --dry-run
 ```
 
 当 `features.translateSVG` 和 `svg` 都设置时，`sync` 会自动运行 SVG 步骤（使用 `--no-svg` 跳过）。共享标志包括 `-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency` 和 `--force` / `--force-update`。

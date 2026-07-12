@@ -4,9 +4,9 @@ title: Démarrage rapide
 description: >-
   Obtenez votre premier document traduit en moins de cinq minutes en utilisant
   ai-i18n-tools avec ce projet exemple Next.js.
-translation_last_updated: '2026-07-10T21:34:19.190Z'
-source_file_mtime: '2026-05-04T22:22:41.000Z'
-source_file_hash: bfe5380d21559e2ebd12913020cd7a9e50b1e85a76bc4436c438e90e9c09e1cf
+translation_last_updated: '2026-07-12T01:33:47.068Z'
+source_file_mtime: '2026-07-12T01:15:35.414Z'
+source_file_hash: e34ee98fed8efd780f0d40a5bd9d9d33307cb5bf12700487e6cb4054acd45660
 translation_language: fr
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -92,8 +92,8 @@ Ouvrez `ai-i18n-tools.config.json`. La section pertinente pour la traduction de 
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders in docs-site static assets",
-              "search": "screenshots/fr/",
-              "replace": "screenshots/${translatedLocale}/"
+              "search": "screenshots/fr/]+/",
+              "replace": "screenshots/fr/"
             }
           ]
         }
@@ -110,8 +110,8 @@ Ouvrez `ai-i18n-tools.config.json`. La section pertinente pour la traduction de 
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders under translated-docs",
-              "search": "images/screenshots/[^/]+/",
-              "replace": "images/screenshots/${translatedLocale}/"
+              "search": "images/screenshots/fr/]+/",
+              "replace": "images/screenshots/fr/"
             }
           ],
           "languageListBlock": {

@@ -19,11 +19,52 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="what-to-do"></a>
 ## 実行すること
 
+<a id="docusaurus-sites-preferred"></a>
+### Docusaurusサイト (推奨)
+
+[Docusaurus](/ja/guide/integrations/docusaurus) のドキュメント（`docsOutput.style = "docusaurus"`）では、`ai-i18n-tools write-heading-ids`ではなく Docusaurus のネイティブな見出し ID を優先してください。
+
+1. Docusaurus の `{#…}` サフィックスを使用して、見出し行に明示的な id を追加します（例: `## TLS configuration {#tls-configuration}`）。`translate-docs`の際、翻訳されるのは表示される見出しテキストのみであり、`{#tls-configuration}` サフィックスはすべてのロケールで保持されます。
+2. Docusaurus プロジェクトのルートから `docusaurus write-heading-ids` を実行して（`package.json`に組み込んでいる場合は通常 `pnpm run write-heading-ids`）、サフィックスのない見出しに `{#…}` サフィックスを追加または更新します。見出しを変更した後は、古い id が現在のタイトルと一致するよう再実行してください。
+
+markdown の **アンカーリンク**をこれらの安定した id に向けます（例: `[label](other.md#tls-configuration)`）。ここでフラグメントは `{#…}` サフィックスに一致し、英語の単語だけから推測したスラッグではありません。このパターンを使用したコミット済みドキュメントについては、[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) を参照してください。
+
+<a id="other-layouts-flat-starlight-vitepress-etc"></a>
+### その他のレイアウト (フラット、Starlight、VitePressなど)
+
+Docusaurus を使用していない場合、または `{#…}` サフィックスの代わりに HTML アンカーが必要な場合は以下のようにします。
+
 1. `translate-docs` の前（通常の `docs[]` / `contentPaths` と同じ）に、ソース `.md` / `.mdx` に対して `ai-i18n-tools write-heading-ids` を実行します。これにより各見出しの前の行に明示的なHTMLアンカーが挿入され、すべての翻訳コピーで `id` 値が共有されます。見出しの名前を変更した後は再実行して、古くなったアンカーIDが現在のタイトルに合わせて更新されるようにします。
 2. markdownの**アンカーリンク**をこれらの固定IDを指すようにしてください。例：`[label](other.md#section-id)`。ここで `section-id` はツールが書き込んだアンカーと一致している必要があります — 英語の単語から推測したものではありません。
 
 <a id="example"></a>
 ## 例
+
+<a id="example-docusaurus"></a>
+### Docusaurus の `{#…}` サフィックス
+
+`docs/overview.md`:
+
+```markdown
+See [TLS setup](security.md#tls-configuration) for certificate steps.
+```
+
+`docs/security.md`（英語ソース）:
+
+```markdown
+## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+`translate-docs`の後、リンクのフラグメントはすべてのロケールで `#tls-configuration` のまま維持され、変更されるのは見出しテキストとリンクラベルのみです。
+
+```markdown
+Siehe [TLS-Einrichtung](security.md#tls-configuration) für die Zertifikatsschritte.
+```
+
+<a id="html-anchors-write-heading-ids"></a>
+### HTMLアンカー (`write-heading-ids`)
 
 `docs/overview.md`:
 

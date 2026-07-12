@@ -9,7 +9,7 @@ Voir aussi [Documents](/fr/guide/documents/) et la démo exécutable [examples/f
 ## Démarrage rapide
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Chargez le JSON par paramètre régional dans `layout.shared.ts` via `loadUiCata
 Les paramètres régionaux standard peuvent être couverts par les préréglages `@fumadocs/language/*` sans coût LLM ; le catalogue traduit les **remplacements de projet** uniquement dans le bloc anglais.
 
 **N'utilisez pas** `json[]` pour les chaînes d'interface utilisateur Fumadocs — ce pipeline est destiné aux bundles de paramètres régionaux d'applications non liés.
-
-<a id="framework-shell-translation"></a>
-## Traduction du shell du framework
-
-| Framework | Chaînes de shell / thème | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | catalogue `write-translations` | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Étiquettes de barre latérale `_meta.ts` | Documents — auto quand `style: "nextra"` + `translate-docs` |
-| Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Étiquettes de barre latérale `meta.json` | Documents — auto quand `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catalogue de surcharges d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses locales) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
-
-Ne mettez **pas** les chaînes de l'interface/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de locales d'applications non liés. Voir [intégration Docusaurus](/fr/guide/integrations/docusaurus), [intégration VitePress](/fr/guide/integrations/vitepress) et [intégration Nextra](/fr/guide/integrations/nextra) pour les autres modèles de framework.
 
 <a id="link-conventions"></a>
 ## Conventions de lien

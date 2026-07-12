@@ -19,9 +19,24 @@ Guias específicos de framework para integrar as ferramentas ai-i18n-tools em si
 
 Todas as integrações de framework de documentação compartilham o mesmo modelo de bloco `docs[]` descrito em [Documentos](/pt-BR/guide/documents/). Defina `docsOutput.style` para corresponder ao seu framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` ou `"astro-starlight"`). Para o layout da pasta de saída e o comportamento de reescrita de links, consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts) e [Reescrita de links](/pt-BR/guide/documents/link-rewriting).
 
-Cada modelo `init -t ui-*` estrutura um bloco de provedor LLM padrão. Antes de `translate-docs` ou `sync`, configure `provider` / `providers`, se necessário, e defina a chave de API correspondente — consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
+Cada modelo `init -t ui-*` estrutura um bloco de provedor LLM padrão (`openrouter`, a menos que você passe `-P <provider>`). Antes de `translate-docs` ou `sync`, configure `provider` / `providers`, se necessário, e defina a chave de API correspondente — consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
 
-**Não** coloque strings de shell ou tema do framework em `json[]` — esse pipeline é para pacotes de localidade de aplicativos não relacionados. Cada página de integração explica quais caminhos de catálogo e flags da CLI cobrem rótulos de navegação, barra lateral e tema para aquele framework.
+Consulte [Tradução do shell do framework](#framework-shell-translation) para uma comparação entre frameworks. Cada guia vinculada abaixo aborda a configuração para esse framework.
+
+<a id="framework-shell-translation"></a>
+## Tradução do shell do framework
+
+| Framework | Strings do shell / tema | Pipeline |
+|-----------|----------------------|----------|
+| Docusaurus | Catálogo `write-translations` (`{ message, description }`) | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Catálogo de tema/navegação/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | Rótulos da barra lateral `_meta.ts` | Documentos — automático quando `style: "nextra"` + `translate-docs` |
+| Nextra | Dicionário de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | Rótulos da barra lateral `meta.json` | Documentos — automático quando `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | Catálogo de substituições de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Strings de UI integradas (muitas localidades); sem pipeline de shell adicional | Documentos — `translate-docs` (somente páginas) |
+
+**Não** coloque strings de shell/tema do framework em `json[]` — esse pipeline é para pacotes de localização de aplicativos não relacionados. Os detalhes de configuração por framework estão nos guias vinculados em [Qual guia ler](#which-guide-to-read).
 
 <a id="runnable-examples"></a>
 ## Exemplos executáveis

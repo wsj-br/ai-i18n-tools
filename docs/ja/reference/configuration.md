@@ -134,9 +134,11 @@
 
 以下のリストは、拡張可能な**ベースライン**として扱ってください。特定のロケールの翻訳が不十分または失敗した場合は、その言語またはスクリプトを効果的にサポートするモデルを調査し（オンラインリソースまたはプロバイダーのドキュメントを参照）、それらのモデルIDを代替として追加してください。
 
+これらのモデルIDは、`-P openrouter`（デフォルト）の場合、`ai-i18n-tools init [-P <provider>]`と一致します。その他のプリセットは`init -P <provider>`からネイティブなモデルIDを取得します — [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)を参照してください。
+
 このリストは、36の対象ロケールを持つ大規模なドキュメンテーションプロジェクトで**広範なロケール対応のテスト**が行われました。実用的なデフォルトとして機能しますが、すべてのロケールで良好に動作する保証はありません。
 
-例 `translationModels`（`npx ai-i18n-tools init`と同じデフォルト値）:
+`translationModels`の例（`ai-i18n-tools init [-P <provider>]`と同じデフォルト）:
 
 <details>
 <summary>デフォルトのtranslationModelsフォールバックリスト</summary>
@@ -147,9 +149,9 @@
   "meta-llama/llama-3.3-70b-instruct",
   "openai/gpt-4o-mini",
   "google/gemma-4-26b-a4b-it",
-  "anthropic/claude-3-haiku",
+  "~anthropic/claude-haiku-latest",
   "z-ai/glm-5.2",
-  "google/gemini-3-flash-preview",
+  "google/gemini-3.5-flash",
   "~anthropic/claude-sonnet-latest"
   // … add more fallback models as needed
 ]
@@ -189,11 +191,11 @@
 
 <br />
 
-アクティブなプロバイダーのAPIキー環境変数（例：`OPENROUTER_API_KEY`）を環境または`.env`ファイルに設定します。
+アクティブなプロバイダーのAPIキー環境変数（[プリセットテーブル](/ja/guide/providers-and-models#built-in-providers)を参照）を、環境または`.env`ファイルに設定してください。
 
-モデルリストを変更する前に、`npx ai-i18n-tools check-models`を実行してください。これにより、各プロバイダーについて、設定された各モデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）が、そのプロバイダーのライブモデルリスト（`GET /models`）と照合され、不足しているIDや`expiration_date`を過ぎたIDが報告され、有効なモデルがリストアップされ、設定されたIDが無効な場合はゼロ以外の値で終了します。プロバイダーが価格情報（例: OpenRouter）を返す場合、推定入出力価格（100万トークンあたりの米ドル）も表示されます。
+モデルリストを変更する前に、`ai-i18n-tools check-models`を実行してください。各プロバイダーについて、設定されたすべてのモデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）をそのプロバイダーのライブモデルリスト（`GET /models`）と照合して検証し、欠落しているまたは`expiration_date`を過ぎたIDを報告し、有効なモデルをリスト表示し、無効なIDが1つでもあれば非ゼロで終了します。プロバイダーが価格情報を返す場合（例: OpenRouter）、推定入力/出力価格（100万トークンあたりのUSD）も表示されます。
 
-設定されたモデルを実際の翻訳作業で比較するには、`npx ai-i18n-tools bench-models` を実行します。これは、`translationModels`、`uiModels`、および `localeModels` からの一意のモデル ID ごとに、各モデルを個別に（並行して、`concurrency` によって制限されます）1 つのサンプルを翻訳することでベンチマークを行い、モデルごとの入出力トークン、実時間、および USD コストを出力します。これにより、モデルリストを決定する前に速度と価格を比較検討できます。
+設定したモデルを実際の翻訳作業で比較するには、`ai-i18n-tools bench-models`を実行してください。`translationModels`、`uiModels`、および`localeModels`のすべての一意なモデルIDについて、それぞれを個別に（並列で、`concurrency`で制限）1つのサンプルを翻訳してベンチマークし、モデルごとの入力/出力トークン数、経過時間、USDコストを出力します。これにより、モデルリストを確定する前に速度と価格のバランスを検討できます。
 
 ---
 
@@ -461,5 +463,5 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 **空の用語集CSVを生成する：**
 
 ```bash
-npx ai-i18n-tools glossary-generate
+ai-i18n-tools glossary-generate
 ```

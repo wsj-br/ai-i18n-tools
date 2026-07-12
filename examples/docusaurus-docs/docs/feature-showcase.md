@@ -237,7 +237,7 @@ The config entry for this docs-site includes:
 "regexAdjustments": [
   {
     "description": "Per-locale screenshot folders in docs-site static assets",
-    "search": "screenshots/en-GB/",
+    "search": "screenshots/[^/]+/",
     "replace": "screenshots/${translatedLocale}/"
   }
 ]

@@ -24,10 +24,10 @@ Añada los marcadores manualmente, o deje que el comando `mark-html` inserte los
 
 ```bash
 # Preview (no changes written)
-npx ai-i18n-tools mark-html public/index.html
+ai-i18n-tools mark-html public/index.html
 
 # Apply the bare markers
-npx ai-i18n-tools mark-html public/index.html --write
+ai-i18n-tools mark-html public/index.html --write
 ```
 
 `mark-html` es idempotente, respeta `data-i18n-ignore`, nunca marca elementos similares a código (`code`, `pre`, `kbd`, `samp`, `var`) ni texto vacío/solo numérico, y nunca emite un marcador con valor. Después de marcar, envuelva manualmente cualquier fragmento de contenido mixto reportado, luego añada `.html` a `ui.uiExtractor.extensions` para que `extract` capture las cadenas:
@@ -41,63 +41,96 @@ npx ai-i18n-tools mark-html public/index.html --write
 }
 ```
 
-<a id="worked-example-localizing-a-plain-html-app-the-bundled-dashboard"></a>
-## Ejemplo práctico: localización de una aplicación HTML simple (el panel de control incluido)
+<a id="worked-example-localizing-a-plain-html-app"></a>
+## Ejemplo práctico: localización de una aplicación HTML sencilla
 
-El propio panel de traducción del paquete (`src/dashboard-app`) utiliza estos mismos marcadores. Su `index.html` contiene marcadores simples como:
+El ejemplo de espacio de trabajo [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) es una aplicación estática ejecutable que utiliza estos marcadores de principio a fin. Clónelo con `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html`, ejecute `pnpm install` y `pnpm dev`, luego abra [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) para portugués (Brasil).
+
+Su `public/index.html` contiene marcadores simples como:
 
 ```html
-<button type="button" id="seg-btn-next" disabled data-i18n>Next</button>
-<input type="text" id="seg-filter-filename" placeholder="Filename (partial)" data-i18n-placeholder />
-<button id="dashboard-close" title="Stop the dashboard server and close this window" data-i18n-title data-i18n>Close</button>
+<button type="button" id="btn-apply" data-i18n>Apply</button>
+<input
+  type="text"
+  id="filter-filename"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-title
+  data-i18n-placeholder
+/>
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers, then</span> <code>extract</code>
+  <span data-i18n>and</span> <code>translate-ui</code><span data-i18n>.</span>
+</p>
 ```
 
-`extract` escribe cada cadena de origen en inglés en el catálogo (`strings.json`), y `translate-ui` rellena un paquete plano por cada idioma, indexado por el texto de origen en inglés. Para una aplicación HTML estática típica, apuntaría `ui.flatOutputDir` a un directorio servido por la web, como `public/locales/`:
-
-```bash
-npx ai-i18n-tools extract        # index.html markers → strings.json
-npx ai-i18n-tools translate-ui   # strings.json → {ui.flatOutputDir}/{locale}.json
-```
+`ai-i18n-tools.config.json` dirige la extracción a `public/` y escribe paquetes planos junto a los archivos estáticos:
 
 ```jsonc
-// public/locales/de.json
 {
-  "Next": "Weiter",
-  "Filename (partial)": "Dateiname (teilweise)",
-  "Stop the dashboard server and close this window": "Dashboard-Server stoppen und dieses Fenster schließen",
-  "Close": "Schließen"
+  "sourceLocale": "en",
+  "targetLocales": ["es", "fr", "pt-BR"],
+  "features": { "translateUIStrings": true },
+  "ui": {
+    "sourceRoots": ["public"],
+    "stringsJson": "public/strings.json",
+    "flatOutputDir": "public/locales",
+    "uiExtractor": { "extensions": [".html"] }
+  }
 }
 ```
 
-En tiempo de ejecución, cargue el paquete del idioma activo y recorra los elementos marcados. La clave proviene del valor del marcador cuando está presente, de lo contrario, del propio texto/título/marcador de posición del elemento (normalizado de la misma manera que el extractor normaliza los espacios en blanco):
+`extract` escribe cada cadena de origen en inglés en el catálogo (`public/strings.json`), y `translate-ui` rellena un paquete plano por cada configuración regional, con la cadena de origen en inglés como clave:
 
-```html
-<script type="module">
-  const locale = document.documentElement.lang || "en";
-  const bundle = locale.startsWith("en")
-    ? {}
-    : await fetch(`/locales/${locale}.json`).then((r) => (r.ok ? r.json() : {}));
+```bash
+pnpm i18n:extract        # public/index.html markers → public/strings.json
+pnpm i18n:translate-ui   # strings.json → public/locales/{locale}.json
+```
 
-  const t = (key) => bundle[key] ?? key; // English source is the fallback
-  const norm = (s) => s.trim().replace(/\s+/g, " ");
+```jsonc
+// public/locales/pt-BR.json
+{
+  "Apply": "Aplicar",
+  "Filename (partial)": "Nome do arquivo (parcial)",
+  "Filter by filepath": "Filtrar por caminho do arquivo",
+  "Run": "Execute",
+  "to add bare markers, then": "para adicionar marcadores simples, depois",
+  "and": "e",
+  ".": "."
+}
+```
 
+En tiempo de ejecución, `public/app.js` carga `/locales/ui-languages.json` para los metadatos de la configuración regional, resuelve la configuración regional activa (`?locale=` → `localStorage` → navegador → `en`), obtiene `/locales/{locale}.json` (omitido para inglés), luego recorre los elementos marcados. La clave proviene del valor del marcador cuando está presente, de lo contrario, del propio texto/título/marcador de posición del elemento (normalizado de la misma manera que el extractor normaliza los espacios en blanco):
+
+```javascript
+function normalizeI18nText(s) {
+  return s.trim().replace(/\s+/g, " ");
+}
+
+function t(key) {
+  const raw = I18N.bundle[key];
+  return typeof raw === "string" && raw.length > 0 ? raw : key;
+}
+
+function applyStaticI18n() {
   document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.getAttribute("data-i18n") || norm(el.textContent || "");
+    const key = el.getAttribute("data-i18n") || normalizeI18nText(el.textContent || "");
     if (key) el.textContent = t(key);
   });
   document.querySelectorAll("[data-i18n-title]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-title") || norm(el.getAttribute("title") || "");
+    const key = el.getAttribute("data-i18n-title") || normalizeI18nText(el.getAttribute("title") || "");
     if (key) el.setAttribute("title", t(key));
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-placeholder") || norm(el.getAttribute("placeholder") || "");
+    const key =
+      el.getAttribute("data-i18n-placeholder") ||
+      normalizeI18nText(el.getAttribute("placeholder") || "");
     if (key) el.setAttribute("placeholder", t(key));
   });
-</script>
+}
 ```
 
-La mitad de este fragmento que recorre los marcadores es exactamente `applyStaticI18n` en [`src/dashboard-app/app.js`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/dashboard-app/app.js). Dado que el texto fuente en inglés es la clave del catálogo, las cadenas sin traducir vuelven automáticamente al inglés.
+`normalizeI18nText` debe permanecer idéntico a `normalizeI18nText` en [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts). Debido a que el texto fuente en inglés es la clave del catálogo, las cadenas no traducidas vuelven automáticamente al inglés.
 
-Para una **contraparte estática ejecutable** (sin servidor Node — `fetch('/locales/{locale}.json')` en lugar de `/api/ui-i18n`), consulte el ejemplo de espacio de trabajo [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). Utiliza los mismos patrones de marcador con una interfaz de usuario de estilo de panel recortada; pruebe el portugués (Brasil) en `http://localhost:3090/?locale=pt-BR` después de `pnpm dev`.
-
-En qué se diferencia el panel de control incluido: como tiene un servidor Node, no obtiene un `/locales/{locale}.json` estático. El cliente llama a `GET /api/ui-i18n`, y el servidor resuelve la configuración regional activa (`--ui-lang` > `AI_I18N_LANG` > configuración `uiLanguage` > sistema operativo del host) y devuelve `{ locale, dir, bundle }`. Luego, el cliente establece `document.documentElement` `lang`/`dir` a partir de esa respuesta (en lugar de leer `lang` para elegir la configuración regional) antes de llamar a `applyStaticI18n`. Los paquetes en sí no son el contenido de la herramienta que se está traduciendo, son las cadenas de la interfaz de usuario del propio panel de control, enviadas en `src/i18n/locales/{locale}.json` (copiadas a `dist/i18n/locales` en la compilación) y leídas en el lado del servidor por `loadUiBundle` en [`src/i18n/index.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/i18n/index.ts). El `t()` del panel de control también admite la interpolación ```{{name}}```, a diferencia del `t` mínimo anterior.
+El [Panel de control de traducción](https://github.com/wsj-br/ai-i18n-tools/tree/main/src/dashboard-app) incluido utiliza el mismo algoritmo `applyStaticI18n` para sus marcadores HTML, pero sirve paquetes de configuración regional desde `GET /api/ui-i18n` en lugar de archivos estáticos `/locales/{locale}.json`. Consulte el [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) del ejemplo para ver el flujo de trabajo completo, el diseño del proyecto y la tabla comparativa.

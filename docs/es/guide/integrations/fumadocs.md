@@ -9,7 +9,7 @@ Consulte también [Documentos](/es/guide/documents/) y la demostración ejecutab
 ## Inicio rápido
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Cargue el JSON por configuración regional en `layout.shared.ts` a través de `l
 Las locales estándar pueden estar cubiertas por los ajustes preestablecidos de `@fumadocs/language/*` sin costo de LLM; el catálogo traduce las **anulaciones de proyecto** en el bloque de inglés solo.
 
 **No** utilice `json[]` para las cadenas de interfaz de usuario de Fumadocs — esa canalización es para paquetes de locales de aplicaciones no relacionados.
-
-<a id="framework-shell-translation"></a>
-## Traducción del shell del framework
-
-| Marco de trabajo | Cadenas de shell / tema | Canalización |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` catálogo | Documentos — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catálogo de tema/navegación/barra lateral | Documentos — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Etiquetas de barra lateral `_meta.ts` | Documentos — automático cuando `style: "nextra"` + `translate-docs` |
-| Nextra | Diccionario de tema `.ts` | Documentos — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Etiquetas de barra lateral `meta.json` | Documentos — automático cuando `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catálogo de anulaciones de UI | Documentos — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Cadenas de UI integradas (muchas configuraciones regionales); sin pipeline de shell adicional | Documentos — `translate-docs` (solo páginas) |
-
-**No** ponga cadenas de shell/tema del framework en `json[]`; esa canalización es para paquetes de configuración regional de aplicaciones no relacionados. Consulte la [integración de Docusaurus](/es/guide/integrations/docusaurus), la [integración de VitePress](/es/guide/integrations/vitepress) y la [integración de Nextra](/es/guide/integrations/nextra) para ver los otros patrones de framework.
 
 <a id="link-conventions"></a>
 ## Convenciones de enlaces

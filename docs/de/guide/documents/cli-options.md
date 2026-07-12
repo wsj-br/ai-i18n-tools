@@ -39,4 +39,6 @@ Sie können `--force` nicht mit `--force-update` kombinieren (beide schließen s
 | `json-array` (Standard) | Ein JSON-Array von Zeichenketten, ein Eintrag pro Segment in der Reihenfolge.               | Ein JSON-Array der **gleichen Länge** (gleiche Reihenfolge).           |
 | `json-object`          | Ein JSON-Objekt `{"0":"…","1":"…",…}`, indiziert nach Segmentindex.            | Ein JSON-Objekt mit den **gleichen Schlüsseln** und übersetzten Werten. |
 
+Einige Modelle folgen einem Format zuverlässiger als einem anderen. Versuchen Sie daher einen anderen Modus, wenn ein Modell häufig fehlerhafte Batches oder nicht übereinstimmende Segment-IDs zurückgibt. `json-array` ist die Standardeinstellung, da es ein gängiges, einfaches Format ist, das Modelle im Allgemeinen gut verarbeiten.
+
 Der Ausführungsheader gibt auch `Batch prompt format: …` aus, damit Sie den aktiven Modus bestätigen können. JSON-Label-Dateien (`docusaurusCatalogDir`) und SVG-Dateibatches verwenden dieselbe Einstellung, wenn diese Schritte als Teil von `translate-docs` (oder der Dokumentationsphase von `sync` – `sync` macht dieses Flag nicht verfügbar; es wird standardmäßig auf `json-array` gesetzt) ausgeführt werden.

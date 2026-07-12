@@ -78,7 +78,41 @@ pnpm add ai-i18n-tools
 
 Depois de instalar o pacote em seu projeto, use npm/pnpm/yarn para vincular a entrada bin publicada (`bin/ai-i18n-tools.mjs`) em `node_modules/.bin/ai-i18n-tools`. Esse shim carrega a CLI compilada do pacote instalado.
 
-**Scripts `package.json` (recomendado)** — npm e pnpm adicionam `node_modules/.bin` ao `PATH` ao executar scripts, então você pode chamar o nome do comando diretamente:
+Para digitar o comando `ai-i18n-tools` em um shell interativo, configure uma das opções abaixo. Sem configuração, o shell não consegue encontrar o binário mesmo após uma instalação local.
+
+**direnv** — adicione a um `.envrc` na raiz do projeto (bash/zsh; consulte [direnv.net](https://direnv.net/)):
+
+```bash
+PATH_add node_modules/.bin
+```
+
+Após `direnv allow`, o comando simples estará disponível sempre que você `cd` no projeto.
+
+**PATH manual** — a partir da raiz do projeto em um shell interativo:
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**Instalação global** — instale a CLI uma vez e invoque-a de qualquer diretório:
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+Uma instalação global usa a versão globalmente fixada. Para fixação de versão por projeto, prefira direnv ou PATH manual para que `node_modules/.bin` seja resolvido para a dependência do projeto.
+
+**Scripts `package.json`** — quando o npm ou pnpm executa um script, ele adiciona `node_modules/.bin` ao `PATH`, então o nome do comando simples funciona dentro dos scripts sem alterações no PATH do shell:
 
 ```json
 "scripts": {
@@ -93,25 +127,11 @@ Depois de instalar o pacote em seu projeto, use npm/pnpm/yarn para vincular a en
 }
 ```
 
-Em seguida, execute, por exemplo, `pnpm run i18n:sync` — sem a necessidade do prefixo `npx`.
+Em seguida, execute, por exemplo, `pnpm run i18n:sync` — os scripts resolvem o binário local sem configuração extra do shell.
 
-**Shell interativo** — a partir da raiz do seu projeto (após uma instalação local):
-
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-```
-
-Para digitar o comando `ai-i18n-tools` puro em bash/zsh, adicione o diretório bin local ao `PATH` (consulte [Usando a CLI](../docs/guide/installation.md#using-the-cli) para notas sobre PowerShell, direnv e Windows):
-
-```bash
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
+**Alternativas** — se você preferir não ajustar `PATH`: `npx ai-i18n-tools …` (npm) ou `pnpm exec ai-i18n-tools …` (pnpm). Para uma execução única sem instalação e sem entrada `package.json`: `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>`.
 
 Prefira `sync` em vez de encadear manualmente `extract`, `translate-ui`, `translate-svg`, `translate-docs` e `translate-json` — a ordem e as flags de recursos são fáceis de errar quando executadas manualmente. Consulte [Scripts `package.json` recomendados](../docs/guide/quick-start.md#recommended-packagejson-scripts) no guia de Início rápido.
-
-**Execução única sem instalação** — `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>` (baixa o pacote apenas para essa invocação; nenhuma entrada em `package.json`).
 
 Defina sua chave de API do provedor (OpenRouter mostrado; use a variável correspondente para seu provedor):
 
@@ -184,18 +204,20 @@ Para uma demonstração prática de como alternar provedores com `-P` em um úni
 <a id="quick-start"></a>
 ## Início rápido
 
+Primeiro, configure seu shell para o comando simples — consulte [Usando a CLI](#using-the-cli).
+
 <a id="ui-strings"></a>
 ### Strings de UI
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 
 # 2. Extract UI strings to strings.json
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 
 # 3. Translate to all target locales
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 Em seguida, conecte o i18next em seu aplicativo usando os auxiliares de `'ai-i18n-tools/runtime'`. Consulte [Etapa 4: Conectar o i18next em tempo de execução](../docs/guide/ui-strings/i18next-runtime.md) no guia de strings de UI para a configuração completa.
@@ -207,26 +229,26 @@ O modelo padrão `init` (`ui-markdown`) habilita apenas a extração de interfac
 
 ```bash
 # Docusaurus docs + optional write-translations catalog
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 
 # Astro Starlight documentation
-# npx ai-i18n-tools init -t ui-starlight
+# ai-i18n-tools init -t ui-starlight [-P <provider>]
 
 # VitePress documentation (pages + theme catalog)
-# npx ai-i18n-tools init -t ui-vitepress
+# ai-i18n-tools init -t ui-vitepress [-P <provider>]
 
 # Nextra documentation (pages + _meta.ts + theme dictionary)
-# npx ai-i18n-tools init -t ui-nextra
+# ai-i18n-tools init -t ui-nextra [-P <provider>]
 
 # Fumadocs documentation (pages + meta.json + UI catalog)
-# npx ai-i18n-tools init -t ui-fumadocs
+# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# npx ai-i18n-tools init -t ui-astro-website
+# ai-i18n-tools init -t ui-astro-website [-P <provider>]
 
-npx ai-i18n-tools translate-docs
-npx ai-i18n-tools status
-# npx ai-i18n-tools translate-docs --locale de   # single locale
+ai-i18n-tools translate-docs
+ai-i18n-tools status
+# ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
 Edite `ai-i18n-tools.config.json`: defina `docs[].contentPaths` para fontes markdown, MDX e/ou `.astro`; `docs[].outputDir` e `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"`, etc.). Referência de campo completa: [Documentos](../docs/guide/documents/).
@@ -268,7 +290,7 @@ Conecte `t()` no momento da compilação sem i18next, a menos que você adicione
 ### Sincronização combinada
 
 ```bash
-npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
+ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
 ```
 
 ---
@@ -306,7 +328,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract

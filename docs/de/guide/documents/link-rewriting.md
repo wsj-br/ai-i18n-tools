@@ -3,6 +3,8 @@
 
 `translate-docs` schreibt URLs in übersetztem Markdown um, damit Links auch nach dem Verschieben von Dateien an lokalspezifische Pfade noch aufgelöst werden. Die meisten seitenübergreifenden Links werden automatisch behandelt; wenn Ihre Website einen gemeinsamen statischen URL-Baum oder lokalisierte Asset-Ordner verwendet, fügen Sie `docsOutput.postProcessing.regexAdjustments`-Regeln hinzu.
 
+Informationen zu Screenshot-Verzeichnislayouts, dem flachen Tiefenpräfix + Gebietsschema-Austausch-Workflow und layoutspezifischen Asset-Beispielen finden Sie unter [Bilder & Screenshots – Link-Umschreibung](/de/guide/images-and-screenshots/link-rewriting).
+
 <a id="built-in-rewriters"></a>
 ## Integrierte Umschreiber
 

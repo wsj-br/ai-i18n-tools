@@ -9,7 +9,7 @@ Voir aussi [Documents](/fr/guide/documents/) et la démo exécutable [examples/v
 ## Démarrage rapide
 
 ```bash
-npx ai-i18n-tools init -t ui-vitepress
+ai-i18n-tools init -t ui-vitepress [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
@@ -123,21 +123,6 @@ After editing:
 
 Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
 ```
-
-<a id="framework-shell-translation"></a>
-## Traduction du shell du framework
-
-| Framework | Chaînes de shell / thème | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | Catalogue `write-translations` (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Catalogue Thème/nav/barre latérale | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | Étiquettes de barre latérale `_meta.ts` | Documents — auto quand `style: "nextra"` + `translate-docs` |
-| Nextra | Dictionnaire de thème `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | Étiquettes de barre latérale `meta.json` | Documents — auto quand `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | Catalogue de surcharges d'interface utilisateur | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Chaînes d'interface utilisateur intégrées (nombreuses locales) ; pas de pipeline de shell supplémentaire | Documents — `translate-docs` (pages uniquement) |
-
-Ne mettez **pas** les chaînes de shell/thème du framework dans `json[]` — ce pipeline est destiné aux bundles de locale d'application non liés. Voir [intégration Docusaurus](/fr/guide/integrations/docusaurus) et [intégration Fumadocs](/fr/guide/integrations/fumadocs) pour les autres modèles de framework.
 
 <a id="example-project"></a>
 ## Exemple de projet

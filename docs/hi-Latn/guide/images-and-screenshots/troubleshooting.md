@@ -18,3 +18,6 @@ Symlink ke bina, `docs/user-guide/` mein source docs `static/assets/` mein PNGs 
 
 **`take-screenshots` script kewal source locale ko capture karti hai**
 Per-locale folder layout ke liye har locale ke liye PNG files ki avashyakta hoti hai. Yadi script kewal `en-GB` ko capture karti hai, toh anuvadit docs mein missing files ki or ishara karne wale rewritten paths honge.
+
+**fenced config examples ke andar `regexAdjustments` ko phir se likhna**
+`postProcessing` poore anuvaadit markdown body par chalta hai, jismein fenced code blocks bhi shaamil hain. Yadi koi doc page ek config snippet ko embed karta hai jismein ek matching path (jaise ki `screenshots/en-GB/`) hota hai, to vah snippet anuvaadit output mein bhi phir se likha jaata hai. Reusable examples mein generic `screenshots/[^/]+/` form ko prefer karein, ya swikaar karein ki anuvaadit docs illustrations ke andar locale-specific paths dikhaenge.

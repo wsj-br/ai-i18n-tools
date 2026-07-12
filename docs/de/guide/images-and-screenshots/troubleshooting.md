@@ -18,3 +18,6 @@ Ohne den Symlink können Quelldokumente in `docs/user-guide/` nicht per relative
 
 **Das Skript `take-screenshots` erfasst nur das Quellgebietsschema**
 Das Ordnerlayout pro Gebietsschema erfordert PNG-Dateien für jedes Gebietsschema. Wenn das Skript nur `en-GB` erfasst, haben übersetzte Dokumente umgeschriebene Pfade, die auf fehlende Dateien verweisen.
+
+**Umschreiben `regexAdjustments` innerhalb von umgrenzten Konfigurationsbeispielen**
+`postProcessing` wird auf den gesamten übersetzten Markdown-Text angewendet, einschließlich umgrenzter Codeblöcke. Wenn eine Dokumentationsseite ein Konfigurations-Snippet einbettet, das einen übereinstimmenden Pfad enthält (z. B. `screenshots/en-GB/`), wird dieses Snippet auch in der übersetzten Ausgabe umgeschrieben. Bevorzugen Sie die generische Form `screenshots/[^/]+/` in wiederverwendbaren Beispielen oder akzeptieren Sie, dass übersetzte Dokumente lokalspezifische Pfade in Abbildungen anzeigen.

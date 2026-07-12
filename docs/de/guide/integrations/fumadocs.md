@@ -9,7 +9,7 @@ Siehe auch [Dokumente](/de/guide/documents/) und die ausführbare Demo [examples
 ## Schnellstart
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Laden Sie JSON pro Gebietsschema in `layout.shared.ts` über `loadUiCatalog(loca
 Standard-Gebietsschemas können durch `@fumadocs/language/*`-Voreinstellungen ohne LLM-Kosten abgedeckt werden; der Katalog übersetzt **Projektüberschreibungen** nur im englischen Block.
 
 Verwenden Sie **nicht** `json[]` für Fumadocs-UI-Strings – diese Pipeline ist für unabhängige App-Gebietsschema-Bundles vorgesehen.
-
-<a id="framework-shell-translation"></a>
-## Übersetzung der Framework-Shell
-
-| Framework | Shell-/Theme-Strings | Pipeline |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations`-Katalog | Dokumente – `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "nextra"` + `translate-docs` |
-| Nextra | Theme-Wörterbuch `.ts` | Dokumente — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "fumadocs"` + `translate-docs` |
-| Fumadocs | UI-Überschreibungs-Katalog | Dokumente — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | Eingebaute UI-Strings (viele Gebietsschemata); keine zusätzliche Shell-Pipeline | Dokumente — `translate-docs` (nur Seiten) |
-
-Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Siehe [Docusaurus-Integration](/de/guide/integrations/docusaurus), [VitePress-Integration](/de/guide/integrations/vitepress) und [Nextra-Integration](/de/guide/integrations/nextra) für die anderen Framework-Muster.
 
 <a id="link-conventions"></a>
 ## Link-Konventionen

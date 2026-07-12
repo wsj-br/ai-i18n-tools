@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI strings
 
-Designed for any JS/TS project that uses i18next: React apps, Next.js (client and server components), Node.js services, CLI tools.
+Designed for any JS/TS project that uses i18next: React apps, Next.js (client and server components), Node.js services, Plain HTML, Astro websites and CLI tools.
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
@@ -19,12 +19,12 @@ Designed for any JS/TS project that uses i18next: React apps, Next.js (client an
 ## Step 1: Initialise
 
 ```bash
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 ```
 
 This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including a default `provider` / `providers` block). Before running `translate-ui` or `sync`, set the API key for your active provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit the config to set:
 
-- `provider` and `providers` — at least one provider with `translationModels`; change the preset or model list if OpenRouter is not your choice. See [LLM providers and models](/guide/providers-and-models).
+- `provider` and `providers` — at least one provider with `translationModels`; change the preset or model list if the default is not your choice (`init -P <provider>`). See [LLM providers and models](/guide/providers-and-models).
 - `sourceLocale` - your source language BCP-47 code (e.g. `"en-GB"`). **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` - array of BCP-47 codes for your target languages (e.g. `["de", "fr", "pt-BR"]`). Run `generate-ui-languages` to create the `ui-languages.json` manifest from this list.
 - `ui.sourceRoots` - directories or glob patterns to scan for `t("…")` calls (e.g. `["src/"]`, `["src/**/*.ts"]`).
@@ -36,7 +36,7 @@ This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (includi
 ## Step 2: Extract strings
 
 ```bash
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 ```
 
 Scans all JS/TS files under `ui.sourceRoots` for `t("literal")` and `i18n.t("literal")` calls. Writes (or merges into) `ui.stringsJson`.
@@ -47,7 +47,7 @@ The scanner is configurable: add custom function names via `ui.uiExtractor.funcN
 ## Step 3: Translate UI strings
 
 ```bash
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 Reads `strings.json`, sends batches to the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
@@ -55,7 +55,11 @@ Reads `strings.json`, sends batches to the active LLM provider for each target l
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
 
-Optional `providers.<active>.localeModels` entries map a BCP-47 locale to an ordered model list tried **before** `uiModels` and `translationModels` for that locale. The same `localeModels` entries also apply to document, JSON, and SVG translation. Locale tags are matched case-insensitively (`pt-br` = `pt-BR`). If no entry matches, only `uiModels` and `translationModels` are used for UI work.
+Depending on the target language, some translation models may perform significantly better than others—for example, qwen and z-ai models tend to produce higher quality translations for Asian languages compared to many Western (Occidental) language models. To take advantage of this, you can use optional `providers.<active>.localeModels` entries to specify a prioritized list of models for each BCP-47 locale. These model lists are tried **before** the more general `uiModels` and `translationModels` for that particular locale. This allows you to tailor model selection and achieve better translation quality per language. Locale tags are matched case-insensitively (so `zh-cn` and `ZH-CN` are equivalent). If no custom entry matches a locale, the tool falls back to the default `uiModels` and `translationModels` order for UI translations. The same `localeModels` mechanism also applies to document, JSON, and SVG translation.
+
+
+<a id="translations-database-stringsjson"></a>
+### Translations database (`strings.json`)
 
 For each entry, `translate-ui` stores the **model id from the active provider** that successfully translated each locale in an optional `models` object (same locale keys as `translated`). Strings edited in the Translation Dashboard are marked with the sentinel value `user-edited` in `models` for that locale. The per-locale flat files under `ui.flatOutputDir` remain **source string → translation** only; they do not include `models` (so runtime bundles stay unchanged).
 
@@ -69,7 +73,7 @@ Then wire i18next at runtime — [Wire i18next](/guide/ui-strings/i18next-runtim
 To hand UI strings off to a translation vendor, TMS, or CAT tool, export the catalog as **XLIFF 2.0** (one file per target locale). This command is **read-only**: it does not modify `strings.json` or call any API.
 
 ```bash
-npx ai-i18n-tools export-ui-xliff
+ai-i18n-tools export-ui-xliff
 ```
 
 By default, files are written next to `ui.stringsJson`, named like `strings.de.xliff`, `strings.pt-BR.xliff` (basename of your catalog + locale + `.xliff`). Use `-o` / `--output-dir` to write elsewhere. Existing translations from `strings.json` appear in `<target>`; missing locales use `state="initial"` with no `<target>` so tools can fill them in. Use `--untranslated-only` to export only units that still need a translation for each locale (useful for vendor batches). `--dry-run` prints paths without writing files.

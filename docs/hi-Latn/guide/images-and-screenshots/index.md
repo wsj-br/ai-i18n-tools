@@ -107,23 +107,21 @@ Case-sensitivity mismatches ko roknay ke liye `forceLowercase: true` ko `svg` co
 <a id="decision-guide"></a>
 # Nirnay margdarshika
 
-```
-Is the asset an SVG with translatable text or labels?
-  Yes → Web app SVG or Colocated SVG
-  No (raster screenshot or decorative SVG) →
-    doc-system site with assets colocated beside translated docs?
-      Yes → Colocated screenshots (rasters) + Colocated SVG (SVGs)
-    Only one locale needs the image (no per-locale variants)?
-      Yes → Shared image
-    Otherwise → Per-locale folder
-```
+**Kya asset mein anuvaadit text ya lebel waala SVG hai?**
+  - **Haan** → [Web app SVG](/hi-Latn/guide/svg-translation/translated-svg-web-app) ya [Colocated SVG](/hi-Latn/guide/svg-translation/translated-svg-colocated)
+  - **Nahin** (raster screenshot ya sajja SVG) →
+    - **Kya doc-system site par assets anuvaadit docs ke saath sthit hain?**
+      - **Haan** → [Colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) (rasters) + [Colocated SVG](/hi-Latn/guide/svg-translation/translated-svg-colocated) (SVGs)
+    - **Kya keval ek locale ko image ki aavashyakta hai** (koi per-locale variant nahin)?
+      - **Haan** → [Shared image](/hi-Latn/guide/images-and-screenshots/shared-image)
+    - **Anyatha** → [Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder)
 
 SVG layouts ko [SVG translation](/hi-Latn/guide/svg-translation/) guide mein cover kiya gaya hai.
 
-| Layout | Asset type | Site type | Tool mechanism |
-|--------|-----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Shared image](/hi-Latn/guide/images-and-screenshots/shared-image) | Raster (shared) | `docsOutput.style = "flat"` docs | Per-file link rewriter; aam taur par koi regex nahi |
+| Layout                                                                       | Asset type                  | Site type                                                              | Tool mechanism                                               |
+|------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| [Colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated)          | `"doc-system"` ke saath sthit assets (Docusaurus preset)               | Screenshot script dwara files sthaapit kiye jaate hain; koi regex nahin                     |
 | [Per-locale folder](/hi-Latn/guide/images-and-screenshots/per-locale-folder) | Raster (per-locale) | `"flat"` ya `"doc-system"` (incl. `"docusaurus"`, `"astro-starlight"`) | `regexAdjustments` locale segment swap |
-| [Colocated screenshots](/hi-Latn/guide/images-and-screenshots/colocated-screenshots) | Raster (colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | Screenshot script files rakhta hai; koi regex nahi |
-| [Web app SVG](/hi-Latn/guide/svg-translation/translated-svg-web-app) | SVG (translated) | Web app | `translate-svg` with `svg.style = "flat"` |
+| [Shared image](/hi-Latn/guide/images-and-screenshots/shared-image)                   | Raster (shared)             | `docsOutput.style = "flat"` docs                                       | Per-file link rewriter; aamtaur par koi regex nahin                     |
 | [Colocated SVG](/hi-Latn/guide/svg-translation/translated-svg-colocated) | SVG (translated, colocated) | `"doc-system"` with colocated assets (Docusaurus preset) | `translate-svg` with `svg.style = "nested"` + `pathTemplate` |
+| [Web app SVG](/hi-Latn/guide/svg-translation/translated-svg-web-app) | SVG (translated) | Web app | `translate-svg` with `svg.style = "flat"` |

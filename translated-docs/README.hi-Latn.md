@@ -78,7 +78,41 @@ pnpm add ai-i18n-tools
 
 Apne project mein package install karne ke baad, npm/pnpm/yarn link published bin entry (`bin/ai-i18n-tools.mjs`) ko `node_modules/.bin/ai-i18n-tools` mein. Vah shim installed package se compiled CLI load karta hai.
 
-**`package.json` scripts (sifarish ki jaati hai)** — npm aur pnpm scripts chalate samay `node_modules/.bin` ko `PATH` se pehle jodte hain, isliye aap nange command naam ko call kar sakte hain:
+Ek interactive shell mein nange `ai-i18n-tools` command ko type karne ke liye, neeche diye gaye vikalpon mein se kisi ek ko configure karein. Setup ke bina, shell binary ko dhoondh nahi payega, bhale hi local install ke baad bhi.
+
+**direnv** — project root mein ek `.envrc` mein jodein (bash/zsh; [direnv.net](https://direnv.net/) dekhein):
+
+```bash
+PATH_add node_modules/.bin
+```
+
+`direnv allow` ke baad, nanga command tab uplabdh hota hai jab bhi aap project mein `cd` karte hain.
+
+**Manual PATH** — ek interactive shell mein project root se:
+
+```bash
+# bash/zsh
+export PATH="$PWD/node_modules/.bin:$PATH"
+ai-i18n-tools sync
+```
+
+```powershell
+# Windows PowerShell
+$env:Path = "$PWD\node_modules\.bin;$env:Path"
+ai-i18n-tools sync
+```
+
+**Global install** — CLI ko ek baar install karein aur ise kisi bhi directory se invoke karein:
+
+```bash
+npm install -g ai-i18n-tools
+# or
+pnpm add -g ai-i18n-tools
+```
+
+Ek global install globally pinned version ka upyog karta hai. Per-project version pinning ke liye, direnv ya manual PATH ko prefer karein taaki `node_modules/.bin` project ki dependency ko resolve kare.
+
+**`package.json` scripts** — jab npm ya pnpm ek script chalata hai, to yah `node_modules/.bin` ko `PATH` mein prepends karta hai, isliye nanga command naam scripts ke andar shell PATH badlav ke bina kaam karta hai:
 
 ```json
 "scripts": {
@@ -93,25 +127,11 @@ Apne project mein package install karne ke baad, npm/pnpm/yarn link published bi
 }
 ```
 
-Phir chalaen jaise ki `pnpm run i18n:sync` — koi `npx` prefix ki zaroorat nahin.
+Phir chalaayein jaise `pnpm run i18n:sync` — scripts bina kisi atirikt shell setup ke local binary ko resolve karte hain.
 
-**Interactive shell** — apne project root se (ek local install ke baad):
-
-```bash
-npx ai-i18n-tools sync        # npm
-pnpm exec ai-i18n-tools sync  # pnpm
-```
-
-Bash/zsh mein nange `ai-i18n-tools` command ko type karne ke liye, local bin directory ko `PATH` mein jodein (PowerShell, direnv, aur Windows notes ke liye [Using the CLI](../docs/guide/installation.md#using-the-cli) dekhein):
-
-```bash
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
+**Vikalp** — agar aap `PATH` ko adjust karna pasand nahi karte hain: `npx ai-i18n-tools …` (npm) ya `pnpm exec ai-i18n-tools …` (pnpm). Bina kisi `package.json` entry ke zero-install one-off ke liye: `npx ai-i18n-tools <cmd>` ya `pnpm dlx ai-i18n-tools <cmd>`.
 
 `extract`, `translate-ui`, `translate-svg`, `translate-docs`, aur `translate-json` ko manually chain karne ke bajaye `sync` ko prefer karein — manually chalane par order aur feature flags galat ho sakte hain. Quick start guide mein [Recommended `package.json` scripts](../docs/guide/quick-start.md#recommended-packagejson-scripts) dekhein.
-
-**Zero-install one-off** — `npx ai-i18n-tools <cmd>` ya `pnpm dlx ai-i18n-tools <cmd>` (sirf us invocation ke liye package download karta hai; `package.json` mein koi entry nahin).
 
 Apni provider API key set karein (OpenRouter dikhaya gaya hai; apne provider ke liye matching variable ka upyog karein):
 
@@ -184,18 +204,20 @@ Ek single document par `-P` ke saath providers ko switch karne ke hands-on demo 
 <a id="quick-start"></a>
 ## Quick start
 
+Pehle nange command ke liye apni shell configure karein — [Using the CLI](#using-the-cli) dekhein.
+
 <a id="ui-strings"></a>
 ### UI strings
 
 ```bash
 # 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 
 # 2. Extract UI strings to strings.json
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 
 # 3. Translate to all target locales
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 Phir `'ai-i18n-tools/runtime'` se helpers ka upyog karke apne app mein i18next ko wire karein. Poore setup ke liye UI strings guide mein [Step 4: Wire i18next at runtime](../docs/guide/ui-strings/i18next-runtime.md) dekhein.
@@ -207,26 +229,26 @@ Default `init` template (`ui-markdown`) kewal UI extraction ko enable karta hai.
 
 ```bash
 # Docusaurus docs + optional write-translations catalog
-npx ai-i18n-tools init -t ui-docusaurus
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 
 # Astro Starlight documentation
-# npx ai-i18n-tools init -t ui-starlight
+# ai-i18n-tools init -t ui-starlight [-P <provider>]
 
 # VitePress documentation (pages + theme catalog)
-# npx ai-i18n-tools init -t ui-vitepress
+# ai-i18n-tools init -t ui-vitepress [-P <provider>]
 
 # Nextra documentation (pages + _meta.ts + theme dictionary)
-# npx ai-i18n-tools init -t ui-nextra
+# ai-i18n-tools init -t ui-nextra [-P <provider>]
 
 # Fumadocs documentation (pages + meta.json + UI catalog)
-# npx ai-i18n-tools init -t ui-fumadocs
+# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 
 # Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# npx ai-i18n-tools init -t ui-astro-website
+# ai-i18n-tools init -t ui-astro-website [-P <provider>]
 
-npx ai-i18n-tools translate-docs
-npx ai-i18n-tools status
-# npx ai-i18n-tools translate-docs --locale de   # single locale
+ai-i18n-tools translate-docs
+ai-i18n-tools status
+# ai-i18n-tools translate-docs --locale de   # single locale
 ```
 
 `ai-i18n-tools.config.json` edit karein: `docs[].contentPaths` ko markdown, MDX, aur/ya `.astro` sources par set karein; `docs[].outputDir` aur `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"`, aadi). Poora field reference: [Documents](../docs/guide/documents/).
@@ -268,7 +290,7 @@ Adhikansh teamein do pipelines ka **hybrid** upyog karti hain:
 ### Sanyukt sync
 
 ```bash
-npx ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
+ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
 ```
 
 ---
@@ -306,7 +328,7 @@ ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
 ai-i18n-tools write-heading-ids …
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract

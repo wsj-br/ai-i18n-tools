@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # 依地區設定的資料夾 (URL 重寫)
 
-適用於具有 `docsOutput.style = "flat"` 的 README/USER-GUIDE，以及用於從共用靜態 URL 樹提供螢幕截圖的說明系統網站（`docsOutput.style = "doc-system"` 或其別名 `"docusaurus"` / `"astro-starlight"`）。
+用於帶有 `docsOutput.style = "flat"` 的 README/USER-GUIDE，以及用於文件系統網站（`docsOutput.style = "doc-system"` 或別名 `"docusaurus"` / `"astro-starlight"`），和用於從共享靜態 URL 樹提供螢幕截圖的 `"vitepress"` / 其他文件系統預設。VitePress 的連結重寫詳情：[連結重寫 — VitePress](/zh-Hant/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress)。
 
 <a id="directory-layout"></a>
 ### 目錄佈局
@@ -41,9 +41,11 @@ function getScreenshotDir(locale) {
 }
 ```
 
-請參閱 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh) 中的螢幕截圖腳本中的簡單 `bash` 範例，或 [Transrewrt 專案](https://github.com/wsj-br/transrewrt) 儲存庫中的 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 中的更複雜範例。
+請參閱 [examples/nextjs-app 中的螢幕截圖腳本](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh) 中的簡單 `bash` 範例，或 [duplistatus](https://github.com/wsj-br/duplistatus) 專案中 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 的更複雜範例（[Transrewrt](https://github.com/wsj-br/transrewrt) 在生產環境中也有使用）。
 
-> **注意：** 以下四個子區段共用相同的 `regexAdjustments` 地區設定片段交換（`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`）。僅輸出佈局和平面連結重寫器是否先執行有所不同——請跳至符合您 `docsOutput.style` 的子區段。
+> **注意：** 以下四個小節共享相同的 `regexAdjustments` 語系區段替換（`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`）。只有輸出佈局以及扁平連結重寫器是否優先執行有所不同 — 請跳轉到與您的 `docsOutput.style` 相符的小節。
+>
+> **注意：** `regexAdjustments` 會在完整的翻譯後 markdown 主體上執行，包括圍欄程式碼區塊。如果文件頁面嵌入了包含相符路徑的設定範例（例如 `screenshots/en-GB/`），該程式碼片段也會在翻譯輸出中被重寫。在可重複使用的範例中，請優先使用通用的 `screenshots/[^/]+/` 形式。
 
 <a id="config---docsoutputstyle--flat"></a>
 ### 設定 - `docsOutput.style = "flat"`
@@ -80,7 +82,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 `postProcessing` 步驟在平面連結重寫器之後執行。編寫 `search` 正規表示式，以匹配已預先加上字首的 URL 中任何位置的語言環境區段 — 無需在正規表示式中包含 `../` 字首。
 
-實作範例（正式環境）：[Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) 中的螢幕擷取畫面 URL（`images/screenshots/en-GB/…`），[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json) 中的地區設定重寫，腳本 [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts)（請參閱上方 [螢幕擷取畫面腳本合約](#screenshot-script-contract)）。
+實作範例（生產環境）：[Transrewrt](https://github.com/wsj-br/transrewrt) — [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) 中的螢幕截圖 URL (`images/screenshots/en-GB/…`)，[ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json) 中的語系重寫，基於 duplistatus 的 [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) 的擷取腳本（請參閱上方的[螢幕截圖腳本契約](#screenshot-script-contract)）。
 
 實作範例（示範設定）：[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) — [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) 中的第二個 `docs[]` 區塊（`images/screenshots/[^/]+/` → `${translatedLocale}`）；輔助腳本 [screenshot-locales.sh](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh)。
 
@@ -177,10 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-在 `public/img/screenshots/<locale>/screenshot.png` 提供 PNG 檔案。
+在 `public/img/screenshots/<locale>/screenshot.png` 發佈 PNG。`${translatedLocale}` 佔位符使用您的設定語系字串（例如 `pt-BR`）。`astro-starlight` 預設預設會將語系 **輸出路徑**轉為小寫（`pt-br/`），但 `public/img/screenshots/` 下的靜態資產資料夾應與寫入 markdown URL 的語系區段相符 — 保持螢幕截圖目錄與 `${translatedLocale}` 對齊，而不一定與 Astro 路由大小寫對齊。
 
 實作範例：[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) 和 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`)。
-
----
-
-<a id="colocated-raster-doc-system"></a>

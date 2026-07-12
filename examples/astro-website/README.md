@@ -193,7 +193,7 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
 Scaffold a similar config from the template (UI extraction only — merge in the `documentations[]` block above for page HTML):
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 ```
 
 ---

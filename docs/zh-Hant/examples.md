@@ -14,7 +14,7 @@ cd <name>
 pnpm install
 ```
 
-如果您是改為複製**整個** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 儲存庫，請在儲存庫根目錄執行 `pnpm install` 與 `pnpm run build`，然後執行 `cd examples/<name>`。工作區範例透過 `pnpm exec ai-i18n-tools …` 或其 `pnpm run i18n:*` 腳本使用本地 CLI —— 而非在儲存庫根目錄執行 `npx`（該指令會執行已發布的 npm 套件）。請參閱[安裝 —— 複製的 Monorepo](/zh-Hant/guide/installation#cloned-monorepo)。
+如果您改為複製 **整個** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 儲存庫，請在儲存庫根目錄執行 `pnpm install` 與 `pnpm run build`，然後執行 `cd examples/<name>`。工作區範例透過其 `pnpm run i18n:*` 腳本使用本地 CLI，或在 [PATH 設定](/zh-Hant/guide/installation#using-the-cli) 後直接使用 `ai-i18n-tools …`。請參閱[安裝 — 複製的 monorepo](/zh-Hant/guide/installation#cloned-monorepo)。
 
 <a id="list-of-examples"></a>
 ## 範例清單

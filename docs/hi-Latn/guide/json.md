@@ -14,10 +14,10 @@ Yeh pipeline **nahin** chalta hai `extract` — yahaan koi `strings.json` catalo
 ### Step 1: Nested JSON ke liye initialise karein
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-Vah template `features.translateJson: true` set karta hai, UI extraction aur document translation ko disable karta hai, aur `src/i18n/en/translation.json` ki taraf ishara karte hue ek single `json[]` block ko output `src/i18n/{llocale}/translation.json` ke saath scaffold karta hai. Ismein ek default `provider` / `providers` block bhi shamil hai — `translate-json` ya `sync` chalane se pehle matching API key set karein (ya local Ollama ka upyog karein); [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein. Apne repo layout ke liye `sourceLocale`, `targetLocales`, `contentPaths`, aur `outputPathTemplate` ko edit karein.
+Vah template `features.translateJson: true` set karta hai, UI extraction aur document translation ko disable karta hai, aur `src/i18n/{llocale}/translation.json` output ke saath `src/i18n/en/translation.json` ki taraf ishara karte hue ek single `json[]` block ko scaffold karta hai. Ismein ek default `provider` / `providers` block bhi shamil hai (`openrouter` jab tak aap `-P <provider>` pass na karein) — `translate-json` ya `sync` chalane se pehle matching API key set karein (ya local Ollama ka upyog karein); [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein. Apne repo layout ke liye `sourceLocale`, `targetLocales`, `contentPaths`, aur `outputPathTemplate` ko edit karein.
 
 <a id="step-2-configure-json"></a>
 ### Step 2: `json[]` configure karein
@@ -72,7 +72,7 @@ Paths dot notation (`nav.home.label`) ka upyog karte hain. `slug` jaisa ek nanga
 ### Step 3: JSON bundles translate karein
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 Vikalpik flags (`translate-docs` jaise hi vichaar): `-l` / `--locale` lakshyon ke upsamuchchay ke liye, `-p` / `--path` files ko seemit karne ke liye, `--dry-run`, `--force` (milit files ke liye file tracking aur segment cache saaf karein), `--force-update` (jab file hash milta hai to phir se process karein; segment cache abhi bhi lagu hota hai), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
@@ -80,7 +80,7 @@ Vikalpik flags (`translate-docs` jaise hi vichaar): `-l` / `--locale` lakshyon k
 Keval JSON projects chal sakte hain:
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 Jab UI ya docs bhi saksham hon, to `sync` **translate-docs ke baad translate-json** chalata hai (jab tak ki `--no-json` na ho). `--no-json` ke saath JSON ko chhodein.
@@ -88,7 +88,7 @@ Jab UI ya docs bhi saksham hon, to `sync` **translate-docs ke baad translate-jso
 Prati file aur locale ke liye coverage jaanchein:
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 Jab `translateJson` chalu hota hai, to `status` ek `json[]` section print karta hai (✓ up to date, ● stale ya missing).

@@ -65,7 +65,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 <a id="implementation-example"></a>
 ### 구현 예시
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json)에 `svg`가 포함된 중첩된 `pathTemplate` 블록; `documentation/static/img/` 아래에 나열된 소스 SVG(예: [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/img/duplistatus_toolbar.svg)); `translate-svg`는 공동 배치된 PNG 옆에 로케일별 파일을 `documentation/i18n/<locale>/…/current/assets/`에 작성합니다. 문서는 현재 `/img/duplistatus_*.svg`를 통해 이를 포함합니다(예: [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)). `../assets/` 경로로의 계획된 이동 및 SVG `regexAdjustments` 브리지 제거에 대한 자세한 내용은 [task-locale-assets-simplification.md](https://github.com/wsj-br/duplistatus/blob/master/dev/task-locale-assets-simplification.md)를 참조하세요.
+[duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 내에 `pathTemplate`이(가) 포함된 중첩 `svg` 블록; `documentation/static/assets/`의 소스 SVG(예: [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)); `translate-svg`은(는) 동일 위치의 PNG 옆 `documentation/i18n/<locale>/…/current/assets/`에 로케일별 파일을 작성합니다; 문서는 `regexAdjustments` 브리지 없이 `../assets/` 경로(예: [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md))를 통해 이를 삽입합니다.
 
 ---
 

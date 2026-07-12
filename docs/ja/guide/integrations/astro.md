@@ -14,7 +14,7 @@ ai-i18n-toolsを[Astro](https://astro.build/)で利用するには、一般的�
 ### クイックスタート
 
 ```bash
-npx ai-i18n-tools init -t ui-starlight
+ai-i18n-tools init -t ui-starlight [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -47,20 +47,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 
 Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます。詳細については、[ドキュメント — ドキュメントの初期化](/ja/guide/documents/#step-1-initialise-for-documentation)を参照してください。
 
-<a id="framework-shell-translation"></a>
-### フレームワークシェルの翻訳
-
-Starlightは、多くのロケール（ナビゲーションラベル、検索プレースホルダー、目次など）向けに独自の組み込みUI文字列を出荷しています。Docusaurus、VitePress、Nextraとは異なり、設定する個別のシェル/テーマパイプラインはありません。
-
-| フレームワーク | シェル / テーマ文字列 | パイプライン |
-|-----------|----------------------|----------|
-| Astro Starlight | 組み込みUI文字列（多くのロケール）。追加のシェルパイプラインなし | ドキュメント — `translate-docs`（ページのみ） |
-| Docusaurus | `write-translations`カタログ（`{ message, description }`） | ドキュメント — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | テーマ/ナビ/サイドバーカタログ | ドキュメント — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` サイドバーラベル + テーマ辞書 `.ts` | ドキュメント — [Nextra 連携](/ja/guide/integrations/nextra) を参照 |
-| Fumadocs | `meta.json` サイドバーラベル + UI オーバーライドカタログ | ドキュメント — [Fumadocs 連携](/ja/guide/integrations/fumadocs) を参照 |
-
-他のフレームワークのパターンについては、[Docusaurus 連携](/ja/guide/integrations/docusaurus)、[VitePress 連携](/ja/guide/integrations/vitepress)、[Nextra 連携](/ja/guide/integrations/nextra)、および [Fumadocs 連携](/ja/guide/integrations/fumadocs) を参照してください。
+Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲーションラベル、検索プレースホルダー、目次など）を提供しています。別のシェル/テーマパイプラインを設定する必要はありません。ページコンテンツには`translate-docs`のみを使用してください。他のフレームワークについては、[フレームワークのシェル翻訳](/ja/guide/integrations/#framework-shell-translation)を参照してください。
 
 <a id="example-project"></a>
 ### プロジェクト例
@@ -83,7 +70,7 @@ Starlightは、多くのロケール（ナビゲーションラベル、検索�
 ### クイックスタート
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev

@@ -18,3 +18,6 @@ Sem o link simbólico, documentos de origem em `docs/user-guide/` não podem ref
 
 **O script `take-screenshots` captura apenas a localidade de origem**
 O layout de pasta por localidade requer arquivos PNG para cada localidade. Se o script capturar apenas `en-GB`, os documentos traduzidos terão caminhos reescritos apontando para arquivos ausentes.
+
+**Reescrita de `regexAdjustments` dentro de exemplos de configuração cercados**
+`postProcessing` é executado em todo o corpo do markdown traduzido, incluindo blocos de código cercados. Se uma página de documentação incorpora um trecho de configuração que contém um caminho correspondente (por exemplo, `screenshots/en-GB/`), esse trecho também é reescrito na saída traduzida. Prefira o formato genérico `screenshots/[^/]+/` em exemplos reutilizáveis, ou aceite que os documentos traduzidos mostrarão caminhos específicos do local dentro das ilustrações.

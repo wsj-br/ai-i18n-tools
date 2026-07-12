@@ -1,30 +1,36 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # フラットリンク書き換えと2段階フロー
 
+スクリーンショットのURLレイアウトとフラットな2ステップのアセットフローについてはこのページを参照してください。ページ間のMarkdownリンクと`replace`プレースホルダーについては、[ドキュメント — リンクの書き換え](/ja/guide/documents/link-rewriting)を参照してください。
+
 `docsOutput.style = "flat"`の場合（および`rewriteRelativeLinks: false`またはカスタム`pathTemplate`が設定されていない限り）、組み込みのリライターは`postProcessing`の前に実行されます。これは、ドキュメント間のリンクを処理し（ロケールサフィックスを追加）、非マークダウンアセットURLに深さプレフィックスを付加します。ロケール固有のアセットパス（スクリーンショット、`/img/…`ブリッジ）は、その後`docsOutput.postProcessing.regexAdjustments`によって書き換えられます。
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"`時の2段階の処理フロー
 
-```
-source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
-```
+1. **ソースURL** — 翻訳済みMarkdown内の画像パス（セグメント再構築後）
+2. **フラットリンクリライター** — 深度プレフィックスを付加（`../`, `../../docs/`, …）
+3. **`regexAdjustments`** — ロケールフォルダーセグメントを置換（`en-GB` → `${translatedLocale}`）
+4. **出力URL** — 翻訳済みファイルに書き込まれる最終パス
 
 `outputDir: "translated-docs/"`かつソース`README.md`がリポジトリのルートにある場合の例：
 
 1. フラットリンクリライター: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (`translated-docs/`に1つの`../`)
 2. `regexAdjustments`ルール`images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-`docsOutput.style = "doc-system"`（`"docusaurus"`、`"astro-starlight"`、`"nested"`を含む）の場合、フラットリンクリライターは実行されません。`regexAdjustments`は、翻訳されたマークダウンからの元のURL（通常は`/img/screenshots/en-GB/foo.png`のような絶対パス）を参照します。
+`flat`以外のスタイル（`"nested"`、`"doc-system"`、および`"docusaurus"`、`"astro-starlight"`、`"vitepress"`などのプリセットを含む）の場合、フラットリンクリライターは実行されません。`regexAdjustments`は翻訳済みMarkdownの元のURL（通常は`/img/screenshots/en-GB/foo.png`のような絶対パス）をそのまま認識します。
+
+**Astro Starlight MDX:** Starlightのコンテンツはしばしば`.mdx`です。これらのファイルに対して、`translate-docs`は`postProcessing.regexAdjustments`のみを実行します — フラット、VitePress、Nextra、またはFumadocsのリンクリライターは実行されません。ロケールごとのスクリーンショットパスは引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`ルールを使用します。[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)を参照してください。
 
 <a id="vitepress-link-normalizer-style-vitepress"></a>
 ### VitePress リンク正規化機能 (`style: "vitepress"`)
 
 `docsOutput.rewriteVitepressLinks`が`true`（`style`が`"vitepress"`の場合のデフォルト）の場合、セグメントの再構成後に（フラットなリライターではなく）別のノーマライザーが実行されます。これは、英語がコンテンツルートにあり、ロケールが兄弟フォルダー（`docs/de/guide/…`）にあるVitePress / ドキュメントシステムサイトを対象としています。
 
-```
-source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
-```
+1. **ソースhref** — 翻訳済みMarkdown内のリンク（セグメント再構築後）
+2. **VitePressリンクノーマライザー** — ドキュメントパスをサイトルートに書き換え（`/guide/…`）
+3. **`regexAdjustments`** — スクリーンショットのオプションのロケールフォルダー置換（`screenshots/en-GB/` → `screenshots/de/`, …）
+4. **出力href** — 翻訳済みファイルに書き込まれる最終URL
 
 一般的な書き換え:
 
@@ -37,6 +43,8 @@ source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  out
 `README.md` → `docs/index.md` を同期するプロジェクトでは、VitePressツリー外の `LICENSE`、`examples/`、およびその他のファイルの `README.md` において完全なGitHub URLを使用してください。[VitePress integration — README as the docs homepage](/ja/guide/integrations/vitepress#readme-as-homepage) を参照してください。
 
 フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/ja/guide/integrations/vitepress#link-conventions) を参照してください。
+
+ロケールごとのスクリーンショットフォルダーは、必要に応じて引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments`ルールを使用します。[ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder)を参照してください。
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Nextra リンク正規化機能 (`style: "nextra"`)

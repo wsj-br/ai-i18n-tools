@@ -3,6 +3,8 @@
 
 當 `doc-system` 網站將特定地區的資源與翻譯過的 markdown 放在一起時使用 — 不需要進行 URL 重寫。Docusaurus 預設設定 (`docsOutput.style = "docusaurus"`) 是參考實作；其他使用 `"doc-system"` 並自訂 `localeSubpath` 的產生器遵循相同的概念：英文資源位於來源地區路徑，翻譯過的資源位於 `{outputDir}/{locale}/[localeSubpath/]assets/` 下。
 
+> **為何沒有庫內範例：** 本儲存庫的 Docusaurus 示範（[`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/)、[`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)）改用[各語系資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)佈局——請參閱[決策指南](/zh-Hant/guide/images-and-screenshots/#decision-guide)。共置的 `../assets/` 是建議的全新專案模式；[duplistatus](https://github.com/wsj-br/duplistatus) 是完整的生產環境參考。
+
 <a id="directory-layout"></a>
 ### 目錄佈局
 

@@ -65,7 +65,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 <a id="implementation-example"></a>
 ### 實作範例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — 巢狀的 `svg` 區塊，在 [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 中包含 `pathTemplate`；來源 SVG 列在 `documentation/static/img/` 下方 (例如 [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/img/duplistatus_toolbar.svg))；`translate-svg` 將每個地區設定的檔案寫入與 PNG 並置的 `documentation/i18n/<locale>/…/current/assets/` 中；文件目前透過 `/img/duplistatus_*.svg` 嵌入它們 (例如 [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md))。請參閱 [task-locale-assets-simplification.md](https://github.com/wsj-br/duplistatus/blob/master/dev/task-locale-assets-simplification.md)，以了解計劃移至 `../assets/` 路徑並移除 SVG `regexAdjustments` 橋接。
+[duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 中的巢狀 `svg` 區塊包含 `pathTemplate`；來源 SVG 位於 `documentation/static/assets/`（例如 [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)）；`translate-svg` 會將各語系檔案寫入 `documentation/i18n/<locale>/…/current/assets/`，與共置的 PNG 並列；文件透過 `../assets/` 路徑嵌入它們（例如 [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)），無需 `regexAdjustments` 橋接。
 
 ---
 

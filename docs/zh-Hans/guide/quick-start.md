@@ -26,7 +26,7 @@ pnpm install          # repository root
 pnpm run build        # after changing CLI source
 cd examples/console-app
 pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: pnpm exec ai-i18n-tools sync
+# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
 工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 条目 (`ai-i18n-tools: workspace:*`) 会自动将工作区示例链接到你的本地检出。独立夹具 (`multi-provider`, `test-markdown`) 不是工作区包 — 从它们的文件夹中使用 `node ../../bin/ai-i18n-tools.mjs …`。要从**仓库根目录**运行 CLI（此包自己的 docs/i18n），请使用 `pnpm i18n:sync` 或 `node bin/ai-i18n-tools.mjs …` — 参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)和[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
@@ -36,36 +36,41 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 
 每个调用 LLM 的命令 —— `translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 和 `sync` —— 需要**两者**：
 
-1. `ai-i18n-tools.config.json` 中**至少一个提供商**：一个包含 `translationModels` 的 `providers.<name>` 块，以及配置了多个提供商时的顶层 `provider` 键。`init` 默认脚手架使用 OpenRouter；切换预设、添加提供商或调整模型列表 —— 请参阅 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
-2. 环境或项目根目录 `.env` 文件中**匹配的 API 密钥**。每个内置预设读取一个命名的环境变量（例如 `OPENROUTER_API_KEY`）；**Ollama** 是个例外 —— 它使用本地端点且不需要密钥。请参阅[安装 —— 设置您的提供商 API 密钥](/zh-Hans/guide/installation#using-the-cli)和[预设环境变量表](/zh-Hans/guide/providers-and-models#built-in-providers)。
+1. **至少一个提供者** 在 `ai-i18n-tools.config.json` 中：一个带有 `translationModels` 的 `providers.<name>` 块，以及当配置了多个提供者时的一个顶层 `provider` 键。`init` 会搭建一个默认的提供者块（除非你传递 `-P <provider>`，否则为 `openrouter`）；切换预设、添加提供者或调整模型列表 — 参见 [LLM 提供者和模型](/zh-Hans/guide/providers-and-models)。
+2. **匹配的 API 密钥** 在你的环境中或项目根目录的 `.env` 文件中。每个内置预设从[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)中读取一个命名的环境变量（例如默认的 `OPENROUTER_API_KEY`，或者当你使用 `-P anthropic` 搭建时的 `ANTHROPIC_API_KEY`）；**Ollama** 是个例外 — 它使用本地端点且不需要密钥。参见[安装 — 设置你的提供者 API 密钥](/zh-Hans/guide/installation#using-the-cli)。
 
 `extract`、`status` 以及其他不调用 LLM 的命令不需要提供商或 API 密钥。
 
 <a id="core-cli-commands"></a>
 ### 核心 CLI 命令
 
-在安装 `ai-i18n-tools` 后从你的**项目根目录**运行（关于 `npx`、`pnpm exec` 和 `package.json` 脚本，请参见[使用 CLI](/zh-Hans/guide/installation#using-the-cli)）。下面的示例使用直接命令名；npm 用户可以添加 `npx` 前缀，pnpm 用户可以添加 `pnpm exec` 前缀。
+在安装 `ai-i18n-tools` 并[为裸命令配置你的 shell](/zh-Hans/guide/installation#using-the-cli)之后，从你的**项目根目录**运行。下面的示例直接使用 `ai-i18n-tools`。
 
 ```bash
-# Set API key for your active provider (skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
+# Set the API key for your active provider (see preset table; skip for local Ollama)
+# Default init uses openrouter:
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# Or scaffold another preset at init, e.g. anthropic:
+# export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 # UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init    # writes config including provider block; edit provider/models if needed
+ai-i18n-tools init [-P <provider>]    # default: openrouter
+ai-i18n-tools init -P anthropic
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight
-# VitePress docs: ai-i18n-tools init -t ui-vitepress
-# Nextra docs: ai-i18n-tools init -t ui-nextra
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website
+ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
+# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
+# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -79,7 +84,7 @@ ai-i18n-tools status
 <a id="recommended-packagejson-scripts"></a>
 ### 推荐的 `package.json` 脚本
 
-在本地安装了该包后，您可以直接在脚本中使用 CLI 命令（无需 `npx`）。
+在本地安装该包后，`package.json` 脚本会从 `node_modules/.bin` 解析 `ai-i18n-tools`，无需额外的 shell 设置。对于交互式 shell，请先配置 PATH — 参见[使用 CLI](/zh-Hans/guide/installation#using-the-cli)。
 
 **优先使用** `sync` 来处理任何以前需要“运行 `translate-ui`，然后 `translate-svg`，然后 `translate-docs`，然后 `translate-json`”的操作：`ai-i18n-tools sync` 根据您的配置按正确的顺序并使用共享标志运行 **提取**（启用时）、**翻译 UI**、可选的 **翻译 SVG**、**翻译文档**，然后是可选的 **翻译 JSON**。手动链接这些步骤很容易出错（顺序、提取、区域设置标志）。仅在需要 **单个**步骤隔离时才使用 `i18n:translate:ui`、`i18n:translate:svg`、`i18n:translate:docs` 和 `i18n:translate:json`。
 

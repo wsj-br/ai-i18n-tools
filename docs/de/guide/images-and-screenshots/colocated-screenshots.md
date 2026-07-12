@@ -3,6 +3,8 @@
 
 Verwenden Sie dieses Muster, wenn eine `doc-system`-Website sprachspezifische Assets neben der übersetzten Markdown-Datei ablegt – keine URL-Umschreibung ist erforderlich. Die Docusaurus-Voreinstellung (`docsOutput.style = "docusaurus"`) ist die Referenzimplementierung; andere Generatoren, die `"doc-system"` mit einem benutzerdefinierten `localeSubpath` verwenden, folgen demselben Prinzip: Englische Assets liegen im Quellsprachen-Pfad, übersetzte Assets liegen unter `{outputDir}/{locale}/[localeSubpath/]assets/`.
 
+> **Warum kein In-Repo-Beispiel:** Die Docusaurus-Demos dieses Repositorys ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) verwenden stattdessen das [Layout mit Ordnern pro Gebietsschema](/de/guide/images-and-screenshots/per-locale-folder) – siehe den [Entscheidungsleitfaden](/de/guide/images-and-screenshots/#decision-guide). Kollokiertes `../assets/` ist das empfohlene Greenfield-Muster; [duplistatus](https://github.com/wsj-br/duplistatus) ist die vollständige Produktionsreferenz.
+
 <a id="directory-layout"></a>
 ### Verzeichnisstruktur
 

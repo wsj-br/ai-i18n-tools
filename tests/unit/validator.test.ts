@@ -202,4 +202,27 @@ describe("validateDocTranslatePair", () => {
     const r = await validateDocTranslatePair(src, "const x = `**`;");
     expect(r.ok).toBe(true);
   });
+
+  it("accepts plain translated alt for image segments", async () => {
+    const src = S({
+      type: "image",
+      content: "English screenshot",
+      hash: "h",
+      image: { url: "/img/foo.png" },
+    });
+    const r = await validateDocTranslatePair(src, "Deutscher Screenshot");
+    expect(r.ok).toBe(true);
+  });
+
+  it("rejects image alt containing markdown syntax", async () => {
+    const src = S({
+      type: "image",
+      content: "English screenshot",
+      hash: "h",
+      image: { url: "/img/foo.png" },
+    });
+    const r = await validateDocTranslatePair(src, "![bad](/x.png)");
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.includes("Image alt contains markdown"))).toBe(true);
+  });
 });

@@ -35,9 +35,9 @@
 使用 `init -t ui-astro-website` 搭建 UI 擷取，然後在您也翻譯頁面 HTML 時合併到 `docs[]` 區塊中（請參閱 [解析並取代頁面](#astro-website-pages-parse-and-replace))。將 TypeScript 模組中的 `t('…')` 和 `.astro` 前置內容（以及當您偏好 UI 字串而非重複的地區設定頁面時的範本 `{expression}` 區塊）中的文字包裝起來：
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 將 `sourceLocale` 設定為與 `astro.config.mjs` 中的 `i18n.defaultLocale` 相符。將 flat bundles 寫入 Astro 在建置時可以匯入的目錄（模板使用 `public/locales/`）。**建置時**透過查找英文來源文字串作為金鑰來解析 `t('…')`（請參閱 `examples/astro-website/src/i18n/t.ts`；`strings.json` 是提取快取，而不是運行時 bundle）。除非您新增在載入後切換語言的用戶端 islands，否則靜態網站**不需要** `ai-i18n-tools/runtime` 或 i18next。
@@ -79,7 +79,7 @@ const t = useTranslations(locale, makeT(flat));
 }
 ```
 
-執行 `npx ai-i18n-tools translate-docs`（或 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 中的 `pnpm i18n:translate`）。英文來源保留在 `src/pages/index.astro`；每個目標語系都會取得 `src/pages/{locale}/index.astro`，並調整匯入以適應額外的目錄層級（例如 `../layouts/` → `../../layouts/`）。
+執行 `ai-i18n-tools translate-docs`（或在 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 中執行 `pnpm i18n:translate`）。英文原始碼保留在 `src/pages/index.astro`；每個目標地區設定會取得 `src/pages/{locale}/index.astro`，並調整匯入以適應額外的目錄層級（例如 `../layouts/` → `../../layouts/`）。
 
 在 **範本主體** 內部，當 `{expression}` 區塊（內聯陣列、物件 `title`/`desc` 欄位）中的字串常值面向使用者時，它們會被翻譯；受保護屬性/鍵上的引號值、`t('…')`、`<script>` 和 `<style>` 內部的常值保持不變。**前置內容 TypeScript 不會**透過此路徑翻譯 — 保持英文和地區設定頁面上的共享前置內容（包括 `t()` 匯入和資料陣列）相同，或在編輯英文頁面後重新執行 `translate-docs`，以便地區設定副本擷取前置內容變更。對於僅限前置內容的副本，請改用 [UI 字串管線](#astro-website-ui-strings-ssg)。
 

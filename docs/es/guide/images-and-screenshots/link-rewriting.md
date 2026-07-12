@@ -1,30 +1,36 @@
 <a id="the-flat-link-rewriter-and-two-step-flow"></a>
 # El reescritor de enlaces planos y el flujo de dos pasos
 
+Lea esta página para conocer los diseños de URL de capturas de pantalla y el flujo de activos plano de dos pasos. Para enlaces de Markdown entre páginas y marcadores de posición `replace`, consulte [Documentos — Reescritura de enlaces](/es/guide/documents/link-rewriting).
+
 Para `docsOutput.style = "flat"` (y a menos que se establezca `rewriteRelativeLinks: false` o un `pathTemplate` personalizado), se ejecuta un reescritor integrado antes de `postProcessing`. Maneja enlaces entre documentos (añadiendo sufijos de configuración regional) y antepone un prefijo de profundidad a las URL de activos que no son de Markdown. Las rutas de activos específicas de la configuración regional (capturas de pantalla, puentes `/img/…`) son luego reescritas por `docsOutput.postProcessing.regexAdjustments`.
 
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Flujo en dos pasos cuando `docsOutput.style = "flat"`
 
-```
-source URL  →  [flat link rewriter: depth prefix]  →  [regexAdjustments: locale segment]  →  output URL
-```
+1. **URL de origen** — ruta de la imagen en Markdown traducido (después del reensamblaje del segmento)
+2. **Reescritor de enlaces planos** — antepone un prefijo de profundidad (`../`, `../../docs/`, …)
+3. **`regexAdjustments`** — intercambia el segmento de la carpeta de configuración regional (`en-GB` → `${translatedLocale}`)
+4. **URL de salida** — ruta final escrita en el archivo traducido
 
 Ejemplo con `outputDir: "translated-docs/"` y el origen `README.md` en la raíz del repositorio:
 
 1. Reescritor de enlaces planos: `images/screenshots/en-GB/foo.png` → `../images/screenshots/en-GB/foo.png` (un `../` para `translated-docs/`)
 2. Regla `regexAdjustments` `images/screenshots/[^/]+/` → `images/screenshots/${translatedLocale}/`: `../images/screenshots/de/foo.png`
 
-Para `docsOutput.style = "doc-system"` (incluyendo `"docusaurus"`, `"astro-starlight"` y `"nested"`), el reescritor de enlaces planos no se ejecuta. `regexAdjustments` ve la URL original del Markdown traducido (normalmente una ruta absoluta como `/img/screenshots/en-GB/foo.png`).
+Para cualquier estilo que no sea `flat` (incluidos `"nested"`, `"doc-system"` y preajustes como `"docusaurus"`, `"astro-starlight"` y `"vitepress"`), el reescritor de enlaces planos no se ejecuta. `regexAdjustments` ve la URL original del Markdown traducido (normalmente una ruta absoluta como `/img/screenshots/en-GB/foo.png`).
+
+**Astro Starlight MDX:** El contenido de Starlight a menudo es `.mdx`. Para esos archivos, `translate-docs` ejecuta `postProcessing.regexAdjustments` solamente — sin reescritor de enlaces planos, VitePress, Nextra o Fumadocs. Las rutas de las capturas de pantalla por configuración regional siguen utilizando la misma regla `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`; consulte [ejemplos/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/).
 
 <a id="vitepress-link-normalizer-style-vitepress"></a>
 ### Normalizador de enlaces de VitePress (`style: "vitepress"`)
 
 Cuando `docsOutput.rewriteVitepressLinks` es `true` (valor predeterminado cuando `style` es `"vitepress"`), se ejecuta un normalizador independiente después del reensamblaje del segmento (en lugar del reescritor plano). Está dirigido a sitios de VitePress/sistemas de documentación donde el inglés se encuentra en la raíz del contenido y las configuraciones regionales se encuentran en carpetas hermanas (`docs/de/guide/…`).
 
-```
-source href  →  [VitePress link normalizer]  →  [regexAdjustments]  →  output href
-```
+1. **Href de origen** — enlace en Markdown traducido (después del reensamblaje del segmento)
+2. **Normalizador de enlaces de VitePress** — reescribe las rutas de los documentos a las rutas del sitio (`/guide/…`)
+3. **`regexAdjustments`** — intercambio opcional de la carpeta de configuración regional para capturas de pantalla (`screenshots/en-GB/` → `screenshots/de/`, …)
+4. **Href de salida** — URL final escrita en el archivo traducido
 
 Reescrituras típicas:
 
@@ -37,6 +43,8 @@ Reescrituras típicas:
 Para proyectos que sincronizan `README.md` → `docs/index.md`, usa URLs completas de GitHub en `README.md` para `LICENSE`, `examples/` y otros archivos fuera del árbol de VitePress. Consulta [Integración de VitePress — README como página de inicio de la documentación](/es/guide/integrations/vitepress#readme-as-homepage).
 
 El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `regexAdjustments`. Consulta [Integración de VitePress — Convenciones de enlaces](/es/guide/integrations/vitepress#link-conventions).
+
+Las carpetas de capturas de pantalla por configuración regional siguen utilizando la misma regla `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` cuando es necesario; consulte [Carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder).
 
 <a id="nextra-link-normalizer-style-nextra"></a>
 ### Normalizador de enlaces de Nextra (`style: "nextra"`)

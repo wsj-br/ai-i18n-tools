@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # 工具介面語言
 
-工具會獨立於您專案的 `sourceLocale` / `targetLocales` 來本地化自身的使用者介面 — CLI 說明文字、高頻率的日誌/摘要/錯誤訊息，以及翻譯儀表板。無需任何設定：預設情況下，工具會遵循您的作業系統語言環境。
+`ai-i18n-tools` 會獨立於您專案的 `sourceLocale` / `targetLocales`，對其自身的使用者介面進行在地化 —— 包含 CLI 說明文字、高頻率的日誌/摘要/錯誤訊息，以及翻譯儀表板。無需任何設定：預設情況下，此工具會遵循您作業系統的地區設定。
 
 <a id="locale-resolution"></a>
 ## 語言環境解析
@@ -21,7 +21,7 @@ UI 語言環境會從以下來源解析，按優先級由高至低排列：
 <a id="shipped-ui-languages"></a>
 ## 內建介面語言
 
-`en-GB`（來源）加上 `de`、`es`、`fr`、`hi-Latn`、`ja`、`ko`、`pt-BR`、`zh-Hans` 和 `zh-Hant`。
+英文（英國，來源）、德文、西班牙文、法文、印地文（拉丁字母）、日文、韓文、葡萄牙文（巴西）、簡體中文、繁體中文。
 
 <a id="translation-dashboard"></a>
 ## 翻譯儀表板

@@ -9,7 +9,7 @@ Next.js App Router에서 [Fumadocs](https://www.fumadocs.dev/) 4 문서 사이�
 ## 빠른 시작
 
 ```bash
-npx ai-i18n-tools init -t ui-fumadocs
+ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)
@@ -120,21 +120,6 @@ Fumadocs 레이아웃 크롬(검색 플레이스 홀더, 로케일 표시 이름
 표준 로케일은 `@fumadocs/language/*` 프리셋으로 처리될 수 있으며, LLM 비용이 들지 않습니다. 카탈로그는 영어 블록에서만 **프로젝트 오버라이드**를 번역합니다.
 
 **Fumadocs UI 문자열**에 `json[]`를 사용하지 마십시오. 해당 파이프라인은 관련된 앱 로케일 번들을 위한 것입니다.
-
-<a id="framework-shell-translation"></a>
-## 프레임워크 셸 번역
-
-| 프레임워크 | 셸/테마 문자열 | 파이프라인 |
-|-----------|----------------------|----------|
-| Docusaurus | `write-translations` 카탈로그 | 문서 — `docs[].docusaurusCatalogDir` + `translate-docs` |
-| VitePress | 테마/nav/sidebar 카탈로그 | 문서 — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
-| Nextra | `_meta.ts` 사이드바 라벨 | 문서 — `style: "nextra"` + `translate-docs` 시 자동 |
-| Nextra | 테마 사전 `.ts` | 문서 — `docs[].nextraDictionaryPath` + `translate-docs` |
-| Fumadocs | `meta.json` 사이드바 라벨 | 문서 — `style: "fumadocs"` + `translate-docs` 시 자동 |
-| Fumadocs | UI 오버라이드 카탈로그 | 문서 — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
-| Astro Starlight | 내장 UI 문자열 (다수 로케일); 추가 셸 파이프라인 없음 | 문서 — `translate-docs` (페이지만) |
-
-프레임워크 셸/테마 문자열을 `json[]`에 넣지 **마세요** — 해당 파이프라인은 관련 없는 앱 로케일 번들을 위한 것입니다. 다른 프레임워크 패턴은 [Docusaurus 통합](/ko/guide/integrations/docusaurus), [VitePress 통합](/ko/guide/integrations/vitepress), [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요.
 
 <a id="link-conventions"></a>
 ## 링크 규칙

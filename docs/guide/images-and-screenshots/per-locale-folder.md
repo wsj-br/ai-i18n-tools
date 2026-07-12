@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Per-locale folder (URL rewriting)
 
-Use for README/USER-GUIDE with `docsOutput.style = "flat"`, and for doc-system sites (`docsOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) that serve screenshots from a shared static URL tree.
+Use for README/USER-GUIDE with `docsOutput.style = "flat"`, and for doc-system sites (`docsOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) and for `"vitepress"` / other doc-system presets that serve screenshots from a shared static URL tree. Link-rewriting details for VitePress: [Link rewriting — VitePress](/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Directory layout
@@ -41,10 +41,12 @@ function getScreenshotDir(locale) {
 }
 ```
 
-See a simple `bash` example in the [screenshot script in examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh), or a more complex example in [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) from the [Transrewrt project](https://github.com/wsj-br/transrewrt) repository.
+See a simple `bash` example in the [screenshot script in examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh), or a more complex example in [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) from the [duplistatus](https://github.com/wsj-br/duplistatus) project (also used in production by [Transrewrt](https://github.com/wsj-br/transrewrt)).
 
 
 > **Note:** The four sub-sections below share the same `regexAdjustments` locale-segment swap (`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`). Only the output layout and whether the flat link rewriter runs first differ — jump to the sub-section that matches your `docsOutput.style`.
+>
+> **Note:** `regexAdjustments` runs on the full translated markdown body, including fenced code blocks. If a doc page embeds a config example that contains a matching path (e.g. `screenshots/en-GB/`), that snippet will also be rewritten in translated output. Prefer the generic `screenshots/[^/]+/` form in reusable examples.
 
 <a id="config---docsoutputstyle--flat"></a>
 ### Config - `docsOutput.style = "flat"`
@@ -81,7 +83,7 @@ Result: `../images/screenshots/de/translate.png` — correct relative path from 
 
 The `postProcessing` step runs after the flat link rewriter. Write `search` regexes that match the locale segment anywhere within the already-prefixed URL — no need to include the `../` prefix in the regex.
 
-Implementation example (production): [Transrewrt](https://github.com/wsj-br/transrewrt) — screenshot URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), locale rewrite in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), capture script [take-screenshots.js](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) (see the [screenshot script contract](#screenshot-script-contract) above).
+Implementation example (production): [Transrewrt](https://github.com/wsj-br/transrewrt) — screenshot URLs in [README.md](https://github.com/wsj-br/transrewrt/blob/main/README.md) (`images/screenshots/en-GB/…`), locale rewrite in [ai-i18n-tools.config.json](https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json), capture script based on [take-screenshots.ts](https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts) from duplistatus (see the [screenshot script contract](#screenshot-script-contract) above).
 
 Implementation example (demo config): [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) — second `docs[]` block in [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (`images/screenshots/[^/]+/` → `${translatedLocale}`); helper script [screenshot-locales.sh](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh).
 
@@ -178,10 +180,6 @@ Same as `"doc-system"` with `localeSubpath: ""` — translated pages sit directl
 
 </details>
 
-Ship PNGs at `public/img/screenshots/<locale>/screenshot.png`.
+Ship PNGs at `public/img/screenshots/<locale>/screenshot.png`. The `${translatedLocale}` placeholder uses your config locale string (e.g. `pt-BR`). The `astro-starlight` preset lowercases locale **output paths** by default (`pt-br/`), but static asset folders under `public/img/screenshots/` should match the locale segment written into markdown URLs — keep screenshot directories aligned with `${translatedLocale}`, not necessarily with Astro route casing.
 
 Implementation example: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) and [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).
-
----
-
-<a id="colocated-raster-doc-system"></a>

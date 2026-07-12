@@ -35,9 +35,9 @@ Beispiel-`package.json`-Skripte (aus dem Referenzprojekt):
 Extrahieren Sie UI-Strings mit `init -t ui-astro-website` und fügen Sie dann einen `docs[]`-Block ein, wenn Sie auch Seiten-HTML übersetzen (siehe [Seiten parsen und ersetzen](#astro-website-pages-parse-and-replace)). Umschließen Sie den Text in `t('…')` in TypeScript-Modulen und `.astro`-Frontmatter (und Vorlagen-`{expression}`-Blöcke, wenn Sie UI-Strings gegenüber duplizierten Lokalisierungsseiten bevorzugen):
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 Legen Sie `sourceLocale` so fest, dass es `i18n.defaultLocale` in `astro.config.mjs` entspricht. Schreiben Sie flache Bündel in ein Verzeichnis, das Astro zur Build-Zeit importieren kann (die Vorlage verwendet `public/locales/`). Lösen Sie `t('…')` zur **Build-Zeit** auf, indem Sie den englischen Quelltext als Schlüssel nachschlagen (siehe `examples/astro-website/src/i18n/t.ts`; `strings.json` ist der Extraktions-Cache, nicht das Laufzeit-Bündel). Sie benötigen **kein** `ai-i18n-tools/runtime` oder i18next für eine statische Website, es sei denn, Sie fügen Client-Islands hinzu, die nach dem Laden die Sprache wechseln.
@@ -79,7 +79,7 @@ Strukturelle Attribut- und Schlüsselwerte werden standardmäßig **nicht** übe
 }
 ```
 
-Führen Sie `npx ai-i18n-tools translate-docs` (oder `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)) aus. Die englische Quelle bleibt unter `src/pages/index.astro`; jede Zielsprache erhält `src/pages/{locale}/index.astro` mit angepassten Importen für die zusätzliche Verzeichnisebene (z. B. `../layouts/` → `../../layouts/`).
+Führen Sie `ai-i18n-tools translate-docs` aus (oder `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). Die englische Quelle bleibt bei `src/pages/index.astro`; jedes Zielland erhält `src/pages/{locale}/index.astro`, wobei die Importe an die zusätzliche Verzeichnisebene angepasst werden (z. B. `../layouts/` → `../../layouts/`).
 
 Innerhalb des **Vorlagenkörpers** werden String-Literale in `{expression}`-Blöcken (Inline-Arrays, Objekt-`title`/`desc`-Felder) übersetzt, wenn sie für den Benutzer sichtbar sind; in Anführungszeichen stehende Werte für geschützte Attribute/Schlüssel, Literale innerhalb von `t('…')`, `<script>` und `<style>` bleiben unverändert. **Frontmatter TypeScript wird über diesen Pfad nicht übersetzt** – halten Sie gemeinsames Frontmatter (einschließlich `t()`-Importe und Daten-Arrays) auf englischen und lokalisierten Seiten identisch, oder führen Sie `translate-docs` nach der Bearbeitung der englischen Seite erneut aus, damit die lokalen Kopien Frontmatter-Änderungen übernehmen. Für reinen Frontmatter-Text verwenden Sie stattdessen die [UI-String-Pipeline](#astro-website-ui-strings-ssg).
 

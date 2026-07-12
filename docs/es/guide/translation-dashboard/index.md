@@ -22,7 +22,7 @@ El puerto de escucha predeterminado es **8675**. Si ese puerto no está disponib
 
 La interfaz de usuario del panel de control utiliza la misma resolución de configuración regional que la CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuración `uiLanguage` → configuración regional del SO. Consulte [Idioma de la interfaz de usuario de la herramienta](/es/guide/tool-ui-language).
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![Panel de control de traducción que muestra la pestaña Documentación con filtros y filas de segmentos en caché](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## ¿Qué pestaña debo usar?

@@ -65,7 +65,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 <a id="implementation-example"></a>
 ### 実装例
 
-[duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json)内の`pathTemplate`を持つネストされた`svg`ブロック。ソースSVGは`documentation/static/img/`の下にリストされています（例：[duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/img/duplistatus_toolbar.svg)）。`translate-svg`は、併置されたPNGの横にロケールごとのファイルを`documentation/i18n/<locale>/…/current/assets/`に書き込みます。ドキュメントは現在、`/img/duplistatus_*.svg`を介してそれらを埋め込んでいます（例：[overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)）。計画されている`../assets/`パスへの移行とSVG `regexAdjustments`ブリッジの削除については、[task-locale-assets-simplification.md](https://github.com/wsj-br/duplistatus/blob/master/dev/task-locale-assets-simplification.md)を参照してください。
+[duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 内の `pathTemplate` を含むネストされた `svg` ブロック。`documentation/static/assets/` 内のソースSVG（例: [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)）。`translate-svg` はロケールごとのファイルをコロケーションされたPNGの隣の `documentation/i18n/<locale>/…/current/assets/` に書き込みます。ドキュメントは `../assets/` パス経由でそれらを埋め込み（例: [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)）、`regexAdjustments` ブリッジは不要です。
 
 ---
 

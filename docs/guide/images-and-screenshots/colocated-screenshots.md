@@ -3,6 +3,8 @@
 
 Use when a `doc-system` site colocates locale-specific assets beside translated markdown — no URL rewriting is needed. The Docusaurus preset (`docsOutput.style = "docusaurus"`) is the reference implementation; other generators using `"doc-system"` with a custom `localeSubpath` follow the same idea: English assets live at a source-locale path, translated assets live under `{outputDir}/{locale}/[localeSubpath/]assets/`.
 
+> **Why no in-repo example:** This repository's Docusaurus demos ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) use [per-locale folder](/guide/images-and-screenshots/per-locale-folder) layout instead — see the [decision guide](/guide/images-and-screenshots/#decision-guide). Colocated `../assets/` is the recommended greenfield pattern; [duplistatus](https://github.com/wsj-br/duplistatus) is the full production reference.
+
 <a id="directory-layout"></a>
 ### Directory layout
 

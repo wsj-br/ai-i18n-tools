@@ -19,9 +19,24 @@ Framework-spezifische Anleitungen zum Einbinden von ai-i18n-tools in Dokumentati
 
 Alle Dokumentations-Framework-Integrationen teilen dasselbe `docs[]`-Blockmodell, das unter [Dokumente](/de/guide/documents/) beschrieben ist. Setzen Sie `docsOutput.style` passend zu Ihrem Framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` oder `"astro-starlight"`). Informationen zum Layout des Ausgabeordners und zum Verhalten der Link-Umschreibung finden Sie unter [Ausgabe-Layouts](/de/guide/documents/output-layouts) und [Link-Umschreibung](/de/guide/documents/link-rewriting).
 
-Jede `init -t ui-*`-Vorlage erstellt einen Standard-LLM-Anbieterblock. Vor `translate-docs` oder `sync` konfigurieren Sie bei Bedarf `provider` / `providers` und legen den passenden API-Schlüssel fest – siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
+Jede `init -t ui-*`-Vorlage erstellt einen Standard-LLM-Anbieterblock (`openrouter`, es sei denn, Sie übergeben `-P <provider>`). Bevor Sie `translate-docs` oder `sync` verwenden, konfigurieren Sie bei Bedarf `provider` / `providers` und legen Sie den passenden API-Schlüssel fest – siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
 
-Legen Sie **keine** Framework-Shell- oder Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte Anwendungs-Locale-Bundles vorgesehen. Jede Integrationsseite erklärt, welche Katalogpfade und CLI-Flags Navigation, Seitenleiste und Theme-Labels für das jeweilige Framework abdecken.
+Einen frameworkübergreifenden Vergleich finden Sie unter [Framework-Shell-Übersetzung](#framework-shell-translation). Jede der unten verlinkten Anleitungen behandelt die Einrichtung für das jeweilige Framework.
+
+<a id="framework-shell-translation"></a>
+## Übersetzung der Framework-Shell
+
+| Framework | Shell / Theme-Strings | Pipeline |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations`-Katalog (`{ message, description }`) | Dokumente — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Theme-/Navigations-/Seitenleisten-Katalog | Dokumente — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "nextra"` + `translate-docs` |
+| Nextra | Theme-Wörterbuch `.ts` | Dokumente — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json`-Seitenleistenbeschriftungen | Dokumente — automatisch, wenn `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI-Überschreibungs-Katalog | Dokumente — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Eingebaute UI-Strings (viele Gebietsschemata); keine zusätzliche Shell-Pipeline | Dokumente — `translate-docs` (nur Seiten) |
+
+Legen Sie **keine** Framework-Shell-/Theme-Strings in `json[]` ab – diese Pipeline ist für nicht verwandte App-Locale-Bundles vorgesehen. Details zur Einrichtung pro Framework finden Sie in den Anleitungen, die unter [Welche Anleitung soll ich lesen?](#which-guide-to-read) verlinkt sind.
 
 <a id="runnable-examples"></a>
 ## Ausführbare Beispiele

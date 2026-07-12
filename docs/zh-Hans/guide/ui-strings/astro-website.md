@@ -35,9 +35,9 @@
 使用 `init -t ui-astro-website` 搭建 UI 提取，然后在您也翻译页面 HTML 时合并到 `docs[]` 块中（请参阅 [解析和替换页面](#astro-website-pages-parse-and-replace)）。在 TypeScript 模块中将副本包装在 `t('…')` 中，并在 `.astro` 前置内容（以及当您更喜欢 UI 字符串而不是重复的区域设置页面时，模板 `{expression}` 块）中：
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 将 `sourceLocale` 设置为匹配 `astro.config.mjs` 中的 `i18n.defaultLocale`。将 flat bundles 写入 Astro 在构建时可以导入的目录（模板使用 `public/locales/`）。在**构建时**通过查找英语源字面量作为键来解析 `t('…')`（请参阅 `examples/astro-website/src/i18n/t.ts`；`strings.json` 是提取缓存，而不是运行时 bundle）。除非您添加了在加载后切换语言的客户端 island，否则对于静态站点，您**不需要** `ai-i18n-tools/runtime` 或 i18next。
@@ -79,7 +79,7 @@ const t = useTranslations(locale, makeT(flat));
 }
 ```
 
-运行 `npx ai-i18n-tools translate-docs`（或 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 中的 `pnpm i18n:translate`）。英文源保留在 `src/pages/index.astro`；每个目标语言环境都会获得 `src/pages/{locale}/index.astro`，并根据额外的目录级别调整导入（例如 `../layouts/` → `../../layouts/`）。
+运行 `ai-i18n-tools translate-docs`（或在 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 中运行 `pnpm i18n:translate`）。英文源文件保留在 `src/pages/index.astro`；每个目标区域设置会获得 `src/pages/{locale}/index.astro`，其中的导入已针对多出的目录层级进行调整（例如 `../layouts/` → `../../layouts/`）。
 
 在 **模板主体** 内，当 `{expression}` 块（内联数组、对象 `title`/`desc` 字段）中的字符串字面量面向用户时，它们会被翻译；受保护属性/键上的带引号值、`t('…')`、`<script>` 和 `<style>` 内的字面量保持不变。**前置内容 TypeScript 不会通过此路径翻译**——保持共享前置内容（包括 `t()` 导入和数据数组）在英文和区域设置页面上相同，或者在编辑英文页面后重新运行 `translate-docs`，以便区域设置副本获取前置内容更改。对于仅前置内容的副本，请改用 [UI 字符串管道](#astro-website-ui-strings-ssg)。
 

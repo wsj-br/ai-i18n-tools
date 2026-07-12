@@ -2,9 +2,9 @@
 sidebar_position: 1
 title: عرض ميزة الترجمة
 description: مستند مرجعي يوضح كل عنصر Markdown يعرف ai-i18n-tools كيفية ترجمته.
-translation_last_updated: '2026-07-10T22:46:20.851Z'
-source_file_mtime: '2026-07-10T22:43:31.192Z'
-source_file_hash: cde52a5795286ffaa0127de77d3733882cadddbd7aa4626a4e01616476e73676
+translation_last_updated: '2026-07-12T01:33:42.977Z'
+source_file_mtime: '2026-07-12T01:15:35.404Z'
+source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: ar
 source_file_path: docs/feature-showcase.md
 translation_models:
@@ -245,7 +245,7 @@ export default config;
 "regexAdjustments": [
   {
     "description": "Per-locale screenshot folders in docs-site static assets",
-    "search": "screenshots/ar/",
+    "search": "screenshots/ar/]+/",
     "replace": "screenshots/ar/"
   }
 ]
@@ -259,7 +259,7 @@ export default config;
 
 هذه هي لقطة الشاشة الفعلية لتطبيق Next.js — وهي باللغة الإنجليزية افتراضيًا، ولكن إذا كنت تقرأ هذا بلغة مترجمة، فيجب أن تعرض الصورة أدناه التطبيق بلغتك:
 
-![The example Next.js app — UI strings and this page translated by ai-i18n-tools](/img/screenshots/ar/screenshot.png)
+![تطبيق Next.js المثال — سلاسل واجهة المستخدم وهذه الصفحة مترجمة بواسطة ai-i18n-tools](/img/screenshots/ar/screenshot.png)
 
 ---
 

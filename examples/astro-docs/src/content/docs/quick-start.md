@@ -74,7 +74,7 @@ Open `ai-i18n-tools.config.json`. The relevant section for documentation transla
           "regexAdjustments": [
             {
               "description": "Per-locale screenshot folders in public assets",
-              "search": "screenshots/en-GB/",
+              "search": "screenshots/[^/]+/",
               "replace": "screenshots/${translatedLocale}/"
             }
           ]

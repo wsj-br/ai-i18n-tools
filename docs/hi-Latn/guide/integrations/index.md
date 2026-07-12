@@ -19,9 +19,24 @@ ai-i18n-tools ko documentation sites aur Astro projects mein wire karne ke liye 
 
 Sabhi documentation-framework integrations [Documents](/hi-Latn/guide/documents/) mein varnit ek hi `docs[]` block model share karte hain. Apne framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, ya `"astro-starlight"`) se mel khane ke liye `docsOutput.style` set karein. Output folder layout aur link rewriting behaviour ke liye, [Output layouts](/hi-Latn/guide/documents/output-layouts) aur [Link rewriting](/hi-Latn/guide/documents/link-rewriting) dekhein.
 
-Har ek `init -t ui-*` template ek default LLM provider block ko scaffold karta hai. `translate-docs` ya `sync` se pehle, yadi avashyak ho to `provider` / `providers` ko configure karein aur matching API key set karein — [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein.
+Har ek `init -t ui-*` template ek default LLM provider block (`openrouter` jab tak aap `-P <provider>` paas na karein) ko scaffold karta hai. `translate-docs` ya `sync` se pehle, yadi avashyak ho to `provider` / `providers` ko configure karein aur matching API key set karein — [Provider aur API key](/hi-Latn/guide/quick-start#provider-and-api-key) dekhein.
 
-Framework shell ya theme strings ko `json[]` mein **na** rakhein — vah pipeline unrelated application locale bundles ke liye hai. Har integration page batata hai ki kaun se catalog paths aur CLI flags us framework ke liye nav, sidebar, aur theme labels ko cover karte hain.
+Cross-framework tulna ke liye [Framework shell anuvaad](#framework-shell-translation) dekhen. Neeche diye gaye pratyek linked guide mein us framework ke liye setup shamil hai.
+
+<a id="framework-shell-translation"></a>
+## Framework shell translation
+
+| Framework | Shell / theme strings | Pipeline |
+|-----------|----------------------|----------|
+| Docusaurus | `write-translations` catalog (`{ message, description }`) | Documents — `docs[].docusaurusCatalogDir` + `translate-docs` |
+| VitePress | Theme/nav/sidebar catalog | Documents — `docsOutput.vitepressThemeCatalog` + `translate-docs` |
+| Nextra | `_meta.ts` sidebar labels | Documents — auto jab `style: "nextra"` + `translate-docs` |
+| Nextra | Theme dictionary `.ts` | Documents — `docs[].nextraDictionaryPath` + `translate-docs` |
+| Fumadocs | `meta.json` sidebar labels | Documents — auto jab `style: "fumadocs"` + `translate-docs` |
+| Fumadocs | UI overrides catalog | Documents — `docsOutput.fumadocsUiCatalog` + `translate-docs` |
+| Astro Starlight | Built-in UI strings (kai locales); koi additional shell pipeline nahi | Documents — `translate-docs` (sirf pages) |
+
+Framework shell/theme strings ko `json[]` mein **na** rakhen — vah pipeline asambandhit app locale bundles ke liye hai. Pratyek-framework setup vivaran [Kaun sa guide padhen](#which-guide-to-read) se linked guides mein hain.
 
 <a id="runnable-examples"></a>
 ## Runnable examples

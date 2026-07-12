@@ -4,9 +4,9 @@ title: Schnellstart
 description: >-
   Erstellen Sie Ihr erstes übersetztes Dokument in weniger als fünf Minuten mit
   ai-i18n-tools und diesem Docusaurus-Beispielprojekt.
-translation_last_updated: '2026-07-10T22:46:24.523Z'
-source_file_mtime: '2026-07-10T22:43:30.778Z'
-source_file_hash: 3ce439245e1bfdd2c280cc6ce7d3250ef27a14c7ae4756eae5f6e6b4e20a67c1
+translation_last_updated: '2026-07-12T01:33:44.000Z'
+source_file_mtime: '2026-07-10T22:50:38.005Z'
+source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: de
 source_file_path: docs/quick-start.md
 translation_models:
@@ -136,12 +136,12 @@ Wichtige Punkte zur Überprüfung:
 ## Schritt 6 – Docusaurus {#step-6--start-docusaurus} starten
 
 ```bash
-pnpm run start:de
+pnpm start
 ```
 
-Dadurch wird der Docusaurus-Entwicklungsserver auf Deutsch gestartet. Öffnen Sie [http://localhost:3100/de/quick-start](http://localhost:3100/de/quick-start) in Ihrem Browser, um die übersetzten Dokumente zu durchsuchen.
+Dies erstellt jedes Gebietsschema und stellt die Site bereit, sodass das Sprachmenü der Navigationsleiste funktioniert. Öffnen Sie [http://localhost:3100/quick-start](http://localhost:3100/quick-start) und wechseln Sie dann zu Portugiesisch (Brasilien) – zum Beispiel [http://localhost:3100/pt-BR/feature-showcase](http://localhost:3100/pt-BR/feature-showcase).
 
-Nach einem Produktions-Build (`pnpm build` und dann `pnpm preview`) ist jedes Gebietsschema verfügbar, ohne den Entwicklungsserver pro Gebietsschema neu starten zu müssen.
+Während der Bearbeitung englischer Quellen bietet `pnpm dev` nur für das Standard-Gebietsschema ein Hot-Reload; führen Sie `pnpm start` erneut aus, um alle Gebietsschemas nach Änderungen zu aktualisieren.
 
 ---
 

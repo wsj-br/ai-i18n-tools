@@ -4,9 +4,9 @@ title: بدء سريع
 description: >-
   احصل على أول مستند مترجم لك في أقل من خمس دقائق باستخدام ai-i18n-tools مع
   مشروع Docusaurus التجريبي هذا.
-translation_last_updated: '2026-07-10T22:46:24.274Z'
-source_file_mtime: '2026-07-10T22:43:30.778Z'
-source_file_hash: 3ce439245e1bfdd2c280cc6ce7d3250ef27a14c7ae4756eae5f6e6b4e20a67c1
+translation_last_updated: '2026-07-12T01:33:43.972Z'
+source_file_mtime: '2026-07-10T22:50:38.005Z'
+source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: ar
 source_file_path: docs/quick-start.md
 translation_models:
@@ -136,12 +136,12 @@ diff docs/quick-start.md \
 ## الخطوة 6 — بدء Docusaurus {#step-6--start-docusaurus}
 
 ```bash
-pnpm run start:de
+pnpm start
 ```
 
-يؤدي هذا إلى بدء تشغيل خادم Docusaurus للمطورين باللغة الألمانية. افتح [http://localhost:3100/de/quick-start](http://localhost:3100/de/quick-start) في متصفحك لتصفح المستندات المترجمة.
+يقوم هذا بإنشاء كل لغة وتقديم الموقع حتى تعمل قائمة لغات شريط التنقل. افتح [http://localhost:3100/quick-start](http://localhost:3100/quick-start)، ثم قم بالتبديل إلى البرتغالية (البرازيل) — على سبيل المثال [http://localhost:3100/pt-BR/feature-showcase](http://localhost:3100/pt-BR/feature-showcase).
 
-بعد بناء الإنتاج (`pnpm build` ثم `pnpm preview`)، تكون كل لغة متاحة دون إعادة تشغيل خادم التطوير لكل لغة.
+أثناء تحرير المصادر الإنجليزية، يوفر `pnpm dev` إعادة تحميل سريعة للغة الافتراضية فقط؛ أعد تشغيل `pnpm start` لتحديث جميع اللغات بعد التغييرات.
 
 ---
 

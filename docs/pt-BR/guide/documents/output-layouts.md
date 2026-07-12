@@ -1,19 +1,84 @@
 <a id="output-layouts"></a>
 # Layouts de saída
 
-`docsOutput.style` controla onde os arquivos markdown traduzidos são gravados. Use os valores de string exatos abaixo em `docs[].docsOutput.style` (apelidos são layouts predefinidos, não mecanismos separados).
+`docsOutput.style` controla onde os arquivos markdown traduzidos são gravados. Use os valores de string exatos abaixo em `docs[].docsOutput.style`. Aliases são layouts `doc-system` predefinidos (ou layout de sufixo de ponto Fumadocs), não mecanismos separados — o carregamento da configuração pode reescrever os valores de alias `style` para `"doc-system"` canônicos, preservando o preset original em `stylePreset`.
 
-`docsOutput.style = "nested"` (padrão quando omitido) — espelha a árvore de origem sob `{outputDir}/{locale}/` (por exemplo, `docs/guide.md` → `i18n/de/docs/guide.md`).
+Defina `docs[].docsOutput.pathTemplate` (markdown/MDX) ou `jsonPathTemplate` (arquivos de rótulo JSON) para substituir qualquer layout integrado. Veja [placeholders pathTemplate](#pathtemplate--jsonpathtemplate-placeholders) abaixo.
 
-`docsOutput.style = "doc-system"` — árvore de documentação com prefixo de localidade para sites de documentação estáticos. Arquivos sob `docsRoot` são gravados em `{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}`. Caminhos fora de `docsRoot` voltam ao layout aninhado. Defina `docs[].docsOutput.docsRoot` como a raiz do seu código-fonte em inglês (por exemplo, `"docs"` ou `"src/content/docs"`). Quando `docsOutput.style = "doc-system"`, você deve definir `localeSubpath` explicitamente (use um apelido abaixo para configurações predefinidas).
+<a id="layout-overview"></a>
+## Visão geral do layout
 
-**Aliases** (mesmo mecanismo de layout, `localeSubpath` predefinido):
+| `docsOutput.style` | Mecanismo | Uso típico |
+| --- | --- | --- |
+| `"nested"` | A pasta de localidade espelha a árvore de origem completa | Padrão; saída i18n genérica em `{outputDir}/{locale}/` |
+| `"flat"` | Sufixo de localidade no nome do arquivo (subdiretórios opcionais) | README, changelogs, docs na raiz do repositório, [trocador de idioma](/pt-BR/guide/documents/language-switcher) |
+| `"doc-system"` | Pasta de localidade + `localeSubpath` opcional em `docsRoot` | Geradores de docs estáticos personalizados |
+| `"docusaurus"` | Preset `doc-system` | Layout de plugin i18n do [Docusaurus](/pt-BR/guide/integrations/docusaurus) |
+| `"astro-starlight"` | Preset `doc-system` (`localeSubpath: ""`) | [Astro Starlight](/pt-BR/guide/integrations/astro#astro-starlight), páginas de localidade Astro simples |
+| `"vitepress"` | Preset `doc-system` (`localeSubpath: ""`) | Pastas de localidade do [VitePress](/pt-BR/guide/integrations/vitepress) ao lado do inglês |
+| `"nextra"` | Preset `doc-system` (`localeSubpath: ""`) | Pastas de localidade do [Nextra](/pt-BR/guide/integrations/nextra) (`content/en/` → `content/{locale}/`) |
+| `"fumadocs"` | Sufixo de ponto (padrão) ou `doc-system` quando `fumadocsParser: "dir"` | Layout de conteúdo de ponto ou diretório do [Fumadocs](/pt-BR/guide/integrations/fumadocs) |
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` assume o padrão `docusaurus-plugin-content-docs/current` (layout do plugin i18n do Docusaurus).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` assume o padrão `""` (páginas traduzidas diretamente em `{outputDir}/{locale}/`, correspondendo ao [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`).
-- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume o padrão `false`). Consulte [integração com VitePress](/pt-BR/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês reside em uma pasta de localidade (por exemplo, `content/en/`). Consulte [integração com Nextra](/pt-BR/guide/integrations/nextra).
-- `docsOutput.style = "fumadocs"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês usa arquivos com sufixo de ponto (padrão) ou uma pasta de localidade quando `fumadocsParser` é `"dir"`. Consulte [integração com Fumadocs](/pt-BR/guide/integrations/fumadocs).
+<a id="nested-default"></a>
+## `nested` (padrão)
+
+`docsOutput.style = "nested"` (padrão quando omitido) — espelha a árvore de origem em `{outputDir}/{locale}/`.
+
+```text
+docs/guide.md  →  i18n/de/docs/guide.md
+README.md      →  i18n/de/README.md
+```
+
+Caminhos fora de um `docsRoot` (quando definido) usam a mesma forma aninhada.
+
+<a id="flat"></a>
+## `flat`
+
+`docsOutput.style = "flat"` — grava arquivos traduzidos em `outputDir` com um sufixo de localidade no nome do arquivo. Por padrão, apenas o nome base é mantido (`{outputDir}/{stem}.{locale}{extension}`), então `docs/guide.md` e `docs/other/guide.md` colidiriam a menos que você ative `flatPreserveRelativeDir`.
+
+```text
+README.md           →  translated-docs/README.de.md
+docs/guide.md       →  translated-docs/guide.de.md   (default: basename only)
+```
+
+Links relativos entre páginas são reescritos automaticamente quando `docsOutput.style = "flat"` (a menos que `rewriteRelativeLinks: false` ou um `pathTemplate` personalizado seja definido). Veja [Links de âncora](/pt-BR/guide/documents/anchor-links) para tratamento de `#anchor` entre páginas.
+
+<a id="flat-with-flatpreserverelativedir"></a>
+### `flat` com `flatPreserveRelativeDir`
+
+Defina `docsOutput.flatPreserveRelativeDir` como `true` para manter os subdiretórios de origem em `outputDir`. Use isso ao traduzir vários arquivos markdown que compartilham nomes base em pastas diferentes, ou quando as saídas planas devem espelhar uma árvore rasa (por exemplo, README na raiz do repositório mais `docs/*.md`).
+
+```text
+docs/guide.md       →  translated-docs/docs/guide.de.md
+docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
+```
+
+O reescritor de links planos usa o caminho de saída por arquivo ao calcular prefixos de profundidade para URLs de ativos — veja [Reescrita de links](/pt-BR/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir).
+
+<a id="doc-system"></a>
+## `doc-system`
+
+`docsOutput.style = "doc-system"` — árvore de documentação com prefixo de localidade para sites de documentos estáticos. Os arquivos em `docsRoot` são gravados em:
+
+```text
+{outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
+```
+
+Caminhos fora de `docsRoot` retornam ao layout [aninhado](#nested) (`{outputDir}/{locale}/{relPath}`).
+
+Defina `docs[].docsOutput.docsRoot` como sua raiz de origem em inglês (por exemplo, `"docs"`, `"src/content/docs"` ou `"content/en"`). Quando `docsOutput.style = "doc-system"`, você deve definir `localeSubpath` explicitamente (use um alias abaixo para predefinições). Use `localeSubpath: ""` quando as páginas traduzidas estiverem diretamente em `{outputDir}/{locale}/` (estilo Starlight).
+
+O JSON shell do Docusaurus de `docusaurusCatalogDir` e outros artefatos JSON em predefinições do sistema de documentos seguem o mesmo layout de pasta que o markdown. Com `style: "flat"`, os arquivos de rótulo JSON ainda usam o formato aninhado, a menos que você defina `jsonPathTemplate`.
+
+<a id="doc-system-aliases"></a>
+## Aliases do sistema de documentos
+
+**Aliases** (mesmo motor `doc-system`, predefinição `localeSubpath` e padrões):
+
+- `docsOutput.style = "docusaurus"` — `localeSubpath` assume como padrão `docusaurus-plugin-content-docs/current` (layout do plugin i18n do Docusaurus).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` assume como padrão `""`; `localePathLowercase` assume como padrão `true`. Páginas traduzidas em `{outputDir}/{locale}/`, correspondendo a [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`. Também usado para páginas de localidade Astro simples (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — veja [páginas do site Astro](/pt-BR/guide/ui-strings/astro-website#pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume como padrão `false`). Veja [integração VitePress](/pt-BR/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês fica em uma pasta de localidade (por exemplo, `content/en/`). Veja [integração Nextra](/pt-BR/guide/integrations/nextra).
 
 Predefinição Docusaurus (páginas principais de documentação):
 
@@ -39,18 +104,6 @@ Predefinição Nextra (inglês em uma pasta de localidade, pastas de localidade 
 content/en/guide/getting-started.mdx  →  content/pt-BR/guide/getting-started.mdx
 ```
 
-Predefinição Fumadocs — analisador de ponto (padrão; sufixo de localidade ao lado da fonte em inglês):
-
-```text
-content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
-```
-
-Predefinição Fumadocs — analisador de diretório (pastas de localidade estilo Nextra):
-
-```text
-content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
-```
-
 Rótulos JSON opcionais — strings do shell Docusaurus de `docusaurusCatalogDir` (não o corpo do MDX):
 
 ```text
@@ -63,15 +116,24 @@ As strings de navegação/barra lateral/rodapé do VitePress não estão em mark
 
 O dicionário de tema Nextra (`.ts`) e os rótulos da barra lateral `_meta.ts` não estão em markdown — use `docs[].nextraDictionaryPath` e a coleta automática de `_meta` quando `style: "nextra"`, tudo dentro de **`translate-docs`**. Consulte [integração com Nextra](/pt-BR/guide/integrations/nextra).
 
-As substituições da interface do usuário do Fumadocs (`lib/layout.shared.ts`) e os rótulos da barra lateral `meta.json` não estão em markdown — use `docsOutput.fumadocsUiCatalog` e a coleta automática de `meta.json` quando `style: "fumadocs"`, tudo dentro de **`translate-docs`**. Consulte [integração com Fumadocs](/pt-BR/guide/integrations/fumadocs).
+<a id="fumadocs"></a>
+## `fumadocs`
 
-`docsOutput.style = "flat"` — coloca os arquivos traduzidos ao lado do código-fonte com sufixo de localidade, ou em um subdiretório. Links relativos entre páginas são reescritos automaticamente quando `docsOutput.style = "flat"` (a menos que `rewriteRelativeLinks: false` ou um `pathTemplate` personalizado seja definido).
+`docsOutput.style = "fumadocs"` — Layout de conteúdo Fumadocs via `docsOutput.fumadocsParser`:
+
+- **`"dot"` (padrão)** — sufixo de localidade no nome do arquivo ao lado das fontes em inglês em `outputDir` (não é uma pasta de localidade). Isso é separado do formato de caminho `doc-system`.
 
 ```text
-docs/guide.md → i18n/guide.de.md
+content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-Para links âncora entre páginas em layout plano, consulte [Links âncora](/pt-BR/guide/documents/anchor-links).
+- **`"dir"`** — pastas de localidade estilo Nextra; usa o mesmo motor `doc-system` com `localeSubpath` vazio.
+
+```text
+content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
+```
+
+As substituições da interface do usuário do Fumadocs (`lib/layout.shared.ts`) e os rótulos da barra lateral `meta.json` não estão em markdown — use `docsOutput.fumadocsUiCatalog` e a coleta automática de `meta.json` quando `style: "fumadocs"`, tudo dentro de **`translate-docs`**. Consulte [integração com Fumadocs](/pt-BR/guide/integrations/fumadocs).
 
 Para reescrita de URL de link e ativo além das correções de link relativo integradas, consulte [Reescrita de link](/pt-BR/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 
@@ -84,7 +146,7 @@ Substitua onde os arquivos traduzidos são gravados definindo `docs[].docsOutput
 
 Se você usar um `pathTemplate` personalizado, `rewriteRelativeLinks` assume como padrão `false` a menos que você o defina explicitamente — a reescrita de links relativos é feita para `docsOutput.style = "flat"` sem um modelo personalizado.
 
-Para layouts integrados (`nested`, `flat`, `doc-system` sem modelo personalizado), defina `docsOutput.localePathLowercase` como `true` para gravar segmentos de pasta ou nome de arquivo em letras minúsculas (por exemplo, `pt-br` em vez de `pt-BR`). O alias `astro-starlight` define isso como padrão `true`. Valores personalizados de `pathTemplate` / `jsonPathTemplate` permanecem inalterados — use `{llocale}` ali quando precisar de segmentos em minúsculas mantendo `{locale}` como BCP-47.
+Para layouts integrados (`nested`, `flat`, `doc-system` sem um modelo personalizado), defina `docsOutput.localePathLowercase` como `true` para gravar segmentos de pasta ou nome de arquivo de localidade em minúsculas (por exemplo, `pt-br` em vez de `pt-BR`). O alias `astro-starlight` e `doc-system` com `localeSubpath` vazio definem isso como `true` no carregamento da configuração. Os valores personalizados `pathTemplate` / `jsonPathTemplate` permanecem inalterados — use `{llocale}` lá quando precisar de segmentos em minúsculas, mantendo `{locale}` como BCP-47.
 
 | Espaço reservado       | Função                                                                                                     | Exemplo                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|

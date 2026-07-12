@@ -35,9 +35,9 @@
 `init -t ui-astro-website` で UI 抽出の足場を構築し、ページ HTML も翻訳する場合は `docs[]` ブロックにマージします（[ページの解析と置換](#astro-website-pages-parse-and-replace) を参照）。TypeScript モジュールでは `t('…')`、`.astro` フロントマター（および重複するロケールページよりも UI 文字列を優先する場合はテンプレートの `{expression}` ブロック）でコピーをラップします。
 
 ```bash
-npx ai-i18n-tools init -t ui-astro-website
-npx ai-i18n-tools extract
-npx ai-i18n-tools translate-ui
+ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 `astro.config.mjs` 内の `i18n.defaultLocale` と一致するように `sourceLocale` を設定してください。ビルド時に Astro がインポートできるディレクトリにフラットバンドルを書き出します（テンプレートでは `public/locales/` を使用）。英語の原文リテラルをキーとして検索することで、**ビルド時**に `t('…')` を解決します（`examples/astro-website/src/i18n/t.ts` を参照。`strings.json` は実行時バンドルではなく、抽出キャッシュです）。読み込み後に言語切り替えを行うクライアントアイランドを追加しない限り、静的サイトでは `ai-i18n-tools/runtime` や i18next は**不要**です。
@@ -79,7 +79,7 @@ const t = useTranslations(locale, makeT(flat));
 }
 ```
 
-`npx ai-i18n-tools translate-docs`（または [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) の `pnpm i18n:translate`）を実行します。英語のソースは `src/pages/index.astro` に残り、各ターゲットロケールは追加のディレクトリレベルに合わせてインポートが調整された `src/pages/{locale}/index.astro` を取得します（例: `../layouts/` → `../../layouts/`）。
+`ai-i18n-tools translate-docs` を実行します（または [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) で `pnpm i18n:translate` を実行します）。英語のソースは `src/pages/index.astro` のままです。各ターゲットロケールは、追加のディレクトリレベルに合わせてインポートを調整した `src/pages/{locale}/index.astro` を取得します（例: `../layouts/` → `../../layouts/`）。
 
 **テンプレート本体**内では、`{expression}` ブロック（インライン配列、オブジェクトの `title`/`desc` フィールド）内の文字列リテラルは、ユーザー向けである場合に翻訳されます。保護された属性/キーの引用符付きの値、`t('…')`、`<script>`、`<style>` 内のリテラルは変更されません。**フロントマターの TypeScript はこのパスでは翻訳されません**。共有フロントマター（`t()` のインポートとデータ配列を含む）は、英語ページとロケールページで同じに保つか、英語ページの編集後に `translate-docs` を再実行して、ロケールコピーがフロントマターの変更を反映するようにします。フロントマターのみのコピーについては、代わりに [UI 文字列パイプライン](#astro-website-ui-strings-ssg) を使用してください。
 

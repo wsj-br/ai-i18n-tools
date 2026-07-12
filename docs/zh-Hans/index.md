@@ -61,12 +61,13 @@ features:
 
 ```bash
 pnpm add ai-i18n-tools
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here   # or your provider's env var
-npx ai-i18n-tools init
-npx ai-i18n-tools sync
+# Set API key for your active provider — see preset table (default init: openrouter)
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+ai-i18n-tools init [-P <provider>]
+ai-i18n-tools sync
 ```
 
-有关 CLI 调用详情（包括[克隆 monorepo 开发](/zh-Hans/guide/installation#cloned-monorepo)），请参阅[安装](/zh-Hans/guide/installation)；有关脚手架模板，请参阅[快速开始](/zh-Hans/guide/quick-start)。
+请参阅[安装](/zh-Hans/guide/installation)了解[配置裸 CLI 命令](/zh-Hans/guide/installation#using-the-cli)（包括[克隆的 monorepo 开发](/zh-Hans/guide/installation#cloned-monorepo)），并参阅[快速开始](/zh-Hans/guide/quick-start)获取脚手架模板。
 
 <a id="which-pipeline-should-i-use"></a>
 ## 我应该使用哪个流水线？

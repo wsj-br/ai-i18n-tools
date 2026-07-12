@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI文字列
 
-i18next を使用するあらゆる JS/TS プロジェクト向けに設計されています：React アプリ、Next.js（クライアントおよびサーバーコンポーネント）、Node.js サービス、CLI ツールなど。
+i18nextを使用するあらゆるJS/TSプロジェクト向けに設計されています：Reactアプリ、Next.js（クライアントおよびサーバーコンポーネント）、Node.jsサービス、プレーンHTML、Astroウェブサイト、CLIツール。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
@@ -19,15 +19,15 @@ i18next を使用するあらゆる JS/TS プロジェクト向けに設計さ�
 ## ステップ1: 初期化
 
 ```bash
-npx ai-i18n-tools init
+ai-i18n-tools init [-P <provider>]
 ```
 
 これにより、`ui-markdown` テンプレートを使用して `ai-i18n-tools.config.json` が書き込まれます（デフォルトの `provider` / `providers` ブロックを含む）。`translate-ui` または `sync` を実行する前に、環境変数または `.env` でアクティブなプロバイダーのAPIキーを設定してください（Ollamaを除く）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。設定を編集して以下を設定します：
 
-- `provider` および `providers` — `translationModels` を持つプロバイダーが少なくとも1つ必要です。OpenRouterを使用しない場合は、プリセットまたはモデルリストを変更してください。[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
-- `sourceLocale` - ソース言語のBCP-47コード（例: `"en-GB"`）。ランタイムのi18nセットアップファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた `SOURCE_LOCALE` と**一致する必要があります**。
-- `targetLocales` - ターゲット言語のBCP-47コードの配列（例: `["de", "fr", "pt-BR"]`）。このリストから `ui-languages.json` マニフェストを作成するには、`generate-ui-languages` を実行します。
-- `ui.sourceRoots` - `t("…")` 呼び出しをスキャンするディレクトリまたはglobパターン（例: `["src/"]`, `["src/**/*.ts"]`）。
+- `provider`および`providers` — `translationModels`を持つプロバイダが少なくとも1つ必要です。デフォルトがお好みでない場合は、プリセットまたはモデルリストを変更してください (`init -P <provider>`)。[LLMプロバイダとモデル](/ja/guide/providers-and-models)を参照してください。
+- `sourceLocale` - ソース言語のBCP-47コード（例：`"en-GB"`）。ランタイムi18nセットアップファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた`SOURCE_LOCALE`と**一致する必要があります**。
+- `targetLocales` - ターゲット言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。このリストから`ui-languages.json`マニフェストを作成するには、`generate-ui-languages`を実行します。
+- `ui.sourceRoots` - `t("…")`呼び出しをスキャンするディレクトリまたはglobパターン（例：`["src/"]`、`["src/**/*.ts"]`）。
 - `ui.stringsJson` - マスターカタログを書き込む場所（例: `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - `de.json`、`pt-BR.json` などを書き込む場所（例: `"src/locales/"`）。
 - `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および `proofread-ui` のための順序付きUI専用モデルリスト（一致する `localeModels` エントリの後、`translationModels` の前）。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照してください。
@@ -36,7 +36,7 @@ npx ai-i18n-tools init
 ## ステップ2: 文字列を抽出する
 
 ```bash
-npx ai-i18n-tools extract
+ai-i18n-tools extract
 ```
 
 `ui.sourceRoots` 配下のすべての JS/TS ファイルをスキャンし、`t("literal")` および `i18n.t("literal")` 呼び出しを検出して `ui.stringsJson` に書き込み（またはマージ）します。
@@ -47,7 +47,7 @@ npx ai-i18n-tools extract
 ## ステップ3: UI文字列を翻訳する
 
 ```bash
-npx ai-i18n-tools translate-ui
+ai-i18n-tools translate-ui
 ```
 
 `strings.json`を読み取り、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデル選択にはUIチェーンが使用されます: `localeModels(locale)` → `uiModels` → `translationModels`（「[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)」を参照）。
@@ -55,7 +55,10 @@ npx ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-オプションの`providers.<active>.localeModels`エントリは、BCP-47ロケールを、そのロケールに対して**前に** `uiModels`と`translationModels`が試行された順序付きモデルリストにマッピングします。同じ`localeModels`エントリは、ドキュメント、JSON、SVGの翻訳にも適用されます。ロケールタグは、大文字と小文字を区別せずに照合されます（`pt-br` = `pt-BR`）。一致するエントリがない場合、UI作業には`uiModels`と`translationModels`のみが使用されます。
+ターゲット言語によっては、一部の翻訳モデルが他のモデルよりも大幅に優れたパフォーマンスを発揮する場合があります。例えば、多くの西洋（欧米系）言語モデルと比較して、qwenやz-aiモデルはアジア言語に対してより高品質な翻訳を生成する傾向があります。これを活用するために、オプションの`providers.<active>.localeModels`エントリを使用して、各BCP-47ロケールの優先順位付けされたモデルリストを指定できます。これらのモデルリストは、その特定のロケールに対して、より一般的な`uiModels`および`translationModels`よりも**先に**試行されます。これにより、モデルの選択を調整し、言語ごとに翻訳品質を向上させることができます。ロケールタグは大文字と小文字を区別せずに一致します（したがって、`zh-cn`と`ZH-CN`は同等です）。カスタムエントリがロケールに一致しない場合、ツールはUI翻訳用のデフォルトの`uiModels`および`translationModels`の順序にフォールバックします。同じ`localeModels`メカニズムは、ドキュメント、JSON、およびSVGの翻訳にも適用されます。
+
+<a id="translations-database-stringsjson"></a>
+### 翻訳データベース (`strings.json`)
 
 各エントリについて、`translate-ui`は、オプションの`models`オブジェクト (`translated`と同じロケールキー) 内で、各ロケールを正常に翻訳した**アクティブプロバイダーからのモデルID**を格納します。翻訳ダッシュボードで編集された文字列は、そのロケールの`models`で、番兵値`user-edited`でマークされます。`ui.flatOutputDir`の下にあるロケールごとのフラットファイルは、**ソース文字列 → 翻訳**のみのままであり、`models`は含まれません (そのため、ランタイムバンドルは変更されません)。
 
@@ -69,7 +72,7 @@ npx ai-i18n-tools translate-ui
 UI 文字列を翻訳ベンダー、TMS、CAT ツールに引き渡すために、カタログを **XLIFF 2.0** 形式（ターゲットロケールごとに1ファイル）でエクスポートします。このコマンドは**読み取り専用**です。`strings.json` を変更したり、API を呼び出したりすることはありません。
 
 ```bash
-npx ai-i18n-tools export-ui-xliff
+ai-i18n-tools export-ui-xliff
 ```
 
 デフォルトでは、ファイルは `ui.stringsJson` の隣に `strings.de.xliff`、`strings.pt-BR.xliff`（カタログのベースネーム + ロケール + `.xliff`）のような名前で出力されます。`-o` / `--output-dir` を使用して他の場所に出力できます。`strings.json` からの既存の翻訳は `<target>` に表示され、翻訳のないロケールは `<target>` なしの `state="initial"` として出力され、ツールが翻訳を埋められるようになります。`--untranslated-only` を使用すると、各ロケールでまだ翻訳が必要なユニットのみをエクスポートできます（ベンダー向けのバッチ処理に便利です）。`--dry-run` はファイルの書き込みなしでパスを表示します。

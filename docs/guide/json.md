@@ -14,10 +14,10 @@ This pipeline does **not** run `extract` — there is no `strings.json` catalog.
 ### Step 1: Initialise for nested JSON
 
 ```bash
-npx ai-i18n-tools init -t ui-json-bundles
+ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ```
 
-That template sets `features.translateJson: true`, disables UI extraction and document translation, and scaffolds a single `json[]` block pointing at `src/i18n/en/translation.json` with output `src/i18n/{llocale}/translation.json`. It also includes a default `provider` / `providers` block — set the matching API key (or use local Ollama) before running `translate-json` or `sync`; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit `sourceLocale`, `targetLocales`, `contentPaths`, and `outputPathTemplate` for your repo layout.
+That template sets `features.translateJson: true`, disables UI extraction and document translation, and scaffolds a single `json[]` block pointing at `src/i18n/en/translation.json` with output `src/i18n/{llocale}/translation.json`. It also includes a default `provider` / `providers` block (`openrouter` unless you pass `-P <provider>`) — set the matching API key (or use local Ollama) before running `translate-json` or `sync`; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit `sourceLocale`, `targetLocales`, `contentPaths`, and `outputPathTemplate` for your repo layout.
 
 <a id="step-2-configure-json"></a>
 ### Step 2: Configure `json[]`
@@ -72,7 +72,7 @@ Paths use dot notation (`nav.home.label`). A bare name like `slug` matches the f
 ### Step 3: Translate JSON bundles
 
 ```bash
-npx ai-i18n-tools translate-json
+ai-i18n-tools translate-json
 ```
 
 Optional flags (same ideas as `translate-docs`): `-l` / `--locale` for a subset of targets, `-p` / `--path` to limit files, `--dry-run`, `--force` (clear file tracking and segment cache for matched files), `--force-update` (re-process when file hash matches; segment cache still applies), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
@@ -80,7 +80,7 @@ Optional flags (same ideas as `translate-docs`): `-l` / `--locale` for a subset 
 JSON-only projects can run:
 
 ```bash
-npx ai-i18n-tools sync --no-ui --no-svg --no-docs
+ai-i18n-tools sync --no-ui --no-svg --no-docs
 ```
 
 When UI or docs are also enabled, `sync` runs **translate-json after translate-docs** (unless `--no-json`). Skip JSON with `--no-json`.
@@ -88,7 +88,7 @@ When UI or docs are also enabled, `sync` runs **translate-json after translate-d
 Check coverage per file and locale:
 
 ```bash
-npx ai-i18n-tools status
+ai-i18n-tools status
 ```
 
 When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, ● stale or missing).

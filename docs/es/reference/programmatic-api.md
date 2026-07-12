@@ -21,6 +21,14 @@ console.log(
 );
 ```
 
+Cree una configuración a partir de Node.js (el cuarto argumento opcional selecciona el preajuste integrado; el valor predeterminado es `openrouter`):
+
+```ts
+import { writeInitConfigFile } from 'ai-i18n-tools';
+
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+```
+
 Exportaciones clave (de uso común; consulte `src/index.ts` para ver la superficie pública completa):
 
 | Exportación | Descripción |
@@ -41,4 +49,6 @@ Exportaciones clave (de uso común; consulte `src/index.ts` para ver la superfic
 | `resolveDocumentationOutputPath` | Resolver la ruta del archivo de salida para un documento traducido. |
 | `Glossary` / `GlossaryMatcher` | Cargar y aplicar glosarios de traducción. |
 | `runTranslateUI` | Punto de entrada programático para la interfaz de traducción. |
+| `writeInitConfigFile` | Escriba un JSON de configuración inicial (`template`, `providerKey` opcional con valor predeterminado `openrouter`). |
+| `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` inicial por preajuste integrado utilizado por `init -P`. |
 | `PROVIDER_PRESETS` | Mapa preestablecido de proveedor integrado (`baseUrl`, `apiKeyEnv`). |
