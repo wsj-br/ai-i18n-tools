@@ -9,7 +9,7 @@
 
 `ai-i18n-tools` 是一个 CLI 工具和工具包，用于国际化 JavaScript/TypeScript 应用和文档站点——包括 Docusaurus、Astro、Starlight、VitePress、Nextra、Fumadocs 以及纯 Markdown/MDX——借助大语言模型完成。
 
-指向任意提供商并开始翻译：**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任意 [OpenRouter](https://openrouter.ai/) 模型（通过单个 API 密钥即可从数百个模型中选择），或用于完全自托管、离线翻译的 **Ollama**。可按项目或甚至按语言切换提供商或模型，无需修改代码库。
+从内置预设中选择（**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、**OpenRouter**、**Ollama**），或指向任何兼容 OpenAI 的 API。无需修改代码库，即可按项目甚至按语言切换提供商或模型。
 
 一个配置文件驱动三种翻译模式，因此您可以根据内容的结构进行混合和匹配：
 
@@ -133,10 +133,10 @@ pnpm add -g ai-i18n-tools
 
 优先使用 `sync`，而不是手动链接 `extract`、`translate-ui`、`translate-svg`、`translate-docs` 和 `translate-json`——手动运行时，顺序和功能标志很容易出错。请参阅快速入门指南中的 [推荐的 `package.json` 脚本](../docs/guide/quick-start.md#recommended-packagejson-scripts)。
 
-设置您的提供商 API 密钥（显示 OpenRouter；请使用与您的提供商匹配的变量）：
+为所选提供商设置 API 密钥（环境变量名称见 [LLM 提供商](#llm-providers)）：
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+export PROVIDER_API_KEY=sk-your-key-here
 ```
 
 ---
@@ -160,8 +160,9 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ```jsonc
 {
-  "provider": "openrouter",
+  "provider": "ollama",
   "providers": {
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "openrouter": {
       "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
       "uiModels": ["anthropic/claude-sonnet-latest"],
@@ -169,7 +170,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
         { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     },
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
 }
@@ -177,25 +177,25 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 内置提供商预设（键 — 基本 URL — API 密钥环境变量）：
 
-| 提供商     | 基础 URL                                                  | API 密钥环境变量      |
+| 提供商       | 基础 URL                                                  | API 密钥环境变量     |
 |--------------|-----------------------------------------------------------|----------------------|
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (无) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 通过添加一个带有 `baseUrl`（以及 `apiKeyEnv`，除非不需要密钥）的新键来定义自定义的 OpenAI 兼容提供商。模型 ID 是纯粹的上游 ID — 提供商在配置级别选择，因此不需要 `provider/` 前缀（OpenRouter ID 保留其原生的 `vendor/model` 格式）。
 
-每个提供商都会报告令牌使用量；仅当提供商返回确切美元费用时才显示（OpenRouter）。`ai-i18n-tools check-models` 会根据当前提供商的实时 `GET /models` 列表（适用于任何提供商）验证所有已配置的模型 ID（`translationModels`、`uiModels` 以及每个 `localeModels` 条目），并在提供商返回定价时显示（例如 OpenRouter）。`ai-i18n-tools list-models` 列出当前提供商公布的所有模型（使用 `-P` / `--provider` 查看其他已配置的提供商）。`ai-i18n-tools bench-models` 通过独立翻译一个样本来对每个唯一的已配置模型 ID（`translationModels`、`uiModels` 和 `localeModels`）进行基准测试（模型并行运行，受 `concurrency` 限制），并打印每个模型的输入/输出令牌数、实际耗时和美元费用。
+每个提供商都会报告令牌使用情况；仅当提供商返回时才显示确切的美元成本。`ai-i18n-tools check-models` 会根据当前活跃提供商的实时 `GET /models` 列表验证所有已配置的模型 ID（`translationModels`、`uiModels` 以及每个 `localeModels` 条目），并在提供商返回时显示定价。`ai-i18n-tools list-models` 会列出当前活跃提供商公布的所有模型（使用 `-P` / `--provider` 检查另一个已配置的提供商）。`ai-i18n-tools bench-models` 通过独立翻译一个样本（模型并行运行，受 `concurrency` 限制）对每个已配置的唯一模型 ID（`translationModels`、`uiModels` 和 `localeModels`）进行基准测试，并打印每个模型的输入/输出令牌数、实际运行时间和美元成本。
 
 有关使用 `-P` 在单个文档上切换提供程序的动手演示，请参阅 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)。
 
