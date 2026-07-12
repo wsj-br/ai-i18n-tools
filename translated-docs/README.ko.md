@@ -9,7 +9,7 @@
 
 `ai-i18n-tools`는 대규모 언어 모델을 사용하여 JavaScript/TypeScript 애플리케이션 및 Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs, 일반 Markdown/MDX를 포함한 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다.
 
-어떤 공급자든 지정하여 번역을 시작하세요. **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, 모든 [OpenRouter](https://openrouter.ai/) 모델(단일 API 키로 수백 가지 중에서 선택 가능) 또는 완전 자체 호스팅 오프라인 번역을 위한 **Ollama**를 사용할 수 있습니다. 코드베이스를 수정하지 않고도 프로젝트별 또는 언어별로 공급자나 모델을 전환할 수 있습니다.
+내장 프리셋(**OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, **OpenRouter**, **Ollama**) 중에서 선택하거나 OpenAI 호환 API를 가리키도록 설정하세요. 코드베이스를 수정하지 않고 프로젝트별로, 심지어 언어별로 프로바이더 또는 모델을 전환할 수 있습니다.
 
 하나의 구성 파일이 세 가지 번역 모드를 구동하므로 콘텐츠 구조에 따라 혼합하여 사용할 수 있습니다.
 
@@ -133,10 +133,10 @@ pnpm add -g ai-i18n-tools
 
 `extract`, `translate-ui`, `translate-svg`, `translate-docs`, `translate-json`를 수동으로 연결하는 것보다 `sync`를 선호하세요. 수동으로 실행할 때 순서와 기능 플래그가 잘못될 수 있습니다. 빠른 시작 가이드의 [권장 `package.json` 스크립트](../docs/guide/quick-start.md#recommended-packagejson-scripts)를 참조하세요.
 
-제공자 API 키를 설정합니다(OpenRouter 표시; 제공자에 맞는 변수 사용):
+선택한 프로바이더의 API 키를 설정하세요(환경 변수 이름은 [LLM 프로바이더](#llm-providers)에 있습니다):
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+export PROVIDER_API_KEY=sk-your-key-here
 ```
 
 ---
@@ -160,8 +160,9 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ```jsonc
 {
-  "provider": "openrouter",
+  "provider": "ollama",
   "providers": {
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "openrouter": {
       "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
       "uiModels": ["anthropic/claude-sonnet-latest"],
@@ -169,7 +170,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
         { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     },
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
 }
@@ -177,25 +177,25 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
 
-| 제공업체     | 기본 URL                                                  | API 키 환경 변수      |
+| 프로바이더     | 베이스 URL                                                  | API 키 환경 변수      |
 |--------------|-----------------------------------------------------------|----------------------|
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 사용자 지정 OpenAI 호환 제공자를 정의하려면 `baseUrl`(키가 필요하지 않은 경우 `apiKeyEnv` 제외)와 함께 새 키를 추가합니다. 모델 ID는 일반 업스트림 ID입니다. 제공자는 구성 수준에서 선택되므로 `provider/` 접두사가 필요하지 않습니다(OpenRouter ID는 네이티브 `vendor/model` 형식을 유지합니다).
 
-토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 USD 비용은 공급자가 반환하는 경우에만 표시됩니다(OpenRouter). `ai-i18n-tools check-models`는 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 모든 `localeModels` 항목)를 활성 공급자의 라이브 `GET /models` 목록(모든 공급자)에 대해 검증하고, 공급자가 반환하는 경우(예: OpenRouter) 가격을 표시합니다. `ai-i18n-tools list-models`는 활성 공급자가 광고하는 모든 모델을 나열합니다(`-P` / `--provider`를 사용하여 다른 구성된 공급자를 검사). `ai-i18n-tools bench-models`는 고유하게 구성된 모든 모델 ID(`translationModels`, `uiModels` 및 `localeModels`)를 샘플을 개별적으로 번역하여 벤치마킹하고(모델은 `concurrency`에 의해 제한되어 병렬로 실행됨) 모델별 입력/출력 토큰, 실제 시간 및 USD 비용을 출력합니다.
+모든 프로바이더에 대해 토큰 사용량이 보고되며, 정확한 USD 비용은 프로바이더가 이를 반환할 때만 표시됩니다. `ai-i18n-tools check-models`은(는) 구성된 모든 모델 ID(`translationModels`, `uiModels`, 그리고 모든 `localeModels` 항목)를 활성 프로바이더의 라이브 `GET /models` 목록과 대조하여 검증하며, 프로바이더가 반환할 때 가격을 표시합니다. `ai-i18n-tools list-models`은(는) 활성 프로바이더가 제공하는 모든 모델을 나열합니다(다른 구성된 프로바이더를 검사하려면 `-P` / `--provider`을(를) 사용하세요). `ai-i18n-tools bench-models`은(는) 격리된 상태에서 샘플을 번역하여 모든 고유한 구성 모델 ID(`translationModels`, `uiModels`, `localeModels`)를 벤치마크합니다(모델은 병렬로 실행되며 `concurrency`에 의해 제한됨). 그리고 모델별 입력/출력 토큰, 실제 경과 시간, USD 비용을 출력합니다.
 
 단일 문서에서 `-P`를 사용하여 공급자를 전환하는 실습 데모는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)를 참조하세요.
 

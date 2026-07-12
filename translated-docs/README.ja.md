@@ -9,7 +9,7 @@
 
 `ai-i18n-tools` は、大規模言語モデルを使用して、Docusaurus、Astro、Starlight、VitePress、Nextra、Fumadocs、およびプレーンな Markdown/MDX を含む、JavaScript/TypeScript アプリケーションおよびドキュメントサイトを国際化するための CLI およびツールキットです。
 
-任意のプロバイダーを指定して翻訳を開始できます。**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、任意の[OpenRouter](https://openrouter.ai/)モデル（単一のAPIキーで数百から選択可能）、または完全に自己ホスト型でオフライン翻訳が可能な**Ollama**。コードベースを変更することなく、プロジェクトごと、あるいは言語ごとにプロバイダーやモデルを切り替えることができます。
+組み込みのプリセット（**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、**OpenRouter**、**Ollama**）から選択するか、OpenAI互換の任意のAPIを指定します。コードベースを変更することなく、プロジェクトごと、あるいは言語ごとにプロバイダーやモデルを切り替えられます。
 
 1つの設定ファイルで3つの翻訳モードを制御できるため、コンテンツの構造に応じて自由に組み合わせることができます。
 
@@ -133,10 +133,10 @@ pnpm add -g ai-i18n-tools
 
 `extract`、`translate-ui`、`translate-svg`、`translate-docs`、および`translate-json`を手動で連結するよりも`sync`を使用することをお勧めします。手動で実行すると、順序と機能フラグを間違えやすいためです。クイックスタートガイドの[推奨される`package.json`スクリプト](../docs/guide/quick-start.md#recommended-packagejson-scripts)を参照してください。
 
-プロバイダーのAPIキーを設定します（OpenRouterの例を示します。使用するプロバイダーに応じた対応する変数を使用してください）：
+選択したプロバイダーのAPIキーを設定します（環境変数名は[LLMプロバイダー](#llm-providers)を参照）：
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+export PROVIDER_API_KEY=sk-your-key-here
 ```
 
 ---
@@ -160,8 +160,9 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 ```jsonc
 {
-  "provider": "openrouter",
+  "provider": "ollama",
   "providers": {
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "openrouter": {
       "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
       "uiModels": ["anthropic/claude-sonnet-latest"],
@@ -169,7 +170,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
         { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     },
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
 }
@@ -177,25 +177,25 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
 
-| プロバイダー | ベース URL                                                  | API キー環境変数     |
+| プロバイダー     | ベースURL                                                  | APIキー環境変数      |
 |--------------|-----------------------------------------------------------|----------------------|
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 カスタムのOpenAI互換プロバイダーを定義するには、`baseUrl`（キーが不要な場合を除く`apiKeyEnv`）を持つ新しいキーを追加します。モデルIDはプレーンなアップストリームIDです。プロバイダーは設定レベルで選択されるため、`provider/`プレフィックスは不要です（OpenRouter IDはネイティブの`vendor/model`形式を維持します）。
 
-トークンの使用状況はプロバイダーごとに報告されます。正確なUSDコストは、プロバイダーがそれを返す場合（OpenRouter）にのみ表示されます。`ai-i18n-tools check-models`は、設定されたすべてのモデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）を、アクティブなプロバイダーのライブ`GET /models`リスト（任意のプロバイダー）に対して検証し、プロバイダーが価格を返す場合（例：OpenRouter）に価格を表示します。`ai-i18n-tools list-models`は、アクティブなプロバイダーが宣伝するすべてのモデルをリストします（別の設定済みプロバイダーを検査するには`-P` / `--provider`を使用します）。`ai-i18n-tools bench-models`は、一意に設定されたすべてのモデルID（`translationModels`、`uiModels`、および`localeModels`）を、サンプルを個別に翻訳することによってベンチマークします（モデルは並行して実行され、`concurrency`によって制限されます）。そして、モデルごとの入出力トークン、実時間、およびUSDコストを出力します。
+すべてのプロバイダーでトークン使用量が報告されます。正確なUSDコストは、プロバイダーがそれを返した場合にのみ表示されます。`ai-i18n-tools check-models`は、設定されたすべてのモデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）をアクティブなプロバイダーのライブ`GET /models`リストに対して検証し、プロバイダーが返した場合に価格を表示します。`ai-i18n-tools list-models`は、アクティブなプロバイダーがアドバタイズするすべてのモデルをリストします（`-P` / `--provider`を使用して、別の設定済みプロバイダーを調べます）。`ai-i18n-tools bench-models`は、サンプルを個別に翻訳することで、設定された一意のすべてのモデルID（`translationModels`、`uiModels`、`localeModels`）のベンチマークを行い（モデルは並行して実行され、`concurrency`によって制限されます）、モデルごとの入出力トークン、実時間、およびUSDコストを出力します。
 
 単一ドキュメントで`-P`を使用してプロバイダーを切り替える実践的なデモについては、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)を参照してください。
 

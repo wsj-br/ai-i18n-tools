@@ -14,7 +14,7 @@
 
 `ai-i18n-tools` is a CLI and toolkit for internationalizing JavaScript/TypeScript applications and documentation sites - including Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs, and plain Markdown/MDX - using large language models.
 
-Point it at any provider and start translating: **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, any [OpenRouter](https://openrouter.ai/) model (hundreds to choose from with a single API key), or **Ollama** for fully self-hosted, offline translation. Switch providers or models per project—or even per language—without modifying your codebase.
+Choose from built-in presets (**OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, **OpenRouter**, **Ollama**) or point at any OpenAI-compatible API. Switch providers or models per project—or even per language—without modifying your codebase.
 
 One config file drives three translation modes, so you can mix and match based on how your content is structured:
 
@@ -141,10 +141,10 @@ Then run e.g. `pnpm run i18n:sync` — scripts resolve the local binary without 
 
 Prefer `sync` over hand-chaining `extract`, `translate-ui`, `translate-svg`, `translate-docs`, and `translate-json` — order and feature flags are easy to get wrong when run manually. See [Recommended `package.json` scripts](docs/guide/quick-start.md#recommended-packagejson-scripts) in the Quick start guide.
 
-Set your provider API key (OpenRouter shown; use the matching variable for your provider):
+Set the API key for your chosen provider (environment variable names are in [LLM providers](#llm-providers)):
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+export PROVIDER_API_KEY=sk-your-key-here
 ```
 
 ---
@@ -168,8 +168,9 @@ To switch providers for a single run without editing the config, pass the global
 
 ```jsonc
 {
-  "provider": "openrouter",
+  "provider": "ollama",
   "providers": {
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "openrouter": {
       "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
       "uiModels": ["anthropic/claude-sonnet-latest"],
@@ -177,7 +178,6 @@ To switch providers for a single run without editing the config, pass the global
         { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     },
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
 }
@@ -187,23 +187,23 @@ Built-in provider presets (key — base URL — API-key env var):
 
 | Provider     | Base URL                                                  | API-key env var      |
 |--------------|-----------------------------------------------------------|----------------------|
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `openai`     | `https://api.openai.com/v1`                               | `OPENAI_API_KEY`     |
+| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
 | `anthropic`  | `https://api.anthropic.com/v1`                            | `ANTHROPIC_API_KEY`  |
-| `gemini`     | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY`     |
-| `deepseek`   | `https://api.deepseek.com`                                | `DEEPSEEK_API_KEY`   |
+| `apifun`     | `https://api.apikey.fun/v1`                               | `APIFUN_API_KEY`     |
 | `cerebras`   | `https://api.cerebras.ai/v1`                              | `CEREBRAS_API_KEY`   |
+| `deepseek`   | `https://api.deepseek.com`                                | `DEEPSEEK_API_KEY`   |
+| `gemini`     | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY`     |
 | `groq`       | `https://api.groq.com/openai/v1`                          | `GROQ_API_KEY`       |
 | `mistral`    | `https://api.mistral.ai/v1`                               | `MISTRAL_API_KEY`    |
-| `xai`        | `https://api.x.ai/v1`                                     | `XAI_API_KEY`        |
 | `nvidia`     | `https://integrate.api.nvidia.com/v1`                     | `NVIDIA_API_KEY`     |
-| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
-| `apifun`     | `https://api.apikey.fun/v1`                               | `APIFUN_API_KEY`     |
 | `ollama`     | `http://localhost:11434/v1`                               | (none)               |
+| `openai`     | `https://api.openai.com/v1`                               | `OPENAI_API_KEY`     |
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
+| `xai`        | `https://api.x.ai/v1`                                     | `XAI_API_KEY`        |
 
 Define a custom OpenAI-compatible provider by adding a new key with `baseUrl` (and `apiKeyEnv` unless it needs no key). Model ids are plain upstream ids — the provider is chosen at the config level, so no `provider/` prefix is needed (OpenRouter ids keep their native `vendor/model` form).
 
-Token usage is reported for every provider; exact USD cost is shown only when the provider returns it (OpenRouter). `ai-i18n-tools check-models` validates all configured model ids (`translationModels`, `uiModels`, and every `localeModels` entry) against the active provider's live `GET /models` list (any provider), and shows pricing when the provider returns it (e.g. OpenRouter). `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks every unique configured model id (`translationModels`, `uiModels`, and `localeModels`) by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
+Token usage is reported for every provider; exact USD cost is shown only when the provider returns it. `ai-i18n-tools check-models` validates all configured model ids (`translationModels`, `uiModels`, and every `localeModels` entry) against the active provider's live `GET /models` list, and shows pricing when the provider returns it. `ai-i18n-tools list-models` lists every model the active provider advertises (use `-P` / `--provider` to inspect another configured provider). `ai-i18n-tools bench-models` benchmarks every unique configured model id (`translationModels`, `uiModels`, and `localeModels`) by translating a sample in isolation (models run in parallel, bounded by `concurrency`) and prints per-model input/output tokens, wall-clock time, and USD cost.
 
 For a hands-on demo of switching providers with `-P` on a single document, see [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/).
 

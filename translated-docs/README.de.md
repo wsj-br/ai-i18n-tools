@@ -9,7 +9,7 @@
 
 `ai-i18n-tools` ist ein CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentations-Websites – einschließlich Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs und einfachem Markdown/MDX – unter Verwendung großer Sprachmodelle.
 
-Verbinden Sie es mit einem beliebigen Anbieter und beginnen Sie mit der Übersetzung: **OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, jedes [OpenRouter](https://openrouter.ai/)-Modell (Hunderte zur Auswahl mit einem einzigen API-Schlüssel) oder **Ollama** für eine vollständig selbst gehostete Offline-Übersetzung. Wechseln Sie Anbieter oder Modelle pro Projekt – oder sogar pro Sprache – ohne Ihre Codebasis zu ändern.
+Wählen Sie aus vordefinierten Presets (**OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, **OpenRouter**, **Ollama**) oder verweisen Sie auf eine beliebige OpenAI-kompatible API. Wechseln Sie Anbieter oder Modelle pro Projekt – oder sogar pro Sprache – ohne Ihre Codebasis zu ändern.
 
 Eine Konfigurationsdatei steuert drei Übersetzungsmodi, sodass Sie diese je nach Struktur Ihres Inhalts mischen und anpassen können:
 
@@ -133,10 +133,10 @@ Führen Sie dann z. B. `pnpm run i18n:sync` aus – Skripte lösen die lokale Bi
 
 Bevorzugen Sie `sync` gegenüber der manuellen Verkettung von `extract`, `translate-ui`, `translate-svg`, `translate-docs` und `translate-json` – Reihenfolge und Feature-Flags können bei manueller Ausführung leicht falsch sein. Siehe [Empfohlene `package.json`-Skripte](../docs/guide/quick-start.md#recommended-packagejson-scripts) im Schnellstart-Leitfaden.
 
-Legen Sie Ihren Anbieter-API-Schlüssel fest (OpenRouter gezeigt; verwenden Sie die passende Variable für Ihren Anbieter):
+Legen Sie den API-Schlüssel für Ihren ausgewählten Anbieter fest (Namen der Umgebungsvariablen finden Sie unter [LLM-Anbieter](#llm-providers)):
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+export PROVIDER_API_KEY=sk-your-key-here
 ```
 
 ---
@@ -160,8 +160,9 @@ Um den Anbieter für einen einzelnen Durchlauf zu wechseln, ohne die Konfigurati
 
 ```jsonc
 {
-  "provider": "openrouter",
+  "provider": "ollama",
   "providers": {
+    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "openrouter": {
       "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
       "uiModels": ["anthropic/claude-sonnet-latest"],
@@ -169,7 +170,6 @@ Um den Anbieter für einen einzelnen Durchlauf zu wechseln, ohne die Konfigurati
         { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
       ]
     },
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
     "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
   }
 }
@@ -177,25 +177,25 @@ Um den Anbieter für einen einzelnen Durchlauf zu wechseln, ohne die Konfigurati
 
 Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebungsvariable):
 
-| Anbieter     | Basis-URL                                                 | API-Schlüssel-Umgebungsvariable |
+| Anbieter     | Basis-URL                                                 | API-Schlüssel-Umgebungsvariable      |
 |--------------|-----------------------------------------------------------|----------------------|
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (keine) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 Definieren Sie einen benutzerdefinierten OpenAI-kompatiblen Anbieter, indem Sie einen neuen Schlüssel mit `baseUrl` (und `apiKeyEnv`, falls kein Schlüssel benötigt wird) hinzufügen. Modell-IDs sind reine Upstream-IDs – der Anbieter wird auf Konfigurationsebene ausgewählt, sodass kein `provider/`-Präfix erforderlich ist (OpenRouter-IDs behalten ihr natives `vendor/model`-Format).
 
-Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen USD-Kosten werden nur angezeigt, wenn der Anbieter sie zurückgibt (OpenRouter). `ai-i18n-tools check-models` validiert alle konfigurierten Modell-IDs (`translationModels`, `uiModels` und jeder `localeModels`-Eintrag) anhand der Live-`GET /models`-Liste des aktiven Anbieters (jeder Anbieter) und zeigt die Preise an, wenn der Anbieter sie zurückgibt (z. B. OpenRouter). `ai-i18n-tools list-models` listet jedes Modell auf, das der aktive Anbieter bewirbt (verwenden Sie `-P` / `--provider`, um einen anderen konfigurierten Anbieter zu überprüfen). `ai-i18n-tools bench-models` bewertet jede eindeutige konfigurierte Modell-ID (`translationModels`, `uiModels` und `localeModels`), indem es ein Beispiel isoliert übersetzt (Modelle laufen parallel, begrenzt durch `concurrency`) und gibt pro Modell Eingabe-/Ausgabe-Tokens, die tatsächliche Zeit und die USD-Kosten aus.
+Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen USD-Kosten werden nur angezeigt, wenn der Anbieter sie zurückgibt. `ai-i18n-tools check-models` validiert alle konfigurierten Modell-IDs (`translationModels`, `uiModels` und jeder `localeModels`-Eintrag) anhand der Live-`GET /models`-Liste des aktiven Anbieters und zeigt die Preise an, wenn der Anbieter sie zurückgibt. `ai-i18n-tools list-models` listet jedes Modell auf, das der aktive Anbieter bewirbt (verwenden Sie `-P` / `--provider`, um einen anderen konfigurierten Anbieter zu überprüfen). `ai-i18n-tools bench-models` bewertet jede eindeutige konfigurierte Modell-ID (`translationModels`, `uiModels` und `localeModels`), indem ein Beispiel isoliert übersetzt wird (Modelle laufen parallel, begrenzt durch `concurrency`) und gibt pro Modell Eingabe-/Ausgabe-Tokens, die tatsächliche Laufzeit und die USD-Kosten aus.
 
 Eine praktische Demo zum Wechseln von Anbietern mit `-P` für ein einzelnes Dokument finden Sie unter [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/).
 

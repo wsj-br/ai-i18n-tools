@@ -24,7 +24,7 @@ Triggers the Deploy Docs workflow (.github/workflows/docs.yml) on GitHub.
 
 Options:
   --ref=<branch>  Branch or tag to build and deploy (default: current branch).
-  --watch         Wait for the workflow run to finish (opens live log).
+  --watch         Wait for the workflow run to finish (gh run watch <run-id>).
 
 GitHub builds the remote ref — push your branch before running if needed.
 EOF
@@ -53,6 +53,11 @@ fail() {
   exit 1
 }
 
+latest_run_id() {
+  sleep 2
+  gh run list --workflow="$WORKFLOW" --limit 1 --json databaseId -q '.[0].databaseId'
+}
+
 require_cmd gh
 require_cmd git
 
@@ -67,15 +72,16 @@ fi
 echo "Triggering Deploy Docs workflow on ref: ${REF}"
 gh workflow run "$WORKFLOW" --ref "$REF"
 
+RUN_ID="$(latest_run_id)"
+[[ -n "$RUN_ID" && "$RUN_ID" != "null" ]] || fail "Could not find the workflow run."
+
 if [[ "$WATCH" == "true" ]]; then
-  sleep 2
-  RUN_ID="$(gh run list --workflow="$WORKFLOW" --limit 1 --json databaseId -q '.[0].databaseId')"
-  [[ -n "$RUN_ID" && "$RUN_ID" != "null" ]] || fail "Could not find the workflow run to watch."
   gh run watch "$RUN_ID"
   exit 0
 fi
 
 echo ""
 echo "Workflow triggered. Track progress:"
-echo "  gh run watch --workflow=${WORKFLOW}"
+echo "  gh run watch ${RUN_ID}"
+echo "  ./scripts/publish-docs.sh --ref=${REF} --watch"
 echo "  https://github.com/wsj-br/ai-i18n-tools/actions/workflows/docs.yml"
