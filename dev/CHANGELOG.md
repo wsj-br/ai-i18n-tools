@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-07-12
+
 - **Fixed**: processors — VitePress link rewriting prefixes internal routes in translated markdown and home-layout frontmatter (`hero.actions[].link`, `features[].link`, `prev`/`next`) for output under `docs/<locale>/…`; shared public assets (`/logo.svg`, etc.) stay unprefixed.
 - **Added**: processors — `prefixVitepressThemeNavLinks` and `prefixVitepressThemeConfigLinks` prefix navbar/sidebar `link` and `activeMatch` in `.vitepress/config.mts` per locale (same rules as markdown rewriting). Exported from `ai-i18n-tools`; requires `^1.8.0`.
 - **Changed**: examples — `examples/vitepress-docs` imports `prefixVitepressThemeConfigLinks` from `ai-i18n-tools` (degit-safe) instead of a monorepo-relative `src/` path.
