@@ -72,11 +72,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22.x
+          # Seeds project `.npmrc` for `registry.npmjs.org`; auth for `npm publish` comes from `NODE_AUTH_TOKEN` on the publish step.
+          registry-url: https://registry.npmjs.org
 
       - name: Enable pnpm via corepack
         run: corepack enable && corepack prepare --activate
-          # Seeds project `.npmrc` for `registry.npmjs.org`; auth for `npm publish` comes from `NODE_AUTH_TOKEN` on the publish step.
-          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
