@@ -206,6 +206,7 @@ function themeConfigFor(t: ThemeCatalog, localeCode: string | null = null) {
   const localeRoutePrefix = localeCode ? `/${localeCode}` : null;
   return prefixVitepressThemeConfigLinks(
     {
+    logo: "/ai-i18n-tools_logo.svg",
     nav: [
       { text: t.nav.guide, link: "/guide/what-is-ai-i18n-tools", activeMatch: "/guide/" },
       { text: t.nav.examples, link: "/examples", activeMatch: "/examples" },
