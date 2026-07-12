@@ -9,7 +9,7 @@ hero:
     一個設定檔、三種翻譯模式，以及您選擇的供應商 — OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何相容於
     OpenAI 的 API。無需重寫程式碼庫即可按專案或語系切換模型。
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 標誌
   actions:
     - theme: brand

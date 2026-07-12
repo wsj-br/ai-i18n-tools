@@ -174,10 +174,10 @@ VitePress 從內容根目錄提供英文頁面，並從 `docs/<locale>/…` 提�
 | `[JSON](/zh-Hant/guide/json)` | `[JSON](/zh-Hant/guide/json)` | `[JSON](/pt-BR/guide/json)`（地區前綴與資料夾相符） |
 | 內文中的 `[Quick start](/zh-Hant/guide/quick-start)` 或 `hero.actions[].link` | 不變（`/guide/quick-start`） | `/pt-BR/guide/quick-start` |
 | 地區索引上的 `[Home](./README.md)` | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | 不變 | 不變（共用 `docs/public/` 資產） |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | 不變 | 不變（共享 `docs/public/` 資源） |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | 不變（完整 URL） | 不變（完整 URL） |
 
-`docs/` 下的英文根來源保留 **地區中立** 的網站路由（`/guide/…`）。寫入 `docs/<locale>/…` 的檔案會在內部內容路由上自動取得地區前綴——包括 **首頁版面配置 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。共用公開資產（例如 `/logo.svg` 與 `/translation-dashboard.png`）在每個地區上皆保持不加上前綴。
+`docs/` 下的英文根來源保留 **地區設定中性** 的網站路由（`/guide/…`）。寫入至 `docs/<locale>/…` 的檔案會在內部內容路由上自動取得地區設定前綴 — 包括 **首頁版面配置 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。如 `/ai-i18n-tools_logo.svg` 與 `/translation-dashboard.png` 等共享公開資源在每個地區設定上保持無前綴。
 
 <a id="theme-navsidebar-links"></a>
 ### 主題導覽/側邊欄連結

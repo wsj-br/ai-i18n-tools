@@ -13,7 +13,7 @@ hero:
     OpenAI-kompatible API. Wechseln Sie Modelle pro Projekt oder pro
     Gebietsschema, ohne Ihren Code neu schreiben zu müssen.
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools-Logo
   actions:
     - theme: brand

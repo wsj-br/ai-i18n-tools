@@ -174,10 +174,10 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 | `[JSON](docs/guide/json.md)` | `[JSON](/guide/json)` | `[JSON](/pt-BR/guide/json)` (locale prefix matches folder) |
 | `[Quick start](/guide/quick-start)` in body or `hero.actions[].link` | unchanged (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | `[Home](./README.md)` on locale index | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | unchanged | unchanged (shared `docs/public/` asset) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | unchanged | unchanged (shared `docs/public/` asset) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | unchanged (full URL) | unchanged (full URL) |
 
-English root sources under `docs/` keep **locale-neutral** site routes (`/guide/…`). Files written to `docs/<locale>/…` get the locale prefix on internal content routes automatically — including **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Shared public assets such as `/logo.svg` and `/translation-dashboard.png` stay unprefixed on every locale.
+English root sources under `docs/` keep **locale-neutral** site routes (`/guide/…`). Files written to `docs/<locale>/…` get the locale prefix on internal content routes automatically — including **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Shared public assets such as `/ai-i18n-tools_logo.svg` and `/translation-dashboard.png` stay unprefixed on every locale.
 
 <a id="theme-navsidebar-links"></a>
 ### Theme nav/sidebar links

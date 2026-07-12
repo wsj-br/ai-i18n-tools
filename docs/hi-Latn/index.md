@@ -13,7 +13,7 @@ hero:
     API. Apne codebase ko dobara likhe bina har project ya har locale ke liye
     models badlein.
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools logo
   actions:
     - theme: brand

@@ -9,7 +9,7 @@ hero:
     一个配置文件，三种翻译模式，以及您选择的提供商 —— OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何兼容
     OpenAI 的 API。按项目或按区域设置切换模型，无需重写代码库。
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 标志
   actions:
     - theme: brand

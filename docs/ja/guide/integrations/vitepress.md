@@ -174,10 +174,10 @@ VitePressはコンテンツルートから英語ページを提供し、ロケ�
 | `[JSON](/ja/guide/json)` | `[JSON](/ja/guide/json)` | `[JSON](/pt-BR/guide/json)`（ロケールプレフィックスがフォルダと一致） |
 | 本文または`hero.actions[].link`内の`[Quick start](/ja/guide/quick-start)` | 変更なし（`/guide/quick-start`） | `/pt-BR/guide/quick-start` |
 | ロケールインデックス上の`[Home](./README.md)` | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | 変更なし | 変更なし（共有`docs/public/`アセット） |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | 変更なし | 変更なし (共有 `docs/public/` アセット) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | 変更なし（完全なURL） | 変更なし（完全なURL） |
 
-英語のルートソースは `docs/` で **ロケール中立** サイトルート（`/guide/…`）を維持します。`docs/<locale>/…` に書き込まれたファイルは、内部コンテンツルートにロケールプレフィックスが自動的に付与されます — **ホームレイアウトフロントマター**（`hero.actions[].link`、`features[].link`、`prev`/`next`）を含みます。`/logo.svg` や `/translation-dashboard.png` のような共有パブリックアセットは、すべてのロケールでプレフィックスなしのままです。
+`docs/` 配下の英語のルートソースは、**ロケールニュートラルな**サイトルート (`/guide/…`) を維持します。`docs/<locale>/…` に書き込まれたファイルは、内部コンテンツルートで自動的にロケールプレフィックスを取得します — **ホームレイアウトのフロントマター** (`hero.actions[].link`, `features[].link`, `prev`/`next`) を含みます。`/ai-i18n-tools_logo.svg` や `/translation-dashboard.png` などの共有公開アセットは、すべてのロケールでプレフィックスなしのままとなります。
 
 <a id="theme-navsidebar-links"></a>
 ### テーマのナビゲーション/サイドバーのリンク

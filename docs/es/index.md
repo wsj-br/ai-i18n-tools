@@ -13,7 +13,7 @@ hero:
     compatible con OpenAI. Cambia de modelo por proyecto o por idioma sin
     reescribir tu código base.
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: Logotipo de ai-i18n-tools
   actions:
     - theme: brand

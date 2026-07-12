@@ -174,10 +174,10 @@ Built-in normalizer ko enable karein taaki `translate-docs` har translated file 
 | `[JSON](/hi-Latn/guide/json)` | `[JSON](/hi-Latn/guide/json)` | `[JSON](/pt-BR/guide/json)` (locale prefix folder se mel khata hai) |
 | body mein `[Quick start](/hi-Latn/guide/quick-start)` ya `hero.actions[].link` | aparivartit (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | locale index par `[Home](./README.md)` | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | aparivartit | aparivartit (sajha `docs/public/` asset) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | aparivartit | aparivartit (saajha `docs/public/` asset) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | aparivartit (pura URL) | aparivartit (pura URL) |
 
-`docs/` ke tahat Angrezi root srot **locale-neutral** site routes (`/guide/…`) rakhte hain. `docs/<locale>/…` mein likhi gayi files ko internal content routes par locale prefix swatah mil jata hai — jismein **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`) shamil hai. `/logo.svg` aur `/translation-dashboard.png` jaise sajha public assets har locale par unprefixed rahte hain.
+`docs/` ke tahat angrezi mool srot **locale-neutral** site routes (`/guide/…`) rakhte hain. `docs/<locale>/…` mein likhi gayi files ko internal content routes par locale prefix swatah mil jaata hai — jismein **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`) shaamil hain. Saajha public assets jaise ki `/ai-i18n-tools_logo.svg` aur `/translation-dashboard.png` har locale par unprefixed rahte hain.
 
 <a id="theme-navsidebar-links"></a>
 ### Theme nav/sidebar links

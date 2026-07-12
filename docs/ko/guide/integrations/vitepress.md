@@ -174,10 +174,10 @@ VitePress는 콘텐츠 루트에서 영어 페이지를 제공하고 `docs/<loca
 | `[JSON](/ko/guide/json)` | `[JSON](/ko/guide/json)` | `[JSON](/pt-BR/guide/json)` (로케일 접두사가 폴더와 일치) |
 | `[Quick start](/ko/guide/quick-start)` 본문 또는 `hero.actions[].link` | 변경 없음 (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | 로케일 인덱스의 `[Home](./README.md)` | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | 변경 없음 | 변경 없음 (공유 `docs/public/` 에셋) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | 변경 없음 | 변경 없음 (공유 `docs/public/` 에셋) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | 변경 없음 (전체 URL) | 변경 없음 (전체 URL) |
 
-`docs/` 아래의 영어 루트 소스는 **로케일 중립적** 사이트 라우트를 유지합니다 (`/guide/…`). `docs/<locale>/…`에 작성된 파일은 내부 콘텐츠 라우트에 로케일 접두사를 자동으로 가져옵니다 — **홈 레이아웃 프론트매터** 포함 (`hero.actions[].link`, `features[].link`, `prev`/`next`). `/logo.svg` 및 `/translation-dashboard.png`과 같은 공유 공개 에셋은 모든 로케일에서 접두사 없이 유지됩니다.
+`docs/` 아래의 영어 루트 소스는 **로케일 중립적인** 사이트 라우트(`/guide/…`)를 유지합니다. `docs/<locale>/…`에 작성된 파일은 내부 콘텐츠 라우트에서 자동으로 로케일 접두사를 받습니다 — 여기에는 **홈 레이아웃 프론트매터** (`hero.actions[].link`, `features[].link`, `prev`/`next`)가 포함됩니다. `/ai-i18n-tools_logo.svg` 및 `/translation-dashboard.png`와 같은 공유 퍼블릭 에셋은 모든 로케일에서 접두사 없이 유지됩니다.
 
 <a id="theme-navsidebar-links"></a>
 ### 테마 탐색/사이드바 링크

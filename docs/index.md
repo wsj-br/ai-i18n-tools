@@ -12,7 +12,7 @@ hero:
     OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or any OpenAI-compatible API.
     Switch models per project or per locale without rewriting your codebase.
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools logo
   actions:
     - theme: brand

@@ -174,10 +174,10 @@ VitePress 从内容根目录提供英文页面，并从 `docs/<locale>/…` 提�
 | `[JSON](/zh-Hans/guide/json)` | `[JSON](/zh-Hans/guide/json)` | `[JSON](/pt-BR/guide/json)`（区域设置前缀与文件夹匹配） |
 | 正文中的 `[Quick start](/zh-Hans/guide/quick-start)` 或 `hero.actions[].link` | 不变（`/guide/quick-start`） | `/pt-BR/guide/quick-start` |
 | 区域设置索引上的 `[Home](./README.md)` | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | 不变 | 不变（共享的 `docs/public/` 资源） |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | 不变 | 不变（共享 `docs/public/` 资源） |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | 不变（完整 URL） | 不变（完整 URL） |
 
-`docs/` 下的英文根源保留 **与区域设置无关的** 站点路由（`/guide/…`）。写入到 `docs/<locale>/…` 的文件会自动在内部内容路由上获得区域设置前缀——包括 **首页布局 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。共享的公共资源（例如 `/logo.svg` 和 `/translation-dashboard.png`）在每个区域设置上均保持不带前缀。
+`docs/` 下的英语根源保留 **区域设置中立** 的站点路由（`/guide/…`）。写入 `docs/<locale>/…` 的文件会自动在内部内容路由上获得区域设置前缀——包括 **首页布局 frontmatter**（`hero.actions[].link`、`features[].link`、`prev`/`next`）。诸如 `/ai-i18n-tools_logo.svg` 和 `/translation-dashboard.png` 之类的共享公共资源在每个区域设置下均保持无前缀。
 
 <a id="theme-navsidebar-links"></a>
 ### 主题导航/侧边栏链接

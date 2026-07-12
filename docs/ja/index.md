@@ -8,7 +8,7 @@ hero:
   tagline: >-
     1つの設定ファイル、3つの翻訳モード、そして選択したプロバイダー（OpenAI、Anthropic、Gemini、OpenRouter、Ollama、またはOpenAI互換の任意のAPI）に対応。コードベースを書き換えることなく、プロジェクトやロケールごとにモデルを切り替えられます。
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools ロゴ
   actions:
     - theme: brand

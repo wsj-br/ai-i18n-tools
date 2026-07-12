@@ -9,7 +9,7 @@ hero:
     하나의 설정 파일, 세 가지 번역 모드, 그리고 원하는 공급자 — OpenAI, Anthropic, Gemini, OpenRouter,
     Ollama 또는 OpenAI 호환 API. 코드베이스를 다시 작성하지 않고도 프로젝트별 또는 로케일별로 모델을 전환하세요.
   image:
-    src: /logo.svg
+    src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 로고
   actions:
     - theme: brand

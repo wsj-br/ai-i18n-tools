@@ -174,10 +174,10 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 | `[JSON](/es/guide/json)` | `[JSON](/es/guide/json)` | `[JSON](/pt-BR/guide/json)` (el prefijo de la configuración regional coincide con la carpeta) |
 | `[Quick start](/es/guide/quick-start)` en el cuerpo o `hero.actions[].link` | sin cambios (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | `[Home](./README.md)` en el índice de la configuración regional | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | sin cambios | sin cambios (recurso `docs/public/` compartido) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | sin cambios | sin cambios (recurso `docs/public/` compartido) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | sin cambios (URL completa) | sin cambios (URL completa) |
 
-Las fuentes raíz en inglés bajo `docs/` mantienen rutas de sitio **neutrales a la configuración regional** (`/guide/…`). Los archivos escritos en `docs/<locale>/…` obtienen el prefijo de la configuración regional en las rutas de contenido internas automáticamente, incluida la **información de diseño de la página de inicio** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Los activos públicos compartidos como `/logo.svg` y `/translation-dashboard.png` permanecen sin prefijo en cada configuración regional.
+Las fuentes raíz en inglés bajo `docs/` mantienen rutas de sitio **neutrales en cuanto a la configuración regional** (`/guide/…`). Los archivos escritos en `docs/<locale>/…` obtienen automáticamente el prefijo de configuración regional en las rutas de contenido interno, incluida la **información de diseño de la página de inicio** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Los recursos públicos compartidos, como `/ai-i18n-tools_logo.svg` y `/translation-dashboard.png`, permanecen sin prefijo en cada configuración regional.
 
 <a id="theme-navsidebar-links"></a>
 ### Enlaces de navegación/barra lateral del tema

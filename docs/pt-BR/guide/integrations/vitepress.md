@@ -174,10 +174,10 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 | `[JSON](/pt-BR/guide/json)` | `[JSON](/pt-BR/guide/json)` | `[JSON](/pt-BR/guide/json)` (prefixo de localidade corresponde à pasta) |
 | `[Quick start](/pt-BR/guide/quick-start)` no corpo ou `hero.actions[].link` | inalterado (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | `[Home](./README.md)` no índice de localidade | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | inalterado | inalterado (ativo `docs/public/` compartilhado) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | inalterado | inalterado (ativo `docs/public/` compartilhado) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | inalterado (URL completa) | inalterado (URL completa) |
 
-As fontes raiz em inglês em `docs/` mantêm rotas de site **neutras em relação à localidade** (`/guide/…`). Os arquivos gravados em `docs/<locale>/…` recebem o prefixo de localidade nas rotas de conteúdo interno automaticamente — incluindo **frontmatter de layout inicial** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Ativos públicos compartilhados, como `/logo.svg` e `/translation-dashboard.png`, permanecem sem prefixo em todas as localidades.
+As fontes raiz em inglês em `docs/` mantêm rotas de site **neutras em relação ao local** (`/guide/…`). Os arquivos gravados em `docs/<locale>/…` recebem o prefixo de local nas rotas de conteúdo internas automaticamente — incluindo o **frontmatter do layout inicial** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Ativos públicos compartilhados, como `/ai-i18n-tools_logo.svg` e `/translation-dashboard.png`, permanecem sem prefixo em todos os locais.
 
 <a id="theme-navsidebar-links"></a>
 ### Links de navegação/barra lateral do tema

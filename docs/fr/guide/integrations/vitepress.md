@@ -174,10 +174,10 @@ Activez le normaliseur intégré pour que `translate-docs` corrige automatiqueme
 | `[JSON](/fr/guide/json)` | `[JSON](/fr/guide/json)` | `[JSON](/pt-BR/guide/json)` (le préfixe de la locale correspond au dossier) |
 | `[Quick start](/fr/guide/quick-start)` dans le corps ou `hero.actions[].link` | inchangé (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | `[Home](./README.md)` sur l'index de la locale | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | inchangé | inchangé (ressource `docs/public/` partagée) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | inchangé | inchangé (ressource partagée `docs/public/`) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | inchangé (URL complète) | inchangé (URL complète) |
 
-Les sources racines anglaises sous `docs/` conservent des routes de site **neutres en termes de locale** (`/guide/…`). Les fichiers écrits dans `docs/<locale>/…` obtiennent automatiquement le préfixe de la locale sur les routes de contenu internes, y compris le **frontmatter de la mise en page d'accueil** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Les ressources publiques partagées telles que `/logo.svg` et `/translation-dashboard.png` restent sans préfixe pour chaque locale.
+Les sources racines anglaises sous `docs/` conservent des routes de site **neutres en termes de paramètres régionaux** (`/guide/…`). Les fichiers écrits dans `docs/<locale>/…` obtiennent automatiquement le préfixe de paramètres régionaux sur les routes de contenu internes — y compris le **frontmatter de la mise en page d'accueil** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Les ressources publiques partagées telles que `/ai-i18n-tools_logo.svg` et `/translation-dashboard.png` restent sans préfixe pour chaque paramètre régional.
 
 <a id="theme-navsidebar-links"></a>
 ### Liens de navigation/barre latérale du thème

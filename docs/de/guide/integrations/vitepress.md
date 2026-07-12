@@ -174,10 +174,10 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 | `[JSON](/de/guide/json)` | `[JSON](/de/guide/json)` | `[JSON](/pt-BR/guide/json)` (Gebietsschema-Präfix stimmt mit Ordner überein) |
 | `[Quick start](/de/guide/quick-start)` im Text oder `hero.actions[].link` | unverändert (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | `[Home](./README.md)` im Gebietsschema-Index | `/` | `/pt-BR/` |
-| `hero.image.src: /logo.svg` | unverändert | unverändert (gemeinsames `docs/public/`-Asset) |
+| `hero.image.src: /ai-i18n-tools_logo.svg` | unverändert | unverändert (gemeinsames `docs/public/`-Asset) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | unverändert (vollständige URL) | unverändert (vollständige URL) |
 
-Englische Stammquellen unter `docs/` behalten **gebietsschema-neutrale** Site-Routen (`/guide/…`). Dateien, die nach `docs/<locale>/…` geschrieben werden, erhalten automatisch das Gebietsschema-Präfix für interne Inhaltsrouten – einschließlich **Home-Layout-Frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Gemeinsame öffentliche Assets wie `/logo.svg` und `/translation-dashboard.png` bleiben in jedem Gebietsschema ohne Präfix.
+Englische Stammquellen unter `docs/` behalten **gebietsschema-neutrale** Site-Routen (`/guide/…`). Dateien, die nach `docs/<locale>/…` geschrieben werden, erhalten automatisch das Gebietsschema-Präfix auf internen Inhaltsrouten – einschließlich **Home-Layout-Frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Gemeinsame öffentliche Assets wie `/ai-i18n-tools_logo.svg` und `/translation-dashboard.png` bleiben in jedem Gebietsschema unpräfixiert.
 
 <a id="theme-navsidebar-links"></a>
 ### Theme-Navigations-/Seitenleisten-Links
