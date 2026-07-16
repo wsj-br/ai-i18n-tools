@@ -21,7 +21,7 @@ La configuración regional solicitada se compara exactamente con los idiomas de 
 <a id="shipped-ui-languages"></a>
 ## Idiomas de la interfaz de usuario enviados
 
-Inglés (Reino Unido, origen), alemán, español, francés, hindi (escritura latina), japonés, coreano, portugués (Brasil), chino (simplificado), chino (tradicional).
+Inglés (Reino Unido, origen), alemán, español, francés, hindi, japonés, coreano, portugués (Brasil), chino (simplificado), chino (tradicional).
 
 <a id="translation-dashboard"></a>
 ## Panel de traducción

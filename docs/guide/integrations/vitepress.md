@@ -142,7 +142,7 @@ Downstream projects sometimes copy `README.md` into the VitePress site as `docs/
 
 **Recommendation for synced README → index:** In `README.md`, use **full URLs** for anything outside the VitePress content tree (`LICENSE`, `examples/`, config files, agent context files) and for translated README copies under `translated-docs/`. Use `docs/guide/…` paths (or site routes in English docs under `docs/`) for in-site documentation links; a sync script or `rewriteVitepressLinks` normalizer can convert those to `/guide/…` routes.
 
-**This repository** keeps `README.md` and `docs/index.md` as **independent files**: README is the full npm/GitHub landing; `docs/index.md` is a slim docs-site entry point that links into `/guide/` and `/reference/`. Update each according to its audience when shared facts change.
+**This repository** keeps `README.md` and `docs/index.md` as **independent files**: README is a concise GitHub/npm landing page; `docs/index.md` is the docs-site entry point that links into `/guide/` and `/reference/`. Detailed guides live under `docs/` — do not duplicate long reference material in the README. Update each according to its audience when shared facts change.
 
 Example links for a synced README in another project:
 

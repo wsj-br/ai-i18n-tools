@@ -82,6 +82,9 @@ export function englishLanguageNameForLocale(localeCode: string): string | undef
  * ISO 15924 script subtag (Title case) if the tag carries one, else `undefined`.
  * Accepts BCP-47 hyphen or glibc underscore tags: `hi-Latn` / `hi_Latn` → `Latn`,
  * `zh-Hant-HK` → `Hant`, `en-GB` → `undefined` (region, not script).
+ *
+ * Does **not** apply language-default scripts — use {@link effectiveScriptSubtag} for
+ * prompt directives and wrong-script validation (e.g. bare `hi` → Devanagari).
  */
 export function scriptSubtag(locale: string): string | undefined {
   const parts = locale.trim().split(/[-_]/);
@@ -92,6 +95,29 @@ export function scriptSubtag(locale: string): string | undefined {
     }
   }
   return undefined;
+}
+
+/**
+ * Default ISO 15924 script when a language tag omits an explicit script subtag.
+ * Explicit scripts always win (`hi-Latn` stays Latin). Used so bare `hi` (and `hi-IN`)
+ * get Devanagari prompt directives and wrong-script validation like `sd-Deva`.
+ */
+const DEFAULT_SCRIPT_BY_PRIMARY: Readonly<Record<string, string>> = {
+  hi: "Deva",
+};
+
+/**
+ * Script to enforce for prompts and validation: the tag's explicit ISO 15924 subtag
+ * when present, otherwise the language's default script from {@link DEFAULT_SCRIPT_BY_PRIMARY}
+ * (e.g. `hi` / `hi-IN` → `Deva`). Returns `undefined` when neither applies.
+ */
+export function effectiveScriptSubtag(locale: string): string | undefined {
+  const explicit = scriptSubtag(locale);
+  if (explicit) {
+    return explicit;
+  }
+  const primary = primaryLanguageSubtag(locale);
+  return primary ? DEFAULT_SCRIPT_BY_PRIMARY[primary] : undefined;
 }
 
 /** True when the tag's script subtag is `Latn` (Latin/Roman), e.g. `hi-Latn`, `sr-Latn`. */

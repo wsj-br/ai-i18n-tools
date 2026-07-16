@@ -142,7 +142,7 @@ Les projets en aval copient parfois `README.md` dans le site VitePress sous le n
 
 **Recommandation pour README → index synchronisé :** Dans `README.md`, utilisez des **URL complètes** pour tout ce qui se trouve en dehors de l'arborescence de contenu VitePress (`LICENSE`, `examples/`, fichiers de configuration, fichiers de contexte d'agent) et pour les copies traduites de README sous `translated-docs/`. Utilisez les chemins `docs/guide/…` (ou les routes du site dans la documentation anglaise sous `docs/`) pour les liens de documentation internes au site ; un script de synchronisation ou le normalisateur `rewriteVitepressLinks` peut les convertir en routes `/guide/…`.
 
-**Ce dépôt** conserve `README.md` et `docs/index.md` comme **fichiers indépendants** : le README est la page d'accueil complète de npm/GitHub ; `docs/index.md` est un point d'entrée allégé du site de documentation qui renvoie vers `/guide/` et `/reference/`. Mettez à jour chacun d'eux en fonction de son public lorsque les faits partagés changent.
+**Ce dépôt** conserve `README.md` et `docs/index.md` en tant que **fichiers indépendants** : le README est une page d’accueil GitHub/npm concise ; `docs/index.md` est le point d’entrée du site de documentation qui renvoie vers `/guide/` et `/reference/`. Les guides détaillés se trouvent sous `docs/` — ne dupliquez pas de longs documents de référence dans le README. Mettez à jour chacun d’eux en fonction de son public lorsque les faits partagés changent.
 
 Exemples de liens pour un README synchronisé dans un autre projet :
 

@@ -2,389 +2,81 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
-<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
+<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-**AIモデルを自由に選択してアプリとドキュメントを翻訳：ロックインなし、コード書き直しなし。**
+**お好みのAIモデルでアプリとドキュメントを翻訳 — ロックインなし、書き直し不要。**
 
-`ai-i18n-tools` は、大規模言語モデルを使用して、Docusaurus、Astro、Starlight、VitePress、Nextra、Fumadocs、およびプレーンな Markdown/MDX を含む、JavaScript/TypeScript アプリケーションおよびドキュメントサイトを国際化するための CLI およびツールキットです。
+JavaScript/TypeScriptアプリおよびドキュメントサイト（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、プレーンなMarkdown/MDX）を国際化するためのCLIおよびツールキットです。OpenAI、Anthropic、Gemini、OpenRouter、Ollamaなどの組み込みプリセット、またはOpenAI互換の任意のAPIを使用できます。コードベースを変更することなく、プロジェクトやロケールごとにプロバイダーやモデルを切り替えられます。
 
-組み込みのプリセット（**OpenAI**、**Anthropic**、**Google Gemini**、**NVIDIA**、**DeepSeek**、**Groq**、**Mistral**、**xAI**、**Cerebras**、**Alibaba**、**APIFUN**、**OpenRouter**、**Ollama**）から選択するか、OpenAI互換の任意のAPIを指定します。コードベースを変更することなく、プロジェクトごと、あるいは言語ごとにプロバイダーやモデルを切り替えられます。
+## 特徴
 
-1つの設定ファイルで3つの翻訳モードを制御できるため、コンテンツの構造に応じて自由に組み合わせることができます。
+| | |
+| --- | --- |
+| **UI文字列** | JS/TS/Astroから`t("…")`を抽出（およびHTML内の`data-i18n*`）→ ロケールごとのフラットなJSON |
+| **ドキュメント** | 主要なドキュメントフレームワーク向けにMarkdown、MDX、および`.astro`ページを翻訳 |
+| **JSON** | テキストが`t()`呼び出しの外にある場合、ネストされたロケールバンドルを翻訳 |
+| **SVG** | `translate-svg`を介してイラスト付きSVGラベルを翻訳 |
+| **スマートキャッシュ** | 共有SQLiteキャッシュ — 新規または変更されたセグメントのみがモデルにアクセス |
+| **単一の`sync`** | 1つの設定から抽出 → UI → SVG → ドキュメント → JSONを正しい順序で実行 |
 
-- **UI 文字列** — JS/TS (およびオプションで `.astro` ファイル) から `t("…")` 呼び出しを抽出し、i18next または静的 SSG ルックアップ用のフラットなロケールごとの JSON を生成します。
-- **ドキュメント** — `docs[].contentPaths` にリストされている Markdown、MDX、および `.astro` ページを `translate-docs` を使用して翻訳します。**VitePress**、**Starlight**、**Docusaurus**、**Nextra**、**Fumadocs**、Astro ベースのサイト、または Markdown/MDX/`.astro` ソースファイルから読み取る任意の静的サイトジェネレーターで動作します。
-- **JSON** — `json[]` で定義された任意のネストされた JSON バンドルを翻訳します。UI コピーがソースの `t()` 呼び出しではなく、ロケールごとの JSON ファイルにある場合は `translate-json` を使用します。
+## どのパイプラインを使うべきか？
 
-**SVG**アセットには独自のパスがあります。トップレベルの`svg`ブロックである`features.translateSVG`と`translate-svg`であり、`docs[].contentPaths`ではありません。
+| コンテンツ | コマンド |
+| --- | --- |
+| ソースが`t()`またはHTMLマーカーを使用している | **UI文字列** — `extract` / `translate-ui` |
+| ローカライズされたページやドキュメントサイト | **ドキュメント** — `translate-docs` |
+| スタンドアロンのネストされたJSONロケールファイル | **JSON** — `translate-json` |
 
-**どれを使えばいいですか？**
+完全な比較については、[ai-i18n-toolsとは？](../docs/guide/what-is-ai-i18n-tools.md)を参照してください。
 
-| コンテンツ                                                                    | コマンド                                     |
-|-------------------------------------------------------------------------------|---------------------------------------------|
-| ソースコードは`t()`を使用                                                        | **UI文字列** — `extract` / `translate-ui` |
-| ローカライズされたページまたはドキュメントサイト（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astroなど） | **ドキュメント** — `translate-docs` |
-| スタンドアロンのネストされたJSONロケールファイル                                          | **JSON** — `translate-json`                 |
-
-これら3つはすべてファイル/SQLiteキャッシュを共有しているため、新しいセグメントまたは変更されたセグメント（文字列またはテキストチャンク）のみがモデルに再送信されます。どのプロバイダーを使用しているかに関係なく、再実行は高速で安価です。
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**目次**
-
-- [翻訳タイプ](#translation-types)
-- [インストール](#installation)
-  - [CLIの使用](#using-the-cli)
-- [LLMプロバイダー](#llm-providers)
-- [クイックスタート](#quick-start)
-  - [UI 文字列](#ui-strings)
-  - [ドキュメント](#documents)
-  - [VitePress](#vitepress)
-  - [Nextra](#nextra)
-  - [Fumadocs](#fumadocs)
-  - [Astro (プレーン Astro & Starlight)](#astro-plain-astro--starlight)
-  - [結合同期](#combined-sync)
-- [ランタイムヘルパー](#runtime-helpers)
-- [CLI コマンド](#cli-commands)
-  - [ツール UI 言語 (ログ、ヘルプ、ダッシュボード)](#tool-ui-language-logs-help-dashboard)
-- [ドキュメント](#documentation)
-- [ライセンス](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-<a id="translation-types"></a>
-## 翻訳タイプ
-
-各翻訳タイプには、完全な設定の詳細が記載された独自のガイドがあります。[UI文字列](../docs/guide/ui-strings/)、[ドキュメント](../docs/guide/documents/)、[JSON](../docs/guide/json.md)を参照してください。[ai-i18n-toolsとは？](../docs/guide/what-is-ai-i18n-tools.md)で比較を確認してください。
-
-事前に知っておくべきことがいくつかあります。UI 文字列は、アクティブな LLM プロバイダーを介してロケールごとに不足しているエントリを翻訳し ([LLM プロバイダー](#llm-providers) を参照)、フラットな JSON ファイル (`de.json`、`pt-BR.json` など) を書き込みます。英語のソーステキストはランタイムルックアップキーとして使用されます。`strings.json` は抽出キャッシュであり、ランタイムバンドルではありません。ドキュメントは `docs[].docsOutput.style` 値 `"nested"`、`"flat"`、`"doc-system"`、およびエイリアス `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` をサポートします ([出力レイアウト](../docs/guide/documents/output-layouts.md) を参照)。これら 3 つはすべて `ai-i18n-tools.config.json` を共有し、組み合わせることができます。`sync` は、`features` フラグに従って、抽出、UI 翻訳、SVG 翻訳、`translate-docs`、および `translate-json` を順番に実行します。
-
----
-
-<a id="installation"></a>
 ## インストール
 
-公開されているパッケージは**ESM専用**（`"type": "module"`）です。Node.js `>=22.16.0`が必要です。
+ESM専用です。Node.js `>=22.16.0`が必要です。
 
 ```bash
-npm install ai-i18n-tools
-# or
 pnpm add ai-i18n-tools
+# or: npm install ai-i18n-tools
 ```
 
-<a id="using-the-cli"></a>
-### CLI の使用方法
-
-プロジェクトにパッケージをインストールした後、npm/pnpm/yarn を使用して、公開された bin エントリ (`bin/ai-i18n-tools.mjs`) を `node_modules/.bin/ai-i18n-tools` にリンクします。そのシムは、インストールされたパッケージからコンパイル済みの CLI をロードします。
-
-インタラクティブシェルで `ai-i18n-tools` コマンド単体を入力するには、以下のいずれかのオプションを設定してください。設定を行わない場合、ローカルインストール後であってもシェルはバイナリを見つけることができません。
-
-**direnv** — プロジェクトルートの `.envrc` に追加します (bash/zsh、[direnv.net](https://direnv.net/) を参照):
+プロバイダーのAPIキーを設定します（デフォルトの`init`はOpenRouterを使用します。Ollamaには不要です）。
 
 ```bash
-PATH_add node_modules/.bin
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-`direnv allow` の後、プロジェクトに `cd` すれば、いつでもコマンド単体が利用可能になります。
+素の`ai-i18n-tools`コマンドを設定します（direnv、PATH、`package.json`スクリプト、または`npx`） — [インストール](../docs/guide/installation.md)を参照してください。
 
-**手動PATH** — インタラクティブシェルでプロジェクトルートから:
-
-```bash
-# bash/zsh
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-**グローバルインストール** — CLIを一度インストールし、任意のディレクトリから呼び出します:
-
-```bash
-npm install -g ai-i18n-tools
-# or
-pnpm add -g ai-i18n-tools
-```
-
-グローバルインストールはグローバルに固定されたバージョンを使用します。プロジェクトごとのバージョン固定には、direnv または手動PATHを使用し、`node_modules/.bin` がプロジェクトの依存関係に解決されるようにすることをお勧めします。
-
-**`package.json` スクリプト** — npm または pnpm がスクリプトを実行する際、`node_modules/.bin` を `PATH` の先頭に追加するため、シェルのPATHを変更しなくても、スクリプト内でコマンド単体名が機能します:
-
-```json
-"scripts": {
-  "i18n:extract": "ai-i18n-tools extract",
-  "i18n:sync": "ai-i18n-tools sync",
-  "i18n:translate:ui": "ai-i18n-tools translate-ui",
-  "i18n:translate:svg": "ai-i18n-tools translate-svg",
-  "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate:json": "ai-i18n-tools translate-json",
-  "i18n:translate": "ai-i18n-tools translate-docs",
-  "i18n:dashboard": "ai-i18n-tools dashboard"
-}
-```
-
-その後、例えば `pnpm run i18n:sync` を実行します — スクリプトは追加のシェル設定なしにローカルバイナリを解決します。
-
-**代替手段** — `PATH` を調整したくない場合: `npx ai-i18n-tools …` (npm) または `pnpm exec ai-i18n-tools …` (pnpm)。`package.json` エントリを持たないインストール不要の一回限りの実行には: `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`。
-
-`extract`、`translate-ui`、`translate-svg`、`translate-docs`、および`translate-json`を手動で連結するよりも`sync`を使用することをお勧めします。手動で実行すると、順序と機能フラグを間違えやすいためです。クイックスタートガイドの[推奨される`package.json`スクリプト](../docs/guide/quick-start.md#recommended-packagejson-scripts)を参照してください。
-
-選択したプロバイダーのAPIキーを設定します（環境変数名は[LLMプロバイダー](#llm-providers)を参照）：
-
-```bash
-export PROVIDER_API_KEY=sk-your-key-here
-```
-
----
-
-<a id="llm-providers"></a>
-## LLMプロバイダー
-
-翻訳コマンド（`translate-ui`、`translate-docs`、`translate-json`、`sync`、`check-models`、および関連スクリプト）はLLMプロバイダーを呼び出しますが、`check-markdown`、`mark-html`、および`extract`は呼び出しません。
-
-トップレベルの`providers`マップ内にプロバイダーを設定し、トップレベルの`provider`セレクターでアクティブなプロバイダーを選択します（プロバイダーが1つだけ設定されている場合は省略可能）。ほとんどのプロバイダーでは`translationModels`リストのみが必要です。`baseUrl`およびAPIキーの環境変数は組み込みプリセットから取得されます。プロバイダーごとに`baseUrl`、`apiKeyEnv`、`headers`、`maxTokens`、`temperature`、`requestTimeoutMs`をオーバーライドできます。`requestTimeoutMs`は各リクエストの最大待機時間（ミリ秒単位）です（デフォルトは`30000`）。
-
-各プロバイダーブロックのオプションのモデル階層:
-
-- `translationModels` — グローバルな順序付きフォールバックチェーン（翻訳機能に必須）。
-- `uiModels` — UIのみのチェーン（`translate-ui`、複数形生成、`proofread-ui`）：一致する`localeModels`エントリの後、`translationModels`の前に試行されます。
-- `localeModels` — **すべての**パイプラインのロケールごとのオーバーライド：各エントリはBCP-47ロケールを、そのロケールのみで最初に試行される順序付きモデルリストにマッピングします（`pt-br`は`pt-BR`と一致します）。
-
-解決順序: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **ドキュメント / JSON / SVG** → `localeModels(locale)` → `translationModels`。重複するモデルIDは、順序を維持しながらスキップされます。
-
-設定を編集せずに単一の実行でプロバイダーを切り替えるには、グローバルオプション `-P` / `--provider <name>` を渡します（例：`ai-i18n-tools -P groq translate-ui`）。名前は設定済みの `providers` キーのいずれかである必要があります。
-
-```jsonc
-{
-  "provider": "ollama",
-  "providers": {
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
-    "openrouter": {
-      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
-      "uiModels": ["anthropic/claude-sonnet-latest"],
-      "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
-      ]
-    },
-    "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
-  }
-}
-```
-
-組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
-
-| プロバイダー     | ベースURL                                                  | APIキー環境変数      |
-|--------------|-----------------------------------------------------------|----------------------|
-| `alibaba`    | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`  | `ALIBABA_API_KEY`    |
-| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
-| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `ollama` | `http://localhost:11434/v1` | （なし） |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
-| `openrouter` | `https://openrouter.ai/api/v1`                            | `OPENROUTER_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
-
-カスタムのOpenAI互換プロバイダーを定義するには、`baseUrl`（キーが不要な場合を除く`apiKeyEnv`）を持つ新しいキーを追加します。モデルIDはプレーンなアップストリームIDです。プロバイダーは設定レベルで選択されるため、`provider/`プレフィックスは不要です（OpenRouter IDはネイティブの`vendor/model`形式を維持します）。
-
-すべてのプロバイダーでトークン使用量が報告されます。正確なUSDコストは、プロバイダーがそれを返した場合にのみ表示されます。`ai-i18n-tools check-models`は、設定されたすべてのモデルID（`translationModels`、`uiModels`、およびすべての`localeModels`エントリ）をアクティブなプロバイダーのライブ`GET /models`リストに対して検証し、プロバイダーが返した場合に価格を表示します。`ai-i18n-tools list-models`は、アクティブなプロバイダーがアドバタイズするすべてのモデルをリストします（`-P` / `--provider`を使用して、別の設定済みプロバイダーを調べます）。`ai-i18n-tools bench-models`は、サンプルを個別に翻訳することで、設定された一意のすべてのモデルID（`translationModels`、`uiModels`、`localeModels`）のベンチマークを行い（モデルは並行して実行され、`concurrency`によって制限されます）、モデルごとの入出力トークン、実時間、およびUSDコストを出力します。
-
-単一ドキュメントで`-P`を使用してプロバイダーを切り替える実践的なデモについては、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)を参照してください。
-
----
-
-<a id="quick-start"></a>
 ## クイックスタート
 
-まずコマンド単体用にシェルを設定してください — [CLIの使用](#using-the-cli) を参照してください。
-
-<a id="ui-strings"></a>
-### UI文字列
-
 ```bash
-# 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-ai-i18n-tools init [-P <provider>]
-
-# 2. Extract UI strings to strings.json
-ai-i18n-tools extract
-
-# 3. Translate to all target locales
-ai-i18n-tools translate-ui
+ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
+ai-i18n-tools sync                   # extract + translate per features
 ```
 
-次に、`'ai-i18n-tools/runtime'`のヘルパーを使用してアプリにi18nextを組み込みます。完全な設定については、UI文字列ガイドの[ステップ4：実行時にi18nextを組み込む](../docs/guide/ui-strings/i18next-runtime.md)を参照してください。
+ドキュメント指向のスキャフォールド: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, または `ui-json-bundles`。
 
-<a id="documents"></a>
-### ドキュメント
+個別の翻訳コマンドを連鎖させるよりも、`sync`を使用することをお勧めします。完全なチュートリアル: [クイックスタート](../docs/guide/quick-start.md)。
 
-デフォルトの `init` テンプレート (`ui-markdown`) は UI 抽出のみを有効にします。ドキュメント指向のテンプレートを使用するか (または `features.translateDocs` を有効にして `docs[]` を追加) `translate-docs` の前に行ってください:
+## ドキュメント
 
-```bash
-# Docusaurus docs + optional write-translations catalog
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+- [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/) — ガイド、インテグレーション、リファレンス
+- [インストール](../docs/guide/installation.md) · [クイックスタート](../docs/guide/quick-start.md) · [プロバイダーとモデル](../docs/guide/providers-and-models.md)
+- [UI文字列](../docs/guide/ui-strings/) · [ドキュメント](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
+- [インテグレーション](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [CLIリファレンス](../docs/reference/cli-commands/) · [設定](../docs/reference/configuration.md) · [ランタイムヘルパー](../docs/guide/runtime-helpers.md)
+- [例](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — 実行可能なデモ (`npx degit …`)
+- [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマーリポジトリのアシスタント向けインテグレーションガイド
 
-# Astro Starlight documentation
-# ai-i18n-tools init -t ui-starlight [-P <provider>]
+## コントリビュート
 
-# VitePress documentation (pages + theme catalog)
-# ai-i18n-tools init -t ui-vitepress [-P <provider>]
+Issueやプルリクエストを歓迎します。このリポジトリのメンテナーワークフロー: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) および [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md)。
 
-# Nextra documentation (pages + _meta.ts + theme dictionary)
-# ai-i18n-tools init -t ui-nextra [-P <provider>]
-
-# Fumadocs documentation (pages + meta.json + UI catalog)
-# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-
-# Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# ai-i18n-tools init -t ui-astro-website [-P <provider>]
-
-ai-i18n-tools translate-docs
-ai-i18n-tools status
-# ai-i18n-tools translate-docs --locale de   # single locale
-```
-
-`ai-i18n-tools.config.json` を編集: `docs[].contentPaths` を markdown、MDX、および/または `.astro` ソースに設定します。`docs[].outputDir` および `docs[].docsOutput.style` (`"docusaurus"`、`"astro-starlight"`、`"vitepress"`、`"nextra"`、`"fumadocs"`、`"flat"` など)。完全なフィールドリファレンス: [ドキュメント](../docs/guide/documents/)。
-
-<a id="vitepress"></a>
-### VitePress
-
-`init -t ui-vitepress`は`docsOutput.style: "vitepress"`およびナビ/サイドバー/フッターの文字列用の`docsOutput.vitepressThemeCatalog`をスキャフォールドします。`sync`を実行すると、ページのMarkdownとテーマカタログを一緒に翻訳します — 別個のJSONパイプラインは不要です。[VitePress統合](../docs/guide/integrations/vitepress.md)および[examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/)を参照してください。
-
-<a id="nextra"></a>
-### Nextra
-
-`init -t ui-nextra`は`docsOutput.style: "nextra"`をスキャフォールドします。`translate-docs`は`_meta.ts`のサイドバーラベルを自動的に収集して翻訳します。`docs[].nextraDictionaryPath`を設定すると、テーマ辞書モジュール（例: `app/_dictionaries/en.ts`）も翻訳します — すべて同じ`sync`の実行内で行われ、JSONサイドカーは不要です。[Nextra統合](../docs/guide/integrations/nextra.md)および[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)を参照してください。
-
-<a id="fumadocs"></a>
-### Fumadocs
-
-`init -t ui-fumadocs`は、ドットパーサー（デフォルト）またはNextraスタイルのロケールフォルダ用のディレパーサーを使用して`docsOutput.style: "fumadocs"`をスキャフォールドします。`translate-docs`は`meta.json`のサイドバーラベルを自動的に収集して翻訳します。`docsOutput.fumadocsUiCatalog`を設定すると、`lib/layout.shared.ts`のUIオーバーライドも翻訳します — すべて同じ`sync`の実行内で行われ、JSONサイドカーは不要です。[Fumadocs統合](../docs/guide/integrations/fumadocs.md)および[examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/)を参照してください。
-
-<a id="astro-plain-astro--starlight"></a>
-### Astro (プレーン Astro & Starlight)
-
-**Astro Starlight** — `init -t ui-starlight`、次に`translate-docs`。Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます ([ドキュメント — ドキュメント用に初期化](../docs/guide/documents/index.md#step-1-initialise-for-documentation))。
-
-**プレーン Astro** (Starlight ではないマーケティングまたはアプリサイト) — [Astro 組み込みの i18n ルーティング](https://docs.astro.build/en/guides/internationalization/) と ai-i18n-tools を組み合わせます。参照プロジェクト: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (`/` に英語、`/{locale}/` にロケール)。
-
-ほとんどのチームは二つのパイプラインの **ハイブリッド** を使用します:
-
-| パイプライン               | 用途                                                                 | コマンド                   | 出力                                                   |
-|------------------------|----------------------------------------------------------------------|----------------------------|--------------------------------------------------------|
-| **ページ HTML**          | テンプレート本文の見出し、段落、ナビゲーションラベル、インライン配列 | `translate-docs`           | ロケールごとに `src/pages/{locale}/index.astro`            |
-| **UI 文字列 (`t()`)** | フロントマター データ、タブラベル、共有配列 | `extract` → `translate-ui` | `public/locales/{locale}.json` (英語ソースをキーとして) |
-
-`init -t ui-astro-website`でUIをスキャフォールドします。`.astro`ページでハードコードされたHTMLの場合、`features.translateDocs`を有効にし、`docsOutput.style: "astro-starlight"`を含む`docs[]`ブロックを追加します ([Astroウェブサイトページ (解析と置換)](../docs/guide/ui-strings/astro-website.md#astro-website-pages-parse-and-replace)を参照)。`targetLocales`、`i18n.locales`を`astro.config.mjs`、および`ui-languages.json`と整合させます (Astroルートは`pt-br`などの小文字のコードを使用します。フラットバンドルファイル名は、`pt-BR.json`などの構成の大文字/小文字に従います)。
-
-クライアントアイランドを追加しない限り、ビルド時にi18nextなしで`t()`をワイヤリングします — [AstroウェブサイトUI文字列 (SSG)](../docs/guide/ui-strings/astro-website.md#astro-website-ui-strings-ssg)と例の`src/i18n/t.ts`を参照してください。
-
-<a id="combined-sync"></a>
-### 結合同期
-
-```bash
-ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
-```
-
----
-
-<a id="runtime-helpers"></a>
-## ランタイムヘルパー
-
-`'ai-i18n-tools/runtime'` からエクスポートされる以下のヘルパーは、任意のJavaScript環境で使用できます。i18nextをインポートする必要はありません：
-
-| ヘルパー | 説明 |
-|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `defaultI18nInitOptions(sourceLocale)` | キーをデフォルト値として使用する設定向けの標準的な i18next 初期化オプション。 |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | 推奨される構成：`wrapT`からのキーのトリムおよび複数形`strings.json`、オプションで`translate-ui` `{sourceLocale}.json`の複数形キーをマージします。 |
-| `wrapT(i18n, options)`                                                 | 複数形対応の低レベルな `t()` ラッパー（通常は `setupKeyAsDefaultT` によってインストールされる）。                                                    |
-| `buildPluralIndexFromStringsJson(entries)`                               | カタログ行の `"plural": true` から、`wrapT` が使用する複数形グループインデックスを構築します。                                                    |
-| `extractInterpolationNamesForWrap(key)`                                  | ソースキーから `{{var}}` 名を解析し、`wrapT` / キーのトリムフォールバックに使用します。                                                              |
-| `wrapI18nWithKeyTrim(i18n)` | 下位レベルのキー・トリムラッパーのみ（アプリ構成では非推奨。代わりに`setupKeyAsDefaultT`を使用してください）。 |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | `localeLoaders`の`makeLoadLocale`マップを`ui-languages.json`から構築します（`code`を除くすべての`sourceLocale`）。 |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | 非同期ロケールファイル読み込み用のファクトリ。 |
-| `getTextDirection(lng)` | BCP-47コードに対応する`'ltr'`または`'rtl'`を返す。 |
-| `applyDirection(lng, element?)` | `document.documentElement`に`dir`属性を設定。 |
-| `getUILanguageLabel(lang, t)` | 言語メニュー行の表示ラベル（i18n付き）。 |
-| `getUILanguageLabelNative(lang)` | `t()`呼び出しなしの表示ラベル（ヘッダー形式）。 |
-| `interpolateTemplate(str, vars)` | 単純な文字列に対する低レベルの`{{var}}`置換（内部使用。アプリコードは代わりに`t()`を使用すべき）。 |
-| `flipUiArrowsForRtl(text, isRtl)` | RTLレイアウト向けに`→`を`←`に反転。 |
-
----
-
-<a id="cli-commands"></a>
-## CLIコマンド
-
-```bash
-ai-i18n-tools version
-ai-i18n-tools check-models
-ai-i18n-tools list-models
-ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
-ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
-ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
-ai-i18n-tools translate-ui …
-ai-i18n-tools sync-ui …
-ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
-ai-i18n-tools export-ui-xliff …
-ai-i18n-tools sync …
-ai-i18n-tools status …
-ai-i18n-tools statistics …
-ai-i18n-tools cleanup …
-ai-i18n-tools clean-temp …
-ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
-ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
-ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
-```
-
-プレーンなHTMLアプリの場合、要素に裸の`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーをアノテーションします (ソーステキストは要素自身のtextContent / title / placeholderから一度書き込まれます)。`mark-html`がそれらを挿入し、`extract`がそれらを`strings.json`にキャプチャします。[翻訳用のHTMLのマーク付け](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation)を参照してください。
-
-コマンドごとの完全なフラグリストは[CLIリファレンス](../docs/reference/cli-commands/)に記載されています。組み込みの使用方法を確認するには、`ai-i18n-tools <command> --help`を実行してください。
-
-グローバルオプション: `-c <config>` (デフォルト: `ai-i18n-tools.config.json`)、`-v` (詳細出力)、`-P` / `--provider <name>` (アクティブなLLMプロバイダーを上書き; `providers`で設定する必要があります)、`-L` / `--ui-lang <code>` (ツール自体のUI/ログの言語)、`-V` / `--version`、および `-h` / `--help` — すべてのコマンドで使用できます。`-w` / `--write-logs [path]` はコンソール出力をログファイルにも出力します (デフォルト: 翻訳キャッシュディレクトリ配下) が、翻訳および同期コマンド (`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、`cleanup`) でのみ有効です。一部のコマンドは、ターゲットロケールを制限するために `-l` / `--locale <codes>` (カンマ区切りのBCP-47) を受け付けます。`proofread-ui` は単一のソースロケールを使用します。コマンドの概要については、[CLIリファレンス](../docs/reference/cli-commands/)を参照してください。
-
-<a id="tool-ui-language-logs-help-dashboard"></a>
-### ツールUI言語（ログ、ヘルプ、ダッシュボード）
-
-このツールは、翻訳対象のロケールとは独立して、自身のCLIヘルプ、ログサマリー、および翻訳ダッシュボードをローカライズします。デフォルトではOSのロケールに従いますが、設定で`-L pt-BR`、`export AI_I18N_LANG=es`、または`"uiLanguage"`により上書きできます。ロケールの解決、同梱言語、およびダッシュボードの動作については、[ツールUIの言語](../docs/guide/tool-ui-language.md)を参照してください。
-
----
-
-<a id="documentation"></a>
-## ドキュメンテーション
-
-- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — VitePressガイド（GitHub Pagesで9ロケール対応）。完全なガイドへのリンクを備えたスリムなエントリポイント。
-- [Quick start](../docs/guide/quick-start.md) — UI文字列、ドキュメント、JSONのセットアップ（UI、docs/`.astro`、JSONバンドル、VitePress、Nextra、Fumadocs、Astro Starlight、およびプレーンなAstro）。
-- [Locale assets guide](../docs/guide/images-and-screenshots/) - 翻訳されたドキュメント内のスクリーンショットとイラスト付きSVG（フラットリンクリライター、スクリーンショットスクリプト）。
-- [Architecture](../docs/reference/architecture.md) - アーキテクチャ、内部構造、プログラマティックAPI、および拡張ポイント。
-- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **パッケージを使用するアプリ向け:** ダウンストリームプロジェクトの統合プロンプト (リポジトリのエージェントルールにコピー)。
-- **この**リポジトリのメンテナーガイド: `AGENT.md` (ルールとワークフロー; クローンのみ; npmにはありません)。パイプラインリファレンス: `docs/reference/`。ローカル開発と公開: `dev/DEVEL.md`。
-
----
-
-<a id="license"></a>
 ## ライセンス
 
-このプロジェクトはMITライセンスの下でライセンスされています。
-詳細については、[LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) ファイルを参照してください。
+MIT — [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) を参照してください。
 
-Copyright &copy; 2026 Waldemar Scudeller Jr.
+Copyright © 2026 Waldemar Scudeller Jr.

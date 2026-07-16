@@ -9,6 +9,19 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.2] - 2026-07-17
+
+- **Fixed**: scripts — `screenshot-translation-dashboard.sh` starts the dashboard with `-L en-GB` so the shared docs PNG stays English regardless of host OS locale / `AI_I18N_LANG`; `dev/DEVEL.md` link updated to `docs/guide/translation-dashboard/`.
+- **Fixed**: scripts — `write-third-party-notices.js` falls back to `require.resolve` / top-level `node_modules/<name>` when `pnpm licenses list` reports a virtual-store path that is missing (e.g. `nodeLinker: hoisted`).
+- **Removed**: tooling — deleted orphaned root `3p-lic-clarifications.json` (replaced by `scripts/write-third-party-notices.json` since 1.6.1; nothing referenced it).
+- **Changed**: scripts — moved ad-hoc maintainer tools to `dev/scripts/` (`validate-ui-language-labels.mjs`, `gen-han-variant-data.mjs`, and their `lib/` helpers). Root `scripts/` keeps package.json-wired build/docs/release helpers, docs asset capture (`screenshot-translation-dashboard.sh`), and the dependency-upgrade stack.
+- **Removed**: scripts — deleted obsolete leftovers: `license-checker-custom-format.json`, `lib/load-fill-label-config.mjs`, `unescape-vue-braces-in-docs.mjs`, `eslint-react-peers-allow-eslint10.js`, and `lib/decode-html-entities-ui-languages.mjs` (plus its Vitest file) from the removed Wikimedia UI-languages scrape pipeline.
+- **Changed**: docs — slimmed `README.md` to a concise GitHub/npm landing page (value prop, features table, install, quick start, doc links); detailed CLI, provider, runtime, and framework content now lives only under `docs/`. Updated `docs/index.md`, `docs/guide/installation.md`, VitePress README-role note, and `AGENTS.md` accordingly; regenerated `translated-docs/` and locale guide copies.
+- **Changed**: cli/cache — `cleanup` now drops SQLite cache rows (`translations`, `file_tracking`, `translation_failures`) for locales absent from config (`sourceLocale`, root `targetLocales`, and any per-block `docs[]` / `json[]` `targetLocales`). New helpers: `getConfiguredCacheLocales` (`src/core/ui-languages.ts`) and `TranslationCache.pruneUnconfiguredLocales` / `listDistinctLocales` (`src/core/cache.ts`). Cache-only — generated documents, flat UI files, and `strings.json` entries are unchanged (use `purge-locale` for those). Fixes retired codes such as `hi-Latn` lingering after a switch to `hi`.
+- **Added**: tests/processors — expanded unit coverage for `fumadocs-link-normalize.ts` (absolute/relative rewrites, mailto/protocol-relative/empty hrefs, fragments, `src` attributes, docs-root edge cases) to ~100% lines.
+- **Added**: tests/core — expanded unit coverage for `doc-file-tracking.ts` (all key builders, per-prefix `resolveDocTrackingKeyToAbs`, malformed/unrelated keys) to 100% statements/branches/functions/lines.
+- **Added**: locale-utils/api — bare `hi` (and `hi-IN`) now imply Devanagari for script-aware translation. New `effectiveScriptSubtag` returns an explicit ISO 15924 subtag when present (`hi-Latn` stays Latin) or the language default (`hi` → `Deva`). Prompt builders prepend the Devanagari `SCRIPT REQUIREMENT` directive, and `LlmClient` rejects wrong non-Latin scripts with model fallback — matching explicit `*-Deva` locales such as `sd-Deva`. Exported from `config` and the package root.
+
 ## [1.8.1] - 2026-07-12
 
 - **Fixed**: CI — workflows enable pnpm via corepack (`corepack prepare --activate`) instead of `pnpm/action-setup`. The action's npm bootstrap could not read pnpm 11.12 lockfiles, and `standalone: true` left a broken `@pnpm/exe` shim when npm blocked install scripts on Node 24 runners (`This: not found`).

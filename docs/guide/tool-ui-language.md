@@ -21,7 +21,7 @@ The requested locale is matched against the shipped UI languages exactly or by c
 <a id="shipped-ui-languages"></a>
 ## Shipped UI languages
 
-English (UK, source), German, Spanish, French, Hindi (Latin script), Japanese, Korean, Portuguese (Brazil), Chinese (Simplified), Chinese (Traditional).
+English (UK, source), German, Spanish, French, Hindi, Japanese, Korean, Portuguese (Brazil), Chinese (Simplified), Chinese (Traditional).
 
 <a id="translation-dashboard"></a>
 ## Translation Dashboard

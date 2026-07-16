@@ -100,4 +100,4 @@ SVG illustrations use a separate `translate-svg` path — not `docs[].contentPat
 - [**Examples**](/examples) — nine runnable demo projects with `npx degit`
 - [**Architecture**](/reference/architecture) — internals, programmatic API, and extension points
 
-For the full npm-style guide (provider table, CLI command list, framework quick starts), see the [repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md). Integrating the package into your own project? Start with [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md).
+Integrating the package into your own project? Start with [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). The [repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) is a short GitHub/npm landing page that links here for detail.

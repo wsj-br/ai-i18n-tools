@@ -68,7 +68,7 @@ Run `ai-i18n-tools <command> --help` for every flag on a command. Group pages be
 
 | Command | Summary |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | Prune stale cache rows and repopulate markdown issues. |
+| [`cleanup`](maintenance#cleanup) | Prune stale/orphan/unconfigured-locale cache rows and repopulate markdown issues. |
 | [`clean-temp`](maintenance#clean-temp) | Find and delete `*.log`, `*.tmp`, and cache backups. |
 | [`purge-locale`](maintenance#purge-locale) | Remove cache rows and generated artifacts for locale(s). |
 

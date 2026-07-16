@@ -87,7 +87,7 @@ Optional tuning: `VIRTUAL_TIME_MS` (default **8000**) delays capture so locale J
 
 ### Optional: Translation Dashboard screenshot
 
-`[scripts/screenshot-translation-dashboard.sh](../scripts/screenshot-translation-dashboard.sh)` refreshes `docs/public/translation-dashboard.png` for the [Translation Dashboard](../docs/guide/translation-dashboard.md) guide page.
+`[scripts/screenshot-translation-dashboard.sh](../scripts/screenshot-translation-dashboard.sh)` refreshes `docs/public/translation-dashboard.png` for the [Translation Dashboard](../docs/guide/translation-dashboard/) guide page (shared absolute URL across all VitePress locales).
 
 
 | Dependency                | Role                                                               |
@@ -97,7 +97,7 @@ Optional tuning: `VIRTUAL_TIME_MS` (default **8000**) delays capture so locale J
 | **Built CLI**             | Run `pnpm build` so `dist/cli/index.js` exists.                    |
 
 
-By default the script starts `ai-i18n-tools dashboard --no-open` on port **8675**, captures, then stops the server. If the dashboard is already running, set `BASE_URL` (for example `http://127.0.0.1:8675/`) and `SKIP_DASHBOARD_START=1`. Optional tuning: `VIRTUAL_TIME_MS`, `WINDOW_SIZE`, `PORT`.
+By default the script starts `ai-i18n-tools dashboard -L en-GB --no-open` on port **8675**, captures, then stops the server. `-L en-GB` pins the dashboard UI so the shot stays English regardless of host OS locale or `AI_I18N_LANG`. If the dashboard is already running, set `BASE_URL` (for example `http://127.0.0.1:8675/`) and `SKIP_DASHBOARD_START=1`. Optional tuning: `VIRTUAL_TIME_MS`, `WINDOW_SIZE`, `PORT`.
 
 ## Setting Up the Workspace
 
@@ -285,9 +285,9 @@ tests/            Vitest test files
 data/             Bundled JSON (ui-languages-complete.json; published to npm)
 docs/             VitePress documentation site (GitHub Pages on release)
 translated-docs/  Flat README translations (Git repo only; not in the npm tarball)
-dev/              Developer-only files (changelog, this guide)
+dev/              Maintainer internals: CHANGELOG.md, DEVEL.md, ad-hoc scripts under scripts/
 examples/         Example projects — see examples/README.md
-scripts/          Build helper scripts
+scripts/          Mainstream workflow helpers (build, docs, release, dependency upgrade)
 ```
 
 Workspace packages are listed in `pnpm-workspace.yaml`: root, `examples/console-app`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, and `examples/vitepress-docs`. Standalone fixtures (`multi-provider`, `test-markdown`) install `ai-i18n-tools` from npm when copied with `degit`.

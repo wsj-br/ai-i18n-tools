@@ -42,7 +42,7 @@ export interface ProofreadUIPromptStrings {
   outputContract: string;
 }
 
-/** Script-enforcement directives prepended to system prompts when the target locale carries a script subtag (e.g. `hi-Latn`, `sr-Latn`, `zh-Hans`). */
+/** Script-enforcement directives prepended to system prompts when the target has an effective script (explicit subtag or language default, e.g. `hi-Latn`, bare `hi` → Devanagari, `zh-Hans`). */
 export interface ScriptPromptStrings {
   /** For Latin/Roman targets: force romanization and forbid native scripts (Devanagari, Cyrillic, …). */
   latinDirective: string;

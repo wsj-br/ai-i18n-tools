@@ -142,7 +142,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 **同期された README → index の推奨事項:** `README.md` では、VitePress コンテンツツリー外のもの (`LICENSE`, `examples/`, 設定ファイル、エージェントコンテキストファイル) および `translated-docs/` 配下の翻訳された README コピーには **完全なURL** を使用してください。サイト内ドキュメントリンクには `docs/guide/…` パス（または `docs/` 配下の英語ドキュメントのサイトルート）を使用してください。同期スクリプトまたは `rewriteVitepressLinks` ノーマライザーがそれらを `/guide/…` ルートに変換できます。
 
-**このリポジトリでは**、`README.md`と`docs/index.md`を**独立したファイル**として保持しています。READMEはnpm/GitHub向けの完全なランディングページであり、`docs/index.md`は`/guide/`や`/reference/`へリンクする簡潔なドキュメントサイトのエントリポイントです。共通の事実が変更された場合は、それぞれの対象読者に合わせて更新してください。
+**このリポジトリ**は`README.md`と`docs/index.md`を**独立したファイル**として保持します。READMEは簡潔なGitHub/npmランディングページであり、`docs/index.md`は`/guide/`および`/reference/`へリンクするドキュメントサイトのエントリポイントです。詳細なガイドは`docs/`以下にあります。READMEに長いリファレンス資料を重複させないでください。共通の事実が変更された場合は、それぞれの対象読者に合わせて更新してください。
 
 別のプロジェクトで同期されたREADMEのリンク例:
 

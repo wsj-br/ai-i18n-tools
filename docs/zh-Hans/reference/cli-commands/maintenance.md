@@ -6,7 +6,7 @@
 
 **概要：** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-清空整个 `markdown_source_issues` 表，然后运行 `sync --force-update`（提取、UI、SVG、文档，以及启用时的 `translate-json`），以便为当前配置的文档重新填充 markdown 问题；然后移除过期的分段行（null `last_hit_at` / 空文件路径）；丢弃在磁盘上找不到已解析源路径的 `file_tracking` 行；移除其 `filepath` 元数据指向缺失文件的翻译行；清理孤立的 `translation_failures` 行。在同步后记录四个清理计数（过期分段、孤立 `file_tracking`、孤立翻译、孤立失败）以及预先清除的 markdown 问题计数。
+清空整个 `markdown_source_issues` 表，然后运行 `sync --force-update`（提取、UI、SVG、文档，以及启用时的 `translate-json`），以便为当前配置的文档重新填充 markdown 问题；随后移除过时的段行（`last_hit_at` 为 null / 文件路径为空）；丢弃已解析源路径在磁盘上缺失的 `file_tracking` 行；移除其 `filepath` 元数据指向缺失文件的翻译行；清理孤立的 `translation_failures` 行；并丢弃配置中不存在的区域设置的缓存行（`sourceLocale`、根 `targetLocales`，以及任何按块的 `docs[]` / `json[]` `targetLocales`）。对于已停用的区域设置仅清理缓存——生成的文档、扁平 UI 文件和 `strings.json` 条目保持不变（使用 [`purge-locale`](#purge-locale) 来移除这些内容）。同步后记录清理计数（过时段、孤立 `file_tracking`、孤立翻译、孤立失败、未配置的区域设置）以及预先执行的 markdown 问题清空计数。
 
 **关键选项：** `--dry-run`, `--backup`
 

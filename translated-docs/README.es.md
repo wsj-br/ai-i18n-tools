@@ -2,389 +2,81 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
-<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
-<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [Hindi (Roman)](./README.hi-Latn.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
+<small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-**Traduzca su aplicación y documentación usando el modelo de IA de su elección: sin ataduras, sin reescrituras.**
+**Traduzca su aplicación y documentación con el modelo de IA de su elección, sin ataduras ni reescrituras.**
 
-`ai-i18n-tools` es una CLI y un kit de herramientas para internacionalizar aplicaciones y sitios de documentación de JavaScript/TypeScript —incluidos Docusaurus, Astro, Starlight, VitePress, Nextra, Fumadocs y Markdown/MDX simple— utilizando modelos de lenguaje grandes.
+CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, Markdown/MDX simple). Utilice ajustes preestablecidos integrados para OpenAI, Anthropic, Gemini, OpenRouter, Ollama y más, o cualquier API compatible con OpenAI. Cambie de proveedor o modelo por proyecto o por configuración regional sin cambiar su base de código.
 
-Elija entre los preajustes incorporados (**OpenAI**, **Anthropic**, **Google Gemini**, **NVIDIA**, **DeepSeek**, **Groq**, **Mistral**, **xAI**, **Cerebras**, **Alibaba**, **APIFUN**, **OpenRouter**, **Ollama**) o apunte a cualquier API compatible con OpenAI. Cambie de proveedor o modelo por proyecto —o incluso por idioma— sin modificar su base de código.
+## Características
 
-Un archivo de configuración controla tres modos de traducción, por lo que puede mezclarlos y combinarlos según la estructura de su contenido:
+| | |
+| --- | --- |
+| **Cadenas de interfaz de usuario** | Extraiga `t("…")` de JS/TS/Astro (y `data-i18n*` en HTML) → JSON plano por configuración regional |
+| **Documentos** | Traduzca páginas Markdown, MDX y `.astro` para los principales marcos de documentos |
+| **JSON** | Traduzca paquetes de configuración regional anidados cuando la copia se encuentre fuera de las llamadas a `t()` |
+| **SVG** | Traduzca etiquetas SVG ilustradas a través de `translate-svg` |
+| **Caché inteligente** | Caché SQLite compartida: solo los segmentos nuevos o modificados llegan al modelo |
+| **Un `sync`** | Ejecuta extracto → UI → SVG → docs → JSON en el orden correcto desde una configuración |
 
-- **Cadenas de interfaz de usuario** — Extrae llamadas `t("…")` de JS/TS (y opcionalmente archivos `.astro`) y genera JSON plano por idioma para i18next o búsqueda estática de SSG.
-- **Documentos** — Traduce páginas de Markdown, MDX y `.astro` listadas en `docs[].contentPaths` usando `translate-docs`. Funciona con **VitePress**, **Starlight**, **Docusaurus**, **Nextra**, **Fumadocs**, sitios basados en Astro, o cualquier generador de sitios estáticos que lea de archivos fuente Markdown/MDX/`.astro`.
-- **JSON** — Traduce paquetes JSON anidados arbitrarios definidos en `json[]`. Use `translate-json` cuando la copia de la interfaz de usuario resida en archivos JSON por idioma en lugar de llamadas `t()` en el código fuente.
+## ¿Qué pipeline?
 
-Los activos **SVG** tienen su propia ruta: `features.translateSVG`, el bloque `svg` de nivel superior y `translate-svg` —no `docs[].contentPaths`.
+| Su contenido | Comando |
+| --- | --- |
+| La fuente utiliza `t()` o marcadores HTML | **Cadenas de interfaz de usuario** — `extract` / `translate-ui` |
+| Páginas localizadas o sitios de documentos | **Documentos** — `translate-docs` |
+| Archivos de configuración regional JSON anidados independientes | **JSON** — `translate-json` |
 
-**¿Cuál debo usar?**
+Consulte [¿Qué es ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) para una comparación completa.
 
-| Su contenido                                                                  | Comando                                     |
-|-------------------------------------------------------------------------------|---------------------------------------------|
-| El código fuente usa `t()`                                                        | **Cadenas de interfaz de usuario** — `extract` / `translate-ui` |
-| Páginas localizadas o sitios de documentos (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, etc.) | **Documentos** — `translate-docs` |
-| Archivos de localidad JSON anidados e independientes                                          | **JSON** — `translate-json`                 |
+## Instalar
 
-Los tres comparten una caché de archivos/SQLite, por lo que solo los segmentos nuevos o modificados (cadenas o fragmentos de texto) se reenvían al modelo; las repeticiones son rápidas y económicas, independientemente del proveedor que esté utilizando.
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Tabla de contenido**
-
-- [Tipos de traducción](#translation-types)
-- [Instalación](#installation)
-  - [Uso de la CLI](#using-the-cli)
-- [Proveedores de LLM](#llm-providers)
-- [Inicio rápido](#quick-start)
-  - [Cadenas de interfaz de usuario](#ui-strings)
-  - [Documentos](#documents)
-  - [VitePress](#vitepress)
-  - [Nextra](#nextra)
-  - [Fumadocs](#fumadocs)
-  - [Astro (Astro simple y Starlight)](#astro-plain-astro--starlight)
-  - [Sincronización combinada](#combined-sync)
-- [Ayudantes de tiempo de ejecución](#runtime-helpers)
-- [Comandos CLI](#cli-commands)
-  - [Idioma de la interfaz de usuario de la herramienta (registros, ayuda, panel)](#tool-ui-language-logs-help-dashboard)
-- [Documentación](#documentation)
-- [Licencia](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-<a id="translation-types"></a>
-## Tipos de traducción
-
-Cada tipo de traducción tiene su propia guía con detalles completos de configuración: [Cadenas de interfaz de usuario](../docs/guide/ui-strings/), [Documentos](../docs/guide/documents/) y [JSON](../docs/guide/json.md). Consulte [¿Qué es ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) para una comparación lado a lado.
-
-Algunas cosas que vale la pena saber de antemano: las cadenas de la interfaz de usuario traducen las entradas faltantes por idioma a través del proveedor de LLM activo (consulte [Proveedores de LLM](#llm-providers)) y escriben archivos JSON planos (`de.json`, `pt-BR.json`, …), con el texto fuente en inglés como clave de búsqueda en tiempo de ejecución — `strings.json` es la caché de extracción, no el paquete en tiempo de ejecución. Los documentos admiten los valores `docs[].docsOutput.style` `"nested"`, `"flat"`, `"doc-system"` y los alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Diseños de salida](../docs/guide/documents/output-layouts.md)). Los tres comparten `ai-i18n-tools.config.json` y se pueden combinar; `sync` ejecuta la extracción, la traducción de la interfaz de usuario, la traducción de SVG, `translate-docs` y `translate-json` en orden según sus indicadores `features`.
-
----
-
-<a id="installation"></a>
-## Instalación
-
-El paquete publicado es solo **ESM** (`"type": "module"`). Requiere Node.js `>=22.16.0`.
+Solo ESM. Requiere Node.js `>=22.16.0`.
 
 ```bash
-npm install ai-i18n-tools
-# or
 pnpm add ai-i18n-tools
+# or: npm install ai-i18n-tools
 ```
 
-<a id="using-the-cli"></a>
-### Uso de la CLI
-
-Después de instalar el paquete en su proyecto, npm/pnpm/yarn enlaza la entrada bin publicada (`bin/ai-i18n-tools.mjs`) en `node_modules/.bin/ai-i18n-tools`. Ese shim carga la CLI compilada desde el paquete instalado.
-
-Para escribir el comando simple `ai-i18n-tools` en un shell interactivo, configure una de las opciones siguientes. Sin configuración, el shell no puede encontrar el binario incluso después de una instalación local.
-
-**direnv** — añádalo a un `.envrc` en la raíz del proyecto (bash/zsh; consulte [direnv.net](https://direnv.net/)):
+Establezca una clave API para su proveedor (el `init` predeterminado usa OpenRouter; Ollama no necesita ninguna):
 
 ```bash
-PATH_add node_modules/.bin
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Después de `direnv allow`, el comando simple estará disponible cada vez que acceda al proyecto con `cd`.
+Configure el comando `ai-i18n-tools` básico (direnv, PATH, scripts `package.json` o `npx`) — consulte [Instalación](../docs/guide/installation.md).
 
-**PATH manual** — desde la raíz del proyecto en un shell interactivo:
-
-```bash
-# bash/zsh
-export PATH="$PWD/node_modules/.bin:$PATH"
-ai-i18n-tools sync
-```
-
-```powershell
-# Windows PowerShell
-$env:Path = "$PWD\node_modules\.bin;$env:Path"
-ai-i18n-tools sync
-```
-
-**Instalación global** — instale la CLI una vez e invóquela desde cualquier directorio:
-
-```bash
-npm install -g ai-i18n-tools
-# or
-pnpm add -g ai-i18n-tools
-```
-
-Una instalación global utiliza la versión globalmente fijada. Para fijar la versión por proyecto, prefiera direnv o PATH manual para que `node_modules/.bin` se resuelva en la dependencia del proyecto.
-
-**Scripts de `package.json`** — cuando npm o pnpm ejecutan un script, anteponen `node_modules/.bin` a `PATH`, por lo que el nombre del comando simple funciona dentro de los scripts sin cambios en el PATH del shell:
-
-```json
-"scripts": {
-  "i18n:extract": "ai-i18n-tools extract",
-  "i18n:sync": "ai-i18n-tools sync",
-  "i18n:translate:ui": "ai-i18n-tools translate-ui",
-  "i18n:translate:svg": "ai-i18n-tools translate-svg",
-  "i18n:translate:docs": "ai-i18n-tools translate-docs",
-  "i18n:translate:json": "ai-i18n-tools translate-json",
-  "i18n:translate": "ai-i18n-tools translate-docs",
-  "i18n:dashboard": "ai-i18n-tools dashboard"
-}
-```
-
-Luego ejecute, por ejemplo, `pnpm run i18n:sync` — los scripts resuelven el binario local sin configuración adicional del shell.
-
-**Alternativas** — si prefiere no ajustar `PATH`: `npx ai-i18n-tools …` (npm) o `pnpm exec ai-i18n-tools …` (pnpm). Para una instalación única sin entrada `package.json`: `npx ai-i18n-tools <cmd>` o `pnpm dlx ai-i18n-tools <cmd>`.
-
-Prefiera `sync` en lugar de encadenar manualmente `extract`, `translate-ui`, `translate-svg`, `translate-docs` y `translate-json` — el orden y las banderas de características son fáciles de equivocarse cuando se ejecutan manualmente. Consulte [Scripts `package.json` recomendados](../docs/guide/quick-start.md#recommended-packagejson-scripts) en la guía de inicio rápido.
-
-Establezca la clave API para el proveedor elegido (los nombres de las variables de entorno están en [Proveedores de LLM](#llm-providers)):
-
-```bash
-export PROVIDER_API_KEY=sk-your-key-here
-```
-
----
-
-<a id="llm-providers"></a>
-## Proveedores de LLM
-
-Los comandos de traducción (`translate-ui`, `translate-docs`, `translate-json`, `sync`, `check-models` y scripts relacionados) llaman a un proveedor de LLM; `check-markdown`, `mark-html` y `extract` no.
-
-Configura los proveedores bajo un mapa de nivel superior `providers` y elige el activo con un selector de nivel superior `provider` (opcional cuando se configura exactamente un proveedor). La mayoría de los proveedores solo necesitan una lista `translationModels` — `baseUrl` y la variable de entorno de la clave API provienen de un preset integrado; puedes anular `baseUrl`, `apiKeyEnv`, `headers`, `maxTokens`, `temperature` y `requestTimeoutMs` por proveedor. `requestTimeoutMs` es el tiempo máximo en milisegundos para esperar cada solicitud (predeterminado `30000`).
-
-Niveles de modelo opcionales en cada bloque de proveedor:
-
-- `translationModels` — cadena de reserva ordenada global (requerida para las funciones de traducción).
-- `uiModels` — cadena solo de interfaz de usuario (`translate-ui`, generación plural, `proofread-ui`): se intenta después de cualquier entrada `localeModels` coincidente, antes de `translationModels`.
-- `localeModels` — anulaciones por configuración regional para **todas** las canalizaciones: cada entrada asigna una configuración regional BCP-47 a una lista de modelos ordenada que se intenta primero solo para esa configuración regional (`pt-br` coincide con `pt-BR`).
-
-Orden de resolución: **UI** → `localeModels(locale)` → `uiModels` → `translationModels`; **documentos / JSON / SVG** → `localeModels(locale)` → `translationModels`. Los ID de modelo duplicados se omiten mientras se conserva el orden.
-
-Para cambiar de proveedor para una sola ejecución sin editar la configuración, pase la opción global `-P` / `--provider <name>` (p. ej., `ai-i18n-tools -P groq translate-ui`); el nombre debe ser una de las claves de `providers` configuradas.
-
-```jsonc
-{
-  "provider": "ollama",
-  "providers": {
-    "groq": { "translationModels": ["llama-3.3-70b-versatile"] },
-    "openrouter": {
-      "translationModels": ["qwen/qwen3-235b-a22b-2507", "openai/gpt-4o-mini"],
-      "uiModels": ["anthropic/claude-sonnet-latest"],
-      "localeModels": [
-        { "locale": "pt-BR", "models": ["google/gemini-3-flash-preview"] }
-      ]
-    },
-    "ollama": { "baseUrl": "http://localhost:11434/v1", "translationModels": ["llama3.2"] }
-  }
-}
-```
-
-Presets de proveedores integrados (clave — URL base — variable de entorno de clave API):
-
-| Proveedor | URL base | Variable de entorno de clave API |
-|---|---|---|
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
-| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `ollama` | `http://localhost:11434/v1` | (ninguno) |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
-
-Define un proveedor personalizado compatible con OpenAI agregando una nueva clave con `baseUrl` (y `apiKeyEnv` a menos que no necesite clave). Los IDs de modelo son IDs directos del proveedor de origen; el proveedor se elige en el nivel de configuración, por lo que no se necesita prefijo `provider/` (los IDs de OpenRouter conservan su forma nativa `vendor/model`).
-
-El uso de tokens se informa para cada proveedor; el costo exacto en USD se muestra solo cuando el proveedor lo devuelve. `ai-i18n-tools check-models` valida todos los ID de modelo configurados (`translationModels`, `uiModels` y cada entrada de `localeModels`) contra la lista `GET /models` en vivo del proveedor activo, y muestra los precios cuando el proveedor los devuelve. `ai-i18n-tools list-models` enumera cada modelo que anuncia el proveedor activo (use `-P` / `--provider` para inspeccionar otro proveedor configurado). `ai-i18n-tools bench-models` compara cada ID de modelo configurado único (`translationModels`, `uiModels` y `localeModels`) traduciendo una muestra de forma aislada (los modelos se ejecutan en paralelo, limitados por `concurrency`) e imprime los tokens de entrada/salida por modelo, el tiempo transcurrido y el costo en USD.
-
-Para una demostración práctica de cómo cambiar de proveedor con `-P` en un solo documento, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/).
-
----
-
-<a id="quick-start"></a>
 ## Inicio rápido
 
-Configure su shell para el comando simple primero — consulte [Uso de la CLI](#using-the-cli).
-
-<a id="ui-strings"></a>
-### Cadenas de interfaz de usuario
-
 ```bash
-# 1. Create config (default ui-markdown; plain Astro: init -t ui-astro-website)
-ai-i18n-tools init [-P <provider>]
-
-# 2. Extract UI strings to strings.json
-ai-i18n-tools extract
-
-# 3. Translate to all target locales
-ai-i18n-tools translate-ui
+ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
+ai-i18n-tools sync                   # extract + translate per features
 ```
 
-Luego, conecte i18next en su aplicación usando los ayudantes de `'ai-i18n-tools/runtime'`. Consulte [Paso 4: Conectar i18next en tiempo de ejecución](../docs/guide/ui-strings/i18next-runtime.md) en la guía de cadenas de interfaz de usuario para la configuración completa.
+Andamios orientados a documentos: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` o `ui-json-bundles`.
 
-<a id="documents"></a>
-### Documentos
+Prefiera `sync` en lugar de encadenar comandos de traducción individuales. Tutorial completo: [Inicio rápido](../docs/guide/quick-start.md).
 
-La plantilla predeterminada `init` (`ui-markdown`) habilita solo la extracción de interfaz. Use una plantilla orientada a documentación (o habilite `features.translateDocs` y agregue `docs[]`) antes de `translate-docs`:
-
-```bash
-# Docusaurus docs + optional write-translations catalog
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
-
-# Astro Starlight documentation
-# ai-i18n-tools init -t ui-starlight [-P <provider>]
-
-# VitePress documentation (pages + theme catalog)
-# ai-i18n-tools init -t ui-vitepress [-P <provider>]
-
-# Nextra documentation (pages + _meta.ts + theme dictionary)
-# ai-i18n-tools init -t ui-nextra [-P <provider>]
-
-# Fumadocs documentation (pages + meta.json + UI catalog)
-# ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-
-# Plain Astro website — UI extraction for t() in .astro; add docs[] for page HTML (see Astro below)
-# ai-i18n-tools init -t ui-astro-website [-P <provider>]
-
-ai-i18n-tools translate-docs
-ai-i18n-tools status
-# ai-i18n-tools translate-docs --locale de   # single locale
-```
-
-Edite `ai-i18n-tools.config.json`: establezca `docs[].contentPaths` en fuentes markdown, MDX y/o `.astro`; `docs[].outputDir` y `docs[].docsOutput.style` (`"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, `"flat"`, etc.). Referencia completa del campo: [Documentos](../docs/guide/documents/).
-
-<a id="vitepress"></a>
-### VitePress
-
-`init -t ui-vitepress` genera `docsOutput.style: "vitepress"` más `docsOutput.vitepressThemeCatalog` para cadenas de navegación/barra lateral/pie de página. Ejecute `sync` para traducir el markdown de la página y el catálogo de temas juntos, sin una canalización JSON separada. Consulte [Integración de VitePress](../docs/guide/integrations/vitepress.md) y [ejemplos/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/).
-
-<a id="nextra"></a>
-### Nextra
-
-`init -t ui-nextra` genera `docsOutput.style: "nextra"`. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral de `_meta.ts`; configure `docs[].nextraDictionaryPath` para traducir también el módulo de diccionario de temas (por ejemplo, `app/_dictionaries/en.ts`), todo en la misma ejecución de `sync`, sin archivos JSON complementarios. Consulte [Integración de Nextra](../docs/guide/integrations/nextra.md) y [ejemplos/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/).
-
-<a id="fumadocs"></a>
-### Fumadocs
-
-`init -t ui-fumadocs` genera `docsOutput.style: "fumadocs"` con el analizador de puntos (predeterminado) o el analizador de directorios para carpetas de configuración regional estilo Nextra. `translate-docs` recopila y traduce automáticamente las etiquetas de la barra lateral de `meta.json`; configure `docsOutput.fumadocsUiCatalog` para traducir también las anulaciones de la interfaz de usuario en `lib/layout.shared.ts`, todo en la misma ejecución de `sync`, sin archivos JSON complementarios. Consulte [Integración de Fumadocs](../docs/guide/integrations/fumadocs.md) y [ejemplos/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/).
-
-<a id="astro-plain-astro--starlight"></a>
-### Astro (Astro plano y Starlight)
-
-**Astro Starlight** — `init -t ui-starlight`, luego `translate-docs`. Las anulaciones de la interfaz de usuario de Starlight pueden usar `src/content/i18n/en.json` con `jsonPathTemplate` en un bloque `docs[]` separado cuando sea necesario ([Documentos — inicializar para documentación](../docs/guide/documents/index.md#step-1-initialise-for-documentation)).
-
-**Astro simple** (sitios de marketing o aplicaciones, no Starlight) — combine [enrutamiento i18n integrado de Astro](https://docs.astro.build/en/guides/internationalization/) con ai-i18n-tools. Proyecto de referencia: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) (inglés en `/`, configuraciones regionales en `/{locale}/`).
-
-La mayoría de los equipos usan un enfoque **híbrido** con dos flujos de trabajo:
-
-| Canalización | Usar para | Comandos | Salida |
-|---|---|---|---|
-| **HTML de página** | Encabezados, párrafos, etiquetas de navegación, matrices en línea en el cuerpo de la plantilla | `translate-docs` | `src/pages/{locale}/index.astro` por configuración regional |
-| **Cadenas de interfaz (`t()`)** | Datos de frontmatter, etiquetas de pestañas, arrays compartidos | `extract` → `translate-ui` | `public/locales/{locale}.json` (inglés como clave fuente) |
-
-Andamiaje de la interfaz de usuario con `init -t ui-astro-website`. Para HTML codificado en páginas `.astro`, habilite `features.translateDocs` y agregue un bloque `docs[]` con `docsOutput.style: "astro-starlight"` (consulte [Páginas del sitio web de Astro (analizar y reemplazar)](../docs/guide/ui-strings/astro-website.md#astro-website-pages-parse-and-replace)). Mantenga `targetLocales`, `i18n.locales` en `astro.config.mjs` y `ui-languages.json` alineados (las rutas de Astro usan códigos en minúsculas como `pt-br`; los nombres de archivo de paquetes planos siguen el uso de mayúsculas y minúsculas de la configuración, por ejemplo, `pt-BR.json`).
-
-Conecte `t()` en tiempo de compilación sin i18next a menos que agregue islas de cliente; consulte [Cadenas de interfaz de usuario del sitio web de Astro (SSG)](../docs/guide/ui-strings/astro-website.md#astro-website-ui-strings-ssg) y el `src/i18n/t.ts` del ejemplo.
-
-<a id="combined-sync"></a>
-### Sincronización combinada
-
-```bash
-ai-i18n-tools sync   # extract → translate-ui → translate-svg → translate-docs → translate-json (per features)
-```
-
----
-
-<a id="runtime-helpers"></a>
-## Ayudantes de tiempo de ejecución
-
-Los siguientes ayudantes se exportan desde `'ai-i18n-tools/runtime'` y funcionan en cualquier entorno JavaScript. No es necesario importar i18next para usarlos:
-
-| Ayudante                                                                 | Descripción                                                                                                                            |
-|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `defaultI18nInitOptions(sourceLocale)`                                 | Opciones estándar de inicialización de i18next para configuraciones de clave como valor por defecto.                                                                               |
-| `setupKeyAsDefaultT(i18n, { stringsJson, sourcePluralFlatBundle? })` | Conexión recomendada: recorte de claves + plural `wrapT` desde `strings.json`, opcionalmente combina claves plurales `translate-ui` `{sourceLocale}.json`. |
-| `wrapT(i18n, options)`                                                 | Contenedor de bajo nivel consciente de plurales `t()` (normalmente instalado por `setupKeyAsDefaultT`).                                                    |
-| `buildPluralIndexFromStringsJson(entries)`                               | Genera el índice del grupo plural que utiliza `wrapT` a partir de filas del catálogo con `"plural": true`.                                                    |
-| `extractInterpolationNamesForWrap(key)`                                  | Analiza los nombres `{{var}}` a partir de una clave fuente para `wrapT` / retroceso por recorte de clave.                                                              |
-| `wrapI18nWithKeyTrim(i18n)` | Solo un contenedor de bajo nivel para recorte de claves (obsoleto para la conexión de aplicaciones; prefiera `setupKeyAsDefaultT`). |
-| `makeLocaleLoadersFromManifest(uiLanguages, sourceLocale, makeLoader)` | Crea el mapa `localeLoaders` para `makeLoadLocale` desde `ui-languages.json` (cada `code` excepto `sourceLocale`). |
-| `makeLoadLocale(i18n, loaders, sourceLocale)` | Fábrica para carga asíncrona de archivos de idioma. |
-| `getTextDirection(lng)` | Devuelve `'ltr'` o `'rtl'` para un código BCP-47. |
-| `applyDirection(lng, element?)` | Establece el atributo `dir` en `document.documentElement`. |
-| `getUILanguageLabel(lang, t)` | Etiqueta mostrada para una fila del menú de idiomas (con i18n). |
-| `getUILanguageLabelNative(lang)` | Etiqueta mostrada sin llamar a `t()` (estilo encabezado). |
-| `interpolateTemplate(str, vars)` | Sustitución de `{{var}}` de bajo nivel en una cadena simple (usado internamente; el código de la aplicación debería usar `t()` en su lugar). |
-| `flipUiArrowsForRtl(text, isRtl)` | Invierte `→` a `←` para diseños de derecha a izquierda (RTL). |
-
----
-
-<a id="cli-commands"></a>
-## Comandos de CLI
-
-```bash
-ai-i18n-tools version
-ai-i18n-tools check-models
-ai-i18n-tools list-models
-ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
-ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
-ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
-ai-i18n-tools translate-ui …
-ai-i18n-tools sync-ui …
-ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
-ai-i18n-tools export-ui-xliff …
-ai-i18n-tools sync …
-ai-i18n-tools status …
-ai-i18n-tools statistics …
-ai-i18n-tools cleanup …
-ai-i18n-tools clean-temp …
-ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
-ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
-ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
-```
-
-Para aplicaciones HTML simples, anote los elementos con marcadores simples `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` (el texto fuente se toma del propio textContent / title / placeholder del elemento, escrito una vez); `mark-html` los inserta por usted y `extract` luego los captura en `strings.json`. Consulte [Marcado de HTML para traducción](../docs/guide/ui-strings/plain-html.md#marking-html-for-translation).
-
-Las listas completas de indicadores por comando se encuentran en la [referencia de la CLI](../docs/reference/cli-commands/). Ejecute `ai-i18n-tools <command> --help` para obtener el texto de uso integrado.
-
-Opciones globales: `-c <config>` (predeterminado: `ai-i18n-tools.config.json`), `-v` (detallado), `-P` / `--provider <name>` (anula el proveedor de LLM activo; debe configurarse en `providers`), `-L` / `--ui-lang <code>` (idioma para la interfaz de usuario/registros de la herramienta), `-V` / `--version` y `-h` / `--help` — aceptadas en cada comando. `-w` / `--write-logs [path]` envía la salida de la consola a un archivo de registro (predeterminado: en el directorio de caché de traducción), pero solo tiene efecto en los comandos de traducción y sincronización (`translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, `cleanup`). Varios comandos aceptan `-l` / `--locale <codes>` (BCP-47 separado por comas) para limitar las configuraciones regionales de destino; `proofread-ui` usa una única configuración regional de origen. Consulte la [referencia de la CLI](../docs/reference/cli-commands/) para obtener una descripción general de los comandos.
-
-<a id="tool-ui-language-logs-help-dashboard"></a>
-### Idioma de la interfaz de usuario de la herramienta (registros, ayuda, panel de control)
-
-La herramienta localiza su propia ayuda de CLI, resúmenes de registro y el Panel de traducción independientemente de las configuraciones regionales que traduzca. De forma predeterminada, sigue la configuración regional de su sistema operativo; anule con `-L pt-BR`, `export AI_I18N_LANG=es` o `"uiLanguage"` en la configuración. Consulte [Idioma de la interfaz de usuario de la herramienta](../docs/guide/tool-ui-language.md) para ver la resolución de la configuración regional, los idiomas enviados y el comportamiento del panel.
-
----
-
-<a id="documentation"></a>
 ## Documentación
 
-- [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — Guía de VitePress (9 configuraciones regionales en GitHub Pages); punto de entrada reducido con enlaces a la guía completa.
-- [Inicio rápido](../docs/guide/quick-start.md) — configuración para cadenas de interfaz de usuario, documentos y JSON (interfaz de usuario, documentos/`.astro`, paquetes JSON, VitePress, Nextra, Fumadocs, Astro Starlight y Astro sin formato).
-- [Guía de recursos de configuración regional](../docs/guide/images-and-screenshots/) - capturas de pantalla y SVG ilustrados en documentos traducidos (reescritor de enlaces planos, scripts de captura de pantalla).
-- [Arquitectura](../docs/reference/architecture.md) - arquitectura, componentes internos, API programática y puntos de extensión.
-- [Contexto del agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) - **para aplicaciones que usan el paquete:** indicaciones de integración para proyectos posteriores (copiar en las reglas del agente de su repositorio).
-- Guía del mantenedor para **este** repositorio: `AGENT.md` (reglas y flujos de trabajo; solo clonar; no en npm). Referencia de la canalización: `docs/reference/`. Desarrollo local y publicación: `dev/DEVEL.md`.
+- [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — guías, integraciones y referencia
+- [Instalación](../docs/guide/installation.md) · [Inicio rápido](../docs/guide/quick-start.md) · [Proveedores y modelos](../docs/guide/providers-and-models.md)
+- [Cadenas de interfaz de usuario](../docs/guide/ui-strings/) · [Documentos](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
+- [Integraciones](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [Referencia de CLI](../docs/reference/cli-commands/) · [Configuración](../docs/reference/configuration.md) · [Ayudantes de tiempo de ejecución](../docs/guide/runtime-helpers.md)
+- [Ejemplos](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — demostraciones ejecutables (`npx degit …`)
+- [Contexto de agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — guía de integración para asistentes en repositorios de consumidores
 
----
+## Contribución
 
-<a id="license"></a>
+Los problemas y las solicitudes de extracción son bienvenidos. Flujos de trabajo de mantenedor para este repositorio: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) y [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md).
+
 ## Licencia
 
-Este proyecto tiene licencia MIT.
-Consulte el archivo [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) para obtener más detalles.
+MIT — consulte [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).
 
-Copyright &copy; 2026 Waldemar Scudeller Jr.
+Copyright © 2026 Waldemar Scudeller Jr.

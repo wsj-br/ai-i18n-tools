@@ -21,7 +21,7 @@ A localidade solicitada é comparada exatamente com os idiomas de interface do u
 <a id="shipped-ui-languages"></a>
 ## Idiomas de IU enviados
 
-Inglês (Reino Unido, original), Alemão, Espanhol, Francês, Hindi (escrita latina), Japonês, Coreano, Português (Brasil), Chinês (Simplificado), Chinês (Tradicional).
+Inglês (Reino Unido, original), Alemão, Espanhol, Francês, Hindi, Japonês, Coreano, Português (Brasil), Chinês (Simplificado), Chinês (Tradicional).
 
 <a id="translation-dashboard"></a>
 ## Painel de Tradução

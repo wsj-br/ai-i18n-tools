@@ -68,7 +68,7 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 
 | Comando | Resumen |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | Elimina las filas de caché obsoletas y vuelve a rellenar los problemas de markdown. |
+| [`cleanup`](maintenance#cleanup) | Elimina las filas de caché obsoletas/huérfanas/con configuración regional no configurada y vuelve a rellenar los problemas de markdown. |
 | [`clean-temp`](maintenance#clean-temp) | Busca y elimina `*.log`, `*.tmp` y las copias de seguridad de la caché. |
 | [`purge-locale`](maintenance#purge-locale) | Elimina las filas de caché y los artefactos generados para las configuraciones regionales. |
 

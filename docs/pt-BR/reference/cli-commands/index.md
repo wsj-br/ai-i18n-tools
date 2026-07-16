@@ -68,7 +68,7 @@ Execute `ai-i18n-tools <command> --help` para cada flag em um comando. As págin
 
 | Comando | Resumo |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | Remove linhas de cache obsoletas e repopula problemas de markdown. |
+| [`cleanup`](maintenance#cleanup) | Remove linhas de cache obsoletas/órfãs/com localidade não configurada e repopula problemas de markdown. |
 | [`clean-temp`](maintenance#clean-temp) | Encontra e exclui backups de `*.log`, `*.tmp` e cache. |
 | [`purge-locale`](maintenance#purge-locale) | Remove linhas de cache e artefatos gerados para o(s) idioma(s). |
 

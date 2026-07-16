@@ -68,7 +68,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 
 | Befehl | Zusammenfassung |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | Bereinigt veraltete Cache-Zeilen und füllt Markdown-Probleme neu auf. |
+| [`cleanup`](maintenance#cleanup) | Veraltete/verwaiste/nicht konfigurierte Cache-Zeilen für Gebietsschemas bereinigen und Markdown-Probleme neu füllen. |
 | [`clean-temp`](maintenance#clean-temp) | Sucht und löscht `*.log`, `*.tmp` und Cache-Backups. |
 | [`purge-locale`](maintenance#purge-locale) | Entfernt Cache-Zeilen und generierte Artefakte für Gebietsschema(s). |
 

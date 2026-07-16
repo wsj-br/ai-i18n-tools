@@ -6,7 +6,7 @@
 
 **概要:** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-`markdown_source_issues`テーブル全体をクリアし、`sync --force-update`（抽出、UI、SVG、ドキュメント、および有効時の`translate-json`）を実行して、現在設定されているドキュメントのマークダウン問題を再登録します。その後、古いセグメント行（nullの`last_hit_at` / 空のファイルパス）を削除し、解決されたソースパスがディスク上に存在しない`file_tracking`行を削除し、`filepath`メタデータが存在しないファイルを指している翻訳行を削除し、孤立した`translation_failures`行を整理します。同期後に4つの整理カウント（古いセグメント、孤立した`file_tracking`、孤立した翻訳、孤立した失敗）と、事前のマークダウン問題クリアカウントをログに出力します。
+`markdown_source_issues`テーブル全体をクリアし、次に`sync --force-update`を実行して（有効な場合は抽出、UI、SVG、ドキュメント、および`translate-json`）、現在構成されているドキュメントのマークダウン問題が再生成されるようにします。その後、古いセグメント行（nullの`last_hit_at` / 空のファイルパス）を削除し、ディスク上に解決されたソースパスが存在しない`file_tracking`行を破棄し、`filepath`メタデータが欠落しているファイルを指している翻訳行を削除し、孤立した`translation_failures`行を整理し、構成に存在しないロケールのキャッシュ行（`sourceLocale`、ルート`targetLocales`、およびブロックごとの`docs[]` / `json[]` `targetLocales`）を破棄します。廃止されたロケールのキャッシュのみ — 生成されたドキュメント、フラットUIファイル、および`strings.json`エントリはそのまま残されます（それらを削除するには[`purge-locale`](#purge-locale)を使用してください）。同期後に整理数（古いセグメント、孤立した`file_tracking`、孤立した翻訳、孤立した失敗、未構成のロケール）と前処理のマークダウン問題クリア数をログに記録します。
 
 **主なオプション:** `--dry-run`, `--backup`
 

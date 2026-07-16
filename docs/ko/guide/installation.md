@@ -52,15 +52,21 @@ pnpm add -g ai-i18n-tools
 
 전역 설치는 전역으로 고정된 버전을 사용합니다. 프로젝트별 버전 고정을 위해서는 `node_modules/.bin`가 프로젝트의 종속성으로 확인되도록 direnv 또는 수동 PATH를 사용하는 것이 좋습니다.
 
-**`package.json` 스크립트** — npm 또는 pnpm이 스크립트를 실행할 때 `node_modules/.bin`을(를) `PATH` 앞에 추가하므로 셸 PATH를 변경하지 않고도 스크립트 내에서 bare 명령 이름이 작동합니다.
+**`package.json` 스크립트** — npm 또는 pnpm이 스크립트를 실행할 때 `node_modules/.bin`을(를) `PATH` 앞에 추가하므로, 셸 PATH를 변경하지 않고도 스크립트 내에서 명령어 이름만으로 실행할 수 있습니다. translate 단계를 수동으로 연결하는 것보다 `sync`을(를) 사용하는 것을 권장합니다 — 수동으로 실행하면 순서와 기능 플래그를 잘못 지정하기 쉽습니다:
 
 ```json
 "scripts": {
-  "i18n:sync": "ai-i18n-tools sync"
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
+  "i18n:translate:docs": "ai-i18n-tools translate-docs",
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
-그런 다음 예를 들어 `pnpm run i18n:sync`를 실행합니다.
+그런 다음 예를 들어 `pnpm run i18n:sync`을(를) 실행합니다. 권장되는 전체 세트는 [권장 `package.json` 스크립트](/ko/guide/quick-start#recommended-packagejson-scripts)를 참조하세요.
 
 **대안** — `PATH`을(를) 조정하지 않으려면 `npx ai-i18n-tools …`(npm) 또는 `pnpm exec ai-i18n-tools …`(pnpm)을(를) 사용하세요. `package.json` 항목이 없는 제로 설치 일회성 실행의 경우 `npx ai-i18n-tools <cmd>` 또는 `pnpm dlx ai-i18n-tools <cmd>`을(를) 사용하세요.
 

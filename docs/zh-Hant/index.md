@@ -91,4 +91,4 @@ SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths
 - [**範例**](/zh-Hant/examples) — 九個可執行的示範專案，附 `npx degit`
 - [**架構**](/zh-Hant/reference/architecture) — 內部原理、程式化 API 與擴充點
 
-如需完整的 npm 風格指南（供應商表格、CLI 指令列表、框架快速入門），請參閱[儲存庫 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)。要將套件整合到您自己的專案中嗎？請從 [AI Agent 上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 開始。
+要將套件整合到您自己的專案中嗎？請從 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 開始。[repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一個簡短的 GitHub/npm 首頁，它會連結至此以取得詳細資訊。

@@ -2,11 +2,13 @@
 # Capture a headless screenshot of the Translation Dashboard for docs.
 #
 # Writes docs/public/translation-dashboard.png (English UI only; single capture).
+# Shared across all docs locales via /translation-dashboard.png (VitePress public/).
 #
 # Prerequisites: built CLI (`pnpm build`), `chromium-headless-shell`.
-# By default this script starts `ai-i18n-tools dashboard --no-open`, waits for
-# HTTP, captures, then stops the server. If the dashboard is already running,
-# set BASE_URL (and optionally SKIP_DASHBOARD_START=1).
+# By default this script starts `ai-i18n-tools dashboard -L en-GB --no-open`, waits
+# for HTTP, captures, then stops the server. If the dashboard is already running,
+# set BASE_URL (and optionally SKIP_DASHBOARD_START=1); ensure that instance uses
+# English UI if you need a matching shot.
 #
 # Usage:
 #   ./scripts/screenshot-translation-dashboard.sh
@@ -71,7 +73,7 @@ if [[ "${SKIP_DASHBOARD_START:-}" != "1" && "${AUTO_START_DASHBOARD}" == "1" ]];
   echo "Starting dashboard on port ${PORT}…"
   (
     cd "${ROOT}"
-    node "${CLI}" dashboard -p "${PORT}" --no-open
+    node "${CLI}" dashboard -L en-GB -p "${PORT}" --no-open
   ) &
   DASHBOARD_PID=$!
 fi

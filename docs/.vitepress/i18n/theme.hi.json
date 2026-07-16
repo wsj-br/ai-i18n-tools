@@ -1,0 +1,91 @@
+{
+  "site": {
+    "title": "ai-i18n-tools",
+    "description": "LLM का उपयोग करके JavaScript/TypeScript एप्लिकेशन और दस्तावेज़ साइटों को अंतर्राष्ट्रीय बनाने के लिए CLI और टूलकिट।"
+  },
+  "nav": {
+    "guide": "गाइड",
+    "reference": "संदर्भ",
+    "examples": "उदाहरण",
+    "github": "गिटहब"
+  },
+  "sidebar": {
+    "guide": "गाइड",
+    "whatIs": "ai-i18n-tools क्या है?",
+    "installation": "इंस्टॉलेशन",
+    "quickStart": "त्वरित शुरुआत",
+    "toolUiLanguage": "टूल UI भाषा",
+    "translationTypes": "अनुवाद के प्रकार",
+    "uiStrings": "UI स्ट्रिंग्स",
+    "overview": "अवलोकन",
+    "uiStringsPlainHtml": "सादे HTML ऐप्स",
+    "uiStringsAstroWebsite": "एस्ट्रो वेबसाइट",
+    "uiStringsWireI18next": "i18next वायर करें",
+    "uiStringsTCallsAndPlurals": "t() कॉल और बहुवचन",
+    "uiStringsLanguageSwitcher": "भाषा स्विचर और RTL",
+    "documents": "दस्तावेज़",
+    "documentsOutputLayouts": "आउटपुट लेआउट",
+    "documentsAnchorLinks": "एंकर लिंक",
+    "documentsLinkRewriting": "लिंक पुनर्लेखन",
+    "documentsLanguageSwitcher": "भाषा स्विचर",
+    "documentsCliOptions": "CLI विकल्प",
+    "documentsTroubleshooting": "समस्या निवारण",
+    "json": "JSON",
+    "integrations": "एकीकरण",
+    "astro": "एस्ट्रो",
+    "docusaurus": "डॉक्यूसौरस",
+    "vitepress": "वाइटप्रेस",
+    "nextra": "नेक्स्ट्रा",
+    "fumadocs": "फ्यूमाडॉक्स",
+    "imagesAndScreenshots": "छवियाँ और स्क्रीनशॉट",
+    "imagesSharedImage": "साझा छवि",
+    "imagesPerLocaleFolder": "प्रति-स्थानिक फ़ोल्डर",
+    "imagesColocatedScreenshots": "सह-स्थित स्क्रीनशॉट",
+    "imagesLinkRewriting": "लिंक पुनर्लेखन",
+    "imagesTroubleshooting": "समस्या निवारण",
+    "svgTranslation": "SVG अनुवाद",
+    "svgWebAppFlat": "वेब ऐप (फ़्लैट SVG)",
+    "svgColocated": "कोलोकेटेड SVG",
+    "svgTroubleshooting": "समस्या निवारण",
+    "providers": "LLM प्रदाता",
+    "runtimeHelpers": "रनटाइम हेल्पर",
+    "dashboard": "अनुवाद डैशबोर्ड",
+    "dashboardDocumentationCache": "दस्तावेज़ कैश",
+    "dashboardUiStringsAndPlurals": "UI स्ट्रिंग और बहुवचन",
+    "dashboardGlossary": "शब्दावली",
+    "dashboardFailures": "विफलताएँ",
+    "dashboardMarkdownIssues": "मार्कडाउन समस्याएँ",
+    "dashboardStatistics": "सांख्यिकी",
+    "reference": "संदर्भ",
+    "configuration": "कॉन्फ़िगरेशन",
+    "cli": "CLI कमांड",
+    "cliOverview": "अवलोकन",
+    "cliSetup": "सेटअप",
+    "cliModels": "मॉडल और कैटलॉग",
+    "cliUiStrings": "UI स्ट्रिंग",
+    "cliDocuments": "दस्तावेज़",
+    "cliContent": "अन्य सामग्री",
+    "cliWorkflows": "वर्कफ़्लो और स्थिति",
+    "cliMaintenance": "कैश और रखरखाव",
+    "cliTools": "टूल",
+    "architecture": "आर्किटेक्चर",
+    "programmaticApi": "प्रोग्रामेटिक एपीआई",
+    "environment": "पर्यावरण चर",
+    "examples": "उदाहरण"
+  },
+  "footer": {
+    "message": "एमआईटी लाइसेंस के तहत जारी किया गया।",
+    "copyright": "कॉपीराइट © वाल्डेमर स्कुडेलर जूनियर।"
+  },
+  "docFooter": {
+    "prev": "पिछला",
+    "next": "अगला"
+  },
+  "outline": {
+    "label": "इस पेज पर"
+  },
+  "langMenuLabel": "भाषा",
+  "search": {
+    "placeholder": "खोज"
+  }
+}

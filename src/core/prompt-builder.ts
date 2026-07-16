@@ -1,7 +1,7 @@
 import type { CldrPluralForm, Segment } from "./types.js";
 import { BatchTranslationError } from "./types.js";
 import { pluralCategoryExamplesHint } from "./plural-forms.js";
-import { englishScriptName, scriptSubtag } from "./locale-utils.js";
+import { effectiveScriptSubtag, englishScriptName } from "./locale-utils.js";
 import {
   PROMPTS,
   type PromptStrings,
@@ -47,7 +47,7 @@ export interface PromptBuilderOptions {
   sourceLanguageLabel: string;
   targetLanguageLabel: string;
   glossaryHints: string[];
-  /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+  /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
   targetLocale?: string;
 }
 
@@ -72,7 +72,7 @@ export function targetScriptDirective(targetLocale: string | undefined): string 
   if (!targetLocale) {
     return "";
   }
-  const script = scriptSubtag(targetLocale);
+  const script = effectiveScriptSubtag(targetLocale);
   if (!script) {
     return "";
   }
@@ -227,7 +227,7 @@ export function buildUIPromptMessages(
     sourceLanguageLabel: string;
     targetLanguageLabel: string;
     glossaryHints?: string[];
-    /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+    /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
     targetLocale?: string;
   }
 ): { systemPrompt: string; userContent: string } {
@@ -296,7 +296,7 @@ export function buildPluralPassBPrompt(opts: {
   glossaryHints?: string[];
   /** When set, appends an `Intl.PluralRules` sample-count line for the target BCP-47 tag. */
   intlPluralLocaleTag?: string;
-  /** Target BCP-47 locale; when it carries a script subtag (e.g. `hi-Latn`) a script directive is prepended. */
+  /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
   targetLocale?: string;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
@@ -397,9 +397,10 @@ export class ProofreadUIJsonParseError extends PromptParseError {
 }
 
 /**
- * A translation came back in the wrong writing system for the target locale's script subtag
- * (e.g. Devanagari output for `hi-Latn`). Carried through the model-fallback loop like a parse
- * failure so the next model gets a chance to honor the script requirement.
+ * A translation came back in the wrong writing system for the target locale's effective script
+ * (e.g. Devanagari output for `hi-Latn`, or Arabic for bare `hi` / Devanagari). Carried through
+ * the model-fallback loop like a parse failure so the next model gets a chance to honor the
+ * script requirement.
  */
 export class ScriptValidationError extends PromptParseError {
   constructor(

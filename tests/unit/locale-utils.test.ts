@@ -14,6 +14,7 @@ import {
   primaryLanguageSubtag,
   scriptLetterCounts,
   scriptSubtag,
+  effectiveScriptSubtag,
   scriptValidationIssue,
   unicodeScriptPropertyForSubtag,
 } from "../../src/core/locale-utils.js";
@@ -106,6 +107,25 @@ describe("scriptSubtag", () => {
     expect(scriptSubtag("en-GB")).toBeUndefined();
     expect(scriptSubtag("pt-BR")).toBeUndefined();
     expect(scriptSubtag("zh-419")).toBeUndefined();
+  });
+});
+
+describe("effectiveScriptSubtag", () => {
+  it("returns an explicit script subtag unchanged", () => {
+    expect(effectiveScriptSubtag("hi-Latn")).toBe("Latn");
+    expect(effectiveScriptSubtag("sd-Deva")).toBe("Deva");
+    expect(effectiveScriptSubtag("zh-Hans")).toBe("Hans");
+  });
+
+  it("defaults bare hi (and hi with a region) to Devanagari", () => {
+    expect(effectiveScriptSubtag("hi")).toBe("Deva");
+    expect(effectiveScriptSubtag("hi-IN")).toBe("Deva");
+  });
+
+  it("does not invent a script for languages without a default", () => {
+    expect(effectiveScriptSubtag("en-GB")).toBeUndefined();
+    expect(effectiveScriptSubtag("de")).toBeUndefined();
+    expect(effectiveScriptSubtag("pt-BR")).toBeUndefined();
   });
 });
 

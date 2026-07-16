@@ -68,7 +68,7 @@
 
 | 命令 | 摘要 |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | 清理过期的缓存行并重新填充 markdown 问题。 |
+| [`cleanup`](maintenance#cleanup) | 清理过期/孤立/未配置区域设置的缓存行，并重新填充 markdown 问题。 |
 | [`clean-temp`](maintenance#clean-temp) | 查找并删除 `*.log`、`*.tmp` 和缓存备份。 |
 | [`purge-locale`](maintenance#purge-locale) | 移除指定区域设置的缓存行和生成的产物。 |
 

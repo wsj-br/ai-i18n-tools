@@ -192,6 +192,53 @@ describe("TranslationCache", () => {
     cache.close();
   });
 
+  it("pruneUnconfiguredLocales removes locales absent from the allowed set", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("h", "hi", "a", "b", "m", "doc.md", 1);
+    cache.setSegment("h", "hi-Latn", "a", "b", "m", "doc.md", 1);
+    cache.setFileStatus("doc-block:0:doc.md", "hi-Latn", "fh");
+    cache.addSegmentFailures([
+      {
+        sourceHash: "h",
+        locale: "hi-Latn",
+        model: "mx",
+        modelOrder: 0,
+        qualityError: "api",
+        errorMessage: "failed",
+        fatal: true,
+        filepath: "doc.md",
+        sourceText: "a",
+      },
+    ]);
+
+    const dry = cache.pruneUnconfiguredLocales(["en", "hi"], true);
+    expect(dry.locales).toEqual(["hi-Latn"]);
+    expect(dry.count).toBe(3);
+    expect(cache.getSegment("h", "hi-Latn")).not.toBeNull();
+
+    const pruned = cache.pruneUnconfiguredLocales(["en", "hi"], false);
+    expect(pruned.locales).toEqual(["hi-Latn"]);
+    expect(pruned.count).toBe(3);
+    expect(cache.getSegment("h", "hi")).not.toBeNull();
+    expect(cache.getSegment("h", "hi-Latn")).toBeNull();
+    expect(cache.getFileHash("doc-block:0:doc.md", "hi-Latn")).toBeNull();
+    expect(cache.listTranslationFailures({ locale: "hi-Latn", limit: 10, offset: 0 }).total).toBe(
+      0
+    );
+    cache.close();
+  });
+
+  it("pruneUnconfiguredLocales keeps source and configured target locales", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("h", "en", "a", "b", "m", "doc.md", 1);
+    cache.setSegment("h", "de", "a", "b", "m", "doc.md", 1);
+    const pruned = cache.pruneUnconfiguredLocales(["en", "de"], false);
+    expect(pruned.count).toBe(0);
+    expect(cache.getSegment("h", "en")).not.toBeNull();
+    expect(cache.getSegment("h", "de")).not.toBeNull();
+    cache.close();
+  });
+
   it("clear with locale removes only that locale", () => {
     const cache = new TranslationCache(":memory:");
     cache.setSegment("h", "de", "a", "b", "m", "f.md", 1);

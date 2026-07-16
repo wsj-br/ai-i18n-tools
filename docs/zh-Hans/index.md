@@ -91,4 +91,4 @@ SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPa
 - [**示例**](/zh-Hans/examples) — 九个可运行的演示项目及 `npx degit`
 - [**架构**](/zh-Hans/reference/architecture) — 内部原理、程序化 API 和扩展点
 
-有关完整的 npm 风格指南（提供商表、CLI 命令列表、框架快速开始），请参阅[仓库 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)。要将该包集成到你自己的项目中？请从 [AI 代理上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 开始。
+要将该包集成到你自己的项目中？请从 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 开始。[仓库 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一个简短的 GitHub/npm 着陆页，链接到此处以获取详细信息。

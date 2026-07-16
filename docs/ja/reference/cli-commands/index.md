@@ -66,9 +66,9 @@
 <a id="cache--maintenancemaintenance"></a>
 ### [キャッシュとメンテナンス](maintenance)
 
-| コマンド | 概要 |
+| Command | Summary |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | 古いキャッシュ行を整理し、Markdownのissueを再生成します。 |
+| [`cleanup`](maintenance#cleanup) | 古い/孤立した/未設定ロケールのキャッシュ行を削除し、Markdownのissueを再作成します。 |
 | [`clean-temp`](maintenance#clean-temp) | `*.log`、`*.tmp`、およびキャッシュのバックアップを検索して削除します。 |
 | [`purge-locale`](maintenance#purge-locale) | ロケールのキャッシュ行と生成されたアーティファクトを削除します。 |
 

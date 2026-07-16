@@ -194,7 +194,7 @@ Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-
 
 SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, locale)` 加上 `translated_text`、`model`、`filepath`、`last_hit_at` 和相关字段组成。哈希值是规范化内容（折叠空格后）的前 16 个十六进制字符的 SHA-256。
 
-每次运行时，都会通过哈希 × 区域设置查找段。只有缓存未命中才会转到 LLM。翻译后，`last_hit_at` 会针对当前翻译范围内未命中的段行重置。文档翻译期间成功的缓存命中会清除该段的陈旧 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后删除陈旧的段行（空 `last_hit_at` / 空文件路径），当磁盘上缺少解析的源路径时修剪 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等），删除元数据文件路径指向缺失文件的翻译行，修剪孤立的 `translation_failures` 行，并修剪解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行；除非传递 `--backup <path>`，否则它不会备份 `cache.db`，后者会首先将备份写入该路径。
+每次运行时，都会按哈希 × 语言环境查找片段。只有缓存未命中才会发送给 LLM。翻译后，当前翻译范围内未命中的片段行的 `last_hit_at` 会被重置。文档翻译期间成功的缓存命中会清除该片段过期的 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后移除过期的片段行（空 `last_hit_at` / 空文件路径），当解析的源路径在磁盘上缺失时修剪 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其元数据文件路径指向缺失文件的翻译行，修剪孤立的 `translation_failures` 行，修剪其解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行，并丢弃配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales` 以及任何按块划分的 `docs[]` / `json[]` `targetLocales`；仅限 SQLite —— 使用 `purge-locale` 删除生成的文件）；除非传递了 `--backup <path>`，否则它不会备份 `cache.db`，该参数会首先将备份写入该路径。
 
 `translate-docs` 命令还使用**文件跟踪**，因此具有现有、最新输出的未更改源可以完全跳过工作。`--force-update` 重新运行文件处理，同时仍使用段缓存；`--force` 清除文件跟踪并绕过 API 翻译的段缓存读取。当每个配置的模型在 markdown 段上 AST 验证失败时，`translate-docs` 可以逐步拆分段并重试较小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认开启）。有关完整的标志表，请参阅 [文档 — 缓存行为和标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 

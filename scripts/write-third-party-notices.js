@@ -26,6 +26,7 @@
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,6 +34,7 @@ import semver from "semver";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
+const requireFromRoot = createRequire(path.join(root, "package.json"));
 
 /**
  * First-party workspace packages. Each name is used both to scope a
@@ -77,6 +79,24 @@ function licenseTitleLine(moduleData) {
   }
   if (typeof licenses === "string") return licenses;
   return "";
+}
+
+/**
+ * Resolves the on-disk package directory. `pnpm licenses list` reports virtual-store
+ * paths under `node_modules/.pnpm/…`, which do not exist when `nodeLinker: hoisted`
+ * (or a flat install) is in use — fall back to `require.resolve` / top-level
+ * `node_modules/<name>`.
+ */
+function resolvePkgDir(name, reportedPath) {
+  if (reportedPath && fs.existsSync(reportedPath)) return reportedPath;
+  try {
+    return path.dirname(requireFromRoot.resolve(`${name}/package.json`));
+  } catch {
+    // Some packages block `./package.json` via `exports`; try the flat path.
+  }
+  const flat = path.join(root, "node_modules", ...name.split("/"));
+  if (fs.existsSync(flat)) return flat;
+  return reportedPath ?? "";
 }
 
 /** Reads the first real license file in a package directory, or "" if none exists. */
@@ -223,7 +243,7 @@ for (const packageName of FIRST_PARTY_PACKAGES) {
       versions.forEach((version, i) => {
         const key = `${name}@${version}`;
         if (modules[key]) return;
-        const pkgDir = paths[i] ?? paths[0];
+        const pkgDir = resolvePkgDir(name, paths[i] ?? paths[0]);
         modules[key] = {
           licenses: license,
           licenseText: bodyFor(name, version, license, author, pkgDir, clarifications),

@@ -19,6 +19,7 @@ import type {
 } from "./types.js";
 import { computeSegmentHash } from "../utils/hash.js";
 import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
+import { normalizeLocale } from "./locale-utils.js";
 
 const SCHEMA_VERSION = 4;
 const require = createRequire(import.meta.url);
@@ -503,6 +504,69 @@ export class TranslationCache {
       translations: count("SELECT COUNT(*) as c FROM translations WHERE locale = ?"),
       fileTracking: count("SELECT COUNT(*) as c FROM file_tracking WHERE locale = ?"),
       failures: count("SELECT COUNT(*) as c FROM translation_failures WHERE locale = ?"),
+    };
+  }
+
+  /** Distinct `locale` values present in `translations`, `file_tracking`, or `translation_failures`. */
+  listDistinctLocales(): string[] {
+    const rows = this.db
+      .prepare(
+        `SELECT locale FROM translations
+         UNION
+         SELECT locale FROM file_tracking
+         UNION
+         SELECT locale FROM translation_failures
+         ORDER BY 1`
+      )
+      .all() as { locale: string }[];
+    return rows.map((r) => r.locale);
+  }
+
+  /**
+   * Delete cache rows whose locale is not in `allowedLocales` (BCP-47 codes compared via
+   * {@link normalizeLocale}). Returns per-locale counts; when `dryRun` is true, reports without
+   * deleting. Deletion uses the exact `locale` string stored in the DB.
+   */
+  pruneUnconfiguredLocales(
+    allowedLocales: readonly string[],
+    dryRun = false
+  ): {
+    locales: string[];
+    count: number;
+    byLocale: {
+      locale: string;
+      translations: number;
+      fileTracking: number;
+      failures: number;
+    }[];
+  } {
+    const allowed = new Set(allowedLocales.map((l) => normalizeLocale(l)));
+    const byLocale: {
+      locale: string;
+      translations: number;
+      fileTracking: number;
+      failures: number;
+    }[] = [];
+    let count = 0;
+    for (const locale of this.listDistinctLocales()) {
+      if (allowed.has(normalizeLocale(locale))) {
+        continue;
+      }
+      const rows = this.countLocaleRows(locale);
+      const rowCount = rows.translations + rows.fileTracking + rows.failures;
+      if (rowCount === 0) {
+        continue;
+      }
+      byLocale.push({ locale, ...rows });
+      count += rowCount;
+      if (!dryRun) {
+        this.clear(locale);
+      }
+    }
+    return {
+      locales: byLocale.map((r) => r.locale),
+      count,
+      byLocale,
     };
   }
 

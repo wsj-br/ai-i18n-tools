@@ -52,15 +52,21 @@ pnpm add -g ai-i18n-tools
 
 全局安装使用全局固定的版本。若要按项目固定版本，建议使用 direnv 或手动配置 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
 
-**`package.json` 脚本** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 前置到 `PATH`，因此无需更改 shell PATH 即可在脚本内使用不带前缀的命令名称：
+**`package.json` 脚本** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 前置到 `PATH`，因此在脚本中可以直接使用裸命令名，无需更改 shell 的 PATH。优先使用 `sync` 而非手动串联翻译步骤 — 手动运行时顺序和功能标志很容易出错：
 
 ```json
 "scripts": {
-  "i18n:sync": "ai-i18n-tools sync"
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
+  "i18n:translate:docs": "ai-i18n-tools translate-docs",
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
-然后运行，例如 `pnpm run i18n:sync`。
+然后运行例如 `pnpm run i18n:sync`。请参阅[推荐的 `package.json` 脚本](/zh-Hans/guide/quick-start#recommended-packagejson-scripts)以获取完整的推荐集合。
 
 **替代方案** — 如果您不想调整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。对于没有 `package.json` 条目且无需安装的一次性运行：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 

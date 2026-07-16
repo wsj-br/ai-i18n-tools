@@ -190,6 +190,46 @@ export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] 
 }
 
 /**
+ * Locales that may legitimately appear in the translation cache for this config:
+ * `sourceLocale` (e.g. SVG copy-through), root `targetLocales`, and any per-block
+ * `docs[]` / `json[]` `targetLocales`. Used by `cleanup` to drop rows for retired codes
+ * (e.g. `hi-Latn` after switching to `hi`).
+ */
+export function getConfiguredCacheLocales(config: I18nConfig): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  const add = (raw: string): void => {
+    const c = normalizeLocale(raw);
+    if (!c || seen.has(c)) {
+      return;
+    }
+    seen.add(c);
+    out.push(c);
+  };
+  add(config.sourceLocale);
+  for (const l of config.targetLocales) {
+    add(l);
+  }
+  for (const block of config.docs) {
+    if (!Array.isArray(block.targetLocales)) {
+      continue;
+    }
+    for (const l of block.targetLocales) {
+      add(l);
+    }
+  }
+  for (const block of config.json) {
+    if (!Array.isArray(block.targetLocales)) {
+      continue;
+    }
+    for (const l of block.targetLocales) {
+      add(l);
+    }
+  }
+  return out;
+}
+
+/**
  * Locales for `translate` / `sync` document steps (and `status` markdown columns). Honors `--locale` by
  * intersecting with allowed documentation targets.
  */

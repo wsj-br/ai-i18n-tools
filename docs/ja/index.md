@@ -88,4 +88,4 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 - [**例**](/ja/examples) — `npx degit` を使用した9つの実行可能なデモプロジェクト
 - [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラマティックAPI、拡張ポイント
 
-npmスタイルの完全なガイド（プロバイダーテーブル、CLIコマンドリスト、フレームワークのクイックスタート）については、[リポジトリのREADME](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)を参照してください。パッケージを独自のプロジェクトに統合する場合は、[AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)から始めてください。
+パッケージを自分のプロジェクトに組み込む場合は、[AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) から始めてください。[リポジトリの README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) は短い GitHub/npm ランディングページであり、詳細についてはここへリンクしています。

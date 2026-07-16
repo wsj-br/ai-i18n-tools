@@ -6,7 +6,7 @@
 
 **概要：** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-清除整個 `markdown_source_issues` 資料表，接著執行 `sync --force-update`（擷取、UI、SVG、文件，以及啟用時的 `translate-json`），讓目前設定的文件重新填入 Markdown 問題；然後移除過時的段落列（`last_hit_at` 為 null 或檔案路徑為空）；捨棄解析後來源路徑在磁碟上不存在的 `file_tracking` 列；移除其 `filepath` 中繼資料指向不存在檔案的翻譯列；修剪孤立的 `translation_failures` 列。同步後記錄四個修剪計數（過時段落、孤立 `file_tracking`、孤立翻譯、孤立失敗），以及前置的 Markdown 問題清除計數。
+清除整個 `markdown_source_issues` 資料表，然後執行 `sync --force-update`（提取、UI、SVG、文件，以及啟用時的 `translate-json`），讓目前設定的文件重新填入 markdown 問題；接著移除過時的段落列（null `last_hit_at` / 空檔案路徑）；捨棄已解析原始路徑在磁碟上遺失的 `file_tracking` 列；移除其 `filepath` 中繼資料指向遺失檔案的翻譯列；修剪孤立的 `translation_failures` 列；並捨棄設定中不存在之地區設定的快取列（`sourceLocale`、根 `targetLocales`，以及任何每區塊的 `docs[]` / `json[]` `targetLocales`）。對於已淘汰的地區設定僅限快取 — 產生的文件、平面 UI 檔案和 `strings.json` 項目保持不變（使用 [`purge-locale`](#purge-locale) 來移除它們）。在同步後記錄修剪計數（過時的段落、孤立的 `file_tracking`、孤立的翻譯、孤立的失敗、未設定的地區設定）以及預先的 markdown 問題清除計數。
 
 **關鍵選項：** `--dry-run`、`--backup`
 

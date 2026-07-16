@@ -21,7 +21,7 @@ Die angeforderte Lokale wird genau oder durch die nächste Variation (z. B. `pt-
 <a id="shipped-ui-languages"></a>
 ## Verfügbare UI-Sprachen
 
-Englisch (UK, Quelle), Deutsch, Spanisch, Französisch, Hindi (lateinische Schrift), Japanisch, Koreanisch, Portugiesisch (Brasilien), Chinesisch (vereinfacht), Chinesisch (traditionell).
+Englisch (UK, Quelle), Deutsch, Spanisch, Französisch, Hindi, Japanisch, Koreanisch, Portugiesisch (Brasilien), Chinesisch (vereinfacht), Chinesisch (traditionell).
 
 <a id="translation-dashboard"></a>
 ## Übersetzungs-Dashboard

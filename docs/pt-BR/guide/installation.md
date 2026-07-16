@@ -52,15 +52,21 @@ pnpm add -g ai-i18n-tools
 
 Uma instalação global usa a versão globalmente fixada. Para fixação de versão por projeto, prefira direnv ou PATH manual para que `node_modules/.bin` seja resolvido para a dependência do projeto.
 
-**Scripts `package.json`** — quando o npm ou pnpm executa um script, ele adiciona `node_modules/.bin` ao `PATH`, então o nome do comando simples funciona dentro dos scripts sem alterações no PATH do shell:
+**`package.json` scripts** — quando o npm ou pnpm executa um script, ele adiciona `node_modules/.bin` ao `PATH`, para que o nome do comando simples funcione dentro dos scripts sem alterações no PATH do shell. Prefira `sync` em vez de encadear manualmente as etapas de tradução — a ordem e os sinalizadores de recursos são fáceis de errar quando executados manualmente:
 
 ```json
 "scripts": {
-  "i18n:sync": "ai-i18n-tools sync"
+  "i18n:extract": "ai-i18n-tools extract",
+  "i18n:sync": "ai-i18n-tools sync",
+  "i18n:translate:ui": "ai-i18n-tools translate-ui",
+  "i18n:translate:svg": "ai-i18n-tools translate-svg",
+  "i18n:translate:docs": "ai-i18n-tools translate-docs",
+  "i18n:translate:json": "ai-i18n-tools translate-json",
+  "i18n:dashboard": "ai-i18n-tools dashboard"
 }
 ```
 
-Em seguida, execute, por exemplo, `pnpm run i18n:sync`.
+Em seguida, execute, por exemplo, `pnpm run i18n:sync`. Consulte [Scripts `package.json` recomendados](/pt-BR/guide/quick-start#recommended-packagejson-scripts) para o conjunto completo recomendado.
 
 **Alternativas** — se você preferir não ajustar `PATH`: `npx ai-i18n-tools …` (npm) ou `pnpm exec ai-i18n-tools …` (pnpm). Para uma execução única sem instalação e sem entrada `package.json`: `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>`.
 

@@ -519,12 +519,35 @@ describe("LlmClient", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(2);
   });
 
-  it("translateUIBatch does NOT enforce script for plain hi (Devanagari is accepted)", async () => {
+  it("translateUIBatch enforces Devanagari for plain hi (rejects wrong non-Latin script)", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(genResult('["مرحبا"]'))
+      .mockResolvedValueOnce(genResult('["नमस्ते"]'));
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["Hello"], "hi");
+    expect(r.translations).toEqual(["नमस्ते"]);
+    expect(r.model).toBe("good");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("translateUIBatch accepts Devanagari for plain hi", async () => {
     generateTextMock.mockResolvedValue(genResult('["नमस्ते"]'));
     const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
     const r = await c.translateUIBatch(["Hello"], "hi");
     expect(r.translations).toEqual(["नमस्ते"]);
     expect(generateTextMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("translateUIBatch prepends the Devanagari script directive for plain hi", async () => {
+    generateTextMock.mockResolvedValue(genResult('["नमस्ते"]'));
+    const c = new LlmClient({
+      config: llmConfig(["m"], { localeDisplayNames: { hi: "Hindi" } }),
+      apiKey: "k",
+    });
+    await c.translateUIBatch(["Save"], "hi");
+    const args = genArgs();
+    expect(args.system).toContain("SCRIPT REQUIREMENT");
+    expect(args.system).toContain("Devanagari");
   });
 
   it("translateDocumentSegment retries when hi-Latn segment comes back in Devanagari", async () => {

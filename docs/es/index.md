@@ -105,4 +105,4 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 - [**Ejemplos**](/es/examples) — nueve proyectos de demostración ejecutables con `npx degit`
 - [**Arquitectura**](/es/reference/architecture) — elementos internos, API programática y puntos de extensión
 
-Para obtener la guía completa de estilo npm (tabla de proveedores, lista de comandos de la CLI, inicios rápidos de frameworks), consulte el [README del repositorio](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md). ¿Está integrando el paquete en su propio proyecto? Comience con [Contexto del agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md).
+¿Va a integrar el paquete en su propio proyecto? Empiece con [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). El [README del repositorio](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) es una breve página de inicio de GitHub/npm que enlaza aquí para obtener más detalles.

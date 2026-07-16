@@ -30,6 +30,7 @@ import { scaffoldVitepressInitFiles } from "./vitepress-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
+  getConfiguredCacheLocales,
   getDocumentationTargetLocaleCodes,
   getJsonTargetLocaleCodes,
   resolveLocalesForDocumentation,
@@ -2747,7 +2748,7 @@ program
   .command("cleanup")
   .description(
     t(
-      "Clear the markdown_source_issues table, then run sync --force-update (extract, UI, SVG, docs) so it repopulates with only currently-configured docs; then clean stale segment rows (null last_hit_at / empty filepath) and remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk (SQLite)"
+      "Clear the markdown_source_issues table, then run sync --force-update (extract, UI, SVG, docs) so it repopulates with only currently-configured docs; then clean stale segment rows (null last_hit_at / empty filepath), remove orphaned file_tracking keys, translation rows, and translation_failures when resolved paths are missing on disk, and drop cache rows for locales absent from config (SQLite; does not delete generated files — use purge-locale for that)"
     )
   )
   .option("--dry-run", t("Show only"), false)
@@ -2865,6 +2866,24 @@ program
       console.log(
         t("[cleanup] orphaned translation_failures: {{count}}", { count: prunedFailures }) + dryTag
       );
+
+      const allowedLocales = getConfiguredCacheLocales(loaded);
+      const prunedLocales = cache.pruneUnconfiguredLocales(allowedLocales, Boolean(opts.dryRun));
+      console.log(
+        t("[cleanup] unconfigured locales (absent from config): {{count}} row(s){{locales}}", {
+          count: prunedLocales.count,
+          locales: prunedLocales.locales.length > 0 ? ` [${prunedLocales.locales.join(", ")}]` : "",
+        }) + dryTag
+      );
+      if (opts.dryRun && prunedLocales.byLocale.length > 0) {
+        for (const row of prunedLocales.byLocale) {
+          console.log(
+            chalk.gray(
+              `  ${row.locale}: translations=${row.translations}, file_tracking=${row.fileTracking}, failures=${row.failures}`
+            )
+          );
+        }
+      }
     } finally {
       cache.close();
     }

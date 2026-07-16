@@ -142,7 +142,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 **同步 README → index 的建議：** 在 `README.md` 中，對 VitePress 內容樹之外的任何項目（`LICENSE`、`examples/`、設定檔、代理上下文檔案）以及 `translated-docs/` 下的翻譯 README 副本，請使用**完整網址**。對站內文件連結，請使用 `docs/guide/…` 路徑（或英文文件中 `docs/` 下的網站路由）；同步腳本或 `rewriteVitepressLinks` 正規化器可將其轉換為 `/guide/…` 路由。
 
-**此存放庫**將 `README.md` 與 `docs/index.md` 保持為**獨立檔案**：README 是完整的 npm/GitHub 落地頁；`docs/index.md` 是精簡的文件站入口，連結至 `/guide/` 與 `/reference/`。當共用事實變更時，請依各自的受眾更新每個檔案。
+**此儲存庫**將 `README.md` 與 `docs/index.md` 保留為**獨立檔案**：README 是簡潔的 GitHub/npm 到達頁面；`docs/index.md` 是文件網站的入口點，連結至 `/guide/` 與 `/reference/`。詳細指南位於 `docs/` 之下 — 請勿在 README 中重複冗長的參考資料。當共同事實變更時，請根據其受眾更新各個檔案。
 
 另一個專案中已同步 README 的範例連結：
 

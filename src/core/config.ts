@@ -9,6 +9,7 @@ import { ConfigValidationError } from "./errors.js";
 import {
   coerceTargetLocalesField,
   disallowedScriptLetters,
+  effectiveScriptSubtag,
   englishLanguageNameForLocale,
   englishScriptName,
   hanVariantCounts,
@@ -59,6 +60,7 @@ import {
 export {
   coerceTargetLocalesField,
   disallowedScriptLetters,
+  effectiveScriptSubtag,
   englishLanguageNameForLocale,
   englishScriptName,
   hanVariantCounts,

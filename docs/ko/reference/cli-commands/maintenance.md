@@ -6,7 +6,7 @@
 
 **개요:** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-`markdown_source_issues` 테이블 전체를 지운 다음, `sync --force-update`(추출, UI, SVG, 문서 및 활성화된 경우 `translate-json`)를 실행하여 현재 구성된 문서에 대해 마크다운 이슈를 다시 채웁니다. 그런 다음 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 디스크에서 확인된 소스 경로가 없는 `file_tracking` 행을 삭제하며, `filepath` 메타데이터가 없는 파일을 가리키는 번역 행을 제거하고, 고립된 `translation_failures` 행을 정리합니다. 동기화 후 네 가지 정리 개수(오래된 세그먼트, 고립된 `file_tracking`, 고립된 번역, 고립된 실패)와 사전 마크다운 이슈 삭제 개수를 로그에 기록합니다.
+전체 `markdown_source_issues` 테이블을 지운 다음 `sync --force-update`을(를) 실행하여(활성화된 경우 추출, UI, SVG, 문서 및 `translate-json`) 현재 구성된 문서에 대한 마크다운 문제가 다시 채워지도록 합니다. 그런 다음 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 디스크에서 확인된 소스 경로가 누락된 `file_tracking` 행을 삭제하며, `filepath` 메타데이터가 누락된 파일을 가리키는 번역 행을 제거하고, 고아가 된 `translation_failures` 행을 정리하며, 구성에 없는 로케일(`sourceLocale`, 루트 `targetLocales`, 블록별 `docs[]` / `json[]` `targetLocales`)에 대한 캐시 행을 삭제합니다. 더 이상 사용되지 않는 로케일의 경우 캐시에만 해당됩니다. 생성된 문서, 플랫 UI 파일 및 `strings.json` 항목은 그대로 유지됩니다(이를 제거하려면 [`purge-locale`](#purge-locale)을(를) 사용하세요). 동기화 후 정리 개수(오래된 세그먼트, 고아가 된 `file_tracking`, 고아가 된 번역, 고아가 된 실패, 구성되지 않은 로케일)와 초기 마크다운 문제 지우기 개수를 기록합니다.
 
 **주요 옵션:** `--dry-run`, `--backup`
 

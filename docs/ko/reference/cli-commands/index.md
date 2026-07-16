@@ -66,9 +66,9 @@
 <a id="cache--maintenancemaintenance"></a>
 ### [캐시 및 유지 관리](maintenance)
 
-| 명령 | 요약 |
+| 명령어 | 요약 |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | 오래된 캐시 행을 정리하고 마크다운 이슈를 다시 채웁니다. |
+| [`cleanup`](maintenance#cleanup) | 오래되거나 고아 또는 구성되지 않은 로케일 캐시 행을 정리하고 마크다운 이슈를 다시 채웁니다. |
 | [`clean-temp`](maintenance#clean-temp) | `*.log`, `*.tmp` 및 캐시 백업을 찾아 삭제합니다. |
 | [`purge-locale`](maintenance#purge-locale) | 로케일에 대한 캐시 행과 생성된 아티팩트를 제거합니다. |
 

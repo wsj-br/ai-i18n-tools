@@ -142,7 +142,7 @@ Do not introduce a hand-maintained duplicate of theme strings — config must re
 
 **동기화된 README → index 권장 사항:** `README.md`에서 VitePress 콘텐츠 트리 외부의 모든 항목(`LICENSE`, `examples/`, 설정 파일, 에이전트 컨텍스트 파일) 및 `translated-docs/` 아래의 번역된 README 사본에 대해 **전체 URL**을 사용하십시오. 사이트 내 문서 링크에는 `docs/guide/…` 경로(또는 `docs/` 아래 영어 문서에서 사이트 라우트)를 사용하십시오; 동기화 스크립트나 `rewriteVitepressLinks` 노멀라이저가 이를 `/guide/…` 라우트로 변환할 수 있습니다.
 
-**이 저장소**는 `README.md`와 `docs/index.md`을 **독립된 파일**로 유지합니다. README는 전체 npm/GitHub 랜딩 페이지이고, `docs/index.md`는 `/guide/` 및 `/reference/`로 연결되는 간결한 문서 사이트 진입점입니다. 공유된 정보가 변경되면 각 대상 독자에 맞게 업데이트하세요.
+**이 리포지토리는** `README.md`와 `docs/index.md`을 **독립된 파일**로 유지합니다: README는 간결한 GitHub/npm 랜딩 페이지이며, `docs/index.md`는 `/guide/` 및 `/reference/`로 연결되는 문서 사이트 진입점입니다. 상세 가이드는 `docs/` 아래에 있습니다 — README에 긴 참조 자료를 중복하지 마세요. 공유된 정보가 변경되면 각각의 대상 독자에 맞게 업데이트하세요.
 
 다른 프로젝트에서 동기화된 README의 예시 링크:
 

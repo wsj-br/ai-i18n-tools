@@ -7,7 +7,7 @@
  * The two character lists below are vendored verbatim from the MIT-licensed
  * `traditional-or-simplified` package by Nick Drewe
  * (https://github.com/nickdrewe/traditional-or-simplified). Regenerate with
- * `node scripts/gen-han-variant-data.mjs`.
+ * `node dev/scripts/gen-han-variant-data.mjs`.
  *
  * MIT License — Copyright (c) Nick Drewe
  *

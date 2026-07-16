@@ -93,4 +93,4 @@ SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다
 - [**예제**](/ko/examples) — `npx degit`를 사용한 9개의 실행 가능한 데모 프로젝트
 - [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 방식 API 및 확장 지점
 
-전체 npm 스타일 가이드(제공자 표, CLI 명령 목록, 프레임워크 빠른 시작)는 [리포지토리 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)를 참조하세요. 패키지를 자체 프로젝트에 통합하시겠습니까? [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)로 시작하세요.
+패키지를 자체 프로젝트에 통합하시나요? [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)부터 시작하세요. [저장소 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)는 자세한 내용을 위해 이곳으로 연결되는 짧은 GitHub/npm 랜딩 페이지입니다.

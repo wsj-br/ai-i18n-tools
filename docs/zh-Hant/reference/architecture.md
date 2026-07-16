@@ -194,7 +194,7 @@ Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-
 
 SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash, locale)`，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 和相關欄位。雜湊是正規化內容（空白字元折疊）的前 16 個十六進位字元的 SHA-256。
 
-在每次執行時，會透過雜湊 × 語言環境來查詢區段。只有快取未命中才會傳送至 LLM。翻譯後，`last_hit_at` 會針對目前翻譯範圍中未命中的區段列重設。文件翻譯期間成功的快取命中會清除該區段的過時 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，然後移除過時的區段列（空 `last_hit_at` / 空檔案路徑），在磁碟上找不到解析的來源路徑時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其中繼資料檔案路徑指向遺失檔案的翻譯列，修剪孤立的 `translation_failures` 列，並修剪其解析的來源路徑在磁碟上遺失的孤立 `markdown_source_issues` 列；除非傳遞 `--backup <path>`，否則它不會備份 `cache.db`，這會先將備份寫入該路徑。
+在每次執行時，區段會透過雜湊 × 語系進行查詢。只有快取未命中才會傳送至 LLM。翻譯後，目前翻譯範圍中未命中的區段列會重設 `last_hit_at`。文件翻譯期間成功的快取命中會清除該區段過時的 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，接著移除過時的區段列（null `last_hit_at` / 空白檔案路徑），當解析後的來源路徑在磁碟上不存在時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除元資料檔案路徑指向不存在檔案的翻譯列，修剪孤立的 `translation_failures` 列，修剪解析後來源路徑在磁碟上不存在的孤立 `markdown_source_issues` 列，並捨棄設定中缺少語系的快取列（`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`；僅限 SQLite — 使用 `purge-locale` 來刪除產生的檔案）；除非傳遞了 `--backup <path>`，否則它不會備份 `cache.db`，傳遞時會先將備份寫入該路徑。
 
 `translate-docs` 命令還使用**檔案追蹤**，因此未更改且已存在最新輸出的來源可以完全跳過工作。`--force-update` 重新執行檔案處理，同時仍使用區段快取；`--force` 清除檔案追蹤並繞過 API 翻譯的區段快取讀取。當每個配置的模型在 markdown 區段上 AST 驗證失敗時，`translate-docs` 可以逐步分割區段並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。有關完整的標誌表，請參閱 [文件 — 快取行為和標誌](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 

@@ -20,7 +20,7 @@ import {
   normalizeLocale,
   resolveTranslationModels,
 } from "../core/config.js";
-import { scriptSubtag, scriptValidationIssue } from "../core/locale-utils.js";
+import { effectiveScriptSubtag, scriptValidationIssue } from "../core/locale-utils.js";
 import {
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
@@ -275,17 +275,18 @@ export class LlmClient {
   }
 
   /**
-   * Enforce the target locale's ISO 15924 script subtag on a model response, throwing
+   * Enforce the target locale's expected script on a model response, throwing
    * {@link ScriptValidationError} so the model-fallback loop retries with the next model.
    *
    * Uses a statistical dominant-script check ({@link scriptValidationIssue}): Latin text
    * (code, URLs, brand names, placeholders) and letter-like symbols such as `ℹ` are ignored,
    * a stray foreign-language quote does not fail the output, and `zh-Hans`/`zh-Hant` are told
-   * apart via variant-distinct characters. Locales without a script subtag, and composite
-   * scripts (e.g. `Jpan`, `Kore`), are not enforced.
+   * apart via variant-distinct characters. Uses {@link effectiveScriptSubtag} so bare `hi`
+   * (Devanagari by default) is enforced like an explicit `*-Deva` tag. Locales with no
+   * effective script, and composite scripts (e.g. `Jpan`, `Kore`), are not enforced.
    */
   private assertExpectedScript(text: string, targetLocale: string): void {
-    const script = scriptSubtag(targetLocale);
+    const script = effectiveScriptSubtag(targetLocale);
     if (!script) {
       return;
     }

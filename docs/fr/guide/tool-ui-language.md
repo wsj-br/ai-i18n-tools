@@ -21,7 +21,7 @@ La locale demandée est comparée exactement aux langues d'interface utilisateur
 <a id="shipped-ui-languages"></a>
 ## Langues d'interface utilisateur fournies
 
-Anglais (Royaume-Uni, source), allemand, espagnol, français, hindi (écriture latine), japonais, coréen, portugais (Brésil), chinois (simplifié), chinois (traditionnel).
+Anglais (Royaume-Uni, source), allemand, espagnol, français, hindi, japonais, coréen, portugais (Brésil), chinois (simplifié), chinois (traditionnel).
 
 <a id="translation-dashboard"></a>
 ## Tableau de bord de traduction

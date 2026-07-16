@@ -1,6 +1,6 @@
 {
   "sourceLocale": "en-GB",
-  "targetLocales": ["de", "es", "fr", "hi-Latn", "ja", "ko", "pt-BR", "zh-Hans", "zh-Hant"],
+  "targetLocales": ["de", "es", "fr", "hi", "ja", "ko", "pt-BR", "zh-Hans", "zh-Hant"],
   "concurrency": 5,
   "batchConcurrency": 5,
   "batchSize": 20,

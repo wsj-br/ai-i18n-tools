@@ -17,6 +17,7 @@ import {
   expandJsonTargetLocalesInRawInput,
   expandTargetLocalesFileReferenceInRawInput,
   getDocumentationTargetLocaleCodes,
+  getConfiguredCacheLocales,
   getJsonTargetLocaleCodes,
   loadUiLanguageEntries,
   looksLikeUiLanguagesFileRef,
@@ -299,6 +300,47 @@ describe("ui-languages", () => {
       ],
     });
     expect(getDocumentationTargetLocaleCodes(c)).toEqual(["de", "fr"]);
+  });
+
+  it("getConfiguredCacheLocales unions source, root targets, and per-block docs/json locales", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en-GB",
+      targetLocales: ["de", "hi"],
+      cacheDir: ".translation-cache",
+      docs: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["de", "ja"],
+          ...defaultDocumentationFields,
+        },
+      ],
+      json: [
+        {
+          contentPaths: ["a/"],
+          outputPathTemplate: "{locale}/a.json",
+          targetLocales: ["fr"],
+        },
+      ],
+    });
+    expect(getConfiguredCacheLocales(c)).toEqual(["en-GB", "de", "hi", "ja", "fr"]);
+  });
+
+  it("getConfiguredCacheLocales excludes retired codes not listed anywhere in config", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["hi"],
+      cacheDir: ".translation-cache",
+      docs: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          ...defaultDocumentationFields,
+        },
+      ],
+    });
+    expect(getConfiguredCacheLocales(c)).toEqual(["en", "hi"]);
+    expect(getConfiguredCacheLocales(c)).not.toContain("hi-Latn");
   });
 
   it("resolveLocalesForSvg includes source locale then documentation targets", () => {

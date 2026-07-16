@@ -259,10 +259,16 @@ describe("targetScriptDirective", () => {
     expect(targetScriptDirective("zh-Hant")).toContain("NEVER Simplified forms");
   });
 
-  it("returns empty string when there is no script subtag", () => {
-    expect(targetScriptDirective("hi")).toBe("");
+  it("returns empty string when there is no effective script", () => {
     expect(targetScriptDirective("en-GB")).toBe("");
+    expect(targetScriptDirective("de")).toBe("");
     expect(targetScriptDirective(undefined)).toBe("");
+  });
+
+  it("defaults bare hi to the Devanagari directive", () => {
+    const d = targetScriptDirective("hi");
+    expect(d).toContain("SCRIPT REQUIREMENT");
+    expect(d).toContain("Devanagari");
   });
 
   it("names the script for the catalog's script variants", () => {
@@ -286,7 +292,7 @@ describe("targetScriptDirective", () => {
 });
 
 describe("script directive injection into prompts", () => {
-  it("buildDocumentSinglePrompt prepends the Latin directive for hi-Latn only", () => {
+  it("buildDocumentSinglePrompt prepends the Latin directive for hi-Latn and Devanagari for bare hi", () => {
     const withScript = buildDocumentSinglePrompt("Hello", {
       sourceLanguageLabel: "English",
       targetLanguageLabel: "hi-Latn: Hindi (Romanized)",
@@ -296,11 +302,20 @@ describe("script directive injection into prompts", () => {
     expect(withScript.systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
     expect(withScript.systemPrompt).toContain("romanize");
 
-    const noScript = buildDocumentSinglePrompt("Hello", {
+    const hiDeva = buildDocumentSinglePrompt("Hello", {
       sourceLanguageLabel: "English",
       targetLanguageLabel: "Hindi",
       glossaryHints: [],
       targetLocale: "hi",
+    });
+    expect(hiDeva.systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
+    expect(hiDeva.systemPrompt).toContain("Devanagari");
+
+    const noScript = buildDocumentSinglePrompt("Hello", {
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "German",
+      glossaryHints: [],
+      targetLocale: "de",
     });
     expect(noScript.systemPrompt).not.toContain("SCRIPT REQUIREMENT");
   });

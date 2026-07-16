@@ -66,9 +66,9 @@
 <a id="cache--maintenancemaintenance"></a>
 ### [快取與維護](maintenance)
 
-| 命令 | 摘要 |
+| 指令 | 摘要 |
 |---------|---------|
-| [`cleanup`](maintenance#cleanup) | 清理過時的快取列並重新填入 markdown 問題。 |
+| [`cleanup`](maintenance#cleanup) | 清理過時/孤立/未設定語系的快取列並重新填充 Markdown 問題。 |
 | [`clean-temp`](maintenance#clean-temp) | 尋找並刪除 `*.log`、`*.tmp` 與快取備份。 |
 | [`purge-locale`](maintenance#purge-locale) | 移除指定地區設定的快取列與產生的產物。 |
 

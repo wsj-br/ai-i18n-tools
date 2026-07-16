@@ -6,7 +6,7 @@
 
 **Synopsis:** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-Clears the entire `markdown_source_issues` table, then runs `sync --force-update` (extract, UI, SVG, docs, and `translate-json` when enabled) so markdown issues repopulate for currently configured docs; then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file; prunes orphaned `translation_failures` rows. Logs four prune counts after sync (stale segments, orphaned `file_tracking`, orphaned translations, orphaned failures) plus the upfront markdown-issues clear count.
+Clears the entire `markdown_source_issues` table, then runs `sync --force-update` (extract, UI, SVG, docs, and `translate-json` when enabled) so markdown issues repopulate for currently configured docs; then removes stale segment rows (null `last_hit_at` / empty filepath); drops `file_tracking` rows whose resolved source path is missing on disk; removes translation rows whose `filepath` metadata points at a missing file; prunes orphaned `translation_failures` rows; and drops cache rows for locales absent from config (`sourceLocale`, root `targetLocales`, and any per-block `docs[]` / `json[]` `targetLocales`). Cache-only for retired locales — generated documents, flat UI files, and `strings.json` entries are left alone (use [`purge-locale`](#purge-locale) to remove those). Logs prune counts after sync (stale segments, orphaned `file_tracking`, orphaned translations, orphaned failures, unconfigured locales) plus the upfront markdown-issues clear count.
 
 **Key options:** `--dry-run`, `--backup`
 

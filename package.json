@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.8.1",
-  "packageManager": "pnpm@11.13.0",
+  "version": "1.8.2",
+  "packageManager": "pnpm@11.13.1",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -44,7 +44,6 @@
     "clean:workspace": "bash scripts/clean-workspace.sh",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm test",
     "pre-release": "bash scripts/pre-release.sh",
-    "docs:sync": "node bin/ai-i18n-tools.mjs translate-docs --path docs/index.md",
     "docs:dev": "node scripts/escape-vue-braces-in-docs.mjs && vitepress dev docs --host",
     "docs:build": "node scripts/escape-vue-braces-in-docs.mjs && vitepress build docs",
     "docs:preview": "vitepress preview docs",
