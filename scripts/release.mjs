@@ -65,7 +65,9 @@ function fail(message) {
 }
 
 /**
- * Run a command. Uses shell on Windows so `gh` / `git` resolve as `.cmd` shims.
+ * Run a command with an argv array (no shell). `git` / `gh` are native
+ * executables on Windows; using a shell would split `-m "Release v1.8.3"`
+ * on spaces and make `git tag` fail with "fatal: too many arguments".
  * @returns {{ status: number, stdout: string, stderr: string }}
  */
 function run(command, args, options = {}) {
@@ -74,7 +76,7 @@ function run(command, args, options = {}) {
     cwd: root,
     encoding: "utf8",
     env: process.env,
-    shell: process.platform === "win32",
+    shell: false,
     stdio: inherit ? "inherit" : ["ignore", "pipe", "pipe"],
   });
 

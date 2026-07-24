@@ -13,6 +13,7 @@ Version 1.8.3 is a Windows reliability patch: install, build, CLI entry, and rel
 ## Detailed Changes
 
 - **Changed**: scripts — `pnpm release:github` / `release:github:dry` now run `scripts/release.mjs` (Node) instead of `scripts/release.sh`, so GitHub release publishing works on Windows and Linux without bash.
+- **Fixed**: scripts — `release.mjs` spawns `git` / `gh` without a shell so Windows does not split `-m "Release v…"` on spaces (`fatal: too many arguments`).
 - **Changed**: scripts — `pnpm pre-release` now runs `scripts/pre-release.mjs` (Node) instead of `scripts/pre-release.sh`, so the release gate works on Windows and Linux without bash.
 - **Fixed**: install — `scripts/ensure-built.mjs` invokes the build via `node $npm_execpath` (or a shell `pnpm` fallback) and guards nested `prepare` runs, so Windows `pnpm install` no longer fails with `spawnSync pnpm ENOENT` when `dist/` is missing.
 - **Fixed**: build — `scripts/ensure-src-ui-languages-json.mjs` materializes `src/runtime/ui-languages-complete.json` from `data/` when the git symlink is a plain text pointer (common on Windows with `core.symlinks=false`), so `tsc` no longer fails on that import.
