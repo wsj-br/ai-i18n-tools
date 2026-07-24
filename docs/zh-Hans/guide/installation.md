@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 执行 `direnv allow` 后，只要您 `cd` 进入该项目，就可以使用不带前缀的命令。
 
-**手动配置 PATH** — 在交互式 shell 中从项目根目录执行：
+**手动 PATH** — 从**项目根目录**运行这些命令（即包含 `node_modules/.bin` 的目录）。只要保留该 `PATH` 条目，子目录之后就能继续正常工作；从嵌套文件夹重新运行导出会失败，因为 `$PWD` 不再指向项目根目录。
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-全局安装使用全局固定的版本。若要按项目固定版本，建议使用 direnv 或手动配置 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
+使用 pnpm 时，如果缺少全局命令，请在每台机器上运行一次 `pnpm setup`（并打开一个新的 shell）— pnpm 需要将其全局 bin 目录放在 `PATH` 上。全局安装会使用全局固定的版本。对于按项目固定版本，建议使用 direnv 或手动 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
 
 **`package.json` 脚本** — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 前置到 `PATH`，因此在脚本中可以直接使用裸命令名，无需更改 shell 的 PATH。优先使用 `sync` 而非手动串联翻译步骤 — 手动运行时顺序和功能标志很容易出错：
 

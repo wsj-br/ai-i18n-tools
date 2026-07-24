@@ -2,6 +2,7 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
@@ -12,7 +13,8 @@
 
 JavaScript/TypeScriptアプリおよびドキュメントサイト（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、プレーンなMarkdown/MDX）を国際化するためのCLIおよびツールキットです。OpenAI、Anthropic、Gemini、OpenRouter、Ollamaなどの組み込みプリセット、またはOpenAI互換の任意のAPIを使用できます。コードベースを変更することなく、プロジェクトやロケールごとにプロバイダーやモデルを切り替えられます。
 
-## 特徴
+<a id="features"></a>
+## 機能
 
 | | |
 | --- | --- |
@@ -23,7 +25,8 @@ JavaScript/TypeScriptアプリおよびドキュメントサイト（VitePress�
 | **スマートキャッシュ** | 共有SQLiteキャッシュ — 新規または変更されたセグメントのみがモデルにアクセス |
 | **単一の`sync`** | 1つの設定から抽出 → UI → SVG → ドキュメント → JSONを正しい順序で実行 |
 
-## どのパイプラインを使うべきか？
+<a id="which-pipeline"></a>
+## どのパイプライン？
 
 | コンテンツ | コマンド |
 | --- | --- |
@@ -33,6 +36,7 @@ JavaScript/TypeScriptアプリおよびドキュメントサイト（VitePress�
 
 完全な比較については、[ai-i18n-toolsとは？](../docs/guide/what-is-ai-i18n-tools.md)を参照してください。
 
+<a id="install"></a>
 ## インストール
 
 ESM専用です。Node.js `>=22.16.0`が必要です。
@@ -50,6 +54,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 素の`ai-i18n-tools`コマンドを設定します（direnv、PATH、`package.json`スクリプト、または`npx`） — [インストール](../docs/guide/installation.md)を参照してください。
 
+<a id="quick-start"></a>
 ## クイックスタート
 
 ```bash
@@ -61,6 +66,7 @@ ai-i18n-tools sync                   # extract + translate per features
 
 個別の翻訳コマンドを連鎖させるよりも、`sync`を使用することをお勧めします。完全なチュートリアル: [クイックスタート](../docs/guide/quick-start.md)。
 
+<a id="documentation"></a>
 ## ドキュメント
 
 - [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/) — ガイド、インテグレーション、リファレンス
@@ -71,10 +77,12 @@ ai-i18n-tools sync                   # extract + translate per features
 - [例](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — 実行可能なデモ (`npx degit …`)
 - [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマーリポジトリのアシスタント向けインテグレーションガイド
 
+<a id="contributing"></a>
 ## コントリビュート
 
 Issueやプルリクエストを歓迎します。このリポジトリのメンテナーワークフロー: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) および [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md)。
 
+<a id="license"></a>
 ## ライセンス
 
 MIT — [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) を参照してください。

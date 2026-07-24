@@ -1,3 +1,4 @@
+import path from "path";
 import { describe, expect, it } from "vitest";
 import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
 import {
@@ -41,11 +42,13 @@ function cfg(over: Record<string, unknown> = {}) {
 
 describe("output-paths", () => {
   const cwd = "/proj";
+  /** Resolved project root in posix form (`/proj` on Unix, `C:/proj` on Windows). */
+  const root = toPosix(path.resolve(cwd));
 
   it("nested style mirrors locale and relPath", () => {
     const c = cfg();
     const out = resolveDocumentationOutputPath(c, cwd, "de", "docs/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/de/docs/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/docs/intro.md`);
   });
 
   it("docusaurus style uses plugin path under docsRoot", () => {
@@ -59,7 +62,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "docs/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/de/docusaurus-plugin-content-docs/current/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/docusaurus-plugin-content-docs/current/intro.md`);
   });
 
   it("doc-system style uses localeSubpath under docsRoot", () => {
@@ -77,7 +80,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "docs/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/de/custom/prefix/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/custom/prefix/intro.md`);
   });
 
   it("astro-starlight alias writes directly under locale folder", () => {
@@ -97,7 +100,7 @@ describe("output-paths", () => {
       "src/content/docs/quick-start.md",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/src/content/docs/de/quick-start.md");
+    expect(toPosix(out)).toBe(`${root}/src/content/docs/de/quick-start.md`);
   });
 
   it("astro-starlight lowercases regional locale folders for Starlight", () => {
@@ -117,7 +120,7 @@ describe("output-paths", () => {
       "src/content/docs/feature-showcase.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/src/content/docs/pt-br/feature-showcase.mdx");
+    expect(toPosix(out)).toBe(`${root}/src/content/docs/pt-br/feature-showcase.mdx`);
   });
 
   it("doc-system with empty localeSubpath writes directly under locale folder", () => {
@@ -141,7 +144,7 @@ describe("output-paths", () => {
       "src/content/docs/quick-start.md",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/src/content/docs/de/quick-start.md");
+    expect(toPosix(out)).toBe(`${root}/src/content/docs/de/quick-start.md`);
   });
 
   it("flat style writes stem.locale.ext in outputDir", () => {
@@ -155,7 +158,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "README.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/translated-docs/README.pt-BR.md");
+    expect(toPosix(out)).toBe(`${root}/translated-docs/README.pt-BR.md`);
   });
 
   it("pathTemplate overrides style", () => {
@@ -172,7 +175,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "fr", "docs/a.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/out/custom/fr/docs/a.md");
+    expect(toPosix(out)).toBe(`${root}/out/custom/fr/docs/a.md`);
   });
 
   it("expandPathTemplate fills placeholders", () => {
@@ -206,7 +209,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "docs/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/pt-br/docs/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/pt-br/docs/intro.md`);
   });
 
   it("localePathLowercase on flat style lowercases filename segment", () => {
@@ -220,7 +223,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "README.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/translated-docs/README.pt-br.md");
+    expect(toPosix(out)).toBe(`${root}/translated-docs/README.pt-br.md`);
   });
 
   it("astro-starlight with localePathLowercase false preserves BCP-47 folder", () => {
@@ -244,7 +247,7 @@ describe("output-paths", () => {
       "src/content/docs/feature-showcase.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/src/content/docs/pt-BR/feature-showcase.mdx");
+    expect(toPosix(out)).toBe(`${root}/src/content/docs/pt-BR/feature-showcase.mdx`);
   });
 
   it("vitepress alias writes directly under locale folder", () => {
@@ -264,7 +267,7 @@ describe("output-paths", () => {
       "docs/guide/getting-started.md",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/docs/de/guide/getting-started.md");
+    expect(toPosix(out)).toBe(`${root}/docs/de/guide/getting-started.md`);
   });
 
   it("vitepress preserves BCP-47 locale folder casing by default", () => {
@@ -278,7 +281,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "pt-BR", "docs/index.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/docs/pt-BR/index.md");
+    expect(toPosix(out)).toBe(`${root}/docs/pt-BR/index.md`);
   });
 
   it("vitepressLocaleRoutePrefix is set for locale output and null for root English paths", () => {
@@ -311,7 +314,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "zh-Hans", "docs/index.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/docs/zh-hans/index.md");
+    expect(toPosix(out)).toBe(`${root}/docs/zh-hans/index.md`);
   });
 
   it("vitepress pathTemplate overrides style", () => {
@@ -329,7 +332,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "fr", "docs/a.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/docs/custom/fr/docs/a.md");
+    expect(toPosix(out)).toBe(`${root}/docs/custom/fr/docs/a.md`);
   });
 
   it("nextra alias writes directly under locale folder from content/en", () => {
@@ -349,7 +352,7 @@ describe("output-paths", () => {
       "content/en/guide/getting-started.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/content/pt-BR/guide/getting-started.mdx");
+    expect(toPosix(out)).toBe(`${root}/content/pt-BR/guide/getting-started.mdx`);
   });
 
   it("nextra json artifacts strip docsRoot like markdown (_meta.ts)", () => {
@@ -369,7 +372,7 @@ describe("output-paths", () => {
       "content/en/guide/_meta.ts",
       "json"
     );
-    expect(toPosix(out)).toBe("/proj/content/pt-BR/guide/_meta.ts");
+    expect(toPosix(out)).toBe(`${root}/content/pt-BR/guide/_meta.ts`);
   });
 
   it("nextra preserves BCP-47 locale folder casing by default", () => {
@@ -389,7 +392,7 @@ describe("output-paths", () => {
       "content/en/index.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/content/zh-Hans/index.mdx");
+    expect(toPosix(out)).toBe(`${root}/content/zh-Hans/index.mdx`);
   });
 
   it("shouldRewriteFlatMarkdownLinks defaults for flat without template", () => {
@@ -488,7 +491,7 @@ describe("output-paths", () => {
       "content/docs/guide/start.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/content/docs/guide/start.pt.mdx");
+    expect(toPosix(out)).toBe(`${root}/content/docs/guide/start.pt.mdx`);
   });
 
   it("fumadocs dir parser writes under locale folder from content/docs/en", () => {
@@ -512,7 +515,7 @@ describe("output-paths", () => {
       "content/docs/en/guide/start.mdx",
       "markdown"
     );
-    expect(toPosix(out)).toBe("/proj/content/docs/pt-BR/guide/start.mdx");
+    expect(toPosix(out)).toBe(`${root}/content/docs/pt-BR/guide/start.mdx`);
   });
 
   it("shouldRewriteFumadocsLinks defaults to true for the fumadocs alias after normalization", () => {
@@ -549,7 +552,7 @@ describe("output-paths", () => {
   it("JSON uses nested layout by default", () => {
     const c = cfg();
     const out = resolveDocumentationOutputPath(c, cwd, "de", "navbar.json", "json");
-    expect(toPosix(out)).toBe("/proj/i18n/de/navbar.json");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/navbar.json`);
   });
 
   it("docusaurus style uses nested path when source is outside docsRoot", () => {
@@ -563,7 +566,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "other/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/de/other/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/other/intro.md`);
   });
 
   it("doc-system style uses nested path when source is outside docsRoot", () => {
@@ -581,7 +584,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "other/intro.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/i18n/de/other/intro.md");
+    expect(toPosix(out)).toBe(`${root}/i18n/de/other/intro.md`);
   });
 
   it("flat with flatPreserveRelativeDir nests under subdirectories", () => {
@@ -595,7 +598,7 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "docs/sub/page.md", "markdown");
-    expect(toPosix(out)).toBe("/proj/out/docs/sub/page.de.md");
+    expect(toPosix(out)).toBe(`${root}/out/docs/sub/page.de.md`);
   });
 
   it("jsonPathTemplate applies to json artifacts", () => {
@@ -612,6 +615,6 @@ describe("output-paths", () => {
       ],
     });
     const out = resolveDocumentationOutputPath(c, cwd, "de", "foo.json", "json");
-    expect(toPosix(out)).toBe("/proj/i18n/j/de/foo.json");
+    expect(toPosix(out)).toBe(`${root}/i18n/j/de/foo.json`);
   });
 });

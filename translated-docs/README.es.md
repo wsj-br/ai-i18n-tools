@@ -2,6 +2,7 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
@@ -12,6 +13,7 @@
 
 CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, Markdown/MDX simple). Utilice ajustes preestablecidos integrados para OpenAI, Anthropic, Gemini, OpenRouter, Ollama y más, o cualquier API compatible con OpenAI. Cambie de proveedor o modelo por proyecto o por configuración regional sin cambiar su base de código.
 
+<a id="features"></a>
 ## Características
 
 | | |
@@ -23,7 +25,8 @@ CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScr
 | **Caché inteligente** | Caché SQLite compartida: solo los segmentos nuevos o modificados llegan al modelo |
 | **Un `sync`** | Ejecuta extracto → UI → SVG → docs → JSON en el orden correcto desde una configuración |
 
-## ¿Qué pipeline?
+<a id="which-pipeline"></a>
+## ¿Qué "pipeline"?
 
 | Su contenido | Comando |
 | --- | --- |
@@ -33,6 +36,7 @@ CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScr
 
 Consulte [¿Qué es ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) para una comparación completa.
 
+<a id="install"></a>
 ## Instalar
 
 Solo ESM. Requiere Node.js `>=22.16.0`.
@@ -50,6 +54,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 Configure el comando `ai-i18n-tools` básico (direnv, PATH, scripts `package.json` o `npx`) — consulte [Instalación](../docs/guide/installation.md).
 
+<a id="quick-start"></a>
 ## Inicio rápido
 
 ```bash
@@ -61,6 +66,7 @@ Andamios orientados a documentos: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepr
 
 Prefiera `sync` en lugar de encadenar comandos de traducción individuales. Tutorial completo: [Inicio rápido](../docs/guide/quick-start.md).
 
+<a id="documentation"></a>
 ## Documentación
 
 - [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — guías, integraciones y referencia
@@ -71,10 +77,12 @@ Prefiera `sync` en lugar de encadenar comandos de traducción individuales. Tuto
 - [Ejemplos](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — demostraciones ejecutables (`npx degit …`)
 - [Contexto de agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — guía de integración para asistentes en repositorios de consumidores
 
+<a id="contributing"></a>
 ## Contribución
 
 Los problemas y las solicitudes de extracción son bienvenidos. Flujos de trabajo de mantenedor para este repositorio: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) y [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md).
 
+<a id="license"></a>
 ## Licencia
 
 MIT — consulte [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).

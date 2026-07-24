@@ -29,16 +29,16 @@ PATH_add node_modules/.bin
 
 After `direnv allow`, the bare command is available whenever you `cd` into the project.
 
-**Manual PATH** — from the project root in an interactive shell:
+**Manual PATH** — run these from the **project root** (the directory that contains `node_modules/.bin`). Subdirectories keep working afterward as long as you leave that `PATH` entry in place; re-running the export from a nested folder fails because `$PWD` no longer points at the project root.
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -51,7 +51,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-A global install uses the globally pinned version. For per-project version pinning, prefer direnv or manual PATH so `node_modules/.bin` resolves to the project's dependency.
+With pnpm, run `pnpm setup` once per machine (and open a new shell) if global commands are missing — pnpm requires its global bin directory on `PATH`. A global install uses the globally pinned version. For per-project version pinning, prefer direnv or manual PATH so `node_modules/.bin` resolves to the project's dependency.
 
 **`package.json` scripts** — when npm or pnpm runs a script, it prepends `node_modules/.bin` to `PATH`, so the bare command name works inside scripts without shell PATH changes. Prefer `sync` over hand-chaining translate steps — order and feature flags are easy to get wrong when run manually:
 

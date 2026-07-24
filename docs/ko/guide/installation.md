@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 `direnv allow` 후에는 프로젝트에 `cd`할 때마다 bare 명령을 사용할 수 있습니다.
 
-**수동 PATH** — 인터랙티브 셸의 프로젝트 루트에서 다음을 실행합니다.
+**수동 PATH** — `node_modules/.bin`가 포함된 디렉터리인 **프로젝트 루트**에서 이 명령들을 실행하세요. 해당 `PATH` 항목을 그대로 두는 한 이후에 하위 디렉터리에서도 계속 작동합니다. 중첩된 폴더에서 export를 다시 실행하면 `$PWD`가 더 이상 프로젝트 루트를 가리키지 않아 실패합니다.
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-전역 설치는 전역으로 고정된 버전을 사용합니다. 프로젝트별 버전 고정을 위해서는 `node_modules/.bin`가 프로젝트의 종속성으로 확인되도록 direnv 또는 수동 PATH를 사용하는 것이 좋습니다.
+pnpm을 사용할 때 전역 명령이 누락된 경우 머신당 한 번씩 `pnpm setup`을(를) 실행하고 새 셸을 여세요. pnpm은 자신의 전역 bin 디렉터리가 `PATH`에 있어야 하기 때문입니다. 전역 설치는 전역으로 고정된 버전을 사용합니다. 프로젝트별 버전 고정을 위해서는 direnv 또는 수동 PATH를 사용하여 `node_modules/.bin`가 프로젝트의 의존성을 가리키도록 하는 것을 권장합니다.
 
 **`package.json` 스크립트** — npm 또는 pnpm이 스크립트를 실행할 때 `node_modules/.bin`을(를) `PATH` 앞에 추가하므로, 셸 PATH를 변경하지 않고도 스크립트 내에서 명령어 이름만으로 실행할 수 있습니다. translate 단계를 수동으로 연결하는 것보다 `sync`을(를) 사용하는 것을 권장합니다 — 수동으로 실행하면 순서와 기능 플래그를 잘못 지정하기 쉽습니다:
 

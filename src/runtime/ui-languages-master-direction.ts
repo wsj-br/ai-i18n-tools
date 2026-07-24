@@ -1,7 +1,7 @@
 import masterJson from "./ui-languages-complete.json" with { type: "json" };
 import { normalizeManifestLocaleKey } from "../core/locale-utils.js";
 
-/** Compile-time bundle of `data/ui-languages-complete.json` (symlink under `src/runtime/`). */
+/** Compile-time bundle of `data/ui-languages-complete.json` (symlink or sync'd copy under `src/runtime/`). */
 const master = masterJson as unknown[];
 
 const DIRECTION_BY_KEY = new Map<string, "ltr" | "rtl">();

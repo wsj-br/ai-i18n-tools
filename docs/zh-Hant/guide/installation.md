@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 在 `direnv allow` 之後，每當您 `cd` 進入專案時，裸指令即可使用。
 
-**手動 PATH** — 在互動式 shell 中從專案根目錄執行：
+**手動 PATH** — 請從**專案根目錄**（包含 `node_modules/.bin` 的目錄）執行這些指令。只要您保留該 `PATH` 項目，子目錄之後仍會繼續運作；從巢狀資料夾重新執行匯出會失敗，因為 `$PWD` 不再指向專案根目錄。
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-全域安裝會使用全域鎖定的版本。若要進行各專案的版本鎖定，建議使用 direnv 或手動 PATH，以便 `node_modules/.bin` 解析至專案的相依性。
+使用 pnpm 時，如果遺漏全域指令，請在每台機器上執行一次 `pnpm setup`（並開啟新的 shell）— pnpm 需要將其全域 bin 目錄放在 `PATH` 上。全域安裝會使用全域鎖定的版本。若要針對個別專案鎖定版本，建議使用 direnv 或手動 PATH，讓 `node_modules/.bin` 解析至專案的依賴項目。
 
 **`package.json` 指令稿** — 當 npm 或 pnpm 執行指令稿時，會將 `node_modules/.bin` 前置到 `PATH`，因此在指令稿內部可以直接使用指令名稱而無需變更殼層的 PATH。建議使用 `sync` 而非手動串接翻譯步驟——手動執行時順序和功能旗標很容易出錯：
 

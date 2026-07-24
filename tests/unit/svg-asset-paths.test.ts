@@ -101,7 +101,7 @@ describe("svg-asset-paths", () => {
       "images/translation_demo_svg.svg",
       "translation_demo_svg.svg"
     );
-    expect(abs).toBe(path.join(cwd, "public/assets/illustrations/translation_demo_svg__de.svg"));
+    expect(abs).toBe(path.resolve(cwd, "public/assets/illustrations/translation_demo_svg__de.svg"));
   });
 
   it("resolveSvgAssetOutputPath flat uses stem.locale.svg", () => {
@@ -112,7 +112,7 @@ describe("svg-asset-paths", () => {
       "images/translation_demo_svg.svg",
       "translation_demo_svg.svg"
     );
-    expect(abs).toBe(path.join(cwd, "public/assets/translation_demo_svg.pt-BR.svg"));
+    expect(abs).toBe(path.resolve(cwd, "public/assets/translation_demo_svg.pt-BR.svg"));
   });
 
   it("resolveSvgAssetOutputPath nested uses locale/relPath", () => {
@@ -123,7 +123,7 @@ describe("svg-asset-paths", () => {
       "images/icons/a.svg",
       "icons/a.svg"
     );
-    expect(abs).toBe(path.join(cwd, "public/assets/pt-BR/icons/a.svg"));
+    expect(abs).toBe(path.resolve(cwd, "public/assets/pt-BR/icons/a.svg"));
   });
 
   it("resolveSvgAssetOutputPath flat with localePathLowercase uses lowercased locale", () => {
@@ -154,7 +154,7 @@ describe("svg-asset-paths", () => {
       "images/translation_demo_svg.svg",
       "translation_demo_svg.svg"
     );
-    expect(abs).toBe(path.join(cwd, "public/assets/translation_demo_svg.pt-br.svg"));
+    expect(abs).toBe(path.resolve(cwd, "public/assets/translation_demo_svg.pt-br.svg"));
   });
 
   it("svgAssetCacheFilepath prefixes svg-files:", () => {

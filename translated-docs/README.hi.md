@@ -2,7 +2,8 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
-# एआई-आई18एन-टूल्स
+<a id="ai-i18n-tools"></a>
+# ai-i18n-tools
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
 
@@ -12,6 +13,7 @@
 
 जावास्क्रिप्ट/टाइपस्क्रिप्ट ऐप्स और दस्तावेज़ साइटों (वाइटप्रेस, स्टारलाइट, डॉक्यूसॉरस, नेक्सट्रा, फ़्यूमाडॉक्स, एस्ट्रो, सादा मार्कडाउन/एमडीएक्स) के अंतर्राष्ट्रीयकरण के लिए सीएलआई और टूलकिट। ओपनएआई, एंथ्रोपिक, जेमिनी, ओपनराउटर, ओलामा, और बहुत कुछ के लिए अंतर्निहित प्रीसेट का उपयोग करें — या कोई भी ओपनएआई-संगत एपीआई। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल स्विच करें।
 
+<a id="features"></a>
 ## विशेषताएँ
 
 | | |
@@ -23,6 +25,7 @@
 | **स्मार्ट कैश** | साझा SQLite कैश — केवल नए या बदले हुए सेगमेंट मॉडल को हिट करते हैं |
 | **एक `sync`** | एक कॉन्फ़िग से सही क्रम में एक्सट्रैक्ट → यूआई → एसवीजी → डॉक्स → JSON चलाता है |
 
+<a id="which-pipeline"></a>
 ## कौन सी पाइपलाइन?
 
 | आपकी सामग्री | कमांड |
@@ -33,6 +36,7 @@
 
 पूरी तुलना के लिए [एआई-आई18एन-टूल्स क्या है?](../docs/guide/what-is-ai-i18n-tools.md) देखें।
 
+<a id="install"></a>
 ## इंस्टॉल करें
 
 केवल ईएसएम। Node.js `>=22.16.0` की आवश्यकता है।
@@ -50,6 +54,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 नंगे `ai-i18n-tools` कमांड (डाइरेनवी, पाथ, `package.json` स्क्रिप्ट, या `npx`) को कॉन्फ़िगर करें — [इंस्टॉलेशन](../docs/guide/installation.md) देखें।
 
+<a id="quick-start"></a>
 ## त्वरित शुरुआत
 
 ```bash
@@ -61,6 +66,7 @@ ai-i18n-tools sync                   # extract + translate per features
 
 व्यक्तिगत अनुवाद कमांड को जोड़ने के बजाय `sync` को प्राथमिकता दें। पूर्ण वॉकथ्रू: [त्वरित शुरुआत](../docs/guide/quick-start.md)।
 
+<a id="documentation"></a>
 ## दस्तावेज़
 
 - [दस्तावेज़ साइट](https://wsj-br.github.io/ai-i18n-tools/) — गाइड, इंटीग्रेशन और संदर्भ
@@ -71,10 +77,12 @@ ai-i18n-tools sync                   # extract + translate per features
 - [उदाहरण](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — चलाने योग्य डेमो (`npx degit …`)
 - [AI एजेंट संदर्भ](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — उपभोक्ता रेपो में सहायकों के लिए इंटीग्रेशन गाइड
 
-## योगदान करना
+<a id="contributing"></a>
+## योगदान
 
 समस्याएँ और पुल अनुरोधों का स्वागत है। इस रिपॉजिटरी के लिए अनुरक्षक वर्कफ़्लो: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) और [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md)।
 
+<a id="license"></a>
 ## लाइसेंस
 
 MIT — [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) देखें।

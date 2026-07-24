@@ -2,6 +2,7 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
@@ -12,6 +13,7 @@
 
 CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Apps und Dokumentationsseiten (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, einfaches Markdown/MDX). Verwenden Sie integrierte Voreinstellungen für OpenAI, Anthropic, Gemini, OpenRouter, Ollama und mehr – oder jede OpenAI-kompatible API. Wechseln Sie den Anbieter oder das Modell pro Projekt oder pro Gebietsschema, ohne Ihre Codebasis zu ändern.
 
+<a id="features"></a>
 ## Funktionen
 
 | | |
@@ -23,6 +25,7 @@ CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Apps und Dok
 | **Intelligenter Cache** | Geteilter SQLite-Cache – nur neue oder geänderte Segmente erreichen das Modell |
 | **Ein `sync`** | Führt Extract → UI → SVG → Docs → JSON in der richtigen Reihenfolge aus einer Konfiguration aus |
 
+<a id="which-pipeline"></a>
 ## Welche Pipeline?
 
 | Ihr Inhalt | Befehl |
@@ -33,7 +36,8 @@ CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Apps und Dok
 
 Einen vollständigen Vergleich finden Sie unter [Was ist ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md).
 
-## Installation
+<a id="install"></a>
+## Installieren
 
 Nur ESM. Erfordert Node.js `>=22.16.0`.
 
@@ -50,6 +54,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 Konfigurieren Sie den reinen `ai-i18n-tools`-Befehl (direnv, PATH, `package.json`-Skripte oder `npx`) – siehe [Installation](../docs/guide/installation.md).
 
+<a id="quick-start"></a>
 ## Schnellstart
 
 ```bash
@@ -61,6 +66,7 @@ Dokumentationsorientierte Gerüste: `-t ui-docusaurus`, `ui-starlight`, `ui-vite
 
 Bevorzugen Sie `sync` gegenüber dem Verketten einzelner Übersetzungsbefehle. Vollständige Anleitung: [Schnellstart](../docs/guide/quick-start.md).
 
+<a id="documentation"></a>
 ## Dokumentation
 
 - [Dokumentationsseite](https://wsj-br.github.io/ai-i18n-tools/) – Anleitungen, Integrationen und Referenz
@@ -71,10 +77,12 @@ Bevorzugen Sie `sync` gegenüber dem Verketten einzelner Übersetzungsbefehle. V
 - [Beispiele](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) – ausführbare Demos (`npx degit …`)
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) – Integrationsanleitung für Assistenten in Consumer-Repos
 
+<a id="contributing"></a>
 ## Mitwirken
 
 Probleme und Pull-Requests sind willkommen. Workflows für Maintainer für dieses Repository: [`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) und [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md).
 
+<a id="license"></a>
 ## Lizenz
 
 MIT – siehe [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).

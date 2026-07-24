@@ -7,6 +7,7 @@
 - [Development Guide](#development-guide)
   - [Related guides](#related-guides)
   - [Prerequisites](#prerequisites)
+    - [Git symlinks (required on Windows)](#git-symlinks-required-on-windows)
     - [Optional: locale screenshots (](#optional-locale-screenshots-examplesnextjs-app)`examples/nextjs-app`[)](#optional-locale-screenshots-examplesnextjs-app)
     - [Optional: Translation Dashboard screenshot](#optional-translation-dashboard-screenshot)
   - [Setting Up the Workspace](#setting-up-the-workspace)
@@ -34,7 +35,7 @@
     - [Pre-release checklist](#pre-release-checklist)
     - [Bumping the version](#bumping-the-version)
     - [Release notes and changelog](#release-notes-and-changelog)
-    - [Creating the GitHub release (](#creating-the-github-release-scriptsreleasesh)`scripts/release.sh`[)](#creating-the-github-release-scriptsreleasesh)
+    - [Creating the GitHub release (](#creating-the-github-release-scriptsreleasemjs)`scripts/release.mjs`[)](#creating-the-github-release-scriptsreleasemjs)
     - [npm package dry run (optional)](#npm-package-dry-run-optional)
     - [What gets published](#what-gets-published)
 
@@ -69,7 +70,31 @@ Local development setup, examples, testing, and publishing for [ai-i18n-tools](h
 
 > **Tip:** [Corepack](https://nodejs.org/api/corepack.html) ships with Node.js and is the recommended way to manage pnpm.
 
+### Git symlinks (required on Windows)
 
+This repository tracks `src/runtime/ui-languages-complete.json` as a **git symlink** to `data/ui-languages-complete.json` (so TypeScript can `import` the catalog under `src/` without duplicating the file). New clones must enable Git symlink support **before** checkout, or restore the link afterward.
+
+On a new machine (especially Windows):
+
+1. Enable OS symlink creation — turn on [Developer Mode](https://learn.microsoft.com/windows/apps/get-started/enable-your-device-for-development), or use an elevated shell. Without this, Git cannot create symlinks even when `core.symlinks` is true.
+2. Tell Git to materialize symlinks (global once per machine, or local to this repo):
+
+```bash
+git config --global core.symlinks true
+# or, inside the clone only:
+git config --local core.symlinks true
+```
+
+3. Clone (or re-checkout the file if the repo already exists):
+
+```bash
+git clone https://github.com/wsj-br/ai-i18n-tools.git
+cd ai-i18n-tools
+# If you cloned earlier with core.symlinks=false:
+git checkout -- src/runtime/ui-languages-complete.json
+```
+
+If the path is a plain text file whose only content is `../../data/ui-languages-complete.json`, the symlink was not created. After enabling the settings above, re-run the `git checkout --` command. As a fallback, `pnpm build` / `pnpm typecheck` run `scripts/ensure-src-ui-languages-json.mjs`, which copies the catalog into place when the symlink is broken — that unblocks the build but leaves a dirty working tree until the real symlink is restored.
 
 ### Optional: locale screenshots (`examples/nextjs-app`)
 
@@ -101,6 +126,8 @@ By default the script starts `ai-i18n-tools dashboard -L en-GB --no-open` on por
 
 ## Setting Up the Workspace
 
+On Windows, configure [Git symlinks](#git-symlinks-required-on-windows) before cloning (or restore the link after enabling `core.symlinks`).
+
 ```bash
 git clone https://github.com/wsj-br/ai-i18n-tools.git
 cd ai-i18n-tools
@@ -112,7 +139,7 @@ After building, invoke the CLI using one of the options in [Running the CLI duri
 
 ### Running the CLI during development
 
-The published `bin` entry is `bin/ai-i18n-tools.mjs` — a stable shim that dynamically imports the compiled CLI at `dist/cli/index.js`.
+The published `bin` entry is `bin/ai-i18n-tools.mjs` — a stable shim that dynamically imports the compiled CLI at `dist/cli/index.js` via `pathToFileURL` (required on Windows; bare absolute paths are not valid ESM module URLs).
 
 `pnpm build` runs, in order:
 
@@ -138,21 +165,32 @@ node bin/ai-i18n-tools.mjs status
 
 Some in-repo examples use this form explicitly, e.g. `node ../../bin/ai-i18n-tools.mjs …` in `examples/multi-provider`.
 
-**Option 2 — shell alias (bare command in any directory while developing):**
+**Option 2 — shell alias / function (bare command while developing):**
 
-From the repository root:
-
-```bash
-alias ai-i18n-tools='node "$(pwd)/bin/ai-i18n-tools.mjs"'
-```
-
-Or with a fixed clone path (adjust to your checkout):
+Prefer a **fixed clone path** so the bare command works from any directory (adjust to your checkout):
 
 ```bash
+# bash/zsh — add to ~/.bashrc or ~/.zshrc
 alias ai-i18n-tools='node "$HOME/src/ai-i18n-tools/bin/ai-i18n-tools.mjs"'
 ```
 
-Add the alias to `~/.bashrc` or `~/.zshrc` if you want it in every new shell. Rebuild (`pnpm build`) after CLI changes before invoking.
+A `$(pwd)`-based alias only works when your cwd is the repository root (`$(pwd)` is evaluated at invoke time, not when you define the alias):
+
+```bash
+# bash/zsh — only while cwd is the ai-i18n-tools repo root
+alias ai-i18n-tools='node "$(pwd)/bin/ai-i18n-tools.mjs"'
+```
+
+PowerShell (Windows) — put a function in your profile (or a script your profile dot-sources). Do **not** use `Set-Alias … .\node_modules\.bin\ai-i18n-tools`: that relative path breaks in subdirectories, and the monorepo root has no self-shim under `node_modules/.bin`.
+
+```powershell
+# PowerShell — bare command from any cwd while developing this repo
+function ai-i18n-tools {
+  node "$HOME\src\ai-i18n-tools\bin\ai-i18n-tools.mjs" @args
+}
+```
+
+Rebuild (`pnpm build`) after CLI changes before invoking.
 
 **Option 3 — global install from the working tree (bare command everywhere):**
 
@@ -192,7 +230,7 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 **Cross-platform notes**
 
 - Linux, macOS, and WSL: the CLI needs the executable bit on `dist/cli/index.js`; `pnpm build` sets it (see `scripts/chmod-cli-bin.mjs`).
-- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account. Prefer `node bin/ai-i18n-tools.mjs` or a PowerShell function over a bash `alias`.
+- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account. Prefer `node bin/ai-i18n-tools.mjs` or the PowerShell function in Option 2 over a bash `alias`.
 
 
 
@@ -217,7 +255,7 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 | `pnpm clean`           | Remove the `dist/` directory                                                                          |
 | `pnpm clean:workspace` | Remove install/build artifacts across the monorepo (`scripts/clean-workspace.sh`)                     |
 | `pnpm clean-temp`      | List temp `*.log` / `cache.db.backup*.sqlite` files; delete after confirm, or pass `-f` for no prompt |
-| `pnpm pre-release`     | Full release gate via `scripts/pre-release.sh` (see [Starting a release](#starting-a-release))                          |
+| `pnpm pre-release`     | Full release gate via `scripts/pre-release.mjs` (see [Starting a release](#starting-a-release))                          |
 
 
 
@@ -259,7 +297,7 @@ Run `pnpm i18n:self` after changing user-facing CLI, log, or dashboard strings (
 
 | Command                   | Description                                                                                           |
 | ------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `pnpm release:github`     | Create the GitHub release from `release-notes/RELEASE_NOTES_<version>.md` (runs `scripts/release.sh`) |
+| `pnpm release:github`     | Create the GitHub release from `release-notes/RELEASE_NOTES_<version>.md` (runs `scripts/release.mjs`) |
 | `pnpm release:github:dry` | Dry-run the release script (validate inputs; no tag push or GitHub release)                           |
 | `pnpm notices:write`      | Regenerate third-party notices                                                                        |
 
@@ -487,16 +525,16 @@ pnpm update-all
 pnpm pre-release
 ```
 
-`pre-release` (`scripts/pre-release.sh`) runs, in order:
+`pre-release` (`scripts/pre-release.mjs`) runs, in order:
 
 1. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
 2. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
 3. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
 4. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
 5. `pnpm docs:build`
-6. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/nextjs-app`, `examples/nextra-docs`, and `examples/vitepress-docs`
+6. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/docusaurus-docs`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/nextra-docs`, and `examples/vitepress-docs`
 
-It does **not** run `examples/nextjs-app/docs-site` (nested Docusaurus site), or `examples/test-markdown` (build invokes live translation and needs API keys). Resolve any failures locally; CI applies the same checks before npm publish.
+It does **not** run `examples/test-markdown` (build invokes live translation and needs API keys). Resolve any failures locally; CI applies the same checks before npm publish.
 
 ### Pre-release checklist
 
@@ -532,9 +570,9 @@ Copy and paste `[dev/release-new-version-prompt.md](release-new-version-prompt.m
 
 Commit the new or updated release-notes file and changelog together with any other release prep so `git status` **is clean** before you publish the GitHub release.
 
-### Creating the GitHub release (`scripts/release.sh`)
+### Creating the GitHub release (`scripts/release.mjs`)
 
-Publishing the GitHub release is done with the release script (wrapper: `pnpm release:github`, which runs `bash scripts/release.sh` from the repository root).
+Publishing the GitHub release is done with the release script (wrapper: `pnpm release:github`, which runs `node scripts/release.mjs` from the repository root). Works on Windows and Linux without bash.
 
 **Prerequisites**
 
@@ -556,7 +594,7 @@ Publishing the GitHub release is done with the release script (wrapper: `pnpm re
   ```bash
    pnpm release:github
   ```
-   Equivalent: `./scripts/release.sh` from the repo root. Use `./scripts/release.sh --help` for flags (`--dry-run`, `--verify-clean=false`).
+   Equivalent: `node scripts/release.mjs` from the repo root. Use `node scripts/release.mjs --help` for flags (`--dry-run`, `--verify-clean=false`).
 
 The script creates an annotated tag `v<version>` at **HEAD**, pushes it to `origin`, and creates a GitHub release whose body is `release-notes/RELEASE_NOTES_<version>.md`. If that tag or a GitHub release for it already exists, the script removes them and recreates the tag at the current HEAD so you can fix a mistaken tag or add follow-up commits before releasing.
 

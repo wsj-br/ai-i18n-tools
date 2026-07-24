@@ -2,6 +2,7 @@
   <img src="../docs/public/ai-i18n-tools_logo.png" alt="ai-i18n-tools logo" width="128" />
 </p>
 
+<a id="ai-i18n-tools"></a>
 # ai-i18n-tools
 
 <small id="lang-list">[English (UK)](../README.md) · [Deutsch](./README.de.md) · [Español](./README.es.md) · [Français](./README.fr.md) · [हिन्दी](./README.hi.md) · [日本語](./README.ja.md) · [한국어](./README.ko.md) · [Português (Brasil)](./README.pt-BR.md) · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)</small>
@@ -12,7 +13,8 @@
 
 用于国际化 JavaScript/TypeScript 应用和文档站点（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、纯 Markdown/MDX）的 CLI 和工具包。使用 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 等内置预设 — 或任何兼容 OpenAI 的 API。无需更改代码库即可按项目或按区域设置切换提供商或模型。
 
-## 特性
+<a id="features"></a>
+## 功能
 
 | | |
 | --- | --- |
@@ -23,7 +25,8 @@
 | **智能缓存** | 共享 SQLite 缓存 — 只有新增或更改的片段会发送给模型 |
 | **单个 `sync`** | 从一个配置中按正确顺序运行提取 → UI → SVG → 文档 → JSON |
 
-## 选择哪个流水线？
+<a id="which-pipeline"></a>
+## 哪种流水线？
 
 | 你的内容 | 命令 |
 | --- | --- |
@@ -33,6 +36,7 @@
 
 查看 [什么是 ai-i18n-tools？](../docs/guide/what-is-ai-i18n-tools.md) 获取完整比较。
 
+<a id="install"></a>
 ## 安装
 
 仅支持 ESM。需要 Node.js `>=22.16.0`。
@@ -50,6 +54,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 配置纯 `ai-i18n-tools` 命令（direnv、PATH、`package.json` 脚本或 `npx`） — 请参阅[安装](../docs/guide/installation.md)。
 
+<a id="quick-start"></a>
 ## 快速开始
 
 ```bash
@@ -61,6 +66,7 @@ ai-i18n-tools sync                   # extract + translate per features
 
 优先使用 `sync` 而不是链式调用单个翻译命令。完整演练：[快速开始](../docs/guide/quick-start.md)。
 
+<a id="documentation"></a>
 ## 文档
 
 - [文档站点](https://wsj-br.github.io/ai-i18n-tools/) — 指南、集成和参考
@@ -71,10 +77,12 @@ ai-i18n-tools sync                   # extract + translate per features
 - [示例](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — 可运行的演示 (`npx degit …`)
 - [AI 代理上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 面向消费者仓库中助手的集成指南
 
+<a id="contributing"></a>
 ## 贡献
 
 欢迎提交 Issue 和拉取请求。此仓库的维护者工作流：[`AGENTS.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/AGENTS.md) 和 [`dev/DEVEL.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md)。
 
+<a id="license"></a>
 ## 许可证
 
 MIT — 请参阅 [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE)。

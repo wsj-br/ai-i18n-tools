@@ -9,6 +9,14 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.3] - 2026-07-24
+
+- **Changed**: scripts — `pnpm release:github` / `release:github:dry` now run `scripts/release.mjs` (Node) instead of `scripts/release.sh`, so GitHub release publishing works on Windows and Linux without bash.
+- **Changed**: scripts — `pnpm pre-release` now runs `scripts/pre-release.mjs` (Node) instead of `scripts/pre-release.sh`, so the release gate works on Windows and Linux without bash.
+- **Fixed**: install — `scripts/ensure-built.mjs` invokes the build via `node $npm_execpath` (or a shell `pnpm` fallback) and guards nested `prepare` runs, so Windows `pnpm install` no longer fails with `spawnSync pnpm ENOENT` when `dist/` is missing.
+- **Fixed**: build — `scripts/ensure-src-ui-languages-json.mjs` materializes `src/runtime/ui-languages-complete.json` from `data/` when the git symlink is a plain text pointer (common on Windows with `core.symlinks=false`), so `tsc` no longer fails on that import.
+- **Fixed**: cli — `bin/ai-i18n-tools.mjs` dynamically imports the compiled entry via `pathToFileURL(...).href` so Windows absolute paths no longer trigger `ERR_UNSUPPORTED_ESM_URL_SCHEME` (Node treats bare `C:\...` as an unsupported URL protocol).
+
 ## [1.8.2] - 2026-07-17
 
 - **Fixed**: scripts — `screenshot-translation-dashboard.sh` starts the dashboard with `-L en-GB` so the shared docs PNG stays English regardless of host OS locale / `AI_I18N_LANG`; `dev/DEVEL.md` link updated to `docs/guide/translation-dashboard/`.

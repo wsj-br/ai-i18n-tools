@@ -1,3 +1,4 @@
+import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   parseProofreadUIBatchResponse,
@@ -100,7 +101,7 @@ describe("formatProofreadUIHumanLogText", () => {
     expect(text).toContain("ok: 1");
     expect(text).toContain("totalCostUsd:");
     expect(text).toContain("[warning]");
-    expect(text).toContain("  /proj/src/x.tsx:1");
+    expect(text).toContain(`  ${path.normalize(path.join("/proj", "src/x.tsx"))}:1`);
     expect(text).toContain("OK (1):");
     expect(text).toContain('[ok] b "Fine"');
     expect(text).not.toContain("schemaVersion");

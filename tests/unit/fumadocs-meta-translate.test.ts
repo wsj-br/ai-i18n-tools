@@ -4,7 +4,7 @@ import path from "path";
 import { afterEach, describe, expect, it } from "vitest";
 import { collectFumadocsMetaFiles } from "../../src/cli/fumadocs-meta-translate.js";
 import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
-import { resolveDocumentationOutputPath } from "../../src/core/output-paths.js";
+import { resolveDocumentationOutputPath, toPosix } from "../../src/core/output-paths.js";
 import type { I18nDocTranslateConfig } from "../../src/core/types.js";
 
 describe("collectFumadocsMetaFiles", () => {
@@ -80,6 +80,7 @@ describe("collectFumadocsMetaFiles", () => {
 
 describe("fumadocs meta output paths", () => {
   const cwd = "/proj";
+  const root = toPosix(path.resolve(cwd));
 
   function cfg(over: Record<string, unknown> = {}) {
     const full = parseI18nConfig(
@@ -116,7 +117,7 @@ describe("fumadocs meta output paths", () => {
       "content/docs/guide/meta.json",
       "markdown"
     );
-    expect(out.replace(/\\/g, "/")).toBe("/proj/content/docs/guide/meta.pt.json");
+    expect(toPosix(out)).toBe(`${root}/content/docs/guide/meta.pt.json`);
   });
 
   it("writes locale folder meta.json for dir parser", () => {
@@ -136,6 +137,6 @@ describe("fumadocs meta output paths", () => {
       "content/docs/en/guide/meta.json",
       "markdown"
     );
-    expect(out.replace(/\\/g, "/")).toBe("/proj/content/docs/pt-BR/guide/meta.json");
+    expect(toPosix(out)).toBe(`${root}/content/docs/pt-BR/guide/meta.json`);
   });
 });

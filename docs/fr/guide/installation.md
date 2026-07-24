@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 Après `direnv allow`, la commande simple est disponible chaque fois que vous `cd` dans le projet.
 
-**PATH manuel** — depuis la racine du projet dans un shell interactif :
+**Chemin d'accès manuel** — exécutez ces commandes depuis la **racine du projet** (le répertoire qui contient `node_modules/.bin`). Les sous-répertoires continuent de fonctionner par la suite tant que vous laissez cette entrée `PATH` en place ; relancer l'exportation depuis un dossier imbriqué échoue car `$PWD` ne pointe plus vers la racine du projet.
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-Une installation globale utilise la version épinglée globalement. Pour un épinglage de version par projet, préférez direnv ou PATH manuel afin que `node_modules/.bin` se résolve en dépendance du projet.
+Avec pnpm, exécutez `pnpm setup` une fois par machine (et ouvrez un nouveau shell) si des commandes globales sont manquantes — pnpm nécessite son répertoire de binaires global sur `PATH`. Une installation globale utilise la version épinglée globalement. Pour l'épinglage de version par projet, préférez direnv ou le PATH manuel afin que `node_modules/.bin` se résolve à la dépendance du projet.
 
 **`package.json` scripts** — lorsque npm ou pnpm exécute un script, il ajoute `node_modules/.bin` à `PATH`, de sorte que le nom de la commande fonctionne dans les scripts sans modifier le PATH du shell. Préférez `sync` plutôt que d'enchaîner manuellement les étapes de traduction — l'ordre et les indicateurs de fonctionnalité sont faciles à mal interpréter lorsqu'ils sont exécutés manuellement :
 

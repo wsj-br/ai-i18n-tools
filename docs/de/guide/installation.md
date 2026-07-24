@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 Nach `direnv allow` ist der reine Befehl verfügbar, wann immer Sie sich in das Projekt `cd`.
 
-**Manueller PATH** – vom Projektstamm in einer interaktiven Shell aus:
+**Manueller PATH** – führen Sie diese Befehle vom **Projektstammverzeichnis** aus (dem Verzeichnis, das `node_modules/.bin` enthält). Unterverzeichnisse funktionieren danach weiterhin, solange Sie den Eintrag `PATH` beibehalten; ein erneuter Export aus einem verschachtelten Ordner schlägt fehl, da `$PWD` nicht mehr auf das Projektstammverzeichnis zeigt.
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-Eine globale Installation verwendet die global festgelegte Version. Für die versionsspezifische Festlegung pro Projekt bevorzugen Sie direnv oder den manuellen PATH, damit `node_modules/.bin` auf die Abhängigkeit des Projekts verweist.
+Führen Sie bei pnpm `pnpm setup` einmal pro Maschine aus (und öffnen Sie eine neue Shell), wenn globale Befehle fehlen – pnpm benötigt sein globales Bin-Verzeichnis auf `PATH`. Eine globale Installation verwendet die global festgelegte Version. Für die projektbezogene Versionsfestlegung bevorzugen Sie direnv oder den manuellen PATH, damit `node_modules/.bin` auf die Abhängigkeit des Projekts verweist.
 
 **`package.json`-Skripte** – wenn npm oder pnpm ein Skript ausführt, wird `node_modules/.bin` an `PATH` vorangestellt, sodass der reine Befehlsname innerhalb von Skripten ohne Änderungen des Shell-PATH funktioniert. Bevorzugen Sie `sync` gegenüber dem manuellen Verketten von Übersetzungsschritten – Reihenfolge und Feature-Flags können bei manueller Ausführung leicht falsch sein:
 

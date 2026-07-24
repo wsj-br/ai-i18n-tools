@@ -28,16 +28,16 @@ PATH_add node_modules/.bin
 
 `direnv allow` の後、プロジェクトに `cd` すれば、いつでもコマンド単体が利用可能になります。
 
-**手動PATH** — インタラクティブシェルでプロジェクトルートから:
+**手動PATH** — これらは**プロジェクトルート**（`node_modules/.bin`を含むディレクトリ）から実行してください。その`PATH`エントリをそのまま残しておけば、サブディレクトリでも引き続き機能します。ネストされたフォルダからエクスポートを再実行すると、`$PWD`がプロジェクトルートを指さなくなるため失敗します。
 
 ```bash
-# bash/zsh
+# bash/zsh — from the project root
 export PATH="$PWD/node_modules/.bin:$PATH"
 ai-i18n-tools sync
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell — from the project root
 $env:Path = "$PWD\node_modules\.bin;$env:Path"
 ai-i18n-tools sync
 ```
@@ -50,7 +50,7 @@ npm install -g ai-i18n-tools
 pnpm add -g ai-i18n-tools
 ```
 
-グローバルインストールはグローバルに固定されたバージョンを使用します。プロジェクトごとのバージョン固定には、direnv または手動PATHを使用し、`node_modules/.bin` がプロジェクトの依存関係に解決されるようにすることをお勧めします。
+pnpmの場合、グローバルコマンドが見つからない場合はマシンごとに1回`pnpm setup`を実行し（新しいシェルを開いてください）— pnpmはそのグローバルbinディレクトリを`PATH`に配置する必要があります。グローバルインストールでは、グローバルに固定されたバージョンが使用されます。プロジェクトごとのバージョン固定には、direnvまたは手動PATHを推奨します。これにより、`node_modules/.bin`がプロジェクトの依存関係に解決されるようになります。
 
 **`package.json` スクリプト** — npmまたはpnpmがスクリプトを実行する際、`node_modules/.bin`を`PATH`の先頭に追加するため、シェルのPATHを変更しなくてもスクリプト内でコマンド名をそのまま使用できます。translateステップを手動でつなぎ合わせるよりも`sync`を優先してください — 手動で実行すると、順序や機能フラグを間違えやすくなります:
 
