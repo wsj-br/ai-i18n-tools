@@ -101,19 +101,14 @@ function run(command, args, options = {}) {
 }
 
 function requireCmd(command) {
-  const result =
-    process.platform === "win32"
-      ? spawnSync("where", [command], {
-          cwd: root,
-          env: process.env,
-          shell: true,
-          stdio: "ignore",
-        })
-      : spawnSync("sh", ["-c", `command -v -- ${JSON.stringify(command)}`], {
-          cwd: root,
-          env: process.env,
-          stdio: "ignore",
-        });
+  // Same probe on Windows and Linux: spawn the binary directly (no shell).
+  // Avoids DEP0190, `where.exe`, and non-portable `command -v --` under dash.
+  const result = spawnSync(command, ["--version"], {
+    cwd: root,
+    env: process.env,
+    shell: false,
+    stdio: "ignore",
+  });
   if (result.error || (result.status ?? 1) !== 0) {
     fail(`Missing required command: ${command}`);
   }
