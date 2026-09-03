@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: examples — bump `astro` from `7.0.7` to `7.1.0` in `examples/astro-docs` and the workspace lockfile (`examples/astro-website` was already `^7.1.0`).
+
 ## [1.8.3] - 2026-07-24
 
 - **Changed**: scripts — `pnpm release:github` / `release:github:dry` now run `scripts/release.mjs` (Node) instead of `scripts/release.sh`, so GitHub release publishing works on Windows and Linux without bash.
