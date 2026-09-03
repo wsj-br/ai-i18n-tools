@@ -240,5 +240,5 @@ if (dryRun) {
 run("gh", createArgs, { inherit: true });
 console.log(`Release created successfully: ${tag}`);
 console.log("");
-console.log("See the progress at the github repository https://github.com/wsj-br/ai-i18n-tools");
+console.log("See the progress at the github repository https://github.com/wsj-br/ai-i18n-tools/actions");
 console.log("");
