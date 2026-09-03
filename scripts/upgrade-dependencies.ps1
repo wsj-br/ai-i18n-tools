@@ -215,9 +215,17 @@ function Invoke-DoctorUpgradeDir {
     }
 
     $verify = Get-UpgradeVerifyCmd -Dir $Dir -PkgMgr $script:UpgradePkgMgr
+    # typescript-eslint has no TypeScript 7 API yet (issue #10940). A TS 7 bump
+    # fails lint immediately and ncu --doctor then marks every other upgrade as reverted.
+    $ncuReject = $script:EslintReject
+    if (Test-IsDirectDep -Dir $Dir -Name 'typescript-eslint') {
+        if ($ncuReject) { $ncuReject = "$ncuReject,typescript" }
+        else { $ncuReject = 'typescript' }
+        Write-UpgradeWarn "   ↳ [${label}] excluding typescript from ncu (typescript-eslint does not support TS 7.0)."
+    }
     $ncuArgs = @('--upgrade', '--packageManager', $script:UpgradePkgMgr)
-    if ($script:EslintReject) {
-        $ncuArgs += @('-x', $script:EslintReject)
+    if ($ncuReject) {
+        $ncuArgs += @('-x', $ncuReject)
     }
 
     if (-not $verify) {
@@ -247,8 +255,8 @@ function Invoke-DoctorUpgradeDir {
         '--doctorInstall', "$($script:UpgradePkgMgr) install",
         '--doctorTest', $verifyScript
     )
-    if ($script:EslintReject) {
-        $doctorArgs += @('-x', $script:EslintReject)
+    if ($ncuReject) {
+        $doctorArgs += @('-x', $ncuReject)
     }
 
     Push-Location $Dir

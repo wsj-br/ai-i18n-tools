@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -58,9 +58,8 @@ jobs:
     runs-on: ubuntu-latest
     # Optional: Settings → Environments → `npm` — add protection rules, required reviewers, or wait timers before publish.
     environment: npm
-    # Publishing: prefer npm Trusted Publishers (OIDC) — configure on npmjs with workflow file `ci.yml`
-    # (name must match exactly). If OIDC is not set up or the workflow name mismatches, set
-    # `NPM_TOKEN` (granular publish token) as a repo secret. See https://docs.npmjs.com/trusted-publishers/
+    # Publishing uses npm Trusted Publishers (OIDC) — configure on npmjs with workflow file `ci.yml`
+    # (name must match exactly). See https://docs.npmjs.com/trusted-publishers/
     permissions:
       id-token: write
       contents: read
@@ -69,11 +68,9 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 22.x
-          # Seeds project `.npmrc` for `registry.npmjs.org`; auth for `npm publish` comes from `NODE_AUTH_TOKEN` on the publish step.
-          registry-url: https://registry.npmjs.org
 
       - name: Enable pnpm via corepack
         run: corepack enable && corepack prepare --activate
@@ -91,5 +88,3 @@ jobs:
       # `--provenance`: supply-chain attestation (public repos; npm also attests when using Trusted Publishing).
       - name: Publish to npm
         run: npx --yes npm@^11.5.1 publish --ignore-scripts --provenance --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

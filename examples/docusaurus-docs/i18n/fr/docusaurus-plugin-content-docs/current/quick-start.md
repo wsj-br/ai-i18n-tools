@@ -4,7 +4,7 @@ title: Démarrage rapide
 description: >-
   Obtenez votre premier document traduit en moins de cinq minutes en utilisant
   ai-i18n-tools avec ce projet d'exemple Docusaurus.
-translation_last_updated: '2026-07-12T01:33:43.882Z'
+translation_last_updated: '2026-09-03T22:52:20.514Z'
 source_file_mtime: '2026-07-10T22:50:38.005Z'
 source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: fr

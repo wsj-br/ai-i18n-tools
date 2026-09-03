@@ -5,8 +5,8 @@ description: >-
   هذا المثال Astro Starlight.
 sidebar:
   order: 2
-translation_last_updated: '2026-07-12T01:33:37.401Z'
-source_file_mtime: '2026-07-12T01:15:35.414Z'
+translation_last_updated: '2026-09-03T22:52:11.895Z'
+source_file_mtime: '2026-07-12T19:44:59.015Z'
 source_file_hash: 8ad7728b78a59c53a69b14c5c5f27a1f87ccfc635bea1f6c68dd612ea8d0f31d
 translation_language: ar
 source_file_path: src/content/docs/quick-start.md

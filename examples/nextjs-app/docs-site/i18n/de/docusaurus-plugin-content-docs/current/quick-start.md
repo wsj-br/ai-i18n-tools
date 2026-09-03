@@ -4,8 +4,8 @@ title: Schnellstart
 description: >-
   Erhalten Sie Ihr erstes übersetzte Dokument in unter fünf Minuten mithilfe von
   ai-i18n-tools mit diesem Next.js-Beispielprojekt.
-translation_last_updated: '2026-07-12T01:33:47.013Z'
-source_file_mtime: '2026-07-12T01:15:35.414Z'
+translation_last_updated: '2026-09-03T22:52:23.882Z'
+source_file_mtime: '2026-07-12T19:44:59.023Z'
 source_file_hash: e34ee98fed8efd780f0d40a5bd9d9d33307cb5bf12700487e6cb4054acd45660
 translation_language: de
 source_file_path: docs-site/docs/quick-start.md

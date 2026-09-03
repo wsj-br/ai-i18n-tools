@@ -506,13 +506,7 @@ You can also run the CI workflow **manually** from the **Actions** tab (**Run wo
 
 ### One-time setup: npm publish authentication
 
-CI prefers [npm Trusted Publishers](https://docs.npmjs.com/trusted-publishers/) (OIDC) configured on npmjs.com for workflow file `ci.yml`. If OIDC is not set up, add a repository secret named `NPM_TOKEN`:
-
-1. Go to [npmjs.com](https://www.npmjs.com/) > **Access Tokens** > **Generate New Token**.
-2. Choose **Granular Access Token** with publish permission scoped to `ai-i18n-tools` (or use the **Automation** token type, which bypasses 2FA for CI).
-3. Copy the token.
-4. Go to **github.com/wsj-br/ai-i18n-tools** > **Settings** > **Secrets and variables** > **Actions** > **New repository secret**.
-5. Name: `NPM_TOKEN`, Value: paste the token from step 2.
+CI publishes with [npm Trusted Publishers](https://docs.npmjs.com/trusted-publishers/) (OIDC). Configure the trusted publisher on npmjs.com for this repository and workflow file `ci.yml` (the filename must match exactly). The publish job requests `id-token: write` and does not use a long-lived `NPM_TOKEN`.
 
 
 

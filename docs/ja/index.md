@@ -5,8 +5,7 @@ description: LLMを使用してJavaScript/TypeScriptアプリケーションや�
 hero:
   name: ai-i18n-tools
   text: 任意のLLMでアプリとドキュメントを翻訳
-  tagline: >-
-    1つの設定ファイル、3つの翻訳モード、そして選択したプロバイダー（OpenAI、Anthropic、Gemini、OpenRouter、Ollama、またはOpenAI互換の任意のAPI）に対応。コードベースを書き換えることなく、プロジェクトやロケールごとにモデルを切り替えられます。
+  tagline: 1つの設定ファイル、3つの翻訳モード、そして選択したプロバイダー（OpenAI、Anthropic、Gemini、OpenRouter、Ollama、またはOpenAI互換の任意のAPI）に対応。コードベースを書き換えることなく、プロジェクトやロケールごとにモデルを切り替えられます。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools ロゴ
@@ -26,8 +25,7 @@ features:
     details: JS、TS、Astroから t() 呼び出しを抽出し、i18nextや静的SSGルックアップ向けにロケールごとのフラットなJSONを生成します。
   - icon: 📄
     title: ドキュメント
-    details: >-
-      VitePress、Starlight、Docusaurus、Nextra、Fumadocs、および通常の静的サイト向けにMarkdown、MDX、Astroページを翻訳します。
+    details: VitePress、Starlight、Docusaurus、Nextra、Fumadocs、および通常の静的サイト向けにMarkdown、MDX、Astroページを翻訳します。
   - icon: 📦
     title: JSONバンドル
     details: ソースの t() 呼び出し以外にUIコピーが存在する場合（テーマラベル、カタログ、アプリの上書きなど）に使用する、ネストされたロケールJSON。
@@ -39,8 +37,7 @@ features:
     details: 主要なLLM APIの組み込みプリセットに加え、カスタムのOpenAI互換エンドポイントに対応。-P でアクティブなプロバイダーを上書きできます。
   - icon: ⚡
     title: 1つの同期コマンド
-    details: >-
-      1つの設定から、extract、translate-ui、translate-svg、translate-docs、translate-jsonを正しい順序で実行します。
+    details: 1つの設定から、extract、translate-ui、translate-svg、translate-docs、translate-jsonを正しい順序で実行します。
 ---
 
 

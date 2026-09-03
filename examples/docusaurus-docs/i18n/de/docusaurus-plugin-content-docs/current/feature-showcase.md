@@ -4,8 +4,8 @@ title: Funktionsübersicht der Übersetzung
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element demonstriert, das
   ai-i18n-tools übersetzen kann.
-translation_last_updated: '2026-07-12T01:33:42.952Z'
-source_file_mtime: '2026-07-12T01:15:35.404Z'
+translation_last_updated: '2026-09-03T22:52:20.679Z'
+source_file_mtime: '2026-07-12T19:44:59.019Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: de
 source_file_path: docs/feature-showcase.md

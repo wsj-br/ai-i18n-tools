@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.8.3",
-  "packageManager": "pnpm@11.17.0",
+  "version": "1.8.4",
+  "packageManager": "pnpm@11.25.0",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -87,42 +87,42 @@
   },
   "homepage": "https://wsj-br.github.io/ai-i18n-tools/",
   "dependencies": {
-    "@11ty/gray-matter": "^2.1.0",
-    "@ai-sdk/openai-compatible": "^3.0.7",
+    "@11ty/gray-matter": "^3.0.0",
+    "@ai-sdk/openai-compatible": "^3.0.43",
     "@babel/parser": "^8.0.4",
     "@babel/types": "^8.0.4",
-    "ai": "^7.0.21",
-    "chalk": "^5.6.2",
+    "ai": "^7.0.92",
+    "chalk": "^6.0.0",
     "commander": "^15.0.0",
-    "csv-parse": "^7.0.1",
+    "csv-parse": "^7.0.2",
     "emoji-regex": "^10.6.0",
     "express": "^5.2.1",
     "get-east-asian-width": "^1.6.0",
     "i18next-scanner": "^4.6.0",
-    "ignore": "^7.0.6",
+    "ignore": "^7.0.8",
     "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-gfm": "^3.1.0",
     "micromark-extension-gfm": "^3.0.0",
-    "minimatch": "^10.2.5",
-    "remove-markdown": "^0.6.4",
+    "minimatch": "^10.2.6",
+    "remove-markdown": "^0.7.0",
     "unist-util-visit": "^5.1.0",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.6",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.4.1",
     "@types/unist": "^3.0.3",
-    "@vitest/coverage-v8": "^4.1.10",
-    "eslint": "^10.6.0",
-    "globals": "^17.7.0",
-    "prettier": "^3.9.5",
+    "@vitest/coverage-v8": "^5.0.0",
+    "eslint": "^10.9.1",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.6",
     "semver": "^7.8.5",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.63.0",
-    "vitepress": "2.0.0-alpha.17",
-    "vitest": "^4.1.10"
+    "typescript-eslint": "^8.69.0",
+    "vitepress": "2.0.0-alpha.19",
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -138,9 +138,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "overrides": {
-    "glob": "^13.0.6",
-    "test-exclude": "^8.0.0"
   }
 }

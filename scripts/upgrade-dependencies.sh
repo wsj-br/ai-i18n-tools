@@ -193,9 +193,22 @@ _doctor_upgrade_dir() {
   local verify
   verify=$(detect_verify_cmd "$dir")
 
+  # typescript-eslint has no TypeScript 7 API yet (issue #10940). A TS 7 bump
+  # fails `pnpm lint` immediately and ncu --doctor then marks every other
+  # upgrade in that package as reverted.
+  local ncu_reject="$ESLINT_REJECT"
+  if _is_direct_dep "$dir" "typescript-eslint"; then
+    if [ -n "$ncu_reject" ]; then
+      ncu_reject="${ncu_reject},typescript"
+    else
+      ncu_reject="typescript"
+    fi
+    upgrade_warn "   ↳ [${label}] excluding typescript from ncu (typescript-eslint does not support TS 7.0)."
+  fi
+
   if [ -z "$verify" ]; then
     upgrade_warn "📦  [${label}] No typecheck/lint/build script; upgrading without build verification."
-    (cd "$dir" && run_step ncu --upgrade --packageManager "$PKG_MGR" ${ESLINT_REJECT:+-x "$ESLINT_REJECT"}) || true
+    (cd "$dir" && run_step ncu --upgrade --packageManager "$PKG_MGR" ${ncu_reject:+-x "$ncu_reject"}) || true
     return 0
   fi
 
@@ -215,7 +228,7 @@ _doctor_upgrade_dir() {
       --packageManager "$PKG_MGR" \
       --doctorInstall "$PKG_MGR install" \
       --doctorTest "$verify_script" \
-      ${ESLINT_REJECT:+-x "$ESLINT_REJECT"} 2>&1
+      ${ncu_reject:+-x "$ncu_reject"} 2>&1
   ) | tee "$logf" | pr -o 4 -T
   rc=${PIPESTATUS[0]}
 
