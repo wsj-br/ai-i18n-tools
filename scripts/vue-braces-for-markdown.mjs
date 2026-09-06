@@ -2,6 +2,9 @@
  * Escape {{ }} in VitePress markdown outside fenced code blocks.
  * Inline code and prose placeholders become <code v-pre>…</code> so Vue does not
  * treat mustache syntax as interpolation, while readers still see {{name}}.
+ *
+ * Inline code follows CommonMark: a run of N backticks opens a span closed by
+ * the next run of exactly N backticks (so `` `code` `` is handled correctly).
  */
 export function escapeVueBracesInMarkdown(text) {
   function restoreVPreToSource(input) {
@@ -23,6 +26,27 @@ export function escapeVueBracesInMarkdown(text) {
     return segment.replace(/\{\{([^{}]+)\}\}/g, (_, inner) => toVPreCode(`{{${inner}}}`));
   }
 
+  function countBackticks(s, from) {
+    let n = 0;
+    while (from + n < s.length && s[from + n] === "`") n += 1;
+    return n;
+  }
+
+  /** Index of the closing backtick run of length `tickCount`, or -1 if none. */
+  function findInlineCodeClose(s, contentStart, tickCount) {
+    let i = contentStart;
+    while (i < s.length) {
+      if (s[i] !== "`") {
+        i += 1;
+        continue;
+      }
+      const n = countBackticks(s, i);
+      if (n === tickCount) return i;
+      i += n;
+    }
+    return -1;
+  }
+
   const source = restoreVPreToSource(text);
   const parts = [];
   let i = 0;
@@ -35,9 +59,17 @@ export function escapeVueBracesInMarkdown(text) {
       continue;
     }
     if (source[i] === "`") {
-      const end = source.indexOf("`", i + 1);
-      const sliceEnd = end === -1 ? source.length : end + 1;
-      const inner = source.slice(i + 1, sliceEnd - 1);
+      const tickCount = countBackticks(source, i);
+      const contentStart = i + tickCount;
+      const closeStart = findInlineCodeClose(source, contentStart, tickCount);
+      if (closeStart === -1) {
+        // Unmatched backticks are literal text (CommonMark).
+        parts.push(source.slice(i, contentStart));
+        i = contentStart;
+        continue;
+      }
+      const inner = source.slice(contentStart, closeStart);
+      const sliceEnd = closeStart + tickCount;
       parts.push(inner.includes("{{") ? toVPreCode(inner) : source.slice(i, sliceEnd));
       i = sliceEnd;
       continue;

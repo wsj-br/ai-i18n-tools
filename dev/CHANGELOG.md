@@ -9,6 +9,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.8] - 2026-09-07
+
+- **Fixed**: docs — `escapeVueBracesInMarkdown` parses CommonMark multi-backtick inline spans (`` `…` ``), so double-backtick examples no longer desync scanning and leave `` `<code v-pre>{{…}}</code>` `` that breaks `pnpm docs:build` with Vue `Invalid Character \`…\``.
+
 ## [1.8.7] - 2026-09-06
 
 - **Fixed**: docs — pre-restore placeholder integrity allows `{{SE}}` / `{{IT}}` / other emphasis markers to move relative to numbered tokens (`{{URL_N}}`, `{{ILC_N}}`, …) when per-type counts match, so CJK word-order reorderings no longer fail as `placeholderTagMap` token-sequence mismatches; numbered-token order and HTM reuse/drop checks are unchanged.
