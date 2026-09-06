@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { Glossary } from "../../src/glossary/glossary.js";
+import { Glossary, isUiLabelAbbreviation } from "../../src/glossary/glossary.js";
 
 describe("Glossary", () => {
   it("loads strings.json and finds terms", () => {
@@ -114,6 +114,48 @@ describe("Glossary", () => {
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it("skipUiAbbreviations omits compact UI label translations from doc hints", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-abbr-"));
+    const user = path.join(dir, "glossary-user.csv");
+    fs.writeFileSync(
+      user,
+      [
+        "Original language string,locale,Translation,Force",
+        "Size,es,Tam,",
+        "Storage,es,Alm.,",
+        "Duplicati,es,Duplicati,",
+        "Homepage,es,Homepage,",
+      ].join("\n"),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(undefined, user, ["es"]);
+      const prose =
+        "Optional API keys for Duplicati uploads and Homepage widgets, with upload size and storage limits";
+      const uiHints = g.findTermsInText(prose, "es");
+      expect(uiHints.some((h) => /Size/i.test(h) && /Tam/i.test(h))).toBe(true);
+      expect(uiHints.some((h) => /Storage/i.test(h) && /Alm/i.test(h))).toBe(true);
+
+      const docHints = g.findTermsInText(prose, "es", { skipUiAbbreviations: true });
+      expect(docHints.some((h) => /Size/i.test(h) && /Tam/i.test(h))).toBe(false);
+      expect(docHints.some((h) => /Storage/i.test(h))).toBe(false);
+      expect(docHints.some((h) => /Duplicati/i.test(h))).toBe(true);
+      expect(docHints.some((h) => /Homepage/i.test(h))).toBe(true);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("isUiLabelAbbreviation detects trailing-dot and short compressions", () => {
+    expect(isUiLabelAbbreviation("Size", "Tam")).toBe(true);
+    expect(isUiLabelAbbreviation("Storage", "Alm.")).toBe(true);
+    expect(isUiLabelAbbreviation("Last", "Últ.")).toBe(true);
+    expect(isUiLabelAbbreviation("Size", "Tamaño")).toBe(false);
+    expect(isUiLabelAbbreviation("Yes", "Sí")).toBe(false);
+    expect(isUiLabelAbbreviation("Duplicati", "Duplicati")).toBe(false);
+    expect(isUiLabelAbbreviation("File Size", "Tamaño de Archivo")).toBe(false);
   });
 
   it("user CSV exact locale overrides star", () => {

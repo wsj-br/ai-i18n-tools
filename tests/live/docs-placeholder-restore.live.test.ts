@@ -228,19 +228,26 @@ describe.skipIf(!HAS_KEY)("live docs placeholder restore smoke", () => {
           config: llmConfig(model),
           translationModels: [model],
         });
-        const hints = glossary.findTermsInText(SOURCE_1_2, "es");
-        expect(hints.some((h) => /Size/i.test(h) && /Tam/i.test(h))).toBe(true);
-        const res = await client.translateDocumentSegment(text, "es", hints, {
+        // Docs pipeline skips UI-label abbreviations so Size→Tam is not hinted.
+        const docHints = glossary.findTermsInText(SOURCE_1_2, "es", {
+          skipUiAbbreviations: true,
+        });
+        expect(docHints.some((h) => /Size/i.test(h) && /Tam/i.test(h))).toBe(false);
+        // Without the docs filter, the abbreviation would still match (regression guard).
+        const uiHints = glossary.findTermsInText(SOURCE_1_2, "es");
+        expect(uiHints.some((h) => /Size/i.test(h) && /Tam/i.test(h))).toBe(true);
+
+        const res = await client.translateDocumentSegment(text, "es", docHints, {
           contentType: "markdown",
         });
         const restored = restore(res.content, state);
         logAndAssertIntegrity({
-          label: "1.2 es invented braces (Size→Tam)",
+          label: "1.2 es invented braces (Size→Tam skipped for docs)",
           model,
           source: SOURCE_1_2,
           protectedText: text,
           protectState: state,
-          glossaryHints: hints,
+          glossaryHints: docHints,
           systemPrompt: res.debugPrompt?.systemPrompt,
           userContent: res.debugPrompt?.userContent,
           raw: res.content,

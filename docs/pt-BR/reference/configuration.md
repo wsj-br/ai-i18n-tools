@@ -460,6 +460,8 @@ Caminhos e estrutura de nível superior para arquivos SVG. A tradução é execu
 | `userGlossary` | Caminho para um CSV com colunas `Original language string` (ou `en`), `locale`, `Translation` - uma linha por termo de origem e localidade de destino (`locale` pode ser `*` para todos os destinos). |
 | `autoAddUserEditedToGlossary` | Quando `true`, as edições do painel para strings da UI podem ser anexadas automaticamente ao glossário do usuário. |
 
+`translate-docs` usa o mesmo glossário para dicas de terminologia, mas ignora abreviações compactas de rótulos de UI (formas com ponto final, como `Alm.`, ou compressões curtas de token único, como `Size` → `Tam`), para que os prompts do documento não sejam direcionados a tokens <code v-pre>{{…}}</code> inventados. Termos completos do produto e traduções de UI não abreviadas ainda são sugeridos.
+
 **Gere um arquivo CSV de glossário vazio:**
 
 ```bash

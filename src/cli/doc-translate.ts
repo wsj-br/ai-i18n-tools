@@ -1101,7 +1101,7 @@ export async function translateSegmentsBatched(
     let localIndividualSegmentTranslations = 0;
     const batch = batches[bi]!;
     const hintText = batch.map((s) => s.content).join("\n");
-    const hints = glossary.findTermsInText(hintText, locale);
+    const hints = glossary.findTermsInText(hintText, locale, { skipUiAbbreviations: true });
     const markdownQuality = contentType === "markdown";
     const models = client?.getConfiguredModels() ?? [];
     const failureFp = failureDocMeta?.filepath ?? null;

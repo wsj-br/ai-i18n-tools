@@ -21,7 +21,7 @@ For an optional **language switcher** block in README or docs, set `docsOutput.s
 
 Arbitrary nested UI JSON bundles unrelated to a documentation framework's shell/theme strings belong in the [JSON](/guide/json) pipeline, not in `docs[]`.
 
-For **terminology consistency** between UI and docs, set `glossary.uiGlossary` to your `strings.json` path — `translate-docs` reuses existing UI translations as hints in LLM prompts when matching terms appear in a segment. Optional `glossary.userGlossary` adds CSV overrides for product terms (shared with `translate-ui` and `proofread-ui`). Generate a starter CSV with `glossary-generate`, edit rows in the Translation Dashboard **Glossary** tab, or see [Configuration — `glossary`](/reference/configuration#glossary) and [Glossary](/guide/translation-dashboard/glossary).
+For **terminology consistency** between UI and docs, set `glossary.uiGlossary` to your `strings.json` path — `translate-docs` reuses existing UI translations as hints in LLM prompts when matching terms appear in a segment. Optional `glossary.userGlossary` adds CSV overrides for product terms (shared with `translate-ui` and `proofread-ui`). Compact UI-label abbreviations used to fit narrow columns (for example `Size` → `Tam`) stay available for UI translation but are omitted from document glossary hints. Generate a starter CSV with `glossary-generate`, edit rows in the Translation Dashboard **Glossary** tab, or see [Configuration — `glossary`](/reference/configuration#glossary) and [Glossary](/guide/translation-dashboard/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides

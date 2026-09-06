@@ -46,6 +46,36 @@ function pickForce(row: Record<string, string>): boolean {
 }
 
 /**
+ * Compact UI-label abbreviations (e.g. `Size` → `Tam`, `Storage` → `Alm.`) used to
+ * fit column headers. Document prompts must not receive these as terminology hints —
+ * models may wrap them as invented `{{TAM}}`-style tokens and break MDX.
+ */
+export function isUiLabelAbbreviation(english: string, translation: string): boolean {
+  const en = english.trim();
+  const tr = translation.trim();
+  if (!en || !tr) {
+    return false;
+  }
+  // Single-token trailing abbrev marker: "Tam.", "Últ.", "Alm."
+  if (!/\s/.test(tr) && /.\.$/u.test(tr)) {
+    return true;
+  }
+  const enParts = en.split(/\s+/);
+  const trCore = tr.replace(/\.$/u, "");
+  const trParts = trCore.split(/\s+/);
+  if (enParts.length !== 1 || trParts.length !== 1) {
+    return false;
+  }
+  if (trCore.toLowerCase() === en.toLowerCase()) {
+    return false;
+  }
+  const enLen = en.length;
+  const trLen = trCore.length;
+  // Short compressed label without a trailing dot: Size→Tam
+  return enLen >= 4 && trLen <= 4 && trLen < enLen;
+}
+
+/**
  * Terminology for doc translation: `strings.json` and/or CSV, with user overrides.
  */
 export class Glossary {
@@ -229,9 +259,14 @@ export class Glossary {
     }
   }
 
-  findTermsInText(text: string, locale: string): string[] {
+  findTermsInText(
+    text: string,
+    locale: string,
+    opts?: { skipUiAbbreviations?: boolean }
+  ): string[] {
     const hints: string[] = [];
     const textLower = text.toLowerCase();
+    const skipUiAbbreviations = opts?.skipUiAbbreviations === true;
 
     const sortedTerms = Array.from(this.terms.entries()).sort((a, b) => b[0].length - a[0].length);
 
@@ -240,6 +275,9 @@ export class Glossary {
     for (const [termLower, term] of sortedTerms) {
       const translation = term.translations[locale];
       if (!translation) {
+        continue;
+      }
+      if (skipUiAbbreviations && isUiLabelAbbreviation(term.english, translation)) {
         continue;
       }
 

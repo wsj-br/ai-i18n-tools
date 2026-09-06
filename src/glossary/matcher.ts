@@ -6,7 +6,11 @@ import type { Glossary } from "./glossary.js";
 export class GlossaryMatcher {
   constructor(private readonly glossary: Glossary) {}
 
-  findTermsInText(text: string, locale: string): string[] {
-    return this.glossary.findTermsInText(text, locale);
+  findTermsInText(
+    text: string,
+    locale: string,
+    opts?: { skipUiAbbreviations?: boolean }
+  ): string[] {
+    return this.glossary.findTermsInText(text, locale, opts);
   }
 }

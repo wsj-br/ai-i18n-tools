@@ -460,6 +460,8 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 | `userGlossary` | 包含 `Original language string`（或 `en`）、`locale`、`Translation` 列的 CSV 的路径 - 每行一个源术语和目标区域设置（`locale` 可以是 `*` 以表示所有目标）。 |
 | `autoAddUserEditedToGlossary` | 当 `true` 时，对 UI 字符串的仪表板编辑可以自动添加到用户词汇表中。 |
 
+`translate-docs` 使用相同的术语表进行术语提示，但会跳过紧凑的 UI 标签缩写（带尾点的形式，如 `Alm.`，或短的单标记压缩，如 `Size` → `Tam`），以免文档提示被引向虚构的 <code v-pre>{{…}}</code> 标记。完整的产品术语和非缩写的 UI 翻译仍会得到提示。
+
 **生成一个空的词汇表 CSV：**
 
 ```bash

@@ -21,7 +21,7 @@ README またはドキュメント内のオプションの **言語スイッチ�
 
 ドキュメントフレームワークのシェル/テーマ文字列とは無関係な任意のネストされたUI JSONバンドルは、`docs[]`ではなく、[JSON](/ja/guide/json)パイプラインに属します。
 
-UI とドキュメント間の **用語の一貫性** を保つため、`glossary.uiGlossary` を `strings.json` パスに設定します — 一致する用語がセグメントに現れた場合、`translate-docs` は既存の UI 翻訳を LLM プロンプトのヒントとして再利用します。オプションの `glossary.userGlossary` は、製品用語の CSV オーバーライドを追加します（`translate-ui` と `proofread-ui` で共有）。`glossary-generate` で初期 CSV を生成するか、翻訳ダッシュボードの **用語集** タブで行を編集するか、[設定 — `glossary`](/ja/reference/configuration#glossary) および [用語集](/ja/guide/translation-dashboard/glossary) を参照してください。
+UIとドキュメント間の**用語の一貫性**を保つため、`glossary.uiGlossary`を`strings.json`のパスに設定してください — `translate-docs`は、セグメント内に一致する用語が含まれる場合、LLMプロンプトのヒントとして既存のUI翻訳を再利用します。オプションの`glossary.userGlossary`で、製品用語のCSVオーバーライドを追加できます（`translate-ui`および`proofread-ui`と共有）。狭い列に合わせるために使用されるコンパクトなUIラベルの略語（例: `Size` → `Tam`）は、UI翻訳では引き続き使用できますが、ドキュメントの用語集ヒントからは除外されます。`glossary-generate`で初期CSVを生成し、Translation Dashboardの**用語集**タブで行を編集するか、[設定 — `glossary`](/ja/reference/configuration#glossary)および[用語集](/ja/guide/translation-dashboard/glossary)を参照してください。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド

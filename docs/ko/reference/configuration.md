@@ -460,6 +460,8 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | `userGlossary` | 열이 `Original language string`(또는 `en`), `locale`, `Translation`인 CSV 파일의 경로 - 각 원본 용어와 대상 로케일에 해당하는 행 하나씩 포함 (`locale`는 모든 대상에 대해 `*`일 수 있음). |
 | `autoAddUserEditedToGlossary` | `true`일 때, UI 문자열에 대한 대시보드 편집 내용을 사용자 용어집에 자동으로 추가할 수 있습니다. |
 
+`translate-docs`는 용어 힌트를 위한 동일한 용어 사전을 사용하지만, 컴팩트한 UI 레이블 약어(예: `Alm.`의 마침표가 붙은 형태 또는 `Size` → `Tam`와 같은 짧은 단일 토큰 압축)를 건너뛰므로 문서 프롬프트가 만들어진 <code v-pre>{{…}}</code> 토큰으로 유도되지 않습니다. 전체 제품 용어 및 비축약 UI 번역은 여전히 힌트를 받습니다.
+
 **빈 용어집 CSV 생성:**
 
 ```bash

@@ -168,7 +168,7 @@ async function translateProtectedContent(
     warnModelSwitch,
   } = params;
 
-  const hints = glossary.findTermsInText(protectedContent, locale);
+  const hints = glossary.findTermsInText(protectedContent, locale, { skipUiAbbreviations: true });
   const ph = new PlaceholderHandler();
   let startIdx = startModelIndex;
   let remainingErrors: string[] = [];

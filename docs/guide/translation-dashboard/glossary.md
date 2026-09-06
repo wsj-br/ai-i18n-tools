@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossary
 
-The **Glossary** tab edits your user glossary CSV (`glossary.userGlossary` in config). Entries here are terminology hints for `translate-ui` and `proofread-ui` — they are **not** used by documentation translation.
+The **Glossary** tab edits your user glossary CSV (`glossary.userGlossary` in config). Entries here are terminology hints for `translate-ui`, `proofread-ui`, and `translate-docs` (via the shared glossary). Compact UI-label abbreviations (for example `Size` → `Tam` / `Tam.`) are kept for UI translation but skipped when building document prompts, so they do not push models toward invented <code v-pre>{{…}}</code> tokens in markdown/MDX.
 
 The tab is hidden when `glossary.userGlossary` is not configured.
 
@@ -32,7 +32,7 @@ The CSV file is created on first add if it does not exist yet.
 - **Inline edit** — change fields directly in the table and click **Save** on that row.
 - **Delete** — remove a row with the delete control.
 
-Changes take effect on the next `translate-ui`, `proofread-ui`, or `sync` UI step.
+Changes take effect on the next `translate-ui`, `proofread-ui`, `translate-docs`, or `sync` run.
 
 <a id="filters"></a>
 ## Filters

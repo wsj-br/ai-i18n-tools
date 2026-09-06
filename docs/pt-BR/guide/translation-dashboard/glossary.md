@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossário
 
-A aba **Glossário** edita seu CSV de glossário do usuário (`glossary.userGlossary` na configuração). As entradas aqui são sugestões de terminologia para `translate-ui` e `proofread-ui` — elas **não** são usadas pela tradução da documentação.
+A aba **Glossário** edita seu CSV de glossário de usuário (`glossary.userGlossary` na configuração). As entradas aqui são dicas de terminologia para `translate-ui`, `proofread-ui` e `translate-docs` (através do glossário compartilhado). Abreviações compactas de rótulos de UI (por exemplo, `Size` → `Tam` / `Tam.`) são mantidas para a tradução da UI, mas ignoradas ao construir prompts de documento, para que não direcionem os modelos para tokens <code v-pre>{{…}}</code> inventados em markdown/MDX.
 
 A aba fica oculta quando `glossary.userGlossary` não está configurado.
 
@@ -32,7 +32,7 @@ O arquivo CSV é criado na primeira adição, se ainda não existir.
 - **Edição em linha** — altere os campos diretamente na tabela e clique em **Salvar** nessa linha.
 - **Excluir** — remova uma linha com o controle de exclusão.
 
-As alterações entram em vigor na próxima etapa da interface do usuário `translate-ui`, `proofread-ui` ou `sync`.
+As alterações entram em vigor na próxima execução de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`.
 
 <a id="filters"></a>
 ## Filtros

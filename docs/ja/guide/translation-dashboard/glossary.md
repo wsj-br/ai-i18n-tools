@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 用語集
 
-**用語集**タブでは、ユーザー用語集CSV（設定内の`glossary.userGlossary`）を編集します。ここでのエントリは、`translate-ui`と`proofread-ui`の用語のヒントであり、ドキュメントの翻訳には**使用されません**。
+**用語集**タブでは、ユーザー用語集CSV（設定内の`glossary.userGlossary`）を編集します。ここでのエントリは、`translate-ui`、`proofread-ui`、および`translate-docs`（共有用語集経由）の用語ヒントとなります。コンパクトなUIラベルの略語（例：`Size` → `Tam` / `Tam.`）はUI翻訳用に保持されますが、ドキュメントプロンプトの構築時にはスキップされるため、markdown/MDX内でモデルが架空の<code v-pre>{{…}}</code>トークンを生成するよう誘導することはありません。
 
 `glossary.userGlossary`が設定されていない場合、タブは非表示になります。
 
@@ -32,7 +32,7 @@ CSVファイルは、まだ存在しない場合、最初に追加されたと�
 - **インライン編集** — テーブル内のフィールドを直接変更し、その行の**保存**をクリックします。
 - **削除** — 削除コントロールで行を削除します。
 
-変更は、次の`translate-ui`、`proofread-ui`、または`sync`のUIステップで有効になります。
+変更は次回の`translate-ui`、`proofread-ui`、`translate-docs`、または`sync`の実行時に反映されます。
 
 <a id="filters"></a>
 ## フィルター

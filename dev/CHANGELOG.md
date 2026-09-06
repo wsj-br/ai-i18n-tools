@@ -9,6 +9,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.6] - 2026-09-06
+
+- **Fixed**: glossary/docs — `translate-docs` skips compact UI-label abbreviations (e.g. `Size` → `Tam` / `Tam.`, `Storage` → `Alm.`) when building glossary hints, so column-header shortenings from `strings.json` / `userGlossary` no longer steer models toward invented `{{TAM}}`-style tokens in MDX. UI/`proofread-ui` hints are unchanged (`findTermsInText(..., { skipUiAbbreviations: true })`).
 
 ## [1.8.5] - 2026-09-06
 

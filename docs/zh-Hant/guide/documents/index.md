@@ -21,7 +21,7 @@
 
 與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/zh-Hant/guide/json) 管線，而非 `docs[]`。
 
-為了讓 UI 與文件之間**術語一致**，請將 `glossary.uiGlossary` 設定為您的 `strings.json` 路徑 — 當片段中出現相符的術語時，`translate-docs` 會將現有的 UI 翻譯作為提示重複用於 LLM 提示詞中。選用的 `glossary.userGlossary` 可為產品術語新增 CSV 覆寫（與 `translate-ui` 及 `proofread-ui` 共用）。使用 `glossary-generate` 產生起始 CSV，在翻譯儀表板的 **詞彙表** 分頁中編輯列，或參閱[設定 — `glossary`](/zh-Hant/reference/configuration#glossary)及[詞彙表](/zh-Hant/guide/translation-dashboard/glossary)。
+為了在 UI 與文件之間保持**術語一致性**，請將 `glossary.uiGlossary` 設定為您的 `strings.json` 路徑 — 當段落中出現相符的術語時，`translate-docs` 會在 LLM 提示中重用現有的 UI 翻譯作為提示。選用的 `glossary.userGlossary` 可為產品術語新增 CSV 覆寫（與 `translate-ui` 和 `proofread-ui` 共用）。為配合窄欄位而使用的精簡 UI 標籤縮寫（例如 `Size` → `Tam`）仍可用於 UI 翻譯，但不會包含在文件詞彙表提示中。使用 `glossary-generate` 產生入門 CSV，在翻譯儀表板的 **詞彙表** 分頁中編輯列，或參閱[設定 — `glossary`](/zh-Hant/reference/configuration#glossary)與[詞彙表](/zh-Hant/guide/translation-dashboard/glossary)。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋

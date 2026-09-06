@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossaire
 
-L'onglet **Glossaire** modifie votre fichier CSV de glossaire utilisateur (`glossary.userGlossary` dans la configuration). Les entrées ici sont des suggestions terminologiques pour `translate-ui` et `proofread-ui` — elles ne sont **pas** utilisées par la traduction de la documentation.
+L'onglet **Glossaire** modifie votre fichier CSV de glossaire utilisateur (`glossary.userGlossary` dans la configuration). Les entrées ici sont des indications terminologiques pour `translate-ui`, `proofread-ui` et `translate-docs` (via le glossaire partagé). Les abréviations compactes des étiquettes d'interface utilisateur (par exemple `Size` → `Tam` / `Tam.`) sont conservées pour la traduction de l'interface utilisateur, mais ignorées lors de la création d'invites de document, afin qu'elles n'incitent pas les modèles à inventer des jetons <code v-pre>{{…}}</code> en markdown/MDX.
 
 L'onglet est masqué lorsque `glossary.userGlossary` n'est pas configuré.
 
@@ -32,7 +32,7 @@ Le fichier CSV est créé lors du premier ajout s'il n'existe pas encore.
 - **Modification en ligne** — modifiez les champs directement dans le tableau et cliquez sur **Enregistrer** sur cette ligne.
 - **Supprimer** — supprimez une ligne avec le contrôle de suppression.
 
-Les modifications prennent effet à la prochaine étape de l'interface utilisateur `translate-ui`, `proofread-ui` ou `sync`.
+Les modifications prennent effet lors de la prochaine exécution de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`.
 
 <a id="filters"></a>
 ## Filtres

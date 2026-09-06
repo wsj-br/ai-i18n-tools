@@ -460,6 +460,8 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | `userGlossary` | `Original language string`（または `en`）、`locale`、`Translation` の列を持つCSVファイルへのパス。各行は1つのソース用語と対象ロケールに対応します（`locale` はすべての対象言語で `*` でも可）。 |
 | `autoAddUserEditedToGlossary` | `true`の場合、UI文字列に対するダッシュボードの編集は、ユーザー用語集に自動的に追加できます。 |
 
+`translate-docs` は用語のヒントとして同じグロッサリーを使用しますが、コンパクトなUIラベルの略語（`Alm.` のような末尾にドットが付く形式、または `Size` → `Tam` のような短い単一トークンの圧縮）をスキップし、ドキュメントのプロンプトが架空の <code v-pre>{{…}}</code> トークンに誘導されないようにします。完全な製品用語と略語化されていないUI翻訳は引き続きヒントとして提供されます。
+
 **空の用語集CSVを生成する：**
 
 ```bash

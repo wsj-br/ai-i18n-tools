@@ -21,7 +21,7 @@ README나 문서에서 선택적 **언어 전환기** 블록을 사용하려면 
 
 문서 프레임워크의 셸/테마 문자열과 관련 없는 임의의 중첩된 UI JSON 번들은 `docs[]`이 아닌 [JSON](/ko/guide/json) 파이프라인에 속합니다.
 
-UI와 문서 간의 **용어 일관성**을 위해 `glossary.uiGlossary`를 `strings.json` 경로로 설정하세요 — `translate-docs`는 세그먼트에 일치하는 용어가 나타날 때 기존 UI 번역을 LLM 프롬프트의 힌트로 재사용합니다. 선택적 `glossary.userGlossary`는 제품 용어에 대한 CSV 재정의를 추가합니다(`translate-ui` 및 `proofread-ui`와 공유). `glossary-generate`로 시작 CSV를 생성하고, Translation Dashboard **용어집** 탭에서 행을 편집하거나, [구성 — `glossary`](/ko/reference/configuration#glossary) 및 [용어집](/ko/guide/translation-dashboard/glossary)을 참조하세요.
+UI와 문서 간 **용어 일관성**을 위해 `glossary.uiGlossary`를 `strings.json` 경로로 설정하세요 — `translate-docs`는 세그먼트에 일치하는 용어가 나타날 때 LLM 프롬프트의 힌트로 기존 UI 번역을 재사용합니다. 선택적 `glossary.userGlossary`은 제품 용어에 대한 CSV 재정의를 추가합니다(`translate-ui` 및 `proofread-ui`와 공유됨). 좁은 열에 맞추기 위해 사용된 간결한 UI 라벨 약어(예: `Size` → `Tam`)는 UI 번역에는 사용할 수 있지만 문서 용어집 힌트에서는 생략됩니다. `glossary-generate`로 시작 CSV를 생성하고, Translation Dashboard **Glossary** 탭에서 행을 편집하거나 [Configuration — `glossary`](/ko/reference/configuration#glossary) 및 [Glossary](/ko/guide/translation-dashboard/glossary)를 참조하세요.
 
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의

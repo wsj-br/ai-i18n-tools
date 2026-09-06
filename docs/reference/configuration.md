@@ -464,6 +464,7 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 | `userGlossary` | Path to a CSV with columns `Original language string` (or `en`), `locale`, `Translation` - one row per source term and target locale (`locale` may be `*` for all targets). |
 | `autoAddUserEditedToGlossary` | When `true`, dashboard edits to UI strings can be appended to the user glossary automatically. |
 
+`translate-docs` uses the same glossary for terminology hints, but skips compact UI-label abbreviations (trailing-dot forms such as `Alm.`, or short single-token compressions such as `Size` → `Tam`) so document prompts are not steered toward invented <code v-pre>{{…}}</code> tokens. Full product terms and non-abbreviated UI translations are still hinted.
 
 **Generate an empty glossary CSV:**
 

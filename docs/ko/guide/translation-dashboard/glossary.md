@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 용어집
 
-**용어집** 탭은 사용자 용어집 CSV(구성의 `glossary.userGlossary`)를 편집합니다. 여기에 있는 항목은 `translate-ui` 및 `proofread-ui`에 대한 용어 힌트이며, 문서 번역에는 **사용되지 않습니다**.
+**용어집** 탭은 사용자 용어집 CSV(설정의 `glossary.userGlossary`)를 편집합니다. 여기의 항목은 `translate-ui`, `proofread-ui`, `translate-docs`에 대한 용어 힌트입니다(공유 용어집을 통해). 간결한 UI 레이블 약어(예: `Size` → `Tam` / `Tam.`)는 UI 번역을 위해 유지되지만 문서 프롬프트를 빌드할 때는 건너뛰므로, 모델이 markdown/MDX에서 만들어낸 <code v-pre>{{…}}</code> 토큰을 생성하도록 유도하지 않습니다.
 
 `glossary.userGlossary`이(가) 구성되지 않은 경우 탭이 숨겨집니다.
 
@@ -32,7 +32,7 @@ CSV 파일은 아직 존재하지 않는 경우 첫 번째 추가 시 생성됩�
 - **인라인 편집** — 테이블에서 필드를 직접 변경하고 해당 행에서 **저장**을(를) 클릭합니다.
 - **삭제** — 삭제 컨트롤로 행을 제거합니다.
 
-변경 사항은 다음 `translate-ui`, `proofread-ui` 또는 `sync` UI 단계에 적용됩니다.
+변경 사항은 다음 `translate-ui`, `proofread-ui`, `translate-docs` 또는 `sync` 실행 시 적용됩니다.
 
 <a id="filters"></a>
 ## 필터

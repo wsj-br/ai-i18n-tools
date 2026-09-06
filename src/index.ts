@@ -394,5 +394,5 @@ export {
   pluralTranslatedLocaleHasContent,
 } from "./core/plural-forms.js";
 
-export { Glossary } from "./glossary/glossary.js";
+export { Glossary, isUiLabelAbbreviation } from "./glossary/glossary.js";
 export { GlossaryMatcher } from "./glossary/matcher.js";
