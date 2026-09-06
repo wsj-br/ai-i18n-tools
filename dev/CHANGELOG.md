@@ -9,8 +9,11 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
 ## [1.8.5] - 2026-09-06
 
+- **Added**: scripts — `pnpm actions:cleanup` / `pnpm actions:cleanup:dry` (`scripts/cleanup-failed-actions.sh`) delete (no confirm) or list failed, cancelled, timed-out, and startup-failure GitHub Actions runs.
+- **Fixed**: install — `scripts/ensure-built.mjs` (and `pre-release.mjs`) spawn pnpm 12's native `npm_execpath` binary directly instead of `node <path>`, so `prepare` no longer fails in CI with `SyntaxError` on ELF `pnpm-native`.
 - **Changed**: tests/live — docs and plural OpenRouter smokes can dump the system/user prompt sent, model return (raw + parsed/restored), usage, and detailed integrity / placeholder check results; off by default, enable with `pnpm test:live -- --verbose` (or `-v`).
 - **Added**: api — `translatePluralCardinalBatch` returns optional `rawAssistantContent` for live/debug dumps of the assistant reply before parse.
 - **Fixed**: docs — reject HTML placeholder reuse/drop and invented `{{IDENT}}` after `translate-docs` restore (token-sequence + tag-kind + source-aware brace checks; quality retry cycles models as for leaks).

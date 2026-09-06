@@ -299,6 +299,8 @@ Run `pnpm i18n:self` after changing user-facing CLI, log, or dashboard strings (
 | ------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `pnpm release:github`     | Create the GitHub release from `release-notes/RELEASE_NOTES_<version>.md` (runs `scripts/release.mjs`) |
 | `pnpm release:github:dry` | Dry-run the release script (validate inputs; no tag push or GitHub release)                           |
+| `pnpm actions:cleanup`    | Delete failed/stopped GitHub Actions runs without confirmation (`scripts/cleanup-failed-actions.sh --yes`) |
+| `pnpm actions:cleanup:dry` | List failed/stopped GitHub Actions runs without deleting them |
 | `pnpm notices:write`      | Regenerate third-party notices                                                                        |
 
 

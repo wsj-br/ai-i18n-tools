@@ -50,6 +50,8 @@
     "docs:build": "node scripts/escape-vue-braces-in-docs.mjs && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:publish": "bash scripts/publish-docs.sh",
+    "actions:cleanup": "bash scripts/cleanup-failed-actions.sh --yes",
+    "actions:cleanup:dry": "bash scripts/cleanup-failed-actions.sh --dry-run",
     "update-tocs": "doctoc --update-only *.md dev/*.md",
     "i18n:self": "node bin/ai-i18n-tools.mjs -c ai-i18n-self.config.json sync-ui",
     "i18n:sync": "node bin/ai-i18n-tools.mjs sync --path docs/index.md",

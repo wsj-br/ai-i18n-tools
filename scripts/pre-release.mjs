@@ -8,8 +8,8 @@
  *   pnpm pre-release
  */
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { spawnPackageManager } from "./lib/spawn-package-manager.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const startedMs = Date.now();
@@ -30,24 +30,15 @@ function banner(message) {
 }
 
 /**
- * Run pnpm with the given args. Prefer `node $npm_execpath` (set during pnpm
- * lifecycle scripts); fall back to a shell invocation so bare `pnpm` resolves
- * as `pnpm.cmd` on Windows.
+ * Run pnpm with the given args. Uses `$npm_execpath` when set (native binary or
+ * JS CLI); falls back to a shell `pnpm` so Windows resolves `pnpm.cmd`.
  */
 function runPnpm(args) {
-  const execPath = process.env.npm_execpath;
-  const result = execPath
-    ? spawnSync(process.execPath, [execPath, ...args], {
-        cwd: root,
-        stdio: "inherit",
-        env: process.env,
-      })
-    : spawnSync(`pnpm ${args.join(" ")}`, {
-        cwd: root,
-        stdio: "inherit",
-        env: process.env,
-        shell: true,
-      });
+  const result = spawnPackageManager(args, {
+    cwd: root,
+    stdio: "inherit",
+    env: process.env,
+  });
 
   if (result.error) {
     console.error(`pre-release: failed to start pnpm: ${result.error.message}`);
