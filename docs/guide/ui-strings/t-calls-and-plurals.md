@@ -63,6 +63,8 @@ When you run `translate-ui`, **ai-i18n-tools calls an LLM** to generate every re
 
 **Validation:** If the message contains **two or more** distinct <code v-pre>{{…}}</code> placeholders, **one of them must be** <code v-pre>{{count}}</code> (the plural axis). Otherwise `extract` **fails** with a clear file/line message.
 
+After the LLM returns CLDR forms, `translate-ui` also checks each form against the **original developer literal**: every source placeholder must appear in every category (including `one`), forms must not invent new <code v-pre>{{…}}</code> / `%d` / `{n}` tokens, and noun-only sources (no <code v-pre>{{count}}</code> and no digits, e.g. unit labels like `Minutes`) must stay noun-only. Mismatches discard that model’s response and retry the next model in the fallback list.
+
 **Two independent counts** (e.g. sections and pages) cannot share one plural message — use **two** `t()` calls (each with `plurals: true` and its own `count`) and concatenate in the UI.
 
 **Not in v1:** ordinal plurals (`_ordinal_*`, `ordinal: true`), interval plurals, ICU-only pipelines.

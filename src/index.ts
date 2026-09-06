@@ -134,6 +134,7 @@ export {
   buildUIPromptMessages,
   buildPluralStep0Prompt,
   buildPluralPassBPrompt,
+  buildPluralPlaceholderConstraint,
   parseBatchTranslationResponse,
   parsePluralFormsJsonResponse,
   parseUIJsonArrayResponse,
@@ -151,6 +152,22 @@ export {
   type DocumentPromptStrings,
   type UIPromptStrings,
 } from "./core/prompt-builder.js";
+
+export {
+  assertPluralFormsPlaceholders,
+  pluralFormPlaceholderIssues,
+  PluralFormsPlaceholderError,
+  type PluralFormPlaceholderIssue,
+  type PluralPlaceholderIssueKind,
+} from "./core/plural-placeholders.js";
+
+export {
+  extractUiPlaceholderTokens,
+  collectPlaceholderFamilies,
+  canonicalPlaceholderFamily,
+  isNounOnlyPluralSource,
+  isQuantityPlaceholderFamily,
+} from "./core/ui-placeholders.js";
 
 export { computeSegmentHash } from "./utils/hash.js";
 
@@ -221,6 +238,17 @@ export {
 } from "./processors/markdown-source-diagnostics.js";
 
 export { hasInternalPlaceholderLeak } from "./processors/translation-placeholder-leaks.js";
+export {
+  extractIdentTokens,
+  compareIdentTokenSequences,
+  compareHtmlTagKindSequences,
+  collectPreRestorePlaceholderErrors,
+  collectPostRestorePlaceholderErrors,
+  collectUnexpectedIdentErrors,
+  htmlTagKindFingerprint,
+  normalizeIdentTokenForSequence,
+  protectedTextForSequenceCompare,
+} from "./processors/placeholder-integrity.js";
 export {
   protectGlossaryForcedTerms,
   restoreGlossaryForcedTerms,

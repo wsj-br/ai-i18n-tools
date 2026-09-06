@@ -647,6 +647,41 @@ describe("LlmClient", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(2);
   });
 
+  it("translatePluralCardinalBatch retries when originalLiteral placeholders are dropped", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult('{"one":"Merge Selected Server","other":"Merge Selected Servers ({{count}})"}')
+      )
+      .mockResolvedValueOnce(
+        genResult(
+          '{"one":"Merge Selected Server ({{count}})","other":"Merge Selected Servers ({{count}})"}'
+        )
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translatePluralCardinalBatch(
+      ["one", "other"],
+      { systemPrompt: "sys", userContent: "usr" },
+      { originalLiteral: "Merge Selected Servers ({{count}})" }
+    );
+    expect(r.forms.one).toContain("{{count}}");
+    expect(r.model).toBe("good");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("translatePluralCardinalBatch retries when noun-only source invents {{count}}", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(genResult('{"one":"1 minute","other":"{{count}} minutes"}'))
+      .mockResolvedValueOnce(genResult('{"one":"Minute","other":"Minutes"}'));
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translatePluralCardinalBatch(
+      ["one", "other"],
+      { systemPrompt: "sys", userContent: "usr" },
+      { originalLiteral: "Minutes" }
+    );
+    expect(r.forms).toEqual({ one: "Minute", other: "Minutes" });
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
   it("translateDocumentSegment folds a discarded wrong-script attempt's tokens/cost into the result", async () => {
     generateTextMock
       .mockResolvedValueOnce(

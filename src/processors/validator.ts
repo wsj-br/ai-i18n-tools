@@ -3,7 +3,7 @@ import type { Node } from "unist";
 import { visit } from "unist-util-visit";
 import type { Segment } from "../core/types.js";
 import { imageAltTranslationErrors } from "../extractors/image-markdown.js";
-import { hasInternalPlaceholderLeak } from "./translation-placeholder-leaks.js";
+import { collectPostRestorePlaceholderErrors } from "./placeholder-integrity.js";
 
 export interface ValidationResult {
   valid: boolean;
@@ -297,7 +297,7 @@ export async function validateTranslation(
 
 /**
  * Strict checks for markdown doc translation after placeholder restore: mdast structure matches source,
- * length ratio, frontmatter keys, and no leaked internal `{{...}}` markers.
+ * length ratio, frontmatter keys, HTML tag-kind sequence, and no unexpected leftover `{{...}}` markers.
  */
 export async function validateDocTranslatePair(
   source: Segment,
@@ -340,9 +340,7 @@ export async function validateDocTranslatePair(
     }
   }
 
-  if (hasInternalPlaceholderLeak(translatedText)) {
-    errors.push(`Internal translation placeholder leaked in output (hash ${source.hash})`);
-  }
+  errors.push(...collectPostRestorePlaceholderErrors(source.content, translatedText, source.hash));
 
   return { ok: errors.length === 0, errors };
 }

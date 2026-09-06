@@ -187,6 +187,8 @@ Vor der Übersetzung wird empfindliche Syntax durch undurchsichtige Token ersetz
 6. **Inline-Code-Abschnitte** (`` `code` ``) und **fett formatierte Inline-Codes** (`**`code`**`) – bleiben erhalten.
 7. **Markdown-Hervorhebungen** (optional, automatisch aktiviert für CJK-/RTL-Lokalisierungen) – Hervorhebungs-Trennzeichen werden maskiert.
 
+Nachdem das Modell zurückgegeben wurde, stellt `translate-docs` die Zuordnungen wieder her und validiert das Segment: Die geordnete Token-Sequenz mit doppelten geschweiften Klammern muss mit der geschützten Quelle übereinstimmen, die wiederhergestellten HTML-Tag-Typen müssen mit der ungeschützten Quelle übereinstimmen, und jeder verbleibende Bezeichner mit doppelten geschweiften Klammern muss bereits in der Quelle vorhanden gewesen sein (sodass erfundene Token fehlschlagen). Die Dokumentaufforderung fordert die Modelle außerdem auf, jedes Token einmal der Reihe nach zu kopieren und keine neuen doppelten geschweiften Klammern zu erfinden; mechanische Prüfungen bleiben maßgebend.
+
 Der gemeinsame Attribut-/Schlüsselschutz für Astro-Templates und MDX JSX wird in `src/processors/expression-attribute-protection.ts` implementiert und pro Block durch `docs[].protectAttributes` und `docs[].protectKeys` gesteuert (siehe [protectAttributes / protectKeys](/de/reference/configuration#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
@@ -405,6 +407,7 @@ src/
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
 │   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── placeholder-integrity.ts    Pre/post-restore token sequence + tag-kind + invented {{IDENT}} checks
 │   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks

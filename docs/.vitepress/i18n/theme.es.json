@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación usando LLM."
+    "description": "CLI y kit de herramientas para internacionalizar aplicaciones y sitios de documentación de JavaScript/TypeScript usando LLM."
   },
   "nav": {
     "guide": "Guía",
@@ -25,7 +25,7 @@
     "uiStringsLanguageSwitcher": "Selector de idioma y RTL",
     "documents": "Documentos",
     "documentsOutputLayouts": "Diseños de salida",
-    "documentsAnchorLinks": "Enlaces ancla",
+    "documentsAnchorLinks": "Enlaces de anclaje",
     "documentsLinkRewriting": "Reescritura de enlaces",
     "documentsLanguageSwitcher": "Selector de idioma",
     "documentsCliOptions": "Opciones de CLI",
@@ -39,13 +39,13 @@
     "fumadocs": "Fumadocs",
     "imagesAndScreenshots": "Imágenes y capturas de pantalla",
     "imagesSharedImage": "Imagen compartida",
-    "imagesPerLocaleFolder": "Carpeta por idioma",
-    "imagesColocatedScreenshots": "Capturas de pantalla colocalizadas",
+    "imagesPerLocaleFolder": "Carpeta por configuración regional",
+    "imagesColocatedScreenshots": "Capturas de pantalla coubicadas",
     "imagesLinkRewriting": "Reescritura de enlaces",
     "imagesTroubleshooting": "Solución de problemas",
     "svgTranslation": "Traducción de SVG",
     "svgWebAppFlat": "Aplicación web (SVG plano)",
-    "svgColocated": "SVG colocalizado",
+    "svgColocated": "SVG coubicado",
     "svgTroubleshooting": "Solución de problemas",
     "providers": "Proveedores de LLM",
     "runtimeHelpers": "Ayudantes de tiempo de ejecución",

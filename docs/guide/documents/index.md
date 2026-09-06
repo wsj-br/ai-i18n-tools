@@ -133,7 +133,9 @@ For flags, cache behaviour, and batch prompt format, see [CLI options](/guide/do
 <a id="complex-markdown-and-failed-quality-checks"></a>
 ## Complex Markdown and failed quality checks
 
-`translate-docs` checks that each translated segment preserves markdown structure (including emphasis parsed from the document). Paragraphs that stack many `bold` spans around `` `inline code` ``, nest backticks inside bold (for example template literals such as `` `fetch(\`/locales/${code}.json\`)` ``), or weave bold and code through one long sentence are fragile: some locales need different word order, which can change how `**` and `` ` `` line up after translation and trigger CLI errors such as `AST mismatch`.
+`translate-docs` checks that each translated segment preserves markdown structure (including emphasis parsed from the document) and that internal placeholder tokens restore cleanly. Paragraphs that stack many `bold` spans around `` `inline code` ``, nest backticks inside bold (for example template literals such as `` `fetch(\`/locales/${code}.json\`)` ``), or weave bold and code through one long sentence are fragile: some locales need different word order, which can change how `**` and `` ` `` line up after translation and trigger CLI errors such as `AST mismatch`.
+
+After restore, `translate-docs` also rejects segments where HTML tag placeholders were reused or dropped (so restored tags no longer match the source map) or where the model invented leftover double-brace tokens that were not in the source (for example a made-up glossary-style token). Those failures use the same model-fallback path as leftover official internal tokens.
 
 **If you hit that kind of validation failure, prefer simplifying the source-language text** - split the paragraph, move an example into a fenced code block, or describe the same idea with fewer layered bold/code pairs - rather than expecting every model and locale to reproduce dense inline markup perfectly.
 

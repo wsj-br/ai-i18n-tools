@@ -1,0 +1,229 @@
+import { describe, expect, it } from "vitest";
+import { protectHtmlTags, restoreHtmlTags } from "../../src/processors/html-tag-placeholders.js";
+import { hasInternalPlaceholderLeak } from "../../src/processors/translation-placeholder-leaks.js";
+import {
+  collectPostRestorePlaceholderErrors,
+  collectPreRestorePlaceholderErrors,
+  collectUnexpectedIdentErrors,
+  compareHtmlTagKindSequences,
+  compareIdentTokenSequences,
+  extractIdentTokens,
+} from "../../src/processors/placeholder-integrity.js";
+
+const SOURCE_LI_A =
+  '<li><a href="display-settings.md">Display Settings</a>: Configure theme, chart time range, chart style, format locale, auto-refresh interval, card sort order, and week start</li>';
+
+const PROSE_DE =
+  "Anzeigeeinstellungen: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart";
+
+const BAD_RESTORED_DE =
+  '<li><a href="display-settings.md">Anzeigeeinstellungen</li>: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart</li>';
+
+const GOOD_RESTORED_DE =
+  '<li><a href="display-settings.md">Anzeigeeinstellungen</a>: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart</li>';
+
+function protectedLiA(): { protected: string; htmlTagMap: string[] } {
+  return protectHtmlTags(SOURCE_LI_A);
+}
+
+describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
+  it("2.1 fail-tag-swap: reused HTM_3 drops </a> after restore", () => {
+    const p = protectedLiA();
+    expect(p.htmlTagMap).toEqual(["<li>", '<a href="display-settings.md">', "</a>", "</li>"]);
+    const swapped =
+      "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_3}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
+    expect(compareIdentTokenSequences(p.protected, swapped)).toMatch(/reused or dropped/);
+    const restored = restoreHtmlTags(swapped, p.htmlTagMap);
+    expect(restored).toBe(BAD_RESTORED_DE);
+    expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toMatch(/tag kind mismatch/);
+    expect(collectPostRestorePlaceholderErrors(SOURCE_LI_A, restored).length).toBeGreaterThan(0);
+  });
+
+  it("2.2 pass: correct token set with German prose", () => {
+    const p = protectedLiA();
+    const good =
+      "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
+    expect(compareIdentTokenSequences(p.protected, good)).toBeNull();
+    const restored = restoreHtmlTags(good, p.htmlTagMap);
+    expect(restored).toBe(GOOD_RESTORED_DE);
+    expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toBeNull();
+    expect(collectPostRestorePlaceholderErrors(SOURCE_LI_A, restored)).toEqual([]);
+  });
+
+  it("2.3 pass: correct tokens with untranslated English prose", () => {
+    const p = protectedLiA();
+    expect(compareIdentTokenSequences(p.protected, p.protected)).toBeNull();
+    expect(compareHtmlTagKindSequences(SOURCE_LI_A, SOURCE_LI_A)).toBeNull();
+  });
+
+  it("2.4 fail-tag-swap: dropped closing </li>", () => {
+    const p = protectedLiA();
+    const model =
+      "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart";
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+  });
+
+  it("2.5 fail-tag-swap: dropped opening <li>", () => {
+    const p = protectedLiA();
+    const model =
+      "{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+  });
+
+  it("2.6 fail-tag-swap: literal </a> plus unused HTM_2", () => {
+    const p = protectedLiA();
+    const model =
+      "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen</a>: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
+    // Pre-restore sequence catches missing HTM_2; after restore a literal </a> may still
+    // yield a matching tag-kind sequence, so layer A is required for this case.
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+    expect(collectPreRestorePlaceholderErrors({ text: p.protected }, model).length).toBeGreaterThan(
+      0
+    );
+  });
+
+  it("2.7 fail-tag-swap: open <a> and </a> swapped", () => {
+    const p = protectedLiA();
+    const model =
+      "{{HTM_0}}{{HTM_2}}Anzeigeeinstellungen{{HTM_1}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+    const restored = restoreHtmlTags(model, p.htmlTagMap);
+    expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toMatch(/tag kind mismatch/);
+  });
+
+  it("2.8 fail-tag-swap: all tokens present once but reversed order", () => {
+    const p = protectedLiA();
+    const model = `{{HTM_3}}{{HTM_2}}{{HTM_1}}{{HTM_0}}${PROSE_DE}`;
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+  });
+});
+
+describe("placeholder-integrity RTL logical order", () => {
+  it("passes Arabic prose between tokens when HTM sequence is unchanged", () => {
+    const p = protectedLiA();
+    const model = "{{HTM_0}}{{HTM_1}}إعدادات العرض{{HTM_2}}: تكوين السمة ونطاق وقت المخطط{{HTM_3}}";
+    expect(compareIdentTokenSequences(p.protected, model)).toBeNull();
+    const restored = restoreHtmlTags(model, p.htmlTagMap);
+    expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toBeNull();
+  });
+
+  it("fails when HTM indices are reversed with Arabic prose", () => {
+    const p = protectedLiA();
+    const model = "{{HTM_3}}{{HTM_2}}إعدادات العرض{{HTM_1}}: تكوين السمة{{HTM_0}}";
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+  });
+
+  it("passes with RLM/LRM outside tokens", () => {
+    const p = protectedLiA();
+    const rlm = "\u200F";
+    const model = `${rlm}{{HTM_0}}{{HTM_1}}${rlm}إعدادات${rlm}{{HTM_2}}: نص{{HTM_3}}`;
+    expect(compareIdentTokenSequences(p.protected, model)).toBeNull();
+  });
+});
+
+describe("placeholder-integrity invented braces (corpus 3.*)", () => {
+  const apiKeysSource =
+    "- Optional [API keys](settings/api-keys-settings.md) for Duplicati uploads and Homepage widgets, with upload size and rate limits";
+
+  it("3.1 fail-invented-braces: {{TAM}}", () => {
+    const bad =
+      "- [Claves de API](settings/api-keys-settings.md) opcionales para las subidas de Duplicati y los widgets de Homepage, con límites de tasa y de {{TAM}} de subida";
+    expect(hasInternalPlaceholderLeak(bad)).toBe(false);
+    const errs = collectUnexpectedIdentErrors(apiKeysSource, bad);
+    expect(errs.some((e) => e.includes("Unexpected {{…}} token") && e.includes("{{TAM}}"))).toBe(
+      true
+    );
+    expect(collectPostRestorePlaceholderErrors(apiKeysSource, bad).length).toBeGreaterThan(0);
+  });
+
+  it("3.2 / 3.3 fail case variants {{tam}} / {{Tam}}", () => {
+    expect(
+      collectUnexpectedIdentErrors(apiKeysSource, "… de {{tam}} de subida").length
+    ).toBeGreaterThan(0);
+    expect(
+      collectUnexpectedIdentErrors(apiKeysSource, "… de {{Tam}} de subida").length
+    ).toBeGreaterThan(0);
+  });
+
+  it("3.4 / 3.5 / 3.6 / 3.11 leftover official tokens fail", () => {
+    for (const token of ["{{GLS_0}}", "{{HTM_0}}", "{{HTM-0}}", "{{MDX_0}}"]) {
+      const errs = collectUnexpectedIdentErrors(apiKeysSource, `… de ${token} de subida`);
+      expect(errs.some((e) => e.includes("placeholder leaked") || e.includes("Unexpected"))).toBe(
+        true
+      );
+    }
+  });
+
+  it("3.7 pass: good Spanish without braces", () => {
+    const good =
+      "- [Claves de API](settings/api-keys-settings.md) opcionales para las subidas de Duplicati y los widgets de Homepage, con límites de tasa y de tamaño de subida";
+    expect(collectPostRestorePlaceholderErrors(apiKeysSource, good)).toEqual([]);
+  });
+
+  it("3.8 pass: plain Tam glossary abbreviation", () => {
+    expect(collectUnexpectedIdentErrors(apiKeysSource, "… de Tam de subida")).toEqual([]);
+  });
+
+  it("3.9 pass: source already contains {{count}}", () => {
+    const source = 'Use t("{{count}} backups selected") in examples';
+    const out = 'Use t("{{count}} backups selected") in examples';
+    expect(collectUnexpectedIdentErrors(source, out)).toEqual([]);
+    expect(collectPostRestorePlaceholderErrors(source, out)).toEqual([]);
+  });
+
+  it("3.10 pass: single braces in URL badge", () => {
+    const src = "![versión](https://img.shields.io/badge/version-{VERSION}-blue)";
+    expect(collectUnexpectedIdentErrors(src, src)).toEqual([]);
+    expect(extractIdentTokens(src)).toEqual([]);
+  });
+
+  it("3.12 / 3.13 fail {{FOO}} and {{ count }}", () => {
+    expect(collectUnexpectedIdentErrors("hello", "x {{FOO}} y").length).toBeGreaterThan(0);
+    expect(collectUnexpectedIdentErrors("hello", "x {{ count }} y").length).toBeGreaterThan(0);
+  });
+});
+
+describe("placeholder-integrity section 5 guards", () => {
+  it("passes markdown links without HTML tags", () => {
+    const src = "- Optional [API keys](settings/api-keys-settings.md) for Duplicati uploads";
+    const out = "- [Claves de API](settings/api-keys-settings.md) opcionales para Duplicati";
+    expect(collectPostRestorePlaceholderErrors(src, out)).toEqual([]);
+  });
+
+  it("passes author {{count}} present in source", () => {
+    const src = "Selected {{count}} items";
+    const out = "Seleccionados {{count}} elementos";
+    expect(collectPostRestorePlaceholderErrors(src, out)).toEqual([]);
+  });
+
+  it("passes heading id and MDX comment forms without inventing IDENT", () => {
+    const src = "## Overview {#overview}\n{/* #heading-id */}";
+    const out = "## Resumen {#overview}\n{/* #heading-id */}";
+    expect(collectUnexpectedIdentErrors(src, out)).toEqual([]);
+  });
+
+  it("passes style={{…}} MDX expression (not IDENT token)", () => {
+    const src = '<td style={{verticalAlign: "top"}}>Size</td>';
+    const out = '<td style={{verticalAlign: "top"}}>Tamaño</td>';
+    expect(extractIdentTokens(src)).toEqual([]);
+    expect(collectUnexpectedIdentErrors(src, out)).toEqual([]);
+  });
+});
+
+describe("collectPreRestorePlaceholderErrors", () => {
+  it("flags sequence mismatch against protect state", () => {
+    const p = protectedLiA();
+    const errs = collectPreRestorePlaceholderErrors(
+      { text: p.protected },
+      "{{HTM_0}}{{HTM_1}}x{{HTM_3}}: y{{HTM_3}}",
+      "abc"
+    );
+    expect(errs.length).toBeGreaterThan(0);
+    expect(errs[0]).toContain("hash abc");
+  });
+
+  it("returns empty when sequences match", () => {
+    const p = protectedLiA();
+    expect(collectPreRestorePlaceholderErrors({ text: p.protected }, p.protected)).toEqual([]);
+  });
+});

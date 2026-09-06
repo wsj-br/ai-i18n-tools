@@ -72,7 +72,7 @@ export const PROMPTS: PromptStrings = {
 - When prose names or describes user-visible interface elements (menus, dialogs, buttons, notifications), phrase them with the same conventional labels users see in mainstream applications in that locale so documentation matches the product.`,
 
     coreRules:
-      "Rules: Keep headers (###), variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{URL_N}}, {{BLD_N}}, {{ILC_N}}, {{HTM_N}}, {{ANC_N}}, {{HDG_N}}, {{MDX_N}}, {{GLS_N}}, {{IT}}, {{IU}}, {{SE}}, {{SU}}, {{ST}} (for GLS and similar tokens, N is any non-negative integer; copy the full token character-for-character). Copy each placeholder character-for-character; do not change underscores, hyphens, or digits inside {{...}} tokens. Some segments end with appendix lines `||JXA_N: …||` (one or more): preserve each marker’s index N and closing `||`; translate only the human-readable text between the colon and the closing `||`. YAML front matter is not translated (omitted from segments). Admonition lines only mask the directive prefix (for example `:::note `); translate any title text that appears after {{ADM_OPEN_N}} on the same line. If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). Maintain coherence for all other phrasing.",
+      "Rules: Keep headers (###), variables, URLs, line breaks, markdown formatting, placeholders {{X}} unchanged. Preserve exactly (do not translate or alter): {{ADM_OPEN_N}}, {{ADM_END_N}}, {{ADM_TCLOSE_N}}, {{URL_N}}, {{BLD_N}}, {{ILC_N}}, {{HTM_N}}, {{ANC_N}}, {{HDG_N}}, {{MDX_N}}, {{JXA_N}}, {{GLS_N}}, {{IT}}, {{IU}}, {{SE}}, {{SU}}, {{ST}} (for GLS and similar tokens, N is any non-negative integer; copy the full token character-for-character). Copy each placeholder character-for-character; do not change underscores, hyphens, or digits inside {{...}} tokens. Use every {{…}} token from the input exactly once, in the same order; do not reuse, drop, or renumber tokens. Do not invent new {{…}} tokens; glossary target words are plain text, not wrapped in {{…}}. Keep that token order even when the target language is written right-to-left (placeholders are markup, not prose). Some segments end with appendix lines `||JXA_N: …||` (one or more): preserve each marker’s index N and closing `||`; translate only the human-readable text between the colon and the closing `||`. YAML front matter is not translated (omitted from segments). Admonition lines only mask the directive prefix (for example `:::note `); translate any title text that appears after {{ADM_OPEN_N}} on the same line. If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). Maintain coherence for all other phrasing.",
 
     markdownPreservation:
       "Markdown structure: Preserve heading levels (#\u2013######), list markers and indentation, blockquotes (>), horizontal rules, and meaningful line breaks. Inline `` `code` `` is sent as {{ILC_N}}; bold+code **`code`** as {{BLD_N}} \u2014 copy those tokens exactly. Keep **bold** and *italic* intact with balanced delimiters. Every **bold** span in the source must have a corresponding **bold** span in the translation \u2014 even when the bolded word translates to a short conjunction, particle, suffix, or single word in the target language; never remove bold to simplify the sentence. In [visible text](url), ![alt](path), and HTML like <img \u2026> / <a \u2026>, translate only the visible link text or alt; keep URLs, paths, angle-bracket links, and attribute names unchanged. Preserve GFM pipe tables (| cells |).",
@@ -92,11 +92,11 @@ Context: Segments are human-readable text from SVG (text elements, titles).
     markdownExample: `Example (same structure in {{targetLang}}):
 Input:
 ### Section title
-Body line with \`CODE\` and {{PLACEHOLDER}}.
+Body line with \`CODE\` and {{HTM_0}}.
 
 Output:
 ### [Translated section title]
-[Translated body line with \`CODE\` and {{PLACEHOLDER}}.]`,
+[Translated body line with \`CODE\` and {{HTM_0}}.]`,
 
     singleSegmentOutputInstruction:
       "The next user message is one source segment only (markdown or text as provided). Respond with ONLY the translated segment — no explanations, preamble, code fences, or extra markup beyond what the segment requires.",
@@ -161,8 +161,10 @@ Do not change keys, add keys, remove keys, or return XML tags/markdown/code fenc
       "- Keys must be exactly the cardinal plural category names requested (CLDR / Intl.PluralRules: zero, one, two, few, many, other). Include only the keys you are asked for.",
       "- Include every requested key exactly once — do not omit a category because another category could use the same wording; duplicate string values across keys are allowed and often required.",
       "- Each value is one UI string for that plural category in the target language described in the user message.",
-      "- Preserve placeholders exactly: {{variable}}, {{count}}, {0}, %s, %d — copy character-for-character.",
-      "- For messages that include a numeric quantity, use {{count}} where a number must appear unless the category is zero and instructions say to use the literal digit 0.",
+      '- Copy every placeholder that appears in the original developer string into EVERY requested category value, including "one". Do not drop {{count}} (or any other {{…}}, {0}, %s, %d) from singular forms. Category "one" is not permission to omit a number token.',
+      "- If the original has no {{count}} / %d / {n} and no digit, inflect the noun only. Do not insert {{count}}, {{n}}, a literal 1/0, or any other quantity. Runtime count only selects the category; it is not a request to print a number (the UI may already show the number beside the label).",
+      '- This is NOT gettext ("%d file" / "%d files") and NOT ICU {count, plural, …}. Output only the requested flat JSON object of UI strings.',
+      '- When the user message allows zeroDigit, a literal 0 may appear in the "zero" value only (where a quantity would appear). Other categories must not use 0 as a substitute for {{count}}.',
       "- No markdown, no code fences, no commentary outside the JSON object.",
     ],
   },

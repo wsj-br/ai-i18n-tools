@@ -9,6 +9,14 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.5] - 2026-09-06
+
+- **Changed**: tests/live — docs and plural OpenRouter smokes can dump the system/user prompt sent, model return (raw + parsed/restored), usage, and detailed integrity / placeholder check results; off by default, enable with `pnpm test:live -- --verbose` (or `-v`).
+- **Added**: api — `translatePluralCardinalBatch` returns optional `rawAssistantContent` for live/debug dumps of the assistant reply before parse.
+- **Fixed**: docs — reject HTML placeholder reuse/drop and invented `{{IDENT}}` after `translate-docs` restore (token-sequence + tag-kind + source-aware brace checks; quality retry cycles models as for leaks).
+- **Changed**: docs prompt — require each `{{…}}` token once in the same order, forbid inventing new `{{…}}` (glossary targets stay plain text), list `{{JXA_N}}` / `{{ADM_TCLOSE_N}}`, and use `{{HTM_0}}` in the markdown example instead of a fake `{{PLACEHOLDER}}`.
+- **Fixed**: ui/plurals — `translate-ui` Step 0 and Pass B now reject cardinal forms that drop or invent source placeholders (or inject digits / `{{count}}` into noun-only labels such as `Minutes`). Failures throw `PluralFormsPlaceholderError` so the existing model-fallback loop retries. New helpers: `pluralFormPlaceholderIssues` / `assertPluralFormsPlaceholders` (`src/core/plural-placeholders.ts`); shared token extraction in `src/core/ui-placeholders.ts`.
+- **Changed**: prompts — plural system rules and Step 0 / Pass B user text now include a per-request `PLACEHOLDERS` inventory (or an explicit noun-only constraint), anti-gettext/ICU guidance, and an Intl `n=` hint that sample counts are selectors only — aimed at code models (e.g. `mistralai/codestral-2508`) that previously invented quantities or dropped `{{count}}` from `_one`.
 - **Changed**: ci — bump `actions/setup-node` from `v6` to `v7` in `ci.yml` and `docs.yml`.
 - **Changed**: ci — publish with npm Trusted Publishers (OIDC) only: drop `setup-node` `registry-url` and `NODE_AUTH_TOKEN` / `NPM_TOKEN` fallback from the publish job.
 

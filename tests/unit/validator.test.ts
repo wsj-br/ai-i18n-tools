@@ -147,6 +147,59 @@ describe("validateDocTranslatePair", () => {
     expect(r.errors.some((e) => e.includes("placeholder leaked"))).toBe(true);
   });
 
+  it("fails on HTML tag swap after restore (corpus 1.1)", async () => {
+    const src = S({
+      type: "paragraph",
+      content: '<li><a href="display-settings.md">Display Settings</a>: Configure theme</li>',
+      hash: "h11",
+    });
+    const bad =
+      '<li><a href="display-settings.md">Anzeigeeinstellungen</li>: Konfigurieren Sie Design</li>';
+    const r = await validateDocTranslatePair(src, bad);
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.includes("HTML tag placeholders reused or dropped"))).toBe(true);
+  });
+
+  it("fails on invented {{TAM}} (corpus 1.2)", async () => {
+    const src = S({
+      type: "paragraph",
+      content: "- Optional [API keys](settings/api-keys-settings.md) for uploads with size limits",
+      hash: "h12",
+    });
+    const bad =
+      "- [Claves de API](settings/api-keys-settings.md) opcionales con límites de {{TAM}} de subida";
+    const r = await validateDocTranslatePair(src, bad);
+    expect(r.ok).toBe(false);
+    expect(
+      r.errors.some((e) => e.includes("Unexpected {{…}} token") && e.includes("{{TAM}}"))
+    ).toBe(true);
+  });
+
+  it("accepts correct German HTML tags and Spanish without invented braces", async () => {
+    const srcHtml = S({
+      type: "paragraph",
+      content: '<li><a href="display-settings.md">Display Settings</a>: Configure theme</li>',
+      hash: "ok1",
+    });
+    const goodDe =
+      '<li><a href="display-settings.md">Anzeigeeinstellungen</a>: Design konfigurieren</li>';
+    expect((await validateDocTranslatePair(srcHtml, goodDe)).ok).toBe(true);
+
+    const srcMd = S({
+      type: "paragraph",
+      content: "- Optional [API keys](settings/api-keys-settings.md) for uploads",
+      hash: "ok2",
+    });
+    const goodEs = "- [Claves de API](settings/api-keys-settings.md) opcionales para subidas";
+    expect((await validateDocTranslatePair(srcMd, goodEs)).ok).toBe(true);
+  });
+
+  it("accepts author {{count}} when present in the source", async () => {
+    const src = S({ type: "paragraph", content: "Selected {{count}} items", hash: "c" });
+    const r = await validateDocTranslatePair(src, "Seleccionados {{count}} elementos");
+    expect(r.ok).toBe(true);
+  });
+
   it("passes when ** delimiter count matches after translation", async () => {
     const src = S({ type: "paragraph", content: "Use **bold** here.", hash: "h" });
     const r = await validateDocTranslatePair(src, "Usa **negrita** aquí.");

@@ -187,6 +187,8 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
+모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 정렬된 이중 중괄호 토큰 시퀀스는 보호된 소스와 일치해야 하고, 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만들어진 토큰은 실패합니다). 문서 프롬프트는 또한 모델에게 각 토큰을 순서대로 한 번씩 복사하고 새로운 이중 중괄호 래퍼를 만들지 않도록 요청하지만, 기계적 검사가 최종 기준입니다.
+
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
 <a id="cache-translationcache"></a>
@@ -405,6 +407,7 @@ src/
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
 │   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── placeholder-integrity.ts    Pre/post-restore token sequence + tag-kind + invented {{IDENT}} checks
 │   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks

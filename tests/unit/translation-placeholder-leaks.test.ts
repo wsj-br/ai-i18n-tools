@@ -15,12 +15,20 @@ describe("hasInternalPlaceholderLeak", () => {
     expect(hasInternalPlaceholderLeak("x {{ILC_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{HTM_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{GLS_0}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{MDX_0}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{JXA_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_OPEN_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ADM_END_0}}")).toBe(true);
+    expect(hasInternalPlaceholderLeak("x {{ADM_TCLOSE_0}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{IT}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{IU}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{SE}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{SU}}")).toBe(true);
     expect(hasInternalPlaceholderLeak("x {{ST}}")).toBe(true);
+  });
+
+  it("does not treat invented {{TAM}} or author {{count}} as official leaks", () => {
+    expect(hasInternalPlaceholderLeak("… de {{TAM}} de subida")).toBe(false);
+    expect(hasInternalPlaceholderLeak("Selected {{count}} items")).toBe(false);
   });
 });

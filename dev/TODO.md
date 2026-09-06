@@ -21,8 +21,6 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 ## Improvements
 
 - check the proofread-ui command to see if it is working as expected, check if the warnings and suggestions make sense and are helpful.
-- **Plural placeholder validation:** after Step 0 / Pass B, reject (and retry) CLDR forms that drop or invent `{{count}}` / other interpolations relative to the source literal. Prompt currently says “preserve placeholders” but `parsePluralFormsJsonResponse` does not check. Details: [plural-placeholder-validation.md](./plural-placeholder-validation.md).
-- **Docs HTML token restore:** reject (and retry) `translate-docs` segments where the model reuses/drops `{{HTM_N}}` (restored tags no longer match the source map) or leaves an unknown `{{IDENT}}` such as `{{TAM}}`. Current `hasInternalPlaceholderLeak` misses both. Corpus: [docs-placeholder-restore-failures.md](./docs-placeholder-restore-failures.md).
 
 
 

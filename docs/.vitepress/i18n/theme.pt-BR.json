@@ -14,9 +14,9 @@
     "whatIs": "O que é ai-i18n-tools?",
     "installation": "Instalação",
     "quickStart": "Início rápido",
-    "toolUiLanguage": "Idioma da interface da ferramenta",
+    "toolUiLanguage": "Idioma da UI da ferramenta",
     "translationTypes": "Tipos de tradução",
-    "uiStrings": "Strings da interface do usuário",
+    "uiStrings": "Strings da UI",
     "overview": "Visão geral",
     "uiStringsPlainHtml": "Aplicativos HTML simples",
     "uiStringsAstroWebsite": "Site Astro",
@@ -44,8 +44,8 @@
     "imagesLinkRewriting": "Reescrita de links",
     "imagesTroubleshooting": "Solução de problemas",
     "svgTranslation": "Tradução de SVG",
-    "svgWebAppFlat": "Aplicativo web (SVG plano)",
-    "svgColocated": "SVG Colocado",
+    "svgWebAppFlat": "Aplicativo web (SVG simples)",
+    "svgColocated": "SVG Colocalizado",
     "svgTroubleshooting": "Solução de problemas",
     "providers": "Provedores de LLM",
     "runtimeHelpers": "Auxiliares de tempo de execução",
@@ -74,7 +74,7 @@
     "examples": "Exemplos"
   },
   "footer": {
-    "message": "Lançado sob a licença MIT.",
+    "message": "Lançado sob a Licença MIT.",
     "copyright": "Copyright © Waldemar Scudeller Jr."
   },
   "docFooter": {

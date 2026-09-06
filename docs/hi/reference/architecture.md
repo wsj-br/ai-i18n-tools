@@ -187,6 +187,8 @@ i18next इन्हें संसाधन बंडल के रूप म�
 6. **इनलाइन कोड स्पैन** (`` `code` ``) और **बोल्ड-रैप्ड इनलाइन कोड** (`**`code`**`) - संरक्षित।
 7. **मार्कडाउन एम्फेसिस** (वैकल्पिक, CJK/RTL लोकेल के लिए स्वतः सक्षम) - एम्फेसिस डीलिमिटर मास्क्ड।
 
+मॉडल के वापस आने के बाद, `translate-docs` मैप्स को पुनर्स्थापित करता है और सेगमेंट को मान्य करता है: ऑर्डर किए गए डबल-ब्रेस टोकन अनुक्रम को संरक्षित स्रोत से मेल खाना चाहिए, पुनर्स्थापित HTML टैग प्रकारों को असुरक्षित स्रोत से मेल खाना चाहिए, और कोई भी बचा हुआ डबल-ब्रेस पहचानकर्ता स्रोत में पहले से मौजूद होना चाहिए (इसलिए आविष्कार किए गए टोकन विफल हो जाते हैं)। दस्तावेज़ प्रॉम्प्ट मॉडल से प्रत्येक टोकन को एक बार क्रम में कॉपी करने और नए डबल-ब्रेस रैपर का आविष्कार न करने के लिए भी कहता है; यांत्रिक जांच आधिकारिक बनी रहती है।
+
 एस्ट्रो टेम्प्लेट और एमडीएक्स जेएसएक्स के लिए साझा विशेषता/कुंजी सुरक्षा `src/processors/expression-attribute-protection.ts` में लागू की जाती है और `docs[].protectAttributes` और `docs[].protectKeys` द्वारा प्रति ब्लॉक संचालित की जाती है (देखें [protectAttributes / protectKeys](/hi/reference/configuration#protectattributes-protectkeys))।
 
 <a id="cache-translationcache"></a>
@@ -405,6 +407,7 @@ src/
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
 │   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── placeholder-integrity.ts    Pre/post-restore token sequence + tag-kind + invented {{IDENT}} checks
 │   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks

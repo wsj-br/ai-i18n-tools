@@ -187,6 +187,8 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
 7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
 
+模型返回后，`translate-docs` 恢复映射并验证该片段：有序的双花括号令牌序列必须与受保护的源文本匹配，恢复的 HTML 标签类型必须与未受保护的源文本匹配，且任何残留的双花括号标识符必须已存在于源文本中（因此虚构的令牌会失败）。文档提示词还要求模型按顺序复制每个令牌一次，且不得虚构新的双花括号包装；机械检查仍具有决定权。
+
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
 <a id="cache-translationcache"></a>
@@ -405,6 +407,7 @@ src/
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
 │   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── placeholder-integrity.ts    Pre/post-restore token sequence + tag-kind + invented {{IDENT}} checks
 │   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks

@@ -48,6 +48,7 @@ import { dedupeOrderedModelIds, resolveTranslationModelsForLocale } from "../cor
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
+import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
 import {
   computeFlatLinkRewritePrefixes,
   computePerFileDepthPrefix,
@@ -940,6 +941,12 @@ function summarizeQualityError(errorMessage: string): string {
   if (errorMessage.startsWith("Internal translation placeholder leaked")) {
     return "placeholderLeak";
   }
+  if (errorMessage.startsWith("HTML tag placeholders reused or dropped")) {
+    return "placeholderTagMap";
+  }
+  if (errorMessage.startsWith("Unexpected {{…}} token in translation")) {
+    return "placeholderInvented";
+  }
   return "validation";
 }
 
@@ -1423,25 +1430,28 @@ export async function translateSegmentsBatched(
         const st = placeholderById.get(s.id);
         const restored = restoreSegmentTranslation(ph, raw, st);
         const origSeg = segmentOriginalContent(s, originalContentByHash);
+        const preRestoreErrors = collectPreRestorePlaceholderErrors(st, raw, s.hash);
         const v = await validateDocTranslatePair(origSeg, restored);
+        const allErrors = [...preRestoreErrors, ...v.errors];
+        const ok = preRestoreErrors.length === 0 && v.ok;
         const docIdx0 = batchDocIndices[bi]?.[i];
         const label =
           docLog && docIdx0 !== undefined
             ? `doc #${docIdx0 + 1}/${docLog.totalSegments} seg id=${i} (hash ${s.hash})`
             : `batch seg id=${i} (hash ${s.hash})`;
-        perSegmentLines.push(`${label}: ${v.ok ? "OK" : v.errors.join("; ")}`);
-        if (v.ok) {
+        perSegmentLines.push(`${label}: ${ok ? "OK" : allErrors.join("; ")}`);
+        if (ok) {
           partial.set(s.hash, { text: restored, modelUsed: res.model });
         } else {
           localSegmentValidationFailures++;
-          qualityErrors.push(...v.errors);
+          qualityErrors.push(...allErrors);
           await recordFailures(
             buildQualityFailureRows(
               s.hash,
               locale,
               res.model,
               modelOrder1Based(models, res.model),
-              v.errors,
+              allErrors,
               nextStart >= models.length,
               failureFp,
               origSeg.content
@@ -1452,7 +1462,7 @@ export async function translateSegmentsBatched(
             segment: s,
             state: st,
             original: origSeg,
-            errors: v.errors,
+            errors: allErrors,
             docIdx0,
           });
         }

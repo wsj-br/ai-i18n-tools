@@ -371,8 +371,10 @@ Standalone fixtures (`multi-provider`, `test-markdown`) use `node ../../bin/ai-i
 Tests use [Vitest](https://vitest.dev/) with V8 coverage:
 
 ```bash
-pnpm test              # single run + coverage report
+pnpm test              # single run + coverage report (unit tests only)
 pnpm test:watch        # re-run on changes
+pnpm test:live         # opt-in OpenRouter smokes under tests/live/ (needs OPENROUTER_API_KEY in repo-root `.env`)
+pnpm test:live -- --verbose   # same, plus prompt / model return / check-detail dumps
 ```
 
 

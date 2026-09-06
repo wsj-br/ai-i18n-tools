@@ -35,6 +35,8 @@
     "dev": "node scripts/ensure-src-ui-languages-json.mjs && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-dashboard-app.mjs && node scripts/copy-i18n-locales.mjs && tsc --watch",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:live": "node scripts/run-live-tests.mjs",
+    "test:live:verbose": "pnpm test:live -- --verbose",
     "typecheck": "node scripts/ensure-src-ui-languages-json.mjs && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json",
     "lint": "eslint . && pnpm run typecheck",
     "lint:fix": "eslint . --fix",

@@ -4,6 +4,7 @@ import {
   buildDocumentSinglePrompt,
   buildPluralPassBPrompt,
   buildPluralStep0Prompt,
+  buildPluralPlaceholderConstraint,
   buildProofreadUIPromptMessages,
   buildUIPromptMessages,
   parseProofreadUIBatchResponse,
@@ -60,6 +61,8 @@ describe("buildDocumentBatchPrompt", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "markdown");
     expect(systemPrompt).toContain("TERMINOLOGY (technical documentation)");
     expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
+    expect(systemPrompt).toContain("{{ADM_TCLOSE_N}}");
+    expect(systemPrompt).toContain("{{JXA_N}}");
     expect(systemPrompt).toContain("{{BLD_N}}");
     expect(systemPrompt).toContain("{{ILC_N}}");
     expect(systemPrompt).toContain("{{IT}}");
@@ -67,6 +70,9 @@ describe("buildDocumentBatchPrompt", () => {
     expect(systemPrompt).toContain("{{SE}}");
     expect(systemPrompt).toContain("{{SU}}");
     expect(systemPrompt).toContain("{{ST}}");
+    expect(systemPrompt).toContain("exactly once, in the same order");
+    expect(systemPrompt).toContain("Do not invent new {{…}} tokens");
+    expect(systemPrompt).toContain("right-to-left");
     expect(systemPrompt).toContain("Preserve GFM pipe tables");
     expect(systemPrompt).not.toContain("software localization JSON file");
   });
@@ -169,6 +175,19 @@ describe("PROMPTS config shape", () => {
 
   it("markdownExample contains the {{targetLang}} placeholder", () => {
     expect(PROMPTS.document.markdownExample).toContain("{{targetLang}}");
+  });
+
+  it("markdownExample uses {{HTM_0}} instead of a fake {{PLACEHOLDER}}", () => {
+    expect(PROMPTS.document.markdownExample).toContain("{{HTM_0}}");
+    expect(PROMPTS.document.markdownExample).not.toContain("{{PLACEHOLDER}}");
+  });
+
+  it("document coreRules forbids inventing tokens and requires once-each order", () => {
+    expect(PROMPTS.document.coreRules).toContain("exactly once, in the same order");
+    expect(PROMPTS.document.coreRules).toContain("Do not invent new {{…}} tokens");
+    expect(PROMPTS.document.coreRules).toContain("glossary target words are plain text");
+    expect(PROMPTS.document.coreRules).toContain("{{JXA_N}}");
+    expect(PROMPTS.document.coreRules).toContain("{{ADM_TCLOSE_N}}");
   });
 });
 
@@ -364,9 +383,66 @@ describe("plural prompt builders and parsers", () => {
       glossaryHints: ['- "message" → "رسالة"'],
     });
     expect(systemPrompt).toContain("<glossary>");
-    expect(userContent).toContain('For the "zero" category, prefer the literal digit 0');
+    expect(userContent).toContain('For the "zero" category only, prefer the literal digit 0');
     expect(userContent).toContain("Intl.PluralRules");
+    expect(userContent).toContain("Do not write them into the UI strings");
     expect(userContent).toContain("zero, one, other");
+    expect(userContent).toContain("PLACEHOLDERS in the original string");
+    expect(userContent).toContain("{{count}}");
+  });
+
+  it("buildPluralStep0Prompt noun-only Minutes constraint", () => {
+    const { systemPrompt, userContent } = buildPluralStep0Prompt({
+      sourceLanguageLabel: "English (United Kingdom)",
+      originalLiteral: "Minutes",
+      requiredForms: ["one", "other"],
+      zeroDigit: false,
+    });
+    expect(systemPrompt).not.toContain("use {{count}} where a number must appear");
+    expect(systemPrompt).toContain("NOT gettext");
+    expect(userContent).toContain("PLACEHOLDERS in the original string: none");
+    expect(userContent).toContain("Noun-only inflection");
+  });
+
+  it("buildPluralStep0Prompt zeroDigit false note does not invent count", () => {
+    const { userContent } = buildPluralStep0Prompt({
+      sourceLanguageLabel: "English",
+      originalLiteral: "You have {{count}} items",
+      requiredForms: ["zero", "one", "other"],
+      zeroDigit: false,
+    });
+    expect(userContent).toContain("do not invent {{count}}");
+    expect(userContent).toContain("natural zero-quantity phrasing");
+  });
+
+  it("buildPluralPassBPrompt lists original tokens even when sourceForms.one dropped them", () => {
+    const { userContent } = buildPluralPassBPrompt({
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "German",
+      sourceForms: { one: "Merge Selected Server", other: "Merge Selected Servers ({{count}})" },
+      requiredTargetForms: ["one", "other"],
+      originalLiteral: "Merge Selected Servers ({{count}})",
+      intlPluralLocaleTag: "   ",
+    });
+    expect(userContent).toContain("PLACEHOLDERS in the original string");
+    expect(userContent).toContain("{{count}}");
+    expect(userContent).toContain("still restore it from this list");
+    expect(userContent).not.toContain("Intl.PluralRules");
+  });
+
+  it("buildPluralPlaceholderConstraint lists multi-placeholder names", () => {
+    const text = buildPluralPlaceholderConstraint(
+      "Showing only the first {{shown}} of {{count}} messages"
+    );
+    expect(text).toContain("{{shown}}");
+    expect(text).toContain("{{count}}");
+    expect(text).toContain("EVERY category value");
+  });
+
+  it("pluralFormsSystemPrompt no longer tells models to invent {{count}}", () => {
+    const joined = PROMPTS.ui.pluralFormsSystemPrompt.join("\n");
+    expect(joined).not.toContain("use {{count}} where a number must appear");
+    expect(joined).toContain("inflect the noun only");
   });
 
   it("buildPluralPassBPrompt omits intl hint when empty tag", () => {

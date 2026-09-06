@@ -148,4 +148,134 @@ describe("translateOneSegmentWithQualityRetry split fallback", () => {
       })
     ).rejects.toThrow(/Doc translation quality failed/);
   });
+
+  it("retries next model when first returns HTML token swap; accepts correct second model", async () => {
+    const source = '<li><a href="display-settings.md">Display Settings</a>: Configure theme</li>';
+    const models = ["model-a", "model-b"];
+    const glossary = new Glossary(undefined, undefined);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const good = "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Design konfigurieren{{HTM_3}}";
+    const bad = "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_3}}: Design konfigurieren{{HTM_3}}";
+
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          const idx = opts?.startModelIndex ?? 0;
+          const model = models[idx]!;
+          return {
+            content: model === "model-a" ? bad : good,
+            model,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: model === "model-a" ? bad : good,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+
+    const result = await translateOneSegmentWithQualityRetry({
+      client,
+      locale: "de",
+      glossary,
+      contentType: "markdown",
+      models,
+      original: seg(source),
+      protectedContent: protectedSeg.text,
+      protectState: protectedSeg.state,
+      startModelIndex: 0,
+      splitDepth: 0,
+      qualityRetrySplit: true,
+      maxQualityRetrySplitDepth: 3,
+      protectForTranslation: protectForPart,
+      segmentHash: "abc123",
+      failureFp: null,
+      recordFailures: async () => {},
+      buildQualityFailureRows: () => [],
+      buildRuntimeFailureRow: () => ({
+        sourceHash: "abc123",
+        locale: "de",
+        model: null,
+        modelOrder: null,
+        qualityError: "runtime",
+        errorMessage: "",
+        fatal: true,
+        filepath: null,
+        sourceText: source,
+      }),
+      modelOrder1Based: () => null,
+      segLabelSingle: "segment 1/1",
+    });
+
+    expect(result.text).toContain("</a>");
+    expect(result.text).not.toMatch(/Anzeigeeinstellungen<\/li>:/);
+    expect(result.modelUsed).toBe("model-b");
+    expect(result.qualitySplitRetries).toBe(0);
+  });
+
+  it("throws on placeholder invent without quality split after model exhaustion", async () => {
+    const source =
+      "- Optional [API keys](settings/api-keys-settings.md) for uploads with size limits";
+    const models = ["model-a"];
+    const glossary = new Glossary(undefined, undefined);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "es", true, false);
+    const protectedSeg = protectForPart(source);
+    const bad = "- [Claves de API](settings/api-keys-settings.md) opcionales con {{TAM}} de subida";
+
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(async () => ({
+        content: bad,
+        model: "model-a",
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+        cost: 0,
+        debugPrompt: { systemPrompt: "", userContent: "" },
+        rawAssistantContent: bad,
+      })),
+    } as unknown as LlmClient;
+
+    await expect(
+      translateOneSegmentWithQualityRetry({
+        client,
+        locale: "es",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: true,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: () => [],
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "es",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+          filepath: null,
+          sourceText: source,
+        }),
+        modelOrder1Based: () => null,
+        segLabelSingle: "",
+      })
+    ).rejects.toThrow(/Doc translation quality failed/);
+  });
 });

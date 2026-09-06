@@ -18,7 +18,7 @@
     "translationTypes": "Übersetzungstypen",
     "uiStrings": "UI-Strings",
     "overview": "Übersicht",
-    "uiStringsPlainHtml": "Reine HTML-Apps",
+    "uiStringsPlainHtml": "Reine HTML-Anwendungen",
     "uiStringsAstroWebsite": "Astro-Website",
     "uiStringsWireI18next": "i18next einbinden",
     "uiStringsTCallsAndPlurals": "t()-Aufrufe & Plurale",
@@ -64,7 +64,7 @@
     "cliModels": "Modelle & Katalog",
     "cliUiStrings": "UI-Strings",
     "cliDocuments": "Dokumente",
-    "cliContent": "Andere Inhalte",
+    "cliContent": "Weitere Inhalte",
     "cliWorkflows": "Workflows & Status",
     "cliMaintenance": "Cache & Wartung",
     "cliTools": "Tools",
@@ -78,8 +78,8 @@
     "copyright": "Copyright © Waldemar Scudeller Jr."
   },
   "docFooter": {
-    "prev": "Zurück",
-    "next": "Weiter"
+    "prev": "Vorherige",
+    "next": "Nächste"
   },
   "outline": {
     "label": "Auf dieser Seite"

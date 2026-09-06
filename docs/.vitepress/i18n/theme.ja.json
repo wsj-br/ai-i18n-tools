@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "LLMを使用してJavaScript/TypeScriptアプリケーションやドキュメントサイトを国際化するためのCLIおよびツールキット。"
+    "description": "LLMを使用してJavaScript/TypeScriptアプリケーションおよびドキュメントサイトを国際化するためのCLIおよびツールキット。"
   },
   "nav": {
     "guide": "ガイド",
@@ -14,8 +14,8 @@
     "whatIs": "ai-i18n-toolsとは？",
     "installation": "インストール",
     "quickStart": "クイックスタート",
-    "toolUiLanguage": "ツールUIの言語",
-    "translationTypes": "翻訳の種類",
+    "toolUiLanguage": "ツールのUI言語",
+    "translationTypes": "翻訳タイプ",
     "uiStrings": "UI文字列",
     "overview": "概要",
     "uiStringsPlainHtml": "プレーンHTMLアプリ",
@@ -27,11 +27,11 @@
     "documentsOutputLayouts": "出力レイアウト",
     "documentsAnchorLinks": "アンカーリンク",
     "documentsLinkRewriting": "リンクの書き換え",
-    "documentsLanguageSwitcher": "言語切り替え",
-    "documentsCliOptions": "CLIオプション",
+    "documentsLanguageSwitcher": "言語スイッチャー",
+    "documentsCliOptions": "CLI オプション",
     "documentsTroubleshooting": "トラブルシューティング",
     "json": "JSON",
-    "integrations": "統合",
+    "integrations": "インテグレーション",
     "astro": "Astro",
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",
@@ -43,7 +43,7 @@
     "imagesColocatedScreenshots": "コロケーションされたスクリーンショット",
     "imagesLinkRewriting": "リンクの書き換え",
     "imagesTroubleshooting": "トラブルシューティング",
-    "svgTranslation": "SVG翻訳",
+    "svgTranslation": "SVG 翻訳",
     "svgWebAppFlat": "Webアプリ (フラットSVG)",
     "svgColocated": "コロケーションSVG",
     "svgTroubleshooting": "トラブルシューティング",

@@ -44,6 +44,7 @@ import {
   type DocumentPromptContentType,
   type ProofreadUISlotResult,
 } from "../core/prompt-builder.js";
+import { assertPluralFormsPlaceholders } from "../core/plural-placeholders.js";
 import type { Logger } from "../utils/logger.js";
 
 /** OpenRouter: prefer throughput; allow backup providers (top-level `provider` routing field). */
@@ -877,12 +878,20 @@ export class LlmClient {
   async translatePluralCardinalBatch(
     expectedForms: CldrPluralForm[],
     messages: { systemPrompt: string; userContent: string },
-    options?: { startModelIndex?: number; targetLocale?: string }
+    options?: {
+      startModelIndex?: number;
+      targetLocale?: string;
+      /** Original developer literal; when set, placeholder/qty validation runs after parse. */
+      originalLiteral?: string;
+      zeroDigit?: boolean;
+    }
   ): Promise<{
     forms: Record<CldrPluralForm, string>;
     model: string;
     usage: LlmUsageStats;
     cost?: number;
+    /** Raw assistant text before plural-forms parse (for live/debug dumps). */
+    rawAssistantContent?: string;
   }> {
     if (expectedForms.length === 0) {
       return {
@@ -916,6 +925,12 @@ export class LlmClient {
       }
       try {
         const forms = parsePluralFormsJsonResponse(result.content, expectedForms);
+        if (options?.originalLiteral !== undefined) {
+          assertPluralFormsPlaceholders(options.originalLiteral, forms, {
+            zeroDigit: options.zeroDigit === true,
+            rawResponse: result.content,
+          });
+        }
         if (options?.targetLocale) {
           for (const value of Object.values(forms)) {
             this.assertExpectedScript(value, options.targetLocale);
@@ -927,6 +942,7 @@ export class LlmClient {
           model: result.model,
           usage: folded.usage,
           cost: folded.cost,
+          rawAssistantContent: result.content,
         };
       } catch (e) {
         lastError = e;

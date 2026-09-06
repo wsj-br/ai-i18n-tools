@@ -135,7 +135,11 @@ export function pluralCategoryExamplesHint(locale: string): string {
       parts.push(`${f}: n=${n}`);
     }
   }
-  return `Intl.PluralRules reference for locale ${tag}: ${parts.join("; ")}.`;
+  return (
+    `Intl.PluralRules reference for locale ${tag}: ${parts.join("; ")}. ` +
+    "These n= values only show which count selects that category. " +
+    "Do not write them into the UI strings unless the original already contains that quantity or placeholder."
+  );
 }
 
 /**

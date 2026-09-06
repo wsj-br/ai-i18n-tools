@@ -9,6 +9,7 @@ import {
   type UIPromptStrings,
   type ProofreadUIPromptStrings,
 } from "./prompts.js";
+import { extractUiPlaceholderTokens } from "./ui-placeholders.js";
 
 /**
  * Document translation prompts follow common batch / single-segment patterns for markdown, JSON message
@@ -52,6 +53,25 @@ export interface PromptBuilderOptions {
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────
+
+/**
+ * Instance-specific PLACEHOLDERS constraint for plural Step 0 / Pass B user messages.
+ * Lists every token in the original developer string, or states noun-only when none.
+ */
+export function buildPluralPlaceholderConstraint(originalLiteral: string): string {
+  const tokens = extractUiPlaceholderTokens(originalLiteral);
+  if (tokens.length === 0) {
+    return (
+      "PLACEHOLDERS in the original string: none. Noun-only inflection: do not insert {{count}}, {{n}}, %d, {0}, " +
+      "or any digit. Runtime count only selects the category; a separate control may already show the number."
+    );
+  }
+  const listed = tokens.join(", ");
+  return (
+    'PLACEHOLDERS in the original string (copy character-for-character into EVERY category value, including "one"; ' +
+    `do not add any other {{…}} / %d / {n} tokens): ${listed}`
+  );
+}
 
 /** Nicer English names than `Intl` for common script codes used in directives. */
 const SCRIPT_DIRECTIVE_NAME_OVERRIDES: Record<string, string> = {
@@ -263,17 +283,20 @@ export function buildPluralStep0Prompt(opts: {
   );
   const formsList = opts.requiredForms.join(", ");
   const zeroNote = opts.zeroDigit
-    ? 'For the "zero" category, prefer the literal digit 0 where the quantity appears when that matches the language; still keep other placeholders exactly.'
-    : 'For the "zero" category, use natural zero-quantity phrasing for this language; preserve {{count}} where needed.';
+    ? 'For the "zero" category only, prefer the literal digit 0 where a quantity would appear when that matches the language; still copy every listed original placeholder into all other categories. Do not invent {{count}}.'
+    : 'For the "zero" category, use natural zero-quantity phrasing for this language; still copy every listed original placeholder (do not invent {{count}}).';
   const intlHint =
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
       ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
       : "";
+  const placeholderConstraint = buildPluralPlaceholderConstraint(opts.originalLiteral);
 
   const userContent = `Language — write every output string in this language: ${opts.sourceLanguageLabel}
 
 Original UI string from source code (context):
 ${JSON.stringify(opts.originalLiteral)}
+
+${placeholderConstraint}
 
 Generate cardinal plural variants for exactly these categories: ${formsList}.
 ${zeroNote}
@@ -307,11 +330,15 @@ export function buildPluralPassBPrompt(opts: {
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
       ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
       : "";
+  const placeholderConstraint = buildPluralPlaceholderConstraint(opts.originalLiteral);
 
   const userContent = `Translate cardinal plural UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
 
 Original developer string (context):
 ${JSON.stringify(opts.originalLiteral)}
+
+${placeholderConstraint}
+If a source-language form omitted a listed placeholder, still restore it from this list in every target category value.
 
 Source-language plural strings (JSON object):
 ${JSON.stringify(opts.sourceForms, null, 2)}

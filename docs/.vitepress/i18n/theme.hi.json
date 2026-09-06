@@ -18,7 +18,7 @@
     "translationTypes": "अनुवाद के प्रकार",
     "uiStrings": "UI स्ट्रिंग्स",
     "overview": "अवलोकन",
-    "uiStringsPlainHtml": "सादे HTML ऐप्स",
+    "uiStringsPlainHtml": "प्लेन HTML ऐप्स",
     "uiStringsAstroWebsite": "एस्ट्रो वेबसाइट",
     "uiStringsWireI18next": "i18next वायर करें",
     "uiStringsTCallsAndPlurals": "t() कॉल और बहुवचन",
@@ -48,7 +48,7 @@
     "svgColocated": "कोलोकेटेड SVG",
     "svgTroubleshooting": "समस्या निवारण",
     "providers": "LLM प्रदाता",
-    "runtimeHelpers": "रनटाइम हेल्पर",
+    "runtimeHelpers": "रनटाइम सहायक",
     "dashboard": "अनुवाद डैशबोर्ड",
     "dashboardDocumentationCache": "दस्तावेज़ कैश",
     "dashboardUiStringsAndPlurals": "UI स्ट्रिंग और बहुवचन",
@@ -65,17 +65,17 @@
     "cliUiStrings": "UI स्ट्रिंग",
     "cliDocuments": "दस्तावेज़",
     "cliContent": "अन्य सामग्री",
-    "cliWorkflows": "वर्कफ़्लो और स्थिति",
+    "cliWorkflows": "कार्यप्रवाह और स्थिति",
     "cliMaintenance": "कैश और रखरखाव",
-    "cliTools": "टूल",
+    "cliTools": "उपकरण",
     "architecture": "आर्किटेक्चर",
-    "programmaticApi": "प्रोग्रामेटिक एपीआई",
+    "programmaticApi": "प्रोग्रामेटिक API",
     "environment": "पर्यावरण चर",
     "examples": "उदाहरण"
   },
   "footer": {
-    "message": "एमआईटी लाइसेंस के तहत जारी किया गया।",
-    "copyright": "कॉपीराइट © वाल्डेमर स्कुडेलर जूनियर।"
+    "message": "MIT लाइसेंस के तहत जारी किया गया।",
+    "copyright": "कॉपीराइट © वाल्डेमार स्कुडेलर जूनियर।"
   },
   "docFooter": {
     "prev": "पिछला",

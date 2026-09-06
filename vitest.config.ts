@@ -4,7 +4,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    // Live OpenRouter smokes live under tests/live/ — run with `pnpm test:live`
+    // (excluded from default `pnpm test` / CI even when OPENROUTER_API_KEY is set).
+    include: ["tests/unit/**/*.test.ts"],
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],

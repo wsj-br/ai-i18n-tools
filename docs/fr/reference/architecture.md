@@ -187,6 +187,8 @@ Avant la traduction, la syntaxe sensible est remplacée par des jetons opaques a
 6. **Portées de code en ligne** (`` `code` ``) et **code en ligne en gras** (`**`code`**`) - conservés tels quels.
 7. **Mise en emphase en markdown** (facultatif, activé automatiquement pour les paramètres régionaux CJK/RTL) - les délimiteurs d'emphase sont masqués.
 
+Une fois que le modèle est renvoyé, `translate-docs` restaure les cartes et valide le segment : la séquence de jetons à double accolade ordonnée doit correspondre à la source protégée, les types de balises HTML restaurés doivent correspondre à la source non protégée, et tout identifiant à double accolade restant doit déjà avoir existé dans la source (de sorte que les jetons inventés échouent). L'invite du document demande également aux modèles de copier chaque jeton une fois dans l'ordre et de ne pas inventer de nouveaux wrappers à double accolade ; les vérifications mécaniques restent fiables.
+
 La protection partagée des attributs/clés pour les modèles Astro et MDX JSX est implémentée dans `src/processors/expression-attribute-protection.ts` et pilotée par bloc par `docs[].protectAttributes` et `docs[].protectKeys` (voir [protectAttributes / protectKeys](/fr/reference/configuration#protectattributes-protectkeys)).
 
 <a id="cache-translationcache"></a>
@@ -405,6 +407,7 @@ src/
 │   ├── admonition-placeholders.ts  Docusaurus admonition protection/restore
 │   ├── anchor-placeholders.ts      HTML anchor / heading ID protection/restore
 │   ├── html-tag-placeholders.ts    Lowercase HTML tag / comment protection ({{HTM_N}})
+│   ├── placeholder-integrity.ts    Pre/post-restore token sequence + tag-kind + invented {{IDENT}} checks
 │   ├── mdx-placeholders.ts         MDX comments, JSX tags, brace expressions, JSX attribute extraction
 │   ├── batch-processor.ts          Segment → batch grouping (count + char limits)
 │   ├── validator.ts                Post-translation structural checks

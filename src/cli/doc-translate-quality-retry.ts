@@ -5,6 +5,7 @@ import { splitSegmentForQualityRetry } from "../extractors/markdown-quality-spli
 import { PlaceholderHandler } from "../processors/placeholder-handler.js";
 import { restoreGlossaryForcedTerms } from "../processors/glossary-force-placeholders.js";
 import { errorsIncludeAstMismatch, validateDocTranslatePair } from "../processors/validator.js";
+import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
 import type { Glossary } from "../glossary/glossary.js";
 import type { LlmClient } from "../api/llm-client.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
@@ -154,6 +155,7 @@ async function translateProtectedContent(
     contentType,
     models,
     original,
+    segmentHash,
     recordFailures,
     buildQualityFailureRows,
     buildRuntimeFailureRow,
@@ -202,21 +204,28 @@ async function translateProtectedContent(
 
     const restored = restoreSegmentTranslation(ph, single.content, protectState);
     const origSeg: Segment = { ...original, content: originalContent };
+    const preRestoreErrors = collectPreRestorePlaceholderErrors(
+      protectState,
+      single.content,
+      segmentHash
+    );
     const v = await validateDocTranslatePair(origSeg, restored);
+    const allErrors = [...preRestoreErrors, ...v.errors];
+    const ok = preRestoreErrors.length === 0 && v.ok;
     const nextIdx = models.indexOf(single.model) + 1;
-    const line = perSegLine(params, v.ok, v.errors, partLabel);
+    const line = perSegLine(params, ok, allErrors, partLabel);
 
     if (failureLogDirAbs && docLog && writeDebugLog) {
       const debugLogPath = writeDebugLog({
         segmentsLabel: segLabelSingle || "(segment range unknown)",
-        outcome: v.ok
+        outcome: ok
           ? "individual_success"
           : nextIdx >= models.length
             ? "fatal"
             : "retrying_next_model",
         failedModel: single.model,
         nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-        qualityErrors: v.errors,
+        qualityErrors: allErrors,
         perSegmentLines: [line],
         systemPrompt: single.debugPrompt?.systemPrompt ?? "",
         userContent: single.debugPrompt?.userContent ?? "",
@@ -229,7 +238,7 @@ async function translateProtectedContent(
       }
     }
 
-    if (v.ok) {
+    if (ok) {
       return {
         ok: true as const,
         text: restored,
@@ -244,12 +253,12 @@ async function translateProtectedContent(
     }
 
     validationFailures++;
-    remainingErrors = v.errors;
+    remainingErrors = allErrors;
     await recordFailures(
       buildQualityFailureRows(
         single.model,
         modelOrder1Based(single.model),
-        v.errors,
+        allErrors,
         nextIdx >= models.length
       )
     );
@@ -260,7 +269,7 @@ async function translateProtectedContent(
         outcome: nextIdx >= models.length ? "fatal" : "retrying_next_model",
         failedModel: single.model,
         nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
-        qualityErrors: v.errors,
+        qualityErrors: allErrors,
         perSegmentLines: [line],
         systemPrompt: single.debugPrompt?.systemPrompt ?? "",
         userContent: single.debugPrompt?.userContent ?? "",
@@ -277,7 +286,7 @@ async function translateProtectedContent(
       break;
     }
 
-    warnModelSwitch?.(single.model, models[nextIdx]!, v.errors.join("; "), {
+    warnModelSwitch?.(single.model, models[nextIdx]!, allErrors.join("; "), {
       index1Based: nextIdx + 1,
       total: models.length,
     });

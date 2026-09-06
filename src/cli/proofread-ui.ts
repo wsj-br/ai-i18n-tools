@@ -12,6 +12,7 @@ import { englishLanguageNameForLocale, normalizeLocale } from "../core/config.js
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filter.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
+import { extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
 import { Glossary } from "../glossary/glossary.js";
@@ -27,26 +28,16 @@ export interface ProofreadUIUnit {
   locations: Array<{ file: string; line: number }>;
 }
 
-/** Extract placeholder substrings that must survive any suggested rewrite. */
-export function extractUiPlaceholderTokens(original: string): string[] {
-  const found = new Set<string>();
-  for (const re of [/\{\{[\s\S]*?\}\}/g, /\{\s*[0-9]+\s*\}/g, /%[sd]/g]) {
-    re.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(original)) !== null) {
-      found.add(m[0]);
-    }
-  }
-  return [...found];
-}
+/** Re-export for callers that imported from this CLI module. */
+export { extractUiPlaceholderTokens };
 
 /** Returns true if every placeholder token from `original` appears unchanged in `suggested`. */
 export function proofreadSuggestionPreservesPlaceholders(
   original: string,
   suggested: string
 ): boolean {
-  for (const t of extractUiPlaceholderTokens(original)) {
-    if (!suggested.includes(t)) {
+  for (const token of extractUiPlaceholderTokens(original)) {
+    if (!suggested.includes(token)) {
       return false;
     }
   }

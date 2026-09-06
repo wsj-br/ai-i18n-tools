@@ -99,11 +99,12 @@ describe("expandPluralFormsForFlatOutput", () => {
 });
 
 describe("pluralCategoryExamplesHint", () => {
-  it("lists sample n per category for Arabic", () => {
+  it("lists sample n per category for Arabic and warns not to emit them", () => {
     const h = pluralCategoryExamplesHint("ar");
     expect(h).toContain("Intl.PluralRules reference");
     expect(h).toContain("few:");
     expect(h).toContain("many:");
+    expect(h).toContain("Do not write them into the UI strings");
   });
 });
 

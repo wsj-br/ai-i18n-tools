@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "LLM을 사용하여 JavaScript/TypeScript 애플리케이션과 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다."
+    "description": "LLM을 사용하여 JavaScript/TypeScript 애플리케이션과 문서 사이트를 국제화하는 CLI 및 툴킷입니다."
   },
   "nav": {
     "guide": "가이드",
@@ -11,7 +11,7 @@
   },
   "sidebar": {
     "guide": "가이드",
-    "whatIs": "ai-i18n-tools란 무엇인가요?",
+    "whatIs": "ai-i18n-tools란?",
     "installation": "설치",
     "quickStart": "빠른 시작",
     "toolUiLanguage": "도구 UI 언어",
@@ -44,8 +44,8 @@
     "imagesLinkRewriting": "링크 재작성",
     "imagesTroubleshooting": "문제 해결",
     "svgTranslation": "SVG 번역",
-    "svgWebAppFlat": "웹 앱 (플랫 SVG)",
-    "svgColocated": "동일 위치 SVG",
+    "svgWebAppFlat": "웹 앱(플랫 SVG)",
+    "svgColocated": "같은 위치의 SVG",
     "svgTroubleshooting": "문제 해결",
     "providers": "LLM 제공자",
     "runtimeHelpers": "런타임 헬퍼",

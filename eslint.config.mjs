@@ -11,6 +11,7 @@ export default tseslint.config(
       "**/*.cjs",
       "src/dashboard-app/**",
       "vitest.config.ts",
+      "vitest.live.config.ts",
       // VitePress site config/theme are outside the package tsconfigs used for typed lint.
       "docs/**",
       // Example apps ship their own TS setup; repo lint covers `src/` + `tests/` only.

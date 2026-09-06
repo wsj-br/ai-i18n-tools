@@ -443,7 +443,10 @@ async function runTranslateUIBody(
           glossaryHints: hints,
           intlPluralLocaleTag: srcNorm,
         });
-        const batch = await step0Client.translatePluralCardinalBatch(req, msgs);
+        const batch = await step0Client.translatePluralCardinalBatch(req, msgs, {
+          originalLiteral: entry.source,
+          zeroDigit: entry.zeroDigit === true,
+        });
         const forms = compactIdenticalPluralForms(batch.forms, srcNorm) as Record<
           CldrPluralForm,
           string
@@ -717,6 +720,8 @@ async function runTranslateUIBody(
           });
           const batch = await localeClient.translatePluralCardinalBatch(reqTarget, msgs, {
             targetLocale: locale,
+            originalLiteral: entry.source,
+            zeroDigit: entry.zeroDigit === true,
           });
           console.log(
             chalk.green(

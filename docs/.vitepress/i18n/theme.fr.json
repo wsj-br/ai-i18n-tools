@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "CLI et boîte à outils pour internationaliser les applications et les sites de documentation JavaScript/TypeScript à l'aide de LLM."
+    "description": "CLI et boîte à outils pour l'internationalisation des applications JavaScript/TypeScript et des sites de documentation à l'aide de LLM."
   },
   "nav": {
     "guide": "Guide",
@@ -65,7 +65,7 @@
     "cliUiStrings": "Chaînes d'interface utilisateur",
     "cliDocuments": "Documents",
     "cliContent": "Autre contenu",
-    "cliWorkflows": "Workflows et état",
+    "cliWorkflows": "Workflows et statut",
     "cliMaintenance": "Cache et maintenance",
     "cliTools": "Outils",
     "architecture": "Architecture",

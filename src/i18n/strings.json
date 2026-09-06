@@ -160,7 +160,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 409
+        "line": 400
       }
     ]
   },
@@ -226,7 +226,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 418
+        "line": 409
       }
     ]
   },
@@ -1746,7 +1746,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate-quality-retry.ts",
-        "line": 228
+        "line": 237
       }
     ]
   },
@@ -1779,15 +1779,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate-quality-retry.ts",
-        "line": 272
+        "line": 281
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1491
+        "line": 1501
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1504
+        "line": 1514
       }
     ]
   },
@@ -1820,7 +1820,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate-quality-retry.ts",
-        "line": 301
+        "line": 310
       }
     ]
   },
@@ -1853,7 +1853,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate-quality-retry.ts",
-        "line": 370
+        "line": 379
       }
     ]
   },
@@ -1886,7 +1886,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 348
+        "line": 349
       }
     ]
   },
@@ -1919,7 +1919,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 428
+        "line": 429
       }
     ]
   },
@@ -1952,7 +1952,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 494
+        "line": 495
       }
     ]
   },
@@ -1985,7 +1985,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 594
+        "line": 595
       }
     ]
   },
@@ -2018,7 +2018,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1114
+        "line": 1121
       }
     ]
   },
@@ -2051,7 +2051,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1145
+        "line": 1152
       }
     ]
   },
@@ -2084,7 +2084,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1156
+        "line": 1163
       }
     ]
   },
@@ -2117,11 +2117,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1202
+        "line": 1209
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1566
+        "line": 1576
       }
     ]
   },
@@ -2154,7 +2154,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1515
+        "line": 1525
       }
     ]
   },
@@ -2187,7 +2187,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1533
+        "line": 1543
       }
     ]
   },
@@ -2220,7 +2220,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1689
+        "line": 1699
       }
     ]
   },
@@ -2253,19 +2253,19 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1744
+        "line": 1754
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2125
+        "line": 2135
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2466
+        "line": 2476
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2712
+        "line": 2722
       }
     ]
   },
@@ -2298,11 +2298,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1769
+        "line": 1779
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2150
+        "line": 2160
       }
     ]
   },
@@ -2335,7 +2335,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1790
+        "line": 1800
       }
     ]
   },
@@ -2368,11 +2368,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1859
+        "line": 1869
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2240
+        "line": 2250
       }
     ]
   },
@@ -2405,7 +2405,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2175
+        "line": 2185
       }
     ]
   },
@@ -2438,7 +2438,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2491
+        "line": 2501
       }
     ]
   },
@@ -2471,7 +2471,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2510
+        "line": 2520
       }
     ]
   },
@@ -2504,7 +2504,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2737
+        "line": 2747
       }
     ]
   },
@@ -2537,7 +2537,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2781
+        "line": 2791
       }
     ]
   },
@@ -2570,7 +2570,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2982
+        "line": 2992
       }
     ]
   },
@@ -2603,7 +2603,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3004
+        "line": 3014
       }
     ]
   },
@@ -2636,7 +2636,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3005
+        "line": 3015
       }
     ]
   },
@@ -2669,7 +2669,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3008
+        "line": 3018
       }
     ]
   },
@@ -2702,7 +2702,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3085
+        "line": 3095
       }
     ]
   },
@@ -2735,7 +2735,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3090
+        "line": 3100
       }
     ]
   },
@@ -2768,7 +2768,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3109
+        "line": 3119
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2809,7 +2809,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3111
+        "line": 3121
       }
     ]
   },
@@ -2842,7 +2842,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3114
+        "line": 3124
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2883,7 +2883,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3117
+        "line": 3127
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2924,7 +2924,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3131
+        "line": 3141
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -2961,7 +2961,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3133
+        "line": 3143
       }
     ]
   },
@@ -2994,7 +2994,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3136
+        "line": 3146
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3031,7 +3031,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3139
+        "line": 3149
       }
     ]
   },
@@ -3064,7 +3064,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3142
+        "line": 3152
       }
     ]
   },
@@ -3097,7 +3097,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3474
+        "line": 3484
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3105,7 +3105,7 @@
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 791
+        "line": 796
       }
     ]
   },
@@ -3138,7 +3138,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3522
+        "line": 3532
       }
     ]
   },
@@ -13287,7 +13287,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 279
+        "line": 270
       }
     ]
   },
@@ -13320,7 +13320,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 301
+        "line": 292
       }
     ]
   },
@@ -13353,7 +13353,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 312
+        "line": 303
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
@@ -13390,7 +13390,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 348
+        "line": 339
       }
     ]
   },
@@ -13423,7 +13423,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 352
+        "line": 343
       }
     ]
   },
@@ -13456,11 +13456,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 355
+        "line": 346
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 429
+        "line": 420
       }
     ]
   },
@@ -13493,7 +13493,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 367
+        "line": 358
       }
     ]
   },
@@ -13526,7 +13526,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 451
+        "line": 442
       }
     ]
   },
@@ -13559,11 +13559,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 499
+        "line": 490
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 563
+        "line": 554
       }
     ]
   },
@@ -13596,7 +13596,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 551
+        "line": 542
       }
     ]
   },
@@ -13629,7 +13629,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 573
+        "line": 564
       }
     ]
   },
@@ -13662,7 +13662,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 632
+        "line": 623
       }
     ]
   },
@@ -13695,7 +13695,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 651
+        "line": 642
       }
     ]
   },
@@ -13728,7 +13728,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 651
+        "line": 642
       }
     ]
   },
@@ -13761,7 +13761,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 655
+        "line": 646
       }
     ]
   },
@@ -13794,7 +13794,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 667
+        "line": 658
       }
     ]
   },
@@ -13827,7 +13827,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 680
+        "line": 671
       }
     ]
   },
@@ -13860,7 +13860,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 694
+        "line": 685
       }
     ]
   },
@@ -13893,7 +13893,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 708
+        "line": 699
       }
     ]
   },
@@ -13926,7 +13926,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 715
+        "line": 706
       }
     ]
   },
@@ -15588,7 +15588,7 @@
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 504
+        "line": 507
       }
     ]
   },
@@ -15654,7 +15654,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 453
+        "line": 456
       }
     ]
   },
@@ -15687,7 +15687,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 489
+        "line": 492
       }
     ]
   },
@@ -15720,7 +15720,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 538
+        "line": 541
       }
     ]
   },
@@ -15753,7 +15753,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 556
+        "line": 559
       }
     ]
   },
@@ -15786,7 +15786,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 590
+        "line": 593
       }
     ]
   },
@@ -15819,7 +15819,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 601
+        "line": 604
       }
     ]
   },
@@ -15852,7 +15852,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 636
+        "line": 639
       }
     ]
   },
@@ -15885,7 +15885,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 661
+        "line": 664
       }
     ]
   },
@@ -15918,7 +15918,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 680
+        "line": 683
       }
     ]
   },
@@ -15951,7 +15951,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 723
+        "line": 728
       }
     ]
   },
@@ -15984,7 +15984,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 777
+        "line": 782
       }
     ]
   },
@@ -16017,11 +16017,11 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 807
+        "line": 812
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 837
+        "line": 842
       }
     ]
   },
@@ -16054,7 +16054,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 819
+        "line": 824
       }
     ]
   },
@@ -16087,7 +16087,7 @@
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
-        "line": 851
+        "line": 856
       }
     ]
   },
