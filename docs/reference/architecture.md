@@ -188,7 +188,7 @@ Before translation, sensitive syntax is replaced with opaque tokens to prevent L
 6. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
 7. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
 
-After the model returns, `translate-docs` restores maps and validates the segment: the ordered double-brace token sequence must match the protected source, restored HTML tag kinds must match the unprotected source, and any leftover double-brace identifier must already have existed in the source (so invented tokens fail). The document prompt also asks models to copy each token once in order and not invent new double-brace wrappers; mechanical checks remain authoritative.
+After the model returns, `translate-docs` restores maps and validates the segment: non-emphasis double-brace tokens must keep the same ordered subsequence as the protected source (emphasis markers such as `{{SE}}` may move with word order when per-type counts match), restored HTML tag kinds must match the unprotected source, and any leftover double-brace identifier must already have existed in the source (so invented tokens fail). The document prompt also asks models to copy each token once, keep numbered-token order, and not invent new double-brace wrappers; mechanical checks remain authoritative.
 
 Shared attribute/key protection for Astro templates and MDX JSX is implemented in `src/processors/expression-attribute-protection.ts` and driven per block by `docs[].protectAttributes` and `docs[].protectKeys` (see [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)).
 

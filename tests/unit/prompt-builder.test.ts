@@ -70,7 +70,9 @@ describe("buildDocumentBatchPrompt", () => {
     expect(systemPrompt).toContain("{{SE}}");
     expect(systemPrompt).toContain("{{SU}}");
     expect(systemPrompt).toContain("{{ST}}");
-    expect(systemPrompt).toContain("exactly once, in the same order");
+    expect(systemPrompt).toContain("exactly once");
+    expect(systemPrompt).toContain("Emphasis markers");
+    expect(systemPrompt).toContain("numbered tokens");
     expect(systemPrompt).toContain("Do not invent new {{…}} tokens");
     expect(systemPrompt).toContain("right-to-left");
     expect(systemPrompt).toContain("Preserve GFM pipe tables");
@@ -182,8 +184,9 @@ describe("PROMPTS config shape", () => {
     expect(PROMPTS.document.markdownExample).not.toContain("{{PLACEHOLDER}}");
   });
 
-  it("document coreRules forbids inventing tokens and requires once-each order", () => {
-    expect(PROMPTS.document.coreRules).toContain("exactly once, in the same order");
+  it("document coreRules forbids inventing tokens and allows emphasis float", () => {
+    expect(PROMPTS.document.coreRules).toContain("exactly once");
+    expect(PROMPTS.document.coreRules).toContain("Emphasis markers");
     expect(PROMPTS.document.coreRules).toContain("Do not invent new {{…}} tokens");
     expect(PROMPTS.document.coreRules).toContain("glossary target words are plain text");
     expect(PROMPTS.document.coreRules).toContain("{{JXA_N}}");

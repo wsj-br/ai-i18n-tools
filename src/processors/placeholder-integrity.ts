@@ -1,8 +1,10 @@
 /**
  * Post-protect / post-restore integrity checks for document translation placeholders.
  *
- * Layer A (pre-restore): model output must keep the same ordered `{{IDENT}}` sequence
- * as the protected source text.
+ * Layer A (pre-restore): model output must keep the same multiset of `{{IDENT}}`
+ * tokens and the same ordered subsequence of non-emphasis tokens (HTML/URL/ILC/…).
+ * Emphasis markers (`{{SE}}`, `{{IT}}`, …) may move with natural word order as long
+ * as per-type counts match — restore maps them by occurrence, not by position vs URLs.
  * Layer B (post-restore): restored HTML tag kinds must match the source, and any
  * leftover `{{IDENT}}` must already have existed in the unprotected source.
  */
@@ -78,8 +80,32 @@ function sequenceKey(token: string): string {
   return normalizeIdentTokenForSequence(token);
 }
 
+function isEmphasisSequenceToken(normalizedToken: string): boolean {
+  const m = /^\{\{([A-Za-z_][A-Za-z0-9_-]*)\}\}$/.exec(normalizedToken);
+  if (!m?.[1]) {
+    return false;
+  }
+  return EMPHASIS_TOKENS.has(m[1].toUpperCase());
+}
+
+function countByToken(tokens: string[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const t of tokens) {
+    counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  return counts;
+}
+
 /**
- * Compare ordered IDENT sequences (logical order). Returns an error message or null.
+ * Compare IDENT integrity (logical order).
+ *
+ * - Total token count must match.
+ * - Each emphasis token type (`{{SE}}`, `{{IT}}`, …) must appear the same number of times
+ *   (markers may move relative to numbered tokens when the locale reorders words).
+ * - Non-emphasis tokens (`{{HTM_N}}`, `{{URL_N}}`, `{{ILC_N}}`, author `{{count}}`, …)
+ *   must appear in the same ordered subsequence (reuse/drop/swap of those ids fails).
+ *
+ * Returns an error message or null.
  */
 export function compareIdentTokenSequences(
   expectedProtectedText: string,
@@ -90,9 +116,31 @@ export function compareIdentTokenSequences(
   if (expected.length !== actual.length) {
     return `HTML tag placeholders reused or dropped: expected ${expected.length} {{…}} token(s), got ${actual.length}`;
   }
-  for (let i = 0; i < expected.length; i++) {
-    if (expected[i] !== actual[i]) {
-      return `HTML tag placeholders reused or dropped: token sequence mismatch at index ${i} (expected ${expected[i]}, got ${actual[i]})`;
+
+  const expectedEmphasis = expected.filter(isEmphasisSequenceToken);
+  const actualEmphasis = actual.filter(isEmphasisSequenceToken);
+  const expectedEmphasisCounts = countByToken(expectedEmphasis);
+  const actualEmphasisCounts = countByToken(actualEmphasis);
+  for (const [token, expCount] of expectedEmphasisCounts) {
+    const actCount = actualEmphasisCounts.get(token) ?? 0;
+    if (actCount !== expCount) {
+      return `HTML tag placeholders reused or dropped: expected ${expCount} ${token} token(s), got ${actCount}`;
+    }
+  }
+  for (const [token, actCount] of actualEmphasisCounts) {
+    if (!expectedEmphasisCounts.has(token)) {
+      return `HTML tag placeholders reused or dropped: expected 0 ${token} token(s), got ${actCount}`;
+    }
+  }
+
+  const expectedCore = expected.filter((t) => !isEmphasisSequenceToken(t));
+  const actualCore = actual.filter((t) => !isEmphasisSequenceToken(t));
+  if (expectedCore.length !== actualCore.length) {
+    return `HTML tag placeholders reused or dropped: expected ${expectedCore.length} non-emphasis {{…}} token(s), got ${actualCore.length}`;
+  }
+  for (let i = 0; i < expectedCore.length; i++) {
+    if (expectedCore[i] !== actualCore[i]) {
+      return `HTML tag placeholders reused or dropped: token sequence mismatch at index ${i} (expected ${expectedCore[i]}, got ${actualCore[i]})`;
     }
   }
   return null;

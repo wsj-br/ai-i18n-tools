@@ -121,6 +121,57 @@ describe("placeholder-integrity RTL logical order", () => {
   });
 });
 
+describe("placeholder-integrity emphasis float vs numbered order", () => {
+  const hardenProtected =
+    "1. Keep port {{ILC_0}} off the public internet.\n" +
+    "2. Create [API keys]({{URL_0}}) and enable {{SE}}Require API keys for external APIs{{SE}}.\n" +
+    "3. Serve {{SE}}duplistatus{{SE}} through a [reverse proxy with HTTPS]({{URL_1}}).\n" +
+    "4. Add the address to {{SE}}Trusted proxies{{SE}} (or {{ILC_1}}).\n" +
+    "5. Enable [IP allowlists]({{URL_2}}), using {{SE}}Detected IP{{SE}}.";
+
+  it("passes when {{URL_1}} moves before a {{SE}} pair (CJK-style word order)", () => {
+    // Same failure signature as duplistatus harden-duplistatus-security.md zh-Hans:
+    // index 4 expected {{SE}}, got {{URL_1}} under the old full-sequence compare.
+    const reordered =
+      "1. Keep port {{ILC_0}} off the public internet.\n" +
+      "2. Create [API keys]({{URL_0}}) and enable {{SE}}Require API keys for external APIs{{SE}}.\n" +
+      "3. Serve [reverse proxy with HTTPS]({{URL_1}}) 提供 {{SE}}duplistatus{{SE}}.\n" +
+      "4. Add the address to {{SE}}Trusted proxies{{SE}} (or {{ILC_1}}).\n" +
+      "5. Enable [IP allowlists]({{URL_2}}), using {{SE}}Detected IP{{SE}}.";
+    expect(compareIdentTokenSequences(hardenProtected, reordered)).toBeNull();
+    expect(collectPreRestorePlaceholderErrors({ text: hardenProtected }, reordered)).toEqual([]);
+  });
+
+  it("passes when {{BLD_0}} precedes reordered {{SE}} (ja concurrent example)", () => {
+    const protectedSrc =
+      "substituindo chamadas {{SE}}síncronas{{SE}} por {{BLD_0}} sempre que possível";
+    const model = "可能な限り{{BLD_0}}を使用して{{SE}}同期{{SE}}呼び出しを置き換える";
+    expect(compareIdentTokenSequences(protectedSrc, model)).toBeNull();
+  });
+
+  it("fails when numbered URL tokens are swapped even if {{SE}} counts match", () => {
+    const swapped =
+      "1. Keep port {{ILC_0}} off the public internet.\n" +
+      "2. Create [API keys]({{URL_1}}) and enable {{SE}}Require API keys for external APIs{{SE}}.\n" +
+      "3. Serve {{SE}}duplistatus{{SE}} through a [reverse proxy with HTTPS]({{URL_0}}).\n" +
+      "4. Add the address to {{SE}}Trusted proxies{{SE}} (or {{ILC_1}}).\n" +
+      "5. Enable [IP allowlists]({{URL_2}}), using {{SE}}Detected IP{{SE}}.";
+    expect(compareIdentTokenSequences(hardenProtected, swapped)).toMatch(/sequence mismatch/);
+  });
+
+  it("fails when a {{SE}} pair is dropped", () => {
+    const dropped =
+      "1. Keep port {{ILC_0}} off the public internet.\n" +
+      "2. Create [API keys]({{URL_0}}) and enable Require API keys for external APIs.\n" +
+      "3. Serve {{SE}}duplistatus{{SE}} through a [reverse proxy with HTTPS]({{URL_1}}).\n" +
+      "4. Add the address to {{SE}}Trusted proxies{{SE}} (or {{ILC_1}}).\n" +
+      "5. Enable [IP allowlists]({{URL_2}}), using {{SE}}Detected IP{{SE}}.";
+    expect(compareIdentTokenSequences(hardenProtected, dropped)).toMatch(
+      /expected 13 \{\{\u2026\}\} token\(s\), got 11/
+    );
+  });
+});
+
 describe("placeholder-integrity invented braces (corpus 3.*)", () => {
   const apiKeysSource =
     "- Optional [API keys](settings/api-keys-settings.md) for Duplicati uploads and Homepage widgets, with upload size and rate limits";
