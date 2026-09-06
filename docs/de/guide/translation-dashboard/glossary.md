@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossar
 
-Auf der Registerkarte **Glossar** wird Ihre Benutzerglossar-CSV (`glossary.userGlossary` in der Konfiguration) bearbeitet. Die Einträge hier sind Terminologiehinweise für `translate-ui`, `proofread-ui` und `translate-docs` (über das gemeinsame Glossar). Kompakte UI-Label-Abkürzungen (z. B. `Size` → `Tam` / `Tam.`) werden für die UI-Übersetzung beibehalten, aber beim Erstellen von Dokumentaufforderungen übersprungen, damit sie die Modelle nicht zu erfundenen <code v-pre>{{…}}</code>-Tokens in Markdown/MDX drängen.
+Auf der Registerkarte **Glossar** wird Ihre Benutzerglossar-CSV-Datei (`glossary.userGlossary` in der Konfiguration) bearbeitet. Die Einträge hier sind Terminologiehinweise für `translate-ui`, `proofread-ui` und `translate-docs` (über das gemeinsame Glossar). Kompakte UI-Label-Abkürzungen (z. B. `Size` → `Tam` / `Tam.`) werden für die UI-Übersetzung beibehalten, aber beim Erstellen von Dokument-Prompts übersprungen, damit sie die Modelle nicht zu erfundenen <code v-pre>{{…}}</code>-Tokens in Markdown/MDX drängen.
 
 Die Registerkarte ist ausgeblendet, wenn `glossary.userGlossary` nicht konfiguriert ist.
 

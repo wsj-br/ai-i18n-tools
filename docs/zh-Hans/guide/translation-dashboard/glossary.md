@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 词汇表
 
-**词汇表**选项卡用于编辑您的用户词汇表 CSV（配置中的 `glossary.userGlossary`）。此处的条目是 `translate-ui`、`proofread-ui` 和 `translate-docs` 的术语提示（通过共享词汇表）。紧凑的 UI 标签缩写（例如 `Size` → `Tam` / `Tam.`）会保留用于 UI 翻译，但在构建文档提示时会跳过，因此它们不会促使模型在 markdown/MDX 中发明 <code v-pre>{{…}}</code> 标记。
+**词汇表**选项卡用于编辑您的用户词汇表 CSV（配置中的 `glossary.userGlossary`）。此处的条目是 `translate-ui`、`proofread-ui` 和 `translate-docs` 的术语提示（通过共享词汇表）。紧凑的 UI 标签缩写（例如 `Size` → `Tam` / `Tam.`）会保留用于 UI 翻译，但在构建文档提示时会跳过，因此它们不会促使模型在 markdown/MDX 中编造 <code v-pre>{{…}}</code> 标记。
 
 当未配置`glossary.userGlossary`时，该选项卡将隐藏。
 

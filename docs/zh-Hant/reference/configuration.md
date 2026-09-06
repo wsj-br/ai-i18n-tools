@@ -460,7 +460,7 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 | `userGlossary` | 指向 CSV 檔案的路徑，其中包含 `Original language string`（或 `en`）、`locale`、`Translation` 等欄位 - 每行代表一個來源術語和目標地區設定（`locale` 可以是 `*` 以代表所有目標地區設定）。 |
 | `autoAddUserEditedToGlossary` | 當 `true` 時，對 UI 字串的儀表板編輯可以自動附加到使用者詞彙表中。 |
 
-`translate-docs` 使用相同的詞彙表來提供術語提示，但會跳過簡潔的 UI 標籤縮寫（結尾帶句點的形式，例如 `Alm.`，或是簡短的單一權杖壓縮，例如 `Size` → `Tam`），以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 權杖。完整的產品術語和非縮寫的 UI 翻譯仍會提供提示。
+`translate-docs` 使用相同的詞彙表來提供術語提示，但會跳過精簡的 UI 標籤縮寫（帶有結尾句點的形式，例如 `Alm.`，或是簡短的單一標記壓縮，例如 `Size` → `Tam`），以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 標記。完整的產品術語與非縮寫的 UI 翻譯仍會提供提示。
 
 **產生一個空的詞彙表 CSV：**
 

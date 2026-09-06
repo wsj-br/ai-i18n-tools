@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 用語集
 
-**用語集**タブでは、ユーザー用語集CSV（設定内の`glossary.userGlossary`）を編集します。ここでのエントリは、`translate-ui`、`proofread-ui`、および`translate-docs`（共有用語集経由）の用語ヒントとなります。コンパクトなUIラベルの略語（例：`Size` → `Tam` / `Tam.`）はUI翻訳用に保持されますが、ドキュメントプロンプトの構築時にはスキップされるため、markdown/MDX内でモデルが架空の<code v-pre>{{…}}</code>トークンを生成するよう誘導することはありません。
+**用語集**タブでは、ユーザー用語集CSV（config内の`glossary.userGlossary`）を編集します。ここでのエントリは、`translate-ui`、`proofread-ui`、`translate-docs`向けの用語ヒントです（共有用語集経由）。コンパクトなUIラベルの略語（例：`Size` → `Tam` / `Tam.`）はUI翻訳用に保持されますが、ドキュメントプロンプトの構築時にはスキップされるため、markdown/MDX内でモデルが独自の<code v-pre>{{…}}</code>トークンを生成するよう誘導することはありません。
 
 `glossary.userGlossary`が設定されていない場合、タブは非表示になります。
 

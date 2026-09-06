@@ -460,7 +460,7 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 | `userGlossary` | Ruta a un archivo CSV con columnas `Original language string` (o `en`), `locale`, `Translation` - una fila por término fuente y configuración regional objetivo (`locale` puede ser `*` para todos los destinos). |
 | `autoAddUserEditedToGlossary` | Cuando `true`, las ediciones del panel de control a las cadenas de la interfaz de usuario se pueden añadir automáticamente al glosario del usuario. |
 
-`translate-docs` utiliza el mismo glosario para las sugerencias de terminología, pero omite las abreviaturas compactas de etiquetas de interfaz de usuario (formas con puntos finales como `Alm.`, o compresiones cortas de un solo token como `Size` → `Tam`) para que las indicaciones del documento no se dirijan a tokens <code v-pre>{{…}}</code> inventados. Los términos completos del producto y las traducciones de la interfaz de usuario no abreviadas aún se sugieren.
+`translate-docs` utiliza el mismo glosario para las sugerencias de terminología, pero omite las abreviaturas compactas de etiquetas de interfaz de usuario (formas con puntos finales como `Alm.`, o compresiones cortas de un solo token como `Size` → `Tam`) para que las indicaciones del documento no se dirijan a tokens <code v-pre>{{…}}</code> inventados. Los términos completos del producto y las traducciones de la interfaz de usuario no abreviadas todavía se sugieren.
 
 **Genere un archivo CSV de glosario vacío:**
 

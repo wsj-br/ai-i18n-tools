@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossaire
 
-L'onglet **Glossaire** modifie votre fichier CSV de glossaire utilisateur (`glossary.userGlossary` dans la configuration). Les entrées ici sont des indications terminologiques pour `translate-ui`, `proofread-ui` et `translate-docs` (via le glossaire partagé). Les abréviations compactes des étiquettes d'interface utilisateur (par exemple `Size` → `Tam` / `Tam.`) sont conservées pour la traduction de l'interface utilisateur, mais ignorées lors de la création d'invites de document, afin qu'elles n'incitent pas les modèles à inventer des jetons <code v-pre>{{…}}</code> en markdown/MDX.
+L'onglet **Glossaire** modifie votre fichier CSV de glossaire utilisateur (`glossary.userGlossary` dans la configuration). Les entrées ici sont des suggestions terminologiques pour `translate-ui`, `proofread-ui` et `translate-docs` (via le glossaire partagé). Les abréviations compactes des étiquettes d'interface utilisateur (par exemple `Size` → `Tam` / `Tam.`) sont conservées pour la traduction de l'interface utilisateur, mais ignorées lors de la création d'invites de document, afin qu'elles n'incitent pas les modèles à utiliser des jetons <code v-pre>{{…}}</code> inventés dans markdown/MDX.
 
 L'onglet est masqué lorsque `glossary.userGlossary` n'est pas configuré.
 

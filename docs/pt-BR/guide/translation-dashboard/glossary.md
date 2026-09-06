@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossário
 
-A aba **Glossário** edita seu CSV de glossário de usuário (`glossary.userGlossary` na configuração). As entradas aqui são dicas de terminologia para `translate-ui`, `proofread-ui` e `translate-docs` (através do glossário compartilhado). Abreviações compactas de rótulos de UI (por exemplo, `Size` → `Tam` / `Tam.`) são mantidas para a tradução da UI, mas ignoradas ao construir prompts de documento, para que não direcionem os modelos para tokens <code v-pre>{{…}}</code> inventados em markdown/MDX.
+A aba **Glossário** edita seu CSV de glossário de usuário (`glossary.userGlossary` na configuração). As entradas aqui são dicas de terminologia para `translate-ui`, `proofread-ui` e `translate-docs` (através do glossário compartilhado). Abreviações compactas de rótulos de UI (por exemplo, `Size` → `Tam` / `Tam.`) são mantidas para tradução de UI, mas ignoradas ao construir prompts de documento, para que não empurrem os modelos para tokens <code v-pre>{{…}}</code> inventados em markdown/MDX.
 
 A aba fica oculta quando `glossary.userGlossary` não está configurado.
 

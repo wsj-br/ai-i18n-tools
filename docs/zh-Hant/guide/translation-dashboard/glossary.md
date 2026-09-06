@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 詞彙表
 
-「**詞彙表**」分頁用於編輯您的使用者詞彙表 CSV（設定中的 `glossary.userGlossary`）。此處的條目是提供給 `translate-ui`、`proofread-ui` 與 `translate-docs`（透過共享詞彙表）的術語提示。精簡的 UI 標籤縮寫（例如 `Size` → `Tam` / `Tam.`）會保留用於 UI 翻譯，但在建構文件提示詞時會略過，因此它們不會促使模型在 markdown/MDX 中產生虛構的 <code v-pre>{{…}}</code> 權杖。
+**詞彙表** 分頁用於編輯您的使用者詞彙表 CSV（設定中的 `glossary.userGlossary`）。此處的條目是提供給 `translate-ui`、`proofread-ui` 與 `translate-docs` 的術語提示（透過共享詞彙表）。精簡的 UI 標籤縮寫（例如 `Size` → `Tam` / `Tam.`）在 UI 翻譯時會被保留，但在建構文件提示詞時會被略過，因此它們不會促使模型在 markdown/MDX 中產生虛構的 <code v-pre>{{…}}</code> 權杖。
 
 當未設定 `glossary.userGlossary` 時，此分頁會隱藏。
 

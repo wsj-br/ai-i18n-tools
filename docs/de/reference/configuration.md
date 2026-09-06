@@ -460,7 +460,7 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 | `userGlossary` | Pfad zu einer CSV-Datei mit den Spalten `Original language string` (oder `en`), `locale`, `Translation` – eine Zeile pro Quellbegriff und Zielsprache (`locale` kann `*` für alle Ziele sein). |
 | `autoAddUserEditedToGlossary` | Wenn `true`, können Dashboard-Bearbeitungen von UI-Strings automatisch dem Benutzerglossar hinzugefügt werden. |
 
-`translate-docs` verwendet dasselbe Glossar für Terminologiehinweise, überspringt jedoch kompakte UI-Label-Abkürzungen (Formen mit nachgestelltem Punkt wie `Alm.` oder kurze Ein-Token-Komprimierungen wie `Size` → `Tam`), sodass Dokumentaufforderungen nicht auf erfundene <code v-pre>{{…}}</code>-Tokens gelenkt werden. Vollständige Produktbegriffe und nicht abgekürzte UI-Übersetzungen werden weiterhin angedeutet.
+`translate-docs` verwendet dasselbe Glossar für Terminologiehinweise, überspringt jedoch kompakte UI-Label-Abkürzungen (Formen mit nachgestelltem Punkt wie `Alm.` oder kurze Ein-Token-Komprimierungen wie `Size` → `Tam`), damit Dokumentaufforderungen nicht auf erfundene <code v-pre>{{…}}</code>-Tokens gelenkt werden. Vollständige Produktbegriffe und nicht abgekürzte UI-Übersetzungen werden weiterhin als Hinweis gegeben.
 
 **Ein leeres Glossar im CSV-Format generieren:**
 

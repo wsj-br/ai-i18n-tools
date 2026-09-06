@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # 용어집
 
-**용어집** 탭은 사용자 용어집 CSV(설정의 `glossary.userGlossary`)를 편집합니다. 여기의 항목은 `translate-ui`, `proofread-ui`, `translate-docs`에 대한 용어 힌트입니다(공유 용어집을 통해). 간결한 UI 레이블 약어(예: `Size` → `Tam` / `Tam.`)는 UI 번역을 위해 유지되지만 문서 프롬프트를 빌드할 때는 건너뛰므로, 모델이 markdown/MDX에서 만들어낸 <code v-pre>{{…}}</code> 토큰을 생성하도록 유도하지 않습니다.
+**용어집** 탭은 사용자 용어집 CSV(설정의 `glossary.userGlossary`)를 편집합니다. 이곳의 항목은 `translate-ui`, `proofread-ui`, `translate-docs`에 대한 용어 힌트입니다(공유 용어집을 통해). 간결한 UI 레이블 약어(예: `Size` → `Tam` / `Tam.`)는 UI 번역에는 유지되지만 문서 프롬프트를 작성할 때는 건너뛰므로, 모델이 markdown/MDX에서 임의로 만든 <code v-pre>{{…}}</code> 토큰을 생성하도록 유도하지 않습니다.
 
 `glossary.userGlossary`이(가) 구성되지 않은 경우 탭이 숨겨집니다.
 

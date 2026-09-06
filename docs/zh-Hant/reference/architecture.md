@@ -187,7 +187,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
 7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
 
-在模型回傳後，`translate-docs` 會還原映射並驗證區段：有序的雙大括號標記序列必須與受保護的來源相符，還原後的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的標記將會失敗）。文件提示詞亦要求模型依序複製每個標記一次，且不得虛構新的雙大括號包裝；機械式檢查仍具權威性。
+在模型回傳後，`translate-docs` 會還原映射並驗證區段：非強調的雙大括號標記必須保持與受保護來源相同的有序子序列（強調標記如 `{{SE}}` 在各類型計數相符時可隨詞序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別符必須已存在於來源中（因此捏造的權杖會失敗）。文件提示詞也會要求模型複製每個權杖一次、保持編號權杖的順序，且不發明新的雙大括號包裝；機械檢查仍具權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 
