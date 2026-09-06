@@ -42,7 +42,7 @@ describe("isNativeBinary", () => {
   it("returns false for missing paths", () => {
     const missing = path.join(
       path.dirname(fileURLToPath(import.meta.url)),
-      "definitely-missing-pnpm-native",
+      "definitely-missing-pnpm-native"
     );
     expect(isNativeBinary(missing)).toBe(false);
   });
