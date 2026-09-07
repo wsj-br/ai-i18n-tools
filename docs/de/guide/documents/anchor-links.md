@@ -22,17 +22,17 @@ Hier ist das Link-Ziel `setup.md` und `#first-run` der Anker: Es sollte zum rich
 <a id="docusaurus-sites-preferred"></a>
 ### Docusaurus-Sites (bevorzugt)
 
-In der [Docusaurus](/de/guide/integrations/docusaurus)-Dokumentation (`docsOutput.style = "docusaurus"`) sollten die nativen Überschriften-IDs von Docusaurus anstelle von `ai-i18n-tools write-heading-ids` bevorzugt werden:
+In der [Docusaurus](/de/guide/integrations/docusaurus)-Dokumentation (`docsOutput.style = "docusaurus"`) sollten Sie die nativen Überschriften-IDs von Docusaurus anstelle von HTML-Ankern aus `ai-i18n-tools write-heading-ids` bevorzugen:
 
-1. Fügen Sie eine explizite ID in der Überschriftenzeile mit dem `{#…}`-Suffix von Docusaurus hinzu, z. B. `## TLS configuration {#tls-configuration}`. Während der `translate-docs` wird nur der sichtbare Überschriftentext übersetzt – das `{#tls-configuration}`-Suffix bleibt in jedem Gebietsschema erhalten.
-2. Führen Sie `docusaurus write-heading-ids` aus dem Stammverzeichnis Ihres Docusaurus-Projekts aus (oft `pnpm run write-heading-ids`, wenn es in `package.json` verdrahtet ist), um `{#…}`-Suffixe zu Überschriften hinzuzufügen oder zu aktualisieren, die keine haben. Führen Sie es nach dem Umbenennen von Überschriften erneut aus, damit veraltete IDs mit den aktuellen Titeln übereinstimmen.
+1. Fügen Sie eine explizite ID in der Überschriftenzeile mit dem klassischen Docusaurus-Suffix `{#…}` (CommonMark) oder dem MDX-Kommentar `{/* #… */}` (bevorzugt für `.mdx`) hinzu, z. B. `## TLS configuration {#tls-configuration}` oder `## TLS configuration {/* #tls-configuration */}`. Während der `translate-docs` wird nur der sichtbare Überschriftentext übersetzt – das ID-Suffix bleibt in jedem Gebietsschema erhalten.
+2. Führen Sie `docusaurus write-heading-ids` aus dem Stammverzeichnis Ihres Docusaurus-Projekts aus (oft `pnpm run write-heading-ids`, wenn es in `package.json` eingebunden ist), um IDs zu Überschriften hinzuzufügen oder zu aktualisieren, die keine haben – verwenden Sie `--syntax mdx-comment` für die Form `{/* #… */}`. Alternativ können Sie `ai-i18n-tools write-heading-ids --slug-style mdx-comment` auf demselben `docs[]` / `contentPaths` ausführen. Führen Sie dies nach dem Umbenennen von Überschriften erneut aus, damit veraltete IDs mit den aktuellen Titeln übereinstimmen.
 
-Verweisen Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs, z. B. `[label](other.md#tls-configuration)`, wobei das Fragment mit dem `{#…}`-Suffix übereinstimmt – nicht mit einem Slug, der nur aus englischen Wörtern erraten wurde. Siehe [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) für festgeschriebene Dokumente, die dieses Muster verwenden.
+Verweisen Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs, z. B. `[label](other.md#tls-configuration)`, wobei das Fragment mit der ID `{#…}` oder `{/* #… */}` übereinstimmt – nicht mit einem Slug, der nur aus englischen Wörtern erraten wurde. Siehe [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) für festgeschriebene Dokumente, die dieses Muster verwenden.
 
 <a id="other-layouts-flat-starlight-vitepress-etc"></a>
 ### Andere Layouts (Flat, Starlight, VitePress usw.)
 
-Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}`-Suffixen benötigen:
+Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}` / `{/* #… */}`-Suffixen benötigen:
 
 1. Führen Sie `ai-i18n-tools write-heading-ids` auf Ihrer Quelle `.md` / `.mdx` vor `translate-docs` aus (gleicher `docs[]` / `contentPaths` wie üblich). Es fügt explizite HTML-Anker in die Zeile vor jeder Überschrift ein, sodass `id`-Werte von jeder übersetzten Kopie gemeinsam genutzt werden. Führen Sie es erneut aus, nachdem Sie Überschriften umbenannt haben, damit veraltete Anker-IDs aktualisiert werden und dem aktuellen Titel entsprechen.
 2. Verweisen Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs, z. B. `[label](other.md#section-id)`, wobei `section-id` mit dem Anker übereinstimmt, den das Tool geschrieben hat — nicht nur eine Vermutung aus englischen Wörtern.
@@ -41,7 +41,7 @@ Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}`-Suffix
 ## Beispiel
 
 <a id="example-docusaurus"></a>
-### Docusaurus `{#…}`-Suffix
+### Docusaurus `{#…}` / `{/* #… */}` Suffix
 
 `docs/overview.md`:
 
@@ -49,10 +49,18 @@ Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}`-Suffix
 See [TLS setup](security.md#tls-configuration) for certificate steps.
 ```
 
-`docs/security.md` (englische Quelle):
+`docs/security.md` (englische Quelle, klassisch):
 
 ```markdown
 ## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+Oder die von MDX bevorzugte Kommentarform:
+
+```markdown
+## TLS configuration {/* #tls-configuration */}
 
 Your CA and cert steps…
 ```

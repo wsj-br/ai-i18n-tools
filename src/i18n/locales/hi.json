@@ -156,7 +156,7 @@
   "Template must be \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", or \"ui-json-bundles\".": "टेम्पलेट \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", या \"ui-json-bundles\" होना चाहिए।",
   "Wrote {{path}} ({{template}}, provider: {{provider}})": "{{path}} लिखा गया ({{template}}, प्रोवाइडर: {{provider}})",
   "Wrote .translate-ignore": ".translate-ignore लिखा गया",
-  "Insert `<a id=\"slug\"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)": "प्रत्येक ATX हेडिंग से पहली लाइन में `<a id=\"slug\"></a>` जोड़ें (फ़्लैट मार्कडाउन; स्लग मोड doctoc / PyMdown / Azure DevOps के अनुरूप हैं)",
+  "Insert HTML anchors before ATX headings, or MDX comment ids with --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)": "ATX हेडिंग से पहले HTML एंकर डालें, या --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus) के साथ MDX कमेंट id डालें",
   "Only process files under this path (file or directory); project-relative or absolute": "केवल इस पथ के अंतर्गत फ़ाइलों को प्रोसेस करें (फ़ाइल या डायरेक्टरी); प्रोजेक्ट-सापेक्ष या एब्सोल्यूट",
   "Same as --path": "--path के समान",
   "With pymdown: lower | title | none (default: lower)": "pymdown के साथ: lower | title | none (डिफ़ॉल्ट: lower)",

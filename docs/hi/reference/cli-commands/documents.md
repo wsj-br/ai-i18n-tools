@@ -21,11 +21,11 @@
 
 **सारांश:** `ai-i18n-tools write-heading-ids [options]`
 
-कम से कम एक `docs[]` ब्लॉक की आवश्यकता है। प्रत्येक ब्लॉक के `contentPaths` के तहत `.md` / `.mdx` एकत्र करता है (`.translate-ignore` का सम्मान करता है)। प्रत्येक फ़्लैट एटीएक्स `#` शीर्षक से ठीक पहले एक एचटीएमएल एंकर लाइन `<a id="slug"></a>` सम्मिलित करता है (फ़ेंस्ड कोड ब्लॉक के अंदर शीर्षकों को छोड़ देता है); जब एक एंकर लाइन पहले से मौजूद होती है, तो यदि यह वर्तमान शीर्षक टेक्स्ट से प्राप्त स्लग से मेल नहीं खाती है तो `id` को अपडेट करता है।
+कम से कम एक `docs[]` ब्लॉक की आवश्यकता है। प्रत्येक ब्लॉक के `contentPaths` के तहत `.md` / `.mdx` एकत्र करता है (`.translate-ignore` का सम्मान करता है)। डिफ़ॉल्ट रूप से प्रत्येक फ्लैट ATX `#` हेडिंग से ठीक पहले एक HTML एंकर लाइन `<a id="slug"></a>` सम्मिलित करता है (फेंस किए गए कोड ब्लॉक के अंदर हेडिंग को छोड़ देता है); जब एक एंकर लाइन पहले से मौजूद होती है, तो यदि यह वर्तमान हेडिंग टेक्स्ट से प्राप्त स्लग से मेल नहीं खाती है तो `id` को अपडेट करता है। `--slug-style mdx-comment` के साथ, इसके बजाय हेडिंग लाइन पर एक Docusaurus MDX टिप्पणी प्रत्यय `{/* #slug */}` जोड़ता है (वही github-शैली स्लग एल्गोरिथम), जब हेडिंग टेक्स्ट बदलता है तो एक पुरानी टिप्पणी को ताज़ा करता है।
 
 **मुख्य विकल्प:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--dry-run`
 
-`--slug-style`: `github` (डिफ़ॉल्ट; डॉकटॉक / एंकर-मार्कडाउन-हेडर), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`। `pymdown` के साथ, वैकल्पिक `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`।
+`--slug-style`: `github` (डिफ़ॉल्ट; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}` प्रत्यय)। `pymdown` के साथ, वैकल्पिक `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`।
 
 **यह भी देखें:** [एंकर लिंक](/hi/guide/documents/anchor-links)
 

@@ -14,9 +14,9 @@ Causas comunes:
 
 **Solución**
 
-1. Ejecute `ai-i18n-tools write-heading-ids` en su `.md` / `.mdx` **fuente** (mismo `docs[]` / `contentPaths` que `translate-docs`). Inserta `<a id="slug"></a>` antes de cada encabezado ATX, o actualiza un ancla existente cuando el texto del encabezado ya no coincide con el slug actual.
-2. Dirija los enlaces de anclaje a esos id — por ejemplo, `[setup](guide.md#first-run)` donde `#first-run` coincida con la línea de anclaje sobre el encabezado de destino, no un slug inferido únicamente del título en inglés.
-3. Vuelva a ejecutar `translate-docs` (o `sync --force-update`) para que cada copia en un idioma incluya las líneas de anclaje actualizadas.
+1. Ejecute `ai-i18n-tools write-heading-ids` en su `.md` / `.mdx` **de origen** (el mismo `docs[]` / `contentPaths` que `translate-docs`). Por defecto, inserta `<a id="slug"></a>` antes de cada encabezado ATX, o actualiza un ancla existente cuando el texto del encabezado ya no coincide con el slug actual. Para los ID de comentarios MDX de Docusaurus, use `--slug-style mdx-comment`.
+2. Apunte los enlaces de anclaje a esos ID, por ejemplo, `[setup](guide.md#first-run)`, donde `#first-run` coincide con la línea de anclaje encima del encabezado de destino, no con un slug inferido solo del título en inglés.
+3. Vuelva a ejecutar `translate-docs` (o `sync --force-update`) para que cada copia local incluya las líneas de anclaje actualizadas.
 
 Utilice `--dry-run` en `write-heading-ids` primero para previsualizar los cambios. Consulte [Enlaces de anclaje](/es/guide/documents/anchor-links) para ver el patrón completo.
 

@@ -9,6 +9,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: docs — pre-restore placeholder integrity treats `{{ILC_N}}` / `{{URL_N}}` / `{{BLD_N}}` / emphasis markers as restore-by-id content tokens (multiset only), so locale word-order reorderings no longer fail as `placeholderTagMap` sequence mismatches; ordered subsequence checks remain only for structural `{{HTM_N}}` / `{{ADM_*}}` tokens.
+- **Added**: write-heading-ids — `--slug-style mdx-comment` appends Docusaurus MDX heading ids (`{/* #slug */}`) using the github slug algorithm; refreshes stale comment ids when heading text changes, and HTML styles skip headings that already carry an MDX comment id.
+
 ## [1.8.8] - 2026-09-07
 
 - **Fixed**: docs — `escapeVueBracesInMarkdown` parses CommonMark multi-backtick inline spans (`` `…` ``), so double-backtick examples no longer desync scanning and leave `` `<code v-pre>{{…}}</code>` `` that breaks `pnpm docs:build` with Vue `Invalid Character \`…\``.

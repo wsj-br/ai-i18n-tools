@@ -156,7 +156,7 @@
   "Template must be \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", or \"ui-json-bundles\".": "模板必须是 \"ui-markdown\"、\"ui-docusaurus\"、\"ui-starlight\"、\"ui-vitepress\"、\"ui-nextra\"、\"ui-fumadocs\"、\"ui-astro-website\" 或 \"ui-json-bundles\"。",
   "Wrote {{path}} ({{template}}, provider: {{provider}})": "已写入 {{path}} ({{template}}, 提供商: {{provider}})",
   "Wrote .translate-ignore": "已写入 .translate-ignore",
-  "Insert `<a id=\"slug\"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)": "在每个 ATX 标题前一行插入 `<a id=\"slug\"></a>`（纯 Markdown；slug 模式与 doctoc / PyMdown / Azure DevOps 对齐）",
+  "Insert HTML anchors before ATX headings, or MDX comment ids with --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)": "在 ATX 标题前插入 HTML 锚点，或使用 --slug-style mdx-comment 插入 MDX 注释 ID (doctoc / PyMdown / Azure DevOps / Docusaurus)",
   "Only process files under this path (file or directory); project-relative or absolute": "仅处理此路径下的文件（文件或目录）；相对于项目或绝对路径",
   "Same as --path": "与 --path 相同",
   "With pymdown: lower | title | none (default: lower)": "使用 pymdown 时：lower | title | none（默认：lower）",

@@ -2,9 +2,9 @@
  * Post-protect / post-restore integrity checks for document translation placeholders.
  *
  * Layer A (pre-restore): model output must keep the same multiset of `{{IDENT}}`
- * tokens and the same ordered subsequence of non-emphasis tokens (HTML/URL/ILC/…).
- * Emphasis markers (`{{SE}}`, `{{IT}}`, …) may move with natural word order as long
- * as per-type counts match — restore maps them by occurrence, not by position vs URLs.
+ * tokens; structural tokens (`{{HTM_N}}`, `{{ADM_*}}`) must keep their ordered
+ * subsequence. Content tokens (`{{ILC_N}}`, `{{URL_N}}`, `{{SE}}`, …) may move with
+ * natural word order — restore maps them by id / occurrence.
  * Layer B (post-restore): restored HTML tag kinds must match the source, and any
  * leftover `{{IDENT}}` must already have existed in the unprotected source.
  */
@@ -80,14 +80,6 @@ function sequenceKey(token: string): string {
   return normalizeIdentTokenForSequence(token);
 }
 
-function isEmphasisSequenceToken(normalizedToken: string): boolean {
-  const m = /^\{\{([A-Za-z_][A-Za-z0-9_-]*)\}\}$/.exec(normalizedToken);
-  if (!m?.[1]) {
-    return false;
-  }
-  return EMPHASIS_TOKENS.has(m[1].toUpperCase());
-}
-
 function countByToken(tokens: string[]): Map<string, number> {
   const counts = new Map<string, number>();
   for (const t of tokens) {
@@ -97,13 +89,56 @@ function countByToken(tokens: string[]): Map<string, number> {
 }
 
 /**
+ * Structural tokens whose relative order must stay fixed (open/close nesting).
+ * Content placeholders (`{{ILC_N}}`, `{{URL_N}}`, `{{BLD_N}}`, …) restore by id and may
+ * move with natural word order as long as each id appears exactly once.
+ */
+const ORDER_SENSITIVE_PREFIXES = ["HTM", "ADM_OPEN", "ADM_END", "ADM_TCLOSE"] as const;
+
+function isOrderSensitiveToken(normalizedToken: string): boolean {
+  const m = /^\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}$/.exec(normalizedToken);
+  if (!m?.[1]) {
+    return false;
+  }
+  const inner = m[1];
+  for (const prefix of ORDER_SENSITIVE_PREFIXES) {
+    if (inner === prefix) {
+      return true;
+    }
+    if (new RegExp(`^${prefix}_(\\d+)$`).test(inner)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function compareTokenMultisets(expected: string[], actual: string[]): string | null {
+  if (expected.length !== actual.length) {
+    return `HTML tag placeholders reused or dropped: expected ${expected.length} {{…}} token(s), got ${actual.length}`;
+  }
+  const expectedCounts = countByToken(expected);
+  const actualCounts = countByToken(actual);
+  for (const [token, expCount] of expectedCounts) {
+    const actCount = actualCounts.get(token) ?? 0;
+    if (actCount !== expCount) {
+      return `HTML tag placeholders reused or dropped: expected ${expCount} ${token} token(s), got ${actCount}`;
+    }
+  }
+  for (const [token, actCount] of actualCounts) {
+    if (!expectedCounts.has(token)) {
+      return `HTML tag placeholders reused or dropped: expected 0 ${token} token(s), got ${actCount}`;
+    }
+  }
+  return null;
+}
+
+/**
  * Compare IDENT integrity (logical order).
  *
- * - Total token count must match.
- * - Each emphasis token type (`{{SE}}`, `{{IT}}`, …) must appear the same number of times
- *   (markers may move relative to numbered tokens when the locale reorders words).
- * - Non-emphasis tokens (`{{HTM_N}}`, `{{URL_N}}`, `{{ILC_N}}`, author `{{count}}`, …)
- *   must appear in the same ordered subsequence (reuse/drop/swap of those ids fails).
+ * - Same multiset of all `{{IDENT}}` tokens (each id / emphasis type the right number of times).
+ * - Structural tokens (`{{HTM_N}}`, `{{ADM_*_N}}`) must keep the same ordered subsequence
+ *   (open/close nesting). Content tokens (`{{ILC_N}}`, `{{URL_N}}`, `{{SE}}`, …) may move
+ *   with natural word order — restore maps them by id / occurrence, not by absolute position.
  *
  * Returns an error message or null.
  */
@@ -113,34 +148,17 @@ export function compareIdentTokenSequences(
 ): string | null {
   const expected = extractIdentTokens(expectedProtectedText).map(sequenceKey);
   const actual = extractIdentTokens(modelOutput).map(sequenceKey);
-  if (expected.length !== actual.length) {
-    return `HTML tag placeholders reused or dropped: expected ${expected.length} {{…}} token(s), got ${actual.length}`;
+
+  const multisetErr = compareTokenMultisets(expected, actual);
+  if (multisetErr) {
+    return multisetErr;
   }
 
-  const expectedEmphasis = expected.filter(isEmphasisSequenceToken);
-  const actualEmphasis = actual.filter(isEmphasisSequenceToken);
-  const expectedEmphasisCounts = countByToken(expectedEmphasis);
-  const actualEmphasisCounts = countByToken(actualEmphasis);
-  for (const [token, expCount] of expectedEmphasisCounts) {
-    const actCount = actualEmphasisCounts.get(token) ?? 0;
-    if (actCount !== expCount) {
-      return `HTML tag placeholders reused or dropped: expected ${expCount} ${token} token(s), got ${actCount}`;
-    }
-  }
-  for (const [token, actCount] of actualEmphasisCounts) {
-    if (!expectedEmphasisCounts.has(token)) {
-      return `HTML tag placeholders reused or dropped: expected 0 ${token} token(s), got ${actCount}`;
-    }
-  }
-
-  const expectedCore = expected.filter((t) => !isEmphasisSequenceToken(t));
-  const actualCore = actual.filter((t) => !isEmphasisSequenceToken(t));
-  if (expectedCore.length !== actualCore.length) {
-    return `HTML tag placeholders reused or dropped: expected ${expectedCore.length} non-emphasis {{…}} token(s), got ${actualCore.length}`;
-  }
-  for (let i = 0; i < expectedCore.length; i++) {
-    if (expectedCore[i] !== actualCore[i]) {
-      return `HTML tag placeholders reused or dropped: token sequence mismatch at index ${i} (expected ${expectedCore[i]}, got ${actualCore[i]})`;
+  const expectedStructural = expected.filter(isOrderSensitiveToken);
+  const actualStructural = actual.filter(isOrderSensitiveToken);
+  for (let i = 0; i < expectedStructural.length; i++) {
+    if (expectedStructural[i] !== actualStructural[i]) {
+      return `HTML tag placeholders reused or dropped: token sequence mismatch at index ${i} (expected ${expectedStructural[i]}, got ${actualStructural[i]})`;
     }
   }
   return null;

@@ -1,5 +1,6 @@
 /**
- * Insert `<a id="…"></a>` immediately before flat ATX headings (doctoc-compatible slug modes).
+ * Insert heading anchors for `write-heading-ids`: HTML `<a id="…"></a>` lines, or
+ * Docusaurus MDX comment suffixes (doctoc-compatible slug modes).
  */
 
 import emojiRegex from "emoji-regex";
@@ -7,8 +8,14 @@ import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import removeMarkdown from "remove-markdown";
 
-/** Slug algorithms aligned with doctoc / anchor-markdown-header modes. */
-export type SlugStyle = "github" | "bitbucket" | "gitlab" | "pymdown" | "azure-devops";
+/** Slug algorithms / output modes aligned with doctoc / anchor-markdown-header / Docusaurus. */
+export type SlugStyle =
+  | "github"
+  | "bitbucket"
+  | "gitlab"
+  | "pymdown"
+  | "azure-devops"
+  | "mdx-comment";
 
 export interface PymdownSlugOptions {
   case: "lower" | "title" | "none";
@@ -17,7 +24,13 @@ export interface PymdownSlugOptions {
 }
 
 const ATX_HEADING_RE = /^(#{1,6})\s+(.+)$/;
-const EXISTING_HEADING_ID_RE = /\{#[^}]+\}/;
+/** Classic Docusaurus / CommonMark heading id: `{#my-id}` at end of title. */
+const CLASSIC_HEADING_ID_RE = /\s*\{#([^}]+)\}\s*$/;
+/**
+ * Docusaurus MDX-comment heading id at end of title (brace + slash-star + `#id` + star-slash + brace).
+ * Id token matches Docusaurus (`\S+`); trailing whitespace before the closing comment allowed.
+ */
+const MDX_COMMENT_HEADING_ID_RE = /\s*\{\/\*\s*#(\S+)\s*\*\/\}\s*$/;
 const HTML_ANCHOR_LINE_RE = /^\s*<a\s+id\s*=\s*(["'])([^"']*)\1[^>]*>\s*<\/a>\s*$/i;
 
 function asciiOnlyToLowerCase(input: string): string {
@@ -158,18 +171,52 @@ export interface SlugContext {
   counts: Map<string, number>;
 }
 
+export type ExplicitHeadingIdKind = "classic" | "mdx-comment";
+
+export interface ParsedHeadingTitle {
+  /** Visible heading text with any trailing id suffix removed. */
+  text: string;
+  id?: string;
+  kind?: ExplicitHeadingIdKind;
+}
+
+/** Parse classic `{#id}` or MDX comment (`mdx-comment`) suffix at the end of an ATX title part. */
+export function parseExplicitHeadingId(titlePart: string): ParsedHeadingTitle {
+  const classic = titlePart.match(CLASSIC_HEADING_ID_RE);
+  if (classic) {
+    return {
+      text: titlePart.slice(0, classic.index).trimEnd(),
+      id: classic[1]!.trim(),
+      kind: "classic",
+    };
+  }
+  const mdx = titlePart.match(MDX_COMMENT_HEADING_ID_RE);
+  if (mdx) {
+    return {
+      text: titlePart.slice(0, mdx.index).trimEnd(),
+      id: mdx[1]!.trim(),
+      kind: "mdx-comment",
+    };
+  }
+  return { text: titlePart.trim() };
+}
+
 function headingTitleKey(trimmedHeadingLine: string): string {
   const m = trimmedHeadingLine.match(ATX_HEADING_RE);
-  return m ? m[2]!.trim() : trimmedHeadingLine;
+  if (!m) return trimmedHeadingLine;
+  return parseExplicitHeadingId(m[2]!).text;
 }
 
 function stripHeadingSuffixForSlug(titlePart: string): string {
-  return titlePart.replace(EXISTING_HEADING_ID_RE, "").trim();
+  return parseExplicitHeadingId(titlePart).text;
 }
 
 function computeRawSlug(titlePart: string, repetition: number, ctx: SlugContext): string {
   const trimmed = stripHeadingSuffixForSlug(titlePart);
-  switch (ctx.style) {
+  // mdx-comment uses the github / doctoc algorithm; only the written suffix differs.
+  const styleForSlug: Exclude<SlugStyle, "mdx-comment"> =
+    ctx.style === "mdx-comment" ? "github" : ctx.style;
+  switch (styleForSlug) {
     case "github": {
       const lower = trimmed.toLowerCase();
       return getGithubId(lower, repetition);
@@ -187,14 +234,14 @@ function computeRawSlug(titlePart: string, repetition: number, ctx: SlugContext)
     case "azure-devops":
       return slugAzureDevOps(trimmed, repetition);
     default: {
-      const exhaustive: never = ctx.style;
+      const exhaustive: never = styleForSlug;
       throw new Error(`Unsupported slug style: ${String(exhaustive)}`);
     }
   }
 }
 
 function finalizeFragmentForId(rawSlug: string, style: SlugStyle): string {
-  if (style === "github") {
+  if (style === "github" || style === "mdx-comment") {
     return githubEncodeURI(rawSlug);
   }
   return rawSlug;
@@ -221,12 +268,82 @@ function formatHtmlAnchorLine(id: string): string {
   return `<a id="${escapeAttrValue(id)}"></a>`;
 }
 
+function formatMdxCommentSuffix(id: string): string {
+  return `{/* #${id} */}`;
+}
+
+function formatHeadingWithMdxComment(hashes: string, visibleTitle: string, id: string): string {
+  return `${hashes} ${visibleTitle} ${formatMdxCommentSuffix(id)}`;
+}
+
+/**
+ * Appends or refreshes an MDX-comment heading id at the end of each ATX heading (outside fenced code).
+ * Skips headings that already have classic `{#…}`. When an MDX comment id is present,
+ * updates it when it no longer matches the slug derived from the visible heading text.
+ */
+function injectMdxCommentHeadingIds(markdownBody: string, ctx: SlugContext): string {
+  const lines = markdownBody.split("\n");
+  let fence: "`" | "~" | null = null;
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const trimmed = line.trimStart();
+
+    if (fence) {
+      if (trimmed.startsWith(fence + fence + fence)) {
+        fence = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      fence = trimmed.startsWith("```") ? "`" : "~";
+      i += 1;
+      continue;
+    }
+
+    const hm = line.match(ATX_HEADING_RE);
+    if (hm) {
+      const hashes = hm[1]!;
+      const fullTitle = hm[2]!;
+      const parsed = parseExplicitHeadingId(fullTitle);
+      if (parsed.kind === "classic") {
+        i += 1;
+        continue;
+      }
+
+      const expectedId = computeAnchorIdForHeading(parsed.text, line, ctx);
+      if (parsed.kind === "mdx-comment") {
+        if (parsed.id !== expectedId) {
+          lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
+        }
+        i += 1;
+        continue;
+      }
+
+      lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
+      i += 1;
+      continue;
+    }
+
+    i += 1;
+  }
+
+  return lines.join("\n");
+}
+
 /**
  * Inserts or refreshes `<a id="slug"></a>` on the line directly above each ATX heading (outside fenced code).
- * Skips headings that already have `{#…}` on the line. When an `<a id=…>` is on the immediately preceding line,
- * updates the id when it no longer matches the slug derived from the current heading text.
+ * Skips headings that already have classic `{#…}` or an MDX-comment id. When an `<a id=…>` is on the
+ * immediately preceding line, updates the id when it no longer matches the slug derived from the current heading text.
  */
 export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
+  if (ctx.style === "mdx-comment") {
+    return injectMdxCommentHeadingIds(markdownBody, ctx);
+  }
+
   const lines = markdownBody.split("\n");
   let fence: "`" | "~" | null = null;
   let i = 0;
@@ -252,7 +369,8 @@ export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext)
     const hm = line.match(ATX_HEADING_RE);
     if (hm) {
       const fullTitle = hm[2]!;
-      if (EXISTING_HEADING_ID_RE.test(fullTitle)) {
+      const parsed = parseExplicitHeadingId(fullTitle);
+      if (parsed.kind === "classic" || parsed.kind === "mdx-comment") {
         i += 1;
         continue;
       }

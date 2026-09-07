@@ -21,11 +21,11 @@ Traduz markdown, MDX, `.astro`, JSON de catálogo Docusaurus opcional (`docusaur
 
 **Sinopse:** `ai-i18n-tools write-heading-ids [options]`
 
-Requer pelo menos um bloco `docs[]`. Coleta `.md` / `.mdx` em cada `contentPaths` do bloco (respeita `.translate-ignore`). Insere uma linha de âncora HTML `<a id="slug"></a>` imediatamente antes de cada cabeçalho ATX `#` simples (ignora cabeçalhos dentro de blocos de código cercados); quando uma linha de âncora já está presente, atualiza o `id` se ele não corresponder mais ao slug derivado do texto do cabeçalho atual.
+Requer pelo menos um bloco `docs[]`. Coleta `.md` / `.mdx` sob o `contentPaths` de cada bloco (respeita `.translate-ignore`). Por padrão, insere uma linha de âncora HTML `<a id="slug"></a>` imediatamente antes de cada cabeçalho ATX plano `#` (ignora cabeçalhos dentro de blocos de código cercados); quando uma linha de âncora já está presente, atualiza o `id` se ele não corresponder mais ao slug derivado do texto do cabeçalho atual. Com `--slug-style mdx-comment`, anexa um sufixo de comentário MDX do Docusaurus `{/* #slug */}` na linha do cabeçalho (mesmo algoritmo de slug estilo GitHub), atualizando um comentário obsoleto quando o texto do cabeçalho muda.
 
 **Opções principais:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--dry-run`
 
-`--slug-style`: `github` (padrão; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. Com `pymdown`, `--pymdown-case` opcional, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
+`--slug-style`: `github` (padrão; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (sufixo `{/* #… */}` do Docusaurus). Com `pymdown`, `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode` opcionais.
 
 **Ver também:** [Links de âncora](/pt-BR/guide/documents/anchor-links)
 

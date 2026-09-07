@@ -167,7 +167,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 命令 `write-heading-ids` 是一个 **本地、非 LLM** 的文档 markdown 预处理器。实现：`src/cli/write-heading-ids.ts` 协调文件发现；`src/markdown/write-heading-ids-core.ts` 解析行并插入锚点。
 
-它需要一个有效的配置，其中**至少有一个`docs[]`块**。对于每个块，它会收集`.md` / `.mdx`文件到`contentPaths`下，应用项目的`.translate-ignore`规则（与文档翻译类似），并可选择使用`--path` / `--file`限制到子树。每个文件都通过`applyHeadingAnchorsToMarkdown`进行转换：对于围栏代码块之外的每个**扁平ATX标题**（`# …`到`###### …`），如果缺少或过时，则在其上方插入一个空HTML行`<a id="slug"></a>`。Slug算法与常见的生态系统匹配——`github`（默认）、`bitbucket`、`gitlab`、`pymdown`（可选的Unicode规范化/百分比编码标志）、`azure-devops`——因此锚点ID与现有工具（doctoc、PyMdown等）保持一致。`--dry-run`报告将要进行的编辑而不写入。
+它需要一个有效的配置，且**至少包含一个 `docs[]` 块**。对于每个块，它会收集 `contentPaths` 下的 `.md` / `.mdx` 文件，应用项目的 `.translate-ignore` 规则（与文档翻译的思路相同），并可选择使用 `--path` / `--file` 限制到某个子树。每个文件都使用 `applyHeadingAnchorsToMarkdown` 进行转换：对于受围栏代码块之外的每个**扁平 ATX 标题**（从 `# …` 到 `###### …`），如果缺失或过时，则在其上方插入一个空的 HTML 行 `<a id="slug"></a>`，或者 —— 使用 `--slug-style mdx-comment` —— 在标题行追加一个 Docusaurus MDX 后缀 `{/* #slug */}`。Slug 算法与常见的生态系统相匹配 —— `github`（默认）、`bitbucket`、`gitlab`、`pymdown`（可选的 Unicode 规范化 / 百分号编码标志）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 注释输出）—— 从而使锚点 ID 与现有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 报告将要进行的编辑而不实际写入。
 
 此命令 **不** 在 `translate-docs` 或 `sync` 中运行；当您希望在翻译或发布之前源文件中的片段 ID 稳定时，请显式运行它。
 
@@ -187,7 +187,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
 7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
 
-模型返回后，`translate-docs` 恢复映射并验证该片段：非强调双花括号标记必须保持与受保护源相同的有序子序列（当各类型计数匹配时，诸如 <code v-pre>**</code> 之类的强调标记可随语序移动），恢复的 HTML 标签类型必须与未受保护源匹配，且任何剩余的双花括号标识符必须已在源中存在（因此凭空发明的标记会失败）。文档提示还要求模型复制每个标记一次，保持编号标记的顺序，且不要发明新的双花括号包装；机械检查仍然具有权威性。
+在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
 
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 

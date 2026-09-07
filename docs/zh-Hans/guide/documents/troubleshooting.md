@@ -14,9 +14,9 @@
 
 **修复**
 
-1. 在您的**源** `.md` / `.mdx` 上运行 `ai-i18n-tools write-heading-ids`（与 `translate-docs` 的 `docs[]` / `contentPaths` 相同）。它会在每个 ATX 标题前插入 `<a id="slug"></a>`，或者在标题文本不再与当前 slug 匹配时刷新现有锚点。
-2. 将锚点链接指向这些 ID — 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 匹配目标标题上方的锚点行，而不是仅从英文标题推断出的 slug。
-3. 重新运行 `translate-docs`（或 `sync --force-update`），以便每个区域设置副本都包含更新的锚点行。
+1. 在你的 **源** `.md` / `.mdx`（与 `translate-docs` 相同的 `docs[]` / `contentPaths`）上运行 `ai-i18n-tools write-heading-ids`。默认情况下，它会在每个 ATX 标题之前插入 `<a id="slug"></a>`，或者在标题文本不再与当前 slug 匹配时刷新现有锚点。对于 Docusaurus MDX 注释 id，请使用 `--slug-style mdx-comment`。
+2. 将锚点链接指向这些 id —— 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 与目标标题上方的锚点行匹配，而不是仅从英文标题推断出的 slug。
+3. 重新运行 `translate-docs`（或 `sync --force-update`），以便每个语言环境的副本都包含更新后的锚点行。
 
 首先在 `write-heading-ids` 上使用 `--dry-run` 预览更改。有关完整模式，请参阅[锚点链接](/zh-Hans/guide/documents/anchor-links)。
 

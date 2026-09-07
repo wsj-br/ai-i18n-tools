@@ -14,7 +14,7 @@ Common causes:
 
 **Fix**
 
-1. Run `ai-i18n-tools write-heading-ids` on your **source** `.md` / `.mdx` (same `docs[]` / `contentPaths` as `translate-docs`). It inserts `<a id="slug"></a>` before each ATX heading, or refreshes an existing anchor when the heading text no longer matches the current slug.
+1. Run `ai-i18n-tools write-heading-ids` on your **source** `.md` / `.mdx` (same `docs[]` / `contentPaths` as `translate-docs`). By default it inserts `<a id="slug"></a>` before each ATX heading, or refreshes an existing anchor when the heading text no longer matches the current slug. For Docusaurus MDX comment ids, use `--slug-style mdx-comment`.
 2. Point anchor links at those ids — e.g. `[setup](guide.md#first-run)` where `#first-run` matches the anchor line above the target heading, not a slug inferred from the English title alone.
 3. Re-run `translate-docs` (or `sync --force-update`) so every locale copy includes the updated anchor lines.
 

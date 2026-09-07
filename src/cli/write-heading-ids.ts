@@ -20,6 +20,7 @@ const SLUG_STYLES = new Set<SlugStyle>([
   "gitlab",
   "pymdown",
   "azure-devops",
+  "mdx-comment",
 ]);
 
 export interface WriteHeadingIdsOptions {
@@ -121,6 +122,9 @@ export function parseSlugStyle(raw: string | undefined): SlugStyle {
   const s = (raw ?? "github").trim().toLowerCase();
   if (s === "azure" || s === "ado") {
     return "azure-devops";
+  }
+  if (s === "mdx" || s === "mdx-comment") {
+    return "mdx-comment";
   }
   if (SLUG_STYLES.has(s as SlugStyle)) {
     return s as SlugStyle;

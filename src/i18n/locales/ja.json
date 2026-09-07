@@ -156,7 +156,7 @@
   "Template must be \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", or \"ui-json-bundles\".": "テンプレートは \"ui-markdown\"、\"ui-docusaurus\"、\"ui-starlight\"、\"ui-vitepress\"、\"ui-nextra\"、\"ui-fumadocs\"、\"ui-astro-website\"、または \"ui-json-bundles\" のいずれかである必要があります。",
   "Wrote {{path}} ({{template}}, provider: {{provider}})": "{{path}} に書き込みました ({{template}}、プロバイダー: {{provider}})",
   "Wrote .translate-ignore": ".translate-ignore を書き込みました",
-  "Insert `<a id=\"slug\"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)": "各ATX見出しの前の行に `<a id=\"slug\"></a>` を挿入します（フラットなMarkdown。スラグモードはdoctoc / PyMdown / Azure DevOpsに準拠）",
+  "Insert HTML anchors before ATX headings, or MDX comment ids with --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)": "ATX見出しの前にHTMLアンカーを挿入、または --slug-style mdx-comment でMDXコメントIDを挿入 (doctoc / PyMdown / Azure DevOps / Docusaurus)",
   "Only process files under this path (file or directory); project-relative or absolute": "このパス以下のファイルのみ処理します（ファイルまたはディレクトリ。プロジェクト相対パスまたは絶対パス）",
   "Same as --path": "--pathと同じ",
   "With pymdown: lower | title | none (default: lower)": "pymdown使用時: lower | title | none（デフォルト: lower）",

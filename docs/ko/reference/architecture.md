@@ -167,7 +167,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 
 `write-heading-ids` 명령은 문서 마크다운을 위한 **로컬, 비-LLM** 전처리기입니다. 구현 방식: `src/cli/write-heading-ids.ts`이 파일 탐색을 조정하고, `src/markdown/write-heading-ids-core.ts`가 줄을 구문 분석하여 앵커를 삽입합니다.
 
-**최소 하나 이상의 `docs[]` 블록**이 있는 유효한 구성이 필요합니다. 각 블록에 대해 `contentPaths` 아래의 `.md` / `.mdx` 파일을 수집하고 프로젝트의 `.translate-ignore` 규칙(문서 번역과 동일한 개념)을 적용하며, 선택적으로 `--path` / `--file`를 사용하여 하위 트리에 제한을 둡니다. 각 파일은 `applyHeadingAnchorsToMarkdown`로 변환됩니다. 펜스 코드 블록 외부의 모든 **플랫 ATX 헤딩**(`# …` ~ `###### …`)에 대해 누락되거나 오래된 경우 위에 빈 HTML 줄 `<a id="slug"></a>`이 삽입됩니다. 슬러그 알고리즘은 일반적인 에코시스템(`github`(기본값), `bitbucket`, `gitlab`, `pymdown`(선택적 유니코드 정규화/퍼센트 인코딩 플래그), `azure-devops`)과 일치하므로 앵커 ID는 기존 도구(doctoc, PyMdown 등)와 일관성을 유지합니다. `--dry-run`은 쓰기 없이 예상되는 편집 내용을 보고합니다.
+유효한 구성에는 **최소 하나의 `docs[]` 블록**이 필요합니다. 각 블록에 대해 `contentPaths` 아래의 `.md` / `.mdx` 파일을 수집하고, 프로젝트의 `.translate-ignore` 규칙(문서 번역과 동일한 개념)을 적용하며, 선택적으로 `--path` / `--file`를 사용하여 하위 트리로 제한합니다. 각 파일은 `applyHeadingAnchorsToMarkdown`로 변환됩니다: 펜스 코드 블록 외부의 모든 **플랫 ATX 제목**(`# …`부터 `###### …`까지)에 대해, 누락되거나 오래된 경우 빈 HTML 라인 `<a id="slug"></a>`이 위 줄에 삽입되거나, `--slug-style mdx-comment`를 사용하여 Docusaurus MDX 접미사 `{/* #slug */}`가 제목 줄에 추가됩니다. 슬러그 알고리즘은 일반적인 생태계와 일치합니다 — `github`(기본값), `bitbucket`, `gitlab`, `pymdown`(선택적 유니코드 정규화 / 퍼센트 인코딩 플래그), `azure-devops`, 및 `mdx-comment`(github slug + MDX 주석 출력) — 따라서 앵커 ID가 기존 도구(doctoc, PyMdown, Docusaurus 등)와 일관성을 유지합니다. `--dry-run`는 실제로 쓰지 않고 편집될 내용을 보고합니다.
 
 이 명령은 `translate-docs` 또는 `sync` 내부에서 **실행되지 않습니다**. 번역 또는 게시 전에 소스 파일 내 조각 ID를 안정적으로 유지하고자 할 때 명시적으로 실행해야 합니다.
 
@@ -187,7 +187,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 강조가 아닌 이중 중괄호 토큰은 보호된 소스와 동일한 순서의 하위 시퀀스를 유지해야 하며(유형별 개수가 일치할 때 <code v-pre>**</code>와 같은 강조 표시는 단어 순서에 따라 이동할 수 있음), 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 이미 소스에 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번씩 복사하고, 번호가 매겨진 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
+모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 

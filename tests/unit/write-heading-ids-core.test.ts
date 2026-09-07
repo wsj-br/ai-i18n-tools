@@ -3,6 +3,7 @@ import {
   applyHeadingAnchorsToMarkdown,
   defaultPymdownOptions,
   injectHtmlHeadingAnchors,
+  parseExplicitHeadingId,
   slugAzureDevOps,
   slugPymdown,
   type SlugContext,
@@ -121,6 +122,90 @@ describe("injectHtmlHeadingAnchors", () => {
     });
     expect(out).toContain("<a id=");
     expect(out).toContain("## café");
+  });
+
+  it("skips headings that already contain {/* #custom-id */}", () => {
+    const input = "## Doc {/* #custom-id */}\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("github"));
+    expect(out).toBe(input);
+  });
+});
+
+describe("injectHtmlHeadingAnchors mdx-comment", () => {
+  it("appends {/* #slug */} using the github slug algorithm", () => {
+    const input = "## Notifications not working\n\n## Next\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe(
+      "## Notifications not working {/* #notifications-not-working */}\n\n## Next {/* #next */}\n"
+    );
+  });
+
+  it("does not insert an HTML anchor line", () => {
+    const input = "## Hello\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).not.toContain("<a id=");
+    expect(out).toBe("## Hello {/* #hello */}\n");
+  });
+
+  it("skips headings inside fenced code blocks", () => {
+    const input = "```\n## Not a heading\n```\n\n## Real\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).not.toContain("{/* #not-a-heading */}");
+    expect(out).toContain("## Real {/* #real */}");
+  });
+
+  it("leaves unchanged when the MDX comment id matches the heading", () => {
+    const input = "## Already {/* #already */}\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe(input);
+  });
+
+  it("updates a stale MDX comment when the heading text changed", () => {
+    const input = "## Plan for i18n early {/* #design-for-i18n-from-the-start */}\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe("## Plan for i18n early {/* #plan-for-i18n-early */}\n");
+  });
+
+  it("skips headings that already contain classic {#custom-id}", () => {
+    const input = "## Doc {#custom-id}\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe(input);
+  });
+
+  it("disambiguates duplicate titles with -1", () => {
+    const input = "## Hello\n\n## Hello\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toContain("## Hello {/* #hello */}");
+    expect(out).toContain("## Hello {/* #hello-1 */}");
+  });
+
+  it("preserves YAML front matter via applyHeadingAnchorsToMarkdown", () => {
+    const md = `---
+title: T
+---
+
+## Body
+`;
+    const out = applyHeadingAnchorsToMarkdown(md, "mdx-comment");
+    expect(out.startsWith("---\ntitle: T\n---\n\n")).toBe(true);
+    expect(out).toContain("## Body {/* #body */}");
+    expect(out).not.toContain("<a id=");
+  });
+});
+
+describe("parseExplicitHeadingId", () => {
+  it("parses classic and mdx-comment suffixes", () => {
+    expect(parseExplicitHeadingId("Hello {#x}")).toEqual({
+      text: "Hello",
+      id: "x",
+      kind: "classic",
+    });
+    expect(parseExplicitHeadingId("Hello {/* #notifications-not-working */}")).toEqual({
+      text: "Hello",
+      id: "notifications-not-working",
+      kind: "mdx-comment",
+    });
+    expect(parseExplicitHeadingId("Plain")).toEqual({ text: "Plain" });
   });
 });
 

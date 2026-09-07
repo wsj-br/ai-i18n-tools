@@ -14,9 +14,9 @@ Causas comuns:
 
 **Correção**
 
-1. Execute `ai-i18n-tools write-heading-ids` no seu `.md` / `.mdx` de **origem** (mesmo `docs[]` / `contentPaths` que `translate-docs`). Ele insere `<a id="slug"></a>` antes de cada título ATX, ou atualiza uma âncora existente quando o texto do título não corresponde mais ao slug atual.
-2. Aponte os links de âncora para esses IDs — por exemplo, `[setup](guide.md#first-run)` onde `#first-run` corresponde à linha de âncora acima do título de destino, não a um slug inferido apenas do título em inglês.
-3. Execute novamente `translate-docs` (ou `sync --force-update`) para que cada cópia em outro idioma inclua as linhas de âncora atualizadas.
+1. Execute `ai-i18n-tools write-heading-ids` no seu `.md` / `.mdx` de **origem** (mesmo `docs[]` / `contentPaths` que `translate-docs`). Por padrão, ele insere `<a id="slug"></a>` antes de cada título ATX ou atualiza uma âncora existente quando o texto do título não corresponde mais ao slug atual. Para IDs de comentários MDX do Docusaurus, use `--slug-style mdx-comment`.
+2. Aponte os links de âncora para esses IDs — por exemplo, `[setup](guide.md#first-run)` onde `#first-run` corresponde à linha de âncora acima do título de destino, não um slug inferido apenas do título em inglês.
+3. Execute novamente `translate-docs` (ou `sync --force-update`) para que cada cópia de localidade inclua as linhas de âncora atualizadas.
 
 Use `--dry-run` em `write-heading-ids` primeiro para visualizar as alterações. Consulte [Links âncora](/pt-BR/guide/documents/anchor-links) para o padrão completo.
 

@@ -167,7 +167,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 `write-heading-ids` 命令是一個 **本機、非 LLM** 的文件 Markdown 預處理器。實作方式：`src/cli/write-heading-ids.ts` 負責協調檔案發現；`src/markdown/write-heading-ids-core.ts` 解析行內容並插入錨點。
 
-它需要一個有效的設定，其中**至少有一個`docs[]`區塊**。對於每個區塊，它會收集`.md` / `.mdx`檔案到`contentPaths`下，應用專案的`.translate-ignore`規則（與文件翻譯概念相同），並可選擇使用`--path` / `--file`限制到子樹。每個檔案都透過`applyHeadingAnchorsToMarkdown`進行轉換：對於圍欄程式碼區塊外的每個**扁平ATX標題**（`# …`到`###### …`），如果缺少或過時，則在其上方插入一個空HTML行`<a id="slug"></a>`。Slug演算法與常見生態系統匹配 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的Unicode正規化/百分比編碼標誌）、`azure-devops` — 因此錨點ID與現有工具（doctoc、PyMdown等）保持一致。`--dry-run`會報告預期的編輯，但不會寫入。
+它需要一個有效的設定，且帶有**至少一個 `docs[]` 區塊**。對於每個區塊，它會收集 `contentPaths` 下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（與文件翻譯的概念相同），並可選擇使用 `--path` / `--file` 限制在子樹中。每個檔案都會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於圍欄程式碼區塊之外的每個**扁平 ATX 標題**（從 `# …` 到 `###### …`），當缺失或過時時，會在上一行插入一個空的 HTML 行 `<a id="slug"></a>`，或者 — 使用 `--slug-style mdx-comment` — 在標題行附加 Docusaurus MDX 後綴 `{/* #slug */}`。Slug 演算法與常見的生態系統相符 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops`，加上 `mdx-comment`（github slug + MDX 註解輸出）— 因此錨點 ID 能與現有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 會報告預計的編輯而不會實際寫入。
 
 此命令**不會**在 `translate-docs` 或 `sync` 中執行；當您希望在翻譯或發佈前，原始檔案中有穩定的片段 ID 時，請明確執行此命令。
 
@@ -187,7 +187,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
 7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
 
-模型回傳後，`translate-docs` 會恢復對應表並驗證區段：非強調的雙括號標記必須與受保護來源保持相同的順序子序列（強調標記如 <code v-pre>**</code> 在每類型數量相符時可隨詞序移動），恢復的 HTML 標籤類型必須與未受保護來源相符，且任何剩餘的雙括號識別符必須已存在於來源中（因此自創的標記會失敗）。文件提示也要求模型複製每個標記一次、保持編號標記的順序，且不要發明新的雙括號包裝；機械檢查仍為權威標準。
+在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 

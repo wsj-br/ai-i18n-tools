@@ -14,9 +14,9 @@ Häufige Ursachen:
 
 **Behebung**
 
-1. Führen Sie `ai-i18n-tools write-heading-ids` auf Ihrer **Quell-**`.md` / `.mdx` aus (gleiches `docs[]` / `contentPaths` wie `translate-docs`). Es fügt `<a id="slug"></a>` vor jede ATX-Überschrift ein oder aktualisiert einen vorhandenen Anker, wenn der Überschriftentext nicht mehr mit dem aktuellen Slug übereinstimmt.
-2. Verweisen Sie Ankerlinks auf diese IDs – z. B. `[setup](guide.md#first-run)`, wobei `#first-run` mit der Ankerzeile über der Zielüberschrift übereinstimmt, nicht mit einem Slug, der allein aus dem englischen Titel abgeleitet ist.
-3. Führen Sie `translate-docs` (oder `sync --force-update`) erneut aus, sodass jede Lokalisierungskopie die aktualisierten Ankerzeilen enthält.
+1. Führen Sie `ai-i18n-tools write-heading-ids` auf Ihrer **Quell-** `.md` / `.mdx` aus (gleiche `docs[]` / `contentPaths` wie `translate-docs`). Standardmäßig fügt es `<a id="slug"></a>` vor jeder ATX-Überschrift ein oder aktualisiert einen vorhandenen Anker, wenn der Überschriftentext nicht mehr mit dem aktuellen Slug übereinstimmt. Für Docusaurus MDX-Kommentar-IDs verwenden Sie `--slug-style mdx-comment`.
+2. Verweisen Sie Ankerlinks auf diese IDs – z. B. `[setup](guide.md#first-run)`, wobei `#first-run` mit der Ankerzeile über der Zielüberschrift übereinstimmt, nicht mit einem Slug, der allein aus dem englischen Titel abgeleitet wurde.
+3. Führen Sie `translate-docs` (oder `sync --force-update`) erneut aus, damit jede Lokalisierungskopie die aktualisierten Ankerzeilen enthält.
 
 Verwenden Sie zuerst `--dry-run` auf `write-heading-ids`, um Änderungen in der Vorschau anzuzeigen. Siehe [Ankerlinks](/de/guide/documents/anchor-links) für das vollständige Muster.
 

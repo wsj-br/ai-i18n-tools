@@ -21,11 +21,11 @@
 
 **Synopsis:** `ai-i18n-tools write-heading-ids [options]`
 
-Erfordert mindestens einen `docs[]`-Block. Sammelt `.md` / `.mdx` unter dem `contentPaths` jedes Blocks (berücksichtigt `.translate-ignore`). Fügt eine HTML-Ankerzeile `<a id="slug"></a>` unmittelbar vor jeder flachen ATX `#`-Überschrift ein (überspringt Überschriften innerhalb von Codeblöcken); wenn bereits eine Ankerzeile vorhanden ist, aktualisiert sie den `id`, falls er nicht mehr mit dem aus dem aktuellen Überschriftentext abgeleiteten Slug übereinstimmt.
+Erfordert mindestens einen `docs[]`-Block. Sammelt `.md` / `.mdx` unter dem `contentPaths` jedes Blocks (berücksichtigt `.translate-ignore`). Standardmäßig wird eine HTML-Ankerzeile `<a id="slug"></a>` unmittelbar vor jeder flachen ATX `#`-Überschrift eingefügt (Überschriften innerhalb von Codeblöcken werden übersprungen); wenn bereits eine Ankerzeile vorhanden ist, wird das `id` aktualisiert, falls es nicht mehr mit dem aus dem aktuellen Überschriftentext abgeleiteten Slug übereinstimmt. Mit `--slug-style mdx-comment` wird stattdessen ein Docusaurus MDX-Kommentarsuffix `{/* #slug */}` an die Überschriftenzeile angehängt (gleicher GitHub-Stil-Slug-Algorithmus), wobei ein veralteter Kommentar aktualisiert wird, wenn sich der Überschriftentext ändert.
 
 **Schlüsseloptionen:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--dry-run`
 
-`--slug-style`: `github` (Standard; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`. Mit `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
+`--slug-style`: `github` (Standard; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}`-Suffix). Mit `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
 
 **Siehe auch:** [Anker-Links](/de/guide/documents/anchor-links)
 

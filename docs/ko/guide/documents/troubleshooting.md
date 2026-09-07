@@ -14,9 +14,9 @@
 
 **해결 방법**
 
-1. `ai-i18n-tools write-heading-ids`을 **소스** `.md` / `.mdx`에 실행합니다(`translate-docs`와 동일한 `docs[]` / `contentPaths`). 이 작업은 각 ATX 제목 앞에 `<a id="slug"></a>`을 삽입하거나, 제목 텍스트가 현재 슬러그와 일치하지 않을 경우 기존 앵커를 갱신합니다.
-2. 앵커 링크를 해당 ID를 가리키도록 설정합니다. 예: `[setup](guide.md#first-run)`에서 `#first-run`은 대상 제목 위의 앵커 줄과 일치해야 하며, 영문 제목만으로 유추된 슬러그가 아닙니다.
-3. `translate-docs`(또는 `sync --force-update`)을 다시 실행하여 모든 로케일 복사본에 업데이트된 앵커 줄이 포함되도록 합니다.
+1. **소스** `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을(를) 실행합니다 (`translate-docs`와 동일한 `docs[]` / `contentPaths`). 기본적으로 각 ATX 제목 앞에 `<a id="slug"></a>`을(를) 삽입하거나, 제목 텍스트가 현재 슬러그와 더 이상 일치하지 않을 때 기존 앵커를 갱신합니다. Docusaurus MDX 주석 id의 경우 `--slug-style mdx-comment`을(를) 사용하세요.
+2. 앵커 링크를 해당 id로 지정하세요. 예를 들어 `[setup](guide.md#first-run)`에서 `#first-run`는 영어 제목만으로 유추한 슬러그가 아니라 대상 제목 바로 위의 앵커 라인과 일치해야 합니다.
+3. 모든 로케일 사본에 업데이트된 앵커 라인이 포함되도록 `translate-docs`(또는 `sync --force-update`)을(를) 다시 실행하세요.
 
 변경 사항을 미리 보려면 먼저 `write-heading-ids`에서 `--dry-run`를 사용하세요. 전체 패턴은 [앵커 링크](/ko/guide/documents/anchor-links)를 참조하세요.
 

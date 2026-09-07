@@ -149,14 +149,24 @@ describe("placeholder-integrity emphasis float vs numbered order", () => {
     expect(compareIdentTokenSequences(protectedSrc, model)).toBeNull();
   });
 
-  it("fails when numbered URL tokens are swapped even if {{SE}} counts match", () => {
+  it("passes when content {{URL_N}} / {{ILC_N}} tokens reorder (restore-by-id)", () => {
     const swapped =
       "1. Keep port {{ILC_0}} off the public internet.\n" +
       "2. Create [API keys]({{URL_1}}) and enable {{SE}}Require API keys for external APIs{{SE}}.\n" +
       "3. Serve {{SE}}duplistatus{{SE}} through a [reverse proxy with HTTPS]({{URL_0}}).\n" +
       "4. Add the address to {{SE}}Trusted proxies{{SE}} (or {{ILC_1}}).\n" +
       "5. Enable [IP allowlists]({{URL_2}}), using {{SE}}Detected IP{{SE}}.";
-    expect(compareIdentTokenSequences(hardenProtected, swapped)).toMatch(/sequence mismatch/);
+    expect(compareIdentTokenSequences(hardenProtected, swapped)).toBeNull();
+  });
+
+  it("passes when {{ILC_3}} precedes {{ILC_1}} (hi write-heading-ids prose)", () => {
+    // docs/reference/cli-commands/documents.md hash 657a41dfd6362bbf — models reorder
+    // contentPaths (ILC_3) ahead of .md (ILC_1) for Hindi word order.
+    const protectedSrc =
+      "Requires at least one {{ILC_0}} block. Collects {{ILC_1}} / {{ILC_2}} under each block's {{ILC_3}} (honours {{ILC_4}}).";
+    const reordered =
+      "प्रत्येक ब्लॉक के {{ILC_3}} के अंतर्गत कम से कम एक {{ILC_0}} ब्लॉक आवश्यक। {{ILC_1}} / {{ILC_2}} एकत्र करता है ({{ILC_4}} का सम्मान)।";
+    expect(compareIdentTokenSequences(protectedSrc, reordered)).toBeNull();
   });
 
   it("fails when a {{SE}} pair is dropped", () => {
@@ -169,6 +179,12 @@ describe("placeholder-integrity emphasis float vs numbered order", () => {
     expect(compareIdentTokenSequences(hardenProtected, dropped)).toMatch(
       /expected 13 \{\{\u2026\}\} token\(s\), got 11/
     );
+  });
+
+  it("fails when an {{ILC_N}} id is reused and another dropped", () => {
+    const protectedSrc = "Use {{ILC_0}} then {{ILC_1}} then {{ILC_2}}.";
+    const bad = "Use {{ILC_0}} then {{ILC_2}} then {{ILC_2}}.";
+    expect(compareIdentTokenSequences(protectedSrc, bad)).toMatch(/{{ILC_1}}|{{ILC_2}}/);
   });
 });
 

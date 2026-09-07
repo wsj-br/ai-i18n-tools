@@ -21,11 +21,11 @@
 
 **概要：** `ai-i18n-tools write-heading-ids [options]`
 
-需要至少一个 `docs[]` 块。在每个块的 `contentPaths` 下收集 `.md` / `.mdx`（遵循 `.translate-ignore`）。在每个扁平 ATX `#` 标题前立即插入 HTML 锚点行 `<a id="slug"></a>`（跳过 fenced 代码块内的标题）；当锚点行已存在时，如果其与从当前标题文本派生的 slug 不再匹配，则更新 `id`。
+至少需要一个 `docs[]` 块。在每个块的 `contentPaths` 下收集 `.md` / `.mdx`（遵循 `.translate-ignore`）。默认情况下，在每个扁平 ATX `#` 标题之前立即插入 HTML 锚点行 `<a id="slug"></a>`（跳过围栏代码块内的标题）；当锚点行已存在时，如果它不再匹配从当前标题文本派生的 slug，则更新 `id`。使用 `--slug-style mdx-comment` 时，改为在标题行上附加 Docusaurus MDX 注释后缀 `{/* #slug */}`（相同的 github 风格 slug 算法），并在标题文本更改时刷新过时的注释。
 
 **主要选项：** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--dry-run`
 
-`--slug-style`：`github`（默认；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`。使用 `pymdown` 时，可选 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。
+`--slug-style`：`github`（默认；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}` 后缀）。使用 `pymdown` 时，可选 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。
 
 **另请参阅：** [锚点链接](/zh-Hans/guide/documents/anchor-links)
 

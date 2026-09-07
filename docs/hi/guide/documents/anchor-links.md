@@ -22,17 +22,17 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="docusaurus-sites-preferred"></a>
 ### Docusaurus साइटें (पसंदीदा)
 
-[Docusaurus](/hi/guide/integrations/docusaurus) दस्तावेज़ों (`docsOutput.style = "docusaurus"`) पर, `ai-i18n-tools write-heading-ids` के बजाय Docusaurus की मूल शीर्षक ID को प्राथमिकता दें:
+[डॉक्यूसौरस](/hi/guide/integrations/docusaurus) दस्तावेज़ (`docsOutput.style = "docusaurus"`) पर, `ai-i18n-tools write-heading-ids` से HTML एंकर के बजाय डॉक्यूसौरस के मूल शीर्षक ID को प्राथमिकता दें:
 
-1. Docusaurus के `{#…}` प्रत्यय के साथ शीर्षक पंक्ति पर एक स्पष्ट आईडी जोड़ें, जैसे `## TLS configuration {#tls-configuration}`। `translate-docs` के दौरान, केवल दृश्यमान शीर्षक टेक्स्ट का अनुवाद किया जाता है — `{#tls-configuration}` प्रत्यय प्रत्येक स्थान-विशेष में संरक्षित रहता है।
-2. Docusaurus प्रोजेक्ट रूट से `docusaurus write-heading-ids` चलाएँ (अक्सर `pnpm run write-heading-ids` जब `package.json` में वायर्ड होता है) उन शीर्षकों पर `{#…}` प्रत्यय जोड़ने या ताज़ा करने के लिए जिनमें वे नहीं हैं। शीर्षकों का नाम बदलने के बाद फिर से चलाएँ ताकि पुराने आईडी वर्तमान शीर्षकों से मेल खाएँ।
+1. शीर्षक पंक्ति पर Docusaurus के क्लासिक `{#…}` सफ़िक्स (CommonMark) या MDX कमेंट `{/* #… */}` (`.mdx` के लिए प्राथमिक) के साथ एक स्पष्ट id जोड़ें, जैसे `## TLS configuration {#tls-configuration}` या `## TLS configuration {/* #tls-configuration */}`। `translate-docs` के दौरान, केवल दृश्यमान शीर्षक टेक्स्ट का अनुवाद किया जाता है — id सफ़िक्स हर लोकेल में सुरक्षित रहता है।
+2. अपने Docusaurus प्रोजेक्ट रूट से `docusaurus write-heading-ids` चलाएँ (अक्सर `pnpm run write-heading-ids` जब `package.json` में वायर्ड हो) उन शीर्षकों पर id जोड़ने या रिफ़्रेश करने के लिए जिनमें वे नहीं हैं — `--syntax mdx-comment` का उपयोग करें `{/* #… */}` फ़ॉर्म के लिए। वैकल्पिक रूप से `ai-i18n-tools write-heading-ids --slug-style mdx-comment` चलाएँ उसी `docs[]` / `contentPaths` पर। शीर्षकों का नाम बदलने के बाद पुनः चलाएँ ताकि पुराने ids वर्तमान टाइटल से मेल खाएँ।
 
-अपने मार्कडाउन **एंकर लिंक** को उन स्थिर आईडी पर इंगित करें, जैसे `[label](other.md#tls-configuration)`, जहां खंड `{#…}` प्रत्यय से मेल खाता है — न कि केवल अंग्रेजी शब्दों से अनुमानित स्लग। इस पैटर्न का उपयोग करने वाले प्रतिबद्ध दस्तावेज़ों के लिए [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) देखें।
+अपने मार्कडाउन **एंकर लिंक** को उन स्थिर ID पर इंगित करें, जैसे `[label](other.md#tls-configuration)`, जहाँ फ़्रैगमेंट `{#…}` या `{/* #… */}` ID से मेल खाता है — केवल अंग्रेजी शब्दों से अनुमानित स्लग से नहीं। इस पैटर्न का उपयोग करने वाले प्रतिबद्ध दस्तावेज़ों के लिए [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) देखें।
 
 <a id="other-layouts-flat-starlight-vitepress-etc"></a>
 ### अन्य लेआउट (फ्लैट, स्टारलाइट, वाइटप्रेस, आदि)
 
-जब आप Docusaurus पर नहीं हैं, या आपको `{#…}` प्रत्ययों के बजाय HTML एंकर की आवश्यकता है:
+जब आप Docusaurus पर नहीं हैं, या आपको `{#…}` / `{/* #… */}` प्रत्ययों के बजाय HTML एंकर की आवश्यकता है:
 
 1. `translate-docs` से पहले अपने स्रोत `.md` / `.mdx` पर `ai-i18n-tools write-heading-ids` चलाएँ (सामान्य की तरह ही `docs[]` / `contentPaths`)। यह प्रत्येक शीर्षक से पहले की पंक्ति पर स्पष्ट HTML एंकर सम्मिलित करता है ताकि `id` मान प्रत्येक अनुवादित प्रतिलिपि द्वारा साझा किए जा सकें। शीर्षकों का नाम बदलने के बाद इसे फिर से चलाएँ ताकि पुराने एंकर आईडी वर्तमान शीर्षक से मेल खाने के लिए ताज़ा हो जाएँ।
 2. अपने मार्कडाउन **एंकर लिंक** को उन स्थिर आईडी पर इंगित करें, जैसे `[label](other.md#section-id)`, जहां `section-id` उस एंकर से मेल खाता है जिसे टूल ने लिखा है — न कि केवल अंग्रेजी शब्दों से अनुमानित।
@@ -41,7 +41,7 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 ## उदाहरण
 
 <a id="example-docusaurus"></a>
-### Docusaurus `{#…}` प्रत्यय
+### Docusaurus `{#…}` / `{/* #… */}` प्रत्यय
 
 `docs/overview.md`:
 
@@ -49,10 +49,18 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 See [TLS setup](security.md#tls-configuration) for certificate steps.
 ```
 
-`docs/security.md` (अंग्रेजी स्रोत):
+`docs/security.md` (अंग्रेजी स्रोत, क्लासिक):
 
 ```markdown
 ## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+या MDX-पसंदीदा टिप्पणी फ़ॉर्म:
+
+```markdown
+## TLS configuration {/* #tls-configuration */}
 
 Your CA and cert steps…
 ```

@@ -695,7 +695,7 @@ program
   .command("write-heading-ids")
   .description(
     t(
-      'Insert `<a id="slug"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)'
+      "Insert HTML anchors before ATX headings, or MDX comment ids with --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)"
     )
   )
   .option(
@@ -703,7 +703,11 @@ program
     t("Only process files under this path (file or directory); project-relative or absolute")
   )
   .option("-f, --file <path>", t("Same as --path"))
-  .option("--slug-style <mode>", "github | bitbucket | gitlab | pymdown | azure-devops", "github")
+  .option(
+    "--slug-style <mode>",
+    "github | bitbucket | gitlab | pymdown | azure-devops | mdx-comment",
+    "github"
+  )
   .option("--pymdown-case <mode>", t("With pymdown: lower | title | none (default: lower)"))
   .option("--pymdown-normalize <mode>", t("With pymdown: nfc | nfd | none (default: nfc)"))
   .option("--pymdown-percent-encode", t("With pymdown: percent-encode slug (default on)"), false)

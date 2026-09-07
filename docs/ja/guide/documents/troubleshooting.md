@@ -14,9 +14,9 @@
 
 **修正方法**
 
-1. **ソース**の `.md` / `.mdx`（`translate-docs` と同じ `docs[]` / `contentPaths`）で `ai-i18n-tools write-heading-ids` を実行します。ATX見出しの直前に `<a id="slug"></a>` を挿入するか、見出しのテキストが現在のスラッグと一致しない場合に既存のアンカーを更新します。
-2. それらのIDを指すようにアンカーリンクを設定します — たとえば、`[setup](guide.md#first-run)` の `#first-run` は英語のタイトルから推論されたスラッグではなく、対象となる見出しの上にあるアンカー行と一致する必要があります。
-3. `translate-docs`（または `sync --force-update`）を再実行して、すべてのロケールのコピーに更新されたアンカー行が含まれるようにします。
+1. **ソース**の`.md` / `.mdx`で`ai-i18n-tools write-heading-ids`を実行します（`translate-docs`と同じ`docs[]` / `contentPaths`）。デフォルトでは、各ATX見出しの前に`<a id="slug"></a>`を挿入するか、見出しテキストが現在のスラグと一致しなくなった場合に既存のアンカーを更新します。DocusaurusのMDXコメントIDには、`--slug-style mdx-comment`を使用します。
+2. アンカーリンクの宛先をこれらのIDにします。例えば、`[setup](guide.md#first-run)`において、`#first-run`は対象見出しの上にあるアンカー行に一致し、英語タイトルのみから推測されたスラグではありません。
+3. `translate-docs`（または`sync --force-update`）を再実行し、すべてのロケールコピーに更新されたアンカー行が含まれるようにします。
 
 変更をプレビューするには、まず`--dry-run`で`write-heading-ids`を使用します。完全なパターンについては、[アンカーリンク](/ja/guide/documents/anchor-links)を参照してください。
 

@@ -14,9 +14,9 @@
 
 **修正**
 
-1. 在您的 **來源** `.md` / `.mdx` 上執行 `ai-i18n-tools write-heading-ids`（與 `translate-docs` 相同的 `docs[]` / `contentPaths`）。它會在每個 ATX 標題前插入 `<a id="slug"></a>`，或者在標題文字不再符合目前 slug 時重新整理現有的錨點。
-2. 將錨點連結指向這些 ID — 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 應符合目標標題上方的錨點行，而不是僅從英文標題推斷出的 slug。
-3. 重新執行 `translate-docs`（或 `sync --force-update`），以便每個地區設定的副本都包含更新的錨點行。
+1. 在您的**來源** `.md` / `.mdx` 上執行 `ai-i18n-tools write-heading-ids`（與 `translate-docs` 相同的 `docs[]` / `contentPaths`）。預設情況下，它會在每個 ATX 標題之前插入 `<a id="slug"></a>`，或者在標題文字不再與目前的 slug 相符時重新整理現有的錨點。對於 Docusaurus MDX 註解 id，請使用 `--slug-style mdx-comment`。
+2. 將錨點連結指向這些 id — 例如 `[setup](guide.md#first-run)`，其中 `#first-run` 與目標標題上方的錨點行相符，而不是僅從英文標題推斷出的 slug。
+3. 重新執行 `translate-docs`（或 `sync --force-update`），以便每個語言環境副本都包含更新後的錨點行。
 
 請先在 `--dry-run` 上使用 `write-heading-ids` 預覽變更。如需完整模式，請參閱[錨點連結](/zh-Hant/guide/documents/anchor-links)。
 

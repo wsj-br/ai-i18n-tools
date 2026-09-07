@@ -22,17 +22,17 @@ Here the link target is `setup.md`, and `#first-run` is the anchor: it should sc
 <a id="docusaurus-sites-preferred"></a>
 ### Docusaurus sites (preferred)
 
-On [Docusaurus](/guide/integrations/docusaurus) documentation (`docsOutput.style = "docusaurus"`), prefer Docusaurus's native heading IDs instead of `ai-i18n-tools write-heading-ids`:
+On [Docusaurus](/guide/integrations/docusaurus) documentation (`docsOutput.style = "docusaurus"`), prefer Docusaurus's native heading IDs instead of HTML anchors from `ai-i18n-tools write-heading-ids`:
 
-1. Add an explicit id on the heading line with Docusaurus's `{#…}` suffix, e.g. `## TLS configuration {#tls-configuration}`. During `translate-docs`, only the visible heading text is translated — the `{#tls-configuration}` suffix is preserved in every locale.
-2. Run `docusaurus write-heading-ids` from your Docusaurus project root (often `pnpm run write-heading-ids` when wired in `package.json`) to add or refresh `{#…}` suffixes on headings that lack them. Re-run after renaming headings so stale ids match the current titles.
+1. Add an explicit id on the heading line with Docusaurus's classic `{#…}` suffix (CommonMark) or MDX comment `{/* #… */}` (preferred for `.mdx`), e.g. `## TLS configuration {#tls-configuration}` or `## TLS configuration {/* #tls-configuration */}`. During `translate-docs`, only the visible heading text is translated — the id suffix is preserved in every locale.
+2. Run `docusaurus write-heading-ids` from your Docusaurus project root (often `pnpm run write-heading-ids` when wired in `package.json`) to add or refresh ids on headings that lack them — use `--syntax mdx-comment` for the `{/* #… */}` form. Alternatively run `ai-i18n-tools write-heading-ids --slug-style mdx-comment` on the same `docs[]` / `contentPaths`. Re-run after renaming headings so stale ids match the current titles.
 
-Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md#tls-configuration)`, where the fragment matches the `{#…}` suffix — not a slug guessed from English words alone. See [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) for committed docs that use this pattern.
+Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md#tls-configuration)`, where the fragment matches the `{#…}` or `{/* #… */}` id — not a slug guessed from English words alone. See [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) for committed docs that use this pattern.
 
 <a id="other-layouts-flat-starlight-vitepress-etc"></a>
 ### Other layouts (flat, Starlight, VitePress, etc.)
 
-When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` suffixes:
+When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` / `{/* #… */}` suffixes:
 
 1. Run `ai-i18n-tools write-heading-ids` on your source `.md` / `.mdx` before `translate-docs` (same `docs[]` / `contentPaths` as usual). It inserts explicit HTML anchors on the line before each heading so `id` values are shared by every translated copy. Re-run it after renaming headings so stale anchor ids are refreshed to match the current title.
 2. Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md#section-id)`, where `section-id` matches the anchor the tool wrote — not a guess from English words alone.
@@ -41,7 +41,7 @@ When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` suf
 ## Example
 
 <a id="example-docusaurus"></a>
-### Docusaurus `{#…}` suffix
+### Docusaurus `{#…}` / `{/* #… */}` suffix
 
 `docs/overview.md`:
 
@@ -49,10 +49,18 @@ When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` suf
 See [TLS setup](security.md#tls-configuration) for certificate steps.
 ```
 
-`docs/security.md` (English source):
+`docs/security.md` (English source, classic):
 
 ```markdown
 ## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+Or MDX-preferred comment form:
+
+```markdown
+## TLS configuration {/* #tls-configuration */}
 
 Your CA and cert steps…
 ```

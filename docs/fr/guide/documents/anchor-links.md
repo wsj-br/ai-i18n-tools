@@ -22,17 +22,17 @@ Ici, la cible du lien est `setup.md`, et `#first-run` est l'ancre : elle doit fa
 <a id="docusaurus-sites-preferred"></a>
 ### Sites Docusaurus (préféré)
 
-Sur la documentation [Docusaurus](/fr/guide/integrations/docusaurus) (`docsOutput.style = "docusaurus"`), préférez les identifiants d'en-tête natifs de Docusaurus au lieu de `ai-i18n-tools write-heading-ids` :
+Dans la documentation [Docusaurus](/fr/guide/integrations/docusaurus) (`docsOutput.style = "docusaurus"`), préférez les identifiants d'en-tête natifs de Docusaurus aux ancres HTML de `ai-i18n-tools write-heading-ids` :
 
-1. Ajoutez un identifiant explicite sur la ligne d'en-tête avec le suffixe `{#…}` de Docusaurus, par exemple `## TLS configuration {#tls-configuration}`. Pendant la `translate-docs`, seul le texte visible de l'en-tête est traduit — le suffixe `{#tls-configuration}` est conservé dans chaque langue.
-2. Exécutez `docusaurus write-heading-ids` depuis la racine de votre projet Docusaurus (souvent `pnpm run write-heading-ids` lorsqu'il est configuré dans `package.json`) pour ajouter ou actualiser les suffixes `{#…}` sur les en-têtes qui en sont dépourvus. Réexécutez après avoir renommé les en-têtes afin que les identifiants obsolètes correspondent aux titres actuels.
+1. Ajoutez un identifiant explicite sur la ligne d'en-tête avec le suffixe `{#…}` classique de Docusaurus (CommonMark) ou le commentaire MDX `{/* #… */}` (préféré pour `.mdx`), par exemple `## TLS configuration {#tls-configuration}` ou `## TLS configuration {/* #tls-configuration */}`. Lors de la `translate-docs`, seul le texte visible de l'en-tête est traduit — le suffixe d'identifiant est conservé dans chaque locale.
+2. Exécutez `docusaurus write-heading-ids` depuis la racine de votre projet Docusaurus (souvent `pnpm run write-heading-ids` lorsqu'il est câblé dans `package.json`) pour ajouter ou actualiser les identifiants sur les en-têtes qui n'en ont pas — utilisez `--syntax mdx-comment` pour la forme `{/* #… */}`. Vous pouvez également exécuter `ai-i18n-tools write-heading-ids --slug-style mdx-comment` sur le même `docs[]` / `contentPaths`. Réexécutez après avoir renommé les en-têtes afin que les identifiants obsolètes correspondent aux titres actuels.
 
-Pointez vos **liens d'ancrage** Markdown vers ces identifiants stables, par exemple `[label](other.md#tls-configuration)`, où le fragment correspond au suffixe `{#…}` — et non à un slug deviné à partir de mots anglais uniquement. Voir [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) pour des documents validés qui utilisent ce modèle.
+Pointez vos **liens d'ancrage** markdown vers ces identifiants stables, par exemple `[label](other.md#tls-configuration)`, où le fragment correspond à l'identifiant `{#…}` ou `{/* #… */}` — et non à un slug deviné à partir de mots anglais uniquement. Voir [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) pour les documents validés qui utilisent ce modèle.
 
 <a id="other-layouts-flat-starlight-vitepress-etc"></a>
 ### Autres mises en page (flat, Starlight, VitePress, etc.)
 
-Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML au lieu de suffixes `{#…}` :
+Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML au lieu de suffixes `{#…}` / `{/* #… */}` :
 
 1. Exécutez `ai-i18n-tools write-heading-ids` sur votre source `.md` / `.mdx` avant `translate-docs` (même `docs[]` / `contentPaths` que d'habitude). Cet outil insère des ancres HTML explicites sur la ligne précédant chaque en-tête, afin que les valeurs `id` soient partagées par chaque copie traduite. Réexécutez-le après avoir renommé des en-têtes afin que les identifiants d'ancre obsolètes soient actualisés pour correspondre au titre actuel.
 2. Faites pointer vos **liens d'ancre** en markdown vers ces identifiants stables, par exemple `[label](other.md#section-id)`, où `section-id` correspond à l'ancre insérée par l'outil — et non une déduction basée uniquement sur les mots anglais.
@@ -41,7 +41,7 @@ Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML a
 ## Exemple
 
 <a id="example-docusaurus"></a>
-### Suffixe Docusaurus `{#…}`
+### Suffixe Docusaurus `{#…}` / `{/* #… */}`
 
 `docs/overview.md`:
 
@@ -49,10 +49,18 @@ Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML a
 See [TLS setup](security.md#tls-configuration) for certificate steps.
 ```
 
-`docs/security.md` (source anglaise) :
+`docs/security.md` (source anglaise, classique) :
 
 ```markdown
 ## TLS configuration {#tls-configuration}
+
+Your CA and cert steps…
+```
+
+Ou la forme de commentaire préférée de MDX :
+
+```markdown
+## TLS configuration {/* #tls-configuration */}
 
 Your CA and cert steps…
 ```

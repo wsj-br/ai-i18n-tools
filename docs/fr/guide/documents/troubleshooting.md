@@ -14,9 +14,9 @@ Causes fréquentes :
 
 **Correction**
 
-1. Exécutez `ai-i18n-tools write-heading-ids` sur votre `.md` / `.mdx` **source** (même `docs[]` / `contentPaths` que `translate-docs`). Il insère `<a id="slug"></a>` avant chaque en-tête ATX, ou met à jour un ancre existante lorsque le texte de l'en-tête ne correspond plus au slug actuel.
-2. Pointez les liens d'ancre vers ces identifiants — par exemple `[setup](guide.md#first-run)` où `#first-run` correspond à la ligne d'ancre située au-dessus de l'en-tête cible, et non à un slug déduit uniquement du titre anglais.
-3. Relancez `translate-docs` (ou `sync --force-update`) afin que chaque copie dans chaque langue inclue les lignes d'ancre mises à jour.
+1. Exécutez `ai-i18n-tools write-heading-ids` sur votre **source** `.md` / `.mdx` (même `docs[]` / `contentPaths` que `translate-docs`). Par défaut, il insère `<a id="slug"></a>` avant chaque en-tête ATX, ou actualise une ancre existante lorsque le texte de l'en-tête ne correspond plus au slug actuel. Pour les identifiants de commentaire Docusaurus MDX, utilisez `--slug-style mdx-comment`.
+2. Pointez les liens d'ancrage vers ces identifiants — par exemple `[setup](guide.md#first-run)` où `#first-run` correspond à la ligne d'ancrage au-dessus de l'en-tête cible, et non à un slug déduit du titre anglais seul.
+3. Réexécutez `translate-docs` (ou `sync --force-update`) afin que chaque copie de locale inclue les lignes d'ancrage mises à jour.
 
 Utilisez `--dry-run` sur `write-heading-ids` d'abord pour prévisualiser les modifications. Voir [Liens d'ancrage](/fr/guide/documents/anchor-links) pour le modèle complet.
 

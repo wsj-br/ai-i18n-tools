@@ -156,7 +156,7 @@
   "Template must be \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", or \"ui-json-bundles\".": "Le modèle doit être « ui-markdown », « ui-docusaurus », « ui-starlight », « ui-vitepress », « ui-nextra », « ui-fumadocs », « ui-astro-website » ou « ui-json-bundles ».",
   "Wrote {{path}} ({{template}}, provider: {{provider}})": "{{path}} écrit ({{template}}, fournisseur : {{provider}})",
   "Wrote .translate-ignore": ".translate-ignore créé",
-  "Insert `<a id=\"slug\"></a>` on the line before each ATX heading (flat markdown; slug modes align with doctoc / PyMdown / Azure DevOps)": "Insérer `<a id=\"slug\"></a>` sur la ligne précédant chaque titre ATX (markdown plat ; les modes de slug s'alignent sur doctoc / PyMdown / Azure DevOps)",
+  "Insert HTML anchors before ATX headings, or MDX comment ids with --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)": "Insérer des ancres HTML avant les titres ATX, ou des ids de commentaire MDX avec --slug-style mdx-comment (doctoc / PyMdown / Azure DevOps / Docusaurus)",
   "Only process files under this path (file or directory); project-relative or absolute": "Traiter uniquement les fichiers sous ce chemin (fichier ou répertoire) ; relatif au projet ou absolu",
   "Same as --path": "Identique à --path",
   "With pymdown: lower | title | none (default: lower)": "Avec pymdown : lower | title | none (défaut : lower)",
