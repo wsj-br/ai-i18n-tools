@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.9] - 2026-09-14
+
 - **Changed**: examples — pin `ai-i18n-tools` to `^1.8.9` (including `multi-provider` / `test-markdown`) so standalone degit copies match the release; the monorepo still resolves via `ai-i18n-tools: workspace:*`.
 - **Changed**: scripts — exclude `ai-i18n-tools` from example ncu upgrades, sync example pins from the root version on `pnpm version`, and fail `pre-release` if any example pin is stale.
 - **Added**: cli — committed `bin/ai-i18n-tools` (PATH-friendly name beside the published `bin/ai-i18n-tools.mjs` shim) and `.envrc` `PATH_add bin`, so the bare `ai-i18n-tools` command works in this checkout after `direnv allow`.
