@@ -40,7 +40,7 @@ Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML a
 <a id="example"></a>
 ## Exemple
 
-<a id="example-docusaurus"></a>
+<a id="docusaurus------suffix"></a>
 ### Suffixe Docusaurus `{#…}` / `{/* #… */}`
 
 `docs/overview.md`:

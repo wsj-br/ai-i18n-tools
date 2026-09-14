@@ -40,7 +40,7 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="example"></a>
 ## उदाहरण
 
-<a id="example-docusaurus"></a>
+<a id="docusaurus------suffix"></a>
 ### Docusaurus `{#…}` / `{/* #… */}` प्रत्यय
 
 `docs/overview.md`:

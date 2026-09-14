@@ -40,7 +40,7 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="example"></a>
 ## 範例
 
-<a id="example-docusaurus"></a>
+<a id="docusaurus------suffix"></a>
 ### Docusaurus `{#…}` / `{/* #… */}` 後綴
 
 `docs/overview.md`:

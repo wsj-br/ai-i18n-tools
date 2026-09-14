@@ -40,8 +40,8 @@ Docusaurus を使用していない場合、または `{#…}` / `{/* #… */}` 
 <a id="example"></a>
 ## 例
 
-<a id="example-docusaurus"></a>
-### Docusaurus の `{#…}` / `{/* #… */}` サフィックス
+<a id="docusaurus------suffix"></a>
+### Docusaurus `{#…}` / `{/* #… */}` サフィックス
 
 `docs/overview.md`:
 

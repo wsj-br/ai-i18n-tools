@@ -40,7 +40,7 @@ When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` / `
 <a id="example"></a>
 ## Example
 
-<a id="example-docusaurus"></a>
+<a id="docusaurus------suffix"></a>
 ### Docusaurus `{#…}` / `{/* #… */}` suffix
 
 `docs/overview.md`:

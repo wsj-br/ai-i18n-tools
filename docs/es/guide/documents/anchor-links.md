@@ -40,8 +40,8 @@ Cuando no estés en Docusaurus, o necesites anclajes HTML en lugar de sufijos `{
 <a id="example"></a>
 ## Ejemplo
 
-<a id="example-docusaurus"></a>
-### Sufijo `{#…}` / `{/* #… */}` de Docusaurus
+<a id="docusaurus------suffix"></a>
+### Sufijo Docusaurus `{#…}` / `{/* #… */}`
 
 `docs/overview.md`:
 
