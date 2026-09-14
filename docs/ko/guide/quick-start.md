@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-`console-app`를 예시 폴더 이름으로 바꿉니다. 각 예시는 `"ai-i18n-tools": "^1.7.2"`를 선언하고 npm에서 CLI를 설치합니다. 예시별 README에는 폴더 이름이 채워진 동일한 스니펫이 포함되어 있습니다.
+`console-app`를 원하는 예제 폴더 이름으로 바꾸세요. 각 예제는 현재 패키지 버전과 일치하는 `ai-i18n-tools`의 공개된 캐럿 범위(caret range)를 선언하고 npm에서 CLI를 설치합니다. 각 예제의 README에는 폴더 이름이 채워진 동일한 스니펫이 포함되어 있습니다.
 
 **전체 ai-i18n-tools 저장소에서** — 전체 저장소를 복제한 경우(degit으로 단일 예제 폴더만 복제한 것이 아닌 경우):
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-워크스페이스 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 항목(`ai-i18n-tools: workspace:*`)은 워크스페이스 예제를 로컬 체크아웃에 자동으로 연결합니다. 독립형 픽스처(`multi-provider`, `test-markdown`)는 워크스페이스 패키지가 아닙니다. 해당 폴더에서 `node ../../bin/ai-i18n-tools.mjs …`를 사용하세요. **저장소 루트**에서 CLI를 실행하려면(이 패키지 자체의 docs/i18n), `pnpm i18n:sync` 또는 `node bin/ai-i18n-tools.mjs …`를 사용하세요 — [설치 — 복제된 모노레포](/ko/guide/installation#cloned-monorepo) 및 [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)를 참조하세요.
+워크스페이스 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 항목(`ai-i18n-tools: workspace:*`)은 워크스페이스 예제를 로컬 체크아웃에 자동으로 연결합니다. 독립형 픽스처(`multi-provider`, `test-markdown`)는 워크스페이스 패키지가 아닙니다 — 해당 폴더에서 `node ../../bin/ai-i18n-tools.mjs …`를 사용하세요. **저장소 루트**(이 패키지 자체의 docs/i18n)에서 CLI를 실행하려면 `direnv allow` 이후에 단순히 `ai-i18n-tools`를 사용하거나, `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …`를 사용하세요 — [설치 — 복제한 모노레포](/ko/guide/installation#cloned-monorepo) 및 [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)를 참조하세요.
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### 프로바이더 및 API 키(번역 필수)

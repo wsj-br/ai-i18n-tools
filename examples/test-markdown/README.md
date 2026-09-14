@@ -178,4 +178,4 @@ examples/test-markdown/
     └── test-markdown-en-GB.{locale}.md
 ```
 
-This directory installs `ai-i18n-tools` from npm (`^1.7.2`). Run the full flow with `pnpm build`, or invoke `ai-i18n-tools` directly after `pnpm install`.
+This directory installs `ai-i18n-tools` from npm (a published caret range matching the current package version). Run the full flow with `pnpm build`, or invoke `ai-i18n-tools` directly after `pnpm install`.

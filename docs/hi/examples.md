@@ -6,7 +6,7 @@ GitHub पर [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/ex
 <a id="run-standalone-npx-degit"></a>
 ## स्टैंडअलोन चलाएँ (`npx degit`)
 
-पूरे रिपॉजिटरी को क्लोन किए बिना एक उदाहरण कॉपी करें। प्रत्येक `"ai-i18n-tools": "^1.7.2"` घोषित करता है और npm से CLI स्थापित करता है:
+पूरे रिपॉजिटरी को क्लोन किए बिना एक उदाहरण कॉपी करें। प्रत्येक `ai-i18n-tools` की एक प्रकाशित कैरेट रेंज घोषित करता है जो वर्तमान पैकेज संस्करण से मेल खाती है और npm से CLI स्थापित करती है:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

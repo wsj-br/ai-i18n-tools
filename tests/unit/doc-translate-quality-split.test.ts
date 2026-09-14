@@ -221,6 +221,77 @@ describe("translateOneSegmentWithQualityRetry split fallback", () => {
     expect(result.qualitySplitRetries).toBe(0);
   });
 
+  it("accepts CJK content-token reordering from the first model", async () => {
+    const source = [
+      "1. Create a new `.md` file in `documentation/docs/` (or a subdirectory)",
+      "2. Add it to the sidebar in `documentation/sidebars.ts`",
+      "3. Run `pnpm write-translations` to update the translation files structure",
+      "4. Run `pnpm write-heading-ids` to generate heading IDs (anchors)",
+    ].join("\n");
+    const reordered = [
+      "1. 在 {{ILC_1}}（或子目录）中创建新的 {{ILC_0}} 文件",
+      "2. 将其添加到 {{ILC_2}} 侧边栏中",
+      "3. 运行 {{ILC_3}} 以更新翻译文件结构",
+      "4. 运行 {{ILC_4}} 以生成标题 ID（锚点）",
+    ].join("\n");
+    const models = ["model-a", "model-b"];
+    const glossary = new Glossary(undefined, undefined);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "zh-Hans", true, false);
+    const protectedSeg = protectForPart(source);
+    const translateDocumentSegment = vi.fn(async () => ({
+      content: reordered,
+      model: "model-a",
+      usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      cost: 0,
+      debugPrompt: { systemPrompt: "", userContent: "" },
+      rawAssistantContent: reordered,
+    }));
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment,
+    } as unknown as LlmClient;
+
+    const result = await translateOneSegmentWithQualityRetry({
+      client,
+      locale: "zh-Hans",
+      glossary,
+      contentType: "markdown",
+      models,
+      original: seg(source),
+      protectedContent: protectedSeg.text,
+      protectState: protectedSeg.state,
+      startModelIndex: 0,
+      splitDepth: 0,
+      qualityRetrySplit: true,
+      maxQualityRetrySplitDepth: 3,
+      protectForTranslation: protectForPart,
+      segmentHash: "abc123",
+      failureFp: null,
+      recordFailures: async () => {},
+      buildQualityFailureRows: () => [],
+      buildRuntimeFailureRow: () => ({
+        sourceHash: "abc123",
+        locale: "zh-Hans",
+        model: null,
+        modelOrder: null,
+        qualityError: "runtime",
+        errorMessage: "",
+        fatal: true,
+        filepath: null,
+        sourceText: source,
+      }),
+      modelOrder1Based: () => null,
+      segLabelSingle: "segment 1/1",
+    });
+
+    expect(result.modelUsed).toBe("model-a");
+    expect(result.qualitySplitRetries).toBe(0);
+    expect(translateDocumentSegment).toHaveBeenCalledTimes(1);
+    expect(result.text).toContain("`documentation/docs/`");
+    expect(result.text).toContain("`.md`");
+  });
+
   it("throws on placeholder invent without quality split after model exhaustion", async () => {
     const source =
       "- Optional [API keys](settings/api-keys-settings.md) for uploads with size limits";

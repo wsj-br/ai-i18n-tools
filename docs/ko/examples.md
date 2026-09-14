@@ -6,7 +6,7 @@ GitHub의 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/exampl
 <a id="run-standalone-npx-degit"></a>
 ## 독립 실행 (`npx degit`)
 
-전체 저장소를 복제하지 않고 예시 하나를 복사합니다. 각 예시는 `"ai-i18n-tools": "^1.7.2"`를 선언하고 npm에서 CLI를 설치합니다.
+전체 리포지토리를 복제하지 않고 하나의 예제를 복사하세요. 각 예제는 현재 패키지 버전과 일치하는 `ai-i18n-tools`의 게시된 캐럿 범위를 선언하고 npm에서 CLI를 설치합니다:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-Substitua `console-app` por qualquer nome de pasta de exemplo. Cada exemplo declara `"ai-i18n-tools": "^1.7.2"` e instala a CLI do npm. Os READMEs de cada exemplo incluem o mesmo trecho com o nome da pasta preenchido.
+Substitua `console-app` por qualquer nome de pasta de exemplo. Cada exemplo declara um intervalo de circunflexo publicado de `ai-i18n-tools` correspondendo à versão atual do pacote e instala a CLI do npm. Os READMEs por exemplo incluem o mesmo trecho com o nome da pasta preenchido.
 
 **Do repositório completo ai-i18n-tools** — se você clonou o repositório inteiro (não apenas uma pasta de exemplo com degit):
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-A entrada do espaço de trabalho [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula exemplos de espaço de trabalho ao seu checkout local automaticamente. Os "fixtures" autônomos (`multi-provider`, `test-markdown`) não são pacotes de espaço de trabalho — de sua pasta, use `node ../../bin/ai-i18n-tools.mjs …`. Para executar a CLI a partir da **raiz do repositório** (documentos/i18n deste pacote), use `pnpm i18n:sync` ou `node bin/ai-i18n-tools.mjs …` — consulte [Instalação — Monorepo clonado](/pt-BR/guide/installation#cloned-monorepo) e o [Guia de Desenvolvimento](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
+A entrada do espaço de trabalho [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula os exemplos do espaço de trabalho ao seu checkout local automaticamente. Os fixtures autônomos (`multi-provider`, `test-markdown`) não são pacotes de espaço de trabalho — de sua pasta, use `node ../../bin/ai-i18n-tools.mjs …`. Para executar a CLI da **raiz do repositório** (documentos/i18n deste próprio pacote), use `ai-i18n-tools` puro após `direnv allow`, ou `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` — consulte [Instalação — Monorepo clonado](/pt-BR/guide/installation#cloned-monorepo) e o [Guia de Desenvolvimento](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### Provedor e chave de API (obrigatório para tradução)

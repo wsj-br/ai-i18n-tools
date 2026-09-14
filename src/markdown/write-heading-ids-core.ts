@@ -10,12 +10,7 @@ import removeMarkdown from "remove-markdown";
 
 /** Slug algorithms / output modes aligned with doctoc / anchor-markdown-header / Docusaurus. */
 export type SlugStyle =
-  | "github"
-  | "bitbucket"
-  | "gitlab"
-  | "pymdown"
-  | "azure-devops"
-  | "mdx-comment";
+  "github" | "bitbucket" | "gitlab" | "pymdown" | "azure-devops" | "mdx-comment";
 
 export interface PymdownSlugOptions {
   case: "lower" | "title" | "none";

@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-Replace `console-app` with any example folder name. Each example declares `"ai-i18n-tools": "^1.7.2"` and installs the CLI from npm. Per-example READMEs include the same snippet with the folder name filled in.
+Replace `console-app` with any example folder name. Each example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm. Per-example READMEs include the same snippet with the folder name filled in.
 
 **From the full ai-i18n-tools repository** — if you cloned the whole repo (not just one example folder with degit):
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-The workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) links workspace examples to your local checkout automatically. Standalone fixtures (`multi-provider`, `test-markdown`) are not workspace packages — from their folder use `node ../../bin/ai-i18n-tools.mjs …`. To run the CLI from the **repository root** (this package's own docs/i18n), use `pnpm i18n:sync` or `node bin/ai-i18n-tools.mjs …` — see [Installation — Cloned monorepo](/guide/installation#cloned-monorepo) and the [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
+The workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) links workspace examples to your local checkout automatically. Standalone fixtures (`multi-provider`, `test-markdown`) are not workspace packages — from their folder use `node ../../bin/ai-i18n-tools.mjs …`. To run the CLI from the **repository root** (this package's own docs/i18n), use bare `ai-i18n-tools` after `direnv allow`, or `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` — see [Installation — Cloned monorepo](/guide/installation#cloned-monorepo) and the [Development Guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### Provider and API key (required for translation)

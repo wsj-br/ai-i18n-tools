@@ -25,7 +25,7 @@ pnpm install
 
 ### From the full ai-i18n-tools repository
 
-Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). Run `pnpm install` from the **repository root**. The workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares `"ai-i18n-tools": "^1.7.2"`. No separate link step is needed — rebuild the library (`pnpm run build` in the repo root) whenever you change source files and the example will pick up the updated `dist/` automatically.
+Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository (not just this folder with degit). Run `pnpm install` from the **repository root**. The workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares a published caret range. No separate link step is needed — rebuild the library (`pnpm run build` in the repo root) whenever you change source files and the example will pick up the updated `dist/` automatically.
 
 ```bash
 # From the repository root

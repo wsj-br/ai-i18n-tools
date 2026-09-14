@@ -86,6 +86,7 @@ minimumReleaseAgeExclude:
   - "@types/react-dom@19.2.7"
   - image-size-next@2.1.1
   - vitepress@2.0.0-alpha.19
+  - zod@4.6.5
 overrides:
   ai-i18n-tools: workspace:*
   postcss@<8.5.10: ^8.5.10

@@ -1,10 +1,11 @@
 ---
-translation_last_updated: '2026-09-03T22:52:19.380Z'
-source_file_mtime: '2026-07-05T22:05:35.671Z'
-source_file_hash: dcf4013f15bc8b51e6c8c55f7963ed55c9f1ce31a17b3dfd87ba1ff877e62c94
+translation_last_updated: '2026-09-14T19:52:38.479Z'
+source_file_mtime: '2026-09-14T19:41:20.670Z'
+source_file_hash: 6dd907fbf677c7f74b4b338263c315239bdf5b35ae40fe1b462c93766b0a54e9
 translation_language: de
 source_file_path: README.md
 translation_models:
+  - google/gemini-2.5-flash
   - qwen/qwen3-235b-a22b-2507
   - qwen/qwen3.6-plus
 ---
@@ -35,7 +36,7 @@ pnpm install
 
 ### Aus dem vollständigen ai-i18n-tools-Repository
 
-Verwenden Sie dies, wenn Sie das **gesamte** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)-Repository geklont haben (nicht nur diesen Ordner mit degit). Führen Sie `pnpm install` aus dem **Repository-Stammverzeichnis** aus. Der Workspace-[`overrides`](../../pnpm-workspace.yaml)-Eintrag (`ai-i18n-tools: workspace:*`) zwingt `ai-i18n-tools` zur lokalen Workspace-Kopie, auch wenn dieses Beispiel `"ai-i18n-tools": "^1.7.2"` deklariert. Ein separater Verknüpfungsschritt ist nicht erforderlich – kompilieren Sie die Bibliothek neu (`pnpm run build` im Repository-Stamm), sobald Sie Quelldateien ändern, und das Beispiel verwendet automatisch die aktualisierte `dist/`.
+Verwenden Sie dies, wenn Sie das **gesamte** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)-Repository geklont haben (nicht nur diesen Ordner mit degit). Führen Sie `pnpm install` vom **Repository-Stammverzeichnis** aus. Der Workspace-Eintrag [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) erzwingt `ai-i18n-tools` auf die lokale Workspace-Kopie, obwohl dieses Beispiel einen veröffentlichten Caret-Bereich deklariert. Es ist kein separater Verknüpfungsschritt erforderlich – erstellen Sie die Bibliothek (`pnpm run build` im Repository-Stammverzeichnis) neu, wann immer Sie Quelldateien ändern, und das Beispiel übernimmt die aktualisierte `dist/` automatisch.
 
 ```bash
 # From the repository root

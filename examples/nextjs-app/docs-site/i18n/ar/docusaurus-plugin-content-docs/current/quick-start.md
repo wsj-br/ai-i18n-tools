@@ -4,8 +4,8 @@ title: البدء السريع
 description: >-
   احصل على أول مستند ترجمته في أقل من خمس دقائق باستخدام ai-i18n-tools من خلال
   مشروع المثال هذا الخاص بـ Next.js.
-translation_last_updated: '2026-09-03T22:52:24.089Z'
-source_file_mtime: '2026-07-12T19:44:59.023Z'
+translation_last_updated: '2026-09-14T19:52:51.964Z'
+source_file_mtime: '2026-09-14T18:37:46.367Z'
 source_file_hash: e34ee98fed8efd780f0d40a5bd9d9d33307cb5bf12700487e6cb4054acd45660
 translation_language: ar
 source_file_path: docs-site/docs/quick-start.md

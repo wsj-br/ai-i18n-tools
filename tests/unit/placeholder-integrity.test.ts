@@ -9,6 +9,7 @@ import {
   compareIdentTokenSequences,
   extractIdentTokens,
 } from "../../src/processors/placeholder-integrity.js";
+import { PlaceholderHandler } from "../../src/processors/placeholder-handler.js";
 
 const SOURCE_LI_A =
   '<li><a href="display-settings.md">Display Settings</a>: Configure theme, chart time range, chart style, format locale, auto-refresh interval, card sort order, and week start</li>';
@@ -32,7 +33,9 @@ describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
     expect(p.htmlTagMap).toEqual(["<li>", '<a href="display-settings.md">', "</a>", "</li>"]);
     const swapped =
       "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_3}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
-    expect(compareIdentTokenSequences(p.protected, swapped)).toMatch(/reused or dropped/);
+    expect(compareIdentTokenSequences(p.protected, swapped)).toMatch(
+      /Translation placeholder inventory mismatch/
+    );
     const restored = restoreHtmlTags(swapped, p.htmlTagMap);
     expect(restored).toBe(BAD_RESTORED_DE);
     expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toMatch(/tag kind mismatch/);
@@ -60,14 +63,18 @@ describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
     const p = protectedLiA();
     const model =
       "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart";
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Translation placeholder inventory mismatch/
+    );
   });
 
   it("2.5 fail-tag-swap: dropped opening <li>", () => {
     const p = protectedLiA();
     const model =
       "{{HTM_1}}Anzeigeeinstellungen{{HTM_2}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Translation placeholder inventory mismatch/
+    );
   });
 
   it("2.6 fail-tag-swap: literal </a> plus unused HTM_2", () => {
@@ -76,7 +83,9 @@ describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
       "{{HTM_0}}{{HTM_1}}Anzeigeeinstellungen</a>: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
     // Pre-restore sequence catches missing HTM_2; after restore a literal </a> may still
     // yield a matching tag-kind sequence, so layer A is required for this case.
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/reused or dropped/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Translation placeholder inventory mismatch/
+    );
     expect(collectPreRestorePlaceholderErrors({ text: p.protected }, model).length).toBeGreaterThan(
       0
     );
@@ -86,7 +95,9 @@ describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
     const p = protectedLiA();
     const model =
       "{{HTM_0}}{{HTM_2}}Anzeigeeinstellungen{{HTM_1}}: Konfigurieren Sie Design, Diagramm-Zeitbereich, Diagrammstil, Gebietsschema-Format, automatisches Aktualisierungsintervall, Karten-Sortierreihenfolge und Wochenstart{{HTM_3}}";
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Structural placeholder order mismatch/
+    );
     const restored = restoreHtmlTags(model, p.htmlTagMap);
     expect(compareHtmlTagKindSequences(SOURCE_LI_A, restored)).toMatch(/tag kind mismatch/);
   });
@@ -94,7 +105,9 @@ describe("placeholder-integrity HTML tag map (corpus 1.1 / 2.*)", () => {
   it("2.8 fail-tag-swap: all tokens present once but reversed order", () => {
     const p = protectedLiA();
     const model = `{{HTM_3}}{{HTM_2}}{{HTM_1}}{{HTM_0}}${PROSE_DE}`;
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Structural placeholder order mismatch/
+    );
   });
 });
 
@@ -110,7 +123,9 @@ describe("placeholder-integrity RTL logical order", () => {
   it("fails when HTM indices are reversed with Arabic prose", () => {
     const p = protectedLiA();
     const model = "{{HTM_3}}{{HTM_2}}إعدادات العرض{{HTM_1}}: تكوين السمة{{HTM_0}}";
-    expect(compareIdentTokenSequences(p.protected, model)).toMatch(/sequence mismatch/);
+    expect(compareIdentTokenSequences(p.protected, model)).toMatch(
+      /Structural placeholder order mismatch/
+    );
   });
 
   it("passes with RLM/LRM outside tokens", () => {
@@ -185,6 +200,53 @@ describe("placeholder-integrity emphasis float vs numbered order", () => {
     const protectedSrc = "Use {{ILC_0}} then {{ILC_1}} then {{ILC_2}}.";
     const bad = "Use {{ILC_0}} then {{ILC_2}} then {{ILC_2}}.";
     expect(compareIdentTokenSequences(protectedSrc, bad)).toMatch(/{{ILC_1}}|{{ILC_2}}/);
+  });
+});
+
+describe("placeholder-integrity Docusaurus list corpus", () => {
+  const source = [
+    "1. Create a new `.md` file in `documentation/docs/` (or a subdirectory)",
+    "2. Add it to the sidebar in `documentation/sidebars.ts`",
+    "3. Run `pnpm write-translations` to update the translation files structure",
+    "4. Run `pnpm write-heading-ids` to generate heading IDs (anchors)",
+  ].join("\n");
+
+  it("accepts CJK content-token reordering and restores code spans by ID", () => {
+    const handler = new PlaceholderHandler();
+    const state = handler.protectForTranslation(source, { emphasis: true });
+    const reordered = [
+      "1. 在 {{ILC_1}}（或子目录）中创建新的 {{ILC_0}} 文件",
+      "2. 将其添加到 {{ILC_2}} 侧边栏中",
+      "3. 运行 {{ILC_3}} 以更新翻译文件结构",
+      "4. 运行 {{ILC_4}} 以生成标题 ID（锚点）",
+    ].join("\n");
+
+    expect(state.htmlTagMap).toEqual([]);
+    expect(state.ilcMap).toEqual([
+      "`.md`",
+      "`documentation/docs/`",
+      "`documentation/sidebars.ts`",
+      "`pnpm write-translations`",
+      "`pnpm write-heading-ids`",
+    ]);
+    expect(collectPreRestorePlaceholderErrors({ text: state.text }, reordered)).toEqual([]);
+
+    const restored = handler.restoreAfterTranslation(reordered, state);
+    expect(restored).toContain("`.md`");
+    expect(restored).toContain("`documentation/docs/`");
+    expect(restored).toContain("`documentation/sidebars.ts`");
+    expect(restored).toContain("`pnpm write-translations`");
+    expect(restored).toContain("`pnpm write-heading-ids`");
+  });
+
+  it("rejects reuse/drop when a code placeholder ID is missing", () => {
+    const handler = new PlaceholderHandler();
+    const state = handler.protectForTranslation(source);
+    const bad = state.text.replace("{{ILC_0}}", "{{ILC_1}}");
+
+    expect(collectPreRestorePlaceholderErrors({ text: state.text }, bad)[0]).toMatch(
+      /Translation placeholder inventory mismatch/
+    );
   });
 });
 

@@ -1,11 +1,11 @@
 ---
-translation_last_updated: '2026-09-03T22:52:19.437Z'
-source_file_mtime: '2026-07-05T22:05:35.671Z'
-source_file_hash: dcf4013f15bc8b51e6c8c55f7963ed55c9f1ce31a17b3dfd87ba1ff877e62c94
+translation_last_updated: '2026-09-14T19:52:42.330Z'
+source_file_mtime: '2026-09-14T19:41:20.670Z'
+source_file_hash: 6dd907fbf677c7f74b4b338263c315239bdf5b35ae40fe1b462c93766b0a54e9
 translation_language: fr
 source_file_path: README.md
 translation_models:
-  - openai/gpt-4o-mini
+  - meta-llama/llama-3.3-70b-instruct
   - qwen/qwen3-235b-a22b-2507
   - qwen/qwen3.6-plus
 ---
@@ -36,7 +36,7 @@ pnpm install
 
 ### Depuis le dépôt complet ai-i18n-tools
 
-Utilisez ceci lorsque vous avez cloné le **tout** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) dépôt (pas seulement ce dossier avec degit). Exécutez `pnpm install` depuis la **racine du dépôt**. L'entrée de l'espace de travail [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) force `ai-i18n-tools` à la copie locale de l'espace de travail même si cet exemple déclare `"ai-i18n-tools": "^1.7.2"`. Aucune étape de lien séparée n'est nécessaire — reconstruisez la bibliothèque (`pnpm run build` à la racine du dépôt) chaque fois que vous modifiez des fichiers source et l'exemple récupérera automatiquement le `dist/` mis à jour.
+Utilisez ceci lorsque vous avez cloné la **totalité** du référentiel [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) (et non seulement ce dossier avec degit). Exécutez `pnpm install` à partir de la **racine du référentiel**. L'entrée de l'espace de travail [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) force `ai-i18n-tools` à utiliser la copie locale de l'espace de travail, même si cet exemple déclare une plage de soins publiée. Aucune étape de liaison distincte n'est nécessaire — reconstruisez la bibliothèque (`pnpm run build` à la racine du référentiel) chaque fois que vous modifiez des fichiers source et l'exemple utilisera automatiquement la version mise à jour de `dist/`.
 
 ```bash
 # From the repository root

@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-`console-app` को किसी भी उदाहरण फ़ोल्डर नाम से बदलें। प्रत्येक उदाहरण `"ai-i18n-tools": "^1.7.2"` घोषित करता है और npm से CLI स्थापित करता है। प्रति-उदाहरण READMEs में फ़ोल्डर नाम भरा हुआ वही स्निपेट शामिल होता है।
+किसी भी उदाहरण फ़ोल्डर नाम के साथ `console-app` को बदलें। प्रत्येक उदाहरण वर्तमान पैकेज संस्करण से मेल खाने वाली `ai-i18n-tools` की प्रकाशित कैरेट रेंज घोषित करता है और npm से CLI स्थापित करता है। प्रति-उदाहरण READMEs में फ़ोल्डर नाम के साथ वही स्निपेट शामिल होता है।
 
 **पूरे ai-i18n-tools रिपॉजिटरी से** — यदि आपने पूरा रिपो क्लोन किया है (केवल degit के साथ एक उदाहरण फ़ोल्डर नहीं):
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-कार्यस्थान [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) प्रविष्टि (`ai-i18n-tools: workspace:*`) कार्यस्थान उदाहरणों को आपके स्थानीय चेकआउट से स्वचालित रूप से लिंक करती है। स्टैंडअलोन फिक्स्चर (`multi-provider`, `test-markdown`) कार्यस्थान पैकेज नहीं हैं — उनके फ़ोल्डर से `node ../../bin/ai-i18n-tools.mjs …` का उपयोग करें। **रिपॉजिटरी रूट** (इस पैकेज के अपने डॉक्स/i18n) से CLI चलाने के लिए, `pnpm i18n:sync` या `node bin/ai-i18n-tools.mjs …` का उपयोग करें — [स्थापना — क्लोन किया गया मोनोरिपो](/hi/guide/installation#cloned-monorepo) और [विकास गाइड](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) देखें।
+कार्यस्थान [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) प्रविष्टि (`ai-i18n-tools: workspace:*`) कार्यस्थान उदाहरणों को आपके स्थानीय चेकआउट से स्वचालित रूप से लिंक करती है। स्टैंडअलोन फिक्स्चर (`multi-provider`, `test-markdown`) कार्यस्थान पैकेज नहीं हैं — उनके फ़ोल्डर से `node ../../bin/ai-i18n-tools.mjs …` का उपयोग करें। **रिपॉजिटरी रूट** (इस पैकेज के अपने डॉक्स/i18n) से CLI चलाने के लिए, `direnv allow` के बाद केवल `ai-i18n-tools`, या `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` का उपयोग करें — [इंस्टॉलेशन — क्लोन किया गया मोनोरिपो](/hi/guide/installation#cloned-monorepo) और [डेवलपमेंट गाइड](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) देखें।
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### प्रदाता और API कुंजी (अनुवाद के लिए आवश्यक)

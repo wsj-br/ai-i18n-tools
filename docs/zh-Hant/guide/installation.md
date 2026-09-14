@@ -75,9 +75,9 @@ pnpm add -g ai-i18n-tools
 
 在從 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整複本開發套件或執行工作區 **examples** 時：
 
-- **工作區範例**（`examples/console-app`、`examples/nextjs-app`，以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他套件）— 在儲存庫根目錄執行 `pnpm install`，然後執行 `cd examples/<name>`。使用範例的 `pnpm run i18n:*` 腳本，或設定 PATH（請參閱 [使用 CLI](#using-the-cli)）並直接執行 `ai-i18n-tools …`。工作區 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 會將 `ai-i18n-tools` 連結到你的本地檢出。
-- **儲存庫根目錄** — pnpm 不會將根套件自身的 `bin` 連結到 `node_modules/.bin`。請改用 `node bin/ai-i18n-tools.mjs …` 或根 `pnpm i18n:*` 腳本（或 shell 別名 / `pnpm add -g .` — 請參閱 [開發指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)）。
-- **獨立夾具** (`multi-provider`, `test-markdown`) — 從夾具資料夾中，使用 `node ../../bin/ai-i18n-tools.mjs …`。
+- **工作區範例** （`examples/console-app`、`examples/nextjs-app`，以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他套件） — 在儲存庫根目錄執行 `pnpm install`，然後執行 `cd examples/<name>`。使用範例的 `pnpm run i18n:*` 腳本，或設定 PATH（請參閱 [使用 CLI](#using-the-cli)）並執行單獨的 `ai-i18n-tools …`。工作區 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 將 `ai-i18n-tools` 連結到您的本機簽出。
+- **儲存庫根目錄** — pnpm 不會將根套件自身的 `bin` 連結到 `node_modules/.bin` 中。此簽出的 `.envrc` 會將 `bin/` 加入到 `PATH`，因此已提交的 `bin/ai-i18n-tools` 包裝器（在已發布的 `bin/ai-i18n-tools.mjs` 墊片旁邊）會在 `direnv allow` 之後提供單獨的命令。若未使用 direnv，請使用 `node bin/ai-i18n-tools.mjs …`、`./bin/ai-i18n-tools …` 或根 `pnpm i18n:*` 腳本（或 shell 別名 / `pnpm add -g .` — 請參閱 [開發指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)）。
+- **獨立測試夾具** （`multi-provider`、`test-markdown`） — 從測試夾具資料夾中，使用 `node ../../bin/ai-i18n-tools.mjs …`。
 
 變更 CLI 原始碼後，請在儲存庫根目錄執行 `pnpm run build`。請參閱[開發指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)以了解建置步驟與可選的全域安裝替代方案。
 

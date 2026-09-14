@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const binShim = path.join(repoRoot, "bin", "ai-i18n-tools.mjs");
+const binPathEntry = path.join(repoRoot, "bin", "ai-i18n-tools");
 const cliEntry = path.join(repoRoot, "dist", "cli", "index.js");
 
 describe("bin/ai-i18n-tools.mjs", () => {
@@ -21,6 +22,24 @@ describe("bin/ai-i18n-tools.mjs", () => {
   it("prints CLI help when invoked with --help", () => {
     expect(fs.existsSync(cliEntry)).toBe(true);
     const out = execFileSync(process.execPath, [binShim, "--help"], {
+      encoding: "utf8",
+      cwd: repoRoot,
+      env: { ...process.env, AI_I18N_LANG: "en-GB" },
+    });
+    expect(out).toMatch(/Usage:/i);
+    expect(out).toMatch(/ai-i18n-tools/i);
+  });
+});
+
+describe("bin/ai-i18n-tools", () => {
+  it("forwards to the published .mjs shim", () => {
+    const source = fs.readFileSync(binPathEntry, "utf8");
+    expect(source).toMatch(/import\s+["']\.\/ai-i18n-tools\.mjs["']/);
+  });
+
+  it("prints CLI help when invoked with --help", () => {
+    expect(fs.existsSync(cliEntry)).toBe(true);
+    const out = execFileSync(process.execPath, [binPathEntry, "--help"], {
       encoding: "utf8",
       cwd: repoRoot,
       env: { ...process.env, AI_I18N_LANG: "en-GB" },

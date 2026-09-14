@@ -6,7 +6,7 @@ GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 <a id="run-standalone-npx-degit"></a>
 ## 独立运行 (`npx degit`)
 
-复制一个示例，无需克隆整个存储库。每个示例都声明 `"ai-i18n-tools": "^1.7.2"` 并从 npm 安装 CLI：
+复制一个示例，无需克隆整个仓库。每个示例都声明了与当前包版本匹配的 `ai-i18n-tools` 脱字符范围，并从 npm 安装 CLI：
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

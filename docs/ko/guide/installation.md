@@ -75,9 +75,9 @@ pnpm을 사용할 때 전역 명령이 누락된 경우 머신당 한 번씩 `pn
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)의 전체 복제본에서 패키지를 개발하거나 워크스페이스 **예제**를 실행할 때:
 
-- **워크스페이스 예제** (`examples/console-app`, `examples/nextjs-app`, 및 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)에 나열된 다른 패키지) — 저장소 루트에서 `pnpm install`를 실행한 다음 `cd examples/<name>`를 실행합니다. 예제의 `pnpm run i18n:*` 스크립트를 사용하거나 PATH를 구성하고([CLI 사용](#using-the-cli) 참조) 단순히 `ai-i18n-tools …`를 실행합니다. 워크스페이스 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)는 `ai-i18n-tools`를 로컬 체크아웃에 연결합니다.
-- **저장소 루트** — pnpm은 루트 패키지 자체의 `bin`를 `node_modules/.bin`에 연결하지 않습니다. 대신 `node bin/ai-i18n-tools.mjs …` 또는 루트 `pnpm i18n:*` 스크립트를 사용하세요 (또는 셸 별칭 / `pnpm add -g .` — [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) 참조).
-- **독립형 픽스처** (`multi-provider`, `test-markdown`) — 픽스처 폴더에서 `node ../../bin/ai-i18n-tools.mjs …`를 사용하세요.
+- **워크스페이스 예제** (`examples/console-app`, `examples/nextjs-app`, [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)에 나열된 기타 패키지) — 저장소 루트에서 `pnpm install`을(를) 실행한 다음 `cd examples/<name>`을(를) 실행하세요. 예제의 `pnpm run i18n:*` 스크립트를 사용하거나, PATH를 구성하고([CLI 사용](#using-the-cli) 참조) bare `ai-i18n-tools …`을(를) 실행하세요. 워크스페이스 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 링크 `ai-i18n-tools`을(를) 로컬 체크아웃에 연결합니다.
+- **저장소 루트** — pnpm은 루트 패키지 자체의 `bin`을(를) `node_modules/.bin`에 링크하지 않습니다. 이 체크아웃의 `.envrc`은(는) `bin/`을(를) `PATH`에 추가하므로 커밋된 `bin/ai-i18n-tools` 래퍼(게시된 `bin/ai-i18n-tools.mjs` 심과 함께)가 `direnv allow` 이후에 bare 명령을 제공합니다. direnv가 없는 경우 `node bin/ai-i18n-tools.mjs …`, `./bin/ai-i18n-tools …` 또는 루트 `pnpm i18n:*` 스크립트(또는 셸 별칭 / `pnpm add -g .` — [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) 참조)를 사용하세요.
+- **독립형 픽스처** (`multi-provider`, `test-markdown`) — 픽스처 폴더에서 `node ../../bin/ai-i18n-tools.mjs …`을(를) 사용하세요.
 
 CLI 소스를 변경한 후 저장소 루트에서 `pnpm run build`을(를) 실행하세요. 빌드 단계 및 선택적 전역 설치 해결 방법은 [개발 가이드](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)를 참조하세요.
 

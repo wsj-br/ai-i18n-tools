@@ -7,14 +7,14 @@ description: 使用 ai-i18n-tools 翻译的最小 Fumadocs 文档站点
 
 # Fumadocs + ai-i18n-tools
 
-此示例展示了使用 **dot** 解析器的 **`fumadocs`** 输出预设：英文源页面位于 `content/docs/*.mdx`，翻译副本则以区域设置后缀（`*.pt-BR.mdx`、`*.zh-Hans.mdx`）的形式写入。
+此示例展示了使用 **dot** 解析器的 **`fumadocs`** 输出预设：英文源页面位于 `content/docs/*.mdx`，翻译副本则以语言环境后缀（`*.pt-BR.mdx`、`*.zh-Hans.mdx`）的形式写入。
 
 ## 您将看到什么
 
-- 采用 `docsOutput.style: "Fumadocs"` 的 `init -t ui-fumadocs` 样式配置
-- 仅支持两种目标语言环境（`pt-BR`、`zh-Hans`），以实现快速、可读的演示
-- 已提交翻译，因此 `pnpm run dev` 无需 API 密钥即可工作
-- 侧边栏标签 (`meta.json`) 和 UI 目录 (`lib/i18n/ui.{locale}.json`) 通过 `translate-docs` 翻译
+- `init -t ui-fumadocs`风格的配置，带有`docsOutput.style: "Fumadocs"`
+- 仅支持两种目标语言环境（`pt-BR`、`zh-Hans`），用于快速、可读的演示
+- 已提交的翻译，因此`pnpm run dev`无需API密钥即可工作
+- 侧边栏标签（`meta.json`）和UI目录（`lib/i18n/ui.{locale}.json`）通过`translate-docs`翻译
 
 ## 后续步骤
 

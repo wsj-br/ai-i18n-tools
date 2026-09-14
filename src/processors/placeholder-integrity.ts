@@ -114,19 +114,19 @@ function isOrderSensitiveToken(normalizedToken: string): boolean {
 
 function compareTokenMultisets(expected: string[], actual: string[]): string | null {
   if (expected.length !== actual.length) {
-    return `HTML tag placeholders reused or dropped: expected ${expected.length} {{…}} token(s), got ${actual.length}`;
+    return `Translation placeholder inventory mismatch: expected ${expected.length} {{…}} token(s), got ${actual.length}`;
   }
   const expectedCounts = countByToken(expected);
   const actualCounts = countByToken(actual);
   for (const [token, expCount] of expectedCounts) {
     const actCount = actualCounts.get(token) ?? 0;
     if (actCount !== expCount) {
-      return `HTML tag placeholders reused or dropped: expected ${expCount} ${token} token(s), got ${actCount}`;
+      return `Translation placeholder inventory mismatch: expected ${expCount} ${token} token(s), got ${actCount}`;
     }
   }
   for (const [token, actCount] of actualCounts) {
     if (!expectedCounts.has(token)) {
-      return `HTML tag placeholders reused or dropped: expected 0 ${token} token(s), got ${actCount}`;
+      return `Translation placeholder inventory mismatch: expected 0 ${token} token(s), got ${actCount}`;
     }
   }
   return null;
@@ -158,7 +158,7 @@ export function compareIdentTokenSequences(
   const actualStructural = actual.filter(isOrderSensitiveToken);
   for (let i = 0; i < expectedStructural.length; i++) {
     if (expectedStructural[i] !== actualStructural[i]) {
-      return `HTML tag placeholders reused or dropped: token sequence mismatch at index ${i} (expected ${expectedStructural[i]}, got ${actualStructural[i]})`;
+      return `Structural placeholder order mismatch at index ${i} (expected ${expectedStructural[i]}, got ${actualStructural[i]})`;
     }
   }
   return null;

@@ -206,6 +206,18 @@ _doctor_upgrade_dir() {
     upgrade_warn "   ↳ [${label}] excluding typescript from ncu (typescript-eslint does not support TS 7.0)."
   fi
 
+  # Example packages declare a published caret range matching the (possibly
+  # unpublished) root version. ncu would rewrite that pin to the latest npm
+  # release, which would undo the workspace:* override intent.
+  if [ "$dir" != "$REPO_ROOT" ] && _is_direct_dep "$dir" "ai-i18n-tools"; then
+    if [ -n "$ncu_reject" ]; then
+      ncu_reject="${ncu_reject},ai-i18n-tools"
+    else
+      ncu_reject="ai-i18n-tools"
+    fi
+    upgrade_warn "   ↳ [${label}] excluding ai-i18n-tools from ncu (pin tracks the workspace package version)."
+  fi
+
   if [ -z "$verify" ]; then
     upgrade_warn "📦  [${label}] No typecheck/lint/build script; upgrading without build verification."
     (cd "$dir" && run_step ncu --upgrade --packageManager "$PKG_MGR" ${ncu_reject:+-x "$ncu_reject"}) || true

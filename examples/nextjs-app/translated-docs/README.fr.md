@@ -37,7 +37,7 @@ Utilisez ceci lorsque vous avez cloné le **tout** [ai-i18n-tools](https://githu
 pnpm install
 ```
 
-L'entrée de l'espace de travail [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) force `ai-i18n-tools` à utiliser la copie locale de l'espace de travail, même si cet exemple déclare `"ai-i18n-tools": "^1.7.2"`. Aucune étape de compilation ou de liaison séparée n'est nécessaire — après avoir modifié les sources de la bibliothèque, exécutez `pnpm run build` à la racine du dépôt et l'exemple utilisera automatiquement la version mise à jour de `dist/`.
+L'entrée de l'espace de travail [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) force `ai-i18n-tools` vers la copie locale de l'espace de travail, même si cet exemple déclare une plage de version publiée. Aucune étape de construction ou de liaison distincte n'est nécessaire — après avoir modifié les sources de la bibliothèque, exécutez `pnpm run build` à la racine du dépôt et l'exemple récupérera automatiquement le `dist/` mis à jour.
 
 **Répertoire de travail :** Exécutez l'application Next.js et toutes les commandes `pnpm run i18n:*` depuis le répertoire racine de cet exemple (après degit, vous êtes déjà dans `nextjs-app/` ; depuis le monorepo, utilisez `examples/nextjs-app/`, où se trouve `ai-i18n-tools.config.json`), ou passez `--config` / définissez le répertoire de travail afin que l'interface en ligne de commande trouve ce fichier de configuration.
 

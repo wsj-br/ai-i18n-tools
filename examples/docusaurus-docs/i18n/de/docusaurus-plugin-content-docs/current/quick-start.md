@@ -4,8 +4,8 @@ title: Schnellstart
 description: >-
   Erstellen Sie Ihr erstes übersetztes Dokument in weniger als fünf Minuten mit
   ai-i18n-tools und diesem Docusaurus-Beispielprojekt.
-translation_last_updated: '2026-09-03T22:52:20.721Z'
-source_file_mtime: '2026-07-10T22:50:38.005Z'
+translation_last_updated: '2026-09-14T19:52:44.035Z'
+source_file_mtime: '2026-09-14T18:37:46.359Z'
 source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: de
 source_file_path: docs/quick-start.md

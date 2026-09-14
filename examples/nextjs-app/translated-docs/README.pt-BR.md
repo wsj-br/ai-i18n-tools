@@ -37,7 +37,7 @@ Use isso quando você clonou o repositório inteiro de **[ai-i18n-tools](https:/
 pnpm install
 ```
 
-A entrada do workspace [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) força o `ai-i18n-tools` a usar a cópia local do workspace, mesmo que este exemplo declare `"ai-i18n-tools": "^1.7.2"`. Nenhuma etapa separada de build ou link é necessária — após alterar as fontes da biblioteca, execute `pnpm run build` na raiz do repositório e o exemplo usará automaticamente o `dist/` atualizado.
+A entrada do espaço de trabalho [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) força `ai-i18n-tools` para a cópia local do espaço de trabalho, embora este exemplo declare um intervalo de circunflexo publicado. Nenhuma etapa separada de compilação ou vinculação é necessária — depois de alterar as fontes da biblioteca, execute `pnpm run build` na raiz do repositório e o exemplo selecionará o `dist/` atualizado automaticamente.
 
 **Diretório de trabalho:** Execute o aplicativo Next.js e todos os comandos `pnpm run i18n:*` a partir do diretório raiz deste exemplo (após o degit você já está em `nextjs-app/`; no monorepo use `examples/nextjs-app/`, onde está localizado `ai-i18n-tools.config.json`), ou passe `--config` / defina o diretório de trabalho para que a CLI localize esse arquivo de configuração.
 

@@ -4,8 +4,8 @@ title: Início Rápido
 description: >-
   Obtenha seu primeiro documento traduzido em menos de cinco minutos usando
   ai-i18n-tools com este projeto de exemplo do Docusaurus.
-translation_last_updated: '2026-09-03T22:52:21.043Z'
-source_file_mtime: '2026-07-10T22:50:38.005Z'
+translation_last_updated: '2026-09-14T19:52:44.393Z'
+source_file_mtime: '2026-09-14T18:37:46.359Z'
 source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: pt-BR
 source_file_path: docs/quick-start.md

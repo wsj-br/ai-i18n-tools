@@ -37,7 +37,7 @@ Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br
 pnpm install
 ```
 
-The workspace [`overrides`](../../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares `"ai-i18n-tools": "^1.7.2"`. No separate build or link step is needed — after changing library sources, run `pnpm run build` at the repo root and the example will pick up the updated `dist/` automatically.
+The workspace [`overrides`](../../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces `ai-i18n-tools` to the local workspace copy even though this example declares a published caret range. No separate build or link step is needed — after changing library sources, run `pnpm run build` at the repo root and the example will pick up the updated `dist/` automatically.
 
 **Working directory:** Run the Next.js app and all `pnpm run i18n:*` commands from this example's root directory (after degit you are already in `nextjs-app/`; from the monorepo use `examples/nextjs-app/`, where `ai-i18n-tools.config.json` lives), or pass `--config` / set the working directory so the CLI resolves that config.
 

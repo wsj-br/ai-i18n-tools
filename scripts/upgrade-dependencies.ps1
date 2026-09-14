@@ -223,6 +223,17 @@ function Invoke-DoctorUpgradeDir {
         else { $ncuReject = 'typescript' }
         Write-UpgradeWarn "   ↳ [${label}] excluding typescript from ncu (typescript-eslint does not support TS 7.0)."
     }
+
+    # Example packages declare a published caret range matching the (possibly
+    # unpublished) root version. ncu would rewrite that pin to the latest npm
+    # release, which would undo the workspace:* override intent.
+    $dirFull = [IO.Path]::GetFullPath($Dir)
+    $rootFull = [IO.Path]::GetFullPath($script:UpgradeRepoRoot)
+    if ($dirFull -ne $rootFull -and (Test-IsDirectDep -Dir $Dir -Name 'ai-i18n-tools')) {
+        if ($ncuReject) { $ncuReject = "$ncuReject,ai-i18n-tools" }
+        else { $ncuReject = 'ai-i18n-tools' }
+        Write-UpgradeWarn "   ↳ [${label}] excluding ai-i18n-tools from ncu (pin tracks the workspace package version)."
+    }
     $ncuArgs = @('--upgrade', '--packageManager', $script:UpgradePkgMgr)
     if ($ncuReject) {
         $ncuArgs += @('-x', $ncuReject)

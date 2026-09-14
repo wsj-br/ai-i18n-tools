@@ -8,7 +8,7 @@ Most examples need an LLM API key (typically [OpenRouter](https://openrouter.ai/
 
 ### Run one example standalone (`npx degit`)
 
-Each folder under `examples/` can be copied without cloning the full repository. Every example declares `"ai-i18n-tools": "^1.7.2"` and installs the CLI from npm. Copy the example, install dependencies, then follow that example's README for run and translation commands:
+Each folder under `examples/` can be copied without cloning the full repository. Every example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm. Copy the example, install dependencies, then follow that example's README for run and translation commands:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -41,7 +41,7 @@ pnpm install
 pnpm run build
 ```
 
-Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) declare `"ai-i18n-tools": "^1.7.2"` in their `package.json`. When you install from the **monorepo root**, the workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces that dependency to the local workspace copy, so edits to the library are picked up without a manual link step. From an example folder, run `pnpm run i18n:sync` or `pnpm exec ai-i18n-tools …` — not `npx` at the repository root (that runs the published npm package). **Standalone fixtures** (`multi-provider`, `test-markdown`) use `node ../../bin/ai-i18n-tools.mjs …` from their folder. See [Installation — Cloned monorepo](https://wsj-br.github.io/ai-i18n-tools/guide/installation#cloned-monorepo) and [`dev/DEVEL.md`](../dev/DEVEL.md#running-the-cli-during-development).
+Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) declare a published caret range of `ai-i18n-tools` in their `package.json`. When you install from the **monorepo root**, the workspace [`overrides`](../pnpm-workspace.yaml) entry (`ai-i18n-tools: workspace:*`) forces that dependency to the local workspace copy, so edits to the library are picked up without a manual link step. From an example folder, run `pnpm run i18n:sync` or `pnpm exec ai-i18n-tools …` — not `npx` at the repository root (that runs the published npm package). **Standalone fixtures** (`multi-provider`, `test-markdown`) use `node ../../bin/ai-i18n-tools.mjs …` from their folder. See [Installation — Cloned monorepo](https://wsj-br.github.io/ai-i18n-tools/guide/installation#cloned-monorepo) and [`dev/DEVEL.md`](../dev/DEVEL.md#running-the-cli-during-development).
 
 | Example                             | Type               | Translation types                        | Framework / runtime              |
 |-------------------------------------|--------------------|------------------------------------------|----------------------------------|

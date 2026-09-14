@@ -1,6 +1,6 @@
 {
   "title": "Fumadocs + ai-i18n-tools",
-  "description": "Site de documentação mínimo do Fumadocs traduzido com ai-i18n-tools.",
+  "description": "Site de documentação mínimo Fumadocs traduzido com ai-i18n-tools.",
   "pages": [
     "index",
     "guide"

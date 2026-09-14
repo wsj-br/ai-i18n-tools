@@ -75,9 +75,9 @@ pnpmの場合、グローバルコマンドが見つからない場合はマシ�
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) の完全なクローンからパッケージを開発する、またはワークスペースの**例**を実行する場合:
 
-- **ワークスペースの例** (`examples/console-app`, `examples/nextjs-app`, および [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) にリストされているその他のパッケージ) — リポジトリルートで `pnpm install` を実行し、その後 `cd examples/<name>` を実行します。例の `pnpm run i18n:*` スクリプトを使用するか、PATH を設定して ([CLI の使用](#using-the-cli) を参照) 単独の `ai-i18n-tools …` を実行します。ワークスペース [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) は `ai-i18n-tools` をローカルのチェックアウトにリンクします。
-- **リポジトリルート** — pnpm はルートパッケージ自身の `bin` を `node_modules/.bin` にリンクしません。代わりに `node bin/ai-i18n-tools.mjs …` またはルートの `pnpm i18n:*` スクリプトを使用してください (またはシェルエイリアス / `pnpm add -g .` — [開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照)。
-- **スタンドアロンのフィクスチャ** (`multi-provider`, `test-markdown`) — フィクスチャフォルダから `node ../../bin/ai-i18n-tools.mjs …` を使用します。
+- **ワークスペースの例** (`examples/console-app`, `examples/nextjs-app`, および [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) にリストされている他のパッケージ) — リポジトリルートで `pnpm install` を実行し、その後 `cd examples/<name>` を実行します。例の `pnpm run i18n:*` スクリプトを使用するか、PATH を設定し ([CLIの使用](#using-the-cli) を参照)、素の `ai-i18n-tools …` を実行します。ワークスペース [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) は `ai-i18n-tools` をローカルのチェックアウトにリンクします。
+- **リポジトリルート** — pnpm はルートパッケージ自身の `bin` を `node_modules/.bin` にリンクしません。このチェックアウトの `.envrc` は `bin/` を `PATH` に追加するため、コミットされた `bin/ai-i18n-tools` ラッパー (公開された `bin/ai-i18n-tools.mjs` シムの隣) は `direnv allow` の後に素のコマンドを提供します。direnv を使用しない場合は、`node bin/ai-i18n-tools.mjs …`、`./bin/ai-i18n-tools …`、またはルートの `pnpm i18n:*` スクリプト (またはシェルエイリアス / `pnpm add -g .` — [開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照) を使用します。
+- **スタンドアロンのフィクスチャ** (`multi-provider`, `test-markdown`) — フィクスチャフォルダから、`node ../../bin/ai-i18n-tools.mjs …` を使用します。
 
 CLI ソースを変更した後、リポジトリルートで `pnpm run build` を実行します。ビルド手順やオプションのグローバルインストールの回避策については、[開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照してください。
 

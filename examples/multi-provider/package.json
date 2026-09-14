@@ -17,7 +17,7 @@
     "clean": "rm -rf .translation-cache translated-docs/"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.7.2"
+    "ai-i18n-tools": "^1.8.9"
   },
   "engines": {
     "node": ">=22.16.0"

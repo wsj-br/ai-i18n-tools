@@ -6,7 +6,7 @@ Runnable projects under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tr
 <a id="run-standalone-npx-degit"></a>
 ## Run standalone (`npx degit`)
 
-Copy one example without cloning the full repository. Each declares `"ai-i18n-tools": "^1.7.2"` and installs the CLI from npm:
+Copy one example without cloning the full repository. Each declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

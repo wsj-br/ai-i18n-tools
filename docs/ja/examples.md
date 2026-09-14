@@ -6,7 +6,7 @@ GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 <a id="run-standalone-npx-degit"></a>
 ## スタンドアロンで実行 (`npx degit`)
 
-リポジトリ全体をクローンせずに、1 つの例をコピーします。それぞれが `"ai-i18n-tools": "^1.7.2"` を宣言し、npm から CLI をインストールします。
+リポジトリ全体をクローンせずに1つの例をコピーします。各例では、現在のパッケージバージョンに一致する公開済みのキャレット範囲 `ai-i18n-tools` を宣言し、npm から CLI をインストールします。
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

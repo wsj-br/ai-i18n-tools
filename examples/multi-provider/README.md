@@ -179,4 +179,4 @@ examples/multi-provider/
     └── markdown-example.{locale}.md
 ```
 
-This directory installs `ai-i18n-tools` from npm (`^1.7.2`). Run commands through the `pnpm run …` scripts or invoke `ai-i18n-tools` directly after `pnpm install`.
+This directory installs `ai-i18n-tools` from npm (a published caret range matching the current package version). Run commands through the `pnpm run …` scripts or invoke `ai-i18n-tools` directly after `pnpm install`.

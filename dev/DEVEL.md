@@ -139,13 +139,13 @@ After building, invoke the CLI using one of the options in [Running the CLI duri
 
 ### Running the CLI during development
 
-The published `bin` entry is `bin/ai-i18n-tools.mjs` — a stable shim that dynamically imports the compiled CLI at `dist/cli/index.js` via `pathToFileURL` (required on Windows; bare absolute paths are not valid ESM module URLs).
+The published `bin` entry is `bin/ai-i18n-tools.mjs` — a stable shim that dynamically imports the compiled CLI at `dist/cli/index.js` via `pathToFileURL` (required on Windows; bare absolute paths are not valid ESM module URLs). Beside it, `bin/ai-i18n-tools` (no suffix) re-exports that shim so the shell can resolve the bare command name when `bin/` is on `PATH`.
 
 `pnpm build` runs, in order:
 
 1. `scripts/write-build-info.mjs` — writes `src/build-info.generated.ts` (gitignored)
 2. `tsc` — compiles `src/` to `dist/` (CLI entry: `src/cli/index.ts`)
-3. `scripts/chmod-cli-bin.mjs` — sets mode `0o755` on the shim and `dist/cli/index.js`
+3. `scripts/chmod-cli-bin.mjs` — sets mode `0o755` on both bin shims and `dist/cli/index.js`
 4. `scripts/copy-runtime-ui-languages-json.mjs` — copies `data/ui-languages-complete.json` into `dist/runtime/`
 5. `scripts/copy-dashboard-app.mjs` — copies `src/dashboard-app/` into `dist/dashboard-app/`
 6. `scripts/copy-i18n-locales.mjs` — copies `src/i18n/locales/` into `dist/i18n/locales/`
@@ -154,23 +154,32 @@ The root `prepare` script runs `scripts/ensure-built.mjs`, which builds when `di
 
 Root `pnpm i18n:*` scripts invoke `node bin/ai-i18n-tools.mjs` directly, so they work at the repository root without a global install or shell alias.
 
-**Why bare** `ai-i18n-tools` **and** `pnpm exec ai-i18n-tools` **do not work at the repo root:** pnpm links a package's `bin` into `node_modules/.bin` only for *dependents*, not for the package itself. At the monorepo root there is no `node_modules/.bin/ai-i18n-tools`, so bare `ai-i18n-tools` and `pnpm exec ai-i18n-tools` fail unless you use one of the workarounds below. Workspace examples that list `"ai-i18n-tools": "workspace:^"` do get the bin link — there `pnpm exec ai-i18n-tools` works as documented for consumer projects.
+**Bare** `ai-i18n-tools` **at the repo root:** pnpm links a package's `bin` into `node_modules/.bin` only for *dependents*, not for the package itself, so `pnpm exec ai-i18n-tools` still fails at the monorepo root. This checkout puts `bin/` on `PATH` via `.envrc` (`PATH_add bin`) so the committed `bin/ai-i18n-tools` wrapper provides the bare command after `direnv allow`. Workspace examples that list `"ai-i18n-tools": "workspace:^"` do get the `node_modules/.bin` link — there `pnpm exec ai-i18n-tools` works as documented for consumer projects.
 
-**Option 1 — call the shim directly (always works after** `pnpm build`**):**
+**Option 1 — direnv (bare command in this checkout):**
+
+```bash
+direnv allow    # once per clone, after `.envrc` changes
+ai-i18n-tools status
+```
+
+Without direnv, add `export PATH="$PWD/bin:$PATH"` from the repository root (same limitation as the consumer `node_modules/.bin` PATH snippet: re-run it only from the root).
+
+**Option 2 — call the shim directly (always works after** `pnpm build`**):**
 
 ```bash
 node bin/ai-i18n-tools.mjs status
-./bin/ai-i18n-tools.mjs status   # Linux/macOS/WSL after chmod
+./bin/ai-i18n-tools status       # Linux/macOS/WSL after chmod
 ```
 
 Some in-repo examples use this form explicitly, e.g. `node ../../bin/ai-i18n-tools.mjs …` in `examples/multi-provider`.
 
-**Option 2 — shell alias / function (bare command while developing):**
+**Option 3 — shell alias / function (bare command outside the checkout):**
 
 Prefer a **fixed clone path** so the bare command works from any directory (adjust to your checkout):
 
 ```bash
-# bash/zsh — add to ~/.bashrc or ~/.zshrc
+# bash/zsh — add to ~/.bashrc, ~/.zshrc or .env or .env.local
 alias ai-i18n-tools='node "$HOME/src/ai-i18n-tools/bin/ai-i18n-tools.mjs"'
 ```
 
@@ -192,7 +201,7 @@ function ai-i18n-tools {
 
 Rebuild (`pnpm build`) after CLI changes before invoking.
 
-**Option 3 — global install from the working tree (bare command everywhere):**
+**Option 4 — global install from the working tree (bare command everywhere):**
 
 Requires pnpm ≥ 11 (this repo uses pnpm 11.x). pnpm 11 removed `pnpm link --global`; register the local package with `pnpm add -g .` instead:
 
@@ -230,7 +239,7 @@ Undo with `pnpm remove -g ai-i18n-tools` (alias: `pnpm uninstall -g ai-i18n-tool
 **Cross-platform notes**
 
 - Linux, macOS, and WSL: the CLI needs the executable bit on `dist/cli/index.js`; `pnpm build` sets it (see `scripts/chmod-cli-bin.mjs`).
-- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account. Prefer `node bin/ai-i18n-tools.mjs` or the PowerShell function in Option 2 over a bash `alias`.
+- Windows (PowerShell, CMD, Git Bash): file mode is irrelevant; pnpm generates `ai-i18n-tools.cmd` and `.ps1` shims that call `node` explicitly. `pnpm setup` is still required once per Windows account. Prefer `node bin/ai-i18n-tools.mjs` or the PowerShell function in Option 3 over a bash `alias`. The extensionless `bin/ai-i18n-tools` wrapper is a shebang script — invoke it with `node` from PowerShell.
 
 
 
@@ -555,6 +564,10 @@ pnpm version minor   # 1.0.0 → 1.1.0  (new features, backward-compatible)
 pnpm version major   # 1.0.0 → 2.0.0  (breaking changes)
 ```
 
+`pnpm version` runs `scripts/sync-example-ai-i18n-tools-version.mjs`, which rewrites every example `"ai-i18n-tools"` range to `^<new version>`. The workspace override (`ai-i18n-tools: workspace:*`) still links the monorepo to the local checkout, so the unpublished caret range is safe until npm publish. `pnpm pre-release` fails if any example pin is out of date.
+
+If you edit the `package.json` version by hand instead of `pnpm version`, run `node scripts/sync-example-ai-i18n-tools-version.mjs` yourself.
+
 
 
 ### Release notes and changelog
@@ -617,7 +630,7 @@ Controlled by the `files` field in `package.json`:
 
 | Path                            | Contents                                                                         |
 | ------------------------------- | -------------------------------------------------------------------------------- |
-| `bin/`                          | CLI shim (`ai-i18n-tools.mjs`)                                                   |
+| `bin/`                          | Published CLI shim (`ai-i18n-tools.mjs`) and PATH wrapper (`ai-i18n-tools`)      |
 | `dist/`                         | Compiled JavaScript, type declarations, source maps, dashboard app, i18n locales |
 | `data/`                         | Bundled data (`ui-languages-complete.json` for `generate-ui-languages`)          |
 | `README.md`                     | Main English README                                                              |

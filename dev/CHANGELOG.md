@@ -9,6 +9,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: examples — pin `ai-i18n-tools` to `^1.8.9` (including `multi-provider` / `test-markdown`) so standalone degit copies match the release; the monorepo still resolves via `ai-i18n-tools: workspace:*`.
+- **Changed**: scripts — exclude `ai-i18n-tools` from example ncu upgrades, sync example pins from the root version on `pnpm version`, and fail `pre-release` if any example pin is stale.
+- **Added**: cli — committed `bin/ai-i18n-tools` (PATH-friendly name beside the published `bin/ai-i18n-tools.mjs` shim) and `.envrc` `PATH_add bin`, so the bare `ai-i18n-tools` command works in this checkout after `direnv allow`.
+- **Fixed**: docs — classify content-placeholder inventory and structural-order validation failures separately from post-restore HTML tag errors, so valid CJK inline-code reordering is diagnosable without weakening placeholder reuse/drop checks.
 - **Fixed**: docs — pre-restore placeholder integrity treats `{{ILC_N}}` / `{{URL_N}}` / `{{BLD_N}}` / emphasis markers as restore-by-id content tokens (multiset only), so locale word-order reorderings no longer fail as `placeholderTagMap` sequence mismatches; ordered subsequence checks remain only for structural `{{HTM_N}}` / `{{ADM_*}}` tokens.
 - **Added**: write-heading-ids — `--slug-style mdx-comment` appends Docusaurus MDX heading ids (`{/* #slug */}`) using the github slug algorithm; refreshes stale comment ids when heading text changes, and HTML styles skip headings that already carry an MDX comment id.
 

@@ -102,9 +102,9 @@ pnpm update-tocs # refresh doctoc TOCs in README.md and dev/*.md
 pnpm clean && pnpm build   # full rebuild from scratch
 ```
 
-Root `i18n:*` scripts invoke `node bin/ai-i18n-tools.mjs` so they work without a global CLI on `PATH`.
+Root `i18n:*` scripts invoke `node bin/ai-i18n-tools.mjs` so they work without a global CLI on `PATH`. In this checkout, `.envrc` adds `bin/` to `PATH` so the committed `bin/ai-i18n-tools` wrapper (beside the published `.mjs` shim) provides the bare `ai-i18n-tools` command after `direnv allow`.
 
-Run `pnpm test` and `pnpm lint` after every behavioral change. When you change user-facing CLI/log/dashboard strings (wrapped in `t()` or `data-i18n*` markers), run `pnpm i18n:self` so `src/i18n/locales/*.json` stay in sync; `pnpm build` then ships them to `dist/i18n/locales`. The CLI entry is `bin/ai-i18n-tools.mjs` (compiled to `dist/cli/index.js`).
+Run `pnpm test` and `pnpm lint` after every behavioral change. When you change user-facing CLI/log/dashboard strings (wrapped in `t()` or `data-i18n*` markers), run `pnpm i18n:self` so `src/i18n/locales/*.json` stay in sync; `pnpm build` then ships them to `dist/i18n/locales`. The published CLI entry is `bin/ai-i18n-tools.mjs` (compiled to `dist/cli/index.js`). `bin/ai-i18n-tools` is a PATH-friendly re-export of that shim.
 
 If you need to run ai-i18n-tools (or `pnpm i18n:*` commands) from a subdirectory that does not contain a .env file with the API key, load the .env file from the root of the repository in the agent shell. 
 

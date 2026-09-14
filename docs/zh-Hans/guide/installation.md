@@ -75,9 +75,9 @@ pnpm add -g ai-i18n-tools
 
 在开发该包或从 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整克隆中运行工作区 **示例** 时：
 
-- **工作区示例**（`examples/console-app`、`examples/nextjs-app` 以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他包）——在仓库根目录运行 `pnpm install`，然后运行 `cd examples/<name>`。使用示例的 `pnpm run i18n:*` 脚本，或者配置 PATH（参见[使用 CLI](#using-the-cli)）并直接运行 `ai-i18n-tools …`。将工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 链接 `ai-i18n-tools` 到你的本地检出目录。
-- **仓库根目录** —— pnpm 不会将根包自身的 `bin` 链接到 `node_modules/.bin` 中。请改用 `node bin/ai-i18n-tools.mjs …` 或根目录的 `pnpm i18n:*` 脚本（或者使用 shell 别名 / `pnpm add -g .` —— 参见[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)）。
-- **独立夹具**（`multi-provider`、`test-markdown`）——在夹具文件夹中，使用 `node ../../bin/ai-i18n-tools.mjs …`。
+- **工作区示例** (`examples/console-app`、`examples/nextjs-app` 以及 [`pnpm-workspace.yaml`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 中列出的其他包) — 在仓库根目录运行 `pnpm install`，然后运行 `cd examples/<name>`。使用示例的 `pnpm run i18n:*` 脚本，或者配置 PATH (参见[使用 CLI](#using-the-cli)) 并运行裸 `ai-i18n-tools …`。工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 将 `ai-i18n-tools` 链接到你的本地检出。
+- **仓库根目录** — pnpm 不会将根包自身的 `bin` 链接到 `node_modules/.bin` 中。此检出的 `.envrc` 将 `bin/` 添加到 `PATH`，因此提交的 `bin/ai-i18n-tools` 包装器 (位于已发布的 `bin/ai-i18n-tools.mjs` 垫片旁边) 在 `direnv allow` 之后提供裸命令。如果不使用 direnv，请使用 `node bin/ai-i18n-tools.mjs …`、`./bin/ai-i18n-tools …` 或根目录的 `pnpm i18n:*` 脚本 (或 shell 别名 / `pnpm add -g .` — 参见[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development))。
+- **独立夹具** (`multi-provider`、`test-markdown`) — 从夹具文件夹中，使用 `node ../../bin/ai-i18n-tools.mjs …`。
 
 更改 CLI 源码后，在仓库根目录运行 `pnpm run build`。有关构建步骤和可选的全局安装变通方案，请参阅[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
 

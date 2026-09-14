@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-将 `console-app` 替换为任何示例文件夹名称。每个示例都声明了 `"ai-i18n-tools": "^1.7.2"` 并从 npm 安装 CLI。每个示例的 README 都包含相同的代码片段，其中已填充文件夹名称。
+将 `console-app` 替换为任意示例文件夹名称。每个示例都声明了一个与当前包版本匹配的已发布脱字符范围 `ai-i18n-tools`，并从 npm 安装该 CLI。各示例的 README 中包含填入了文件夹名称的相同代码片段。
 
 **从完整的 ai-i18n-tools 仓库** — 如果你克隆了整个仓库（而不仅仅是使用 degit 克隆了一个示例文件夹）：
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 条目 (`ai-i18n-tools: workspace:*`) 会自动将工作区示例链接到你的本地检出。独立夹具 (`multi-provider`, `test-markdown`) 不是工作区包 — 从它们的文件夹中使用 `node ../../bin/ai-i18n-tools.mjs …`。要从**仓库根目录**运行 CLI（此包自己的 docs/i18n），请使用 `pnpm i18n:sync` 或 `node bin/ai-i18n-tools.mjs …` — 参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)和[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
+工作区 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 条目（`ai-i18n-tools: workspace:*`）会自动将工作区示例链接到您的本地检出。独立夹具（`multi-provider`、`test-markdown`）不是工作区包——请在其文件夹中使用 `node ../../bin/ai-i18n-tools.mjs …`。要从**仓库根目录**（本包自身的 docs/i18n）运行 CLI，请在 `direnv allow` 之后直接使用 `ai-i18n-tools`，或使用 `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …`——参见[安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)和[开发指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### 提供商和 API 密钥（翻译所需）

@@ -10,6 +10,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnPackageManager } from "./lib/spawn-package-manager.mjs";
+import { syncExampleAiI18nToolsVersion } from "./sync-example-ai-i18n-tools-version.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const startedMs = Date.now();
@@ -63,6 +64,25 @@ const EXAMPLE_BUILDS = [
   ["examples/nextra-docs", "build"],
   ["examples/vitepress-docs", "docs:build"],
 ];
+
+banner("Checking example ai-i18n-tools version pins");
+{
+  let result;
+  try {
+    result = syncExampleAiI18nToolsVersion(root, { checkOnly: true });
+  } catch (error) {
+    console.error(`pre-release: failed to check example pins: ${error.message}`);
+    process.exit(1);
+  }
+  if (result.mismatches.length > 0) {
+    console.error(`example ai-i18n-tools pins must be ${result.expected}:`);
+    for (const pin of result.mismatches) {
+      console.error(`  ${path.relative(root, pin.file)} (${pin.field}): ${pin.range}`);
+    }
+    process.exit(1);
+  }
+  console.log(`example ai-i18n-tools pins match ${result.expected}`);
+}
 
 // Build the package and check if all UI strings are translated
 banner("Building the package and checking if all UI strings are translated");

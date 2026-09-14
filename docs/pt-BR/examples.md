@@ -6,7 +6,7 @@ Projetos executáveis em [`examples/`](https://github.com/wsj-br/ai-i18n-tools/t
 <a id="run-standalone-npx-degit"></a>
 ## Executar de forma autônoma (`npx degit`)
 
-Copie um exemplo sem clonar o repositório completo. Cada um declara `"ai-i18n-tools": "^1.7.2"` e instala a CLI do npm:
+Copie um exemplo sem clonar o repositório completo. Cada um declara um intervalo de circunflexo publicado de `ai-i18n-tools` correspondendo à versão atual do pacote e instala a CLI do npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>

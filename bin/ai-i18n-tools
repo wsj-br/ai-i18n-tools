@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+/**
+ * PATH-friendly name (no .mjs suffix) beside the published package.json bin
+ * (`ai-i18n-tools.mjs`). With direnv `PATH_add bin` in `.envrc`, the bare
+ * `ai-i18n-tools` command works in this checkout. pnpm still does not link the
+ * root package's own bin into `node_modules/.bin`.
+ */
+import "./ai-i18n-tools.mjs";

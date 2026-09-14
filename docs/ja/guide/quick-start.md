@@ -17,7 +17,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-`console-app`を任意の例のフォルダー名に置き換えます。各例は`"ai-i18n-tools": "^1.7.2"`を宣言し、npmからCLIをインストールします。例ごとのREADMEには、フォルダー名が入力された同じスニペットが含まれています。
+`console-app`は任意のサンプルフォルダー名に置き換えてください。各サンプルは現在のパッケージバージョンに一致する公開済みのキャレット範囲 `ai-i18n-tools` を宣言し、npmからCLIをインストールします。サンプルごとのREADMEには、フォルダー名を埋めた同じスニペットが記載されています。
 
 **完全な ai-i18n-tools リポジトリから** — degit で単一のサンプルフォルダーではなくリポジトリ全体をクローンした場合:
 
@@ -29,7 +29,7 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 # or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
 ```
 
-ワークスペース [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) のエントリー (`ai-i18n-tools: workspace:*`) は、ワークスペースのサンプルをローカルのチェックアウトに自動的にリンクします。スタンドアロンのフィクスチャ (`multi-provider`, `test-markdown`) はワークスペースパッケージではありません — それらのフォルダーからは `node ../../bin/ai-i18n-tools.mjs …` を使用してください。**リポジトリルート** (このパッケージ自身の docs/i18n) から CLI を実行するには、`pnpm i18n:sync` または `node bin/ai-i18n-tools.mjs …` を使用してください — [インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo) および [開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development) を参照してください。
+ワークスペースの[`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml)エントリー(`ai-i18n-tools: workspace:*`)は、ワークスペースのサンプルをローカルのチェックアウトに自動的にリンクします。スタンドアロンのフィクスチャ(`multi-provider`、`test-markdown`)はワークスペースパッケージではありません。これらのフォルダーからは `node ../../bin/ai-i18n-tools.mjs …` を使用してください。**リポジトリルート**(このパッケージ自身のdocs/i18n)からCLIを実行するには、`direnv allow`の後に単独の `ai-i18n-tools` を使用するか、`pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` を使用してください。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)および[開発ガイド](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)を参照してください。
 
 <a id="provider-and-api-key-required-for-translation"></a>
 ### プロバイダーとAPIキー（翻訳に必要）

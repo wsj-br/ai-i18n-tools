@@ -941,6 +941,12 @@ function summarizeQualityError(errorMessage: string): string {
   if (errorMessage.startsWith("Internal translation placeholder leaked")) {
     return "placeholderLeak";
   }
+  if (errorMessage.startsWith("Translation placeholder inventory mismatch")) {
+    return "placeholderInventory";
+  }
+  if (errorMessage.startsWith("Structural placeholder order mismatch")) {
+    return "placeholderStructure";
+  }
   if (errorMessage.startsWith("HTML tag placeholders reused or dropped")) {
     return "placeholderTagMap";
   }

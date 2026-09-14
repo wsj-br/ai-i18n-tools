@@ -1,11 +1,11 @@
 ---
-translation_last_updated: '2026-09-03T22:52:19.267Z'
-source_file_mtime: '2026-07-05T22:05:35.671Z'
-source_file_hash: dcf4013f15bc8b51e6c8c55f7963ed55c9f1ce31a17b3dfd87ba1ff877e62c94
+translation_last_updated: '2026-09-14T19:52:38.128Z'
+source_file_mtime: '2026-09-14T19:41:20.670Z'
+source_file_hash: 6dd907fbf677c7f74b4b338263c315239bdf5b35ae40fe1b462c93766b0a54e9
 translation_language: es
 source_file_path: README.md
 translation_models:
-  - openai/gpt-4o-mini
+  - google/gemini-2.5-flash
   - qwen/qwen3-235b-a22b-2507
   - qwen/qwen3.6-plus
 ---
@@ -36,7 +36,7 @@ pnpm install
 
 ### Desde el repositorio completo de ai-i18n-tools
 
-Utiliza esto cuando clones el **todo** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repositorio (no solo esta carpeta con degit). Ejecuta `pnpm install` desde la **raíz del repositorio**. La entrada del espacio de trabajo [`overrides`](../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) fuerza `ai-i18n-tools` a la copia local del espacio de trabajo, aunque este ejemplo declare `"ai-i18n-tools": "^1.7.2"`. No se necesita un paso de enlace separado: reconstruye la biblioteca (`pnpm run build` en la raíz del repositorio) cada vez que cambies archivos de origen y el ejemplo recogerá automáticamente el `dist/` actualizado.
+Utilice esto cuando haya clonado el repositorio **completo** de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) (no solo esta carpeta con degit). Ejecute `pnpm install` desde la **raíz del repositorio**. La entrada del [`overrides`](../../pnpm-workspace.yaml) espacio de trabajo (`ai-i18n-tools: workspace:*`) fuerza a `ai-i18n-tools` a la copia local del espacio de trabajo, aunque este ejemplo declare un rango de intercalación publicado. No se necesita un paso de enlace separado: reconstruya la biblioteca (`pnpm run build` en la raíz del repositorio) cada vez que cambie los archivos de origen y el ejemplo tomará automáticamente el `dist/` actualizado.
 
 ```bash
 # From the repository root

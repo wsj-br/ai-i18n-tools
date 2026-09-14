@@ -37,7 +37,7 @@ Verwenden Sie dies, wenn Sie das **gesamte** [ai-i18n-tools](https://github.com/
 pnpm install
 ```
 
-Der Workspace-[`overrides`](../../../pnpm-workspace.yaml)-Eintrag (`ai-i18n-tools: workspace:*`) erzwingt die Verwendung der lokalen Workspace-Kopie von `ai-i18n-tools`, obwohl in diesem Beispiel `"ai-i18n-tools": "^1.7.2"` deklariert ist. Es ist kein separater Build- oder Verknüpfungsschritt erforderlich – nachdem Sie die Bibliotheksquellen geändert haben, führen Sie `pnpm run build` im Stammverzeichnis des Repositorys aus, und das Beispiel übernimmt automatisch die aktualisierte Version von `dist/`.
+Der Arbeitsbereichseintrag [`overrides`](../../../pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) erzwingt `ai-i18n-tools` in die lokale Arbeitsbereichskopie, obwohl dieses Beispiel einen veröffentlichten Caret-Bereich deklariert. Es ist kein separater Build- oder Verknüpfungsschritt erforderlich – nach dem Ändern der Bibliotheksquellen führen Sie `pnpm run build` im Repo-Stammverzeichnis aus, und das Beispiel übernimmt die aktualisierte `dist/` automatisch.
 
 **Arbeitsverzeichnis:** Führen Sie die Next.js-App und alle `pnpm run i18n:*`-Befehle aus dem Stammverzeichnis dieses Beispiels aus (nach degit befinden Sie sich bereits in `nextjs-app/`; im Monorepo verwenden Sie `examples/nextjs-app/`, wo sich `ai-i18n-tools.config.json` befindet), oder übergeben Sie `--config` / legen Sie das Arbeitsverzeichnis fest, damit die CLI diese Konfiguration auflösen kann.
 
