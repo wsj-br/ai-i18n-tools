@@ -534,12 +534,13 @@ pnpm pre-release
 
 `pre-release` (`scripts/pre-release.mjs`) runs, in order:
 
-1. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
-2. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
-3. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
-4. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
-5. `pnpm docs:build`
-6. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/docusaurus-docs`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/nextra-docs`, and `examples/vitepress-docs`
+1. Sync every example `"ai-i18n-tools"` range to `^<root version>` (`scripts/sync-example-ai-i18n-tools-version.mjs`)
+2. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
+3. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
+4. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
+5. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
+6. `pnpm docs:build`
+7. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/docusaurus-docs`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/nextra-docs`, and `examples/vitepress-docs`
 
 It does **not** run `examples/test-markdown` (build invokes live translation and needs API keys). Resolve any failures locally; CI applies the same checks before npm publish.
 
@@ -564,9 +565,9 @@ pnpm version minor   # 1.0.0 → 1.1.0  (new features, backward-compatible)
 pnpm version major   # 1.0.0 → 2.0.0  (breaking changes)
 ```
 
-`pnpm version` runs `scripts/sync-example-ai-i18n-tools-version.mjs`, which rewrites every example `"ai-i18n-tools"` range to `^<new version>`. The workspace override (`ai-i18n-tools: workspace:*`) still links the monorepo to the local checkout, so the unpublished caret range is safe until npm publish. `pnpm pre-release` fails if any example pin is out of date.
+`pnpm version` runs `scripts/sync-example-ai-i18n-tools-version.mjs`, which rewrites every example `"ai-i18n-tools"` range to `^<new version>`. The workspace override (`ai-i18n-tools: workspace:*`) still links the monorepo to the local checkout, so the unpublished caret range is safe until npm publish. `pnpm pre-release` runs the same sync as its first step, so a hand-edited root version still gets matching example pins.
 
-If you edit the `package.json` version by hand instead of `pnpm version`, run `node scripts/sync-example-ai-i18n-tools-version.mjs` yourself.
+If you edit the `package.json` version by hand instead of `pnpm version`, you can still run `node scripts/sync-example-ai-i18n-tools-version.mjs` yourself; `pnpm pre-release` will do it if you skip that.
 
 
 

@@ -4,18 +4,18 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-源语言的 BCP-47 代码（例如 `"en-GB"`、`"en"`、`"pt-BR"`）。不会为该区域设置生成翻译文件——键字符串本身就是源文本。
+來源語言的 BCP-47 代碼（例如 `"en-GB"`、`"en"`、`"pt-BR"`）。此語系不會產生翻譯檔案——鍵值字串本身即為來源文字。
 
-**必须匹配**从您的运行时 i18n 设置文件（`SOURCE_LOCALE` / `src/i18n.ts`）导出的 `src/i18n.js`。
+**必須符合** 從您的執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE`。
 
 ---
 
 <a id="targetlocales"></a>
 ### `targetLocales`
 
-要翻译到的 BCP-47 区域设置代码数组（例如 `["de", "fr", "es", "pt-BR"]`）。
+要翻譯成的 BCP-47 語系代碼陣列（例如 `["de", "fr", "es", "pt-BR"]`）。
 
-`targetLocales` 是 UI 翻译的主要区域设置列表，也是文档块的默认区域设置列表。使用 `generate-ui-languages` 从 `ui-languages.json` + `sourceLocale` 构建 `targetLocales` manifest。
+`targetLocales` 是 UI 翻譯的主要語系清單，也是文件區塊的預設語系清單。使用 `generate-ui-languages` 從 `sourceLocale` + `targetLocales` 建構 `ui-languages.json` 資訊清單。
 
 ---
 
@@ -45,14 +45,31 @@
 <a id="concurrency-optional"></a>
 ### `concurrency`（可选）
 
-同时翻译的最大**目标区域设置**（`translate-ui`、`translate-docs`、`translate-svg` 以及 `sync` 中的匹配步骤）。如果省略，CLI 会为 UI 翻译使用**4**，为文档翻译使用**3**（内置默认值）。可以通过 `-j` / `--concurrency` 为每次运行覆盖。
+同時翻譯的最大**目標語系**數量（`translate-ui`、`translate-docs`、`translate-svg`，以及 `sync` 內對應的步驟）。若省略，CLI 會在 UI 翻譯時使用 **4**，在文件翻譯時使用 **3**（內建預設值）。每次執行時可用 `-j` / `--concurrency` 覆寫。
 
 ---
 
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency`（可选）
 
-**translate-docs**、**translate-svg** 和 **translate-json**（以及 `sync` 內的匹配步驟）：每個檔案的最大平行 LLM **批次**請求數（每個批次可包含許多區段）。省略時預設為 **4**。`translate-ui` 會忽略。使用 `-b` / `--batch-concurrency` 覆寫。
+**translate-docs**、**translate-svg** 與 **translate-json**（以及 `sync` 內對應的步驟）：每個檔案的最大並行 LLM **批次**請求數（每個批次可包含多個區段）。省略時預設為 **4**。不適用於 `translate-ui`——請改用 `uiBatchConcurrency`。可用 `-b` / `--batch-concurrency` 覆寫。
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency`（選用）
+
+**translate-ui**、**sync-ui** 與 `sync` 的 UI 步驟：**單一語系內**的最大並行 LLM **批次**請求數（先處理 50 個純字串區塊，再處理複數群組）。省略時預設為 **2**。與 `concurrency`（並行目標語系）和 `batchConcurrency`（docs/JSON/SVG）互不相關。無 CLI 旗標；請在設定檔中設定，或將 `uiBatchConcurrency` 傳遞給程式化介面的 `runTranslateUI`。
+
+**範例：**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+在預設語系並行數 **4** 的情況下，這表示最多可有 **8** 個進行中的 UI API 呼叫。翻譯單一大型語系（`-l de`）時可提高此值；若供應商有速率限制則保持較低的值。
 
 ---
 

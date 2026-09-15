@@ -30,3 +30,14 @@ Un enlace de Markdown o `![alt](url)` funciona en inglés, pero devuelve un erro
 1. Confirma que el diseño de tus recursos coincide con tu `docsOutput.style` (plano frente a sistema de documentos). Consulta [Reescritura de enlaces](/es/guide/documents/link-rewriting) e [Imágenes y capturas de pantalla](/es/guide/images-and-screenshots/).
 2. Agrega o ajusta `docsOutput.postProcessing.regexAdjustments` para intercambiar segmentos de configuración regional o unir rutas absolutas de `/img/…`. Para un diseño plano, recuerda que el reescritor de enlaces planos se ejecuta **antes** de `regexAdjustments`; haz coincidir los patrones con la URL ya prefijada.
 3. Asegúrate de que los archivos de recursos específicos de la configuración regional existan en las rutas a las que hace referencia el Markdown reescrito (`translate-docs` reescribe las URL, pero no copia los archivos ráster).
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## La salida en hindi, árabe, CJK o cirílico está romanizada (letras latinas)
+
+Algunos modelos traducen el significado, pero escriben el resultado en letras latinas/romanas (por ejemplo, hindi como `Namaste` en lugar de `नमस्ते`). `hi` a secas significa devanagari; usa `hi-Latn` solo cuando quieras hindi romanizado.
+
+**Solución**
+
+1. Confirma que el código de configuración regional coincide con el script que deseas (`hi` frente a `hi-Latn`, `zh-Hans` frente a `zh-Hant`, `sr` frente a `sr-Latn`).
+2. Vuelve a ejecutar la traducción para que se rechacen las filas de caché de script incorrecto: `translate-ui --force` para cadenas de IU, o `translate-docs` / `sync` (la omisión a nivel de archivo está deshabilitada para configuraciones regionales con un script esperado; `--force-update` aún reutiliza la caché de segmento válida).
+3. Si un modelo sigue fallando en la verificación del script, agrega una entrada `localeModels` para esa configuración regional para que se pruebe primero un modelo más potente; consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).

@@ -52,7 +52,24 @@
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency`（オプション）
 
-**translate-docs**、**translate-svg**、および**translate-json**（と`sync`内の対応するステップ）：ファイルごとのLLM **バッチ**リクエストの最大並列数（各バッチには多数のセグメントを含めることができます）。省略した場合のデフォルトは**4**です。`translate-ui`では無視されます。`-b` / `--batch-concurrency`で上書きします。
+**translate-docs**、**translate-svg**、および**translate-json**（および`sync`内の対応するステップ）：ファイルあたりの最大並列LLM**batch**リクエスト数（各バッチには多数のセグメントを含めることができます）。省略時のデフォルトは**4**です。`translate-ui`には適用されません — 代わりに`uiBatchConcurrency`を使用してください。`-b` / `--batch-concurrency`で上書きします。
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency`（オプション）
+
+**translate-ui**、**sync-ui**、および`sync`のUIステップ：**単一ロケール内**での最大並列LLM**batch**リクエスト数（50のプレーン文字列チャンク、次に複数形グループ）。省略時のデフォルトは**2**です。`concurrency`（並列ターゲットロケール）および`batchConcurrency`（docs/JSON/SVG）とは独立しています。CLIフラグはありません。configで設定するか、プログラマティックな`runTranslateUI`に`uiBatchConcurrency`を渡してください。
+
+**例:**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+デフォルトのロケール並列数**4**の場合、最大**8**の実行中UI API呼び出しになります。1つの大きなロケールを翻訳する場合はこの値を上げてください（`-l de`）。プロバイダーがレート制限を設けている場合は低く保ってください。
 
 ---
 

@@ -45,7 +45,7 @@ UI文字列のみを翻訳します（`strings.json` → ロケールJSON）。`
 
 **主なオプション:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: カンマ区切りのターゲットロケール（デフォルト: 設定`targetLocales`から`sourceLocale`を引いたもの）。`--force`: ロケールごとにすべてのエントリを再翻訳します（既存の翻訳を無視します）。`--dry-run`: 書き込みやAPI呼び出しを行いません。
+`-l` / `--locale`: カンマ区切りのターゲットロケール（デフォルト: config `targetLocales` から `sourceLocale` を除いたもの）。`--force`: ロケールごとにすべてのエントリを再翻訳（既存の翻訳を無視）。`--dry-run`: 書き込みなし、API呼び出しなし。`-j` は **locales** を並列化し、各ロケール内では config `uiBatchConcurrency`（デフォルト **2**）が LLM バッチ（50文字列のチャンク、続いて複数形グループ）を並列化します。`uiBatchConcurrency` に対応する CLI フラグはありません。
 
 ---
 

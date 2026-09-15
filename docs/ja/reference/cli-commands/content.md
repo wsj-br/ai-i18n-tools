@@ -21,6 +21,6 @@
 
 `config.svg` で設定されたSVGファイルを翻訳します（ドキュメントとは別）。`features.translateSVG` が必要。ドキュメントと同じキャッシュの考え方を使用し、`--no-cache` をサポートしてその実行中のSQLiteの読み取り/書き込みをスキップします。
 
-**主なオプション:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**主なオプション:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, グローバル `--debug-failed`
 
 **関連項目:** [SVG翻訳](/ja/guide/svg-translation/)

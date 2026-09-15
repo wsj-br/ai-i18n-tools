@@ -10,7 +10,7 @@
 
 **主なオプション:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force`はUIおよびSVGステップならびにdocs/JSONに転送されます。`--force-update`はdocs、JSON、SVGに適用されます（UIには適用されません）。ドキュメントフェーズでは`--emphasis-placeholders`と`--debug-failed`も転送されます（`translate-docs`と同じ意味）。`--prompt-format`は`sync`フラグではありません。docsおよびJSONステップは組み込みのデフォルト（`json-array`）を使用します。
+`--force`は、docs/JSONだけでなくUIおよびSVGステップにも転送されます。`--force-update`はdocs、JSON、SVGに適用されます（UIには適用されません）。Docsフェーズでは`--emphasis-placeholders`も転送されます（`translate-docs`と同じ意味）。グローバルな`--debug-failed`は、チェーン内のすべてのモデルが失敗した場合だけでなく、破棄されたモデルの試行（SVG/docsスクリプトのフォールバックを含む）ごとに`cacheDir`の下に`FAILED-TRANSLATION`ログを書き込みます。`--prompt-format`は`sync`フラグではありません。docsおよびJSONステップは組み込みのデフォルト（`json-array`）を使用します。
 
 ---
 

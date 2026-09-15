@@ -52,7 +52,24 @@ Maximale Anzahl gleichzeitig übersetzter **Zielgebietsschemata** (`translate-ui
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (optional)
 
-**translate-docs**, **translate-svg** und **translate-json** (und die entsprechenden Schritte innerhalb von `sync`): maximale parallele LLM-**Batch**-Anfragen pro Datei (jeder Batch kann viele Segmente enthalten). Standardwert **4**, wenn weggelassen. Wird von `translate-ui` ignoriert. Überschreiben mit `-b` / `--batch-concurrency`.
+**translate-docs**, **translate-svg** und **translate-json** (und die entsprechenden Schritte in `sync`): maximale parallele LLM-**Batch**-Anfragen pro Datei (jeder Batch kann viele Segmente enthalten). Standardwert **4**, wenn weggelassen. Gilt nicht für `translate-ui` – verwenden Sie stattdessen `uiBatchConcurrency`. Überschreiben Sie dies mit `-b` / `--batch-concurrency`.
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency` (optional)
+
+**translate-ui**, **sync-ui** und der UI-Schritt von `sync`: maximale parallele LLM-**Batch**-Anfragen **innerhalb eines einzelnen Gebietsschemas** (einfache Zeichenfolgen-Chunks von 50, dann Pluralgruppen). Standardwert **2**, wenn weggelassen. Unabhängig von `concurrency` (parallele Ziel-Gebietsschemas) und `batchConcurrency` (Dokumente/JSON/SVG). Kein CLI-Flag; in der Konfiguration festlegen oder `uiBatchConcurrency` an das programmatische `runTranslateUI` übergeben.
+
+**Beispiel:**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+Bei der Standard-Locale-Parallelität von **4** sind das bis zu **8** UI-API-Aufrufe, die gleichzeitig ausgeführt werden. Erhöhen Sie diesen Wert, wenn Sie eine große Locale (`-l de`) übersetzen; halten Sie ihn niedrig, wenn der Anbieter Ratenbegrenzungen vornimmt.
 
 ---
 

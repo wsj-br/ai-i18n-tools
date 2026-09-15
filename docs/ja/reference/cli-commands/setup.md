@@ -15,7 +15,7 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 
 **概要:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
-スターター設定ファイルを作成します（`provider` / `providers`、`concurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、および `docs[].addFrontmatter` を含みます）。LLMを呼び出す翻訳コマンドには、環境変数または `.env` にアクティブなプロバイダーのAPIキーが必要です（Ollamaを除く） — [プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key) を参照してください。
+初期設定ファイルを記述します（`provider` / `providers`、`concurrency`、`uiBatchConcurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`docs[].addFrontmatter` を含みます）。LLM を呼び出す翻訳コマンドでは、環境変数または `.env` にアクティブなプロバイダーの API キーが必要です（Ollama を除く）— [プロバイダーと API キー](/ja/guide/quick-start#provider-and-api-key) を参照してください。
 
 **主なオプション:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 

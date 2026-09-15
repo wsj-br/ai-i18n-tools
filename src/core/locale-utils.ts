@@ -99,25 +99,133 @@ export function scriptSubtag(locale: string): string | undefined {
 
 /**
  * Default ISO 15924 script when a language tag omits an explicit script subtag.
- * Explicit scripts always win (`hi-Latn` stays Latin). Used so bare `hi` (and `hi-IN`)
- * get Devanagari prompt directives and wrong-script validation like `sd-Deva`.
+ * Explicit scripts always win (`hi-Latn` stays Latin). Conservative: only languages
+ * whose catalog/CLDR default is a single native script (not Latin-primary or
+ * script-ambiguous tags such as bare `uz`, `zh`, or `pa`).
  */
 const DEFAULT_SCRIPT_BY_PRIMARY: Readonly<Record<string, string>> = {
+  // Devanagari
   hi: "Deva",
+  ne: "Deva",
+  mr: "Deva",
+  sa: "Deva",
+  mai: "Deva",
+  bho: "Deva",
+  mag: "Deva",
+  new: "Deva",
+  doi: "Deva",
+  anp: "Deva",
+  awa: "Deva",
+  brx: "Deva",
+  kok: "Deva",
+  raj: "Deva",
+  pi: "Deva",
+  hne: "Deva",
+  gbm: "Deva",
+  bhb: "Deva",
+  bh: "Deva",
+  // Bengali / related
+  bn: "Beng",
+  as: "Beng",
+  bpy: "Beng",
+  mni: "Beng",
+  // Other Indic
+  te: "Telu",
+  ta: "Taml",
+  kn: "Knda",
+  tcy: "Knda",
+  ml: "Mlym",
+  gu: "Gujr",
+  or: "Orya",
+  si: "Sinh",
+  // Arabic-script
+  ar: "Arab",
+  arz: "Arab",
+  fa: "Arab",
+  ur: "Arab",
+  ps: "Arab",
+  ug: "Arab",
+  ckb: "Arab",
+  khw: "Arab",
+  // Hebrew / Thaana
+  he: "Hebr",
+  yi: "Hebr",
+  dv: "Thaa",
+  // Cyrillic (explicit *-Latn still wins)
+  ru: "Cyrl",
+  uk: "Cyrl",
+  bg: "Cyrl",
+  mk: "Cyrl",
+  be: "Cyrl",
+  sr: "Cyrl",
+  ky: "Cyrl",
+  kk: "Cyrl",
+  mn: "Cyrl",
+  tg: "Cyrl",
+  tt: "Cyrl",
+  cv: "Cyrl",
+  ce: "Cyrl",
+  os: "Cyrl",
+  sah: "Cyrl",
+  ba: "Cyrl",
+  kv: "Cyrl",
+  udm: "Cyrl",
+  ab: "Cyrl",
+  av: "Cyrl",
+  bxr: "Cyrl",
+  myv: "Cyrl",
+  inh: "Cyrl",
+  xal: "Cyrl",
+  cu: "Cyrl",
+  // CJK composites (validated as allowed-script families)
+  ja: "Jpan",
+  ko: "Kore",
+  // Other native scripts
+  el: "Grek",
+  hy: "Armn",
+  ka: "Geor",
+  th: "Thai",
+  lo: "Laoo",
+  km: "Khmr",
+  my: "Mymr",
+  am: "Ethi",
+  ti: "Ethi",
+  bo: "Tibt",
+  dz: "Tibt",
+};
+
+/**
+ * Full-tag overrides when a region (not a script subtag) selects the writing system.
+ * Bare `pa` stays unset (Gurmukhi vs Shahmukhi); `zh` stays unset (Hans vs Hant).
+ */
+const DEFAULT_SCRIPT_BY_NORMALIZED_TAG: Readonly<Record<string, string>> = {
+  "pa-IN": "Guru",
+  "pa-PK": "Arab",
+  "az-IR": "Arab",
 };
 
 /**
  * Script to enforce for prompts and validation: the tag's explicit ISO 15924 subtag
- * when present, otherwise the language's default script from {@link DEFAULT_SCRIPT_BY_PRIMARY}
- * (e.g. `hi` / `hi-IN` → `Deva`). Returns `undefined` when neither applies.
+ * when present, otherwise a language/region default (e.g. `hi` / `hi-IN` → `Deva`,
+ * `ar` → `Arab`, `ja` → `Jpan`). Returns `undefined` when neither applies.
  */
 export function effectiveScriptSubtag(locale: string): string | undefined {
   const explicit = scriptSubtag(locale);
   if (explicit) {
     return explicit;
   }
+  const normalized = normalizeLocale(locale);
+  const byTag = DEFAULT_SCRIPT_BY_NORMALIZED_TAG[normalized];
+  if (byTag) {
+    return byTag;
+  }
   const primary = primaryLanguageSubtag(locale);
   return primary ? DEFAULT_SCRIPT_BY_PRIMARY[primary] : undefined;
+}
+
+/** True when prompt directives and output-script validation apply to this locale. */
+export function localeEnforcesOutputScript(locale: string): boolean {
+  return effectiveScriptSubtag(locale) !== undefined;
 }
 
 /** True when the tag's script subtag is `Latn` (Latin/Roman), e.g. `hi-Latn`, `sr-Latn`. */
@@ -163,7 +271,8 @@ export function nonLatinLettersIn(text: string, limit = 5): string[] {
 /**
  * ISO 15924 script code → ECMAScript `\p{Script=…}` property value (Unicode script long name).
  * Codes that Unicode does not encode as a single script property (composite scripts such as
- * `Jpan` = Han+Kana, `Kore` = Hangul+Han) are intentionally absent → script enforcement is skipped.
+ * `Jpan` = Han+Kana, `Kore` = Hangul+Han) are intentionally absent here; {@link expectedUnicodeScriptsForSubtag}
+ * and {@link scriptValidationIssue} treat those as allowed-script families.
  * Simplified/Traditional Han (`Hans`/`Hant`) both map to `Han` (Unicode has no Simplified/Traditional
  * script property), so the validator can catch a *different* script but not Simplified vs Traditional.
  */
@@ -212,6 +321,40 @@ export function unicodeScriptPropertyForSubtag(scriptCode: string): string | und
   return UNICODE_SCRIPT_PROPERTY_BY_SUBTAG[canonical];
 }
 
+/**
+ * Composite ISO 15924 codes that Unicode does not encode as a single Script property.
+ * Validation treats letters from any listed property as the expected writing system.
+ */
+const COMPOSITE_UNICODE_SCRIPTS_BY_SUBTAG: Readonly<Record<string, readonly string[]>> = {
+  Jpan: ["Han", "Hiragana", "Katakana"],
+  Kore: ["Hangul", "Han"],
+};
+
+function canonicalScriptSubtag(scriptCode: string): string {
+  const code = scriptCode.trim();
+  if (!code) {
+    return "";
+  }
+  return code.charAt(0).toUpperCase() + code.slice(1).toLowerCase();
+}
+
+/**
+ * Unicode Script property values that count as the expected writing system for an ISO 15924
+ * subtag. Composite codes (`Jpan`, `Kore`) return a family; unknown codes return `undefined`.
+ */
+export function expectedUnicodeScriptsForSubtag(scriptCode: string): readonly string[] | undefined {
+  const canonical = canonicalScriptSubtag(scriptCode);
+  if (!canonical) {
+    return undefined;
+  }
+  const composite = COMPOSITE_UNICODE_SCRIPTS_BY_SUBTAG[canonical];
+  if (composite) {
+    return composite;
+  }
+  const single = UNICODE_SCRIPT_PROPERTY_BY_SUBTAG[canonical];
+  return single ? [single] : undefined;
+}
+
 const DISALLOWED_SCRIPT_RE_CACHE = new Map<string, RegExp>();
 
 /**
@@ -222,8 +365,9 @@ const DISALLOWED_SCRIPT_RE_CACHE = new Map<string, RegExp>();
  * - Any other supported script (`Cyrl`, `Arab`, `Deva`, `Mong`, `Han`, …): letters from a *different*
  *   non-Latin script are reported, but Latin letters are always allowed (code, URLs, brand names,
  *   placeholders legitimately appear), so native-script→Latin fallback is **not** flagged here — that
- *   case is handled by the prompt directive instead.
- * - Unsupported/composite script codes (e.g. `Jpan`, `Kore`) report nothing (no enforcement).
+ *   case is handled by {@link scriptValidationIssue} instead.
+ * - Unsupported/composite script codes (e.g. `Jpan`, `Kore`) report nothing here; output
+ *   validation for those families uses {@link scriptValidationIssue} instead.
  *
  * Returns at most `limit` unique characters, in first-seen order.
  *
@@ -279,6 +423,12 @@ export const EXPECTED_SCRIPT_MIN_SHARE = 0.6;
  * this count the variant check is skipped.
  */
 export const VARIANT_MIN_SAMPLE = 4;
+
+/**
+ * Minimum letters of source prose before a batch can be judged untranslated.
+ * Below this count the sample is too small (same idea as {@link VARIANT_MIN_SAMPLE}).
+ */
+export const BATCH_SCRIPT_MIN_LETTERS = 24;
 
 const LETTER_RE = /\p{L}/u;
 const LATIN_LETTER_RE = /\p{Script=Latin}/u;
@@ -416,17 +566,121 @@ function scriptName(property: string): string {
   return property === "Other" ? "another script" : property;
 }
 
+function stripProtectedForScriptCheck(text: string): string {
+  return text
+    .replace(/\{\{[^}]*\}\}/g, " ")
+    .replace(/\{[0-9A-Za-z_]+\}/g, " ")
+    .replace(/%[0-9]*[sd@]/g, " ")
+    .replace(/https?:\/\/[^\s)]+/gi, " ")
+    .replace(/[^\s<>()]+@[^\s<>()]+\.[A-Za-z]{2,}/g, " ")
+    .replace(/\b[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+\b/g, " ")
+    .replace(/<[^>]+>/g, " ");
+}
+
+function letterWords(text: string): string[] {
+  const words: string[] = [];
+  for (const m of text.matchAll(/\p{L}+/gu)) {
+    words.push(m[0]!);
+  }
+  return words;
+}
+
+function isLatinWord(word: string): boolean {
+  return /^[\p{Script=Latin}]+$/u.test(word);
+}
+
+/** Brand / code token: ALLCAPS, CamelCase, digits, or 1–2 letter fragments — not ordinary prose. */
+function isIdentifierLikeWord(word: string): boolean {
+  if (!word) {
+    return true;
+  }
+  if (word.length <= 2) {
+    return true;
+  }
+  if (word === word.toUpperCase() && word.length <= 6) {
+    return true;
+  }
+  if (/[a-z][A-Z]/.test(word) || /[A-Z][a-z]+[A-Z]/.test(word)) {
+    return true;
+  }
+  if (/\d/.test(word)) {
+    return true;
+  }
+  return false;
+}
+
+function latinFallbackIssue(
+  text: string,
+  scriptCode: string,
+  expectedName: string,
+  options?: ScriptValidationOptions
+): ScriptValidationIssue | null {
+  const strippedOut = stripProtectedForScriptCheck(text);
+  const outWords = letterWords(strippedOut);
+  if (outWords.length === 0) {
+    return null;
+  }
+  const latinOut = outWords.filter(isLatinWord);
+  if (latinOut.length === 0) {
+    return null;
+  }
+  const fail = (sampleWords: string[]): ScriptValidationIssue => ({
+    message: `is written in Latin/Roman letters rather than the expected ${expectedName} (${scriptCode}) script`,
+    sample: sampleWords.slice(0, 5).map((w) => w.charAt(0)),
+  });
+
+  const source = options?.sourceText;
+  if (source !== undefined) {
+    const strippedSrc = stripProtectedForScriptCheck(source);
+    const srcSet = new Set(letterWords(strippedSrc).map((w) => w.toLowerCase()));
+    const unexplained = latinOut.filter((w) => !srcSet.has(w.toLowerCase()));
+    if (unexplained.length > 0) {
+      return fail(unexplained);
+    }
+    return null;
+  }
+
+  if (latinOut.every(isIdentifierLikeWord)) {
+    return null;
+  }
+  return fail(latinOut);
+}
+
+function letterCount(text: string): number {
+  let n = 0;
+  for (const ch of text) {
+    if (LETTER_RE.test(ch)) {
+      n++;
+    }
+  }
+  return n;
+}
+
+function expectedScriptLetterCount(text: string, expectedScripts: readonly string[]): number {
+  const counts = scriptLetterCounts(text);
+  return expectedScripts.reduce((sum, property) => sum + (counts.byScript.get(property) ?? 0), 0);
+}
+
+/** Optional source context for {@link scriptValidationIssue}. */
+export interface ScriptValidationOptions {
+  /** Original source string; used to tell preserved brands/code from copied English / romanization. */
+  sourceText?: string;
+}
+
 /**
  * Statistical check that a model response is written in the locale's expected script
- * ({@link scriptSubtag}). Returns `null` when the output is acceptable, or a
- * {@link ScriptValidationIssue} describing the dominant wrong script otherwise.
+ * ({@link scriptSubtag} / {@link effectiveScriptSubtag}). Returns `null` when the output is
+ * acceptable, or a {@link ScriptValidationIssue} describing the dominant wrong script otherwise.
  *
- * - No script subtag, or a composite/unsupported script (`Jpan`, `Kore`) → `null` (no enforcement).
+ * - Unknown/unsupported script codes → `null` (no enforcement).
+ * - Composite families (`Jpan` = Han+Hiragana+Katakana, `Kore` = Hangul+Han) are enforced as a set.
  * - `*-Latn` (romanized) targets: Latin letters must make up more than {@link EXPECTED_SCRIPT_MIN_SHARE}
  *   of all letters; otherwise the dominant non-Latin script is reported.
- * - Other scripts: Latin letters are ignored (code/URLs/brands), and the expected script must
- *   account for more than {@link EXPECTED_SCRIPT_MIN_SHARE} of the remaining letters. A lone foreign
- *   quote or a letter-like symbol (e.g. `ℹ`) therefore does not trip the check.
+ * - Other scripts: Latin letters are ignored when expected-script letters are present (code/URLs/brands).
+ *   The expected script (or family) must account for more than {@link EXPECTED_SCRIPT_MIN_SHARE} of the
+ *   remaining letters. Fully Latin leftover: when `sourceText` is provided, only Latin words absent from
+ *   the source are rejected (romanization). Names, emails, hostnames, and code that already appear in the
+ *   source pass. Without `sourceText`, identifier-like tokens pass and remaining Latin prose is rejected.
  * - `zh-Hans` / `zh-Hant`: when the Han check passes, variant-distinct characters are tallied; the
  *   mismatch is reported only when there are at least {@link VARIANT_MIN_SAMPLE} such characters AND
  *   the wrong variant is a clear majority (> {@link EXPECTED_SCRIPT_MIN_SHARE}), so a tie or a lone
@@ -434,15 +688,18 @@ function scriptName(property: string): string {
  */
 export function scriptValidationIssue(
   text: string,
-  scriptCode: string
+  scriptCode: string,
+  options?: ScriptValidationOptions
 ): ScriptValidationIssue | null {
-  const property = unicodeScriptPropertyForSubtag(scriptCode);
-  if (!property) {
+  const expectedScripts = expectedUnicodeScriptsForSubtag(scriptCode);
+  if (!expectedScripts || expectedScripts.length === 0) {
     return null;
   }
   const counts = scriptLetterCounts(text);
+  const canonical = canonicalScriptSubtag(scriptCode);
+  const expectedName = englishScriptName(canonical) ?? expectedScripts.join("/");
 
-  if (property === "Latin") {
+  if (expectedScripts.length === 1 && expectedScripts[0] === "Latin") {
     const total = counts.latin + counts.nonLatinTotal;
     if (total === 0) {
       return null;
@@ -458,26 +715,28 @@ export function scriptValidationIssue(
   }
 
   if (counts.nonLatinTotal === 0) {
-    return null;
+    return latinFallbackIssue(text, canonical, expectedName, options);
   }
-  const expectedCount = counts.byScript.get(property) ?? 0;
+  const expectedCount = expectedScripts.reduce(
+    (sum, property) => sum + (counts.byScript.get(property) ?? 0),
+    0
+  );
   if (expectedCount / counts.nonLatinTotal <= EXPECTED_SCRIPT_MIN_SHARE) {
     const dominant = dominantNonLatinScript(counts) ?? "Other";
-    const expectedName = englishScriptName(scriptCode) ?? property;
     return {
-      message: `is predominantly ${scriptName(dominant)} rather than the expected ${expectedName} (${scriptCode}) script`,
+      message: `is predominantly ${scriptName(dominant)} rather than the expected ${expectedName} (${canonical}) script`,
       sample: counts.samples.get(dominant) ?? [],
     };
   }
 
-  if (scriptCode === "Hans" || scriptCode === "Hant") {
+  if (canonical === "Hans" || canonical === "Hant") {
     const variant = hanVariantCounts(text);
     const exclusiveTotal = variant.simplified + variant.traditional;
     // Too few variant-distinct characters to judge confidently (e.g. a 1-vs-1 tie).
     if (exclusiveTotal < VARIANT_MIN_SAMPLE) {
       return null;
     }
-    const wantSimplified = scriptCode === "Hans";
+    const wantSimplified = canonical === "Hans";
     const expectedVariant = wantSimplified ? variant.simplified : variant.traditional;
     // Flag only when the wrong variant is a clear majority (> 60%), never on a tie or a thin margin.
     if (expectedVariant / exclusiveTotal < 1 - EXPECTED_SCRIPT_MIN_SHARE) {
@@ -492,6 +751,72 @@ export function scriptValidationIssue(
   }
 
   return null;
+}
+
+/**
+ * Locale-aware wrapper around {@link scriptValidationIssue} using {@link effectiveScriptSubtag}.
+ * Returns `null` when the locale has no enforceable script or the text is acceptable.
+ */
+export function translationScriptIssue(
+  text: string,
+  locale: string,
+  sourceText?: string
+): ScriptValidationIssue | null {
+  const script = effectiveScriptSubtag(locale);
+  if (!script) {
+    return null;
+  }
+  return scriptValidationIssue(text, script, sourceText !== undefined ? { sourceText } : undefined);
+}
+
+/**
+ * Batch-level check: flag when joined source prose is long enough and the joined outputs
+ * contain zero letters in the expected script (the model echoed English or romanized everything).
+ * Per-string {@link scriptValidationIssue} already covers wrong-script mix-ins and romanization
+ * of individual items. `*-Latn` locales are not enforced here.
+ */
+export function batchScriptValidationIssue(
+  outputs: readonly string[],
+  sources: readonly string[],
+  scriptCode: string
+): ScriptValidationIssue | null {
+  const expectedScripts = expectedUnicodeScriptsForSubtag(scriptCode);
+  if (!expectedScripts || expectedScripts.length === 0) {
+    return null;
+  }
+  if (expectedScripts.length === 1 && expectedScripts[0] === "Latin") {
+    return null;
+  }
+  const strippedSources = sources.map((s) => stripProtectedForScriptCheck(s)).join(" ");
+  if (letterCount(strippedSources) < BATCH_SCRIPT_MIN_LETTERS) {
+    return null;
+  }
+  const strippedOutputs = outputs.map((s) => stripProtectedForScriptCheck(s)).join(" ");
+  if (expectedScriptLetterCount(strippedOutputs, expectedScripts) > 0) {
+    return null;
+  }
+  const canonical = canonicalScriptSubtag(scriptCode);
+  const expectedName = englishScriptName(canonical) ?? expectedScripts.join("/");
+  const sampleWords = letterWords(strippedOutputs).slice(0, 5);
+  return {
+    message: `has no letters in the expected ${expectedName} (${canonical}) script (batch appears untranslated or romanized)`,
+    sample: sampleWords.map((w) => w.charAt(0)),
+  };
+}
+
+/**
+ * Locale-aware wrapper around {@link batchScriptValidationIssue} using {@link effectiveScriptSubtag}.
+ */
+export function batchTranslationScriptIssue(
+  outputs: readonly string[],
+  sources: readonly string[],
+  locale: string
+): ScriptValidationIssue | null {
+  const script = effectiveScriptSubtag(locale);
+  if (!script) {
+    return null;
+  }
+  return batchScriptValidationIssue(outputs, sources, script);
 }
 
 /** Split CLI/config locale lists (commas and/or ASCII whitespace). Dedupes, preserves order. */

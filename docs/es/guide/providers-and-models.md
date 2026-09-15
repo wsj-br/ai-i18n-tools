@@ -35,7 +35,7 @@ Establezca la clave de API del proveedor activo en su entorno o en el archivo `.
 <a id="model-fallback-chain"></a>
 ### Cadena de reserva de modelos
 
-`translationModels` es una **lista ordenada**, no una única opción. La CLI prueba el primer modelo; si la solicitud o el análisis fallan, pasa a la siguiente entrada. Configure varios modelos para que una interrupción transitoria o un modelo que tenga dificultades con una configuración regional no bloquee toda la ejecución.
+`translationModels` es una **lista ordenada**, no una opción única. La CLI prueba el primer modelo; si falla la solicitud, el análisis o el script incorrecto, pasa a la siguiente entrada. Configure varios modelos para que una interrupción transitoria o un modelo que tenga dificultades con una configuración regional (por ejemplo, hindi romanizado en lugar de devanagari) no bloquee toda la ejecución. La salida romanizada se rechaza para las configuraciones regionales de script nativo; una configuración regional que deba permanecer romanizada debe configurarse con una subetiqueta `-Latn` explícita (por ejemplo, `hi-Latn`).
 
 **Niveles de resolución** (deduplicados, orden conservado):
 

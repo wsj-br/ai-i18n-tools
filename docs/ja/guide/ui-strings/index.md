@@ -50,7 +50,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json`を読み取り、各ターゲットロケールのアクティブなLLMプロバイダーにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデル選択にはUIチェーンが使用されます: `localeModels(locale)` → `uiModels` → `translationModels`（「[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)」を参照）。
+`strings.json` を読み取り、各ターゲットロケールのアクティブな LLM プロバイダーにバッチを送信し、フラットな JSON ファイル (`de.json`, `fr.json` など) を `ui.flatOutputDir` に書き込みます。モデルの選択は UI チェーンを使用します: `localeModels(locale)` → `uiModels` → `translationModels` ([プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照)。ロケール内では、最大 `uiBatchConcurrency` バッチが同時に実行されます (デフォルト **2**; [設定 — uiBatchConcurrency](/ja/reference/configuration#uibatchconcurrency-optional) を参照)。`-j` は引き続きターゲットロケールのみを並列化します。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
@@ -62,7 +62,7 @@ ai-i18n-tools translate-ui
 
 各エントリについて、`translate-ui`は、オプションの`models`オブジェクト (`translated`と同じロケールキー) 内で、各ロケールを正常に翻訳した**アクティブプロバイダーからのモデルID**を格納します。翻訳ダッシュボードで編集された文字列は、そのロケールの`models`で、番兵値`user-edited`でマークされます。`ui.flatOutputDir`の下にあるロケールごとのフラットファイルは、**ソース文字列 → 翻訳**のみのままであり、`models`は含まれません (そのため、ランタイムバンドルは変更されません)。
 
-> **注:** UI文字列に対するダッシュボードの編集は、SQLiteドキュメントキャッシュではなく、`strings.json`に保存されます。カタログからフラットロケールファイルを書き換えるには、プレーンな`sync`または`translate-ui` (特別なフラグなし) を実行します。`--force-update`はUIステップに転送**されません**。手動編集後にUIコマンドで`--force`を使用しないでください。すべてのエントリが再翻訳され、`user-edited`行が上書きされる可能性があります。
+> **注意:** UI 文字列に対するダッシュボードの編集は、SQLite ドキュメントキャッシュではなく `strings.json` に保存されます。カタログからフラットなロケールファイルを再作成するには、通常の `sync` または `translate-ui` (特別なフラグなし) を実行してください — `--force-update` は UI ステップに **転送されません**。手動編集後に UI コマンドで `--force` を使用することは避けてください: すべてのエントリが再翻訳され、`user-edited` の行が上書きされる可能性があります。保存された翻訳がロケールの書記体系チェックに失敗したカタログ行 (例: `hi` のローマ字化されたヒンディー語) は、欠落しているものとして扱われ、`--force` なしで再翻訳されます。
 
 次に、実行時にi18nextを接続します — [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime)。
 

@@ -30,3 +30,14 @@ Markdown 链接或 `![alt](url)` 在英文版中有效，但在翻译版本中�
 1. 确认您的资产布局与您的 `docsOutput.style` 匹配（扁平式与文档系统）。请参阅[链接重写](/zh-Hans/guide/documents/link-rewriting)和[图片与截图](/zh-Hans/guide/images-and-screenshots/)。
 2. 添加或调整 `docsOutput.postProcessing.regexAdjustments` 以交换区域设置段或桥接绝对 `/img/…` 路径。对于扁平式布局，请记住扁平链接重写器在 **之前** 运行 `regexAdjustments` — 根据已添加前缀的 URL 匹配模式。
 3. 确保区域设置特定的资产文件存在于重写后的 markdown 引用的路径中（`translate-docs` 重写 URL 但不复制栅格文件）。
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## 印地语、阿拉伯语、CJK 或西里尔文输出被罗马化（拉丁字母）
+
+某些模型会翻译含义，但将结果以拉丁/罗马字母书写（例如将印地语写为 `Namaste` 而非 `नमस्ते`）。不带后缀的 `hi` 表示天城文；仅当您需要罗马化印地语时才使用 `hi-Latn`。
+
+**修复**
+
+1. 确认区域设置代码与您想要的书写系统匹配（`hi` 与 `hi-Latn`，`zh-Hans` 与 `zh-Hant`，`sr` 与 `sr-Latn`）。
+2. 重新运行翻译，以便拒绝使用错误书写系统的缓存行：对 UI 字符串使用 `translate-ui --force`，或使用 `translate-docs` / `sync`（对于具有预期书写系统的区域设置，文件级跳过已禁用；`--force-update` 仍会复用有效的片段缓存）。
+3. 如果某个模型始终无法通过书写系统检查，请为该区域设置添加一条 `localeModels` 条目，以便优先尝试更强的模型——参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。

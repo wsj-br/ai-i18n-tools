@@ -21,6 +21,6 @@
 
 `config.svg` में कॉन्फ़िगर की गई SVG फ़ाइलों का अनुवाद करें (दस्तावेज़ों से अलग)। इसके लिए `features.translateSVG` आवश्यक है। दस्तावेज़ों के समान कैश विचार; उस रन के लिए SQLite रीड/राइट को छोड़ने के लिए `--no-cache` का समर्थन करता है।
 
-**मुख्य विकल्प:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**मुख्य विकल्प:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, वैश्विक `--debug-failed`
 
 **यह भी देखें:** [SVG अनुवाद](/hi/guide/svg-translation/)

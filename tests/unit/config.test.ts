@@ -227,6 +227,31 @@ describe("parseI18nConfig", () => {
     expect(c.docs[0].outputDir).toBe("./out");
   });
 
+  it("accepts uiBatchConcurrency", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        uiBatchConcurrency: 3,
+      })
+    );
+    expect(c.uiBatchConcurrency).toBe(3);
+  });
+
+  it("rejects unknown top-level keys", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+          notARealKey: true,
+        })
+      )
+    ).toThrow(/Invalid ai-i18n-tools config/);
+  });
+
   it("accepts providers.uiModels and providers.localeModels", () => {
     const c = parseI18nConfig(
       mergeWithDefaults({
@@ -853,10 +878,12 @@ describe("writeInitConfigFile", () => {
         sourceLocale?: string;
         provider?: string;
         providers?: Record<string, { translationModels?: string[] }>;
+        uiBatchConcurrency?: number;
       };
       expect(raw.sourceLocale).toBe("en-GB");
       expect(raw.provider).toBe("openrouter");
       expect(raw.providers?.openrouter?.translationModels?.[0]).toBe("google/gemini-2.5-flash");
+      expect(raw.uiBatchConcurrency).toBe(2);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

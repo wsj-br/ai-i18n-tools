@@ -1,9 +1,38 @@
 import type { Segment, SegmentTranslationMapValue } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 
-const TEXT_TAG_RE = /<text([\s\S]*?)>([\s\S]*?)<\/text>/gi;
-const TITLE_TAG_RE = /<title([\s\S]*?)>([\s\S]*?)<\/title>/gi;
-const DESC_TAG_RE = /<desc([\s\S]*?)>([\s\S]*?)<\/desc>/gi;
+type SvgElementName = "text" | "title" | "desc";
+
+interface SvgElementMatch {
+  attrs: string;
+  inner: string;
+  fullMatch: string;
+}
+
+/**
+ * Match `<tag …>inner</tag>` without treating a same-prefix name (`<textPath>`) as `<text>`,
+ * and without pairing a self-closing `<tag … />` with a later `</tag>`.
+ */
+function matchSvgElements(svg: string, tag: SvgElementName): SvgElementMatch[] {
+  const re = new RegExp(
+    `<${tag}(?=[\\s>/])((?:[^>"']|"[^"]*"|'[^']*')*?)\\s*(?:/>|>([\\s\\S]*?)</${tag}\\s*>)`,
+    "gi"
+  );
+  const out: SvgElementMatch[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(svg)) !== null) {
+    const inner = match[2];
+    if (inner === undefined) {
+      continue;
+    }
+    out.push({
+      attrs: match[1] ?? "",
+      inner,
+      fullMatch: match[0],
+    });
+  }
+  return out;
+}
 
 function extractTextFromXml(xml: string): string {
   return xml
@@ -43,6 +72,20 @@ function decodeXmlEntitiesFromModel(text: string): string {
   return s;
 }
 
+function openingTagFor(element: SvgElementName, attrs: string): string {
+  switch (element) {
+    case "text":
+      return `<text${attrs}>`;
+    case "title":
+    case "desc":
+      return (attrs || "").trim();
+    default: {
+      const _exhaustive: never = element;
+      return _exhaustive;
+    }
+  }
+}
+
 export interface SvgExtractorOptions {
   forceLowercase?: boolean;
 }
@@ -70,65 +113,26 @@ export class SvgExtractor extends BaseExtractor {
     const segments: Segment[] = [];
     let i = 0;
 
-    let match: RegExpExecArray | null;
-    TEXT_TAG_RE.lastIndex = 0;
-    while ((match = TEXT_TAG_RE.exec(content)) !== null) {
-      const attrs = match[1] ?? "";
-      const innerContent = match[2] ?? "";
-      const text = extractTextFromXml(innerContent);
-      if (!text) {
-        continue;
+    const elements: SvgElementName[] = ["text", "title", "desc"];
+    for (const element of elements) {
+      for (const found of matchSvgElements(content, element)) {
+        const text = extractTextFromXml(found.inner);
+        if (!text) {
+          continue;
+        }
+        segments.push({
+          id: `svg-${i++}`,
+          type: "svg-text",
+          content: text,
+          hash: this.computeHash(text),
+          translatable: true,
+          svg: {
+            element,
+            fullMatch: found.fullMatch,
+            openingTag: openingTagFor(element, found.attrs),
+          },
+        });
       }
-      const fullMatch = match[0];
-      const openingTag = `<text${attrs}>`;
-      segments.push({
-        id: `svg-${i++}`,
-        type: "svg-text",
-        content: text,
-        hash: this.computeHash(text),
-        translatable: true,
-        svg: { element: "text", fullMatch, openingTag },
-      });
-    }
-
-    TITLE_TAG_RE.lastIndex = 0;
-    while ((match = TITLE_TAG_RE.exec(content)) !== null) {
-      const attrs = match[1] ?? "";
-      const innerContent = match[2] ?? "";
-      const text = extractTextFromXml(innerContent);
-      if (!text) {
-        continue;
-      }
-      const fullMatch = match[0];
-      const openingTag = (attrs || "").trim();
-      segments.push({
-        id: `svg-${i++}`,
-        type: "svg-text",
-        content: text,
-        hash: this.computeHash(text),
-        translatable: true,
-        svg: { element: "title", fullMatch, openingTag },
-      });
-    }
-
-    DESC_TAG_RE.lastIndex = 0;
-    while ((match = DESC_TAG_RE.exec(content)) !== null) {
-      const attrs = match[1] ?? "";
-      const innerContent = match[2] ?? "";
-      const text = extractTextFromXml(innerContent);
-      if (!text) {
-        continue;
-      }
-      const fullMatch = match[0];
-      const openingTag = (attrs || "").trim();
-      segments.push({
-        id: `svg-${i++}`,
-        type: "svg-text",
-        content: text,
-        hash: this.computeHash(text),
-        translatable: true,
-        svg: { element: "desc", fullMatch, openingTag },
-      });
     }
 
     return segments;
@@ -152,18 +156,27 @@ export class SvgExtractor extends BaseExtractor {
       }
       out = decodeXmlEntitiesFromModel(out);
       const escaped = escapeXml(out);
-      if (meta.element === "text") {
-        const newContent = `${meta.openingTag}<tspan>${escaped}</tspan></text>`;
-        result = result.replace(meta.fullMatch, newContent);
-      } else if (meta.element === "title") {
-        const attrs = meta.openingTag ? ` ${meta.openingTag}` : "";
-        const newContent = `<title${attrs}>${escaped}</title>`;
-        result = result.replace(meta.fullMatch, newContent);
-      } else {
-        const attrs = meta.openingTag ? ` ${meta.openingTag}` : "";
-        const newContent = `<desc${attrs}>${escaped}</desc>`;
-        result = result.replace(meta.fullMatch, newContent);
+      let newContent: string;
+      switch (meta.element) {
+        case "text":
+          newContent = `${meta.openingTag}<tspan>${escaped}</tspan></text>`;
+          break;
+        case "title": {
+          const attrs = meta.openingTag ? ` ${meta.openingTag}` : "";
+          newContent = `<title${attrs}>${escaped}</title>`;
+          break;
+        }
+        case "desc": {
+          const attrs = meta.openingTag ? ` ${meta.openingTag}` : "";
+          newContent = `<desc${attrs}>${escaped}</desc>`;
+          break;
+        }
+        default: {
+          const _exhaustive: never = meta.element;
+          return _exhaustive;
+        }
       }
+      result = result.replace(meta.fullMatch, () => newContent);
     }
 
     return result;

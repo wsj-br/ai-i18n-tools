@@ -8,12 +8,13 @@ import type {
   StringsJsonPluralEntry,
 } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
-import { LlmClient } from "../api/llm-client.js";
+import { LlmAllModelsFailedError, LlmClient } from "../api/llm-client.js";
 import {
   dedupeOrderedModelIds,
   englishLanguageNameForLocale,
   normalizeLocale,
   resolveUITranslationModels,
+  translationScriptIssue,
 } from "../core/config.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { buildPluralPassBPrompt, buildPluralStep0Prompt } from "../core/prompt-builder.js";
@@ -24,6 +25,12 @@ import {
   requiredCldrPluralForms,
 } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
+import {
+  llmClientDebugFailedOpts,
+  translationFailureLogDir,
+  warnTranslationFailureLogPath,
+  writeTranslationFailureLog,
+} from "./translation-failure-log.js";
 import {
   timestamp,
   formatElapsedMmSs,
@@ -81,7 +88,14 @@ function plainMissingBatchRangeLabel(
 export interface TranslateUIOptions {
   cwd: string;
   locales: string[];
+  /** Re-translate every entry of the target {@link locales}; does not touch source-locale plural forms. */
   force: boolean;
+  /**
+   * Re-run plural Step 0 for `sourceLocale` even when its forms already have content.
+   * Separate from {@link force} because Pass B translates every target locale *from* these forms,
+   * so refreshing them changes the source of truth for locales outside {@link locales}.
+   */
+  forceSourcePlurals?: boolean;
   dryRun: boolean;
   verbose: boolean;
   /** Path to the active log file (printed in the header block). */
@@ -90,8 +104,18 @@ export interface TranslateUIOptions {
    * Max parallel target locales (CLI `-j`). Effective default when omitted: `config.concurrency ?? 4`.
    */
   concurrency?: number;
+  /**
+   * Max parallel LLM batch requests per locale (plain chunks of 50 and plural groups).
+   * Effective default when omitted: `config.uiBatchConcurrency ?? 2`.
+   */
+  uiBatchConcurrency?: number;
   /** When aborted (Ctrl+C), cooperative workers stop claiming new work. */
   abortSignal?: AbortSignal;
+  /**
+   * When true, write per-failure debug logs (`*-FAILED-TRANSLATION_*.log`) under cacheDir.
+   * Default: off.
+   */
+  debugFailed?: boolean;
 }
 
 export interface TranslateUISummary {
@@ -116,6 +140,35 @@ function localeLabelForPrompt(config: I18nConfig, localeCode: string): string {
     return `${display}`;
   }
   return localeCode;
+}
+
+function writeUiTranslationFailureLog(
+  opts: TranslateUIOptions,
+  config: I18nConfig,
+  relativePath: string,
+  locale: string,
+  segmentsLabel: string,
+  err: unknown
+): void {
+  const dir = translationFailureLogDir(opts, config.cacheDir);
+  if (!dir || !(err instanceof LlmAllModelsFailedError)) {
+    return;
+  }
+  warnTranslationFailureLogPath(
+    writeTranslationFailureLog({
+      cacheDirAbs: dir,
+      relativePath,
+      locale,
+      segmentsLabel,
+      outcome: "fatal",
+      failedModel: err.details.lastModel,
+      qualityErrors: [err.message],
+      perSegmentLines: [],
+      systemPrompt: err.details.systemPrompt,
+      userContent: err.details.userContent,
+      rawAssistantContent: err.details.lastRawAssistantContent ?? "",
+    })
+  );
 }
 
 function buildFlatJsonForLocale(strings: StringsFile, locale: string): Record<string, string> {
@@ -342,6 +395,10 @@ async function runTranslateUIBody(
   );
 
   const parallelLimit = Math.max(1, Math.floor(opts.concurrency ?? config.concurrency ?? 4));
+  const uiBatchLimit = Math.max(
+    1,
+    Math.floor(opts.uiBatchConcurrency ?? config.uiBatchConcurrency ?? 2)
+  );
 
   // Header block
   console.log(
@@ -374,6 +431,9 @@ async function runTranslateUIBody(
   if (opts.logPath) {
     console.log(chalk.cyan(`${t("Output log:")} `) + chalk.magenta(opts.logPath));
   }
+  console.log(
+    chalk.cyan(`${t("Parallel UI batches per locale:")} `) + chalk.magenta(`${uiBatchLimit}`)
+  );
   if (targets.length > 1) {
     console.log(
       chalk.cyan(`${t("Parallel translations:")} `) +
@@ -403,7 +463,11 @@ async function runTranslateUIBody(
     if (!opts.dryRun) {
       let step0Client: LlmClient;
       try {
-        step0Client = await createFilteredLlmClient(config, srcNorm, { ui: true });
+        step0Client = await createFilteredLlmClient(config, srcNorm, {
+          ui: true,
+          ...llmClientDebugFailedOpts(opts, config.cacheDir),
+          debugFailedRelativePath: stringsRel,
+        });
       } catch (e) {
         throw new Error(
           t("LLM provider API key required for UI translation: {{error}}", {
@@ -422,7 +486,8 @@ async function runTranslateUIBody(
           const [, entry] = tuple;
           return (
             isPluralStringsEntry(entry) &&
-            (opts.force || !pluralTranslatedLocaleHasContent(entry.translated?.[srcNorm], srcNorm))
+            (opts.forceSourcePlurals === true ||
+              !pluralTranslatedLocaleHasContent(entry.translated?.[srcNorm], srcNorm))
           );
         }
       );
@@ -442,11 +507,19 @@ async function runTranslateUIBody(
           zeroDigit: entry.zeroDigit === true,
           glossaryHints: hints,
           intlPluralLocaleTag: srcNorm,
+          sourceLocale: srcNorm,
         });
-        const batch = await step0Client.translatePluralCardinalBatch(req, msgs, {
-          originalLiteral: entry.source,
-          zeroDigit: entry.zeroDigit === true,
-        });
+        let batch;
+        try {
+          batch = await step0Client.translatePluralCardinalBatch(req, msgs, {
+            originalLiteral: entry.source,
+            zeroDigit: entry.zeroDigit === true,
+            targetLocale: srcNorm,
+          });
+        } catch (e) {
+          writeUiTranslationFailureLog(opts, config, stringsRel, srcNorm, `plural Step 0 ${h}`, e);
+          throw e;
+        }
         const forms = compactIdenticalPluralForms(batch.forms, srcNorm) as Record<
           CldrPluralForm,
           string
@@ -501,7 +574,11 @@ async function runTranslateUIBody(
       let localeClient: LlmClient | null = null;
       if (!opts.dryRun) {
         try {
-          localeClient = await createFilteredLlmClient(config, locale, { ui: true });
+          localeClient = await createFilteredLlmClient(config, locale, {
+            ui: true,
+            ...llmClientDebugFailedOpts(opts, config.cacheDir),
+            debugFailedRelativePath: stringsRel,
+          });
         } catch (e) {
           throw new Error(
             t("LLM provider API key required for UI translation: {{error}}", {
@@ -524,7 +601,10 @@ async function runTranslateUIBody(
           return true;
         }
         const t = entry.translated?.[locale];
-        return t === undefined || String(t).trim() === "";
+        if (t === undefined || String(t).trim() === "") {
+          return true;
+        }
+        return translationScriptIssue(String(t), locale, src) !== null;
       });
 
       const plainEligible = entries.filter(([, entry]) => {
@@ -546,93 +626,123 @@ async function runTranslateUIBody(
           )
         );
 
+        const plainChunks: Array<{ startIndex: number; chunk: typeof missingPlain }> = [];
         for (let i = 0; i < missingPlain.length; i += UI_CHUNK) {
-          const chunk = missingPlain.slice(i, i + UI_CHUNK);
-          const sources = chunk.map(([, v]) => v.source ?? "");
-          const chunkNum = Math.floor(i / UI_CHUNK) + 1;
-          const chunkTotal = Math.ceil(missingPlain.length / UI_CHUNK);
-
-          if (opts.dryRun || !localeClient) {
-            if (opts.verbose) {
-              console.log(
-                chalk.yellow(
-                  `  ${t(
-                    "{{timestamp}} - [dry-run] plain chunk {{num}}/{{total}} ({{count}} strings)",
-                    {
-                      timestamp: timestamp(),
-                      num: chunkNum,
-                      total: chunkTotal,
-                      count: chunk.length,
-                    }
-                  )}`
-                )
-              );
-            }
-            continue;
-          }
-
-          const protectedSources: string[] = [];
-          const glossaryReplacementsPerString: string[][] = [];
-          for (const src of sources) {
-            const g = protectGlossaryForcedTerms(src, glossary, locale);
-            protectedSources.push(g.text);
-            glossaryReplacementsPerString.push(g.replacements);
-          }
-          const hints = glossary.findTermsInText(protectedSources.join("\n"), locale);
-          const uiBatch = await localeClient.translateUIBatch(protectedSources, locale, {
-            glossaryHints: hints,
-          });
-          inputTokens += uiBatch.usage.inputTokens;
-          outputTokens += uiBatch.usage.outputTokens;
-          costUsd += uiBatch.cost ?? 0;
-
-          const rangeLabel = plainMissingBatchRangeLabel(i, chunk.length, missingPlain.length);
-          const n = chunk.length;
-          const batchMsg =
-            n === 1
-              ? t(
-                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} string in batch, {{tokens}} tokens, model: {{model}})",
-                  {
-                    locale,
-                    path: stringsRel,
-                    range: rangeLabel,
-                    count: n,
-                    tokens: uiBatch.usage.totalTokens,
-                    model: uiBatch.model,
-                  }
-                )
-              : t(
-                  "✔️  {{locale}} {{path}}: {{range}} ({{count}} strings in batch, {{tokens}} tokens, model: {{model}})",
-                  {
-                    locale,
-                    path: stringsRel,
-                    range: rangeLabel,
-                    count: n,
-                    tokens: uiBatch.usage.totalTokens,
-                    model: uiBatch.model,
-                  }
-                );
-          console.log(chalk.green(batchMsg));
-
-          chunk.forEach(([h], idx) => {
-            let tr = uiBatch.translations[idx];
-            if (tr !== undefined) {
-              tr = restoreGlossaryForcedTerms(tr, glossaryReplacementsPerString[idx] ?? []);
-            }
-            if (tr !== undefined && strings[h]) {
-              const ent = strings[h];
-              if (isPluralStringsEntry(ent)) {
-                return;
-              }
-              ent.translated = ent.translated ?? {};
-              ent.translated[locale] = tr;
-              ent.models = ent.models ?? {};
-              ent.models[locale] = uiBatch.model;
-              stringsUpdated++;
-              stringsTranslated++;
-            }
+          plainChunks.push({
+            startIndex: i,
+            chunk: missingPlain.slice(i, i + UI_CHUNK),
           });
         }
+        const chunkTotal = plainChunks.length;
+        const plainConc = opts.dryRun || !localeClient ? 1 : uiBatchLimit;
+        await runMapWithConcurrency(
+          plainChunks,
+          plainConc,
+          async ({ startIndex, chunk }) => {
+            const sources = chunk.map(([, v]) => v.source ?? "");
+            const chunkNum = Math.floor(startIndex / UI_CHUNK) + 1;
+            const client = localeClient;
+
+            if (opts.dryRun || !client) {
+              if (opts.verbose) {
+                console.log(
+                  chalk.yellow(
+                    `  ${t(
+                      "{{timestamp}} - [dry-run] plain chunk {{num}}/{{total}} ({{count}} strings)",
+                      {
+                        timestamp: timestamp(),
+                        num: chunkNum,
+                        total: chunkTotal,
+                        count: chunk.length,
+                      }
+                    )}`
+                  )
+                );
+              }
+              return;
+            }
+
+            const protectedSources: string[] = [];
+            const glossaryReplacementsPerString: string[][] = [];
+            for (const src of sources) {
+              const g = protectGlossaryForcedTerms(src, glossary, locale);
+              protectedSources.push(g.text);
+              glossaryReplacementsPerString.push(g.replacements);
+            }
+            const hints = glossary.findTermsInText(protectedSources.join("\n"), locale);
+            let uiBatch;
+            try {
+              uiBatch = await client.translateUIBatch(protectedSources, locale, {
+                glossaryHints: hints,
+              });
+            } catch (e) {
+              writeUiTranslationFailureLog(
+                opts,
+                config,
+                stringsRel,
+                locale,
+                `plain chunk ${chunkNum}/${chunkTotal}`,
+                e
+              );
+              throw e;
+            }
+            inputTokens += uiBatch.usage.inputTokens;
+            outputTokens += uiBatch.usage.outputTokens;
+            costUsd += uiBatch.cost ?? 0;
+
+            const rangeLabel = plainMissingBatchRangeLabel(
+              startIndex,
+              chunk.length,
+              missingPlain.length
+            );
+            const n = chunk.length;
+            const batchMsg =
+              n === 1
+                ? t(
+                    "✔️  {{locale}} {{path}}: {{range}} ({{count}} string in batch, {{tokens}} tokens, model: {{model}})",
+                    {
+                      locale,
+                      path: stringsRel,
+                      range: rangeLabel,
+                      count: n,
+                      tokens: uiBatch.usage.totalTokens,
+                      model: uiBatch.model,
+                    }
+                  )
+                : t(
+                    "✔️  {{locale}} {{path}}: {{range}} ({{count}} strings in batch, {{tokens}} tokens, model: {{model}})",
+                    {
+                      locale,
+                      path: stringsRel,
+                      range: rangeLabel,
+                      count: n,
+                      tokens: uiBatch.usage.totalTokens,
+                      model: uiBatch.model,
+                    }
+                  );
+            console.log(chalk.green(batchMsg));
+
+            chunk.forEach(([h], idx) => {
+              let tr = uiBatch.translations[idx];
+              if (tr !== undefined) {
+                tr = restoreGlossaryForcedTerms(tr, glossaryReplacementsPerString[idx] ?? []);
+              }
+              if (tr !== undefined && strings[h]) {
+                const ent = strings[h];
+                if (isPluralStringsEntry(ent)) {
+                  return;
+                }
+                ent.translated = ent.translated ?? {};
+                ent.translated[locale] = tr;
+                ent.models = ent.models ?? {};
+                ent.models[locale] = uiBatch.model;
+                stringsUpdated++;
+                stringsTranslated++;
+              }
+            });
+          },
+          opts.abortSignal
+        );
       } else {
         console.log(
           chalk.gray(
@@ -649,10 +759,19 @@ async function runTranslateUIBody(
         if (!isPluralStringsEntry(entry)) {
           return false;
         }
-        if (!opts.force && pluralTranslatedLocaleHasContent(entry.translated?.[locale], locale)) {
-          return false;
+        if (opts.force) {
+          return true;
         }
-        return true;
+        if (!pluralTranslatedLocaleHasContent(entry.translated?.[locale], locale)) {
+          return true;
+        }
+        const forms = entry.translated?.[locale];
+        if (!forms || typeof forms !== "object") {
+          return true;
+        }
+        return Object.values(forms).some(
+          (v) => typeof v === "string" && translationScriptIssue(v, locale, entry.source) !== null
+        );
       });
 
       const pluralEligible = entries.filter(([, entry]) => isPluralStringsEntry(entry)).length;
@@ -671,99 +790,110 @@ async function runTranslateUIBody(
       }
 
       if (!opts.dryRun && localeClient) {
-        for (let pi = 0; pi < pluralTargets.length; pi++) {
-          const [h, entry] = pluralTargets[pi]!;
-          if (!isPluralStringsEntry(entry)) {
-            continue;
-          }
-          const srcForms = entry.translated?.[srcNorm];
-          if (!pluralTranslatedLocaleHasContent(srcForms, srcNorm)) {
-            console.warn(
-              chalk.yellow(
-                `   ${t(
-                  "⚠️  Skip plural {{id}}: missing non-empty plural forms for source locale {{locale}} (fill Step 0 or entries in strings.json, then run translate-ui again).",
-                  { id: h, locale: srcNorm }
-                )}`
+        const client = localeClient;
+        await runMapWithConcurrency(
+          pluralTargets,
+          uiBatchLimit,
+          async ([h, entry], pi) => {
+            if (!isPluralStringsEntry(entry)) {
+              return;
+            }
+            const srcForms = entry.translated?.[srcNorm];
+            if (!pluralTranslatedLocaleHasContent(srcForms, srcNorm)) {
+              console.warn(
+                chalk.yellow(
+                  `   ${t(
+                    "⚠️  Skip plural {{id}}: missing non-empty plural forms for source locale {{locale}} (fill Step 0 or entries in strings.json, then run translate-ui again).",
+                    { id: h, locale: srcNorm }
+                  )}`
+                )
+              );
+              return;
+            }
+            const reqTarget = requiredCldrPluralForms(locale);
+            const srcReq = requiredCldrPluralForms(srcNorm);
+            const protectedParts: {
+              key: CldrPluralForm;
+              text: string;
+              replacements: string[];
+            }[] = [];
+            for (const form of srcReq) {
+              const raw = srcForms?.[form] ?? "";
+              const g = protectGlossaryForcedTerms(raw, glossary, locale);
+              protectedParts.push({ key: form, text: g.text, replacements: g.replacements });
+            }
+            const hints = glossary.findTermsInText(
+              protectedParts.map((p) => p.text).join("\n"),
+              locale
+            );
+            const sourceFormsProtected: Partial<Record<CldrPluralForm, string>> = {};
+            for (const p of protectedParts) {
+              sourceFormsProtected[p.key] = p.text;
+            }
+            const msgs = buildPluralPassBPrompt({
+              sourceLanguageLabel: localeLabelForPrompt(config, srcNorm),
+              targetLanguageLabel: localeLabelForPrompt(config, locale),
+              sourceForms: sourceFormsProtected,
+              requiredTargetForms: reqTarget,
+              originalLiteral: entry.source,
+              glossaryHints: hints,
+              intlPluralLocaleTag: locale,
+              targetLocale: locale,
+            });
+            let batch;
+            try {
+              batch = await client.translatePluralCardinalBatch(reqTarget, msgs, {
+                targetLocale: locale,
+                originalLiteral: entry.source,
+                zeroDigit: entry.zeroDigit === true,
+              });
+            } catch (e) {
+              writeUiTranslationFailureLog(opts, config, stringsRel, locale, `plural ${h}`, e);
+              throw e;
+            }
+            console.log(
+              chalk.green(
+                t(
+                  "✔️  {{locale}} {{path}}: plural {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens, model: {{model}})",
+                  {
+                    locale,
+                    path: stringsRel,
+                    index: pi + 1,
+                    total: pluralTargets.length,
+                    id: h,
+                    tokens: batch.usage.totalTokens,
+                    model: batch.model,
+                  }
+                )
               )
             );
-            continue;
-          }
-          const reqTarget = requiredCldrPluralForms(locale);
-          const srcReq = requiredCldrPluralForms(srcNorm);
-          const protectedParts: {
-            key: CldrPluralForm;
-            text: string;
-            replacements: string[];
-          }[] = [];
-          for (const form of srcReq) {
-            const raw = srcForms?.[form] ?? "";
-            const g = protectGlossaryForcedTerms(raw, glossary, locale);
-            protectedParts.push({ key: form, text: g.text, replacements: g.replacements });
-          }
-          const hints = glossary.findTermsInText(
-            protectedParts.map((p) => p.text).join("\n"),
-            locale
-          );
-          const sourceFormsProtected: Partial<Record<CldrPluralForm, string>> = {};
-          for (const p of protectedParts) {
-            sourceFormsProtected[p.key] = p.text;
-          }
-          const msgs = buildPluralPassBPrompt({
-            sourceLanguageLabel: localeLabelForPrompt(config, srcNorm),
-            targetLanguageLabel: localeLabelForPrompt(config, locale),
-            sourceForms: sourceFormsProtected,
-            requiredTargetForms: reqTarget,
-            originalLiteral: entry.source,
-            glossaryHints: hints,
-            intlPluralLocaleTag: locale,
-            targetLocale: locale,
-          });
-          const batch = await localeClient.translatePluralCardinalBatch(reqTarget, msgs, {
-            targetLocale: locale,
-            originalLiteral: entry.source,
-            zeroDigit: entry.zeroDigit === true,
-          });
-          console.log(
-            chalk.green(
-              t(
-                "✔️  {{locale}} {{path}}: plural {{index}}/{{total}} ({{id}}) (1 plural group in batch, {{tokens}} tokens, model: {{model}})",
-                {
-                  locale,
-                  path: stringsRel,
-                  index: pi + 1,
-                  total: pluralTargets.length,
-                  id: h,
-                  tokens: batch.usage.totalTokens,
-                  model: batch.model,
-                }
-              )
-            )
-          );
-          const allReplacements = protectedParts.flatMap((p) => p.replacements);
-          let formsOut = batch.forms;
-          for (const k of reqTarget) {
-            if (formsOut[k] !== undefined) {
-              formsOut[k] = restoreGlossaryForcedTerms(formsOut[k] ?? "", allReplacements);
+            const allReplacements = protectedParts.flatMap((p) => p.replacements);
+            let formsOut = batch.forms;
+            for (const k of reqTarget) {
+              if (formsOut[k] !== undefined) {
+                formsOut[k] = restoreGlossaryForcedTerms(formsOut[k] ?? "", allReplacements);
+              }
             }
-          }
-          formsOut = compactIdenticalPluralForms(formsOut, locale) as Record<
-            CldrPluralForm,
-            string
-          >;
-          const ent = strings[h];
-          if (!ent || !isPluralStringsEntry(ent)) {
-            continue;
-          }
-          ent.translated = ent.translated ?? {};
-          ent.translated[locale] = formsOut;
-          ent.models = ent.models ?? {};
-          ent.models[locale] = batch.model;
-          inputTokens += batch.usage.inputTokens;
-          outputTokens += batch.usage.outputTokens;
-          costUsd += batch.cost ?? 0;
-          stringsUpdated++;
-          stringsTranslated++;
-        }
+            formsOut = compactIdenticalPluralForms(formsOut, locale) as Record<
+              CldrPluralForm,
+              string
+            >;
+            const ent = strings[h];
+            if (!ent || !isPluralStringsEntry(ent)) {
+              return;
+            }
+            ent.translated = ent.translated ?? {};
+            ent.translated[locale] = formsOut;
+            ent.models = ent.models ?? {};
+            ent.models[locale] = batch.model;
+            inputTokens += batch.usage.inputTokens;
+            outputTokens += batch.usage.outputTokens;
+            costUsd += batch.cost ?? 0;
+            stringsUpdated++;
+            stringsTranslated++;
+          },
+          opts.abortSignal
+        );
       }
 
       if (missingPlain.length === 0 && pluralTargets.length === 0) {

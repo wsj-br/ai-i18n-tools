@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
   assignCoercedTargetLocales,
+  batchScriptValidationIssue,
+  batchTranslationScriptIssue,
   coerceTargetLocalesField,
   disallowedScriptLetters,
+  effectiveScriptSubtag,
   englishLanguageNameForLocale,
   englishScriptName,
+  expectedUnicodeScriptsForSubtag,
   hanVariantCounts,
   isLatinScriptLocale,
+  localeEnforcesOutputScript,
   nonLatinLettersIn,
   normalizeLocale,
   normalizeManifestLocaleKey,
@@ -14,8 +19,8 @@ import {
   primaryLanguageSubtag,
   scriptLetterCounts,
   scriptSubtag,
-  effectiveScriptSubtag,
   scriptValidationIssue,
+  translationScriptIssue,
   unicodeScriptPropertyForSubtag,
 } from "../../src/core/locale-utils.js";
 
@@ -122,10 +127,30 @@ describe("effectiveScriptSubtag", () => {
     expect(effectiveScriptSubtag("hi-IN")).toBe("Deva");
   });
 
-  it("does not invent a script for languages without a default", () => {
+  it("defaults other native-script languages when the tag omits a script subtag", () => {
+    expect(effectiveScriptSubtag("ar")).toBe("Arab");
+    expect(effectiveScriptSubtag("bn")).toBe("Beng");
+    expect(effectiveScriptSubtag("te")).toBe("Telu");
+    expect(effectiveScriptSubtag("ru")).toBe("Cyrl");
+    expect(effectiveScriptSubtag("ja")).toBe("Jpan");
+    expect(effectiveScriptSubtag("ko")).toBe("Kore");
+    expect(effectiveScriptSubtag("pa-IN")).toBe("Guru");
+    expect(effectiveScriptSubtag("pa-PK")).toBe("Arab");
+  });
+
+  it("does not invent a script for Latin-primary or script-ambiguous languages", () => {
     expect(effectiveScriptSubtag("en-GB")).toBeUndefined();
     expect(effectiveScriptSubtag("de")).toBeUndefined();
     expect(effectiveScriptSubtag("pt-BR")).toBeUndefined();
+    expect(effectiveScriptSubtag("uz")).toBeUndefined();
+    expect(effectiveScriptSubtag("zh")).toBeUndefined();
+    expect(effectiveScriptSubtag("pa")).toBeUndefined();
+  });
+
+  it("localeEnforcesOutputScript follows effectiveScriptSubtag", () => {
+    expect(localeEnforcesOutputScript("hi")).toBe(true);
+    expect(localeEnforcesOutputScript("ja")).toBe(true);
+    expect(localeEnforcesOutputScript("de")).toBe(false);
   });
 });
 
@@ -164,6 +189,18 @@ describe("nonLatinLettersIn", () => {
   it("respects the limit and de-duplicates", () => {
     const out = nonLatinLettersIn("ααα ββ γ", 2);
     expect(out).toEqual(["α", "β"]);
+  });
+});
+
+describe("expectedUnicodeScriptsForSubtag", () => {
+  it("maps composite CJK families", () => {
+    expect(expectedUnicodeScriptsForSubtag("Jpan")).toEqual(["Han", "Hiragana", "Katakana"]);
+    expect(expectedUnicodeScriptsForSubtag("Kore")).toEqual(["Hangul", "Han"]);
+  });
+
+  it("wraps single-script subtags", () => {
+    expect(expectedUnicodeScriptsForSubtag("Deva")).toEqual(["Devanagari"]);
+    expect(expectedUnicodeScriptsForSubtag("Hans")).toEqual(["Han"]);
   });
 });
 
@@ -258,9 +295,17 @@ describe("hanVariantCounts", () => {
 });
 
 describe("scriptValidationIssue", () => {
-  it("returns null when there is no script subtag or for composite scripts", () => {
+  it("returns null when there is no script subtag", () => {
     expect(scriptValidationIssue("anything", "")).toBeNull();
-    expect(scriptValidationIssue("ここ 한국", "Jpan")).toBeNull();
+  });
+
+  it("accepts Japanese kana/kanji and Korean hangul families", () => {
+    expect(scriptValidationIssue("保存する こんにちは", "Jpan")).toBeNull();
+    expect(scriptValidationIssue("설정 저장", "Kore")).toBeNull();
+  });
+
+  it("flags Hangul inside a Japanese family target", () => {
+    expect(scriptValidationIssue("ここ 한국한국어", "Jpan")).not.toBeNull();
   });
 
   it("ignores letter-like symbols such as ℹ for Han targets (false-positive regression)", () => {
@@ -283,8 +328,34 @@ describe("scriptValidationIssue", () => {
     expect(scriptValidationIssue("保存设置历史记录 П", "Hans")).toBeNull();
   });
 
-  it("allows Latin-only / symbol-only output (handled by the prompt directive)", () => {
+  it("allows Latin-only brand/code tokens but rejects romanized or copied English", () => {
     expect(scriptValidationIssue("GitHub {{URL_0}} OK", "Hans")).toBeNull();
+    expect(scriptValidationIssue("Namaste duniya", "Deva")).not.toBeNull();
+    expect(scriptValidationIssue("Save", "Deva", { sourceText: "Save" })).toBeNull();
+    expect(scriptValidationIssue("GitHub", "Deva", { sourceText: "GitHub" })).toBeNull();
+  });
+
+  it("allows preserved names, emails, hostnames, and code from the source", () => {
+    expect(scriptValidationIssue("t", "Hans", { sourceText: "t" })).toBeNull();
+    expect(scriptValidationIssue("NTFY", "Deva", { sourceText: "view NTFY messages" })).toBeNull();
+    expect(
+      scriptValidationIssue("Duplicati configuration", "Deva", {
+        sourceText: "Duplicati configuration",
+      })
+    ).toBeNull();
+    expect(
+      scriptValidationIssue("recipient@example.com", "Deva", {
+        sourceText: "recipient@example.com",
+      })
+    ).toBeNull();
+    expect(
+      scriptValidationIssue("smtp.your-domain.com", "Deva", {
+        sourceText: "smtp.your-domain.com",
+      })
+    ).toBeNull();
+    expect(
+      scriptValidationIssue("Upyogkarta menu", "Deva", { sourceText: "user menu" })
+    ).not.toBeNull();
   });
 
   it("discriminates Hans vs Hant via variant-distinct characters", () => {
@@ -316,5 +387,66 @@ describe("scriptValidationIssue", () => {
   it("Latn target: requires Latin to dominate", () => {
     expect(scriptValidationIssue("Namaste duniya café", "Latn")).toBeNull();
     expect(scriptValidationIssue("नमस्ते दुनिया", "Latn")).not.toBeNull();
+  });
+
+  it("accepts native output for Arabic, Bengali, Telugu, and Cyrillic", () => {
+    expect(scriptValidationIssue("حفظ الإعدادات", "Arab")).toBeNull();
+    expect(scriptValidationIssue("সংরক্ষণ", "Beng")).toBeNull();
+    expect(scriptValidationIssue("సేవ్", "Telu")).toBeNull();
+    expect(scriptValidationIssue("Сохранить", "Cyrl")).toBeNull();
+  });
+});
+
+describe("translationScriptIssue", () => {
+  it("uses language defaults for bare locale codes", () => {
+    expect(translationScriptIssue("नमस्ते", "hi")).toBeNull();
+    expect(translationScriptIssue("Hello", "hi", "Hello")).toBeNull();
+    expect(translationScriptIssue("Hello", "de")).toBeNull();
+    expect(translationScriptIssue("こんにちは", "ja")).toBeNull();
+    expect(translationScriptIssue("Konnichiwa", "ja")).not.toBeNull();
+    expect(translationScriptIssue("مرحبا", "ar")).toBeNull();
+    expect(translationScriptIssue("Marhaba", "ar")).not.toBeNull();
+    expect(translationScriptIssue("Сохранить", "ru")).toBeNull();
+    expect(translationScriptIssue("GitHub {{URL_0}}", "bn", "GitHub {{URL_0}}")).toBeNull();
+    expect(translationScriptIssue("t", "zh-Hans", "t")).toBeNull();
+    expect(
+      translationScriptIssue("Duplicati configuration", "hi", "Duplicati configuration")
+    ).toBeNull();
+  });
+});
+
+describe("batchScriptValidationIssue", () => {
+  it("passes a mostly-Devanagari batch that keeps an email and hostname", () => {
+    const sources = [
+      "Failed to save daily summary settings",
+      "recipient@example.com",
+      "smtp.your-domain.com",
+      "Enable daily summary",
+    ];
+    const outputs = [
+      "दैनिक सारांश सेटिंग्स सहेजने में विफल",
+      "recipient@example.com",
+      "smtp.your-domain.com",
+      "दैनिक सारांश सक्षम करें",
+    ];
+    expect(batchScriptValidationIssue(outputs, sources, "Deva")).toBeNull();
+    expect(batchTranslationScriptIssue(outputs, sources, "hi")).toBeNull();
+  });
+
+  it("flags a batch that echoes English when source prose is long enough", () => {
+    const sources = ["Failed to save daily summary settings", "Enable daily summary notifications"];
+    const outputs = ["Failed to save daily summary settings", "Enable daily summary notifications"];
+    expect(batchScriptValidationIssue(outputs, sources, "Deva")).not.toBeNull();
+    expect(batchTranslationScriptIssue(outputs, sources, "hi")).not.toBeNull();
+  });
+
+  it("does not flag a two-short-item batch below the letter threshold", () => {
+    expect(batchScriptValidationIssue(["Save", "Add"], ["Save", "Add"], "Deva")).toBeNull();
+  });
+
+  it("does not enforce romanized locales", () => {
+    const sources = ["Failed to save daily summary settings", "Enable daily summary notifications"];
+    expect(batchScriptValidationIssue(sources, sources, "Latn")).toBeNull();
+    expect(batchTranslationScriptIssue(sources, sources, "hi-Latn")).toBeNull();
   });
 });

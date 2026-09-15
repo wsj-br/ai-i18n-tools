@@ -30,3 +30,14 @@ Ein Markdown-Link oder `![alt](url)` funktioniert auf Englisch, gibt aber in üb
 1. Bestätigen Sie, dass Ihr Asset-Layout mit Ihrem `docsOutput.style` übereinstimmt (flach vs. Dokumentensystem). Siehe [Link-Umschreibung](/de/guide/documents/link-rewriting) und [Bilder & Screenshots](/de/guide/images-and-screenshots/).
 2. Fügen Sie `docsOutput.postProcessing.regexAdjustments` hinzu oder passen Sie es an, um Gebietsschema-Segmente auszutauschen oder absolute `/img/…`-Pfade zu überbrücken. Bei einem flachen Layout denken Sie daran, dass der flache Link-Rewriter **vor** `regexAdjustments` ausgeführt wird – passen Sie Muster an die bereits präfixierte URL an.
 3. Stellen Sie sicher, dass sprachspezifische Asset-Dateien unter den Pfaden existieren, auf die das umgeschriebene Markdown verweist (`translate-docs` schreibt URLs um, kopiert aber keine Rasterdateien).
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## Hindi, Arabisch, CJK oder Kyrillisch wird romanisiert (lateinische Buchstaben)
+
+Einige Modelle übersetzen die Bedeutung, schreiben das Ergebnis aber in lateinischen/römischen Buchstaben (z. B. Hindi als `Namaste` anstelle von `नमस्ते`). Ein bloßes `hi` bedeutet Devanagari; verwenden Sie `hi-Latn` nur, wenn Sie romanisiertes Hindi wünschen.
+
+**Behebung**
+
+1. Stellen Sie sicher, dass der Gebietsschema-Code dem gewünschten Skript entspricht (`hi` vs. `hi-Latn`, `zh-Hans` vs. `zh-Hant`, `sr` vs. `sr-Latn`).
+2. Führen Sie die Übersetzung erneut aus, damit Cache-Zeilen mit falschem Skript abgelehnt werden: `translate-ui --force` für UI-Strings oder `translate-docs` / `sync` (die Dateiebene-Überspringung ist für Gebietsschemas mit einem erwarteten Skript deaktiviert; `--force-update` verwendet weiterhin den gültigen Segment-Cache).
+3. Wenn ein Modell die Skriptprüfung immer wieder nicht besteht, fügen Sie einen `localeModels`-Eintrag für dieses Gebietsschema hinzu, damit zuerst ein stärkeres Modell versucht wird – siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).

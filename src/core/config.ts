@@ -12,15 +12,20 @@ import {
   effectiveScriptSubtag,
   englishLanguageNameForLocale,
   englishScriptName,
+  expectedUnicodeScriptsForSubtag,
   hanVariantCounts,
   isLatinScriptLocale,
+  localeEnforcesOutputScript,
   localePathPlaceholders,
   nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
   scriptLetterCounts,
   scriptSubtag,
+  batchScriptValidationIssue,
+  batchTranslationScriptIssue,
   scriptValidationIssue,
+  translationScriptIssue,
   unicodeScriptPropertyForSubtag,
 } from "./locale-utils.js";
 import {
@@ -63,15 +68,20 @@ export {
   effectiveScriptSubtag,
   englishLanguageNameForLocale,
   englishScriptName,
+  expectedUnicodeScriptsForSubtag,
   hanVariantCounts,
   isLatinScriptLocale,
+  localeEnforcesOutputScript,
   localePathPlaceholders,
   nonLatinLettersIn,
   normalizeLocale,
   parseLocaleList,
   scriptLetterCounts,
   scriptSubtag,
+  batchScriptValidationIssue,
+  batchTranslationScriptIssue,
   scriptValidationIssue,
+  translationScriptIssue,
   unicodeScriptPropertyForSubtag,
 };
 
@@ -637,6 +647,8 @@ export const initConfigTemplates = {
     },
     // Parallelism: translate-ui effective default 4; translate-docs effective default 3 when omitted.
     concurrency: 4,
+    // translate-ui: max parallel LLM batch requests per locale (plain chunks and plural groups).
+    uiBatchConcurrency: 2,
     // translate-docs: max parallel LLM batch requests per file.
     batchConcurrency: 4,
     batchSize: 20,

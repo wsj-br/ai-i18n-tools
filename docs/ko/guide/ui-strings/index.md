@@ -50,7 +50,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 공급자에게 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인 `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조).
+`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 제공자에게 배치를 전송하며, 평면 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 작성합니다. 모델 선택은 UI 체인을 사용합니다: `localeModels(locale)` → `uiModels` → `translationModels` ([제공자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조). 로케일 내에서 최대 `uiBatchConcurrency`개의 배치가 동시에 실행됩니다(기본값 **2**; [구성 — uiBatchConcurrency](/ko/reference/configuration#uibatchconcurrency-optional) 참조). `-j`은 여전히 대상 로케일만 병렬 처리합니다.
 
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
@@ -62,7 +62,7 @@ ai-i18n-tools translate-ui
 
 각 항목에 대해 `translate-ui`는 선택적 `models` 개체(`translated`와 동일한 로케일 키)에 각 로케일을 성공적으로 번역한 **활성 공급자의 모델 ID**를 저장합니다. 번역 대시보드에서 편집된 문자열은 해당 로케일에 대해 `models`에 센티넬 값 `user-edited`으로 표시됩니다. `ui.flatOutputDir` 아래의 로케일별 플랫 파일은 **원본 문자열 → 번역**만 유지하며, `models`를 포함하지 않습니다(따라서 런타임 번들은 변경되지 않습니다).
 
-> **참고:** UI 문자열에 대한 대시보드 편집은 SQLite 문서 캐시가 아닌 `strings.json`에 있습니다. 카탈로그에서 플랫 로케일 파일을 다시 작성하려면 일반 `sync` 또는 `translate-ui`(특수 플래그 없음)를 실행하십시오. `--force-update`는 UI 단계로 전달되지 **않습니다**. 수동 편집 후 UI 명령에서 `--force`를 사용하지 마십시오. 모든 항목을 다시 번역하고 `user-edited` 행을 덮어쓸 수 있습니다.
+> **참고:** UI 문자열에 대한 대시보드 편집은 SQLite 문서 캐시가 아닌 `strings.json`에 저장됩니다. 카탈로그에서 평면 로케일 파일을 다시 작성하려면 일반 `sync` 또는 `translate-ui`를(특수 플래그 없이) 실행하십시오 — `--force-update`은(는) UI 단계로 전달되지 **않습니다**. 수동 편집 후 UI 명령에 `--force`을(를) 사용하지 마십시오: 모든 항목을 다시 번역하여 `user-edited` 행을 덮어쓸 수 있습니다. 저장된 번역이 로케일 문자 체계 검사에 실패한 카탈로그 행(예: `hi`에 대한 로마자 표기 힌디어)은 누락된 것으로 간주되어 `--force` 없이 다시 번역됩니다.
 
 그런 다음 런타임에 i18next를 연결합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime).
 

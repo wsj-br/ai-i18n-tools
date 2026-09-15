@@ -28,7 +28,7 @@
 6. 🔗 링크 제어는 **터미널**에서 `ai-i18n-tools dashboard`이 실행 중인 파일/줄 힌트를 기록합니다.
 7. 프로젝트의 **소스 파일**을 수정한 다음 `translate-docs` 또는 `sync`를 다시 실행하세요. 성공적인 실행 후 목록이 **최신이 아닌 것**으로 보인다면 `ai-i18n-tools sync --force-update`을 실행하고 대시보드를 다시 로드하세요.
 
-UI와 함께 파일 기반 디버깅을 위해 `translate-docs --debug-failed`를 사용하여 `FAILED-TRANSLATION` 세부 정보를 `cacheDir`에서 재시도 중에 작성합니다. [캐시 동작 및 `translate-docs` 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하십시오.
+UI와 함께 파일 기반 디버깅을 수행하려면, `translate-docs`, `translate-ui`, `translate-json`, `translate-svg` 또는 `sync`에서 전역 `--debug-failed`을(를) 전달하여 버려진 각 모델 시도(프롬프트, 원시 출력, 유효성 검사 오류)마다 `cacheDir` 아래에 `FAILED-TRANSLATION` 파일을 작성하도록 합니다. 여기에는 스크립트 폴백 경고도 포함되며, 모든 모델이 실패할 때만 해당하는 것은 아닙니다. [캐시 동작 및 `translate-docs` 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하세요.
 
 <a id="failures-vs-markdown-issues"></a>
 ## 실패 vs 마크다운 문제

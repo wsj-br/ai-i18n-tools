@@ -28,7 +28,7 @@
 6. 🔗 लिंक नियंत्रण `ai-i18n-tools dashboard` चल रहे **टर्मिनल** में फ़ाइल/लाइन संकेत लॉग करता है।
 7. अपनी परियोजना में **स्रोत फ़ाइल** को ठीक करें, फिर `translate-docs` या `sync` को फिर से चलाएँ। यदि सफल रन के बाद सूची **पुरानी** दिखती है, तो `ai-i18n-tools sync --force-update` चलाएँ और डैशबोर्ड को फिर से लोड करें।
 
-UI के साथ फ़ाइल-आधारित डिबगिंग के लिए, रिट्राई के दौरान `cacheDir` के तहत `FAILED-TRANSLATION` विवरण लिखने के लिए `translate-docs --debug-failed` का उपयोग करें — [कैश व्यवहार और `translate-docs` फ़्लैग](/hi/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) देखें।
+UI के साथ फ़ाइल-आधारित डीबगिंग के लिए, प्रत्येक छोड़े गए मॉडल प्रयास (प्रॉम्प्ट, कच्चा आउटपुट, सत्यापन त्रुटि) के लिए `cacheDir` के तहत एक `FAILED-TRANSLATION` फ़ाइल लिखने के लिए `--debug-failed` को `translate-docs`, `translate-ui`, `translate-json`, `translate-svg`, या `sync` पर पास करें, जिसमें स्क्रिप्ट-फ़ॉलबैक चेतावनियाँ शामिल हैं — न केवल तब जब हर मॉडल विफल हो जाता है। [कैश व्यवहार और `translate-docs` फ़्लैग](/hi/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) देखें।
 
 <a id="failures-vs-markdown-issues"></a>
 ## विफलताएँ बनाम मार्कडाउन समस्याएँ

@@ -15,7 +15,7 @@
 
 **सारांश:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
-एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (इसमें `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `docs[].addFrontmatter` शामिल हैं)। एलएलएम को कॉल करने वाले अनुवाद कमांड के लिए पर्यावरण में सक्रिय प्रदाता की एपीआई कुंजी या `.env` (ओलामा को छोड़कर) की आवश्यकता होती है — [प्रदाता और एपीआई कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें।
+एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (इसमें `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `docs[].addFrontmatter` शामिल हैं)। LLM को कॉल करने वाले अनुवाद कमांड के लिए सक्रिय प्रदाता की API कुंजी वातावरण में या `.env` (ओलामा को छोड़कर) में होनी चाहिए — [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें।
 
 **मुख्य विकल्प:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 

@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | すべてのコマンド | この実行のアクティブな LLM プロバイダー。設定の `provider` キーをオーバーライドします。`providers` の下で設定する必要があります。 |
 | `-L` / `--ui-lang <code>`    | すべてのコマンド | ツール独自のUI（CLIヘルプ、ログ/サマリー、ダッシュボード）の言語。最優先ソース。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。 |
 | `-w` / `--write-logs [path]` | 選択されたコマンド | コンソール出力を `.log` ファイルにティーします (デフォルトパス: ルート `cacheDir` の下)。`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、および `cleanup` のみで機能します。 |
+| `--debug-failed`             | 翻訳コマンド | 破棄されたモデルの試行（スクリプトの誤り、解析、品質、または API エラー）ごとに、フォールバックを含む — すべてのモデルが失敗した場合のみならず、ルート `cacheDir` 配下に `FAILED-TRANSLATION` ログを書き出します。`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync-ui`、`sync`、および `cleanup` に適用されます。 |
 
 <a id="per-command-help"></a>
 ### コマンドごとのヘルプ

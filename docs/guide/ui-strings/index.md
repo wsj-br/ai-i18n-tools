@@ -50,7 +50,7 @@ The scanner is configurable: add custom function names via `ui.uiExtractor.funcN
 ai-i18n-tools translate-ui
 ```
 
-Reads `strings.json`, sends batches to the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
+Reads `strings.json`, sends batches to the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)). Within a locale, up to `uiBatchConcurrency` batches run at once (default **2**; see [Configuration — uiBatchConcurrency](/reference/configuration#uibatchconcurrency-optional)). `-j` still only parallelizes target locales.
 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
@@ -63,7 +63,7 @@ Depending on the target language, some translation models may perform significan
 
 For each entry, `translate-ui` stores the **model id from the active provider** that successfully translated each locale in an optional `models` object (same locale keys as `translated`). Strings edited in the Translation Dashboard are marked with the sentinel value `user-edited` in `models` for that locale. The per-locale flat files under `ui.flatOutputDir` remain **source string → translation** only; they do not include `models` (so runtime bundles stay unchanged).
 
-> **Note:** Dashboard edits to UI strings live in `strings.json`, not the SQLite documentation cache. Run plain `sync` or `translate-ui` (no special flag) to rewrite flat locale files from the catalog — `--force-update` is **not** forwarded to the UI step. Avoid `--force` on UI commands after manual edits: it re-translates every entry and can overwrite your `user-edited` rows.
+> **Note:** Dashboard edits to UI strings live in `strings.json`, not the SQLite documentation cache. Run plain `sync` or `translate-ui` (no special flag) to rewrite flat locale files from the catalog — `--force-update` is **not** forwarded to the UI step. Avoid `--force` on UI commands after manual edits: it re-translates every entry and can overwrite your `user-edited` rows. Catalog rows whose stored translation fails the locale writing-system check (for example romanized Hindi for `hi`) are treated as missing and retranslated without `--force`.
 
 Then wire i18next at runtime — [Wire i18next](/guide/ui-strings/i18next-runtime).
 

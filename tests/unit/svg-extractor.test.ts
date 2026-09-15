@@ -157,4 +157,65 @@ describe("SvgExtractor", () => {
     expect(ex.canHandle("x.SVG")).toBe(true);
     expect(ex.canHandle("x.png")).toBe(false);
   });
+
+  it("does not pair a self-closing <text /> with the next </text>", () => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg"><g>
+<text
+       xml:space="preserve"
+       id="text10885"
+       style="white-space:pre;shape-inside:url(#rect10887);display:inline;fill:none;stroke:none" /><text
+       xml:space="preserve"
+       id="text11001"><tspan
+         sodipodi:role="line"
+         id="tspan10999">t</tspan></text>
+</g></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "inkscape.svg");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.content).toBe("t");
+
+    const out = ex.reassemble(segs, new Map([[segs[0]!.hash, "t"]]));
+    expect(out).toContain('id="text10885"');
+    expect(out).toMatch(/stroke:none" \/><text/);
+    expect(out).not.toMatch(/\/>\s*<tspan>/);
+    expect(out).toContain("<tspan>t</tspan></text>");
+    expect(out).toContain("</g></svg>");
+  });
+
+  it("skips a lone self-closing <text />", () => {
+    const svg = `<svg><text id="empty" /></svg>`;
+    const ex = new SvgExtractor();
+    expect(ex.extract(svg, "sc.svg")).toHaveLength(0);
+  });
+
+  it("does not treat <textPath> as <text>", () => {
+    const svg = `<svg><textPath href="#p">Hello</textPath><text>World</text></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "path.svg");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.content).toBe("World");
+    const out = ex.reassemble(segs, new Map([[segs[0]!.hash, "Monde"]]));
+    expect(out).toContain('<textPath href="#p">Hello</textPath>');
+    expect(out).toContain("<tspan>Monde</tspan>");
+    expect(out).not.toContain("</text>Path>");
+  });
+
+  it("does not truncate opening tags on quoted > in attributes", () => {
+    const svg = `<svg><text data-note="a > b">Hello</text></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "gt.svg");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.content).toBe("Hello");
+    const out = ex.reassemble(segs, new Map([[segs[0]!.hash, "Bonjour"]]));
+    expect(out).toContain('data-note="a > b"');
+    expect(out).toContain("<tspan>Bonjour</tspan>");
+  });
+
+  it("writes $ and $& in translations literally", () => {
+    const svg = `<svg><text>Price</text></svg>`;
+    const ex = new SvgExtractor();
+    const segs = ex.extract(svg, "dollar.svg");
+    const out = ex.reassemble(segs, new Map([[segs[0]!.hash, "$5 $&"]]));
+    expect(out).toBe(`<svg><text><tspan>$5 $&amp;</tspan></text></svg>`);
+  });
 });

@@ -21,6 +21,6 @@ Traduce JSON anidado por `json[]` (requiere `features.translateJson`). Caché SQ
 
 Traduce archivos SVG configurados en `config.svg` (separado de los documentos). Requiere `features.translateSVG`. Las mismas ideas de caché que los documentos; admite `--no-cache` para omitir lecturas/escrituras de SQLite para esa ejecución.
 
-**Opciones clave:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**Opciones clave:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, `--debug-failed` global
 
 **Ver también:** [Traducción de SVG](/es/guide/svg-translation/)

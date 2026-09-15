@@ -44,9 +44,9 @@ export interface ProofreadUIPromptStrings {
 
 /** Script-enforcement directives prepended to system prompts when the target has an effective script (explicit subtag or language default, e.g. `hi-Latn`, bare `hi` → Devanagari, `zh-Hans`). */
 export interface ScriptPromptStrings {
-  /** For Latin/Roman targets: force romanization and forbid native scripts (Devanagari, Cyrillic, …). */
+  /** For Latin/Roman targets: force romanization and forbid native scripts (Devanagari, Cyrillic, …). Placeholder `{{LOCALE}}`. */
   latinDirective: string;
-  /** For any other script subtag; `{{SCRIPT_NAME}}` is the English script name (e.g. `Cyrillic`). */
+  /** For any other script subtag; `{{SCRIPT_NAME}}` is the English script name (e.g. `Cyrillic`); `{{LOCALE}}` is the BCP-47 tag. */
   genericDirectiveTemplate: string;
   /** Appended for `zh-Hans`: insist on Simplified character forms over Traditional ones. */
   simplifiedHanClause: string;
@@ -204,9 +204,9 @@ Input format: JSON array of strings (same length and order as you must return).
 
   script: {
     latinDirective:
-      "SCRIPT REQUIREMENT (critical — overrides every other instruction): The target locale uses the Latin (Roman) alphabet. Write EVERY output string using ONLY Latin/Roman letters (a–z, A–Z), standard punctuation, digits, and any placeholders or markup that must be preserved. You MUST romanize (transliterate) the target language into Latin letters — translate the meaning, then write the result in Roman script. NEVER output any text in a native or non-Latin writing system (for example Devanagari देवनागरी, Cyrillic, Han/Chinese 汉字, Arabic, Hebrew, Hangul, Kana, Thai). If a word would normally be written in a non-Latin script, write its romanized form instead.",
+      "SCRIPT REQUIREMENT (critical — overrides every other instruction): The target locale {{LOCALE}} uses the Latin (Roman) alphabet. Write EVERY output string using ONLY Latin/Roman letters (a–z, A–Z), standard punctuation, digits, and any placeholders or markup that must be preserved. You MUST romanize (transliterate) the target language into Latin letters — translate the meaning, then write the result in Roman script. NEVER output any text in a native or non-Latin writing system (for example Devanagari देवनागरी, Cyrillic, Han/Chinese 汉字, Arabic, Hebrew, Hangul, Kana, Thai). If a word would normally be written in a non-Latin script, write its romanized form instead.",
     genericDirectiveTemplate:
-      "SCRIPT REQUIREMENT (critical — overrides every other instruction): Write EVERY output string using the {{SCRIPT_NAME}} script. Do not substitute another writing system for the target language's words (keep placeholders, code, URLs, and markup unchanged).",
+      "SCRIPT REQUIREMENT (critical — overrides every other instruction): The target locale is {{LOCALE}} and must be written in the {{SCRIPT_NAME}} script. Translate the meaning first, then write EVERY user-visible word in {{SCRIPT_NAME}}. Do not transliterate into Latin/Roman letters, do not leave the text in the source language, and do not substitute another writing system. Latin/Roman letters are allowed ONLY for placeholders, code, URLs, file names, and brand names that already appear in the source unchanged.",
     simplifiedHanClause:
       " Use Simplified Chinese character forms (e.g. 设置, 历史, 网络, 简体, 关闭) — NEVER Traditional forms (設定, 歷史, 網絡, 繁體, 關閉).",
     traditionalHanClause:

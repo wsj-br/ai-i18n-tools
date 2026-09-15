@@ -8,7 +8,11 @@ import type {
 } from "../core/types.js";
 import { vitepressThemeFileTrackingKey } from "../core/doc-file-tracking.js";
 import { matchesDocsOutputStylePreset } from "../core/docs-output-normalize.js";
-import { localePathPlaceholders } from "../core/locale-utils.js";
+import {
+  localeEnforcesOutputScript,
+  localePathPlaceholders,
+  translationScriptIssue,
+} from "../core/locale-utils.js";
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import {
   extractVitepressThemeCatalog,
@@ -22,6 +26,7 @@ import {
   protectSegmentForTranslation,
   translatePromptFormatToResponseFormat,
   translateSegmentsBatched,
+  translationFailureLogDir,
   type DocSegmentTranslation,
   type TranslateRunOptions,
   type TranslateTotals,
@@ -217,6 +222,7 @@ export async function translateVitepressThemeCatalog(
     cache &&
     !opts.noCache &&
     cachedFileHash === fileHash &&
+    !localeEnforcesOutputScript(locale) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -277,7 +283,7 @@ export async function translateVitepressThemeCatalog(
       const hit = await withCacheMutex(opts.cacheMutex, () =>
         cache.getSegment(s.hash, locale, catalogRelPath)
       );
-      if (hit) {
+      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
         hitKeys?.add(`${s.hash}|${locale}`);
         segmentsCached++;
@@ -325,7 +331,7 @@ export async function translateVitepressThemeCatalog(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    undefined,
+    translationFailureLogDir(opts, config.cacheDir),
     failureTracker,
     { filepath: catalogRelPath },
     undefined,

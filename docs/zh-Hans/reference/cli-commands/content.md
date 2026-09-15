@@ -21,6 +21,6 @@
 
 翻译在 `config.svg` 中配置的 SVG 文件（与文档分开）。需要 `features.translateSVG`。与文档使用相同的缓存机制；支持 `--no-cache` 以在该次运行中跳过 SQLite 读写。
 
-**关键选项：** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**关键选项：** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, 全局 `--debug-failed`
 
 **另请参阅：** [SVG 翻译](/zh-Hans/guide/svg-translation/)

@@ -35,7 +35,7 @@ Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der
 <a id="model-fallback-chain"></a>
 ### Modell-Fallback-Kette
 
-`translationModels` ist eine **geordnete Liste**, keine einzelne Auswahl. Die CLI versucht das erste Modell; bei Anforderungs- oder Analysefehler wechselt sie zum nächsten Eintrag. Konfigurieren Sie mehrere Modelle, damit ein vorübergehender Ausfall oder ein Modell, das mit einem Gebietsschema Schwierigkeiten hat, den gesamten Lauf nicht blockiert.
+`translationModels` ist eine **geordnete Liste**, keine Einzelwahl. Die CLI versucht das erste Modell; bei Anforderung, Analyse oder Fehlern bei falschen Skripten wechselt sie zum nächsten Eintrag. Konfigurieren Sie mehrere Modelle, damit ein vorübergehender Ausfall oder ein Modell, das mit einer Sprache Schwierigkeiten hat (z. B. romanisiertes Hindi anstelle von Devanagari), den gesamten Lauf nicht blockiert. Romanisierte Ausgabe wird für Sprachen mit nativer Schrift abgelehnt; eine Sprache, die romanisiert bleiben soll, muss mit einem expliziten `-Latn`-Untertag (z. B. `hi-Latn`) konfiguriert werden.
 
 **Auflösungsstufen** (dedupliziert, Reihenfolge beibehalten):
 

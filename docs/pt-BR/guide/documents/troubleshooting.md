@@ -30,3 +30,14 @@ Um link Markdown ou `![alt](url)` funciona em inglês, mas retorna 404 em cópia
 1. Confirme se o layout do seu ativo corresponde ao seu `docsOutput.style` (plano vs. sistema de documentos). Consulte [Reescrita de links](/pt-BR/guide/documents/link-rewriting) e [Imagens e capturas de tela](/pt-BR/guide/images-and-screenshots/).
 2. Adicione ou ajuste `docsOutput.postProcessing.regexAdjustments` para trocar segmentos de localidade ou fazer a ponte entre caminhos `/img/…` absolutos. Para layout plano, lembre-se de que o reescritor de link plano é executado **antes** de `regexAdjustments` — combine padrões com o URL já prefixado.
 3. Certifique-se de que os arquivos de ativos específicos da localidade existam nos caminhos referenciados pelo Markdown reescrito (`translate-docs` reescreve URLs, mas não copia arquivos raster).
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## A saída em hindi, árabe, CJK ou cirílico é romanizada (letras latinas)
+
+Alguns modelos traduzem o significado, mas escrevem o resultado em letras latinas/romanas (por exemplo, hindi como `Namaste` em vez de `नमस्ते`). `hi` puro significa Devanagari; use `hi-Latn` apenas quando quiser hindi romanizado.
+
+**Correção**
+
+1. Confirme se o código de localidade corresponde ao script desejado (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
+2. Execute novamente a tradução para que as linhas de cache de script incorretas sejam rejeitadas: `translate-ui --force` para strings de UI, ou `translate-docs` / `sync` (a ignorância em nível de arquivo está desabilitada para localidades com um script esperado; `--force-update` ainda reutiliza o cache de segmento válido).
+3. Se um modelo continuar falhando na verificação de script, adicione uma entrada `localeModels` para essa localidade para que um modelo mais forte seja tentado primeiro — consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain).

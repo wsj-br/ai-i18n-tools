@@ -28,7 +28,7 @@ La mise en page dense avec des balises intégrées (**bold** mélangé avec `` `
 6. Le contrôle de lien 🔗 enregistre les indices de fichier/ligne dans le **terminal** où `ai-i18n-tools dashboard` s'exécute.
 7. Corrigez le **fichier source** dans votre projet, puis exécutez `translate-docs` ou `sync` à nouveau. Si la liste semble **obsolète** après une exécution réussie, exécutez `ai-i18n-tools sync --force-update` et rechargez le tableau de bord.
 
-Pour le débogage basé sur les fichiers en plus de l'interface utilisateur, utilisez `translate-docs --debug-failed` pour écrire `FAILED-TRANSLATION` détail sous `cacheDir` pendant les réessais — voir [Comportement du cache et drapeaux `translate-docs`](/fr/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+Pour le débogage basé sur des fichiers en parallèle de l'interface utilisateur, passez `--debug-failed` globalement sur `translate-docs`, `translate-ui`, `translate-json`, `translate-svg` ou `sync` pour écrire un fichier `FAILED-TRANSLATION` sous `cacheDir` pour chaque tentative de modèle rejetée (invite, sortie brute, erreur de validation), y compris les avertissements de repli de script — et pas seulement lorsque tous les modèles échouent. Voir [Comportement du cache et indicateurs `translate-docs`](/fr/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Échecs vs Problèmes de Markdown

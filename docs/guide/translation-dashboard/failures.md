@@ -28,7 +28,7 @@ Dense inline markup (**bold** mixed with `` `code` ``, nested emphasis, long sen
 6. The 🔗 link control logs file/line hints to the **terminal** where `ai-i18n-tools dashboard` is running.
 7. Fix the **source file** in your project, then run `translate-docs` or `sync` again. If the list looks **out of date** after a successful run, run `ai-i18n-tools sync --force-update` and reload the dashboard.
 
-For file-based debugging alongside the UI, use `translate-docs --debug-failed` to write `FAILED-TRANSLATION` detail under `cacheDir` during retries — see [Cache behaviour and `translate-docs` flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+For file-based debugging alongside the UI, pass global `--debug-failed` on `translate-docs`, `translate-ui`, `translate-json`, `translate-svg`, or `sync` to write a `FAILED-TRANSLATION` file under `cacheDir` for each discarded model attempt (prompt, raw output, validation error), including script-fallback warnings — not only when every model fails. See [Cache behaviour and `translate-docs` flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Failures vs Markdown issues

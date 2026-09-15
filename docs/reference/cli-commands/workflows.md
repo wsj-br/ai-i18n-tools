@@ -10,7 +10,7 @@ Extract (if enabled), then UI translation, then `translate-svg` when `features.t
 
 **Key options:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` is forwarded to the UI and SVG steps as well as docs/JSON; `--force-update` applies to docs, JSON, and SVG (not UI). Docs phase also forwards `--emphasis-placeholders` and `--debug-failed` (same meaning as `translate-docs`). `--prompt-format` is not a `sync` flag; docs and JSON steps use the built-in default (`json-array`).
+`--force` is forwarded to the UI and SVG steps as well as docs/JSON; `--force-update` applies to docs, JSON, and SVG (not UI). Docs phase also forwards `--emphasis-placeholders` (same meaning as `translate-docs`). Global `--debug-failed` writes `FAILED-TRANSLATION` logs under `cacheDir` for each discarded model attempt (including SVG/docs script fallbacks), not only when every model in the chain fails. `--prompt-format` is not a `sync` flag; docs and JSON steps use the built-in default (`json-array`).
 
 ---
 

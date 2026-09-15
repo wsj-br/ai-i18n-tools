@@ -364,6 +364,7 @@ General rules for all doc frameworks:
 - **Language picker names not translated** — ensure `englishName` (or equivalent) is covered by extract flags or manual rows, then `translate-ui`.
 - `generate-ui-languages` fails — set `languagesManifestPath` (manifest output) in config.
 - **Section anchor links broken in translated docs** — run `write-heading-ids` on source markdown to insert or refresh `<a id="…"></a>` lines, then re-run `translate-docs`; see [Documents — Troubleshooting](/guide/documents/troubleshooting).
+- **Hindi/Arabic/CJK/Cyrillic output is romanized (Latin letters)** — wrong-script cache rows are rejected on the next `translate-ui` / `translate-docs` / `sync`; see [Documents — Troubleshooting](/guide/documents/troubleshooting#wrong-script-or-romanized-output). Use `hi-Latn` only when you want romanized Hindi.
 - **Broken links on VitePress (404 in dev or GitHub Pages)** — English sources should use site routes (`/guide/…`), not `docs/guide/…` or `../guide/…`. Enable `rewriteVitepressLinks` (default for `style: "vitepress"`) and re-run `translate-docs` / `sync`. Do not patch locale trees by hand.
 - **Nextra / Fumadocs sidebar labels not translated** — confirm `style` is `"nextra"` or `"fumadocs"`, English sources live under the configured `docsRoot`, and `features.translateDocs` is on; re-run `sync`.
 - **Fumadocs wrong output paths** — check `fumadocsParser`: `"dot"` writes `page.{locale}.mdx` beside English; `"dir"` writes locale folders like Nextra.

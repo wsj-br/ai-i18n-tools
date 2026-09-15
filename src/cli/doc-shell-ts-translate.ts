@@ -10,6 +10,7 @@ import {
   protectSegmentForTranslation,
   translatePromptFormatToResponseFormat,
   translateSegmentsBatched,
+  translationFailureLogDir,
   type DocSegmentTranslation,
   type TranslateRunOptions,
   type TranslateTotals,
@@ -23,6 +24,7 @@ import {
   type TsLiteralSpan,
   type TsObjectLiteralPolicy,
 } from "../extractors/ts-object-literal-extractor.js";
+import { localeEnforcesOutputScript, translationScriptIssue } from "../core/locale-utils.js";
 import { t } from "../i18n/index.js";
 
 type ProtectState = ReturnType<typeof protectSegmentForTranslation>["state"];
@@ -108,6 +110,7 @@ export async function translateTsObjectLiteralFile(
     cache &&
     !opts.noCache &&
     cachedFileHash === fileHash &&
+    !localeEnforcesOutputScript(locale) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -193,7 +196,7 @@ export async function translateTsObjectLiteralFile(
       const hit = await withCacheMutex(opts.cacheMutex, () =>
         cache.getSegment(s.hash, locale, relPathFromCwd)
       );
-      if (hit) {
+      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
         hitKeys?.add(`${s.hash}|${locale}`);
         segmentsCached++;
@@ -242,7 +245,7 @@ export async function translateTsObjectLiteralFile(
         totalSegments: segments.length,
         segmentIndicesInDoc,
       },
-      undefined,
+      translationFailureLogDir(opts, config.cacheDir),
       failureTracker,
       { filepath: relPathFromCwd },
       undefined,

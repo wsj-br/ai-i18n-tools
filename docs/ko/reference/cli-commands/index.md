@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | 모든 명령 | 이 실행의 활성 LLM 제공자이며, 구성 `provider` 키를 재정의합니다. `providers` 아래에 구성해야 합니다. |
 | `-L` / `--ui-lang <code>`    | 모든 명령어 | 도구 자체 UI(CLI 도움말, 로그/요약, 대시보드)의 언어; 최우선 소스. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하십시오. |
 | `-w` / `--write-logs [path]` | 선택한 명령 | 콘솔 출력을 `.log` 파일로 보냅니다(기본 경로: 루트 `cacheDir` 아래). `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` 및 `cleanup`에만 연결됩니다. |
+| `--debug-failed`             | 번역 명령 | 루트 `cacheDir` 아래에 폐기된 각 모델 시도(잘못된 스크립트, 파싱, 품질 또는 API 오류, 폴백 포함)에 대한 `FAILED-TRANSLATION` 로그를 작성합니다. 모든 모델이 실패할 때만 작성되는 것은 아닙니다. `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync`, `cleanup`에 적용됩니다. |
 
 <a id="per-command-help"></a>
 ### 명령별 도움말

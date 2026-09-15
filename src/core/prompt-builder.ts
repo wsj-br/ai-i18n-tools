@@ -78,8 +78,10 @@ const SCRIPT_DIRECTIVE_NAME_OVERRIDES: Record<string, string> = {
   Hans: "Simplified Chinese (Han)",
   Hant: "Traditional Chinese (Han)",
   Hani: "Han (Chinese)",
-  Jpan: "Japanese",
-  Kore: "Korean",
+  Jpan: "Japanese (Kanji, Hiragana, and/or Katakana — never romaji)",
+  Kore: "Korean Hangul (never romanized Latin)",
+  // Intl.DisplayNames often returns "Bangla"; models and CLDR also know "Bengali".
+  Beng: "Bengali (Bangla)",
   // "Mongolian" alone is ambiguous (Mongolia mainly uses Cyrillic); be explicit about the vertical script.
   Mong: "traditional Mongolian vertical script (Mongolian Bichig), NOT Cyrillic",
 };
@@ -96,11 +98,14 @@ export function targetScriptDirective(targetLocale: string | undefined): string 
   if (!script) {
     return "";
   }
+  const localeTag = targetLocale.trim();
   if (script === "Latn") {
-    return PROMPTS.script.latinDirective;
+    return PROMPTS.script.latinDirective.replace(/\{\{LOCALE\}\}/g, localeTag);
   }
   const name = SCRIPT_DIRECTIVE_NAME_OVERRIDES[script] ?? englishScriptName(script) ?? script;
-  const base = PROMPTS.script.genericDirectiveTemplate.replace(/\{\{SCRIPT_NAME\}\}/g, name);
+  const base = PROMPTS.script.genericDirectiveTemplate
+    .replace(/\{\{SCRIPT_NAME\}\}/g, name)
+    .replace(/\{\{LOCALE\}\}/g, localeTag);
   if (script === "Hans") {
     return `${base}${PROMPTS.script.simplifiedHanClause}`;
   }
@@ -276,6 +281,8 @@ export function buildPluralStep0Prompt(opts: {
   glossaryHints?: string[];
   /** When set, appends an `Intl.PluralRules` sample-count line for this BCP-47 tag. */
   intlPluralLocaleTag?: string;
+  /** Source BCP-47 locale; when it has an effective script, a script directive is prepended. */
+  sourceLocale?: string;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
@@ -304,7 +311,10 @@ ${intlHint}
 Reply with ONLY one JSON object whose keys are exactly those category names (strings: zero, one, two, few, many, other as applicable) and whose values are the UI text for ${opts.sourceLanguageLabel}.`;
 
   return {
-    systemPrompt: PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+    systemPrompt: withScriptDirective(
+      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+      opts.sourceLocale
+    ),
     userContent,
   };
 }

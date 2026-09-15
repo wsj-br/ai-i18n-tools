@@ -21,6 +21,7 @@ import {
   type TranslateTotals,
   matchesPathFilter,
 } from "./doc-translate.js";
+import { llmClientDebugFailedOpts } from "./translation-failure-log.js";
 import { runMapWithConcurrency, AsyncMutex } from "../utils/concurrency.js";
 import {
   bindRunInterruptScope,
@@ -226,7 +227,9 @@ async function runTranslateSvgBody(
 
     let client: LlmClient | null = null;
     if (needsApi) {
-      client = await createFilteredLlmClient(config, locale);
+      client = await createFilteredLlmClient(config, locale, {
+        ...llmClientDebugFailedOpts(opts, config.cacheDir),
+      });
     }
 
     for (const rel of files) {

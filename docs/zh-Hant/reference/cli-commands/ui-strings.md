@@ -45,7 +45,7 @@
 
 **關鍵選項：** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`：以逗號分隔的目標地區設定（預設：設定 `targetLocales` 減去 `sourceLocale`）。`--force`：重新翻譯每個地區設定的所有項目（忽略現有翻譯）。`--dry-run`：不寫入，不進行 API 呼叫。
+`-l` / `--locale`：以逗號分隔的目標語言地區（預設：設定 `targetLocales` 減去 `sourceLocale`）。`--force`：重新翻譯每個語言地區的所有項目（忽略現有翻譯）。`--dry-run`：不寫入、不呼叫 API。`-j` 並行處理 **locales**；在每個語言地區內，設定 `uiBatchConcurrency`（預設 **2**）並行處理 LLM 批次（每 50 個字串為一區塊，接著是複數群組）。沒有用於 `uiBatchConcurrency` 的 CLI 旗標。
 
 ---
 

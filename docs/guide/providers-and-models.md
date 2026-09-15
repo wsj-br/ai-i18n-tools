@@ -35,7 +35,7 @@ Set the active provider's API key in your environment or `.env` file. The CLI au
 <a id="model-fallback-chain"></a>
 ### Model fallback chain
 
-`translationModels` is an **ordered list**, not a single choice. The CLI tries the first model; on request or parse failure it moves to the next entry. Configure several models so a transient outage or a model that struggles with a locale does not block the whole run.
+`translationModels` is an **ordered list**, not a single choice. The CLI tries the first model; on request, parse, or wrong-script failure it moves to the next entry. Configure several models so a transient outage or a model that struggles with a locale (for example romanized Hindi instead of Devanagari) does not block the whole run. Romanized output is rejected for native-script locales; a locale that should stay romanized must be configured with an explicit `-Latn` subtag (for example `hi-Latn`).
 
 **Resolution tiers** (deduplicated, order preserved):
 

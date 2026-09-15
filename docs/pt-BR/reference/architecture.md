@@ -118,11 +118,12 @@ O i18next carrega esses arquivos como pacotes de recursos e procura traduções 
 
 `buildUIPromptMessages` constrói mensagens de sistema e do usuário que:
 
-- Identifique os idiomas de origem e destino (pelo nome exibido em `localeDisplayNames` ou `ui-languages.json`).
-- Envie um array JSON de strings e solicite um array JSON de traduções em retorno.
+- Identifique os idiomas de origem e de destino (pelo nome de exibição de `localeDisplayNames` ou `ui-languages.json`).
+- Preponha uma diretiva de script quando o local de destino tiver um sistema de escrita esperado (script BCP-47 explícito ou um padrão de idioma como `hi` → Devanagari, `ar` → Árabe, `ja` → Kana/Kanji japonês).
+- Envie um array JSON de strings e solicite um array JSON de traduções em troca.
 - Inclua dicas de glossário quando disponíveis.
 
-O `LlmClient.translateUIBatch` tenta cada modelo em ordem, recorrendo ao próximo em caso de erros de análise (parse) ou de rede. A CLI cria essa lista por localidade de destino a partir de `localeModels`, do opcional `uiModels` e de `translationModels` (consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` tenta cada modelo em ordem, recorrendo a erros de análise, rede ou script incorreto (incluindo fallback romanizado/latino para locais de script nativo). A CLI constrói essa lista por local de destino a partir de `localeModels`, `uiModels` opcional e `translationModels` (consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -247,10 +248,10 @@ Quando `docsOutput.style === "flat"`, os arquivos markdown traduzidos são coloc
 
 Cliente de chat independente de provedor construído sobre o Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). Ele resolve o provedor ativo a partir de `provider` / `providers`, constrói um cliente compatível com OpenAI (`createOpenAICompatible`) para o `baseUrl` + chave de API desse provedor e roteia todas as chamadas através de `generateText`. `OpenRouterClient` é mantido como um alias obsoleto. Comportamentos chave:
 
-- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; retorna em caso de falha de solicitação ou análise. Cada localidade de destino obtém sua própria cadeia resolvida: `localeModels(locale)` primeiro quando configurado, depois `uiModels` (somente pipelines de UI), depois `translationModels`. A tradução de Documentos, JSON e SVG cria um cliente por localidade com a cadeia não-UI. O comando `bench-models` em vez disso, constrói um único cliente de modelo por ID configurado (união de `translationModels`, `uiModels` e `localeModels`; `translationModels: [id]`, sem fallback) para que possa cronometrar e precificar cada modelo independentemente.
-- **Tempo limite da solicitação**: o `requestTimeoutMs` do provedor ativo (padrão 30 segundos) anula cada solicitação via `AbortSignal.timeout`. O mesmo valor se aplica a `GET /models` quando a CLI carrega a lista de modelos de um provedor para `check-models` (qualquer provedor). O filtro de pré-voo opcional que descarta IDs de modelo desconhecidos é executado apenas quando o provedor ativo é o OpenRouter.
-- **Extras do OpenRouter** (somente quando `openrouter` está ativo): roteamento de throughput via campo de solicitação `provider`, cabeçalhos `HTTP-Referer` / `X-Title` e custo exato em USD lido de `usage.cost`. O uso de token é relatado para cada provedor; o custo exato somente quando o provedor o retorna.
-- **Log de tráfego de depuração**: se `debugTrafficFilePath` estiver definido, anexa JSON de solicitação e resposta a um arquivo.
+- **Fallback de modelo**: tenta cada modelo na lista resolvida em ordem; recorre a falhas de solicitação ou análise. Cada local de destino obtém sua própria cadeia resolvida: `localeModels(locale)` primeiro quando configurado, depois `uiModels` (apenas pipelines de UI), depois `translationModels`. A tradução de documentos, JSON e SVG cria um cliente por local com a cadeia não-UI. O comando `bench-models` em vez disso constrói um cliente de modelo único por ID configurado (união de `translationModels`, `uiModels` e `localeModels`; `translationModels: [id]`, sem fallback) para que possa cronometrar e precificar cada modelo independentemente.
+- **Tempo limite de solicitação**: o `requestTimeoutMs` do provedor ativo (padrão de 30 segundos) anula cada solicitação via `AbortSignal.timeout`. O mesmo valor se aplica a `GET /models` quando a CLI carrega uma lista de modelos de provedor para `check-models` (qualquer provedor). O filtro pré-voo opcional que descarta IDs de modelo desconhecidos é executado apenas quando o provedor ativo é OpenRouter.
+- **Extras do OpenRouter** (somente quando `openrouter` está ativo): roteamento de throughput via campo de solicitação `provider`, cabeçalhos `HTTP-Referer` / `X-Title` e custo exato em USD lido de `usage.cost`. O uso de tokens é relatado para cada provedor; o custo exato somente quando o provedor o retorna.
+- **Log de tráfego de depuração**: se `debugTrafficFilePath` estiver definido, anexa JSON de solicitação e resposta a um arquivo (programático). A CLI `--debug-failed` grava arquivos `FAILED-TRANSLATION` em `cacheDir` com o prompt do sistema/usuário, resposta bruta do assistente e erros de validação para tentativas falhas de UI, documentos, JSON e SVG.
 
 <a id="config-loading"></a>
 ### Carregamento de configuração

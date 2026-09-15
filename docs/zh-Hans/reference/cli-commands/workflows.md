@@ -10,7 +10,7 @@
 
 **主要选项：** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` 会转发到 UI 和 SVG 步骤以及 docs/JSON；`--force-update` 适用于 docs、JSON 和 SVG（不适用于 UI）。文档阶段还会转发 `--emphasis-placeholders` 和 `--debug-failed`（含义与 `translate-docs` 相同）。`--prompt-format` 不是 `sync` 标志；docs 和 JSON 步骤使用内置默认值（`json-array`）。
+`--force` 会转发到 UI 和 SVG 步骤以及 docs/JSON；`--force-update` 适用于 docs、JSON 和 SVG（不适用于 UI）。Docs 阶段还会转发 `--emphasis-placeholders`（含义与 `translate-docs` 相同）。全局 `--debug-failed` 会在 `cacheDir` 下为每次被丢弃的模型尝试（包括 SVG/docs 脚本回退）写入 `FAILED-TRANSLATION` 日志，而不仅仅是在链中的每个模型都失败时才写入。`--prompt-format` 不是 `sync` 标志；docs 和 JSON 步骤使用内置默认值（`json-array`）。
 
 ---
 

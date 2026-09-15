@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Full release gate: i18n:self, format, lint, clean, build, test, docs build,
- * and production builds for every workspace example with a site build.
+ * Full release gate: sync example `ai-i18n-tools` pins, i18n:self, format,
+ * lint, clean, build, test, docs build, and production builds for every
+ * workspace example with a site build.
  *
  * Usage:
  *   node scripts/pre-release.mjs
@@ -65,23 +66,22 @@ const EXAMPLE_BUILDS = [
   ["examples/vitepress-docs", "docs:build"],
 ];
 
-banner("Checking example ai-i18n-tools version pins");
+banner("Syncing example ai-i18n-tools version pins");
 {
   let result;
   try {
-    result = syncExampleAiI18nToolsVersion(root, { checkOnly: true });
+    result = syncExampleAiI18nToolsVersion(root);
   } catch (error) {
-    console.error(`pre-release: failed to check example pins: ${error.message}`);
+    console.error(`pre-release: failed to sync example pins: ${error.message}`);
     process.exit(1);
   }
-  if (result.mismatches.length > 0) {
-    console.error(`example ai-i18n-tools pins must be ${result.expected}:`);
-    for (const pin of result.mismatches) {
-      console.error(`  ${path.relative(root, pin.file)} (${pin.field}): ${pin.range}`);
+  if (result.updated.length > 0) {
+    for (const file of result.updated) {
+      console.log(`updated ${path.relative(root, file)} → ${result.expected}`);
     }
-    process.exit(1);
+  } else {
+    console.log(`example ai-i18n-tools pins already match ${result.expected}`);
   }
-  console.log(`example ai-i18n-tools pins match ${result.expected}`);
 }
 
 // Build the package and check if all UI strings are translated

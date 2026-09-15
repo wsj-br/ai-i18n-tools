@@ -28,7 +28,7 @@
 6. 🔗リンクコントロールは、`ai-i18n-tools dashboard`が実行されている**ターミナル**にファイル/行ヒントをログに記録します。
 7. プロジェクトの**ソースファイル**を修正し、`translate-docs`または`sync`を再度実行します。成功した実行後にリストが**古く見える**場合は、`ai-i18n-tools sync --force-update`を実行してダッシュボードを再読み込みします。
 
-UIと並行してファイルベースのデバッグを行うには、再試行中に`cacheDir`の下に`FAILED-TRANSLATION`の詳細を書き込むために`translate-docs --debug-failed`を使用します。[キャッシュの動作と`translate-docs`フラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) を参照してください。
+UIに加えてファイルベースのデバッグを行うには、`translate-docs`、`translate-ui`、`translate-json`、`translate-svg`、または`sync`でグローバルな`--debug-failed`を渡します。これにより、すべてのモデルが失敗した場合だけでなく、破棄された各モデルの試行（プロンプト、生の出力、検証エラー）やスクリプトフォールバックの警告ごとに、`cacheDir`の下に`FAILED-TRANSLATION`ファイルが書き出されます。[キャッシュの動作と`translate-docs`フラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)を参照してください。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失敗とMarkdownの問題

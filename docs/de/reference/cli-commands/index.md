@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | Jeder Befehl | Aktiver LLM-Anbieter für diesen Lauf; überschreibt den Konfigurationsschlüssel `provider`. Muss unter `providers` konfiguriert werden. |
 | `-L` / `--ui-lang <code>` | Jeder Befehl | Sprache für die eigene Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle/Zusammenfassungen, Dashboard); Quelle mit höchster Priorität. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Ausgewählte Befehle | Konsolenausgabe in eine `.log`-Datei umleiten (Standardpfad: unter dem Stammverzeichnis `cacheDir`). Nur für `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` und `cleanup` verdrahtet. |
+| `--debug-failed`             | Übersetzungsbefehle | Schreiben Sie `FAILED-TRANSLATION`-Protokolle unter dem Stammverzeichnis `cacheDir` für jeden verworfenen Modellversuch (falsches Skript, Analyse-, Qualitäts- oder API-Fehler), einschließlich Fallbacks – nicht nur, wenn jedes Modell fehlschlägt. Gilt für `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync` und `cleanup`. |
 
 <a id="per-command-help"></a>
 ### Hilfe pro Befehl

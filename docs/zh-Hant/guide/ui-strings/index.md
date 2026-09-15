@@ -50,7 +50,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-讀取 `strings.json`，將批次發送到每個目標區域設置的活躍 LLM 提供者，將扁平的 JSON 文件（`de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。
+讀取 `strings.json`，將批次傳送至每個目標語系的作用中 LLM 提供者，並將平面 JSON 檔案（`de.json`、`fr.json` 等）寫入至 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱[提供者與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。在單一語系內，最多同時執行 `uiBatchConcurrency` 個批次（預設為 **2**；請參閱[設定 — uiBatchConcurrency](/zh-Hant/reference/configuration#uibatchconcurrency-optional)）。`-j` 仍然只會對目標語系進行平行處理。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
@@ -62,7 +62,7 @@ ai-i18n-tools translate-ui
 
 對於每個條目，`translate-ui` 會儲存來自作用中提供者的 **模型 ID**，該提供者已成功翻譯選用 `models` 物件中的每個地區設定 (與 `translated` 具有相同的地區設定金鑰)。在翻譯儀表板中編輯的字串，會以該地區設定的 `models` 中的標記值 `user-edited` 標記。`ui.flatOutputDir` 下的每個地區設定平面檔案仍僅包含 **來源字串 → 翻譯**；它們不包含 `models` (因此執行階段套件保持不變)。
 
-> **注意：** 儀表板對 UI 字串的編輯儲存在 `strings.json` 中，而不是 SQLite 文件快取中。執行純 `sync` 或 `translate-ui`（無特殊標誌）以從目錄重寫平面語言環境檔案 — `--force-update` **不會**轉發到 UI 步驟。手動編輯後避免在 UI 命令上使用 `--force`：它會重新翻譯每個條目並可能覆蓋您的 `user-edited` 行。
+> **注意：** 對 UI 字串的儀表板編輯位於 `strings.json` 中，而非 SQLite 文件快取。執行普通的 `sync` 或 `translate-ui`（無特殊旗標）以從目錄重寫平面語系檔案 —— `--force-update` **不會**轉送至 UI 步驟。避免在手動編輯後對 UI 指令使用 `--force`：它會重新翻譯每個項目，並可能覆寫您的 `user-edited` 列。儲存的翻譯未通過語系書寫系統檢查的目錄列（例如 `hi` 的羅馬拼音印地語）將被視為缺失，並在不使用 `--force` 的情況下重新翻譯。
 
 然後在執行時連接 i18next — [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime)。
 

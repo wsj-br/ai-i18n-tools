@@ -118,11 +118,12 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 
 `buildUIPromptMessages`은 다음을 수행하는 시스템 및 사용자 메시지를 구성합니다:
 
-- 소스 및 대상 언어를 식별합니다(표시 이름은 `localeDisplayNames` 또는 `ui-languages.json`에서 가져옴).
-- 문자열의 JSON 배열을 보내고 번역된 결과의 JSON 배열을 반환하도록 요청합니다.
-- 가능할 경우 용어집 힌트를 포함합니다.
+- 소스 및 대상 언어를 식별합니다(`localeDisplayNames` 또는 `ui-languages.json`의 표시 이름 기준).
+- 대상 로캘에 예상 문자 체계가 있는 경우(명시적 BCP-47 스크립트 또는 `hi` → 데바나가리, `ar` → 아랍 문자, `ja` → 일본어 가나/한자와 같은 언어 기본값) 스크립트 지시어를 앞에 추가합니다.
+- 문자열의 JSON 배열을 전송하고 그에 대한 번역의 JSON 배열을 반환하도록 요청합니다.
+- 사용 가능한 경우 용어집 힌트를 포함합니다.
 
-`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석 또는 네트워크 오류 시 대체합니다. CLI는 `localeModels`, 선택적 `uiModels` 및 `translationModels`에서 대상 로케일별로 해당 목록을 빌드합니다([공급자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조).
+`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석, 네트워크 또는 잘못된 스크립트 오류 발생 시 대체합니다(네이티브 스크립트 로캘의 경우 로마자/라틴 문자 대체 포함). CLI는 `localeModels`, 선택적 `uiModels`, `translationModels`에서 대상 로캘별로 해당 목록을 작성합니다([제공자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조).
 
 ---
 
@@ -187,7 +188,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
+모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
@@ -247,10 +248,10 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 
 Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 공급자 독립적인 채팅 클라이언트입니다. 활성 공급자를 `provider` / `providers`에서 확인하고, 해당 공급자의 `baseUrl` + API 키에 대한 OpenAI 호환 클라이언트( `createOpenAICompatible` )를 빌드한 다음, 모든 호출을 `generateText`를 통해 라우팅합니다. `OpenRouterClient`는 더 이상 사용되지 않는 별칭으로 유지됩니다. 주요 동작:
 
-- **모델 대체(Model fallback)**: 확인된 목록의 각 모델을 순서대로 시도합니다. 요청 또는 구문 분석 실패 시 대체됩니다. 각 대상 로케일은 자체적으로 확인된 체인을 가져옵니다. 구성된 경우 `localeModels(locale)`가 먼저 적용되고, 그 다음 `uiModels`(UI 파이프라인만 해당), 그 다음 `translationModels`가 적용됩니다. 문서, JSON 및 SVG 번역은 비 UI 체인을 사용하여 로케일별 클라이언트를 생성합니다. 대신 `bench-models` 명령은 구성된 ID( `translationModels`, `uiModels` 및 `localeModels`의 통합, `translationModels: [id]`, 대체 없음)당 하나의 단일 모델 클라이언트를 빌드하여 각 모델의 시간과 가격을 독립적으로 측정할 수 있습니다.
-- **요청 시간 초과(Request timeout)**: 활성 공급자의 `requestTimeoutMs`(기본값 30초)는 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. 동일한 값은 CLI가 `check-models`(모든 공급자)에 대한 공급자의 모델 목록을 로드할 때 `GET /models`에 적용됩니다. 알 수 없는 모델 ID를 삭제하는 선택적 사전 필터는 활성 공급자가 OpenRouter인 경우에만 실행됩니다.
-- **OpenRouter 추가 기능(OpenRouter extras)**( `openrouter`가 활성 상태인 경우에만 해당): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 공급자에 대해 보고됩니다. 정확한 비용은 공급자가 반환하는 경우에만 보고됩니다.
-- **디버그 트래픽 로그(Debug traffic log)**: `debugTrafficFilePath`가 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다.
+- **모델 폴백**: 해결된 목록의 각 모델을 순서대로 시도하며, 요청 또는 구문 분석 실패 시 대체합니다. 각 대상 로캘은 자체 해결된 체인을 갖습니다: 구성된 경우 `localeModels(locale)`가 먼저, 그 다음 `uiModels`(UI 파이프라인 전용), 그 다음 `translationModels`. 문서, JSON 및 SVG 번역은 비-UI 체인으로 로캘별 클라이언트를 생성합니다. `bench-models` 명령은 대신 구성된 각 ID에 대해 단일 모델 클라이언트를 하나씩 작성합니다(`translationModels`, `uiModels`, `localeModels`의 합집합; `translationModels: [id]`, 폴백 없음). 이를 통해 각 모델을 독립적으로 시간 측정하고 가격을 책정할 수 있습니다.
+- **요청 시간 초과**: 활성 제공자의 `requestTimeoutMs`(기본 30초)가 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. CLI가 `check-models`(모든 제공자)에 대해 제공자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알려지지 않은 모델 ID를 삭제하는 선택적 사전 필터는 활성 제공자가 OpenRouter인 경우에만 실행됩니다.
+- **OpenRouter 추가 기능**(`openrouter`가 활성일 때만): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 제공자에 대해 보고되며, 정확한 비용은 제공자가 반환할 때만 제공됩니다.
+- **디버그 트래픽 로그**: `debugTrafficFilePath`이 설정된 경우, 요청 및 응답 JSON을 파일에 추가합니다(프로그래밍 방식). CLI `--debug-failed`은 `cacheDir` 아래에 `FAILED-TRANSLATION` 파일을 작성하며, 실패한 UI, 문서, JSON 및 SVG 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답 및 유효성 검사 오류를 포함합니다.
 
 <a id="config-loading"></a>
 ### 설정 로드

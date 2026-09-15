@@ -118,11 +118,12 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 `buildUIPromptMessages` 构建系统 + 用户消息，这些消息：
 
-- 标识源语言和目标语言（来自 `localeDisplayNames` 或 `ui-languages.json` 的显示名称）。
-- 发送字符串的 JSON 数组，并要求返回翻译的 JSON 数组。
-- 在可用时包含术语表提示。
+- 根据显示名称（来自 `localeDisplayNames` 或 `ui-languages.json`）识别源语言和目标语言。
+- 当目标区域设置具有预期的书写系统时（显式 BCP-47 脚本，或语言默认值，例如 `hi` → 天城文，`ar` → 阿拉伯文，`ja` → 日文假名/汉字），在前面添加脚本指令。
+- 发送一个字符串 JSON 数组，并请求返回一个翻译 JSON 数组。
+- 在可用时包含词汇表提示。
 
-`LlmClient.translateUIBatch` 按顺序尝试每个模型，并在解析或网络错误时回退。CLI 根据 `localeModels`、可选的 `uiModels` 和 `translationModels` 为每个目标区域设置构建该列表（请参阅[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain))。
+`LlmClient.translateUIBatch` 会按顺序尝试每个模型，在解析、网络或脚本错误时回退（包括针对原生脚本区域设置的罗马化/拉丁字母回退）。CLI 会根据 `localeModels`、可选的 `uiModels` 和 `translationModels` 为每个目标区域设置构建该列表（参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)）。
 
 ---
 
@@ -187,7 +188,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
 7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
 
-在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
+在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
 
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
@@ -247,10 +248,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 基于 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）构建的提供商无关的聊天客户端。它从 `provider` / `providers` 解析活动提供商，为该提供商的 `baseUrl` + API 密钥构建一个 OpenAI 兼容的客户端（`createOpenAICompatible`），并通过 `generateText` 路由所有调用。`OpenRouterClient` 保留为已弃用的别名。关键行为：
 
-- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首选 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 流水线），接着是 `translationModels`。文档、JSON 和 SVG 翻译会使用非 UI 链为每个区域设置创建一个客户端。而 `bench-models` 命令会为每个配置的 ID 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
-- **请求超时**：活动提供程序的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供程序）加载提供程序的模型列表时，相同的值也适用于 `GET /models`。丢弃未知模型 ID 的可选预检过滤器仅在活动提供程序为 OpenRouter 时运行。
-- **OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段、`HTTP-Referer` / `X-Title` 标头进行吞吐量路由，并从 `usage.cost` 读取准确的美元成本。每个提供程序都会报告令牌使用情况；仅当提供程序返回时才提供准确成本。
-- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中。
+- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有自己已解析的链：先使用已配置的 `localeModels(locale)`，然后是 `uiModels`（仅 UI 管道），再是 `translationModels`。文档、JSON 和 SVG 翻译会为每个区域设置创建一个使用非 UI 链的客户端。`bench-models` 命令则会为每个已配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便能够独立地对每个模型进行计时和计价。
+- **请求超时**：活动提供商的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供商）加载提供商的模型列表时，相同的值也适用于 `GET /models`。用于丢弃未知模型 id 的可选预检过滤器仅在活动提供商为 OpenRouter 时运行。
+- **OpenRouter 附加功能**（仅当 `openrouter` 处于活动状态时）：通过 `provider` 请求字段进行吞吐量路由，`HTTP-Referer` / `X-Title` 标头，以及从 `usage.cost` 读取的精确美元成本。每个提供商都会报告令牌使用量；仅当提供商返回时才提供精确成本。
+- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则会将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 会在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示、原始助手回复以及失败的 UI、文档、JSON 和 SVG 尝试的验证错误。
 
 <a id="config-loading"></a>
 ### 加载配置

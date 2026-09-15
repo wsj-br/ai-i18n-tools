@@ -15,7 +15,7 @@ Exibe a versão da CLI e o carimbo de data/hora da compilação (mesmas informa�
 
 **Sinopse:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
 
-Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `concurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` e `docs[].addFrontmatter`). Os comandos de tradução que chamam um LLM exigem a chave de API do provedor ativo no ambiente ou `.env` (exceto Ollama) — consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
+Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` e `docs[].addFrontmatter`). Os comandos de tradução que chamam um LLM exigem a chave de API do provedor ativo no ambiente ou `.env` (Ollama, exceto) — consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
 
 **Opções principais:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 

@@ -21,6 +21,6 @@
 
 Übersetzt in `config.svg` konfigurierte SVG-Dateien (getrennt von den Dokumenten). Erfordert `features.translateSVG`. Gleiche Cache-Konzepte wie bei Dokumenten; unterstützt `--no-cache`, um SQLite-Lese-/Schreibvorgänge für diesen Durchlauf zu überspringen.
 
-**Wichtige Optionen:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**Wichtige Optionen:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, globale `--debug-failed`
 
 **Siehe auch:** [SVG-Übersetzung](/de/guide/svg-translation/)

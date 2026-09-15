@@ -118,11 +118,12 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 `buildUIPromptMessages` 建置系統 + 使用者訊息，這些訊息會：
 
-- 識別來源和目標語言 (透過 `localeDisplayNames` 或 `ui-languages.json` 的顯示名稱)。
-- 發送字串的 JSON 陣列，並要求回傳翻譯的 JSON 陣列。
-- 在有詞彙提示時包含它們。
+- 識別來源與目標語言（透過 `localeDisplayNames` 或 `ui-languages.json` 的顯示名稱）。
+- 當目標地區具有預期的書寫系統時（明確的 BCP-47 腳本，或語言預設值，例如 `hi` → 天城文，`ar` → 阿拉伯文，`ja` → 日文假名/漢字），請在前面加上腳本指令。
+- 傳送字串的 JSON 陣列，並要求傳回翻譯的 JSON 陣列。
+- 可用時包含詞彙表提示。
 
-`LlmClient.translateUIBatch` 會依序嘗試每個模型，並在發生解析或網路錯誤時回退。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標語言環境建立該清單（請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。
+`LlmClient.translateUIBatch` 會依序嘗試每個模型，在發生解析、網路或腳本錯誤時進行後援（包含原生腳本地區的羅馬化/拉丁字母後援）。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標地區建立該清單（請參閱 [供應商與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)）。
 
 ---
 
@@ -187,7 +188,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
 7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
 
-在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
+在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 
@@ -247,10 +248,10 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 基於 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）建置的提供者無關的聊天用戶端。它會從 `provider` / `providers` 解析作用中的提供者，為該提供者的 `baseUrl` + API 金鑰建置一個 OpenAI 相容的用戶端（`createOpenAICompatible`），並透過 `generateText` 路由所有呼叫。`OpenRouterClient` 保留為已淘汰的別名。主要行為：
 
-- **模型備援**：依順序嘗試已解析清單中的每個模型；在請求或解析失敗時進行備援。每個目標地區設定都有自己已解析的鏈：設定時優先使用 `localeModels(locale)`，然後是 `uiModels`（僅限 UI 管線），接著是 `translationModels`。文件、JSON 與 SVG 翻譯會使用非 UI 鏈為每個地區設定建立客戶端。`bench-models` 指令則相反，它會為每個已設定的 ID 建立一個單一模型客戶端（`translationModels`、`uiModels` 與 `localeModels` 的聯集；`translationModels: [id]`，無備援），以便獨立計時與計價每個模型。
-- **請求逾時**：當前提供者的 `requestTimeoutMs`（預設 30 秒）會透過 `AbortSignal.timeout` 中止每個請求。當 CLI 載入提供者的模型清單以供 `check-models`（任何提供者）使用時，相同的值也適用於 `GET /models`。捨棄未知模型 ID 的選用預檢篩選器僅在當前提供者為 OpenRouter 時執行。
-- **OpenRouter 額外功能**（僅在 `openrouter` 為當前狀態時）：透過 `provider` 請求欄位進行吞吐量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的精確美元成本。每個提供者都會報告 Token 使用量；精確成本僅在提供者傳回時提供。
-- **除錯流量日誌**：如果設定了 `debugTrafficFilePath`，會將請求與回應的 JSON 附加到檔案中。
+- **模型後援**：依序嘗試已解析清單中的每個模型；在請求或解析失敗時進行後援。每個目標地區都有自己已解析的鏈：設定時優先使用 `localeModels(locale)`，然後是 `uiModels`（僅限 UI 管線），接著是 `translationModels`。文件、JSON 和 SVG 翻譯會使用非 UI 鏈為每個地區建立客戶端。`bench-models` 命令則會為每個已設定的 ID 建立一個單一模型客戶端（`translationModels`、`uiModels` 和 `localeModels` 的聯集；`translationModels: [id]`，無後援），以便獨立計時和計價每個模型。
+- **請求逾時**：作用中供應商的 `requestTimeoutMs`（預設 30 秒）會透過 `AbortSignal.timeout` 中止每個請求。當 CLI 為 `check-models`（任何供應商）載入供應商的模型清單時，相同的值也適用於 `GET /models`。丟棄未知模型 ID 的選用預檢篩選器僅在作用中供應商為 OpenRouter 時執行。
+- **OpenRouter 額外功能**（僅在 `openrouter` 處於作用中狀態時）：透過 `provider` 請求欄位進行輸送量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的確切 USD 成本。每個供應商都會報告權杖使用量；僅在供應商傳回時才提供確切成本。
+- **除錯流量日誌**：如果設定了 `debugTrafficFilePath`，會將請求和回應 JSON 附加到檔案中（程式化）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，其中包含系統/使用者提示、原始助理回覆，以及失敗的 UI、文件、JSON 和 SVG 嘗試的驗證錯誤。
 
 <a id="config-loading"></a>
 ### 設定載入

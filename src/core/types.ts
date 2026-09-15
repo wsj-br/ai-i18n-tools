@@ -863,6 +863,10 @@ const i18nConfigSchemaInner = z
      */
     batchConcurrency: z.number().int().positive().optional(),
     /**
+     * Max parallel LLM **batch** requests per locale (`translate-ui`). Default `2` when unset.
+     */
+    uiBatchConcurrency: z.number().int().positive().optional(),
+    /**
      * Max concurrent files processed within a single locale (`translate-docs`).
      * When > 1, files within the same locale are processed in parallel.
      * Default `1` (sequential) when unset to preserve existing behavior.

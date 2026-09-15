@@ -28,7 +28,7 @@ Marcação inline densa (**negrito** misturado com `` `code` ``, ênfase aninhad
 6. O controle de link 🔗 registra dicas de arquivo/linha no **terminal** onde `ai-i18n-tools dashboard` está sendo executado.
 7. Corrija o **arquivo de origem** em seu projeto e execute `translate-docs` ou `sync` novamente. Se a lista parecer **desatualizada** após uma execução bem-sucedida, execute `ai-i18n-tools sync --force-update` e recarregue o painel.
 
-Para depuração baseada em arquivo junto com a interface do usuário, use `translate-docs --debug-failed` para gravar detalhes de `FAILED-TRANSLATION` em `cacheDir` durante as tentativas — consulte [Comportamento do cache e sinalizadores `translate-docs`](/pt-BR/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+Para depuração baseada em arquivo junto com a interface do usuário, passe `--debug-failed` global em `translate-docs`, `translate-ui`, `translate-json`, `translate-svg` ou `sync` para gravar um arquivo `FAILED-TRANSLATION` em `cacheDir` para cada tentativa de modelo descartada (prompt, saída bruta, erro de validação), incluindo avisos de fallback de script — não apenas quando todos os modelos falham. Consulte [Comportamento do cache e sinalizadores `translate-docs`](/pt-BR/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Falhas vs. Problemas de Markdown

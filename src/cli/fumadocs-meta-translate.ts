@@ -18,6 +18,7 @@ import {
   protectSegmentForTranslation,
   translatePromptFormatToResponseFormat,
   translateSegmentsBatched,
+  translationFailureLogDir,
   type DocSegmentTranslation,
   type TranslateRunOptions,
   type TranslateTotals,
@@ -30,6 +31,7 @@ import {
 } from "./helpers.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
 import { AsyncMutex } from "../utils/concurrency.js";
+import { localeEnforcesOutputScript, translationScriptIssue } from "../core/locale-utils.js";
 import { t } from "../i18n/index.js";
 
 const META_FILENAME = "meta.json";
@@ -155,6 +157,7 @@ export async function translateFumadocsMetaFiles(
       cache &&
       !opts.noCache &&
       cachedFileHash === fileHash &&
+      !localeEnforcesOutputScript(locale) &&
       translatedOutputIsCurrent(outPath, sourceFileMtime)
     ) {
       if (opts.verbose) {
@@ -210,7 +213,7 @@ export async function translateFumadocsMetaFiles(
         const hit = await withCacheMutex(opts.cacheMutex, () =>
           cache.getSegment(s.hash, locale, rel)
         );
-        if (hit) {
+        if (hit && translationScriptIssue(hit, locale, s.content) === null) {
           translations.set(s.hash, { text: hit });
           hitKeys?.add(`${s.hash}|${locale}`);
           segmentsCached++;
@@ -258,7 +261,7 @@ export async function translateFumadocsMetaFiles(
         totalSegments: segments.length,
         segmentIndicesInDoc,
       },
-      undefined,
+      translationFailureLogDir(opts, config.cacheDir),
       failureTracker,
       { filepath: rel },
       undefined,

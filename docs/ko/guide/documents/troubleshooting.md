@@ -30,3 +30,14 @@
 1. 에셋 레이아웃이 `docsOutput.style`와 일치하는지 확인합니다(플랫 vs 문서 시스템). [링크 재작성](/ko/guide/documents/link-rewriting) 및 [이미지 및 스크린샷](/ko/guide/images-and-screenshots/)을 참조하십시오.
 2. 로케일 세그먼트를 교체하거나 절대 `/img/…` 경로를 연결하도록 `docsOutput.postProcessing.regexAdjustments`를 추가하거나 조정합니다. 플랫 레이아웃의 경우, 플랫 링크 재작성기가 `regexAdjustments` **이전**에 실행된다는 점을 기억하십시오. 이미 접두사가 붙은 URL에 대해 패턴을 일치시키십시오.
 3. 재작성된 마크다운이 참조하는 경로에 로케일별 에셋 파일이 있는지 확인하십시오(`translate-docs`는 URL을 재작성하지만 래스터 파일을 복사하지는 않습니다).
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## 힌디어, 아랍어, CJK 또는 키릴어 출력이 로마자화됨(라틴 문자)
+
+일부 모델은 의미는 번역하지만 결과를 라틴/로마 문자로 작성합니다(예: 힌디어를 `नमस्ते` 대신 `Namaste`로 작성). 단순 `hi`는 데바나가리 문자를 의미하며, 로마자화된 힌디어가 필요할 때만 `hi-Latn`를 사용하세요.
+
+**해결 방법**
+
+1. 로케일 코드가 원하는 문자 체계와 일치하는지 확인하세요(`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
+2. 잘못된 문자 체계의 캐시 행이 거부되도록 번역을 다시 실행하세요: UI 문자열의 경우 `translate-ui --force`, 또는 `translate-docs` / `sync`(예상 문자 체계가 있는 로케일의 경우 파일 수준 건너뛰기가 비활성화됨; `--force-update`는 여전히 유효한 세그먼트 캐시를 재사용함).
+3. 모델이 계속해서 문자 체계 검사에 실패하는 경우, 더 강력한 모델이 먼저 시도되도록 해당 로케일에 `localeModels` 항목을 추가하세요 — [제공자 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.

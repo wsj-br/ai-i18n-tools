@@ -50,7 +50,7 @@ Der Scanner ist konfigurierbar: Fügen Sie benutzerdefinierte Funktionsnamen üb
 ai-i18n-tools translate-ui
 ```
 
-Liest `strings.json`, sendet Batches an den aktiven LLM-Anbieter für jedes Zielland, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain)).
+Liest `strings.json`, sendet Batches an den aktiven LLM-Anbieter für jedes Zielland, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain)). Innerhalb eines Gebietsschemas laufen bis zu `uiBatchConcurrency` Batches gleichzeitig (Standard **2**; siehe [Konfiguration – uiBatchConcurrency](/de/reference/configuration#uibatchconcurrency-optional)). `-j` parallelisiert weiterhin nur die Zielländer.
 
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
@@ -62,7 +62,7 @@ Je nach Zielsprache können einige Übersetzungsmodelle deutlich bessere Ergebni
 
 Für jeden Eintrag speichert `translate-ui` die **Modell-ID des aktiven Anbieters**, der jede Sprache erfolgreich übersetzt hat, in einem optionalen `models`-Objekt (dieselben Sprachschlüssel wie `translated`). Im Übersetzungs-Dashboard bearbeitete Zeichenfolgen werden mit dem Sentinel-Wert `user-edited` in `models` für diese Sprache markiert. Die sprachspezifischen Flatfiles unter `ui.flatOutputDir` bleiben nur **Quellzeichenfolge → Übersetzung**; sie enthalten keine `models` (sodass Laufzeit-Bundles unverändert bleiben).
 
-> **Hinweis:** Dashboard-Bearbeitungen von UI-Zeichenfolgen befinden sich in `strings.json`, nicht im SQLite-Dokumentations-Cache. Führen Sie einfaches `sync` oder `translate-ui` (ohne spezielles Flag) aus, um Flat-Sprachdateien aus dem Katalog neu zu schreiben – `--force-update` wird **nicht** an den UI-Schritt weitergeleitet. Vermeiden Sie `--force` bei UI-Befehlen nach manuellen Bearbeitungen: Es übersetzt jeden Eintrag neu und kann Ihre `user-edited`-Zeilen überschreiben.
+> **Hinweis:** Dashboard-Bearbeitungen an UI-Strings befinden sich in `strings.json`, nicht im SQLite-Dokumentations-Cache. Führen Sie einfaches `sync` oder `translate-ui` (ohne spezielles Flag) aus, um flache Gebietsschema-Dateien aus dem Katalog neu zu schreiben – `--force-update` wird **nicht** an den UI-Schritt weitergeleitet. Vermeiden Sie `--force` bei UI-Befehlen nach manuellen Bearbeitungen: Es übersetzt jeden Eintrag neu und kann Ihre `user-edited`-Zeilen überschreiben. Katalogzeilen, deren gespeicherte Übersetzung die Überprüfung des Schreibsystems des Gebietsschemas nicht besteht (z. B. romanisiertes Hindi für `hi`), werden als fehlend behandelt und ohne `--force` neu übersetzt.
 
 Binden Sie dann i18next zur Laufzeit ein – [i18next einbinden](/de/guide/ui-strings/i18next-runtime).
 

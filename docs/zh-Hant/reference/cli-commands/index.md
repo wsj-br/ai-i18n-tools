@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | 每個指令 | 此執行緒的活躍 LLM 提供者；會覆寫組態 `provider` 鍵。必須在 `providers` 下進行組態。 |
 | `-L` / `--ui-lang <code>`    | 每個指令 | 工具自身 UI（CLI 說明、日誌/摘要、儀表板）的語言；最高優先級來源。請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。 |
 | `-w` / `--write-logs [path]` | 選定的命令 | 將控制台輸出導向至 `.log` 檔案（預設路徑：在根目錄 `cacheDir` 下）。僅適用於 `translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync` 和 `cleanup`。 |
+| `--debug-failed`             | 翻譯指令 | 在根目錄 `cacheDir` 下為每個被捨棄的模型嘗試（錯誤腳本、解析、品質或 API 錯誤）撰寫 `FAILED-TRANSLATION` 日誌，包括後備方案——不僅限於所有模型都失敗時。適用於 `translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync-ui`、`sync` 和 `cleanup`。 |
 
 <a id="per-command-help"></a>
 ### 命令說明

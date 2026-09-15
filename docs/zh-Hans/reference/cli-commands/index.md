@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | 每个命令 | 此运行的活动 LLM 提供程序；覆盖配置 `provider` 键。必须在 `providers` 下进行配置。 |
 | `-L` / `--ui-lang <code>`    | 每个命令 | 工具自身 UI（CLI 帮助、日志/摘要、仪表板）的语言；最高优先级来源。参见[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。 |
 | `-w` / `--write-logs [path]` | 选定命令 | 将控制台输出复制到 `.log` 文件（默认路径：在根 `cacheDir` 下）。仅适用于 `translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync` 和 `cleanup`。 |
+| `--debug-failed`             | 翻译命令 | 为每次被丢弃的模型尝试（脚本错误、解析、质量或 API 错误）在根目录 `cacheDir` 下写入 `FAILED-TRANSLATION` 日志，包括回退情况——而不仅仅是在所有模型都失败时。适用于 `translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync-ui`、`sync` 和 `cleanup`。 |
 
 <a id="per-command-help"></a>
 ### 按命令查看帮助

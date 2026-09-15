@@ -126,6 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | Cada comando | Proveedor de LLM activo para esta ejecución; anula la clave `provider` de la configuración. Debe configurarse en `providers`. |
 | `-L` / `--ui-lang <code>` | Cada comando | Idioma de la interfaz de usuario de la herramienta (ayuda de la CLI, registros/resúmenes, panel); fuente de mayor prioridad. Consulte [Idioma de la interfaz de usuario de la herramienta](/es/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Comandos seleccionados | Envía la salida de la consola a un archivo `.log` (ruta predeterminada: bajo la raíz `cacheDir`). Cableado solo para `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` y `cleanup`. |
+| `--debug-failed` | Comandos de traducción | Escribe registros `FAILED-TRANSLATION` bajo la raíz `cacheDir` para cada intento de modelo descartado (script incorrecto, análisis, calidad o error de API), incluyendo los fallbacks, no solo cuando todos los modelos fallan. Se aplica a `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync` y `cleanup`. |
 
 <a id="per-command-help"></a>
 ### Ayuda por comando

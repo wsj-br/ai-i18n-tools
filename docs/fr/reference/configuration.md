@@ -52,7 +52,24 @@ Nombre maximal de **paramètres régionaux cibles** traduits simultanément (`tr
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (facultatif)
 
-**translate-docs**, **translate-svg** et **translate-json** (et les étapes correspondantes dans `sync`) : nombre maximal de requêtes LLM **par lots** parallèles par fichier (chaque lot peut contenir de nombreux segments). La valeur par défaut est **4** si omise. Ignoré par `translate-ui`. Remplacé par `-b` / `--batch-concurrency`.
+**translate-docs**, **translate-svg** et **translate-json** (ainsi que les étapes correspondantes dans `sync`) : nombre maximal de requêtes LLM **par lot** en parallèle par fichier (chaque lot peut contenir de nombreux segments). La valeur par défaut est **4** si omise. Ne s'applique pas à `translate-ui` — utilisez `uiBatchConcurrency` à la place. Outrepassez avec `-b` / `--batch-concurrency`.
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency` (facultatif)
+
+**translate-ui**, **sync-ui** et l'étape UI de `sync` : nombre maximal de requêtes LLM **par lot** en parallèle **au sein d'une seule locale** (blocs de chaînes de caractères de 50, puis groupes pluriels). La valeur par défaut est **2** si omise. Indépendant de `concurrency` (locales cibles parallèles) et `batchConcurrency` (docs/JSON/SVG). Pas de drapeau CLI ; définissez-le dans la configuration ou passez `uiBatchConcurrency` à `runTranslateUI` programmatique.
+
+**Exemple :**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+Avec la concurrence de locale par défaut de **4**, cela représente jusqu'à **8** appels d'API UI en cours. Augmentez cette valeur lors de la traduction d'une grande locale (`-l de`) ; maintenez-la basse si le fournisseur applique des limites de débit.
 
 ---
 

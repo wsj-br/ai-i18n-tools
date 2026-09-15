@@ -434,7 +434,7 @@ Target locales (-l / --locale):
 
   proofread-ui uses -l, --locale <code> for a single source locale to review.
 
-Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs.
+Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--write-logs, --debug-failed.
 
 Provider override (-P / --provider):
   On translation commands, selects the active LLM provider for this run, overriding the config
@@ -470,6 +470,13 @@ program
   .option(
     "-w, --write-logs [path]",
     t("Tee console output to a .log file (default path: under cacheDir)")
+  )
+  .option(
+    "--debug-failed",
+    t(
+      "Write detailed FAILED-TRANSLATION logs under cacheDir for each failed model attempt (wrong script, parse, or quality), including fallbacks — not only when every model fails (UI, docs, JSON, SVG)"
+    ),
+    false
   )
   .option(
     "-L, --ui-lang <code>",
@@ -916,7 +923,11 @@ function buildTranslateOpts(
   projectRoot: string,
   logPath?: string
 ): { locales: string[]; uiLocales: string[]; translateOpts: TranslateRunOptions } {
-  const g = cmd.optsWithGlobals() as { verbose?: boolean; config?: string };
+  const g = cmd.optsWithGlobals() as {
+    verbose?: boolean;
+    config?: string;
+    debugFailed?: boolean;
+  };
   const o = cmd.opts() as {
     locale?: string;
     path?: string;
@@ -933,7 +944,6 @@ function buildTranslateOpts(
     promptFormat?: string;
     emphasisPlaceholders?: boolean;
     noEmphasisPlaceholders?: boolean;
-    debugFailed?: boolean;
   };
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
   const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
@@ -961,7 +971,7 @@ function buildTranslateOpts(
     promptFormat: parseTranslatePromptFormat(o.promptFormat),
     emphasisPlaceholdersCli: Boolean(o.emphasisPlaceholders),
     noEmphasisPlaceholdersCli: Boolean(o.noEmphasisPlaceholders),
-    debugFailed: Boolean(o.debugFailed),
+    debugFailed: Boolean(g.debugFailed),
   };
   return { locales, uiLocales, translateOpts };
 }
@@ -985,7 +995,7 @@ function buildCleanupSyncTranslateOpts(
   config: I18nConfig,
   projectRoot: string,
   logPath: string | undefined,
-  g: { verbose?: boolean },
+  g: { verbose?: boolean; debugFailed?: boolean },
   dryRun: boolean
 ): { uiLocales: string[]; translateOpts: TranslateRunOptions } {
   const locales = resolveLocalesForDocumentation(config, projectRoot, null);
@@ -1006,6 +1016,7 @@ function buildCleanupSyncTranslateOpts(
     concurrency: undefined,
     batchConcurrency: undefined,
     promptFormat: "json-array",
+    debugFailed: Boolean(g.debugFailed),
   };
   return { uiLocales, translateOpts };
 }
@@ -1062,6 +1073,7 @@ async function runSyncPipeline(args: {
           logPath: sharedOpts.logPath,
           concurrency: sharedOpts.concurrency,
           abortSignal: interrupt.signal,
+          debugFailed: sharedOpts.debugFailed,
         });
       } catch (e) {
         if (isRunInterruptedError(e)) {
@@ -1245,11 +1257,6 @@ program
     t(
       "Do not mask markdown emphasis (overrides CJK/RTL default, configuration has precedence over CLI flags)"
     ),
-    false
-  )
-  .option(
-    "--debug-failed",
-    t("Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures"),
     false
   )
   .action(async (_a, cmd) => {
@@ -1632,7 +1639,11 @@ program
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
-    const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
+    const g = cmd.optsWithGlobals() as {
+      verbose?: boolean;
+      writeLogs?: boolean | string;
+      debugFailed?: boolean;
+    };
     const o = cmd.opts() as {
       locale?: string;
       dryRun?: boolean;
@@ -1660,6 +1671,7 @@ program
           o.concurrency !== undefined
             ? parsePositiveInt("Concurrency (-j)", o.concurrency)
             : undefined,
+        debugFailed: Boolean(g.debugFailed),
       });
     } catch (e) {
       if (exitIfRunInterrupted(e)) {
@@ -1697,7 +1709,11 @@ program
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
-    const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
+    const g = cmd.optsWithGlobals() as {
+      verbose?: boolean;
+      writeLogs?: boolean | string;
+      debugFailed?: boolean;
+    };
     const o = cmd.opts() as {
       locale?: string;
       dryRun?: boolean;
@@ -1748,6 +1764,7 @@ program
           o.concurrency !== undefined
             ? parsePositiveInt("Concurrency (-j)", o.concurrency)
             : undefined,
+        debugFailed: Boolean(g.debugFailed),
       });
     } catch (e) {
       if (exitIfRunInterrupted(e)) {
@@ -1981,11 +1998,6 @@ program
     t(
       "Do not mask markdown emphasis (overrides CJK/RTL default and --emphasis-placeholders when not contradicted by docs[].emphasisPlaceholders)"
     ),
-    false
-  )
-  .option(
-    "--debug-failed",
-    t("Write detailed FAILED-TRANSLATION logs under cacheDir for quality failures"),
     false
   )
   .action(async (_a, cmd) => {
@@ -2765,7 +2777,11 @@ program
     const { config: loaded, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
 
     const dryTag = opts.dryRun ? t(" (dry-run)") : "";
-    const g = cmd.optsWithGlobals() as { verbose?: boolean; writeLogs?: boolean | string };
+    const g = cmd.optsWithGlobals() as {
+      verbose?: boolean;
+      writeLogs?: boolean | string;
+      debugFailed?: boolean;
+    };
     const cacheDir = path.join(projectRoot, loaded.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "cleanup");
     const { uiLocales, translateOpts } = buildCleanupSyncTranslateOpts(

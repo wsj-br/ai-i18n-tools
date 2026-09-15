@@ -10,7 +10,7 @@ Extraktion (falls aktiviert), dann UI-Übersetzung, dann `translate-svg`, wenn `
 
 **Wichtige Optionen:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` wird an die UI- und SVG-Schritte sowie an Docs/JSON weitergeleitet; `--force-update` gilt für Docs, JSON und SVG (nicht UI). Die Docs-Phase leitet auch `--emphasis-placeholders` und `--debug-failed` weiter (gleiche Bedeutung wie `translate-docs`). `--prompt-format` ist kein `sync`-Flag; die Docs- und JSON-Schritte verwenden den integrierten Standard (`json-array`).
+`--force` wird an die UI- und SVG-Schritte sowie an docs/JSON weitergeleitet; `--force-update` gilt für docs, JSON und SVG (nicht UI). Die Docs-Phase leitet auch `--emphasis-placeholders` weiter (gleiche Bedeutung wie `translate-docs`). Das globale `--debug-failed` schreibt `FAILED-TRANSLATION`-Protokolle unter `cacheDir` für jeden verworfenen Modellversuch (einschließlich SVG/Docs-Skript-Fallbacks), nicht nur, wenn jedes Modell in der Kette fehlschlägt. `--prompt-format` ist kein `sync`-Flag; Docs- und JSON-Schritte verwenden den integrierten Standard (`json-array`).
 
 ---
 

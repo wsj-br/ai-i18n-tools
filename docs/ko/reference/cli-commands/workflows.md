@@ -10,7 +10,7 @@
 
 **주요 옵션:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force`는 UI 및 SVG 단계와 docs/JSON에 전달됩니다. `--force-update`는 문서, JSON, SVG에 적용됩니다(UI 제외). 문서 단계에서는 `--emphasis-placeholders` 및 `--debug-failed`도 전달됩니다(`translate-docs`와 동일한 의미). `--prompt-format`는 `sync` 플래그가 아니며, 문서 및 JSON 단계는 기본 제공 기본값(`json-array`)을 사용합니다.
+`--force`은(는) UI 및 SVG 단계뿐만 아니라 docs/JSON으로도 전달됩니다. `--force-update`은(는) docs, JSON 및 SVG(UI 제외)에 적용됩니다. Docs 단계에서는 `--emphasis-placeholders`(`translate-docs`과(와) 동일한 의미)도 전달합니다. 전역 `--debug-failed`은(는) 체인의 모든 모델이 실패할 때뿐만 아니라, 각 폐기된 모델 시도(SVG/docs 스크립트 폴백 포함)에 대해 `cacheDir` 아래에 `FAILED-TRANSLATION` 로그를 작성합니다. `--prompt-format`은(는) `sync` 플래그가 아니며, docs 및 JSON 단계에서는 기본 제공 기본값(`json-array`)을 사용합니다.
 
 ---
 

@@ -4,7 +4,12 @@ import chalk from "chalk";
 import type { I18nConfig, JsonBlock } from "../core/types.js";
 import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
-import { localePathPlaceholders, normalizeLocale } from "../core/locale-utils.js";
+import {
+  localeEnforcesOutputScript,
+  localePathPlaceholders,
+  normalizeLocale,
+  translationScriptIssue,
+} from "../core/locale-utils.js";
 import { resolveLocalesForJson } from "../core/ui-languages.js";
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
@@ -17,10 +22,12 @@ import {
   protectSegmentForTranslation,
   translatePromptFormatToResponseFormat,
   translateSegmentsBatched,
+  translationFailureLogDir,
   type DocSegmentTranslation,
   type TranslateRunOptions,
   type TranslateTotals,
 } from "./doc-translate.js";
+import { llmClientDebugFailedOpts } from "./translation-failure-log.js";
 import { mergeTranslateTotals, printTranslationRunSummary } from "./translate-summary.js";
 import {
   bindRunInterruptScope,
@@ -111,6 +118,7 @@ export async function translateNestedJsonFile(
     cache &&
     !opts.noCache &&
     cachedHash === fileHash &&
+    !localeEnforcesOutputScript(locale) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -156,7 +164,9 @@ export async function translateNestedJsonFile(
   const segmentIndicesInDoc: number[] = [];
   let client: LlmClient | null = null;
   if (!opts.dryRun) {
-    client = await createFilteredLlmClient(config, locale);
+    client = await createFilteredLlmClient(config, locale, {
+      ...llmClientDebugFailedOpts(opts, config.cacheDir),
+    });
   }
 
   for (let i = 0; i < segments.length; i++) {
@@ -166,7 +176,7 @@ export async function translateNestedJsonFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = cache.getSegment(s.hash, locale, relSourcePath);
-      if (hit) {
+      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
         segmentsCached++;
         continue;
@@ -203,7 +213,7 @@ export async function translateNestedJsonFile(
         totalSegments: segments.length,
         segmentIndicesInDoc,
       },
-      undefined,
+      translationFailureLogDir(opts, config.cacheDir),
       undefined,
       { filepath: relSourcePath },
       undefined,

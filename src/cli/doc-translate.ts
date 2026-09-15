@@ -44,7 +44,13 @@ import {
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
 import { LlmClient } from "../api/llm-client.js";
-import { dedupeOrderedModelIds, resolveTranslationModelsForLocale } from "../core/config.js";
+import {
+  dedupeOrderedModelIds,
+  localeEnforcesOutputScript,
+  normalizeLocale,
+  resolveTranslationModelsForLocale,
+  translationScriptIssue,
+} from "../core/config.js";
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
@@ -86,7 +92,15 @@ import {
   translatedOutputIsCurrent,
   writeAtomicUtf8,
 } from "./helpers.js";
-import { normalizeLocale } from "../core/config.js";
+import {
+  llmClientDebugFailedOpts,
+  translationFailureLogDir,
+  warnTranslationFailureLogPath,
+  writeTranslationDebugLog,
+  writeTranslationFailureLog,
+} from "./translation-failure-log.js";
+
+export { translationFailureLogDir } from "./translation-failure-log.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import type {
   DocumentBatchResponseFormat,
@@ -354,121 +368,8 @@ function warnDocQualityModelSwitch(
   );
 }
 
-function safeDocNameForLogFilename(relativePath: string): string {
-  return relativePath.replace(/[/\\:*?"<>|]/g, "_");
-}
-
-/**
- * Writes prompt, raw response, and validation details when doc translation quality checks fail.
- * Filename: `{iso}-FAILED-TRANSLATION_{document}_{ms}.log` under `cacheDirAbs`.
- * Returns absolute path; callers print `📝 Failure log: …` after warnings (retry) or before throw (fatal).
- */
-type DocTranslationLogOutcome = "retrying_next_model" | "fatal" | "individual_success";
-
-function writeDocTranslationDetailLog(
-  opts: {
-    cacheDirAbs: string;
-    relativePath: string;
-    locale: string;
-    segmentsLabel: string;
-    outcome: DocTranslationLogOutcome;
-    failedModel: string;
-    nextModel?: string;
-    qualityErrors: string[];
-    perSegmentLines: string[];
-    systemPrompt: string;
-    userContent: string;
-    rawAssistantContent: string;
-  },
-  mode: "failed" | "debug"
-): string | undefined {
-  const fileLabel = mode === "failed" ? "FAILED-TRANSLATION" : "DEBUG-TRANSLATION";
-  const headerTitle =
-    mode === "failed"
-      ? "=== ai-i18n-tools doc translation failure ==="
-      : "=== ai-i18n-tools doc translation debug ===";
-  const tsIso = new Date().toISOString().replace(/:/g, "-");
-  const ms = Date.now();
-  const doc = safeDocNameForLogFilename(opts.relativePath);
-  const fileName = `${tsIso}-${fileLabel}_${doc}_${ms}.log`;
-  const abs = path.join(opts.cacheDirAbs, fileName);
-  try {
-    ensureDirForFile(abs);
-    const lines = [
-      headerTitle,
-      `logFilePath: ${abs}`,
-      `isoTime: ${new Date().toISOString()}`,
-      `locale: ${opts.locale}`,
-      `document: ${opts.relativePath}`,
-      `segments: ${opts.segmentsLabel}`,
-      `outcome: ${opts.outcome}`,
-      `failedModel: ${opts.failedModel}`,
-      opts.nextModel ? `nextModel: ${opts.nextModel}` : "",
-      "",
-      "--- quality / validation errors ---",
-      ...(opts.qualityErrors.length > 0 ? opts.qualityErrors.map((e) => `  ${e}`) : ["  (none)"]),
-      "",
-      "--- per-segment validation ---",
-      ...opts.perSegmentLines.map((e) => `  ${e}`),
-      "",
-      "--- system prompt ---",
-      opts.systemPrompt,
-      "",
-      "--- user content ---",
-      opts.userContent,
-      "",
-      "--- raw assistant response ---",
-      opts.rawAssistantContent,
-      "",
-    ].filter((l) => l !== "");
-    fs.writeFileSync(abs, lines.join("\n"), "utf8");
-    return abs;
-  } catch (e) {
-    console.warn(
-      chalk.yellow(
-        t("  ⚠️  Could not write translation {{mode}} log: {{error}}", {
-          mode,
-          error: String(e),
-        })
-      )
-    );
-    return undefined;
-  }
-}
-
-function writeDocTranslationFailureLog(opts: {
-  cacheDirAbs: string;
-  relativePath: string;
-  locale: string;
-  segmentsLabel: string;
-  outcome: "retrying_next_model" | "fatal";
-  failedModel: string;
-  nextModel?: string;
-  qualityErrors: string[];
-  perSegmentLines: string[];
-  systemPrompt: string;
-  userContent: string;
-  rawAssistantContent: string;
-}): string | undefined {
-  return writeDocTranslationDetailLog(opts, "failed");
-}
-
-function writeDocTranslationDebugLog(opts: {
-  cacheDirAbs: string;
-  relativePath: string;
-  locale: string;
-  segmentsLabel: string;
-  outcome: DocTranslationLogOutcome;
-  failedModel: string;
-  nextModel?: string;
-  qualityErrors: string[];
-  perSegmentLines: string[];
-  systemPrompt: string;
-  userContent: string;
-  rawAssistantContent: string;
-}): string | undefined {
-  return writeDocTranslationDetailLog(opts, "debug");
-}
+const writeDocTranslationFailureLog = writeTranslationFailureLog;
+const writeDocTranslationDebugLog = writeTranslationDebugLog;
 
 /** Elapsed time as `M:SS` (minutes not zero-padded), matching reference translate-docs. */
 function formatElapsedFileTime(ms: number): string {
@@ -848,6 +749,11 @@ async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Pr
     return fn();
   }
   return mutex.runExclusive(async () => fn());
+}
+
+/** File-level skip would bypass segment script checks; locales with an expected script re-check cache rows. */
+function canSkipUnchangedTranslatedFile(locale: string): boolean {
+  return !localeEnforcesOutputScript(locale);
 }
 
 /** Add YAML front matter fields to translated markdown (timestamp, source path, locale, models used). */
@@ -1503,9 +1409,7 @@ export async function translateSegmentsBatched(
         }
 
         if (nextStart >= models.length) {
-          if (failureLogPath) {
-            console.warn(chalk.gray(t("  📝 Failure log: {{path}}", { path: failureLogPath })));
-          }
+          warnTranslationFailureLogPath(failureLogPath);
         } else {
           warnDocQualityModelSwitch(
             locale,
@@ -1516,9 +1420,7 @@ export async function translateSegmentsBatched(
             segLabel || undefined,
             { index1Based: nextStart + 1, total: models.length }
           );
-          if (failureLogPath) {
-            console.warn(chalk.gray(t("  📝 Failure log: {{path}}", { path: failureLogPath })));
-          }
+          warnTranslationFailureLogPath(failureLogPath);
         }
 
         const initialModelIndex =
@@ -1776,6 +1678,7 @@ export async function translateMarkdownFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
+    canSkipUnchangedTranslatedFile(locale) &&
     cachedFileHash === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -1857,7 +1760,8 @@ export async function translateMarkdownFile(
     const cached = batchCacheHits?.get(s.hash);
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
-      if (quality.ok) {
+      const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
+      if (quality.ok && !scriptIssue) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
@@ -1878,7 +1782,9 @@ export async function translateMarkdownFile(
                 path: relPath,
                 locale,
                 hash: s.hash,
-                errors: quality.errors.join("; "),
+                errors: [...quality.errors, ...(scriptIssue ? [scriptIssue.message] : [])].join(
+                  "; "
+                ),
               }
             )
           )
@@ -1937,7 +1843,7 @@ export async function translateMarkdownFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
+    translationFailureLogDir(opts, config.cacheDir),
     failureTracker,
     { filepath: translationFilepathMeta },
     {
@@ -2157,6 +2063,7 @@ export async function translateAstroFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
+    canSkipUnchangedTranslatedFile(locale) &&
     cachedFileHash === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2238,7 +2145,8 @@ export async function translateAstroFile(
     const cached = batchCacheHits?.get(s.hash);
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
-      if (quality.ok) {
+      const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
+      if (quality.ok && !scriptIssue) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
@@ -2259,7 +2167,9 @@ export async function translateAstroFile(
                 path: relPath,
                 locale,
                 hash: s.hash,
-                errors: quality.errors.join("; "),
+                errors: [...quality.errors, ...(scriptIssue ? [scriptIssue.message] : [])].join(
+                  "; "
+                ),
               }
             )
           )
@@ -2317,7 +2227,7 @@ export async function translateAstroFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    opts.debugFailed ? path.join(opts.cwd, config.cacheDir) : null,
+    translationFailureLogDir(opts, config.cacheDir),
     failureTracker,
     { filepath: translationFilepathMeta },
     {
@@ -2498,6 +2408,7 @@ export async function translateJsonFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
+    canSkipUnchangedTranslatedFile(locale) &&
     cachedFileHashJson === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2560,7 +2471,7 @@ export async function translateJsonFile(
       const hit = await withCacheMutex(opts.cacheMutex, () =>
         cache.getSegment(s.hash, locale, relPathFromCwd)
       );
-      if (hit) {
+      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
@@ -2615,7 +2526,7 @@ export async function translateJsonFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    undefined,
+    translationFailureLogDir(opts, config.cacheDir),
     failureTracker,
     { filepath: relPathFromCwd },
     undefined,
@@ -2744,6 +2655,7 @@ export async function translateSvgAssetFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
+    canSkipUnchangedTranslatedFile(locale) &&
     cachedFileHashSvg === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2831,7 +2743,7 @@ export async function translateSvgAssetFile(
       const hit = await withCacheMutex(opts.cacheMutex, () =>
         cache.getSegment(s.hash, locale, translationSvgFilepathMeta)
       );
-      if (hit) {
+      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         let t = hit;
         if (forceLc) {
           t = t.toLowerCase();
@@ -2890,7 +2802,7 @@ export async function translateSvgAssetFile(
       totalSegments: segments.length,
       segmentIndicesInDoc,
     },
-    undefined,
+    translationFailureLogDir(opts, config.cacheDir),
     failureTracker,
     { filepath: translationSvgFilepathMeta },
     undefined,
@@ -3241,6 +3153,7 @@ export async function runTranslate(
       let client: LlmClient | null = null;
       if (needsApi) {
         client = await createFilteredLlmClient(config, locale, {
+          ...llmClientDebugFailedOpts(runOpts, config.cacheDir),
           onApiUsage: (usage, cost) => {
             liveSum.inputTokens += usage.inputTokens;
             liveSum.outputTokens += usage.outputTokens;

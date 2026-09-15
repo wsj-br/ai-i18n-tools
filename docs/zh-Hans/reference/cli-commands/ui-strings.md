@@ -45,7 +45,7 @@
 
 **关键选项：** `-l` / `--locale`，`--force`，`--dry-run`，`-j` / `--concurrency`
 
-`-l` / `--locale`：逗号分隔的目标区域设置（默认：配置 `targetLocales` 减去 `sourceLocale`）。`--force`：重新翻译每个区域设置的所有条目（忽略现有翻译）。`--dry-run`：不写入，不调用 API。
+`-l` / `--locale`：逗号分隔的目标区域设置（默认：配置 `targetLocales` 减去 `sourceLocale`）。`--force`：重新翻译每个区域设置的所有条目（忽略现有翻译）。`--dry-run`：不写入，不进行 API 调用。`-j` 并行处理 **区域设置**；在每个区域设置内，配置 `uiBatchConcurrency`（默认 **2**）并行处理 LLM 批次（50 个字符串组成的块，然后是复数组）。`uiBatchConcurrency` 没有 CLI 标志。
 
 ---
 

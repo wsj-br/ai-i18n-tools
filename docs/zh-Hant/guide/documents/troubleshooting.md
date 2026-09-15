@@ -30,3 +30,14 @@ Markdown 連結或 `![alt](url)` 在英文版中有效，但在翻譯版本中�
 1. 確認您的資產佈局與您的 `docsOutput.style` 相符（扁平式與文件系統）。請參閱[連結重寫](/zh-Hant/guide/documents/link-rewriting)和[圖片與螢幕截圖](/zh-Hant/guide/images-and-screenshots/)。
 2. 新增或調整 `docsOutput.postProcessing.regexAdjustments` 以交換語系區段或橋接絕對 `/img/…` 路徑。對於扁平式佈局，請記住扁平式連結重寫器在 **之前** 執行 `regexAdjustments` — 根據已加前綴的 URL 匹配模式。
 3. 確保語系特定的資產檔案存在於重寫後的 markdown 參考路徑中（`translate-docs` 重寫 URL，但不複製點陣圖檔案）。
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## 印地語、阿拉伯語、中日韓或西里爾字母的輸出被羅馬化（拉丁字母）
+
+某些模型會翻譯其含義，但以拉丁/羅馬字母書寫結果（例如將印地語寫成 `Namaste` 而非 `नमस्ते`）。單純的 `hi` 表示天城文；僅在您需要羅馬化印地語時才使用 `hi-Latn`。
+
+**修正**
+
+1. 確認地區代碼與您想要的書寫系統相符（`hi` 與 `hi-Latn`、`zh-Hans` 與 `zh-Hant`、`sr` 與 `sr-Latn`）。
+2. 重新執行翻譯，使錯誤書寫系統的快取列被拒絕：UI 字串使用 `translate-ui --force`，或使用 `translate-docs` / `sync`（對於具有預期書寫系統的地區，檔案層級的跳過已停用；`--force-update` 仍會重用有效的段落快取）。
+3. 如果某個模型持續無法通過書寫系統檢查，請為該地區新增一筆 `localeModels` 項目，以便優先嘗試更強的模型 — 請參閱[供應商與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。

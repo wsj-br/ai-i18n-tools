@@ -50,7 +50,7 @@ O scanner é configurável: adicione nomes de funções personalizadas via `ui.u
 ai-i18n-tools translate-ui
 ```
 
-Lê `strings.json`, envia lotes para o provedor de LLM ativo para cada localidade de destino, grava arquivos JSON planos (`de.json`, `fr.json`, etc.) em `ui.flatOutputDir`. A seleção do modelo usa a cadeia da UI: `localeModels(locale)` → `uiModels` → `translationModels` (consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain)).
+Lê `strings.json`, envia lotes para o provedor LLM ativo para cada localidade de destino, grava arquivos JSON simples (`de.json`, `fr.json`, etc.) em `ui.flatOutputDir`. A seleção do modelo usa a cadeia da interface do usuário: `localeModels(locale)` → `uiModels` → `translationModels` (consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain)). Dentro de uma localidade, até `uiBatchConcurrency` lotes são executados de uma vez (padrão **2**; consulte [Configuração — uiBatchConcurrency](/pt-BR/reference/configuration#uibatchconcurrency-optional)). `-j` ainda só paraleliza as localidades de destino.
 
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
@@ -62,7 +62,7 @@ Dependendo do idioma de destino, alguns modelos de tradução podem ter um desem
 
 Para cada entrada, `translate-ui` armazena o **ID do modelo do provedor ativo** que traduziu com sucesso cada localidade em um objeto `models` opcional (mesmas chaves de localidade que `translated`). As strings editadas no Painel de Tradução são marcadas com o valor sentinela `user-edited` em `models` para essa localidade. Os arquivos planos por localidade em `ui.flatOutputDir` permanecem **string de origem → tradução** apenas; eles não incluem `models` (para que os pacotes de tempo de execução permaneçam inalterados).
 
-> **Nota:** As edições do Painel para strings da UI ficam em `strings.json`, não no cache de documentação SQLite. Execute `sync` ou `translate-ui` simples (sem sinalizador especial) para reescrever arquivos de localidade planos do catálogo — `--force-update` **não** é encaminhado para a etapa da UI. Evite `--force` em comandos da UI após edições manuais: ele retraduz cada entrada e pode sobrescrever suas linhas `user-edited`.
+> **Nota:** As edições do painel para strings da interface do usuário ficam em `strings.json`, não no cache de documentação do SQLite. Execute `sync` ou `translate-ui` simples (sem sinalizador especial) para reescrever arquivos de localidade simples do catálogo — `--force-update` **não** é encaminhado para a etapa da interface do usuário. Evite `--force` em comandos da interface do usuário após edições manuais: ele retraduz cada entrada e pode sobrescrever suas linhas `user-edited`. As linhas do catálogo cuja tradução armazenada falha na verificação do sistema de escrita da localidade (por exemplo, hindi romanizado para `hi`) são tratadas como ausentes e retraduzidas sem `--force`.
 
 Em seguida, conecte o i18next em tempo de execução — [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime).
 

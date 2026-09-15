@@ -118,11 +118,12 @@ i18next carga estos archivos como paquetes de recursos y busca traducciones medi
 
 `buildUIPromptMessages` construye mensajes del sistema y del usuario que:
 
-- Identifique los idiomas de origen y destino (por nombre mostrado en `localeDisplayNames` o `ui-languages.json`).
-- Envíe un array JSON de cadenas y solicite un array JSON de traducciones a cambio.
-- Incluya sugerencias del glosario cuando estén disponibles.
+- Identifique los idiomas de origen y de destino (por nombre de visualización de `localeDisplayNames` o `ui-languages.json`).
+- Anteponga una directiva de script cuando la configuración regional de destino tenga un sistema de escritura esperado (script BCP-47 explícito o un idioma predeterminado como `hi` → Devanagari, `ar` → árabe, `ja` → kana/kanji japonés).
+- Envíe una matriz JSON de cadenas y solicite una matriz JSON de traducciones a cambio.
+- Incluya sugerencias de glosario cuando estén disponibles.
 
-`LlmClient.translateUIBatch` prueba cada modelo en orden, recurriendo a errores de análisis o de red. La CLI construye esa lista por configuración regional de destino a partir de `localeModels`, `uiModels` opcional y `translationModels` (consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` prueba cada modelo en orden, recurriendo a errores de análisis, de red o de script incorrecto (incluida la reserva romanizada/latina para configuraciones regionales de script nativo). La CLI crea esa lista por configuración regional de destino a partir de `localeModels`, `uiModels` opcional y `translationModels` (consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -247,10 +248,10 @@ Cuando `docsOutput.style === "flat"`, los archivos markdown traducidos se coloca
 
 Cliente de chat independiente del proveedor construido sobre el SDK de IA de Vercel (`ai` + `@ai-sdk/openai-compatible`). Resuelve el proveedor activo desde `provider` / `providers`, construye un cliente compatible con OpenAI (`createOpenAICompatible`) para `baseUrl` y la clave API de ese proveedor, y enruta todas las llamadas a través de `generateText`. `OpenRouterClient` se mantiene como un alias obsoleto. Comportamientos clave:
 
-- **Respaldo del modelo**: intenta cada modelo en la lista resuelta en orden; recurre a fallas de solicitud o análisis. Cada configuración regional de destino obtiene su propia cadena resuelta: `localeModels(locale)` primero cuando está configurado, luego `uiModels` (solo canalizaciones de UI), luego `translationModels`. La traducción de documentos, JSON y SVG crea un cliente por configuración regional con la cadena que no es de UI. El comando `bench-models` en su lugar construye un cliente de un solo modelo por ID configurado (unión de `translationModels`, `uiModels` y `localeModels`; `translationModels: [id]`, sin respaldo) para que pueda cronometrar y tasar cada modelo de forma independiente.
-- **Tiempo de espera de la solicitud**: el `requestTimeoutMs` del proveedor activo (30 segundos por defecto) aborta cada solicitud a través de `AbortSignal.timeout`. El mismo valor se aplica a `GET /models` cuando la CLI carga la lista de modelos de un proveedor para `check-models` (cualquier proveedor). El filtro opcional previo al vuelo que descarta ID de modelo desconocidos solo se ejecuta cuando el proveedor activo es OpenRouter.
+- **Reserva de modelo**: prueba cada modelo en la lista resuelta en orden; recurre a fallos de solicitud o análisis. Cada configuración regional de destino obtiene su propia cadena resuelta: `localeModels(locale)` primero cuando está configurado, luego `uiModels` (solo canalizaciones de UI), luego `translationModels`. La traducción de documentos, JSON y SVG crea un cliente por configuración regional con la cadena que no es de UI. El comando `bench-models` en su lugar crea un cliente de un solo modelo por ID configurado (unión de `translationModels`, `uiModels` y `localeModels`; `translationModels: [id]`, sin reserva) para que pueda cronometrar y fijar el precio de cada modelo de forma independiente.
+- **Tiempo de espera de solicitud**: el `requestTimeoutMs` del proveedor activo (30 segundos por defecto) aborta cada solicitud a través de `AbortSignal.timeout`. El mismo valor se aplica a `GET /models` cuando la CLI carga la lista de modelos de un proveedor para `check-models` (cualquier proveedor). El filtro opcional previo al vuelo que elimina los ID de modelo desconocidos solo se ejecuta cuando el proveedor activo es OpenRouter.
 - **Extras de OpenRouter** (solo cuando `openrouter` está activo): enrutamiento de rendimiento a través del campo de solicitud `provider`, encabezados `HTTP-Referer` / `X-Title` y costo exacto en USD leído de `usage.cost`. El uso de tokens se informa para cada proveedor; el costo exacto solo cuando el proveedor lo devuelve.
-- **Registro de tráfico de depuración**: si se establece `debugTrafficFilePath`, agrega JSON de solicitud y respuesta a un archivo.
+- **Registro de tráfico de depuración**: si se establece `debugTrafficFilePath`, agrega JSON de solicitud y respuesta a un archivo (programático). La CLI `--debug-failed` escribe archivos `FAILED-TRANSLATION` en `cacheDir` con el mensaje del sistema/usuario, la respuesta sin procesar del asistente y los errores de validación para los intentos fallidos de UI, documentos, JSON y SVG.
 
 <a id="config-loading"></a>
 ### Carga de configuración

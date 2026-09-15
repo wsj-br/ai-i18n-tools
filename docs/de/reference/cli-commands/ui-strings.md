@@ -45,7 +45,7 @@ Schreibt `ui-languages.json` nach `languagesManifestPath` (Standard: `{ui.flatOu
 
 **Schlüsseloptionen:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: durch Kommas getrennte Ziellokale (Standard: Konfiguration `targetLocales` minus `sourceLocale`). `--force`: alle Einträge pro Locale neu übersetzen (bestehende Übersetzungen ignorieren). `--dry-run`: keine Schreibvorgänge, keine API-Aufrufe.
+`-l` / `--locale`: durch Kommas getrennte Ziellokale (Standard: Konfiguration `targetLocales` minus `sourceLocale`). `--force`: alle Einträge pro Gebietsschema neu übersetzen (bestehende Übersetzungen ignorieren). `--dry-run`: keine Schreibvorgänge, keine API-Aufrufe. `-j` parallelisiert **Gebietsschemata**; innerhalb jedes Gebietsschemas parallelisiert die Konfiguration `uiBatchConcurrency` (Standard **2**) LLM-Batches (Blöcke von 50 Zeichenfolgen, dann Pluralgruppen). Es gibt kein CLI-Flag für `uiBatchConcurrency`.
 
 ---
 

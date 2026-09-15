@@ -10,7 +10,7 @@ Extraer (si está habilitado), luego traducción de la IU, luego `translate-svg`
 
 **Opciones clave:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` se reenvía a los pasos de IU y SVG, así como a docs/JSON; `--force-update` se aplica a docs, JSON y SVG (no a la IU). La fase de docs también reenvía `--emphasis-placeholders` y `--debug-failed` (mismo significado que `translate-docs`). `--prompt-format` no es un indicador de `sync`; los pasos de docs y JSON usan el valor predeterminado incorporado (`json-array`).
+`--force` se reenvía a los pasos de UI y SVG, así como a docs/JSON; `--force-update` se aplica a docs, JSON y SVG (no a UI). La fase de docs también reenvía `--emphasis-placeholders` (mismo significado que `translate-docs`). El `--debug-failed` global escribe registros `FAILED-TRANSLATION` bajo `cacheDir` para cada intento de modelo descartado (incluidas las alternativas de script SVG/docs), no solo cuando fallan todos los modelos de la cadena. `--prompt-format` no es un indicador `sync`; los pasos de docs y JSON usan el valor predeterminado incorporado (`json-array`).
 
 ---
 

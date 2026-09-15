@@ -259,10 +259,10 @@ describe("buildUIPromptMessages", () => {
 describe("targetScriptDirective", () => {
   it("returns the Latin romanization directive for *-Latn targets", () => {
     const d = targetScriptDirective("hi-Latn");
-    expect(d).toBe(PROMPTS.script.latinDirective);
     expect(d).toContain("Latin (Roman)");
     expect(d).toContain("romanize");
     expect(d).toContain("Devanagari");
+    expect(d).toContain("hi-Latn");
   });
 
   it("returns a generic directive naming the script for non-Latin script subtags", () => {
@@ -288,10 +288,18 @@ describe("targetScriptDirective", () => {
     expect(targetScriptDirective(undefined)).toBe("");
   });
 
-  it("defaults bare hi to the Devanagari directive", () => {
-    const d = targetScriptDirective("hi");
-    expect(d).toContain("SCRIPT REQUIREMENT");
-    expect(d).toContain("Devanagari");
+  it("names the locale and forbids Latin transliteration for native-script targets", () => {
+    const hi = targetScriptDirective("hi");
+    expect(hi).toContain("hi");
+    expect(hi).toContain("Devanagari");
+    expect(hi).toContain("Do not transliterate into Latin");
+
+    expect(targetScriptDirective("ar")).toContain("Arabic");
+    expect(targetScriptDirective("bn")).toContain("Bengali");
+    expect(targetScriptDirective("te")).toContain("Telugu");
+    expect(targetScriptDirective("ru")).toContain("Cyrillic");
+    expect(targetScriptDirective("ja")).toContain("Kanji");
+    expect(targetScriptDirective("ko")).toContain("Hangul");
   });
 
   it("names the script for the catalog's script variants", () => {
@@ -309,8 +317,10 @@ describe("targetScriptDirective", () => {
   });
 
   it("uses the Latin romanization directive for kk-Latn and sr-Latn", () => {
-    expect(targetScriptDirective("kk-Latn")).toBe(PROMPTS.script.latinDirective);
-    expect(targetScriptDirective("sr-Latn")).toBe(PROMPTS.script.latinDirective);
+    expect(targetScriptDirective("kk-Latn")).toContain("kk-Latn");
+    expect(targetScriptDirective("kk-Latn")).toContain("Latin (Roman)");
+    expect(targetScriptDirective("sr-Latn")).toContain("sr-Latn");
+    expect(targetScriptDirective("sr-Latn")).toContain("romanize");
   });
 });
 
@@ -377,6 +387,18 @@ describe("ScriptValidationError", () => {
 });
 
 describe("plural prompt builders and parsers", () => {
+  it("buildPluralStep0Prompt prepends a script directive for non-Latin source locales", () => {
+    const { systemPrompt } = buildPluralStep0Prompt({
+      sourceLanguageLabel: "Hindi",
+      originalLiteral: "{{count}} files",
+      requiredForms: ["one", "other"],
+      zeroDigit: false,
+      sourceLocale: "hi",
+    });
+    expect(systemPrompt.startsWith("SCRIPT REQUIREMENT")).toBe(true);
+    expect(systemPrompt).toContain("Devanagari");
+  });
+
   it("buildPluralStep0Prompt includes intl hint and zeroDigit note", () => {
     const { systemPrompt, userContent } = buildPluralStep0Prompt({
       sourceLanguageLabel: "Arabic",

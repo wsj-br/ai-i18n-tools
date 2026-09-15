@@ -52,7 +52,24 @@
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (선택 사항)
 
-**translate-docs**, **translate-svg** 및 **translate-json**(및 `sync` 내부의 일치하는 단계): 파일당 최대 병렬 LLM **배치** 요청 수(각 배치에는 여러 세그먼트가 포함될 수 있음). 생략 시 기본값은 **4**입니다. `translate-ui`에서는 무시됩니다. `-b` / `--batch-concurrency`로 재정의합니다.
+**translate-docs**, **translate-svg**, **translate-json** (및 `sync` 내부의 일치하는 단계): 파일당 최대 병렬 LLM **batch** 요청 (각 배치에는 여러 세그먼트가 포함될 수 있음). 생략 시 기본값 **4**. `translate-ui`에는 적용되지 않음 — 대신 `uiBatchConcurrency`를 사용하십시오. `-b` / `--batch-concurrency`로 재정의.
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency` (선택 사항)
+
+**translate-ui**, **sync-ui**, 및 `sync`의 UI 단계: **단일 로케일 내** 최대 병렬 LLM **batch** 요청 (50개의 일반 문자열 청크, 그 다음 복수형 그룹). 생략 시 기본값 **2**. `concurrency` (병렬 대상 로케일) 및 `batchConcurrency` (docs/JSON/SVG)와 독립적임. CLI 플래그 없음; config에서 설정하거나 프로그래밍 방식 `runTranslateUI`에 `uiBatchConcurrency`를 전달.
+
+**예시:**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+기본 로케일 동시성 **4**를 사용하면, 최대 **8**개의 진행 중인 UI API 호출이 가능합니다. 하나의 큰 로케일을 번역할 때 (`-l de`) 이 값을 높이고; 제공자가 속도를 제한하는 경우 낮게 유지하십시오.
 
 ---
 

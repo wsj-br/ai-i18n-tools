@@ -35,7 +35,7 @@ Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI
 <a id="model-fallback-chain"></a>
 ### Cadeia de fallback de modelo
 
-`translationModels` é uma **lista ordenada**, não uma única escolha. A CLI tenta o primeiro modelo; em caso de falha de solicitação ou análise, ela passa para a próxima entrada. Configure vários modelos para que uma interrupção transitória ou um modelo que tenha dificuldades com um local não bloqueie toda a execução.
+`translationModels` é uma **lista ordenada**, não uma escolha única. A CLI tenta o primeiro modelo; se houver falha na solicitação, análise ou script incorreto, ela passa para a próxima entrada. Configure vários modelos para que uma interrupção transitória ou um modelo que tenha dificuldades com um local (por exemplo, hindi romanizado em vez de devanágari) não bloqueie toda a execução. A saída romanizada é rejeitada para locais de script nativo; um local que deve permanecer romanizado deve ser configurado com uma subtag `-Latn` explícita (por exemplo, `hi-Latn`).
 
 **Camadas de resolução** (deduplicadas, ordem preservada):
 

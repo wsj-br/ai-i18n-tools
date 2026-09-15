@@ -9,7 +9,7 @@ const { generateTextMock } = vi.hoisted(() => ({ generateTextMock: vi.fn() }));
 vi.mock("ai", () => ({ generateText: generateTextMock }));
 
 // Imported after vi.mock so the client picks up the mocked `generateText`.
-const { DocumentBatchAllModelsFailedError, LlmClient, OpenRouterClient } =
+const { DocumentBatchAllModelsFailedError, LlmAllModelsFailedError, LlmClient, OpenRouterClient } =
   await import("../../src/api/llm-client.js");
 
 function llmConfig(
@@ -437,6 +437,23 @@ describe("LlmClient", () => {
     );
   });
 
+  it("translateUIBatch attaches prompt and last error details when every model fails", async () => {
+    generateTextMock.mockResolvedValue(genResult("not-json"));
+    const c = new LlmClient({ config: llmConfig(["a"]), apiKey: "k" });
+    const err = await c.translateUIBatch(["Hello"], "de").then(
+      () => {
+        throw new Error("expected throw");
+      },
+      (e: unknown) => e
+    );
+    expect(err).toBeInstanceOf(LlmAllModelsFailedError);
+    const d = (err as InstanceType<typeof LlmAllModelsFailedError>).details;
+    expect(d.lastModel).toBe("a");
+    expect(d.systemPrompt).toContain("professional UI/UX translator");
+    expect(d.userContent).toContain("Hello");
+    expect(d.lastRawAssistantContent).toBe("not-json");
+  });
+
   it("uses raw locale in prompts when Intl and localeDisplayNames yield no label", async () => {
     const spy = vi.spyOn(config, "englishLanguageNameForLocale").mockReturnValue(undefined);
     generateTextMock.mockResolvedValue(genResult('["t"]'));
@@ -528,6 +545,35 @@ describe("LlmClient", () => {
     expect(r.translations).toEqual(["नमस्ते"]);
     expect(r.model).toBe("good");
     expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("translateUIBatch falls back when plain hi output is romanized Latin", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(genResult('["Namaste"]'))
+      .mockResolvedValueOnce(genResult('["नमस्ते"]'));
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["Hello"], "hi");
+    expect(r.translations).toEqual(["नमस्ते"]);
+    expect(r.model).toBe("good");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("translateUIBatch accepts a preserved brand token for plain hi", async () => {
+    generateTextMock.mockResolvedValue(genResult('["GitHub"]'));
+    const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
+    const r = await c.translateUIBatch(["GitHub"], "hi");
+    expect(r.translations).toEqual(["GitHub"]);
+    expect(generateTextMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("translateUIBatch prepends Japanese and Arabic script directives", async () => {
+    generateTextMock.mockResolvedValue(genResult('["保存"]'));
+    const c = new LlmClient({ config: llmConfig(["m"]), apiKey: "k" });
+    await c.translateUIBatch(["Save"], "ja");
+    expect(genArgs().system).toContain("Kanji");
+    generateTextMock.mockResolvedValue(genResult('["حفظ"]'));
+    await c.translateUIBatch(["Save"], "ar");
+    expect(genArgs(1).system).toContain("Arabic");
   });
 
   it("translateUIBatch accepts Devanagari for plain hi", async () => {
@@ -908,5 +954,87 @@ describe("LlmClient", () => {
     ]);
     expect(warn.mock.calls.some((c) => String(c[0]).includes("debug-traffic"))).toBe(true);
     fs.rmSync(badPath, { recursive: true, force: true });
+  });
+
+  it("writes a FAILED-TRANSLATION log per discarded model when debugFailedDir is set (script fallback)", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-failed-"));
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">Please confirm the current system status now.</t>`)
+      )
+      .mockResolvedValueOnce(genResult(`<t id="0">状态</t>`));
+    const c = new LlmClient({
+      config: llmConfig(["mistralai/codestral-2508", "deepseek/deepseek-v4-flash"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+    });
+    const segs = [
+      {
+        id: "s0",
+        type: "paragraph" as const,
+        content: "Please confirm the current system status now.",
+        hash: "h0",
+        translatable: true,
+      },
+    ];
+    const r = await c.translateDocumentBatch(segs, "zh-Hans", [], {
+      docLogContext: { relativePath: "documentation/static/assets/dash-cards.svg" },
+    });
+    expect(r.translations.get(0)).toBe("状态");
+    const files = fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"));
+    expect(files).toHaveLength(1);
+    const text = fs.readFileSync(path.join(tmp, files[0]!), "utf8");
+    expect(text).toContain("outcome: retrying_next_model");
+    expect(text).toContain("failedModel: mistralai/codestral-2508");
+    expect(text).toContain("nextModel: deepseek/deepseek-v4-flash");
+    expect(text).toContain("locale: zh-Hans");
+    expect(text).toContain("documentation/static/assets/dash-cards.svg");
+    expect(text).toContain("--- system prompt ---");
+    expect(text).toContain("--- user content ---");
+    expect(text).toContain("--- raw assistant response ---");
+    expect(text).toContain('<t id="0">Please confirm the current system status now.</t>');
+    expect(text).toContain("untranslated or romanized");
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it("writes a FAILED-TRANSLATION log for every model when the whole fallback chain fails", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-failed-all-"));
+    generateTextMock
+      .mockResolvedValueOnce(genResult(`<t id="0">Namaste</t>`))
+      .mockResolvedValueOnce(genResult(`<t id="0">Bonjour</t>`));
+    const c = new LlmClient({
+      config: llmConfig(["model-a", "model-b"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+    });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "Hello", hash: "h0", translatable: true },
+    ];
+    await expect(
+      c.translateDocumentBatch(segs, "hi", [], {
+        docLogContext: { relativePath: "toolbar.svg" },
+      })
+    ).rejects.toBeInstanceOf(DocumentBatchAllModelsFailedError);
+    const files = fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"));
+    expect(files).toHaveLength(2);
+    const texts = files.map((f) => fs.readFileSync(path.join(tmp, f), "utf8")).join("\n");
+    expect(texts).toContain("outcome: retrying_next_model");
+    expect(texts).toContain("outcome: fatal");
+    expect(texts).toContain("failedModel: model-a");
+    expect(texts).toContain("failedModel: model-b");
+    expect(texts).toContain("Devanagari");
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it("does not write FAILED-TRANSLATION logs when debugFailedDir is unset", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(genResult(`<t id="0">Zhuangtai</t>`))
+      .mockResolvedValueOnce(genResult(`<t id="0">状态</t>`));
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "Status", hash: "h0", translatable: true },
+    ];
+    await c.translateDocumentBatch(segs, "zh-Hans");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
   });
 });

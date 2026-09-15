@@ -35,7 +35,7 @@ Définissez la clé API du fournisseur actif dans votre environnement ou votre f
 <a id="model-fallback-chain"></a>
 ### Chaîne de secours du modèle
 
-`translationModels` est une **liste ordonnée**, pas un choix unique. La CLI essaie le premier modèle ; en cas d'échec de la requête ou de l'analyse, elle passe à l'entrée suivante. Configurez plusieurs modèles afin qu'une panne transitoire ou un modèle qui a des difficultés avec une locale ne bloque pas l'exécution complète.
+`translationModels` est une **liste ordonnée**, pas un choix unique. La CLI essaie le premier modèle ; en cas d’échec de la requête, de l’analyse ou du script, elle passe à l’entrée suivante. Configurez plusieurs modèles afin qu’une panne transitoire ou un modèle qui a des difficultés avec un paramètre régional (par exemple, l’hindi romanisé au lieu du devanagari) ne bloque pas l’exécution complète. La sortie romanisée est rejetée pour les paramètres régionaux de script natif ; un paramètre régional qui doit rester romanisé doit être configuré avec un sous-tag `-Latn` explicite (par exemple `hi-Latn`).
 
 **Niveaux de résolution** (dédupliqués, ordre préservé) :
 

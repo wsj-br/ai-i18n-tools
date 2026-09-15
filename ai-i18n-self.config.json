@@ -5,6 +5,7 @@
   "batchConcurrency": 5,
   "batchSize": 20,
   "maxBatchChars": 4096,
+  "uiBatchConcurrency": 5,
   "provider": "openrouter",
   "providers": {
     "openrouter": {

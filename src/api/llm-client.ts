@@ -20,7 +20,11 @@ import {
   normalizeLocale,
   resolveTranslationModels,
 } from "../core/config.js";
-import { effectiveScriptSubtag, scriptValidationIssue } from "../core/locale-utils.js";
+import {
+  batchTranslationScriptIssue,
+  effectiveScriptSubtag,
+  scriptValidationIssue,
+} from "../core/locale-utils.js";
 import {
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
@@ -46,6 +50,10 @@ import {
 } from "../core/prompt-builder.js";
 import { assertPluralFormsPlaceholders } from "../core/plural-placeholders.js";
 import type { Logger } from "../utils/logger.js";
+import {
+  warnTranslationFailureLogPath,
+  writeTranslationFailureLog,
+} from "../utils/translation-failure-log.js";
 
 /** OpenRouter: prefer throughput; allow backup providers (top-level `provider` routing field). */
 const OPENROUTER_PROVIDER = {
@@ -104,24 +112,35 @@ const openRouterMetadataExtractor: MetadataExtractor = {
   }),
 };
 
-/** Thrown when every model in the chain fails for {@link LlmClient.translateDocumentBatch}. */
-export class DocumentBatchAllModelsFailedError extends Error {
+/** Details attached when every model in a fallback chain fails. */
+export interface LlmAllModelsFailedDetails {
+  systemPrompt: string;
+  userContent: string;
+  lastModel: string;
+  lastError: unknown;
+  /** HTTP response body text when the model returned content but parsing/validation failed. */
+  lastRawAssistantContent?: string;
+  /** Tokens spent across billed-but-discarded attempts before every model failed. */
+  wastedUsage?: LlmUsageStats;
+  /** USD cost spent across billed-but-discarded attempts (undefined when no cost was reported). */
+  wastedCost?: number;
+}
+
+/** Thrown when every model in the chain fails for a translation request. */
+export class LlmAllModelsFailedError extends Error {
   constructor(
     message: string,
-    public readonly details: {
-      systemPrompt: string;
-      userContent: string;
-      lastModel: string;
-      lastError: unknown;
-      /** HTTP response body text when the model returned content but parsing failed. */
-      lastRawAssistantContent?: string;
-      /** Tokens spent across billed-but-discarded attempts before every model failed. */
-      wastedUsage?: LlmUsageStats;
-      /** USD cost spent across billed-but-discarded attempts (undefined when no cost was reported). */
-      wastedCost?: number;
-    }
+    public readonly details: LlmAllModelsFailedDetails
   ) {
     super(message);
+    this.name = "LlmAllModelsFailedError";
+  }
+}
+
+/** Thrown when every model in the chain fails for {@link LlmClient.translateDocumentBatch}. */
+export class DocumentBatchAllModelsFailedError extends LlmAllModelsFailedError {
+  constructor(message: string, details: LlmAllModelsFailedDetails) {
+    super(message, details);
     this.name = "DocumentBatchAllModelsFailedError";
   }
 }
@@ -137,6 +156,17 @@ export interface LlmClientOptions {
   translationModels?: string[];
   /** Append request/response JSON when set. */
   debugTrafficFilePath?: string | null;
+  /**
+   * When set (CLI `--debug-failed` → `cacheDir`), write a `FAILED-TRANSLATION` file for each
+   * discarded model attempt (script/parse/API), including fallbacks — not only the final
+   * all-models-failed throw.
+   */
+  debugFailedDir?: string | null;
+  /**
+   * Path label used in `--debug-failed` logs for UI/plural/proofread batches. Document batches
+   * prefer `docLogContext.relativePath` when present.
+   */
+  debugFailedRelativePath?: string;
   logger?: Logger;
   httpReferer?: string;
   xTitle?: string;
@@ -166,6 +196,8 @@ export class LlmClient {
   private readonly maxTokens: number;
   private readonly temperature: number;
   private readonly debugTrafficFilePath: string | null;
+  private readonly debugFailedDir: string | null;
+  private readonly debugFailedRelativePath: string;
   private readonly logger?: Logger;
   private readonly localeDisplayNames: Record<string, string>;
   private readonly sourceLanguageLabel: string;
@@ -210,6 +242,8 @@ export class LlmClient {
     this.temperature = settings.temperature;
     this.requestTimeoutMs = settings.requestTimeoutMs;
     this.debugTrafficFilePath = opts.debugTrafficFilePath ?? null;
+    this.debugFailedDir = opts.debugFailedDir ?? null;
+    this.debugFailedRelativePath = opts.debugFailedRelativePath?.trim() || "llm-batch";
     this.logger = opts.logger;
     this.localeDisplayNames = {};
     for (const [k, v] of Object.entries(opts.config.localeDisplayNames ?? {})) {
@@ -284,14 +318,20 @@ export class LlmClient {
    * a stray foreign-language quote does not fail the output, and `zh-Hans`/`zh-Hant` are told
    * apart via variant-distinct characters. Uses {@link effectiveScriptSubtag} so bare `hi`
    * (Devanagari by default) is enforced like an explicit `*-Deva` tag. Locales with no
-   * effective script, and composite scripts (e.g. `Jpan`, `Kore`), are not enforced.
+   * effective script are not enforced. Composite families (`Jpan`, `Kore`) are enforced as
+   * allowed-script sets. Fully Latin leftover that is not a preserved brand/code token is
+   * rejected for non-Latin targets.
    */
-  private assertExpectedScript(text: string, targetLocale: string): void {
+  private assertExpectedScript(text: string, targetLocale: string, sourceText?: string): void {
     const script = effectiveScriptSubtag(targetLocale);
     if (!script) {
       return;
     }
-    const issue = scriptValidationIssue(text, script);
+    const issue = scriptValidationIssue(
+      text,
+      script,
+      sourceText !== undefined ? { sourceText } : undefined
+    );
     if (!issue) {
       return;
     }
@@ -299,6 +339,23 @@ export class LlmClient {
     throw new ScriptValidationError(
       `Output for ${targetLocale} ${issue.message}${suffix}`,
       text,
+      issue.sample
+    );
+  }
+
+  private assertBatchExpectedScript(
+    outputs: readonly string[],
+    sources: readonly string[],
+    targetLocale: string
+  ): void {
+    const issue = batchTranslationScriptIssue(outputs, sources, targetLocale);
+    if (!issue) {
+      return;
+    }
+    const suffix = issue.sample.length > 0 ? ` (${issue.sample.join(" ")})` : "";
+    throw new ScriptValidationError(
+      `Output for ${targetLocale} ${issue.message}${suffix}`,
+      outputs.join("\n"),
       issue.sample
     );
   }
@@ -330,6 +387,60 @@ export class LlmClient {
     console.warn(
       chalk.yellow(`  ⚠️  ${loc}: ${failedModel} failed (${detail}). Trying ${nextModel}…`)
     );
+  }
+
+  /**
+   * Persist prompt + raw output + validation error for a discarded model attempt when
+   * `--debug-failed` supplied `debugFailedDir`.
+   */
+  private logFailedModelAttempt(args: {
+    locale: string;
+    relativePath: string;
+    model: string;
+    modelIndex: number;
+    error: unknown;
+    systemPrompt: string;
+    userContent: string;
+    rawAssistantContent?: string;
+    segmentsLabel?: string;
+  }): void {
+    if (!this.debugFailedDir) {
+      return;
+    }
+    const nextModel = this.modelsToTry[args.modelIndex + 1];
+    const errMsg = args.error instanceof Error ? args.error.message : String(args.error);
+    warnTranslationFailureLogPath(
+      writeTranslationFailureLog({
+        cacheDirAbs: this.debugFailedDir,
+        relativePath: args.relativePath,
+        locale: args.locale,
+        segmentsLabel: args.segmentsLabel ?? "batch",
+        outcome: nextModel ? "retrying_next_model" : "fatal",
+        failedModel: args.model,
+        nextModel,
+        qualityErrors: [errMsg],
+        perSegmentLines: [],
+        systemPrompt: args.systemPrompt,
+        userContent: args.userContent,
+        rawAssistantContent: args.rawAssistantContent ?? "",
+      })
+    );
+  }
+
+  private static promptPartsFromMessages(messages: Array<{ role: string; content: string }>): {
+    systemPrompt: string;
+    userContent: string;
+  } {
+    return {
+      systemPrompt: messages
+        .filter((m) => m.role === "system")
+        .map((m) => m.content)
+        .join("\n\n"),
+      userContent: messages
+        .filter((m) => m.role === "user")
+        .map((m) => m.content)
+        .join("\n\n"),
+    };
   }
 
   private toOpenRouterMessages(
@@ -472,10 +583,13 @@ export class LlmClient {
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
+    const promptParts = LlmClient.promptPartsFromMessages(messages);
+    const failedPath = options?.docLogContext?.relativePath ?? this.debugFailedRelativePath;
+    const failedLocale = options?.docLogContext?.locale ?? "unknown";
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
-      const warnFailure = (e: unknown): void => {
+      const recordFailure = (e: unknown, rawAssistantContent?: string): void => {
         const nextModel = this.modelsToTry[mi + 1];
         if (nextModel && options?.docLogContext) {
           this.warnModelSwitch(
@@ -488,6 +602,16 @@ export class LlmClient {
         } else if (!options?.docLogContext) {
           this.logger?.warn(`Model ${model} failed: ${e}`);
         }
+        this.logFailedModelAttempt({
+          locale: failedLocale,
+          relativePath: failedPath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt: promptParts.systemPrompt,
+          userContent: promptParts.userContent,
+          rawAssistantContent,
+        });
       };
 
       let completion: ChatResponse;
@@ -498,7 +622,7 @@ export class LlmClient {
         if (e instanceof BilledCompletionError) {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
-        warnFailure(e);
+        recordFailure(e);
         continue;
       }
 
@@ -507,7 +631,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         LlmClient.addDiscarded(discarded, completion.usage, completion.cost);
-        warnFailure(e);
+        recordFailure(e, completion.content);
         continue;
       }
 
@@ -558,7 +682,7 @@ export class LlmClient {
         startModelIndex: options?.startModelIndex,
         docLogContext: options?.docLogContext,
         validateResponse: (c) =>
-          this.assertExpectedScript(this.stripTranslateTags(c), targetLocale),
+          this.assertExpectedScript(this.stripTranslateTags(c), targetLocale, content),
       }
     );
 
@@ -651,6 +775,15 @@ export class LlmClient {
             this.logger?.warn(`Batch request failed with ${model}: ${e}`);
           }
         }
+        this.logFailedModelAttempt({
+          locale,
+          relativePath: options?.docLogContext?.relativePath ?? this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+        });
         continue;
       }
 
@@ -667,9 +800,20 @@ export class LlmClient {
             completion.content
           );
         }
-        for (const value of translations.values()) {
-          this.assertExpectedScript(value, locale);
+        for (const [index, value] of translations.entries()) {
+          this.assertExpectedScript(value, locale, segments[index]?.content);
         }
+        const batchOutputs: string[] = [];
+        const batchSources: string[] = [];
+        for (let i = 0; i < segments.length; i++) {
+          const value = translations.get(i);
+          if (value === undefined) {
+            continue;
+          }
+          batchOutputs.push(value);
+          batchSources.push(segments[i]?.content ?? "");
+        }
+        this.assertBatchExpectedScript(batchOutputs, batchSources, locale);
         const folded = LlmClient.foldDiscarded(completion.usage, completion.cost, discarded);
         return {
           translations,
@@ -699,6 +843,16 @@ export class LlmClient {
             this.logger?.warn(`Batch parse failed with ${model}: ${e}`);
           }
         }
+        this.logFailedModelAttempt({
+          locale,
+          relativePath: options?.docLogContext?.relativePath ?? this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+          rawAssistantContent: completion.content,
+        });
       }
     }
 
@@ -759,6 +913,7 @@ export class LlmClient {
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
+    let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
@@ -770,14 +925,31 @@ export class LlmClient {
         if (e instanceof BilledCompletionError) {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
+        lastFailureDetails = {
+          systemPrompt,
+          userContent,
+          lastModel: model,
+          lastError: e,
+        };
         this.logger?.warn(`UI batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: targetLocale,
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+          segmentsLabel: "ui-batch",
+        });
         continue;
       }
       try {
         const translations = parseUIJsonArrayResponse(result.content, texts.length);
-        for (const value of translations) {
-          this.assertExpectedScript(value, targetLocale);
+        for (let i = 0; i < translations.length; i++) {
+          this.assertExpectedScript(translations[i]!, targetLocale, texts[i]);
         }
+        this.assertBatchExpectedScript(translations, texts, targetLocale);
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           translations,
@@ -788,12 +960,36 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         LlmClient.addDiscarded(discarded, result.usage, result.cost);
+        lastFailureDetails = {
+          systemPrompt,
+          userContent,
+          lastModel: model,
+          lastError: e,
+          lastRawAssistantContent: result.content,
+        };
         this.logger?.warn(`UI batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: targetLocale,
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+          rawAssistantContent: result.content,
+          segmentsLabel: "ui-batch",
+        });
       }
     }
 
-    throw new Error(
-      `All translation models failed for UI batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    throw new LlmAllModelsFailedError(
+      `All translation models failed for UI batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`,
+      lastFailureDetails ?? {
+        systemPrompt,
+        userContent,
+        lastModel: this.modelsToTry[Math.max(0, this.modelsToTry.length - 1)]!,
+        lastError,
+      }
     );
   }
 
@@ -845,6 +1041,16 @@ export class LlmClient {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
         this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: languageLabel,
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+          segmentsLabel: "proofread-ui",
+        });
         continue;
       }
       try {
@@ -864,6 +1070,17 @@ export class LlmClient {
         lastError = e;
         LlmClient.addDiscarded(discarded, result.usage, result.cost);
         this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: languageLabel,
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt,
+          userContent,
+          rawAssistantContent: result.content,
+          segmentsLabel: "proofread-ui",
+        });
       }
     }
 
@@ -909,6 +1126,7 @@ export class LlmClient {
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
+    let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
@@ -920,7 +1138,23 @@ export class LlmClient {
         if (e instanceof BilledCompletionError) {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
+        lastFailureDetails = {
+          systemPrompt: messages.systemPrompt,
+          userContent: messages.userContent,
+          lastModel: model,
+          lastError: e,
+        };
         this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: options?.targetLocale ?? "unknown",
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt: messages.systemPrompt,
+          userContent: messages.userContent,
+          segmentsLabel: "plural-batch",
+        });
         continue;
       }
       try {
@@ -933,7 +1167,7 @@ export class LlmClient {
         }
         if (options?.targetLocale) {
           for (const value of Object.values(forms)) {
-            this.assertExpectedScript(value, options.targetLocale);
+            this.assertExpectedScript(value, options.targetLocale, options.originalLiteral);
           }
         }
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
@@ -947,12 +1181,36 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         LlmClient.addDiscarded(discarded, result.usage, result.cost);
+        lastFailureDetails = {
+          systemPrompt: messages.systemPrompt,
+          userContent: messages.userContent,
+          lastModel: model,
+          lastError: e,
+          lastRawAssistantContent: result.content,
+        };
         this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
+        this.logFailedModelAttempt({
+          locale: options?.targetLocale ?? "unknown",
+          relativePath: this.debugFailedRelativePath,
+          model,
+          modelIndex: mi,
+          error: e,
+          systemPrompt: messages.systemPrompt,
+          userContent: messages.userContent,
+          rawAssistantContent: result.content,
+          segmentsLabel: "plural-batch",
+        });
       }
     }
 
-    throw new Error(
-      `All translation models failed for plural cardinal batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError}`
+    throw new LlmAllModelsFailedError(
+      `All translation models failed for plural cardinal batch (${this.modelsToTry.slice(start).join(", ")}). Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`,
+      lastFailureDetails ?? {
+        systemPrompt: messages.systemPrompt,
+        userContent: messages.userContent,
+        lastModel: this.modelsToTry[Math.max(0, this.modelsToTry.length - 1)]!,
+        lastError,
+      }
     );
   }
 }

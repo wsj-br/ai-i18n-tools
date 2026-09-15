@@ -50,7 +50,7 @@ Le scanner est configurable : ajoutez des noms de fonctions personnalisés via `
 ai-i18n-tools translate-ui
 ```
 
-Lit `strings.json`, envoie des lots au fournisseur LLM actif pour chaque locale cible, écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) dans `ui.flatOutputDir`. La sélection du modèle utilise la chaîne de l'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain)).
+Lit `strings.json`, envoie des lots au fournisseur LLM actif pour chaque locale cible, écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) dans `ui.flatOutputDir`. La sélection du modèle utilise la chaîne d'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain)). Au sein d'une locale, jusqu'à `uiBatchConcurrency` lots s'exécutent simultanément (par défaut **2** ; voir [Configuration — uiBatchConcurrency](/fr/reference/configuration#uibatchconcurrency-optional)). `-j` ne parallélise toujours que les locales cibles.
 
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
@@ -62,7 +62,7 @@ Selon la langue cible, certains modèles de traduction peuvent être significati
 
 Pour chaque entrée, `translate-ui` stocke l'**ID du modèle du fournisseur actif** qui a traduit avec succès chaque locale dans un objet `models` facultatif (mêmes clés de locale que `translated`). Les chaînes éditées dans le tableau de bord de traduction sont marquées avec la valeur sentinelle `user-edited` dans `models` pour cette locale. Les fichiers plats par locale sous `ui.flatOutputDir` restent uniquement **chaîne source → traduction** ; ils n'incluent pas `models` (ainsi les bundles d'exécution restent inchangés).
 
-> **Remarque :** Les modifications du tableau de bord apportées aux chaînes de l'interface utilisateur se trouvent dans `strings.json`, et non dans le cache de documentation SQLite. Exécutez simplement `sync` ou `translate-ui` (sans indicateur spécial) pour réécrire les fichiers de locale plats à partir du catalogue — `--force-update` n'est **pas** transmis à l'étape de l'interface utilisateur. Évitez `--force` sur les commandes de l'interface utilisateur après des modifications manuelles : cela retraduit chaque entrée et peut écraser vos lignes `user-edited`.
+> **Remarque :** Les modifications du tableau de bord apportées aux chaînes d'interface utilisateur se trouvent dans `strings.json`, et non dans le cache de documentation SQLite. Exécutez `sync` ou `translate-ui` (sans indicateur spécial) pour réécrire les fichiers de locale plats à partir du catalogue — `--force-update` n'est **pas** transmis à l'étape de l'interface utilisateur. Évitez `--force` sur les commandes d'interface utilisateur après des modifications manuelles : cela retraduit chaque entrée et peut écraser vos lignes `user-edited`. Les lignes de catalogue dont la traduction stockée échoue à la vérification du système d'écriture de la locale (par exemple, l'hindi romanisé pour `hi`) sont traitées comme manquantes et retraduites sans `--force`.
 
 Ensuite, connectez i18next à l'exécution — [Connecter i18next](/fr/guide/ui-strings/i18next-runtime).
 

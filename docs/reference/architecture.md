@@ -120,10 +120,11 @@ i18next loads these as resource bundles and looks up translations by the source 
 `buildUIPromptMessages` constructs system + user messages that:
 
 - Identify the source and target languages (by display name from `localeDisplayNames` or `ui-languages.json`).
+- Prepend a script directive when the target locale has an expected writing system (explicit BCP-47 script, or a language default such as `hi` → Devanagari, `ar` → Arabic, `ja` → Japanese kana/kanji).
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
 
-`LlmClient.translateUIBatch` tries each model in order, falling back on parse or network errors. The CLI builds that list per target locale from `localeModels`, optional `uiModels`, and `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` tries each model in order, falling back on parse, network, or wrong-script errors (including romanized/Latin fallback for native-script locales). The CLI builds that list per target locale from `localeModels`, optional `uiModels`, and `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -251,7 +252,7 @@ Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai
 - **Model fallback**: tries each model in the resolved list in order; falls back on request or parse failures. Each target locale gets its own resolved chain: `localeModels(locale)` first when configured, then `uiModels` (UI pipelines only), then `translationModels`. Document, JSON, and SVG translation create a per-locale client with the non-UI chain. The `bench-models` command instead builds one single-model client per configured id (union of `translationModels`, `uiModels`, and `localeModels`; `translationModels: [id]`, no fallback) so it can time and price each model independently.
 - **Request timeout**: the active provider's `requestTimeoutMs` (default 30 seconds) aborts each request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads a provider's model list for `check-models` (any provider). The optional pre-flight filter that drops unknown model ids runs only when the active provider is OpenRouter.
 - **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field, `HTTP-Referer` / `X-Title` headers, and exact USD cost read from `usage.cost`. Token usage is reported for every provider; exact cost only when the provider returns it.
-- **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file.
+- **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file (programmatic). CLI `--debug-failed` writes `FAILED-TRANSLATION` files under `cacheDir` with the system/user prompt, raw assistant reply, and validation errors for failed UI, docs, JSON, and SVG attempts.
 
 <a id="config-loading"></a>
 ### Config loading

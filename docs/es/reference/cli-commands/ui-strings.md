@@ -45,7 +45,7 @@ Traduce solo las cadenas de la interfaz de usuario (`strings.json` → JSON de i
 
 **Opciones clave:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: idiomas de destino separados por comas (predeterminado: configuración `targetLocales` menos `sourceLocale`). `--force`: vuelve a traducir todas las entradas por idioma (ignora las traducciones existentes). `--dry-run`: sin escrituras, sin llamadas a la API.
+`-l` / `--locale`: configuración regional de destino separada por comas (predeterminado: `targetLocales` menos `sourceLocale`). `--force`: volver a traducir todas las entradas por configuración regional (ignorar las traducciones existentes). `--dry-run`: sin escrituras, sin llamadas a la API. `-j` paraleliza las **configuraciones regionales**; dentro de cada configuración regional, la configuración `uiBatchConcurrency` (predeterminado **2**) paraleliza los lotes de LLM (fragmentos de 50 cadenas, luego grupos plurales). No hay un indicador de CLI para `uiBatchConcurrency`.
 
 ---
 

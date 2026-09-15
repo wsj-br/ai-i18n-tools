@@ -52,7 +52,24 @@ Número máximo de **configuraciones regionales destino** traducidas simultánea
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (opcional)
 
-**translate-docs**, **translate-svg** y **translate-json** (y los pasos correspondientes dentro de `sync`): solicitudes **por lotes** máximas de LLM paralelas por archivo (cada lote puede contener muchos segmentos). El valor predeterminado es **4** cuando se omite. Ignorado por `translate-ui`. Anule con `-b` / `--batch-concurrency`.
+**translate-docs**, **translate-svg** y **translate-json** (y los pasos correspondientes dentro de `sync`): número máximo de solicitudes **por lotes** de LLM en paralelo por archivo (cada lote puede contener muchos segmentos). El valor predeterminado es **4** si se omite. No se aplica a `translate-ui`; en su lugar, utilice `uiBatchConcurrency`. Se anula con `-b` / `--batch-concurrency`.
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency` (opcional)
+
+**translate-ui**, **sync-ui**, y el paso de UI de `sync`: solicitudes **por lotes** LLM paralelas máximas **dentro de una sola configuración regional** (fragmentos de cadena simple de 50, luego grupos plurales). El valor predeterminado es **2** cuando se omite. Independiente de `concurrency` (configuraciones regionales de destino paralelas) y `batchConcurrency` (documentos/JSON/SVG). No hay un indicador de CLI; configúrelo en la configuración o pase `uiBatchConcurrency` a `runTranslateUI` programático.
+
+**Ejemplo:**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+Con la concurrencia de configuración regional predeterminada de **4**, esto es hasta **8** llamadas a la API de IU en curso. Aumente este valor al traducir una configuración regional grande (`-l de`); manténgalo bajo si el proveedor aplica límites de velocidad.
 
 ---
 

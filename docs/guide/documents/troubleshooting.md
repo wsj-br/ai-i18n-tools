@@ -30,3 +30,14 @@ A markdown link or `![alt](url)` works in English but returns 404 in translated 
 1. Confirm your asset layout matches your `docsOutput.style` (flat vs doc-system). See [Link rewriting](/guide/documents/link-rewriting) and [Images & Screenshots](/guide/images-and-screenshots/).
 2. Add or adjust `docsOutput.postProcessing.regexAdjustments` to swap locale segments or bridge absolute `/img/…` paths. For flat layout, remember the flat link rewriter runs **before** `regexAdjustments` — match patterns against the already-prefixed URL.
 3. Ensure locale-specific asset files exist at the paths the rewritten markdown references (`translate-docs` rewrites URLs but does not copy raster files).
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## Hindi, Arabic, CJK, or Cyrillic output is romanized (Latin letters)
+
+Some models translate the meaning but write the result in Latin/Roman letters (for example Hindi as `Namaste` instead of `नमस्ते`). Bare `hi` means Devanagari; use `hi-Latn` only when you want romanized Hindi.
+
+**Fix**
+
+1. Confirm the locale code matches the script you want (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
+2. Re-run translation so wrong-script cache rows are rejected: `translate-ui --force` for UI strings, or `translate-docs` / `sync` (file-level skip is disabled for locales with an expected script; `--force-update` still reuses valid segment cache).
+3. If a model keeps failing the script check, add a `localeModels` entry for that locale so a stronger model is tried first — see [Providers and models](/guide/providers-and-models#model-fallback-chain).

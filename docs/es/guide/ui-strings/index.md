@@ -50,7 +50,7 @@ El escáner es configurable: añade nombres de funciones personalizadas a travé
 ai-i18n-tools translate-ui
 ```
 
-Lee `strings.json`, envía lotes al proveedor de LLM activo para cada configuración regional de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. La selección del modelo utiliza la cadena de la interfaz de usuario: `localeModels(locale)` → `uiModels` → `translationModels` (consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain)).
+Lee `strings.json`, envía lotes al proveedor de LLM activo para cada configuración regional de destino, escribe archivos JSON planos (`de.json`, `fr.json`, etc.) en `ui.flatOutputDir`. La selección del modelo utiliza la cadena de la interfaz de usuario: `localeModels(locale)` → `uiModels` → `translationModels` (consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain)). Dentro de una configuración regional, se ejecutan hasta `uiBatchConcurrency` lotes a la vez (valor predeterminado **2**; consulte [Configuración — uiBatchConcurrency](/es/reference/configuration#uibatchconcurrency-optional)). `-j` solo paraleliza las configuraciones regionales de destino.
 
 <a id="per-locale-model-overrides"></a>
 ### Anulaciones de modelo por configuración regional
@@ -62,7 +62,7 @@ Dependiendo del idioma de destino, algunos modelos de traducción pueden funcion
 
 Para cada entrada, `translate-ui` almacena el **ID de modelo del proveedor activo** que tradujo con éxito cada idioma en un objeto `models` opcional (las mismas claves de idioma que `translated`). Las cadenas editadas en el Panel de traducción se marcan con el valor centinela `user-edited` en `models` para ese idioma. Los archivos planos por idioma en `ui.flatOutputDir` permanecen solo como **cadena de origen → traducción**; no incluyen `models` (por lo que los paquetes en tiempo de ejecución permanecen sin cambios).
 
-> **Nota:** Las ediciones del Panel a las cadenas de la interfaz de usuario se encuentran en `strings.json`, no en la caché de documentación de SQLite. Ejecuta `sync` o `translate-ui` (sin bandera especial) para reescribir los archivos de idioma planos del catálogo; `--force-update` **no** se reenvía al paso de la interfaz de usuario. Evita `--force` en los comandos de la interfaz de usuario después de ediciones manuales: vuelve a traducir cada entrada y puede sobrescribir tus filas de `user-edited`.
+> **Nota:** Las ediciones del panel de control a las cadenas de la interfaz de usuario se encuentran en `strings.json`, no en la caché de documentación de SQLite. Ejecute `sync` o `translate-ui` sin ningún indicador especial para reescribir los archivos de configuración regional planos del catálogo; `--force-update` **no** se reenvía al paso de la interfaz de usuario. Evite `--force` en los comandos de la interfaz de usuario después de las ediciones manuales: vuelve a traducir cada entrada y puede sobrescribir sus filas de `user-edited`. Las filas del catálogo cuya traducción almacenada no pasa la verificación del sistema de escritura de la configuración regional (por ejemplo, hindi romanizado para `hi`) se tratan como faltantes y se vuelven a traducir sin `--force`.
 
 Luego, conecta i18next en tiempo de ejecución — [Conectar i18next](/es/guide/ui-strings/i18next-runtime).
 

@@ -52,7 +52,24 @@
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency`（可选）
 
-**translate-docs**、**translate-svg** 和 **translate-json**（以及 `sync` 中的匹配步骤）：每个文件的最大并行 LLM **批处理**请求数（每个批处理可以包含多个段）。省略时默认为 **4**。`translate-ui` 忽略。使用 `-b` / `--batch-concurrency` 覆盖。
+**translate-docs**、**translate-svg** 和 **translate-json**（以及 `sync` 中的匹配步骤）：每个文件的最大并行 LLM **batch** 请求（每个批次可包含多个片段）。省略时默认为 **4**。不适用于 `translate-ui` —— 请改用 `uiBatchConcurrency`。使用 `-b` / `--batch-concurrency` 覆盖。
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency`（可选）
+
+**translate-ui**、**sync-ui** 和 `sync` 的 UI 步骤：**在单个语言环境内**的最大并行 LLM **batch** 请求（50 个纯字符串块，然后是复数组）。省略时默认为 **2**。独立于 `concurrency`（并行目标语言环境）和 `batchConcurrency`（文档/JSON/SVG）。无 CLI 标志；在配置中设置或向编程式 `runTranslateUI` 传递 `uiBatchConcurrency`。
+
+**示例：**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+在默认语言环境并发数为 **4** 的情况下，最多可有 **8** 个正在进行的 UI API 调用。在翻译一个大型语言环境时调高此值 (`-l de`)；如果提供商有速率限制则保持较低值。
 
 ---
 

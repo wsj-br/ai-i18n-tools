@@ -52,7 +52,24 @@ Maximum **target locales** translated at the same time (`translate-ui`, `transla
 <a id="batchconcurrency-optional"></a>
 ### `batchConcurrency` (optional)
 
-**translate-docs**, **translate-svg**, and **translate-json** (and the matching steps inside `sync`): maximum parallel LLM **batch** requests per file (each batch can contain many segments). Default **4** when omitted. Ignored by `translate-ui`. Override with `-b` / `--batch-concurrency`.
+**translate-docs**, **translate-svg**, and **translate-json** (and the matching steps inside `sync`): maximum parallel LLM **batch** requests per file (each batch can contain many segments). Default **4** when omitted. Does not apply to `translate-ui` — use `uiBatchConcurrency` instead. Override with `-b` / `--batch-concurrency`.
+
+---
+
+<a id="uibatchconcurrency-optional"></a>
+### `uiBatchConcurrency` (optional)
+
+**translate-ui**, **sync-ui**, and the UI step of `sync`: maximum parallel LLM **batch** requests **within a single locale** (plain-string chunks of 50, then plural groups). Default **2** when omitted. Independent of `concurrency` (parallel target locales) and `batchConcurrency` (docs/JSON/SVG). No CLI flag; set it in config or pass `uiBatchConcurrency` to programmatic `runTranslateUI`.
+
+**Example:**
+
+```json
+{
+  "uiBatchConcurrency": 2
+}
+```
+
+With the default locale concurrency of **4**, that is up to **8** in-flight UI API calls. Raise this when translating one large locale (`-l de`); keep it low if the provider rate-limits.
 
 ---
 

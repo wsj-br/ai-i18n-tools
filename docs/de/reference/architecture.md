@@ -118,11 +118,12 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen über den Que
 
 `buildUIPromptMessages` erstellt System- und Benutzernachrichten, die:
 
-- Identifizieren Sie die Ausgangs- und Zielsprache (nach Anzeigename aus `localeDisplayNames` oder `ui-languages.json`).
-- Senden Sie ein JSON-Array mit Zeichenketten und fordern Sie ein JSON-Array mit Übersetzungen an.
-- Geben Sie Glossarhinweise an, falls verfügbar.
+- Quellsprache und Zielsprache identifizieren (anhand des Anzeigenamens von `localeDisplayNames` oder `ui-languages.json`).
+- Eine Skript-Direktive voranstellen, wenn das Ziel-Gebietsschema ein erwartetes Schriftsystem hat (explizites BCP-47-Skript oder eine Sprachstandardeinstellung wie `hi` → Devanagari, `ar` → Arabisch, `ja` → japanische Kana/Kanji).
+- Ein JSON-Array von Zeichenfolgen senden und ein JSON-Array von Übersetzungen zurückfordern.
+- Glossar-Hinweise einbeziehen, falls verfügbar.
 
-`LlmClient.translateUIBatch` versucht jedes Modell der Reihe nach und greift bei Analyse- oder Netzwerkfehlern auf das nächste zurück. Die CLI erstellt diese Liste pro Ziellokale aus `localeModels`, optional `uiModels` und `translationModels` (siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` versucht jedes Modell der Reihe nach und greift bei Analyse-, Netzwerk- oder Skriptfehlern (einschließlich romanisiertem/lateinischem Fallback für native Skript-Gebietsschemas) auf Fallback zurück. Die CLI erstellt diese Liste pro Ziel-Gebietsschema aus `localeModels`, optional `uiModels` und `translationModels` (siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain)).
 
 ---
 
@@ -247,10 +248,10 @@ Wenn `docsOutput.style === "flat"`, werden übersetzte Markdown-Dateien neben de
 
 Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) basiert. Er ermittelt den aktiven Anbieter aus `provider` / `providers`, erstellt einen OpenAI-kompatiblen Client (`createOpenAICompatible`) für die `baseUrl` + API-Schlüssel des jeweiligen Anbieters und leitet alle Aufrufe über `generateText`. `OpenRouterClient` bleibt als veralteter Alias erhalten. Wichtige Verhaltensweisen:
 
-- **Modell-Fallback**: Versucht jedes Modell in der aufgelösten Liste der Reihe nach; greift bei Anforderungs- oder Analysefehlern auf das nächste zurück. Jedes Zielland erhält seine eigene aufgelöste Kette: `localeModels(locale)` zuerst, wenn konfiguriert, dann `uiModels` (nur UI-Pipelines), dann `translationModels`. Dokument-, JSON- und SVG-Übersetzung erstellen einen Client pro Gebietsschema mit der Nicht-UI-Kette. Der Befehl `bench-models` erstellt stattdessen einen Einzelmodell-Client pro konfigurierter ID (Vereinigung von `translationModels`, `uiModels` und `localeModels`; `translationModels: [id]`, kein Fallback), sodass er jedes Modell unabhängig voneinander zeitlich und preislich bewerten kann.
-- **Anforderungs-Timeout**: Der `requestTimeoutMs` des aktiven Anbieters (Standard 30 Sekunden) bricht jede Anforderung über `AbortSignal.timeout` ab. Derselbe Wert gilt für `GET /models`, wenn die CLI die Modellliste eines Anbieters für `check-models` (jeder Anbieter) lädt. Der optionale Pre-Flight-Filter, der unbekannte Modell-IDs verwirft, wird nur ausgeführt, wenn der aktive Anbieter OpenRouter ist.
-- **OpenRouter-Extras** (nur wenn `openrouter` aktiv ist): Durchsatz-Routing über das Anforderungsfeld `provider`, `HTTP-Referer` / `X-Title`-Header und genaue USD-Kosten, gelesen von `usage.cost`. Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen Kosten nur, wenn der Anbieter sie zurückgibt.
-- **Debug-Verkehrsprotokoll**: Wenn `debugTrafficFilePath` gesetzt ist, werden Anforderungs- und Antwort-JSON an eine Datei angehängt.
+- **Modell-Fallback**: Versucht jedes Modell in der aufgelösten Liste der Reihe nach; greift bei Anforderungs- oder Analysefehlern auf Fallback zurück. Jedes Ziel-Gebietsschema erhält eine eigene aufgelöste Kette: zuerst `localeModels(locale)`, wenn konfiguriert, dann `uiModels` (nur UI-Pipelines), dann `translationModels`. Dokument-, JSON- und SVG-Übersetzung erstellen einen Client pro Gebietsschema mit der Nicht-UI-Kette. Der Befehl `bench-models` erstellt stattdessen einen Einzelmodell-Client pro konfigurierter ID (Vereinigung von `translationModels`, `uiModels` und `localeModels`; `translationModels: [id]`, kein Fallback), sodass er jedes Modell unabhängig zeitlich und preislich bewerten kann.
+- **Anforderungs-Timeout**: Der `requestTimeoutMs` des aktiven Anbieters (Standard 30 Sekunden) bricht jede Anforderung über `AbortSignal.timeout` ab. Derselbe Wert gilt für `GET /models`, wenn die CLI die Modellliste eines Anbieters für `check-models` (jeder Anbieter) lädt. Der optionale Pre-Flight-Filter, der unbekannte Modell-IDs verwirft, läuft nur, wenn der aktive Anbieter OpenRouter ist.
+- **OpenRouter-Extras** (nur wenn `openrouter` aktiv ist): Durchsatz-Routing über das Anforderungsfeld `provider`, die Header `HTTP-Referer` / `X-Title` und die genauen USD-Kosten, die aus `usage.cost` gelesen werden. Die Token-Nutzung wird für jeden Anbieter gemeldet; die genauen Kosten nur, wenn der Anbieter sie zurückgibt.
+- **Debug-Verkehrsprotokoll**: Wenn `debugTrafficFilePath` gesetzt ist, werden Anforderungs- und Antwort-JSON an eine Datei angehängt (programmatisch). CLI `--debug-failed` schreibt `FAILED-TRANSLATION`-Dateien unter `cacheDir` mit dem System-/Benutzer-Prompt, der rohen Assistentenantwort und Validierungsfehlern für fehlgeschlagene UI-, Dokument-, JSON- und SVG-Versuche.
 
 <a id="config-loading"></a>
 ### Laden der Konfiguration

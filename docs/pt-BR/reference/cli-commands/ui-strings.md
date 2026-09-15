@@ -45,7 +45,7 @@ Traduz apenas strings da UI (`strings.json` → JSON de localidade). Requer `fea
 
 **Opções principais:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: localidades de destino separadas por vírgulas (padrão: configuração `targetLocales` menos `sourceLocale`). `--force`: retraduz todas as entradas por localidade (ignora traduções existentes). `--dry-run`: sem gravações, sem chamadas de API.
+`-l` / `--locale`: localidades de destino separadas por vírgulas (padrão: config `targetLocales` menos `sourceLocale`). `--force`: retraduzir todas as entradas por localidade (ignorar traduções existentes). `--dry-run`: sem gravações, sem chamadas de API. `-j` paraleliza **localidades**; dentro de cada localidade, config `uiBatchConcurrency` (padrão **2**) paraleliza lotes LLM (blocos de 50 strings, depois grupos plurais). Não há flag CLI para `uiBatchConcurrency`.
 
 ---
 

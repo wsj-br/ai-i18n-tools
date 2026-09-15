@@ -118,11 +118,12 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 
 `buildUIPromptMessages` は以下の内容を含むシステムおよびユーザー向けメッセージを構築します。
 
-- ソース言語とターゲット言語を特定します（`localeDisplayNames` または `ui-languages.json` の表示名で）。
-- 文字列のJSON配列を送信し、翻訳された文字列のJSON配列を返信として要求します。
-- 利用可能な場合は用語集のヒントを含めてください。
+- ソース言語とターゲット言語を特定します（`localeDisplayNames`または`ui-languages.json`の表示名を使用）。
+- ターゲットロケールに期待される書記体系がある場合、スクリプトディレクティブを先頭に付加します（明示的なBCP-47スクリプト、または`hi` → デーヴァナーガリー、`ar` → アラビア文字、`ja` → 日本語の仮名/漢字などの言語デフォルト）。
+- 文字列のJSON配列を送信し、翻訳のJSON配列を返すよう要求します。
+- 利用可能な場合は用語集のヒントを含めます。
 
-`LlmClient.translateUIBatch` は、解析エラーまたはネットワークエラーが発生した場合に備えて、各モデルを順番に試行します。CLI は、ターゲットロケールごとに `localeModels`、オプションの `uiModels`、および `translationModels` からそのリストを構築します ([プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照)。
+`LlmClient.translateUIBatch`は各モデルを順番に試し、解析エラー、ネットワークエラー、またはスクリプトエラー（ネイティブスクリプトのロケールでのローマ字/ラテン文字フォールバックを含む）が発生した場合はフォールバックします。CLIは`localeModels`、オプションの`uiModels`、および`translationModels`からターゲットロケールごとにそのリストを構築します（[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照）。
 
 ---
 
@@ -187,7 +188,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 6. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`） - そのまま保持されます。
 7. **Markdownの強調**（オプション。CJK/RTLロケールでは自動有効） - 強調区切り記号をマスクします。
 
-モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
+モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
 
 AstroテンプレートとMDX JSXの共有属性/キー保護は`src/processors/expression-attribute-protection.ts`で実装されており、`docs[].protectAttributes`と`docs[].protectKeys`によってブロックごとに駆動されます（[protectAttributes / protectKeys](/ja/reference/configuration#protectattributes-protectkeys)を参照）。
 
@@ -247,10 +248,10 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルのフォールバック**: 解決されたリストの各モデルを順番に試行し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決済みチェーンを取得します。設定されている場合は`localeModels(locale)`が最初、次に`uiModels`（UIパイプラインのみ）、次に`translationModels`です。ドキュメント、JSON、およびSVGの翻訳は、非UIチェーンを持つロケールごとのクライアントを作成します。`bench-models`コマンドは、設定されたIDごとに1つの単一モデルクライアントを構築します（`translationModels`、`uiModels`、および`localeModels`の結合。`translationModels: [id]`、フォールバックなし）。これにより、各モデルの時間を測定し、個別に価格設定できます。
-- **リクエストタイムアウト**: アクティブなプロバイダーの`requestTimeoutMs`（デフォルト30秒）は、`AbortSignal.timeout`を介して各リクエストを中止します。CLIが`check-models`（任意のプロバイダー）のプロバイダーのモデルリストをロードする場合、`GET /models`にも同じ値が適用されます。不明なモデルIDを削除するオプションのプリフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
-- **OpenRouterの追加機能**（`openrouter`がアクティブな場合のみ）: `provider`リクエストフィールド、`HTTP-Referer`/`X-Title`ヘッダー、および`usage.cost`から読み取られた正確なUSDコストを介したスループットルーティング。トークン使用量はすべてのプロバイダーで報告されます。正確なコストは、プロバイダーがそれを返す場合にのみ報告されます。
-- **デバッグトラフィックログ**: `debugTrafficFilePath`が設定されている場合、リクエストとレスポンスのJSONをファイルに追加します。
+- **モデルフォールバック**: 解決済みリストの各モデルを順番に試し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールには独自の解決済みチェーンがあります。設定されている場合は`localeModels(locale)`が最初、次に`uiModels`（UIパイプラインのみ）、次に`translationModels`となります。ドキュメント、JSON、SVGの翻訳では非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models`コマンドは設定されたIDごとに単一モデルのクライアントを1つ構築します（`translationModels`、`uiModels`、`localeModels`の和集合、`translationModels: [id]`、フォールバックなし）。これにより各モデルを個別に計測し価格を算出できます。
+- **リクエストタイムアウト**: アクティブなプロバイダーの`requestTimeoutMs`（デフォルト30秒）が`AbortSignal.timeout`経由で各リクエストを中断します。CLIが`check-models`（任意のプロバイダー）用にプロバイダーのモデルリストを読み込む際、`GET /models`にも同じ値が適用されます。不明なモデルIDを除外するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
+- **OpenRouter拡張機能**（`openrouter`がアクティブな場合のみ）: `provider`リクエストフィールドによるスループットルーティング、`HTTP-Referer` / `X-Title`ヘッダー、および`usage.cost`から読み取る正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されますが、正確なコストはプロバイダーがそれを返す場合のみ報告されます。
+- **デバッグトラフィックログ**: `debugTrafficFilePath`が設定されている場合、リクエストとレスポンスのJSONをファイルに追記します（プログラム経由）。CLIの`--debug-failed`は`cacheDir`配下に`FAILED-TRANSLATION`ファイルを書き出し、システム/ユーザープロンプト、生のアシスタント応答、および失敗したUI、ドキュメント、JSON、SVGの試行に対する検証エラーを記録します。
 
 <a id="config-loading"></a>
 ### 設定の読み込み

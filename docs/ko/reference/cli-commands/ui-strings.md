@@ -45,7 +45,7 @@ UI 문자열만 번역합니다(`strings.json` → 로케일 JSON). `features.tr
 
 **주요 옵션:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: 쉼표로 구분된 대상 로케일(기본값: 설정의 `targetLocales`에서 `sourceLocale` 제외). `--force`: 로케일별 모든 항목을 다시 번역(기존 번역 무시). `--dry-run`: 쓰기 없음, API 호출 없음.
+`-l` / `--locale`: 쉼표로 구분된 대상 로케일 (기본값: config `targetLocales`에서 `sourceLocale` 제외). `--force`: 로케일별로 모든 항목 재번역 (기존 번역 무시). `--dry-run`: 쓰기 및 API 호출 없음. `-j`은(는) **locales**를 병렬 처리합니다; 각 로케일 내에서 config `uiBatchConcurrency`(기본값 **2**)은(는) LLM 배치(50개 문자열 청크, 그 다음 복수형 그룹)를 병렬 처리합니다. `uiBatchConcurrency`에 대한 CLI 플래그는 없습니다.
 
 ---
 

@@ -21,6 +21,6 @@ Translate nested JSON per `json[]` (requires `features.translateJson`). Shared S
 
 Translate SVG files configured in `config.svg` (separate from docs). Requires `features.translateSVG`. Same cache ideas as docs; supports `--no-cache` to skip SQLite reads/writes for that run.
 
-**Key options:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**Key options:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, global `--debug-failed`
 
 **See also:** [SVG translation](/guide/svg-translation/)

@@ -21,6 +21,6 @@
 
 `config.svg`에 구성된 SVG 파일을 번역합니다(문서와 별개). `features.translateSVG`이 필요합니다. 문서와 동일한 캐시 방식을 사용하며, 해당 실행 시 SQLite 읽기/쓰기를 건너뛰도록 `--no-cache`를 지원합니다.
 
-**주요 옵션:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**주요 옵션:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, 전역 `--debug-failed`
 
 **참고 항목:** [SVG 번역](/ko/guide/svg-translation/)

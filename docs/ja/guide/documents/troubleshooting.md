@@ -30,3 +30,14 @@ Markdown リンクまたは `![alt](url)` は英語では機能しますが、�
 1. アセットのレイアウトが `docsOutput.style` (フラット vs ドキュメントシステム) と一致していることを確認します。[リンクの書き換え](/ja/guide/documents/link-rewriting) および [画像とスクリーンショット](/ja/guide/images-and-screenshots/) を参照してください。
 2. ロケールセグメントを交換したり、絶対 `/img/…` パスをブリッジしたりするために、`docsOutput.postProcessing.regexAdjustments` を追加または調整します。フラットレイアウトの場合、フラットリンクの書き換えは **前に** `regexAdjustments` が実行されることを覚えておいてください。すでにプレフィックスが付けられた URL に対してパターンを照合します。
 3. 書き換えられた markdown が参照するパスにロケール固有のアセットファイルが存在することを確認します (`translate-docs` は URL を書き換えますが、ラスターファイルをコピーしません)。
+
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+## ヒンディー語、アラビア語、CJK、またはキリル文字の出力がローマ字化（ラテン文字）される
+
+一部のモデルは意味を翻訳しますが、結果をラテン文字（ローマ字）で出力することがあります（例えば、ヒンディー語が `नमस्ते` ではなく `Namaste` として出力される）。`hi` 単独はデーヴァナーガリー文字を意味します。ローマ字化されたヒンディー語が必要な場合のみ `hi-Latn` を使用してください。
+
+**修正方法**
+
+1. ロケールコードが目的の文字体系と一致していることを確認します（`hi` と `hi-Latn`、`zh-Hans` と `zh-Hant`、`sr` と `sr-Latn`）。
+2. 誤った文字体系のキャッシュ行が拒否されるように、翻訳を再実行します。UI 文字列の場合は `translate-ui --force`、ファイルレベルの場合は `translate-docs` / `sync` を使用します（予期される文字体系を持つロケールではファイルレベルのスキップは無効化されます。`--force-update` は引き続き有効なセグメントキャッシュを再利用します）。
+3. モデルが文字体系チェックで継続的に失敗する場合は、そのロケールの `localeModels` エントリを追加して、より強力なモデルが最初に試されるようにします — [プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。

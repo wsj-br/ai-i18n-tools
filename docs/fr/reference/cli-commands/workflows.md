@@ -10,7 +10,7 @@ Extraction (si activée), puis traduction de l'interface utilisateur, puis `tran
 
 **Options clés :** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` est transmis aux étapes UI et SVG ainsi qu'aux documents/JSON ; `--force-update` s'applique aux documents, JSON et SVG (pas à l'UI). La phase des documents transmet également `--emphasis-placeholders` et `--debug-failed` (même signification que `translate-docs`). `--prompt-format` n'est pas un drapeau `sync` ; les étapes des documents et JSON utilisent la valeur par défaut intégrée (`json-array`).
+`--force` est transmis aux étapes UI et SVG ainsi qu'à docs/JSON ; `--force-update` s'applique à docs, JSON et SVG (pas à l'UI). La phase docs transmet également `--emphasis-placeholders` (même signification que `translate-docs`). Le `--debug-failed` global écrit les journaux `FAILED-TRANSLATION` sous `cacheDir` pour chaque tentative de modèle rejetée (y compris les replis de script SVG/docs), et pas seulement lorsque chaque modèle de la chaîne échoue. `--prompt-format` n'est pas un indicateur `sync` ; les étapes docs et JSON utilisent la valeur par défaut intégrée (`json-array`).
 
 ---
 

@@ -28,7 +28,7 @@
 6. 🔗 連結控制項會將檔案/行提示記錄到正在執行 `ai-i18n-tools dashboard` 的**終端機**。
 7. 修正您專案中的**來源檔案**，然後再次執行 `translate-docs` 或 `sync`。如果成功執行後列表看起來**過時**，請執行 `ai-i18n-tools sync --force-update` 並重新載入儀表板。
 
-為了在 UI 旁邊進行基於檔案的偵錯，請在重試期間使用 `translate-docs --debug-failed` 將 `FAILED-TRANSLATION` 詳細資訊寫入 `cacheDir` 下方——請參閱[快取行為和 `translate-docs` 旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+若要在 UI 旁進行基於檔案的除錯，請在 `translate-docs`、`translate-ui`、`translate-json`、`translate-svg` 或 `sync` 上傳遞全域 `--debug-failed`，以便在 `cacheDir` 下為每個被捨棄的模型嘗試（提示、原始輸出、驗證錯誤）寫入一個 `FAILED-TRANSLATION` 檔案，包括指令碼回退警告——而不僅僅是在每個模型都失敗時。請參閱[快取行為與 `translate-docs` 旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失敗與 Markdown 問題

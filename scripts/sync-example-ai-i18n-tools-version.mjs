@@ -9,7 +9,8 @@
  *   node scripts/sync-example-ai-i18n-tools-version.mjs
  *   node scripts/sync-example-ai-i18n-tools-version.mjs --check
  *
- * `--check` exits 1 if any example pin is not `^<version>` (used by pre-release).
+ * `--check` exits 1 if any example pin is not `^<version>`. `pnpm pre-release`
+ * runs this script without `--check` so stale pins are rewritten.
  */
 import fs from "node:fs";
 import path from "node:path";

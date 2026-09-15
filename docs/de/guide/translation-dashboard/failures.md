@@ -28,7 +28,7 @@ Dichte Inline-Auszeichnungen (**fett** gemischt mit `` `code` ``, verschachtelte
 6. Die 🔗-Verknüpfung protokolliert Datei-/Zeilenhinweise im **Terminal**, in dem `ai-i18n-tools dashboard` ausgeführt wird.
 7. Beheben Sie die **Quelldatei** in Ihrem Projekt und führen Sie dann `translate-docs` oder `sync` erneut aus. Wenn die Liste nach einem erfolgreichen Durchlauf **veraltet** aussieht, führen Sie `ai-i18n-tools sync --force-update` aus und laden Sie das Dashboard neu.
 
-Für dateibasiertes Debugging neben der Benutzeroberfläche verwenden Sie `translate-docs --debug-failed`, um `FAILED-TRANSLATION`-Details unter `cacheDir` während der Wiederholungsversuche zu schreiben – siehe [Cache-Verhalten und `translate-docs`-Flags](/de/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
+Für das dateibasierte Debugging neben der Benutzeroberfläche übergeben Sie das globale `--debug-failed` an `translate-docs`, `translate-ui`, `translate-json`, `translate-svg` oder `sync`, um eine `FAILED-TRANSLATION`-Datei unter `cacheDir` für jeden verworfenen Modellversuch (Prompt, Rohausgabe, Validierungsfehler) zu schreiben, einschließlich Skript-Fallback-Warnungen – nicht nur, wenn jedes Modell fehlschlägt. Siehe [Cache-Verhalten und `translate-docs`-Flags](/de/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 
 <a id="failures-vs-markdown-issues"></a>
 ## Fehler vs. Markdown-Probleme

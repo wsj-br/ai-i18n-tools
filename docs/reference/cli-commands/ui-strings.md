@@ -45,7 +45,7 @@ Translate UI strings only (`strings.json` → locale JSON). Requires `features.t
 
 **Key options:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: comma-separated target locales (default: config `targetLocales` minus `sourceLocale`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls.
+`-l` / `--locale`: comma-separated target locales (default: config `targetLocales` minus `sourceLocale`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j` parallelizes **locales**; within each locale, config `uiBatchConcurrency` (default **2**) parallelizes LLM batches (chunks of 50 strings, then plural groups). There is no CLI flag for `uiBatchConcurrency`.
 
 ---
 

@@ -21,6 +21,6 @@ Traduire les JSON imbriqués par `json[]` (requiert `features.translateJson`). C
 
 Traduire les fichiers SVG configurés dans `config.svg` (séparés des docs). Nécessite `features.translateSVG`. Mêmes idées de cache que les docs ; prend en charge `--no-cache` pour ignorer les lectures/écritures SQLite pour cette exécution.
 
-**Options clés :** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`
+**Options clés :** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, `--debug-failed` globale
 
 **Voir également :** [Traduction SVG](/fr/guide/svg-translation/)

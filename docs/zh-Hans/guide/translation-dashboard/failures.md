@@ -28,7 +28,7 @@
 6. 🔗 链接控件将文件/行提示记录到运行 `ai-i18n-tools dashboard` 的**终端**。
 7. 修复项目中的**源文件**，然后再次运行 `translate-docs` 或 `sync`。如果列表在成功运行后看起来**过时**，请运行 `ai-i18n-tools sync --force-update` 并重新加载仪表板。
 
-对于与 UI 配合使用的基于文件的调试，请使用 `translate-docs --debug-failed` 在重试期间将 `FAILED-TRANSLATION` 详细信息写入 `cacheDir` 下 — 请参阅[缓存行为和 `translate-docs` 标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+为了与 UI 并行进行基于文件的调试，请在 `translate-docs`、`translate-ui`、`translate-json`、`translate-svg` 或 `sync` 上传入全局 `--debug-failed`，以便在 `cacheDir` 下为每次被丢弃的模型尝试（提示词、原始输出、验证错误）写入一个 `FAILED-TRANSLATION` 文件，包括脚本回退警告——而不仅仅是在所有模型都失败时。参见[缓存行为和 `translate-docs` 标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 <a id="failures-vs-markdown-issues"></a>
 ## 失败与 Markdown 问题
