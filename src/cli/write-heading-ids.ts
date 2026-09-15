@@ -31,6 +31,8 @@ export interface WriteHeadingIdsOptions {
   dryRun: boolean;
   verbose: boolean;
   pymdown?: PymdownSlugOptions;
+  /** Strip HTML anchors and heading-id suffixes instead of writing ids. */
+  remove?: boolean;
 }
 
 /** Union of markdown/MDX paths from all `docs[].contentPaths`, `.translate-ignore`, optional path filter. */
@@ -95,7 +97,8 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
     const next = applyHeadingAnchorsToMarkdown(
       raw,
       opts.slugStyle,
-      opts.slugStyle === "pymdown" ? opts.pymdown : undefined
+      opts.slugStyle === "pymdown" ? opts.pymdown : undefined,
+      Boolean(opts.remove)
     );
 
     if (next === raw) {

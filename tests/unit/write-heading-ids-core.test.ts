@@ -6,6 +6,7 @@ import {
   parseExplicitHeadingId,
   slugAzureDevOps,
   slugPymdown,
+  stripHeadingIds,
   type SlugContext,
 } from "../../src/markdown/write-heading-ids-core.js";
 
@@ -51,10 +52,10 @@ describe("injectHtmlHeadingAnchors", () => {
     expect(out).toBe('<a id="plan-for-i18n-early"></a>\n## Plan for i18n early\n');
   });
 
-  it("skips headings that already contain {#custom-id}", () => {
+  it("replaces a classic {#custom-id} suffix with an HTML anchor for github style", () => {
     const input = "## Doc {#custom-id}\n";
     const out = injectHtmlHeadingAnchors(input, ctx("github"));
-    expect(out).toBe(input);
+    expect(out).toBe('<a id="doc"></a>\n## Doc\n');
   });
 
   it("matches anchor-markdown-header github slug for Jack & Jill", () => {
@@ -124,10 +125,10 @@ describe("injectHtmlHeadingAnchors", () => {
     expect(out).toContain("## café");
   });
 
-  it("skips headings that already contain {/* #custom-id */}", () => {
+  it("replaces an MDX comment id with an HTML anchor for github style", () => {
     const input = "## Doc {/* #custom-id */}\n";
     const out = injectHtmlHeadingAnchors(input, ctx("github"));
-    expect(out).toBe(input);
+    expect(out).toBe('<a id="doc"></a>\n## Doc\n');
   });
 });
 
@@ -166,10 +167,22 @@ describe("injectHtmlHeadingAnchors mdx-comment", () => {
     expect(out).toBe("## Plan for i18n early {/* #plan-for-i18n-early */}\n");
   });
 
-  it("skips headings that already contain classic {#custom-id}", () => {
-    const input = "## Doc {#custom-id}\n";
+  it("converts classic {#id} to an MDX comment using the heading slug", () => {
+    const input = "# Welcome to duplistatus {#welcome-to-duplistatus}\n";
     const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
-    expect(out).toBe(input);
+    expect(out).toBe("# Welcome to duplistatus {/* #welcome-to-duplistatus */}\n");
+  });
+
+  it("replaces a custom classic id with the slug from heading text", () => {
+    const input = "## TLS configuration {#tls-setup}\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe("## TLS configuration {/* #tls-configuration */}\n");
+  });
+
+  it("drops a preceding HTML anchor when writing mdx-comment", () => {
+    const input = '<a id="old"></a>\n## Hello\n';
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe("## Hello {/* #hello */}\n");
   });
 
   it("disambiguates duplicate titles with -1", () => {
@@ -240,5 +253,40 @@ title: T
     const out = applyHeadingAnchorsToMarkdown(md, "github");
     expect(out.startsWith("---\ntitle: T\n---\n\n")).toBe(true);
     expect(out).toContain('<a id="body"></a>');
+  });
+
+  it("strips heading ids when remove is true", () => {
+    const md = `---
+title: T
+---
+
+<a id="body"></a>
+## Body {/* #body */}
+`;
+    const out = applyHeadingAnchorsToMarkdown(md, "github", undefined, true);
+    expect(out).toContain("## Body");
+    expect(out).not.toContain("<a id=");
+    expect(out).not.toContain("{/*");
+  });
+});
+
+describe("stripHeadingIds", () => {
+  it("removes HTML anchors, classic suffixes, and MDX comments", () => {
+    const input = [
+      '<a id="orphan"></a>',
+      "# Welcome {#welcome}",
+      "",
+      '<a id="features"></a>',
+      "## Features {/* #features */}",
+      "",
+      "```",
+      "## Not a heading {#inside}",
+      "```",
+      "",
+    ].join("\n");
+    const out = stripHeadingIds(input);
+    expect(out).toBe(
+      ["# Welcome", "", "## Features", "", "```", "## Not a heading {#inside}", "```", ""].join("\n")
+    );
   });
 });

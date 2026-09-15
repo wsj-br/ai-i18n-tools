@@ -14,9 +14,12 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## New features
 
-- analyse to support translation of i18next project (probably is already supported with the JSON translation workflow), or analyse the posibility to automigrate the key schema to english (source locale) schema of ai-i18n-tools using a dedicate blunded in ai-i18n-tools (moving the strings/translations from the separated .content.ts file to our t() schema)
+- Evaluate and, if needed, extend support for translating i18next projects. Confirm that the existing JSON translation workflow covers typical i18next key/value schemas. Investigate the feasibility of automatically migrating i18next key-based translations to the English source-string schema used by ai-i18n-tools (e.g., via a built-in migration utility that moves strings/translations from separate `.content.ts` files into the `t()` pattern).
 
-- add a support to provide context on top of the glossary terms, so that the translation can be more accurate and context aware. For instance, a document that explain a feature or function so the translation to all languages are more accurate and context aware.
+- Add functionality to enable supplying extra context alongside glossary terms, ensuring that translations are more accurate and contextually appropriate. For example, allow attaching documentation or detailed feature explanations so that translations for all languages reflect correct usage and meaning.
+
+- Implement tracking and reporting for model call statistics and associated costs, allowing users to view and understand their usage and expenditure on translation model API calls.
+
 
 ## Improvements
 

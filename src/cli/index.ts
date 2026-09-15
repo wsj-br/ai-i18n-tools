@@ -719,6 +719,11 @@ program
   .option("--pymdown-normalize <mode>", t("With pymdown: nfc | nfd | none (default: nfc)"))
   .option("--pymdown-percent-encode", t("With pymdown: percent-encode slug (default on)"), false)
   .option("--no-pymdown-percent-encode", t("With pymdown: disable percent-encoding"), false)
+  .option(
+    "--remove",
+    t("Remove all heading ids (HTML anchors, classic {#id}, MDX comments) instead of writing them"),
+    false
+  )
   .option("--dry-run", t("Print files that would change; do not write"), false)
   .action((opts, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -733,9 +738,11 @@ program
       pymdownPercentEncode?: boolean;
       noPymdownPercentEncode?: boolean;
       dryRun?: boolean;
+      remove?: boolean;
     };
     const pathRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
     warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
+    const remove = Boolean(o.remove);
     let slugStyle;
     try {
       slugStyle = parseSlugStyle(o.slugStyle);
@@ -752,9 +759,13 @@ program
       o.pymdownPercentEncode ||
       o.noPymdownPercentEncode;
 
-    if (pymdownFlagsUsed && slugStyle !== "pymdown") {
+    if (pymdownFlagsUsed && (remove || slugStyle !== "pymdown")) {
       console.error(
-        chalk.red(t("❌ --pymdown-* options are only valid with --slug-style pymdown."))
+        chalk.red(
+          remove
+            ? t("❌ --pymdown-* options cannot be used with --remove.")
+            : t("❌ --pymdown-* options are only valid with --slug-style pymdown.")
+        )
       );
       process.exit(1);
     }
@@ -800,6 +811,7 @@ program
         dryRun: Boolean(o.dryRun),
         verbose: Boolean(g.verbose),
         pymdown: pymdownOpts,
+        remove,
       });
       console.log(
         chalk.green(

@@ -168,7 +168,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 `write-heading-ids` 命令是一個 **本機、非 LLM** 的文件 Markdown 預處理器。實作方式：`src/cli/write-heading-ids.ts` 負責協調檔案發現；`src/markdown/write-heading-ids-core.ts` 解析行內容並插入錨點。
 
-它需要一個有效的設定，且帶有**至少一個 `docs[]` 區塊**。對於每個區塊，它會收集 `contentPaths` 下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（與文件翻譯的概念相同），並可選擇使用 `--path` / `--file` 限制在子樹中。每個檔案都會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於圍欄程式碼區塊之外的每個**扁平 ATX 標題**（從 `# …` 到 `###### …`），當缺失或過時時，會在上一行插入一個空的 HTML 行 `<a id="slug"></a>`，或者 — 使用 `--slug-style mdx-comment` — 在標題行附加 Docusaurus MDX 後綴 `{/* #slug */}`。Slug 演算法與常見的生態系統相符 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops`，加上 `mdx-comment`（github slug + MDX 註解輸出）— 因此錨點 ID 能與現有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 會報告預計的編輯而不會實際寫入。
+它需要一個有效的設定，內含至少一個 **at least one `docs[]` block**。對於每個區塊，它會收集 `contentPaths` 下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（概念與文件翻譯相同），並可選擇使用 `--path` / `--file` 限制於子樹狀結構。每個檔案都會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於每個位於圍欄程式碼區塊外的 **flat ATX heading**（`# …` 至 `###### …`），任何形式的現有標題 ID 都會被替換為所選樣式。HTML 樣式會在無後綴標題的上一行寫入 `<a id="slug"></a>`；`--slug-style mdx-comment` 會在標題行寫入 `{/* #slug */}`（並移除前面的 HTML 錨點）。Slug 一律取自目前的標題文字。`--remove` 會移除 HTML 錨點、傳統的 `{#id}` 後綴，以及 MDX 註解 ID，而不寫入新的。Slug 演算法符合常見的生態系統 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 註解輸出）— 這樣錨點 ID 就能與現有工具保持一致（doctoc、PyMdown、Docusaurus 等）。`--dry-run` 會報告將進行的編輯而不實際寫入。
 
 此命令**不會**在 `translate-docs` 或 `sync` 中執行；當您希望在翻譯或發佈前，原始檔案中有穩定的片段 ID 時，請明確執行此命令。
 

@@ -21,11 +21,11 @@
 
 **सारांश:** `ai-i18n-tools write-heading-ids [options]`
 
-कम से कम एक `docs[]` ब्लॉक की आवश्यकता है। प्रत्येक ब्लॉक के `contentPaths` के तहत `.md` / `.mdx` एकत्र करता है (`.translate-ignore` का सम्मान करता है)। डिफ़ॉल्ट रूप से प्रत्येक फ्लैट ATX `#` हेडिंग से ठीक पहले एक HTML एंकर लाइन `<a id="slug"></a>` सम्मिलित करता है (फेंस किए गए कोड ब्लॉक के अंदर हेडिंग को छोड़ देता है); जब एक एंकर लाइन पहले से मौजूद होती है, तो यदि यह वर्तमान हेडिंग टेक्स्ट से प्राप्त स्लग से मेल नहीं खाती है तो `id` को अपडेट करता है। `--slug-style mdx-comment` के साथ, इसके बजाय हेडिंग लाइन पर एक Docusaurus MDX टिप्पणी प्रत्यय `{/* #slug */}` जोड़ता है (वही github-शैली स्लग एल्गोरिथम), जब हेडिंग टेक्स्ट बदलता है तो एक पुरानी टिप्पणी को ताज़ा करता है।
+कम से कम एक `docs[]` ब्लॉक की आवश्यकता है। प्रत्येक ब्लॉक के `contentPaths` (`.translate-ignore` का सम्मान करता है) के तहत `.md` / `.mdx` एकत्र करता है। डिफ़ॉल्ट रूप से प्रत्येक फ़्लैट ATX `#` शीर्षक (फ़ेंस्ड कोड ब्लॉक के अंदर शीर्षकों को छोड़ देता है) से ठीक पहले एक HTML एंकर लाइन `<a id="slug"></a>` सम्मिलित करता है। किसी भी रूप के मौजूदा शीर्षक आईडी (HTML एंकर लाइन, क्लासिक `{#id}` प्रत्यय, MDX `{/* #id */}` टिप्पणी) को चयनित शैली से बदल दिया जाता है; स्लग हमेशा वर्तमान शीर्षक टेक्स्ट से प्राप्त होता है। `--slug-style mdx-comment` के साथ, इसके बजाय शीर्षक लाइन पर एक Docusaurus MDX टिप्पणी प्रत्यय लिखता है (वही github-शैली स्लग एल्गोरिथम) और मौजूद होने पर एक पूर्ववर्ती HTML एंकर को हटा देता है। `--remove` उन सभी शीर्षक-आईडी रूपों को हटा देता है और उनके स्थान पर कुछ भी नहीं लिखता है।
 
-**मुख्य विकल्प:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--dry-run`
+**मुख्य विकल्प:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
-`--slug-style`: `github` (डिफ़ॉल्ट; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}` प्रत्यय)। `pymdown` के साथ, वैकल्पिक `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`।
+`--slug-style`: `github` (डिफ़ॉल्ट; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}` प्रत्यय)। `pymdown` के साथ, वैकल्पिक `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`। `--remove` को `--pymdown-*` के साथ नहीं जोड़ा जा सकता है।
 
 **यह भी देखें:** [एंकर लिंक](/hi/guide/documents/anchor-links)
 

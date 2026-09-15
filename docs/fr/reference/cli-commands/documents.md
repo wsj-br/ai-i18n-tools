@@ -21,11 +21,11 @@ Traduit le Markdown, le MDX, `.astro`, le JSON de catalogue Docusaurus facultati
 
 **Synopsis :** `ai-i18n-tools write-heading-ids [options]`
 
-Nécessite au moins un bloc `docs[]`. Collecte `.md` / `.mdx` sous le `contentPaths` de chaque bloc (respecte `.translate-ignore`). Par défaut, insère une ligne d'ancrage HTML `<a id="slug"></a>` immédiatement avant chaque titre ATX plat `#` (ignore les titres à l'intérieur des blocs de code clôturés) ; lorsqu'une ligne d'ancrage est déjà présente, met à jour le `id` s'il ne correspond plus au slug dérivé du texte du titre actuel. Avec `--slug-style mdx-comment`, ajoute un suffixe de commentaire MDX Docusaurus `{/* #slug */}` sur la ligne du titre à la place (même algorithme de slug de style GitHub), actualisant un commentaire obsolète lorsque le texte du titre change.
+Nécessite au moins un bloc `docs[]`. Collecte `.md` / `.mdx` sous le `contentPaths` de chaque bloc (respecte `.translate-ignore`). Par défaut, insère une ligne d'ancrage HTML `<a id="slug"></a>` immédiatement avant chaque titre ATX plat `#` (ignore les titres à l'intérieur des blocs de code clôturés). Les ID de titre existants de toute forme (ligne d'ancrage HTML, suffixe `{#id}` classique, commentaire MDX `{/* #id */}`) sont remplacés par le style sélectionné ; le slug est toujours dérivé du texte du titre actuel. Avec `--slug-style mdx-comment`, écrit un suffixe de commentaire MDX Docusaurus sur la ligne du titre à la place (même algorithme de slug de style GitHub) et supprime une ancre HTML précédente si elle est présente. `--remove` supprime toutes ces formes d'ID de titre et n'écrit rien à leur place.
 
-**Options clés :** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--dry-run`
+**Options clés :** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
-`--slug-style` : `github` (par défaut ; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (suffixe Docusaurus `{/* #… */}`). Avec `pymdown`, `--pymdown-case` facultatif, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`.
+`--slug-style` : `github` (par défaut ; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (suffixe Docusaurus `{/* #… */}`). Avec `pymdown`, `--pymdown-case` facultatif, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove` ne peut pas être combiné avec `--pymdown-*`.
 
 **Voir aussi :** [Liens d'ancrage](/fr/guide/documents/anchor-links)
 

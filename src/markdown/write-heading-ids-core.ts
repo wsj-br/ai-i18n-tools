@@ -271,15 +271,71 @@ function formatHeadingWithMdxComment(hashes: string, visibleTitle: string, id: s
   return `${hashes} ${visibleTitle} ${formatMdxCommentSuffix(id)}`;
 }
 
+function formatCleanHeading(hashes: string, visibleTitle: string): string {
+  return `${hashes} ${visibleTitle}`;
+}
+
+function precedingLineIsHtmlAnchor(lines: string[], headingIndex: number): boolean {
+  return headingIndex > 0 && HTML_ANCHOR_LINE_RE.test(lines[headingIndex - 1]!);
+}
+
 /**
- * Appends or refreshes an MDX-comment heading id at the end of each ATX heading (outside fenced code).
- * Skips headings that already have classic `{#…}`. When an MDX comment id is present,
- * updates it when it no longer matches the slug derived from the visible heading text.
+ * Strip empty HTML heading-anchor lines and classic / MDX heading-id suffixes (outside fenced code).
  */
-function injectMdxCommentHeadingIds(markdownBody: string, ctx: SlugContext): string {
+export function stripHeadingIds(markdownBody: string): string {
   const lines = markdownBody.split("\n");
   let fence: "`" | "~" | null = null;
   let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const trimmed = line.trimStart();
+
+    if (fence) {
+      if (trimmed.startsWith(fence + fence + fence)) {
+        fence = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      fence = trimmed.startsWith("```") ? "`" : "~";
+      i += 1;
+      continue;
+    }
+
+    if (HTML_ANCHOR_LINE_RE.test(line)) {
+      lines.splice(i, 1);
+      continue;
+    }
+
+    const hm = line.match(ATX_HEADING_RE);
+    if (hm) {
+      const parsed = parseExplicitHeadingId(hm[2]!);
+      if (parsed.kind) {
+        lines[i] = formatCleanHeading(hm[1]!, parsed.text);
+      }
+    }
+
+    i += 1;
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Rewrites ATX headings (outside fenced code) to the selected slug style, replacing any existing
+ * HTML `<a id>` line, classic `{#id}` suffix, or MDX comment id. HTML styles write
+ * `<a id="slug"></a>` on the line above a suffix-free heading; `mdx-comment` writes the id on the
+ * heading line and drops a preceding HTML anchor when present. Slugs always come from visible
+ * heading text (existing custom ids are not kept).
+ */
+export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
+  const lines = markdownBody.split("\n");
+  let fence: "`" | "~" | null = null;
+  let i = 0;
+  const htmlStyle = ctx.style !== "mdx-comment";
 
   while (i < lines.length) {
     const line = lines[i]!;
@@ -302,90 +358,29 @@ function injectMdxCommentHeadingIds(markdownBody: string, ctx: SlugContext): str
     const hm = line.match(ATX_HEADING_RE);
     if (hm) {
       const hashes = hm[1]!;
-      const fullTitle = hm[2]!;
-      const parsed = parseExplicitHeadingId(fullTitle);
-      if (parsed.kind === "classic") {
-        i += 1;
-        continue;
-      }
-
+      const parsed = parseExplicitHeadingId(hm[2]!);
       const expectedId = computeAnchorIdForHeading(parsed.text, line, ctx);
-      if (parsed.kind === "mdx-comment") {
-        if (parsed.id !== expectedId) {
-          lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
-        }
-        i += 1;
-        continue;
-      }
 
-      lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
-      i += 1;
-      continue;
-    }
-
-    i += 1;
-  }
-
-  return lines.join("\n");
-}
-
-/**
- * Inserts or refreshes `<a id="slug"></a>` on the line directly above each ATX heading (outside fenced code).
- * Skips headings that already have classic `{#…}` or an MDX-comment id. When an `<a id=…>` is on the
- * immediately preceding line, updates the id when it no longer matches the slug derived from the current heading text.
- */
-export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
-  if (ctx.style === "mdx-comment") {
-    return injectMdxCommentHeadingIds(markdownBody, ctx);
-  }
-
-  const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i]!;
-    const trimmed = line.trimStart();
-
-    if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
-        fence = null;
-      }
-      i += 1;
-      continue;
-    }
-
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
-      i += 1;
-      continue;
-    }
-
-    const hm = line.match(ATX_HEADING_RE);
-    if (hm) {
-      const fullTitle = hm[2]!;
-      const parsed = parseExplicitHeadingId(fullTitle);
-      if (parsed.kind === "classic" || parsed.kind === "mdx-comment") {
-        i += 1;
-        continue;
-      }
-      if (i > 0) {
-        const prev = lines[i - 1]!;
-        const anchorMatch = prev.match(HTML_ANCHOR_LINE_RE);
-        if (anchorMatch) {
-          const existingId = anchorMatch[2]!;
-          const expectedId = computeAnchorIdForHeading(fullTitle, line, ctx);
-          if (existingId !== expectedId) {
-            lines[i - 1] = formatHtmlAnchorLine(expectedId);
-          }
+      if (htmlStyle) {
+        const clean = formatCleanHeading(hashes, parsed.text);
+        if (precedingLineIsHtmlAnchor(lines, i)) {
+          lines[i - 1] = formatHtmlAnchorLine(expectedId);
+          lines[i] = clean;
           i += 1;
           continue;
         }
+        lines[i] = clean;
+        lines.splice(i, 0, formatHtmlAnchorLine(expectedId));
+        i += 2;
+        continue;
       }
 
-      const expectedId = computeAnchorIdForHeading(fullTitle, line, ctx);
-      lines.splice(i, 0, formatHtmlAnchorLine(expectedId));
-      i += 2;
+      if (precedingLineIsHtmlAnchor(lines, i)) {
+        lines.splice(i - 1, 1);
+        i -= 1;
+      }
+      lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
+      i += 1;
       continue;
     }
 
@@ -406,16 +401,18 @@ export function defaultPymdownOptions(): PymdownSlugOptions {
 export function applyHeadingAnchorsToMarkdown(
   markdown: string,
   style: SlugStyle,
-  pymdown?: PymdownSlugOptions
+  pymdown?: PymdownSlugOptions,
+  remove = false
 ): string {
   const parsed = matter(markdown);
   const content = typeof parsed.content === "string" ? parsed.content : String(parsed.content);
-  const ctx: SlugContext = {
-    style,
-    pymdown: style === "pymdown" ? (pymdown ?? defaultPymdownOptions()) : undefined,
-    counts: new Map(),
-  };
-  const nextBody = injectHtmlHeadingAnchors(content, ctx);
+  const nextBody = remove
+    ? stripHeadingIds(content)
+    : injectHtmlHeadingAnchors(content, {
+        style,
+        pymdown: style === "pymdown" ? (pymdown ?? defaultPymdownOptions()) : undefined,
+        counts: new Map(),
+      });
   if (nextBody === content) {
     return markdown;
   }

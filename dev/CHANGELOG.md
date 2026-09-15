@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: write-heading-ids — every slug style replaces existing heading ids (HTML `<a id>`, classic `{#id}`, or MDX comments) with a slug derived from the current heading text. `--remove` strips all of those heading-id forms.
+
 ## [1.8.10] - 2026-09-15
 
 - **Changed**: scripts — `pnpm pre-release` rewrites example `ai-i18n-tools` pins to `^<root version>` as its first step, instead of failing when they are stale.

@@ -21,11 +21,11 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 **概要:** `ai-i18n-tools write-heading-ids [options]`
 
-少なくとも1つの`docs[]`ブロックが必要です。各ブロックの`contentPaths`配下で`.md` / `.mdx`を収集します（`.translate-ignore`を尊重します）。デフォルトでは、各フラットなATX `#`見出しの直前にHTMLアンカー行`<a id="slug"></a>`を挿入します（フェンスされたコードブロック内の見出しはスキップします）。アンカー行がすでに存在する場合は、現在の見出しテキストから生成されたスラッグと一致しなくなった際に`id`を更新します。`--slug-style mdx-comment`を指定すると、代わりに見出し行にDocusaurus MDXコメントサフィックス`{/* #slug */}`を追加します（同じGitHubスタイルのスラッグアルゴリズム）。見出しテキストが変更された場合は古いコメントを更新します。
+少なくとも1つの`docs[]`ブロックが必要です。各ブロックの`contentPaths`配下の`.md` / `.mdx`を収集します（`.translate-ignore`を尊重）。デフォルトでは、フラットなATX `#`見出しの直前にHTMLアンカー行`<a id="slug"></a>`を挿入します（フェンスされたコードブロック内の見出しはスキップ）。任意の形式の既存の見出しID（HTMLアンカー行、従来の`{#id}`サフィックス、MDX `{/* #id */}`コメント）は選択したスタイルに置き換えられます。スラッグは常に現在の見出しテキストから生成されます。`--slug-style mdx-comment`を指定すると、代わりに見出し行にDocusaurus MDXコメントサフィックスを書き込みます（同じgithubスタイルのスラッグアルゴリズム）。先行するHTMLアンカーが存在する場合は削除します。`--remove`はこれらすべての見出しID形式を削除し、代わりに何も書き込みません。
 
-**主なオプション:** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--dry-run`
+**主なオプション:** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--remove`、`--dry-run`
 
-`--slug-style`: `github`（デフォルト、doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}`サフィックス）。`pymdown`を指定すると、オプションで`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`が使用可能です。
+`--slug-style`: `github`（デフォルト、doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}`サフィックス）。`pymdown`、オプションの`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--remove`は`--pymdown-*`と組み合わせることはできません。
 
 **関連項目:** [アンカーリンク](/ja/guide/documents/anchor-links)
 

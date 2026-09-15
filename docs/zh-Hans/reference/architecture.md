@@ -168,7 +168,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 命令 `write-heading-ids` 是一个 **本地、非 LLM** 的文档 markdown 预处理器。实现：`src/cli/write-heading-ids.ts` 协调文件发现；`src/markdown/write-heading-ids-core.ts` 解析行并插入锚点。
 
-它需要一个有效的配置，且**至少包含一个 `docs[]` 块**。对于每个块，它会收集 `contentPaths` 下的 `.md` / `.mdx` 文件，应用项目的 `.translate-ignore` 规则（与文档翻译的思路相同），并可选择使用 `--path` / `--file` 限制到某个子树。每个文件都使用 `applyHeadingAnchorsToMarkdown` 进行转换：对于受围栏代码块之外的每个**扁平 ATX 标题**（从 `# …` 到 `###### …`），如果缺失或过时，则在其上方插入一个空的 HTML 行 `<a id="slug"></a>`，或者 —— 使用 `--slug-style mdx-comment` —— 在标题行追加一个 Docusaurus MDX 后缀 `{/* #slug */}`。Slug 算法与常见的生态系统相匹配 —— `github`（默认）、`bitbucket`、`gitlab`、`pymdown`（可选的 Unicode 规范化 / 百分号编码标志）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 注释输出）—— 从而使锚点 ID 与现有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 报告将要进行的编辑而不实际写入。
+它需要一个有效的配置，且**至少包含一个 `docs[]` 块**。对于每个块，它会收集 `contentPaths` 下的 `.md` / `.mdx` 文件，应用项目的 `.translate-ignore` 规则（与文档翻译的思路相同），并可选择使用 `--path` / `--file` 限制到某个子树。每个文件都使用 `applyHeadingAnchorsToMarkdown` 进行转换：对于围栏代码块之外的每个**扁平 ATX 标题**（从 `# …` 到 `###### …`），任何形式的现有标题 ID 都会被替换为所选样式。HTML 样式在无后缀标题的上一行写入 `<a id="slug"></a>`；`--slug-style mdx-comment` 在标题行写入 `{/* #slug */}`（并丢弃前面的 HTML 锚点）。Slug 始终来自当前标题文本。`--remove` 会剥离 HTML 锚点、经典的 `{#id}` 后缀和 MDX 注释 ID，但不写入新的 ID。Slug 算法与常见的生态系统相匹配——`github`（默认）、`bitbucket`、`gitlab`、`pymdown`（可选的 Unicode 规范化 / 百分号编码标志）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 注释输出）——因此锚点 ID 与现有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 报告将要进行的编辑而不实际写入。
 
 此命令 **不** 在 `translate-docs` 或 `sync` 中运行；当您希望在翻译或发布之前源文件中的片段 ID 稳定时，请显式运行它。
 
