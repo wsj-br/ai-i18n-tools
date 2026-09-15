@@ -46,7 +46,7 @@ ai-i18n-tools dashboard
 | UI 字串或複數 | 純 `sync` 或 `translate-ui` | `--force` (覆寫 `user-edited` 列) |
 | 詞彙表列 | 下一個 `translate-ui` 或 `proofread-ui` | — |
 
-**文件 (SQLite 快取)** — 手動編輯在快取中會標記為模型 `user-edited`。在未變更的來源上重新執行 `translate-docs` 或 `sync` 會重複使用快取的翻譯 (無 LLM 呼叫)。執行 `sync --force-update` 或 `translate-docs --force-update` 以從快取重新整理磁碟上的 Markdown。僅當您想繞過快取並從 LLM 重新翻譯 (覆寫手動修正) 時，才使用 `--force`。
+**文件 (SQLite 快取)** — 手動編輯在快取中會以模型 `user-edited` 標記。未通過地區書寫系統檢查的編輯（例如 `hi` 的印地語羅馬拼音）會顯示警告；確認後仍會儲存文字。在未變更的來源上重新執行 `translate-docs` 或 `sync` 會重用快取的翻譯（無需 LLM 呼叫）。執行 `sync --force-update` 或 `translate-docs --force-update` 以從快取重新整理磁碟上的 Markdown。使用 `--check-cache` 來重新驗證原生文字地區，而無需重寫每個檔案（包含已確認的錯誤書寫系統編輯）。僅在您想要繞過快取並從 LLM 重新翻譯（覆寫手動修正）時使用 `--force`。
 
 **UI 字串 (`strings.json`)** — 手動編輯在 `models[locale]` 中會標記為 `user-edited`。重新執行 `translate-ui` 或 `sync` 會跳過已翻譯的條目。在 UI 命令上使用 `--force` 以重新翻譯並覆寫手動修正。
 

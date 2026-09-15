@@ -188,7 +188,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
 7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
 
-在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
+在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 
@@ -199,7 +199,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 在每次執行時，區段會透過雜湊 × 語系進行查詢。只有快取未命中才會傳送至 LLM。翻譯後，目前翻譯範圍中未命中的區段列會重設 `last_hit_at`。文件翻譯期間成功的快取命中會清除該區段過時的 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，接著移除過時的區段列（null `last_hit_at` / 空白檔案路徑），當解析後的來源路徑在磁碟上不存在時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除元資料檔案路徑指向不存在檔案的翻譯列，修剪孤立的 `translation_failures` 列，修剪解析後來源路徑在磁碟上不存在的孤立 `markdown_source_issues` 列，並捨棄設定中缺少語系的快取列（`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`；僅限 SQLite — 使用 `purge-locale` 來刪除產生的檔案）；除非傳遞了 `--backup <path>`，否則它不會備份 `cache.db`，傳遞時會先將備份寫入該路徑。
 
-`translate-docs` 命令還使用**檔案追蹤**，因此未更改且已存在最新輸出的來源可以完全跳過工作。`--force-update` 重新執行檔案處理，同時仍使用區段快取；`--force` 清除檔案追蹤並繞過 API 翻譯的區段快取讀取。當每個配置的模型在 markdown 區段上 AST 驗證失敗時，`translate-docs` 可以逐步分割區段並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。有關完整的標誌表，請參閱 [文件 — 快取行為和標誌](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+`translate-docs` 指令也使用 **檔案追蹤**，因此對於未更改且已有最新輸出的來源，可以完全跳過工作。`--check-cache` 會以預期的書寫系統重新開啟語言環境，以便重新驗證快取的段落；`--force-update` 會對每個語言環境重新執行檔案處理，同時仍使用段落快取；`--force` 會清除檔案追蹤並繞過段落快取讀取以進行 API 翻譯。當每個已設定的模型在 Markdown 段落上未能通過 AST 驗證時，`translate-docs` 可以逐步分割段落並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。請參閱[文件 — 快取行為與旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)以取得完整的旗標表格。
 
 **批次提示格式：** `translate-docs --prompt-format` 僅為 `LlmClient.translateDocumentBatch` 選擇 XML (`<seg>` / `<t>`) 或 JSON 陣列/物件形狀；提取、佔位符和驗證保持不變。請參閱 [批次提示格式](/zh-Hant/guide/documents/cli-options#batch-prompt-format)。
 
@@ -248,10 +248,10 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 基於 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）建置的提供者無關的聊天用戶端。它會從 `provider` / `providers` 解析作用中的提供者，為該提供者的 `baseUrl` + API 金鑰建置一個 OpenAI 相容的用戶端（`createOpenAICompatible`），並透過 `generateText` 路由所有呼叫。`OpenRouterClient` 保留為已淘汰的別名。主要行為：
 
-- **模型後援**：依序嘗試已解析清單中的每個模型；在請求或解析失敗時進行後援。每個目標地區都有自己已解析的鏈：設定時優先使用 `localeModels(locale)`，然後是 `uiModels`（僅限 UI 管線），接著是 `translationModels`。文件、JSON 和 SVG 翻譯會使用非 UI 鏈為每個地區建立客戶端。`bench-models` 命令則會為每個已設定的 ID 建立一個單一模型客戶端（`translationModels`、`uiModels` 和 `localeModels` 的聯集；`translationModels: [id]`，無後援），以便獨立計時和計價每個模型。
-- **請求逾時**：作用中供應商的 `requestTimeoutMs`（預設 30 秒）會透過 `AbortSignal.timeout` 中止每個請求。當 CLI 為 `check-models`（任何供應商）載入供應商的模型清單時，相同的值也適用於 `GET /models`。丟棄未知模型 ID 的選用預檢篩選器僅在作用中供應商為 OpenRouter 時執行。
-- **OpenRouter 額外功能**（僅在 `openrouter` 處於作用中狀態時）：透過 `provider` 請求欄位進行輸送量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的確切 USD 成本。每個供應商都會報告權杖使用量；僅在供應商傳回時才提供確切成本。
-- **除錯流量日誌**：如果設定了 `debugTrafficFilePath`，會將請求和回應 JSON 附加到檔案中（程式化）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，其中包含系統/使用者提示、原始助理回覆，以及失敗的 UI、文件、JSON 和 SVG 嘗試的驗證錯誤。
+- **模型後備**：依順序嘗試已解析列表中的每個模型；在請求或解析失敗時退回後備。每個目標語言環境都有自己解析的鏈：設定時優先使用 `localeModels(locale)`，然後是 `uiModels`（僅限 UI 管線），接著是 `translationModels`。文件、JSON 和 SVG 翻譯會使用非 UI 鏈為每個語言環境建立客戶端。`bench-models` 指令則為每個已設定的 ID 建立一個單一模型客戶端（`translationModels`、`uiModels` 和 `localeModels` 的聯集；`translationModels: [id]`，無後備），以便獨立計時和計價每個模型。
+- **請求逾時**：當前供應商的 `requestTimeoutMs`（預設 30 秒）透過 `AbortSignal.timeout` 中止每個請求。當 CLI 為 `check-models`（任何供應商）載入供應商的模型列表時，相同的值也適用於 `GET /models`。丟棄未知模型 ID 的選用性預檢篩選器僅在當前供應商為 OpenRouter 時執行。
+- **OpenRouter 額外功能**（僅在 `openrouter` 為當前時）：透過 `provider` 請求欄位進行吞吐量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的精確美元成本。每個供應商都會報告 Token 使用量；精確成本僅在供應商返回時提供。
+- **除錯流量日誌**：如果設定了 `debugTrafficFilePath`，會將請求和回應 JSON 附加到檔案中（程式化）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，包含系統/使用者提示、原始助理回覆，以及失敗的 UI、文件、JSON 和 SVG 翻譯檢查嘗試的驗證錯誤。供應商 API / 空內文失敗會改為在主控台上列印，而不是傾印僅含提示的檔案。
 
 <a id="config-loading"></a>
 ### 設定載入

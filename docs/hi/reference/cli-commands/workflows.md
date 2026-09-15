@@ -8,9 +8,9 @@
 
 निकालें (यदि सक्षम हो), फिर यूआई अनुवाद, फिर `translate-svg` जब `features.translateSVG` और `config.svg` सेट हों, फिर दस्तावेज़ अनुवाद, फिर `translate-json` जब `features.translateJson` और `json[]` सेट हों — जब तक कि `--no-ui`, `--no-svg`, `--no-docs`, या `--no-json` के साथ छोड़ा न जाए।
 
-**मुख्य विकल्प:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**मुख्य विकल्प:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` को UI और SVG चरणों के साथ-साथ डॉक्स/JSON पर भी अग्रेषित किया जाता है; `--force-update` डॉक्स, JSON और SVG (UI नहीं) पर लागू होता है। डॉक्स चरण `--emphasis-placeholders` (`translate-docs` के समान अर्थ) को भी अग्रेषित करता है। ग्लोबल `--debug-failed` प्रत्येक छोड़े गए मॉडल प्रयास (SVG/डॉक्स स्क्रिप्ट फ़ॉलबैक सहित) के लिए `cacheDir` के तहत `FAILED-TRANSLATION` लॉग लिखता है, न कि केवल तब जब चेन में हर मॉडल विफल हो जाता है। `--prompt-format` एक `sync` फ़्लैग नहीं है; डॉक्स और JSON चरण अंतर्निहित डिफ़ॉल्ट (`json-array`) का उपयोग करते हैं।
+`--force` को UI और SVG चरणों के साथ-साथ डॉक्स/JSON पर भी अग्रेषित किया जाता है; `--force-update` डॉक्स, JSON और SVG (UI नहीं) पर लागू होता है। `--check-cache` को डॉक्स, JSON और SVG पर अग्रेषित किया जाता है: यह उन लोकेल के लिए कैशे किए गए सेगमेंट को फिर से मान्य करता है जिनमें एक लागू मूल स्क्रिप्ट होती है, भले ही फ़ाइल ट्रैकिंग छोड़ दी जाए। डॉक्स चरण `--emphasis-placeholders` (`translate-docs` के समान अर्थ) को भी अग्रेषित करता है। ग्लोबल `--debug-failed` प्रत्येक छोड़े गए मॉडल प्रयास (SVG/डॉक्स स्क्रिप्ट फ़ॉलबैक सहित) के लिए `cacheDir` के तहत `FAILED-TRANSLATION` लॉग लिखता है, न कि केवल तब जब श्रृंखला में प्रत्येक मॉडल विफल हो जाता है। `--prompt-format` एक `sync` फ़्लैग नहीं है; डॉक्स और JSON चरण अंतर्निहित डिफ़ॉल्ट (`json-array`) का उपयोग करते हैं।
 
 ---
 

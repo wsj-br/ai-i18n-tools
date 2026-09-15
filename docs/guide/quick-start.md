@@ -148,7 +148,7 @@ Enable all features in a single config to run UI strings and documents together:
 
 `glossary.uiGlossary` points document translation at the same `strings.json` catalog as the UI so terminology stays consistent; `glossary.userGlossary` adds CSV overrides for product terms.
 
-Run `ai-i18n-tools sync` to run one pipeline: when `features.translateUIStrings` is enabled, **extract** then **translate UI** strings; optional **translate SVG** (`features.translateSVG` + `svg` block); **translate documentation** (`docs[]` as configured); then optional **translate-json** (`features.translateJson` + `json[]`). Skip parts with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. The docs and `json[]` steps accept `--dry-run`, `-p` / `--path`, `--force`, and `--force-update` (docs-only flags are ignored when `--no-docs`; JSON uses the same cache flags when `--no-json` is not set).
+Run `ai-i18n-tools sync` to run one pipeline: when `features.translateUIStrings` is enabled, **extract** then **translate UI** strings; optional **translate SVG** (`features.translateSVG` + `svg` block); **translate documentation** (`docs[]` as configured); then optional **translate-json** (`features.translateJson` + `json[]`). Skip parts with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. The docs and `json[]` steps accept `--dry-run`, `-p` / `--path`, `--force`, `--force-update`, and `--check-cache` (docs-only flags are ignored when `--no-docs`; JSON uses the same cache flags when `--no-json` is not set).
 
 Use `docs[].targetLocales` on a block to translate that block’s files to a **smaller subset** than the UI (effective documentation locales are the **union** across blocks):
 

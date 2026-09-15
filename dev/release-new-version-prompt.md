@@ -4,19 +4,19 @@ Create a new release notes file `release-notes/RELEASE_NOTES_<version>.md` for t
 
 1. **Read `package.json`** to get the current version number (`x.y.z`).
 2. **Open `dev/CHANGELOG.md`**.
-3. **Copy all entries under the `## [Unreleased]` section** up to (but not including) the next `## [` heading (which marks the last released version).
+3. **Read all entries under the `## [Unreleased]` section** up to (but not including) the next `## [` heading (which marks the last released version). Use those bullets as source material for highlights only — do **not** copy them into the release notes.
 4. **Format the new file** according to the prior release notes in `release-notes/RELEASE_NOTES_x.y.z.md`:
    - Title: `# ai-i18n-tools <version> Release Notes`
    - Sections:
      - `## Highlights` — Summarize the most important user-facing changes from the changelog bullets (focus on features, fixes, major improvements; don't list every change verbatim—write clear, user-focused summaries).
      - `## Why this release matters` — One or two sentences explaining the main impact or reason for this release.
      - `---`
+     - A short pointer to `dev/CHANGELOG.md` for the full per-change list (see example below). Do **not** paste changelog bullets, a `## Detailed Changes` section, `### Full Changelog`, or the `[Unreleased]` section into the release notes.
+     - `---`
      - `## Documentation` — Add links to major docs: Getting Started, Locale assets guide, Package Overview, Agent Context, as in previous release notes.
      - `---`
      - `## License` — Use the same license section as prior notes.
-     - Don't include the `### Full Changelog` or the `[Unreleased]` section.
-5. **Transfer the detailed change bullets** (from the `[Unreleased]` section) to a new section after the intro highlights (or as a collapsible section if desired for clarity).
-6. **Update `dev/CHANGELOG.md`**:
+5. **Update `dev/CHANGELOG.md`**:
    - Move all lines from `[Unreleased]` to a new section with the current version and today's date (`## [x.y.z] - YYYY-MM-DD`).
    - Leave an empty `[Unreleased]` section at the top for future work.
 
@@ -36,6 +36,10 @@ One or two sentences describing the practical impact or reason for this release 
 
 ---
 
+For the full list of changes, see [`dev/CHANGELOG.md`](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/CHANGELOG.md) (`## [1.2.7] - YYYY-MM-DD`).
+
+---
+
 ## Documentation
 
 - [Getting Started](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/GETTING_STARTED.md) — setup, CLI flags, and config reference.  
@@ -52,4 +56,4 @@ MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br/ai-i18n-tools)
 ```
 
 **Summary:**  
-Ensure the new release notes file follows the format of previous notes, highlights user-facing changes from the changelog, and leaves the changelog ready for the next iteration. Write clearly and concisely for GitHub/Git users.
+Ensure the new release notes file follows the format of previous notes, highlights user-facing changes from the changelog without duplicating its bullets, points to `dev/CHANGELOG.md` for details, and leaves the changelog ready for the next iteration. Write clearly and concisely for GitHub/Git users.

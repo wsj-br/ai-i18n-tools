@@ -75,7 +75,7 @@ Paths use dot notation (`nav.home.label`). A bare name like `slug` matches the f
 ai-i18n-tools translate-json
 ```
 
-Optional flags (same ideas as `translate-docs`): `-l` / `--locale` for a subset of targets, `-p` / `--path` to limit files, `--dry-run`, `--force` (clear file tracking and segment cache for matched files), `--force-update` (re-process when file hash matches; segment cache still applies), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+Optional flags (same ideas as `translate-docs`): `-l` / `--locale` for a subset of targets, `-p` / `--path` to limit files, `--dry-run`, `--force` (clear file tracking and segment cache for matched files), `--force-update` (re-process when file hash matches; segment cache still applies), `--check-cache` (re-validate cached segments for locales with an enforced native script even when file tracking matches), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
 
 JSON-only projects can run:
 

@@ -105,7 +105,7 @@ ai-i18n-tools translate-svg --locale de
 ai-i18n-tools translate-svg --dry-run
 ```
 
-`sync`は、`features.translateSVG`と`svg`の両方が設定されている場合、SVGステップを自動的に実行します（`--no-svg`でスキップ）。共通のフラグには、`-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency`、および`--force` / `--force-update`が含まれます。
+`sync`は、`features.translateSVG`と`svg`が両方とも設定されている場合、SVGステップを自動的に実行します（`--no-svg`でスキップ）。共有フラグには、`-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency`、`--force` / `--force-update`、および`--check-cache`があります。
 
 <a id="troubleshooting"></a>
 ### トラブルシューティング

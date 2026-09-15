@@ -46,7 +46,7 @@ ai-i18n-tools dashboard
 | UI 字符串或复数 | 纯 `sync` 或 `translate-ui` | `--force`（覆盖 `user-edited` 行） |
 | 词汇表行 | 下一个 `translate-ui` 或 `proofread-ui` | — |
 
-**文档（SQLite 缓存）** — 手动编辑在缓存中用模型 `user-edited` 标记。对未更改的源重新运行 `translate-docs` 或 `sync` 会重用缓存的翻译（无 LLM 调用）。运行 `sync --force-update` 或 `translate-docs --force-update` 以从缓存刷新磁盘上的 Markdown。仅当您想绕过缓存并从 LLM 重新翻译（覆盖手动修复）时才使用 `--force`。
+**文档（SQLite 缓存）** — 在缓存中，手动编辑会使用模型 `user-edited` 进行标记。未通过区域设置书写系统检查的编辑（例如 `hi` 的罗马拼音）会显示警告；确认后仍会保存文本。对未更改的源文本重新运行 `translate-docs` 或 `sync` 会重用缓存的翻译（不调用 LLM）。运行 `sync --force-update` 或 `translate-docs --force-update` 可从缓存刷新磁盘上的 markdown。使用 `--check-cache` 可重新验证原生脚本的区域设置，而无需重写每个文件（包括已确认的错误脚本编辑）。仅当您想绕过缓存并从 LLM 重新翻译（覆盖手动修复）时，才使用 `--force`。
 
 **UI 字符串 (`strings.json`)** — 手动编辑在 `models[locale]` 中用 `user-edited` 标记。重新运行 `translate-ui` 或 `sync` 会跳过已存在翻译的条目。在 UI 命令上使用 `--force` 以重新翻译并覆盖手动修复。
 

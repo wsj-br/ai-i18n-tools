@@ -118,7 +118,7 @@ export async function translateNestedJsonFile(
     cache &&
     !opts.noCache &&
     cachedHash === fileHash &&
-    !localeEnforcesOutputScript(locale) &&
+    !(opts.checkCache && localeEnforcesOutputScript(locale)) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {

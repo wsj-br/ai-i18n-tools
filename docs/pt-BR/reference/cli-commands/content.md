@@ -8,7 +8,7 @@
 
 Traduz JSON aninhado por `json[]` (requer `features.translateJson`). Cache SQLite compartilhado.
 
-**Opções principais:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
+**Opções principais:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `--check-cache`, `-b`, `--prompt-format`
 
 **Ver também:** [JSON](/pt-BR/guide/json)
 
@@ -21,6 +21,6 @@ Traduz JSON aninhado por `json[]` (requer `features.translateJson`). Cache SQLit
 
 Traduz arquivos SVG configurados em `config.svg` (separado da documentação). Requer `features.translateSVG`. Mesmas ideias de cache da documentação; suporta `--no-cache` para pular leituras/gravações SQLite para aquela execução.
 
-**Opções principais:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, `--debug-failed` global
+**Opções principais:** `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `-p` / `--path`, `--dry-run`, `--no-cache`, global `--debug-failed`
 
 **Ver também:** [Tradução SVG](/pt-BR/guide/svg-translation/)

@@ -25,6 +25,8 @@ Haga clic en **Aplicar** después de cambiar los filtros. **Borrar** restablece 
 1. Haga clic en el icono de edición en una fila.
 2. Cambie el texto traducido en el modal y guarde.
 
+Si el texto nuevo no supera la comprobación del sistema de escritura local (por ejemplo, hindi romanizado para `hi`), el panel de control advierte y le pide que confirme. La confirmación almacena el texto de todos modos. Un `sync --check-cache` posterior sigue revalidando esa fila y puede volver a traducirla.
+
 La caché almacena el `user-edited` del modelo para esa fila. Ejecute `sync --force-update` o `translate-docs --force-update` para que las salidas de markdown en disco coincidan con la caché.
 
 Si el **texto de origen** en su repositorio cambia más tarde, el hash del segmento cambia y las ediciones manuales para el texto antiguo se anulan en la siguiente ejecución de traducción.

@@ -790,6 +790,14 @@ export class TranslationCache {
     return { rows, total };
   }
 
+  /** Source text stored with a translation row, or `null` when the pair is absent. */
+  getTranslationSourceText(sourceHash: string, locale: string): string | null {
+    const row = this.db
+      .prepare(`SELECT source_text FROM translations WHERE source_hash = ? AND locale = ?`)
+      .get(sourceHash, locale) as { source_text: string } | undefined;
+    return row?.source_text ?? null;
+  }
+
   updateTranslation(sourceHash: string, locale: string, translatedText: string): void {
     this.db
       .prepare(

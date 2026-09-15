@@ -13,6 +13,7 @@ import {
   pluralTranslatedLocaleHasContent,
 } from "../core/plural-forms.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { translationScriptIssue } from "../core/locale-utils.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 import { docBlockFileTrackingKeyToRelPath } from "../core/doc-file-tracking.js";
@@ -244,12 +245,30 @@ export function createTranslationDashboardApp(
 
   app.patch("/api/translations", (req, res) => {
     try {
-      const { source_hash, locale, translated_text } = req.body as Record<string, unknown>;
+      const { source_hash, locale, translated_text, confirm_script_issue } = req.body as Record<
+        string,
+        unknown
+      >;
       if (!source_hash || !locale || translated_text === undefined) {
         res.status(400).json({ error: "Missing source_hash, locale, or translated_text" });
         return;
       }
-      cache.updateTranslation(String(source_hash), String(locale), String(translated_text));
+      const hash = String(source_hash);
+      const loc = String(locale);
+      const text = String(translated_text);
+      const sourceText = cache.getTranslationSourceText(hash, loc);
+      if (sourceText !== null) {
+        const scriptIssue = translationScriptIssue(text, loc, sourceText);
+        if (scriptIssue && confirm_script_issue !== true) {
+          res.status(409).json({
+            error: scriptIssue.message,
+            code: "script_issue",
+            confirmRequired: true,
+          });
+          return;
+        }
+      }
+      cache.updateTranslation(hash, loc, text);
       res.json({ ok: true });
     } catch (err) {
       console.error(err);

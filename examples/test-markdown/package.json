@@ -7,7 +7,7 @@
     "build": "rm -rf .translation-cache translated-docs/ && ai-i18n-tools translate-docs -c ai-i18n-tools.config.json && ai-i18n-tools translate-docs -c ai-i18n-tools.config-en-GB.json"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.8.10"
+    "ai-i18n-tools": "^1.8.11"
   },
   "engines": {
     "node": ">=22.16.0"

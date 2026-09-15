@@ -75,7 +75,7 @@ ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 ```
 
-選用旗標（與 `translate-docs` 的概念相同）：`-l` / `--locale` 用於目標子集，`-p` / `--path` 用於限制檔案，`--dry-run`、`--force`（清除檔案追蹤和符合檔案的區段快取），`--force-update`（當檔案雜湊匹配時重新處理；區段快取仍然適用），`-b` / `--batch-concurrency`，`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
+可選旗標（與 `translate-docs` 相同的概念）：`-l` / `--locale` 用於目標子集，`-p` / `--path` 用於限制檔案，`--dry-run`、`--force`（清除符合檔案的檔案追蹤與分段快取），`--force-update`（當檔案雜湊相符時重新處理；分段快取仍然適用），`--check-cache`（即使檔案追蹤相符，仍重新驗證具有強制原生文字之地區設定的快取分段），`-b` / `--batch-concurrency`、`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
 
 僅限 JSON 的專案可以執行：
 

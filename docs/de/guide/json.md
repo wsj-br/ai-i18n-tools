@@ -75,7 +75,7 @@ Pfade verwenden die Punkt-Notation (`nav.home.label`). Ein einfacher Name wie `s
 ai-i18n-tools translate-json
 ```
 
-Optionale Flags (ähnliche Funktionen wie bei `translate-docs`): `-l` / `--locale` für eine Untermenge der Ziele, `-p` / `--path` zur Begrenzung der Dateien, `--dry-run`, `--force` (Löschen der Dateiüberwachung und des Segment-Caches für passende Dateien), `--force-update` (erneutes Verarbeiten, wenn der Datei-Hash übereinstimmt; Segment-Cache bleibt aktiv), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+Optionale Flags (gleiche Ideen wie `translate-docs`): `-l` / `--locale` für eine Untermenge von Zielen, `-p` / `--path` zur Begrenzung von Dateien, `--dry-run`, `--force` (Dateiverfolgung und Segment-Cache für übereinstimmende Dateien löschen), `--force-update` (erneute Verarbeitung, wenn Dateihash übereinstimmt; Segment-Cache gilt weiterhin), `--check-cache` (erneute Validierung von gecachten Segmenten für Locales mit erzwungenem nativem Skript, selbst wenn die Dateiverfolgung übereinstimmt), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
 
 Projekte, die nur JSON verwenden, können ausführen:
 

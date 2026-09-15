@@ -1,7 +1,7 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.8.10",
-  "packageManager": "pnpm@12.4.1",
+  "version": "1.8.11",
+  "packageManager": "pnpm@12.4.2",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
   "main": "dist/index.js",
@@ -96,7 +96,7 @@
     "@ai-sdk/openai-compatible": "^3.0.48",
     "@babel/parser": "^8.0.5",
     "@babel/types": "^8.0.5",
-    "ai": "^7.0.99",
+    "ai": "^7.0.100",
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
     "csv-parse": "^7.0.2",

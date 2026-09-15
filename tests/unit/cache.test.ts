@@ -49,6 +49,8 @@ describe("TranslationCache", () => {
     const det = cache.getSegmentDetails(h, "de");
     expect(det?.text).toBe("hallo welt");
     expect(det?.model).toBe("test/model");
+    expect(cache.getTranslationSourceText(h, "de")).toBe("hello world");
+    expect(cache.getTranslationSourceText(h, "fr")).toBeNull();
     cache.close();
   });
 

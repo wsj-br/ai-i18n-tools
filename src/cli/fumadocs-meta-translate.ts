@@ -157,7 +157,7 @@ export async function translateFumadocsMetaFiles(
       cache &&
       !opts.noCache &&
       cachedFileHash === fileHash &&
-      !localeEnforcesOutputScript(locale) &&
+      !(opts.checkCache && localeEnforcesOutputScript(locale)) &&
       translatedOutputIsCurrent(outPath, sourceFileMtime)
     ) {
       if (opts.verbose) {

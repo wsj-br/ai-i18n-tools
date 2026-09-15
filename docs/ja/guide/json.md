@@ -75,7 +75,7 @@ ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 ```
 
-オプションフラグ（`translate-docs` と同じ概念）: ターゲットのサブセット用に `-l` / `--locale`、ファイルの制限用に `-p` / `--path`、`--dry-run`、`--force`（一致するファイルのファイル追跡およびセグメントキャッシュをクリア）、`--force-update`（ファイルハッシュが一致する場合に再処理。セグメントキャッシュは引き続き適用）、`-b` / `--batch-concurrency`、`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
+オプションフラグ（`translate-docs`と同様）: ターゲットのサブセットには`-l` / `--locale`、ファイルを限定するには`-p` / `--path`、`--dry-run`、`--force`（一致したファイルのファイルトラッキングとセグメントキャッシュをクリア）、`--force-update`（ファイルハッシュが一致する場合に再処理。セグメントキャッシュは引き続き適用）、`--check-cache`（ファイルトラッキングが一致する場合でも、ネイティブスクリプトが強制されるロケールのキャッシュ済みセグメントを再検証）、`-b` / `--batch-concurrency`、`--prompt-format`（`xml` \| `json-array` \| `json-object`）。
 
 JSONのみのプロジェクトは以下を実行できます:
 

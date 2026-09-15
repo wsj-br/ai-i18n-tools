@@ -8,7 +8,11 @@ import type {
   StringsJsonPluralEntry,
 } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
-import { LlmAllModelsFailedError, LlmClient } from "../api/llm-client.js";
+import {
+  LlmAllModelsFailedError,
+  LlmClient,
+  llmFailureHasAssistantOutput,
+} from "../api/llm-client.js";
 import {
   dedupeOrderedModelIds,
   englishLanguageNameForLocale,
@@ -152,6 +156,9 @@ function writeUiTranslationFailureLog(
 ): void {
   const dir = translationFailureLogDir(opts, config.cacheDir);
   if (!dir || !(err instanceof LlmAllModelsFailedError)) {
+    return;
+  }
+  if (!llmFailureHasAssistantOutput(err.details)) {
     return;
   }
   warnTranslationFailureLogPath(

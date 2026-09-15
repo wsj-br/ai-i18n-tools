@@ -8,9 +8,9 @@
 
 抽出（有効な場合）、次にUI翻訳、次に`features.translateSVG`と`config.svg`が設定されている場合の`translate-svg`、次にドキュメント翻訳、次に`features.translateJson`と`json[]`が設定されている場合の`translate-json` — ただし`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`でスキップされた場合を除きます。
 
-**主なオプション:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**主なオプション:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force`は、docs/JSONだけでなくUIおよびSVGステップにも転送されます。`--force-update`はdocs、JSON、SVGに適用されます（UIには適用されません）。Docsフェーズでは`--emphasis-placeholders`も転送されます（`translate-docs`と同じ意味）。グローバルな`--debug-failed`は、チェーン内のすべてのモデルが失敗した場合だけでなく、破棄されたモデルの試行（SVG/docsスクリプトのフォールバックを含む）ごとに`cacheDir`の下に`FAILED-TRANSLATION`ログを書き込みます。`--prompt-format`は`sync`フラグではありません。docsおよびJSONステップは組み込みのデフォルト（`json-array`）を使用します。
+`--force`はUIおよびSVGステップに加えdocs/JSONにも転送されます。`--force-update`はdocs、JSON、SVGに適用されます（UIには適用されません）。`--check-cache`はdocs、JSON、SVGに転送され、ファイル追跡でスキップされる場合でも、ネイティブスクリプトが強制されるロケールのキャッシュされたセグメントを再検証します。docsフェーズでは`--emphasis-placeholders`も転送されます（`translate-docs`と同じ意味）。グローバルな`--debug-failed`は、チェーン内のすべてのモデルが失敗した場合だけでなく、破棄された各モデルの試行（SVG/docsスクリプトのフォールバックを含む）に対して`cacheDir`配下に`FAILED-TRANSLATION`ログを書き出します。`--prompt-format`は`sync`フラグではありません。docsおよびJSONステップは組み込みのデフォルト（`json-array`）を使用します。
 
 ---
 

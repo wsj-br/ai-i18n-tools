@@ -286,7 +286,9 @@ describe("stripHeadingIds", () => {
     ].join("\n");
     const out = stripHeadingIds(input);
     expect(out).toBe(
-      ["# Welcome", "", "## Features", "", "```", "## Not a heading {#inside}", "```", ""].join("\n")
+      ["# Welcome", "", "## Features", "", "```", "## Not a heading {#inside}", "```", ""].join(
+        "\n"
+      )
     );
   });
 });

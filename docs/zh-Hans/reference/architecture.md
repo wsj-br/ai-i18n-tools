@@ -188,7 +188,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
 7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
 
-在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
+在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
 
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
@@ -199,7 +199,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 每次运行时，都会按哈希 × 语言环境查找片段。只有缓存未命中才会发送给 LLM。翻译后，当前翻译范围内未命中的片段行的 `last_hit_at` 会被重置。文档翻译期间成功的缓存命中会清除该片段过期的 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后移除过期的片段行（空 `last_hit_at` / 空文件路径），当解析的源路径在磁盘上缺失时修剪 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其元数据文件路径指向缺失文件的翻译行，修剪孤立的 `translation_failures` 行，修剪其解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行，并丢弃配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales` 以及任何按块划分的 `docs[]` / `json[]` `targetLocales`；仅限 SQLite —— 使用 `purge-locale` 删除生成的文件）；除非传递了 `--backup <path>`，否则它不会备份 `cache.db`，该参数会首先将备份写入该路径。
 
-`translate-docs` 命令还使用**文件跟踪**，因此具有现有、最新输出的未更改源可以完全跳过工作。`--force-update` 重新运行文件处理，同时仍使用段缓存；`--force` 清除文件跟踪并绕过 API 翻译的段缓存读取。当每个配置的模型在 markdown 段上 AST 验证失败时，`translate-docs` 可以逐步拆分段并重试较小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认开启）。有关完整的标志表，请参阅 [文档 — 缓存行为和标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
+`translate-docs` 命令还使用 **文件跟踪**，因此对于未更改且已有最新输出的源文件，可以完全跳过处理。`--check-cache` 会以预期的书写系统重新打开区域设置，从而重新验证缓存的片段；`--force-update` 会为每个区域设置重新运行文件处理，同时仍使用片段缓存；`--force` 会清除文件跟踪，并在进行 API 翻译时绕过片段缓存读取。当所有已配置的模型在某个 Markdown 片段上未能通过 AST 验证时，`translate-docs` 可以逐步拆分该片段并重试较小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认开启）。有关完整的标志表，请参阅[文档 — 缓存行为与标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 **批量提示格式：** `translate-docs --prompt-format` 仅为 `LlmClient.translateDocumentBatch` 选择 XML (`<seg>` / `<t>`) 或 JSON 数组/对象形状；提取、占位符和验证保持不变。请参阅 [批量提示格式](/zh-Hans/guide/documents/cli-options#batch-prompt-format)。
 
@@ -248,10 +248,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 基于 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）构建的提供商无关的聊天客户端。它从 `provider` / `providers` 解析活动提供商，为该提供商的 `baseUrl` + API 密钥构建一个 OpenAI 兼容的客户端（`createOpenAICompatible`），并通过 `generateText` 路由所有调用。`OpenRouterClient` 保留为已弃用的别名。关键行为：
 
-- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有自己已解析的链：先使用已配置的 `localeModels(locale)`，然后是 `uiModels`（仅 UI 管道），再是 `translationModels`。文档、JSON 和 SVG 翻译会为每个区域设置创建一个使用非 UI 链的客户端。`bench-models` 命令则会为每个已配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便能够独立地对每个模型进行计时和计价。
-- **请求超时**：活动提供商的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供商）加载提供商的模型列表时，相同的值也适用于 `GET /models`。用于丢弃未知模型 id 的可选预检过滤器仅在活动提供商为 OpenRouter 时运行。
-- **OpenRouter 附加功能**（仅当 `openrouter` 处于活动状态时）：通过 `provider` 请求字段进行吞吐量路由，`HTTP-Referer` / `X-Title` 标头，以及从 `usage.cost` 读取的精确美元成本。每个提供商都会报告令牌使用量；仅当提供商返回时才提供精确成本。
-- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则会将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 会在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示、原始助手回复以及失败的 UI、文档、JSON 和 SVG 尝试的验证错误。
+- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首选 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 管道），接着是 `translationModels`。文档、JSON 和 SVG 翻译使用非 UI 链为每个区域设置创建一个客户端。相反，`bench-models` 命令为每个已配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
+- **请求超时**：活动提供商的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供商）加载提供商的模型列表时，相同的值适用于 `GET /models`。丢弃未知模型 id 的可选预检过滤器仅在活动提供商为 OpenRouter 时运行。
+- **OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段进行吞吐量路由，`HTTP-Referer` / `X-Title` 标头，以及从 `usage.cost` 读取的精确美元成本。每个提供商都会报告令牌使用情况；精确成本仅在提供商返回时提供。
+- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供商 API / 空正文失败将打印在控制台上，而不是转储仅包含提示的文件。
 
 <a id="config-loading"></a>
 ### 加载配置

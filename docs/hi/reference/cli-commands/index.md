@@ -126,7 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | हर कमांड | इस रन के लिए सक्रिय LLM प्रदाता; कॉन्फ़िग `provider` कुंजी को ओवरराइड करता है। `providers` के तहत कॉन्फ़िगर किया जाना चाहिए। |
 | `-L` / `--ui-lang <code>`    | हर कमांड | टूल के अपने UI (CLI सहायता, लॉग/सारांश, डैशबोर्ड) के लिए भाषा; उच्चतम-प्राथमिकता स्रोत। [टूल UI भाषा](/hi/guide/tool-ui-language) देखें। |
 | `-w` / `--write-logs [path]` | चयनित कमांड | कंसोल आउटपुट को `.log` फ़ाइल में टी करें (डिफ़ॉल्ट पाथ: रूट `cacheDir` के तहत)। केवल `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, और `cleanup` के लिए वायर्ड।                |
-| `--debug-failed`             | अनुवाद कमांड | प्रत्येक छोड़े गए मॉडल प्रयास (गलत स्क्रिप्ट, पार्स, गुणवत्ता, या एपीआई त्रुटि) के लिए रूट `cacheDir` के तहत `FAILED-TRANSLATION` लॉग लिखें, जिसमें फ़ॉलबैक भी शामिल हैं — न केवल तब जब हर मॉडल विफल हो जाता है। यह `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync`, और `cleanup` पर लागू होता है। |
+| `--debug-failed`             | अनुवाद कमांड | प्रत्येक छोड़ी गई अनुवाद-जाँच (गलत स्क्रिप्ट, पार्स, या गुणवत्ता) के लिए रूट `cacheDir` के तहत `FAILED-TRANSLATION` लॉग लिखें, जिसमें फ़ॉलबैक भी शामिल हैं — न केवल तब जब हर मॉडल विफल हो जाता है। प्रदाता एपीआई / खाली-बॉडी त्रुटियाँ कंसोल पर प्रिंट होती हैं (प्रति मॉडल और त्रुटि संदेश एक बार) और वे फ़ाइलें नहीं लिखती हैं। `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync`, और `cleanup` पर लागू होता है। |
 
 <a id="per-command-help"></a>
 ### प्रति-कमांड सहायता

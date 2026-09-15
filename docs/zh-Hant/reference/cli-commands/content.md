@@ -8,7 +8,7 @@
 
 根據 `json[]` 翻譯巢狀 JSON（需要 `features.translateJson`）。共享 SQLite 快取。
 
-**主要選項：** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
+**關鍵選項：** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `--check-cache`, `-b`, `--prompt-format`
 
 **另請參閱：** [JSON](/zh-Hant/guide/json)
 
@@ -21,6 +21,6 @@
 
 翻譯在 `config.svg` 中設定的 SVG 檔案（與文件分開）。需要 `features.translateSVG`。與文件使用相同的快取機制；支援 `--no-cache` 以在該次執行中跳過 SQLite 讀取/寫入。
 
-**關鍵選項：** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, 全域 `--debug-failed`
+**關鍵選項：** `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `-p` / `--path`, `--dry-run`, `--no-cache`, 全域 `--debug-failed`
 
 **另請參閱：** [SVG 翻譯](/zh-Hant/guide/svg-translation/)

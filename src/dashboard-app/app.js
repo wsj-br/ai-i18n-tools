@@ -353,20 +353,44 @@
     document.getElementById("seg-modal-overlay").classList.add("hidden");
   }
 
+  async function segPatchTranslation(newText, confirmScriptIssue) {
+    const res = await fetch("/api/translations", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source_hash: seg.editingRow.source_hash,
+        locale: seg.editingRow.locale,
+        translated_text: newText,
+        ...(confirmScriptIssue ? { confirm_script_issue: true } : {}),
+      }),
+    });
+    let body = {};
+    try {
+      body = await res.json();
+    } catch {
+      body = {};
+    }
+    if (res.status === 409 && body.code === "script_issue" && !confirmScriptIssue) {
+      const ok = confirm(
+        t("This translation does not use the expected writing system ({{issue}}). Save it anyway?", {
+          issue: typeof body.error === "string" ? body.error : "",
+        })
+      );
+      if (!ok) return false;
+      return segPatchTranslation(newText, true);
+    }
+    if (!res.ok) {
+      throw new Error(typeof body.error === "string" ? body.error : res.statusText);
+    }
+    return true;
+  }
+
   async function segSaveEdit() {
     if (!seg.editingRow) return;
     const newText = document.getElementById("seg-modal-textarea").value;
     try {
-      const res = await fetch("/api/translations", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source_hash: seg.editingRow.source_hash,
-          locale: seg.editingRow.locale,
-          translated_text: newText,
-        }),
-      });
-      if (!res.ok) throw new Error(await res.text());
+      const saved = await segPatchTranslation(newText, false);
+      if (!saved) return;
       segCloseEditModal();
       await segLoadData();
     } catch (err) {

@@ -148,7 +148,7 @@ UI 문자열과 문서를 함께 실행하려면 단일 구성에서 모든 기�
 
 `glossary.uiGlossary`은 문서 번역을 UI와 동일한 `strings.json` 카탈로그를 가리키도록 하여 용어의 일관성을 유지합니다. `glossary.userGlossary`는 제품 용어에 대한 CSV 오버라이드를 추가합니다.
 
-하나의 파이프라인을 실행하려면 `ai-i18n-tools sync`을 실행하세요: `features.translateUIStrings`이 활성화된 경우, **추출**한 다음 UI 문자열을 **번역**합니다; 선택적 **SVG 번역** (`features.translateSVG` + `svg` 블록); **문서 번역** (구성된 대로 `docs[]`); 그다음 선택적 **translate-json** (`features.translateJson` + `json[]`). `--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`으로 부분을 건너뜁니다. 문서 및 `json[]` 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update`을 허용합니다 (`--no-docs`일 때 문서 전용 플래그는 무시됩니다; `--no-json`이 설정되지 않은 경우 JSON은 동일한 캐시 플래그를 사용합니다).
+하나의 파이프라인을 실행하려면 `ai-i18n-tools sync`를 실행하십시오: `features.translateUIStrings`이(가) 활성화된 경우 **추출**한 다음 **UI 번역** 문자열을 번역합니다; 선택적 **SVG 번역** (`features.translateSVG` + `svg` 블록); **문서 번역** (구성된 대로 `docs[]`); 그 다음 선택적 **translate-json** (`features.translateJson` + `json[]`). `--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`으로 부분을 건너뜁니다. 문서 및 `json[]` 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update` 및 `--check-cache`을(를) 허용합니다 (`--no-docs`일 때 문서 전용 플래그는 무시됩니다; `--no-json`이(가) 설정되지 않은 경우 JSON은 동일한 캐시 플래그를 사용합니다).
 
 블록에서 `docs[].targetLocales`을 사용하면 해당 블록의 파일을 UI보다 **더 작은 하위 집합**으로 번역할 수 있습니다(유효한 문서 로케일은 블록 전체에 대해 **합집합**으로 간주됨).
 

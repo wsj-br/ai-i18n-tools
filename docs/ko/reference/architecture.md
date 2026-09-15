@@ -188,7 +188,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 6. **인라인 코드 스팬** (`` `code` ``) 및 **볼드로 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 7. **마크다운 강조** (선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
+모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
@@ -199,7 +199,7 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 
 실행할 때마다 해시 × 로케일을 기준으로 세그먼트를 조회합니다. 캐시 미스만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위에서 적중되지 않은 세그먼트 행에 대해 `last_hit_at`가 재설정됩니다. 문서 번역 중 캐시 적중에 성공하면 해당 세그먼트의 오래된 `translation_failures` 행이 지워집니다. `cleanup`는 먼저 `sync --force-update`를 실행한 다음, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 확인된 소스 경로가 디스크에 없을 때 `file_tracking` 키를 정리하며(`doc-block:…`, `json-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 누락된 파일을 가리키는 번역 행을 제거하고, 고아가 된 `translation_failures` 행을 정리하며, 확인된 소스 경로가 디스크에 없는 고아가 된 `markdown_source_issues` 행을 정리하고, 설정에 없는 로케일의 캐시 행을 삭제합니다(`sourceLocale`, 루트 `targetLocales`, 블록별 `docs[]` / `json[]` `targetLocales`; SQLite 전용 — 생성된 파일을 삭제하려면 `purge-locale` 사용); `--backup <path>`가 전달되지 않는 한 `cache.db`를 백업하지 않으며, 전달될 경우 먼저 해당 경로에 백업을 기록합니다.
 
-`translate-docs` 명령은 또한 **파일 추적**을 사용하여 기존의 최신 출력이 있는 변경되지 않은 소스는 작업을 완전히 건너뛸 수 있습니다. `--force-update`은 세그먼트 캐시를 계속 사용하면서 파일 처리를 다시 실행합니다. `--force`는 파일 추적을 지우고 API 번역을 위한 세그먼트 캐시 읽기를 우회합니다. 구성된 모든 모델이 마크다운 세그먼트에서 AST 유효성 검사에 실패하면 `translate-docs`은 세그먼트를 점진적으로 분할하고 더 작은 부분을 다시 시도할 수 있습니다(`docs[].segmentSplitting.qualityRetrySplit`, 기본값은 켜짐). 전체 플래그 테이블은 [문서 — 캐시 동작 및 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하십시오.
+`translate-docs` 명령은 또한 **파일 추적**을 사용하므로, 변경되지 않은 소스는 최신 출력물이 이미 존재하는 경우 작업을 완전히 건너뛸 수 있습니다. `--check-cache`은(는) 예상되는 문자 체계로 로케일을 다시 열어 캐시된 세그먼트를 재검증합니다; `--force-update`은(는) 세그먼트 캐시를 계속 사용하면서 각 로케일에 대해 파일 처리를 다시 실행합니다; `--force`은(는) 파일 추적을 지우고 API 번역에 대한 세그먼트 캐시 읽기를 우회합니다. 구성된 모든 모델이 마크다운 세그먼트에서 AST 유효성 검사에 실패하면, `translate-docs`은(는) 세그먼트를 점진적으로 분할하고 더 작은 부분을 재시도할 수 있습니다(`docs[].segmentSplitting.qualityRetrySplit`, 기본값 켜짐). 전체 플래그 표는 [문서 — 캐시 동작 및 플래그](/ko/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)를 참조하십시오.
 
 **배치 프롬프트 형식:** `translate-docs --prompt-format`은 `LlmClient.translateDocumentBatch`에 대해서만 XML(`<seg>` / `<t>`) 또는 JSON 배열/객체 모양을 선택합니다. 추출, 자리 표시자 및 유효성 검사는 변경되지 않습니다. [배치 프롬프트 형식](/ko/guide/documents/cli-options#batch-prompt-format)을 참조하십시오.
 
@@ -248,10 +248,10 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 
 Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 공급자 독립적인 채팅 클라이언트입니다. 활성 공급자를 `provider` / `providers`에서 확인하고, 해당 공급자의 `baseUrl` + API 키에 대한 OpenAI 호환 클라이언트( `createOpenAICompatible` )를 빌드한 다음, 모든 호출을 `generateText`를 통해 라우팅합니다. `OpenRouterClient`는 더 이상 사용되지 않는 별칭으로 유지됩니다. 주요 동작:
 
-- **모델 폴백**: 해결된 목록의 각 모델을 순서대로 시도하며, 요청 또는 구문 분석 실패 시 대체합니다. 각 대상 로캘은 자체 해결된 체인을 갖습니다: 구성된 경우 `localeModels(locale)`가 먼저, 그 다음 `uiModels`(UI 파이프라인 전용), 그 다음 `translationModels`. 문서, JSON 및 SVG 번역은 비-UI 체인으로 로캘별 클라이언트를 생성합니다. `bench-models` 명령은 대신 구성된 각 ID에 대해 단일 모델 클라이언트를 하나씩 작성합니다(`translationModels`, `uiModels`, `localeModels`의 합집합; `translationModels: [id]`, 폴백 없음). 이를 통해 각 모델을 독립적으로 시간 측정하고 가격을 책정할 수 있습니다.
-- **요청 시간 초과**: 활성 제공자의 `requestTimeoutMs`(기본 30초)가 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. CLI가 `check-models`(모든 제공자)에 대해 제공자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알려지지 않은 모델 ID를 삭제하는 선택적 사전 필터는 활성 제공자가 OpenRouter인 경우에만 실행됩니다.
-- **OpenRouter 추가 기능**(`openrouter`가 활성일 때만): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 제공자에 대해 보고되며, 정확한 비용은 제공자가 반환할 때만 제공됩니다.
-- **디버그 트래픽 로그**: `debugTrafficFilePath`이 설정된 경우, 요청 및 응답 JSON을 파일에 추가합니다(프로그래밍 방식). CLI `--debug-failed`은 `cacheDir` 아래에 `FAILED-TRANSLATION` 파일을 작성하며, 실패한 UI, 문서, JSON 및 SVG 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답 및 유효성 검사 오류를 포함합니다.
+- **모델 폴백**: 해석된 목록의 각 모델을 순서대로 시도하며, 요청 또는 파싱 실패 시 폴백합니다. 각 대상 로케일은 자체 해석 체인을 갖습니다: 설정된 경우 `localeModels(locale)`가 먼저, 그 다음 `uiModels`(UI 파이프라인 전용), 그 다음 `translationModels`. 문서, JSON, SVG 번역은 비UI 체인으로 로케일별 클라이언트를 생성합니다. `bench-models` 명령어 대신 설정된 각 id(`translationModels`, `uiModels`, `localeModels`의 합집합; `translationModels: [id]`, 폴백 없음)마다 단일 모델 클라이언트를 하나씩 구성하여 각 모델을 독립적으로 시간 측정 및 가격 책정할 수 있습니다.
+- **요청 시간 초과**: 활성 제공자의 `requestTimeoutMs`(기본값 30초)가 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. CLI가 `check-models`(모든 제공자)에 대해 제공자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알 수 없는 모델 id를 제거하는 선택적 사전 필터는 활성 제공자가 OpenRouter인 경우에만 실행됩니다.
+- **OpenRouter 추가 기능**(`openrouter`가 활성일 때만): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 제공자에 대해 보고되며, 정확한 비용은 제공자가 반환할 때만 보고됩니다.
+- **디버그 트래픽 로그**: `debugTrafficFilePath`가 설정된 경우, 요청 및 응답 JSON을 파일에 추가합니다(프로그래밍 방식). CLI `--debug-failed`은 `cacheDir` 아래에 `FAILED-TRANSLATION` 파일을 작성하며, 실패한 UI, 문서, JSON, SVG 번역 검사 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답, 검증 오류를 포함합니다. 제공자 API / 빈 본문 실패는 프롬프트 전용 파일을 덤프하는 대신 콘솔에 출력됩니다.
 
 <a id="config-loading"></a>
 ### 설정 로드

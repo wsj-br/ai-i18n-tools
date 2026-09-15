@@ -126,7 +126,7 @@ ai-i18n-tools help [command]
 | `-P` / `--provider <name>`   | Chaque commande | Fournisseur LLM actif pour cette exécution ; remplace la clé de configuration `provider`. Doit être configuré sous `providers`. |
 | `-L` / `--ui-lang <code>` | Chaque commande | Langue de l'interface utilisateur de l'outil (aide CLI, journaux/résumés, tableau de bord) ; source la plus prioritaire. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Commandes sélectionnées | Affiche la sortie de la console dans un fichier `.log` (chemin par défaut : sous la racine `cacheDir`). Câblé uniquement pour `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` et `cleanup`. |
-| `--debug-failed` | Commandes de traduction | Écrit les journaux `FAILED-TRANSLATION` sous la racine `cacheDir` pour chaque tentative de modèle rejetée (script incorrect, erreur d'analyse, de qualité ou d'API), y compris les solutions de repli — pas seulement lorsque tous les modèles échouent. S'applique à `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync` et `cleanup`. |
+| `--debug-failed` | Commandes de traduction | Écrit les journaux `FAILED-TRANSLATION` sous la racine `cacheDir` pour chaque vérification de traduction ignorée (script, analyse ou qualité incorrects), y compris les solutions de repli — pas seulement lorsque tous les modèles échouent. Les erreurs d'API du fournisseur ou de corps vide s'affichent sur la console (une fois par modèle et par message d'erreur) et n'écrivent pas ces fichiers. S'applique à `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync` et `cleanup`. |
 
 <a id="per-command-help"></a>
 ### Aide par commande

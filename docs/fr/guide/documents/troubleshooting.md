@@ -38,6 +38,6 @@ Certains modèles traduisent le sens mais écrivent le résultat en lettres lati
 
 **Correction**
 
-1. Confirmez que le code de paramètres régionaux correspond au script souhaité (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
-2. Relancez la traduction afin que les lignes de cache de script incorrectes soient rejetées : `translate-ui --force` pour les chaînes d'interface utilisateur, ou `translate-docs` / `sync` (le saut au niveau du fichier est désactivé pour les paramètres régionaux avec un script attendu ; `--force-update` réutilise toujours le cache de segment valide).
-3. Si un modèle continue d'échouer à la vérification du script, ajoutez une entrée `localeModels` pour ces paramètres régionaux afin qu'un modèle plus puissant soit essayé en premier — voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
+1. Vérifiez que le code de la locale correspond au script souhaité (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
+2. Relancez la traduction afin que les lignes de cache de script incorrectes soient rejetées : `translate-ui --force` pour les chaînes d’interface utilisateur, ou `translate-docs --check-cache` / `sync --check-cache` (l’ignorance au niveau du fichier n’est contournée que pour les locales avec un script attendu ; le cache de segment valide est toujours réutilisé). `--force-update` retraite chaque locale.
+3. Si un modèle continue d’échouer à la vérification du script, ajoutez une entrée `localeModels` pour cette locale afin qu’un modèle plus robuste soit essayé en premier — voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).

@@ -8,7 +8,7 @@
 
 Traduire les JSON imbriqués par `json[]` (requiert `features.translateJson`). Cache SQLite partagé.
 
-**Options clés :** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
+**Options clés :** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `--check-cache`, `-b`, `--prompt-format`
 
 **Voir également :** [JSON](/fr/guide/json)
 
@@ -21,6 +21,6 @@ Traduire les JSON imbriqués par `json[]` (requiert `features.translateJson`). C
 
 Traduire les fichiers SVG configurés dans `config.svg` (séparés des docs). Nécessite `features.translateSVG`. Mêmes idées de cache que les docs ; prend en charge `--no-cache` pour ignorer les lectures/écritures SQLite pour cette exécution.
 
-**Options clés :** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, `--debug-failed` globale
+**Options clés :** `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `-p` / `--path`, `--dry-run`, `--no-cache`, global `--debug-failed`
 
 **Voir également :** [Traduction SVG](/fr/guide/svg-translation/)

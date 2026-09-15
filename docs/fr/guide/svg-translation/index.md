@@ -105,7 +105,7 @@ Aperçu sans écrire de fichiers :
 ai-i18n-tools translate-svg --dry-run
 ```
 
-`sync` exécute l'étape SVG automatiquement lorsque `features.translateSVG` et `svg` sont tous deux définis (ignorer avec `--no-svg`). Les drapeaux partagés incluent `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency` et `--force` / `--force-update`.
+`sync` exécute automatiquement l'étape SVG lorsque `features.translateSVG` et `svg` sont tous deux définis (ignorer avec `--no-svg`). Les drapeaux partagés incluent `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update` et `--check-cache`.
 
 <a id="troubleshooting"></a>
 ### Dépannage

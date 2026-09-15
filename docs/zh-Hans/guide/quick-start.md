@@ -148,7 +148,7 @@ ai-i18n-tools status
 
 `glossary.uiGlossary` 将文档翻译指向与 UI 相同的 `strings.json` 目录，以保持术语一致性；`glossary.userGlossary` 添加了产品术语的 CSV 覆盖。
 
-运行 `ai-i18n-tools sync` 以运行一个流水线：当启用 `features.translateUIStrings` 时，**提取**然后**翻译 UI**字符串；可选的**翻译 SVG**（`features.translateSVG` + `svg` 块）；**翻译文档**（`docs[]` 如已配置）；然后是可选的**translate-json**（`features.translateJson` + `json[]`）。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过部分步骤。文档和 `json[]` 步骤接受 `--dry-run`、`-p` / `--path`、`--force` 和 `--force-update`（当 `--no-docs` 时，仅用于文档的标志会被忽略；当未设置 `--no-json` 时，JSON 使用相同的缓存标志）。
+运行 `ai-i18n-tools sync` 以运行一个流水线：当启用 `features.translateUIStrings` 时，先 **提取** 然后 **翻译 UI** 字符串；可选的 **翻译 SVG** (`features.translateSVG` + `svg` 块)；**翻译文档** (`docs[]` 按配置)；然后是可选的 **translate-json** (`features.translateJson` + `json[]`)。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过部分步骤。文档和 `json[]` 步骤接受 `--dry-run`、`-p` / `--path`、`--force`、`--force-update` 和 `--check-cache` (当 `--no-docs` 时忽略仅用于文档的标志；当未设置 `--no-json` 时，JSON 使用相同的缓存标志)。
 
 在块上使用 `docs[].targetLocales` 将该块的文件翻译成比 UI **更小的子集**（有效的文档区域设置是块之间的**并集**）：
 

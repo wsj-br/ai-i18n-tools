@@ -38,6 +38,6 @@ Markdown リンクまたは `![alt](url)` は英語では機能しますが、�
 
 **修正方法**
 
-1. ロケールコードが目的の文字体系と一致していることを確認します（`hi` と `hi-Latn`、`zh-Hans` と `zh-Hant`、`sr` と `sr-Latn`）。
-2. 誤った文字体系のキャッシュ行が拒否されるように、翻訳を再実行します。UI 文字列の場合は `translate-ui --force`、ファイルレベルの場合は `translate-docs` / `sync` を使用します（予期される文字体系を持つロケールではファイルレベルのスキップは無効化されます。`--force-update` は引き続き有効なセグメントキャッシュを再利用します）。
-3. モデルが文字体系チェックで継続的に失敗する場合は、そのロケールの `localeModels` エントリを追加して、より強力なモデルが最初に試されるようにします — [プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。
+1. ロケールコードが目的のスクリプトと一致していることを確認します（`hi` と `hi-Latn`、`zh-Hans` と `zh-Hant`、`sr` と `sr-Latn`）。
+2. 誤ったスクリプトのキャッシュ行が拒否されるように翻訳を再実行します: UI 文字列には `translate-ui --force`、または `translate-docs --check-cache` / `sync --check-cache`（ファイルレベルのスキップは、想定スクリプトが設定されたロケールでのみバイパスされます。有効なセグメントキャッシュは引き続き再利用されます）。`--force-update` はすべてのロケールを再処理します。
+3. モデルがスクリプトチェックに繰り返し失敗する場合は、そのロケールの `localeModels` エントリを追加して、より強力なモデルが最初に試されるようにします — [プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。

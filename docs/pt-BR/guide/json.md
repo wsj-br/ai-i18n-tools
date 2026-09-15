@@ -75,7 +75,7 @@ Os caminhos usam notação por pontos (`nav.home.label`). Um nome simples como `
 ai-i18n-tools translate-json
 ```
 
-Sinalizadores opcionais (mesmas ideias do `translate-docs`): `-l` / `--locale` para um subconjunto de destinos, `-p` / `--path` para limitar arquivos, `--dry-run`, `--force` (limpa o rastreamento de arquivos e o cache de segmentos para os arquivos correspondentes), `--force-update` (reprocessa quando o hash do arquivo corresponde; o cache de segmentos ainda se aplica), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+Sinalizadores opcionais (mesmas ideias que `translate-docs`): `-l` / `--locale` para um subconjunto de destinos, `-p` / `--path` para limitar arquivos, `--dry-run`, `--force` (limpar rastreamento de arquivos e cache de segmento para arquivos correspondentes), `--force-update` (reprocessar quando o hash do arquivo corresponder; o cache de segmento ainda se aplica), `--check-cache` (revalidar segmentos em cache para localidades com um script nativo imposto, mesmo quando o rastreamento de arquivos corresponder), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
 
 Projetos apenas com JSON podem executar:
 

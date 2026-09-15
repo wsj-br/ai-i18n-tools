@@ -225,6 +225,73 @@ describe("createTranslationDashboardApp", () => {
     });
   });
 
+  it("PATCH /api/translations returns 409 for romanized text unless confirm_script_issue is set", async () => {
+    cache = new TranslationCache(":memory:");
+    cache.setSegment("hi1", "hi", "Hello world", "नमस्ते दुनिया", "m", "f.md", 1);
+    const app = createTranslationDashboardApp(cache, {
+      cwd: "/tmp",
+      sourceLocale: "en",
+      targetLocales: ["hi"],
+    });
+    await withHttpServer(app, async (base) => {
+      const res = await fetch(`${base}/api/translations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_hash: "hi1",
+          locale: "hi",
+          translated_text: "Namaste duniya",
+        }),
+      });
+      expect(res.status).toBe(409);
+      const body = (await res.json()) as {
+        error: string;
+        code: string;
+        confirmRequired: boolean;
+      };
+      expect(body.code).toBe("script_issue");
+      expect(body.confirmRequired).toBe(true);
+      expect(body.error).toMatch(/Latin|Roman|Devanagari/i);
+      expect(cache.getSegment("hi1", "hi")).toBe("नमस्ते दुनिया");
+
+      const confirmed = await fetch(`${base}/api/translations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_hash: "hi1",
+          locale: "hi",
+          translated_text: "Namaste duniya",
+          confirm_script_issue: true,
+        }),
+      });
+      expect(confirmed.ok).toBe(true);
+      expect(cache.getSegment("hi1", "hi")).toBe("Namaste duniya");
+    });
+  });
+
+  it("PATCH /api/translations accepts native-script text for a script-enforced locale", async () => {
+    cache = new TranslationCache(":memory:");
+    cache.setSegment("hi1", "hi", "Hello world", "पुराना", "m", "f.md", 1);
+    const app = createTranslationDashboardApp(cache, {
+      cwd: "/tmp",
+      sourceLocale: "en",
+      targetLocales: ["hi"],
+    });
+    await withHttpServer(app, async (base) => {
+      const res = await fetch(`${base}/api/translations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_hash: "hi1",
+          locale: "hi",
+          translated_text: "नमस्ते दुनिया",
+        }),
+      });
+      expect(res.ok).toBe(true);
+      expect(cache.getSegment("hi1", "hi")).toBe("नमस्ते दुनिया");
+    });
+  });
+
   it("GET /api/translations lists rows", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("abc", "de", "src", "dst", "m", "f.md", 1);

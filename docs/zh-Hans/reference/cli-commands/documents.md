@@ -8,7 +8,7 @@
 
 翻译 markdown、MDX、`.astro`、可选的 Docusaurus 目录 JSON（`docusaurusCatalogDir`）、可选的 Nextra `_meta.ts`/字典 `.ts`，以及每个 `docs` 块的可选 VitePress 主题目录。
 
-**主要选项：** `-l`、`-j`、`-b`、`--prompt-format`、`--force`、`--force-update`、`-p` / `-f`、`--dry-run`
+**关键选项：** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `--check-cache`, `-p` / `-f`, `--dry-run`
 
 `-j`：最大并行语言数；`-b`：每个文件的最大并行批量 API 调用数。`--prompt-format`：批量传输格式（`xml` | `json-array` | `json-object`）。
 

@@ -8,9 +8,9 @@
 
 Extrai (se ativado), depois tradução da IU, depois `translate-svg` quando `features.translateSVG` e `config.svg` são definidos, depois tradução da documentação, depois `translate-json` quando `features.translateJson` e `json[]` são definidos — a menos que seja ignorado com `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`.
 
-**Opções principais:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**Opções principais:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` é encaminhado para as etapas de UI e SVG, bem como para docs/JSON; `--force-update` se aplica a docs, JSON e SVG (não a UI). A fase de docs também encaminha `--emphasis-placeholders` (com o mesmo significado que `translate-docs`). O `--debug-failed` global grava logs `FAILED-TRANSLATION` em `cacheDir` para cada tentativa de modelo descartada (incluindo fallbacks de script SVG/docs), não apenas quando todos os modelos na cadeia falham. `--prompt-format` não é um sinalizador `sync`; as etapas de docs e JSON usam o padrão integrado (`json-array`).
+`--force` é encaminhado para as etapas de UI e SVG, bem como para docs/JSON; `--force-update` se aplica a docs, JSON e SVG (não UI). `--check-cache` é encaminhado para docs, JSON e SVG: ele revalida segmentos em cache para localidades com um script nativo imposto, mesmo quando o rastreamento de arquivos seria ignorado. A fase de docs também encaminha `--emphasis-placeholders` (mesmo significado que `translate-docs`). O `--debug-failed` global grava logs de `FAILED-TRANSLATION` em `cacheDir` para cada tentativa de modelo descartada (incluindo fallbacks de script SVG/docs), não apenas quando todos os modelos na cadeia falham. `--prompt-format` não é um sinalizador `sync`; as etapas de docs e JSON usam o padrão integrado (`json-array`).
 
 ---
 

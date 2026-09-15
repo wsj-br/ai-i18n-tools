@@ -8,7 +8,7 @@
 
 각 `docs` 블록에 대해 마크다운, MDX, `.astro`, 선택적 Docusaurus 카탈로그 JSON(`docusaurusCatalogDir`), 선택적 Nextra `_meta.ts`/사전 `.ts`, 선택적 VitePress 테마 카탈로그를 번역합니다.
 
-**주요 옵션:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `-p` / `-f`, `--dry-run`
+**주요 옵션:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `--check-cache`, `-p` / `-f`, `--dry-run`
 
 `-j`: 최대 병렬 로케일; `-b`: 파일당 최대 병렬 배치 API 호출. `--prompt-format`: 배치 와이어 형식(`xml` | `json-array` | `json-object`).
 

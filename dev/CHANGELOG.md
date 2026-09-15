@@ -9,6 +9,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.11] - 2026-09-16
+
+- **Fixed**: cli — provider API / empty-body failures print on the console (model, error, next model) instead of writing prompt-only `FAILED-TRANSLATION` files under `--debug-failed`. Those files remain for parse/script/quality misses. Identical API errors are logged once per `LlmClient` instance.
+- **Changed**: docs — unchanged files skip by default for every locale again (including native-script locales such as `hi` / `ja` / `ko` / `zh-Hans` / `zh-Hant`). File-level skip no longer depends on `localeEnforcesOutputScript`.
+- **Added**: cli — `--check-cache` on `translate-docs`, `translate-json`, `translate-svg`, and `sync` re-validates cached segments for locales with an enforced writing system even when file tracking matches.
+- **Changed**: dashboard — `PATCH /api/translations` returns `409` with `code: "script_issue"` when a Documentation-tab edit fails the locale writing-system check. The UI warns and, if the user confirms, saves anyway (`confirm_script_issue: true`).
 - **Changed**: write-heading-ids — every slug style replaces existing heading ids (HTML `<a id>`, classic `{#id}`, or MDX comments) with a slug derived from the current heading text. `--remove` strips all of those heading-id forms.
 
 ## [1.8.10] - 2026-09-15

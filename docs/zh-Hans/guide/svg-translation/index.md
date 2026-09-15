@@ -105,7 +105,7 @@ ai-i18n-tools translate-svg --locale de
 ai-i18n-tools translate-svg --dry-run
 ```
 
-当 `features.translateSVG` 和 `svg` 都设置时，`sync` 会自动运行 SVG 步骤（使用 `--no-svg` 跳过）。共享标志包括 `-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency` 和 `--force` / `--force-update`。
+当 `features.translateSVG` 和 `svg` 均已设置时，`sync` 会自动运行 SVG 步骤（使用 `--no-svg` 跳过）。共享标志包括 `-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency`、`--force` / `--force-update` 和 `--check-cache`。
 
 <a id="troubleshooting"></a>
 ### 故障排除

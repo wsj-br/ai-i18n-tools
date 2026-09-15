@@ -188,7 +188,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 6. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`） - そのまま保持されます。
 7. **Markdownの強調**（オプション。CJK/RTLロケールでは自動有効） - 強調区切り記号をマスクします。
 
-モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
+モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
 
 AstroテンプレートとMDX JSXの共有属性/キー保護は`src/processors/expression-attribute-protection.ts`で実装されており、`docs[].protectAttributes`と`docs[].protectKeys`によってブロックごとに駆動されます（[protectAttributes / protectKeys](/ja/reference/configuration#protectattributes-protectkeys)を参照）。
 
@@ -199,7 +199,7 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 各実行時に、セグメントはハッシュ × ロケールで検索されます。キャッシュミスのみがLLMに送られます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の `last_hit_at` がリセットされます。ドキュメント翻訳中のキャッシュヒット成功は、そのセグメントの古い `translation_failures` 行をクリアします。`cleanup` は最初に `sync --force-update` を実行し、その後、古いセグメント行（null の `last_hit_at` / 空のファイルパス）を削除し、解決されたソースパスがディスク上に存在しない場合に `file_tracking` キーを整理し（`doc-block:…`, `json-block:…`, `svg-files:…` など）、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除し、孤立した `translation_failures` 行を整理し、解決されたソースパスがディスク上に存在しない孤立した `markdown_source_issues` 行を整理し、設定に存在しないロケールのキャッシュ行を破棄します（`sourceLocale`、ルート `targetLocales`、およびブロックごとの `docs[]` / `json[]` `targetLocales`; SQLiteのみ — 生成されたファイルを削除するには `purge-locale` を使用してください）。`--backup <path>` が渡されない限り `cache.db` をバックアップしませんが、渡された場合は最初にそのパスへバックアップを書き込みます。
 
-`translate-docs`コマンドは**ファイル追跡**も使用するため、既存の最新の出力を持つ変更されていないソースは作業を完全にスキップできます。`--force-update`はセグメントキャッシュを使用しながらファイル処理を再実行します。`--force`はファイル追跡をクリアし、API翻訳のセグメントキャッシュ読み取りをバイパスします。設定されたすべてのモデルがマークダウンセグメントでAST検証に失敗した場合、`translate-docs`はセグメントを段階的に分割し、より小さな部分を再試行できます（`docs[].segmentSplitting.qualityRetrySplit`、デフォルトはオン）。完全なフラグテーブルについては、[ドキュメント — キャッシュの動作とフラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)を参照してください。
+`translate-docs`コマンドは**ファイルトラッキング**も使用するため、変更されていないソースで既存の最新の出力がある場合、作業を完全にスキップできます。`--check-cache`は期待される書記体系でロケールを再度開き、キャッシュされたセグメントを再検証します。`--force-update`はセグメントキャッシュを使用しながら、各ロケールのファイル処理を再実行します。`--force`はファイルトラッキングをクリアし、API翻訳のセグメントキャッシュ読み取りをバイパスします。設定されたすべてのモデルがMarkdownセグメントのAST検証に失敗した場合、`translate-docs`はセグメントを段階的に分割し、より小さな部分を再試行できます（`docs[].segmentSplitting.qualityRetrySplit`、デフォルトでオン）。フラグの完全な表については、[ドキュメント — キャッシュの動作とフラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)を参照してください。
 
 **バッチプロンプト形式:** `translate-docs --prompt-format`は、`LlmClient.translateDocumentBatch`のみのXML（`<seg>` / `<t>`）またはJSON配列/オブジェクトの形式を選択します。抽出、プレースホルダー、検証は変更されません。[バッチプロンプト形式](/ja/guide/documents/cli-options#batch-prompt-format)を参照してください。
 
@@ -248,10 +248,10 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルフォールバック**: 解決済みリストの各モデルを順番に試し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールには独自の解決済みチェーンがあります。設定されている場合は`localeModels(locale)`が最初、次に`uiModels`（UIパイプラインのみ）、次に`translationModels`となります。ドキュメント、JSON、SVGの翻訳では非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models`コマンドは設定されたIDごとに単一モデルのクライアントを1つ構築します（`translationModels`、`uiModels`、`localeModels`の和集合、`translationModels: [id]`、フォールバックなし）。これにより各モデルを個別に計測し価格を算出できます。
-- **リクエストタイムアウト**: アクティブなプロバイダーの`requestTimeoutMs`（デフォルト30秒）が`AbortSignal.timeout`経由で各リクエストを中断します。CLIが`check-models`（任意のプロバイダー）用にプロバイダーのモデルリストを読み込む際、`GET /models`にも同じ値が適用されます。不明なモデルIDを除外するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
-- **OpenRouter拡張機能**（`openrouter`がアクティブな場合のみ）: `provider`リクエストフィールドによるスループットルーティング、`HTTP-Referer` / `X-Title`ヘッダー、および`usage.cost`から読み取る正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されますが、正確なコストはプロバイダーがそれを返す場合のみ報告されます。
-- **デバッグトラフィックログ**: `debugTrafficFilePath`が設定されている場合、リクエストとレスポンスのJSONをファイルに追記します（プログラム経由）。CLIの`--debug-failed`は`cacheDir`配下に`FAILED-TRANSLATION`ファイルを書き出し、システム/ユーザープロンプト、生のアシスタント応答、および失敗したUI、ドキュメント、JSON、SVGの試行に対する検証エラーを記録します。
+- **モデルのフォールバック**: 解決されたリスト内の各モデルを順番に試し、リクエストや解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決されたチェーンを持ちます。設定されている場合は最初に `localeModels(locale)`、次に `uiModels` (UIパイプラインのみ)、次に `translationModels` となります。ドキュメント、JSON、SVGの翻訳は、非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models` コマンドは、設定されたIDごとに単一モデルのクライアントを1つ構築します (`translationModels`、`uiModels`、`localeModels` の和集合、`translationModels: [id]`、フォールバックなし)。これにより、各モデルを個別に計測し価格を評価できます。
+- **リクエストタイムアウト**: アクティブなプロバイダーの `requestTimeoutMs` (デフォルト30秒) が `AbortSignal.timeout` を介して各リクエストを中止します。CLIが `check-models` (任意のプロバイダー) のプロバイダーのモデルリストを読み込む際、同じ値が `GET /models` に適用されます。不明なモデルIDを破棄するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
+- **OpenRouterの追加機能** (`openrouter` がアクティブな場合のみ): `provider` リクエストフィールドを介したスループットルーティング、`HTTP-Referer` / `X-Title` ヘッダー、および `usage.cost` から読み取られた正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されますが、正確なコストはプロバイダーがそれを返した場合にのみ報告されます。
+- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONをファイルに追加します (プログラム的)。CLIの `--debug-failed` は、失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対して、システム/ユーザープロンプト、生のアシスタント応答、および検証エラーを含む `FAILED-TRANSLATION` ファイルを `cacheDir` の下に書き込みます。プロバイダーAPI / 空のボディの失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
 
 <a id="config-loading"></a>
 ### 設定の読み込み

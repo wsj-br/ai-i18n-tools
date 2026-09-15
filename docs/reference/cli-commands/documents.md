@@ -8,7 +8,7 @@
 
 Translate markdown, MDX, `.astro`, optional Docusaurus catalog JSON (`docusaurusCatalogDir`), optional Nextra `_meta.ts`/dictionary `.ts`, and optional VitePress theme catalog for each `docs` block.
 
-**Key options:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `-p` / `-f`, `--dry-run`
+**Key options:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `--check-cache`, `-p` / `-f`, `--dry-run`
 
 `-j`: max parallel locales; `-b`: max parallel batch API calls per file. `--prompt-format`: batch wire format (`xml` | `json-array` | `json-object`).
 

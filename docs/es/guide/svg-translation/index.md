@@ -105,7 +105,7 @@ Previsualizar sin escribir archivos:
 ai-i18n-tools translate-svg --dry-run
 ```
 
-`sync` ejecuta el paso SVG automáticamente cuando `features.translateSVG` y `svg` están configurados (omitir con `--no-svg`). Las banderas compartidas incluyen `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency` y `--force` / `--force-update`.
+`sync` ejecuta el paso SVG automáticamente cuando `features.translateSVG` y `svg` están configurados (se omite con `--no-svg`). Las banderas compartidas incluyen `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update` y `--check-cache`.
 
 <a id="troubleshooting"></a>
 ### Solución de problemas

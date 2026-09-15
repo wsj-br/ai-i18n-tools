@@ -9,8 +9,13 @@ const { generateTextMock } = vi.hoisted(() => ({ generateTextMock: vi.fn() }));
 vi.mock("ai", () => ({ generateText: generateTextMock }));
 
 // Imported after vi.mock so the client picks up the mocked `generateText`.
-const { DocumentBatchAllModelsFailedError, LlmAllModelsFailedError, LlmClient, OpenRouterClient } =
-  await import("../../src/api/llm-client.js");
+const {
+  DocumentBatchAllModelsFailedError,
+  LlmAllModelsFailedError,
+  LlmClient,
+  OpenRouterClient,
+  llmFailureHasAssistantOutput,
+} = await import("../../src/api/llm-client.js");
 
 function llmConfig(
   models: string[] = ["model-a", "model-b"],
@@ -155,19 +160,24 @@ describe("LlmClient", () => {
     ).rejects.toThrow(/All translation models failed/);
   });
 
-  it("chat logs via logger when model fails without docLogContext", async () => {
-    const warn = vi.fn();
+  it("chat warns on the console when a model API call fails without docLogContext", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     generateTextMock.mockRejectedValueOnce(new Error("e")).mockResolvedValueOnce(genResult("ok"));
     const c = new LlmClient({
       config: llmConfig(["a", "b"]),
       apiKey: "k",
-      logger: { warn } as never,
     });
-    await c.chat([
-      { role: "system", content: "s" },
-      { role: "user", content: "u" },
-    ]);
-    expect(warn).toHaveBeenCalled();
+    try {
+      await c.chat([
+        { role: "system", content: "s" },
+        { role: "user", content: "u" },
+      ]);
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("a failed");
+      expect(joined).toContain("Trying b");
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it("chat maps usage to input/output/total tokens only", async () => {
@@ -321,24 +331,27 @@ describe("LlmClient", () => {
     );
   });
 
-  it("translateDocumentBatch warns Batch request failed without docLogContext", async () => {
-    const warn = vi.fn();
+  it("translateDocumentBatch warns on the console when a batch API request fails", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     generateTextMock
       .mockRejectedValueOnce(new Error("e"))
       .mockResolvedValueOnce(genResult(`<t id="0">A</t><t id="1">B</t>`));
     const c = new LlmClient({
       config: llmConfig(["bad", "good"]),
       apiKey: "k",
-      logger: { warn } as never,
     });
     const segs = [
       { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
       { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
     ];
-    await c.translateDocumentBatch(segs, "de");
-    expect(warn.mock.calls.some((call) => String(call[0]).includes("Batch request failed"))).toBe(
-      true
-    );
+    try {
+      await c.translateDocumentBatch(segs, "de");
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("bad failed");
+      expect(joined).toContain("Trying good");
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it("translateDocumentBatch falls back when first model returns batch parse error", async () => {
@@ -1036,5 +1049,112 @@ describe("LlmClient", () => {
     ];
     await c.translateDocumentBatch(segs, "zh-Hans");
     expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not write FAILED-TRANSLATION logs for provider API errors when debugFailedDir is set", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-api-fail-"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    generateTextMock
+      .mockRejectedValueOnce(new Error("This model is only available through the Batch API"))
+      .mockResolvedValueOnce(genResult('{"one":"1 file","other":"n files"}'));
+    const c = new LlmClient({
+      config: llmConfig(["anthropic/claude-sonnet-5:batch", "qwen/qwen-2.5-72b-instruct"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+      debugFailedRelativePath: "src/locales/strings.json",
+    });
+    try {
+      await c.translatePluralCardinalBatch(
+        ["one", "other"],
+        { systemPrompt: "s", userContent: "u" },
+        { targetLocale: "en-GB" }
+      );
+      const files = fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"));
+      expect(files).toHaveLength(0);
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("anthropic/claude-sonnet-5:batch failed");
+      expect(joined).toContain("Batch API");
+      expect(joined).toContain("Trying qwen/qwen-2.5-72b-instruct");
+      expect(joined).toContain("en-GB src/locales/strings.json");
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("warns once per identical API error on the same LlmClient instance", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    generateTextMock
+      .mockRejectedValueOnce(new Error("Batch API"))
+      .mockResolvedValueOnce(genResult('{"one":"a","other":"b"}'))
+      .mockRejectedValueOnce(new Error("Batch API"))
+      .mockResolvedValueOnce(genResult('{"one":"c","other":"d"}'));
+    const c = new LlmClient({
+      config: llmConfig(["bad-model", "good-model"]),
+      apiKey: "k",
+    });
+    const msgs = { systemPrompt: "s", userContent: "u" };
+    try {
+      await c.translatePluralCardinalBatch(["one", "other"], msgs, { targetLocale: "en-GB" });
+      await c.translatePluralCardinalBatch(["one", "other"], msgs, { targetLocale: "en-GB" });
+      const apiWarns = warn.mock.calls.filter((call) =>
+        String(call[0]).includes("bad-model failed")
+      );
+      expect(apiWarns).toHaveLength(1);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("treats empty billed responses as call failures (console, no FAILED-TRANSLATION file)", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-empty-"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    generateTextMock
+      .mockResolvedValueOnce(genResult("   "))
+      .mockResolvedValueOnce(genResult('["ok"]'));
+    const c = new LlmClient({
+      config: llmConfig(["empty", "good"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+    });
+    try {
+      await c.translateUIBatch(["Hello"], "de");
+      expect(fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"))).toHaveLength(0);
+      expect(
+        warn.mock.calls.some((call) => String(call[0]).includes("Empty response content"))
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("llmFailureHasAssistantOutput is false without usable raw assistant text", () => {
+    expect(
+      llmFailureHasAssistantOutput({
+        systemPrompt: "s",
+        userContent: "u",
+        lastModel: "m",
+        lastError: new Error("api"),
+      })
+    ).toBe(false);
+    expect(
+      llmFailureHasAssistantOutput({
+        systemPrompt: "s",
+        userContent: "u",
+        lastModel: "m",
+        lastError: new Error("parse"),
+        lastRawAssistantContent: "  ",
+      })
+    ).toBe(false);
+    expect(
+      llmFailureHasAssistantOutput({
+        systemPrompt: "s",
+        userContent: "u",
+        lastModel: "m",
+        lastError: new Error("parse"),
+        lastRawAssistantContent: '{"x":1}',
+      })
+    ).toBe(true);
   });
 });

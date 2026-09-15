@@ -105,7 +105,7 @@ ai-i18n-tools translate-svg --locale de
 ai-i18n-tools translate-svg --dry-run
 ```
 
-`sync` एसवीजी चरण को स्वचालित रूप से चलाता है जब `features.translateSVG` और `svg` दोनों सेट होते हैं (`--no-svg` के साथ छोड़ दें)। साझा ध्वज में `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, और `--force` / `--force-update` शामिल हैं।
+जब `features.translateSVG` और `svg` दोनों सेट होते हैं, तो `sync` SVG चरण को स्वचालित रूप से चलाता है (`--no-svg` के साथ छोड़ें)। साझा फ़्लैग में `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update`, और `--check-cache` शामिल हैं।
 
 <a id="troubleshooting"></a>
 ### समस्या निवारण

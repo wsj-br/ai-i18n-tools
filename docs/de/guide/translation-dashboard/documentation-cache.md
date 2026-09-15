@@ -25,6 +25,8 @@ Klicken Sie nach dem Ändern der Filter auf **Anwenden**. **Löschen** setzt all
 1. Klicken Sie auf das Bearbeitungssymbol in einer Zeile.
 2. Ändern Sie den übersetzten Text im Modal und speichern Sie.
 
+Wenn der neue Text die Überprüfung des Schriftsystems der Sprache nicht besteht (z. B. romanisiertes Hindi für `hi`), warnt das Dashboard und fordert Sie zur Bestätigung auf. Durch die Bestätigung wird der Text trotzdem gespeichert. Ein späteres `sync --check-cache` validiert diese Zeile weiterhin neu und kann sie erneut übersetzen.
+
 Der Cache speichert das Modell `user-edited` für diese Zeile. Führen Sie `sync --force-update` oder `translate-docs --force-update` aus, damit die Markdown-Ausgaben auf der Festplatte mit dem Cache übereinstimmen.
 
 Wenn sich der **Quelltext** in Ihrem Repository später ändert, ändert sich der Segment-Hash, und manuelle Bearbeitungen für den alten Text werden beim nächsten Übersetzungsdurchlauf überschrieben.

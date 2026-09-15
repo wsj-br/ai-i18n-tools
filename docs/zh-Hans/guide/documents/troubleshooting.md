@@ -38,6 +38,6 @@ Markdown 链接或 `![alt](url)` 在英文版中有效，但在翻译版本中�
 
 **修复**
 
-1. 确认区域设置代码与您想要的书写系统匹配（`hi` 与 `hi-Latn`，`zh-Hans` 与 `zh-Hant`，`sr` 与 `sr-Latn`）。
-2. 重新运行翻译，以便拒绝使用错误书写系统的缓存行：对 UI 字符串使用 `translate-ui --force`，或使用 `translate-docs` / `sync`（对于具有预期书写系统的区域设置，文件级跳过已禁用；`--force-update` 仍会复用有效的片段缓存）。
-3. 如果某个模型始终无法通过书写系统检查，请为该区域设置添加一条 `localeModels` 条目，以便优先尝试更强的模型——参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。
+1. 确认区域设置代码与您所需的文字匹配（`hi` 与 `hi-Latn`，`zh-Hans` 与 `zh-Hant`，`sr` 与 `sr-Latn`）。
+2. 重新运行翻译，以便拒绝文字错误的缓存行：UI 字符串使用 `translate-ui --force`，或 `translate-docs --check-cache` / `sync --check-cache`（文件级跳过仅对具有预期文字的区域设置被绕过；有效的分段缓存仍会被重用）。`--force-update` 重新处理每个区域设置。
+3. 如果某个模型持续未通过文字检查，请为该区域设置添加 `localeModels` 条目，以便优先尝试更强的模型 — 参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。

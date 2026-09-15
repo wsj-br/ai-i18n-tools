@@ -8,7 +8,7 @@
 
 प्रत्येक `docs` ब्लॉक के लिए मार्कडाउन, एमडीएक्स, `.astro`, वैकल्पिक डॉक्युसॉरस कैटलॉग JSON (`docusaurusCatalogDir`), वैकल्पिक नेक्सट्रा `_meta.ts`/डिक्शनरी `.ts`, और वैकल्पिक वाइटप्रेस थीम कैटलॉग का अनुवाद करें।
 
-**मुख्य विकल्प:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `-p` / `-f`, `--dry-run`
+**मुख्य विकल्प:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `--check-cache`, `-p` / `-f`, `--dry-run`
 
 `-j`: अधिकतम समानांतर स्थानीय; `-b`: प्रति फ़ाइल अधिकतम समानांतर बैच एपीआई कॉल। `--prompt-format`: बैच वायर फ़ॉर्मेट (`xml` | `json-array` | `json-object`)।
 

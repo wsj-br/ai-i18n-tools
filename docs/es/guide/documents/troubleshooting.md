@@ -38,6 +38,6 @@ Algunos modelos traducen el significado, pero escriben el resultado en letras la
 
 **Solución**
 
-1. Confirma que el código de configuración regional coincide con el script que deseas (`hi` frente a `hi-Latn`, `zh-Hans` frente a `zh-Hant`, `sr` frente a `sr-Latn`).
-2. Vuelve a ejecutar la traducción para que se rechacen las filas de caché de script incorrecto: `translate-ui --force` para cadenas de IU, o `translate-docs` / `sync` (la omisión a nivel de archivo está deshabilitada para configuraciones regionales con un script esperado; `--force-update` aún reutiliza la caché de segmento válida).
-3. Si un modelo sigue fallando en la verificación del script, agrega una entrada `localeModels` para esa configuración regional para que se pruebe primero un modelo más potente; consulta [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).
+1. Confirme que el código de configuración regional coincide con el script que desea (`hi` frente a `hi-Latn`, `zh-Hans` frente a `zh-Hant`, `sr` frente a `sr-Latn`).
+2. Vuelva a ejecutar la traducción para que se rechacen las filas de caché de script incorrectas: `translate-ui --force` para cadenas de interfaz de usuario, o `translate-docs --check-cache` / `sync --check-cache` (la omisión a nivel de archivo se omite solo para configuraciones regionales con un script esperado; la caché de segmento válida aún se reutiliza). `--force-update` reprocesa cada configuración regional.
+3. Si un modelo sigue fallando la verificación de script, agregue una entrada `localeModels` para esa configuración regional para que se intente primero un modelo más fuerte; consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).

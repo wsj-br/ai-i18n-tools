@@ -9,7 +9,7 @@
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg?event=release)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-**अपनी पसंद के एआई मॉडल के साथ अपने ऐप और दस्तावेज़ों का अनुवाद करें — कोई लॉक-इन नहीं, कोई पुनर्लेखन नहीं।**
+**अपनी पसंद के AI मॉडल के साथ अपने ऐप और दस्तावेज़ का अनुवाद करें — कोई लॉक-इन नहीं, कोई पुनर्लेखन नहीं।**
 
 जावास्क्रिप्ट/टाइपस्क्रिप्ट ऐप्स और दस्तावेज़ साइटों (वाइटप्रेस, स्टारलाइट, डॉक्यूसॉरस, नेक्सट्रा, फ़्यूमाडॉक्स, एस्ट्रो, सादा मार्कडाउन/एमडीएक्स) के अंतर्राष्ट्रीयकरण के लिए सीएलआई और टूलकिट। ओपनएआई, एंथ्रोपिक, जेमिनी, ओपनराउटर, ओलामा, और बहुत कुछ के लिए अंतर्निहित प्रीसेट का उपयोग करें — या कोई भी ओपनएआई-संगत एपीआई। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल स्विच करें।
 

@@ -8,9 +8,9 @@
 
 擷取（若已啟用），接著 UI 翻譯，然後在設定 `features.translateSVG` 與 `config.svg` 時執行 `translate-svg`，接著文件翻譯，然後在設定 `features.translateJson` 與 `json[]` 時執行 `translate-json` — 除非以 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳過。
 
-**主要選項：** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**主要選項：** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` 會轉發至 UI 與 SVG 步驟以及 docs/JSON；`--force-update` 適用於 docs、JSON 與 SVG（不適用於 UI）。Docs 階段亦會轉發 `--emphasis-placeholders`（與 `translate-docs` 意義相同）。全域 `--debug-failed` 會在每次捨棄的模型嘗試下（包含 SVG/docs 指令稿後備）於 `cacheDir` 寫入 `FAILED-TRANSLATION` 日誌，而非僅在鏈中所有模型皆失敗時才寫入。`--prompt-format` 並非 `sync` 旗標；docs 與 JSON 步驟使用內建預設值（`json-array`）。
+`--force` 會轉發至 UI 與 SVG 步驟以及 docs/JSON；`--force-update` 適用於 docs、JSON 與 SVG（不適用於 UI）。`--check-cache` 會轉發至 docs、JSON 與 SVG：即使檔案追蹤會跳過，它仍會針對強制使用原生文字的地區重新驗證快取區段。Docs 階段亦會轉發 `--emphasis-placeholders`（與 `translate-docs` 意義相同）。全域 `--debug-failed` 會在 `cacheDir` 下為每次被捨棄的模型嘗試（包括 SVG/docs 指令稿後備）寫入 `FAILED-TRANSLATION` 日誌，而非僅在鏈中所有模型皆失敗時才寫入。`--prompt-format` 並非 `sync` 旗標；docs 與 JSON 步驟使用內建預設值（`json-array`）。
 
 ---
 

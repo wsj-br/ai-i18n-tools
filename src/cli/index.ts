@@ -474,7 +474,7 @@ program
   .option(
     "--debug-failed",
     t(
-      "Write detailed FAILED-TRANSLATION logs under cacheDir for each failed model attempt (wrong script, parse, or quality), including fallbacks — not only when every model fails (UI, docs, JSON, SVG)"
+      "Write detailed FAILED-TRANSLATION logs under cacheDir for each discarded translation-check (wrong script, parse, or quality), including fallbacks — not only when every model fails (UI, docs, JSON, SVG). Provider API errors print on the console instead."
     ),
     false
   )
@@ -947,6 +947,7 @@ function buildTranslateOpts(
     dryRun?: boolean;
     force?: boolean;
     forceUpdate?: boolean;
+    checkCache?: boolean;
     noCache?: boolean;
     type?: string;
     jsonOnly?: boolean;
@@ -967,6 +968,7 @@ function buildTranslateOpts(
     dryRun: Boolean(o.dryRun),
     force: Boolean(o.force),
     forceUpdate: Boolean(o.forceUpdate),
+    checkCache: Boolean(o.checkCache),
     noCache: Boolean(o.noCache),
     verbose: Boolean(g.verbose),
     pathFilter: normalizePathFilterForProjectRoot(projectRoot, pathFilterRaw),
@@ -1242,6 +1244,13 @@ program
     ),
     false
   )
+  .option(
+    "--check-cache",
+    t(
+      "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
+    ),
+    false
+  )
   .option("--stats", t("Show cache statistics and exit"), false)
   .option("--clear-cache [locale]", t("Clear translation cache (all locales, or one locale)"))
   .option("--type <kind>", "markdown | json")
@@ -1494,6 +1503,13 @@ program
     t("Re-process when file tracking matches; segment cache still applies"),
     false
   )
+  .option(
+    "--check-cache",
+    t(
+      "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
+    ),
+    false
+  )
   .option("-j, --concurrency <n>", t("Reserved for future parallel locales"))
   .option(
     "-b, --batch-concurrency <n>",
@@ -1565,6 +1581,13 @@ program
     "--force-update",
     t(
       "Re-process files even when file tracking matches; still use segment cache (not combinable with --force)"
+    ),
+    false
+  )
+  .option(
+    "--check-cache",
+    t(
+      "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
     ),
     false
   )
@@ -1976,6 +1999,13 @@ program
   .option(
     "--force-update",
     t("Docs: re-process even when file tracking matches; segment cache still applies"),
+    false
+  )
+  .option(
+    "--check-cache",
+    t(
+      "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
+    ),
     false
   )
   .option("--no-ui", t("Skip UI strings translation"), false)

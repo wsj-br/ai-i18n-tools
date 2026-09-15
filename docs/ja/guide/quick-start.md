@@ -148,7 +148,7 @@ UI 文字列とドキュメントを一緒に実行するには、すべての�
 
 `glossary.uiGlossary` は、ドキュメント翻訳をUIと同じ `strings.json` カタログを指すようにして用語の一貫性を保ちます。`glossary.userGlossary` は製品用語のCSVオーバーライドを追加します。
 
-`ai-i18n-tools sync` を実行して1つのパイプラインを実行します: `features.translateUIStrings` が有効な場合、**extract** の後に UI 文字列を **translate** します; オプションで **translate SVG** (`features.translateSVG` + `svg` ブロック); **translate documentation** (設定に応じた `docs[]`); その後オプションで **translate-json** (`features.translateJson` + `json[]`)。`--no-ui`, `--no-svg`, `--no-docs`, または `--no-json` で一部をスキップできます。docs および `json[]` ステップは `--dry-run`, `-p` / `--path`, `--force`, `--force-update` を受け付けます (docs 専用フラグは `--no-docs` の場合は無視されます; JSON は `--no-json` が設定されていない場合、同じキャッシュフラグを使用します)。
+1つのパイプラインを実行するには`ai-i18n-tools sync`を実行します。`features.translateUIStrings`が有効な場合は、**extract**した後、**translate UI**文字列を処理します。任意で**translate SVG**（`features.translateSVG` + `svg`ブロック）、**translate documentation**（設定に従って`docs[]`）、その後任意で**translate-json**（`features.translateJson` + `json[]`）を実行します。`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`で該当部分をスキップします。ドキュメントおよび`json[]`の各ステップは`--dry-run`、`-p` / `--path`、`--force`、`--force-update`、`--check-cache`を受け付けます（`--no-docs`の場合はドキュメント専用フラグが無視され、`--no-json`が未設定の場合はJSONが同じキャッシュフラグを使用します）。
 
 ブロックに対して`docs[].targetLocales`を使用すると、そのブロックのファイルをUIよりも**少ないロケール数**に翻訳できます（有効なドキュメントロケールはブロック間の**和集合**になります）：
 

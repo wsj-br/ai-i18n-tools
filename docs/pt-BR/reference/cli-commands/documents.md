@@ -8,7 +8,7 @@
 
 Traduz markdown, MDX, `.astro`, JSON de catálogo Docusaurus opcional (`docusaurusCatalogDir`), `_meta.ts`/dicionário Nextra opcional `.ts` e catálogo de tema VitePress opcional para cada bloco `docs`.
 
-**Opções principais:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `-p` / `-f`, `--dry-run`
+**Opções principais:** `-l`, `-j`, `-b`, `--prompt-format`, `--force`, `--force-update`, `--check-cache`, `-p` / `-f`, `--dry-run`
 
 `-j`: número máximo de localidades paralelas; `-b`: número máximo de chamadas de API em lote paralelas por arquivo. `--prompt-format`: formato de transmissão em lote (`xml` | `json-array` | `json-object`).
 

@@ -8,7 +8,7 @@
 
 Übersetzt verschachteltes JSON pro `json[]` (erfordert `features.translateJson`). Gemeinsamer SQLite-Cache.
 
-**Wichtige Optionen:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `-b`, `--prompt-format`
+**Wichtige Optionen:** `-l`, `-p` / `--path`, `--dry-run`, `--force`, `--force-update`, `--check-cache`, `-b`, `--prompt-format`
 
 **Siehe auch:** [JSON](/de/guide/json)
 
@@ -21,6 +21,6 @@
 
 Übersetzt in `config.svg` konfigurierte SVG-Dateien (getrennt von den Dokumenten). Erfordert `features.translateSVG`. Gleiche Cache-Konzepte wie bei Dokumenten; unterstützt `--no-cache`, um SQLite-Lese-/Schreibvorgänge für diesen Durchlauf zu überspringen.
 
-**Wichtige Optionen:** `-j`, `-b`, `--force`, `--force-update`, `-p` / `--path`, `--dry-run`, `--no-cache`, globale `--debug-failed`
+**Wichtige Optionen:** `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `-p` / `--path`, `--dry-run`, `--no-cache`, globale `--debug-failed`
 
 **Siehe auch:** [SVG-Übersetzung](/de/guide/svg-translation/)

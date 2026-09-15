@@ -46,7 +46,7 @@ The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` 
 | UI string or plural | plain `sync` or `translate-ui` | `--force` (overwrites `user-edited` rows) |
 | Glossary row | next `translate-ui` or `proofread-ui` | — |
 
-**Documentation (SQLite cache)** — Manual edits are tagged with model `user-edited` in the cache. Re-running `translate-docs` or `sync` on unchanged source reuses the cached translation (no LLM call). Run `sync --force-update` or `translate-docs --force-update` to refresh on-disk markdown from cache. Use `--force` only if you want to bypass cache and re-translate from the LLM (overwriting manual fixes).
+**Documentation (SQLite cache)** — Manual edits are tagged with model `user-edited` in the cache. Edits that fail the locale writing-system check (for example romanized Hindi for `hi`) show a warning; confirming saves the text anyway. Re-running `translate-docs` or `sync` on unchanged source reuses the cached translation (no LLM call). Run `sync --force-update` or `translate-docs --force-update` to refresh on-disk markdown from cache. Use `--check-cache` to re-validate native-script locales without rewriting every file (including confirmed wrong-script edits). Use `--force` only if you want to bypass cache and re-translate from the LLM (overwriting manual fixes).
 
 **UI strings (`strings.json`)** — Manual edits are tagged with `user-edited` in `models[locale]`. Re-running `translate-ui` or `sync` skips entries that already have a translation. Use `--force` on UI commands to re-translate and overwrite manual fixes.
 

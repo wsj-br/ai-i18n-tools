@@ -179,6 +179,12 @@ export interface TranslateRunOptions {
    * Re-run each file even when file hash matches tracking + output exists; segment cache still applies (unlike `force`).
    */
   forceUpdate: boolean;
+  /**
+   * When true, bypass file-level skip for locales with an expected writing system so cached
+   * segments are re-validated (and wrong-script rows retranslated). Independent of `force` /
+   * `forceUpdate`. Locales without an enforced script still skip when tracking matches.
+   */
+  checkCache?: boolean;
   noCache: boolean;
   verbose: boolean;
   pathFilter?: string;
@@ -751,9 +757,9 @@ async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Pr
   return mutex.runExclusive(async () => fn());
 }
 
-/** File-level skip would bypass segment script checks; locales with an expected script re-check cache rows. */
-function canSkipUnchangedTranslatedFile(locale: string): boolean {
-  return !localeEnforcesOutputScript(locale);
+/** File-level skip is the default; `--check-cache` re-opens script-enforced locales to re-validate cache rows. */
+function canSkipUnchangedTranslatedFile(locale: string, checkCache: boolean | undefined): boolean {
+  return !checkCache || !localeEnforcesOutputScript(locale);
 }
 
 /** Add YAML front matter fields to translated markdown (timestamp, source path, locale, models used). */
@@ -1678,7 +1684,7 @@ export async function translateMarkdownFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    canSkipUnchangedTranslatedFile(locale) &&
+    canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     cachedFileHash === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2063,7 +2069,7 @@ export async function translateAstroFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    canSkipUnchangedTranslatedFile(locale) &&
+    canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     cachedFileHash === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2408,7 +2414,7 @@ export async function translateJsonFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    canSkipUnchangedTranslatedFile(locale) &&
+    canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     cachedFileHashJson === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -2655,7 +2661,7 @@ export async function translateSvgAssetFile(
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    canSkipUnchangedTranslatedFile(locale) &&
+    canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     cachedFileHashSvg === fileHash &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {

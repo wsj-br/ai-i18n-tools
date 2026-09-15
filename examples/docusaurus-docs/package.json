@@ -33,7 +33,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@docusaurus/types": "^3.10.2",
-    "ai-i18n-tools": "^1.8.10"
+    "ai-i18n-tools": "^1.8.11"
   },
   "engines": {
     "node": ">=22.16.0"

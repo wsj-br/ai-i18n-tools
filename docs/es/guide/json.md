@@ -75,7 +75,7 @@ Las rutas usan notación con puntos (`nav.home.label`). Un nombre simple como `s
 ai-i18n-tools translate-json
 ```
 
-Marcas opcionales (mismas ideas que `translate-docs`): `-l` / `--locale` para un subconjunto de objetivos, `-p` / `--path` para limitar archivos, `--dry-run`, `--force` (borra el seguimiento de archivos y la caché de segmentos para los archivos coincidentes), `--force-update` (vuelve a procesar cuando el hash del archivo coincide; la caché de segmentos sigue aplicándose), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+Marcadores opcionales (las mismas ideas que `translate-docs`): `-l` / `--locale` para un subconjunto de destinos, `-p` / `--path` para limitar archivos, `--dry-run`, `--force` (borrar el seguimiento de archivos y la caché de segmentos para los archivos coincidentes), `--force-update` (volver a procesar cuando el hash del archivo coincide; la caché de segmentos sigue aplicándose), `--check-cache` (volver a validar los segmentos en caché para las configuraciones regionales con un script nativo forzado incluso cuando el seguimiento de archivos coincide), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
 
 Los proyectos solo JSON pueden ejecutar:
 

@@ -46,7 +46,7 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 | String ou plural da UI | `sync` ou `translate-ui` simples | `--force` (sobrescreve `user-edited` linhas) |
 | Linha do glossário | próximo `translate-ui` ou `proofread-ui` | — |
 
-**Documentação (cache SQLite)** — Edições manuais são marcadas com o modelo `user-edited` no cache. Reexecutar `translate-docs` ou `sync` em uma fonte inalterada reutiliza a tradução em cache (sem chamada LLM). Execute `sync --force-update` ou `translate-docs --force-update` para atualizar o markdown em disco a partir do cache. Use `--force` somente se quiser ignorar o cache e re-traduzir do LLM (sobrescrevendo correções manuais).
+**Documentação (cache SQLite)** — Edições manuais são marcadas com o modelo `user-edited` no cache. Edições que falham na verificação do sistema de escrita do local (por exemplo, hindi romanizado para `hi`) exibem um aviso; a confirmação salva o texto de qualquer forma. Reexecutar `translate-docs` ou `sync` em uma fonte inalterada reutiliza a tradução em cache (sem chamada LLM). Execute `sync --force-update` ou `translate-docs --force-update` para atualizar o markdown em disco a partir do cache. Use `--check-cache` para revalidar locais de script nativo sem reescrever todos os arquivos (incluindo edições de script incorretas confirmadas). Use `--force` apenas se quiser ignorar o cache e retraduzir do LLM (sobrescrevendo correções manuais).
 
 **Strings da UI (`strings.json`)** — Edições manuais são marcadas com `user-edited` em `models[locale]`. Reexecutar `translate-ui` ou `sync` ignora entradas que já possuem uma tradução. Use `--force` nos comandos da UI para re-traduzir e sobrescrever correções manuais.
 

@@ -46,7 +46,7 @@ ai-i18n-tools dashboard
 | UI 문자열 또는 복수형 | 일반 `sync` 또는 `translate-ui` | `--force` (`user-edited` 행을 덮어씁니다) |
 | 용어집 행 | 다음 `translate-ui` 또는 `proofread-ui` | — |
 
-**문서(SQLite 캐시)** — 수동 편집은 캐시에서 모델 `user-edited`으로 태그됩니다. 변경되지 않은 소스에서 `translate-docs` 또는 `sync`를 다시 실행하면 캐시된 번역이 재사용됩니다(LLM 호출 없음). 캐시에서 디스크의 마크다운을 새로 고치려면 `sync --force-update` 또는 `translate-docs --force-update`를 실행합니다. 캐시를 우회하고 LLM에서 다시 번역하려면(수동 수정 덮어쓰기) `--force`만 사용하십시오.
+**문서(SQLite 캐시)** — 수동 편집은 캐시에서 모델 `user-edited`로 태그가 지정됩니다. 로캘 문자 체계 검사에 실패한 편집(예: `hi`에 대한 로마자 힌디어)은 경고를 표시하지만, 확인을 선택하면 텍스트가 그대로 저장됩니다. 변경되지 않은 소스에 대해 `translate-docs` 또는 `sync`을 다시 실행하면 캐시된 번역이 재사용됩니다(LLM 호출 없음). 캐시에서 디스크상의 마크다운을 새로 고치려면 `sync --force-update` 또는 `translate-docs --force-update`를 실행하세요. 모든 파일을 다시 작성하지 않고(확인된 잘못된 문자 체계 편집 포함) 네이티브 문자 로캘을 다시 검증하려면 `--check-cache`를 사용하세요. 캐시를 우회하고 LLM에서 다시 번역하려는 경우(수동 수정 사항 덮어쓰기)에만 `--force`를 사용하세요.
 
 **UI 문자열(`strings.json`)** — 수동 편집은 `models[locale]`에서 `user-edited`로 태그됩니다. `translate-ui` 또는 `sync`를 다시 실행하면 이미 번역이 있는 항목은 건너뜁니다. UI 명령에서 `--force`를 사용하여 수동 수정을 다시 번역하고 덮어씁니다.
 

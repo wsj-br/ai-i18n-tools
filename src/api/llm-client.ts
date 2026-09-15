@@ -137,6 +137,12 @@ export class LlmAllModelsFailedError extends Error {
   }
 }
 
+/** True when a discarded attempt produced model output (parse/script/quality), not a transport error. */
+export function llmFailureHasAssistantOutput(details: LlmAllModelsFailedDetails): boolean {
+  const raw = details.lastRawAssistantContent;
+  return typeof raw === "string" && raw.trim().length > 0;
+}
+
 /** Thrown when every model in the chain fails for {@link LlmClient.translateDocumentBatch}. */
 export class DocumentBatchAllModelsFailedError extends LlmAllModelsFailedError {
   constructor(message: string, details: LlmAllModelsFailedDetails) {
@@ -158,8 +164,8 @@ export interface LlmClientOptions {
   debugTrafficFilePath?: string | null;
   /**
    * When set (CLI `--debug-failed` → `cacheDir`), write a `FAILED-TRANSLATION` file for each
-   * discarded model attempt (script/parse/API), including fallbacks — not only the final
-   * all-models-failed throw.
+   * discarded translation-check (script/parse/quality), including fallbacks — not only the final
+   * all-models-failed throw. Provider API / empty-body failures go to the console instead.
    */
   debugFailedDir?: string | null;
   /**
@@ -205,6 +211,8 @@ export class LlmClient {
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
   private readonly onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
+  /** Dedupes identical API/call-failure console lines per (model, error message). */
+  private readonly warnedCallFailures = new Set<string>();
 
   constructor(opts: LlmClientOptions) {
     this.provider = resolveActiveProvider(opts.config);
@@ -379,18 +387,63 @@ export class LlmClient {
     localeCode: string,
     relativePath: string | undefined,
     failedModel: string,
-    nextModel: string,
+    nextModel: string | undefined,
     error: unknown
   ): void {
-    const loc = relativePath != null ? `${localeCode} ${relativePath}` : localeCode;
+    const loc =
+      relativePath != null && relativePath !== "" ? `${localeCode} ${relativePath}` : localeCode;
     const detail = error instanceof Error ? error.message : String(error);
-    console.warn(
-      chalk.yellow(`  ⚠️  ${loc}: ${failedModel} failed (${detail}). Trying ${nextModel}…`)
-    );
+    const trying = nextModel ? `. Trying ${nextModel}…` : "";
+    console.warn(chalk.yellow(`  ⚠️  ${loc}: ${failedModel} failed (${detail})${trying}`));
+  }
+
+  private static isCallFailure(rawAssistantContent?: string): boolean {
+    return rawAssistantContent == null || rawAssistantContent.trim() === "";
   }
 
   /**
-   * Persist prompt + raw output + validation error for a discarded model attempt when
+   * Record a discarded model attempt.
+   * Call failures (no assistant text): console.warn, no FAILED-TRANSLATION file.
+   * Check failures (parse/script/quality): file dump when `debugFailedDir` is set.
+   */
+  private recordDiscardedAttempt(args: {
+    locale: string;
+    relativePath: string;
+    model: string;
+    modelIndex: number;
+    error: unknown;
+    systemPrompt: string;
+    userContent: string;
+    rawAssistantContent?: string;
+    segmentsLabel?: string;
+    /** Docs/chat with `docLogContext`: console.warn check failures when a fallback remains. */
+    warnCheckFailure?: boolean;
+    loggerCheckMessage?: string;
+  }): void {
+    const nextModel = this.modelsToTry[args.modelIndex + 1];
+    if (LlmClient.isCallFailure(args.rawAssistantContent)) {
+      const errMsg = args.error instanceof Error ? args.error.message : String(args.error);
+      const key = `${args.model}\0${errMsg}`;
+      if (!this.warnedCallFailures.has(key)) {
+        this.warnedCallFailures.add(key);
+        this.warnModelSwitch(args.locale, args.relativePath, args.model, nextModel, args.error);
+      }
+      return;
+    }
+
+    if (args.warnCheckFailure) {
+      if (nextModel) {
+        this.warnModelSwitch(args.locale, args.relativePath, args.model, nextModel, args.error);
+      }
+    } else {
+      this.logger?.warn(args.loggerCheckMessage ?? `Model ${args.model} failed: ${args.error}`);
+    }
+
+    this.logFailedModelAttempt(args);
+  }
+
+  /**
+   * Persist prompt + raw output + validation error for a discarded translation-check when
    * `--debug-failed` supplied `debugFailedDir`.
    */
   private logFailedModelAttempt(args: {
@@ -590,19 +643,7 @@ export class LlmClient {
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
       const recordFailure = (e: unknown, rawAssistantContent?: string): void => {
-        const nextModel = this.modelsToTry[mi + 1];
-        if (nextModel && options?.docLogContext) {
-          this.warnModelSwitch(
-            options.docLogContext.locale,
-            options.docLogContext.relativePath,
-            model,
-            nextModel,
-            e
-          );
-        } else if (!options?.docLogContext) {
-          this.logger?.warn(`Model ${model} failed: ${e}`);
-        }
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: failedLocale,
           relativePath: failedPath,
           model,
@@ -611,6 +652,7 @@ export class LlmClient {
           systemPrompt: promptParts.systemPrompt,
           userContent: promptParts.userContent,
           rawAssistantContent,
+          warnCheckFailure: Boolean(options?.docLogContext),
         });
       };
 
@@ -765,17 +807,7 @@ export class LlmClient {
           lastError: e,
           lastRawAssistantContent: undefined,
         };
-        const nextModel = this.modelsToTry[mi + 1];
-        if (nextModel && options?.docLogContext) {
-          this.warnModelSwitch(locale, options.docLogContext.relativePath, model, nextModel, e);
-        } else if (!options?.docLogContext) {
-          if (e instanceof BatchTranslationError) {
-            this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
-          } else {
-            this.logger?.warn(`Batch request failed with ${model}: ${e}`);
-          }
-        }
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale,
           relativePath: options?.docLogContext?.relativePath ?? this.debugFailedRelativePath,
           model,
@@ -783,6 +815,11 @@ export class LlmClient {
           error: e,
           systemPrompt,
           userContent,
+          warnCheckFailure: Boolean(options?.docLogContext),
+          loggerCheckMessage:
+            e instanceof BatchTranslationError
+              ? `Batch parse failed with ${model}: ${e.message}`
+              : `Batch request failed with ${model}: ${e}`,
         });
         continue;
       }
@@ -833,17 +870,7 @@ export class LlmClient {
           lastError: e,
           lastRawAssistantContent: completion.content,
         };
-        const nextModel = this.modelsToTry[mi + 1];
-        if (nextModel && options?.docLogContext) {
-          this.warnModelSwitch(locale, options.docLogContext.relativePath, model, nextModel, e);
-        } else if (!options?.docLogContext) {
-          if (e instanceof BatchTranslationError) {
-            this.logger?.warn(`Batch parse failed with ${model}: ${e.message}`);
-          } else {
-            this.logger?.warn(`Batch parse failed with ${model}: ${e}`);
-          }
-        }
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale,
           relativePath: options?.docLogContext?.relativePath ?? this.debugFailedRelativePath,
           model,
@@ -852,6 +879,11 @@ export class LlmClient {
           systemPrompt,
           userContent,
           rawAssistantContent: completion.content,
+          warnCheckFailure: Boolean(options?.docLogContext),
+          loggerCheckMessage:
+            e instanceof BatchTranslationError
+              ? `Batch parse failed with ${model}: ${e.message}`
+              : `Batch parse failed with ${model}: ${e}`,
         });
       }
     }
@@ -931,8 +963,7 @@ export class LlmClient {
           lastModel: model,
           lastError: e,
         };
-        this.logger?.warn(`UI batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: targetLocale,
           relativePath: this.debugFailedRelativePath,
           model,
@@ -941,6 +972,7 @@ export class LlmClient {
           systemPrompt,
           userContent,
           segmentsLabel: "ui-batch",
+          loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
         });
         continue;
       }
@@ -967,8 +999,7 @@ export class LlmClient {
           lastError: e,
           lastRawAssistantContent: result.content,
         };
-        this.logger?.warn(`UI batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: targetLocale,
           relativePath: this.debugFailedRelativePath,
           model,
@@ -978,6 +1009,7 @@ export class LlmClient {
           userContent,
           rawAssistantContent: result.content,
           segmentsLabel: "ui-batch",
+          loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
         });
       }
     }
@@ -1040,8 +1072,7 @@ export class LlmClient {
         if (e instanceof BilledCompletionError) {
           LlmClient.addDiscarded(discarded, e.usage, e.cost);
         }
-        this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: languageLabel,
           relativePath: this.debugFailedRelativePath,
           model,
@@ -1050,6 +1081,7 @@ export class LlmClient {
           systemPrompt,
           userContent,
           segmentsLabel: "proofread-ui",
+          loggerCheckMessage: `proofread-ui batch failed with ${model}: ${e}`,
         });
         continue;
       }
@@ -1069,8 +1101,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         LlmClient.addDiscarded(discarded, result.usage, result.cost);
-        this.logger?.warn(`proofread-ui batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: languageLabel,
           relativePath: this.debugFailedRelativePath,
           model,
@@ -1080,6 +1111,7 @@ export class LlmClient {
           userContent,
           rawAssistantContent: result.content,
           segmentsLabel: "proofread-ui",
+          loggerCheckMessage: `proofread-ui batch failed with ${model}: ${e}`,
         });
       }
     }
@@ -1144,8 +1176,7 @@ export class LlmClient {
           lastModel: model,
           lastError: e,
         };
-        this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: options?.targetLocale ?? "unknown",
           relativePath: this.debugFailedRelativePath,
           model,
@@ -1154,6 +1185,7 @@ export class LlmClient {
           systemPrompt: messages.systemPrompt,
           userContent: messages.userContent,
           segmentsLabel: "plural-batch",
+          loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,
         });
         continue;
       }
@@ -1188,8 +1220,7 @@ export class LlmClient {
           lastError: e,
           lastRawAssistantContent: result.content,
         };
-        this.logger?.warn(`Plural cardinal batch failed with ${model}: ${e}`);
-        this.logFailedModelAttempt({
+        this.recordDiscardedAttempt({
           locale: options?.targetLocale ?? "unknown",
           relativePath: this.debugFailedRelativePath,
           model,
@@ -1199,6 +1230,7 @@ export class LlmClient {
           userContent: messages.userContent,
           rawAssistantContent: result.content,
           segmentsLabel: "plural-batch",
+          loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,
         });
       }
     }

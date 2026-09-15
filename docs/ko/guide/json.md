@@ -75,7 +75,7 @@ ai-i18n-tools init -t ui-json-bundles [-P <provider>]
 ai-i18n-tools translate-json
 ```
 
-선택적 플래그 (`translate-docs`과 동일한 개념): `-l` / `--locale`는 대상 하위 집합에 사용, `-p` / `--path`는 파일 제한에 사용, `--dry-run`, `--force` (일치하는 파일의 파일 추적 및 세그먼트 캐시 지우기), `--force-update` (파일 해시가 일치할 때 다시 처리; 세그먼트 캐시는 여전히 적용됨), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
+선택적 플래그(`translate-docs`과 동일한 개념): 타겟 하위 집합에 대한 `-l` / `--locale`, 파일 제한을 위한 `-p` / `--path`, `--dry-run`, `--force` (일치하는 파일의 파일 추적 및 세그먼트 캐시 지우기), `--force-update` (파일 해시가 일치할 때 재처리; 세그먼트 캐시는 여전히 적용됨), `--check-cache` (파일 추적이 일치하더라도 네이티브 스크립트가 적용된 로케일의 캐시된 세그먼트 재검증), `-b` / `--batch-concurrency`, `--prompt-format` (`xml` \| `json-array` \| `json-object`).
 
 JSON 전용 프로젝트는 다음을 실행할 수 있습니다:
 
