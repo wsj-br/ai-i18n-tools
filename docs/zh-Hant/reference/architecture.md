@@ -170,6 +170,8 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 它需要一個有效的設定，內含至少一個 **at least one `docs[]` block**。對於每個區塊，它會收集 `contentPaths` 下的 `.md` / `.mdx` 檔案，套用專案的 `.translate-ignore` 規則（概念與文件翻譯相同），並可選擇使用 `--path` / `--file` 限制於子樹狀結構。每個檔案都會透過 `applyHeadingAnchorsToMarkdown` 進行轉換：對於每個位於圍欄程式碼區塊外的 **flat ATX heading**（`# …` 至 `###### …`），任何形式的現有標題 ID 都會被替換為所選樣式。HTML 樣式會在無後綴標題的上一行寫入 `<a id="slug"></a>`；`--slug-style mdx-comment` 會在標題行寫入 `{/* #slug */}`（並移除前面的 HTML 錨點）。Slug 一律取自目前的標題文字。`--remove` 會移除 HTML 錨點、傳統的 `{#id}` 後綴，以及 MDX 註解 ID，而不寫入新的。Slug 演算法符合常見的生態系統 — `github`（預設）、`bitbucket`、`gitlab`、`pymdown`（可選的 Unicode 正規化 / 百分比編碼旗標）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 註解輸出）— 這樣錨點 ID 就能與現有工具保持一致（doctoc、PyMdown、Docusaurus 等）。`--dry-run` 會報告將進行的編輯而不實際寫入。
 
+在來源遍歷之後，同一指令會將這些英文 id 重新定位到各語系現有的翻譯 markdown（`resolveTranslatedOutputPath`）上。翻譯後的標題絕不會重新產生 slug；標題中間的 `{#id}` / `{/* #id */}` 會被移回至所選樣式預期的後綴（或 HTML 錨點）位置。缺少的語系檔案會被略過。
+
 此命令**不會**在 `translate-docs` 或 `sync` 中執行；當您希望在翻譯或發佈前，原始檔案中有穩定的片段 ID 時，請明確執行此命令。
 
 <a id="placeholder-protection"></a>
@@ -177,16 +179,17 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 
 在翻譯之前，敏感語法會被替換為不透明的 token，以防止 LLM 損壞，按此順序套用（還原是反向的）：
 
-1. **HTML標籤和註解**（`<strong>`、`<!-- ... -->`等）- 來自已知允許列表的小寫HTML標籤會被替換為```{{HTM_N}}```標記。大寫的JSX標籤（`<Highlight>`、`<Tabs>`、`</Tab>`）由MDX層（步驟4）單獨處理。
-2. **提示標記**（`:::note`、`:::`）- 只有開頭行的指令前綴會被替換為```{{ADM_OPEN_N}}```；任何同行的標題都會留給模型翻譯。以確切的原始文字還原。
-3. **文件錨點**（HTML `<a id="…">`、Docusaurus標題`{#…}`）- 逐字保留。
-4. **僅限MDX的建構**（`src/processors/mdx-placeholders.ts`）：
-   - **MDX 註解** (`{/* … */}`，包括 Docusaurus 標題 ID 格式 `{/* #my-id */}`) 已替換為 ```{{MDX_N}}```。
-   - **大寫 JSX 標籤** (`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`) - 保留為 ```{{MDX_N}}```，其中可翻譯的字串屬性 (`label`、`tooltip`、`aria-label`) 已重寫為標籤內的 ```{{JXA_N}}```，除非屬性名稱出現在 `docs[].protectAttributes` 中；`label:` 在 `<Tabs values={[ { label: '…' } ]}>` 物件文字中 (可透過 `docs[].protectKeys` 跳過) 和 `<TabItem value="…">` (當沒有 `label` 屬性時，跳過小寫的 slug 類值) 也會被提取。作為 `||JXA_N: …||` 行附加到區段，由 `restoreMdx` 合併回來。
-   - **MDX 大括號表達式** (`{frontMatter.title}`，<code v-pre>style={{…}}</code>) - 深度感知匹配，替換為 ```{{MDX_N}}```。
-5. **Markdown URL** (`](url)`、`src="…"`) - 翻譯後從映射中還原。
-6. **行內程式碼跨距**（`` `code` ``）和 **粗體包圍的行內程式碼**（`**`code`**`）- 保留。
-7. **Markdown 強調**（可選，對 CJK/RTL 地區自動啟用）- 強調分隔符已遮罩。
+1. **標題 id 後綴**（位於 ATX 標題結尾的傳統 `{#id}` / MDX `{/* #id */}`）— 會從該行完全剝離，且**不會**傳送給模型。還原後會重新釘回至對應標題的結尾，讓 Docusaurus 仍能看見有效的 id。標題中間的註解會保留在文字中，由後續的 MDX / `{#…}` 層處理。
+2. **HTML 標籤與註解**（`<strong>`、`<!-- ... -->` 等）— 來自已知允許清單的小寫 HTML 標籤會被替換為 ```{{HTM_N}}``` 權杖。首字母大寫的 JSX 標籤（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 層（步驟 5）另行處理。
+3. **提示標記**（`:::note`、`:::`）— 僅將開頭行的指令前綴替換為 ```{{ADM_OPEN_N}}```；同一行上的任何標題則保留給模型翻譯。還原時使用完全相同的原始文字。
+4. **文件錨點**（HTML `<a id="…">`、標題中間殘留的 Docusaurus `{#…}`）— 原樣保留。
+5. **MDX 專用結構**（`src/processors/mdx-placeholders.ts`）：
+   - **MDX 註解**（`{/* … */}`，包含非行尾後綴的標題中間 `{/* #my-id */}`）替換為 ```{{MDX_N}}```。
+   - **首字母大寫的 JSX 標籤**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）— 保留為 ```{{MDX_N}}```，可翻譯的字串屬性（`label`、`tooltip`、`aria-label`）會在標籤內改寫為 ```{{JXA_N}}```，除非該屬性名稱出現在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 物件字面量中的 `label:`（可透過 `docs[].protectKeys` 跳過）以及 `<TabItem value="…">`（當不存在 `label` 屬性時，跳過類似 slug 的小寫值）也會被擷取。以 `||JXA_N: …||` 行的形式附加至段落中，並由 `restoreMdx` 合併回來。
+   - **MDX 大括號運算式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）— 具備深度感知的比對，替換為 ```{{MDX_N}}```。
+6. **Markdown URL**（`](url)`、`src="…"`）— 翻譯後從對照表還原。
+7. **行內程式碼區段**（`` `code` ``）與**粗體包裹的行內程式碼**（`**`code`**`）— 保留。
+8. **Markdown 強調**（可選，CJK/RTL 語系自動啟用）— 強調分隔符號會被遮罩。
 
 在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
 

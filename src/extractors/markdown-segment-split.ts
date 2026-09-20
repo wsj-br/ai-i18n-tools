@@ -50,12 +50,37 @@ function splitPipeTableSegment(
   return out;
 }
 
-/** Top-level markdown list items (CommonMark-ish): bullet or ordered at indent ≤3. */
+const LIST_MARKER_RE = /^(\s*)(?:[-*+]|\d+\.)\s/;
+
+/** Indent (spaces) of a bullet/ordered list marker, or `null` when the line is not a marker. */
+export function listMarkerIndent(line: string): number | null {
+  if (!line.trim()) {
+    return null;
+  }
+  const m = LIST_MARKER_RE.exec(line);
+  return m ? m[1]!.length : null;
+}
+
+/**
+ * Top-level markdown list items: siblings at the first item’s indent (and any outdent).
+ * Nested markers with greater indent stay with their parent so `- **Error Responses**:`
+ * plus `  - \`404\`` is one item, not a mid-list slice starting at the nested line.
+ */
 export function splitIntoTopLevelListItems(lines: string[]): string[][] {
+  let baseline: number | null = null;
+  for (const line of lines) {
+    const indent = listMarkerIndent(line);
+    if (indent !== null) {
+      baseline = indent;
+      break;
+    }
+  }
+
   const items: string[][] = [];
   let current: string[] = [];
   for (const line of lines) {
-    const isTop = line.trim().length > 0 && /^\s{0,3}(?:[-*+]|\d+\.)\s/.test(line);
+    const indent = listMarkerIndent(line);
+    const isTop = baseline !== null && indent !== null && indent <= baseline;
     if (isTop && current.length > 0) {
       items.push(current);
       current = [line];

@@ -7,6 +7,7 @@ export {
   writeTranslationFailureLog,
 } from "../utils/translation-failure-log.js";
 export type {
+  TranslationCheckSnapshot,
   TranslationDetailLogOpts,
   TranslationLogMode,
   TranslationLogOutcome,

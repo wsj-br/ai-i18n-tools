@@ -15,7 +15,7 @@
     "i18n:dashboard": "ai-i18n-tools dashboard"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.8.11",
+    "ai-i18n-tools": "^1.8.12",
     "i18next": "^26.4.2",
     "next": "^16.3.5",
     "react": "^19.3.0",

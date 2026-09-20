@@ -10,6 +10,10 @@ import {
   protectMarkdownEmphasis,
   restoreMarkdownEmphasis,
 } from "./emphasis-placeholders.js";
+import {
+  reattachHeadingIdSuffixes,
+  stripHeadingIdSuffixes,
+} from "./heading-id-suffix-placeholders.js";
 import { protectHtmlTags, restoreHtmlTags } from "./html-tag-placeholders.js";
 import { protectMdx, restoreMdx } from "./mdx-placeholders.js";
 import type { ExpressionProtectionOptions } from "./expression-attribute-protection.js";
@@ -17,9 +21,10 @@ import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js"
 
 /**
  * Chains placeholder protection for document translation:
- * html tags/comments → admonitions → doc anchors → MDX (comments/JSX/expressions) → markdown URLs
- * → **`inline`** (whole span) → remaining `` `code` `` → emphasis (optional).
- * Restore is the inverse order.
+ * heading-id suffixes (peeled, not sent) → html tags/comments → admonitions → doc anchors →
+ * MDX (comments/JSX/expressions) → markdown URLs → **`inline`** (whole span) → remaining
+ * `` `code` `` → emphasis (optional). Restore is the inverse order; heading-id suffixes are
+ * pinned back to the end of ATX heading lines last.
  */
 export class PlaceholderHandler {
   protectForTranslation(
@@ -33,6 +38,7 @@ export class PlaceholderHandler {
     titleCloseMap: string[];
     htmlAnchors: string[];
     docusaurusHeadingIds: string[];
+    headingIdSuffixes: string[];
     mdxMap: string[];
     /** Optional: JSX attribute values extracted from MDX tags */
     jsxAttributeMap?: string[];
@@ -44,7 +50,8 @@ export class PlaceholderHandler {
     emphasisProtected: boolean;
   } {
     const emphasisOn = options?.emphasis !== false;
-    const htmlTags = protectHtmlTags(text);
+    const headingIds = stripHeadingIdSuffixes(text);
+    const htmlTags = protectHtmlTags(headingIds.text);
     const ad = protectAdmonitionSyntax(htmlTags.protected);
     const doc = protectDocAnchors(ad.protected);
     const mdx = protectMdx(doc.protected, options?.expressionProtection);
@@ -60,6 +67,7 @@ export class PlaceholderHandler {
       titleCloseMap: ad.titleCloseMap,
       htmlAnchors: doc.htmlAnchors,
       docusaurusHeadingIds: doc.docusaurusHeadingIds,
+      headingIdSuffixes: headingIds.headingIdSuffixes,
       mdxMap: mdx.mdxMap,
       jsxAttributeMap: mdx.jsxAttributeMap ?? [],
       jsxAttributeText: mdx.jsxAttributeText,
@@ -80,6 +88,11 @@ export class PlaceholderHandler {
       titleCloseMap?: string[];
       htmlAnchors: string[];
       docusaurusHeadingIds: string[];
+      /**
+       * Optional for backward compatibility with callers that protected before heading-id
+       * suffixes were peeled out of the prompt.
+       */
+      headingIdSuffixes?: string[];
       /** Optional for backward compatibility with callers that protected before MDX support shipped. */
       mdxMap?: string[];
       /** Optional: JSX attribute values extracted from MDX tags */
@@ -102,6 +115,7 @@ export class PlaceholderHandler {
     s = restoreDocAnchors(s, state.htmlAnchors, state.docusaurusHeadingIds);
     s = restoreAdmonitionSyntax(s, state.openMap, state.endMap, state.titleCloseMap ?? []);
     s = restoreHtmlTags(s, state.htmlTagMap);
+    s = reattachHeadingIdSuffixes(s, state.headingIdSuffixes ?? []);
     return s;
   }
 

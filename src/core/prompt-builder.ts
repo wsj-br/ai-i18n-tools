@@ -10,6 +10,19 @@ import {
   type ProofreadUIPromptStrings,
 } from "./prompts.js";
 import { extractUiPlaceholderTokens } from "./ui-placeholders.js";
+import {
+  buildDocumentCoreRules,
+  buildMarkdownExample,
+  buildMarkdownPreservation,
+  collectDocumentPlaceholderKinds,
+} from "./document-placeholder-types.js";
+
+export {
+  buildDocumentCoreRules,
+  buildMarkdownExample,
+  buildMarkdownPreservation,
+  collectDocumentPlaceholderKinds,
+} from "./document-placeholder-types.js";
 
 /**
  * Document translation prompts follow common batch / single-segment patterns for markdown, JSON message
@@ -145,14 +158,15 @@ function unescapeXml(text: string): string {
 }
 
 /** Shared rules block for document batch/single prompts (all document types). */
-function documentCoreRulesBlock(opts: PromptBuilderOptions): string {
+function documentCoreRulesBlock(opts: PromptBuilderOptions, texts: readonly string[]): string {
+  const kinds = collectDocumentPlaceholderKinds(texts);
   const block = `Translate from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
 
 ${PROMPTS.document.terminology}
 
-${PROMPTS.document.coreRules}
+${buildDocumentCoreRules(kinds)}
 
-${PROMPTS.document.markdownPreservation}`;
+${buildMarkdownPreservation(kinds)}`;
   return withScriptDirective(block, opts.targetLocale);
 }
 
@@ -172,14 +186,12 @@ export function buildDocumentBatchPrompt(
 ): { systemPrompt: string; userContent: string } {
   const glossary = buildGlossaryBlock(opts.glossaryHints);
   const addendum = contentTypeAddendum(contentType);
+  const segmentTexts = segments.map((s) => s.content);
+  const rules = documentCoreRulesBlock(opts, segmentTexts);
 
   if (responseFormat === "json-array") {
-    const userContent = JSON.stringify(
-      segments.map((s) => s.content),
-      null,
-      2
-    );
-    const systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
+    const userContent = JSON.stringify(segmentTexts, null, 2);
+    const systemPrompt = `${rules}${addendum}
 
 ${PROMPTS.document.batchJsonArrayInstruction}${glossary}`;
     return { systemPrompt, userContent };
@@ -191,7 +203,7 @@ ${PROMPTS.document.batchJsonArrayInstruction}${glossary}`;
       payload[String(i)] = segments[i]?.content ?? "";
     }
     const userContent = JSON.stringify(payload, null, 2);
-    const systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
+    const systemPrompt = `${rules}${addendum}
 
 ${PROMPTS.document.batchJsonObjectInstruction}${glossary}`;
     return { systemPrompt, userContent };
@@ -200,7 +212,7 @@ ${PROMPTS.document.batchJsonObjectInstruction}${glossary}`;
   const segBlocks = segments
     .map((s, i) => `<seg id="${i}">${escapeXml(s.content)}</seg>`)
     .join("\n");
-  const systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
+  const systemPrompt = `${rules}${addendum}
 
 ${PROMPTS.document.batchXmlInstruction}${glossary}`;
   const userContent = `<segments>
@@ -218,22 +230,21 @@ export function buildDocumentSinglePrompt(
   const glossary = buildGlossaryBlock(opts.glossaryHints);
   const addendum = contentTypeAddendum(contentType);
   const outputHint = PROMPTS.document.singleSegmentOutputInstruction;
+  const kinds = collectDocumentPlaceholderKinds([content]);
+  const rules = documentCoreRulesBlock(opts, [content]);
 
   let systemPrompt: string;
 
   if (contentType === "markdown") {
-    const example = PROMPTS.document.markdownExample.replace(
-      /\{\{targetLang\}\}/g,
-      opts.targetLanguageLabel
-    );
-    systemPrompt = `${documentCoreRulesBlock(opts)}
+    const example = buildMarkdownExample(opts.targetLanguageLabel, kinds);
+    systemPrompt = `${rules}
 
 ${example}
 
 ---
 ${outputHint}${glossary}`;
   } else {
-    systemPrompt = `${documentCoreRulesBlock(opts)}${addendum}
+    systemPrompt = `${rules}${addendum}
 
 ---
 ${outputHint}${glossary}`;

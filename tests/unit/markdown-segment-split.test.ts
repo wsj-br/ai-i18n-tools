@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mergeSegmentSplittingOpts, segmentSplittingSchema } from "../../src/core/types.js";
 import {
   expandSegmentsWithSplitting,
+  splitIntoTopLevelListItems,
   splitMarkdownSegmentPiece,
 } from "../../src/extractors/markdown-segment-split.js";
 
@@ -51,6 +52,47 @@ describe("splitMarkdownSegmentPiece", () => {
     };
     const parts = splitMarkdownSegmentPiece(seg, enabled);
     expect(parts).toHaveLength(1);
+  });
+
+  it("keeps 2-space nested items with their parent instead of starting a mid-list chunk", () => {
+    const content = [
+      "- **Error Responses**:",
+      "  - `400`: Cannot delete your own account",
+      "  - `401`: Unauthorized",
+      "  - `403`: Forbidden",
+      "  - `404`: User not found",
+      "  - `500`: Internal server error",
+      "- **Notes**:",
+      "  - Only accessible to admin users",
+      "  - Cannot delete your own account",
+    ].join("\n");
+    const items = splitIntoTopLevelListItems(content.split("\n"));
+    expect(items).toHaveLength(2);
+    expect(items[0]!.join("\n")).toContain("Error Responses");
+    expect(items[0]!.join("\n")).toContain("`404`");
+    expect(items[1]!.join("\n")).toContain("Notes");
+
+    const parts = splitMarkdownSegmentPiece(
+      { type: "paragraph", content, translatable: true, startLine: 1 },
+      segmentSplittingSchema.parse({ enabled: true, maxListItemsPerChunk: 4 })
+    );
+    expect(parts).toHaveLength(1);
+    expect(parts[0]!.content).toBe(content);
+  });
+
+  it("still splits sibling items that share the fragment’s starting indent", () => {
+    const content = [
+      "  - `404`: User not found",
+      "  - `500`: Internal server error",
+      "- **Notes**:",
+      "  - Only accessible to admin users",
+    ].join("\n");
+    const items = splitIntoTopLevelListItems(content.split("\n"));
+    expect(items).toHaveLength(4);
+    expect(items[0]!.join("\n")).toContain("`404`");
+    expect(items[1]!.join("\n")).toContain("`500`");
+    expect(items[2]!.join("\n")).toContain("Notes");
+    expect(items[3]!.join("\n")).toContain("Only accessible");
   });
 
   it("splits long top-level lists into chunks with tight joins", () => {

@@ -23,6 +23,8 @@
 
 至少需要一個 `docs[]` 區塊。會在每個區塊的 `contentPaths` 之下收集 `.md` / `.mdx`（遵循 `.translate-ignore`）。預設會在每個扁平 ATX `#` 標題之前立即插入一行 HTML 錨點 `<a id="slug"></a>`（會跳過圍欄程式碼區塊內的標題）。任何形式的現有標題 ID（HTML 錨點行、傳統的 `{#id}` 後綴、MDX `{/* #id */}` 註解）都會被替換為所選的樣式；slug 一律從目前的標題文字推導而來。若使用 `--slug-style mdx-comment`，則改為在標題行上寫入 Docusaurus MDX 註解後綴（採用相同的 github 風格 slug 演算法），並在存在前置 HTML 錨點時將其移除。`--remove` 會移除所有上述的標題 ID 形式，且不寫入任何內容作為替代。
 
+更新來源檔案後，該命令也會遍歷每個語系現有的翻譯 Markdown（與 `translate-docs` 相同的 `docsOutput` 路徑對應）。它會將 **英文** 標題 ID 按文件順序複製到相符的 ATX 標題上 — 它永遠不會對翻譯後的標題進行 slug 處理 — 並將標題中間的 `{#id}` / `{/* #id */}`（或孤立的 HTML `<a id>`）移回 Docusaurus / 所選樣式期望的形式。缺少的翻譯檔案會被跳過。`--remove` 也會從這些翻譯檔案中移除標題 ID，包括放錯位置的中行標記。
+
 **關鍵選項：** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--remove`、`--dry-run`
 
 `--slug-style`：`github`（預設值；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}` 後綴）。搭配 `pymdown` 時，可選用 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--remove` 不可與 `--pymdown-*` 合併使用。

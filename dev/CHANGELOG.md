@@ -9,6 +9,16 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.8.12] - 2026-09-21
+
+- **Fixed**: docs — `translate-docs` peels `{#id}` / `{/* #id */}` heading-id suffixes off ATX headings before the LLM call and pins them back at end of line after restore, so CJK/SOV word order cannot leave a mid-heading comment that Docusaurus ignores.
+- **Added**: write-heading-ids — after updating source files, copies the English heading ids onto existing translated markdown (never slugging the translated title) and repairs mid-line `{#id}` / `{/* #id */}` placements. `--remove` strips those tokens in translated files too.
+- **Changed**: docs — document prompts list only `{{IDENT}}` types present in the current request, so unused `{{SE}}` / `{{GLS_N}}` / `{{ILC_N}}` are no longer advertised. Inputs with no internal placeholders are told not to emit any `{{…}}` tokens.
+- **Fixed**: extractors — `splitIntoTopLevelListItems` keeps 2-space nested items with their parent list item, so default list chunking no longer starts mid-nest.
+- **Fixed**: docs — mdast compare ignores isolated `list` node-count drift when list-marker indents match, and rejects dropped hanging indent via `listMarkerIndent`; mid-list fragments are also parsed under a dummy parent for the remaining structure counts.
+- **Added**: cli — `--debug-failed` FAILED/DEBUG translation logs include the unprotected source, restored translation, and mdast counts actually compared.
+- **Added**: dev scripts — `analyze:translation-failures` deduplicates retry/debug log records, excludes timeout errors, and ranks recurring validation failures with checker-snapshot evidence.
+
 ## [1.8.11] - 2026-09-16
 
 - **Fixed**: cli — provider API / empty-body failures print on the console (model, error, next model) instead of writing prompt-only `FAILED-TRANSLATION` files under `--debug-failed`. Those files remain for parse/script/quality misses. Identical API errors are logged once per `LlmClient` instance.

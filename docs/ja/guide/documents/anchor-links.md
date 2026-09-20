@@ -24,8 +24,8 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 [Docusaurus](/ja/guide/integrations/docusaurus) のドキュメント (`docsOutput.style = "docusaurus"`) では、`ai-i18n-tools write-heading-ids` からの HTML アンカーではなく、Docusaurus のネイティブな見出し ID を優先してください:
 
-1. Docusaurus のクラシックな `{#…}` サフィックス (CommonMark) または MDX コメント `{/* #… */}` (`.mdx` で推奨) を使用して、見出し行に明示的な id を追加します。例: `## TLS configuration {#tls-configuration}` または `## TLS configuration {/* #tls-configuration */}`。`translate-docs` の際、翻訳されるのは表示される見出しテキストのみであり、id サフィックスはすべてのロケールで保持されます。
-2. Docusaurus プロジェクトのルートから `docusaurus write-heading-ids` を実行して (`package.json` に組み込まれている場合は通常 `pnpm run write-heading-ids`)、id のない見出しに id を追加または更新します — `{/* #… */}` 形式には `--syntax mdx-comment` を使用してください。または、同じ `docs[]` / `contentPaths` で `ai-i18n-tools write-heading-ids --slug-style mdx-comment` を実行します。見出しを名前変更した後は、古い id が現在のタイトルに一致するように再実行してください。
+1. 見出し行に Docusaurus の従来の `{#…}` サフィックス (CommonMark) または MDX コメント `{/* #… */}` (`.mdx` ではこちらが推奨) で明示的な id を付与します。例: `## TLS configuration {#tls-configuration}` または `## TLS configuration {/* #tls-configuration */}`。`translate-docs` 中は、見出しの表示テキストのみがモデルに送信されます — id サフィックスは最初に取り除かれ、翻訳された見出し行の **末尾**に再び付与されます (Docusaurus はタイトルの中間に配置された `{/* #id */}` を無視します)。
+2. Docusaurus プロジェクトのルート (`package.json` に組み込んでいる場合は通常 `pnpm run write-heading-ids`) から `docusaurus write-heading-ids` を実行し、id のない見出しに id を追加または更新します — `{/* #… */}` 形式には `--syntax mdx-comment` を使用します。または、同じ `docs[]` / `contentPaths` で `ai-i18n-tools write-heading-ids --slug-style mdx-comment` を実行します。このコマンドは、既存の翻訳ファイル内の同じ英語 id も再配置します (翻訳されたタイトルのスラッグ化は行いません)。見出しを改名した後は、古い id が現在のタイトルに一致するよう再実行してください。
 
 Markdown の **アンカーリンク** はこれらの安定した id を指すようにしてください。例: `[label](other.md#tls-configuration)`。ここでフラグメントは `{#…}` または `{/* #… */}` の id に一致し、英語の単語のみから推測されたスラッグではありません。このパターンを使用したコミット済みドキュメントについては、[examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) を参照してください。
 
@@ -34,8 +34,8 @@ Markdown の **アンカーリンク** はこれらの安定した id を指す�
 
 Docusaurus を使用していない場合、または `{#…}` / `{/* #… */}` サフィックスの代わりに HTML アンカーが必要な場合:
 
-1. `translate-docs` の前（通常の `docs[]` / `contentPaths` と同じ）に、ソース `.md` / `.mdx` に対して `ai-i18n-tools write-heading-ids` を実行します。これにより各見出しの前の行に明示的なHTMLアンカーが挿入され、すべての翻訳コピーで `id` 値が共有されます。見出しの名前を変更した後は再実行して、古くなったアンカーIDが現在のタイトルに合わせて更新されるようにします。
-2. markdownの**アンカーリンク**をこれらの固定IDを指すようにしてください。例：`[label](other.md#section-id)`。ここで `section-id` はツールが書き込んだアンカーと一致している必要があります — 英語の単語から推測したものではありません。
+1. `translate-docs` の前に、ソースの `.md` / `.mdx` で `ai-i18n-tools write-heading-ids` を実行します (通常と同じ `docs[]` / `contentPaths` です)。これにより、各見出しの前の行に明示的な HTML アンカーが挿入され、`id` の値がすべての翻訳コピーで共有されます。また、同じ英語 id が既存の翻訳ファイルにもコピーされます。見出しを改名した後は、古いアンカー id が現在のタイトルに一致するよう再実行してください。
+2. Markdown の **アンカーリンク**をこれらの安定した id に向けます。例: `[label](other.md#section-id)`。ここで `section-id` はツールが書き込んだアンカーに一致させます — 英語の単語だけから推測したものではありません。
 
 <a id="example"></a>
 ## 例

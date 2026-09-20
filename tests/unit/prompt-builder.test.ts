@@ -7,6 +7,8 @@ import {
   buildPluralPlaceholderConstraint,
   buildProofreadUIPromptMessages,
   buildUIPromptMessages,
+  collectDocumentPlaceholderKinds,
+  buildDocumentCoreRules,
   parseProofreadUIBatchResponse,
   parsePluralFormsJsonResponse,
   parseBatchJsonArrayResponse,
@@ -60,28 +62,58 @@ describe("buildDocumentBatchPrompt", () => {
   it("markdown type includes core rules but no JSON/SVG addendum", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "markdown");
     expect(systemPrompt).toContain("TERMINOLOGY (technical documentation)");
-    expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
-    expect(systemPrompt).toContain("{{ADM_TCLOSE_N}}");
-    expect(systemPrompt).toContain("{{JXA_N}}");
-    expect(systemPrompt).toContain("{{BLD_N}}");
+    expect(systemPrompt).toContain("This input has no internal {{…}} placeholders");
+    expect(systemPrompt).toContain("Do not emit any {{…}} tokens");
+    expect(systemPrompt).toContain("glossary target words are plain text");
+    expect(systemPrompt).toContain("Preserve GFM pipe tables");
+    expect(systemPrompt).not.toContain("{{ADM_OPEN_N}}");
+    expect(systemPrompt).not.toContain("{{SE}}");
+    expect(systemPrompt).not.toContain("{{GLS_N}}");
+    expect(systemPrompt).not.toContain("software localization JSON file");
+  });
+
+  it("lists only placeholder types present in the batch", () => {
+    const segs: Segment[] = [
+      {
+        id: "a",
+        type: "paragraph",
+        content: "See {{ILC_0}} {{MDX_0}}",
+        hash: "h1",
+        translatable: true,
+      },
+    ];
+    const { systemPrompt } = buildDocumentBatchPrompt(segs, baseOpts, "markdown");
     expect(systemPrompt).toContain("{{ILC_N}}");
-    expect(systemPrompt).toContain("{{IT}}");
-    expect(systemPrompt).toContain("{{IU}}");
-    expect(systemPrompt).toContain("{{SE}}");
-    expect(systemPrompt).toContain("{{SU}}");
-    expect(systemPrompt).toContain("{{ST}}");
+    expect(systemPrompt).toContain("{{MDX_N}}");
     expect(systemPrompt).toContain("exactly once");
     expect(systemPrompt).toContain("Content tokens");
-    expect(systemPrompt).toContain("structural tokens");
-    expect(systemPrompt).toContain("Do not invent new {{…}} tokens");
-    expect(systemPrompt).toContain("right-to-left");
-    expect(systemPrompt).toContain("Preserve GFM pipe tables");
-    expect(systemPrompt).not.toContain("software localization JSON file");
+    expect(systemPrompt).not.toContain("{{SE}}");
+    expect(systemPrompt).not.toContain("{{SU}}");
+    expect(systemPrompt).not.toContain("{{GLS_N}}");
+    expect(systemPrompt).not.toContain("{{ADM_OPEN_N}}");
+  });
+
+  it("mentions emphasis markers only when they appear in the input", () => {
+    const segs: Segment[] = [
+      {
+        id: "a",
+        type: "paragraph",
+        content: "{{SE}}bold{{SU}}",
+        hash: "h1",
+        translatable: true,
+      },
+    ];
+    const { systemPrompt } = buildDocumentBatchPrompt(segs, baseOpts, "markdown");
+    expect(systemPrompt).toContain("{{SE}}");
+    expect(systemPrompt).toContain("{{SU}}");
+    expect(systemPrompt).toContain("emphasis markers");
+    expect(systemPrompt).not.toContain("{{GLS_N}}");
+    expect(systemPrompt).not.toContain("{{IT}}");
   });
 
   it("json type appends locale-string context", () => {
     const { systemPrompt } = buildDocumentBatchPrompt(oneSeg, baseOpts, "json");
-    expect(systemPrompt).toContain("{{ADM_OPEN_N}}");
+    expect(systemPrompt).toContain("This input has no internal {{…}} placeholders");
     expect(systemPrompt).toContain("software localization JSON file");
   });
 
@@ -195,6 +227,36 @@ describe("PROMPTS config shape", () => {
   });
 });
 
+describe("collectDocumentPlaceholderKinds / buildDocumentCoreRules", () => {
+  it("classifies numbered, emphasis, author, and JXA appendix tokens", () => {
+    const kinds = collectDocumentPlaceholderKinds([
+      "See {{ILC_0}} {{MDX_1}} {{count}}\n||JXA0: label||",
+      "{{SE}}x{{SU}}",
+    ]);
+    expect(kinds.has("ILC")).toBe(true);
+    expect(kinds.has("MDX")).toBe(true);
+    expect(kinds.has("AUTHOR")).toBe(true);
+    expect(kinds.has("SE")).toBe(true);
+    expect(kinds.has("SU")).toBe(true);
+    expect(kinds.has("JXA")).toBe(true);
+    expect(kinds.has("JXA_APPENDIX")).toBe(true);
+    expect(kinds.has("GLS")).toBe(false);
+  });
+
+  it("omits unused official types from coreRules", () => {
+    const none = buildDocumentCoreRules(new Set());
+    expect(none).toContain("This input has no internal {{…}} placeholders");
+    expect(none).not.toContain("{{SE}}");
+    expect(none).not.toContain("{{GLS_N}}");
+
+    const ilc = buildDocumentCoreRules(new Set(["ILC"]));
+    expect(ilc).toContain("{{ILC_N}}");
+    expect(ilc).toContain("exactly once");
+    expect(ilc).not.toContain("{{SE}}");
+    expect(ilc).not.toContain("{{GLS_N}}");
+  });
+});
+
 describe("buildDocumentSinglePrompt", () => {
   const baseOpts = {
     sourceLanguageLabel: "English",
@@ -224,6 +286,16 @@ describe("buildDocumentSinglePrompt", () => {
     const { systemPrompt } = buildDocumentSinglePrompt("Hello", opts, "markdown");
     expect(systemPrompt).toContain("<glossary>");
     expect(systemPrompt).toContain("Bonjour");
+    expect(systemPrompt).not.toContain("{{SE}}");
+    expect(systemPrompt).not.toContain("{{GLS_N}}");
+  });
+
+  it("uses an ILC example when the segment only has inline-code tokens", () => {
+    const { systemPrompt } = buildDocumentSinglePrompt("Run {{ILC_0}}", baseOpts, "markdown");
+    expect(systemPrompt).toContain("{{ILC_0}}");
+    expect(systemPrompt).toContain("{{ILC_N}}");
+    expect(systemPrompt).not.toContain("{{HTM_0}}");
+    expect(systemPrompt).not.toContain("{{SE}}");
   });
 });
 

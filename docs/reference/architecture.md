@@ -171,6 +171,8 @@ The `write-heading-ids` command is a **local, non-LLM** preprocessor for documen
 
 It requires a valid config with **at least one `docs[]` block**. For each block it gathers `.md` / `.mdx` files under `contentPaths`, applies the project's `.translate-ignore` rules (same idea as doc translation), and optionally restricts to a subtree with `--path` / `--file`. Each file is transformed with `applyHeadingAnchorsToMarkdown`: for every **flat ATX heading** (`# …` through `###### …`) outside fenced code blocks, existing heading ids of any form are replaced with the selected style. HTML styles write `<a id="slug"></a>` on the line above a suffix-free heading; `--slug-style mdx-comment` writes `{/* #slug */}` on the heading line (and drops a preceding HTML anchor). Slugs always come from the current heading text. `--remove` strips HTML anchors, classic `{#id}` suffixes, and MDX comment ids without writing new ones. Slug algorithms match common ecosystems — `github` (default), `bitbucket`, `gitlab`, `pymdown` (optional Unicode normalisation / percent-encoding flags), `azure-devops`, plus `mdx-comment` (github slug + MDX comment output) — so anchor IDs stay consistent with existing tooling (doctoc, PyMdown, Docusaurus, etc.). `--dry-run` reports would-be edits without writing.
 
+After the source pass, the same command repositions those English ids onto each locale's existing translated markdown (`resolveTranslatedOutputPath`). Translated titles are never re-slugged; a mid-heading `{#id}` / `{/* #id */}` is moved back to the suffix (or HTML anchor) the selected style expects. Missing locale files are skipped.
+
 This command does **not** run inside `translate-docs` or `sync`; run it explicitly when you want stable fragment IDs in source files before translation or publishing.
 
 <a id="placeholder-protection"></a>
@@ -178,16 +180,17 @@ This command does **not** run inside `translate-docs` or `sync`; run it explicit
 
 Before translation, sensitive syntax is replaced with opaque tokens to prevent LLM corruption, applied in this order (restore is the reverse):
 
-1. **HTML tags and comments** (`<strong>`, `<!-- ... -->`, etc.) - lowercase HTML tags from a known allowlist are replaced with ```{{HTM_N}}``` tokens. Capitalised JSX tags (`<Highlight>`, `<Tabs>`, `</Tab>`) are handled separately by the MDX layer (step 4).
-2. **Admonition markers** (`:::note`, `:::`) - only the directive prefix on the opening line is replaced with ```{{ADM_OPEN_N}}```; any same-line title is left for the model to translate. Restored with exact original text.
-3. **Doc anchors** (HTML `<a id="…">`, Docusaurus heading `{#…}`) - preserved verbatim.
-4. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
-   - **MDX comments** (`{/* … */}`, including Docusaurus heading-id form `{/* #my-id */}`) replaced with ```{{MDX_N}}```.
+1. **Heading-id suffixes** (classic `{#id}` / MDX `{/* #id */}` at end of an ATX heading) — peeled off the line entirely and **not** sent to the model. After restore they are pinned back to the end of the matching heading so Docusaurus still sees a valid id. Mid-heading comments stay in the text and are handled by the later MDX / `{#…}` layers.
+2. **HTML tags and comments** (`<strong>`, `<!-- ... -->`, etc.) - lowercase HTML tags from a known allowlist are replaced with ```{{HTM_N}}``` tokens. Capitalised JSX tags (`<Highlight>`, `<Tabs>`, `</Tab>`) are handled separately by the MDX layer (step 5).
+3. **Admonition markers** (`:::note`, `:::`) - only the directive prefix on the opening line is replaced with ```{{ADM_OPEN_N}}```; any same-line title is left for the model to translate. Restored with exact original text.
+4. **Doc anchors** (HTML `<a id="…">`, leftover mid-heading Docusaurus `{#…}`) - preserved verbatim.
+5. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
+   - **MDX comments** (`{/* … */}`, including a mid-heading `{/* #my-id */}` that was not a line-end suffix) replaced with ```{{MDX_N}}```.
    - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as ```{{MDX_N}}``` with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to ```{{JXA_N}}``` inside the tag unless the attribute name appears in `docs[].protectAttributes`; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals (skippable via `docs[].protectKeys`) and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
    - **MDX brace expressions** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - depth-aware matching, replaced with ```{{MDX_N}}```.
-5. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
-6. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
-7. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
+6. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
+7. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
+8. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
 
 After the model returns, `translate-docs` restores maps and validates the segment: the same multiset of double-brace tokens must be present, structural tokens (<code v-pre>{{HTM_N}}</code>, admonition markers) must keep their ordered subsequence (content tokens such as <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code> may move with word order), restored HTML tag kinds must match the unprotected source, and any leftover double-brace identifier must already have existed in the source (so invented tokens fail). The document prompt also asks models to copy each token once, keep structural-token order, and not invent new double-brace wrappers; mechanical checks remain authoritative.
 

@@ -3,6 +3,7 @@ import type { Node } from "unist";
 import { visit } from "unist-util-visit";
 import type { Segment } from "../core/types.js";
 import { imageAltTranslationErrors } from "../extractors/image-markdown.js";
+import { listMarkerIndent } from "../extractors/markdown-segment-split.js";
 import { collectPostRestorePlaceholderErrors } from "./placeholder-integrity.js";
 
 export interface ValidationResult {
@@ -39,7 +40,7 @@ function loadMarkdownParser(): Promise<MarkdownParserModules> {
 }
 
 /** Structural counts derived from mdast (GFM). Used to compare source vs translated segment text. */
-interface MarkdownStructureStats {
+export interface MarkdownStructureStats {
   link: number;
   image: number;
   code: number;
@@ -67,7 +68,48 @@ function emptyStats(): MarkdownStructureStats {
   };
 }
 
-async function collectMarkdownStructure(md: string): Promise<MarkdownStructureStats> {
+/** Dummy parent so mid-list fragments (indent ≥ 2) parse with the same nesting context. */
+const DUMMY_LIST_PARENT = "- __ai_i18n_list_parent__\n";
+const INDENTED_LIST_START_RE = /^\s{2,3}(?:[-*+]|\d+\.)\s/;
+
+/** True when the first non-empty line is a list marker indented by 2–3 spaces. */
+export function fragmentStartsWithIndentedList(md: string): boolean {
+  const first = md.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+  return INDENTED_LIST_START_RE.test(first);
+}
+
+function withDummyListParent(md: string): string {
+  return `${DUMMY_LIST_PARENT}${md}`;
+}
+
+/** Indent of each list marker, in document order (used to catch hanging-indent drops). */
+export function listMarkerIndentSequence(md: string): number[] {
+  const out: number[] = [];
+  for (const line of md.split(/\r?\n/)) {
+    const indent = listMarkerIndent(line);
+    if (indent !== null) {
+      out.push(indent);
+    }
+  }
+  return out;
+}
+
+/**
+ * Texts actually fed to mdast for structure compare (dummy parent when the source
+ * chunk starts mid-list). Used for logged counts; indent-sequence compare stays on
+ * the raw strings so dropped hanging indent is still visible.
+ */
+export function markdownAstCompareInputs(
+  sourceMd: string,
+  translatedMd: string
+): { source: string; translated: string } {
+  if (fragmentStartsWithIndentedList(sourceMd)) {
+    return { source: withDummyListParent(sourceMd), translated: withDummyListParent(translatedMd) };
+  }
+  return { source: sourceMd, translated: translatedMd };
+}
+
+export async function collectMarkdownStructure(md: string): Promise<MarkdownStructureStats> {
   const { fromMarkdown, gfm, gfmFromMarkdown } = await loadMarkdownParser();
   const tree = fromMarkdown(md, {
     extensions: [gfm()],
@@ -125,6 +167,48 @@ const STRUCT_KEYS = [
   "table",
 ] as const;
 
+/** Compact one-line summary for FAILED/DEBUG translation logs. */
+export function formatMarkdownStructureStats(
+  stats: MarkdownStructureStats,
+  indents?: number[]
+): string {
+  const indentPart = indents ? ` indents=[${indents.join(",")}]` : "";
+  return (
+    `list=${stats.list} listItem=${stats.listItem} inlineCode=${stats.inlineCode}` +
+    ` strong=${stats.strong} emphasis=${stats.emphasis} link=${stats.link}` +
+    ` image=${stats.image} code=${stats.code} table=${stats.table}` +
+    ` headings=[${stats.headingDepths.join(",")}]${indentPart}`
+  );
+}
+
+/** Unprotected source + restored translation + mdast counts the checker used. */
+export interface TranslationCheckSnapshot {
+  sourceText: string;
+  restoredText: string;
+  sourceAst: string;
+  restoredAst: string;
+}
+
+export async function buildTranslationCheckSnapshot(
+  sourceText: string,
+  restoredText: string
+): Promise<TranslationCheckSnapshot> {
+  const inputs = markdownAstCompareInputs(sourceText, restoredText);
+  const [sourceStats, restoredStats] = await Promise.all([
+    collectMarkdownStructure(inputs.source),
+    collectMarkdownStructure(inputs.translated),
+  ]);
+  return {
+    sourceText,
+    restoredText,
+    sourceAst: formatMarkdownStructureStats(sourceStats, listMarkerIndentSequence(sourceText)),
+    restoredAst: formatMarkdownStructureStats(
+      restoredStats,
+      listMarkerIndentSequence(restoredText)
+    ),
+  };
+}
+
 /**
  * Compare mdast structure between two Markdown strings (GFM). Returns human-readable error messages.
  */
@@ -132,13 +216,28 @@ export async function compareMarkdownAST(
   sourceMd: string,
   translatedMd: string
 ): Promise<string[]> {
-  const a = await collectMarkdownStructure(sourceMd);
-  const b = await collectMarkdownStructure(translatedMd);
+  const sourceIndents = listMarkerIndentSequence(sourceMd);
+  const translatedIndents = listMarkerIndentSequence(translatedMd);
+  const indentsMatch = sourceIndents.join(",") === translatedIndents.join(",");
+
+  const inputs = markdownAstCompareInputs(sourceMd, translatedMd);
+  const a = await collectMarkdownStructure(inputs.source);
+  const b = await collectMarkdownStructure(inputs.translated);
   const errors: string[] = [];
   for (const k of STRUCT_KEYS) {
     if (a[k] !== b[k]) {
+      // Isolated mid-list chunks can differ in `list` node count even when
+      // markers and indent are preserved; trust the indent sequence instead.
+      if (k === "list" && indentsMatch) {
+        continue;
+      }
       errors.push(`AST mismatch: ${k} ${a[k]} → ${b[k]}`);
     }
+  }
+  if (!indentsMatch && (sourceIndents.length > 0 || translatedIndents.length > 0)) {
+    errors.push(
+      `AST mismatch: listMarkerIndent [${sourceIndents.join(",")}] → [${translatedIndents.join(",")}]`
+    );
   }
   const aHead = a.headingDepths.join(",");
   const bHead = b.headingDepths.join(",");

@@ -7,6 +7,9 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { t } from "../i18n/index.js";
+import type { TranslationCheckSnapshot } from "../processors/validator.js";
+
+export type { TranslationCheckSnapshot } from "../processors/validator.js";
 
 export type TranslationLogOutcome = "retrying_next_model" | "fatal" | "individual_success";
 export type TranslationLogMode = "failed" | "debug";
@@ -34,6 +37,27 @@ function safeNameForLogFilename(relativePath: string): string {
   return relativePath.replace(/[/\\:*?"<>|]/g, "_");
 }
 
+function formatCheckSnapshotLines(snapshots: TranslationCheckSnapshot[] | undefined): string[] {
+  if (!snapshots || snapshots.length === 0) {
+    return [];
+  }
+  const lines: string[] = ["--- checker inputs (unprotected source vs restored) ---"];
+  for (let i = 0; i < snapshots.length; i++) {
+    const snap = snapshots[i]!;
+    if (snapshots.length > 1) {
+      lines.push(`-- pair ${i + 1}/${snapshots.length} --`);
+    }
+    lines.push(`sourceAst: ${snap.sourceAst}`);
+    lines.push(`restoredAst: ${snap.restoredAst}`);
+    lines.push("--- unprotected source ---");
+    lines.push(snap.sourceText);
+    lines.push("--- restored translation ---");
+    lines.push(snap.restoredText);
+    lines.push("");
+  }
+  return lines;
+}
+
 export interface TranslationDetailLogOpts {
   cacheDirAbs: string;
   relativePath: string;
@@ -49,6 +73,8 @@ export interface TranslationDetailLogOpts {
   rawAssistantContent: string;
   /** Restored / accepted translation when the attempt eventually succeeded. */
   translatedText?: string;
+  /** Unprotected source + restored text + mdast counts actually compared. */
+  checkSnapshots?: TranslationCheckSnapshot[];
 }
 
 /**
@@ -103,6 +129,7 @@ export function writeTranslationDetailLog(
       ...(opts.translatedText !== undefined
         ? ["--- translated text ---", opts.translatedText, ""]
         : []),
+      ...formatCheckSnapshotLines(opts.checkSnapshots),
     ].filter((l) => l !== "");
     fs.writeFileSync(abs, lines.join("\n"), "utf8");
     return abs;

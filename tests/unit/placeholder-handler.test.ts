@@ -70,12 +70,36 @@ describe("PlaceholderHandler", () => {
     expect(out).toBe(line);
   });
 
-  it("protects MDX heading-id comment `{/* #id */}` end-to-end", () => {
+  it("peels MDX heading-id comment `{/* #id */}` out of the prompt and pins it back", () => {
     const h = new PlaceholderHandler();
     const src = "### Hello World {/* #my-explicit-id */}";
     const st = h.protectForTranslation(src, { emphasis: false });
-    expect(st.mdxMap).toEqual(["{/* #my-explicit-id */}"]);
-    expect(st.text).toBe("### Hello World {{MDX_0}}");
+    expect(st.mdxMap).toEqual([]);
+    expect(st.headingIdSuffixes).toEqual(["{/* #my-explicit-id */}"]);
+    expect(st.text).toBe("### Hello World");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
+  it("pins a heading-id suffix to end of line after Hindi-style word reorder", () => {
+    const h = new PlaceholderHandler();
+    const src = "## HTTPS with a reverse proxy {/* #https-with-a-reverse-proxy */}";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.text).toBe("## HTTPS with a reverse proxy");
+    expect(st.headingIdSuffixes).toEqual(["{/* #https-with-a-reverse-proxy */}"]);
+    expect(st.mdxMap).toEqual([]);
+    const translated = "## रिवर्स प्रॉक्सी के साथ HTTPS";
+    expect(h.restoreAfterTranslation(translated, st)).toBe(
+      "## रिवर्स प्रॉक्सी के साथ HTTPS {/* #https-with-a-reverse-proxy */}"
+    );
+  });
+
+  it("peels classic `{#id}` suffixes so they are not sent as `{{HDG_N}}`", () => {
+    const h = new PlaceholderHandler();
+    const src = "### Hello {#hello}";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.docusaurusHeadingIds).toEqual([]);
+    expect(st.headingIdSuffixes).toEqual(["{#hello}"]);
+    expect(st.text).toBe("### Hello");
     expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
   });
 

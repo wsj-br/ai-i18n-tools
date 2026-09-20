@@ -18,7 +18,7 @@ export interface PymdownSlugOptions {
   percentEncode: boolean;
 }
 
-const ATX_HEADING_RE = /^(#{1,6})\s+(.+)$/;
+export const ATX_HEADING_RE = /^(#{1,6})\s+(.+)$/;
 /** Classic Docusaurus / CommonMark heading id: `{#my-id}` at end of title. */
 const CLASSIC_HEADING_ID_RE = /\s*\{#([^}]+)\}\s*$/;
 /**
@@ -27,6 +27,10 @@ const CLASSIC_HEADING_ID_RE = /\s*\{#([^}]+)\}\s*$/;
  */
 const MDX_COMMENT_HEADING_ID_RE = /\s*\{\/\*\s*#(\S+)\s*\*\/\}\s*$/;
 const HTML_ANCHOR_LINE_RE = /^\s*<a\s+id\s*=\s*(["'])([^"']*)\1[^>]*>\s*<\/a>\s*$/i;
+/** Classic `{#id}` anywhere in a heading title (including mid-line after translation). */
+const CLASSIC_HEADING_ID_ANYWHERE_RE = /\s*\{#[^}]+\}/g;
+/** MDX heading-id comment (brace + slash-star + `#id` + star-slash + brace) anywhere in a title. */
+const MDX_COMMENT_HEADING_ID_ANYWHERE_RE = /\s*\{\/\*\s*#\S+\s*\*\/\}/g;
 
 function asciiOnlyToLowerCase(input: string): string {
   let result = "";
@@ -277,6 +281,176 @@ function formatCleanHeading(hashes: string, visibleTitle: string): string {
 
 function precedingLineIsHtmlAnchor(lines: string[], headingIndex: number): boolean {
   return headingIndex > 0 && HTML_ANCHOR_LINE_RE.test(lines[headingIndex - 1]!);
+}
+
+/**
+ * Remove classic `{#id}` / MDX heading-id comment tokens anywhere in a heading title
+ * (trailing suffix or mid-line after translation reordering).
+ */
+function stripEmbeddedHeadingIdTokens(titlePart: string): string {
+  const next = titlePart
+    .replace(MDX_COMMENT_HEADING_ID_ANYWHERE_RE, "")
+    .replace(CLASSIC_HEADING_ID_ANYWHERE_RE, "");
+  if (next === titlePart) {
+    return titlePart;
+  }
+  return next.trim();
+}
+
+/**
+ * Fence-aware walk of ATX headings; returns each heading's explicit id (or `undefined`
+ * when the title has no end-of-line `{#id}` or MDX heading-id comment suffix).
+ */
+export function extractHeadingIds(markdownBody: string): (string | undefined)[] {
+  const ids: (string | undefined)[] = [];
+  const lines = markdownBody.split("\n");
+  let fence: "`" | "~" | null = null;
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+
+    if (fence) {
+      if (trimmed.startsWith(fence + fence + fence)) {
+        fence = null;
+      }
+      continue;
+    }
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      fence = trimmed.startsWith("```") ? "`" : "~";
+      continue;
+    }
+
+    const hm = line.match(ATX_HEADING_RE);
+    if (hm) {
+      ids.push(parseExplicitHeadingId(hm[2]!).id);
+    }
+  }
+
+  return ids;
+}
+
+/**
+ * Write known English heading ids onto translated ATX headings in document order.
+ * Strips any embedded classic / MDX heading-id token (including mid-line) and a
+ * preceding HTML anchor, then writes the known id in `style`. Headings with no
+ * corresponding known id are left untouched.
+ */
+export function applyKnownHeadingIds(
+  markdownBody: string,
+  ids: (string | undefined)[],
+  style: SlugStyle
+): string {
+  const lines = markdownBody.split("\n");
+  let fence: "`" | "~" | null = null;
+  let i = 0;
+  let headingIndex = 0;
+  const htmlStyle = style !== "mdx-comment";
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const trimmed = line.trimStart();
+
+    if (fence) {
+      if (trimmed.startsWith(fence + fence + fence)) {
+        fence = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      fence = trimmed.startsWith("```") ? "`" : "~";
+      i += 1;
+      continue;
+    }
+
+    const hm = line.match(ATX_HEADING_RE);
+    if (hm) {
+      const knownId = ids[headingIndex];
+      headingIndex += 1;
+      if (knownId === undefined) {
+        i += 1;
+        continue;
+      }
+
+      const hashes = hm[1]!;
+      const visibleTitle = stripEmbeddedHeadingIdTokens(hm[2]!);
+
+      if (htmlStyle) {
+        const clean = formatCleanHeading(hashes, visibleTitle);
+        if (precedingLineIsHtmlAnchor(lines, i)) {
+          lines[i - 1] = formatHtmlAnchorLine(knownId);
+          lines[i] = clean;
+          i += 1;
+          continue;
+        }
+        lines[i] = clean;
+        lines.splice(i, 0, formatHtmlAnchorLine(knownId));
+        i += 2;
+        continue;
+      }
+
+      if (precedingLineIsHtmlAnchor(lines, i)) {
+        lines.splice(i - 1, 1);
+        i -= 1;
+      }
+      lines[i] = formatHeadingWithMdxComment(hashes, visibleTitle, knownId);
+      i += 1;
+      continue;
+    }
+
+    i += 1;
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Strip HTML heading-anchor lines and classic / MDX heading-id tokens anywhere in
+ * ATX titles (including mid-line), outside fenced code. Used for `--remove` on
+ * translated files where a suffix may no longer sit at end of line.
+ */
+export function stripHeadingIdsAnywhere(markdownBody: string): string {
+  const lines = markdownBody.split("\n");
+  let fence: "`" | "~" | null = null;
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const trimmed = line.trimStart();
+
+    if (fence) {
+      if (trimmed.startsWith(fence + fence + fence)) {
+        fence = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      fence = trimmed.startsWith("```") ? "`" : "~";
+      i += 1;
+      continue;
+    }
+
+    if (HTML_ANCHOR_LINE_RE.test(line)) {
+      lines.splice(i, 1);
+      continue;
+    }
+
+    const hm = line.match(ATX_HEADING_RE);
+    if (hm) {
+      const stripped = stripEmbeddedHeadingIdTokens(hm[2]!);
+      if (stripped !== hm[2]!) {
+        lines[i] = formatCleanHeading(hm[1]!, stripped);
+      }
+    }
+
+    i += 1;
+  }
+
+  return lines.join("\n");
 }
 
 /**

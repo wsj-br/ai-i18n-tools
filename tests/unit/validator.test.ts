@@ -34,6 +34,61 @@ describe("compareMarkdownAST", () => {
     const e = await compareMarkdownAST("- a\n- b", "- a");
     expect(e.some((x) => x.includes("AST mismatch: listItem") || x.includes("list"))).toBe(true);
   });
+
+  it("accepts an indented error-code + Notes fragment that preserves markers", async () => {
+    const source = [
+      "  - `404`: User not found",
+      "  - `500`: Internal server error",
+      "- **Notes**:",
+      "  - Only accessible to admin users",
+    ].join("\n");
+    const translated = [
+      "  - `404`: Usuario no encontrado",
+      "  - `500`: Error interno del servidor",
+      "- **Notas**:",
+      "  - Solo accesible para usuarios administradores",
+    ].join("\n");
+    expect(await compareMarkdownAST(source, translated)).toEqual([]);
+    const r = await validateDocTranslatePair(
+      S({ type: "paragraph", content: source, hash: "031037763892ff7f" }),
+      translated
+    );
+    expect(r.ok).toBe(true);
+  });
+
+  it("still rejects dropping hanging indent on a mid-list fragment", async () => {
+    const source = [
+      "  - At least one number",
+      "  - Special characters optional",
+      '- **"Remember me" functionality** with username persistence in localStorage',
+      "- **Session-based authentication** with database-backed sessions (replaces in-memory)",
+    ].join("\n");
+    const translated = [
+      "- Pelo menos um número",
+      "  - Caracteres especiais opcionais",
+      '- **Funcionalidade "Lembrar-me"** com persistência do nome de usuário no localStorage',
+      "- **Autenticação baseada em sessão** com sessões com suporte de banco de dados (substitui na memória)",
+    ].join("\n");
+    const e = await compareMarkdownAST(source, translated);
+    expect(e.some((x) => x.includes("listMarkerIndent") || x.includes("AST mismatch: list"))).toBe(
+      true
+    );
+
+    const nestedSource = [
+      "   - Checks for required tables and columns",
+      "   - Verifies the database version is 4.0",
+      "   - Cleans up temporary files",
+    ].join("\n");
+    const nestedTranslated = [
+      "- Comprueba las tablas y columnas requeridas",
+      "   - Verifica que la versión de la base de datos sea 4.0",
+      "   - Limpia los Archivos temporales",
+    ].join("\n");
+    const nested = await compareMarkdownAST(nestedSource, nestedTranslated);
+    expect(
+      nested.some((x) => x.includes("listMarkerIndent") || x.includes("AST mismatch: list"))
+    ).toBe(true);
+  });
 });
 
 describe("lengthRatioMin", () => {

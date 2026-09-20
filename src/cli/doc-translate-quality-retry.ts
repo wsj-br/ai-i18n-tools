@@ -4,7 +4,12 @@ import type { Segment, SegmentType, TranslationFailureInsert } from "../core/typ
 import { splitSegmentForQualityRetry } from "../extractors/markdown-quality-split.js";
 import { PlaceholderHandler } from "../processors/placeholder-handler.js";
 import { restoreGlossaryForcedTerms } from "../processors/glossary-force-placeholders.js";
-import { errorsIncludeAstMismatch, validateDocTranslatePair } from "../processors/validator.js";
+import {
+  buildTranslationCheckSnapshot,
+  errorsIncludeAstMismatch,
+  validateDocTranslatePair,
+  type TranslationCheckSnapshot,
+} from "../processors/validator.js";
 import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
 import type { Glossary } from "../glossary/glossary.js";
 import type { LlmClient } from "../api/llm-client.js";
@@ -41,6 +46,7 @@ export type DocQualityLogWriter = (opts: {
   userContent: string;
   rawAssistantContent: string;
   mode: "failed" | "debug";
+  checkSnapshots?: TranslationCheckSnapshot[];
 }) => string | undefined;
 
 export type ProtectSegmentFn = (raw: string) => { text: string; state: ProtectState };
@@ -214,6 +220,10 @@ async function translateProtectedContent(
     const ok = preRestoreErrors.length === 0 && v.ok;
     const nextIdx = models.indexOf(single.model) + 1;
     const line = perSegLine(params, ok, allErrors, partLabel);
+    const checkSnapshots =
+      failureLogDirAbs && docLog
+        ? [await buildTranslationCheckSnapshot(originalContent, restored)]
+        : undefined;
 
     if (failureLogDirAbs && docLog && writeDebugLog) {
       const debugLogPath = writeDebugLog({
@@ -232,6 +242,7 @@ async function translateProtectedContent(
         rawAssistantContent:
           single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
         mode: "debug",
+        checkSnapshots,
       });
       if (debugLogPath) {
         console.warn(chalk.gray(t("  🧪 Debug log: {{path}}", { path: debugLogPath })));
@@ -276,6 +287,7 @@ async function translateProtectedContent(
         rawAssistantContent:
           single.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
         mode: "failed",
+        checkSnapshots,
       });
       if (failureLogPath) {
         console.warn(chalk.gray(t("  📝 Failure log: {{path}}", { path: failureLogPath })));

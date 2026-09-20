@@ -7,7 +7,7 @@ import {
   normalizeLocale,
   parseLocaleList,
 } from "./locale-utils.js";
-import type { I18nConfig, RawI18nConfigInput } from "./types.js";
+import type { DocBlock, I18nConfig, RawI18nConfigInput } from "./types.js";
 
 /**
  * UI language manifest (`ui-languages.json`).
@@ -169,17 +169,34 @@ export function resolveLocalesForJson(
   return base;
 }
 
-export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] {
+/** Documentation target locales for a single `docs[]` block (block list, else root). */
+export function getDocumentationTargetLocaleCodesForBlock(
+  config: I18nConfig,
+  block: DocBlock
+): string[] {
   const src = normalizeLocale(config.sourceLocale);
+  const doc = block.targetLocales;
+  const useDoc = Array.isArray(doc) && doc.length > 0;
+  const list = useDoc ? doc : config.targetLocales;
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const l of list) {
+    const c = normalizeLocale(l);
+    if (c === src || seen.has(c)) {
+      continue;
+    }
+    seen.add(c);
+    out.push(c);
+  }
+  return out;
+}
+
+export function getDocumentationTargetLocaleCodes(config: I18nConfig): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const block of config.docs) {
-    const doc = block.targetLocales;
-    const useDoc = Array.isArray(doc) && doc.length > 0;
-    const list = useDoc ? doc! : config.targetLocales;
-    for (const l of list) {
-      const c = normalizeLocale(l);
-      if (c === src || seen.has(c)) {
+    for (const c of getDocumentationTargetLocaleCodesForBlock(config, block)) {
+      if (seen.has(c)) {
         continue;
       }
       seen.add(c);

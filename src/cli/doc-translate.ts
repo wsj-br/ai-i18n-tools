@@ -53,7 +53,12 @@ import {
 } from "../core/config.js";
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
-import { validateDocTranslatePair, validateTranslation } from "../processors/validator.js";
+import {
+  buildTranslationCheckSnapshot,
+  validateDocTranslatePair,
+  validateTranslation,
+  type TranslationCheckSnapshot,
+} from "../processors/validator.js";
 import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
 import {
   computeFlatLinkRewritePrefixes,
@@ -269,6 +274,7 @@ function emptyMarkdownProtectShell(): Omit<
     titleCloseMap: [],
     htmlAnchors: [],
     docusaurusHeadingIds: [],
+    headingIdSuffixes: [],
     mdxMap: [],
     jsxAttributeMap: [],
     jsxAttributeText: undefined,
@@ -1202,6 +1208,7 @@ export async function translateSegmentsBatched(
               systemPrompt: opts.systemPrompt,
               userContent: opts.userContent,
               rawAssistantContent: opts.rawAssistantContent,
+              checkSnapshots: opts.checkSnapshots,
             })
         : undefined;
 
@@ -1221,6 +1228,7 @@ export async function translateSegmentsBatched(
               systemPrompt: opts.systemPrompt,
               userContent: opts.userContent,
               rawAssistantContent: opts.rawAssistantContent,
+              checkSnapshots: opts.checkSnapshots,
             })
         : undefined;
 
@@ -1331,6 +1339,7 @@ export async function translateSegmentsBatched(
 
       const qualityErrors: string[] = [];
       const perSegmentLines: string[] = [];
+      const failedCheckSnapshots: TranslationCheckSnapshot[] = [];
       const failedSegments: Array<{
         index: number;
         segment: Segment;
@@ -1383,6 +1392,11 @@ export async function translateSegmentsBatched(
             errors: allErrors,
             docIdx0,
           });
+          if (failureLogDirAbs && docLog) {
+            failedCheckSnapshots.push(
+              await buildTranslationCheckSnapshot(origSeg.content, restored)
+            );
+          }
         }
       }
 
@@ -1411,6 +1425,7 @@ export async function translateSegmentsBatched(
             userContent: res.debugPrompt?.userContent ?? "",
             rawAssistantContent:
               res.rawAssistantContent ?? "(missing raw response; rebuild ai-i18n-tools)",
+            checkSnapshots: failedCheckSnapshots,
           });
         }
 

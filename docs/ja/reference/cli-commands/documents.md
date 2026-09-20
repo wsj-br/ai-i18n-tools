@@ -23,6 +23,8 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 少なくとも1つの`docs[]`ブロックが必要です。各ブロックの`contentPaths`配下の`.md` / `.mdx`を収集します（`.translate-ignore`を尊重）。デフォルトでは、フラットなATX `#`見出しの直前にHTMLアンカー行`<a id="slug"></a>`を挿入します（フェンスされたコードブロック内の見出しはスキップ）。任意の形式の既存の見出しID（HTMLアンカー行、従来の`{#id}`サフィックス、MDX `{/* #id */}`コメント）は選択したスタイルに置き換えられます。スラッグは常に現在の見出しテキストから生成されます。`--slug-style mdx-comment`を指定すると、代わりに見出し行にDocusaurus MDXコメントサフィックスを書き込みます（同じgithubスタイルのスラッグアルゴリズム）。先行するHTMLアンカーが存在する場合は削除します。`--remove`はこれらすべての見出しID形式を削除し、代わりに何も書き込みません。
 
+ソースファイルの更新後、コマンドは各ロケールの既存の翻訳済みマークダウンも走査します（`translate-docs`と同じ`docsOutput`パスマッピング）。ドキュメントの順序で一致するATX見出しに**英語**の見出しIDをコピーします（翻訳されたタイトルのスラッグ化は決して行いません）。また、見出し途中の`{#id}` / `{/* #id */}`（または孤立したHTML `<a id>`）をDocusaurusまたは選択したスタイルが期待する形式に戻します。翻訳済みファイルが欠落している場合はスキップされます。`--remove`は、不適切な位置にある行内のトークンを含め、それらの翻訳済みファイルからも見出しIDを削除します。
+
 **主なオプション:** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--remove`、`--dry-run`
 
 `--slug-style`: `github`（デフォルト、doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}`サフィックス）。`pymdown`、オプションの`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--remove`は`--pymdown-*`と組み合わせることはできません。

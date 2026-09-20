@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   applyHeadingAnchorsToMarkdown,
+  applyKnownHeadingIds,
   defaultPymdownOptions,
+  extractHeadingIds,
   injectHtmlHeadingAnchors,
   parseExplicitHeadingId,
   slugAzureDevOps,
   slugPymdown,
   stripHeadingIds,
+  stripHeadingIdsAnywhere,
   type SlugContext,
 } from "../../src/markdown/write-heading-ids-core.js";
 
@@ -267,6 +270,59 @@ title: T
     expect(out).toContain("## Body");
     expect(out).not.toContain("<a id=");
     expect(out).not.toContain("{/*");
+  });
+});
+
+describe("extractHeadingIds", () => {
+  it("returns explicit ids in document order and undefined when absent", () => {
+    const input = [
+      "# Welcome {/* #welcome */}",
+      "",
+      "## Next {#next}",
+      "",
+      "## No id",
+      "",
+      "```",
+      "## Not a heading {/* #inside */}",
+      "```",
+      "",
+    ].join("\n");
+    expect(extractHeadingIds(input)).toEqual(["welcome", "next", undefined]);
+  });
+});
+
+describe("applyKnownHeadingIds", () => {
+  it("repairs a mid-heading MDX comment using the known English id", () => {
+    const input = "## रिवर्स प्रॉक्सी {/* #https-with-a-reverse-proxy */} के साथ HTTPS\n";
+    const out = applyKnownHeadingIds(input, ["https-with-a-reverse-proxy"], "mdx-comment");
+    expect(out).toBe("## रिवर्स प्रॉक्सी के साथ HTTPS {/* #https-with-a-reverse-proxy */}\n");
+  });
+
+  it("replaces an embedded wrong id with the known id at line end", () => {
+    const input = "## Foo {/* #wrong-position */} bar\n";
+    const out = applyKnownHeadingIds(input, ["correct-id"], "mdx-comment");
+    expect(out).toBe("## Foo bar {/* #correct-id */}\n");
+  });
+
+  it("writes HTML anchors from known ids and leaves extra headings untouched", () => {
+    const input = "## One\n\n## Two\n";
+    const out = applyKnownHeadingIds(input, ["one", undefined], "github");
+    expect(out).toBe('<a id="one"></a>\n## One\n\n## Two\n');
+  });
+
+  it("skips headings inside fenced code blocks", () => {
+    const input = "```\n## Not {#inside}\n```\n\n## Real\n";
+    const out = applyKnownHeadingIds(input, ["real"], "mdx-comment");
+    expect(out).toContain("## Not {#inside}");
+    expect(out).toContain("## Real {/* #real */}");
+  });
+});
+
+describe("stripHeadingIdsAnywhere", () => {
+  it("removes mid-line heading-id tokens that stripHeadingIds would miss", () => {
+    const input = "## Foo {/* #wrong */} bar\n";
+    expect(stripHeadingIds(input)).toBe(input);
+    expect(stripHeadingIdsAnywhere(input)).toBe("## Foo bar\n");
   });
 });
 

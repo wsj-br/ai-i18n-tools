@@ -822,6 +822,16 @@ program
             })
         )
       );
+      if (sum.translatedFilesWritten + sum.translatedFilesUnchanged > 0) {
+        console.log(
+          chalk.green(
+            t("   Repositioned {{written}} translated file(s), {{unchanged}} unchanged", {
+              written: sum.translatedFilesWritten,
+              unchanged: sum.translatedFilesUnchanged,
+            })
+          )
+        );
+      }
     } catch (e) {
       console.error(
         chalk.red(

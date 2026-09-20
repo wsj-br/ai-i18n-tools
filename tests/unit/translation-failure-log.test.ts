@@ -60,6 +60,16 @@ describe("writeTranslationFailureLog", () => {
       userContent: "USER",
       rawAssistantContent: "Namaste",
       translatedText: "नमस्ते",
+      checkSnapshots: [
+        {
+          sourceText: "Hello **world**",
+          restoredText: "नमस्ते **दुनिया**",
+          sourceAst:
+            "list=0 listItem=0 inlineCode=0 strong=1 emphasis=0 link=0 image=0 code=0 table=0 headings=[]",
+          restoredAst:
+            "list=0 listItem=0 inlineCode=0 strong=1 emphasis=0 link=0 image=0 code=0 table=0 headings=[]",
+        },
+      ],
     });
     expect(abs).toBeTruthy();
     const text = fs.readFileSync(abs!, "utf8");
@@ -76,5 +86,11 @@ describe("writeTranslationFailureLog", () => {
     expect(text).toContain("--- translated text ---");
     expect(text).toContain("नमस्ते");
     expect(text).toContain("FAILED-TRANSLATION");
+    expect(text).toContain("--- checker inputs (unprotected source vs restored) ---");
+    expect(text).toContain("sourceAst:");
+    expect(text).toContain("--- unprotected source ---");
+    expect(text).toContain("Hello **world**");
+    expect(text).toContain("--- restored translation ---");
+    expect(text).toContain("नमस्ते **दुनिया**");
   });
 });

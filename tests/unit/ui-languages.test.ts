@@ -17,6 +17,7 @@ import {
   expandJsonTargetLocalesInRawInput,
   expandTargetLocalesFileReferenceInRawInput,
   getDocumentationTargetLocaleCodes,
+  getDocumentationTargetLocaleCodesForBlock,
   getConfiguredCacheLocales,
   getJsonTargetLocaleCodes,
   loadUiLanguageEntries,
@@ -267,6 +268,29 @@ describe("ui-languages", () => {
       "utf8"
     );
     expect(() => loadI18nConfigFromFile(cfgPath, tmp)).toThrow(ConfigValidationError);
+  });
+
+  it("getDocumentationTargetLocaleCodesForBlock uses the block list or root fallback", () => {
+    const c = baseUiConfig({
+      sourceLocale: "en",
+      targetLocales: ["de", "fr", "es"],
+      cacheDir: ".translation-cache",
+      docs: [
+        {
+          contentPaths: ["docs/"],
+          outputDir: "./i18n",
+          targetLocales: ["de", "fr"],
+          ...defaultDocumentationFields,
+        },
+        {
+          contentPaths: ["more/"],
+          outputDir: "./i18n",
+          ...defaultDocumentationFields,
+        },
+      ],
+    });
+    expect(getDocumentationTargetLocaleCodesForBlock(c, c.docs[0]!)).toEqual(["de", "fr"]);
+    expect(getDocumentationTargetLocaleCodesForBlock(c, c.docs[1]!)).toEqual(["de", "fr", "es"]);
   });
 
   it("getDocumentationTargetLocaleCodes prefers docs[].targetLocales", () => {

@@ -170,6 +170,8 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 它需要一个有效的配置，且**至少包含一个 `docs[]` 块**。对于每个块，它会收集 `contentPaths` 下的 `.md` / `.mdx` 文件，应用项目的 `.translate-ignore` 规则（与文档翻译的思路相同），并可选择使用 `--path` / `--file` 限制到某个子树。每个文件都使用 `applyHeadingAnchorsToMarkdown` 进行转换：对于围栏代码块之外的每个**扁平 ATX 标题**（从 `# …` 到 `###### …`），任何形式的现有标题 ID 都会被替换为所选样式。HTML 样式在无后缀标题的上一行写入 `<a id="slug"></a>`；`--slug-style mdx-comment` 在标题行写入 `{/* #slug */}`（并丢弃前面的 HTML 锚点）。Slug 始终来自当前标题文本。`--remove` 会剥离 HTML 锚点、经典的 `{#id}` 后缀和 MDX 注释 ID，但不写入新的 ID。Slug 算法与常见的生态系统相匹配——`github`（默认）、`bitbucket`、`gitlab`、`pymdown`（可选的 Unicode 规范化 / 百分号编码标志）、`azure-devops`，以及 `mdx-comment`（github slug + MDX 注释输出）——因此锚点 ID 与现有工具（doctoc、PyMdown、Docusaurus 等）保持一致。`--dry-run` 报告将要进行的编辑而不实际写入。
 
+在源文件处理之后，同一条命令会将这些英文 id 重新定位到每个区域设置已有的翻译 markdown（`resolveTranslatedOutputPath`）上。翻译后的标题永远不会重新生成 slug；标题中间的 `{#id}` / `{/* #id */}` 会被移回所选样式所期望的后缀（或 HTML 锚点）位置。缺失的区域设置文件会被跳过。
+
 此命令 **不** 在 `translate-docs` 或 `sync` 中运行；当您希望在翻译或发布之前源文件中的片段 ID 稳定时，请显式运行它。
 
 <a id="placeholder-protection"></a>
@@ -177,16 +179,17 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 在翻译之前，敏感语法会被替换为不透明的令牌，以防止 LLM 损坏，按此顺序应用（恢复顺序相反）：
 
-1. **HTML标签和注释**（`<strong>`、`<!-- ... -->`等）- 来自已知允许列表的小写HTML标签被替换为```{{HTM_N}}```标记。大写的JSX标签（`<Highlight>`、`<Tabs>`、`</Tab>`）由MDX层（步骤4）单独处理。
-2. **提示标记**（`:::note`、`:::`）- 只有起始行上的指令前缀被替换为```{{ADM_OPEN_N}}```；任何同一行的标题都留给模型翻译。用确切的原始文本恢复。
-3. **文档锚点**（HTML `<a id="…">`、Docusaurus标题`{#…}`）- 逐字保留。
-4. **仅MDX结构**（`src/processors/mdx-placeholders.ts`）：
-   - **MDX 注释**（`{/* … */}`，包括 Docusaurus 标题 ID 形式 `{/* #my-id */}`）替换为 ```{{MDX_N}}```。
-   - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）——保留为 ```{{MDX_N}}```，其中可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 ```{{JXA_N}}```，除非属性名称出现在 `docs[].protectAttributes` 中；`label:` 在 `<Tabs values={[ { label: '…' } ]}>` 对象字面量中（可通过 `docs[].protectKeys` 跳过）和 `<TabItem value="…">`（当不存在 `label` 属性时，跳过小写类似 slug 的值）也被提取。作为 `||JXA_N: …||` 行附加到段落，由 `restoreMdx` 合并回去。
-   - **MDX 大括号表达式**（`{frontMatter.title}`，<code v-pre>style={{…}}</code>）——深度感知匹配，替换为 ```{{MDX_N}}```。
-5. **Markdown URL**（`](url)`，`src="…"`）——翻译后从映射中恢复。
-6. **行内代码跨度**（`` `code` ``）和 **粗体包裹的行内代码**（`**`code`**`）- 保留。
-7. **Markdown 强调**（可选，对 CJK/RTL 区域自动启用）- 强调分隔符被屏蔽。
+1. **标题 id 后缀**（经典 `{#id}` / MDX `{/* #id */}` 位于 ATX 标题末尾）——从该行中完全剥离，并且**不**发送给模型。恢复后，它们被重新固定到匹配标题的末尾，以便 Docusaurus 仍能看到有效的 id。标题中间的注释保留在文本中，由后续的 MDX / `{#…}` 层处理。
+2. **HTML 标签和注释**（`<strong>`、`<!-- ... -->` 等）——来自已知允许列表的小写 HTML 标签被替换为 ```{{HTM_N}}``` 标记。大写的 JSX 标签（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 层（第 5 步）单独处理。
+3. **提示框标记**（`:::note`、`:::`）——仅起始行上的指令前缀被替换为 ```{{ADM_OPEN_N}}```；同一行上的任何标题都留给模型翻译。使用完全相同的原始文本恢复。
+4. **文档锚点**（HTML `<a id="…">`、残留的标题中间 Docusaurus `{#…}`）——原样保留。
+5. **MDX 专有构造**（`src/processors/mdx-placeholders.ts`）：
+   - **MDX 注释**（`{/* … */}`，包括不是行尾后缀的标题中间 `{/* #my-id */}`）替换为 ```{{MDX_N}}```。
+   - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）——保留为 ```{{MDX_N}}```，其中可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 ```{{JXA_N}}```，除非属性名出现在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 对象字面量中的 `label:`（可通过 `docs[].protectKeys` 跳过）和 `<TabItem value="…">`（当不存在 `label` 属性时，跳过小写的 slug 类值）也会被提取。作为 `||JXA_N: …||` 行追加到段落中，由 `restoreMdx` 合并回去。
+   - **MDX 花括号表达式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）——深度感知匹配，替换为 ```{{MDX_N}}```。
+6. **Markdown URL**（`](url)`、`src="…"`）——翻译后从映射中恢复。
+7. **行内代码段**（`` `code` ``）和**加粗包裹的行内代码**（`**`code`**`）——保留。
+8. **Markdown 强调**（可选，对 CJK/RTL 区域设置自动启用）——强调分隔符被屏蔽。
 
 在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
 
