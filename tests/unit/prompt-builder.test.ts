@@ -631,19 +631,30 @@ describe("proofread-ui prompt and parser", () => {
     expect(systemPrompt).toContain(PROMPTS.proofreadUI.translationContextPreamble);
   });
 
-  it("parseProofreadUIBatchResponse normalizes and pads malformed slots", () => {
-    const { slots, lengthWarning } = parseProofreadUIBatchResponse(
+  it("parseProofreadUIBatchResponse normalizes severity and does not shift a short array", () => {
+    const { slots, lengthWarning, reviewed } = parseProofreadUIBatchResponse(
       '[{"issues":[{"severity":"warn","message":"m1","suggestedText":"s1"}]}]',
       2
     );
-    expect(lengthWarning).toContain("expected 2 slot objects, got 1");
+    expect(lengthWarning).toContain("could not be aligned");
+    expect(reviewed).toEqual([false, false]);
     expect(slots).toHaveLength(2);
+    expect(slots[0]?.issues).toEqual([]);
+    expect(slots[1]?.issues).toEqual([]);
+  });
+
+  it("parseProofreadUIBatchResponse keeps a full-length positional array", () => {
+    const { slots, lengthWarning, reviewed } = parseProofreadUIBatchResponse(
+      '[{"issues":[{"severity":"warn","message":"m1","suggestedText":"s1"}]},{"issues":[]}]',
+      2
+    );
+    expect(lengthWarning).toBeNull();
+    expect(reviewed).toEqual([true, true]);
     expect(slots[0]?.issues[0]).toEqual({
       severity: "warning",
       message: "m1",
       suggestedText: "s1",
     });
-    expect(slots[1]?.issues).toEqual([]);
   });
 
   it("parseProofreadUIBatchResponse throws on non-array", () => {

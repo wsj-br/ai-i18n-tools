@@ -80,7 +80,7 @@
 
 先執行 `extract`（需要 `features.translateUIStrings`），使 `strings.json` 與來源一致，再由 LLM 審查來源語系的 UI 字串（拼字、文法）。術語提示僅來自 `glossary.userGlossary` CSV（範圍與 `translate-ui` 相同 — 不含 `strings.json` / `uiGlossary`，因此不良文案不會被當作詞彙表而強化）。使用作用中的 LLM 供應商（其 API 金鑰環境變數）。
 
-失敗時以 **1** 結束（缺少功能旗標、擷取失敗、缺少/無效的目錄、缺少 API 金鑰，或所有批次皆失敗）；成功完成時以 **0** 結束（審查結果僅供參考）。會在 `cacheDir` 下寫入 `proofread-ui-results_<timestamp>.log` 作為人類可讀的報告（摘要、問題及每個字串的 OK 列）；終端機僅印出摘要計數與問題（不會為每個字串印出 `[ok]` 列）。最後一行會印出日誌檔名。使用 `--json` 時，擬人化輸出會送至 stderr。連結使用 `path:line`，與儀表板 UI 字串的連結按鈕相同。
+失敗時以 **1** 結束 (缺少功能旗標、擷取失敗、缺少/無效的目錄、缺少 API 金鑰，或所有批次皆失敗時)；執行成功完成時以 **0** 結束 (發現僅供參考)。將 `proofread-ui-results_<timestamp>.log` 寫入 `cacheDir` 下，作為人類可讀的報告 (摘要、問題、未審查的列，以及每個字串的 OK 列)；終端機僅列印摘要計數和問題 (每個字串沒有 `[ok]` 行)。失敗的批次，或是短於批次長度且在每個位置沒有可用 `index` 的模型回應，會將這些字串計為未審查。系統會捨棄其問題，以免將過短的陣列套用到錯誤的字串。在最後一行印出記錄檔名稱。使用 `--json` 時，人類風格的輸出會傳送至 stderr。連結會使用 `path:line`，類似儀表板 UI 字串的連結按鈕。
 
 **關鍵選項：** `-l` / `--locale`、`--chunk`（預設 **50**）、`--dry-run`、`--json`、`-j` / `--concurrency`
 

@@ -117,8 +117,7 @@ describe("runWriteHeadingIds", () => {
 
   it("updates the cached translated segment so sync --force-update cannot resurrect the stale heading id", () => {
     writeFile(path.join(tmp, "docs", "security.md"), "## HTTPS with a reverse proxy\n");
-    const staleTranslated =
-      "## रिवर्स प्रॉक्सी {/* #https-with-a-reverse-proxy */} के साथ HTTPS\n";
+    const staleTranslated = "## रिवर्स प्रॉक्सी {/* #https-with-a-reverse-proxy */} के साथ HTTPS\n";
     writeFile(path.join(tmp, "i18n", "hi", "docs", "security.md"), staleTranslated);
 
     const config = parseI18nConfig(

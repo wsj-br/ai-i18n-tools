@@ -222,7 +222,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 406
+        "line": 518
       }
     ]
   },
@@ -323,7 +323,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 415
+        "line": 527
       }
     ]
   },
@@ -14381,7 +14381,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 276
+        "line": 380
       }
     ]
   },
@@ -14414,7 +14414,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 298
+        "line": 402
       }
     ]
   },
@@ -14447,7 +14447,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 309
+        "line": 413
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
@@ -14484,7 +14484,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 345
+        "line": 456
       }
     ]
   },
@@ -14517,7 +14517,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 349
+        "line": 460
       }
     ]
   },
@@ -14550,11 +14550,11 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 352
+        "line": 463
       },
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 426
+        "line": 538
       }
     ]
   },
@@ -14587,7 +14587,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 364
+        "line": 475
       }
     ]
   },
@@ -14620,44 +14620,38 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 465
+        "line": 577
       }
     ]
   },
-  "6e294151": {
-    "source": "[proofread-ui] batch {{batch}}: {{warning}}",
+  "4f15f4ad": {
+    "source": "[proofread-ui] batch {{batch}} retry failed: {{error}}",
     "translated": {
-      "de": "[proofread-ui] Batch {{batch}}: {{warning}}",
-      "es": "[proofread-ui] lote {{batch}}: {{warning}}",
-      "fr": "[proofread-ui] lot {{batch}} : {{warning}}",
-      "ja": "[proofread-ui] バッチ {{batch}}: {{warning}}",
-      "hi-Latn": "[proofread-ui] batch {{batch}}: {{warning}}",
-      "pt-BR": "[proofread-ui] lote {{batch}}: {{warning}}",
-      "zh-Hans": "[proofread-ui] 批次 {{batch}}：{{warning}}",
-      "zh-Hant": "[proofread-ui] 批次 {{batch}}：{{warning}}",
-      "ko": "[proofread-ui] 배치 {{batch}}: {{warning}}",
-      "hi": "[proofread-ui] बैच {{batch}}: {{warning}}"
+      "de": "[proofread-ui] Wiederholung für Batch {{batch}} fehlgeschlagen: {{error}}",
+      "fr": "[proofread-ui] échec de la nouvelle tentative du lot {{batch}} : {{error}}",
+      "es": "[proofread-ui] Error al reintentar el lote {{batch}}: {{error}}",
+      "ja": "[proofread-ui] バッチ {{batch}} の再試行に失敗しました: {{error}}",
+      "hi": "[proofread-ui] बैच {{batch}} पुनः प्रयास विफल: {{error}}",
+      "pt-BR": "[proofread-ui] falha ao tentar novamente o lote {{batch}}: {{error}}",
+      "zh-Hans": "[proofread-ui] 批次 {{batch}} 重试失败：{{error}}",
+      "ko": "[proofread-ui] {{batch}} 배치 재시도 실패: {{error}}",
+      "zh-Hant": "[校對-使用者介面] 批次 {{batch}} 重試失敗：{{error}}"
     },
     "models": {
       "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
       "fr": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
       "ja": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "hi": "~anthropic/claude-sonnet-latest",
       "pt-BR": "~anthropic/claude-sonnet-latest",
       "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
       "ko": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "zh-Hant": "~anthropic/claude-sonnet-latest"
     },
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 513
-      },
-      {
-        "file": "src/cli/proofread-ui.ts",
-        "line": 581
+        "line": 644
       }
     ]
   },
@@ -14690,7 +14684,40 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 569
+        "line": 689
+      }
+    ]
+  },
+  "6e294151": {
+    "source": "[proofread-ui] batch {{batch}}: {{warning}}",
+    "translated": {
+      "de": "[proofread-ui] Batch {{batch}}: {{warning}}",
+      "es": "[proofread-ui] lote {{batch}}: {{warning}}",
+      "fr": "[proofread-ui] lot {{batch}} : {{warning}}",
+      "ja": "[proofread-ui] バッチ {{batch}}: {{warning}}",
+      "hi-Latn": "[proofread-ui] batch {{batch}}: {{warning}}",
+      "pt-BR": "[proofread-ui] lote {{batch}}: {{warning}}",
+      "zh-Hans": "[proofread-ui] 批次 {{batch}}：{{warning}}",
+      "zh-Hant": "[proofread-ui] 批次 {{batch}}：{{warning}}",
+      "ko": "[proofread-ui] 배치 {{batch}}: {{warning}}",
+      "hi": "[proofread-ui] बैच {{batch}}: {{warning}}"
+    },
+    "models": {
+      "de": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "hi": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/proofread-ui.ts",
+        "line": 701
       }
     ]
   },
@@ -14723,7 +14750,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 591
+        "line": 711
       }
     ]
   },
@@ -14756,7 +14783,38 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 650
+        "line": 785
+      }
+    ]
+  },
+  "01aa30f8": {
+    "source": "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{notReviewed}} not reviewed, {{issues}} issue(s)",
+    "translated": {
+      "de": "Zusammenfassung: {{count}} Zeichenfolge(n) — {{withIssues}} mit Problemen, {{ok}} OK, {{notReviewed}} nicht überprüft, {{issues}} Problem(e)",
+      "fr": "Résumé : {{count}} chaîne(s) — {{withIssues}} avec problèmes, {{ok}} OK, {{notReviewed}} non vérifiée(s), {{issues}} problème(s)",
+      "es": "Resumen: {{count}} cadena(s) — {{withIssues}} con problemas, {{ok}} correctas, {{notReviewed}} sin revisar, {{issues}} problema(s)",
+      "ja": "概要: {{count}} 件の文字列 — 問題あり {{withIssues}} 件、OK {{ok}} 件、未確認 {{notReviewed}} 件、問題 {{issues}} 件",
+      "hi": "सारांश: {{count}} स्ट्रिंग — {{withIssues}} में समस्याएँ, {{ok}} ठीक, {{notReviewed}} समीक्षा नहीं हुई, {{issues}} समस्या(एँ)",
+      "pt-BR": "Resumo: {{count}} string(s) — {{withIssues}} com problemas, {{ok}} OK, {{notReviewed}} não revisada(s), {{issues}} problema(s)",
+      "zh-Hans": "摘要：共 {{count}} 条字符串 — {{withIssues}} 条有问题，{{ok}} 条正常，{{notReviewed}} 条未审核，共 {{issues}} 个问题",
+      "ko": "요약: 문자열 {{count}}개 — 문제 있음 {{withIssues}}개, 정상 {{ok}}개, 검토 안 됨 {{notReviewed}}개, 문제 {{issues}}건",
+      "zh-Hant": "摘要：{{count}} 個字串 — {{withIssues}} 個有問題，{{ok}} 個正常，{{notReviewed}} 個未審查，{{issues}} 個問題"
+    },
+    "models": {
+      "de": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "hi": "~anthropic/claude-sonnet-latest",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/proofread-ui.ts",
+        "line": 794
       }
     ]
   },
@@ -14789,7 +14847,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 670
+        "line": 815
       }
     ]
   },
@@ -14822,7 +14880,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 670
+        "line": 815
       }
     ]
   },
@@ -14855,7 +14913,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 674
+        "line": 819
       }
     ]
   },
@@ -14888,7 +14946,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 686
+        "line": 831
       }
     ]
   },
@@ -14921,7 +14979,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 699
+        "line": 844
       }
     ]
   },
@@ -14954,7 +15012,38 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 713
+        "line": 858
+      }
+    ]
+  },
+  "f3014f55": {
+    "source": "⚠  {{issues}} issue(s) in {{withIssues}} string(s); {{ok}} OK, {{notReviewed}} not reviewed, of {{total}} total. Results written to {{logBase}}",
+    "translated": {
+      "de": "⚠  {{issues}} Problem(e) in {{withIssues}} Zeichenfolge(n); {{ok}} OK, {{notReviewed}} nicht überprüft, von {{total}} insgesamt. Ergebnisse gespeichert in {{logBase}}",
+      "fr": "⚠  {{issues}} problème(s) dans {{withIssues}} chaîne(s) ; {{ok}} OK, {{notReviewed}} non vérifiée(s), sur {{total}} au total. Résultats écrits dans {{logBase}}",
+      "es": "⚠  {{issues}} problema(s) en {{withIssues}} cadena(s); {{ok}} correctas, {{notReviewed}} sin revisar, de {{total}} en total. Resultados escritos en {{logBase}}",
+      "ja": "⚠  {{withIssues}} 件の文字列に {{issues}} 件の問題があります。OK {{ok}} 件、未確認 {{notReviewed}} 件（全 {{total}} 件中）。結果は {{logBase}} に書き込まれました",
+      "hi": "⚠  {{withIssues}} स्ट्रिंग में {{issues}} समस्या(एँ); {{ok}} ठीक, {{notReviewed}} समीक्षा नहीं हुई, कुल {{total}} में से। परिणाम {{logBase}} में लिखे गए",
+      "pt-BR": "⚠  {{issues}} problema(s) em {{withIssues}} string(s); {{ok}} OK, {{notReviewed}} não revisada(s), de {{total}} no total. Resultados gravados em {{logBase}}",
+      "zh-Hans": "⚠ {{withIssues}} 条字符串中有 {{issues}} 个问题；{{ok}} 条正常，{{notReviewed}} 条未审核，共 {{total}} 条。结果已写入 {{logBase}}",
+      "ko": "⚠  문자열 {{withIssues}}개에서 문제 {{issues}}건 발생; 정상 {{ok}}개, 검토 안 됨 {{notReviewed}}개, 전체 {{total}}개 중. 결과가 {{logBase}}에 기록되었습니다",
+      "zh-Hant": "⚠  共 {{total}} 個字串中，{{withIssues}} 個字串有 {{issues}} 個問題；{{ok}} 個正常，{{notReviewed}} 個未審查。結果已寫入 {{logBase}}"
+    },
+    "models": {
+      "de": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "es": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "hi": "~anthropic/claude-sonnet-latest",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/proofread-ui.ts",
+        "line": 873
       }
     ]
   },
@@ -14987,7 +15076,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 727
+        "line": 888
       }
     ]
   },
@@ -15020,7 +15109,7 @@
     "locations": [
       {
         "file": "src/cli/proofread-ui.ts",
-        "line": 734
+        "line": 895
       }
     ]
   },

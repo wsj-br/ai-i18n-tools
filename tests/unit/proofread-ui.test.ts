@@ -9,6 +9,7 @@ import {
   extractUiPlaceholderTokens,
   formatProofreadUIHumanLogText,
   proofreadSuggestionPreservesPlaceholders,
+  suggestionRewritesSource,
   type ProofreadUIReport,
 } from "../../src/cli/proofread-ui.js";
 import type { StringsJsonEntry } from "../../src/core/types.js";
@@ -27,13 +28,26 @@ describe("parseProofreadUIBatchResponse", () => {
     expect(slots[1]!.issues).toHaveLength(0);
   });
 
-  it("pads short arrays with empty issues", () => {
-    const raw = `[{ "issues": [] }]`;
-    const { slots, lengthWarning } = parseProofreadUIBatchResponse(raw, 3);
-    expect(lengthWarning).toContain("expected 3");
+  it("does not pad a short array that has no indexes", () => {
+    const raw = `[{ "issues": [{ "severity": "warning", "message": "Typo", "suggestedText": "Hello" }] }]`;
+    const { slots, lengthWarning, reviewed } = parseProofreadUIBatchResponse(raw, 3);
+    expect(lengthWarning).toContain("could not be aligned");
     expect(slots).toHaveLength(3);
+    expect(reviewed).toEqual([false, false, false]);
+    expect(slots.every((slot) => slot.issues.length === 0)).toBe(true);
+  });
+
+  it("applies a short array by index and leaves missing slots unreviewed", () => {
+    const raw = `[
+      { "index": 2, "issues": [{ "severity": "error", "message": "Typo", "suggestedText": "Hello" }] },
+      { "index": 0, "issues": [] }
+    ]`;
+    const { slots, lengthWarning, reviewed } = parseProofreadUIBatchResponse(raw, 3);
+    expect(lengthWarning).toContain("applied by index");
+    expect(reviewed).toEqual([true, false, true]);
+    expect(slots[0]!.issues).toEqual([]);
     expect(slots[1]!.issues).toEqual([]);
-    expect(slots[2]!.issues).toEqual([]);
+    expect(slots[2]!.issues[0]!.suggestedText).toBe("Hello");
   });
 
   it("throws on invalid JSON", () => {
@@ -91,6 +105,7 @@ describe("formatProofreadUIHumanLogText", () => {
         totalUnits: 2,
         unitsWithIssues: 1,
         unitsOk: 1,
+        unitsNotReviewed: 0,
         issueCount: 1,
         totalCostUsd: 0,
       },
@@ -99,6 +114,7 @@ describe("formatProofreadUIHumanLogText", () => {
     expect(text).toContain("Summary:");
     expect(text).toContain("totalStrings: 2");
     expect(text).toContain("ok: 1");
+    expect(text).toContain("notReviewed: 0");
     expect(text).toContain("totalCostUsd:");
     expect(text).toContain("[warning]");
     expect(text).toContain(`  ${path.normalize(path.join("/proj", "src/x.tsx"))}:1`);
@@ -119,5 +135,16 @@ describe("placeholder preservation", () => {
   it("proofreadSuggestionPreservesPlaceholders rejects broken suggestions", () => {
     expect(proofreadSuggestionPreservesPlaceholders("Save {{count}}", "Save {count}")).toBe(false);
     expect(proofreadSuggestionPreservesPlaceholders("Save {{count}}", "Save {{count}}")).toBe(true);
+    expect(
+      proofreadSuggestionPreservesPlaceholders("Save {{count}} and {{count}}", "Save {{count}}")
+    ).toBe(false);
+  });
+
+  it("suggestionRewritesSource rejects a suggestion that belongs to a different string", () => {
+    expect(suggestionRewritesSource("All status", "All statuses")).toBe(true);
+    expect(
+      suggestionRewritesSource("Output log:", "⚠️  Dry-run mode - no changes will be made")
+    ).toBe(false);
+    expect(suggestionRewritesSource("Logged to server console", "Loading...")).toBe(false);
   });
 });

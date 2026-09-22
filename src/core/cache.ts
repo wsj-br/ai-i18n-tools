@@ -321,8 +321,7 @@ export class TranslationCache {
       WHERE source_hash = ? AND locale = ?
     `);
     const row = selectStmt.get(sourceHash, locale) as
-      | { translated_text: string; model: string | null; prompt_context_hash: string }
-      | undefined;
+      { translated_text: string; model: string | null; prompt_context_hash: string } | undefined;
     if (!row) {
       return null;
     }
@@ -501,8 +500,7 @@ export class TranslationCache {
       WHERE filepath = ? AND locale = ?
     `);
     const row = stmt.get(filepath, locale) as
-      | { source_hash: string; prompt_context_hash: string }
-      | undefined;
+      { source_hash: string; prompt_context_hash: string } | undefined;
     if (!row) {
       return null;
     }

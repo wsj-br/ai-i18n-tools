@@ -14,7 +14,7 @@ import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filt
 import { TranslationCache } from "../core/cache.js";
 import { createUsageRecorder } from "../core/usage-recorder.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
-import { extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
+import { collectPlaceholderFamilies, extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
 import { Glossary } from "../glossary/glossary.js";
@@ -37,17 +37,104 @@ export interface ProofreadUIUnit {
 /** Re-export for callers that imported from this CLI module. */
 export { extractUiPlaceholderTokens };
 
-/** Returns true if every placeholder token from `original` appears unchanged in `suggested`. */
+/** Returns true if `suggested` has the same placeholder families, with the same counts, as `original`. */
 export function proofreadSuggestionPreservesPlaceholders(
   original: string,
   suggested: string
 ): boolean {
-  for (const token of extractUiPlaceholderTokens(original)) {
-    if (!suggested.includes(token)) {
+  const orig = collectPlaceholderFamilies(original);
+  const next = collectPlaceholderFamilies(suggested);
+  if (orig.size !== next.size) {
+    return false;
+  }
+  for (const [family, count] of orig) {
+    if (next.get(family) !== count) {
       return false;
     }
   }
   return true;
+}
+
+/**
+ * Minimum bigram Dice score for a suggestion to count as a rewrite of the same string.
+ * Below this, the issue was attached to the wrong string (a short model array shifted slots).
+ */
+const SUGGESTION_REWRITE_MIN_DICE = 0.6;
+
+function suggestionBigramDice(original: string, suggested: string): number {
+  const grams = (value: string): Map<string, number> => {
+    const counts = new Map<string, number>();
+    const normalized = value.toLowerCase().replace(/\s+/g, " ").trim();
+    for (let i = 0; i < normalized.length - 1; i++) {
+      const bg = normalized.slice(i, i + 2);
+      counts.set(bg, (counts.get(bg) ?? 0) + 1);
+    }
+    return counts;
+  };
+  const left = grams(original);
+  const right = grams(suggested);
+  const size = (counts: Map<string, number>): number => {
+    let total = 0;
+    for (const n of counts.values()) {
+      total += n;
+    }
+    return total;
+  };
+  const leftSize = size(left);
+  const rightSize = size(right);
+  if (leftSize === 0 || rightSize === 0) {
+    return original.trim().toLowerCase() === suggested.trim().toLowerCase() ? 1 : 0;
+  }
+  let overlap = 0;
+  for (const [bg, n] of left) {
+    overlap += Math.min(n, right.get(bg) ?? 0);
+  }
+  return (2 * overlap) / (leftSize + rightSize);
+}
+
+/** True when `suggested` is a correction of `original`, not a different string's text. */
+export function suggestionRewritesSource(original: string, suggested: string): boolean {
+  return suggestionBigramDice(original, suggested) >= SUGGESTION_REWRITE_MIN_DICE;
+}
+
+const NOT_REVIEWED_UNALIGNED = "model response could not be aligned to this string";
+const NOT_REVIEWED_BATCH_FAILED = "batch failed";
+
+function countReviewedSlots(reviewed: boolean[]): number {
+  let n = 0;
+  for (const ok of reviewed) {
+    if (ok) {
+      n++;
+    }
+  }
+  return n;
+}
+
+function cleanProofreadIssues(unitText: string, rawIssues: ProofreadUIIssue[]): ProofreadUIIssue[] {
+  const cleaned: ProofreadUIIssue[] = [];
+  for (const iss of rawIssues) {
+    const st = iss.suggestedText;
+    if (st === undefined || st === unitText) {
+      continue;
+    }
+    if (!suggestionRewritesSource(unitText, st)) {
+      continue;
+    }
+    if (!proofreadSuggestionPreservesPlaceholders(unitText, st)) {
+      cleaned.push({
+        severity: iss.severity,
+        message: `${iss.message} (Suggested rewrite omitted: would break placeholders.)`,
+        suggestionDroppedPlaceholderMismatch: true,
+      });
+      continue;
+    }
+    cleaned.push({
+      severity: iss.severity,
+      message: iss.message,
+      suggestedText: st,
+    });
+  }
+  return cleaned;
 }
 
 function normalizeLocations(entry: StringsJsonEntry): Array<{ file: string; line: number }> {
@@ -121,6 +208,8 @@ export interface ProofreadUIReportUnit {
     suggestedText?: string;
     suggestionDroppedPlaceholderMismatch?: boolean;
   }>;
+  /** Set when this string was not judged (batch failed, or the model response could not be aligned). */
+  notReviewedReason?: string;
 }
 
 export interface ProofreadUIReport {
@@ -133,8 +222,10 @@ export interface ProofreadUIReport {
   summary: {
     totalUnits: number;
     unitsWithIssues: number;
-    /** Strings with zero reported issues after proofreading. */
+    /** Strings with zero reported issues after proofreading. Excludes strings that were not reviewed. */
     unitsOk: number;
+    /** Strings skipped because a batch failed or its response could not be aligned. */
+    unitsNotReviewed: number;
     issueCount: number;
     /** Sum of OpenRouter-reported USD `cost` for successful batches (0 when dry-run, empty, or all batches failed). */
     totalCostUsd: number;
@@ -211,6 +302,7 @@ export function formatProofreadUIHumanLogText(
   lines.push(`  totalStrings: ${s.totalUnits}`);
   lines.push(`  withIssues: ${s.unitsWithIssues}`);
   lines.push(`  ok: ${s.unitsOk}`);
+  lines.push(`  notReviewed: ${s.unitsNotReviewed}`);
   lines.push(`  issueCount: ${s.issueCount}`);
   lines.push(`  totalCostUsd: ${s.totalCostUsd.toFixed(6)}`);
   if (report.batchErrors.length > 0) {
@@ -226,8 +318,9 @@ export function formatProofreadUIHumanLogText(
     lines.push("");
   }
 
-  const issueUnits = report.units.filter((u) => u.issues.length > 0);
-  const okUnits = report.units.filter((u) => u.issues.length === 0);
+  const issueUnits = report.units.filter((u) => !u.notReviewedReason && u.issues.length > 0);
+  const okUnits = report.units.filter((u) => !u.notReviewedReason && u.issues.length === 0);
+  const notReviewedUnits = report.units.filter((u) => u.notReviewedReason);
 
   if (issueUnits.length > 0) {
     lines.push("Issues:");
@@ -242,6 +335,17 @@ export function formatProofreadUIHumanLogText(
         appendLocationLines(lines, projectRoot, ru.locations);
         lines.push("");
       }
+    }
+  }
+
+  if (notReviewedUnits.length > 0) {
+    lines.push(`Not reviewed (${notReviewedUnits.length}):`);
+    lines.push("");
+    for (const ru of notReviewedUnits) {
+      lines.push(`[not-reviewed] ${ru.segmentId} ${JSON.stringify(ru.originalText)}`);
+      lines.push(`  -> ${ru.notReviewedReason}`);
+      appendLocationLines(lines, projectRoot, ru.locations);
+      lines.push("");
     }
   }
 
@@ -337,7 +441,14 @@ export async function runProofreadUI(
       projectRoot: cwd,
       units: [],
       batchErrors: [],
-      summary: { totalUnits: 0, unitsWithIssues: 0, unitsOk: 0, issueCount: 0, totalCostUsd: 0 },
+      summary: {
+        totalUnits: 0,
+        unitsWithIssues: 0,
+        unitsOk: 0,
+        unitsNotReviewed: 0,
+        issueCount: 0,
+        totalCostUsd: 0,
+      },
     };
     fs.writeFileSync(logFilePath, formatProofreadUIHumanLogText(report, cwd), "utf8");
     const humanFn = opts.json ? console.error : console.log;
@@ -391,6 +502,7 @@ export async function runProofreadUI(
         totalUnits: units.length,
         unitsWithIssues: 0,
         unitsOk: units.length,
+        unitsNotReviewed: 0,
         issueCount: 0,
         totalCostUsd: 0,
       },
@@ -482,12 +594,21 @@ export async function runProofreadUI(
     type BatchOk = {
       kind: "ok";
       batchIndex: number;
-      pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }>;
+      pairs: Array<{
+        unit: ProofreadUIUnit;
+        issues: ProofreadUIIssue[];
+        notReviewedReason?: string;
+      }>;
       lengthWarning: string | null;
       model: string;
       costUsd: number;
     };
-    type BatchErr = { kind: "err"; batchIndex: number; message: string };
+    type BatchErr = {
+      kind: "err";
+      batchIndex: number;
+      message: string;
+      units: ProofreadUIUnit[];
+    };
 
     const batchErrors: Array<{ batchIndex: number; message: string }> = [];
     const unitIssues = new Map<
@@ -499,51 +620,47 @@ export async function runProofreadUI(
         suggestionDroppedPlaceholderMismatch?: boolean;
       }>
     >();
+    const notReviewed = new Map<string, string>();
 
     const results = await runMapWithConcurrency(chunks, concurrency, async (chunk, batchIndex) => {
       const texts = chunk.map((u) => u.text);
       const hints = glossary.findTermsInText(texts.join("\n"), localeNorm);
       try {
-        const batch = await client.proofreadUISourceBatch(texts, languageLabel, {
+        let batch = await client.proofreadUISourceBatch(texts, languageLabel, {
           glossaryHints: hints,
         });
-        if (opts.verbose && batch.lengthWarning) {
-          console.error(
-            chalk.yellow(
-              t("[proofread-ui] batch {{batch}}: {{warning}}", {
-                batch: batchIndex + 1,
-                warning: batch.lengthWarning,
-              })
-            )
-          );
-        }
-        const pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }> = [];
-        for (let i = 0; i < chunk.length; i++) {
-          const unit = chunk[i]!;
-          const slot = batch.slots[i];
-          const rawIssues = slot?.issues ?? [];
-          const cleaned: ProofreadUIIssue[] = [];
-          for (const iss of rawIssues) {
-            const st = iss.suggestedText?.trim();
-            if (
-              st &&
-              st !== unit.text &&
-              !proofreadSuggestionPreservesPlaceholders(unit.text, st)
-            ) {
-              cleaned.push({
-                severity: iss.severity,
-                message: `${iss.message} (Suggested rewrite omitted: would break placeholders.)`,
-                suggestionDroppedPlaceholderMismatch: true,
-              });
-            } else {
-              cleaned.push({
-                severity: iss.severity,
-                message: iss.message,
-                suggestedText: st && st !== unit.text ? st : undefined,
-              });
+        if (batch.reviewed.some((ok) => !ok)) {
+          try {
+            const retry = await client.proofreadUISourceBatch(texts, languageLabel, {
+              glossaryHints: hints,
+            });
+            if (countReviewedSlots(retry.reviewed) > countReviewedSlots(batch.reviewed)) {
+              batch = retry;
+            }
+          } catch (e) {
+            if (opts.verbose) {
+              console.error(
+                chalk.yellow(
+                  t("[proofread-ui] batch {{batch}} retry failed: {{error}}", {
+                    batch: batchIndex + 1,
+                    error: e instanceof Error ? e.message : String(e),
+                  })
+                )
+              );
             }
           }
-          pairs.push({ unit, issues: cleaned });
+        }
+        const pairs: BatchOk["pairs"] = [];
+        for (let i = 0; i < chunk.length; i++) {
+          const unit = chunk[i]!;
+          if (!batch.reviewed[i]) {
+            pairs.push({ unit, issues: [], notReviewedReason: NOT_REVIEWED_UNALIGNED });
+            continue;
+          }
+          pairs.push({
+            unit,
+            issues: cleanProofreadIssues(unit.text, batch.slots[i]?.issues ?? []),
+          });
         }
         const ok: BatchOk = {
           kind: "ok",
@@ -556,7 +673,7 @@ export async function runProofreadUI(
         return ok;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        return { kind: "err", batchIndex, message: msg } satisfies BatchErr;
+        return { kind: "err", batchIndex, message: msg, units: chunk } satisfies BatchErr;
       }
     });
 
@@ -564,6 +681,9 @@ export async function runProofreadUI(
     for (const r of results) {
       if (r.kind === "err") {
         batchErrors.push({ batchIndex: r.batchIndex, message: r.message });
+        for (const unit of r.units) {
+          notReviewed.set(unit.segmentId, NOT_REVIEWED_BATCH_FAILED);
+        }
         console.error(
           chalk.red(
             t("❌ [proofread-ui] batch {{batch}} failed: {{error}}", {
@@ -596,7 +716,11 @@ export async function runProofreadUI(
           )
         );
       }
-      for (const { unit, issues } of r.pairs) {
+      for (const { unit, issues, notReviewedReason } of r.pairs) {
+        if (notReviewedReason) {
+          notReviewed.set(unit.segmentId, notReviewedReason);
+          continue;
+        }
         if (issues.length === 0) {
           continue;
         }
@@ -606,23 +730,32 @@ export async function runProofreadUI(
       }
     }
 
-    const reportUnits: ProofreadUIReportUnit[] = units.map((u) => ({
-      segmentId: u.segmentId,
-      field: "source",
-      originalText: u.text,
-      locations: u.locations,
-      issues: unitIssues.get(u.segmentId) ?? [],
-    }));
+    const reportUnits: ProofreadUIReportUnit[] = units.map((u) => {
+      const notReviewedReason = notReviewed.get(u.segmentId);
+      return {
+        segmentId: u.segmentId,
+        field: "source",
+        originalText: u.text,
+        locations: u.locations,
+        issues: notReviewedReason ? [] : (unitIssues.get(u.segmentId) ?? []),
+        ...(notReviewedReason ? { notReviewedReason } : {}),
+      };
+    });
 
     let unitsWithIssues = 0;
     let issueCount = 0;
+    let unitsNotReviewed = 0;
     for (const ru of reportUnits) {
+      if (ru.notReviewedReason) {
+        unitsNotReviewed++;
+        continue;
+      }
       if (ru.issues.length > 0) {
         unitsWithIssues++;
         issueCount += ru.issues.length;
       }
     }
-    const unitsOk = units.length - unitsWithIssues;
+    const unitsOk = units.length - unitsWithIssues - unitsNotReviewed;
 
     const report: ProofreadUIReport = {
       schemaVersion: 1,
@@ -635,6 +768,7 @@ export async function runProofreadUI(
         totalUnits: units.length,
         unitsWithIssues,
         unitsOk,
+        unitsNotReviewed,
         issueCount,
         totalCostUsd,
       },
@@ -647,21 +781,32 @@ export async function runProofreadUI(
 
     humanFn(
       chalk.bold(
-        t(
-          "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{issues}} issue(s)",
-          {
-            count: units.length,
-            withIssues: unitsWithIssues,
-            ok: unitsOk,
-            issues: issueCount,
-          }
-        )
+        unitsNotReviewed === 0
+          ? t(
+              "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{issues}} issue(s)",
+              {
+                count: units.length,
+                withIssues: unitsWithIssues,
+                ok: unitsOk,
+                issues: issueCount,
+              }
+            )
+          : t(
+              "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{notReviewed}} not reviewed, {{issues}} issue(s)",
+              {
+                count: units.length,
+                withIssues: unitsWithIssues,
+                ok: unitsOk,
+                notReviewed: unitsNotReviewed,
+                issues: issueCount,
+              }
+            )
       )
     );
     humanFn("");
 
     for (const ru of reportUnits) {
-      if (ru.issues.length === 0) {
+      if (ru.notReviewedReason || ru.issues.length === 0) {
         continue;
       }
       const quoted = JSON.stringify(ru.originalText);
@@ -693,7 +838,7 @@ export async function runProofreadUI(
       console.log(JSON.stringify(report, null, 2));
     }
 
-    if (issueCount === 0) {
+    if (issueCount === 0 && unitsNotReviewed === 0) {
       humanFn(
         chalk.green(
           t(
@@ -707,7 +852,7 @@ export async function runProofreadUI(
           )
         )
       );
-    } else {
+    } else if (unitsNotReviewed === 0) {
       humanFn(
         chalk.yellow(
           t(
@@ -716,6 +861,22 @@ export async function runProofreadUI(
               issues: issueCount,
               withIssues: unitsWithIssues,
               ok: unitsOk,
+              total: units.length,
+              logBase,
+            }
+          )
+        )
+      );
+    } else {
+      humanFn(
+        chalk.yellow(
+          t(
+            "⚠  {{issues}} issue(s) in {{withIssues}} string(s); {{ok}} OK, {{notReviewed}} not reviewed, of {{total}} total. Results written to {{logBase}}",
+            {
+              issues: issueCount,
+              withIssues: unitsWithIssues,
+              ok: unitsOk,
+              notReviewed: unitsNotReviewed,
               total: units.length,
               logBase,
             }
@@ -754,6 +915,13 @@ function emptyReport(
     projectRoot: cwd,
     units: [],
     batchErrors: [],
-    summary: { totalUnits, unitsWithIssues: 0, unitsOk: 0, issueCount: 0, totalCostUsd: 0 },
+    summary: {
+      totalUnits,
+      unitsWithIssues: 0,
+      unitsOk: 0,
+      unitsNotReviewed: 0,
+      issueCount: 0,
+      totalCostUsd: 0,
+    },
   };
 }

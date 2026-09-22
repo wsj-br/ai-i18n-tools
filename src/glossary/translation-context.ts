@@ -34,9 +34,7 @@ export interface TranslationContextConfigSlice {
  * Strip tags that would prematurely close glossary / context prompt blocks.
  */
 export function sanitizePromptSupplementaryText(text: string): string {
-  return text
-    .replace(/<\/\s*glossary\s*>/gi, "")
-    .replace(/<\/\s*translation-context\s*>/gi, "");
+  return text.replace(/<\/\s*glossary\s*>/gi, "").replace(/<\/\s*translation-context\s*>/gi, "");
 }
 
 function assertLocalContextPath(rawPath: string): void {

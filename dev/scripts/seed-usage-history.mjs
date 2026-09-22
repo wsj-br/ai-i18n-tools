@@ -221,7 +221,7 @@ function generateRows(now, months, rnd) {
     day.setUTCDate(day.getUTCDate() + 1)
   ) {
     const ageDays = Math.round((todayStart.getTime() - day.getTime()) / 86_400_000);
-    let count = 0;
+    let count;
     if (ageDays <= 7) count = randInt(14, 32, rnd);
     else if (ageDays <= 31) count = randInt(8, 22, rnd);
     else if (ageDays <= 90) count = randInt(5, 16, rnd);

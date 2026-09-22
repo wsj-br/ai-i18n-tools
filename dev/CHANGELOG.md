@@ -9,6 +9,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — VitePress `chunkSizeWarningLimit` is 700 so the Japanese local-search index (just over 600 kB) no longer warns during `pnpm docs:build`.
+
+- **Fixed**: cli — `proofread-ui` no longer treats a short model response as aligned. Slots apply by `index` when every object has one; otherwise those strings are not reviewed, and a suggestion that is a different string (or that changes placeholder counts) is dropped. The prompt ignores style nits and singular/plural flips on `{{count}}` strings. One retry is attempted when a batch is not fully aligned.
 - **Fixed**: examples — `intlayer-migration` typechecks `src/` only. `intlayer-pristine/` stays the reset snapshot and is excluded from `tsc` and the editor project.
 - **Added**: cli — `migrate-intlayer` report ends with a **Step-by-step TODO** (one box per manual site, then cleanup, runtime bootstrap, locale switch, `extract`, `translate-ui` for any new strings, and package removal). Steps that do not apply are omitted. A dry run starts with the exact `--write` command to re-run.
 - **Added**: docs — `migrating-from-intlayer` gains a "Migrate your project" section with generic setup/config steps (`init`, edit `sourceLocale`/`targetLocales`/`ui.*`, dry run, `--write`, report, `extract`/`translate-ui`, cleanup) that apply to any Intlayer project, not just the shipped example.

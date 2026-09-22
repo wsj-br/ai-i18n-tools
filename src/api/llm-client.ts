@@ -1117,6 +1117,8 @@ export class LlmClient {
     options?: { startModelIndex?: number; glossaryHints?: string[] }
   ): Promise<{
     slots: ProofreadUISlotResult[];
+    /** Parallel to `texts`: false when that string's slot was missing or could not be aligned. */
+    reviewed: boolean[];
     model: string;
     usage: LlmUsageStats;
     cost?: number;
@@ -1125,6 +1127,7 @@ export class LlmClient {
     if (texts.length === 0) {
       return {
         slots: [],
+        reviewed: [],
         model: this.modelsToTry[0]!,
         usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
         lengthWarning: null,
@@ -1170,7 +1173,7 @@ export class LlmClient {
         continue;
       }
       try {
-        const { slots, lengthWarning } = parseProofreadUIBatchResponse(
+        const { slots, lengthWarning, reviewed } = parseProofreadUIBatchResponse(
           result.content,
           texts.length
         );
@@ -1178,6 +1181,7 @@ export class LlmClient {
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           slots,
+          reviewed,
           model: result.model,
           usage: folded.usage,
           cost: folded.cost,

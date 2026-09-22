@@ -19,14 +19,12 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## Improvements
 
-- check the proofread-ui command to see if it is working as expected, check if the warnings and suggestions make sense and are helpful.
-
+> nothing planned
 
 
 ## Fixes
 
 > nothing to fix
-
 
 
 ## To remove

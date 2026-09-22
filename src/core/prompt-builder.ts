@@ -513,14 +513,98 @@ export interface ProofreadUIIssue {
   suggestionDroppedPlaceholderMismatch?: boolean;
 }
 
+function proofreadIssuesFromRow(rec: Record<string, unknown>): ProofreadUIIssue[] {
+  const rawIssues = rec["issues"];
+  const issues: ProofreadUIIssue[] = [];
+  if (!Array.isArray(rawIssues)) {
+    return issues;
+  }
+  for (const item of rawIssues) {
+    if (item === null || typeof item !== "object" || Array.isArray(item)) {
+      continue;
+    }
+    const o = item as Record<string, unknown>;
+    const sevRaw = o["severity"];
+    const msgRaw = o["message"];
+    const sugRaw = o["suggestedText"];
+    const severity =
+      sevRaw === "warning" || sevRaw === "error"
+        ? sevRaw
+        : sevRaw === "warn"
+          ? "warning"
+          : "warning";
+    const message = typeof msgRaw === "string" ? msgRaw.trim() : "";
+    if (!message) {
+      continue;
+    }
+    const suggestedText =
+      typeof sugRaw === "string" && sugRaw.trim().length > 0 ? sugRaw : undefined;
+    issues.push({ severity, message, suggestedText });
+  }
+  return issues;
+}
+
+function proofreadSlotIndex(rec: Record<string, unknown>): number | undefined {
+  const raw = rec["index"];
+  if (typeof raw === "number" && Number.isInteger(raw)) {
+    return raw;
+  }
+  if (typeof raw === "string" && /^(0|[1-9]\d*)$/.test(raw.trim())) {
+    return Number(raw.trim());
+  }
+  return undefined;
+}
+
+function isProofreadSlotObject(row: unknown): row is Record<string, unknown> {
+  return row !== null && typeof row === "object" && !Array.isArray(row);
+}
+
 /**
- * Parse JSON array from model: `[ { "issues": [...] }, ... ]` with length `expectedLength`.
- * If the model returns fewer or more slots than `expectedLength`, pads with empty issues or truncates (best-effort) and sets `lengthWarning`.
+ * Place slots by `"index"` when every returned object has a unique in-range index.
+ * Otherwise a short or long array cannot be trusted: positional padding would attach
+ * issues to the wrong strings.
+ */
+function alignProofreadSlots(
+  parsed: unknown[],
+  expectedLength: number
+): { slots: ProofreadUISlotResult[]; reviewed: boolean[]; alignedByIndex: boolean } {
+  const slots: ProofreadUISlotResult[] = Array.from({ length: expectedLength }, () => ({
+    issues: [],
+  }));
+  const reviewed: boolean[] = Array.from({ length: expectedLength }, () => false);
+  const objects = parsed.filter(isProofreadSlotObject);
+  const indexed: Array<{ index: number; issues: ProofreadUIIssue[] }> = [];
+  const seen = new Set<number>();
+  let indexesUnique = true;
+  for (const rec of objects) {
+    const index = proofreadSlotIndex(rec);
+    if (index === undefined || index < 0 || index >= expectedLength || seen.has(index)) {
+      indexesUnique = false;
+      break;
+    }
+    seen.add(index);
+    indexed.push({ index, issues: proofreadIssuesFromRow(rec) });
+  }
+  const alignedByIndex = objects.length > 0 && objects.length === parsed.length && indexesUnique;
+  if (!alignedByIndex) {
+    return { slots, reviewed, alignedByIndex: false };
+  }
+  for (const row of indexed) {
+    slots[row.index] = { issues: row.issues };
+    reviewed[row.index] = true;
+  }
+  return { slots, reviewed, alignedByIndex: true };
+}
+
+/**
+ * Parse JSON array from model: `[ { "index": 0, "issues": [...] }, ... ]` with length `expectedLength`.
+ * A short or long array is applied only when every object has a unique in-range `index`.
+ * Otherwise no slot is treated as reviewed (callers must not pad by position).
  */
 export function parseProofreadUIBatchResponse(
   content: string,
   expectedLength: number
-): { slots: ProofreadUISlotResult[]; lengthWarning: string | null } {
+): { slots: ProofreadUISlotResult[]; lengthWarning: string | null; reviewed: boolean[] } {
   const cleaned = cleanJsonResponse(content);
   let parsed: unknown;
   try {
@@ -538,54 +622,44 @@ export function parseProofreadUIBatchResponse(
     );
   }
 
-  let lengthWarning: string | null = null;
   if (parsed.length !== expectedLength) {
-    lengthWarning = `proofread-ui batch: expected ${expectedLength} slot objects, got ${parsed.length} (using best-effort padding/truncation)`;
+    const aligned = alignProofreadSlots(parsed, expectedLength);
+    if (aligned.alignedByIndex) {
+      return {
+        slots: aligned.slots,
+        reviewed: aligned.reviewed,
+        lengthWarning: `proofread-ui batch: expected ${expectedLength} slot objects, got ${parsed.length} (applied by index; missing slots were not reviewed)`,
+      };
+    }
+    return {
+      slots: Array.from({ length: expectedLength }, () => ({ issues: [] })),
+      reviewed: Array.from({ length: expectedLength }, () => false),
+      lengthWarning: `proofread-ui batch: expected ${expectedLength} slot objects, got ${parsed.length} (response could not be aligned; no strings from this batch were reviewed)`,
+    };
   }
 
-  const out: ProofreadUISlotResult[] = [];
+  const aligned = alignProofreadSlots(parsed, expectedLength);
+  if (aligned.alignedByIndex && aligned.reviewed.every(Boolean)) {
+    return { slots: aligned.slots, reviewed: aligned.reviewed, lengthWarning: null };
+  }
+
+  const slots: ProofreadUISlotResult[] = [];
+  const reviewed: boolean[] = [];
+  let lengthWarning: string | null = null;
   for (let i = 0; i < expectedLength; i++) {
-    const row = i < parsed.length ? parsed[i] : undefined;
-    if (row === null || row === undefined || typeof row !== "object" || Array.isArray(row)) {
-      if (row !== undefined) {
-        lengthWarning =
-          lengthWarning ??
-          `proofread-ui batch: slot ${i} is not a JSON object (treated as no issues)`;
-      }
-      out.push({ issues: [] });
+    const row = parsed[i];
+    if (!isProofreadSlotObject(row)) {
+      lengthWarning =
+        lengthWarning ??
+        `proofread-ui batch: slot ${i} is not a JSON object (that string was not reviewed)`;
+      slots.push({ issues: [] });
+      reviewed.push(false);
       continue;
     }
-    const rec = row as Record<string, unknown>;
-    const rawIssues = rec["issues"];
-    const issues: ProofreadUIIssue[] = [];
-    if (Array.isArray(rawIssues)) {
-      for (const item of rawIssues) {
-        if (item === null || typeof item !== "object" || Array.isArray(item)) {
-          continue;
-        }
-        const o = item as Record<string, unknown>;
-        const sevRaw = o["severity"];
-        const msgRaw = o["message"];
-        const sugRaw = o["suggestedText"];
-        const severity =
-          sevRaw === "warning" || sevRaw === "error"
-            ? sevRaw
-            : sevRaw === "warn"
-              ? "warning"
-              : "warning";
-        const message = typeof msgRaw === "string" ? msgRaw.trim() : "";
-        if (!message) {
-          continue;
-        }
-        const suggestedText =
-          typeof sugRaw === "string" && sugRaw.trim().length > 0 ? sugRaw : undefined;
-        issues.push({ severity, message, suggestedText });
-      }
-    }
-    out.push({ issues });
+    slots.push({ issues: proofreadIssuesFromRow(row) });
+    reviewed.push(true);
   }
-
-  return { slots: out, lengthWarning };
+  return { slots, reviewed, lengthWarning };
 }
 
 function cleanJsonResponse(content: string): string {
