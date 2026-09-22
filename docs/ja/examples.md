@@ -48,3 +48,9 @@ pnpm install
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, リセット + AIエージェントレポート) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。
+
+<br/>
+
+::: tip 免責事項
+製品名およびアイコンは各所有者に帰属しており、識別目的でのみ使用されています。本ソフトウェアは、これらのブランドと提携しておらず、また推奨も受けていません。
+:::

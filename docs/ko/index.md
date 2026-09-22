@@ -97,3 +97,14 @@ SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다
 - [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 API 및 확장 포인트
 
 패키지를 자체 프로젝트에 통합하시나요? [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)부터 시작하세요. [저장소 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)는 자세한 내용을 위해 이곳으로 연결되는 짧은 GitHub/npm 랜딩 페이지입니다.
+
+<br/>
+<br/>
+
+::: tip 고지 사항
+제품명 및 아이콘은 각 소유권자에게 귀속되며 식별 목적으로만 사용됩니다. 이 소프트웨어는 해당 브랜드와 제휴하거나 승인을 받은 것이 아닙니다.
+
+영국 영어를 제외한 모든 인터페이스 및 문서 언어는 이 패키지(ai-i18n-tools)를 사용하여 AI로 번역되었으며, 일부 문구가 부정확하거나 오류가 포함될 수 있습니다.
+:::
+
+<br/>

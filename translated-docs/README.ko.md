@@ -90,3 +90,13 @@ ai-i18n-tools sync                   # extract + translate per features
 MIT — [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE)를 참조하세요.
 
 Copyright © 2026 Waldemar Scudeller Jr.
+
+<br/>
+
+제품명 및 아이콘은 각 소유권자에게 귀속되며 식별 목적으로만 사용됩니다. 본 소프트웨어는 해당 브랜드와 제휴하지 않았으며, 해당 브랜드의 보증을 받지 않습니다.
+
+<small>
+
+> **UI 및 문서 번역 참고 사항:** 영어(영국)를 제외한 모든 인터페이스 및 문서 언어는 이 패키지(ai-i18n-tools)를 사용하여 AI로 번역되었으며, 문구가 부정확하거나 오류가 포함될 수 있습니다.
+
+</small>

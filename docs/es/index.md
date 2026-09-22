@@ -107,3 +107,14 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 - [**Arquitectura**](/es/reference/architecture) — funcionamiento interno, API programática y puntos de extensión
 
 ¿Va a integrar el paquete en su propio proyecto? Empiece con [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). El [README del repositorio](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) es una breve página de inicio de GitHub/npm que enlaza aquí para obtener más detalles.
+
+<br/>
+<br/>
+
+::: tip Aviso
+Los nombres e iconos de los productos pertenecen a sus respectivos propietarios y se utilizan únicamente con fines de identificación. Este software no está afiliado a ni respaldado por dichas marcas.
+
+Todos los idiomas de la interfaz y de la documentación, excepto el inglés (Reino Unido), se tradujeron con IA utilizando este paquete (ai-i18n-tools); la redacción puede ser imprecisa o contener errores.
+:::
+
+<br/>

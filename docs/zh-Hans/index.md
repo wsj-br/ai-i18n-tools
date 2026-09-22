@@ -93,3 +93,14 @@ SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPa
 - [**架构**](/zh-Hans/reference/architecture) — 内部机制、编程 API 及扩展点
 
 要将该包集成到你自己的项目中？请从 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 开始。[仓库 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一个简短的 GitHub/npm 着陆页，链接到此处以获取详细信息。
+
+<br/>
+<br/>
+
+::: tip 免责声明
+产品名称和图标均归其各自所有者所有，仅用于标识目的。本软件与上述品牌无任何关联，亦未获得其认可。
+
+除英语（英国）外，所有界面和文档语言均使用此软件包 (ai-i18n-tools) 由 AI 翻译；措辞可能不够精确或存在错误。
+:::
+
+<br/>

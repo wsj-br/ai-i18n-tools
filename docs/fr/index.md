@@ -107,3 +107,14 @@ Les illustrations SVG utilisent un chemin `translate-svg` distinct — pas `docs
 - [**Architecture**](/fr/reference/architecture) — fonctionnement interne, API programmatique et points d'extension
 
 Vous intégrez le package dans votre propre projet ? Commencez par [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). Le [fichier README du dépôt](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) est une courte page de destination GitHub/npm qui renvoie ici pour plus de détails.
+
+<br/>
+<br/>
+
+::: tip Avertissement
+Les noms de produits et les icônes appartiennent à leurs propriétaires respectifs et sont utilisés uniquement à des fins d'identification. Ce logiciel n'est ni affilié ni approuvé par ces marques.
+
+Toutes les langues de l'interface et de la documentation, à l'exception de l'anglais (Royaume-Uni), ont été traduites par IA à l'aide de ce package (ai-i18n-tools) ; la formulation peut être imprécise ou contenir des erreurs.
+:::
+
+<br/>

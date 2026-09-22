@@ -90,3 +90,13 @@ Problemas e pull requests são bem-vindos. Fluxos de trabalho do mantenedor para
 MIT — consulte [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).
 
 Copyright © 2026 Waldemar Scudeller Jr.
+
+<br/>
+
+Os nomes e ícones dos produtos pertencem a seus respectivos proprietários e são usados apenas para fins de identificação. Este software não é afiliado nem endossado por essas marcas.
+
+<small>
+
+> **Nota sobre as traduções da interface e da documentação:** Todos os idiomas da interface e da documentação, exceto o inglês (Reino Unido), foram traduzidos por IA usando este pacote (ai-i18n-tools); a redação pode ser imprecisa ou conter erros.
+
+</small>

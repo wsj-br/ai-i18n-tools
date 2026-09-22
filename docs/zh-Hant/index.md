@@ -93,3 +93,14 @@ SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths
 - [**架構**](/zh-Hant/reference/architecture) — 內部實作、程式化 API 與擴充點
 
 要將套件整合到您自己的專案中嗎？請從 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 開始。[repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一個簡短的 GitHub/npm 首頁，它會連結至此以取得詳細資訊。
+
+<br/>
+<br/>
+
+::: tip 免責聲明
+產品名稱與圖示均屬其各自擁有者所有，僅供識別之用。本軟體與上述品牌無任何隸屬關係，亦未獲其背書。
+
+除英文（英國）外，所有介面與文件語言均使用本套件 (ai-i18n-tools) 由 AI 進行翻譯；用詞可能不盡精確或包含錯誤。
+:::
+
+<br/>

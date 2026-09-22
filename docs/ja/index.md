@@ -86,3 +86,14 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 - [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラムAPI、および拡張ポイント
 
 パッケージを自分のプロジェクトに組み込む場合は、[AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) から始めてください。[リポジトリの README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) は短い GitHub/npm ランディングページであり、詳細についてはここへリンクしています。
+
+<br/>
+<br/>
+
+::: tip 免責事項
+製品名およびアイコンはそれぞれの所有者に帰属し、識別目的でのみ使用されています。本ソフトウェアは、これらのブランドとの提携や推奨を受けているものではありません。
+
+英語（英国）を除くすべてのインターフェースおよびドキュメントの言語は、本パッケージ（ai-i18n-tools）を使用してAIにより翻訳されています。そのため、表現が不正確であったり、誤りを含んでいる可能性があります。
+:::
+
+<br/>

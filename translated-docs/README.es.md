@@ -90,3 +90,13 @@ Los problemas y las solicitudes de extracción son bienvenidos. Flujos de trabaj
 MIT — consulte [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).
 
 Copyright © 2026 Waldemar Scudeller Jr.
+
+<br/>
+
+Los nombres de los productos y los iconos pertenecen a sus respectivos propietarios y se utilizan únicamente con fines de identificación. Este software no está afiliado a ni respaldado por dichas marcas.
+
+<small>
+
+> **Nota sobre las traducciones de la interfaz de usuario y la documentación:** Todos los idiomas de la interfaz y de la documentación, excepto el inglés (Reino Unido), se tradujeron con IA mediante este paquete (ai-i18n-tools); la redacción puede ser imprecisa o contener errores.
+
+</small>

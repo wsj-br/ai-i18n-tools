@@ -48,3 +48,9 @@ Wenn Sie stattdessen das **gesamte** [ai-i18n-tools](https://github.com/wsj-br/a
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, Reset + KI-Agent-Bericht) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 Jeder **Beispiel**-Name verlinkt zu seinem GitHub-README mit vollständiger Einrichtung, Befehlen und Projektlayout – oder durchsuchen Sie den [Beispielindex im Repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
+
+<br/>
+
+::: tip Haftungsausschluss
+Produktnamen und Icons sind Eigentum ihrer jeweiligen Inhaber und dienen ausschließlich zu Identifikationszwecken. Diese Software steht in keiner Verbindung zu diesen Marken und wird auch nicht von ihnen unterstützt.
+:::

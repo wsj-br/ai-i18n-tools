@@ -90,3 +90,13 @@ Probleme und Pull-Requests sind willkommen. Workflows für Maintainer für diese
 MIT – siehe [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE).
 
 Copyright © 2026 Waldemar Scudeller Jr.
+
+<br/>
+
+Produktnamen und Icons sind Eigentum der jeweiligen Rechteinhaber und werden ausschließlich zu Identifikationszwecken verwendet. Diese Software ist weder mit diesen Marken verbunden noch wird sie von diesen unterstützt.
+
+<small>
+
+> **Hinweis zu UI- und Dokumentationsübersetzungen:** Alle Sprachen der Benutzeroberfläche und der Dokumentation, mit Ausnahme von Englisch (UK), wurden mithilfe von KI unter Verwendung dieses Pakets (ai-i18n-tools) übersetzt; die Formulierungen können ungenau sein oder Fehler enthalten.
+
+</small>
