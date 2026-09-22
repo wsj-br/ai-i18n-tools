@@ -13,7 +13,7 @@
 
 CLI 與工具套件，用於將 JavaScript/TypeScript 應用程式及文件網站國際化。擷取 `t()` 字串，翻譯 Markdown/MDX 頁面、JSON 套件與 SVG 標籤——全部透過單一設定檔完成，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 及任何相容 OpenAI 之 API 的預設配置。可依專案或地區設定切換供應商或模型，無需變更您的程式碼庫。
 
-支援 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/) 以及純 [Markdown](https://commonmark.org/)。保留您現有的 [i18next](https://www.i18next.com/) 翻譯目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
+支援 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/) 與純 Markdown。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
 
 <a id="features"></a>
 ## 功能

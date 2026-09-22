@@ -13,7 +13,7 @@
 
 CLI and toolkit for internationalizing JavaScript/TypeScript apps and documentation sites. Extract `t()` strings, translate Markdown/MDX pages, JSON bundles, and SVG labels — all from one config, with built-in presets for OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale without changing your codebase.
 
-Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), and plain [Markdown](https://commonmark.org/). Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and migrates [Intlayer](https://intlayer.org/) projects with `migrate-intlayer`.
+Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), and plain Markdown. Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and migrates [Intlayer](https://intlayer.org/) projects with `migrate-intlayer`.
 
 <a id="features"></a>
 ## Features

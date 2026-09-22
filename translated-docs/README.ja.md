@@ -13,7 +13,7 @@
 
 JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化するためのCLIおよびツールキット。`t()`文字列の抽出、Markdown/MDXページ、JSONバンドル、SVGラベルの翻訳を単一の構成から実行でき、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、およびOpenAI互換API用の組み込みプリセットを備えています。コードベースを変更することなく、プロジェクトごとまたはロケールごとにプロバイダーやモデルを切り替えられます。
 
-[VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、およびプレーンな[Markdown](https://commonmark.org/)に対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）を保持し、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行します。
+[VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、およびプレーンMarkdownに対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）は保持され、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行します。
 
 <a id="features"></a>
 ## 機能

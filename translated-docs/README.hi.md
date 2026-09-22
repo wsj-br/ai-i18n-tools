@@ -13,7 +13,7 @@
 
 CLI और JavaScript/TypeScript ऐप्स तथा दस्तावेज़ीकरण साइटों के अंतर्राष्ट्रीयकरण के लिए टूलकिट। `t()` स्ट्रिंग्स निकालें, Markdown/MDX पेज, JSON बंडल्स, और SVG लेबल्स का अनुवाद करें — सब कुछ एक ही कॉन्फ़िगरेशन से, OpenAI, Anthropic, Gemini, OpenRouter, Ollama, और किसी भी OpenAI-संगत API के लिए बिल्ट-इन प्रीसेट के साथ। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल बदलें।
 
-[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), और सादे [Markdown](https://commonmark.org/) के साथ काम करता है। आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को सुरक्षित रखता है, और [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को `migrate-intlayer` के साथ माइग्रेट करता है।
+यह [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), और सादे मार्कडाउन के साथ काम करता है। यह आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को बनाए रखता है, और `migrate-intlayer` का उपयोग करके [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को माइग्रेट करता है।
 
 <a id="features"></a>
 ## विशेषताएँ

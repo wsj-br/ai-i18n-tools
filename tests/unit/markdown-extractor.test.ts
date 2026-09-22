@@ -79,6 +79,48 @@ Paragraph.
     expect(out).toContain("Paragraph.");
   });
 
+  it("captures a Pandoc fenced div as one admonition segment", () => {
+    const block = "::: {.note}\nBody paragraph.\n:::";
+    const segs = ex.extract(`${block}\n\nAfter.`, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]!.content).toBe(block);
+  });
+
+  it("captures a MkDocs indented admonition and leaves the following paragraph outside", () => {
+    const block = [
+      '!!! note "Optional title"',
+      "",
+      "    Indented body.",
+      "",
+      "    Second paragraph.",
+    ].join("\n");
+    const md = `${block}\n\nAfter.`;
+    const segs = ex.extract(md, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]!.content).toBe(block);
+    expect(segs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
+
+    const siblings = ex.extract(
+      ["??? note", "", "    Hidden.", "", "???+ warning", "", "    Shown.", ""].join("\n"),
+      "doc.md"
+    );
+    const blocks = siblings.filter((s) => s.type === "admonition");
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0]!.content).toBe("??? note\n\n    Hidden.");
+    expect(blocks[1]!.content).toBe("???+ warning\n\n    Shown.");
+  });
+
+  it("captures a VitePress spaced container as one admonition segment", () => {
+    const block = "::: tip Disclaimer\nBody paragraph.\n:::";
+    const segs = ex.extract(`${block}\n\nAfter.`, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]!.content).toBe(block);
+    expect(segs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
+  });
+
   it("extracts fenced code and admonition segments", () => {
     const md = "```ts\nconst x = 1;\n```\n\n:::note\nN\n:::\n\nPara.";
     const segs = ex.extract(md, "doc.md");

@@ -235,6 +235,62 @@ describe("collectMalformedAdmonitionIssues", () => {
     );
   });
 
+  it("accepts Pandoc, MyST, VitePress details, and GitHub alert blocks", () => {
+    const samples = [
+      "::: {.note}\nBody of the div.\n:::",
+      ":::{caution} Watch out\nBody.\n:::",
+      "::: details Click to expand\nHidden.\n:::",
+      "> [!NOTE]\n> Official GitHub alert.\n",
+      "> [!WARNING] Custom title\n> Still a blockquote, not a colon fence.\n",
+    ];
+    for (const md of samples) {
+      expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+    }
+  });
+
+  it("accepts a MkDocs admonition and flags a missing type or unclosed title", () => {
+    const ok = [
+      '!!! note "Optional title"',
+      "",
+      "    Indented body.",
+      "",
+      '??? warning "Careful"',
+      "",
+      "    Hidden.",
+      "",
+      "???+ tip",
+      "",
+      "    Shown.",
+    ].join("\n");
+    expect(collectMalformedAdmonitionIssues(ok)).toEqual([]);
+
+    const missing = collectMalformedAdmonitionIssues("Intro\n\n!!!\n\n???+\n");
+    expect(missing.map((i) => i.code)).toEqual([
+      MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_MISSING_TYPE,
+      MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_MISSING_TYPE,
+    ]);
+    expect(missing.map((i) => i.line1)).toEqual([3, 5]);
+
+    const openQuote = collectMalformedAdmonitionIssues('!!! note "No closing quote\n\n    Body.');
+    expect(openQuote).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE,
+        line1: 1,
+      }),
+    ]);
+  });
+
+  it("accepts a VitePress container with a space before the type and title", () => {
+    const md = [
+      "::: tip Disclaimer",
+      "Product names belong to their owners.",
+      "",
+      "Wording may be imprecise.",
+      ":::",
+    ].join("\n");
+    expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+  });
+
   it("passes a well-formed nested admonition block", () => {
     const md = [
       ":::::info[Parent]",

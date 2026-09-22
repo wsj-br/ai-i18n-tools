@@ -2,7 +2,9 @@ import {
   ADMONITION_BRACKETED_TITLE_RE,
   ADMONITION_CLOSING_RE,
   ADMONITION_DIRECTIVE_WITH_TAIL_RE,
+  ADMONITION_FENCED_DIV_RE,
   GITHUB_ALERT_LINE_RE,
+  MKDOCS_ADMONITION_OPENER_RE,
 } from "./admonition-syntax.js";
 
 const OPEN_PREFIX = "{{ADM_OPEN_";
@@ -48,6 +50,22 @@ export function protectAdmonitionSyntax(text: string): AdmonitionProtectedResult
       continue;
     }
 
+    const fencedDiv = line.match(ADMONITION_FENCED_DIV_RE);
+    if (fencedDiv) {
+      const indent = fencedDiv[1]!;
+      const directive = fencedDiv[2]!;
+      const spacing = fencedDiv[3]!;
+      const titleRest = fencedDiv[4]!;
+      const placeholder = `${OPEN_PREFIX}${openIndex}${OPEN_SUFFIX}`;
+      const hasVisibleTitle = titleRest.trim().length > 0;
+      openMap.push(hasVisibleTitle ? directive + spacing : directive);
+      openIndex++;
+      result.push(
+        hasVisibleTitle ? `${indent}${placeholder}${titleRest}` : `${indent}${placeholder}`
+      );
+      continue;
+    }
+
     const openMatch = line.match(ADMONITION_DIRECTIVE_WITH_TAIL_RE);
     if (openMatch) {
       const indent = openMatch[1]!;
@@ -65,11 +83,39 @@ export function protectAdmonitionSyntax(text: string): AdmonitionProtectedResult
       continue;
     }
 
-    if (line.match(GITHUB_ALERT_LINE_RE)) {
+    const mkdocsMatch = line.match(MKDOCS_ADMONITION_OPENER_RE);
+    if (mkdocsMatch) {
+      const indent = mkdocsMatch[1]!;
+      const marker = mkdocsMatch[2]!;
+      const classes = mkdocsMatch[3]!;
+      const quoteOpen = mkdocsMatch[4];
+      const title = mkdocsMatch[5];
+      const quoteClose = mkdocsMatch[6];
       const placeholder = `${OPEN_PREFIX}${openIndex}${OPEN_SUFFIX}`;
-      openMap.push(line);
       openIndex++;
-      result.push(placeholder);
+      if (quoteOpen !== undefined && title !== undefined && quoteClose !== undefined) {
+        const closePlaceholder = `${TCLOSE_PREFIX}${titleCloseIndex}${TCLOSE_SUFFIX}`;
+        openMap.push(marker + classes + quoteOpen);
+        titleCloseMap.push(quoteClose);
+        titleCloseIndex++;
+        result.push(`${indent}${placeholder}${title}${closePlaceholder}`);
+      } else {
+        openMap.push(marker + classes);
+        result.push(`${indent}${placeholder}`);
+      }
+      continue;
+    }
+
+    const githubMatch = line.match(GITHUB_ALERT_LINE_RE);
+    if (githubMatch) {
+      const marker = githubMatch[1]!;
+      const spacing = githubMatch[2] ?? "";
+      const titleRest = githubMatch[3] ?? "";
+      const placeholder = `${OPEN_PREFIX}${openIndex}${OPEN_SUFFIX}`;
+      const hasVisibleTitle = titleRest.trim().length > 0;
+      openMap.push(hasVisibleTitle ? marker + spacing : line);
+      openIndex++;
+      result.push(hasVisibleTitle ? `${placeholder}${titleRest}` : placeholder);
       continue;
     }
 

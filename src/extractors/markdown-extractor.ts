@@ -25,6 +25,8 @@ import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 import {
   ADMONITION_CLOSING_NOINDENT_RE,
   ADMONITION_OPENER_COLONS_RE,
+  MKDOCS_ADMONITION_OPENER_RE,
+  mkdocsAdmonitionEndIndex,
 } from "../processors/admonition-syntax.js";
 
 /** Optional extraction behavior for markdown docs (e.g. skip language-list blocks from translation). */
@@ -275,6 +277,19 @@ export class MarkdownExtractor extends BaseExtractor {
 
       if (admonitionDepths.length > 0) {
         admonitionContent.push(line);
+        continue;
+      }
+
+      if (MKDOCS_ADMONITION_OPENER_RE.test(line)) {
+        flushCurrentSegment();
+        const endIndex = mkdocsAdmonitionEndIndex(lines, lineIndex);
+        segments.push({
+          type: "admonition",
+          content: lines.slice(lineIndex, endIndex + 1).join("\n"),
+          translatable: true,
+          startLine: bodyStartLine + lineIndex,
+        });
+        lineIndex = endIndex;
         continue;
       }
 

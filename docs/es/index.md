@@ -111,10 +111,10 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 <br/>
 <br/>
 
-::: tip Aviso
+::: tip Descargo de responsabilidad
 Los nombres e iconos de los productos pertenecen a sus respectivos propietarios y se utilizan únicamente con fines de identificación. Este software no está afiliado a ni respaldado por dichas marcas.
 
-Todos los idiomas de la interfaz y de la documentación, excepto el inglés (Reino Unido), se tradujeron con IA utilizando este paquete (ai-i18n-tools); la redacción puede ser imprecisa o contener errores.
+Todos los idiomas de la interfaz y de la documentación, excepto el inglés (Reino Unido), se han traducido mediante IA utilizando este paquete (ai-i18n-tools); la redacción puede ser imprecisa o contener errores.
 :::
 
 <br/>

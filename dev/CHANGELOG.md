@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Added**: cli/check-markdown — MkDocs Material admonitions (`!!! note`, collapsible `??? note`, expanded `???+ note`, optional `"title"`, indented body) are one admonition segment. The marker, type, classes, and quotes are protected; the quoted title is translated. A bare `!!!` / `???` is `ADMONITION_MISSING_TYPE`, and an unclosed `"` is `ADMONITION_UNTERMINATED_TITLE`.
+- **Fixed**: cli/check-markdown — colon-fence openers the scanner used to miss are recognized, so their closing `:::` is no longer `ADMONITION_UNEXPECTED_CLOSE`. Covered forms: VitePress `::: tip Title` and `::: details`, Pandoc `::: {.note}`, MyST `:::{note} Title`, and a `{.attr}` block glued to the type (`:::note{.large}`). `:::important` is no longer parsed as `:::info`. GitHub and Obsidian callouts (`> [!NOTE]`, `> [!WARNING] Custom title`, `> [!info]- Folded`) keep the marker protected and leave a custom title translatable.
 - **Changed**: docs — translated `README.md` copies prefix GitHub Pages documentation links with the target locale (`https://wsj-br.github.io/ai-i18n-tools/${translatedLocale}/…`) via `regexAdjustments` on the flat README docs block. The English README stays on the root locale.
 
 ## [1.9.0] - 2026-09-22

@@ -9,6 +9,9 @@ import {
   ADMONITION_CLOSING_NOINDENT_RE,
   ADMONITION_OPENER_COLONS_RE,
   ADMONITION_UNTERMINATED_TITLE_RE,
+  MKDOCS_ADMONITION_MISSING_TYPE_RE,
+  MKDOCS_ADMONITION_OPENER_RE,
+  MKDOCS_ADMONITION_TITLE_START_RE,
 } from "./admonition-syntax.js";
 import { HTML_ID_ANCHOR_RE } from "./anchor-placeholders.js";
 import { computeSegmentHash } from "../utils/hash.js";
@@ -27,6 +30,8 @@ export const MARKDOWN_SOURCE_ISSUE_CODES = {
   ADMONITION_UNEXPECTED_CLOSE: "ADMONITION_UNEXPECTED_CLOSE",
   /** A bracketed-title opener whose `[` is never closed on the line (`:::note[Title`). */
   ADMONITION_UNTERMINATED_TITLE: "ADMONITION_UNTERMINATED_TITLE",
+  /** A MkDocs `!!!` / `???` / `???+` marker with no type (`!!! note`). */
+  ADMONITION_MISSING_TYPE: "ADMONITION_MISSING_TYPE",
 } as const;
 
 export type MarkdownSourceIssueCode =
@@ -327,6 +332,30 @@ export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSour
       continue;
     }
     if (inCodeBlock) {
+      continue;
+    }
+
+    if (MKDOCS_ADMONITION_MISSING_TYPE_RE.test(line)) {
+      issues.push({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_MISSING_TYPE,
+        message:
+          'MkDocs admonition marker needs a type. Use `!!! note`, `??? note`, or `???+ note` (optional `"title"`).',
+        line1,
+      });
+      continue;
+    }
+
+    if (MKDOCS_ADMONITION_TITLE_START_RE.test(line) && !MKDOCS_ADMONITION_OPENER_RE.test(line)) {
+      issues.push({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE,
+        message:
+          'Admonition title quote `"` is never closed on this line. Add a matching `"` (e.g. `!!! note "Title"`).',
+        line1,
+      });
+      continue;
+    }
+
+    if (MKDOCS_ADMONITION_OPENER_RE.test(line)) {
       continue;
     }
 

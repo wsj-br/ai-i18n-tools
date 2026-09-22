@@ -115,9 +115,9 @@ Möchten Sie das Paket in Ihr eigenes Projekt integrieren? Beginnen Sie mit [AI 
 <br/>
 
 ::: tip Haftungsausschluss
-Produktnamen und Symbole gehören ihren jeweiligen Eigentümern und werden ausschließlich zu Identifikationszwecken verwendet. Diese Software steht in keiner Verbindung zu diesen Marken und wird nicht von ihnen unterstützt.
+Produktnamen und Icons sind Eigentum ihrer jeweiligen Inhaber und werden ausschließlich zu Identifikationszwecken verwendet. Diese Software ist weder mit diesen Marken verbunden noch wird sie von ihnen unterstützt.
 
-Alle Sprachen der Benutzeroberfläche und der Dokumentation außer Englisch (UK) wurden mithilfe dieses Pakets (ai-i18n-tools) durch KI übersetzt; die Formulierungen können ungenau sein oder Fehler enthalten.
+Alle Sprachen der Benutzeroberfläche und Dokumentation außer Englisch (UK) wurden mithilfe dieses Pakets (ai-i18n-tools) mit KI übersetzt; die Formulierungen können ungenau sein oder Fehler enthalten.
 :::
 
 <br/>
