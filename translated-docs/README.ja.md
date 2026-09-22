@@ -13,7 +13,7 @@
 
 JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化するためのCLIおよびツールキット。`t()`文字列の抽出、Markdown/MDXページ、JSONバンドル、SVGラベルの翻訳を単一の構成から実行でき、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、およびOpenAI互換API用の組み込みプリセットを備えています。コードベースを変更することなく、プロジェクトごとまたはロケールごとにプロバイダーやモデルを切り替えられます。
 
-VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、およびプレーンMarkdownに対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）を維持したまま、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行できます。
+[VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、およびプレーンな[Markdown](https://commonmark.org/)に対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）を保持し、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行します。
 
 <a id="features"></a>
 ## 機能
@@ -36,7 +36,7 @@ VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、およびプレ
 | ローカライズされたページやドキュメントサイト | **ドキュメント** — `translate-docs` |
 | スタンドアロンのネストされたJSONロケールファイル | **JSON** — `translate-json` |
 
-完全な比較については、[ai-i18n-toolsとは？](../docs/guide/what-is-ai-i18n-tools.md)を参照してください。
+詳細な比較については、[ai-i18n-toolsとは？](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools)を参照してください。
 
 <a id="install"></a>
 ## インストール
@@ -54,7 +54,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-素の`ai-i18n-tools`コマンドを設定します（direnv、PATH、`package.json`スクリプト、または`npx`） — [インストール](../docs/guide/installation.md)を参照してください。
+単体の`ai-i18n-tools`コマンド（direnv、PATH、`package.json`スクリプト、または`npx`）を設定します。[インストール](https://wsj-br.github.io/ai-i18n-tools/guide/installation)を参照してください。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -66,18 +66,18 @@ ai-i18n-tools sync                   # extract + translate per features
 
 ドキュメント指向のスキャフォールド: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, または `ui-json-bundles`。
 
-個別の翻訳コマンドを連鎖させるよりも、`sync`を使用することをお勧めします。完全なチュートリアル: [クイックスタート](../docs/guide/quick-start.md)。
+個々の翻訳コマンドを連続して実行するよりも、`sync`を使用することをお勧めします。詳細な手順：[クイックスタート](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start)。
 
 <a id="documentation"></a>
 ## ドキュメント
 
-- [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/) — ガイド、インテグレーション、リファレンス
-- [インストール](../docs/guide/installation.md) · [クイックスタート](../docs/guide/quick-start.md) · [プロバイダーとモデル](../docs/guide/providers-and-models.md)
-- [UI文字列](../docs/guide/ui-strings/) · [ドキュメント](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
-- [インテグレーション](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [CLIリファレンス](../docs/reference/cli-commands/) · [設定](../docs/reference/configuration.md) · [ランタイムヘルパー](../docs/guide/runtime-helpers.md)
-- [例](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — 実行可能なデモ (`npx degit …`)
-- [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマーリポジトリのアシスタント向けインテグレーションガイド
+- [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/) — ガイド、統合、およびリファレンス
+- [インストール](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [クイックスタート](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [プロバイダーとモデル](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
+- [UI文字列](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
+- [統合](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
+- [CLIリファレンス](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [ランタイムヘルパー](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
+- [例](https://wsj-br.github.io/ai-i18n-tools/examples) — 実行可能なデモ（`npx degit …`）
+- [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマーリポジトリ向けアシスタントの統合ガイド
 
 <a id="contributing"></a>
 ## コントリビュート

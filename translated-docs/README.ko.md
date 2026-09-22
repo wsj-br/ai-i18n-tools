@@ -13,7 +13,7 @@
 
 JavaScript/TypeScript 앱 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. `t()` 문자열을 추출하고 Markdown/MDX 페이지, JSON 번들 및 SVG 레이블을 번역합니다. 이 모든 작업을 단일 구성으로 처리할 수 있으며 OpenAI, Anthropic, Gemini, OpenRouter, Ollama를 비롯한 모든 OpenAI 호환 API에 대한 기본 프리셋이 제공됩니다. 코드베이스를 변경하지 않고도 프로젝트별 또는 로캘별로 공급자나 모델을 전환할 수 있습니다.
 
-VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 및 일반 Markdown과 호환됩니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 그대로 유지하며, `migrate-intlayer`을(를) 통해 [Intlayer](https://intlayer.org/) 프로젝트를 마이그레이션할 수 있습니다.
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/) 및 일반 [Markdown](https://commonmark.org/)과 함께 작동합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지하고, `migrate-intlayer`을(를) 사용하여 [Intlayer](https://intlayer.org/) 프로젝트를 마이그레이션합니다.
 
 <a id="features"></a>
 ## 기능
@@ -36,7 +36,7 @@ VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 및 일반 Markdown과
 | 현지화된 페이지 또는 문서 사이트 | **문서** — `translate-docs` |
 | 독립형 중첩 JSON 로케일 파일 | **JSON** — `translate-json` |
 
-전체 비교는 [ai-i18n-tools란?](../docs/guide/what-is-ai-i18n-tools.md)을 참조하세요.
+전체 비교는 [ai-i18n-tools란 무엇입니까?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools)를 참조하세요.
 
 <a id="install"></a>
 ## 설치
@@ -54,7 +54,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-기본 `ai-i18n-tools` 명령을 구성하세요(direnv, PATH, `package.json` 스크립트 또는 `npx`) — [설치](../docs/guide/installation.md)를 참조하세요.
+기본 `ai-i18n-tools` 명령(direnv, PATH, `package.json` 스크립트 또는 `npx`)을 구성합니다. [설치](https://wsj-br.github.io/ai-i18n-tools/guide/installation)를 참조하세요.
 
 <a id="quick-start"></a>
 ## 빠른 시작
@@ -66,17 +66,17 @@ ai-i18n-tools sync                   # extract + translate per features
 
 문서 중심 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` 또는 `ui-json-bundles`.
 
-개별 번역 명령을 체인하는 것보다 `sync`를 선호하세요. 전체 안내: [빠른 시작](../docs/guide/quick-start.md).
+개별 번역 명령을 연결하는 것보다 `sync`을(를) 사용하는 것이 좋습니다. 전체 가이드: [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start).
 
 <a id="documentation"></a>
 ## 문서
 
-- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — 가이드, 통합 및 참조
-- [설치](../docs/guide/installation.md) · [빠른 시작](../docs/guide/quick-start.md) · [제공자 및 모델](../docs/guide/providers-and-models.md)
-- [UI 문자열](../docs/guide/ui-strings/) · [문서](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
-- [통합](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [CLI 참조](../docs/reference/cli-commands/) · [구성](../docs/reference/configuration.md) · [런타임 헬퍼](../docs/guide/runtime-helpers.md)
-- [예제](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — 실행 가능한 데모 (`npx degit …`)
+- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/) — 가이드, 통합 및 레퍼런스
+- [설치](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [공급자 및 모델](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
+- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [문서](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
+- [통합](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [CLI 레퍼런스](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [런타임 헬퍼](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
+- [예제](https://wsj-br.github.io/ai-i18n-tools/examples) — 실행 가능한 데모(`npx degit …`)
 - [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 리포지토리의 어시스턴트를 위한 통합 가이드
 
 <a id="contributing"></a>

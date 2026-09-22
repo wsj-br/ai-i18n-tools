@@ -13,7 +13,7 @@
 
 CLI y kit de herramientas para internacionalizar aplicaciones JavaScript/TypeScript y sitios de documentación. Extrae cadenas `t()`, traduce páginas Markdown/MDX, paquetes JSON y etiquetas SVG — todo desde una única configuración, con ajustes preestablecidos integrados para OpenAI, Anthropic, Gemini, OpenRouter, Ollama y cualquier API compatible con OpenAI. Cambia de proveedor o modelo por proyecto o por configuración regional sin modificar tu base de código.
 
-Funciona con VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro y Markdown estándar. Conserva tus catálogos existentes de [i18next](https://www.i18next.com/) (JSON de espacio de nombres o cadenas de origen `t()`) y migra proyectos de [Intlayer](https://intlayer.org/) con `migrate-intlayer`.
+Funciona con [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/) y [Markdown](https://commonmark.org/) estándar. Mantiene sus catálogos existentes de [i18next](https://www.i18next.com/) (JSON de espacio de nombres o cadenas de origen `t()`) y migra proyectos de [Intlayer](https://intlayer.org/) con `migrate-intlayer`.
 
 <a id="features"></a>
 ## Características
@@ -36,7 +36,7 @@ Funciona con VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro y Markdow
 | Páginas localizadas o sitios de documentos | **Documentos** — `translate-docs` |
 | Archivos de configuración regional JSON anidados independientes | **JSON** — `translate-json` |
 
-Consulte [¿Qué es ai-i18n-tools?](../docs/guide/what-is-ai-i18n-tools.md) para una comparación completa.
+Consulte [¿Qué es ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) para obtener una comparación completa.
 
 <a id="install"></a>
 ## Instalar
@@ -54,7 +54,7 @@ Establezca una clave API para su proveedor (el `init` predeterminado usa OpenRou
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Configure el comando `ai-i18n-tools` básico (direnv, PATH, scripts `package.json` o `npx`) — consulte [Instalación](../docs/guide/installation.md).
+Configure el comando `ai-i18n-tools` básico (direnv, PATH, scripts `package.json` o `npx`) — consulte [Instalación](https://wsj-br.github.io/ai-i18n-tools/guide/installation).
 
 <a id="quick-start"></a>
 ## Inicio rápido
@@ -66,18 +66,18 @@ ai-i18n-tools sync                   # extract + translate per features
 
 Andamios orientados a documentos: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` o `ui-json-bundles`.
 
-Prefiera `sync` en lugar de encadenar comandos de traducción individuales. Tutorial completo: [Inicio rápido](../docs/guide/quick-start.md).
+Prefiera usar `sync` en lugar de encadenar comandos de traducción individuales. Guía completa: [Inicio rápido](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start).
 
 <a id="documentation"></a>
 ## Documentación
 
 - [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/) — guías, integraciones y referencia
-- [Instalación](../docs/guide/installation.md) · [Inicio rápido](../docs/guide/quick-start.md) · [Proveedores y modelos](../docs/guide/providers-and-models.md)
-- [Cadenas de interfaz de usuario](../docs/guide/ui-strings/) · [Documentos](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
-- [Integraciones](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [Referencia de CLI](../docs/reference/cli-commands/) · [Configuración](../docs/reference/configuration.md) · [Ayudantes de tiempo de ejecución](../docs/guide/runtime-helpers.md)
-- [Ejemplos](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — demostraciones ejecutables (`npx degit …`)
-- [Contexto de agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — guía de integración para asistentes en repositorios de consumidores
+- [Instalación](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [Inicio rápido](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [Proveedores y modelos](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
+- [Cadenas de UI](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
+- [Integraciones](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [Referencia de CLI](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuración](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Funciones auxiliares de tiempo de ejecución](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
+- [Ejemplos](https://wsj-br.github.io/ai-i18n-tools/examples) — demos ejecutables (`npx degit …`)
+- [Contexto de agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — guía de integración para asistentes en repositorios de consumo
 
 <a id="contributing"></a>
 ## Contribución

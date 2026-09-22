@@ -13,7 +13,7 @@
 
 CLI और JavaScript/TypeScript ऐप्स तथा दस्तावेज़ीकरण साइटों के अंतर्राष्ट्रीयकरण के लिए टूलकिट। `t()` स्ट्रिंग्स निकालें, Markdown/MDX पेज, JSON बंडल्स, और SVG लेबल्स का अनुवाद करें — सब कुछ एक ही कॉन्फ़िगरेशन से, OpenAI, Anthropic, Gemini, OpenRouter, Ollama, और किसी भी OpenAI-संगत API के लिए बिल्ट-इन प्रीसेट के साथ। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल बदलें।
 
-VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और प्लेन Markdown के साथ काम करता है। आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को बनाए रखता है, और `migrate-intlayer` के साथ [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को माइग्रेट करता है।
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), और सादे [Markdown](https://commonmark.org/) के साथ काम करता है। आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को सुरक्षित रखता है, और [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को `migrate-intlayer` के साथ माइग्रेट करता है।
 
 <a id="features"></a>
 ## विशेषताएँ
@@ -36,7 +36,7 @@ VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और प्ले�
 | स्थानीयकृत पृष्ठ या डॉक्स साइटें | **दस्तावेज़** — `translate-docs` |
 | स्टैंडअलोन नेस्टेड JSON लोकेल फ़ाइलें | **JSON** — `translate-json` |
 
-पूरी तुलना के लिए [एआई-आई18एन-टूल्स क्या है?](../docs/guide/what-is-ai-i18n-tools.md) देखें।
+पूर्ण तुलना के लिए [ai-i18n-tools क्या है?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) देखें।
 
 <a id="install"></a>
 ## इंस्टॉल करें
@@ -54,7 +54,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-नंगे `ai-i18n-tools` कमांड (डाइरेनवी, पाथ, `package.json` स्क्रिप्ट, या `npx`) को कॉन्फ़िगर करें — [इंस्टॉलेशन](../docs/guide/installation.md) देखें।
+बेयर `ai-i18n-tools` कमांड कॉन्फ़िगर करें (direnv, PATH, `package.json` स्क्रिप्ट्स, या `npx`) — [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/guide/installation) देखें।
 
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
@@ -66,18 +66,18 @@ ai-i18n-tools sync                   # extract + translate per features
 
 दस्तावेज़-उन्मुख स्कैफोल्ड: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, या `ui-json-bundles`।
 
-व्यक्तिगत अनुवाद कमांड को जोड़ने के बजाय `sync` को प्राथमिकता दें। पूर्ण वॉकथ्रू: [त्वरित शुरुआत](../docs/guide/quick-start.md)।
+व्यक्तिगत ट्रांसलेट कमांड्स को चेन करने के बजाय `sync` को प्राथमिकता दें। पूर्ण विवरण: [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start)।
 
 <a id="documentation"></a>
 ## दस्तावेज़
 
-- [दस्तावेज़ साइट](https://wsj-br.github.io/ai-i18n-tools/) — गाइड, इंटीग्रेशन और संदर्भ
-- [इंस्टॉलेशन](../docs/guide/installation.md) · [त्वरित शुरुआत](../docs/guide/quick-start.md) · [प्रदाता और मॉडल](../docs/guide/providers-and-models.md)
-- [UI स्ट्रिंग](../docs/guide/ui-strings/) · [दस्तावेज़](../docs/guide/documents/) · [JSON](../docs/guide/json.md) · [SVG](../docs/guide/svg-translation/)
-- [इंटीग्रेशन](../docs/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [CLI संदर्भ](../docs/reference/cli-commands/) · [कॉन्फ़िगरेशन](../docs/reference/configuration.md) · [रनटाइम हेल्पर](../docs/guide/runtime-helpers.md)
-- [उदाहरण](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) — चलाने योग्य डेमो (`npx degit …`)
-- [AI एजेंट संदर्भ](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — उपभोक्ता रेपो में सहायकों के लिए इंटीग्रेशन गाइड
+- [डॉक्यूमेंटेशन साइट](https://wsj-br.github.io/ai-i18n-tools/) — गाइड्स, इंटीग्रेशंस, और रेफरेंस
+- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [प्रोवाइडर्स और मॉडल्स](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
+- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [डॉक्यूमेंट्स](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
+- [इंटीग्रेशंस](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [CLI रेफरेंस](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [रनटाइम हेल्पर्स](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
+- [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/examples) — रन करने योग्य डेमो (`npx degit …`)
+- [AI एजेंट कॉन्टेक्स्ट](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — कंज्यूमर रेपो में असिस्टेंट्स के लिए इंटीग्रेशन गाइड
 
 <a id="contributing"></a>
 ## योगदान
