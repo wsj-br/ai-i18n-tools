@@ -1,0 +1,25 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage
+	frontmatter={{
+		title: 'Page not found',
+		description: 'This page does not exist in the ai-i18n-tools Starlight example.',
+		template: 'splash',
+		editUrl: false,
+		pagefind: false,
+		hero: {
+			title: 'Page not found',
+			tagline: 'Check the URL, or go back to the quick start.',
+			actions: [
+				{
+					text: 'Quick start',
+					link: '/quick-start',
+					icon: 'right-arrow',
+					variant: 'primary',
+				},
+			],
+		},
+	}}
+/>

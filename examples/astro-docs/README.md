@@ -81,14 +81,24 @@ examples/astro-docs/
 ├── glossary-user.csv
 ├── package.json
 ├── public/
-└── src/content/docs/
-    ├── quick-start.md          # English source
-    ├── feature-showcase.mdx
-    ├── ar/ …                   # committed translations
-    ├── de/
-    ├── es/
-    ├── fr/
-    └── pt-br/
+├── src/pages/
+│   └── 404.astro               # custom 404 (Starlight disable404Route)
+└── src/content/
+    ├── docs/
+    │   ├── quick-start.md      # English source
+    │   ├── feature-showcase.mdx
+    │   ├── ar/ …               # committed translations
+    │   ├── de/
+    │   ├── es/
+    │   ├── fr/
+    │   └── pt-br/
+    └── i18n/                   # Starlight UI string overrides (BCP-47 filenames)
+        ├── en-GB.json
+        ├── ar.json
+        ├── de-DE.json
+        ├── es-ES.json
+        ├── fr-FR.json
+        └── pt-BR.json
 ```
 
 ## Screenshot files — expected layout
