@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — translated `README.md` copies prefix GitHub Pages documentation links with the target locale (`https://wsj-br.github.io/ai-i18n-tools/${translatedLocale}/…`) via `regexAdjustments` on the flat README docs block. The English README stays on the root locale.
+
 ## [1.9.0] - 2026-09-22
 
 - **Changed**: examples — `astro-docs` serves its 404 from `src/pages/404.astro` with `disable404Route`, so the docs slug route no longer collides with `/404`. The build ignores Rolldown’s `MODULE_LEVEL_DIRECTIVE` warning for Astro’s internal `use astro:head-inject` directive; those MDX modules are already identified by the `?astroPropagatedAssets` id.

@@ -48,6 +48,13 @@
         "flatPreserveRelativeDir": true,
         "linkRewriteDocsRoot": ".",
         "postProcessing": {
+          "regexAdjustments": [
+            {
+              "description": "Prefix GitHub Pages doc links with the target locale",
+              "search": "https://wsj-br\\.github\\.io/ai-i18n-tools/",
+              "replace": "https://wsj-br.github.io/ai-i18n-tools/${translatedLocale}/"
+            }
+          ],
           "languageListBlock": {
             "start": "<small id=\"lang-list\">",
             "end": "</small>",

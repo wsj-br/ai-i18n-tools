@@ -35,6 +35,7 @@ Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.as
 | Source uses `t()` or HTML markers | **UI strings** — `extract` / `translate-ui` |
 | Localized pages or docs sites | **Documents** — `translate-docs` |
 | Standalone nested JSON locale files | **JSON** — `translate-json` |
+| Diagrams or illustrations with labels in SVG | **SVG** — `translate-svg` |
 
 See [What is ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) for a full comparison.
 

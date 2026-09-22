@@ -35,8 +35,9 @@ Funciona com [VitePress](https://vitepress.dev/), [Starlight](https://starlight.
 | A fonte usa `t()` ou marcadores HTML | **Strings de UI** — `extract` / `translate-ui` |
 | Páginas localizadas ou sites de documentos | **Documentos** — `translate-docs` |
 | Arquivos de localidade JSON aninhados autônomos | **JSON** — `translate-json` |
+| Diagramas ou ilustrações com rótulos em SVG | **SVG** — `translate-svg` |
 
-Consulte [O que é o ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) para uma comparação completa.
+Consulte [O que é o ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/what-is-ai-i18n-tools) para uma comparação completa.
 
 <a id="install"></a>
 ## Instalar
@@ -54,7 +55,7 @@ Defina uma chave de API para seu provedor (o padrão `init` usa OpenRouter; Olla
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Configure o comando `ai-i18n-tools` puro (direnv, PATH, scripts `package.json` ou `npx`) — consulte [Instalação](https://wsj-br.github.io/ai-i18n-tools/guide/installation).
+Configure o comando `ai-i18n-tools` puro (direnv, PATH, scripts `package.json` ou `npx`) — consulte [Instalação](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/installation).
 
 <a id="quick-start"></a>
 ## Início rápido
@@ -66,17 +67,17 @@ ai-i18n-tools sync                   # extract + translate per features
 
 Scaffolds orientados a documentos: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` ou `ui-json-bundles`.
 
-Prefira `sync` em vez de encadear comandos de tradução individuais. Passo a passo completo: [Início rápido](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start).
+Prefira `sync` em vez de encadear comandos de tradução individuais. Passo a passo completo: [Início rápido](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/quick-start).
 
 <a id="documentation"></a>
 ## Documentação
 
-- [Site de documentação](https://wsj-br.github.io/ai-i18n-tools/) — guias, integrações e referência
-- [Instalação](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [Início rápido](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [Provedores e modelos](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
-- [Strings de UI](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
-- [Integrações](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [Referência da CLI](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuração](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Helpers de runtime](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
-- [Exemplos](https://wsj-br.github.io/ai-i18n-tools/examples) — demos executáveis (`npx degit …`)
+- [Site de documentação](https://wsj-br.github.io/ai-i18n-tools/pt-BR/) — guias, integrações e referência
+- [Instalação](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/installation) · [Início rápido](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/quick-start) · [Provedores e modelos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/providers-and-models)
+- [Strings de UI](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/ui-strings/) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/svg-translation/)
+- [Integrações](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [Referência da CLI](https://wsj-br.github.io/ai-i18n-tools/pt-BR/reference/cli-commands/) · [Configuração](https://wsj-br.github.io/ai-i18n-tools/pt-BR/reference/configuration) · [Helpers de runtime](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/runtime-helpers)
+- [Exemplos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/examples) — demos executáveis (`npx degit …`)
 - [Contexto do Agente de IA](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — guia de integração para assistentes em repositórios consumidores
 
 <a id="contributing"></a>

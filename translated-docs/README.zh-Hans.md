@@ -35,8 +35,9 @@
 | 源码使用 `t()` 或 HTML 标记 | **UI 字符串** — `extract` / `translate-ui` |
 | 本地化页面或文档站点 | **文档** — `translate-docs` |
 | 独立的嵌套 JSON 语言环境文件 | **JSON** — `translate-json` |
+| 带有 SVG 标签的图表或插图 | **SVG** — `translate-svg` |
 
-请参阅[什么是 ai-i18n-tools？](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) 以了解完整对比。
+请参阅[什么是 ai-i18n-tools？](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/what-is-ai-i18n-tools) 以了解完整对比。
 
 <a id="install"></a>
 ## 安装
@@ -54,7 +55,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-配置 `ai-i18n-tools` 基础命令（direnv、PATH、`package.json` 脚本或 `npx`）——请参阅[安装](https://wsj-br.github.io/ai-i18n-tools/guide/installation)。
+配置 `ai-i18n-tools` 基础命令（direnv、PATH、`package.json` 脚本或 `npx`）——请参阅[安装](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/installation)。
 
 <a id="quick-start"></a>
 ## 快速开始
@@ -66,17 +67,17 @@ ai-i18n-tools sync                   # extract + translate per features
 
 面向文档的脚手架：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website` 或 `ui-json-bundles`。
 
-建议优先使用 `sync`，而非串联单个翻译命令。完整教程：[快速入门](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start)。
+建议优先使用 `sync`，而非串联单个翻译命令。完整教程：[快速入门](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/quick-start)。
 
 <a id="documentation"></a>
 ## 文档
 
-- [文档站点](https://wsj-br.github.io/ai-i18n-tools/) —— 指南、集成与参考
-- [安装](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [快速入门](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [提供商与模型](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
-- [UI 字符串](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [文档](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
-- [集成](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) —— VitePress、Nextra、Fumadocs、Docusaurus、Astro
-- [CLI 参考](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [配置](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [运行时辅助工具](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
-- [示例](https://wsj-br.github.io/ai-i18n-tools/examples) —— 可运行演示 (`npx degit …`)
+- [文档站点](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/) —— 指南、集成与参考
+- [安装](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/installation) · [快速入门](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/quick-start) · [提供商与模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/providers-and-models)
+- [UI 字符串](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/) · [文档](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/svg-translation/)
+- [集成](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/integrations/) —— VitePress、Nextra、Fumadocs、Docusaurus、Astro
+- [CLI 参考](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/cli-commands/) · [配置](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/configuration) · [运行时辅助工具](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/runtime-helpers)
+- [示例](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/examples) —— 可运行演示 (`npx degit …`)
 - [AI 智能体上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) —— 使用方代码库中助手的集成指南
 
 <a id="contributing"></a>

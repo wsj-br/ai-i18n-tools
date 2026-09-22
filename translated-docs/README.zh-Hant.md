@@ -35,8 +35,9 @@ CLI 與工具套件，用於將 JavaScript/TypeScript 應用程式及文件網�
 | 原始碼使用 `t()` 或 HTML 標記 | **UI 字串** — `extract` / `translate-ui` |
 | 本地化頁面或文件網站 | **文件** — `translate-docs` |
 | 獨立的巢狀 JSON 語言檔 | **JSON** — `translate-json` |
+| 帶有 SVG 標籤的圖表或插圖 | **SVG** — `translate-svg` |
 
-如需完整比較，請參閱[什麼是 ai-i18n-tools？](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools)。
+如需完整比較，請參閱[什麼是 ai-i18n-tools？](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/what-is-ai-i18n-tools)。
 
 <a id="install"></a>
 ## 安裝
@@ -54,7 +55,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-設定原生 `ai-i18n-tools` 指令（direnv、PATH、`package.json` 指令碼或 `npx`）— 請參閱[安裝](https://wsj-br.github.io/ai-i18n-tools/guide/installation)。
+設定原生 `ai-i18n-tools` 指令（direnv、PATH、`package.json` 指令碼或 `npx`）— 請參閱[安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation)。
 
 <a id="quick-start"></a>
 ## 快速開始
@@ -66,17 +67,17 @@ ai-i18n-tools sync                   # extract + translate per features
 
 以文件為導向的框架模板：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website` 或 `ui-json-bundles`。
 
-建議優先使用 `sync`，而非串聯個別的翻譯指令。完整逐步指南：[快速開始](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start)。
+建議優先使用 `sync`，而非串聯個別的翻譯指令。完整逐步指南：[快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start)。
 
 <a id="documentation"></a>
 ## 文件
 
-- [文件網站](https://wsj-br.github.io/ai-i18n-tools/) — 指南、整合與參考資料
-- [安裝](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [快速開始](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [提供者與模型](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
-- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [文件](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
-- [整合](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
-- [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [執行期輔助工具](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
-- [範例](https://wsj-br.github.io/ai-i18n-tools/examples) — 可執行的示範（`npx degit …`）
+- [文件網站](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/) — 指南、整合與參考資料
+- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [提供者與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
+- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
+- [整合](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
+- [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/configuration) · [執行期輔助工具](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/runtime-helpers)
+- [範例](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/examples) — 可執行的示範（`npx degit …`）
 - [AI 代理程式上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 供使用端儲存庫中助理使用的整合指南
 
 <a id="contributing"></a>

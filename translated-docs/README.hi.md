@@ -35,8 +35,9 @@ CLI और JavaScript/TypeScript ऐप्स तथा दस्तावेज
 | स्रोत `t()` या एचटीएमएल मार्कर का उपयोग करता है | **यूआई स्ट्रिंग्स** — `extract` / `translate-ui` |
 | स्थानीयकृत पृष्ठ या डॉक्स साइटें | **दस्तावेज़** — `translate-docs` |
 | स्टैंडअलोन नेस्टेड JSON लोकेल फ़ाइलें | **JSON** — `translate-json` |
+| SVG में लेबल वाले आरेख या चित्रण | **SVG** — `translate-svg` |
 
-पूर्ण तुलना के लिए [ai-i18n-tools क्या है?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) देखें।
+पूर्ण तुलना के लिए [ai-i18n-tools क्या है?](https://wsj-br.github.io/ai-i18n-tools/hi/guide/what-is-ai-i18n-tools) देखें।
 
 <a id="install"></a>
 ## इंस्टॉल करें
@@ -54,7 +55,7 @@ pnpm add ai-i18n-tools
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-बेयर `ai-i18n-tools` कमांड कॉन्फ़िगर करें (direnv, PATH, `package.json` स्क्रिप्ट्स, या `npx`) — [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/guide/installation) देखें।
+बेयर `ai-i18n-tools` कमांड कॉन्फ़िगर करें (direnv, PATH, `package.json` स्क्रिप्ट्स, या `npx`) — [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) देखें।
 
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
@@ -66,17 +67,17 @@ ai-i18n-tools sync                   # extract + translate per features
 
 दस्तावेज़-उन्मुख स्कैफोल्ड: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, या `ui-json-bundles`।
 
-व्यक्तिगत ट्रांसलेट कमांड्स को चेन करने के बजाय `sync` को प्राथमिकता दें। पूर्ण विवरण: [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start)।
+व्यक्तिगत ट्रांसलेट कमांड्स को चेन करने के बजाय `sync` को प्राथमिकता दें। पूर्ण विवरण: [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start)।
 
 <a id="documentation"></a>
 ## दस्तावेज़
 
-- [डॉक्यूमेंटेशन साइट](https://wsj-br.github.io/ai-i18n-tools/) — गाइड्स, इंटीग्रेशंस, और रेफरेंस
-- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [प्रोवाइडर्स और मॉडल्स](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
-- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [डॉक्यूमेंट्स](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
-- [इंटीग्रेशंस](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
-- [CLI रेफरेंस](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [रनटाइम हेल्पर्स](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
-- [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/examples) — रन करने योग्य डेमो (`npx degit …`)
+- [डॉक्यूमेंटेशन साइट](https://wsj-br.github.io/ai-i18n-tools/hi/) — गाइड्स, इंटीग्रेशंस, और रेफरेंस
+- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [प्रोवाइडर्स और मॉडल्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models)
+- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [डॉक्यूमेंट्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
+- [इंटीग्रेशंस](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [CLI रेफरेंस](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/hi/reference/configuration) · [रनटाइम हेल्पर्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/runtime-helpers)
+- [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/hi/examples) — रन करने योग्य डेमो (`npx degit …`)
 - [AI एजेंट कॉन्टेक्स्ट](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — कंज्यूमर रेपो में असिस्टेंट्स के लिए इंटीग्रेशन गाइड
 
 <a id="contributing"></a>
