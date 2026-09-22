@@ -49,3 +49,10 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, reset + AI-agent report) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 Each **Example** name links to its GitHub README with full setup, commands, and project layout — or browse the [examples index in the repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
+
+
+<br/>
+
+::: tip Disclaimer
+Product names and icons belong to their respective owners and are used for identification purposes only. This software is not affiliated with or endorsed by those brands.
+:::
