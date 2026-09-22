@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-09-22
+
 - **Changed**: examples — `astro-docs` serves its 404 from `src/pages/404.astro` with `disable404Route`, so the docs slug route no longer collides with `/404`. The build ignores Rolldown’s `MODULE_LEVEL_DIRECTIVE` warning for Astro’s internal `use astro:head-inject` directive; those MDX modules are already identified by the `?astroPropagatedAssets` id.
 - **Added**: examples — `astro-docs` has an `i18n` content collection (one UI-string file per configured language) so the example build no longer warns about an empty `i18n` collection.
 - **Changed**: docs — VitePress `chunkSizeWarningLimit` is 700 so the Japanese local-search index (just over 600 kB) no longer warns during `pnpm docs:build`.
